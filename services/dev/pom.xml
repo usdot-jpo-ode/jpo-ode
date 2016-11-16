@@ -1,31 +1,61 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
 
-	<groupId>us.dot.its.jpo.ode</groupId>
-	<artifactId>ode-svcs</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
-
-	<name>ode-svcs</name>
-	<description>Web application for US DOT ITS JPO</description>
-
-	<parent>
+  <parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>1.4.1.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
+    <relativePath/> <!-- lookup parent from repository -->
+  </parent>
 
-	<properties>
+   <groupId>us.dot.its.jpo.ode</groupId>
+   <artifactId>jpo-ode</artifactId>
+   <version>0.0.1-SNAPSHOT</version>
+   <packaging>pom</packaging>
+   <modules>
+      <module>jpo-ode-core</module>
+      <module>jpo-ode-svcs</module>
+   </modules>
+
+   <repositories>
+   <!--  
+      <repository>
+         <id>cnsi-ode-repo</id>
+         <url>http://dropbox.cnsi.com/nexus/content/repositories/ODE/</url>
+      </repository>
+   -->
+   </repositories>
+
+   <properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-	</properties>
 
-	<dependencies>
-	<!--  
+    <!-- Generic properties -->
+      <java.home>${env.JAVA_HOME}</java.home>
+      <!-- Mac OSX home -->
+      <!-- <java.home>/Library/Java/JavaVirtualMachines/jdk1.8.0_51.jdk/Contents/Home</java.home> -->
+
+      <jmockit.version>1.29</jmockit.version>
+
+      <!-- Username and Password required to access CNSI Nexus Repo. In order 
+         to pass the credentials on to the repo you must use a settings file or have 
+         the remote artifacts installed to you local repo manually. -->
+      <cnsi.repo.username></cnsi.repo.username>
+      <cnsi.repo.password></cnsi.repo.password>
+      <bamboo.build.number>Localbuild</bamboo.build.number>
+      <bamboo.git.revision>Localbuild</bamboo.git.revision>
+
+      <finalLocation>${project.build.directory}/${project.artifactId}-${project.version}</finalLocation>
+      <timestamp>${maven.build.timestamp}</timestamp>
+      <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
+
+   </properties>
+
+   <dependencies>
+
+ 	<!--  
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-stream-kafka</artifactId>
@@ -93,7 +123,21 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-	</dependencies>
+
+
+      <dependency>
+         <groupId>org.jmockit</groupId>
+         <artifactId>jmockit</artifactId>
+         <version>${jmockit.version}</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <scope>test</scope>
+      </dependency>
+
+   </dependencies>
 
 	<dependencyManagement>
 		<dependencies>
@@ -107,14 +151,23 @@
 		</dependencies>
 	</dependencyManagement>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-
+   <build>
+      <pluginManagement>
+         <plugins>
+            <plugin>
+              <groupId>org.springframework.boot</groupId>
+              <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-compiler-plugin</artifactId>
+               <configuration>
+                  <source>1.8</source>
+                  <target>1.8</target>
+               </configuration>
+            </plugin>
+         </plugins>
+      </pluginManagement>
+   </build>
 
 </project>
