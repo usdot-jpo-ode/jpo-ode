@@ -2,9 +2,8 @@ package us.dot.its.jpo.ode.asn;
 
 import java.util.List;
 
-import com.bah.ode.asn.oss.dsrc.RoadSignID;
-
 import us.dot.its.jpo.ode.asn.OdeHeadingSlice.SliceMask;
+import us.dot.its.jpo.ode.j2735.dsrc.RoadSignID;
 import us.dot.its.jpo.ode.model.OdeObject;
 
 public class OdeRoadSignId extends OdeObject {

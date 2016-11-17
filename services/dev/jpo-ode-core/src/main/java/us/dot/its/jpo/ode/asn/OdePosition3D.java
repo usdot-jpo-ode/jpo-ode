@@ -17,11 +17,8 @@
 package us.dot.its.jpo.ode.asn;
 
 import java.math.BigDecimal;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
-import com.bah.ode.asn.oss.dsrc.Position3D;
-
+import us.dot.its.jpo.ode.j2735.dsrc.Position3D;
 import us.dot.its.jpo.ode.model.OdeObject;
 
 public class OdePosition3D extends OdeObject {
@@ -66,7 +63,7 @@ public class OdePosition3D extends OdeObject {
          setLongitude(pos._long != null ? BigDecimal.valueOf(
                pos._long.longValue(), 7) : null);
          if (pos.elevation != null) {
-            int elev = ByteBuffer.wrap(pos.elevation.byteArrayValue()).order(ByteOrder.BIG_ENDIAN).getShort();
+            int elev = pos.elevation.intValue();
             if (elev == 0xF000) {
                setElevation(null);
             } else if (elev >= 0x0000 && elev <= 0xEFFF) {

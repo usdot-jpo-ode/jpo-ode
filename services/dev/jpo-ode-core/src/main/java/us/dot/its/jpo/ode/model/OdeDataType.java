@@ -22,18 +22,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import us.dot.its.jpo.ode.asn.OdeMapData;
-import us.dot.its.jpo.ode.asn.OdeSpatData;
-
 public enum OdeDataType {
    Status("status", OdeStatus.class),
    Control("control", OdeControlData.class),
    Authorization("auth", OdeAuthorization.class),
-   VehicleData("veh", OdeVehicleDataFlat.class),
-   IntersectionData("int", OdeIntersectionData.class),
-   AdvisoryData("adv", OdeAdvisoryData.class),
-   MapData("map", OdeMapData.class), 
-   SPaTData("spat", OdeSpatData.class), 
    AggregateData("agg", OdeAggregateData.class),
    WeatherData("weather", OdeWeatherData.class),
    AsnBase64("asnbase64", String.class),

@@ -16,8 +16,7 @@
  *******************************************************************************/
 package us.dot.its.jpo.ode.asn;
 
-import com.bah.ode.asn.oss.dsrc.IntersectionStatusObject;
-
+import us.dot.its.jpo.ode.j2735.dsrc.IntersectionStatusObject;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class OdeIntersectionStatusObject {

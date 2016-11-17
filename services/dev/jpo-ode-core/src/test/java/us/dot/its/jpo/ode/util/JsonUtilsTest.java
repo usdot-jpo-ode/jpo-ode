@@ -11,8 +11,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import junit.framework.TestCase;
 import us.dot.its.jpo.ode.context.AppContext;
-import us.dot.its.jpo.ode.model.OdeVehicleDataFlat;
-import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class JsonUtilsTest extends TestCase {
    private static final String OVDF = 
