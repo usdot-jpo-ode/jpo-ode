@@ -21,9 +21,8 @@ import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import com.bah.ode.asn.oss.dsrc.DDateTime;
-import com.bah.ode.asn.oss.dsrc.DFullTime;
-
+import us.dot.its.jpo.ode.j2735.dsrc.DDateTime;
+import us.dot.its.jpo.ode.j2735.dsrc.DFullTime;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 

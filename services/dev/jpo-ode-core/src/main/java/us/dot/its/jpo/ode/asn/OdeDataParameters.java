@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.asn;
 
-import com.bah.ode.asn.oss.dsrc.DataParameters;
-
+import us.dot.its.jpo.ode.j2735.dsrc.DataParameters;
 import us.dot.its.jpo.ode.model.OdeObject;
 
 public class OdeDataParameters extends OdeObject {
@@ -14,8 +13,8 @@ public class OdeDataParameters extends OdeObject {
    private String geiodUsed;
    
    public OdeDataParameters(DataParameters dataParameters) {
-      if (dataParameters.hasGeiodUsed())
-         setGeiodUsed(dataParameters.getGeiodUsed().stringValue());
+      if (dataParameters.hasGeoidUsed())
+         setGeiodUsed(dataParameters.getGeoidUsed().stringValue());
       
       if (dataParameters.hasLastCheckedDate())
          setLastCheckedDate(dataParameters.getLastCheckedDate().stringValue());

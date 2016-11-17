@@ -167,7 +167,7 @@ public class AppContext {
    @Autowired
    Environment env;
    
-   private AppContext() {
+   public AppContext() {
    }
 
    public static AppContext getInstance() {

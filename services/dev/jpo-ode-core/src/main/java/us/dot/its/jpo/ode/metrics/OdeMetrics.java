@@ -4,8 +4,8 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import com.codahale.metrics.ConsoleReporter;
-import com.codahale.metrics.MetricRegistry;
+//import com.codahale.metrics.ConsoleReporter;
+//import com.codahale.metrics.MetricRegistry;
 
 import us.dot.its.jpo.ode.context.AppContext;
 
@@ -177,21 +177,21 @@ public class OdeMetrics {
       return new Timer(timer);
    }
 
-   public static void main(String args[]) {
-      MetricRegistry metrics = new com.codahale.metrics.MetricRegistry();
-      ConsoleReporter reporter = ConsoleReporter.forRegistry(metrics)
-            .convertRatesTo(TimeUnit.SECONDS)
-            .convertDurationsTo(TimeUnit.MILLISECONDS)
-            .build();
-      reporter.start(1, TimeUnit.SECONDS);
-      com.codahale.metrics.Meter requestsMeter = metrics.meter("requests");
-      requestsMeter.mark();
-      
-      com.codahale.metrics.Counter requestsCounter = metrics.counter("requestsCounter");
-      requestsCounter.inc();
-      
-      wait5Seconds();
-   }
+//   public static void main(String args[]) {
+//      MetricRegistry metrics = new com.codahale.metrics.MetricRegistry();
+//      ConsoleReporter reporter = ConsoleReporter.forRegistry(metrics)
+//            .convertRatesTo(TimeUnit.SECONDS)
+//            .convertDurationsTo(TimeUnit.MILLISECONDS)
+//            .build();
+//      reporter.start(1, TimeUnit.SECONDS);
+//      com.codahale.metrics.Meter requestsMeter = metrics.meter("requests");
+//      requestsMeter.mark();
+//      
+//      com.codahale.metrics.Counter requestsCounter = metrics.counter("requestsCounter");
+//      requestsCounter.inc();
+//      
+//      wait5Seconds();
+//   }
 
    public void startConsoleReport() {
 //      Meter reporterMeter = OdeMetrics.getInstance().meter("reporter");

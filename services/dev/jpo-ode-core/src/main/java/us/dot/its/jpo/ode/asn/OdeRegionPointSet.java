@@ -2,8 +2,7 @@ package us.dot.its.jpo.ode.asn;
 
 import java.util.List;
 
-import com.bah.ode.asn.oss.dsrc.RegionPointSet;
-
+import us.dot.its.jpo.ode.j2735.dsrc.RegionPointSet;
 import us.dot.its.jpo.ode.model.OdeObject;
 
 public class OdeRegionPointSet extends OdeObject {

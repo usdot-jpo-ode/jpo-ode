@@ -19,8 +19,6 @@ package us.dot.its.jpo.ode.asn;
 import java.awt.geom.Point2D;
 import java.math.BigDecimal;
 
-import com.bah.ode.asn.oss.semi.GeoRegion;
-
 import us.dot.its.jpo.ode.model.OdeException;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.util.GeoUtils;
@@ -39,14 +37,6 @@ public class OdeGeoRegion extends OdeObject{
       super();
       this.nwCorner = nwCorner;
       this.seCorner = seCorner;
-   }
-
-   public OdeGeoRegion(GeoRegion serviceRegion) {
-      if (serviceRegion.nwCorner != null)
-         this.setNwCorner(new OdePosition3D(serviceRegion.nwCorner));
-      
-      if (serviceRegion.seCorner != null)
-         this.setSeCorner(new OdePosition3D(serviceRegion.seCorner));
    }
 
    public OdeGeoRegion(String serviceRegion) throws OdeException {

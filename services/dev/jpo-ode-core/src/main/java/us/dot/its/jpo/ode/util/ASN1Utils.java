@@ -2,7 +2,7 @@ package us.dot.its.jpo.ode.util;
 
 import java.math.BigDecimal;
 
-import com.bah.ode.asn.oss.dsrc.Heading;
+import us.dot.its.jpo.ode.j2735.dsrc.Heading;
 
 public class ASN1Utils {
    

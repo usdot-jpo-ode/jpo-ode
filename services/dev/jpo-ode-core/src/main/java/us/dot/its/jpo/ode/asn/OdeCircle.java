@@ -1,7 +1,7 @@
 package us.dot.its.jpo.ode.asn;
 
-import com.bah.ode.asn.oss.dsrc.Circle;
-
+import us.dot.its.jpo.ode.j2735.dsrc.Circle;
+import us.dot.its.jpo.ode.j2735.dsrc.Radius_B12;
 import us.dot.its.jpo.ode.model.OdeObject;
 
 public class OdeCircle extends OdeObject {
@@ -9,11 +9,11 @@ public class OdeCircle extends OdeObject {
    private static final long serialVersionUID = 3009231304492798761L;
 
    public OdePosition3D center;
-   public OdeRadius radius;
+   public Radius_B12 radius;
 
    public OdeCircle(Circle circle) {
       this.center = new OdePosition3D(circle.getCenter());
-      this.radius = new OdeRadius(circle.getRaduis());
+      this.radius = circle.getRadius();
    }
 
    @Override

@@ -30,23 +30,8 @@
    <properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.8</java.version>
 
     <!-- Generic properties -->
-      <java.home>${env.JAVA_HOME}</java.home>
-      <!-- Mac OSX home -->
-      <!-- <java.home>/Library/Java/JavaVirtualMachines/jdk1.8.0_51.jdk/Contents/Home</java.home> -->
-
-      <jmockit.version>1.29</jmockit.version>
-
-      <!-- Username and Password required to access CNSI Nexus Repo. In order 
-         to pass the credentials on to the repo you must use a settings file or have 
-         the remote artifacts installed to you local repo manually. -->
-      <cnsi.repo.username></cnsi.repo.username>
-      <cnsi.repo.password></cnsi.repo.password>
-      <bamboo.build.number>Localbuild</bamboo.build.number>
-      <bamboo.git.revision>Localbuild</bamboo.git.revision>
-
       <finalLocation>${project.build.directory}/${project.artifactId}-${project.version}</finalLocation>
       <timestamp>${maven.build.timestamp}</timestamp>
       <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
@@ -91,6 +76,16 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 	-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -128,7 +123,7 @@
       <dependency>
          <groupId>org.jmockit</groupId>
          <artifactId>jmockit</artifactId>
-         <version>${jmockit.version}</version>
+         <version>1.29</version>
          <scope>test</scope>
       </dependency>
       <dependency>

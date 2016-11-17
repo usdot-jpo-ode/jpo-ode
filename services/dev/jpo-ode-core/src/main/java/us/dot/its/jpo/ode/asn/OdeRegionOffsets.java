@@ -3,9 +3,8 @@ package us.dot.its.jpo.ode.asn;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bah.ode.asn.oss.dsrc.RegionList;
-import com.bah.ode.asn.oss.dsrc.RegionOffsets;
-
+import us.dot.its.jpo.ode.j2735.dsrc.RegionList;
+import us.dot.its.jpo.ode.j2735.dsrc.RegionOffsets;
 import us.dot.its.jpo.ode.model.OdeObject;
 
 public class OdeRegionOffsets extends OdeObject {
@@ -27,12 +26,12 @@ public class OdeRegionOffsets extends OdeObject {
    }
 
    public OdeRegionOffsets(RegionOffsets ofs) {
-      this.xOffsetCm = ofs.getXOffset();
+      this.xOffsetCm = ofs.getXOffset().longValue();
       
-      this.yOffsetCm = ofs.getYOffset();
+      this.yOffsetCm = ofs.getYOffset().longValue();
       
       if (ofs.hasZOffset())
-         this.zOffsetCm = ofs.getZOffset();
+         this.zOffsetCm = ofs.getZOffset().longValue();
    }
 
    public Long getxOffsetCm() {

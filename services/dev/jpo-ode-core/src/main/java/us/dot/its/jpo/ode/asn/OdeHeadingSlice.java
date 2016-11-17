@@ -5,7 +5,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bah.ode.asn.oss.dsrc.HeadingSlice;
+import us.dot.its.jpo.ode.j2735.dsrc.HeadingSlice;
 
 public class OdeHeadingSlice {
    public enum SliceMask {
