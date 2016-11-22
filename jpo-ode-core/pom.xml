@@ -15,13 +15,12 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.8</java.version>
-	</properties>
-
 	<dependencies>
+		<dependency>
+			<groupId>us.dot.its.jpo.ode</groupId>
+			<artifactId>jpo-ode-plugins</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
@@ -44,19 +43,6 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>asn_1</groupId>
-			<artifactId>oss.runtime</artifactId>
-			<version>6.3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>us.dot.its.jpo.ode</groupId>
-			<artifactId>j2735</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
 
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>

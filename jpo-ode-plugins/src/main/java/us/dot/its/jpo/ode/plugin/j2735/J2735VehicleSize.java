@@ -14,17 +14,16 @@
  * Contributors:
  *     Booz | Allen | Hamilton - initial API and implementation
  *******************************************************************************/
-package us.dot.its.jpo.ode.asn;
+package us.dot.its.jpo.ode.plugin.j2735;
 
-import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-public class OdeVehicleSize extends OdeObject {
-   private static final long serialVersionUID = 7666781221639612933L;
+public class J2735VehicleSize implements Asn1Object {
 
    private Integer width;
    private Integer length;
 
-   public OdeVehicleSize(Integer width, Integer length) {
+   public J2735VehicleSize(Integer width, Integer length) {
       super();
       this.width = width;
       this.length = length;
@@ -63,7 +62,7 @@ public class OdeVehicleSize extends OdeObject {
          return false;
       if (getClass() != obj.getClass())
          return false;
-      OdeVehicleSize other = (OdeVehicleSize) obj;
+      J2735VehicleSize other = (J2735VehicleSize) obj;
       if (length == null) {
          if (other.length != null)
             return false;

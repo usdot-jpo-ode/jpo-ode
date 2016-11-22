@@ -3,9 +3,7 @@ package us.dot.its.jpo.ode.model;
 import java.math.BigDecimal;
 
 import junit.framework.TestCase;
-import us.dot.its.jpo.ode.asn.OdeGeoRegion;
-import us.dot.its.jpo.ode.asn.OdePosition3D;
-import us.dot.its.jpo.ode.model.OdeException;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 
 /**
  * The class <code>OdeGeoRegionTest</code> contains tests for the class {@link
@@ -44,55 +42,55 @@ public class OdeGeoRegionTest extends TestCase {
    }
    
    /**
-    * Run the OdePosition3D getNwCorner() method test
+    * Run the J2735Position3D getNwCorner() method test
     */
    public void testGetNwCorner() {
       // add test code here
       OdeGeoRegion fixture = new OdeGeoRegion();
-      OdePosition3D result = fixture.getNwCorner();
+      J2735Position3D result = fixture.getNwCorner();
       assertTrue(true);
    }
 
    /**
-    * Run the OdeGeoRegion setNwCorner(OdePosition3D) method test
+    * Run the OdeGeoRegion setNwCorner(J2735Position3D) method test
     */
    public void testSetNwCorner() {
       // add test code here
       OdeGeoRegion fixture = new OdeGeoRegion();
-      OdePosition3D nwCorner = null;
+      J2735Position3D nwCorner = null;
       OdeGeoRegion result = fixture.setNwCorner(nwCorner);
       assertTrue(true);
    }
 
    /**
-    * Run the OdePosition3D getSeCorner() method test
+    * Run the J2735Position3D getSeCorner() method test
     */
    public void testGetSeCorner() {
       // add test code here
       OdeGeoRegion fixture = new OdeGeoRegion();
-      OdePosition3D result = fixture.getSeCorner();
+      J2735Position3D result = fixture.getSeCorner();
       assertTrue(true);
    }
 
    /**
-    * Run the OdeGeoRegion setSeCorner(OdePosition3D) method test
+    * Run the OdeGeoRegion setSeCorner(J2735Position3D) method test
     */
    public void testSetSeCorner() {
       // add test code here
       OdeGeoRegion fixture = new OdeGeoRegion();
-      OdePosition3D seCorner = null;
+      J2735Position3D seCorner = null;
       OdeGeoRegion result = fixture.setSeCorner(seCorner);
       assertTrue(true);
    }
 
    /**
-    * Run the OdePosition3D getCenterPosition() method test
+    * Run the J2735Position3D getCenterPosition() method test
     * @throws OdeException 
     */
    public void testGetCenterPosition() throws OdeException {
       // add test code here
       OdeGeoRegion fixture = new OdeGeoRegion("42.537903,-83.477903 42.305753,-82.842753");
-      OdePosition3D result = fixture.getCenterPosition();
+      J2735Position3D result = fixture.getCenterPosition();
       assertEquals(BigDecimal.valueOf(42.421828000000005), result.getLatitude());
       assertEquals(BigDecimal.valueOf(-83.16032799999999), result.getLongitude());
    }

@@ -1,13 +1,13 @@
-package us.dot.its.jpo.ode.asn;
+package us.dot.its.jpo.ode.plugin.j2735;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-import us.dot.its.jpo.ode.j2735.dsrc.HeadingSlice;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-public class OdeHeadingSlice {
+public class J2735HeadingSlice implements Asn1Object {
    public enum SliceMask {
       noHeading(0x0000),
       from000_0to022_5degrees(0x0001),
@@ -42,9 +42,10 @@ public class OdeHeadingSlice {
       public void setSliceMask(int sliceMask) {
          this.sliceMask = sliceMask;
       }
-      public static List<SliceMask> getHeadingSlices(HeadingSlice headingSlice2) {
+      
+      public static List<SliceMask> getHeadingSlices(byte[] headingSlice) {
          ArrayList<SliceMask> result = new ArrayList<SliceMask>();
-         short hs = ByteBuffer.wrap(headingSlice2.byteArrayValue()).order(ByteOrder.BIG_ENDIAN).getShort();
+         short hs = ByteBuffer.wrap(headingSlice).order(ByteOrder.BIG_ENDIAN).getShort();
          
          if (hs == allHeadings.getSliceMask()) {
             result.add(allHeadings);
@@ -64,8 +65,8 @@ public class OdeHeadingSlice {
    
    private short headingSlice;
 
-   public OdeHeadingSlice(HeadingSlice headingSlice) {
-      this.headingSlice = ByteBuffer.wrap(headingSlice.byteArrayValue()).order(ByteOrder.BIG_ENDIAN).getShort();
+   public J2735HeadingSlice(byte[] headingSlice) {
+      this.headingSlice = ByteBuffer.wrap(headingSlice).order(ByteOrder.BIG_ENDIAN).getShort();
    }
 
    public int getHeadingSlice() {
@@ -92,7 +93,7 @@ public class OdeHeadingSlice {
          return false;
       if (getClass() != obj.getClass())
          return false;
-      OdeHeadingSlice other = (OdeHeadingSlice) obj;
+      J2735HeadingSlice other = (J2735HeadingSlice) obj;
       if (headingSlice != other.headingSlice)
          return false;
       return true;
