@@ -3,8 +3,8 @@ package us.dot.its.jpo.ode.util;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
-import us.dot.its.jpo.ode.asn.OdeGeoRegion;
-import us.dot.its.jpo.ode.asn.OdePosition3D;
+import us.dot.its.jpo.ode.model.OdeGeoRegion;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 
 public class GeoUtils {
 
@@ -341,12 +341,12 @@ public class GeoUtils {
             && (p.getY() <= (Math.max(l.getY1(), l.getY2()) + tolerance)));
    }
 
-   public static boolean isPositionWithinRegion(OdePosition3D pos, OdeGeoRegion region) {
+   public static boolean isPositionWithinRegion(J2735Position3D pos, OdeGeoRegion region) {
       if (pos == null || region == null)
          return false;
       
-      OdePosition3D nw = region.getNwCorner();
-      OdePosition3D se = region.getSeCorner();
+      J2735Position3D nw = region.getNwCorner();
+      J2735Position3D se = region.getSeCorner();
       
       if (nw == null || nw.getLatitude() == null || pos == null || pos.getLatitude().doubleValue() > nw.getLatitude().doubleValue())
          return false;

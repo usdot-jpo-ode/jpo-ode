@@ -14,26 +14,25 @@
  * Contributors:
  *     Booz | Allen | Hamilton - initial API and implementation
  *******************************************************************************/
-package us.dot.its.jpo.ode.asn;
+package us.dot.its.jpo.ode.model;
 
 import java.awt.geom.Point2D;
 import java.math.BigDecimal;
 
-import us.dot.its.jpo.ode.model.OdeException;
-import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.util.GeoUtils;
 
 public class OdeGeoRegion extends OdeObject{
    private static final long serialVersionUID = 6646494196808253598L;
 
-   private OdePosition3D nwCorner;
-   private OdePosition3D seCorner;
+   private J2735Position3D nwCorner;
+   private J2735Position3D seCorner;
 
    public OdeGeoRegion() {
       super();
    }
 
-   public OdeGeoRegion(OdePosition3D nwCorner, OdePosition3D seCorner) {
+   public OdeGeoRegion(J2735Position3D nwCorner, J2735Position3D seCorner) {
       super();
       this.nwCorner = nwCorner;
       this.seCorner = seCorner;
@@ -42,11 +41,11 @@ public class OdeGeoRegion extends OdeObject{
    public OdeGeoRegion(String serviceRegion) throws OdeException {
       String[] region = serviceRegion.split("[, ] *");
       if (region != null && region.length == 4) {
-         nwCorner = new OdePosition3D(
+         nwCorner = new J2735Position3D(
                BigDecimal.valueOf(Double.parseDouble(region[0])), 
                BigDecimal.valueOf(Double.parseDouble(region[1])), null);
          
-         seCorner = new OdePosition3D(
+         seCorner = new J2735Position3D(
                BigDecimal.valueOf(Double.parseDouble(region[2])), 
                BigDecimal.valueOf(Double.parseDouble(region[3])), null);
       } else {
@@ -54,25 +53,25 @@ public class OdeGeoRegion extends OdeObject{
       }
    }
 
-   public OdePosition3D getNwCorner() {
+   public J2735Position3D getNwCorner() {
       return nwCorner;
    }
 
-   public OdeGeoRegion setNwCorner(OdePosition3D nwCorner) {
+   public OdeGeoRegion setNwCorner(J2735Position3D nwCorner) {
       this.nwCorner = nwCorner;
       return this;
    }
 
-   public OdePosition3D getSeCorner() {
+   public J2735Position3D getSeCorner() {
       return seCorner;
    }
 
-   public OdeGeoRegion setSeCorner(OdePosition3D seCorner) {
+   public OdeGeoRegion setSeCorner(J2735Position3D seCorner) {
       this.seCorner = seCorner;
       return this;
    }
 
-   public OdePosition3D getCenterPosition() {
+   public J2735Position3D getCenterPosition() {
       Point2D nw = new Point2D.Double(
             nwCorner.getLongitude().doubleValue(), 
             nwCorner.getLatitude().doubleValue());
@@ -88,12 +87,12 @@ public class OdeGeoRegion extends OdeObject{
       if (nwCorner.getElevation() != null && seCorner.getElevation() != null) {
          double minElev = Math.min(nwCorner.getElevation().doubleValue(), seCorner.getElevation().doubleValue());
          double diffElev = Math.abs(nwCorner.getElevation().doubleValue() - seCorner.getElevation().doubleValue());
-         return new OdePosition3D(
+         return new J2735Position3D(
                BigDecimal.valueOf(midPoint.getY()), 
                BigDecimal.valueOf(midPoint.getX()), 
                BigDecimal.valueOf(minElev + diffElev/2));
       } else {
-         return new OdePosition3D(
+         return new J2735Position3D(
                BigDecimal.valueOf(midPoint.getY()), 
                BigDecimal.valueOf(midPoint.getX()), 
                null);
@@ -132,7 +131,7 @@ public class OdeGeoRegion extends OdeObject{
       return true;
    }
 
-   public boolean contains(OdePosition3D pos) {
+   public boolean contains(J2735Position3D pos) {
       return GeoUtils.isPositionWithinRegion(pos, this);
    }
 

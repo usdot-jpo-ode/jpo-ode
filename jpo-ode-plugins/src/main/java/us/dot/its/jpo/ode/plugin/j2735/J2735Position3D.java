@@ -14,29 +14,26 @@
  * Contributors:
  *     Booz | Allen | Hamilton - initial API and implementation
  *******************************************************************************/
-package us.dot.its.jpo.ode.asn;
+package us.dot.its.jpo.ode.plugin.j2735;
 
 import java.math.BigDecimal;
 
-import us.dot.its.jpo.ode.j2735.dsrc.Position3D;
-import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-public class OdePosition3D extends OdeObject {
+public class J2735Position3D implements Asn1Object {
    
-   private static final long serialVersionUID = -119625427641036294L;
-
    private BigDecimal latitude;  // in degrees
    private BigDecimal longitude; // in degrees
    private BigDecimal elevation; // in meters
 
-   public OdePosition3D(BigDecimal latitude, BigDecimal longitude, BigDecimal elevation) {
+   public J2735Position3D(BigDecimal latitude, BigDecimal longitude, BigDecimal elevation) {
       super();
       this.latitude = latitude;
       this.longitude = longitude;
       this.elevation = elevation;
    }
 
-   public OdePosition3D(Position3D pos) {
+   public J2735Position3D(Long lat, Long lon, Long elev) {
       // private OdePosition3D position;
       //    Position3D ::=  SEQUENCE {
       //       lat         Latitude,   -- in 1/10th micro degrees
@@ -57,24 +54,19 @@ public class OdePosition3D extends OdeObject {
       // -- i.e. below the reference ellipsoid, as 0xF001 to 0xFFFF
       // -- unknown as 0xF000
       
-      if (pos != null) {
-         setLatitude(pos.lat != null ? BigDecimal.valueOf(pos.lat.longValue(),
-               7) : null);
-         setLongitude(pos._long != null ? BigDecimal.valueOf(
-               pos._long.longValue(), 7) : null);
-         if (pos.elevation != null) {
-            int elev = pos.elevation.intValue();
-            if (elev == 0xF000) {
-               setElevation(null);
-            } else if (elev >= 0x0000 && elev <= 0xEFFF) {
-               setElevation(BigDecimal.valueOf(elev, 1));
-            } else {
-               setElevation(BigDecimal.valueOf(-elev, 1));
-            }
-         } else {
-            setElevation(null);
-         }
-      }
+     setLatitude(lat != null ? BigDecimal.valueOf(lat, 7) : null);
+     setLongitude(lon != null ? BigDecimal.valueOf(lon, 7) : null);
+     if (elev != null) {
+        if (elev == 0xF000) {
+           setElevation(null);
+        } else if (elev >= 0x0000 && elev <= 0xEFFF) {
+           setElevation(BigDecimal.valueOf(elev, 1));
+        } else {
+           setElevation(BigDecimal.valueOf(-elev, 1));
+        }
+     } else {
+        setElevation(null);
+     }
    }
 
    public BigDecimal getLatitude() {
@@ -121,7 +113,7 @@ public class OdePosition3D extends OdeObject {
          return false;
       if (getClass() != obj.getClass())
          return false;
-      OdePosition3D other = (OdePosition3D) obj;
+      J2735Position3D other = (J2735Position3D) obj;
       if (elevation == null) {
          if (other.elevation != null)
             return false;
