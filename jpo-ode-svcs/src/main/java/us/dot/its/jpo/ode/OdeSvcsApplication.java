@@ -6,11 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-import us.dot.its.jpo.ode.storage.StorageProperties;
-import us.dot.its.jpo.ode.storage.StorageService;
-
 @SpringBootApplication
-@EnableConfigurationProperties(StorageProperties.class)
+@EnableConfigurationProperties(OdeProperties.class)
 public class OdeSvcsApplication {
 
 	public static void main(String[] args) {
@@ -18,10 +15,9 @@ public class OdeSvcsApplication {
 	}
 
 	@Bean
-	CommandLineRunner init(StorageService storageService) {
+	CommandLineRunner init(OdeProperties odeProperties) {
 		return (args) -> {
-            storageService.deleteAll();
-            storageService.init();
+			odeProperties.init();
 		};
 	}
 }

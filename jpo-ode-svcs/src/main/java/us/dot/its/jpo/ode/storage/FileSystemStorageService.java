@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.storage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -7,21 +9,31 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugins.oss.j2735.OssAsn1Coder;
+import us.dot.its.jpo.ode.util.JsonUtils;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Scanner;
 import java.util.stream.Stream;
 
 @Service
 public class FileSystemStorageService implements StorageService {
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final Path rootLocation;
 
     @Autowired
-    public FileSystemStorageService(StorageProperties properties) {
-        this.rootLocation = Paths.get(properties.getLocation());
+    public FileSystemStorageService(OdeProperties properties) {
+        this.rootLocation = Paths.get(properties.getUploadLocation());
     }
 
     @Override
@@ -31,12 +43,42 @@ public class FileSystemStorageService implements StorageService {
                 throw new StorageException("Failed to store empty file " + file.getOriginalFilename());
             }
             Files.copy(file.getInputStream(), this.rootLocation.resolve(file.getOriginalFilename()));
+            
+        } catch (FileAlreadyExistsException fae) {
+        	logger.info("File already exisits");
         } catch (IOException e) {
             throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
         }
+        encodeData(file);
     }
 
-    @Override
+    private void encodeData(MultipartFile file) {
+		try {
+			Scanner scanner = new Scanner(file.getInputStream());
+			
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				Asn1Object bsm = 
+						(Asn1Object) JsonUtils.fromJson(line, J2735Bsm.class);
+				
+				Asn1Plugin asn1Coder = new OssAsn1Coder();
+				
+				String encoded = asn1Coder.UPER_EncodeBase64(bsm);
+				logger.info(encoded);
+				J2735Bsm decoded = (J2735Bsm) asn1Coder.UPER_DecodeBase64(encoded);
+				logger.info("Latitude: {}", decoded.coreData.position.getLatitude().toPlainString());
+				logger.info("Longitude: {}", decoded.coreData.position.getLongitude().toPlainString());
+				logger.info("Elevation: {}", decoded.coreData.position.getElevation().toPlainString());
+				
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	@Override
     public Stream<Path> loadAll() {
         try {
             return Files.walk(this.rootLocation, 1)
