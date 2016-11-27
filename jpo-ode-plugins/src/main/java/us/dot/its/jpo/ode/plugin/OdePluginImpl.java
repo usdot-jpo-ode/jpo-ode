@@ -12,7 +12,7 @@ import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-public class OdePluginImpl implements OdePlugin {
+public class OdePluginImpl implements Plugin {
 
 	private List<Class<?>> classes = new ArrayList<Class<?>>();
 

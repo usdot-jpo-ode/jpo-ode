@@ -17,6 +17,7 @@ public class OdeProperties {
 	
 	private String uploadLocation = "uploads";
 	private String pluginsLocations = "plugins";
+	private String asn1CoderClassName = "us.dot.its.jpo.ode.plugins.oss.j2735.OssAsn1Coder";
 	
 	public String getUploadLocation() {
 		return uploadLocation;
@@ -30,9 +31,16 @@ public class OdeProperties {
 	public void setPluginsLocations(String pluginsLocations) {
 		this.pluginsLocations = pluginsLocations;
 	}
+	
+	public String getAsn1CoderClassName() {
+		return asn1CoderClassName;
+	}
+	public void setAsn1CoderClassName(String asn1CoderClassName) {
+		this.asn1CoderClassName = asn1CoderClassName;
+	}
 	public void init() {
         try {
-            Files.createDirectory(Paths.get(uploadLocation));
+           Files.createDirectory(Paths.get(uploadLocation));
         } catch (FileAlreadyExistsException fae) {
         	logger.info("Upload directory already exisits");
         } catch (IOException e) {

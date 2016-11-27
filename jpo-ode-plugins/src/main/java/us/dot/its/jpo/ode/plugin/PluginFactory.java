@@ -1,12 +1,16 @@
 package us.dot.its.jpo.ode.plugin;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.net.URL;
+import java.net.URLClassLoader;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Return concrete implementations for specific, known interfaces. */
 public final class PluginFactory {
 
-	private static final String CODER_CLASS_NAME = "us.dot.its.jpo.ode.OssAsn1Coder";
+	private static Logger logger = LoggerFactory.getLogger(PluginFactory.class);
+	
 
 	/**
 	 * Read in configuration data that maps names of interfaces to names of
@@ -18,7 +22,7 @@ public final class PluginFactory {
 	 * myapp.TimeSourceOneDayAdvance
 	 */
 	public static void init() {
-		// elided
+		//TODO
 		// perhaps a properties file is read, perhaps some other source is used
 	}
 
@@ -30,34 +34,58 @@ public final class PluginFactory {
 
 	/**
 	 * Return the concrete implementation of a OdePlugin interface.
+	 * @param coderClassName 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 * @throws ClassNotFoundException 
 	 */
-	public static OdePlugin getAsn1CoderPlugin() {
-		OdePlugin result = (OdePlugin) buildObject(CODER_CLASS_NAME);
+	public static OdePlugin getPluginByName(String coderClassName) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		logger.info("Getting Plugin: {}", coderClassName);
+		OdePlugin result = (OdePlugin) buildObject(coderClassName);
+		
+		logger.info("Got Plugin: {}", result.toString());
 		return result;
 	}
 
-	// PRIVATE
-
-	/**
-	 * Map the name of an interface to the name of a corresponding concrete
-	 * implementation class.
-	 */
-	private static final Map<String, String> fImplementations = new LinkedHashMap<>();
-
-	private static Object buildObject(String aClassName) {
+	private static Object buildObject(String aClassName) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		Object result = null;
 		try {
-			// note that, with this style, the implementation needs to have a
-			// no-argument constructor!
-			Class implClass = Class.forName(aClassName);
-			result = implClass.newInstance();
-		} catch (ClassNotFoundException ex) {
-			// elided
-		} catch (InstantiationException ex) {
-			// elided
-		} catch (IllegalAccessException ex) {
-			// elided
+			ClassLoader cl = Thread.currentThread().getContextClassLoader();
+
+        	printClasspath(cl);
+ 
+			result = buildObject(cl, aClassName);
+		} catch (Exception ex) {
+			logger.error("Error instantiating an object of " + aClassName, ex);
+		
+			ClassLoader cl = ClassLoader.getSystemClassLoader();
+        	printClasspath(cl);
+			result = buildObject(cl, aClassName);
 		}
 		return result;
+	}
+
+	private static Object buildObject(ClassLoader cl, String aClassName)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		Object result;
+		logger.info("Getting class: {}", aClassName);
+
+		// note that, with this style, the implementation needs to have a
+		// no-argument constructor!
+		Class<?> implClass = cl.loadClass(aClassName);
+		
+		logger.info("creating an instance of: {}", implClass);
+		result = implClass.newInstance();
+		return result;
+	}
+
+	private static void printClasspath(ClassLoader cl) {
+		URL[] urls = ((URLClassLoader)cl).getURLs();
+
+		urls = ((URLClassLoader)cl).getURLs();
+		
+		for(URL url: urls){
+			logger.info("Classpath: {}", url.getFile());
+		}
 	}
 }
