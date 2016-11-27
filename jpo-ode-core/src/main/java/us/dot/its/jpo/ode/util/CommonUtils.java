@@ -1,6 +1,10 @@
 package us.dot.its.jpo.ode.util;
 
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommonUtils {
    
@@ -20,4 +24,17 @@ public class CommonUtils {
       return pid;
     }
 
+   public static List<URL> getClasspath() {
+	   ArrayList<URL> classpath = new ArrayList<URL>();
+	   
+       ClassLoader cl = ClassLoader.getSystemClassLoader();
+
+       URL[] urls = ((URLClassLoader)cl).getURLs();
+
+       for(URL url: urls){
+    	   classpath.add(url);
+       }
+       
+       return classpath;
+   }
 }
