@@ -20,7 +20,7 @@ import java.awt.geom.Point2D;
 import java.math.BigDecimal;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
-import us.dot.its.jpo.ode.util.GeoUtils;
+import us.dot.its.jpo.ode.util.OdeGeoUtils;
 
 public class OdeGeoRegion extends OdeObject{
    private static final long serialVersionUID = 6646494196808253598L;
@@ -132,12 +132,12 @@ public class OdeGeoRegion extends OdeObject{
    }
 
    public boolean contains(J2735Position3D pos) {
-      return GeoUtils.isPositionWithinRegion(pos, this);
+      return OdeGeoUtils.isPositionWithinRegion(pos, this);
    }
 
    public boolean contains(OdeGeoRegion requestRegion) {
-      return GeoUtils.isPositionWithinRegion(requestRegion.getNwCorner(), requestRegion)
-            && GeoUtils.isPositionWithinRegion(requestRegion.getSeCorner(), requestRegion);
+      return OdeGeoUtils.isPositionWithinRegion(requestRegion.getNwCorner(), requestRegion)
+            && OdeGeoUtils.isPositionWithinRegion(requestRegion.getSeCorner(), requestRegion);
    }
 
 }

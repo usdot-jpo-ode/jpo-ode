@@ -20,60 +20,64 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 public class J2735VehicleSize implements Asn1Object {
 
-   private Integer width;
-   private Integer length;
+	private Integer width;
+	private Integer length;
 
-   public J2735VehicleSize(Integer width, Integer length) {
-      super();
-      this.width = width;
-      this.length = length;
-   }
+	public J2735VehicleSize() {
+		super();
+	}
 
-   public Integer getWidth() {
-      return width;
-   }
+	public J2735VehicleSize(Integer width, Integer length) {
+		super();
+		this.width = width;
+		this.length = length;
+	}
 
-   public void setWidth(Integer width) {
-      this.width = width;
-   }
+	public Integer getWidth() {
+		return width;
+	}
 
-   public Integer getLength() {
-      return length;
-   }
+	public void setWidth(Integer width) {
+		this.width = width;
+	}
 
-   public void setLength(Integer length) {
-      this.length = length;
-   }
+	public Integer getLength() {
+		return length;
+	}
 
-   @Override
-   public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + ((length == null) ? 0 : length.hashCode());
-      result = prime * result + ((width == null) ? 0 : width.hashCode());
-      return result;
-   }
+	public void setLength(Integer length) {
+		this.length = length;
+	}
 
-   @Override
-   public boolean equals(Object obj) {
-      if (this == obj)
-         return true;
-      if (obj == null)
-         return false;
-      if (getClass() != obj.getClass())
-         return false;
-      J2735VehicleSize other = (J2735VehicleSize) obj;
-      if (length == null) {
-         if (other.length != null)
-            return false;
-      } else if (!length.equals(other.length))
-         return false;
-      if (width == null) {
-         if (other.width != null)
-            return false;
-      } else if (!width.equals(other.width))
-         return false;
-      return true;
-   }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((length == null) ? 0 : length.hashCode());
+		result = prime * result + ((width == null) ? 0 : width.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		J2735VehicleSize other = (J2735VehicleSize) obj;
+		if (length == null) {
+			if (other.length != null)
+				return false;
+		} else if (!length.equals(other.length))
+			return false;
+		if (width == null) {
+			if (other.width != null)
+				return false;
+		} else if (!width.equals(other.width))
+			return false;
+		return true;
+	}
 
 }

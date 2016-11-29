@@ -18,6 +18,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>us.dot.its.jpo.ode</groupId>
+			<artifactId>jpo-ode-common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>us.dot.its.jpo.ode</groupId>
 			<artifactId>jpo-ode-plugins</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
@@ -29,10 +34,6 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-		</dependency>
 
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
@@ -41,10 +42,6 @@
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-graphite</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
@@ -65,11 +62,6 @@
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-streams</artifactId>
 			<version>0.10.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.websocket</groupId>
-			<artifactId>javax.websocket-client-api</artifactId>
-			<version>1.1</version>
 		</dependency>
 	</dependencies>
 
