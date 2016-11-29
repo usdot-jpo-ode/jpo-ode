@@ -1,3 +1,5 @@
+Master: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=master)](https://travis-ci.org/usdot-jpo-ode/jpo-ode)
+
 # jpo-ode
 US Department of Transportation Joint Program office (JPO) Operational Data Environment (ODE)
 ## Project Description
