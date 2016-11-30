@@ -67,7 +67,9 @@ Private Jars:
 
 Please request access if needed, but with a git client or the command line, you can clone repo.
 
-`git clone https://github.com/usdot-jpo-ode/jpo-ode.git`
+```
+git clone https://github.com/usdot-jpo-ode/jpo-ode.git
+```
 
 #### Building and Running the project
 
@@ -75,26 +77,34 @@ To build the project using maven command line:
 
 Navigate to the root directory
 
-`cd jpo-ode/`
+```
+cd jpo-ode/
+```
 
 Build the project, downloading all of the JAR needed and compiling the code
 
-`mvn clean install`
+```
+mvn clean install
+```
 
 
 Navigate to the project folder supporting the service
 
-`cd /jpo-ode-svcs`
+```
+cd /jpo-ode-svcs
+````
 
 Run the script to establish a local Spring instance
 
-`sh run.sh`
+```
+sh run.sh
+```
 
 You should be able to access the running service at `localhost:8080`, but submissions will not work without the ASN.1 Jar installed locally.
 
 Once you have a jar installed with the project, you should be able to upload the following file and test for a successful output. 
 
-```
+```json
 {
 	"coreData": {
 		"position":	{
