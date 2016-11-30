@@ -1,12 +1,13 @@
 # Docker Images
 	jpo-ode:v5
 ## ODE Service Image
-## Steps to Run Docker image:
+## Steps to Run Docker image from windows 7:
 
+ Note: Make sure visualization is enabled in your BIOS
  1. Change to dirctory with Dockerfile in it
  2. Run Command: docker-machine start default
  3. Run Command: docker-machine env
- 4. Run Command: @FOR /f "tokens=\*" %i IN ('docker-machine env') DO @%i
+ 4. Run Command: @FOR /f "tokens=*" %i IN ('docker-machine env') DO @%i
  5. Run Command: docker build -t jpo-ode:<tagName> .
  6. Run Command: docker run -i -t jpo-ode:<tagName> /bin/bash
  7. Change to home directory in the image
