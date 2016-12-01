@@ -73,11 +73,18 @@ public class FileSystemStorageService implements StorageService {
 
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine();
-				Asn1Object bsm = (Asn1Object) JsonUtils.fromJson(line, J2735Bsm.class);
+				Asn1Object bsm;
+				String encoded;
+				try {
+					bsm = (Asn1Object) JsonUtils.fromJson(line, J2735Bsm.class);
+					encoded = asn1Coder.UPER_EncodeHex(bsm);
+					logger.info(encoded);
+				} catch (Exception e) {
+					logger.warn("Message is not JSON. Assuming HEX...", e);
+					encoded = line;
+				}
 
-				String encoded = asn1Coder.UPER_EncodeBase64(bsm);
-				logger.info(encoded);
-				J2735Bsm decoded = (J2735Bsm) asn1Coder.UPER_DecodeBase64(encoded);
+				J2735Bsm decoded = (J2735Bsm) asn1Coder.UPER_DecodeHex(encoded);
 				logger.info("Latitude: {}", decoded.coreData.position.getLatitude().toPlainString());
 				logger.info("Longitude: {}", decoded.coreData.position.getLongitude().toPlainString());
 				logger.info("Elevation: {}", decoded.coreData.position.getElevation().toPlainString());
