@@ -13,5 +13,11 @@
 		<artifactId>jpo-ode</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-
+	<dependencies>
+		<dependency>
+			<groupId>us.dot.its.jpo.ode</groupId>
+			<artifactId>jpo-ode-common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 </project>
