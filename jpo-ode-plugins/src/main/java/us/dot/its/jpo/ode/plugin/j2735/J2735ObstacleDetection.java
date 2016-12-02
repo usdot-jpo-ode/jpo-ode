@@ -4,7 +4,8 @@ import java.math.BigDecimal;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-public class J2735ObstacleDetection implements Asn1Object {
+public class J2735ObstacleDetection extends Asn1Object {
+	private static final long serialVersionUID = 1L;
 
 	public J2735DDateTime dateTime;
 	public Integer description;

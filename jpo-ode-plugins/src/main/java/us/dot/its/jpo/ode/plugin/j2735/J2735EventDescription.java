@@ -5,7 +5,8 @@ import java.util.List;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-public class J2735EventDescription implements Asn1Object {
+public class J2735EventDescription extends Asn1Object {
+	private static final long serialVersionUID = 1L;
 
 	public List<Integer> description;
 	public J2735Extent extent;

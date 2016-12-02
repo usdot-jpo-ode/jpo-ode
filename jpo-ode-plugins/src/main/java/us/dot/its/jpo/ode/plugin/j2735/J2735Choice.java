@@ -7,8 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-public abstract class J2735Choice implements Asn1Object {
-
+public abstract class J2735Choice extends Asn1Object {
    private static final long serialVersionUID = 2187214491924559144L;
    
    private static final Logger logger = LoggerFactory.getLogger(J2735Choice.class);

@@ -85,9 +85,7 @@ public class FileSystemStorageService implements StorageService {
 				}
 
 				J2735Bsm decoded = (J2735Bsm) asn1Coder.UPER_DecodeHex(encoded);
-				logger.info("Latitude: {}", decoded.coreData.position.getLatitude().toPlainString());
-				logger.info("Longitude: {}", decoded.coreData.position.getLongitude().toPlainString());
-				logger.info("Elevation: {}", decoded.coreData.position.getElevation().toPlainString());
+				logger.info(decoded.toJson());
 
 			}
 		} catch (IOException e) {

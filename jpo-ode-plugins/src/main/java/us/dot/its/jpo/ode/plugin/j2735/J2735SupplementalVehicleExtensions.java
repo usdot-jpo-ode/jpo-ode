@@ -3,8 +3,11 @@ package us.dot.its.jpo.ode.plugin.j2735;
 import java.util.ArrayList;
 import java.util.List;
 
-public class J2735SupplementalVehicleExtensions implements J2735BsmPart2Extension {
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
+public class J2735SupplementalVehicleExtensions extends Asn1Object implements J2735BsmPart2Extension {
+	private static final long serialVersionUID = 1L;
+	
 	public Integer classification;
 	public J2735VehicleClassification classDetails;
 	public J2735VehicleData vehicleData;
