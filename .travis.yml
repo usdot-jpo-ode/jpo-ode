@@ -1,2 +1,8 @@
 language: java
 jdk: oraclejdk8
+
+# safelist
+branches:
+  only:
+  - master
+  - develop
