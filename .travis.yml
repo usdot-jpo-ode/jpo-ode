@@ -7,28 +7,28 @@ branches:
   - master
   - develop
 
-sudo: false
-install: true
-addons:
-  sonarqube:
-    token:
-      secure: sWWb94kni5xfP85SpBryVOFGeDBT61b7yR8m/B8MzO2e+3HTY77SW2sjZY7r/HSjTwJSSHXiJc0ZW64IpoA7ZF/Rc1OZfzubp25Vc79drK0A3cJKX4s4y56QtKa1/LYHIrLwDmVcqmDAHWxoHPqcGrevztEnNn/W8YnIg/ZSYBxFTJ0RW5xktndZUzKeAlSMAQKZoYCc5Gy2Wu31PNsdvRm+b8USku9Xw7rrk3jiXnIBfz39Suj0C4VcZBaT18z2oGXTVQ2ygMUnOpTHCuTbCqNBFfPbJ5uGQIRsA0e71CTtIR4Mpetpo98mecYwi/9Dn+oagVZhUTD76efT0N9hDuBOCWybCv4eulGeXY8b2DjU21YmA2AGnwLkJ21/I6MOhthUGM7yduH3MLH8liya14ANf290I9GpqoAr+KY76yHjd4ym8hfinhFOBmaF/3nqSOby7DR9j20nF6UIQ+zbYN2bT1Jq/pb3GLaA7TwMw07QIfgjk5v3sV+zj4C+YpFfXYkt/xd6id5u2/nQxZUSfc85f2ly8X8leaaJ8oI2+RPl/9bU+/vdXbbJ9lK75MdIY+QSZCk5/2+yksFETgb1Uau8ghNChdU1pBMk46+zamT/763SI5fnjMyEqxsuW3iOWKxVsZWHvPvMQh5U/y6xiCcDwlKblnjMLZDRwXDrjCQ=
-script:
-  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
-cache:
-  directories:
-    - '$HOME/.m2/repository'
-    - '$HOME/.sonar/cache'
-
+#sudo: false
+#install: true
 #addons:
-#  sonarqube: true
-#env:
-#    global:
-#      secure: SONAR_TOKEN=a62f2d0fd19992425e4a13833dcbdbb3f2dd9af2
+#  sonarqube:
+#    token:
+#      secure: sWWb94kni5xfP85SpBryVOFGeDBT61b7yR8m/B8MzO2e+3HTY77SW2sjZY7r/HSjTwJSSHXiJc0ZW64IpoA7ZF/Rc1OZfzubp25Vc79drK0A3cJKX4s4y56QtKa1/LYHIrLwDmVcqmDAHWxoHPqcGrevztEnNn/W8YnIg/ZSYBxFTJ0RW5xktndZUzKeAlSMAQKZoYCc5Gy2Wu31PNsdvRm+b8USku9Xw7rrk3jiXnIBfz39Suj0C4VcZBaT18z2oGXTVQ2ygMUnOpTHCuTbCqNBFfPbJ5uGQIRsA0e71CTtIR4Mpetpo98mecYwi/9Dn+oagVZhUTD76efT0N9hDuBOCWybCv4eulGeXY8b2DjU21YmA2AGnwLkJ21/I6MOhthUGM7yduH3MLH8liya14ANf290I9GpqoAr+KY76yHjd4ym8hfinhFOBmaF/3nqSOby7DR9j20nF6UIQ+zbYN2bT1Jq/pb3GLaA7TwMw07QIfgjk5v3sV+zj4C+YpFfXYkt/xd6id5u2/nQxZUSfc85f2ly8X8leaaJ8oI2+RPl/9bU+/vdXbbJ9lK75MdIY+QSZCk5/2+yksFETgb1Uau8ghNChdU1pBMk46+zamT/763SI5fnjMyEqxsuW3iOWKxVsZWHvPvMQh5U/y6xiCcDwlKblnjMLZDRwXDrjCQ=
 #script:
-#  # the following command line builds the project, runs the tests with coverage and then execute the SonarQube analysis
-#  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.login=$SONAR_TOKEN
+#  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
 #cache:
 #  directories:
 #    - '$HOME/.m2/repository'
 #    - '$HOME/.sonar/cache'
+
+addons:
+  sonarqube: true
+env:
+    global:
+      secure: SONAR_TOKEN=a62f2d0fd19992425e4a13833dcbdbb3f2dd9af2
+script:
+  # the following command line builds the project, runs the tests with coverage and then execute the SonarQube analysis
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.login=$SONAR_TOKEN
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+    - '$HOME/.sonar/cache'
