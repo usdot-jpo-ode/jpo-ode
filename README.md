@@ -54,8 +54,6 @@ https://travis-ci.org/usdot-jpo-ode/jpo-ode
 #### Prerequisites
 * Maven: [https://maven.apache.org/install.html](https://maven.apache.org/install.html)
 * Git: https://git-scm.com/
-* Create an "App Password" in ButBucket https://bitbucket.org/account/user/usdot-jpo-ode/app-passwords
-* Set the environment variable CI_USER_TOKEN to the App Password created above
 
 #### Instructions
 
@@ -75,9 +73,9 @@ To build the application use maven command line:
 Navigate to the root directory:
 
 ```
- - cd jpo-ode/
- - mvn clean
- - mvn install
+ cd jpo-ode/
+ mvn clean
+ mvn install
 ```
 
 ##### Running the application
