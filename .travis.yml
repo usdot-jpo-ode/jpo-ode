@@ -1,13 +1,12 @@
 language: java
 jdk: oraclejdk8
-
-# safelist
 branches:
   only:
   - master
   - develop
-
-udo: false
+sudo: false
+before_install:
+- echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc
 install: true
 addons:
   sonarqube:
@@ -20,5 +19,5 @@ script:
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
 cache:
   directories:
-    - '$HOME/.m2/repository'
-    - '$HOME/.sonar/cache'
+    - "$HOME/.m2/repository"
+    - "$HOME/.sonar/cache"
