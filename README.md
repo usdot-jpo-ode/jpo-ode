@@ -54,7 +54,7 @@ https://travis-ci.org/usdot-jpo-ode/jpo-ode
 #### Prerequisites
 * Maven: [https://maven.apache.org/install.html](https://maven.apache.org/install.html)
 * Git: https://git-scm.com/
-* Create an "App Password" in ButBucket https://bitbucket.org/account/user/usdot-jpo-ode/app-passwords
+* Create an "App Password" in BitBucket https://bitbucket.org/account/user/usdot-jpo-ode/app-passwords
 * Set the environment variable CI_USER_TOKEN to the App Password created above
 
 #### Instructions
