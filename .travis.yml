@@ -7,6 +7,7 @@ branches:
 sudo: false
 before_install:
 - echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc
+install: true
 addons:
   sonarqube:
     token:
