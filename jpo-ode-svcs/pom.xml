@@ -16,14 +16,14 @@
 	<properties>
 	</properties>
 	<dependencies>
-		<!-- <dependency> <groupId>org.springframework.cloud</groupId> <artifactId>spring-cloud-starter-stream-kafka</artifactId>
-			</dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-data-jpa</artifactId>
-			</dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-data-redis</artifactId>
-			</dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-integration</artifactId>
-			</dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-mail</artifactId>
-			</dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-websocket</artifactId>
-			</dependency> <dependency> <groupId>mysql</groupId> <artifactId>mysql-connector-java</artifactId>
-			<scope>runtime</scope> </dependency> <dependency> <groupId>org.springframework.boot</groupId>
+		<!-- <dependency> <groupId>org.springframework.cloud</groupId> <artifactId>spring-cloud-starter-stream-kafka</artifactId> 
+			</dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-data-jpa</artifactId> 
+			</dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-data-redis</artifactId> 
+			</dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-integration</artifactId> 
+			</dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-mail</artifactId> 
+			</dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-websocket</artifactId> 
+			</dependency> <dependency> <groupId>mysql</groupId> <artifactId>mysql-connector-java</artifactId> 
+			<scope>runtime</scope> </dependency> <dependency> <groupId>org.springframework.boot</groupId> 
 			<artifactId>spring-boot-starter-security</artifactId> </dependency> -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -62,35 +62,7 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
-        </dependency>
 
-		<dependency>
-					<groupId>org.webjars</groupId>
-					<artifactId>webjars-locator</artifactId>
-			</dependency>
-			<dependency>
-					<groupId>org.webjars</groupId>
-					<artifactId>sockjs-client</artifactId>
-					<version>1.0.2</version>
-			</dependency>
-			<dependency>
-					<groupId>org.webjars</groupId>
-					<artifactId>stomp-websocket</artifactId>
-					<version>2.3.3</version>
-			</dependency>
-			<dependency>
-					<groupId>org.webjars</groupId>
-					<artifactId>bootstrap</artifactId>
-					<version>3.3.7</version>
-			</dependency>
-			<dependency>
-					<groupId>org.webjars</groupId>
-					<artifactId>jquery</artifactId>
-					<version>3.1.0</version>
-			</dependency>
 
 
 		<dependency>
@@ -114,7 +86,7 @@
 				<!-- Configure spring-boot to use the PropertiesLauncher
 				     by specifying the mainClass and layout-ZIP
 				     Using PropertiesLauncher allows us to extend the class loader
-				     classpath to the plugins directory by declaring
+				     classpath to the plugins directory by declaring 
 				     -Dloader.pass=<plugins> where <plugins> is the absolute
 				     or replative path to a directory containing plugin jars.
 				 -->
