@@ -20,7 +20,8 @@ import java.math.BigDecimal;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-public class J2735Position3D implements Asn1Object {
+public class J2735Position3D extends Asn1Object {
+	private static final long serialVersionUID = 1L;
    
    private BigDecimal latitude;  // in degrees
    private BigDecimal longitude; // in degrees

@@ -1,4 +1,4 @@
-Master: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=master)](https://travis-ci.org/usdot-jpo-ode/jpo-ode)
+Master: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=master)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) [![Quality Gate](https://sonarqube.com/api/badges/gate?key=us.dot.its.jpo.ode:jpo-ode)](https://sonarqube.com/dashboard/index?id=us.dot.its.jpo.ode%3Ajpo-ode)
 
 # jpo-ode
 US Department of Transportation Joint Program office (JPO) Operational Data Environment (ODE)
@@ -30,8 +30,13 @@ are stored in the WYDOT data warehouse.
 
 ## Collaboration Tools
 
-### Source Repository - GitHub
-https://github.com/usdot-jpo-ode/jpo-ode
+### Source Repositories - GitHub
+- Main repository on GitHub (public)
+	- https://github.com/usdot-jpo-ode/jpo-ode
+	- git@github.com:usdot-jpo-ode/jpo-ode.git
+- Submodule repository on BitBucket (Private)
+	- https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
+	- git@bitbucket.org:usdot-jpo-ode/jpo-ode-private.git
 
 ### Agile Project Management - Taiga
 https://tree.taiga.io/project/toryb-its_jpo_ode_agile/
@@ -46,63 +51,44 @@ https://travis-ci.org/usdot-jpo-ode/jpo-ode
 
 ### Local Build
 
-###### Dependencies
-
-You will need the following dependencies to run the application:
-
+#### Prerequisites
 * Maven: [https://maven.apache.org/install.html](https://maven.apache.org/install.html)
+* Git: https://git-scm.com/
 
-IDE of your choice:
+#### Instructions
 
-* IntelliJ: [https://www.jetbrains.com/idea/](https://www.jetbrains.com/idea/)
-* STS: [https://spring.io/tools/sts/all](https://spring.io/tools/sts/all)
-* Eclipse: [https://eclipse.org/](https://eclipse.org/)
+The following instructions describe the procedure to fetch, build and run the application.
 
-Private Jars:
-
-* ASN.1 BSM Encoder/Decoder: To receive the private jar, please contact the development team.
-
-
-#### Clone the Repo
-
-Please request access if needed, but with a git client or the command line, you can clone repo.
+##### Getting the source Code
+Clone the source code from GitHub and BitBucket repositories use Git command line:
 
 ```
-git clone https://github.com/usdot-jpo-ode/jpo-ode.git
+git clone --recursive https://github.com/usdot-jpo-ode/jpo-ode.git
 ```
 
-#### Building and Running the project
+##### Building the Executables
 
-To build the project using maven command line:
+To build the application use maven command line:
 
-Navigate to the root directory
-
-```
-cd jpo-ode/
-```
-
-Build the project, downloading all of the JAR needed and compiling the code
+Navigate to the root directory:
 
 ```
-mvn clean install
+ cd jpo-ode/
+ mvn clean
+ mvn install
 ```
 
-
-Navigate to the project folder supporting the service
-
-```
-cd /jpo-ode-svcs
-````
-
-Run the script to establish a local Spring instance
+##### Running the application
+To run the application: 
 
 ```
-sh run.sh
+cd jpo-ode
+cd jpo-ode-svcs
+cd target
+java -jar po-ode-svcs-0.0.1-SNAPSHOT.jar
 ```
 
-You should be able to access the running service at `localhost:8080`, but submissions will not work without the ASN.1 Jar installed locally.
-
-Once you have a jar installed with the project, you should be able to upload the following file and test for a successful output. 
+You should be able to access the running service at `localhost:8080`.
 
 ```json
 {
@@ -119,17 +105,21 @@ Once you have a jar installed with the project, you should be able to upload the
 And the output:
 
 ```
-2016-11-29 10:52:13.793  INFO 6449 --- [nio-8080-exec-2] u.d.i.j.o.s.FileSystemStorageService     : AExMjM0AAFrSdJU1pOjWCE6AAAAAAAUAAH59B9B/f/8AAAUAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
+004C4C8CCD00005AD2749535A4E8D6084E80000000000500007E7D07D07F7FFF0000050050000000000000000000000000000000000000000000000000000000
 
-2016-11-29 10:52:13.794  INFO 6449 --- [nio-8080-exec-2] u.d.i.j.o.s.FileSystemStorageService     : Latitude: 0.0000042
-
-2016-11-29 10:52:13.794  INFO 6449 --- [nio-8080-exec-2] u.d.i.j.o.s.FileSystemStorageService     : Longitude: -0.0000083
-
-2016-11-29 10:52:13.795  INFO 6449 --- [nio-8080-exec-2] u.d.i.j.o.s.FileSystemStorageService     : Elevation: 15.7
+{"coreData":{"msgCnt":1,"id":"31323334","secMark":1,"position":{"latitude":0.0000042,"longitude":-0.0000083,"elevation":15.7},"accelSet":{"accelLat":0.00,"accelLong":0.00,"accelVert":0.00,"accelYaw":0.00},"accuracy":{"semiMajor":0.00,"semiMinor":0.00,"orientation":0.0},"transmission":"neutral","speed":0.20,"heading":0.0000,"angle":0.0,"brakes":{"wheelBrakes":{"BIT STRING":false},"traction":"unavailable","abs":"unavailable","scs":"unavailable","brakeBoost":"unavailable","auxBrakes":"unavailable"},"size":{"width":10,"length":10}},"partII":[]}
 ```
 
 Which demonstrates a loop of Readable JSON -> ASN.1 UPER encoded BSM Message -> Readable Output
 
+
+### Integrated Development Environment (IDE)
+
+Install the IDE of your choice:
+
+* Eclipse: [https://eclipse.org/](https://eclipse.org/)
+* STS: [https://spring.io/tools/sts/all](https://spring.io/tools/sts/all)
+* IntelliJ: [https://www.jetbrains.com/idea/](https://www.jetbrains.com/idea/)
 
 
 ### Continuous Integration and Delivery

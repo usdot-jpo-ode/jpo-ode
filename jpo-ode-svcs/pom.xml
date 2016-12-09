@@ -3,16 +3,17 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>jpo-ode-svcs</artifactId>
-	<packaging>jar</packaging>
-	<name>jpo-ode-svcs</name>
-	<description>Web application for US DOT ITS JPO</description>
-
 	<parent>
 		<groupId>us.dot.its.jpo.ode</groupId>
 		<artifactId>jpo-ode</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
+
+	<artifactId>jpo-ode-svcs</artifactId>
+	<packaging>jar</packaging>
+	<name>jpo-ode-svcs</name>
+	<description>Web application for US DOT ITS JPO</description>
+
 	<properties>
 	</properties>
 	<dependencies>
@@ -75,6 +76,16 @@
 			<artifactId>jpo-ode-plugins</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>us.dot.its.jpo.ode</groupId>
+			<artifactId>jpo-ode-plugins-asn1-oss</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>0.10.1.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -82,24 +93,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-				<!-- Configure spring-boot to use the PropertiesLauncher
-				     by specifying the mainClass and layout-ZIP
-				     Using PropertiesLauncher allows us to extend the class loader
-				     classpath to the plugins directory by declaring 
-				     -Dloader.pass=<plugins> where <plugins> is the absolute
-				     or replative path to a directory containing plugin jars.
-				 -->
-					<mainClass>${start-class}</mainClass>
-					<layout>ZIP</layout>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

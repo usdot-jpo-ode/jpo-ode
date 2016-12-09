@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>1.4.1.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
 	<groupId>us.dot.its.jpo.ode</groupId>
@@ -17,8 +18,9 @@
 		<module>jpo-ode-core</module>
 		<module>jpo-ode-svcs</module>
 		<module>jpo-ode-plugins</module>
-    <module>jpo-ode-common</module>
-  </modules>
+		<module>jpo-ode-common</module>
+		<module>jpo-ode-private</module>
+	</modules>
 
 	<repositories>
 		<!-- <repository> <id>cnsi-ode-repo</id> <url>http://dropbox.cnsi.com/nexus/content/repositories/ODE/</url> 
@@ -34,7 +36,6 @@
 		<finalLocation>${project.build.directory}/${project.artifactId}-${project.version}</finalLocation>
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
-		<loader.path>plugins</loader.path>
 
 	</properties>
 

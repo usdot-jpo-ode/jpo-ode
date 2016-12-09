@@ -7,7 +7,9 @@ import java.util.List;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-public class J2735HeadingSlice implements Asn1Object {
+public class J2735HeadingSlice extends Asn1Object {
+	private static final long serialVersionUID = 1L;
+	
    public enum SliceMask {
       noHeading(0x0000),
       from000_0to022_5degrees(0x0001),
