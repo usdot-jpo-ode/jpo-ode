@@ -9,15 +9,6 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
-import java.util.Properties;
-import java.util.Arrays;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,29 +16,31 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
+import org.springframework.util.SerializationUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.context.AppContext;
+import us.dot.its.jpo.ode.OdeSvcsApplication;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.wrapper.MessageConsumer;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 @Service
 public class FileSystemStorageService implements StorageService {
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
 
 	private OdeProperties properties;
 	private final Path rootLocation;
 	private Asn1Plugin asn1Coder;
 
-
 	@Autowired
 	public FileSystemStorageService(OdeProperties properties) {
 		this.properties = properties;
-		
+
 		this.rootLocation = Paths.get(properties.getUploadLocation());
 		logger.info("Upload location: {}", this.rootLocation);
 	}
@@ -72,7 +65,8 @@ public class FileSystemStorageService implements StorageService {
 		}
 	}
 
-	private void encodeData(MultipartFile file) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+	private void encodeData(MultipartFile file)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		if (this.asn1Coder == null) {
 			logger.info("Loading ASN1 Coder: {}", properties.getAsn1CoderClassName());
 			this.asn1Coder = (Asn1Plugin) PluginFactory.getPluginByName(properties.getAsn1CoderClassName());
@@ -80,11 +74,12 @@ public class FileSystemStorageService implements StorageService {
 
 		Scanner scanner = null;
 		String topicName = "BSM";
-		try {			
+		String line = null;
+		try {
 			scanner = new Scanner(file.getInputStream());
 
 			while (scanner.hasNextLine()) {
-				String line = scanner.nextLine();
+				line = scanner.nextLine();
 				Asn1Object bsm;
 				String encoded;
 				try {
@@ -98,18 +93,15 @@ public class FileSystemStorageService implements StorageService {
 
 				J2735Bsm decoded = (J2735Bsm) asn1Coder.UPER_DecodeHex(encoded);
 				/*
-				Send decoded.toJson() to kafka queue
-				Recieve from same Kafka topic queue
-				*/
-				produceMessage(topicName,decoded);
+				 * Send decoded.toJson() to kafka queue Recieve from same Kafka
+				 * topic queue
+				 */
+				produceMessage(topicName, decoded);
 				consumeMessage(topicName);
 				logger.info(decoded.toJson());
-				System.out.println("PASSED by KAFKA");
-
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			logger.error("Error decoding data: " + line, e);;
 		} finally {
 			if (scanner != null)
 				scanner.close();
@@ -127,48 +119,20 @@ public class FileSystemStorageService implements StorageService {
 		}
 
 	}
-	public void produceMessage(String topic, J2735Bsm msg)
-	{  
-	      Properties props = new Properties();// create instance for properties to access producer configs 	      
-	      props.put("bootstrap.servers", "localhost:9092");//Assign localhost id	            
-	      props.put("acks", "all");//Set acknowledgements for producer requests.	      
-	      props.put("retries", 0);//If the request fails, the producer can automatically retry
-	      props.put("batch.size", 16384);//Specify buffer size in config	         
-	      props.put("linger.ms", 1);//Reduce the no of requests less than 0	         
-	      props.put("buffer.memory", 33554432);//The buffer.memory controls the total amount of memory available to the producer for buffering.	      
-	      props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");   
-	      props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-	      
-	      KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
-//			producer.send(new ProducerRecord<String, String>(topic, Integer.toString(i), msg.toString())); //Send message to topic
-			producer.send(new ProducerRecord<String,String>(topic,msg.toString()));
-			producer.close();
+
+	public static void produceMessage(String topic, J2735Bsm msg) {
+		MessageProducer<String, byte[]> producer = 
+				(MessageProducer<String, byte[]>) OdeSvcsApplication.getMessageProducerPool().checkOut();
+		producer.send(topic, null, SerializationUtils.serialize(msg));
+		OdeSvcsApplication.getMessageProducerPool().checkIn(producer);
+		
+		logger.debug("Sent message{}", msg.toJson());
 	}
-	
-	public void consumeMessage(String topic)
-	{
-		Properties props = new Properties();
-		props.put("bootstrap.servers", "localhost:9092");
-		props.put("group.id", "None");
-		props.put("enable.auto.commit", "true");
-		props.put("auto.commit.interval.ms", "1000");
-		props.put("session.timeout.ms", "30000");
-		props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-		props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-		KafkaConsumer<String, String> consumer = new KafkaConsumer<String,String>(props);
-		//TopicPartition partition0 = new TopicPartition(topic, 0);
-	    //TopicPartition partition1 = new TopicPartition(topic, 1);
-	    //consumer.assign(Arrays.asList(partition0, partition1));
-		consumer.subscribe(Arrays.asList(topic)); //Subscribe to the topic name
-		System.out.println("subscribed");
-		//consumer.seek(partition0, 0);
-		//consumer.seek(partition1, 0);
-		ConsumerRecords<String, String> records = (ConsumerRecords<String, String>) consumer.poll(10000);
-		for (ConsumerRecord<String, String> record : records){
-			logger.info(record.value());
-			System.out.println("Message consumed");
-		}
-		consumer.close();
+
+	public static void consumeMessage(String topic) {
+		MessageConsumer<String, byte[]> consumer = OdeSvcsApplication.getMessageConsumerPool().checkOut();
+		consumer.subscribe(topic); // Subscribe to the topic name
+		OdeSvcsApplication.getMessageConsumerPool().checkIn(consumer);
 	}
 
 	@Override
