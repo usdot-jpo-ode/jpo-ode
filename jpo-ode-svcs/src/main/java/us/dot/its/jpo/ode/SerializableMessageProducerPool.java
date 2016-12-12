@@ -22,7 +22,7 @@ public class SerializableMessageProducerPool<K, V> extends
 	
 	public SerializableMessageProducerPool<K, V> init() {
 		props  = new Properties();
-		props.put("ack", OdeProperties.getProperty("kafka.producer.ack", "all")); // Set acknowledgments for producer requests.
+		props.put("acks", OdeProperties.getProperty("kafka.producer.ack", "all")); // Set acknowledgments for producer requests.
 		props.put("retries", OdeProperties.getProperty("kafka.producer.retries", 0)); // If the request fails, the producer can
 		                                 // automatically retry
 		props.put("batch.size", OdeProperties.getProperty("kafka.producer.batch.size", 16384));
