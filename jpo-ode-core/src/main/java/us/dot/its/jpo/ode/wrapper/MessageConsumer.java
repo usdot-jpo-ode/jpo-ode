@@ -28,6 +28,8 @@ public class MessageConsumer<K, V> {
 		
 		consumer = new KafkaConsumer<K, V>(props);
 		
+		logger.info("Consumer Created");
+
 		this.meter = OdeMetrics.getInstance().meter(MessageConsumer.class.getSimpleName(),
 				processor.getClass().getSimpleName(), "meter");
 	}

@@ -4,9 +4,13 @@ package us.dot.its.jpo.ode.importer;
 //import java.nio.file.Paths;
 
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
-import static java.nio.file.StandardWatchEventKinds.*;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
+import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,26 +19,25 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.plugin.PluginFactory;
-import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
-import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
+import us.dot.its.jpo.ode.bsm.BsmCoder;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.storage.FileSystemStorageService;
-import us.dot.its.jpo.ode.util.JsonUtils;
 
+@Service
 public class Importer implements Runnable {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	@Autowired
+	private OdeProperties odeProperties;
 	private Path folder;
 	private int interval;
-	private Asn1Plugin asn1Coder;
 
 	public int getInterval() {
 		return interval;
@@ -46,7 +49,9 @@ public class Importer implements Runnable {
 
 	public Importer(OdeProperties odeProps)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		String uploadLocation = odeProps.getUploadLocation();
+		this.odeProperties = odeProps;
+		
+		String uploadLocation = this.odeProperties.getUploadLocation();
 		try {
 			folder = Paths.get(uploadLocation);
 		} catch (Exception ex) {
@@ -55,10 +60,9 @@ public class Importer implements Runnable {
 
 		logger.info("Watching folder: " + folder);
 
-		interval = odeProps.getImporterInterval();
+		interval = this.odeProperties.getImporterInterval();
 		
-		logger.info("Loading ASN1 Coder: {}", odeProps.getAsn1CoderClassName());
-		this.asn1Coder = (Asn1Plugin) PluginFactory.getPluginByName(odeProps.getAsn1CoderClassName());
+		logger.info("Loading ASN1 Coder: {}", this.odeProperties.getAsn1CoderClassName());
 	}
 
 	public Path getFolder() {
@@ -107,42 +111,14 @@ public class Importer implements Runnable {
 						// A new Path was created
 						@SuppressWarnings("unchecked")
 						WatchEvent<Path> watchEventCurrent = (WatchEvent<Path>) watchEvent;
-						Path newPath = watchEventCurrent.context();
-						logger.info("New file detected: {}", newPath);
+						Path path = watchEventCurrent.context();
+						logger.info("New or modified file detected: {}", path);
 
-						String topicName = "BSM";
-						String line = null;
-						try (Scanner scanner = new Scanner(newPath.toAbsolutePath())) {
-							while (scanner.hasNextLine()) {
-								line = scanner.nextLine();
-								Asn1Object bsm;
-								String encoded;
-								try {
-									bsm = (Asn1Object) JsonUtils.fromJson(line, J2735Bsm.class);
-									logger.info("Read JSON data: {}", bsm);
-									encoded = asn1Coder.UPER_EncodeHex(bsm);
-									logger.info("Encoded data: {}", encoded);
-								} catch (Exception e) {
-									logger.warn("Message is not JSON. Assuming HEX...", e);
-									encoded = line;
-								}
-
-								J2735Bsm decoded = (J2735Bsm) asn1Coder.UPER_DecodeHex(encoded);
-								/*
-								 * Send decoded.toJson() to kafka queue Receive from same Kafka
-								 * topic queue
-								 */
-								FileSystemStorageService.produceMessage(topicName, decoded);
-								FileSystemStorageService.consumeMessage(topicName);
-								logger.info(decoded.toJson());
-							}
-						} catch (Exception e) {
-							logger.error("Error decoding data: " + line, e);;
-						}
-
-						// Oulogger.info.out.println("New folder created: " +
-						// newPath);
-						// TODO: handle file here...
+						BsmCoder bsmCoder = new BsmCoder(odeProperties);
+						InputStream inputStream = new FileInputStream(path.toFile());
+						
+						J2735Bsm j2735BSM = bsmCoder.decodeFromHex(inputStream);
+						bsmCoder.publish(BsmCoder.BSM_OBJECTS, j2735BSM);
 					}
 				}
 
