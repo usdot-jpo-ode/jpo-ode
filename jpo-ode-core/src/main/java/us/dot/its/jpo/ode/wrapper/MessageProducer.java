@@ -29,8 +29,6 @@ public class MessageProducer<K, V> {
 		if (partitionerClass != null)
 			props.put("partitioner.class", partitionerClass);
 
-		props.put("producer.type", type);
-
 		producer = new KafkaProducer<K, V>(props);
 
 		logger.info("Producer Created");

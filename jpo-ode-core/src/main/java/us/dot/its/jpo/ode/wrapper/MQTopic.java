@@ -1,8 +1,5 @@
 package us.dot.its.jpo.ode.wrapper;
 
-import org.I0Itec.zkclient.ZkClient;
-
-import kafka.admin.AdminUtils;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.OdeObject;
 
@@ -63,13 +60,6 @@ public class MQTopic extends OdeObject {
       return this;
    }
 
-   public void delete() {
-      String zkClientUrl = AppContext.getInstance().getParam(AppContext.ZK_CONNECTION_STRINGS);
-      ZkClient zkClient = new ZkClient(zkClientUrl);
-      
-      AdminUtils.deleteTopic(zkClient, name);
-   }
-   
    @Override
    public int hashCode() {
       final int prime = 31;
