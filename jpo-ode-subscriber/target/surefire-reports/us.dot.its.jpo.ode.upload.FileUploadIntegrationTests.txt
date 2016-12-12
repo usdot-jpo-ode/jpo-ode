@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: us.dot.its.jpo.ode.upload.FileUploadIntegrationTests
--------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.986 sec - in us.dot.its.jpo.ode.upload.FileUploadIntegrationTests

@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: us.dot.its.jpo.ode.OdeSvcsApplicationTests
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.538 sec - in us.dot.its.jpo.ode.OdeSvcsApplicationTests
