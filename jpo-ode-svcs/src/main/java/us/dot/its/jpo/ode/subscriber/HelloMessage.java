@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode;
+package us.dot.its.jpo.ode.subscriber;
 
 public class HelloMessage {
 
