@@ -43,7 +43,7 @@ public class FileSystemStorageService implements StorageService {
 			Files.copy(file.getInputStream(), this.rootLocation.resolve(file.getOriginalFilename()));
 
 		} catch (FileAlreadyExistsException fae) {
-			logger.info("File already exisits");
+			logger.info("File already exists");
 		} catch (IOException e) {
 			throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
 		}

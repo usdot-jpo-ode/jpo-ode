@@ -75,9 +75,12 @@ public class Importer implements Runnable {
 
 	@Override
 	public void run() {
+		boolean isRunning = false;
 		// Sanity check - Check if path is a folder
 		try {
 			Boolean isFolder = (Boolean) Files.getAttribute(folder, "basic:isDirectory", NOFOLLOW_LINKS);
+			logger.info("Watching directory: {}", folder);
+			isRunning = true;
 			if (!isFolder) {
 				throw new IllegalArgumentException("Path: " + folder + " is not a folder");
 			}
@@ -88,16 +91,16 @@ public class Importer implements Runnable {
 		// We obtain the file system of the Path
 		FileSystem fs = folder.getFileSystem();
 
-		// We create the new WatchService using the new try() block
-		try (WatchService service = fs.newWatchService()) {
+		while (isRunning) {
+			// We create the new WatchService using the new try() block
+			try (WatchService service = fs.newWatchService()) {
 
-			// We register the folder to the service
-			// We watch for creation events
-			folder.register(service, ENTRY_CREATE, ENTRY_MODIFY);
+				// We register the folder to the service
+				// We watch for creation events
+				folder.register(service, ENTRY_CREATE, ENTRY_MODIFY);
 
-			// Start the infinite polling loop
-			WatchKey key = null;
-			while (true) {
+				// Start the infinite polling loop
+				WatchKey key = null;
 				key = service.take();
 
 				// Dequeuing events
@@ -111,7 +114,7 @@ public class Importer implements Runnable {
 						// A new Path was created
 						@SuppressWarnings("unchecked")
 						WatchEvent<Path> watchEventCurrent = (WatchEvent<Path>) watchEvent;
-						Path path = watchEventCurrent.context();
+						Path path = folder.resolve(watchEventCurrent.context());
 						logger.info("New or modified file detected: {}", path);
 
 						BsmCoder bsmCoder = new BsmCoder(odeProperties);
@@ -123,12 +126,12 @@ public class Importer implements Runnable {
 				}
 
 				if (!key.reset()) {
-					break; // loop
+					isRunning = false; // end the loop
 				}
+			} catch (Exception e) {
+				logger.error("Error running the importer.", e);
 			}
 
-		} catch (Exception e) {
-			logger.error("Error running the importer.", e);
 		}
 
 	}
