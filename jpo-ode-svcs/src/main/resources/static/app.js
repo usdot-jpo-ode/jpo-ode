@@ -47,11 +47,29 @@ function showMessage(message) {
     $("#messages").append("<tr><td>" + message + "</td></tr>");
 }
 
+function upload() {
+    var formData = new FormData();
+    formData.append('file', $('#file').get(0).files[0]);
+    console.log("Ajax call submitted");
+    $.ajax({
+        url: '/',
+        type: 'POST',
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+    }).done(function(response) {
+        $( "#uploadResponse" ).append(response.body);
+    });
+}
+
 $(function () {
+    
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
     $( "#connect" ).click(function() { connect(); });
     $( "#disconnect" ).click(function() { disconnect(); });
     $( "#send" ).click(function() { sendName(); });
+    $( "#upload" ).click( function() { upload() } );
 });
