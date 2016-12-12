@@ -59,7 +59,8 @@ function upload() {
         contentType: false,
         processData: false,
     }).done(function(response) {
-        $( "#uploadResponse" ).append(response.body);
+        console.log("File upload response received");
+        $( "#uploadResponse" ).append("File uploaded succesfully.");
     });
 }
 
