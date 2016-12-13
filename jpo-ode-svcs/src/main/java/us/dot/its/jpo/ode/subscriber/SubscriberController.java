@@ -18,9 +18,9 @@ public class SubscriberController {
     private SimpMessagingTemplate template;
 
 
-    @MessageMapping("/hello")
-    @SendTo("/topic/greetings")
-    public Subscriber greeting(HelloMessage message) throws Exception {
+    @MessageMapping("/connect")
+    @SendTo("/topic/subscribers")
+    public Subscriber greeting(RegistrationMessage message) throws Exception {
         Thread.sleep(10); // simulated delay
         return new Subscriber(message.getName());
     }

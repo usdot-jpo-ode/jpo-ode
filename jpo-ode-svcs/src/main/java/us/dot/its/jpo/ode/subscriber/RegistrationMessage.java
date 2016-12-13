@@ -1,13 +1,13 @@
 package us.dot.its.jpo.ode.subscriber;
 
-public class HelloMessage {
+public class RegistrationMessage {
 
     private String name;
 
-    public HelloMessage() {
+    public RegistrationMessage() {
     }
 
-    public HelloMessage(String name) {
+    public RegistrationMessage(String name) {
         this.name = name;
     }
 
