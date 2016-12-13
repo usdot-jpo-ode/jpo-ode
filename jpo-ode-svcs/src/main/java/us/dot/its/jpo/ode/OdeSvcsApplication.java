@@ -17,6 +17,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
+import us.dot.its.jpo.ode.bsm.BsmMessageDistributer;
 import us.dot.its.jpo.ode.bsm.BsmMessagePrinter;
 import us.dot.its.jpo.ode.importer.Importer;
 import us.dot.its.jpo.ode.storage.StorageException;
@@ -49,7 +50,7 @@ public class OdeSvcsApplication {
 			messageProducerPool = new SerializableMessageProducerPool<String, byte[]>(odeProperties);
 
 			messageConsumerPool = new SerializableMessageConsumerPool<String, byte[]>(
-					odeProperties.getHostId(), new BsmMessagePrinter(), odeProperties);
+					odeProperties.getHostId(), new BsmMessageDistributer(), odeProperties);
 
 			
 			importer = Executors.newSingleThreadExecutor();

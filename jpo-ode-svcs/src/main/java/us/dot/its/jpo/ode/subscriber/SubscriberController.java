@@ -32,7 +32,7 @@ public class SubscriberController {
         return "{\"success\": true}" ;
     }
 
-    @GetMapping("/helloworld")
+    @GetMapping("/")
     public String test() throws Exception {
         return "index";
     }
