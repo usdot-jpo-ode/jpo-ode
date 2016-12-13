@@ -8,6 +8,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,31 +24,22 @@ import java.nio.file.WatchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.bsm.BsmCoder;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 
-@Service
 public class Importer implements Runnable {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	@Autowired
 	private OdeProperties odeProperties;
+	private SimpMessagingTemplate template;
 	private Path folder;
 	private int interval;
 
-	public int getInterval() {
-		return interval;
-	}
-
-	public void setInterval(int importerInterval) {
-		this.interval = importerInterval;
-	}
-
-	public Importer(OdeProperties odeProps)
+	public Importer(OdeProperties odeProps, SimpMessagingTemplate template)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		this.odeProperties = odeProps;
 		
@@ -63,6 +55,8 @@ public class Importer implements Runnable {
 		interval = this.odeProperties.getImporterInterval();
 		
 		logger.info("Loading ASN1 Coder: {}", this.odeProperties.getAsn1CoderClassName());
+		
+		this.template = template;
 	}
 
 	public Path getFolder() {
@@ -117,11 +111,22 @@ public class Importer implements Runnable {
 						Path path = folder.resolve(watchEventCurrent.context());
 						logger.info("New or modified file detected: {}", path);
 
-						BsmCoder bsmCoder = new BsmCoder(odeProperties);
-						InputStream inputStream = new FileInputStream(path.toFile());
+						BsmCoder bsmCoder = new BsmCoder(odeProperties, template);
+						File bsmFile = path.toFile();
 						
-						J2735Bsm j2735BSM = bsmCoder.decodeFromHex(inputStream);
-						bsmCoder.publish(BsmCoder.BSM_OBJECTS, j2735BSM);
+						int retryCount = 2;
+						while (retryCount-- > 0) {
+							try (InputStream inputStream = new FileInputStream(path.toFile())) {
+								bsmCoder.decodeFromHexAndPublish(inputStream, BsmCoder.BSM_OBJECTS);
+								inputStream.close();
+								bsmFile.delete();
+								break;
+							} catch (Exception e) {
+								logger.info("unable to open file: " + path 
+										+ " retrying " + retryCount + " more times", e);
+								Thread.sleep(100);
+							}
+						}						
 					}
 				}
 
@@ -134,6 +139,30 @@ public class Importer implements Runnable {
 
 		}
 
+	}
+
+	public int getInterval() {
+		return interval;
+	}
+
+	public void setInterval(int importerInterval) {
+		this.interval = importerInterval;
+	}
+
+	public OdeProperties getOdeProperties() {
+		return odeProperties;
+	}
+
+	public void setOdeProperties(OdeProperties odeProperties) {
+		this.odeProperties = odeProperties;
+	}
+
+	public SimpMessagingTemplate getTemplate() {
+		return template;
+	}
+
+	public void setTemplate(SimpMessagingTemplate template) {
+		this.template = template;
 	}
 
 

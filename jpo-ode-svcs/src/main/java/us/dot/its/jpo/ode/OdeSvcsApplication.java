@@ -27,7 +27,6 @@ import us.dot.its.jpo.ode.storage.StorageException;
 public class OdeSvcsApplication {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	private ExecutorService importer;
 	private static SerializableMessageProducerPool<String, byte[]> messageProducerPool;
 	private static SerializableMessageConsumerPool<String, byte[]> messageConsumerPool;
 
@@ -53,9 +52,6 @@ public class OdeSvcsApplication {
 					odeProperties.getHostId(), new BsmMessageDistributer(), odeProperties);
 
 			
-			importer = Executors.newSingleThreadExecutor();
-			
-			importer.submit(new Importer(odeProperties));
 		};
 	}
 
@@ -69,7 +65,6 @@ public class OdeSvcsApplication {
 	
 	@PreDestroy
 	public void clanup() {
-		importer.shutdown();
 	}
 
 }
