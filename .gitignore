@@ -2,6 +2,30 @@
 ### jpo-ode-svcs ###
 /jpo-ode-svcs/uploads
 /jpo-ode-svcs/src/main/java/us/dot/its/jpo/ode/plugins
+/jpo-ode-svcs/target/
+!/jpo-ode-svcs/.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+/jpo-ode-svcs/.apt_generated
+/jpo-ode-svcs/.classpath
+/jpo-ode-svcs/.factorypath
+/jpo-ode-svcs/.project
+/jpo-ode-svcs/.settings
+/jpo-ode-svcs/.springBeans
+
+### IntelliJ IDEA ###
+/jpo-ode-svcs/.idea
+/jpo-ode-svcs/*.iws
+/jpo-ode-svcs/*.iml
+/jpo-ode-svcs/*.ipr
+
+### NetBeans ###
+/jpo-ode-svcs/nbproject/private/
+/jpo-ode-svcs/build/
+/jpo-ode-svcs/nbbuild/
+/jpo-ode-svcs/dist/
+/jpo-ode-svcs/nbdist/
+/jpo-ode-svcs/.nb-gradle/
 
 ######################
 ### jpo-ode-common ###
