@@ -2,12 +2,17 @@ language: java
 jdk: oraclejdk8
 branches:
   only:
-  - master
-  - develop
+    - master
+    - develop
 sudo: false
 before_install:
-- echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc
-install: true
+  - echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc
+  - echo "installing private repository"
+  - git clone https://usdot-jpo-ode:$CI_USER_TOKEN@bitbucket.org/usdot-jpo-ode/jpo-ode-hamid.git jpo-ode-private
+  - cd jpo-ode-private
+  - mvn clean
+  - mvn install
+install: true #must disable pre-installation of dependencies because it fails due to missing oss.runtime dependency install 
 addons:
   sonarqube:
     token:

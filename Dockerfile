@@ -15,15 +15,23 @@ RUN apt-get update && \
     tar xfz /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -C /opt && \
     rm /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz
 ADD jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar /home
-ADD jpo-ode-svcs/plugins/ /home
-
+RUN apt-get update && \
+	apt-get install -y software-properties-common && \
+	apt-add-repository universe && \
+	apt-get install -y maven
+RUN apt-get install -y git
+RUN apt-get install -y default-jdk
 RUN apt-get update && \
 	apt-get install -y vim && \
 	apt-get clean
 RUN apt-get update && \
 	apt-get install -y nano && \
 	apt-get clean
-#RUN apt-get update && \
-#	apt-get install -y software-properties-common && \
-#	apt-add-repository universe && \
-#	apt-get install -y maven
+
+ADD docker/start.sh /start.sh
+ADD docker/createTopic.sh /createTopic.sh
+RUN echo "hostname=kafka" >> /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"/config/server.properties
+RUN echo "advertised.host.name=192.168.99.100" >> /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"/config/server.properties
+RUN echo "advertised.port=9092" >> /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"/config/server.properties
+RUN chmod +x start.sh
+RUN chmod +x createTopic.sh
