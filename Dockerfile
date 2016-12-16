@@ -20,7 +20,6 @@ RUN apt-get update && \
 	apt-get install -y maven
 RUN apt-get install -y git
 RUN apt-get install -y default-jdk
-ADD jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar /home
 RUN apt-get update && \
 	apt-get install -y vim && \
 	apt-get clean
