@@ -6,9 +6,9 @@ branches:
     - develop
 sudo: false
 before_install:
-  - echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc
+  - echo -e "machine bitbucket.org\n  login $CI_USER_TOKEN" >> ~/.netrc
   - echo "installing private repository"
-  - git clone https://usdot-jpo-ode:$CI_USER_TOKEN@bitbucket.org/usdot-jpo-ode/jpo-ode-hamid.git jpo-ode-private
+  - git clone https://$CI_USER_TOKEN@bitbucket.org/usdot-jpo-ode/jpo-ode-hamid.git jpo-ode-private
   - cd jpo-ode-private
   - mvn clean
   - mvn install
