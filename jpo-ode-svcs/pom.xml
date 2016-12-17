@@ -78,11 +78,6 @@
 			<artifactId>jpo-ode-plugins</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>us.dot.its.jpo.ode</groupId>
-			<artifactId>jpo-ode-plugins-asn1-oss</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 	</dependencies>
 
 	<build>
