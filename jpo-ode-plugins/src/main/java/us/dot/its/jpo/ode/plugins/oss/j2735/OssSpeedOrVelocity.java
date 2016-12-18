@@ -16,9 +16,18 @@ public class OssSpeedOrVelocity {
 	}
 
 	private static BigDecimal genericSpeedOrVelocity(int speedOrVelocity) {
-		if (speedOrVelocity != 8191)
-			return BigDecimal.valueOf(speedOrVelocity * 2, 2);
-		else
-			return null;
+	    
+	    if (speedOrVelocity < 0 || speedOrVelocity > 8191) {
+	        throw new IllegalArgumentException("Speed or velocity out of bounds");
+	    }
+		
+		BigDecimal result = null;
+		
+		if (speedOrVelocity != 8191) {
+			result = BigDecimal.valueOf(speedOrVelocity * 2, 2);
+		}
+		
+		return result;
+		
 	}
 }

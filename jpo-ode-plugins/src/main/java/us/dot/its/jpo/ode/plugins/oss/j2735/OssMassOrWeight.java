@@ -7,12 +7,28 @@ import us.dot.its.jpo.ode.j2735.dsrc.VehicleMass;
 public class OssMassOrWeight {
 
 	public static Integer genericMass(TrailerMass mass) {
-		return mass.intValue() * 500;
+	    
+	    if (mass.intValue() < 0 || mass.intValue() > 255) {
+	        throw new IllegalArgumentException("Trailer mass out of bounds");
+	    }
+		
+		Integer result = null;
+		
+		if (mass.intValue() != 0) {
+			result = mass.intValue() * 500;
+		}
+		
+		return result;
 	}
 
 	//A data element re-used from the SAE J1939 standard and encoded as: 
 	// 2kg/bit, 0 deg offset, Range: 0 to +128,510kg. See SPN 180, PGN reference 65258
 	public static Integer genericWeight(TrailerWeight weight) {
+	    
+	    if (weight.intValue() < 0 || weight.intValue() > 64255) {
+	        throw new IllegalArgumentException("Trailer weight out of bounds");
+	    }
+	    
 		return weight.intValue() * 2;
 	}
 
@@ -33,6 +49,11 @@ public class OssMassOrWeight {
 	 * @return
 	 */
 	public static Integer genericMass(VehicleMass mass) {
+	    
+	    if (mass.intValue() < 0 || mass.intValue() > 255) {
+	        throw new IllegalArgumentException("Vehicle mass out of bounds");
+	    }
+	    
 		Integer gmass = null;
 		int imass = mass.intValue();
 		

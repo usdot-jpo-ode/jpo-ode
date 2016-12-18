@@ -12,7 +12,18 @@ public class OssHeading {
 	}
 
 	public static BigDecimal genericHeading(CoarseHeading heading) {
-		return BigDecimal.valueOf(heading.longValue() * 15, 1);
+	    
+	    if (heading.intValue() < 0 || heading.intValue() > 240) {
+	        throw new IllegalArgumentException("Coarse heading value out of bounds");
+	    }
+		
+		BigDecimal result = null;
+		
+		if (heading.intValue() != 240) {
+			result = BigDecimal.valueOf(heading.longValue() * 15, 1); 
+		}
+
+		return result;
 	}
 
 }

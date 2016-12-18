@@ -5,71 +5,124 @@ import static org.junit.Assert.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.Angle;
 
 /**
- * To be added
+ * -- Summary -- Test class for oss.j2735.OssAngle Checks conversion from
+ * generic angle to degree angle
+ * 
+ * Four test cases: 1) Minimum 0 returns 0 2) Maximum 28799 returns 359.9875 3)
+ * Undefined angle (indicated as 28800) returns null 4) Random generic angle
+ * returns correct corresponding degree angle 5) Angle less than 0 throws
+ * IllegalArgumentException 6) Angle greater than 28800 throws
+ * IllegalArgumentException
  *
  */
 public class OssAngleTest {
-	
-	/**
-	 * Tests that an input angle of (0) returns an output angle of (0)
-	 * @param
-	 */
-	@Test
-	public void shouldReturnZeroAngle() {
-		
-		Angle zeroAngle = new Angle(0);
-		
-		BigDecimal actualValue = OssAngle.genericAngle(zeroAngle);
-		
-		BigDecimal expectedValue = new BigDecimal(0);
-		
-		assertEquals(actualValue.longValue(), expectedValue.longValue());
-		
-	}
-	/**
-	 * Tests that the max input angle (28799) is equal to the max decimal value (359.9875)
-	 * @param
-	 */
-	
-	@Test
-	public void shouldReturnMaxAngle() {
-		
-		BigDecimal expectedValue = new BigDecimal(359.9875)
-				.setScale(4, RoundingMode.DOWN);
-		
-		Angle maxAngle = new Angle(28799);
-		
-		BigDecimal actualValue = OssAngle.genericAngle(maxAngle)
-				.setScale(4, RoundingMode.DOWN);
-		
-		assertEquals(actualValue, expectedValue);
-	}
-	
-	/**
-	 * Tests that a random angle from (0..28800) is accurately converted to (0..360)
-	 * @param
-	 */
-	@Test
-	public void shouldReturnRandomAngle() {
-		
-		Integer randomNumber = (int)(Math.random() * 28800);
-		
-		Double expectedNumber = (long)(randomNumber) * 0.0125;
-		
-		BigDecimal expectedValue = new BigDecimal(expectedNumber)
-				.setScale(4, RoundingMode.DOWN);
-		
-		Angle actualAngle = new Angle(randomNumber);
-		
-		BigDecimal actualValue = OssAngle.genericAngle(actualAngle)
-				.setScale(4, RoundingMode.DOWN);
-		
-		assertEquals(actualValue, expectedValue);
-	}
+
+    /**
+     * Tests that the minimum input angle (0) returns the minimum decimal value
+     * (0)
+     */
+    @Test
+    public void shouldReturnZeroAngle() {
+
+        Integer testInput = 0;
+        BigDecimal expectedValue = BigDecimal.ZERO;
+
+        Angle testAngle = new Angle(testInput);
+        BigDecimal actualValue = OssAngle.genericAngle(testAngle);
+
+        assertEquals(expectedValue.longValue(), actualValue.longValue());
+
+    }
+
+    /**
+     * Tests that the max input angle (28799) returns the max decimal value
+     * (359.9875)
+     */
+    @Test
+    public void shouldReturnMaxAngle() {
+
+        Integer testInput = 28799;
+        BigDecimal expectedValue = BigDecimal.valueOf(359.9875);
+
+        Angle testAngle = new Angle(testInput);
+        BigDecimal actualValue = OssAngle.genericAngle(testAngle);
+
+        assertEquals(expectedValue.longValue(), actualValue.longValue());
+
+    }
+
+    /**
+     * Tests that known input angle (14400) returns the max decimal value
+     * (180.0)
+     */
+    @Test
+    public void shouldReturnKnownAngle() {
+
+        Integer testInput = 14400;
+        BigDecimal expectedValue = BigDecimal.valueOf(180.0);
+
+        Angle testAngle = new Angle(testInput);
+        BigDecimal actualValue = OssAngle.genericAngle(testAngle);
+
+        assertEquals(expectedValue.longValue(), actualValue.longValue());
+
+    }
+
+    /**
+     * Tests that input angle (28800) returns (null) per ASN.1 specification: "A
+     * value of 28800 shall be used when Angle is unavailable"
+     */
+    @Test
+    public void shouldReturnNullAngle() {
+
+        Integer testInput = 28800;
+        BigDecimal expectedValue = null;
+
+        Angle testAngle = new Angle(testInput);
+        BigDecimal actualValue = OssAngle.genericAngle(testAngle);
+
+        assertEquals(expectedValue, actualValue);
+
+    }
+
+    /**
+     * Test that an input angle greater than 28800 throws exception
+     */
+    @Test
+    public void shouldThrowExceptionAboveUpperBound() {
+
+        Integer testValue = 28801;
+        Angle testAngle = new Angle(testValue);
+
+        try {
+            BigDecimal actualValue = OssAngle.genericAngle(testAngle);
+            fail("Expected IllegalArgumentException");
+        } catch (Exception e) {
+            assertTrue(e.getClass().equals(IllegalArgumentException.class));
+        }
+    }
+
+    /**
+     * Test that an input angle less than 0 throws exception
+     */
+    @Test
+    public void shouldThrowExceptionBelowLowerBound() {
+
+        Integer testValue = -1;
+        Angle testAngle = new Angle(testValue);
+
+        try {
+            BigDecimal actualValue = OssAngle.genericAngle(testAngle);
+            fail("Expected IllegalArgumentException");
+        } catch (Exception e) {
+            assertTrue(e.getClass().equals(IllegalArgumentException.class));
+        }
+    }
 
 }
