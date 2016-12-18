@@ -16,7 +16,7 @@ install: true #must disable pre-installation of dependencies because it fails du
 addons:
   sonarqube:
     token:
-      secure: yyYsMrHro07tW9fIj0JuqZODOdAqrhATdvh+/MToSfd5mqCnQpDAR7dnw9Xm20tZ/9Btku72N1MuFJX2p9CQuLWhth/3KJGdlhORdRr45zHTgZb2CZ1VqbHpsZ46P1xaNZyURRC7hTra2fR7qqtRzX6eVmCyc7eDdtDbANesmWPUDGgDo3TTwLgFM1wCkB6lNXxuZkhc5IhklXK4w/Ems8BBzkso8AoRM9CckNiktlMrl8hI4HAQC+749HptmyF4q2XGa9KpPpUnGb4gb3l+iyMe31H+l16MHmmy8qEeJVbHlFxA0l7ol7sUj7am5XplVVyA3gCe/C4A/PBqbjwOfiTcy9e6d0O0R0pimevE0alUFVzPCa9v2Mt/1pP4f3o1/1V/AuIWvKvnY/2tI4tpXRRPszSB89ehbcmX9/Kd1kimN0j1GObs9Lh8CAo5/qlULJXNehZ7hVTF0IzSmb3F+QDfuloNA5yEZ0D2foW2gqnZQGfkgsfAd9j1UfMOQd3WeH/ra3mMP74BYIAwMXBbOjZ1cq+/HnaRp3Cdr/tVLHkCH5jbj0ikYBLoZOXtEJVWh1hKijulk1CQjdkmRUtX0y0U6cdP8tz1fVTGbCvMAdYPYMeJmzp4CurmomzEWcCBC7M1vdCtwQCxqs6E99MHp6aqBaD1+mSYyYctua/nygY=
+      secure: $SONAR_SECURITY_TOKEN
     branches:
       - master
       - develop
