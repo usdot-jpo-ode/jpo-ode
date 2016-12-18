@@ -6,7 +6,6 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Scanner;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -19,26 +18,19 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.plugin.PluginFactory;
-import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
-import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.util.JsonUtils;
 
 @Service
 public class FileSystemStorageService implements StorageService {
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
 
 	private OdeProperties properties;
 	private final Path rootLocation;
-	private Asn1Plugin asn1Coder;
-
 
 	@Autowired
 	public FileSystemStorageService(OdeProperties properties) {
 		this.properties = properties;
-		
-		this.rootLocation = Paths.get(properties.getUploadLocation());
+
+		this.rootLocation = Paths.get(this.properties.getUploadLocation());
 		logger.info("Upload location: {}", this.rootLocation);
 	}
 
@@ -51,51 +43,10 @@ public class FileSystemStorageService implements StorageService {
 			Files.copy(file.getInputStream(), this.rootLocation.resolve(file.getOriginalFilename()));
 
 		} catch (FileAlreadyExistsException fae) {
-			logger.info("File already exisits");
+			logger.info("File already exists");
 		} catch (IOException e) {
 			throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
 		}
-		try {
-			encodeData(file);
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-			logger.error("Error encoding data.", e);
-		}
-	}
-
-	private void encodeData(MultipartFile file) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		if (this.asn1Coder == null) {
-			logger.info("Loading ASN1 Coder: {}", properties.getAsn1CoderClassName());
-			this.asn1Coder = (Asn1Plugin) PluginFactory.getPluginByName(properties.getAsn1CoderClassName());
-		}
-		Scanner scanner = null;
-		try {
-			scanner = new Scanner(file.getInputStream());
-
-			while (scanner.hasNextLine()) {
-				String line = scanner.nextLine();
-				Asn1Object bsm;
-				String encoded;
-				try {
-					bsm = (Asn1Object) JsonUtils.fromJson(line, J2735Bsm.class);
-					encoded = asn1Coder.UPER_EncodeHex(bsm);
-					logger.info(encoded);
-				} catch (Exception e) {
-					logger.warn("Message is not JSON. Assuming HEX...", e);
-					encoded = line;
-				}
-
-				J2735Bsm decoded = (J2735Bsm) asn1Coder.UPER_DecodeHex(encoded);
-				logger.info(decoded.toJson());
-
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			if (scanner != null)
-				scanner.close();
-		}
-
 	}
 
 	@Override

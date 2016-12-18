@@ -1,0 +1,67 @@
+####################
+### jpo-ode-svcs ###
+/jpo-ode-svcs/uploads
+/jpo-ode-svcs/src/main/java/us/dot/its/jpo/ode/plugins
+/jpo-ode-svcs/target/
+!/jpo-ode-svcs/.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+/jpo-ode-svcs/.apt_generated
+/jpo-ode-svcs/.classpath
+/jpo-ode-svcs/.factorypath
+/jpo-ode-svcs/.project
+/jpo-ode-svcs/.settings
+/jpo-ode-svcs/.springBeans
+
+### IntelliJ IDEA ###
+/jpo-ode-svcs/.idea
+/jpo-ode-svcs/*.iws
+/jpo-ode-svcs/*.iml
+/jpo-ode-svcs/*.ipr
+
+### NetBeans ###
+/jpo-ode-svcs/nbproject/private/
+/jpo-ode-svcs/build/
+/jpo-ode-svcs/nbbuild/
+/jpo-ode-svcs/dist/
+/jpo-ode-svcs/nbdist/
+/jpo-ode-svcs/.nb-gradle/
+
+######################
+### jpo-ode-common ###
+/jpo-ode-common/target
+
+####################
+### jpo-ode-core ###
+
+/jpo-ode-core/target/
+!/jpo-ode-core/.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+/jpo-ode-core/.apt_generated
+/jpo-ode-core/.classpath
+/jpo-ode-core/.factorypath
+/jpo-ode-core/.project
+/jpo-ode-core/.settings
+/jpo-ode-core/.springBeans
+
+### IntelliJ IDEA ###
+/jpo-ode-core/.idea
+/jpo-ode-core/*.iws
+/jpo-ode-core/*.iml
+/jpo-ode-core/*.ipr
+
+### NetBeans ###
+/jpo-ode-core/nbproject/private/
+/jpo-ode-core/build/
+/jpo-ode-core/nbbuild/
+/jpo-ode-core/dist/
+/jpo-ode-core/nbdist/
+/jpo-ode-core/.nb-gradle/
+
+/jpo-ode-core/src/main/java/rebel.xml
+
+#######################
+### jpo-ode-plugins ###
+/jpo-ode-plugins/.apt_generated/
+/jpo-ode-plugins/target/
