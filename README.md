@@ -1,5 +1,7 @@
 Master: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=master)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) [![Quality Gate](https://sonarqube.com/api/badges/gate?key=us.dot.its.jpo.ode:jpo-ode)](https://sonarqube.com/dashboard/index?id=us.dot.its.jpo.ode%3Ajpo-ode)
 
+Develop: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=develop)](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=develop) [![Quality Gate](https://sonarqube.com/api/badges/gate?key=us.dot.its.jpo.ode:jpo-ode:develop)](https://sonarqube.com/api/badges/gate?key=us.dot.its.jpo.ode:jpo-ode:develop)
+
 # jpo-ode
 US Department of Transportation Joint Program office (JPO) Operational Data Environment (ODE)
 
@@ -34,25 +36,34 @@ are stored in the WYDOT data warehouse.
 - Main repository on GitHub (public)
 	- https://github.com/usdot-jpo-ode/jpo-ode
 	- git@github.com:usdot-jpo-ode/jpo-ode.git
-- Submodule repository on BitBucket (Private)
+- Private repository on BitBucket
 	- https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 	- git@bitbucket.org:usdot-jpo-ode/jpo-ode-private.git
 
-### Agile Project Management - Taiga
-https://tree.taiga.io/project/toryb-its_jpo_ode_agile/
+### Agile Project Management - Jira
+https://usdotjpoode.atlassian.net/secure/Dashboard.jspa
 
-### Wiki - Taiga
-https://tree.taiga.io/project/toryb-its_jpo_ode_agile/wiki/home
+### Wiki - Confluence
+https://usdotjpoode.atlassian.net/wiki/
 
 ### Continuous Integration and Delivery
 https://travis-ci.org/usdot-jpo-ode/jpo-ode
+
+To allow Travis run your build when you push your changes to your public fork of the jpo-ode repository, you must define the following secure environment variable using Travis CLI (https://github.com/travis-ci/travis.rb). 
+
+```
+travis env set PRIVATE_REPO_URL_UN_PW https://<bitbucketusername>:<password>@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git -r<travis username>/jpo-ode
+```
+
+### Static Code Analysis
+https://sonarqube.com/dashboard/index?id=us.dot.its.jpo.ode%3Ajpo-ode%3Adevelop
 
 ## Getting Started
 
 ### Local Build
 
 #### Prerequisites
-* Maven: [https://maven.apache.org/install.html](https://maven.apache.org/install.html)
+* Maven: https://maven.apache.org/install.html
 * Git: https://git-scm.com/
 
 #### Instructions
@@ -60,32 +71,37 @@ https://travis-ci.org/usdot-jpo-ode/jpo-ode
 The following instructions describe the procedure to fetch, build and run the application.
 
 ##### Getting the source Code
-Clone the source code from GitHub and BitBucket repositories use Git command line:
+Clone the source code from GitHub and BitBucket repositories using Git commands:
 
 ```
-git clone --recursive https://github.com/usdot-jpo-ode/jpo-ode.git
+git clone https://github.com/usdot-jpo-ode/jpo-ode.git
+git clone https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 ```
 
 ##### Building the Executables
 
-To build the application use maven command line:
+To build the application use maven command line. 
 
-Navigate to the root directory:
+**Step 1**. Navigate to the root directory of the jpo-ode-private project:
 
 ```
- cd jpo-ode/
+ cd jpo-ode-private/
  mvn clean
  mvn install
 ```
+It is important you run mvn clean first and then mvn install because mvn clean installs the required OSS jar file in you rmaven local repository. 
 
-##### Running the application
-To run the application: 
+**Step 2**. Navigate to the root directory of the jpo-ode project:
 
 ```
-cd jpo-ode
-cd jpo-ode-svcs
-cd target
-java -jar po-ode-svcs-0.0.1-SNAPSHOT.jar
+ cd jpo-ode (or cd ../jpo-ode if you are in the jpo-ode-private directory) 
+ mvn clean install
+```
+##### Running the application
+To run the application, from jpo-ode directory: 
+
+```
+java -jar jpo-ode-svcs/target/po-ode-svcs-0.0.1-SNAPSHOT.jar
 ```
 
 You should be able to access the running service at `localhost:8080`.
