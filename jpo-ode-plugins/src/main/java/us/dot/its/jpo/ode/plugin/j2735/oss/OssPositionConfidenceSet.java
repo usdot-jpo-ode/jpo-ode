@@ -26,17 +26,9 @@ public class OssPositionConfidenceSet {
 
         J2735PositionConfidenceSet pc = new J2735PositionConfidenceSet();
         
-        pc.pos = null;
-        pc.elevation = null;
+        pc.pos = J2735PositionConfidence.values()[posConfidence.pos.indexOf()];
+        pc.elevation = J2735ElevationConfidence.values()[posConfidence.elevation.indexOf()];
         
-        if (posConfidence.pos.longValue() != 0L) {
-            pc.pos = J2735PositionConfidence.values()[posConfidence.pos.indexOf()];
-        }
-        
-        if (posConfidence.elevation.longValue() != 0L) {
-            pc.elevation = J2735ElevationConfidence.values()[posConfidence.elevation.indexOf()];
-        }
-
         return pc;
     }
 

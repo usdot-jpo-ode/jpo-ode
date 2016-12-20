@@ -91,8 +91,8 @@ public class OssPositionConfidenceSetTest {
     // PositionConfidence tests
     
     /**
-     * Test that an undefined position confidence value (0) returns (null)
-     * Test that an undefined elevation confidence value (0) returns (null)
+     * Test that an undefined position confidence value (0) returns (unavailable)
+     * Test that an undefined elevation confidence value (0) returns (unavailable)
      */
     @Test
     public void shouldReturnUndefinedPositionConfidenceSet() {
@@ -110,8 +110,12 @@ public class OssPositionConfidenceSetTest {
                 OssPositionConfidenceSet.genericPositionConfidenceSet(testPositionConfidenceSet);
         
         
-        assertNull("Expected null PositionConfidence", testJ2735PositionConfidenceSet.pos);
-        assertNull("Expected null ElevationConfidence", testJ2735PositionConfidenceSet.elevation);
+        assertEquals("Expected PositionConfidence value unavailable", 
+                J2735PositionConfidence.unavailable,
+                testJ2735PositionConfidenceSet.pos);
+        assertEquals("Expected ElevationConfidence value unavailable",
+                J2735ElevationConfidence.unavailable,
+                testJ2735PositionConfidenceSet.elevation);
         
         
     }
