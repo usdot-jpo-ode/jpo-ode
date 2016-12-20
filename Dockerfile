@@ -30,7 +30,7 @@ RUN apt-get update && \
 ADD docker/start.sh /start.sh
 ADD docker/createTopic.sh /createTopic.sh
 RUN echo "hostname=kafka" >> /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"/config/server.properties
-RUN echo "advertised.host.name=192.168.99.100" >> /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"/config/server.properties
+RUN echo "advertised.host.name=<IP_FROM_DOCKER_CONTAINER" >> /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"/config/server.properties
 RUN echo "advertised.port=9092" >> /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"/config/server.properties
 RUN chmod +x start.sh
 RUN chmod +x createTopic.sh
