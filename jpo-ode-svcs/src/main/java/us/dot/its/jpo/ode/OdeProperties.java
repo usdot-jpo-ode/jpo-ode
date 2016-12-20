@@ -21,7 +21,7 @@ public class OdeProperties implements EnvironmentAware {
 	
 	private String uploadLocation = "uploads";
 	private String pluginsLocations = "plugins";
-	private String asn1CoderClassName = "us.dot.its.jpo.ode.plugins.oss.j2735.OssAsn1Coder";
+	private String asn1CoderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder";
 	private String kafkaBrokers = "localhost:9092";
 	private String kafkaProducerType = "sync";
 	private int    importerInterval = 1000;
