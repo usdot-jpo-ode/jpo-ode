@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.oss.asn1.BitString;
@@ -63,6 +64,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.SSPindex;
  */
 public class OssPrivilegedEventsTest {
     
+    @Ignore
     @Test
     public void shouldCreatePriviledgedEvents() {
         
