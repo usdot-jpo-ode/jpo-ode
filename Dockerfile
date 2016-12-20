@@ -34,3 +34,4 @@ RUN echo "advertised.host.name=<IP_FROM_DOCKER_CONTAINER" >> /opt/kafka_"$SCALA_
 RUN echo "advertised.port=9092" >> /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"/config/server.properties
 RUN chmod +x start.sh
 RUN chmod +x createTopic.sh
+CMD bash -C './start.sh' ; './createTopic.sh' ; '/bin/bash'
