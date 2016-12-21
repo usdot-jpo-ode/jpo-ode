@@ -10,8 +10,6 @@ import javax.xml.bind.DatatypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oss.asn1.EncodeFailedException;
-import com.oss.asn1.EncodeNotSupportedException;
 import com.oss.asn1.PERUnalignedCoder;
 
 import us.dot.its.jpo.ode.j2735.J2735;
@@ -21,97 +19,94 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 
 public class OssAsn1Coder implements Asn1Plugin {
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	
-	private PERUnalignedCoder coder;
+   private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	public OssAsn1Coder() {
-        coder = J2735.getPERUnalignedCoder();
-	}
+   private PERUnalignedCoder coder;
 
-	public Asn1Object UPER_DecodeBase64(String base64Msg) {
-		return UPER_DecodeBytes(DatatypeConverter.parseBase64Binary(base64Msg));
-	}
+   public OssAsn1Coder() {
+      coder = J2735.getPERUnalignedCoder();
+   }
 
-	public Asn1Object UPER_DecodeHex(String hexMsg) {
-		return UPER_DecodeBytes(DatatypeConverter.parseHexBinary(hexMsg));
-	}
+   public Asn1Object UPER_DecodeBase64(String base64Msg) {
+      return UPER_DecodeBytes(DatatypeConverter.parseBase64Binary(base64Msg));
+   }
 
-	public Asn1Object UPER_DecodeBytes(byte[] byteArrayMsg) {
-        InputStream ins = new ByteArrayInputStream(byteArrayMsg);
-        
-        BasicSafetyMessage bsm = new BasicSafetyMessage();
-        
-        try {
-           coder.decode(ins, bsm);
-        } catch (Exception e) {
-           logger.error("Error decoding ", e);
-        } finally {
-           try {
-              ins.close();
-           } catch (IOException e) {
-              logger.warn("Error closing input stream: ", e);
-           }
-        }
-        
-		return OssBsm.genericBsm(bsm);
-	}
+   public Asn1Object UPER_DecodeHex(String hexMsg) {
+      return UPER_DecodeBytes(DatatypeConverter.parseHexBinary(hexMsg));
+   }
 
-	public String UPER_DecodeBase64ToJson(String base64Msg) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+   public Asn1Object UPER_DecodeBytes(byte[] byteArrayMsg) {
+      InputStream ins = new ByteArrayInputStream(byteArrayMsg);
 
-	public String UPER_DecodeHexToJson(String hexMsg) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+      BasicSafetyMessage bsm = new BasicSafetyMessage();
+      J2735Bsm gbsm = null;
 
-	public String UPER_DecodeBytesToJson(byte[] byteArrayMsg) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+      try {
+         coder.decode(ins, bsm);
+         gbsm = OssBsm.genericBsm(bsm);
+      } catch (Exception e) {
+         logger.error("Error decoding ", e);
+      } finally {
+         try {
+            ins.close();
+         } catch (IOException e) {
+            logger.warn("Error closing input stream: ", e);
+         }
+      }
 
-	public String UPER_EncodeBase64(Asn1Object asn1Object) {
-		return DatatypeConverter.printBase64Binary(UPER_EncodeBytes(asn1Object));
-	}
+      return gbsm;
+   }
 
-	public String UPER_EncodeHex(Asn1Object asn1Object) {
-		return DatatypeConverter.printHexBinary(UPER_EncodeBytes(asn1Object));
-	}
+   public String UPER_DecodeBase64ToJson(String base64Msg) {
+      // TODO Auto-generated method stub
+      return null;
+   }
 
-	public byte[] UPER_EncodeBytes(Asn1Object asn1Object) {
-		if (asn1Object instanceof J2735Bsm) {
-			J2735Bsm genericBsm = (J2735Bsm) asn1Object;
-			try {
-				ByteBuffer bytes = coder.encode(
-						OssBsm.basicSafetyMessage(genericBsm));
-				return bytes.array();
-			} catch (EncodeFailedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (EncodeNotSupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		return null;
-	}
+   public String UPER_DecodeHexToJson(String hexMsg) {
+      // TODO Auto-generated method stub
+      return null;
+   }
 
-	public String UPER_EncodeBase64FromJson(String asn1Object) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+   public String UPER_DecodeBytesToJson(byte[] byteArrayMsg) {
+      // TODO Auto-generated method stub
+      return null;
+   }
 
-	public String UPER_EncodeHexfromJson(String asn1Object) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+   public String UPER_EncodeBase64(Asn1Object asn1Object) {
+      return DatatypeConverter.printBase64Binary(UPER_EncodeBytes(asn1Object));
+   }
 
-	public byte[] UPER_EncodeBytesFromJson(String asn1Object) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+   public String UPER_EncodeHex(Asn1Object asn1Object) {
+      return DatatypeConverter.printHexBinary(UPER_EncodeBytes(asn1Object));
+   }
+
+   public byte[] UPER_EncodeBytes(Asn1Object asn1Object) {
+      if (asn1Object instanceof J2735Bsm) {
+         J2735Bsm genericBsm = (J2735Bsm) asn1Object;
+         try {
+            ByteBuffer bytes = coder.encode(OssBsm.basicSafetyMessage(genericBsm));
+            return bytes.array();
+         } catch (Exception e) {
+            logger.warn("Error encoding data.", e);
+         }
+      }
+
+      return null;
+   }
+
+   public String UPER_EncodeBase64FromJson(String asn1Object) {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   public String UPER_EncodeHexfromJson(String asn1Object) {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   public byte[] UPER_EncodeBytesFromJson(String asn1Object) {
+      // TODO Auto-generated method stub
+      return null;
+   }
 
 }

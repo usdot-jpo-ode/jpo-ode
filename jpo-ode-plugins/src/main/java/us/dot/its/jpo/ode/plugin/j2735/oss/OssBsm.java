@@ -32,6 +32,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.VerticalAcceleration;
 import us.dot.its.jpo.ode.j2735.dsrc.YawRate;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmCoreData;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
 
 public class OssBsm {
 	public static BasicSafetyMessage basicSafetyMessage(J2735Bsm genericBsm) {
@@ -80,7 +81,7 @@ public class OssBsm {
 		return basicSafetyMessage;
 	}
 
-	public static J2735Bsm genericBsm(BasicSafetyMessage basicSafetyMessage) {
+   public static J2735Bsm genericBsm(BasicSafetyMessage basicSafetyMessage) throws OssBsmPart2Exception {
 		J2735Bsm genericBsm = new J2735Bsm();
 		if (basicSafetyMessage.coreData != null) {
 			genericBsm.coreData = 
