@@ -5,7 +5,7 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 public class J2735PositionConfidenceSet extends Asn1Object {
 	private static final long serialVersionUID = 1L;
 
-	public enum J2735ElevationConfidence {
+	public enum J2735PositionConfidence {
 		unavailable,
 		a500m,
 		a200m,
@@ -23,7 +23,7 @@ public class J2735PositionConfidenceSet extends Asn1Object {
 		a2cm,
 		a1cm
 	}
-	public enum J2735PositionConfidence {
+	public enum J2735ElevationConfidence {
 		unavailable,
 		elev_500_00,
 		elev_200_00,
@@ -40,7 +40,6 @@ public class J2735PositionConfidenceSet extends Asn1Object {
 		elev_000_05,
 		elev_000_02,
 		elev_000_01
-
 	}
 	
 	public J2735PositionConfidence pos;

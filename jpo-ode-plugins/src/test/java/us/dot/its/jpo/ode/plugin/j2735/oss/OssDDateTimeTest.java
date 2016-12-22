@@ -69,14 +69,15 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssDDateTime;
 public class OssDDateTimeTest {
 
     /**
-     * Test undefined flag values for each element of DDateTime return null
-     * values:
+     * Test undefined flag values for each element of DDateTime return null values:
      * 
-     * DYear undefined flag (0) returns (null) DMonth undefined flag (0) returns
-     * (null) DDay undefined flag (0) returns (null) DHour undefined flag (31)
-     * returns (null) DMinute undefined flag (60) returns (null) DSecond
-     * undefined flag (65535) returns (null) DOffset value (0) may or may not be
-     * undefined - should return (null) or (0)
+     * DYear undefined flag (0) returns (null) 
+     * DMonth undefined flag (0) returns (null)
+     * DDay undefined flag (0) returns (null) 
+     * DHour undefined flag (31) returns (null) 
+     * DMinute undefined flag (60) returns (null) 
+     * DSecond undefined flag (65535) returns (null) 
+     * DOffset value (0) may or may not be undefined - should return (null) or (0)
      */
     @Test
     public void shouldReturnUndefinedDDateTimeYear() {
@@ -108,9 +109,13 @@ public class OssDDateTimeTest {
     /**
      * Test minimum values for each element of DDateTime return minimum values:
      * 
-     * DYear minimum (1) returns (1) DMonth minimum (1) returns (1) DDay minimum
-     * (1) returns (1) DHour minimum (0) returns (0) DMinute minimum (0) returns
-     * (0) DSecond minimum (0) returns (0) DOffset minimum (-840) returns (-840)
+     * DYear minimum (1) returns (1) 
+     * DMonth minimum (1) returns (1) 
+     * DDay minimum (1) returns (1) 
+     * DHour minimum (0) returns (0) 
+     * DMinute minimum (0) returns (0) 
+     * DSecond minimum (0) returns (0) 
+     * DOffset minimum (-840) returns (-840)
      */
     @Test
     public void shouldReturnMinimumDateTime() {
@@ -149,9 +154,13 @@ public class OssDDateTimeTest {
     /**
      * Test known values for each element of DDateTime return correct values:
      * 
-     * DYear known (2016) returns (2016) DMonth known (7) returns (7) DDay known
-     * (16) returns (16) DHour known (11) returns (11) DMinute known (2) returns
-     * (2) DSecond known (879) returns (879) DOffset known (45) returns (45)
+     * DYear known (2016) returns (2016) 
+     * DMonth known (7) returns (7) 
+     * DDay known (16) returns (16) 
+     * DHour known (11) returns (11) 
+     * DMinute known (2) returns (2) 
+     * DSecond known (879) returns (879) 
+     * DOffset known (45) returns (45)
      */
     @Test
     public void shouldReturnKnownDateTime() {
@@ -189,10 +198,13 @@ public class OssDDateTimeTest {
     /**
      * Test maximum values for each element of DDateTime return correct values:
      * 
-     * DYear maximum (4095) returns (4095) DMonth maximum (12) returns (12) DDay
-     * maximum (31) returns (31) DHour maximum (30) returns (30) DMinute maximum
-     * (59) returns (59) DSecond maximum (65534) returns (65534) DOffset maximum
-     * (840) returns (840)
+     * DYear maximum (4095) returns (4095) 
+     * DMonth maximum (12) returns (12) 
+     * DDay maximum (31) returns (31) 
+     * DHour maximum (30) returns (30) 
+     * DMinute maximum (59) returns (59) 
+     * DSecond maximum (65534) returns (65534) 
+     * DOffset maximum (840) returns (840)
      */
     @Test
     public void shouldReturnMaximumDateTime() {
@@ -226,6 +238,357 @@ public class OssDDateTimeTest {
         assertEquals("Maximum second value 65534 should return 65534:", expectedSecond, actualDDateTimeMaximum.second);
         assertEquals("Maximum offset value 840 should return 840", expectedOffset, actualDDateTimeMaximum.offset);
 
+    }
+    
+    /**
+     * Test that a year value (-1) below the lower bound (0) throws IllegalArgumentException
+     */
+    @Test
+    public void shouldThrowExceptionYearBelowLowerBound() {
+
+        DYear testYear = new DYear(-1);
+        DMonth testMonth = new DMonth(0);
+        DDay testDay = new DDay(0);
+        DHour testHour = new DHour(0);
+        DMinute testMinute = new DMinute(0);
+        DSecond testSecond = new DSecond(0);
+        DOffset testOffset = new DOffset(0);
+
+        DDateTime testDDateTime = new DDateTime(testYear, testMonth, testDay, testHour, testMinute, testSecond,
+                testOffset);
+
+        try {
+            J2735DDateTime actualDDateTimeMaximum = OssDDateTime.genericDDateTime(testDDateTime);
+            fail("Expected IllegalArgumentException");
+        } catch (RuntimeException e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+        }
+        
+    }
+    
+    /**
+     * Test that a year value (4096) above the upper bound (4095) throws IllegalArgumentException
+     */
+    @Test
+    public void shouldThrowExceptionYearAboveUpperBound() {
+
+        DYear testYear = new DYear(4096);
+        DMonth testMonth = new DMonth(0);
+        DDay testDay = new DDay(0);
+        DHour testHour = new DHour(0);
+        DMinute testMinute = new DMinute(0);
+        DSecond testSecond = new DSecond(0);
+        DOffset testOffset = new DOffset(0);
+
+        DDateTime testDDateTime = new DDateTime(testYear, testMonth, testDay, testHour, testMinute, testSecond,
+                testOffset);
+
+        try {
+            J2735DDateTime actualDDateTimeMaximum = OssDDateTime.genericDDateTime(testDDateTime);
+            fail("Expected IllegalArgumentException");
+        } catch (RuntimeException e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+        }
+    }
+    
+    /**
+     * Test that a month value (-1) below the lower bound (0) throws IllegalArgumentException
+     */
+    @Test
+    public void shouldThrowExceptionMonthBelowLowerBound() {
+
+        DYear testYear = new DYear(0);
+        DMonth testMonth = new DMonth(-1);
+        DDay testDay = new DDay(0);
+        DHour testHour = new DHour(0);
+        DMinute testMinute = new DMinute(0);
+        DSecond testSecond = new DSecond(0);
+        DOffset testOffset = new DOffset(0);
+
+        DDateTime testDDateTime = new DDateTime(testYear, testMonth, testDay, testHour, testMinute, testSecond,
+                testOffset);
+
+        try {
+            J2735DDateTime actualDDateTimeMaximum = OssDDateTime.genericDDateTime(testDDateTime);
+            fail("Expected IllegalArgumentException");
+        } catch (RuntimeException e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+        }
+    }
+    
+    /**
+     * Test that a month value (13) above the upper bound (12) throws IllegalArgumentException
+     */
+    @Test
+    public void shouldThrowExceptionMonthAboveUpperBound() {
+
+        DYear testYear = new DYear(0);
+        DMonth testMonth = new DMonth(13);
+        DDay testDay = new DDay(0);
+        DHour testHour = new DHour(0);
+        DMinute testMinute = new DMinute(0);
+        DSecond testSecond = new DSecond(0);
+        DOffset testOffset = new DOffset(0);
+
+        DDateTime testDDateTime = new DDateTime(testYear, testMonth, testDay, testHour, testMinute, testSecond,
+                testOffset);
+
+        try {
+            J2735DDateTime actualDDateTimeMaximum = OssDDateTime.genericDDateTime(testDDateTime);
+            fail("Expected IllegalArgumentException");
+        } catch (RuntimeException e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+        }
+    }
+    
+    /**
+     * Test that a day value (-1) below the lower bound (0) throws IllegalArgumentException
+     */
+    @Test
+    public void shouldThrowExceptionDayBelowLowerBound() {
+
+        DYear testYear = new DYear(0);
+        DMonth testMonth = new DMonth(0);
+        DDay testDay = new DDay(-1);
+        DHour testHour = new DHour(0);
+        DMinute testMinute = new DMinute(0);
+        DSecond testSecond = new DSecond(0);
+        DOffset testOffset = new DOffset(0);
+
+        DDateTime testDDateTime = new DDateTime(testYear, testMonth, testDay, testHour, testMinute, testSecond,
+                testOffset);
+
+        try {
+            J2735DDateTime actualDDateTimeMaximum = OssDDateTime.genericDDateTime(testDDateTime);
+            fail("Expected IllegalArgumentException");
+        } catch (RuntimeException e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+        }
+    }
+    
+    /**
+     * Test that a day value (32) above the upper bound (31) throws IllegalArgumentException
+     */
+    @Test
+    public void shouldThrowExceptionDayAboveUpperBound() {
+
+        DYear testYear = new DYear(0);
+        DMonth testMonth = new DMonth(0);
+        DDay testDay = new DDay(32);
+        DHour testHour = new DHour(0);
+        DMinute testMinute = new DMinute(0);
+        DSecond testSecond = new DSecond(0);
+        DOffset testOffset = new DOffset(0);
+
+        DDateTime testDDateTime = new DDateTime(testYear, testMonth, testDay, testHour, testMinute, testSecond,
+                testOffset);
+
+        try {
+            J2735DDateTime actualDDateTimeMaximum = OssDDateTime.genericDDateTime(testDDateTime);
+            fail("Expected IllegalArgumentException");
+        } catch (RuntimeException e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+        }
+    }
+    
+    /**
+     * Test that an hour value (-1) below the lower bound (0) throws IllegalArgumentException
+     */
+    @Test
+    public void shouldThrowExceptionHourBelowLowerBound() {
+
+        DYear testYear = new DYear(0);
+        DMonth testMonth = new DMonth(0);
+        DDay testDay = new DDay(0);
+        DHour testHour = new DHour(-1);
+        DMinute testMinute = new DMinute(0);
+        DSecond testSecond = new DSecond(0);
+        DOffset testOffset = new DOffset(0);
+
+        DDateTime testDDateTime = new DDateTime(testYear, testMonth, testDay, testHour, testMinute, testSecond,
+                testOffset);
+
+        try {
+            J2735DDateTime actualDDateTimeMaximum = OssDDateTime.genericDDateTime(testDDateTime);
+            fail("Expected IllegalArgumentException");
+        } catch (RuntimeException e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+        }
+    }
+    
+    /**
+     * Test that an hour value (32) above the upper bound (32) throws IllegalArgumentException
+     */
+    @Test
+    public void shouldThrowExceptionHourAboveUpperBound() {
+
+        DYear testYear = new DYear(0);
+        DMonth testMonth = new DMonth(0);
+        DDay testDay = new DDay(0);
+        DHour testHour = new DHour(32);
+        DMinute testMinute = new DMinute(0);
+        DSecond testSecond = new DSecond(0);
+        DOffset testOffset = new DOffset(0);
+
+        DDateTime testDDateTime = new DDateTime(testYear, testMonth, testDay, testHour, testMinute, testSecond,
+                testOffset);
+
+        try {
+            J2735DDateTime actualDDateTimeMaximum = OssDDateTime.genericDDateTime(testDDateTime);
+            fail("Expected IllegalArgumentException");
+        } catch (RuntimeException e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+        }
+    }
+    
+    /**
+     * Test that a minute value (-1) below the lower bound (0) throws IllegalArgumentException
+     */
+    @Test
+    public void shouldThrowExceptionMinuteBelowLowerBound() {
+
+        DYear testYear = new DYear(0);
+        DMonth testMonth = new DMonth(0);
+        DDay testDay = new DDay(0);
+        DHour testHour = new DHour(0);
+        DMinute testMinute = new DMinute(-1);
+        DSecond testSecond = new DSecond(0);
+        DOffset testOffset = new DOffset(0);
+
+        DDateTime testDDateTime = new DDateTime(testYear, testMonth, testDay, testHour, testMinute, testSecond,
+                testOffset);
+
+        try {
+            J2735DDateTime actualDDateTimeMaximum = OssDDateTime.genericDDateTime(testDDateTime);
+            fail("Expected IllegalArgumentException");
+        } catch (RuntimeException e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+        }
+    }
+    
+    /**
+     * Test that a minute value (61) above the upper bound (60) throws IllegalArgumentException
+     */
+    @Test
+    public void shouldThrowExceptionMinuteAboveUpperBound() {
+
+        DYear testYear = new DYear(0);
+        DMonth testMonth = new DMonth(0);
+        DDay testDay = new DDay(0);
+        DHour testHour = new DHour(0);
+        DMinute testMinute = new DMinute(61);
+        DSecond testSecond = new DSecond(0);
+        DOffset testOffset = new DOffset(0);
+
+        DDateTime testDDateTime = new DDateTime(testYear, testMonth, testDay, testHour, testMinute, testSecond,
+                testOffset);
+
+        try {
+            J2735DDateTime actualDDateTimeMaximum = OssDDateTime.genericDDateTime(testDDateTime);
+            fail("Expected IllegalArgumentException");
+        } catch (RuntimeException e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+        }
+    }
+    
+    /**
+     * Test that a second value (-1) below the lower bound (0) throws IllegalArgumentException
+     */
+    @Test
+    public void shouldThrowExceptionSecondBelowLowerBound() {
+
+        DYear testYear = new DYear(0);
+        DMonth testMonth = new DMonth(0);
+        DDay testDay = new DDay(0);
+        DHour testHour = new DHour(0);
+        DMinute testMinute = new DMinute(0);
+        DSecond testSecond = new DSecond(-1);
+        DOffset testOffset = new DOffset(0);
+
+        DDateTime testDDateTime = new DDateTime(testYear, testMonth, testDay, testHour, testMinute, testSecond,
+                testOffset);
+
+        try {
+            J2735DDateTime actualDDateTimeMaximum = OssDDateTime.genericDDateTime(testDDateTime);
+            fail("Expected IllegalArgumentException");
+        } catch (RuntimeException e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+        }
+    }
+    
+    /**
+     * Test that a second value (65536) above the upper bound (65535) throws IllegalArgumentException
+     */
+    @Test
+    public void shouldThrowExceptionSecondAboveUpperBound() {
+
+        DYear testYear = new DYear(0);
+        DMonth testMonth = new DMonth(0);
+        DDay testDay = new DDay(0);
+        DHour testHour = new DHour(0);
+        DMinute testMinute = new DMinute(0);
+        DSecond testSecond = new DSecond(65536);
+        DOffset testOffset = new DOffset(0);
+
+        DDateTime testDDateTime = new DDateTime(testYear, testMonth, testDay, testHour, testMinute, testSecond,
+                testOffset);
+
+        try {
+            J2735DDateTime actualDDateTimeMaximum = OssDDateTime.genericDDateTime(testDDateTime);
+            fail("Expected IllegalArgumentException");
+        } catch (RuntimeException e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+        }
+    }
+    
+    /**
+     * Test that an offset value (-841) below the lower bound (-840) throws IllegalArgumentException
+     */
+    @Test
+    public void shouldThrowExceptionOffsetBelowLowerBound() {
+
+        DYear testYear = new DYear(0);
+        DMonth testMonth = new DMonth(0);
+        DDay testDay = new DDay(0);
+        DHour testHour = new DHour(0);
+        DMinute testMinute = new DMinute(0);
+        DSecond testSecond = new DSecond(0);
+        DOffset testOffset = new DOffset(-841);
+
+        DDateTime testDDateTime = new DDateTime(testYear, testMonth, testDay, testHour, testMinute, testSecond,
+                testOffset);
+
+        try {
+            J2735DDateTime actualDDateTimeMaximum = OssDDateTime.genericDDateTime(testDDateTime);
+            fail("Expected IllegalArgumentException");
+        } catch (RuntimeException e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+        }
+    }
+    
+    /**
+     * Test that an offset value (841) above the upper bound (840) throws IllegalArgumentException
+     */
+    @Test
+    public void shouldThrowExceptionOffsetAboveUpperBound() {
+
+        DYear testYear = new DYear(-1);
+        DMonth testMonth = new DMonth(0);
+        DDay testDay = new DDay(0);
+        DHour testHour = new DHour(0);
+        DMinute testMinute = new DMinute(0);
+        DSecond testSecond = new DSecond(0);
+        DOffset testOffset = new DOffset(840);
+
+        DDateTime testDDateTime = new DDateTime(testYear, testMonth, testDay, testHour, testMinute, testSecond,
+                testOffset);
+
+        try {
+            J2735DDateTime actualDDateTimeMaximum = OssDDateTime.genericDDateTime(testDDateTime);
+            fail("Expected IllegalArgumentException");
+        } catch (RuntimeException e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+        }
     }
 
 }

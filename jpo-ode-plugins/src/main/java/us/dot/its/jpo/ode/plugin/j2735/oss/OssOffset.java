@@ -13,7 +13,7 @@ public class OssOffset {
 		
 		if (offset.intValue() == -64) {
 		    // -64 is undefined flag value: result = null
-		} else if (offset.intValue() > 63) {
+		} else if (offset.intValue() >= 63) {
 		    result = BigDecimal.valueOf(6.3);
 		} else if (offset.intValue() < -64) {
 		    result = BigDecimal.valueOf(-6.3);
