@@ -29,7 +29,7 @@ public class OssWeatherProbe {
 
         // Perform conversion
         J2735WeatherProbe gwp = new J2735WeatherProbe();
-        
+
         if (weatherProbe.hasAirTemp() && weatherProbe.airTemp.intValue() != 191) {
             gwp.airTemp = weatherProbe.airTemp.intValue() - 40;
         } else {
