@@ -153,9 +153,9 @@ public class OssBrakeSystemStatusTest {
 
         Integer testTractionControlEnum = 3; // "engaged"
         Integer testAbsEnum = 3; // "engaged"
-        Integer testScsEnum = 0; // "off"
-        Integer testBrakeBoostEnum = 3; // "off"
-        Integer testAuxBrakesEnum = 0; // "off"
+        Integer testScsEnum = 0; // "unavailable"
+        Integer testBrakeBoostEnum = 0; // "unavailable"
+        Integer testAuxBrakesEnum = 0; // "unavailable"
 
         byte[] testWheelBrakesBytes = { testWheelBrakesBitString.byteValue() };
 
