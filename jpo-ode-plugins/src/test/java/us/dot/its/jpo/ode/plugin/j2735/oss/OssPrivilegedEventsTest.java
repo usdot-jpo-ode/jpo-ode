@@ -64,7 +64,8 @@ import us.dot.its.jpo.ode.j2735.dsrc.SSPindex;
  */
 public class OssPrivilegedEventsTest {
     
-    @Ignore
+    
+    @Ignore // Test case depends on complete implementation of OssBitString
     @Test
     public void shouldCreatePriviledgedEvents() {
         
