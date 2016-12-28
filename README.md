@@ -51,9 +51,18 @@ https://travis-ci.org/usdot-jpo-ode/jpo-ode
 
 To allow Travis run your build when you push your changes to your public fork of the jpo-ode repository, you must define the following secure environment variable using Travis CLI (https://github.com/travis-ci/travis.rb). 
 
+Run:
+
 ```
-travis env set PRIVATE_REPO_URL_UN_PW https://<bitbucketusername>:<password>@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git -r<travis username>/jpo-ode
+travis login --org
 ```
+Enter personal github account credentials and then run this:
+
+```
+travis env set PRIVATE_REPO_URL_UN_PW 'https://<bitbucketusername>:<password>@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git' -r <travis username>/jpo-ode
+```
+
+The login information will be saved and this needs to be done only once.
 
 ### Static Code Analysis
 https://sonarqube.com/dashboard/index?id=us.dot.its.jpo.ode%3Ajpo-ode%3Adevelop
