@@ -64,6 +64,13 @@ travis env set PRIVATE_REPO_URL_UN_PW 'https://<bitbucketusername>:<password>@bi
 
 The login information will be saved and this needs to be done only once.
 
+In order to allow Sonar to run, personal key must be added with this command:
+(Key can be obtained from the JPO-ODE development team)
+
+```
+travis env set SONAR_SECURITY_TOKEN <key> -pr <user-account>/<repo-name>
+```
+
 ### Static Code Analysis
 https://sonarqube.com/dashboard/index?id=us.dot.its.jpo.ode%3Ajpo-ode%3Adevelop
 
