@@ -7,7 +7,7 @@ branches:
 sudo: false
 before_install:
   - echo "installing private repository"
-  - git clone $PRIVATE_REPO_URL_UN_PW jpo-ode-private
+  - git clone $PRIVATE_REPO_URL_UN_PW https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git 
   - cd jpo-ode-private
   - mvn clean
   - mvn install
