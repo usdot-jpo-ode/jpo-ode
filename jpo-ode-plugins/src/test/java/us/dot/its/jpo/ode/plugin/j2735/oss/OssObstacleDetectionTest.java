@@ -1,12 +1,13 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.DDateTime;
@@ -21,6 +22,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.ObstacleDetection;
 import us.dot.its.jpo.ode.j2735.dsrc.ObstacleDirection;
 import us.dot.its.jpo.ode.j2735.dsrc.ObstacleDistance;
 import us.dot.its.jpo.ode.j2735.dsrc.VerticalAccelerationThreshold;
+import us.dot.its.jpo.ode.plugin.j2735.J2735ObstacleDetection;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VertEvent;
 
 /**
@@ -108,9 +110,215 @@ public class OssObstacleDetectionTest {
         
     }
 
-    // distance tests
+    // Distance tests
     
-    // vert event tests
+    /**
+     * Test that minimum distance value (0) returns (0)
+     */
+    @Test
+    public void shouldReturnMinimumDistance() {
+        
+        Integer testInput = 0;
+        Integer expectedValue = 0;
+
+        Integer testVertEventBitString = 0b00000;
+        byte[] testVertEventBytes = {testVertEventBitString.byteValue()};
+        
+        ObstacleDistance testDist = new ObstacleDistance(testInput);
+        ObstacleDirection testDirect = new ObstacleDirection(0);
+        VerticalAccelerationThreshold testVertEvent = new VerticalAccelerationThreshold(testVertEventBytes);
+        
+        ObstacleDetection testObstacleDetection = new ObstacleDetection();
+        testObstacleDetection.setObDist(testDist);
+        testObstacleDetection.setObDirect(testDirect);
+        testObstacleDetection.setVertEvent(testVertEvent);
+        testObstacleDetection.setDateTime(mockDDateTime);
+        
+        Integer actualValue = OssObstacleDetection
+                .genericObstacleDetection(testObstacleDetection)
+                .obDist;
+        
+        assertEquals(expectedValue, actualValue);
+    }
+    
+    /**
+     * Test corner case minimum distance value (1) returns (1)
+     */
+    @Test
+    public void shouldReturnCornerCaseMinimumDistance() {
+
+        Integer testInput = 1;
+        Integer expectedValue = 1;
+
+        Integer testVertEventBitString = 0b00000;
+        byte[] testVertEventBytes = {testVertEventBitString.byteValue()};
+        
+        ObstacleDistance testDist = new ObstacleDistance(testInput);
+        ObstacleDirection testDirect = new ObstacleDirection(0);
+        VerticalAccelerationThreshold testVertEvent = new VerticalAccelerationThreshold(testVertEventBytes);
+        
+        ObstacleDetection testObstacleDetection = new ObstacleDetection();
+        testObstacleDetection.setObDist(testDist);
+        testObstacleDetection.setObDirect(testDirect);
+        testObstacleDetection.setVertEvent(testVertEvent);
+        testObstacleDetection.setDateTime(mockDDateTime);
+        
+        Integer actualValue = OssObstacleDetection
+                .genericObstacleDetection(testObstacleDetection)
+                .obDist;
+        
+        assertEquals(expectedValue, actualValue);
+    }
+    
+    /**
+     * Test known middle distance value (15012) returns (15012)
+     */
+    @Test
+    public void shouldReturnMiddleDistance() {
+        
+        Integer testInput = 15012;
+        Integer expectedValue = 15012;
+
+        Integer testVertEventBitString = 0b00000;
+        byte[] testVertEventBytes = {testVertEventBitString.byteValue()};
+        
+        ObstacleDistance testDist = new ObstacleDistance(testInput);
+        ObstacleDirection testDirect = new ObstacleDirection(0);
+        VerticalAccelerationThreshold testVertEvent = new VerticalAccelerationThreshold(testVertEventBytes);
+        
+        ObstacleDetection testObstacleDetection = new ObstacleDetection();
+        testObstacleDetection.setObDist(testDist);
+        testObstacleDetection.setObDirect(testDirect);
+        testObstacleDetection.setVertEvent(testVertEvent);
+        testObstacleDetection.setDateTime(mockDDateTime);
+        
+        Integer actualValue = OssObstacleDetection
+                .genericObstacleDetection(testObstacleDetection)
+                .obDist;
+        
+        assertEquals(expectedValue, actualValue);
+    }
+    
+    /**
+     * Test corner case maximum distance value (32766) returns (32766)
+     */
+    @Test
+    public void shouldReturnCornerCaseMaximumDistance() {
+
+        Integer testInput = 32766;
+        Integer expectedValue = 32766;
+
+        Integer testVertEventBitString = 0b00000;
+        byte[] testVertEventBytes = {testVertEventBitString.byteValue()};
+        
+        ObstacleDistance testDist = new ObstacleDistance(testInput);
+        ObstacleDirection testDirect = new ObstacleDirection(0);
+        VerticalAccelerationThreshold testVertEvent = new VerticalAccelerationThreshold(testVertEventBytes);
+        
+        ObstacleDetection testObstacleDetection = new ObstacleDetection();
+        testObstacleDetection.setObDist(testDist);
+        testObstacleDetection.setObDirect(testDirect);
+        testObstacleDetection.setVertEvent(testVertEvent);
+        testObstacleDetection.setDateTime(mockDDateTime);
+        
+        Integer actualValue = OssObstacleDetection
+                .genericObstacleDetection(testObstacleDetection)
+                .obDist;
+        
+        assertEquals(expectedValue, actualValue);
+    }
+    
+    /**
+     * Test maximum distance value (32767) returns (32767)
+     */
+    @Test
+    public void shouldReturnMaximumDistance() {
+
+        Integer testInput = 32767;
+        Integer expectedValue = 32767;
+
+        Integer testVertEventBitString = 0b00000;
+        byte[] testVertEventBytes = {testVertEventBitString.byteValue()};
+        
+        ObstacleDistance testDist = new ObstacleDistance(testInput);
+        ObstacleDirection testDirect = new ObstacleDirection(0);
+        VerticalAccelerationThreshold testVertEvent = new VerticalAccelerationThreshold(testVertEventBytes);
+        
+        ObstacleDetection testObstacleDetection = new ObstacleDetection();
+        testObstacleDetection.setObDist(testDist);
+        testObstacleDetection.setObDirect(testDirect);
+        testObstacleDetection.setVertEvent(testVertEvent);
+        testObstacleDetection.setDateTime(mockDDateTime);
+        
+        Integer actualValue = OssObstacleDetection
+                .genericObstacleDetection(testObstacleDetection)
+                .obDist;
+        
+        assertEquals(expectedValue, actualValue);
+    }
+    
+    /**
+     * Test that a distance value (-1) below the lower bound (0) throws IllegalArgumentException
+     */
+    @Test
+    public void shouldThrowExceptionDistanceBelowLowerBound() {
+
+        Integer testInput = -1;
+
+        Integer testVertEventBitString = 0b00000;
+        byte[] testVertEventBytes = {testVertEventBitString.byteValue()};
+        
+        ObstacleDistance testDist = new ObstacleDistance(testInput);
+        ObstacleDirection testDirect = new ObstacleDirection(0);
+        VerticalAccelerationThreshold testVertEvent = new VerticalAccelerationThreshold(testVertEventBytes);
+        
+        ObstacleDetection testObstacleDetection = new ObstacleDetection();
+        testObstacleDetection.setObDist(testDist);
+        testObstacleDetection.setObDirect(testDirect);
+        testObstacleDetection.setVertEvent(testVertEvent);
+        testObstacleDetection.setDateTime(mockDDateTime);
+        
+        try {
+            J2735ObstacleDetection actualValue = OssObstacleDetection
+                    .genericObstacleDetection(testObstacleDetection);
+            fail("Expected IllegalArgumentException");
+        } catch (RuntimeException e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+        }
+    }
+    
+    /**
+     * Test that a distance value (32768) above the upper bound (32767) throws IllegalArgumentException
+     */
+    @Test
+    public void shouldThrowExceptionDistanceAboveUpperBound() {
+        
+        Integer testInput = 32768;
+
+        Integer testVertEventBitString = 0b00000;
+        byte[] testVertEventBytes = {testVertEventBitString.byteValue()};
+        
+        ObstacleDistance testDist = new ObstacleDistance(testInput);
+        ObstacleDirection testDirect = new ObstacleDirection(0);
+        VerticalAccelerationThreshold testVertEvent = new VerticalAccelerationThreshold(testVertEventBytes);
+        
+        ObstacleDetection testObstacleDetection = new ObstacleDetection();
+        testObstacleDetection.setObDist(testDist);
+        testObstacleDetection.setObDirect(testDirect);
+        testObstacleDetection.setVertEvent(testVertEvent);
+        testObstacleDetection.setDateTime(mockDDateTime);
+        
+        try {
+            J2735ObstacleDetection actualValue = OssObstacleDetection
+                    .genericObstacleDetection(testObstacleDetection);
+            fail("Expected IllegalArgumentException");
+        } catch (RuntimeException e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+        }
+        
+    }
+    
+    // VerticalAccelerationEvent tests
     
     /**
      * Test bitstring value "00000" returns "false" for all vert event flags
@@ -121,17 +329,16 @@ public class OssObstacleDetectionTest {
         Integer testInput = 0b00000;
         
         byte[] testVertEventBytes = {testInput.byteValue()};
-        VerticalAccelerationThreshold testVertEvent = new VerticalAccelerationThreshold(testVertEventBytes);
-
-        // Required elements
+        
         ObstacleDistance testDist = new ObstacleDistance(0);
         ObstacleDirection testDirect = new ObstacleDirection(0);
+        VerticalAccelerationThreshold testVertEvent = new VerticalAccelerationThreshold(testVertEventBytes);
         
         ObstacleDetection testObstacleDetection = new ObstacleDetection();
         testObstacleDetection.setObDist(testDist);
         testObstacleDetection.setObDirect(testDirect);
-        testObstacleDetection.setDateTime(mockDDateTime);
         testObstacleDetection.setVertEvent(testVertEvent);
+        testObstacleDetection.setDateTime(mockDDateTime);
         
         J2735VertEvent actualVertEvent = OssObstacleDetection
                 .genericObstacleDetection(testObstacleDetection)
@@ -143,34 +350,90 @@ public class OssObstacleDetectionTest {
         
     }
     
-    @Ignore
+    /**
+     * Test bitstring input "11111" returns "true" for all vert event flags
+     */
     @Test
     public void shouldCreateAllOnVertEvent() {
         
+        Integer testInput = 0b11111;
+        
+        byte[] testVertEventBytes = {testInput.byteValue()};
+        
+        ObstacleDistance testDist = new ObstacleDistance(0);
+        ObstacleDirection testDirect = new ObstacleDirection(0);
+        VerticalAccelerationThreshold testVertEvent = new VerticalAccelerationThreshold(testVertEventBytes);
+        
+        ObstacleDetection testObstacleDetection = new ObstacleDetection();
+        testObstacleDetection.setObDist(testDist);
+        testObstacleDetection.setObDirect(testDirect);
+        testObstacleDetection.setVertEvent(testVertEvent);
+        testObstacleDetection.setDateTime(mockDDateTime);
+        
+        J2735VertEvent actualVertEvent = OssObstacleDetection
+                .genericObstacleDetection(testObstacleDetection)
+                .vertEvent;
+        
+        for (Map.Entry<String, Boolean> curVal : actualVertEvent.entrySet()) {
+            assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
+        }
+        
     }
     
-    @Ignore
+    /**
+     * Test input bitstring value "00001" returns true for "notEquipped" only
+     */
     @Test
     public void shouldCreateNotEquippedVertEvent() {
         
-        Integer testVertEventBitString = 0b00000;
+        Integer testInput = 0b00001;
         String elementTested = "notEquipped";
         
+        byte[] testVertEventBytes = {testInput.byteValue()};
         
-        byte[] testVertEventBytes = {testVertEventBitString.byteValue()};
-        
+        ObstacleDistance testDist = new ObstacleDistance(0);
+        ObstacleDirection testDirect = new ObstacleDirection(0);
         VerticalAccelerationThreshold testVertEvent = new VerticalAccelerationThreshold(testVertEventBytes);
         
-        //ObstacleDistance testDist = new ObstacleDistance();
-        //ObstacleDirection testDirect = new ObstacleDirection();
-        //DDateTime testDateTime = new DDateTime();
-        
-        ObstacleDistance testDist = null;
-        ObstacleDirection testDirect = null;
-        DDateTime testDateTime = null;
-        
-        ObstacleDetection testObstacleDetection = new ObstacleDetection(testDist, testDirect, testDateTime);
+        ObstacleDetection testObstacleDetection = new ObstacleDetection();
+        testObstacleDetection.setObDist(testDist);
+        testObstacleDetection.setObDirect(testDirect);
         testObstacleDetection.setVertEvent(testVertEvent);
+        testObstacleDetection.setDateTime(mockDDateTime);
+        
+        J2735VertEvent actualVertEvent = OssObstacleDetection
+                .genericObstacleDetection(testObstacleDetection)
+                .vertEvent;
+        
+        for (Map.Entry<String, Boolean> curVal : actualVertEvent.entrySet()) {
+            if(curVal.getKey() == elementTested) {
+                assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
+            } else {
+                assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
+            }
+        }
+    }
+    
+    /**
+     * Test input bitstring "00010" returns "true" for "leftFront" only
+     */
+    @Test
+    public void shouldCreateLeftFrontVertEvent() {
+        
+        Integer testInput = 0b00010;
+        String elementTested = "leftFront";
+        
+        byte[] testVertEventBytes = {testInput.byteValue()};
+        
+        ObstacleDistance testDist = new ObstacleDistance(0);
+        ObstacleDirection testDirect = new ObstacleDirection(0);
+        VerticalAccelerationThreshold testVertEvent = new VerticalAccelerationThreshold(testVertEventBytes);
+        
+        ObstacleDetection testObstacleDetection = new ObstacleDetection();
+        testObstacleDetection.setObDist(testDist);
+        testObstacleDetection.setObDirect(testDirect);
+        testObstacleDetection.setVertEvent(testVertEvent);
+        testObstacleDetection.setDateTime(mockDDateTime);
         
         J2735VertEvent actualVertEvent = OssObstacleDetection
                 .genericObstacleDetection(testObstacleDetection)
@@ -186,27 +449,109 @@ public class OssObstacleDetectionTest {
         
     }
     
-    @Ignore
-    @Test
-    public void shouldCreateLeftFrontVertEvent() {
-        
-    }
-    
-    @Ignore
+    /**
+     * Test input bitstring value "01000" returns "true" for "rightFront" only
+     */
     @Test
     public void shouldCreateRightFrontVertEvent() {
         
-    }
-    
-    @Ignore
-    @Test
-    public void shouldCreateRightRearVertEvent() {
+        Integer testInput = 0b01000;
+        String elementTested = "rightFront";
+        
+        byte[] testVertEventBytes = {testInput.byteValue()};
+        
+        ObstacleDistance testDist = new ObstacleDistance(0);
+        ObstacleDirection testDirect = new ObstacleDirection(0);
+        VerticalAccelerationThreshold testVertEvent = new VerticalAccelerationThreshold(testVertEventBytes);
+        
+        ObstacleDetection testObstacleDetection = new ObstacleDetection();
+        testObstacleDetection.setObDist(testDist);
+        testObstacleDetection.setObDirect(testDirect);
+        testObstacleDetection.setVertEvent(testVertEvent);
+        testObstacleDetection.setDateTime(mockDDateTime);
+        
+        J2735VertEvent actualVertEvent = OssObstacleDetection
+                .genericObstacleDetection(testObstacleDetection)
+                .vertEvent;
+        
+        for (Map.Entry<String, Boolean> curVal : actualVertEvent.entrySet()) {
+            if(curVal.getKey() == elementTested) {
+                assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
+            } else {
+                assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
+            }
+        }
         
     }
     
-    @Ignore
+    /**
+     * Test input bitstring value "10000" returns "true" for "rightRear" only
+     */
+    @Test
+    public void shouldCreateRightRearVertEvent() {
+        
+        Integer testInput = 0b10000;
+        String elementTested = "rightRear";
+        
+        byte[] testVertEventBytes = {testInput.byteValue()};
+        
+        ObstacleDistance testDist = new ObstacleDistance(0);
+        ObstacleDirection testDirect = new ObstacleDirection(0);
+        VerticalAccelerationThreshold testVertEvent = new VerticalAccelerationThreshold(testVertEventBytes);
+        
+        ObstacleDetection testObstacleDetection = new ObstacleDetection();
+        testObstacleDetection.setObDist(testDist);
+        testObstacleDetection.setObDirect(testDirect);
+        testObstacleDetection.setVertEvent(testVertEvent);
+        testObstacleDetection.setDateTime(mockDDateTime);
+        
+        J2735VertEvent actualVertEvent = OssObstacleDetection
+                .genericObstacleDetection(testObstacleDetection)
+                .vertEvent;
+        
+        for (Map.Entry<String, Boolean> curVal : actualVertEvent.entrySet()) {
+            if(curVal.getKey() == elementTested) {
+                assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
+            } else {
+                assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
+            }
+        }
+        
+    }
+    
+    /**
+     * Test input bitstring value "01010" returns "true" for "leftFront" and "rightFront" only
+     */
     @Test
     public void shouldCreateTwoVertEvents() {
+        
+        Integer testInput = 0b01010;
+        String elementTested1 = "leftFront";
+        String elementTested2 = "rightFront";
+        
+        byte[] testVertEventBytes = {testInput.byteValue()};
+        
+        ObstacleDistance testDist = new ObstacleDistance(0);
+        ObstacleDirection testDirect = new ObstacleDirection(0);
+        VerticalAccelerationThreshold testVertEvent = new VerticalAccelerationThreshold(testVertEventBytes);
+        
+        ObstacleDetection testObstacleDetection = new ObstacleDetection();
+        testObstacleDetection.setObDist(testDist);
+        testObstacleDetection.setObDirect(testDirect);
+        testObstacleDetection.setVertEvent(testVertEvent);
+        testObstacleDetection.setDateTime(mockDDateTime);
+        
+        J2735VertEvent actualVertEvent = OssObstacleDetection
+                .genericObstacleDetection(testObstacleDetection)
+                .vertEvent;
+        
+        for (Map.Entry<String, Boolean> curVal : actualVertEvent.entrySet()) {
+            if(curVal.getKey() == elementTested1 || curVal.getKey() == elementTested2) {
+                assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
+            } else {
+                assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
+            }
+        }
         
     }
 
