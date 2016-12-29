@@ -9,7 +9,7 @@ public class OssPathHistory {
 		J2735PathHistory ph = new J2735PathHistory();
 		
 		
-		ph.crumbData = OssPathHistoryPoint.genericPathHistoryPointList(pathHistory.crumbData);
+		ph.crumbData = OssPathHistoryPointList.genericPathHistoryPointList(pathHistory.crumbData);
 		ph.currGNSSstatus = OssBitString.genericBitString(pathHistory.currGNSSstatus);
 		ph.initialPosition = OssFullPositionVector.genericFullPositionVector(pathHistory.initialPosition);
 		
