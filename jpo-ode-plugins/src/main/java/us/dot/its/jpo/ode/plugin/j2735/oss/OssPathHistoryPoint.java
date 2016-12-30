@@ -16,32 +16,44 @@ public class OssPathHistoryPoint {
             php.setLatOffset(null);
         } else if (pathHistoryPoint.latOffset.longValue() < -131072) {
             php.setLatOffset(BigDecimal.valueOf(-0.0131071));
-        } else if (pathHistoryPoint.latOffset.longValue() > 131071){
+        } else if (pathHistoryPoint.latOffset.longValue() > 131071) {
             php.setLatOffset(BigDecimal.valueOf(0.0131071));
         } else {
             php.setLatOffset(BigDecimal.valueOf(pathHistoryPoint.latOffset.longValue(), 7));
         }
-        
-        php.setLonOffset(BigDecimal.valueOf(pathHistoryPoint.lonOffset.longValue(), 7));
 
-        if (pathHistoryPoint.elevationOffset.longValue() != 2048)
-            php.setElevationOffset(BigDecimal.valueOf(pathHistoryPoint.elevationOffset.longValue(), 1));
-        if (pathHistoryPoint.timeOffset.intValue() != 65535) {
-            php.setTimeOffset(BigDecimal.valueOf(pathHistoryPoint.timeOffset.intValue(), 2));
+        if (pathHistoryPoint.lonOffset.longValue() == -131072) {
+            php.setLonOffset(null);
+        } else if (pathHistoryPoint.lonOffset.longValue() < -131072) {
+            php.setLonOffset(BigDecimal.valueOf(-0.0131071));
+        } else if (pathHistoryPoint.lonOffset.longValue() > 131071) {
+            php.setLonOffset(BigDecimal.valueOf(0.0131071));
+        } else {
+            php.setLonOffset(BigDecimal.valueOf(pathHistoryPoint.lonOffset.longValue(), 7));
         }
 
+        if (pathHistoryPoint.elevationOffset.longValue() == -2048) {
+            php.setElevationOffset(null);
+        } else if (pathHistoryPoint.elevationOffset.longValue() < -2048) {
+            php.setElevationOffset(BigDecimal.valueOf(-204.7));
+        } else if (pathHistoryPoint.elevationOffset.longValue() > 2047) {
+            php.setElevationOffset(BigDecimal.valueOf(204.7));
+        } else {
+            php.setElevationOffset(BigDecimal.valueOf(pathHistoryPoint.elevationOffset.longValue(), 1));
+        }
+
+        php.setTimeOffset(OssTimeOffset.genericTimeOffset(pathHistoryPoint.timeOffset));
+
         // Optional elements
+        if (pathHistoryPoint.speed != null) {
+            php.setSpeed(OssSpeedOrVelocity.genericSpeed(pathHistoryPoint.speed));
+        }
         if (pathHistoryPoint.posAccuracy != null) {
             php.setPosAccuracy(OssPositionalAccuracy.genericPositionalAccuracy(pathHistoryPoint.posAccuracy));
         }
-        if (pathHistoryPoint.speed != null) {
-            if (pathHistoryPoint.speed.intValue() != 8191) {
-                // speed is received in units of 0.02 m/s
-                php.setSpeed(BigDecimal.valueOf(pathHistoryPoint.speed.intValue() * 2, 2));
-            }
-        }
         if (pathHistoryPoint.heading != null) {
-            php.setHeading(BigDecimal.valueOf(pathHistoryPoint.heading.longValue() * 15, 1));
+            php.setHeading(OssHeading.genericHeading(pathHistoryPoint.heading));
+            //php.setHeading(BigDecimal.valueOf(pathHistoryPoint.heading.longValue() * 15, 1));
         }
 
         return php;
