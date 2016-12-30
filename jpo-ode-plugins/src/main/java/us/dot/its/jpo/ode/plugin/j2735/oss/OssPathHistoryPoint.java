@@ -53,7 +53,6 @@ public class OssPathHistoryPoint {
         }
         if (pathHistoryPoint.heading != null) {
             php.setHeading(OssHeading.genericHeading(pathHistoryPoint.heading));
-            //php.setHeading(BigDecimal.valueOf(pathHistoryPoint.heading.longValue() * 15, 1));
         }
 
         return php;
