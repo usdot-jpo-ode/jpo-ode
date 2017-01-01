@@ -11,110 +11,128 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
+import us.dot.its.jpo.ode.context.AppContext;
+
 @ConfigurationProperties("ode")
 @org.springframework.context.annotation.PropertySource("classpath:application.properties")
 public class OdeProperties implements EnvironmentAware {
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	
-	@Autowired
-	private static Environment env;
-	
-	private String uploadLocation = "uploads";
-	private String pluginsLocations = "plugins";
-	private String asn1CoderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder";
-	private String kafkaBrokers = "localhost:9092";
-	private String kafkaProducerType = "sync";
-	private int    importerInterval = 1000;
-	
-	private String hostId;
-	
-	public static String getProperty(String key) {
-		return env.getProperty(key);
-	}
-	
-	public static String getProperty(String key, String defaultValue) {
-		return env.getProperty(key, defaultValue);
-	}
-	
-	public static Object getProperty(String key, int i) {
-		return env.getProperty(key, Integer.class, i);
-	}
+   private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	public String getHostId() {
-		return hostId;
-	}
+   /////////////////////////////////////////////////////////////////////////////
+   // Kafka Topics
+   public static final String KAFKA_TOPIC_J2735_BSM = "topic.J2735Bsm";
+   public static final String KAFKA_TOPIC_J2735_BSM_JSON = "topic.J2735Bsm.json";
+   /////////////////////////////////////////////////////////////////////////////
 
-	public String getUploadLocation() {
-		return uploadLocation;
-	}
-	public void setUploadLocation(String uploadLocation) {
-		this.uploadLocation = uploadLocation;
-	}
-	public String getPluginsLocations() {
-		return pluginsLocations;
-	}
-	public void setPluginsLocations(String pluginsLocations) {
-		this.pluginsLocations = pluginsLocations;
-	}
-	
-	public String getAsn1CoderClassName() {
-		return asn1CoderClassName;
-	}
-	public void setAsn1CoderClassName(String asn1CoderClassName) {
-		this.asn1CoderClassName = asn1CoderClassName;
-	}
-	public String getKafkaBrokers() {
-		return kafkaBrokers;
-	}
+   @Autowired
+   private Environment env;
 
-	public void setKafkaBrokers(String kafkaBrokers) {
-		this.kafkaBrokers = kafkaBrokers;
-	}
+   private String uploadLocation = "uploads";
+   private String pluginsLocations = "plugins";
+   private String asn1CoderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder";
+   private String kafkaBrokers = null;
+   private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
+   private int importerInterval = 1000;
 
-	public String getKafkaProducerType() {
-		return kafkaProducerType;
-	}
+   private String hostId;
 
-	public void setKafkaProducerType(String kafkaProducerType) {
-		this.kafkaProducerType = kafkaProducerType;
-	}
+   public OdeProperties() {
+      super();
+      init();
+   }
 
+   public String getProperty(String key) {
+      return env.getProperty(key);
+   }
 
-	
-	public int getImporterInterval() {
-		return importerInterval;
-	}
+   public String getProperty(String key, String defaultValue) {
+      return env.getProperty(key, defaultValue);
+   }
 
-	public void setImporterInterval(int importerInterval) {
-		this.importerInterval = importerInterval;
-	}
+   public Object getProperty(String key, int i) {
+      return env.getProperty(key, Integer.class, i);
+   }
 
-	public static Environment getEnv() {
-		return env;
-	}
+   public String getHostId() {
+      return hostId;
+   }
 
-	public static void setEnv(Environment env) {
-		OdeProperties.env = env;
-	}
+   public String getUploadLocation() {
+      return uploadLocation;
+   }
 
+   public void setUploadLocation(String uploadLocation) {
+      this.uploadLocation = uploadLocation;
+   }
 
+   public String getPluginsLocations() {
+      return pluginsLocations;
+   }
 
-	public void init() {
-		String hostname;
-		try {
-			hostname = InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			// Let's just use a random hostname
-			hostname = UUID.randomUUID().toString();
-		}
-		hostId = hostname;
-		
-	}
+   public void setPluginsLocations(String pluginsLocations) {
+      this.pluginsLocations = pluginsLocations;
+   }
 
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.env = environment;
-	}
+   public String getAsn1CoderClassName() {
+      return asn1CoderClassName;
+   }
 
+   public void setAsn1CoderClassName(String asn1CoderClassName) {
+      this.asn1CoderClassName = asn1CoderClassName;
+   }
+
+   public String getKafkaBrokers() {
+      return kafkaBrokers;
+   }
+
+   public void setKafkaBrokers(String kafkaBrokers) {
+      this.kafkaBrokers = kafkaBrokers;
+   }
+
+   public String getKafkaProducerType() {
+      return kafkaProducerType;
+   }
+
+   public void setKafkaProducerType(String kafkaProducerType) {
+      this.kafkaProducerType = kafkaProducerType;
+   }
+
+   public int getImporterInterval() {
+      return importerInterval;
+   }
+
+   public void setImporterInterval(int importerInterval) {
+      this.importerInterval = importerInterval;
+   }
+
+   public Environment getEnv() {
+      return env;
+   }
+
+   public void setEnv(Environment env) {
+      this.env = env;
+   }
+
+   public void init() {
+      String hostname;
+      try {
+         hostname = InetAddress.getLocalHost().getHostName();
+      } catch (UnknownHostException e) {
+         // Let's just use a random hostname
+         hostname = UUID.randomUUID().toString();
+      }
+      hostId = hostname;
+      logger.info("Host ID: {}", hostId);
+      
+      if (kafkaBrokers == null) {
+         kafkaBrokers = System.getenv("DOCKER_HOST_IP") + ":9092";
+      }
+      
+   }
+
+   @Override
+   public void setEnvironment(Environment environment) {
+      env = environment;
+   }
 
 }

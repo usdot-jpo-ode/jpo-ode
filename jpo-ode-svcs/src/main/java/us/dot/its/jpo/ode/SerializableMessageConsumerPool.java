@@ -4,108 +4,94 @@ import java.util.Properties;
 
 import us.dot.its.jpo.ode.util.SerializableObjectPool;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
-import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
-public class SerializableMessageConsumerPool<K, V> extends 
-	SerializableObjectPool<MessageConsumer<K, V>> {
+public class SerializableMessageConsumerPool<K, V> extends SerializableObjectPool<MessageConsumer<K, V>> {
 
-	private static final long serialVersionUID = -2293786403623236678L;
+   private static final long serialVersionUID = -2293786403623236678L;
 
-	OdeProperties odeProperties;
+   OdeProperties odeProperties;
 
-	private String brokers;
-	private String groupId;
-	private MessageProcessor<K, V> processor;
+   private String brokers;
+   private String groupId;
 
-	private Properties props;
+   private Properties props;
 
-	public SerializableMessageConsumerPool<K, V> init() {
-		props = new Properties();
+   public SerializableMessageConsumerPool<K, V> init() {
+      props = new Properties();
 
-		props.put("enable.auto.commit", 
-				OdeProperties.getProperty("kafka.consumer.enable.auto.commit", "true"));
-		props.put("auto.commit.interval.ms", OdeProperties.getProperty("kafka.auto.commit.interval.ms", 1000));
-		props.put("session.timeout.ms", OdeProperties.getProperty("kafka.consumer.session.timeout.ms", 30000));
-		props.put("key.deserializer", 
-				OdeProperties.getProperty("kafka.key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer"));
-		props.put("value.deserializer", 
-				OdeProperties.getProperty("kafka.value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer"));
+      props.put("enable.auto.commit", odeProperties.getProperty("kafka.consumer.enable.auto.commit",
+            MessageConsumer.DEFAULT_CONSUMER_ENABLE_AUTO_COMMIT));
+      props.put("auto.commit.interval.ms", odeProperties.getProperty("kafka.auto.commit.interval.ms",
+            MessageConsumer.DEFAULT_CONSUMER_AUTO_COMMIT_INTERVAL_MS));
+      props.put("session.timeout.ms", odeProperties.getProperty("kafka.consumer.session.timeout.ms",
+            MessageConsumer.DEFAULT_CONSUMER_SESSION_TIMEOUT_MS));
+      props.put("key.deserializer",
+            odeProperties.getProperty("kafka.key.deserializer", MessageConsumer.SERIALIZATION_STRING_DESERIALIZER));
+      props.put("value.deserializer", odeProperties.getProperty("kafka.value.deserializer",
+            MessageConsumer.SERIALIZATION_BYTE_ARRAY_DESERIALIZER));
 
-		return this;
-	}
-	
-	public SerializableMessageConsumerPool(String groupId, 
-			MessageProcessor<K, V> processor, OdeProperties odeProperties) {
-		init();
-		this.odeProperties = odeProperties;
-		this.brokers = odeProperties.getKafkaBrokers();
-		this.groupId = groupId;
-		this.processor = processor;
-	}
+      return this;
+   }
 
-	public SerializableMessageConsumerPool(
-			String brokers, String groupId, MessageProcessor<K, V> processor,
-			Properties consumerProps) {
-		init();
-		this.brokers = brokers;
-		this.groupId = groupId;
-		this.processor = processor;
-		this.props = consumerProps;
-	}
+   public SerializableMessageConsumerPool(String groupId, OdeProperties odeProperties) {
+      this.odeProperties = odeProperties;
+      this.brokers = odeProperties.getKafkaBrokers();
+      this.groupId = groupId;
+      init();
+   }
 
-	@Override
-	protected MessageConsumer<K, V> create() {
-		return new MessageConsumer<K, V>(brokers, groupId, processor, props);
-	}
+   public SerializableMessageConsumerPool(String brokers, String groupId, Properties consumerProps) {
+      this.brokers = brokers;
+      this.groupId = groupId;
+      this.props = consumerProps;
+      init();
+   }
 
-	@Override
-	public boolean validate(MessageConsumer<K, V> o) {
-		return o.getProcessor() != null && o.getConsumer() != null;
-	}
+   @Override
+   protected MessageConsumer<K, V> create() {
+      return new MessageConsumer<K, V>(brokers, groupId, props);
+   }
 
-	@Override
-	public void expire(MessageConsumer<K, V> o) {
-		o.close();
-	}
+   @Override
+   public boolean validate(MessageConsumer<K, V> o) {
+      return o.getProcessor() != null && o.getConsumer() != null;
+   }
 
-	public String getBrokers() {
-		return brokers;
-	}
+   @Override
+   public void expire(MessageConsumer<K, V> o) {
+      o.close();
+   }
 
-	public void setBrokers(String brokers) {
-		this.brokers = brokers;
-	}
+   public String getBrokers() {
+      return brokers;
+   }
 
-	public String getGroupId() {
-		return groupId;
-	}
+   public void setBrokers(String brokers) {
+      this.brokers = brokers;
+   }
 
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
+   public String getGroupId() {
+      return groupId;
+   }
 
-	public MessageProcessor<K, V> getProcessor() {
-		return processor;
-	}
+   public void setGroupId(String groupId) {
+      this.groupId = groupId;
+   }
 
-	public void setProcessor(MessageProcessor<K, V> processor) {
-		this.processor = processor;
-	}
+   public OdeProperties getOdeProperties() {
+      return odeProperties;
+   }
 
-	public OdeProperties getOdeProperties() {
-		return odeProperties;
-	}
+   public void setOdeProperties(OdeProperties odeProperties) {
+      this.odeProperties = odeProperties;
+   }
 
-	public void setOdeProperties(OdeProperties odeProperties) {
-		this.odeProperties = odeProperties;
-	}
+   public Properties getProps() {
+      return props;
+   }
 
-	public Properties getProps() {
-		return props;
-	}
-
-	public void setProps(Properties props) {
-		this.props = props;
-	}
+   public void setProps(Properties props) {
+      this.props = props;
+   }
 
 }

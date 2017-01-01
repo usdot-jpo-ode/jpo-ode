@@ -23,9 +23,6 @@ import java.nio.file.WatchService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.bsm.BsmCoder;
@@ -35,11 +32,11 @@ public class Importer implements Runnable {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private OdeProperties odeProperties;
-	private SimpMessagingTemplate template;
 	private Path folder;
 	private int interval;
+	private static String publishToTopic = OdeProperties.KAFKA_TOPIC_J2735_BSM_JSON;
 
-	public Importer(OdeProperties odeProps, SimpMessagingTemplate template)
+	public Importer(OdeProperties odeProps)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		this.odeProperties = odeProps;
 		
@@ -56,7 +53,7 @@ public class Importer implements Runnable {
 		
 		logger.info("Loading ASN1 Coder: {}", this.odeProperties.getAsn1CoderClassName());
 		
-		this.template = template;
+		logger.info("Publishing to {}", publishToTopic);
 	}
 
 	public Path getFolder() {
@@ -84,6 +81,7 @@ public class Importer implements Runnable {
 
 		// We obtain the file system of the Path
 		FileSystem fs = folder.getFileSystem();
+      BsmCoder bsmCoder = new BsmCoder(odeProperties);
 
 		while (isRunning) {
 			// We create the new WatchService using the new try() block
@@ -111,13 +109,13 @@ public class Importer implements Runnable {
 						Path path = folder.resolve(watchEventCurrent.context());
 						logger.info("New or modified file detected: {}", path);
 
-						BsmCoder bsmCoder = new BsmCoder(odeProperties, template);
 						File bsmFile = path.toFile();
 						
 						int retryCount = 2;
 						while (retryCount-- > 0) {
 							try (InputStream inputStream = new FileInputStream(path.toFile())) {
-								bsmCoder.decodeFromHexAndPublish(inputStream, BsmCoder.BSM_OBJECTS);
+								bsmCoder.decodeFromHexAndPublish(
+										inputStream, publishToTopic);
 								inputStream.close();
 								bsmFile.delete();
 								break;
@@ -156,14 +154,4 @@ public class Importer implements Runnable {
 	public void setOdeProperties(OdeProperties odeProperties) {
 		this.odeProperties = odeProperties;
 	}
-
-	public SimpMessagingTemplate getTemplate() {
-		return template;
-	}
-
-	public void setTemplate(SimpMessagingTemplate template) {
-		this.template = template;
-	}
-
-
 }
