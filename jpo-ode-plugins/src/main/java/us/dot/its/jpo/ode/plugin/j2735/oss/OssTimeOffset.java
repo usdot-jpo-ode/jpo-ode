@@ -6,19 +6,24 @@ import us.dot.its.jpo.ode.j2735.dsrc.TimeOffset;
 
 public class OssTimeOffset {
 
-	public static BigDecimal genericTimeOffset(TimeOffset timeOffset) {
-	    
-	    if (timeOffset.intValue() < 1 || timeOffset.intValue() > 65535) {
-	        throw new IllegalArgumentException("Time offset out of bounds");
-	    }
-		
-		BigDecimal result = null;
-		
-		if (timeOffset.intValue() != 65535) {
-			result = BigDecimal.valueOf(timeOffset.longValue(), 2);
-		}
-		
-		return result;
-	}
+    private static final Integer TIME_OFFSET_LOWER_BOUND = 1;
+    private static final Integer TIME_OFFSET_UPPER_BOUND = 65535;
+
+    public static BigDecimal genericTimeOffset(TimeOffset timeOffset) {
+
+        BigDecimal result;
+
+        if (timeOffset.intValue() == 65535) {
+            result = null;
+        } else if (timeOffset.intValue() < TIME_OFFSET_LOWER_BOUND) {
+            throw new IllegalArgumentException("Time offset value below lower bound [1]");
+        } else if (timeOffset.intValue() > TIME_OFFSET_UPPER_BOUND) {
+            result = BigDecimal.valueOf(655.34);
+        } else {
+            result = BigDecimal.valueOf(timeOffset.longValue(), 2);
+        }
+
+        return result;
+    }
 
 }

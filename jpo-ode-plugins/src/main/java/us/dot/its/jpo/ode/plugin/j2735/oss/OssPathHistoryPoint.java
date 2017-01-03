@@ -1,49 +1,61 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import us.dot.its.jpo.ode.j2735.dsrc.PathHistoryPoint;
-import us.dot.its.jpo.ode.j2735.dsrc.PathHistoryPointList;
 import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistoryPoint;
 
 public class OssPathHistoryPoint {
 
-	public static List<J2735PathHistoryPoint> genericPathHistoryPointList(PathHistoryPointList crumbData) {
-		List<J2735PathHistoryPoint> phpl = new ArrayList<J2735PathHistoryPoint>();
-		
-		Iterator<PathHistoryPoint> iter = crumbData.elements.iterator();
-		
-		while(iter.hasNext()) {
-			phpl.add(OssPathHistoryPoint.genericPathHistoryPoint(iter.next()));
-		}
-		
-		return phpl ;
-	}
+    public static J2735PathHistoryPoint genericPathHistoryPoint(PathHistoryPoint pathHistoryPoint) {
 
-	private static J2735PathHistoryPoint genericPathHistoryPoint(PathHistoryPoint next) {
-		
-		J2735PathHistoryPoint php = new J2735PathHistoryPoint();
-		
-		if (next.elevationOffset.longValue() != 2048)
-			php.elevationOffset = BigDecimal.valueOf(next.elevationOffset.longValue(), 1);
-		
-		php.heading = BigDecimal.valueOf(next.heading.longValue() * 15, 1);
-		
-		php.latOffset = BigDecimal.valueOf(next.latOffset.longValue(), 7);
-		php.lonOffset = BigDecimal.valueOf(next.lonOffset.longValue(), 7);
-		php.posAccuracy = OssPositionalAccuracy.genericPositionalAccuracy(next.posAccuracy);
-		if (next.speed.intValue() != 8191) {
-			// speed is received in units of 0.02 m/s
-			php.speed = BigDecimal.valueOf(next.speed.intValue() * 2, 2);
-		}
+        J2735PathHistoryPoint php = new J2735PathHistoryPoint();
 
-		if (next.timeOffset.intValue() != 65535)
-			php.timeOffset = BigDecimal.valueOf(next.timeOffset.intValue(), 2);
-		
-		return php ;
-	}
+        // Required elements
+        if (pathHistoryPoint.latOffset.longValue() == -131072) {
+            php.setLatOffset(null);
+        } else if (pathHistoryPoint.latOffset.longValue() < -131072) {
+            php.setLatOffset(BigDecimal.valueOf(-0.0131071));
+        } else if (pathHistoryPoint.latOffset.longValue() > 131071) {
+            php.setLatOffset(BigDecimal.valueOf(0.0131071));
+        } else {
+            php.setLatOffset(BigDecimal.valueOf(pathHistoryPoint.latOffset.longValue(), 7));
+        }
+
+        if (pathHistoryPoint.lonOffset.longValue() == -131072) {
+            php.setLonOffset(null);
+        } else if (pathHistoryPoint.lonOffset.longValue() < -131072) {
+            php.setLonOffset(BigDecimal.valueOf(-0.0131071));
+        } else if (pathHistoryPoint.lonOffset.longValue() > 131071) {
+            php.setLonOffset(BigDecimal.valueOf(0.0131071));
+        } else {
+            php.setLonOffset(BigDecimal.valueOf(pathHistoryPoint.lonOffset.longValue(), 7));
+        }
+
+        if (pathHistoryPoint.elevationOffset.longValue() == -2048) {
+            php.setElevationOffset(null);
+        } else if (pathHistoryPoint.elevationOffset.longValue() < -2048) {
+            php.setElevationOffset(BigDecimal.valueOf(-204.7));
+        } else if (pathHistoryPoint.elevationOffset.longValue() > 2047) {
+            php.setElevationOffset(BigDecimal.valueOf(204.7));
+        } else {
+            php.setElevationOffset(BigDecimal.valueOf(pathHistoryPoint.elevationOffset.longValue(), 1));
+        }
+
+        php.setTimeOffset(OssTimeOffset.genericTimeOffset(pathHistoryPoint.timeOffset));
+
+        // Optional elements
+        if (pathHistoryPoint.speed != null) {
+            php.setSpeed(OssSpeedOrVelocity.genericSpeed(pathHistoryPoint.speed));
+        }
+        if (pathHistoryPoint.posAccuracy != null) {
+            php.setPosAccuracy(OssPositionalAccuracy.genericPositionalAccuracy(pathHistoryPoint.posAccuracy));
+        }
+        if (pathHistoryPoint.heading != null) {
+            php.setHeading(OssHeading.genericHeading(pathHistoryPoint.heading));
+        }
+
+        return php;
+    }
 
 }

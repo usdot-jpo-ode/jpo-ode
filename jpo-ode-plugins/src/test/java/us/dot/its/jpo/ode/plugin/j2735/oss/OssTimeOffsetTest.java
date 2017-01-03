@@ -114,21 +114,20 @@ public class OssTimeOffsetTest {
     }
 
     /**
-     * Test that a time offset value above the upper bound (65535) throws IllegalArgumentException
+     * Test that a time offset value (65536) above the upper bound (65535)
+     * is reduced and returned as (655.34)
      */
     @Test
-    public void shouldThrowExceptionTimeOffsetAboveUpperBound() {
+    public void shouldReduceTimeOffsetAboveUpperBound() {
 
         Integer testValue = 65536;
+        BigDecimal expectedValue = BigDecimal.valueOf(655.34);
 
         TimeOffset testTimeOffset = new TimeOffset(testValue);
-
-        try {
-            BigDecimal actualValue = OssTimeOffset.genericTimeOffset(testTimeOffset);
-            fail("Expected IllegalArgumentException");
-        } catch (RuntimeException e) {
-            assertEquals(IllegalArgumentException.class, e.getClass());
-        }
+        
+        BigDecimal actualValue = OssTimeOffset.genericTimeOffset(testTimeOffset);
+        
+        assertEquals(expectedValue, actualValue);
 
     }
 
