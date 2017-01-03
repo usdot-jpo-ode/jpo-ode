@@ -27,7 +27,12 @@ public class J2735Position3D extends Asn1Object {
     private BigDecimal longitude; // in degrees
     private BigDecimal elevation; // in meters
 
-    public J2735Position3D(BigDecimal latitude, BigDecimal longitude, BigDecimal elevation) {
+    
+    public J2735Position3D() {
+      super();
+   }
+
+   public J2735Position3D(BigDecimal latitude, BigDecimal longitude, BigDecimal elevation) {
         super();
         this.latitude = latitude;
         this.longitude = longitude;

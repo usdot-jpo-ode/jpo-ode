@@ -34,7 +34,6 @@ public class Importer implements Runnable {
 	private OdeProperties odeProperties;
 	private Path folder;
 	private int interval;
-	private static String publishToTopic = OdeProperties.KAFKA_TOPIC_J2735_BSM_JSON;
 
 	public Importer(OdeProperties odeProps)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
@@ -53,7 +52,7 @@ public class Importer implements Runnable {
 		
 		logger.info("Loading ASN1 Coder: {}", this.odeProperties.getAsn1CoderClassName());
 		
-		logger.info("Publishing to {}", publishToTopic);
+		logger.info("Publishing to {}", OdeProperties.KAFKA_TOPIC_J2735_BSM);
 	}
 
 	public Path getFolder() {
@@ -115,7 +114,7 @@ public class Importer implements Runnable {
 						while (retryCount-- > 0) {
 							try (InputStream inputStream = new FileInputStream(path.toFile())) {
 								bsmCoder.decodeFromHexAndPublish(
-										inputStream, publishToTopic);
+										inputStream, OdeProperties.KAFKA_TOPIC_J2735_BSM);
 								inputStream.close();
 								bsmFile.delete();
 								break;

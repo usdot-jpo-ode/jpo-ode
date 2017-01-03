@@ -59,7 +59,7 @@ public class MessageConsumer<K, V> {
       MessageConsumer<String, byte[]> msgConsumer = 
             new MessageConsumer<String, byte[]>(brokers, groupId, processor, props);
 
-      logger.info("Default String Message Consumer Created");
+      logger.info("Default Byte Array Message Consumer Created");
 
       return msgConsumer;
    }
