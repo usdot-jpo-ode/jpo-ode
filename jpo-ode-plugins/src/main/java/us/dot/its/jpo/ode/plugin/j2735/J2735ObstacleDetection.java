@@ -12,6 +12,6 @@ public class J2735ObstacleDetection extends Asn1Object {
 	public J2735NamedNumber locationDetails;
 	public BigDecimal obDirect;
 	public Integer obDist;
-	public J2735BitString vertEvent;
+	public J2735VertEvent vertEvent;
 
 }
