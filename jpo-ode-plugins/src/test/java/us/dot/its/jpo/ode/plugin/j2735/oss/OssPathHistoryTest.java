@@ -1,16 +1,30 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
+import us.dot.its.jpo.ode.j2735.dsrc.Elevation;
+import us.dot.its.jpo.ode.j2735.dsrc.FullPositionVector;
 import us.dot.its.jpo.ode.j2735.dsrc.GNSSstatus;
+import us.dot.its.jpo.ode.j2735.dsrc.Latitude;
+import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
+import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B18;
 import us.dot.its.jpo.ode.j2735.dsrc.PathHistory;
+import us.dot.its.jpo.ode.j2735.dsrc.PathHistoryPoint;
 import us.dot.its.jpo.ode.j2735.dsrc.PathHistoryPointList;
+import us.dot.its.jpo.ode.j2735.dsrc.TimeConfidence;
+import us.dot.its.jpo.ode.j2735.dsrc.TimeOffset;
+import us.dot.its.jpo.ode.j2735.dsrc.VertOffset_B12;
 import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistory;
+import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistoryPoint;
 
 /**
  * -- Summary --
@@ -18,11 +32,11 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistory;
  * 
  * Verifies correct conversion from generic PathHistory to compliant-J2735PathHistory
  * 
- * Notes:
- * - This class only tests GNSSstatus bit string to hash map conversion
- * - Required element PathHistoryPointList is tested by OssPathHistoryPointListTest and 
- *   is used with a null value for these tests
- * - Optional element FullPositionVector is tested by OssFullPositionVectorTest and is not included in these tests
+ * This is a trivial test that verifies a PathHistory object can be successfully created.
+ * 
+ * FullPositionVector is tested by OssFullPositionVectorTest
+ * GNSSstatus is tested by OssGNSSstatusTest
+ * PathHistoryPointList is tested by OssPathHistoryPointListTest
  * 
  * -- Documentation --
  * Data Frame: DF_PathHistory
@@ -33,203 +47,92 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistory;
  *       crumbData PathHistoryPointList,
  *       ...
  *       }
- * 
- * Data Element: DE_GNSSstatus
- * Use: The DE_GNSSstatus data element is used to relate the current state of a GPS/GNSS rover or base system 
- * in terms of its general health, lock on satellites in view, and use of any correction information. Various 
- * bits can be asserted (made to a value of one) to reflect these values. A GNSS set with unknown health and 
- * no tracking or corrections would be represented by setting the unavailable bit to one. A value of zero shall 
- * be used when a defined data element is unavailable. The term "GPS" in any data element name in this standard 
- * does not imply that it is only to be used for GPS-type GNSS systems.
- * ASN.1 Representation:
- *    GNSSstatus ::= BIT STRING {
- *       unavailable (0), -- Not Equipped or unavailable
- *       isHealthy (1),
- *       isMonitored (2),
- *       baseStationType (3), -- Set to zero if a moving base station,
- *          -- or if a rover device (an OBU),
- *          -- set to one if it is a fixed base station
- *       aPDOPofUnder5 (4), -- A dilution of precision greater than 5
- *       inViewOfUnder5 (5), -- Less than 5 satellites in view
- *       localCorrectionsPresent (6), -- DGPS type corrections used
- *       networkCorrectionsPresent (7) -- RTK type corrections used
- *       } (SIZE(8))
- *
  */
 public class OssPathHistoryTest {
-
     
     /**
-     * Test input bit string "00000000" returns "false" for all flag values
+     * Test that an empty path history object can be created
      */
     @Test
-    public void shouldReturnAllOffGNSSstatus() {
+    public void shouldCreateEmptyPathHistory() {
         
-        Integer testInput = 0b00000000;
-        
-        byte[] testInputBytes = {testInput.byteValue()};
-        
-        GNSSstatus testGNSSstatus = new GNSSstatus(testInputBytes);
         PathHistoryPointList testPathHistoryPointList = new PathHistoryPointList();
         
-        PathHistory testPathHistory = new PathHistory();
-        testPathHistory.crumbData = testPathHistoryPointList;
-        testPathHistory.currGNSSstatus = testGNSSstatus;
+        PathHistory testPathHistory = new PathHistory(testPathHistoryPointList);
         
         J2735PathHistory actualPathHistory = OssPathHistory.genericPathHistory(testPathHistory);
         
-        for (Map.Entry<String, Boolean> curVal : actualPathHistory.currGNSSstatus.entrySet()) {
-            assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
-        }
-        
-        
+        assertTrue(actualPathHistory.crumbData.isEmpty());
     }
     
     /**
-     * Test input bit string "11111111" returns "true" for all flag values
+     * Test that a path history object with a known path history point and path history point 
+     * list can be created
      */
     @Test
-    public void shouldReturnAllOnGNSSstatus() {
+    public void shouldCreatePathHistoryWithKnownPathHistoryPoint() {
         
-        Integer testInput = 0b11111111;
+        Integer testInput = 1927;
+        BigDecimal expectedValue = BigDecimal.valueOf(0.0001927);
         
-        byte[] testInputBytes = {testInput.byteValue()};
+        OffsetLL_B18 testLatOffset = new OffsetLL_B18(testInput);
+        OffsetLL_B18 testLonOffset = new OffsetLL_B18(0);
+        VertOffset_B12 testElevationOffset = new VertOffset_B12(0);
+        TimeOffset testTimeOffset = new TimeOffset(1);
         
-        GNSSstatus testGNSSstatus = new GNSSstatus(testInputBytes);
-        PathHistoryPointList testPathHistoryPointList = new PathHistoryPointList();
+        PathHistoryPoint testPathHistoryPoint = new PathHistoryPoint();
+        testPathHistoryPoint.setLatOffset(testLatOffset);
+        testPathHistoryPoint.setLonOffset(testLonOffset);
+        testPathHistoryPoint.setElevationOffset(testElevationOffset);
+        testPathHistoryPoint.setTimeOffset(testTimeOffset);
+        
+        PathHistoryPointList testPointList = new PathHistoryPointList();
+        testPointList.add(testPathHistoryPoint);
         
         PathHistory testPathHistory = new PathHistory();
-        testPathHistory.crumbData = testPathHistoryPointList;
-        testPathHistory.currGNSSstatus = testGNSSstatus;
+        testPathHistory.crumbData = testPointList;
         
         J2735PathHistory actualPathHistory = OssPathHistory.genericPathHistory(testPathHistory);
         
-        for (Map.Entry<String, Boolean> curVal : actualPathHistory.currGNSSstatus.entrySet()) {
-            assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
-        }
+        BigDecimal actualValue = actualPathHistory.crumbData.get(0).getLatOffset();
+        
+        assertEquals(expectedValue, actualValue);
     }
     
     /**
-     * Test input bit string "00000001" returns "true" for "unavailable" only
+     * Test that a path history object with a known full position vector can be created
      */
     @Test
-    public void shouldReturnGNSSstatusUnavailable() {
+    public void shouldCreatePathHistoryWithKnownFullPositionVector() {
         
-        Integer testInput = 0b00000001;
-        String elementTested = "unavailable";
+        Integer testInput = -1799999998;
+        BigDecimal expectedValue = BigDecimal.valueOf(-179.9999998);
         
-        byte[] testInputBytes = {testInput.byteValue()};
+        Longitude testLong = new Longitude(testInput);
+        Latitude testLat = new Latitude(0);
+        Elevation testElevation = new Elevation(0);
+        TimeConfidence testTimeConfidence = new TimeConfidence(0);
         
-        GNSSstatus testGNSSstatus = new GNSSstatus(testInputBytes);
-        PathHistoryPointList testPathHistoryPointList = new PathHistoryPointList();
+        FullPositionVector testFPV = new FullPositionVector();
+        testFPV.set_long(testLong);
+        testFPV.setLat(testLat);
+        testFPV.setElevation(testElevation);
+        testFPV.setTimeConfidence(testTimeConfidence);
         
         PathHistory testPathHistory = new PathHistory();
-        testPathHistory.crumbData = testPathHistoryPointList;
-        testPathHistory.currGNSSstatus = testGNSSstatus;
+        testPathHistory.crumbData = new PathHistoryPointList();
+        testPathHistory.initialPosition = testFPV;
         
         J2735PathHistory actualPathHistory = OssPathHistory.genericPathHistory(testPathHistory);
         
-        for (Map.Entry<String, Boolean> curVal : actualPathHistory.currGNSSstatus.entrySet()) {
-            if(curVal.getKey() == elementTested) {
-                assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
-            } else {
-                assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
-            }
-        }
+        BigDecimal actualValue = actualPathHistory.initialPosition.position.getLongitude();
+        
+        assertEquals(expectedValue, actualValue);
+        
     }
     
-    /**
-     * Test input bit string "00000010" returns "true" for "isHealthy" only
-     */
     @Test
-    public void shouldReturnGNSSstatusIsHealthy() {
-        
-        Integer testInput = 0b00000010;
-        String elementTested = "isHealthy";
-        
-        byte[] testInputBytes = {testInput.byteValue()};
-        
-        GNSSstatus testGNSSstatus = new GNSSstatus(testInputBytes);
-        PathHistoryPointList testPathHistoryPointList = new PathHistoryPointList();
-        
-        PathHistory testPathHistory = new PathHistory();
-        testPathHistory.crumbData = testPathHistoryPointList;
-        testPathHistory.currGNSSstatus = testGNSSstatus;
-        
-        J2735PathHistory actualPathHistory = OssPathHistory.genericPathHistory(testPathHistory);
-        
-        for (Map.Entry<String, Boolean> curVal : actualPathHistory.currGNSSstatus.entrySet()) {
-            if(curVal.getKey() == elementTested) {
-                assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
-            } else {
-                assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
-            }
-        }
-    }
-    
-    /**
-     * Test input bit string "01000000" returns "true" for "localCorrectionsPresent" only
-     */
-    @Test
-    public void shouldReturnGNSSstatusLocalCorrectionsPresent() {
-        
-        Integer testInput = 0b01000000;
-        String elementTested = "localCorrectionsPresent";
-        
-        byte[] testInputBytes = {testInput.byteValue()};
-        
-        GNSSstatus testGNSSstatus = new GNSSstatus(testInputBytes);
-        PathHistoryPointList testPathHistoryPointList = new PathHistoryPointList();
-        
-        PathHistory testPathHistory = new PathHistory();
-        testPathHistory.crumbData = testPathHistoryPointList;
-        testPathHistory.currGNSSstatus = testGNSSstatus;
-        
-        J2735PathHistory actualPathHistory = OssPathHistory.genericPathHistory(testPathHistory);
-        
-        for (Map.Entry<String, Boolean> curVal : actualPathHistory.currGNSSstatus.entrySet()) {
-            if(curVal.getKey() == elementTested) {
-                assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
-            } else {
-                assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
-            }
-        }
-    }
-    
-    /**
-     * Test input bit string "10000000" returns "true" for "networkCorrectionsPresent" only
-     */
-    @Test
-    public void shouldReturnGNSSstatusNetworkCorrectionsPresent() {
-        
-        Integer testInput = 0b10000000;
-        String elementTested = "networkCorrectionsPresent";
-        
-        byte[] testInputBytes = {testInput.byteValue()};
-        
-        GNSSstatus testGNSSstatus = new GNSSstatus(testInputBytes);
-        PathHistoryPointList testPathHistoryPointList = new PathHistoryPointList();
-        
-        PathHistory testPathHistory = new PathHistory();
-        testPathHistory.crumbData = testPathHistoryPointList;
-        testPathHistory.currGNSSstatus = testGNSSstatus;
-        
-        J2735PathHistory actualPathHistory = OssPathHistory.genericPathHistory(testPathHistory);
-        
-        for (Map.Entry<String, Boolean> curVal : actualPathHistory.currGNSSstatus.entrySet()) {
-            if(curVal.getKey() == elementTested) {
-                assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
-            } else {
-                assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
-            }
-        }
-    }
-    
-    /**
-     * Test input bit string "01000010" returns "true" for "isHealthy" and "localCorrectionsPresent" only
-     */
-    @Test
-    public void shouldReturnTwoGNSSstatus() {
+    public void shouldCreatePathHistoryWithKnownGNSSstatus() {
         
         Integer testInput = 0b01000010;
         String elementTested1 = "isHealthy";
@@ -253,6 +156,6 @@ public class OssPathHistoryTest {
                 assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
             }
         }
+        
     }
-
 }

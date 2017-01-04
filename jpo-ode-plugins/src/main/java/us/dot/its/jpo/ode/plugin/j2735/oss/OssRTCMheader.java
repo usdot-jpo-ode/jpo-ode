@@ -9,7 +9,7 @@ public class OssRTCMheader {
 		J2735RTCMheader header = new J2735RTCMheader();
 		
 		header.offsetSet = OssAntennaOffsetSet.genericAntennaOffsetSet(rtcmHeader.offsetSet);
-		header.status = OssBitString.genericBitString(rtcmHeader.status);
+		header.status = OssGNSSstatus.genericGNSSstatus(rtcmHeader.status);
 		
 		return header ;
 	}

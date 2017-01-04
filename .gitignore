@@ -30,6 +30,7 @@
 ######################
 ### jpo-ode-common ###
 /jpo-ode-common/target
+/jpo-ode-common/.classpath
 
 ####################
 ### jpo-ode-core ###
