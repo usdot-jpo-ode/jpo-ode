@@ -27,7 +27,6 @@ public class OssPathHistory {
 	        }
 		    
 		    ph.currGNSSstatus = status;
-		    //ph.currGNSSstatus = OssBitString.genericBitString(pathHistory.currGNSSstatus);
 		}
 		if (pathHistory.initialPosition != null) {
 		    ph.initialPosition = OssFullPositionVector.genericFullPositionVector(pathHistory.initialPosition);
