@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.annotation.PreDestroy;
 
@@ -17,54 +15,33 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-import us.dot.its.jpo.ode.bsm.BsmMessageDistributer;
-import us.dot.its.jpo.ode.bsm.BsmMessagePrinter;
-import us.dot.its.jpo.ode.importer.Importer;
 import us.dot.its.jpo.ode.storage.StorageException;
 
 @SpringBootApplication
 @EnableConfigurationProperties(OdeProperties.class)
 public class OdeSvcsApplication {
 
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	private static SerializableMessageProducerPool<String, byte[]> messageProducerPool;
-	private static SerializableMessageConsumerPool<String, byte[]> messageConsumerPool;
+   private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	public static void main(String[] args) {
-		SpringApplication.run(OdeSvcsApplication.class, args);
-	}
+   public static void main(String[] args) {
+      SpringApplication.run(OdeSvcsApplication.class, args);
+   }
 
-	@Bean
-	CommandLineRunner init(OdeProperties odeProperties) {
-		return (args) -> {
-			odeProperties.init();
-			try {
-				Files.createDirectory(Paths.get(odeProperties.getUploadLocation()));
-			} catch (FileAlreadyExistsException fae) {
-				logger.info("Upload directory already exisits");
-			} catch (IOException e) {
-				throw new StorageException("Could not initialize storage", e);
-			}
+   @Bean
+   CommandLineRunner init(OdeProperties odeProperties) {
+      return (args) -> {
+         try {
+            Files.createDirectory(Paths.get(odeProperties.getUploadLocation()));
+         } catch (FileAlreadyExistsException fae) {
+            logger.info("Upload directory already exisits");
+         } catch (IOException e) {
+            throw new StorageException("Could not initialize storage", e);
+         }
+      };
+   }
 
-			messageProducerPool = new SerializableMessageProducerPool<String, byte[]>(odeProperties);
-
-			messageConsumerPool = new SerializableMessageConsumerPool<String, byte[]>(
-					odeProperties.getHostId(), new BsmMessageDistributer(), odeProperties);
-
-			
-		};
-	}
-
-	public static SerializableMessageProducerPool<String, byte[]> getMessageProducerPool() {
-		return messageProducerPool;
-	}
-
-	public static SerializableMessageConsumerPool<String, byte[]> getMessageConsumerPool() {
-		return messageConsumerPool;
-	}
-	
-	@PreDestroy
-	public void clanup() {
-	}
+   @PreDestroy
+   public void clanup() {
+   }
 
 }

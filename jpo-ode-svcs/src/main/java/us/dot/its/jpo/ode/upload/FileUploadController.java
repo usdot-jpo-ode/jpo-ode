@@ -20,76 +20,86 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.exporter.Exporter;
 import us.dot.its.jpo.ode.importer.Importer;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
 
 @Controller
 public class FileUploadController {
-	private static Logger logger = LoggerFactory.getLogger(FileUploadController.class);  
+   private static final String OUTPUT_TOPIC = "/topic/messages";
 
-	private final StorageService storageService;
-	private ExecutorService importer;
+   private static Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
-	@Autowired
-	public FileUploadController(StorageService storageService, OdeProperties odeProperties,
-			SimpMessagingTemplate template) {
-		super();
-		this.storageService = storageService;
+   private final StorageService storageService;
+   private ExecutorService importer;
+   private ExecutorService exporter;
 
-		importer = Executors.newSingleThreadExecutor();
+   @Autowired
+   public FileUploadController(StorageService storageService, OdeProperties odeProperties,
+         SimpMessagingTemplate template) {
+      super();
+      this.storageService = storageService;
 
-		try {
-			importer.submit(new Importer(odeProperties, template));
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-			logger.error("Error creating " + this.getClass().getSimpleName(), e);
-		}
+      importer = Executors.newSingleThreadExecutor();
+      exporter = Executors.newSingleThreadExecutor();
 
-	}
+      try {
+         importer.submit(new Importer(odeProperties));
+      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+         logger.error("Error launching Importer", e);
+      }
 
-	// @GetMapping("/")
-	// public String listUploadedFiles(Model model) throws IOException {
-	//
-	// model.addAttribute("files", storageService
-	// .loadAll()
-	// .map(path ->
-	// MvcUriComponentsBuilder
-	// .fromMethodName(FileUploadController.class, "serveFile",
-	// path.getFileName().toString())
-	// .build().toString())
-	// .collect(Collectors.toList()));
-	//
-	// return "uploadForm";
-	// }
+      try {
+         exporter.submit(new Exporter(odeProperties, template, OUTPUT_TOPIC));
+      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+         logger.error("Error launching Exporter", e);
+      }
 
-	@GetMapping("/files/{filename:.+}")
-	@ResponseBody
-	public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+   }
 
-		Resource file = storageService.loadAsResource(filename);
-		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
-				.body(file);
-	}
+   // @GetMapping("/")
+   // public String listUploadedFiles(Model model) throws IOException {
+   //
+   // model.addAttribute("files", storageService
+   // .loadAll()
+   // .map(path ->
+   // MvcUriComponentsBuilder
+   // .fromMethodName(FileUploadController.class, "serveFile",
+   // path.getFileName().toString())
+   // .build().toString())
+   // .collect(Collectors.toList()));
+   //
+   // return "uploadForm";
+   // }
 
-	@PostMapping("/")
-	@ResponseBody
-	public String handleFileUpload(@RequestParam("file") MultipartFile file) {
+   @GetMapping("/files/{filename:.+}")
+   @ResponseBody
+   public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
 
-		storageService.store(file);
+      Resource file = storageService.loadAsResource(filename);
+      return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+   }
 
-		/*
-		 * redirectAttributes.addFlashAttribute("message",
-		 * "You successfully uploaded " + file.getOriginalFilename() + "!");
-		 */
+   @PostMapping("/")
+   @ResponseBody
+   public String handleFileUpload(@RequestParam("file") MultipartFile file) {
 
-		return "{\"success\": true}";
-		// return "redirect:/helloworld";
-	}
+      storageService.store(file);
 
-	@ExceptionHandler(StorageFileNotFoundException.class)
-	public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
-		return ResponseEntity.notFound().build();
-	}
+      /*
+       * redirectAttributes.addFlashAttribute("message",
+       * "You successfully uploaded " + file.getOriginalFilename() + "!");
+       */
+
+      return "{\"success\": true}";
+      // return "redirect:/helloworld";
+   }
+
+   @ExceptionHandler(StorageFileNotFoundException.class)
+   public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
+      return ResponseEntity.notFound().build();
+   }
 
 }

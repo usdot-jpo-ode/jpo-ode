@@ -1,42 +1,37 @@
 FROM ubuntu:latest
 MAINTAINER 583114@bah.com
 
-#Set environment variables
-ENV KAFKA_VERSION 0.10.1.0
-ENV SCALA_VERSION 2.11
-ENV KAFKA_HOME /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"
-
-#Expose ports for use with the container
-EXPOSE 9092
-
 #Install necessary software
+RUN apt-get update && apt-get install -y apt-utils
 RUN apt-get update && \
-    apt-get install -y zookeeper wget supervisor dnsutils && \
-    rm -rf /var/lib/apt/lists/* && \
-    wget -q http://apache.mirrors.spacedump.net/kafka/"$KAFKA_VERSION"/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -O /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz && \
-    tar xfz /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -C /opt && \
-    rm /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz
+    apt-get install -y wget supervisor dnsutils curl jq net-tools
 RUN apt-get update && \
-	apt-get install -y software-properties-common && \
-	apt-add-repository universe && \
-	apt-get install -y maven
-RUN apt-get install -y git
-RUN apt-get install -y default-jdk
+    apt-get install -y default-jdk
 RUN apt-get update && \
-	apt-get install -y vim
+    apt-get install -y vim
 RUN apt-get update && \
-	apt-get install -y nano && \
+    apt-get install -y nano && \
 	apt-get clean
+
+##install docker
+#RUN apt-get install -y apt-transport-https ca-certificates
+#RUN apt-key adv \
+#  --keyserver hkp://ha.pool.sks-keyservers.net:80 \
+#  --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+#RUN echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | tee /etc/apt/sources.list.d/docker.list
+#RUN apt-get update && apt-get install -y docker docker-engine
+#RUN apt-cache policy docker-engine
+##RUN apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual
+#RUN service docker start
 
 #Add files
 ADD jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar /home
-ADD docker/start.sh /start.sh
-ADD docker/createTopic.sh /createTopic.sh
-RUN echo "hostname=kafka" >> /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"/config/server.properties
-RUN echo "advertised.host.name=<Docker_Container_IP>" >> /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"/config/server.properties
-RUN echo "advertised.port=9092" >> /opt/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION"/config/server.properties
+ADD docker/start-ode.sh /usr/bin/start-ode.sh
+ADD jpo-ode-svcs/src/main/resources/application.properties /home
+RUN chmod a+x /usr/bin/start-ode.sh
 
 #Change permissions and run scripts
-RUN chmod +x start.sh
-RUN chmod +x createTopic.sh
-CMD bash -C './start.sh' ; './createTopic.sh' ; '/bin/bash'
+RUN cd /home
+# Use "exec" form so that it runs as PID 1 (useful for graceful shutdown)
+#CMD bash -c 'start-kafka.sh & ; start-ode.sh'
+CMD bash -c 'start-ode.sh'

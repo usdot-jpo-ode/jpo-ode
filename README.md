@@ -29,6 +29,10 @@ are stored in the WYDOT data warehouse.
  
 ## Release Notes
 ### Release 1.0
+### 2017-01-02
+- ODE-42 Clean up the kafka adapter and make it work with Kafka broker
+Integrated kafka. Kept Stomp as the high level WebSocket API protocol.
+- ODE-36 - Docker, docker-compose, Kafka and ode Integration
 
 ## Collaboration Tools
 
@@ -89,61 +93,81 @@ The following instructions describe the procedure to fetch, build and run the ap
 ##### Getting the source Code
 Clone the source code from GitHub and BitBucket repositories using Git commands:
 
-```
+```bash
 git clone https://github.com/usdot-jpo-ode/jpo-ode.git
 git clone https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 ```
 
-##### Building the Executables
+**NOTE**: If running on Windows, please make sure that your global git config is set up to not convert End-of-Line characters during checkout. This is important for building docker images correctly.
+```bash
+git config --global core.autocrlf false
+``` 
+
+##### Building ODE Application
 
 To build the application use maven command line. 
 
 **Step 1**. Navigate to the root directory of the jpo-ode-private project:
 
-```
+```bash
  cd jpo-ode-private/
  mvn clean
  mvn install
 ```
-It is important you run mvn clean first and then mvn install because mvn clean installs the required OSS jar file in you rmaven local repository. 
+It is important you run mvn clean first and then mvn install because mvn clean installs the required OSS jar file in your maven local repository. 
 
 **Step 2**. Navigate to the root directory of the jpo-ode project:
+If you wish to change the application properties, such as change the location of the upload service via ode.uploadLocation property or set the ode.kafkaBrokers to something other than the $DOCKER_HOST_IP:9092, modify ```jpo-ode-svcs\src\main\resources\application.properties``` file as desired.
 
-```
+Run the following commands to build the application containers.
+```bash
  cd jpo-ode (or cd ../jpo-ode if you are in the jpo-ode-private directory) 
  mvn clean install
+ docker-compose build
 ```
-##### Running the application
+
+Alternatively, run the script ```build``` script.
+
+##### Deploying ODE Application on a Docker Host
 To run the application, from jpo-ode directory: 
 
-```
-java -jar jpo-ode-svcs/target/po-ode-svcs-0.0.1-SNAPSHOT.jar
-```
-
-You should be able to access the running service at `localhost:8080`.
-
-```json
-{
-	"coreData": {
-		"position":	{
-				"latitude":42.3288028,
-				"longitude":-83.048916,
-				"elevation":157.5
-		}
-	}
-}
+```bash
+docker-compose up --no-recreate -d
 ```
 
-And the output:
+**NOTE**: It's important to run ```docker-compose up``` with ```no-recreate``` option. Otherwise you may run into [this issue] (https://github.com/wurstmeister/kafka-docker/issues/100).
 
+Alternatively, run ```deploy``` script.
+
+Check the deployment by running ```docker-compose ps```. You can start and stop service using ```docker-compose start``` and ```docker-compose stop``` commands. 
+If using the multi-broker docker-compose file, you can change the scaling by running ```docker-compose scale <service>=n``` where service is the service you would like to scale and n is the number of instances. For example, ```docker-compose scale kafka=3```.
+
+##### Build and deploy in one step
+To build and run the application in one step, run the ```build-and-deploy``` script.
+ 
+##### Running ODE Application Locally
+You can run the application on your local machine while other services are deployed on a host environment. To do so, run the following:
+```bash
+ docker-compose start zookeeper kafka
+ java -jar jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar
 ```
-004C4C8CCD00005AD2749535A4E8D6084E80000000000500007E7D07D07F7FFF0000050050000000000000000000000000000000000000000000000000000000
 
-{"coreData":{"msgCnt":1,"id":"31323334","secMark":1,"position":{"latitude":0.0000042,"longitude":-0.0000083,"elevation":15.7},"accelSet":{"accelLat":0.00,"accelLong":0.00,"accelVert":0.00,"accelYaw":0.00},"accuracy":{"semiMajor":0.00,"semiMinor":0.00,"orientation":0.0},"transmission":"neutral","speed":0.20,"heading":0.0000,"angle":0.0,"brakes":{"wheelBrakes":{"BIT STRING":false},"traction":"unavailable","abs":"unavailable","scs":"unavailable","brakeBoost":"unavailable","auxBrakes":"unavailable"},"size":{"width":10,"length":10}},"partII":[]}
+##### Testing ODE Application
+You should be able to access the jpo-ode UI at `localhost:8080`.
+
+Upload a file containing BSM messages in ASN.1 Hexadecimal encoded format. For example, a file containing the following record:
+```text
+401480CA4000000000000000000000000000000000000000000000000000000000000000F800D9EFFFB7FFF00000000000000000000000000000000000000000000000000000001FE07000000000000000000000000000000000001FF0
 ```
 
-Which demonstrates a loop of Readable JSON -> ASN.1 UPER encoded BSM Message -> Readable Output
+1. Press the ```Connect``` button to connect to the ODE WebSocket service.
+2. Press ```Choose File``` button to select the file with the ASN.1 Hex BSM record in it.
+3. Press ```Upload``` button to upload the file to ODE.
 
+Another way data can be uploaded to the ODE is through copying the file to the location specified by the ode.uploadLocation property. Default location is the ```uploads``` directory directly off of the directory where ODE is launched.
+The result of uploading and decoding of the message will be displayed on the UI screen. 
+
+![ODE UI](images/ode-ui.png)
 
 ### Integrated Development Environment (IDE)
 
@@ -159,4 +183,8 @@ Install the IDE of your choice:
 ### Deployment
 
 ## Docker
-docker/README.md
+![docker/README.md](docker/README.md)
+
+## Kafka
+![docker/kafka/README.md](docker/kafka/README.md)
+

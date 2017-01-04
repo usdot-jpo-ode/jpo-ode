@@ -5,106 +5,91 @@ import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.util.SerializationUtils;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.OdeSvcsApplication;
+import us.dot.its.jpo.ode.SerializableMessageProducerPool;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.subscriber.Subscriber;
-import us.dot.its.jpo.ode.wrapper.MessageConsumer;
+import us.dot.its.jpo.ode.util.SerializationUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class BsmCoder {
 
-	public static final String BSM_ASN1_ENCODED_MESSAGES = "BSM_ASN1_ENCODED_MESSAGES";
+   private static Logger logger = LoggerFactory.getLogger(BsmCoder.class);
 
-	public static final String BSM_OBJECTS = "/topic/messages";
+   private OdeProperties odeProperties;
+   private Asn1Plugin asn1Coder;
+   private SerializableMessageProducerPool<String, byte[]> messageProducerPool;
+   
+   public BsmCoder() {
+      super();
+   }
 
-	private static Logger logger = LoggerFactory.getLogger(BsmCoder.class);
+   public BsmCoder(OdeProperties properties) {
+      super();
+      this.odeProperties = properties;
+      if (this.asn1Coder == null) {
+         logger.info("Loading ASN1 Coder: {}", this.odeProperties.getAsn1CoderClassName());
+         try {
+            this.asn1Coder = (Asn1Plugin) PluginFactory.getPluginByName(properties.getAsn1CoderClassName());
+         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            logger.error("Unable to load plugin: " + properties.getAsn1CoderClassName(), e);
+         }
+      }
+      
+      messageProducerPool = 
+            new SerializableMessageProducerPool<String, byte[]>(odeProperties);
+   }
 
-    private SimpMessagingTemplate template;
+   public void decodeFromHexAndPublish(InputStream is, String topic)
+         throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+      String line = null;
+      J2735Bsm decoded = null;
 
-	private OdeProperties odeProperties;
-	private Asn1Plugin asn1Coder;
+      try (Scanner scanner = new Scanner(is)) {
+         while (scanner.hasNextLine()) {
+            line = scanner.nextLine();
 
-	
-	public BsmCoder() {
-		super();
-	}
+            decoded = (J2735Bsm) asn1Coder.UPER_DecodeHex(line);
+            logger.debug("Decoded: {}", decoded);
+            if (!OdeProperties.KAFKA_TOPIC_J2735_BSM.endsWith("json"))
+               publish(topic, decoded);
+            else
+               publish(topic, decoded.toJson());
+         }
+      } catch (Exception e) {
+         logger.error("Error decoding data: " + line, e);
+      }
+   }
 
-	public BsmCoder(OdeProperties properties, SimpMessagingTemplate template) {
-		super();
-		this.odeProperties = properties;
-		if (this.asn1Coder == null) {
-			logger.info("Loading ASN1 Coder: {}", this.odeProperties.getAsn1CoderClassName());
-			try {
-				this.asn1Coder = (Asn1Plugin) PluginFactory.getPluginByName(properties.getAsn1CoderClassName());
-			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-				logger.error("Unable to load plugin: " + properties.getAsn1CoderClassName(), e);
-			}
-		}
-		
-		this.template = template;
-	}
+   public void publish(String topic, J2735Bsm msg) {
+      SerializationUtils<J2735Bsm> serializer = new SerializationUtils<J2735Bsm>();
+      publish(topic, serializer.serialize(msg));
+      logger.debug("Published: {}", msg.toJson());
+   }
 
-	public void decodeFromHexAndPublish(InputStream is, String topic)
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		String line = null;
-		J2735Bsm decoded = null;
+   public void publish(String topic, String msg) {
+	        MessageProducer.defaultStringMessageProducer(
+	        		odeProperties.getKafkaBrokers(), 
+	        		odeProperties.getKafkaProducerType())
+	        	.send(topic, null, msg);
+	        
+	        logger.debug("Published: {}", msg);
+   }
 
-		try (Scanner scanner = new Scanner(is)) {
-			while (scanner.hasNextLine()) {
-				line = scanner.nextLine();
+   public void publish(String topic, byte[] msg) {
+      MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
+      producer.send(topic, null, msg);
+      messageProducerPool.checkIn(producer);
+   }
 
-				decoded = (J2735Bsm) asn1Coder.UPER_DecodeHex(line);
-				logger.debug("Decoded: {}", decoded);
-				//TODO replace this with Kafka
-		        template.convertAndSend(topic, new Subscriber(decoded.toJson()));
-			}
-		} catch (Exception e) {
-			logger.error("Error decoding data: " + line, e);
-		}
-	}
+   public OdeProperties getOdeProperties() {
+      return odeProperties;
+   }
 
-	public void publish(String topic, J2735Bsm msg) {
-		publish(topic, SerializationUtils.serialize(msg));
-	}
-
-	public void publish(String topic, String msg) {
-		publish(topic, SerializationUtils.serialize(msg));
-	}
-
-	public void publish(String topic, byte[] msg) {
-		MessageProducer<String, byte[]> producer = (MessageProducer<String, byte[]>) OdeSvcsApplication
-				.getMessageProducerPool().checkOut();
-		producer.send(topic, null, msg);
-		logger.debug("Published: {}", msg.toString());
-		OdeSvcsApplication.getMessageProducerPool().checkIn(producer);
-	}
-
-	public void subscribe() {
-		MessageConsumer<String, byte[]> consumer = OdeSvcsApplication.getMessageConsumerPool().checkOut();
-		consumer.subscribe(BSM_OBJECTS); // Subscribe to the topic name
-		OdeSvcsApplication.getMessageConsumerPool().checkIn(consumer);
-	}
-
-	public SimpMessagingTemplate getTemplate() {
-		return template;
-	}
-
-	public void setTemplate(SimpMessagingTemplate template) {
-		this.template = template;
-	}
-
-	public OdeProperties getOdeProperties() {
-		return odeProperties;
-	}
-
-	public void setOdeProperties(OdeProperties odeProperties) {
-		this.odeProperties = odeProperties;
-	}
+   public void setOdeProperties(OdeProperties odeProperties) {
+      this.odeProperties = odeProperties;
+   }
 
 }
