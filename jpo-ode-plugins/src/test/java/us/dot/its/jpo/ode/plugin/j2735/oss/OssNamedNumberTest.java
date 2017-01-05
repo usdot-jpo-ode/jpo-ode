@@ -19,10 +19,21 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssNamedNumber;
  * "Generic Locations," is assigned the upper byte value of [31] (which provides
  * for value ranges from 7936 to 8191, inclusive).
  * 
- * ASN.1 Representation: GenericLocations ::= ENUMERATED { -- Road Related
- * on-bridges (7937), -- Not to be used as the default for this -- category
- * in-tunnels (7938), entering-or-leaving-tunnels (7939), on-ramps (7940), ...
- * northwest (8003), southeast (8004), southwest (8005), ... }
+ * ASN.1 Representation: 
+ *    GenericLocations ::= ENUMERATED { 
+ *    -- Road Related
+ *    on-bridges (7937), 
+ *    -- Not to be used as the default for this 
+ *    -- category
+ *    in-tunnels (7938), 
+ *    entering-or-leaving-tunnels (7939), 
+ *    on-ramps (7940), 
+ *    [shortened]
+ *    northwest (8003), 
+ *    southeast (8004), 
+ *    southwest (8005), 
+ *    ... 
+ *    }
  */
 public class OssNamedNumberTest {
 
