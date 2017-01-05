@@ -1,18 +1,14 @@
 package us.dot.its.jpo.ode.importer;
 
-//import java.nio.file.InvalidPathException;
-//import java.nio.file.Paths;
-
-//import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
-import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-//import java.nio.file.CopyOption;
+
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
@@ -23,20 +19,13 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-//import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.bsm.BsmCoder;
-//import us.dot.its.jpo.ode.plugin.PluginFactory;
-//import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
-//import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
-//import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-//import us.dot.its.jpo.ode.storage.FileSystemStorageService;
-//import us.dot.its.jpo.ode.util.JsonUtils;
-//import us.dot.its.jpo.ode.bsm.BsmCoder;
+
 
 public class Importer implements Runnable {
 	
@@ -186,9 +175,6 @@ public class Importer implements Runnable {
 		logger.info("IMPORTER - Watching inbox folder: " + inboxFolder);
 
 		
-		
-		//logger.info("IMPORTER - Loading ASN1 Coder: {}", odeProps.getAsn1CoderClassName());
-		//this.asn1Coder = (Asn1Plugin) PluginFactory.getPluginByName(odeProps.getAsn1CoderClassName());	
 		logger.info("IMPORTER - Instantiating BSM Coder...");
 		bsmCoder = new BsmCoder(odeProps);
 		
@@ -219,85 +205,20 @@ public class Importer implements Runnable {
 	
 
 	public void processFile(Path filePath) throws Exception {
-		//String topicName = "BSM";
-		//String line = "";
-		
-		/*
-		// TODO: figure out what type of file this is and handle it accordingly
-		try (Scanner scanner = new Scanner(filePath.toAbsolutePath())) {
-			while (scanner.hasNextLine()) {
-				line = scanner.nextLine();
-				
-//				if(!line.isEmpty()) {
-				// TODO (Cris): process BSM data here, for now it's not important.
-				if(false) {
-					Asn1Object bsm;
-					String encoded;
-					try {
-						bsm = (Asn1Object) JsonUtils.fromJson(line, J2735Bsm.class);
-						logger.info("IMPORTER - Read JSON data: {}", bsm);
-						encoded = asn1Coder.UPER_EncodeHex(bsm);
-						logger.info("IMPORTER - Encoded data: {}", encoded);
-					} catch (Exception e) {
-						logger.warn("IMPORTER - Message is not JSON. Assuming HEX...");
-						encoded = line;
-					}
-					
-					logger.info("IMPORTER - Data to decode: ", encoded);
 	
-					J2735Bsm decoded = (J2735Bsm) asn1Coder.UPER_DecodeHex(encoded);
-					
-					// Update stats
-					processedFileCount++;
-					lastFileProcessedTime = System.currentTimeMillis();
-					
-					
-					 // Send decoded.toJson() to kafka queue Receive from same Kafka
-					 // topic queue
-					 
-					FileSystemStorageService.produceMessage(topicName, decoded);
-					FileSystemStorageService.consumeMessage(topicName);
-					logger.info("IMPORTER - Decoded Data:", decoded.toJson());
-				}
-			}
-			// Now rename file and move it to the backup folder			
-			try {
-				// TODO(Cris): handle other file types here...
-				String processedFileName = Integer.toString((int)System.currentTimeMillis()) + "-" + filePath.getFileName().toString().replaceFirst("uper", "pbo");
-				Path targetPath = backupFolder.resolveSibling("backup\\" +  processedFileName);
-				Files.move(filePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
-			}
-			catch (Exception e){
-				importerStatus |= MOVE2BACKUP_ERROR;
-				logger.error("IMPORTER -  Error moving file to temporary directory: " + line, e);
-			}
-
-		
+		try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
+			
+			this.bsmCoder.decodeFromHexAndPublish(
+					inputStream, OdeProperties.KAFKA_TOPIC_J2735_BSM);
+			inputStream.close();
+			
+			disposeOfProcessedFile(filePath);
+			//break;
 		} catch (Exception e) {
-			importerStatus |= ASN_DECODING_ERROR;
-			logger.error("IMPORTER -  Error opening file: " + filePath.toString(), e);
-			throw (e);
+			logger.info("unable to open file: " + filePath, e);
+			throw e;
 		}
-		*/
-		File bsmFile = filePath.toFile();
-		
-		int retryCount = 2;
-		while (retryCount-- > 0) {
-			try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
-				
-				// TODO (Cris): enable
-				//this.bsmCoder.decodeFromHexAndPublish(
-				//		inputStream, OdeProperties.KAFKA_TOPIC_J2735_BSM);
-				inputStream.close();
-				// bsmFile.delete();
-				disposeOfProcessedFile(filePath);
-				break;
-			} catch (Exception e) {
-				logger.info("unable to open file: " + filePath 
-						+ " retrying " + retryCount + " more times", e);
-				Thread.sleep(100);
-			}
-		}						
+								
 	}
 	
 	
@@ -372,10 +293,9 @@ public class Importer implements Runnable {
 						WatchEvent<Path> watchEventCurrent = (WatchEvent<Path>) watchEvent;
 						Path newPath = watchEventCurrent.context();
 						logger.info("IMPORTER - New file detected: {}", newPath);
-						
-						processFile(newPath);
+						Path fullPath = Paths.get(inboxFolder.toString(), newPath.toString());
+						processFile(fullPath);
 
-						
 					}
 				}
 
