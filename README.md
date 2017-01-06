@@ -5,16 +5,8 @@ Develop: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch
 # jpo-ode
 US Department of Transportation Joint Program office (JPO) Operational Data Environment (ODE)
 
-![System Diagram](images/overview.png)
-
-## Project Description
 In the context of ITS, an Operational Data Environment is a real-time data acquisition and distribution software system that processes and routes data from Connected-X devices –including connected vehicles (CV), personal mobile devices, and infrastructure components and sensors –to subscribing applications to support the operation, maintenance, and use of the transportation system, as well as related research and development efforts.
 
-As a data provisioning service, the ODE can provision data from disparate data sources to software applications that have placed data subscription requests to the ODE. These subscribing applications may include CV applications as well as non-CV applications. While provisioning data from data sources for data users, the ODE also performs necessary security / credential checks and, as needed, data valuation, aggregation, integration, sanitization and propagation functions. These functions are core functions to the WYDOT ODE and are detailed in later sections. However, these may be summarized, in no particular order, as the following: -	Data valuation is the process of making a judgment about the quality or value of the data-	Data integration is the process of combining different data from multiple sources to provide more complete information-	Data sanitization is the modification of data as originally received to reduce or eliminate the possibility that the data can be used to compromise the privacy of the individual(s) that might be linked to the data-	Data aggregation is the creation of composite or summary information from more granular data
-
-
-
- 
 ## Release Notes
 ### Release 1.0
 ### 2017-01-02
@@ -51,8 +43,6 @@ travis env set PRIVATE_REPO_URL_UN_PW https://<bitbucketusername>:<password>@bit
 https://sonarqube.com/dashboard/index?id=us.dot.its.jpo.ode%3Ajpo-ode%3Adevelop
 
 ## Getting Started
-
-![Architecture Diagram](images/ODE_Architecture_v2.png)
 
 ### Local Build
 
