@@ -1,8 +1,8 @@
 cd ..
-git clone https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
+call git clone https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 cd jpo-ode-private
-mvn clean
-mvn install
+call mvn clean
+call mvn install
 cd ../jpo-ode
-mvn clean install
-docker-compose build
+call mvn clean install
+call docker-compose build

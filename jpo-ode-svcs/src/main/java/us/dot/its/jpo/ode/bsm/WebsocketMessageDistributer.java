@@ -9,24 +9,24 @@ import us.dot.its.jpo.ode.util.WebSocketUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
 public class WebsocketMessageDistributer extends MessageProcessor<String, byte[]> {
-	
-	private Session clientSession;
-	
-	@Override
-	public Object call() throws Exception {
-	    J2735Bsm bsm = (J2735Bsm) SerializationUtils.deserialize(record.value());
-	    
-		// send the data to client
-		WebSocketUtils.send(clientSession, bsm.toJson());
-		return null;
-	}
 
-	public Session getClientSession() {
-		return clientSession;
-	}
+   private Session clientSession;
 
-	public void setClientSession(Session clientSession) {
-		this.clientSession = clientSession;
-	}
+   @Override
+   public Object call() throws Exception {
+      J2735Bsm bsm = (J2735Bsm) SerializationUtils.deserialize(record.value());
+
+      // send the data to client
+      WebSocketUtils.send(clientSession, bsm.toJson());
+      return null;
+   }
+
+   public Session getClientSession() {
+      return clientSession;
+   }
+
+   public void setClientSession(Session clientSession) {
+      this.clientSession = clientSession;
+   }
 
 }

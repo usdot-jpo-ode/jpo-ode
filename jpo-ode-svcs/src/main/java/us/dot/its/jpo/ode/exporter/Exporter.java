@@ -16,39 +16,40 @@ public class Exporter implements Runnable {
    private MessageConsumer<String, String> stringConsumer;
    private MessageConsumer<String, byte[]> byteArrayConsumer;
    private String topic;
-   
-   private static String subscribeToTopic = OdeProperties.KAFKA_TOPIC_J2735_BSM_JSON;
 
    public Exporter(OdeProperties odeProps, SimpMessagingTemplate template, String topic)
          throws ClassNotFoundException, InstantiationException, IllegalAccessException {
       this.odeProperties = odeProps;
       this.template = template;
       this.topic = topic;
-      
+
    }
 
    @Override
    public void run() {
-//      byteArrayConsumer = MessageConsumer.defaultByteArrayMessageConsumer(
-//            odeProperties.getKafkaBrokers(),
-//            odeProperties.getHostId() + this.getClass().getSimpleName(), 
-//            new StompByteArrayMessageDistributor(template));
-//      logger.info("Subscribing to {}", OdeProperties.KAFKA_TOPIC_J2735_BSM);
-//      byteArrayConsumer.subscribe(OdeProperties.KAFKA_TOPIC_J2735_BSM);
-//      byteArrayConsumer.close();
-       stringConsumer = MessageConsumer.defaultStringMessageConsumer (
-       odeProperties.getKafkaBrokers(),
-       odeProperties.getHostId()+this.getClass().getSimpleName(),
-       new StompStringMessageDistributor(template, topic));
-      
-       logger.info("Subscribing to {}", subscribeToTopic);
-       stringConsumer.subscribe(subscribeToTopic);
-       shutDown();
+      logger.info("Subscribing to {}", OdeProperties.KAFKA_TOPIC_J2735_BSM);
+      if (!OdeProperties.KAFKA_TOPIC_J2735_BSM.endsWith("json")) {
+         byteArrayConsumer = MessageConsumer.defaultByteArrayMessageConsumer(
+               odeProperties.getKafkaBrokers(),
+               odeProperties.getHostId() + this.getClass().getSimpleName(),
+               new StompByteArrayMessageDistributor(template, topic));
+         byteArrayConsumer.subscribe(OdeProperties.KAFKA_TOPIC_J2735_BSM);
+      } else {
+         stringConsumer = MessageConsumer.defaultStringMessageConsumer(
+               odeProperties.getKafkaBrokers(),
+               odeProperties.getHostId() + this.getClass().getSimpleName(),
+               new StompStringMessageDistributor(template, topic));
+         stringConsumer.subscribe(OdeProperties.KAFKA_TOPIC_J2735_BSM);
+      }
+      shutDown();
    }
 
    public void shutDown() {
       logger.info("Shutting down Exporter to topic {}", topic);
-      stringConsumer.close();
-      byteArrayConsumer.close();
+      if (stringConsumer != null)
+         stringConsumer.close();
+      
+      if (byteArrayConsumer != null)
+         byteArrayConsumer.close();
    }
 }

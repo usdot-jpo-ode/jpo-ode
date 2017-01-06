@@ -1,2 +1,2 @@
-docker-compose stop
-docker-compose up --no-recreate -d
+call docker-compose stop
+call docker-compose up --no-recreate -d

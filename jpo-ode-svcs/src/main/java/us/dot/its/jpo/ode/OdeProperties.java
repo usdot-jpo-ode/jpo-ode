@@ -21,7 +21,6 @@ public class OdeProperties implements EnvironmentAware {
    /////////////////////////////////////////////////////////////////////////////
    // Kafka Topics
    public static final String KAFKA_TOPIC_J2735_BSM = "topic.J2735Bsm";
-   public static final String KAFKA_TOPIC_J2735_BSM_JSON = "topic.J2735Bsm.json";
    /////////////////////////////////////////////////////////////////////////////
 
    @Autowired

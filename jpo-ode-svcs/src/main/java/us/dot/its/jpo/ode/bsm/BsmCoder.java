@@ -5,13 +5,13 @@ import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.SerializationUtils;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.util.SerializationUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class BsmCoder {
@@ -53,7 +53,7 @@ public class BsmCoder {
 
             decoded = (J2735Bsm) asn1Coder.UPER_DecodeHex(line);
             logger.debug("Decoded: {}", decoded);
-            if (topic == OdeProperties.KAFKA_TOPIC_J2735_BSM)
+            if (!OdeProperties.KAFKA_TOPIC_J2735_BSM.endsWith("json"))
                publish(topic, decoded);
             else
                publish(topic, decoded.toJson());
@@ -64,7 +64,9 @@ public class BsmCoder {
    }
 
    public void publish(String topic, J2735Bsm msg) {
-      publish(topic, SerializationUtils.serialize(msg));
+      SerializationUtils<J2735Bsm> serializer = new SerializationUtils<J2735Bsm>();
+      publish(topic, serializer.serialize(msg));
+      logger.debug("Published: {}", msg.toJson());
    }
 
    public void publish(String topic, String msg) {
@@ -79,7 +81,6 @@ public class BsmCoder {
    public void publish(String topic, byte[] msg) {
       MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
       producer.send(topic, null, msg);
-      logger.debug("Published: {}", SerializationUtils.deserialize(msg));
       messageProducerPool.checkIn(producer);
    }
 
