@@ -556,7 +556,6 @@ public class OssTrailerUnitDescriptionTest {
         
         assertEquals(1, actualtud.crumbData.size());
         assertEquals(expectedHeading, actualtud.crumbData.get(0).heading);
-        
     }
 
 }
