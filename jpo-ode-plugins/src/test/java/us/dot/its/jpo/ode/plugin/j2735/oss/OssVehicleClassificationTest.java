@@ -693,15 +693,6 @@ public class OssVehicleClassificationTest {
     }
 
     // ResponderGroupAffected tests
-    /*
-      *       emergency-vehicle-units (9729), -- Default, to be used when one of
- *       -- the below does not fit better
- *       federal-law-enforcement-units (9730),
- *       state-police-units (9731),
- *       [shortened]
- *       transportation-response-units (9741),
- *       private-contractor-response-units (9742),
-     */
     /**
      * Test minimum responder group affected value (9729) returns ("emergency_vehicle_units")
      */

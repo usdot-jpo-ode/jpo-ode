@@ -41,7 +41,6 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735TrailerHistoryPoint;
  *       -- overall heading
  *       ...
  *       }
- *
  */
 public class OssTrailerHistoryPointTest {
 
@@ -66,7 +65,6 @@ public class OssTrailerHistoryPointTest {
         } catch (Exception e) {
             fail("Unexpected exception: " + e.getClass());
         }
-        
     }
 
 }
