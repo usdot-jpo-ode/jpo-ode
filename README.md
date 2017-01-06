@@ -9,6 +9,10 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
  
 ## Release Notes
 ### Release 1.0
+
+### 2017-01-06
+ODE_41 Importer improvements
+
 ### 2017-01-02
 - ODE-42 Clean up the kafka adapter and make it work with Kafka broker
 Integrated kafka. Kept Stomp as the high level WebSocket API protocol.
@@ -103,10 +107,11 @@ Run the following commands to build the application containers.
 ```bash
  cd jpo-ode (or cd ../jpo-ode if you are in the jpo-ode-private directory) 
  mvn clean install
+ docker-compose rm -f -v
  docker-compose build
 ```
 
-Alternatively, run the script ```build``` script.
+Alternatively, run the script ```clean-build``` script.
 
 ##### Deploying ODE Application on a Docker Host
 To run the application, from jpo-ode directory: 
@@ -123,7 +128,7 @@ Check the deployment by running ```docker-compose ps```. You can start and stop 
 If using the multi-broker docker-compose file, you can change the scaling by running ```docker-compose scale <service>=n``` where service is the service you would like to scale and n is the number of instances. For example, ```docker-compose scale kafka=3```.
 
 ##### Build and deploy in one step
-To build and run the application in one step, run the ```build-and-deploy``` script.
+To build and run the application in one step, run the ```clean-build-and-deploy``` script.
  
 ##### Running ODE Application Locally
 You can run the application on your local machine while other services are deployed on a host environment. To do so, run the following:
