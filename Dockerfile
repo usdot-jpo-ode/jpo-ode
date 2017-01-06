@@ -31,7 +31,6 @@ ADD jpo-ode-svcs/src/main/resources/application.properties /home
 RUN chmod a+x /usr/bin/start-ode.sh
 
 #Change permissions and run scripts
-RUN cd /home
 # Use "exec" form so that it runs as PID 1 (useful for graceful shutdown)
 #CMD bash -c 'start-kafka.sh & ; start-ode.sh'
 CMD bash -c 'start-ode.sh'

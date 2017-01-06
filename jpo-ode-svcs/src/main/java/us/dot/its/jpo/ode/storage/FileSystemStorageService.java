@@ -46,6 +46,7 @@ public class FileSystemStorageService implements StorageService {
             throw new StorageException("Failed to store empty file " + path);
          }
          Files.copy(file.getInputStream(), path);
+         logger.debug("File {} copied to {}", file.getOriginalFilename(), path);
       } catch (IOException e) {
          throw new StorageException("Failed to store file " + path, e);
       }

@@ -12,4 +12,7 @@
 #echo java -jar /home/jpo-ode-svcs-0.0.1-SNAPSHOT.jar --ode.kafkaBrokers=$BROKER_LIST
 #java -jar /home/jpo-ode-svcs-0.0.1-SNAPSHOT.jar --ode.kafkaBrokers=$BROKER_LIST
 echo starting ODE
-java -jar /home/jpo-ode-svcs-0.0.1-SNAPSHOT.jar --ode.kafkaBrokers=$DOCKER_HOST_IP:9092
+cd /home
+#mkdir -p /home/uploads
+#java -Xdebug -Xrunjdwp:transport=dt_socket,address=8001,server=y,suspend=y -jar /home/jpo-ode-svcs-0.0.1-SNAPSHOT.jar
+java -jar /home/jpo-ode-svcs-0.0.1-SNAPSHOT.jar
