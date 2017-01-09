@@ -66,3 +66,4 @@
 /jpo-ode-plugins/.apt_generated/
 /jpo-ode-plugins/target/
 jpo-ode-consumer-example/my-app/target/*
+ode.log
