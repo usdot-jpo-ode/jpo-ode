@@ -10,7 +10,7 @@ public class J2735EventDescription extends Asn1Object {
 
 	public List<Integer> description;
 	public J2735Extent extent;
-	public J2735BitString heading;
+	public J2735HeadingSlice heading;
 	public String priority;
 	public List<J2735RegionalContent> regional = 
 			new ArrayList<J2735RegionalContent>();

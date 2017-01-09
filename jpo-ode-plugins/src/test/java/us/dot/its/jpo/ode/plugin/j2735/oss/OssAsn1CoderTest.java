@@ -2,9 +2,18 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
+import javax.xml.bind.DatatypeConverter;
+
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 
 public class OssAsn1CoderTest {
 

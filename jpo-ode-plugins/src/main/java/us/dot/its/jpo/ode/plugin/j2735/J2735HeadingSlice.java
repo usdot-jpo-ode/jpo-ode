@@ -7,9 +7,10 @@ import java.util.List;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-public class J2735HeadingSlice extends Asn1Object {
+public class J2735HeadingSlice extends J2735BitString {
 	private static final long serialVersionUID = 1L;
 	
+	/*
    public enum SliceMask {
       noHeading(0x0000),
       from000_0to022_5degrees(0x0001),
@@ -29,6 +30,7 @@ public class J2735HeadingSlice extends Asn1Object {
       from315_0to337_5degrees(0x4000),
       from337_5to360_0degrees(0x8000),
       allHeadings(0xFFFF);
+       
       
       
       private int sliceMask;
@@ -101,5 +103,5 @@ public class J2735HeadingSlice extends Asn1Object {
       return true;
    }
 
-   
+   */
 }
