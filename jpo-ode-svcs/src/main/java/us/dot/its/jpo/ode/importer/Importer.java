@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.importer;
 
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
@@ -194,9 +193,9 @@ public class Importer implements Runnable {
    public void processFile(Path filePath) throws Exception, InterruptedException {
 
       //TODO let's try to get rid of the need for retry
-      int retryCount = 3;
+      int tryCount = 3;
       boolean fileProcessed = false;
-      while (retryCount-- > 0) {
+      while (tryCount-- > 0) {
          try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
             this.bsmCoder.decodeFromHexAndPublish(inputStream, OdeProperties.KAFKA_TOPIC_J2735_BSM);
             fileProcessed = true;
@@ -204,7 +203,7 @@ public class Importer implements Runnable {
             break;
          } catch (Exception e) {
             logger.info("unable to open file: " + filePath 
-                  + " retrying " + retryCount + " more times", e);
+                  + " retrying " + tryCount + " more times", e);
             Thread.sleep(1000);
          }
       }
@@ -264,8 +263,8 @@ public class Importer implements Runnable {
          try (WatchService service = fs.newWatchService()) {
 
             // We register the folder to the service
-            // We watch for creation events
-            inboxFolder.register(service, ENTRY_CREATE, ENTRY_MODIFY);
+            // We watch for modification events
+            inboxFolder.register(service, ENTRY_MODIFY);
 
             // Start the infinite polling loop
             WatchKey key = null;
@@ -278,7 +277,7 @@ public class Importer implements Runnable {
                kind = watchEvent.kind();
                if (OVERFLOW == kind) {
                   continue; // loop
-               } else if (ENTRY_CREATE == kind || ENTRY_MODIFY == kind) {
+               } else if (ENTRY_MODIFY == kind) {
                   // A new Path was created
                   @SuppressWarnings("unchecked")
                   WatchEvent<Path> watchEventCurrent = (WatchEvent<Path>) watchEvent;
