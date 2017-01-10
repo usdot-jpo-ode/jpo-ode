@@ -44,7 +44,6 @@ public class OssBsmCoreData {
             // Heading ::= INTEGER (0..28800)
             // -- LSB of 0.0125 degrees
             // -- A range of 0 to 359.9875 degrees
-            System.out.println("[OssCoreData] Input: " + coreData.heading.intValue());
             genericBsmCoreData.heading = OssHeading.genericHeading(coreData.heading);
         }
 

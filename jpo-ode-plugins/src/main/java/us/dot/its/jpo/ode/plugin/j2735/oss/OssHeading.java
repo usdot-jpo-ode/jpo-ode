@@ -17,14 +17,12 @@ public class OssHeading {
             throw new IllegalArgumentException("Coarse heading value out of bounds");
         }
 
-        System.out.println("[OssHeading] Input: " + heading.intValue());
         BigDecimal result = null;
 
         if (heading.intValue() != 240) {
             result = BigDecimal.valueOf(heading.longValue() * 15, 1);
         }
 
-        System.out.println("[OssHeading] Output: " + result);
         return result;
     }
 
