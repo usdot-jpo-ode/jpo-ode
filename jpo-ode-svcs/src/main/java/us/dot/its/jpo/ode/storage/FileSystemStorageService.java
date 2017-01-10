@@ -40,7 +40,7 @@ public class FileSystemStorageService implements StorageService {
       Path path = this.rootLocation.resolve(file.getOriginalFilename());
       try {
          Files.deleteIfExists(path);
-         data.info("Trying to delete file in shared directory", this.rootLocation);
+         data.info("Trying to delete old file in shared directory", this.rootLocation);
       } catch (IOException e) {
     	  data.info("Failed to delete existing file in shared directory", this.rootLocation);
     	  throw new StorageException("Failed to delete existing file " + path, e);
@@ -95,6 +95,7 @@ public class FileSystemStorageService implements StorageService {
    @Override
    public void deleteAll() {
 	   FileSystemUtils.deleteRecursively(rootLocation.toFile());
+	   data.info("Deleting", this.rootLocation);
    }
 
    @Override

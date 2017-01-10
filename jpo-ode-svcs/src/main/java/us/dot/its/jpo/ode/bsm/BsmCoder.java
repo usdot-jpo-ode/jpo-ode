@@ -18,6 +18,7 @@ import us.dot.its.jpo.ode.wrapper.MessageProducer;
 public class BsmCoder {
 
    private static Logger logger = LoggerFactory.getLogger(BsmCoder.class);
+   private Logger data = LoggerFactory.getLogger("data");
 
    private OdeProperties odeProperties;
    private Asn1Plugin asn1Coder;
@@ -32,6 +33,7 @@ public class BsmCoder {
       this.odeProperties = properties;
       if (this.asn1Coder == null) {
          logger.info("Loading ASN1 Coder: {}", this.odeProperties.getAsn1CoderClassName());
+         data.info("Loading ASN1 library for decoding");
          try {
             this.asn1Coder = (Asn1Plugin) PluginFactory.getPluginByName(properties.getAsn1CoderClassName());
          } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
@@ -50,6 +52,7 @@ public class BsmCoder {
 
       try (Scanner scanner = new Scanner(is)) {
          
+    	 data.info("Attempting to decode message");
          boolean empty = true;
          while (scanner.hasNextLine()) {
             empty = false;
@@ -63,9 +66,11 @@ public class BsmCoder {
                publish(topic, decoded.toJson());
          }
          if (empty) {
+        	data.info("Empty file was received");
             throw new IOException("Empty file received");
          }
       } catch (Exception e) {
+    	 data.info("Error occurred while decoding the message");
          throw new Exception("Error decoding data: " + line, e);
       }
    }
@@ -74,6 +79,7 @@ public class BsmCoder {
       SerializationUtils<J2735Bsm> serializer = new SerializationUtils<J2735Bsm>();
       publish(topic, serializer.serialize(msg));
       logger.debug("Published: {}", msg.toJson());
+      data.info("Publishing message");
    }
 
    public void publish(String topic, String msg) {
@@ -83,6 +89,7 @@ public class BsmCoder {
 	        	.send(topic, null, msg);
 	        
 	        logger.debug("Published: {}", msg);
+	        data.info("Publishing message");
    }
 
    public void publish(String topic, byte[] msg) {
