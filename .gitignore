@@ -5,6 +5,8 @@
 /jpo-ode-svcs/target/
 !/jpo-ode-svcs/.mvn/wrapper/maven-wrapper.jar
 /jpo-ode-svcs/ode.log
+/jpo-ode-svcs/Data.log
+/jpo-ode-svcs/ode-test.log
 
 ### STS ###
 /jpo-ode-svcs/.apt_generated
