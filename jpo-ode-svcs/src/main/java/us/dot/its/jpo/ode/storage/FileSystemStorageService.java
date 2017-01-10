@@ -50,6 +50,7 @@ public class FileSystemStorageService implements StorageService {
         	 data.info("Failed to store empty file", this.rootLocation);
         	 throw new StorageException("Failed to store empty file " + path);
          }
+         logger.debug("Copying file {} to {}", file.getOriginalFilename(), path);
          Files.copy(file.getInputStream(), path);
          data.info("Attempting to copy file into shared directory", this.rootLocation);
       } catch (IOException e) {

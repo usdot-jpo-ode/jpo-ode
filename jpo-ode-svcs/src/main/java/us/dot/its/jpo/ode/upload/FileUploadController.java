@@ -88,6 +88,7 @@ public class FileUploadController {
    @ResponseBody
    public String handleFileUpload(@RequestParam("file") MultipartFile file) {
 
+      logger.debug("File received: {}", file.getOriginalFilename());
       storageService.store(file);
 
       /*
