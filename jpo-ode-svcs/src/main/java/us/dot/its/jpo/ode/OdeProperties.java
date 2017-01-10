@@ -17,6 +17,8 @@ import us.dot.its.jpo.ode.context.AppContext;
 @org.springframework.context.annotation.PropertySource("classpath:application.properties")
 public class OdeProperties implements EnvironmentAware {
    private Logger logger = LoggerFactory.getLogger(this.getClass());
+   private Logger data = LoggerFactory.getLogger("data");
+
 
    /////////////////////////////////////////////////////////////////////////////
    // Kafka Topics
@@ -122,6 +124,7 @@ public class OdeProperties implements EnvironmentAware {
       }
       hostId = hostname;
       logger.info("Host ID: {}", hostId);
+      data.info("Initializing services",hostId);
       
       if (kafkaBrokers == null) {
          kafkaBrokers = System.getenv("DOCKER_HOST_IP") + ":9092";

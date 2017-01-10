@@ -21,6 +21,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 @Service
 public class FileSystemStorageService implements StorageService {
    private static Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
+   private Logger data = LoggerFactory.getLogger("data");
 
    private OdeProperties properties;
    private final Path rootLocation;
@@ -31,6 +32,7 @@ public class FileSystemStorageService implements StorageService {
 
       this.rootLocation = Paths.get(this.properties.getUploadLocation());
       logger.info("Upload location: {}", this.rootLocation);
+      data.info("File System storage service started.", this.rootLocation);
    }
 
    @Override
@@ -38,16 +40,21 @@ public class FileSystemStorageService implements StorageService {
       Path path = this.rootLocation.resolve(file.getOriginalFilename());
       try {
          Files.deleteIfExists(path);
+         data.info("Trying to delete file in shared directory", this.rootLocation);
       } catch (IOException e) {
-         throw new StorageException("Failed to delete existing file " + path, e);
+    	  data.info("Failed to delete existing file in shared directory", this.rootLocation);
+    	  throw new StorageException("Failed to delete existing file " + path, e);
       }
       try {
          if (file.isEmpty()) {
-            throw new StorageException("Failed to store empty file " + path);
+        	 data.info("Failed to store empty file", this.rootLocation);
+        	 throw new StorageException("Failed to store empty file " + path);
          }
          Files.copy(file.getInputStream(), path);
+         data.info("Attempting to copy file into shared directory", this.rootLocation);
       } catch (IOException e) {
-         throw new StorageException("Failed to store file " + path, e);
+    	  data.info("Failed to store file in shared directory", this.rootLocation);
+    	  throw new StorageException("Failed to store file " + path, e);
       }
    }
 
@@ -57,7 +64,8 @@ public class FileSystemStorageService implements StorageService {
          return Files.walk(this.rootLocation, 1).filter(path -> !path.equals(this.rootLocation))
                .map(path -> this.rootLocation.relativize(path));
       } catch (IOException e) {
-         throw new StorageException("Failed to read stored files", e);
+    	  data.info("Failed to read stored files", this.rootLocation);
+    	  throw new StorageException("Failed to read stored files", e);
       }
 
    }
@@ -85,7 +93,7 @@ public class FileSystemStorageService implements StorageService {
 
    @Override
    public void deleteAll() {
-      FileSystemUtils.deleteRecursively(rootLocation.toFile());
+	   FileSystemUtils.deleteRecursively(rootLocation.toFile());
    }
 
    @Override
@@ -93,7 +101,8 @@ public class FileSystemStorageService implements StorageService {
       try {
          Files.createDirectory(rootLocation);
       } catch (IOException e) {
-         throw new StorageException("Could not initialize storage", e);
+    	  data.info("Failed to initialize storage service",this.rootLocation);
+    	  throw new StorageException("Could not initialize storage", e);
       }
    }
 }

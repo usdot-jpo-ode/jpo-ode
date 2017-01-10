@@ -30,6 +30,7 @@ public class FileUploadController {
    private static final String OUTPUT_TOPIC = "/topic/messages";
 
    private static Logger logger = LoggerFactory.getLogger(FileUploadController.class);
+   private Logger data = LoggerFactory.getLogger("data");
 
    private final StorageService storageService;
    private ExecutorService importer;
@@ -41,6 +42,7 @@ public class FileUploadController {
       super();
       this.storageService = storageService;
 
+      data.info("Creating importer and exporter");
       importer = Executors.newSingleThreadExecutor();
       exporter = Executors.newSingleThreadExecutor();
 
