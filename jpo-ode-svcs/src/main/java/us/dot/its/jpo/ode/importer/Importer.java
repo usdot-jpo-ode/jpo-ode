@@ -197,9 +197,12 @@ public class Importer implements Runnable {
       boolean fileProcessed = false;
       while (tryCount-- > 0) {
          try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
-            this.bsmCoder.decodeFromHexAndPublish(inputStream, OdeProperties.KAFKA_TOPIC_J2735_BSM);
+            if (filePath.toString().endsWith("uper")) {
+               this.bsmCoder.decodeFromStreamAndPublish(inputStream, OdeProperties.KAFKA_TOPIC_J2735_BSM);
+            } else {
+               this.bsmCoder.decodeFromHexAndPublish(inputStream, OdeProperties.KAFKA_TOPIC_J2735_BSM);
+            }
             fileProcessed = true;
-            disposeOfProcessedFile(filePath);
             break;
          } catch (Exception e) {
             logger.info("unable to open file: " + filePath 
@@ -208,7 +211,9 @@ public class Importer implements Runnable {
          }
       }
       
-      if (!fileProcessed) {
+      if (fileProcessed) {
+         disposeOfProcessedFile(filePath);
+      } else {
          throw new Exception("unable to open file: " + filePath);
       }
    }
