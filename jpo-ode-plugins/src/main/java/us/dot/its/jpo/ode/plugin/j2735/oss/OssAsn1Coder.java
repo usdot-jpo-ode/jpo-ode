@@ -27,14 +27,17 @@ public class OssAsn1Coder implements Asn1Plugin {
       coder = J2735.getPERUnalignedCoder();
    }
 
+   @Override
    public Asn1Object UPER_DecodeBase64(String base64Msg) {
       return UPER_DecodeBytes(DatatypeConverter.parseBase64Binary(base64Msg));
    }
 
+   @Override
    public Asn1Object UPER_DecodeHex(String hexMsg) {
       return UPER_DecodeBytes(DatatypeConverter.parseHexBinary(hexMsg));
    }
 
+   @Override
    public Asn1Object UPER_DecodeBytes(byte[] byteArrayMsg) {
       InputStream ins = new ByteArrayInputStream(byteArrayMsg);
 
@@ -57,29 +60,52 @@ public class OssAsn1Coder implements Asn1Plugin {
       return gbsm;
    }
 
+   @Override
+   public Asn1Object UPER_DecodeStream(InputStream ins) {
+      BasicSafetyMessage bsm = new BasicSafetyMessage();
+      J2735Bsm gbsm = null;
+
+      try {
+         if (ins.available() > 0) {
+            coder.decode(ins, bsm);
+            gbsm = OssBsm.genericBsm(bsm);
+         }
+      } catch (Exception e) {
+         logger.debug("Error decoding ", e);
+      }
+
+      return gbsm;
+   }
+
+   @Override
    public String UPER_DecodeBase64ToJson(String base64Msg) {
       // TODO Auto-generated method stub
       return null;
    }
 
+   @Override
    public String UPER_DecodeHexToJson(String hexMsg) {
       // TODO Auto-generated method stub
       return null;
    }
 
+   @Override
    public String UPER_DecodeBytesToJson(byte[] byteArrayMsg) {
       // TODO Auto-generated method stub
       return null;
    }
 
+   @Override
    public String UPER_EncodeBase64(Asn1Object asn1Object) {
       return DatatypeConverter.printBase64Binary(UPER_EncodeBytes(asn1Object));
    }
 
+   @Override
    public String UPER_EncodeHex(Asn1Object asn1Object) {
       return DatatypeConverter.printHexBinary(UPER_EncodeBytes(asn1Object));
    }
 
+   @Override
    public byte[] UPER_EncodeBytes(Asn1Object asn1Object) {
       if (asn1Object instanceof J2735Bsm) {
          J2735Bsm genericBsm = (J2735Bsm) asn1Object;
@@ -94,16 +120,19 @@ public class OssAsn1Coder implements Asn1Plugin {
       return null;
    }
 
+   @Override
    public String UPER_EncodeBase64FromJson(String asn1Object) {
       // TODO Auto-generated method stub
       return null;
    }
 
+   @Override
    public String UPER_EncodeHexfromJson(String asn1Object) {
       // TODO Auto-generated method stub
       return null;
    }
 
+   @Override
    public byte[] UPER_EncodeBytesFromJson(String asn1Object) {
       // TODO Auto-generated method stub
       return null;
