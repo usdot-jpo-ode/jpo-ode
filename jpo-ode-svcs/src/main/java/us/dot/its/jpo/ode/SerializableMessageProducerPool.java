@@ -7,8 +7,6 @@ import org.apache.kafka.common.serialization.Serializer;
 import us.dot.its.jpo.ode.util.SerializableObjectPool;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-import java.io.*;
-
 public class SerializableMessageProducerPool<K, V> extends SerializableObjectPool<MessageProducer<K, V>> {
 
    private static final long serialVersionUID = -2293786403623236678L;
@@ -18,7 +16,6 @@ public class SerializableMessageProducerPool<K, V> extends SerializableObjectPoo
    private String brokers;
    private String type;
    private String partitionerClass;
-   //private File f = new File("/jpo-ode-svcs/");
 
    private Properties props;
 

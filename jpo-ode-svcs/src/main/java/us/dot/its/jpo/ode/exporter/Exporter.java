@@ -10,6 +10,7 @@ import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 public class Exporter implements Runnable {
 
    private Logger logger = LoggerFactory.getLogger(this.getClass());
+   private Logger data = LoggerFactory.getLogger("data");
 
    private OdeProperties odeProperties;
    private SimpMessagingTemplate template;
@@ -28,6 +29,7 @@ public class Exporter implements Runnable {
    @Override
    public void run() {
       logger.info("Subscribing to {}", OdeProperties.KAFKA_TOPIC_J2735_BSM);
+      data.info("Subscribing to " + OdeProperties.KAFKA_TOPIC_J2735_BSM);
       if (!OdeProperties.KAFKA_TOPIC_J2735_BSM.endsWith("json")) {
          byteArrayConsumer = MessageConsumer.defaultByteArrayMessageConsumer(
                odeProperties.getKafkaBrokers(),
@@ -46,6 +48,7 @@ public class Exporter implements Runnable {
 
    public void shutDown() {
       logger.info("Shutting down Exporter to topic {}", topic);
+      data.info("Shutting down the export for topic " + topic);
       if (stringConsumer != null)
          stringConsumer.close();
       
