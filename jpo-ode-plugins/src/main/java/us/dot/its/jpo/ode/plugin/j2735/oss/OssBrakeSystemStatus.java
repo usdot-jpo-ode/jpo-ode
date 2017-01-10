@@ -1,7 +1,9 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import us.dot.its.jpo.ode.j2735.dsrc.BrakeSystemStatus;
+import us.dot.its.jpo.ode.plugin.j2735.J2735BrakeAppliedStatus;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BrakeSystemStatus;
+import us.dot.its.jpo.ode.plugin.j2735.J2735PrivilegedEventFlags;
 
 public class OssBrakeSystemStatus {
 
@@ -40,6 +42,19 @@ public class OssBrakeSystemStatus {
 		
 		genericBrakesStatus.wheelBrakes = 
 				OssBitString.genericBitString(brakesStatus.wheelBrakes);
+		
+		J2735BrakeAppliedStatus appliedWheelBrakes = new J2735BrakeAppliedStatus();
+
+      for (int i = 0; i < brakesStatus.wheelBrakes.getSize(); i++) {
+
+          String eventName = brakesStatus.wheelBrakes.getNamedBits().getMemberName(i);
+          Boolean eventStatus = brakesStatus.wheelBrakes.getBit(brakesStatus.wheelBrakes.getSize() - i - 1);
+
+          if (eventName != null) {
+              appliedWheelBrakes.put(eventName, eventStatus);
+          }
+      }
+      genericBrakesStatus.wheelBrakes = appliedWheelBrakes;
 		
 		//      TractionControlState ::= ENUMERATED {
 		//         unavailable (0), -- B'00  Not Equipped with tracton control 

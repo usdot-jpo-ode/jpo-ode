@@ -7,23 +7,25 @@ import us.dot.its.jpo.ode.j2735.dsrc.Heading;
 
 public class OssHeading {
 
-	public static BigDecimal genericHeading(Heading heading) {
-		return OssAngle.longToDecimal(heading.longValue());
-	}
+    public static BigDecimal genericHeading(Heading heading) {
+        return OssAngle.longToDecimal(heading.longValue());
+    }
 
-	public static BigDecimal genericHeading(CoarseHeading heading) {
-	    
-	    if (heading.intValue() < 0 || heading.intValue() > 240) {
-	        throw new IllegalArgumentException("Coarse heading value out of bounds");
-	    }
-		
-		BigDecimal result = null;
-		
-		if (heading.intValue() != 240) {
-			result = BigDecimal.valueOf(heading.longValue() * 15, 1); 
-		}
+    public static BigDecimal genericHeading(CoarseHeading heading) {
 
-		return result;
-	}
+        if (heading.intValue() < 0 || heading.intValue() > 240) {
+            throw new IllegalArgumentException("Coarse heading value out of bounds");
+        }
+
+        System.out.println("[OssHeading] Input: " + heading.intValue());
+        BigDecimal result = null;
+
+        if (heading.intValue() != 240) {
+            result = BigDecimal.valueOf(heading.longValue() * 15, 1);
+        }
+
+        System.out.println("[OssHeading] Output: " + result);
+        return result;
+    }
 
 }
