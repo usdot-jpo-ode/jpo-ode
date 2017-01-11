@@ -35,7 +35,7 @@ public class OdeProperties implements EnvironmentAware {
 
    private String hostId;
 
-   public OdeProperties() {
+   public OdeProperties() throws Exception {
       super();
       init();
    }
@@ -112,7 +112,7 @@ public class OdeProperties implements EnvironmentAware {
       this.env = env;
    }
 
-   public void init() {
+   public void init() throws Exception {
       String hostname;
       try {
          hostname = InetAddress.getLocalHost().getHostName();
@@ -124,9 +124,12 @@ public class OdeProperties implements EnvironmentAware {
       logger.info("Host ID: {}", hostId);
       
       if (kafkaBrokers == null) {
+         logger.info("ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP from which will derive the Kafka bootstrap-server");
          kafkaBrokers = System.getenv("DOCKER_HOST_IP") + ":9092";
       }
-      
+
+      if (kafkaBrokers == null)
+         throw new Exception("ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
    }
 
    @Override

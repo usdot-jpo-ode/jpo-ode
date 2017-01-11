@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.bsm;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
@@ -43,12 +44,15 @@ public class BsmCoder {
    }
 
    public void decodeFromHexAndPublish(InputStream is, String topic)
-         throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+         throws Exception {
       String line = null;
       J2735Bsm decoded = null;
 
       try (Scanner scanner = new Scanner(is)) {
+         
+         boolean empty = true;
          while (scanner.hasNextLine()) {
+            empty = false;
             line = scanner.nextLine();
 
             decoded = (J2735Bsm) asn1Coder.UPER_DecodeHex(line);
@@ -58,8 +62,11 @@ public class BsmCoder {
             else
                publish(topic, decoded.toJson());
          }
+         if (empty) {
+            throw new IOException("Empty file received");
+         }
       } catch (Exception e) {
-         logger.error("Error decoding data: " + line, e);
+         throw new Exception("Error decoding data: " + line, e);
       }
    }
 
