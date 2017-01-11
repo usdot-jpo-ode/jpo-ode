@@ -33,3 +33,5 @@ services:
       ZK: ${DOCKER_HOST_IP}:2181
     depends_on:
       - kafka
+    links:
+      - kafka

@@ -17,6 +17,7 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.eventlog.EventLogger;
 
 @Service
 public class FileSystemStorageService implements StorageService {
@@ -37,18 +38,23 @@ public class FileSystemStorageService implements StorageService {
    public void store(MultipartFile file) {
       Path path = this.rootLocation.resolve(file.getOriginalFilename());
       try {
+         EventLogger.logger.info("Deleting existing file: {}", path);
          Files.deleteIfExists(path);
       } catch (IOException e) {
-         throw new StorageException("Failed to delete existing file " + path, e);
+    	  EventLogger.logger.info("Failed to delete existing file: {} ", path);
+    	  throw new StorageException("Failed to delete existing file: " + path, e);
       }
       try {
          if (file.isEmpty()) {
-            throw new StorageException("Failed to store empty file " + path);
+        	EventLogger.logger.info("File is empty: {}", path);
+        	throw new StorageException("File is empty: " + path);
          }
-         logger.debug("Copying file {} to {}", file.getOriginalFilename(), path);
+         logger.debug("Copying file {} to {}", file.getOriginalFilename(), this.rootLocation);
+         EventLogger.logger.info("Copying file {} to {}", file.getOriginalFilename(), this.rootLocation);
          Files.copy(file.getInputStream(), path);
       } catch (IOException e) {
-         throw new StorageException("Failed to store file " + path, e);
+    	  EventLogger.logger.info("Failed to store file in shared directory {}", this.rootLocation);
+    	  throw new StorageException("Failed to store file in shared directory" + this.rootLocation, e);
       }
    }
 
@@ -58,7 +64,8 @@ public class FileSystemStorageService implements StorageService {
          return Files.walk(this.rootLocation, 1).filter(path -> !path.equals(this.rootLocation))
                .map(path -> this.rootLocation.relativize(path));
       } catch (IOException e) {
-         throw new StorageException("Failed to read stored files", e);
+    	  EventLogger.logger.info("Failed to read files stored in {}", this.rootLocation);
+    	  throw new StorageException("Failed to read files stored in " + this.rootLocation, e);
       }
 
    }
@@ -86,7 +93,8 @@ public class FileSystemStorageService implements StorageService {
 
    @Override
    public void deleteAll() {
-      FileSystemUtils.deleteRecursively(rootLocation.toFile());
+	   FileSystemUtils.deleteRecursively(rootLocation.toFile());
+	   EventLogger.logger.info("Deleting {}", this.rootLocation);
    }
 
    @Override
@@ -94,7 +102,8 @@ public class FileSystemStorageService implements StorageService {
       try {
          Files.createDirectory(rootLocation);
       } catch (IOException e) {
-         throw new StorageException("Could not initialize storage", e);
+    	  EventLogger.logger.info("Failed to initialize storage service {}",this.rootLocation);
+    	  throw new StorageException("Failed to initialize storage service " + this.rootLocation, e);
       }
    }
 }

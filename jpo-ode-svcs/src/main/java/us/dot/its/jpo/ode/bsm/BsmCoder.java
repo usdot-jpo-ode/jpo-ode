@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
+import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
@@ -63,9 +64,11 @@ public class BsmCoder {
                publish(topic, decoded.toJson());
          }
          if (empty) {
+        	EventLogger.logger.info("Empty file received");
             throw new IOException("Empty file received");
          }
       } catch (Exception e) {
+    	 EventLogger.logger.info("Error occurred while decoding message: {}", line);
          throw new Exception("Error decoding data: " + line, e);
       }
    }
