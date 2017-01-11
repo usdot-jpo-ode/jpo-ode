@@ -68,7 +68,7 @@ public class BsmCoder {
             throw new IOException("Empty file received");
          }
       } catch (Exception e) {
-    	 EventLogger.logger.info("Error occurred while decoding the message");
+    	 EventLogger.logger.info("Error occurred while decoding message: {}", line);
          throw new Exception("Error decoding data: " + line, e);
       }
    }
