@@ -32,6 +32,7 @@
 ### jpo-ode-common ###
 /jpo-ode-common/target
 /jpo-ode-common/.classpath
+/jpo-ode-common/.project
 
 ####################
 ### jpo-ode-core ###
@@ -67,3 +68,4 @@
 ### jpo-ode-plugins ###
 /jpo-ode-plugins/.apt_generated/
 /jpo-ode-plugins/target/
+/jpo-ode-plugins/.project
