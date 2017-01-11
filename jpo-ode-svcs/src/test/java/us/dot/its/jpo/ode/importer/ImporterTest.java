@@ -114,7 +114,7 @@ public class ImporterTest {
 	
 	
 
-	
+    @Ignore
 	@Test
 	public void testGetImporterStatus() {
 		System.out.println(">> In testGetImporterStatus");
@@ -124,7 +124,7 @@ public class ImporterTest {
 		
 	}
 
-	
+	@Ignore
 	@Test
 	public void testGetImporterErrors() {
 		System.out.println(">> In testGetImporterErrors");
@@ -133,6 +133,7 @@ public class ImporterTest {
 		assertEquals(testImporter.getImporterErrors(), "No errors, importer is working like a champ");
 	}
 
+	@Ignore
 	@Test
 	public void testVerifyInboxFolder() {
 		
@@ -157,7 +158,7 @@ public class ImporterTest {
 
 	
 
-	
+	@Ignore
 	@Test
 	public void testGetInboxFolder() {
 		System.out.println(">> In testGetInboxFolder");
@@ -168,7 +169,7 @@ public class ImporterTest {
 		assertEquals(inBox, uploadLoc);
 	}
 
-	
+	@Ignore
 	@Test
 	public void testSetInboxFolder() {
 		System.out.println(">> In testSetInboxFolder");
@@ -183,7 +184,7 @@ public class ImporterTest {
 	}
 
 	
-
+	@Ignore
 	@Test
 	public void testProcessNonExitsingFile() {
 		
@@ -203,7 +204,7 @@ public class ImporterTest {
 		
 	}
 	
-	
+	@Ignore
 	@Test
 	public void testProcessFile() {
 		
@@ -227,6 +228,7 @@ public class ImporterTest {
 	}
 
 
+	@Ignore
 	@Test
 	public void testProcessExistingFiles() {
 		System.out.println(">> In testProcessExistingFiles");
@@ -241,7 +243,7 @@ public class ImporterTest {
 		
 	}
 
-	
+	@Ignore
 	@Test
 	public void testRun() {
 		System.out.println(">> In testProcessExistingFiles");
