@@ -213,8 +213,8 @@ public class Importer implements Runnable {
       }
       
       if (!fileProcessed) {
-         throw new Exception("Failed to process file: " + filePath);
-         EventLogger.logger.info("Failed to process file: {} ", filePath);
+    	  EventLogger.logger.info("Failed to process file: {} ", filePath.toFile());
+    	  throw new Exception("Failed to process file: " + filePath);
       }
    }
 
