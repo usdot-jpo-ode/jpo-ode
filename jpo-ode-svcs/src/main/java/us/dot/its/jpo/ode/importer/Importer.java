@@ -188,8 +188,8 @@ public class Importer implements Runnable {
          Files.move(filePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
       } catch (Exception e) {
          importerStatus |= MOVE2BACKUP_ERROR;
-         logger.error("IMPORTER -  Error moving file to temporary directory: " + filePath.toString(), e);
-         EventLogger.logger.info("Failed to dispose file");
+         logger.error("Error moving file to temporary directory: " + filePath.toString(), e);
+         EventLogger.logger.info("Error moving file to temporary directory: {}", filePath.toString());
       }
    }
 
@@ -208,13 +208,13 @@ public class Importer implements Runnable {
          } catch (Exception e) {
             logger.info("unable to open file: " + filePath 
                   + " retrying " + tryCount + " more times", e);
-            EventLogger.logger.info("Failed to process file");
             Thread.sleep(1000);
          }
       }
       
       if (!fileProcessed) {
-         throw new Exception("unable to open file: " + filePath);
+         throw new Exception("Failed to process file: " + filePath);
+         EventLogger.logger.info("Failed to process file: {} ", filePath);
       }
    }
 
@@ -244,7 +244,7 @@ public class Importer implements Runnable {
 
       // If we have any fatal errors at this point we abort
       if ((importerStatus & FATAL_ERROR) != 0) {
-         logger.error("IMPORTER -  Importer cannot run, see error above. Execution terminated.");
+         logger.error("Importer cannot run, see error above. Execution terminated.");
          return;
       }
 
@@ -287,8 +287,8 @@ public class Importer implements Runnable {
                   @SuppressWarnings("unchecked")
                   WatchEvent<Path> watchEventCurrent = (WatchEvent<Path>) watchEvent;
                   Path newPath = watchEventCurrent.context();
-                  logger.info("IMPORTER - New file detected: {}", newPath);
-                  EventLogger.logger.info("New file detected in directory");
+                  logger.info("New file detected: {}", newPath);
+                  EventLogger.logger.info("New file detected: {}", newPath);
                   Path fullPath = Paths.get(inboxFolder.toString(), newPath.toString());
                   processFile(fullPath);
                }
