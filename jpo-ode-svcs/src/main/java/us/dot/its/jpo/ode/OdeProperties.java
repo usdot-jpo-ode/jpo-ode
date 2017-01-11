@@ -124,7 +124,7 @@ public class OdeProperties implements EnvironmentAware {
       }
       hostId = hostname;
       logger.info("Host ID: {}", hostId);
-      EventLogger.logger.info("Initializing services",hostId);
+      EventLogger.logger.info("Initializing services on host {}", hostId);
       
       if (kafkaBrokers == null) {
          logger.info("ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP from which will derive the Kafka bootstrap-server");
