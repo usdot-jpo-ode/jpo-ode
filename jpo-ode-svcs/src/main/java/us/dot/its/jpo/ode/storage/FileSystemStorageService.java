@@ -64,7 +64,7 @@ public class FileSystemStorageService implements StorageService {
          return Files.walk(this.rootLocation, 1).filter(path -> !path.equals(this.rootLocation))
                .map(path -> this.rootLocation.relativize(path));
       } catch (IOException e) {
-    	  EventLogger.logger.info("Failed to read files storedin {}", this.rootLocation);
+    	  EventLogger.logger.info("Failed to read files stored in {}", this.rootLocation);
     	  throw new StorageException("Failed to read files stored in " + this.rootLocation, e);
       }
 
