@@ -21,9 +21,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735SupplementalVehicleExtensions;
  * Verifies correct conversion from generic SupplementalVehicleExtensions object 
  * to compliant-J2735SupplementalVehicleExtensions
  * 
- * This test class is trivial and demonstrates that a simple J2735SupplementalVehicleExtension object can be 
- * successfully created. All elements of this class except for BasicVehicleClassification are explicitly tested by 
- * other classes. Note that, BasicVehicleClassification is tested by OssVehicleClassificationTest.
+ * See OssBsmPart2Extension for specific object building tests
  * 
  * -- Documentation --
  * Data Frame: DF_SupplementalVehicleExtensions
