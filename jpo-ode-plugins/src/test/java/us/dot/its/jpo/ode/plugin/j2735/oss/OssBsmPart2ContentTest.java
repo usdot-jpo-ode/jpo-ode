@@ -17,6 +17,7 @@ import com.oss.asn1.PERUnalignedCoder;
 
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage.PartII.Sequence_;
+import us.dot.its.jpo.ode.j2735.dsrc.BasicVehicleClass;
 import us.dot.its.jpo.ode.j2735.dsrc.Confidence;
 import us.dot.its.jpo.ode.j2735.dsrc.EmergencyDetails;
 import us.dot.its.jpo.ode.j2735.dsrc.EventDescription;
@@ -29,10 +30,12 @@ import us.dot.its.jpo.ode.j2735.dsrc.RadiusOfCurvature;
 import us.dot.its.jpo.ode.j2735.dsrc.SSPindex;
 import us.dot.its.jpo.ode.j2735.dsrc.SirenInUse;
 import us.dot.its.jpo.ode.j2735.dsrc.SpecialVehicleExtensions;
+import us.dot.its.jpo.ode.j2735.dsrc.SupplementalVehicleExtensions;
 import us.dot.its.jpo.ode.j2735.dsrc.VehicleEventFlags;
 import us.dot.its.jpo.ode.j2735.dsrc.VehicleSafetyExtensions;
 import us.dot.its.jpo.ode.j2735.itis.ITIScodes;
 import us.dot.its.jpo.ode.plugin.j2735.J2735SpecialVehicleExtensions;
+import us.dot.its.jpo.ode.plugin.j2735.J2735SupplementalVehicleExtensions;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleSafetyExtensions;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
 
@@ -165,6 +168,33 @@ public class OssBsmPart2ContentTest {
     @Test
     public void shouldCreateSupplementalVehicleExtensions() {
         
+        Integer testBasicVehicleClass = 27;
+        Integer expectedBasicVehicleClass = 27;
+        
+        SupplementalVehicleExtensions testsve = new SupplementalVehicleExtensions();
+        testsve.setClassification(new BasicVehicleClass(testBasicVehicleClass));
+        
+        // Create a BasicSafetyMessage.PartII by encoding the SupplementalVehicleExtensions object
+        PERUnalignedCoder coder = J2735.getPERUnalignedCoder();
+
+        Sequence_ testSequence = new Sequence_();
+        testSequence.partII_Id = new PartII_Id(2);
+
+        try {
+            testSequence.setPartII_Value(new OpenType(coder.encode(testsve).array()));
+        } catch (Exception e) {
+            fail("Unexpected exception: " + e.getClass());
+        }
+
+        J2735SupplementalVehicleExtensions actualValue = null;
+        try {
+            actualValue = (J2735SupplementalVehicleExtensions) OssBsmPart2Content.genericPart2Content(testSequence).value;
+            assertNotNull("J2735BsmPart2Content null", actualValue);
+        } catch (OssBsmPart2Exception e) {
+            fail("Unexpected exception: " + e.getClass());
+        }
+        assertEquals(expectedBasicVehicleClass, actualValue.classification);
+        
     }
     
     /**
@@ -175,7 +205,7 @@ public class OssBsmPart2ContentTest {
     public void shouldCreateVehicleSafetyExtensions () {
         
         // VehicleEventFlags
-        Long testVehicleEventFlags = 0b11L;
+        Integer testVehicleEventFlags = 0b1;
         String expectedVehicleEventFlag1 = "eventHazardLights";
         String expectedVehicleEventFlag2 = "eventHazardousMaterials";
         

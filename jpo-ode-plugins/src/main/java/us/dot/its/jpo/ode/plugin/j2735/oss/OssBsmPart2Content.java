@@ -17,6 +17,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.VehicleSafetyExtensions;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmPart2Content;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ExteriorLights;
 import us.dot.its.jpo.ode.plugin.j2735.J2735SpecialVehicleExtensions;
+import us.dot.its.jpo.ode.plugin.j2735.J2735SupplementalVehicleExtensions;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleEventFlags;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleSafetyExtensions;
 
@@ -80,8 +81,24 @@ public class OssBsmPart2Content {
             }
             break;
         case supplementalVehicleExt:
+            J2735SupplementalVehicleExtensions supVeh = new J2735SupplementalVehicleExtensions();
+            part2Content.value = supVeh;
+            
+            SupplementalVehicleExtensions sve = null;
+            if (value.getDecodedValue() != null) {
+                sve = (SupplementalVehicleExtensions) value.getDecodedValue();
+            } else if (value.getEncodedValueAsStream() != null) {
+                sve = new SupplementalVehicleExtensions();
+                try {
+                    coder.decode(value.getEncodedValueAsStream(), sve);
+                } catch (DecodeFailedException | DecodeNotSupportedException e) {
+                    throw new OssBsmPart2Exception("Error decoding OpenType value", e);
+                }
+            } else {
+                throw new OssBsmPart2Exception("No OpenType value");
+            }
             part2Content.value = OssSupplementalVehicleExtensions
-                    .genericSupplementalVehicleExtensions((SupplementalVehicleExtensions) value.getDecodedValue());
+                    .genericSupplementalVehicleExtensions(sve);
 
             break;
         case vehicleSafetyExt:
