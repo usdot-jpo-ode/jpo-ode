@@ -10,7 +10,7 @@
 	</appender>
 	
 	<appender name="DATA-FILE" class="ch.qos.logback.core.FileAppender">
-		<file>Data.log</file>
+		<file>Events.log</file>
 		<append>true</append>
 		<encoder>
 			<pattern>%date{"HH:mm:ss", UTC} [%thread] %-5level %logger{35} - %msg %n</pattern>
@@ -24,7 +24,7 @@
 	</appender>
 	
 	<!--  additivity=false ensures data trace only goes to Data log -->
-	<logger name="data" level="INFO" additivity="false">
+	<logger name="us.dot.its.jpo.ode.eventlog.EventLogger" level="INFO" additivity="false">
 		<appender-ref ref="DATA-FILE"/>
 	</logger>
 	<logger name="org.springframework.web" level="INFO"/>

@@ -29,7 +29,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}:9092
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ZK: ${DOCKER_HOST_IP}:2181
     depends_on:
       - kafka

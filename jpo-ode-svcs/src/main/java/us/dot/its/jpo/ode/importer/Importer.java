@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.bsm.BsmCoder;
+import us.dot.its.jpo.ode.eventlog.EventLogger;
 
 public class Importer implements Runnable {
 
@@ -35,7 +36,6 @@ public class Importer implements Runnable {
    public static final int PROCESSING_EXISTING_ERROR = 64; // 1000000
 
    private Logger logger = LoggerFactory.getLogger(this.getClass());
-   private Logger data = LoggerFactory.getLogger("data");
 
    // inboxFolder is the directory where the BSM and other data files get
    // dropped by the OBE/OBU
@@ -179,7 +179,7 @@ public class Importer implements Runnable {
 
    public void disposeOfProcessedFile(Path filePath) {
       try {
-         data.info("Attempting to dispose of processed file");
+         EventLogger.logger.info("Disposing file");
     	  // TODO(Cris): handle other file types here...
          String processedFileName = Integer.toString((int) System.currentTimeMillis()) + "-"
                + filePath.getFileName().toString().replaceFirst("uper", "pbo");
@@ -189,7 +189,7 @@ public class Importer implements Runnable {
       } catch (Exception e) {
          importerStatus |= MOVE2BACKUP_ERROR;
          logger.error("IMPORTER -  Error moving file to temporary directory: " + filePath.toString(), e);
-         data.info("Failed to dispose of processed file");
+         EventLogger.logger.info("Failed to dispose file");
       }
    }
 
@@ -200,7 +200,7 @@ public class Importer implements Runnable {
       boolean fileProcessed = false;
       while (tryCount-- > 0) {
          try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
-            data.info("Attempting to process file " + filePath.toFile());
+        	 EventLogger.logger.info("Processing file " + filePath.toFile());
         	 this.bsmCoder.decodeFromHexAndPublish(inputStream, OdeProperties.KAFKA_TOPIC_J2735_BSM);
             fileProcessed = true;
             disposeOfProcessedFile(filePath);
@@ -208,7 +208,7 @@ public class Importer implements Runnable {
          } catch (Exception e) {
             logger.info("unable to open file: " + filePath 
                   + " retrying " + tryCount + " more times", e);
-            data.info("Failed to process file");
+            EventLogger.logger.info("Failed to process file");
             Thread.sleep(1000);
          }
       }
@@ -288,7 +288,7 @@ public class Importer implements Runnable {
                   WatchEvent<Path> watchEventCurrent = (WatchEvent<Path>) watchEvent;
                   Path newPath = watchEventCurrent.context();
                   logger.info("IMPORTER - New file detected: {}", newPath);
-                  data.info("New file detected in directory");
+                  EventLogger.logger.info("New file detected in directory");
                   Path fullPath = Paths.get(inboxFolder.toString(), newPath.toString());
                   processFile(fullPath);
                }

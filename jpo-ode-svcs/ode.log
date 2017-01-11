@@ -1,51 +1,51 @@
-4054 [restartedMain] INFO  u.d.its.jpo.ode.OdeSvcsApplication - Starting OdeSvcsApplication on BAH5CG4432LBC with PID 18720 (C:\Users\583114\Desktop\TESTING\jpo-ode\jpo-ode-svcs\target\classes started by 583114 in C:\Users\583114\Desktop\TESTING\jpo-ode\jpo-ode-svcs) 
-4057 [restartedMain] DEBUG u.d.its.jpo.ode.OdeSvcsApplication - Running with Spring Boot v1.4.1.RELEASE, Spring v4.3.3.RELEASE 
-4057 [restartedMain] INFO  u.d.its.jpo.ode.OdeSvcsApplication - No active profile set, falling back to default profiles: default 
-36139 [localhost-startStop-1] INFO  o.s.web.context.ContextLoader - Root WebApplicationContext: initialization completed in 31080 ms 
-36893 [restartedMain] INFO  us.dot.its.jpo.ode.OdeProperties - Host ID: BAH5CG4432LBC 
-36905 [restartedMain] INFO  us.dot.its.jpo.ode.OdeProperties - ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP from which will derive the Kafka bootstrap-server 
-36963 [restartedMain] INFO  u.d.i.j.o.s.FileSystemStorageService - Upload location: uploads 
-37757 [restartedMain] INFO  u.dot.its.jpo.ode.importer.Importer - IMPORTER - Inbox Folder exists: uploads 
-37789 [restartedMain] INFO  u.dot.its.jpo.ode.importer.Importer - IMPORTER - Backup Folder exists: uploads\backup 
-37789 [restartedMain] INFO  u.dot.its.jpo.ode.importer.Importer - IMPORTER - Watching inbox folder: uploads 
-37790 [restartedMain] INFO  u.dot.its.jpo.ode.importer.Importer - IMPORTER - Instantiating BSM Coder... 
-37803 [restartedMain] INFO  us.dot.its.jpo.ode.bsm.BsmCoder - Loading ASN1 Coder: us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder 
-37806 [restartedMain] INFO  u.d.i.jpo.ode.plugin.PluginFactory - Getting Plugin: us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder 
-37807 [restartedMain] INFO  u.d.i.jpo.ode.plugin.PluginFactory - Classpath: /C:/Users/583114/Desktop/TESTING/jpo-ode/jpo-ode-svcs/target/classes/ 
-37807 [restartedMain] INFO  u.d.i.jpo.ode.plugin.PluginFactory - Classpath: /C:/Users/583114/Desktop/TESTING/jpo-ode/jpo-ode-core/target/classes/ 
-37807 [restartedMain] INFO  u.d.i.jpo.ode.plugin.PluginFactory - Classpath: /C:/Users/583114/Desktop/TESTING/jpo-ode/jpo-ode-common/target/classes/ 
-37807 [restartedMain] INFO  u.d.i.jpo.ode.plugin.PluginFactory - Classpath: /C:/Users/583114/Desktop/TESTING/jpo-ode/jpo-ode-plugins/target/classes/ 
-37807 [restartedMain] INFO  u.d.i.jpo.ode.plugin.PluginFactory - Getting class: us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder 
-37840 [restartedMain] INFO  u.d.i.jpo.ode.plugin.PluginFactory - creating an instance of: class us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder 
-38150 [restartedMain] INFO  u.d.i.jpo.ode.plugin.PluginFactory - Got Plugin: us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder@25c37309 
-38180 [restartedMain] INFO  u.dot.its.jpo.ode.importer.Importer - Publishing to topic.J2735Bsm 
-38271 [pool-2-thread-1] INFO  u.dot.its.jpo.ode.exporter.Exporter - Subscribing to topic.J2735Bsm 
-39167 [pool-2-thread-1] INFO  u.d.i.j.ode.wrapper.MessageConsumer - Consumer Created for groupId BAH5CG4432LBCExporter 
-39167 [pool-2-thread-1] INFO  u.d.i.j.ode.wrapper.MessageConsumer - Default Byte Array Message Consumer Created 
-39167 [pool-2-thread-1] INFO  u.d.i.j.ode.wrapper.MessageConsumer - Subscribing to [topic.J2735Bsm] 
-39903 [restartedMain] INFO  o.s.w.s.s.s.WebSocketHandlerMapping - Mapped URL path [/ode-websocket/**] onto handler of type [class org.springframework.web.socket.sockjs.support.SockJsHttpRequestHandler] 
-40623 [restartedMain] INFO  o.s.w.s.m.WebSocketAnnotationMethodMessageHandler - Mapped "{[/connect],messageType=[MESSAGE]}" onto public us.dot.its.jpo.ode.subscriber.Subscriber us.dot.its.jpo.ode.subscriber.SubscriberController.greeting(us.dot.its.jpo.ode.subscriber.RegistrationMessage) throws java.lang.Exception 
-41357 [restartedMain] INFO  o.s.w.s.m.m.a.RequestMappingHandlerAdapter - Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@5842f339: startup date [Tue Jan 10 13:52:13 EST 2017]; root of context hierarchy 
-41509 [restartedMain] INFO  o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped "{[/],methods=[GET]}" onto public java.lang.String us.dot.its.jpo.ode.subscriber.SubscriberController.test() throws java.lang.Exception 
-41510 [restartedMain] INFO  o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped "{[/newMessage],methods=[POST]}" onto public java.lang.String us.dot.its.jpo.ode.subscriber.SubscriberController.messages() throws java.lang.Exception 
-41514 [restartedMain] INFO  o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped "{[/files/{filename:.+}],methods=[GET]}" onto public org.springframework.http.ResponseEntity<org.springframework.core.io.Resource> us.dot.its.jpo.ode.upload.FileUploadController.serveFile(java.lang.String) 
-41514 [restartedMain] INFO  o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped "{[/],methods=[POST]}" onto public java.lang.String us.dot.its.jpo.ode.upload.FileUploadController.handleFileUpload(org.springframework.web.multipart.MultipartFile) 
-41519 [restartedMain] INFO  o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest) 
-41519 [restartedMain] INFO  o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse) 
-41950 [restartedMain] INFO  o.s.w.s.h.SimpleUrlHandlerMapping - Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler] 
-41950 [restartedMain] INFO  o.s.w.s.h.SimpleUrlHandlerMapping - Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler] 
-41983 [restartedMain] INFO  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Detected @ExceptionHandler methods in repositoryRestExceptionHandler 
-42092 [restartedMain] INFO  o.s.w.s.h.SimpleUrlHandlerMapping - Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler] 
-44183 [restartedMain] INFO  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Detected @ExceptionHandler methods in repositoryRestExceptionHandler 
-45000 [restartedMain] INFO  u.d.i.j.o.OdeSvcsApplication$$EnhancerBySpringCGLIB$$cb09ec4c - Upload directory already exisits 
-45002 [restartedMain] INFO  u.d.its.jpo.ode.OdeSvcsApplication - Started OdeSvcsApplication in 42.487 seconds (JVM running for 45.747) 
-89937 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - FrameworkServlet 'dispatcherServlet': initialization started 
-90210 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - FrameworkServlet 'dispatcherServlet': initialization completed in 273 ms 
-99930 [MessageBroker-1] INFO  o.s.w.s.c.WebSocketMessageBrokerStats - WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannelpool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 1, active threads = 1, queued tasks = 0, completed tasks = 0] 
-150622 [http-nio-8080-exec-7] DEBUG u.d.i.j.o.u.FileUploadController - File received: bsm.uper 
-150658 [http-nio-8080-exec-7] DEBUG u.d.i.j.o.s.FileSystemStorageService - Copying file bsm.uper to uploads\bsm.uper 
-150871 [pool-1-thread-1] INFO  u.dot.its.jpo.ode.importer.Importer - IMPORTER - New file detected: bsm.uper 
-152499 [pool-1-thread-1] DEBUG us.dot.its.jpo.ode.bsm.BsmCoder - Decoded: {"coreData":{"msgCnt":0,"id":"52032900","secMark":0,"position":{"latitude":-90.0000000,"longitude":-179.9999999},"accelSet":{"accelLat":-20.00,"accelLong":-20.00,"accelYaw":-327.67},"accuracy":{"semiMajor":0.00,"semiMinor":0.00,"orientation":0E-10},"transmission":"neutral","speed":0.00,"heading":0.0000,"angle":-189.0,"brakes":{"wheelBrakes":{"BIT STRING":false},"traction":"unavailable","abs":"unavailable","scs":"unavailable","brakeBoost":"unavailable","auxBrakes":"unavailable"},"size":{"length":31}},"partII":[]} 
-154344 [pool-1-thread-1] INFO  u.d.i.j.ode.wrapper.MessageProducer - Producer Created 
-154714 [pool-1-thread-1] DEBUG us.dot.its.jpo.ode.bsm.BsmCoder - Published: {"coreData":{"msgCnt":0,"id":"52032900","secMark":0,"position":{"latitude":-90.0000000,"longitude":-179.9999999},"accelSet":{"accelLat":-20.00,"accelLong":-20.00,"accelYaw":-327.67},"accuracy":{"semiMajor":0.00,"semiMinor":0.00,"orientation":0E-10},"transmission":"neutral","speed":0.00,"heading":0.0000,"angle":-189.0,"brakes":{"wheelBrakes":{"BIT STRING":false},"traction":"unavailable","abs":"unavailable","scs":"unavailable","brakeBoost":"unavailable","auxBrakes":"unavailable"},"size":{"length":31}},"partII":[]} 
-154771 [pool-2-thread-1] DEBUG u.d.i.j.ode.wrapper.MessageConsumer - Consuming 1 message(s) 
+4194 [restartedMain] INFO  u.d.its.jpo.ode.OdeSvcsApplication - Starting OdeSvcsApplication on BAH5CG4432LBC with PID 17888 (C:\Users\583114\Desktop\TESTING\jpo-ode\jpo-ode-svcs\target\classes started by 583114 in C:\Users\583114\Desktop\TESTING\jpo-ode\jpo-ode-svcs) 
+4197 [restartedMain] DEBUG u.d.its.jpo.ode.OdeSvcsApplication - Running with Spring Boot v1.4.1.RELEASE, Spring v4.3.3.RELEASE 
+4197 [restartedMain] INFO  u.d.its.jpo.ode.OdeSvcsApplication - No active profile set, falling back to default profiles: default 
+20138 [localhost-startStop-1] INFO  o.s.web.context.ContextLoader - Root WebApplicationContext: initialization completed in 11023 ms 
+20508 [restartedMain] INFO  us.dot.its.jpo.ode.OdeProperties - Host ID: BAH5CG4432LBC 
+20512 [restartedMain] INFO  us.dot.its.jpo.ode.OdeProperties - ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP from which will derive the Kafka bootstrap-server 
+20534 [restartedMain] INFO  u.d.i.j.o.s.FileSystemStorageService - Upload location: uploads 
+20901 [restartedMain] INFO  u.dot.its.jpo.ode.importer.Importer - IMPORTER - Inbox Folder exists: uploads 
+20901 [restartedMain] INFO  u.dot.its.jpo.ode.importer.Importer - IMPORTER - Backup Folder exists: uploads\backup 
+20901 [restartedMain] INFO  u.dot.its.jpo.ode.importer.Importer - IMPORTER - Watching inbox folder: uploads 
+20901 [restartedMain] INFO  u.dot.its.jpo.ode.importer.Importer - IMPORTER - Instantiating BSM Coder... 
+20902 [restartedMain] INFO  us.dot.its.jpo.ode.bsm.BsmCoder - Loading ASN1 Coder: us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder 
+20905 [restartedMain] INFO  u.d.i.jpo.ode.plugin.PluginFactory - Getting Plugin: us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder 
+20905 [restartedMain] INFO  u.d.i.jpo.ode.plugin.PluginFactory - Classpath: /C:/Users/583114/Desktop/TESTING/jpo-ode/jpo-ode-svcs/target/classes/ 
+20906 [restartedMain] INFO  u.d.i.jpo.ode.plugin.PluginFactory - Classpath: /C:/Users/583114/Desktop/TESTING/jpo-ode/jpo-ode-core/target/classes/ 
+20906 [restartedMain] INFO  u.d.i.jpo.ode.plugin.PluginFactory - Classpath: /C:/Users/583114/Desktop/TESTING/jpo-ode/jpo-ode-common/target/classes/ 
+20906 [restartedMain] INFO  u.d.i.jpo.ode.plugin.PluginFactory - Classpath: /C:/Users/583114/Desktop/TESTING/jpo-ode/jpo-ode-plugins/target/classes/ 
+20906 [restartedMain] INFO  u.d.i.jpo.ode.plugin.PluginFactory - Getting class: us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder 
+20908 [restartedMain] INFO  u.d.i.jpo.ode.plugin.PluginFactory - creating an instance of: class us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder 
+20927 [restartedMain] INFO  u.d.i.jpo.ode.plugin.PluginFactory - Got Plugin: us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder@1b4c4f13 
+20929 [restartedMain] INFO  u.dot.its.jpo.ode.importer.Importer - Publishing to topic.J2735Bsm 
+20934 [pool-2-thread-1] INFO  u.dot.its.jpo.ode.exporter.Exporter - Subscribing to topic.J2735Bsm 
+22179 [pool-2-thread-1] INFO  u.d.i.j.ode.wrapper.MessageConsumer - Consumer Created for groupId BAH5CG4432LBCExporter 
+22180 [pool-2-thread-1] INFO  u.d.i.j.ode.wrapper.MessageConsumer - Default Byte Array Message Consumer Created 
+22181 [pool-2-thread-1] INFO  u.d.i.j.ode.wrapper.MessageConsumer - Subscribing to [topic.J2735Bsm] 
+22800 [restartedMain] INFO  o.s.w.s.s.s.WebSocketHandlerMapping - Mapped URL path [/ode-websocket/**] onto handler of type [class org.springframework.web.socket.sockjs.support.SockJsHttpRequestHandler] 
+23475 [restartedMain] INFO  o.s.w.s.m.WebSocketAnnotationMethodMessageHandler - Mapped "{[/connect],messageType=[MESSAGE]}" onto public us.dot.its.jpo.ode.subscriber.Subscriber us.dot.its.jpo.ode.subscriber.SubscriberController.greeting(us.dot.its.jpo.ode.subscriber.RegistrationMessage) throws java.lang.Exception 
+24097 [restartedMain] INFO  o.s.w.s.m.m.a.RequestMappingHandlerAdapter - Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@12b3f72c: startup date [Wed Jan 11 14:03:34 EST 2017]; root of context hierarchy 
+24188 [restartedMain] INFO  o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped "{[/],methods=[GET]}" onto public java.lang.String us.dot.its.jpo.ode.subscriber.SubscriberController.test() throws java.lang.Exception 
+24189 [restartedMain] INFO  o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped "{[/newMessage],methods=[POST]}" onto public java.lang.String us.dot.its.jpo.ode.subscriber.SubscriberController.messages() throws java.lang.Exception 
+24194 [restartedMain] INFO  o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped "{[/files/{filename:.+}],methods=[GET]}" onto public org.springframework.http.ResponseEntity<org.springframework.core.io.Resource> us.dot.its.jpo.ode.upload.FileUploadController.serveFile(java.lang.String) 
+24194 [restartedMain] INFO  o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped "{[/],methods=[POST]}" onto public java.lang.String us.dot.its.jpo.ode.upload.FileUploadController.handleFileUpload(org.springframework.web.multipart.MultipartFile) 
+24203 [restartedMain] INFO  o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest) 
+24204 [restartedMain] INFO  o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse) 
+24471 [restartedMain] INFO  o.s.w.s.h.SimpleUrlHandlerMapping - Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler] 
+24471 [restartedMain] INFO  o.s.w.s.h.SimpleUrlHandlerMapping - Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler] 
+24488 [restartedMain] INFO  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Detected @ExceptionHandler methods in repositoryRestExceptionHandler 
+24524 [restartedMain] INFO  o.s.w.s.h.SimpleUrlHandlerMapping - Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler] 
+25602 [restartedMain] INFO  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Detected @ExceptionHandler methods in repositoryRestExceptionHandler 
+26079 [restartedMain] INFO  u.d.i.j.o.OdeSvcsApplication$$EnhancerBySpringCGLIB$$f0171a38 - Upload directory already exisits 
+26081 [restartedMain] INFO  u.d.its.jpo.ode.OdeSvcsApplication - Started OdeSvcsApplication in 25.524 seconds (JVM running for 26.685) 
+51803 [http-nio-8080-exec-6] INFO  o.s.web.servlet.DispatcherServlet - FrameworkServlet 'dispatcherServlet': initialization started 
+52278 [http-nio-8080-exec-6] INFO  o.s.web.servlet.DispatcherServlet - FrameworkServlet 'dispatcherServlet': initialization completed in 475 ms 
+78837 [http-nio-8080-exec-3] DEBUG u.d.i.j.o.u.FileUploadController - File received: bsm.uper 
+78838 [http-nio-8080-exec-3] DEBUG u.d.i.j.o.s.FileSystemStorageService - Copying file bsm.uper to uploads\bsm.uper 
+79415 [pool-1-thread-1] INFO  u.dot.its.jpo.ode.importer.Importer - IMPORTER - New file detected: bsm.uper 
+79733 [pool-1-thread-1] DEBUG us.dot.its.jpo.ode.bsm.BsmCoder - Decoded: {"coreData":{"msgCnt":0,"id":"52032900","secMark":0,"position":{"latitude":-90.0000000,"longitude":-179.9999999},"accelSet":{"accelLat":-20.00,"accelLong":-20.00,"accelYaw":-327.67},"accuracy":{"semiMajor":0.00,"semiMinor":0.00,"orientation":0E-10},"transmission":"neutral","speed":0.00,"heading":0.0000,"angle":-189.0,"brakes":{"wheelBrakes":{"BIT STRING":false},"traction":"unavailable","abs":"unavailable","scs":"unavailable","brakeBoost":"unavailable","auxBrakes":"unavailable"},"size":{"length":31}},"partII":[]} 
+79986 [pool-1-thread-1] INFO  u.d.i.j.ode.wrapper.MessageProducer - Producer Created 
+80164 [pool-1-thread-1] DEBUG us.dot.its.jpo.ode.bsm.BsmCoder - Published: {"coreData":{"msgCnt":0,"id":"52032900","secMark":0,"position":{"latitude":-90.0000000,"longitude":-179.9999999},"accelSet":{"accelLat":-20.00,"accelLong":-20.00,"accelYaw":-327.67},"accuracy":{"semiMajor":0.00,"semiMinor":0.00,"orientation":0E-10},"transmission":"neutral","speed":0.00,"heading":0.0000,"angle":-189.0,"brakes":{"wheelBrakes":{"BIT STRING":false},"traction":"unavailable","abs":"unavailable","scs":"unavailable","brakeBoost":"unavailable","auxBrakes":"unavailable"},"size":{"length":31}},"partII":[]} 
+80291 [pool-2-thread-1] DEBUG u.d.i.j.ode.wrapper.MessageConsumer - Consuming 1 message(s) 
+82815 [MessageBroker-3] INFO  o.s.w.s.c.WebSocketMessageBrokerStats - WebSocketSession[1 current WS(1)-HttpStream(0)-HttpPoll(0), 1 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(1)-CONNECTED(1)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 8, active threads = 0, queued tasks = 0, completed tasks = 9], outboundChannelpool size = 2, active threads = 0, queued tasks = 0, completed tasks = 2], sockJsScheduler[pool size = 4, active threads = 1, queued tasks = 2, completed tasks = 5] 
