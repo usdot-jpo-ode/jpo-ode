@@ -17,7 +17,10 @@ public class OssRTCMPackage {
 		while (iter.hasNext()) {
 			rtcm.msgs.add(CodecUtils.toHex(iter.next().byteArrayValue()));
 		}
-		rtcm.rtcmHeader = OssRTCMheader.genericRTCMheader(theRTCM.rtcmHeader);
+		// Optional element
+		if (theRTCM.rtcmHeader != null) {
+		    rtcm.rtcmHeader = OssRTCMheader.genericRTCMheader(theRTCM.rtcmHeader);
+		}
 		
 		return rtcm ;
 	}

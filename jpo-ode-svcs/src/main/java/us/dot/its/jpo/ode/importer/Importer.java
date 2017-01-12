@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.bsm.BsmCoder;
+import us.dot.its.jpo.ode.eventlog.EventLogger;
 
 public class Importer implements Runnable {
 
@@ -178,6 +179,7 @@ public class Importer implements Runnable {
 
    public void disposeOfProcessedFile(Path filePath) {
       try {
+         EventLogger.logger.info("Disposing file");
          // TODO(Cris): handle other file types here...
          String processedFileName = Integer.toString((int) System.currentTimeMillis()) + "-"
                + filePath.getFileName().toString().replaceFirst("uper", "pbo");
@@ -186,17 +188,19 @@ public class Importer implements Runnable {
          Files.move(filePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
       } catch (Exception e) {
          importerStatus |= MOVE2BACKUP_ERROR;
-         logger.error("IMPORTER -  Error moving file to temporary directory: " + filePath.toString(), e);
+         logger.error("Error moving file to temporary directory: " + filePath.toString(), e);
+         EventLogger.logger.info("Error moving file to temporary directory: {}", filePath.toString());
       }
    }
 
    public void processFile(Path filePath) throws Exception, InterruptedException {
 
-      //TODO let's try to get rid of the need for retry
+      // TODO let's try to get rid of the need for retry
       int tryCount = 3;
       boolean fileProcessed = false;
       while (tryCount-- > 0) {
          try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
+            EventLogger.logger.info("Processing file " + filePath.toFile());
             if (filePath.toString().endsWith("uper")) {
                this.bsmCoder.decodeFromStreamAndPublish(inputStream, OdeProperties.KAFKA_TOPIC_J2735_BSM);
             } else {
@@ -205,16 +209,16 @@ public class Importer implements Runnable {
             fileProcessed = true;
             break;
          } catch (Exception e) {
-            logger.info("unable to open file: " + filePath 
-                  + " retrying " + tryCount + " more times", e);
+            logger.info("unable to open file: " + filePath + " retrying " + tryCount + " more times", e);
             Thread.sleep(1000);
          }
       }
-      
+
       if (fileProcessed) {
          disposeOfProcessedFile(filePath);
       } else {
-         throw new Exception("unable to open file: " + filePath);
+         EventLogger.logger.info("Failed to process file: {} ", filePath.toFile());
+         throw new Exception("Failed to process file: " + filePath);
       }
    }
 
@@ -244,7 +248,7 @@ public class Importer implements Runnable {
 
       // If we have any fatal errors at this point we abort
       if ((importerStatus & FATAL_ERROR) != 0) {
-         logger.error("IMPORTER -  Importer cannot run, see error above. Execution terminated.");
+         logger.error("Importer cannot run, see error above. Execution terminated.");
          return;
       }
 
@@ -287,7 +291,8 @@ public class Importer implements Runnable {
                   @SuppressWarnings("unchecked")
                   WatchEvent<Path> watchEventCurrent = (WatchEvent<Path>) watchEvent;
                   Path newPath = watchEventCurrent.context();
-                  logger.info("IMPORTER - New file detected: {}", newPath);
+                  logger.info("New file detected: {}", newPath);
+                  EventLogger.logger.info("New file detected: {}", newPath);
                   Path fullPath = Paths.get(inboxFolder.toString(), newPath.toString());
                   processFile(fullPath);
                }

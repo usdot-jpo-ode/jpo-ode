@@ -6,11 +6,10 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735SupplementalVehicleExtensions;
 
 public class OssBsmPart2Extension {
 
-	public static J2735BsmPart2Extension genericSupplementalVehicleExtensions(
-			SupplementalVehicleExtensions sve) {
-		J2735SupplementalVehicleExtensions gsve = 
-				OssSupplementalVehicleExtensions.genericSupplementalVehicleExtensions(sve);
-		return gsve;
-	}
+    public static J2735BsmPart2Extension genericSupplementalVehicleExtensions(SupplementalVehicleExtensions sve) {
+        J2735SupplementalVehicleExtensions gsve = OssSupplementalVehicleExtensions
+                .genericSupplementalVehicleExtensions(sve);
+        return gsve;
+    }
 
 }

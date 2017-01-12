@@ -4,6 +4,7 @@
 /jpo-ode-svcs/src/main/java/us/dot/its/jpo/ode/plugins
 /jpo-ode-svcs/target/
 !/jpo-ode-svcs/.mvn/wrapper/maven-wrapper.jar
+/jpo-ode-svcs/ode.log
 
 ### STS ###
 /jpo-ode-svcs/.apt_generated
@@ -26,10 +27,14 @@
 /jpo-ode-svcs/dist/
 /jpo-ode-svcs/nbdist/
 /jpo-ode-svcs/.nb-gradle/
+/jpo-ode-svcs/ode.log
+/jpo-ode-svcs/Events.log
 
 ######################
 ### jpo-ode-common ###
 /jpo-ode-common/target
+/jpo-ode-common/.classpath
+/jpo-ode-common/.project
 
 ####################
 ### jpo-ode-core ###
@@ -65,3 +70,8 @@
 ### jpo-ode-plugins ###
 /jpo-ode-plugins/.apt_generated/
 /jpo-ode-plugins/target/
+/jpo-ode-plugins/.project
+/jpo-ode-plugins/bin/
+/jpo-ode-plugins/.classpath
+ode.log
+jpo-ode-consumer-example/target/
