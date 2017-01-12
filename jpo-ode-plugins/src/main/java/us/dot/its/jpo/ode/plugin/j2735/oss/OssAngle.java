@@ -22,7 +22,14 @@ public class OssAngle {
     }
 
     public static BigDecimal longToDecimal(long longValue) {
-        return BigDecimal.valueOf(longValue * 125, 4);
+        
+        BigDecimal result = null;
+        
+        if (longValue != 28800) {
+            result = BigDecimal.valueOf(longValue * 125, 4);
+        }
+        
+        return result;
     }
 
 }

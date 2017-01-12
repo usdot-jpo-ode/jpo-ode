@@ -12,14 +12,21 @@ public class OssEmergencyDetails {
 	public static J2735EmergencyDetails genericEmergencyDetails(EmergencyDetails vehicleAlerts) {
 		J2735EmergencyDetails va = new J2735EmergencyDetails();
 		
-		va.events = OssPrivilegedEvents.genericPrivilegedEvents(vehicleAlerts.events);
-		va.lightsUse = J2735LightbarInUse.values()[vehicleAlerts.lightsUse.indexOf()];
-		va.multi = J2735MultiVehicleResponse.values()[vehicleAlerts.multi.indexOf()];
-		va.responseType = J2735ResponseType.values()[vehicleAlerts.responseType.indexOf()];
-		va.sirenUse = J2735SirenInUse.values()[vehicleAlerts.sirenUse.indexOf()];;
+		// Required elements
 		va.sspRights = vehicleAlerts.sspRights.intValue();
+      va.sirenUse = J2735SirenInUse.values()[vehicleAlerts.sirenUse.indexOf()];
+      va.lightsUse = J2735LightbarInUse.values()[vehicleAlerts.lightsUse.indexOf()];
+      va.multi = J2735MultiVehicleResponse.values()[vehicleAlerts.multi.indexOf()];
+
+		// Optional elements
+      if (vehicleAlerts.hasEvents()) {
+          va.events = OssPrivilegedEvents.genericPrivilegedEvents(vehicleAlerts.events);
+      }
+      if (vehicleAlerts.hasResponseType()) {
+          va.responseType = J2735ResponseType.values()[vehicleAlerts.responseType.indexOf()];
+      }
 		
-		return null;
+		return va;
 	}
 
 }

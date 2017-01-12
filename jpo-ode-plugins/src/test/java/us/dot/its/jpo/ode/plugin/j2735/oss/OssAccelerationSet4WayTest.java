@@ -6,14 +6,12 @@ import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.Acceleration;
 import us.dot.its.jpo.ode.j2735.dsrc.AccelerationSet4Way;
 import us.dot.its.jpo.ode.j2735.dsrc.VerticalAcceleration;
 import us.dot.its.jpo.ode.j2735.dsrc.YawRate;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssAccelerationSet4Way;
 
 /**
  * ------------- -- Summary --
@@ -473,8 +471,6 @@ public class OssAccelerationSet4WayTest {
     }
 
     /**
-     * Note - @Ignore tag added as this test may be unnecessary
-     * 
      * Test that an input value above the upper yaw rate bound (32767) throws an
      * IllegalArgumentException
      * 
@@ -499,7 +495,6 @@ public class OssAccelerationSet4WayTest {
         } catch (Exception e) {
             assertTrue(e.getClass().equals(IllegalArgumentException.class));
         }
-
     }
 
     /**

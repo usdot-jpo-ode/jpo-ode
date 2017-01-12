@@ -12,7 +12,6 @@ public class OssWeatherProbe {
 
     public static J2735WeatherProbe genericWeatherProbe(WeatherProbe weatherProbe) {
 
-        // Verify bounds of optional members
         if (weatherProbe.hasAirTemp()) {
             if (weatherProbe.airTemp.intValue() < TEMP_LOWER_BOUND
                     || weatherProbe.airTemp.intValue() > TEMP_UPPER_BOUND) {
@@ -42,7 +41,9 @@ public class OssWeatherProbe {
             gwp.airPressure = null;
         }
 
-        gwp.rainRates = OssWiperSet.genericWiperSet(weatherProbe.rainRates);
+        if (weatherProbe.hasRainRates()) {
+            gwp.rainRates = OssWiperSet.genericWiperSet(weatherProbe.rainRates);
+        }
 
         return gwp;
     }
