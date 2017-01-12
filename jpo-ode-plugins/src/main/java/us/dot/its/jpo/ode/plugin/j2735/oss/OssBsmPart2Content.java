@@ -120,38 +120,24 @@ public class OssBsmPart2Content {
             }
 
             if (vse.hasEvents()) {
-                //vehSafety.events = OssBitString.genericBitString(vse.events);
-                
                 J2735VehicleEventFlags eventFlags = new J2735VehicleEventFlags();
-                
                 for (int i = 0; i < vse.getEvents().getSize(); i++) {
-                    
-
                     String flagName = vse.getEvents().getNamedBits().getMemberName(i);
                     Boolean flagStatus = vse.getEvents().getBit(vse.getEvents().getSize() - i - 1);
-                    
-
-                    System.out.println("[VehicleEventFlags] (i = " + i + ") key=" + flagName + ", status=" + flagStatus);
 
                     if (flagName != null) {
                         eventFlags.put(flagName, flagStatus);
                     }
                 }
-                
-
-                System.out.println("[VehicleEventFlags] # events =" + vse.events.getSize());
                 vehSafety.events = eventFlags;
             }
             if (vse.hasLights()) {
-                //vehSafety.lights = OssBitString.genericBitString(vse.lights);
                 
                 J2735ExteriorLights exteriorLights = new J2735ExteriorLights();
                 
-                for (int i = 0; i < vse.lights.getSize(); i++) {
-                    
-
-                    String lightName = vse.lights.getNamedBits().getMemberName(i);
-                    Boolean lightStatus = vse.lights.getBit(vse.lights.getSize() - i - 1);
+                for (int i = 0; i < vse.getLights().getSize(); i++) {
+                    String lightName = vse.getLights().getNamedBits().getMemberName(i);
+                    Boolean lightStatus = vse.getLights().getBit(vse.getLights().getSize() - i - 1);
 
                     if (lightName != null) {
                         exteriorLights.put(lightName, lightStatus);

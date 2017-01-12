@@ -152,6 +152,9 @@ public class OssBsmPart2ContentTest {
     }
     
     
+    /**
+     * Create a test SupplementalVehicleExtensions object with minimal contents and verify correct conversion
+     */
     @Test
     public void shouldCreateSupplementalVehicleExtensions() {
         
@@ -187,14 +190,15 @@ public class OssBsmPart2ContentTest {
     /**
      * Create a test VehicleSafetyExtensions object with minimal contents and verify correct conversion
      */
-    @Ignore
     @Test
     public void shouldCreateVehicleSafetyExtensions () {
         
         // VehicleEventFlags
-        Integer testVehicleEventFlags = 0b1;
-        String expectedVehicleEventFlag1 = "eventHazardLights";
-        String expectedVehicleEventFlag2 = "eventHazardousMaterials";
+        byte[] testVehicleEventFlags = new byte[2];
+        testVehicleEventFlags[0] = 0b01000000;
+        testVehicleEventFlags[1] = 0b00100000;
+        String expectedVehicleEventFlag1 = "eventABSactivated";
+        String expectedVehicleEventFlag2 = "eventDisabledVehicle";
         
         // PathPrediction
         Integer testRadiusOfCurvature = 435;
@@ -204,24 +208,27 @@ public class OssBsmPart2ContentTest {
         BigDecimal expectedConfidence = BigDecimal.valueOf(28.0);
         
         // ExteriorLights
-        Integer testExteriorLights = 0b000100010;
-        String expectedExteriorLights1 = "leftTurnSignalOn";
-        String expectedExteriorLights2 = "daytimeRunningLightsOn";
+        byte[] testExteriorLights = new byte[2];
+        testExteriorLights[0] = 0b01000001;
+        testExteriorLights[1] = 0b00000000;
+        String expectedExteriorLights1 = "highBeamHeadlightsOn";
+        String expectedExteriorLights2 = "fogLightOn";
         
         VehicleSafetyExtensions testvse = new VehicleSafetyExtensions();
         
-        testvse.setEvents(new VehicleEventFlags(new byte[]{testVehicleEventFlags.byteValue()}));
+        testvse.setEvents(new VehicleEventFlags(testVehicleEventFlags));
         testvse.setPathPrediction(
                 new PathPrediction(
                         new RadiusOfCurvature(testRadiusOfCurvature), 
                         new Confidence(testConfidence)));
-        testvse.setLights(new ExteriorLights(new byte[]{testExteriorLights.byteValue()}));
+        testvse.setLights(new ExteriorLights(testExteriorLights));
         
         // Create a BasicSafetyMessage.PartII by encoding the VehicleSafetyExtensions object
         PERUnalignedCoder coder = J2735.getPERUnalignedCoder();
         
         Sequence_ testSequence = new Sequence_();
         testSequence.partII_Id = new PartII_Id(0);
+        
         try {
             testSequence.setPartII_Value(new OpenType(coder.encode(testvse).array()));
         } catch (Exception e) {
@@ -238,9 +245,7 @@ public class OssBsmPart2ContentTest {
         assertEquals("Incorrect radius of curvature", expectedRadiusOfCurvature, actualValue.pathPrediction.radiusOfCurve);
         assertEquals("Incorrect confidence", expectedConfidence, actualValue.pathPrediction.confidence);
         
-        System.out.println("[Test] # elements =" + actualValue.events.entrySet().size());
         for (Map.Entry<String, Boolean> curVal1 : actualValue.events.entrySet()) {
-            System.out.println("[Test] key=" + curVal1.getKey() + ", status=" + curVal1.getValue());
             if (curVal1.getKey().equals(expectedVehicleEventFlag1) || curVal1.getKey().equals(expectedVehicleEventFlag2)) {
                 assertTrue("Expected " + curVal1.getKey() + " to be true", curVal1.getValue());
             } else {
@@ -248,7 +253,6 @@ public class OssBsmPart2ContentTest {
             }
         }
         
-
         for (Map.Entry<String, Boolean> curVal2 : actualValue.lights.entrySet()) {
             if (curVal2.getKey().equals(expectedExteriorLights1) || curVal2.getKey().equals(expectedExteriorLights2)) {
                 assertTrue("Expected " + curVal2.getKey() + " to be true", curVal2.getValue());
