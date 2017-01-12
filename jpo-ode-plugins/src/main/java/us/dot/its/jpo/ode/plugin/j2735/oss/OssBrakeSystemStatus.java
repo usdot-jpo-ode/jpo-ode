@@ -40,9 +40,6 @@ public class OssBrakeSystemStatus {
 		//          rightRear   (8)  -- B'1000  Right Rear Active
 		//      } -- to fit in 4 bits
 		
-		genericBrakesStatus.wheelBrakes = 
-				OssBitString.genericBitString(brakesStatus.wheelBrakes);
-		
 		J2735BrakeAppliedStatus appliedWheelBrakes = new J2735BrakeAppliedStatus();
 
       for (int i = 0; i < brakesStatus.wheelBrakes.getSize(); i++) {

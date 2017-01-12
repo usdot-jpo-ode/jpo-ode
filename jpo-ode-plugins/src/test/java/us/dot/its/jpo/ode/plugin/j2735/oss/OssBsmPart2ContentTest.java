@@ -95,18 +95,7 @@ public class OssBsmPart2ContentTest {
     public void shouldCreateSpecialVehicleExtensions() {
         
         SpecialVehicleExtensions testsve = new SpecialVehicleExtensions();
-        
-        /*
-        EmergencyDetails ::= SEQUENCE { -- CERT SSP Privilege Details
-            sspRights SSPindex, -- index set by CERT
-            sirenUse SirenInUse,
-            lightsUse LightbarInUse,
-            multi MultiVehicleResponse,
-            events PrivilegedEvents OPTIONAL,
-            responseType ResponseType OPTIONAL,
-            ...
-            }
-        */
+
         Integer testSspRights = 5;
         Integer expectedSspRights = 5;
         
@@ -146,8 +135,6 @@ public class OssBsmPart2ContentTest {
         } catch (Exception e) {
             fail("Unexpected exception: " + e.getClass());
         }
-        
-        //BasicSafetyMessage.PartII testPart2 = new BasicSafetyMessage.PartII(new Sequence_[]{testSequence});
         
         J2735SpecialVehicleExtensions actualValue = null;
         try {
