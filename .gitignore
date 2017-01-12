@@ -73,3 +73,5 @@
 /jpo-ode-plugins/.project
 /jpo-ode-plugins/bin/
 /jpo-ode-plugins/.classpath
+ode.log
+jpo-ode-consumer-example/target/
