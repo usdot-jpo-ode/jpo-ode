@@ -68,3 +68,5 @@
 ### jpo-ode-plugins ###
 /jpo-ode-plugins/.apt_generated/
 /jpo-ode-plugins/target/
+ode.log
+jpo-ode-consumer-example/target/
