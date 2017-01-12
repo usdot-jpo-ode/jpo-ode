@@ -12,11 +12,13 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
 import us.dot.its.jpo.ode.context.AppContext;
+import us.dot.its.jpo.ode.eventlog.EventLogger;
 
 @ConfigurationProperties("ode")
 @org.springframework.context.annotation.PropertySource("classpath:application.properties")
 public class OdeProperties implements EnvironmentAware {
    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
 
    /////////////////////////////////////////////////////////////////////////////
    // Kafka Topics
@@ -35,7 +37,7 @@ public class OdeProperties implements EnvironmentAware {
 
    private String hostId;
 
-   public OdeProperties() {
+   public OdeProperties() throws Exception {
       super();
       init();
    }
@@ -112,7 +114,7 @@ public class OdeProperties implements EnvironmentAware {
       this.env = env;
    }
 
-   public void init() {
+   public void init() throws Exception {
       String hostname;
       try {
          hostname = InetAddress.getLocalHost().getHostName();
@@ -122,11 +124,15 @@ public class OdeProperties implements EnvironmentAware {
       }
       hostId = hostname;
       logger.info("Host ID: {}", hostId);
+      EventLogger.logger.info("Initializing services on host {}", hostId);
       
       if (kafkaBrokers == null) {
+         logger.info("ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP from which will derive the Kafka bootstrap-server");
          kafkaBrokers = System.getenv("DOCKER_HOST_IP") + ":9092";
       }
-      
+
+      if (kafkaBrokers == null)
+         throw new Exception("ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
    }
 
    @Override

@@ -1,9 +1,9 @@
 language: java
 jdk: oraclejdk8
-branches:
-  only:
-    - master
-    - develop
+#branches:
+#  only:
+#    - master
+#    - develop
 sudo: false
 before_install:
   - echo "installing private repository"
