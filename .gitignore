@@ -27,6 +27,8 @@
 /jpo-ode-svcs/dist/
 /jpo-ode-svcs/nbdist/
 /jpo-ode-svcs/.nb-gradle/
+/jpo-ode-svcs/ode.log
+/jpo-ode-svcs/Events.log
 
 ######################
 ### jpo-ode-common ###
