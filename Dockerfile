@@ -28,6 +28,7 @@ RUN apt-get update && \
 ADD jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar /home
 ADD docker/start-ode.sh /usr/bin/start-ode.sh
 ADD jpo-ode-svcs/src/main/resources/application.properties /home
+ADD jpo-ode-svcs/src/main/resources/logback.xml /home
 
 #Change permissions and run scripts
 RUN chmod a+x /usr/bin/start-ode.sh
