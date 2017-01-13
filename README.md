@@ -14,6 +14,7 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 - ODE-54 Authored first draft of ODE User Guide
 - ODE-58 Developed ODE Event Logger
 - ODE-41 Importer improvements
+
 ### Sprint 3
 - ODE-42 Clean up the kafka adapter and make it work with Kafka broker. Integrated kafka. Kept Stomp as the high level WebSocket API protocol.
 - ODE-36 - Docker, docker-compose, Kafka and ode Integration
