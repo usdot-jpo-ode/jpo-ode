@@ -19,6 +19,12 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 - ODE-42 Clean up the kafka adapter and make it work with Kafka broker. Integrated kafka. Kept Stomp as the high level WebSocket API protocol.
 - ODE-36 - Docker, docker-compose, Kafka and ode Integration
 
+## Documentation
+ODE provides the following living documents to keep ODE users and stakeholders informed of the latest developments:
+
+1. [docs/JPO_ODE_Architecture.pdf](docs/JPO_ODE_Architecture.pdf)
+2. [docs/JPO_ODE_User_Guide.pdf](docs/JPO_ODE_User_Guide.pdf)
+
 ## Collaboration Tools
 
 ### Source Repositories - GitHub
@@ -65,35 +71,38 @@ https://sonarqube.com/dashboard/index?id=us.dot.its.jpo.ode%3Ajpo-ode%3Adevelop
 
 ## Getting Started
 
-### Local Build
-
-#### Prerequisites
+### Prerequisites
 * JDK 1.8: http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html
 * Maven: https://maven.apache.org/install.html
 * Git: https://git-scm.com/
 
-#### Instructions
+### Instructions
 
 The following instructions describe the procedure to fetch, build and run the application.
 
-##### Getting the source Code
-Clone the source code from GitHub and BitBucket repositories using Git commands:
+#### Getting the source Code
+
+**Step 1**: Disable Git core.autocrlf (Only the First Time)
+**NOTE**: If running on Windows, please make sure that your global git config is set up to not convert End-of-Line characters during checkout. This is important for building docker images correctly.
+
+```bash
+git config --global core.autocrlf false
+``` 
+
+**Step 2**:  Clone the source code from GitHub and BitBucket repositories using Git commands:
 
 ```bash
 git clone https://github.com/usdot-jpo-ode/jpo-ode.git
 git clone https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 ```
 
-**NOTE**: If running on Windows, please make sure that your global git config is set up to not convert End-of-Line characters during checkout. This is important for building docker images correctly.
-```bash
-git config --global core.autocrlf false
-``` 
+**Step 3**:  Follow the instructions in the ![docker/README.me]
 
-##### Building ODE Application
+#### Building Private Repository
 
 To build the application use maven command line. 
 
-**Step 1**. Navigate to the root directory of the jpo-ode-private project:
+**Step 4**: Navigate to the root directory of the jpo-ode-private project:
 
 ```bash
  cd jpo-ode-private/
@@ -102,10 +111,25 @@ To build the application use maven command line.
 ```
 It is important you run mvn clean first and then mvn install because mvn clean installs the required OSS jar file in your maven local repository. 
 
-**Step 2**. Navigate to the root directory of the jpo-ode project:
-If you wish to change the application properties, such as change the location of the upload service via ode.uploadLocation property or set the ode.kafkaBrokers to something other than the $DOCKER_HOST_IP:9092, modify ```jpo-ode-svcs\src\main\resources\application.properties``` file as desired.
+#### Building and deploying ODE
+**Step 5**: Navigate to the root directory of the jpo-ode project. 
 
-Run the following commands to build the application containers.
+**Step 6**: (Optional Step) If you wish to change the application properties, such as change the location of the upload service via ode.uploadLocation property or set the ode.kafkaBrokers to something other than the $DOCKER_HOST_IP:9092, modify ```jpo-ode-svcs\src\main\resources\application.properties``` file as desired.
+
+**Step 7**: The easiest and cleanest way to build and run the ODE in a docker container would be to run the ```clean-build-and-deploy``` script. This script executes the following commands:
+
+```bash
+#!/bin/bash
+docker-compose stop
+docker-compose rm -f -v
+mvn clean install
+docker-compose up --build -d
+docker-compose ps
+```
+
+#### Building ODE without Deploying 
+To build the ODE docker container images but not deploy it, run the following commands:
+
 ```bash
  cd jpo-ode (or cd ../jpo-ode if you are in the jpo-ode-private directory) 
  mvn clean install
@@ -113,10 +137,10 @@ Run the following commands to build the application containers.
  docker-compose build
 ```
 
-Alternatively, run the script ```clean-build``` script.
+Alternatively, you may run the ```clean-build``` script.
 
-##### Deploying ODE Application on a Docker Host
-To run the application, from jpo-ode directory: 
+#### Deploying ODE Application on a Docker Host
+To deploy the the application on the docker host configured in your DOCKER_HOST_IP machine, run the following: 
 
 ```bash
 docker-compose up --no-recreate -d
@@ -129,20 +153,19 @@ Alternatively, run ```deploy``` script.
 Check the deployment by running ```docker-compose ps```. You can start and stop service using ```docker-compose start``` and ```docker-compose stop``` commands. 
 If using the multi-broker docker-compose file, you can change the scaling by running ```docker-compose scale <service>=n``` where service is the service you would like to scale and n is the number of instances. For example, ```docker-compose scale kafka=3```.
 
-##### Build and deploy in one step
-To build and run the application in one step, run the ```clean-build-and-deploy``` script.
- 
-##### Running ODE Application Locally
+#### Running ODE Application on localhost
 You can run the application on your local machine while other services are deployed on a host environment. To do so, run the following:
 ```bash
  docker-compose start zookeeper kafka
  java -jar jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar
 ```
 
-##### Testing ODE Application
+#### Testing ODE Application
 You should be able to access the jpo-ode UI at `localhost:8080`.
 
-Upload a file containing BSM messages in ASN.1 Hexadecimal encoded format. For example, a file containing the following record:
+Upload a file containing BSM messages in ASN.1 UPER encoded binary format. For example, try the file [data/bsm.uper](data/bsm.uper).
+
+ALternatively, you may upload a file containing BSM messages in ASN.1 UPER encoded headecimal format. For example, a file containing the following record:
 ```text
 401480CA4000000000000000000000000000000000000000000000000000000000000000F800D9EFFFB7FFF00000000000000000000000000000000000000000000000000000001FE07000000000000000000000000000000000001FF0
 ```
@@ -163,7 +186,6 @@ Install the IDE of your choice:
 * Eclipse: [https://eclipse.org/](https://eclipse.org/)
 * STS: [https://spring.io/tools/sts/all](https://spring.io/tools/sts/all)
 * IntelliJ: [https://www.jetbrains.com/idea/](https://www.jetbrains.com/idea/)
-
 
 ### Continuous Integration and Delivery
 
