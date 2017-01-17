@@ -73,6 +73,27 @@ public class BsmCoder {
       }
    }
 
+   public void decodeFromStreamAndPublish(InputStream is, String topic)
+         throws Exception {
+      J2735Bsm decoded = null;
+
+      try {
+         do {
+            decoded = (J2735Bsm) asn1Coder.UPER_DecodeStream(is);
+            if (decoded != null) {
+               logger.debug("Decoded: {}", decoded);
+               if (!OdeProperties.KAFKA_TOPIC_J2735_BSM.endsWith("json"))
+                  publish(topic, decoded);
+               else
+                  publish(topic, decoded.toJson());
+            }
+         } while (decoded != null);
+
+      } catch (Exception e) {
+         throw new Exception("Error decoding data.", e);
+      }
+   }
+
    public void publish(String topic, J2735Bsm msg) {
       SerializationUtils<J2735Bsm> serializer = new SerializationUtils<J2735Bsm>();
       publish(topic, serializer.serialize(msg));

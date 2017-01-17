@@ -33,7 +33,6 @@ public class OdeProperties implements EnvironmentAware {
    private String asn1CoderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder";
    private String kafkaBrokers = null;
    private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
-   private int importerInterval = 1000;
 
    private String hostId;
 
@@ -96,14 +95,6 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setKafkaProducerType(String kafkaProducerType) {
       this.kafkaProducerType = kafkaProducerType;
-   }
-
-   public int getImporterInterval() {
-      return importerInterval;
-   }
-
-   public void setImporterInterval(int importerInterval) {
-      this.importerInterval = importerInterval;
    }
 
    public Environment getEnv() {
