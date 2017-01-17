@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.Acceleration;
@@ -76,6 +77,7 @@ public class OssBsmCoreDataTest {
      * Test creating a BSM with values that flag undefined or unavailable data
      * (values without explicit undefined flags are set to minimum value)
      */
+    @Ignore
     @Test
     public void shouldCreateCoreDataUndefinedValues() {
         
@@ -231,6 +233,7 @@ public class OssBsmCoreDataTest {
      * Test creating BSM with all values set to their minimum value
      * (values whose minimum value is an undefined flag are set to one unit greater)
      */
+    @Ignore
     @Test
     public void shouldCreateCoreDataMinimumValues() {
         
@@ -384,6 +387,7 @@ public class OssBsmCoreDataTest {
      * Test creating BSM with all values set to their maximum value
      * (values whose maximum value is an undefined flag are set to one unit less)
      */
+    @Ignore
     @Test
     public void shouldCreateCoreDataMaximumValues() {
         

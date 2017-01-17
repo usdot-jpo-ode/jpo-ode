@@ -45,7 +45,8 @@ public class OssBrakeSystemStatus {
       for (int i = 0; i < brakesStatus.wheelBrakes.getSize(); i++) {
 
           String eventName = brakesStatus.wheelBrakes.getNamedBits().getMemberName(i);
-          Boolean eventStatus = brakesStatus.wheelBrakes.getBit(brakesStatus.wheelBrakes.getSize() - i - 1);
+          //Boolean eventStatus = brakesStatus.wheelBrakes.getBit(brakesStatus.wheelBrakes.getSize() - i - 1);
+          Boolean eventStatus = brakesStatus.wheelBrakes.getBit(i);
 
           if (eventName != null) {
               appliedWheelBrakes.put(eventName, eventStatus);
