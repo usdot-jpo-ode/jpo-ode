@@ -25,6 +25,8 @@ ODE provides the following living documents to keep ODE users and stakeholders i
 1. [docs/JPO_ODE_Architecture.pdf](docs/JPO_ODE_Architecture.pdf)
 2. [docs/JPO_ODE_User_Guide.pdf](docs/JPO_ODE_User_Guide.pdf)
 
+All stakeholders are invited to provide input to these documents. Stakeholders should direct all input on this document to the JPO Product Owner at DOT, FHWA, JPO. To provide feedback, we recommend that you create an "issue" in this repository (https://github.com/usdot-jpo-ode/jpo-ode/issues). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
+
 ## Collaboration Tools
 
 ### Source Repositories - GitHub
