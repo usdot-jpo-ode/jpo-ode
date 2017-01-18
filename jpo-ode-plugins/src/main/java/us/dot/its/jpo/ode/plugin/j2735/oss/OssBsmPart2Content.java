@@ -137,7 +137,6 @@ public class OssBsmPart2Content {
                 
                 for (int i = 0; i < vse.getLights().getSize(); i++) {
                     String lightName = vse.getLights().getNamedBits().getMemberName(i);
-                    //Boolean lightStatus = vse.getLights().getBit(vse.getLights().getSize() - i - 1);
                     Boolean lightStatus = vse.getLights().getBit(i);
 
                     if (lightName != null) {
