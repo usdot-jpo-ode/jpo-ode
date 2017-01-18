@@ -1,6 +1,10 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -12,7 +16,6 @@ import us.dot.its.jpo.ode.j2735.dsrc.BrakeSystemStatus;
 import us.dot.its.jpo.ode.j2735.dsrc.StabilityControlStatus;
 import us.dot.its.jpo.ode.j2735.dsrc.TractionControlStatus;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BrakeSystemStatus;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssBrakeSystemStatus;
 
 /**
  * Test conversion from BrakeSystemStatus to ASN.1-compliant
@@ -20,6 +23,8 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssBrakeSystemStatus;
  *
  */
 public class OssBrakeSystemStatusTest {
+    
+    // Brake status tests
 
     /**
      * Test that integer value 0 returns "unavailable" status for all brake
@@ -50,8 +55,6 @@ public class OssBrakeSystemStatusTest {
                 testAbsStatus, testScsStatus, testBrakeBoostStatus, testAuxBrakesStatus);
 
         J2735BrakeSystemStatus actualStatus = OssBrakeSystemStatus.genericBrakeSystemStatus(testBrakeSystemStatus);
-
-        // assertEquals(false, actualStatus.wheelBrakes);
 
         assertEquals("unavailable", actualStatus.traction);
         assertEquals("unavailable", actualStatus.abs);
@@ -176,6 +179,159 @@ public class OssBrakeSystemStatusTest {
         assertEquals("engaged", actualStatus.traction);
         assertEquals("engaged", actualStatus.abs);
 
+    }
+    
+    // WheelBrakes tests
+    @Test
+    public void shouldCreateWheelBrakesAllOff() {
+
+        byte[] testWheelBrakesBytes = new byte[1];
+        testWheelBrakesBytes[0] = 0b00000000;
+
+        BrakeSystemStatus testBrakeSystemStatus = new BrakeSystemStatus(
+                new BrakeAppliedStatus(testWheelBrakesBytes), 
+                new TractionControlStatus(0),
+                new AntiLockBrakeStatus(0), 
+                new StabilityControlStatus(0), 
+                new BrakeBoostApplied(0), 
+                new AuxiliaryBrakeStatus(0));
+
+        J2735BrakeSystemStatus actualStatus = OssBrakeSystemStatus.genericBrakeSystemStatus(testBrakeSystemStatus);
+        
+        for (Map.Entry<String, Boolean> curVal : actualStatus.wheelBrakes.entrySet()) {
+            assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
+        }
+
+    }
+    
+    @Test
+    public void shouldCreateWheelBrakesAllOn() {
+        
+        byte[] testWheelBrakesBytes = new byte[1];
+        testWheelBrakesBytes[0] = (byte) 0b11111000;
+
+        BrakeSystemStatus testBrakeSystemStatus = new BrakeSystemStatus(
+                new BrakeAppliedStatus(testWheelBrakesBytes), 
+                new TractionControlStatus(0),
+                new AntiLockBrakeStatus(0), 
+                new StabilityControlStatus(0), 
+                new BrakeBoostApplied(0), 
+                new AuxiliaryBrakeStatus(0));
+
+        J2735BrakeSystemStatus actualStatus = OssBrakeSystemStatus.genericBrakeSystemStatus(testBrakeSystemStatus);
+        
+        for (Map.Entry<String, Boolean> curVal : actualStatus.wheelBrakes.entrySet()) {
+            assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
+        }
+    }
+    
+    @Test
+    public void shouldCreateWheelBrakesUnavailable() {
+        
+        String elementTested = "unavailable";
+        byte[] testWheelBrakesBytes = new byte[1];
+        testWheelBrakesBytes[0] = (byte) 0b10000000;
+
+        BrakeSystemStatus testBrakeSystemStatus = new BrakeSystemStatus(
+                new BrakeAppliedStatus(testWheelBrakesBytes), 
+                new TractionControlStatus(0),
+                new AntiLockBrakeStatus(0), 
+                new StabilityControlStatus(0), 
+                new BrakeBoostApplied(0), 
+                new AuxiliaryBrakeStatus(0));
+
+        J2735BrakeSystemStatus actualStatus = OssBrakeSystemStatus.genericBrakeSystemStatus(testBrakeSystemStatus);
+        
+        for (Map.Entry<String, Boolean> curVal : actualStatus.wheelBrakes.entrySet()) {
+            if (curVal.getKey().equals(elementTested)) {
+                assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
+            } else {
+                assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
+            }
+        }
+        
+    }
+    
+    @Test
+    public void shouldCreateWheelBrakesLeftFront() {
+        
+        String elementTested = "leftFront";
+        byte[] testWheelBrakesBytes = new byte[1];
+        testWheelBrakesBytes[0] = (byte) 0b01000000;
+
+        BrakeSystemStatus testBrakeSystemStatus = new BrakeSystemStatus(
+                new BrakeAppliedStatus(testWheelBrakesBytes), 
+                new TractionControlStatus(0),
+                new AntiLockBrakeStatus(0), 
+                new StabilityControlStatus(0), 
+                new BrakeBoostApplied(0), 
+                new AuxiliaryBrakeStatus(0));
+
+        J2735BrakeSystemStatus actualStatus = OssBrakeSystemStatus.genericBrakeSystemStatus(testBrakeSystemStatus);
+        
+        for (Map.Entry<String, Boolean> curVal : actualStatus.wheelBrakes.entrySet()) {
+            if (curVal.getKey().equals(elementTested)) {
+                assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
+            } else {
+                assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
+            }
+        }
+        
+    }
+    
+    @Test
+    public void shouldCreateWheelBrakesRightRear() {
+        
+        String elementTested = "rightRear";
+        byte[] testWheelBrakesBytes = new byte[1];
+        testWheelBrakesBytes[0] = (byte) 0b00001000;
+
+        BrakeSystemStatus testBrakeSystemStatus = new BrakeSystemStatus(
+                new BrakeAppliedStatus(testWheelBrakesBytes), 
+                new TractionControlStatus(0),
+                new AntiLockBrakeStatus(0), 
+                new StabilityControlStatus(0), 
+                new BrakeBoostApplied(0), 
+                new AuxiliaryBrakeStatus(0));
+
+        J2735BrakeSystemStatus actualStatus = OssBrakeSystemStatus.genericBrakeSystemStatus(testBrakeSystemStatus);
+        
+        for (Map.Entry<String, Boolean> curVal : actualStatus.wheelBrakes.entrySet()) {
+            if (curVal.getKey().equals(elementTested)) {
+                assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
+            } else {
+                assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
+            }
+        }
+        
+    }
+    
+    @Test
+    public void shouldCreateWheelBrakesTwoOn() {
+        
+        String elementTested1 = "leftFront";
+        String elementTested2 = "rightFront";
+        byte[] testWheelBrakesBytes = new byte[1];
+        testWheelBrakesBytes[0] = (byte) 0b01010000;
+
+        BrakeSystemStatus testBrakeSystemStatus = new BrakeSystemStatus(
+                new BrakeAppliedStatus(testWheelBrakesBytes), 
+                new TractionControlStatus(0),
+                new AntiLockBrakeStatus(0), 
+                new StabilityControlStatus(0), 
+                new BrakeBoostApplied(0), 
+                new AuxiliaryBrakeStatus(0));
+
+        J2735BrakeSystemStatus actualStatus = OssBrakeSystemStatus.genericBrakeSystemStatus(testBrakeSystemStatus);
+        
+        for (Map.Entry<String, Boolean> curVal : actualStatus.wheelBrakes.entrySet()) {
+            if (curVal.getKey().equals(elementTested1) || curVal.getKey().equals(elementTested2)) {
+                assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
+            } else {
+                assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
+            }
+        }
+        
     }
 
 }

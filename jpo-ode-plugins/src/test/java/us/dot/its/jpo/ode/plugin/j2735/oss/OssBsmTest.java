@@ -8,7 +8,6 @@ import static org.junit.Assert.fail;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.Acceleration;
@@ -98,7 +97,6 @@ public class OssBsmTest {
     /**
      * Test that a BSM can be populated with known core data
      */
-    @Ignore
     @Test
     public void shouldCreateKnownBsmCoreData() {
         
@@ -157,8 +155,9 @@ public class OssBsmTest {
         BigDecimal expectedAccelYaw = BigDecimal.valueOf(327.67);
         
         // Brake system status
-        Integer testBrakeAppliedStatus = 0b10000;
-        String expectedBrakeAppliedStatus = "rightRear";
+        byte[] testWheelBrakesBytes = new byte[1];
+        testWheelBrakesBytes[0] = (byte) 0b10000000;
+        String expectedBrakeAppliedStatus = "unavailable";
         
         Integer testTractionControlStatus = 3;
         String expectedTractionControlStatus = "engaged";
@@ -203,7 +202,7 @@ public class OssBsmTest {
                 new VerticalAcceleration(testAccelVert),
                 new YawRate(testAccelYaw));
         testcd.brakes = new BrakeSystemStatus(
-                new BrakeAppliedStatus(new byte[]{testBrakeAppliedStatus.byteValue()}),
+                new BrakeAppliedStatus(testWheelBrakesBytes),
                 new TractionControlStatus(testTractionControlStatus),
                 new AntiLockBrakeStatus(testAntiLockBrakeStatus),
                 new StabilityControlStatus(testStabilityControlStatus),

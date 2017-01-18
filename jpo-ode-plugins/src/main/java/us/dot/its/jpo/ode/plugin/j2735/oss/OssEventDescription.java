@@ -30,15 +30,13 @@ public class OssEventDescription {
             desc.priority = CodecUtils.toHex(description.priority.byteArrayValue());
         }
         if (description.hasHeading()) {
-            //desc.heading = OssBitString.genericBitString(description.heading);
-            //desc.heading = new J2735HeadingSlice(description.heading.byteArrayValue());
             
             J2735HeadingSlice headingSlice = new J2735HeadingSlice();
             
             for (int i = 0; i < description.heading.getSize(); i++) {
 
                 String headingBitName = description.heading.getNamedBits().getMemberName(i);
-                Boolean headingBitStatus = description.heading.getBit(description.heading.getSize() - i - 1);
+                Boolean headingBitStatus = description.heading.getBit(i);
 
                 if (headingBitName != null) {
                     headingSlice.put(headingBitName, headingBitStatus);
