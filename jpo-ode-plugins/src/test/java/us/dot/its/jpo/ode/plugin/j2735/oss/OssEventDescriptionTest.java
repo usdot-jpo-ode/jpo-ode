@@ -213,8 +213,9 @@ public class OssEventDescriptionTest {
     @Test
     public void shouldReturnHeadingSliceAllOff() {
         
-        Integer testInput = 0b000000000000000;
-        byte[] testInputBytes = {testInput.byteValue()};
+        byte[] testInputBytes = new byte[2];
+        testInputBytes[0] = 0b00000000;
+        testInputBytes[1] = 0b00000000;
         
         HeadingSlice testHeadingSlice = new HeadingSlice(testInputBytes);
         
@@ -235,8 +236,9 @@ public class OssEventDescriptionTest {
     @Test
     public void shouldReturnHeadingSliceAllOn() {
         
-        Integer testInput = 0b1111111111111111;
-        byte[] testInputBytes = {testInput.byteValue()};
+        byte[] testInputBytes = new byte[2];
+        testInputBytes[0] = (byte) 0b11111111;
+        testInputBytes[1] = (byte) 0b11111111;
         
         HeadingSlice testHeadingSlice = new HeadingSlice(testInputBytes);
         
@@ -252,15 +254,16 @@ public class OssEventDescriptionTest {
     }
     
     /**
-     * Test heading slice bit string ("0000000000000001") returns true for (from000-0to022-5degrees) only
+     * Test heading slice bit string ("1000000000000000") returns true for (from000-0to022-5degrees) only
      */
     @Test
     public void shouldReturnHeadingSliceBottomBit() {
         
-        Integer testInput = 0b0000000000000001;
         String elementTested = "from000-0to022-5degrees";
         
-        byte[] testInputBytes = {testInput.byteValue()};
+        byte[] testInputBytes = new byte[2];
+        testInputBytes[0] = (byte) 0b10000000;
+        testInputBytes[1] = (byte) 0b00000000;
         
         HeadingSlice testHeadingSlice = new HeadingSlice(testInputBytes);
         
@@ -280,15 +283,16 @@ public class OssEventDescriptionTest {
     }
     
     /**
-     * Test heading slice bit string ("1000000000000000") returns true for (from337-5to360-0degrees) only
+     * Test heading slice bit string ("0000000000000001") returns true for (from337-5to360-0degrees) only
      */
     @Test
     public void shouldReturnHeadingSliceTopBit() {
         
-        Integer testInput = 0b1000000000000000;
         String elementTested = "from337-5to360-0degrees";
         
-        byte[] testInputBytes = {testInput.byteValue()};
+        byte[] testInputBytes = new byte[2];
+        testInputBytes[0] = (byte) 0b00000000;
+        testInputBytes[1] = (byte) 0b00000001;
         
         HeadingSlice testHeadingSlice = new HeadingSlice(testInputBytes);
         

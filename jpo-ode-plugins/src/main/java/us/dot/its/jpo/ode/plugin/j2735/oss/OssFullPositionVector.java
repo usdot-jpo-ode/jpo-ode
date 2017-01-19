@@ -1,9 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
-import us.dot.its.jpo.ode.j2735.dsrc.Elevation;
 import us.dot.its.jpo.ode.j2735.dsrc.FullPositionVector;
-import us.dot.its.jpo.ode.j2735.dsrc.Latitude;
-import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
 import us.dot.its.jpo.ode.plugin.j2735.J2735FullPositionVector;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TimeConfidence;

@@ -80,8 +80,8 @@ public class OssPrivilegedEventsTest {
         
         SSPindex testSSPindex = new SSPindex(testInput);
         
-        Integer testEventBitString = 0b000000;
-        byte[] testEventsBytes = {testEventBitString.byteValue()};
+        byte[] testEventsBytes = new byte[1];
+        testEventsBytes[0] = 0b00000;
         
         PrivilegedEventFlags testPrivilegedEventsFlags = new PrivilegedEventFlags(testEventsBytes);
         PrivilegedEvents testEvents = new PrivilegedEvents(testSSPindex, testPrivilegedEventsFlags);
@@ -103,8 +103,8 @@ public class OssPrivilegedEventsTest {
         
         SSPindex testSSPindex = new SSPindex(testInput);
         
-        Integer testEventBitString = 0b000000;
-        byte[] testEventsBytes = {testEventBitString.byteValue()};
+        byte[] testEventsBytes = new byte[1];
+        testEventsBytes[0] = 0b00000;
         
         PrivilegedEventFlags testPrivilegedEventsFlags = new PrivilegedEventFlags(testEventsBytes);
         PrivilegedEvents testEvents = new PrivilegedEvents(testSSPindex, testPrivilegedEventsFlags);
@@ -124,9 +124,8 @@ public class OssPrivilegedEventsTest {
         Integer expectedValue = 15;
         
         SSPindex testSSPindex = new SSPindex(testInput);
-        
-        Integer testEventBitString = 0b000000;
-        byte[] testEventsBytes = {testEventBitString.byteValue()};
+        byte[] testEventsBytes = new byte[1];
+        testEventsBytes[0] = 0b00000;
         
         PrivilegedEventFlags testPrivilegedEventsFlags = new PrivilegedEventFlags(testEventsBytes);
         PrivilegedEvents testEvents = new PrivilegedEvents(testSSPindex, testPrivilegedEventsFlags);
@@ -147,8 +146,8 @@ public class OssPrivilegedEventsTest {
         
         SSPindex testSSPindex = new SSPindex(testInput);
         
-        Integer testEventBitString = 0b000000;
-        byte[] testEventsBytes = {testEventBitString.byteValue()};
+        byte[] testEventsBytes = new byte[1];
+        testEventsBytes[0] = 0b00000;
         
         PrivilegedEventFlags testPrivilegedEventsFlags = new PrivilegedEventFlags(testEventsBytes);
         PrivilegedEvents testEvents = new PrivilegedEvents(testSSPindex, testPrivilegedEventsFlags);
@@ -169,8 +168,8 @@ public class OssPrivilegedEventsTest {
         
         SSPindex testSSPindex = new SSPindex(testInput);
         
-        Integer testEventBitString = 0b000000;
-        byte[] testEventsBytes = {testEventBitString.byteValue()};
+        byte[] testEventsBytes = new byte[1];
+        testEventsBytes[0] = 0b00000;
         
         PrivilegedEventFlags testPrivilegedEventsFlags = new PrivilegedEventFlags(testEventsBytes);
         PrivilegedEvents testEvents = new PrivilegedEvents(testSSPindex, testPrivilegedEventsFlags);
@@ -190,8 +189,8 @@ public class OssPrivilegedEventsTest {
         
         SSPindex testSSPindex = new SSPindex(testInput);
         
-        Integer testEventBitString = 0b000000;
-        byte[] testEventsBytes = {testEventBitString.byteValue()};
+        byte[] testEventsBytes = new byte[1];
+        testEventsBytes[0] = 0b00000;
         
         PrivilegedEventFlags testPrivilegedEventsFlags = new PrivilegedEventFlags(testEventsBytes);
         PrivilegedEvents testEvents = new PrivilegedEvents(testSSPindex, testPrivilegedEventsFlags);
@@ -214,8 +213,8 @@ public class OssPrivilegedEventsTest {
         
         SSPindex testSSPindex = new SSPindex(testInput);
         
-        Integer testEventBitString = 0b000000;
-        byte[] testEventsBytes = {testEventBitString.byteValue()};
+        byte[] testEventsBytes = new byte[1];
+        testEventsBytes[0] = 0b00000;
         
         PrivilegedEventFlags testPrivilegedEventsFlags = new PrivilegedEventFlags(testEventsBytes);
         PrivilegedEvents testEvents = new PrivilegedEvents(testSSPindex, testPrivilegedEventsFlags);
@@ -236,11 +235,10 @@ public class OssPrivilegedEventsTest {
     @Test
     public void shouldCreateAllOffPrivilegedEvents() {
         
-        Integer testEventBitString = 0b000000;
-        
         SSPindex testSSPindex = new SSPindex(0);
         
-        byte[] testEventsBytes = {testEventBitString.byteValue()};
+        byte[] testEventsBytes = new byte[1];
+        testEventsBytes[0] = 0b00000;
         
         PrivilegedEventFlags testPrivilegedEventsFlags = new PrivilegedEventFlags(testEventsBytes);
         PrivilegedEvents testEvents = new PrivilegedEvents(testSSPindex, testPrivilegedEventsFlags);
@@ -261,11 +259,10 @@ public class OssPrivilegedEventsTest {
     @Test
     public void shouldCreateAllOnPrivilegedEvents() {
         
-        Integer testEventBitString = 0b111111;
-        
         SSPindex testSSPindex = new SSPindex(0);
         
-        byte[] testEventsBytes = {testEventBitString.byteValue()};
+        byte[] testEventsBytes = new byte[1];
+        testEventsBytes[0] = (byte) 0b11111100;
         
         PrivilegedEventFlags testPrivilegedEventsFlags = new PrivilegedEventFlags(testEventsBytes);
         PrivilegedEvents testEvents = new PrivilegedEvents(testSSPindex, testPrivilegedEventsFlags);
@@ -279,17 +276,17 @@ public class OssPrivilegedEventsTest {
     }
     
     /**
-     * Test input bit string "000001" (bit index #0 active) returns "true" for "peUnavailable" only
+     * Test input bit string "100000" (bit index #0 active) returns "true" for "peUnavailable" only
      */
     @Test
     public void shouldCreateUnavailablePrivilegedEvent() {
         
-        Integer testEventBitString = 0b000001;
         String elementTested = "peUnavailable";
         
         SSPindex testSSPindex = new SSPindex(0);
         
-        byte[] testEventsBytes = {testEventBitString.byteValue()};
+        byte[] testEventsBytes = new byte[1];
+        testEventsBytes[0] = (byte) 0b10000000;
         
         PrivilegedEventFlags testPrivilegedEventsFlags = new PrivilegedEventFlags(testEventsBytes);
         PrivilegedEvents testEvents = new PrivilegedEvents(testSSPindex, testPrivilegedEventsFlags);
@@ -307,17 +304,17 @@ public class OssPrivilegedEventsTest {
     }
     
     /**
-     * Test input bit string "000010" (bit index #1 active) returns "true" for "peEmergencyResponse" only
+     * Test input bit string "010000" (bit index #1 active) returns "true" for "peEmergencyResponse" only
      */
     @Test
     public void shouldCreateEmergencyResponsePrivilegedEvent() {
         
-        Integer testEventBitString = 0b000010;
         String elementTested = "peEmergencyResponse";
         
         SSPindex testSSPindex = new SSPindex(0);
         
-        byte[] testEventsBytes = {testEventBitString.byteValue()};
+        byte[] testEventsBytes = new byte[1];
+        testEventsBytes[0] = (byte) 0b01000000;
         
         PrivilegedEventFlags testPrivilegedEventsFlags = new PrivilegedEventFlags(testEventsBytes);
         PrivilegedEvents testEvents = new PrivilegedEvents(testSSPindex, testPrivilegedEventsFlags);
@@ -335,17 +332,17 @@ public class OssPrivilegedEventsTest {
     }
     
     /**
-     * Test input bit string "010000" (bit index #4 active) returns "true" for "peNonEmergencyLightsActive" only
+     * Test input bit string "000010" (bit index #4 active) returns "true" for "peNonEmergencyLightsActive" only
      */
     @Test
     public void shouldCreateEmergencyLightsActivePrivilegedEvent() {
         
-        Integer testEventBitString = 0b010000;
         String elementTested = "peNonEmergencyLightsActive";
         
         SSPindex testSSPindex = new SSPindex(0);
         
-        byte[] testEventsBytes = {testEventBitString.byteValue()};
+        byte[] testEventsBytes = new byte[1];
+        testEventsBytes[0] = (byte) 0b00001000;
         
         PrivilegedEventFlags testPrivilegedEventsFlags = new PrivilegedEventFlags(testEventsBytes);
         PrivilegedEvents testEvents = new PrivilegedEvents(testSSPindex, testPrivilegedEventsFlags);
@@ -368,12 +365,12 @@ public class OssPrivilegedEventsTest {
     @Test
     public void shouldCreateNonEmergencySoundActivePrivilegedEvent() {
         
-        Integer testEventBitString = 0b100000;
         String elementTested = "peNonEmergencySoundActive";
         
         SSPindex testSSPindex = new SSPindex(0);
         
-        byte[] testEventsBytes = {testEventBitString.byteValue()};
+        byte[] testEventsBytes = new byte[1];
+        testEventsBytes[0] = (byte) 0b00000100;
         
         PrivilegedEventFlags testPrivilegedEventsFlags = new PrivilegedEventFlags(testEventsBytes);
         PrivilegedEvents testEvents = new PrivilegedEvents(testSSPindex, testPrivilegedEventsFlags);
@@ -397,13 +394,13 @@ public class OssPrivilegedEventsTest {
     @Test
     public void shouldCreateTwoPrivilegedEvents() {
         
-        Integer testEventBitString = 0b100001;
         String elementTested1 = "peNonEmergencySoundActive";
         String elementTested2 = "peUnavailable";
         
         SSPindex testSSPindex = new SSPindex(0);
         
-        byte[] testEventsBytes = {testEventBitString.byteValue()};
+        byte[] testEventsBytes = new byte[1];
+        testEventsBytes[0] = (byte) 0b10000100;
         
         PrivilegedEventFlags testPrivilegedEventsFlags = new PrivilegedEventFlags(testEventsBytes);
         PrivilegedEvents testEvents = new PrivilegedEvents(testSSPindex, testPrivilegedEventsFlags);

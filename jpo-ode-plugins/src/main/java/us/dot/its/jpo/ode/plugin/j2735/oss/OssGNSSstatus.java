@@ -10,7 +10,7 @@ public class OssGNSSstatus {
         
         for (int i = 0; i < s.getSize(); i++) {
              String statusName = s.getNamedBits().getMemberName(i);
-             Boolean statusValue = s.getBit(s.getSize() - i - 1);
+             Boolean statusValue = s.getBit(i);
 
              if (statusName != null) {
                  status.put(statusName, statusValue);

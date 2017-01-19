@@ -21,7 +21,7 @@ public class OssPrivilegedEvents {
         for (int i = 0; i < events.getEvent().getSize(); i++) {
 
             String eventName = events.getEvent().getNamedBits().getMemberName(i);
-            Boolean eventStatus = events.getEvent().getBit(events.getEvent().getSize() - i - 1);
+            Boolean eventStatus = events.getEvent().getBit(i);
 
             if (eventName != null) {
                 flags.put(eventName, eventStatus);

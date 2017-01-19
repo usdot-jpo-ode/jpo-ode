@@ -46,9 +46,8 @@ public class OssGNSSstatusTest {
     @Test
     public void shouldReturnAllOffGNSSstatus() {
         
-        Integer testInput = 0b00000000;
-        
-        byte[] testInputBytes = {testInput.byteValue()};
+        byte[] testInputBytes = new byte[1];
+        testInputBytes[0] = 0b00000000;
         
         GNSSstatus testGNSSstatus = new GNSSstatus(testInputBytes);
         
@@ -66,9 +65,8 @@ public class OssGNSSstatusTest {
     @Test
     public void shouldReturnAllOnGNSSstatus() {
         
-        Integer testInput = 0b11111111;
-        
-        byte[] testInputBytes = {testInput.byteValue()};
+        byte[] testInputBytes = new byte[1];
+        testInputBytes[0] = (byte) 0b11111111;
         
         GNSSstatus testGNSSstatus = new GNSSstatus(testInputBytes);
         
@@ -80,15 +78,15 @@ public class OssGNSSstatusTest {
     }
     
     /**
-     * Test input bit string "00000001" returns "true" for "unavailable" only
+     * Test input bit string "10000000" returns "true" for "unavailable" only
      */
     @Test
     public void shouldReturnGNSSstatusUnavailable() {
         
-        Integer testInput = 0b00000001;
         String elementTested = "unavailable";
         
-        byte[] testInputBytes = {testInput.byteValue()};
+        byte[] testInputBytes = new byte[1];
+        testInputBytes[0] = (byte) 0b10000000;
         
         GNSSstatus testGNSSstatus = new GNSSstatus(testInputBytes);
         
@@ -109,10 +107,10 @@ public class OssGNSSstatusTest {
     @Test
     public void shouldReturnGNSSstatusIsHealthy() {
         
-        Integer testInput = 0b00000010;
         String elementTested = "isHealthy";
         
-        byte[] testInputBytes = {testInput.byteValue()};
+        byte[] testInputBytes = new byte[1];
+        testInputBytes[0] = (byte) 0b01000000;
         
         GNSSstatus testGNSSstatus = new GNSSstatus(testInputBytes);
         
@@ -133,10 +131,10 @@ public class OssGNSSstatusTest {
     @Test
     public void shouldReturnGNSSstatusLocalCorrectionsPresent() {
         
-        Integer testInput = 0b01000000;
         String elementTested = "localCorrectionsPresent";
         
-        byte[] testInputBytes = {testInput.byteValue()};
+        byte[] testInputBytes = new byte[1];
+        testInputBytes[0] = (byte) 0b00000010;
         
         GNSSstatus testGNSSstatus = new GNSSstatus(testInputBytes);
         
@@ -157,10 +155,10 @@ public class OssGNSSstatusTest {
     @Test
     public void shouldReturnGNSSstatusNetworkCorrectionsPresent() {
         
-        Integer testInput = 0b10000000;
         String elementTested = "networkCorrectionsPresent";
         
-        byte[] testInputBytes = {testInput.byteValue()};
+        byte[] testInputBytes = new byte[1];
+        testInputBytes[0] = (byte) 0b00000001;
         
         GNSSstatus testGNSSstatus = new GNSSstatus(testInputBytes);
         
@@ -181,11 +179,11 @@ public class OssGNSSstatusTest {
     @Test
     public void shouldReturnTwoGNSSstatus() {
         
-        Integer testInput = 0b01000010;
         String elementTested1 = "isHealthy";
         String elementTested2 = "localCorrectionsPresent";
         
-        byte[] testInputBytes = {testInput.byteValue()};
+        byte[] testInputBytes = new byte[1];
+        testInputBytes[0] = (byte) 0b01000010;
         
         GNSSstatus testGNSSstatus = new GNSSstatus(testInputBytes);
         

@@ -1,25 +1,27 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.Angle;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssAngle;
 
 /**
- * -- Summary -- Test class for oss.j2735.OssAngle Checks conversion from
+ * -- Summary -- 
+ * Test class for oss.j2735.OssAngle Checks conversion from
  * generic angle to degree angle
  * 
- * Four test cases: 1) Minimum 0 returns 0 2) Maximum 28799 returns 359.9875 3)
- * Undefined angle (indicated as 28800) returns null 4) Random generic angle
- * returns correct corresponding degree angle 5) Angle less than 0 throws
- * IllegalArgumentException 6) Angle greater than 28800 throws
- * IllegalArgumentException
+ * Test cases: 
+ * 1) Minimum 0 returns 0 
+ * 2) Maximum 28799 returns 359.9875 
+ * 3) Undefined angle (indicated as 28800) returns null 
+ * 4) Known generic angle returns correct corresponding degree angle 
+ * 5) Angle less than 0 throws IllegalArgumentException 
+ * 6) Angle greater than 28800 throws IllegalArgumentException
  *
  */
 public class OssAngleTest {
