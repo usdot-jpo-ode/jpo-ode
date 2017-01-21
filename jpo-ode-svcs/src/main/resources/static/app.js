@@ -57,10 +57,31 @@ function upload() {
         data: formData,
         cache: false,
         contentType: false,
-        processData: false,
+        processData: false
     }).done(function(response) {
         console.log("File upload response received");
         $( "#uploadResponse" ).append("File uploaded succesfully.");
+    });
+}
+function sendSnmp() {
+    var ip1 = $("#snmp-ip").val();
+    var oid1 = $("#snmp-oid").val();
+    console.log("[INFO] SNMP request received IP:[" + ip1 + "] OID:[" + oid1 + "]");
+    $.ajax({
+        url: "/rsuHeartbeat"
+        , type: "get",
+        dataType: "text",
+        data: {
+            ip: ip1
+            , oid: oid1
+        }
+        , success: function (response) {
+            console.log("[SUCCESS] Response: " + response);
+            $("#snmp-response").append("<p>" + response + "</p>");
+        }
+        , error: function (error) {
+            console.log("[ERROR] " + error.responseText);
+        }
     });
 }
 
@@ -73,4 +94,5 @@ $(function () {
     $( "#disconnect" ).click(function() { disconnect(); });
     $( "#send" ).click(function() { sendName(); });
     $( "#upload" ).click( function() { upload() } );
+    $( "#snmp-submit").click( function() { sendSnmp() })
 });
