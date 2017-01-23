@@ -62,12 +62,6 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-	<dependency>
-		<groupId>org.snmp4j</groupId>
-		<artifactId>snmp4j</artifactId>
-		<version>1.10.1</version>
-	</dependency>
-
 	</dependencies>
 
 	<dependencyManagement>
