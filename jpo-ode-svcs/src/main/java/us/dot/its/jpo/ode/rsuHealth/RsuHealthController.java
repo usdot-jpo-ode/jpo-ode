@@ -2,10 +2,22 @@ package us.dot.its.jpo.ode.rsuHealth;
 
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
+import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
+import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
+import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.security.AuthMD5;
+import org.snmp4j.security.PrivDES;
+import org.snmp4j.security.SecurityLevel;
+import org.snmp4j.security.SecurityModels;
+import org.snmp4j.security.SecurityProtocols;
+import org.snmp4j.security.USM;
+import org.snmp4j.security.UsmUser;
+import org.snmp4j.smi.Address;
+import org.snmp4j.smi.GenericAddress;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.UdpAddress;
@@ -27,10 +39,11 @@ public class RsuHealthController {
         String ipAddress = ip;
         String oidValue = oid;
         
-        return sendSnmpRequest(ipAddress, oidValue);
+        //return sendSnmpV2CRequest(ipAddress, oidValue);
+        return sendSnmpV3Request(ipAddress, oidValue);
     }
 
-    private String sendSnmpRequest(String ip, String oid) throws Exception{
+    private String sendSnmpV2CRequest(String ip, String oid) throws Exception{
 
         // SNMP version 2c
         TransportMapping transport = new DefaultUdpTransportMapping();
@@ -59,6 +72,52 @@ public class RsuHealthController {
         snmp.close();
         return responseValue;
     }
+    
+    private String sendSnmpV3Request(String ip, String oid) throws Exception {
+        
+        // Setup SNMP session
+        Address targetAddress = GenericAddress.parse(ip + "/161");
+        TransportMapping transport = new DefaultUdpTransportMapping();
+        Snmp snmp = new Snmp(transport);
+        USM usm = new USM(SecurityProtocols.getInstance(),
+                          new OctetString(MPv3.createLocalEngineID()), 0);
+        SecurityModels.getInstance().addSecurityModel(usm);
+        transport.listen();
+        
+        // Create user with v3 credentials
+        snmp.getUSM().addUser(
+                new OctetString("v3user"), 
+                new UsmUser(
+                        new OctetString("v3user"),
+                        AuthMD5.ID,
+                        new OctetString("v3userpassword"),
+                        PrivDES.ID,
+                        new OctetString("v3userpassword")
+                        ));
+        
+        UserTarget target = new UserTarget();
+        target.setAddress(targetAddress);
+        target.setRetries(1);
+        target.setTimeout(5000);
+        target.setVersion(SnmpConstants.version3);
+        target.setSecurityLevel(SecurityLevel.AUTH_PRIV);
+        target.setSecurityName(new OctetString("v3user"));
+        
+        PDU pdu = new ScopedPDU();
+        pdu.add(new VariableBinding(new OID(oid)));
+        pdu.setType(PDU.GETNEXT);
 
+        // Send request
+        ResponseEvent response = snmp.send(pdu, target);
+        
+        String responseValue = "null";
+        
+        if (response != null && response.getResponse() != null) {
+            responseValue = response.getResponse().getVariableBindings().toString();
+        } 
+        
+        snmp.close();
+        return responseValue;
+    }
 }
 
