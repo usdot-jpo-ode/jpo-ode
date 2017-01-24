@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration debug="true" scan="true">
+<jmxConfigurator/>
 
 	<appender name="DEFAULT" class="ch.qos.logback.core.FileAppender">
 		<file>ode.log</file>
