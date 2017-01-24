@@ -30,6 +30,7 @@
 	</logger>
 	<logger name="org.springframework.web" level="INFO"/>
 	<logger name="us.dot.its.jpo.ode" level="DEBUG"/>
+	<logger name="us.dot.its.jpo.ode" level="ERROR"/>
 	<root level="WARN">
 		<appender-ref ref="DEFAULT"/>
 		<appender-ref ref="STDOUT"/>
