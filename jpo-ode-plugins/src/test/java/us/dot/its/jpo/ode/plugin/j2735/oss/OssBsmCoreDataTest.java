@@ -134,7 +134,8 @@ public class OssBsmCoreDataTest {
         BigDecimal expectedAccelYaw = BigDecimal.valueOf(-327.67);
         
         // Brake system status
-        Integer testBrakeAppliedStatus = 0b00001;
+        byte[] testBrakeAppliedStatusBytes = new byte[1]; 
+        testBrakeAppliedStatusBytes[0] = (byte) 0b10000000;
         String expectedBrakeAppliedStatus = "unavailable";
         
         Integer testTractionControlStatus = 0;
@@ -180,7 +181,7 @@ public class OssBsmCoreDataTest {
                 new VerticalAcceleration(testAccelVert),
                 new YawRate(testAccelYaw));
         testcd.brakes = new BrakeSystemStatus(
-                new BrakeAppliedStatus(new byte[]{testBrakeAppliedStatus.byteValue()}),
+                new BrakeAppliedStatus(testBrakeAppliedStatusBytes),
                 new TractionControlStatus(testTractionControlStatus),
                 new AntiLockBrakeStatus(testAntiLockBrakeStatus),
                 new StabilityControlStatus(testStabilityControlStatus),
@@ -289,7 +290,8 @@ public class OssBsmCoreDataTest {
         BigDecimal expectedAccelYaw = BigDecimal.valueOf(-327.67);
         
         // Brake system status
-        Integer testBrakeAppliedStatus = 0b00010;
+        byte[] testBrakeAppliedStatusBytes = new byte[1]; 
+        testBrakeAppliedStatusBytes[0] = (byte) 0b01000000;
         String expectedBrakeAppliedStatus = "leftFront";
         
         Integer testTractionControlStatus = 1;
@@ -335,7 +337,7 @@ public class OssBsmCoreDataTest {
                 new VerticalAcceleration(testAccelVert),
                 new YawRate(testAccelYaw));
         testcd.brakes = new BrakeSystemStatus(
-                new BrakeAppliedStatus(new byte[]{testBrakeAppliedStatus.byteValue()}),
+                new BrakeAppliedStatus(testBrakeAppliedStatusBytes),
                 new TractionControlStatus(testTractionControlStatus),
                 new AntiLockBrakeStatus(testAntiLockBrakeStatus),
                 new StabilityControlStatus(testStabilityControlStatus),
@@ -442,7 +444,9 @@ public class OssBsmCoreDataTest {
         BigDecimal expectedAccelYaw = BigDecimal.valueOf(327.67);
         
         // Brake system status
-        Integer testBrakeAppliedStatus = 0b10000;
+        
+        byte[] testBrakeAppliedStatusBytes = new byte[1]; 
+        testBrakeAppliedStatusBytes[0] = (byte) 0b00001000;
         String expectedBrakeAppliedStatus = "rightRear";
         
         Integer testTractionControlStatus = 3;
@@ -488,7 +492,7 @@ public class OssBsmCoreDataTest {
                 new VerticalAcceleration(testAccelVert),
                 new YawRate(testAccelYaw));
         testcd.brakes = new BrakeSystemStatus(
-                new BrakeAppliedStatus(new byte[]{testBrakeAppliedStatus.byteValue()}),
+                new BrakeAppliedStatus(testBrakeAppliedStatusBytes),
                 new TractionControlStatus(testTractionControlStatus),
                 new AntiLockBrakeStatus(testAntiLockBrakeStatus),
                 new StabilityControlStatus(testStabilityControlStatus),

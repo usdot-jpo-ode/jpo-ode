@@ -48,10 +48,10 @@ public class OssRTCMheaderTest {
     @Test
     public void shouldCreateRTCMheaderWithKnownGNSSstatus() {
         
-        Integer testInput = 0b00000010;
         String elementTested = "isHealthy";
         
-        byte[] testInputBytes = {testInput.byteValue()};
+        byte[] testInputBytes = new byte[1];
+        testInputBytes[0] = 0b01000000;
         
         GNSSstatus testGNSSstatus = new GNSSstatus(testInputBytes);
         
@@ -89,7 +89,8 @@ public class OssRTCMheaderTest {
         Integer testInput = 11;
         BigDecimal expectedValue = BigDecimal.valueOf(0.11);
         
-        byte[] testInputBytes = {testInput.byteValue()};
+        byte[] testInputBytes = new byte[1];
+        testInputBytes[0] = 0b00000000;
         
         GNSSstatus testGNSSstatus = new GNSSstatus(testInputBytes);
         
