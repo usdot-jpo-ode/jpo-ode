@@ -90,17 +90,14 @@ public class RsuHealthController {
                 new UsmUser(
                         new OctetString("v3user"),
                         AuthMD5.ID,
-                        new OctetString("v3userpassword"),
-                        PrivDES.ID,
-                        new OctetString("v3userpassword")
-                        ));
+                        new OctetString("password"), null, null));
         
         UserTarget target = new UserTarget();
         target.setAddress(targetAddress);
         target.setRetries(1);
         target.setTimeout(5000);
         target.setVersion(SnmpConstants.version3);
-        target.setSecurityLevel(SecurityLevel.AUTH_PRIV);
+        target.setSecurityLevel(SecurityLevel.AUTH_NOPRIV);
         target.setSecurityName(new OctetString("v3user"));
         
         PDU pdu = new ScopedPDU();
