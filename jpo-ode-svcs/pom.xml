@@ -35,12 +35,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.snmp4j/snmp4j -->
-		<dependency>
-    		<groupId>org.snmp4j</groupId>
-    		<artifactId>snmp4j</artifactId>
-    		<version>1.10.1</version>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>

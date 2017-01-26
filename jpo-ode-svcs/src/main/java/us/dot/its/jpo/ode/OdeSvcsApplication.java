@@ -41,10 +41,6 @@ public class OdeSvcsApplication {
       SystemConfig mBean = new SystemConfig(DEFAULT_NO_THREADS, DEFAULT_SCHEMA);
       ObjectName name = new ObjectName("com.journaldev.jmx:type=SystemConfig");
       mbs.registerMBean(mBean, name);
-      do {
-         Thread.sleep(3000);
-         System.out.println("Thread Count=" + mBean.getThreadCount() + ":::Schema Name=" + mBean.getSchemaName());
-      } while (mBean.getThreadCount() != 0);
    }
 
    @Bean

@@ -6,8 +6,7 @@
 		<file>ode.log</file>
 		<append>true</append>
 		<encoder>
-			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n
-			</pattern>
+			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
 		</encoder>
 	</appender>
 
@@ -15,8 +14,7 @@
 		<file>Events.log</file>
 		<append>true</append>
 		<encoder>
-			<pattern>%date{"HH:mm:ss", UTC} [%thread] %-5level %logger{35} - %msg
-				%n</pattern>
+			<pattern>%date{"HH:mm:ss", UTC} [%thread] %-5level %logger{35} - %msg %n</pattern>
 		</encoder>
 	</appender>
 
@@ -28,13 +26,11 @@
 	</appender>
 
 	<!-- additivity=false ensures data trace only goes to Data log -->
-	<logger name="us.dot.its.jpo.ode.eventlog.EventLogger" level="INFO"
-		additivity="false">
+	<logger name="us.dot.its.jpo.ode.eventlog.EventLogger" level="INFO" additivity="false">
 		<appender-ref ref="DATA-FILE" />
 	</logger>
 	<logger name="org.springframework.web" level="INFO" />
 	<logger name="us.dot.its.jpo.ode" level="DEBUG" />
-	<logger name="us.dot.its.jpo.ode" level="ERROR" />
 	<root level="WARN">
 		<appender-ref ref="DEFAULT" />
 		<appender-ref ref="STDOUT" />
