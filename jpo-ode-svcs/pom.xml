@@ -104,11 +104,17 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-messaging</artifactId>
 		</dependency>
-                <dependency>
-                	<groupId>org.snmp4j</groupId>
-                	<artifactId>snmp4j</artifactId>
-                	<version>1.10.1</version>
-        	</dependency>
+		<dependency>
+			<groupId>org.snmp4j</groupId>
+			<artifactId>snmp4j</artifactId>
+			<version>1.10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>1.6.6</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
