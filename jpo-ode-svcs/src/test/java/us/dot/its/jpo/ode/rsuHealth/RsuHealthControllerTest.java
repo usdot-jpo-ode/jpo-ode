@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.rsuHealth;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -21,6 +22,7 @@ public class RsuHealthControllerTest {
             assertEquals(IllegalArgumentException.class, e.getClass());
         }
     }
+    
     
     @Test
     public void shouldRefuseConnectionNullOid() {

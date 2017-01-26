@@ -1,10 +1,12 @@
 package us.dot.its.jpo.ode.rsuHealth;
 
 import org.snmp4j.Snmp;
-import org.snmp4j.event.ResponseEvent;
-import org.snmp4j.smi.Address;
-import org.snmp4j.smi.GenericAddress;
-import org.snmp4j.smi.OID;
+import org.snmp4j.TransportMapping;
+import org.snmp4j.mp.MPv3;
+import org.snmp4j.security.SecurityModels;
+import org.snmp4j.security.SecurityProtocols;
+import org.snmp4j.security.USM;
+import org.snmp4j.smi.OctetString;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,31 +21,21 @@ public class RsuHealthController {
     @ResponseBody
     public static String heartBeat(@RequestParam("ip") String ip, @RequestParam("oid") String oid) throws Exception {
         
-        // Handle and prepare parameters
-        if (ip == null || oid == null) {
-            throw new IllegalArgumentException("[ERROR] Null argument");
+        if (ip == null) {
+            throw new IllegalArgumentException("[ERROR] Endpoint received null ip");
+        }
+        if (oid == null) {
+            throw new IllegalArgumentException("[ERROR] Endpoint received null oid");
         }
         
-        String user = "v3user";
-        String pw = "password";
-        Address targetAddress = GenericAddress.parse(ip + "/161");
-        OID targetOid = new OID(oid);
+        TransportMapping transport = new DefaultUdpTransportMapping();
+        Snmp snmp = new Snmp(transport);
+        USM usm = new USM(SecurityProtocols.getInstance(),
+                          new OctetString(MPv3.createLocalEngineID()), 0);
+        SecurityModels.getInstance().addSecurityModel(usm);
+        transport.listen();
         
-        // Prepare snmp session and send request
-        Snmp snmp = new Snmp();
-        ResponseEvent responseEvent = RsuSnmp.sendSnmpV3(user, pw, targetAddress, targetOid, snmp);
-        
-        String stringResponse = null;
-        
-        if (responseEvent == null) {
-            stringResponse = "[ERROR] Timeout";
-        } else if (responseEvent.getResponse() == null) {
-            stringResponse = "[ERROR] Empty response";
-        } else {
-            stringResponse = responseEvent.getResponse().getVariableBindings().toString();
-        }
-        
-        return stringResponse;
+        return RsuSnmp.sendSnmpV3Request(ip, oid, snmp);
     }
     
 }
