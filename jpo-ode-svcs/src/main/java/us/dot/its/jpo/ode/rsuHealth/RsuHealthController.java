@@ -30,7 +30,7 @@ public class RsuHealthController {
         OID targetOid = new OID(oid);
         
         // Prepare snmp session and send request
-        Snmp snmp = new Snmp(new DefaultUdpTransportMapping());
+        Snmp snmp = new Snmp();
         ResponseEvent responseEvent = RsuSnmp.sendSnmpV3(user, pw, targetAddress, targetOid, snmp);
         
         String stringResponse = null;

@@ -32,6 +32,7 @@ public class RsuSnmp {
 
         // Setup SNMP session
         TransportMapping transport = new DefaultUdpTransportMapping();
+        snmp.addTransportMapping(transport);
         transport.listen();
         
         USM usm = new USM(SecurityProtocols.getInstance(),
