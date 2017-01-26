@@ -35,11 +35,9 @@ public class OdeSvcsApplication {
    public static void main(String[] args) throws MalformedObjectNameException, InterruptedException,
          InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
       SpringApplication.run(OdeSvcsApplication.class, args);
-      // Get the MBean server
       MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-      // register the MBean
       SystemConfig mBean = new SystemConfig(DEFAULT_NO_THREADS, DEFAULT_SCHEMA);
-      ObjectName name = new ObjectName("com.journaldev.jmx:type=SystemConfig");
+      ObjectName name = new ObjectName("us.dot.its.jpo.ode:type=SystemConfig");
       mbs.registerMBean(mBean, name);
    }
 
