@@ -39,14 +39,14 @@ public class RsuSnmp {
         UserTarget target = new UserTarget();
         target.setAddress(targetAddress);
         target.setRetries(1);
-        target.setTimeout(5000);
+        target.setTimeout(2000);
         target.setVersion(SnmpConstants.version3);
         target.setSecurityLevel(SecurityLevel.AUTH_NOPRIV);
         target.setSecurityName(new OctetString("v3user"));
 
         PDU pdu = new ScopedPDU();
         pdu.add(new VariableBinding(new OID(oid)));
-        pdu.setType(PDU.GETNEXT);
+        pdu.setType(PDU.GET);
 
         // Send request
         ResponseEvent responseEvent = snmp.send(pdu, target);
