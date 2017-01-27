@@ -10,6 +10,7 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 ## Release Notes
 ### Sprint 5
 - ODE-126 ADD to ODE 58 - Log ODE Data Flows On/off without restarting ODE
+
 ### Sprint 4
 - ODE-123 Developed a sample client application to interface directly with Kafka service to subscribe to ODE data
 - ODE-118 Validate BSM data decoding, inclusing Part II, with real binary data from OBU
