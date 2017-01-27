@@ -10,6 +10,8 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 ## Release Notes
 ### Sprint 5
 - ODE-126 ADD to ODE 58 - Log ODE Data Flows On/off without restarting ODE
+- ODE-74 RESTful SNMP Wrapper Service to pass SNMP messages to an RSU
+- ODE-127 Defined future story and tasks for inbound/outbound TIM messages
 
 ### Sprint 4
 - ODE-123 Developed a sample client application to interface directly with Kafka service to subscribe to ODE data
