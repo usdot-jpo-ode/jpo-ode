@@ -17,7 +17,8 @@ addons:
   sonarqube:
     token:
       secure: $SONAR_SECURITY_TOKEN
-    #branches:
+    branches:
+       - /.*/
     #  - master
     #  - develop
     #  - refactor
