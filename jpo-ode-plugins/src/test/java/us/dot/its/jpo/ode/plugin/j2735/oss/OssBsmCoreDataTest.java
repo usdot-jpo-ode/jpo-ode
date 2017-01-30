@@ -210,18 +210,18 @@ public class OssBsmCoreDataTest {
         assertEquals("Incorrect accel lat", expectedAccelLat, actualcd.accelSet.getAccelLat());
         assertEquals("Incorrect accel vert", expectedAccelVert, actualcd.accelSet.getAccelVert());
         assertEquals("Incorrect accel yaw", expectedAccelYaw, actualcd.accelSet.getAccelYaw());
-        for (Map.Entry<String, Boolean> curVal: actualcd.brakes.wheelBrakes.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal: actualcd.brakes.getWheelBrakes().entrySet()) {
             if (curVal.getKey() == expectedBrakeAppliedStatus) {
                 assertTrue("Incorrect brake applied status, expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {
                 assertFalse("Incorrect brake applied status, expected " + curVal.getKey() + " to be false", curVal.getValue());
             }
         }
-        assertEquals("Incorrect brake tcs status", expectedTractionControlStatus, actualcd.brakes.traction);
-        assertEquals("Incorrect brake abs status", expectedAntiLockBrakeStatus, actualcd.brakes.abs);
-        assertEquals("Incorrect brake scs status", expectedStabilityControlStatus, actualcd.brakes.scs);
-        assertEquals("Incorrect brake boost status", expectedBrakeBoostApplied, actualcd.brakes.brakeBoost);
-        assertEquals("Incorrect brake aux status", expectedAuxiliaryBrakeStatus, actualcd.brakes.auxBrakes);
+        assertEquals("Incorrect brake tcs status", expectedTractionControlStatus, actualcd.brakes.getTraction());
+        assertEquals("Incorrect brake abs status", expectedAntiLockBrakeStatus, actualcd.brakes.getAbs());
+        assertEquals("Incorrect brake scs status", expectedStabilityControlStatus, actualcd.brakes.getScs());
+        assertEquals("Incorrect brake boost status", expectedBrakeBoostApplied, actualcd.brakes.getBrakeBoost());
+        assertEquals("Incorrect brake aux status", expectedAuxiliaryBrakeStatus, actualcd.brakes.getAuxBrakes());
         assertEquals("Incorrect vehicle width", expectedVehicleWidth, actualcd.size.getWidth());
         assertEquals("Incorrect vehicle length", expectedVehicleLength, actualcd.size.getLength());
         
@@ -366,18 +366,18 @@ public class OssBsmCoreDataTest {
         assertEquals("Incorrect accel lat", expectedAccelLat, actualcd.accelSet.getAccelLat());
         assertEquals("Incorrect accel vert", expectedAccelVert, actualcd.accelSet.getAccelVert());
         assertEquals("Incorrect accel yaw", expectedAccelYaw, actualcd.accelSet.getAccelYaw());
-        for (Map.Entry<String, Boolean> curVal: actualcd.brakes.wheelBrakes.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal: actualcd.brakes.getWheelBrakes().entrySet()) {
             if (curVal.getKey() == expectedBrakeAppliedStatus) {
                 assertTrue("Incorrect brake applied status, expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {
                 assertFalse("Incorrect brake applied status, expected " + curVal.getKey() + " to be false", curVal.getValue());
             }
         }
-        assertEquals("Incorrect brake tcs status", expectedTractionControlStatus, actualcd.brakes.traction);
-        assertEquals("Incorrect brake abs status", expectedAntiLockBrakeStatus, actualcd.brakes.abs);
-        assertEquals("Incorrect brake scs status", expectedStabilityControlStatus, actualcd.brakes.scs);
-        assertEquals("Incorrect brake boost status", expectedBrakeBoostApplied, actualcd.brakes.brakeBoost);
-        assertEquals("Incorrect brake aux status", expectedAuxiliaryBrakeStatus, actualcd.brakes.auxBrakes);
+        assertEquals("Incorrect brake tcs status", expectedTractionControlStatus, actualcd.brakes.getTraction());
+        assertEquals("Incorrect brake abs status", expectedAntiLockBrakeStatus, actualcd.brakes.getAbs());
+        assertEquals("Incorrect brake scs status", expectedStabilityControlStatus, actualcd.brakes.getScs());
+        assertEquals("Incorrect brake boost status", expectedBrakeBoostApplied, actualcd.brakes.getBrakeBoost());
+        assertEquals("Incorrect brake aux status", expectedAuxiliaryBrakeStatus, actualcd.brakes.getAuxBrakes());
         assertEquals("Incorrect vehicle width", expectedVehicleWidth, actualcd.size.getWidth());
         assertEquals("Incorrect vehicle length", expectedVehicleLength, actualcd.size.getLength());   
     }
@@ -521,18 +521,18 @@ public class OssBsmCoreDataTest {
         assertEquals("Incorrect accel lat", expectedAccelLat, actualcd.accelSet.getAccelLat());
         assertEquals("Incorrect accel vert", expectedAccelVert, actualcd.accelSet.getAccelVert());
         assertEquals("Incorrect accel yaw", expectedAccelYaw, actualcd.accelSet.getAccelYaw());
-        for (Map.Entry<String, Boolean> curVal: actualcd.brakes.wheelBrakes.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal: actualcd.brakes.getWheelBrakes().entrySet()) {
             if (curVal.getKey() == expectedBrakeAppliedStatus) {
                 assertTrue("Incorrect brake applied status, expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {
                 assertFalse("Incorrect brake applied status, expected " + curVal.getKey() + " to be false", curVal.getValue());
             }
         }
-        assertEquals("Incorrect brake tcs status", expectedTractionControlStatus, actualcd.brakes.traction);
-        assertEquals("Incorrect brake abs status", expectedAntiLockBrakeStatus, actualcd.brakes.abs);
-        assertEquals("Incorrect brake scs status", expectedStabilityControlStatus, actualcd.brakes.scs);
-        assertEquals("Incorrect brake boost status", expectedBrakeBoostApplied, actualcd.brakes.brakeBoost);
-        assertEquals("Incorrect brake aux status", expectedAuxiliaryBrakeStatus, actualcd.brakes.auxBrakes);
+        assertEquals("Incorrect brake tcs status", expectedTractionControlStatus, actualcd.brakes.getTraction());
+        assertEquals("Incorrect brake abs status", expectedAntiLockBrakeStatus, actualcd.brakes.getAbs());
+        assertEquals("Incorrect brake scs status", expectedStabilityControlStatus, actualcd.brakes.getScs());
+        assertEquals("Incorrect brake boost status", expectedBrakeBoostApplied, actualcd.brakes.getBrakeBoost());
+        assertEquals("Incorrect brake aux status", expectedAuxiliaryBrakeStatus, actualcd.brakes.getAuxBrakes());
         assertEquals("Incorrect vehicle width", expectedVehicleWidth, actualcd.size.getWidth());
         assertEquals("Incorrect vehicle length", expectedVehicleLength, actualcd.size.getLength());
     }
