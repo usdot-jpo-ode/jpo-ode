@@ -17,10 +17,10 @@ addons:
   sonarqube:
     token:
       secure: $SONAR_SECURITY_TOKEN
-    branches:
-      - master
-      - develop
-      - refactor
+    #branches:
+    #  - master
+    #  - develop
+    #  - refactor
 script:
   - mvn clean
   - mvn org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
