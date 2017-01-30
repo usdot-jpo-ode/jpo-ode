@@ -56,7 +56,7 @@ public class OssBsmPart2Content {
             J2735SpecialVehicleExtensions specVeh = new J2735SpecialVehicleExtensions();
             part2Content.value = specVeh;
 
-            SpecialVehicleExtensions sp = null;
+            SpecialVehicleExtensions sp;
             if (value.getDecodedValue() != null) {
                 sp = (SpecialVehicleExtensions) value.getDecodedValue();
             } else if (value.getEncodedValueAsStream() != null) {
@@ -84,7 +84,7 @@ public class OssBsmPart2Content {
             J2735SupplementalVehicleExtensions supVeh = new J2735SupplementalVehicleExtensions();
             part2Content.value = supVeh;
             
-            SupplementalVehicleExtensions sve = null;
+            SupplementalVehicleExtensions sve;
             if (value.getDecodedValue() != null) {
                 sve = (SupplementalVehicleExtensions) value.getDecodedValue();
             } else if (value.getEncodedValueAsStream() != null) {
@@ -105,7 +105,7 @@ public class OssBsmPart2Content {
             J2735VehicleSafetyExtensions vehSafety = new J2735VehicleSafetyExtensions();
             part2Content.value = vehSafety;
 
-            VehicleSafetyExtensions vse = null;
+            VehicleSafetyExtensions vse;
             if (value.getDecodedValue() != null) {
                 vse = (VehicleSafetyExtensions) value.getDecodedValue();
             } else if (value.getEncodedValueAsStream() != null) {

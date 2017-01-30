@@ -3,7 +3,6 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 import us.dot.its.jpo.ode.j2735.dsrc.BrakeSystemStatus;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BrakeAppliedStatus;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BrakeSystemStatus;
-import us.dot.its.jpo.ode.plugin.j2735.J2735PrivilegedEventFlags;
 
 public class OssBrakeSystemStatus {
 
