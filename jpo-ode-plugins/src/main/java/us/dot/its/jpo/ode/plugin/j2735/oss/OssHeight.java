@@ -12,7 +12,7 @@ public class OssHeight {
 	        throw new IllegalArgumentException("Vehicle height out of bounds");
 	    }
 	    
-		return BigDecimal.valueOf(height.intValue() * 5, 2);
+		return BigDecimal.valueOf(height.intValue() * (long)5, 2);
 	}
 
 }

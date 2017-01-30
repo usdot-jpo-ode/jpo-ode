@@ -7,27 +7,29 @@ import us.dot.its.jpo.ode.j2735.dsrc.Velocity;
 
 public class OssSpeedOrVelocity {
 
-	public static BigDecimal genericSpeed(Speed speed) {
-		return genericSpeedOrVelocity(speed.intValue());
-	}
+    private OssSpeedOrVelocity() {}
 
-	public static BigDecimal genericVelocity(Velocity velocity) {
-		return genericSpeedOrVelocity(velocity.intValue());
-	}
+    public static BigDecimal genericSpeed(Speed speed) {
+        return genericSpeedOrVelocity(speed.intValue());
+    }
 
-	private static BigDecimal genericSpeedOrVelocity(int speedOrVelocity) {
-	    
-	    if (speedOrVelocity < 0 || speedOrVelocity > 8191) {
-	        throw new IllegalArgumentException("Speed or velocity out of bounds");
-	    }
-		
-		BigDecimal result = null;
-		
-		if (speedOrVelocity != 8191) {
-			result = BigDecimal.valueOf(speedOrVelocity * 2, 2);
-		}
-		
-		return result;
-		
-	}
+    public static BigDecimal genericVelocity(Velocity velocity) {
+        return genericSpeedOrVelocity(velocity.intValue());
+    }
+
+    private static BigDecimal genericSpeedOrVelocity(int speedOrVelocity) {
+
+        if (speedOrVelocity < 0 || speedOrVelocity > 8191) {
+            throw new IllegalArgumentException("Speed or velocity out of bounds");
+        }
+
+        BigDecimal result = null;
+
+        if (speedOrVelocity != 8191) {
+            result = BigDecimal.valueOf(speedOrVelocity * (long) 2, 2);
+        }
+
+        return result;
+
+    }
 }

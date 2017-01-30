@@ -24,11 +24,11 @@ public class OssPositionalAccuracy {
         J2735PositionalAccuracy genericPositionalAccuracy = new J2735PositionalAccuracy();
 
         if (positionalAccuracy.semiMajor.intValue() != 255) {
-            genericPositionalAccuracy.semiMajor = BigDecimal.valueOf(positionalAccuracy.semiMajor.intValue() * 5, 2);
+            genericPositionalAccuracy.semiMajor = BigDecimal.valueOf(positionalAccuracy.semiMajor.intValue() * (long)5, 2);
         }
 
         if (positionalAccuracy.semiMinor.intValue() != 255) {
-            genericPositionalAccuracy.semiMinor = BigDecimal.valueOf(positionalAccuracy.semiMinor.intValue() * 5, 2);
+            genericPositionalAccuracy.semiMinor = BigDecimal.valueOf(positionalAccuracy.semiMinor.intValue() * (long)5, 2);
         }
 
         if (positionalAccuracy.orientation.intValue() != 65535) {
