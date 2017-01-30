@@ -18,12 +18,9 @@ addons:
     token:
       secure: $SONAR_SECURITY_TOKEN
     branches:
-      except:
-       - PLACEHOLDER_FAKE_BRANCH
-      #- /.*/
-      #- master
-      #- develop
-      #- refactor
+      - master
+      - develop
+      - refactor
 script:
   - mvn clean
   - mvn org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
