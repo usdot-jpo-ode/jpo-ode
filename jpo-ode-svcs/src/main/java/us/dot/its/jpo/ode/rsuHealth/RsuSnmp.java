@@ -31,7 +31,6 @@ public class RsuSnmp {
         if (ip == null || oid == null || snmp == null) {
             logger.debug("Invalid SNMP request parameter");
             throw new IllegalArgumentException("Invalid SNMP request parameter");
-            //throw new IllegalArgumentException("Invalid SNMP request parameter");
         }
         
         // Setup snmp request
