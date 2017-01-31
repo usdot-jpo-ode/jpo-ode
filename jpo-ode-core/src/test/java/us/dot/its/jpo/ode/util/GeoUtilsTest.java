@@ -3,6 +3,8 @@ package us.dot.its.jpo.ode.util;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
+import org.junit.Test;
+
 import junit.framework.TestCase;
 import us.dot.its.jpo.ode.util.GeoUtils;
 import us.dot.its.jpo.ode.util.LengthUtils;
@@ -12,6 +14,7 @@ public class GeoUtilsTest extends TestCase {
    public void testNearestPointOnLine() {
    }
 
+   @Test
    public void testPointOffset() {
       assertOffset(5.0, 5.0, 10.0, 5.0, 5.0, 8.0);  //0 deg
       assertOffset(5.0, 5.0, 10.0, 10.0, 2.878, 7.121); //45 deg
@@ -23,6 +26,7 @@ public class GeoUtilsTest extends TestCase {
       assertOffset(5.0, 5.0, 10.0, 0.0, 7.121, 7.121);  //315 deg
    }
 
+   @Test
    public void assertOffset(double ax, double ay, double bx, double by, double ox, double oy) {
       Point2D a = new Point2D.Double(ax, ay);
       Point2D b = new Point2D.Double(bx, by);
@@ -37,6 +41,7 @@ public class GeoUtilsTest extends TestCase {
       assertEquals((long) (oy * scale), p1y);
    }
    
+   @Test
    public void testDistanceInMapCoordinates() {
       double aLat = 43.652969118285434;
       double aLng = -85.94707489013672;
@@ -65,6 +70,7 @@ public class GeoUtilsTest extends TestCase {
       assertEquals(d1, d3, GeoUtils.ERROR_MARGIN);
    }
    
+   @Test
    public void testDistanceInLatLng() {
       double aLat = 43.652969118285434;
       double aLng = -85.94707489013672;
