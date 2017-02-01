@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.rsuHealth;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
@@ -17,24 +19,24 @@ import org.snmp4j.smi.VariableBinding;
 
 public class RsuSnmp {
 
-    public static String sendSnmpV3Request(String ip, String oid, Snmp snmp) throws Exception {
+    private static final String SNMP_USER = "v3user";
+    private static final String SNMP_PASS = "password";
+    private static Logger logger = LoggerFactory.getLogger(RsuSnmp.class);
+
+    private RsuSnmp() {
+    }
+
+    public static String sendSnmpV3Request(String ip, String oid, Snmp snmp) {
+
+        if (ip == null || oid == null || snmp == null) {
+            logger.debug("Invalid SNMP request parameter");
+            throw new IllegalArgumentException("Invalid SNMP request parameter");
+        }
         
-        if (ip == null) {
-            throw new IllegalArgumentException("[ERROR] RsuSnmp null ip");
-        }
-        if (oid == null) {
-            throw new IllegalArgumentException("[ERROR] RsuSnmp null oid");
-        }
-        if (snmp == null) {
-            throw new IllegalArgumentException("[ERROR] RsuSnmp null snmp");
-        }
-
-        // Setup SNMP session
+        // Setup snmp request
         Address targetAddress = GenericAddress.parse(ip + "/161");
-
-        // Create user with v3 credentials
-        snmp.getUSM().addUser(new OctetString("v3user"),
-                new UsmUser(new OctetString("v3user"), AuthMD5.ID, new OctetString("password"), null, null));
+        snmp.getUSM().addUser(new OctetString(SNMP_USER),
+                new UsmUser(new OctetString(SNMP_USER), AuthMD5.ID, new OctetString(SNMP_PASS), null, null));
 
         UserTarget target = new UserTarget();
         target.setAddress(targetAddress);
@@ -42,26 +44,34 @@ public class RsuSnmp {
         target.setTimeout(2000);
         target.setVersion(SnmpConstants.version3);
         target.setSecurityLevel(SecurityLevel.AUTH_NOPRIV);
-        target.setSecurityName(new OctetString("v3user"));
+        target.setSecurityName(new OctetString(SNMP_USER));
 
         PDU pdu = new ScopedPDU();
         pdu.add(new VariableBinding(new OID(oid)));
         pdu.setType(PDU.GET);
 
-        // Send request
-        ResponseEvent responseEvent = snmp.send(pdu, target);
+        // Try to send the snmp request
+        ResponseEvent responseEvent;
+        try {
+            responseEvent = snmp.send(pdu, target);
+            snmp.close();
+        } catch (Exception e) {
+            responseEvent = null;
+            logger.debug("SNMP4J library exception: " + e);
+        }
 
-        String stringResponse = null;
-
+        // Interpret snmp response
+        String stringResponse;
         if (responseEvent == null) {
-            stringResponse = "[ERROR] Timeout";
+            logger.debug("SNMP connection error");
+            stringResponse = "[ERROR] SNMP connection error";
         } else if (responseEvent.getResponse() == null) {
-            stringResponse = "[ERROR] Empty response";
+            logger.debug("Empty SNMP response");
+            stringResponse = "[ERROR] Empty SNMP response";
         } else {
             stringResponse = responseEvent.getResponse().getVariableBindings().toString();
         }
 
-        snmp.close();
         return stringResponse;
     }
 

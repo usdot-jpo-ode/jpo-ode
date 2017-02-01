@@ -95,14 +95,14 @@ public class OssDDateTimeTest {
 
         J2735DDateTime actualDDateTimeUndefined = OssDDateTime.genericDDateTime(testDDateTime);
 
-        assertNull("Undefined year value 0 should return null:", actualDDateTimeUndefined.year);
-        assertNull("Undefined month value 0 should return null:", actualDDateTimeUndefined.month);
-        assertNull("Undefined day value 0 should return null:", actualDDateTimeUndefined.day);
-        assertNull("Undefined hour value 31 should return null:", actualDDateTimeUndefined.hour);
-        assertNull("Undefined minute value 60 should return null:", actualDDateTimeUndefined.minute);
-        assertNull("Undefined second value 65535 should return null:", actualDDateTimeUndefined.second);
+        assertNull("Undefined year value 0 should return null:", actualDDateTimeUndefined.getYear());
+        assertNull("Undefined month value 0 should return null:", actualDDateTimeUndefined.getMonth());
+        assertNull("Undefined day value 0 should return null:", actualDDateTimeUndefined.getDay());
+        assertNull("Undefined hour value 31 should return null:", actualDDateTimeUndefined.getHour());
+        assertNull("Undefined minute value 60 should return null:", actualDDateTimeUndefined.getMinute());
+        assertNull("Undefined second value 65535 should return null:", actualDDateTimeUndefined.getSecond());
         assertTrue("Undefined offset value 0 should return null or 0:",
-                (actualDDateTimeUndefined.offset == null || actualDDateTimeUndefined.offset.intValue() == 0));
+                (actualDDateTimeUndefined.getOffset() == null || actualDDateTimeUndefined.getOffset().intValue() == 0));
 
     }
 
@@ -141,13 +141,13 @@ public class OssDDateTimeTest {
 
         J2735DDateTime actualDDateTimeMinimum = OssDDateTime.genericDDateTime(testDDateTime);
 
-        assertEquals("Minimum year value 1 should return 1:", expectedYear, actualDDateTimeMinimum.year);
-        assertEquals("Minimum month value 1 should return 1:", expectedMonth, actualDDateTimeMinimum.month);
-        assertEquals("Minimum day value 1 should return 1:", expectedDay, actualDDateTimeMinimum.day);
-        assertEquals("Minimum hour value 0 should return 0:", expectedHour, actualDDateTimeMinimum.hour);
-        assertEquals("Minimum minute value 0 should return 0:", expectedMinute, actualDDateTimeMinimum.minute);
-        assertEquals("Minimum second value 0 should return 0:", expectedSecond, actualDDateTimeMinimum.second);
-        assertEquals("Minimum offset value -840 should return -840:", expectedOffset, actualDDateTimeMinimum.offset);
+        assertEquals("Minimum year value 1 should return 1:", expectedYear, actualDDateTimeMinimum.getYear());
+        assertEquals("Minimum month value 1 should return 1:", expectedMonth, actualDDateTimeMinimum.getMonth());
+        assertEquals("Minimum day value 1 should return 1:", expectedDay, actualDDateTimeMinimum.getDay());
+        assertEquals("Minimum hour value 0 should return 0:", expectedHour, actualDDateTimeMinimum.getHour());
+        assertEquals("Minimum minute value 0 should return 0:", expectedMinute, actualDDateTimeMinimum.getMinute());
+        assertEquals("Minimum second value 0 should return 0:", expectedSecond, actualDDateTimeMinimum.getSecond());
+        assertEquals("Minimum offset value -840 should return -840:", expectedOffset, actualDDateTimeMinimum.getOffset());
 
     }
 
@@ -185,13 +185,13 @@ public class OssDDateTimeTest {
 
         J2735DDateTime actualDDateTimeKnown = OssDDateTime.genericDDateTime(testDDateTime);
 
-        assertEquals("Known year value 1 should return 1:", expectedYear, actualDDateTimeKnown.year);
-        assertEquals("Known month value 1 should return 1:", expectedMonth, actualDDateTimeKnown.month);
-        assertEquals("Known day value 1 should return 1:", expectedDay, actualDDateTimeKnown.day);
-        assertEquals("Known hour value 0 should return 0:", expectedHour, actualDDateTimeKnown.hour);
-        assertEquals("Known minute value 0 should return 0:", expectedMinute, actualDDateTimeKnown.minute);
-        assertEquals("Known second value 0 should return 0:", expectedSecond, actualDDateTimeKnown.second);
-        assertEquals("Known offset value -840 should return -840:", expectedOffset, actualDDateTimeKnown.offset);
+        assertEquals("Known year value 1 should return 1:", expectedYear, actualDDateTimeKnown.getYear());
+        assertEquals("Known month value 1 should return 1:", expectedMonth, actualDDateTimeKnown.getMonth());
+        assertEquals("Known day value 1 should return 1:", expectedDay, actualDDateTimeKnown.getDay());
+        assertEquals("Known hour value 0 should return 0:", expectedHour, actualDDateTimeKnown.getHour());
+        assertEquals("Known minute value 0 should return 0:", expectedMinute, actualDDateTimeKnown.getMinute());
+        assertEquals("Known second value 0 should return 0:", expectedSecond, actualDDateTimeKnown.getSecond());
+        assertEquals("Known offset value -840 should return -840:", expectedOffset, actualDDateTimeKnown.getOffset());
 
     }
 
@@ -230,13 +230,13 @@ public class OssDDateTimeTest {
 
         J2735DDateTime actualDDateTimeMaximum = OssDDateTime.genericDDateTime(testDDateTime);
 
-        assertEquals("Maximum year value 4095 should return 4095:", expectedYear, actualDDateTimeMaximum.year);
-        assertEquals("Maximum month value 12 should return 12:", expectedMonth, actualDDateTimeMaximum.month);
-        assertEquals("Maximum day value 31 should return 31:", expectedDay, actualDDateTimeMaximum.day);
-        assertEquals("Maximum hour value 30 should return 30:", expectedHour, actualDDateTimeMaximum.hour);
-        assertEquals("Maximum minute value 59 should return 59:", expectedMinute, actualDDateTimeMaximum.minute);
-        assertEquals("Maximum second value 65534 should return 65534:", expectedSecond, actualDDateTimeMaximum.second);
-        assertEquals("Maximum offset value 840 should return 840", expectedOffset, actualDDateTimeMaximum.offset);
+        assertEquals("Maximum year value 4095 should return 4095:", expectedYear, actualDDateTimeMaximum.getYear());
+        assertEquals("Maximum month value 12 should return 12:", expectedMonth, actualDDateTimeMaximum.getMonth());
+        assertEquals("Maximum day value 31 should return 31:", expectedDay, actualDDateTimeMaximum.getDay());
+        assertEquals("Maximum hour value 30 should return 30:", expectedHour, actualDDateTimeMaximum.getHour());
+        assertEquals("Maximum minute value 59 should return 59:", expectedMinute, actualDDateTimeMaximum.getMinute());
+        assertEquals("Maximum second value 65534 should return 65534:", expectedSecond, actualDDateTimeMaximum.getSecond());
+        assertEquals("Maximum offset value 840 should return 840", expectedOffset, actualDDateTimeMaximum.getOffset());
 
     }
     

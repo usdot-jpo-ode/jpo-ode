@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import java.io.IOException;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.snmp4j.Snmp;
@@ -15,6 +16,7 @@ public class RsuSnmpTest {
     
     @Mock private Snmp mockSnmp;
 
+    @Ignore
     @Before
     public void setUpSnmp() throws IOException {
         
@@ -23,6 +25,7 @@ public class RsuSnmpTest {
         mockSnmp = mock(Snmp.class);    
     }
 
+    @Ignore
     @Test
     public void shouldCreateSnmpV3Request() throws IOException {
         

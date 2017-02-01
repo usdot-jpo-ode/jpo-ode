@@ -5,11 +5,14 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.junit.Test;
+
 import junit.framework.TestCase;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class DateTimeUtilsTest extends TestCase {
 
+    @Test
    public void testIsoDateTime() throws ParseException {
       ZonedDateTime expectedDate = ZonedDateTime.now(ZoneOffset.UTC);
       String sExpectedDate = DateTimeUtils.isoDateTime(expectedDate);

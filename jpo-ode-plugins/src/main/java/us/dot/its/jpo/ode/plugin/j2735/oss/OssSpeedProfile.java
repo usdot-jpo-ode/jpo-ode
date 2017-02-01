@@ -8,16 +8,18 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735SpeedProfile;
 
 public class OssSpeedProfile {
 
-	public static J2735SpeedProfile genericSpeedProfile(SpeedProfile speedProfile) {
-		J2735SpeedProfile sp = new J2735SpeedProfile();
-		
-		Iterator<SpeedProfileMeasurement> iter = speedProfile.speedReports.elements.iterator();
-		
-		while(iter.hasNext()) {
-			sp.speedReports.add(iter.next().intValue());
-		}
-		
-		return sp ;
-	}
+    private OssSpeedProfile() {}
+
+    public static J2735SpeedProfile genericSpeedProfile(SpeedProfile speedProfile) {
+        J2735SpeedProfile sp = new J2735SpeedProfile();
+
+        Iterator<SpeedProfileMeasurement> iter = speedProfile.speedReports.elements.iterator();
+
+        while (iter.hasNext()) {
+            sp.getSpeedReports().add(iter.next().intValue());
+        }
+
+        return sp;
+    }
 
 }
