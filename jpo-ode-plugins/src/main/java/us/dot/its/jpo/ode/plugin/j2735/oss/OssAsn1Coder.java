@@ -14,9 +14,11 @@ import com.oss.asn1.PERUnalignedCoder;
 
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
+import us.dot.its.jpo.ode.j2735.dsrc.MessageFrame;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 
 public class OssAsn1Coder implements Asn1Plugin {
    private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -39,6 +41,31 @@ public class OssAsn1Coder implements Asn1Plugin {
 
    @Override
    public Asn1Object UPER_DecodeBytes(byte[] byteArrayMsg) {
+       
+       InputStream ins = new ByteArrayInputStream(byteArrayMsg);
+       
+       MessageFrame mf = new MessageFrame();
+       
+       J2735MessageFrame jmf = null;
+       
+       try {
+           coder.decode(ins, mf);
+           jmf = OssMessageFrame.genericMessageFrame(mf);
+       } catch (Exception e) {
+           logger.error("Error decoding ", e);
+       } finally {
+           try {
+               ins.close();
+            } catch (IOException e) {
+               logger.warn("Error closing input stream: ", e);
+            }
+       }
+       
+       return jmf.getValue();
+       
+       
+       
+       /*
       InputStream ins = new ByteArrayInputStream(byteArrayMsg);
 
       BasicSafetyMessage bsm = new BasicSafetyMessage();
@@ -58,6 +85,7 @@ public class OssAsn1Coder implements Asn1Plugin {
       }
 
       return gbsm;
+      */
    }
 
    @Override
