@@ -1,4 +1,5 @@
 var stompClient = null;
+var uploadedFileCount = 1;
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
@@ -59,8 +60,15 @@ function upload() {
         contentType: false,
         processData: false
     }).done(function(response) {
-        console.log("File upload response received");
-        $( "#uploadResponse" ).append("File uploaded succesfully.");
+        console.log("File upload response received: " + response);
+        if ($.parseJSON(response).success) {
+            $( "#uploadResponse" ).html("<p>File upload request successful. (" + uploadedFileCount + ")</p>");
+            uploadedFileCount++;
+        } else {
+            $( "#uploadResponse" ).html("<p>ERROR - Upload request failed.</p>");
+            console.log("Error uploading file: " + response);
+        }
+        
     });
 }
 function sendSnmp() {

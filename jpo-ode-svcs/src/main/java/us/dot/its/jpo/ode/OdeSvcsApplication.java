@@ -1,10 +1,10 @@
 package us.dot.its.jpo.ode;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.lang.management.ManagementFactory;
 
 import javax.annotation.PreDestroy;
 import javax.management.InstanceAlreadyExistsException;
@@ -45,7 +45,9 @@ public class OdeSvcsApplication {
    CommandLineRunner init(OdeProperties odeProperties) {
       return (args) -> {
          try {
-            Files.createDirectory(Paths.get(odeProperties.getUploadLocation()));
+            Files.createDirectory(Paths.get(odeProperties.getUploadLocationRoot()));
+            Files.createDirectory(Paths.get(odeProperties.getUploadLocationBsm()));
+            Files.createDirectory(Paths.get(odeProperties.getUploadLocationMessageFrame()));
          } catch (FileAlreadyExistsException fae) {
             logger.info("Upload directory already exisits");
          } catch (IOException e) {
@@ -55,7 +57,7 @@ public class OdeSvcsApplication {
    }
 
    @PreDestroy
-   public void clanup() {
+   public void cleanup() {
    }
 
 }

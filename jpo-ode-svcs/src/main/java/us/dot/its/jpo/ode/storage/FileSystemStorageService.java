@@ -21,89 +21,89 @@ import us.dot.its.jpo.ode.eventlog.EventLogger;
 
 @Service
 public class FileSystemStorageService implements StorageService {
-   private static Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
+    private static Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
 
-   private OdeProperties properties;
-   private final Path rootLocation;
+    private OdeProperties properties;
+    private final Path rootLocation;
 
-   @Autowired
-   public FileSystemStorageService(OdeProperties properties) {
-      this.properties = properties;
+    @Autowired
+    public FileSystemStorageService(OdeProperties properties) {
+        this.properties = properties;
 
-      this.rootLocation = Paths.get(this.properties.getUploadLocation());
-      logger.info("Upload location: {}", this.rootLocation);
-   }
+        this.rootLocation = Paths.get(this.properties.getUploadLocationRoot());
+        logger.info("Upload location: {}", this.rootLocation);
+    }
 
-   @Override
-   public void store(MultipartFile file) {
-      Path path = this.rootLocation.resolve(file.getOriginalFilename());
-      try {
-         EventLogger.logger.info("Deleting existing file: {}", path);
-         Files.deleteIfExists(path);
-      } catch (IOException e) {
-    	  EventLogger.logger.info("Failed to delete existing file: {} ", path);
-    	  throw new StorageException("Failed to delete existing file: " + path, e);
-      }
-      try {
-         if (file.isEmpty()) {
-        	EventLogger.logger.info("File is empty: {}", path);
-        	throw new StorageException("File is empty: " + path);
-         }
-         logger.debug("Copying file {} to {}", file.getOriginalFilename(), this.rootLocation);
-         EventLogger.logger.info("Copying file {} to {}", file.getOriginalFilename(), this.rootLocation);
-         Files.copy(file.getInputStream(), path);
-      } catch (IOException e) {
-    	  EventLogger.logger.info("Failed to store file in shared directory {}", this.rootLocation);
-    	  throw new StorageException("Failed to store file in shared directory" + this.rootLocation, e);
-      }
-   }
+    @Override
+    public void store(MultipartFile file) {
+        Path path = this.rootLocation.resolve(file.getOriginalFilename());
+        try {
+            EventLogger.logger.info("Deleting existing file: {}", path);
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            EventLogger.logger.info("Failed to delete existing file: {} ", path);
+            throw new StorageException("Failed to delete existing file: " + path, e);
+        }
+        try {
+            if (file.isEmpty()) {
+                EventLogger.logger.info("File is empty: {}", path);
+                throw new StorageException("File is empty: " + path);
+            }
+            logger.debug("Copying file {} to {}", file.getOriginalFilename(), this.rootLocation);
+            EventLogger.logger.info("Copying file {} to {}", file.getOriginalFilename(), this.rootLocation);
+            Files.copy(file.getInputStream(), path);
+        } catch (IOException e) {
+            EventLogger.logger.info("Failed to store file in shared directory {}", this.rootLocation);
+            throw new StorageException("Failed to store file in shared directory" + this.rootLocation, e);
+        }
+    }
 
-   @Override
-   public Stream<Path> loadAll() {
-      try {
-         return Files.walk(this.rootLocation, 1).filter(path -> !path.equals(this.rootLocation))
-               .map(path -> this.rootLocation.relativize(path));
-      } catch (IOException e) {
-    	  EventLogger.logger.info("Failed to read files stored in {}", this.rootLocation);
-    	  throw new StorageException("Failed to read files stored in " + this.rootLocation, e);
-      }
+    @Override
+    public Stream<Path> loadAll() {
+        try {
+            return Files.walk(this.rootLocation, 1).filter(path -> !path.equals(this.rootLocation))
+                    .map(path -> this.rootLocation.relativize(path));
+        } catch (IOException e) {
+            EventLogger.logger.info("Failed to read files stored in {}", this.rootLocation);
+            throw new StorageException("Failed to read files stored in " + this.rootLocation, e);
+        }
 
-   }
+    }
 
-   @Override
-   public Path load(String filename) {
-      return rootLocation.resolve(filename);
-   }
+    @Override
+    public Path load(String filename) {
+        return rootLocation.resolve(filename);
+    }
 
-   @Override
-   public Resource loadAsResource(String filename) {
-      try {
-         Path file = load(filename);
-         Resource resource = new UrlResource(file.toUri());
-         if (resource.exists() || resource.isReadable()) {
-            return resource;
-         } else {
-            throw new StorageFileNotFoundException("Could not read file: " + filename);
+    @Override
+    public Resource loadAsResource(String filename) {
+        try {
+            Path file = load(filename);
+            Resource resource = new UrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            } else {
+                throw new StorageFileNotFoundException("Could not read file: " + filename);
 
-         }
-      } catch (MalformedURLException e) {
-         throw new StorageFileNotFoundException("Could not read file: " + filename, e);
-      }
-   }
+            }
+        } catch (MalformedURLException e) {
+            throw new StorageFileNotFoundException("Could not read file: " + filename, e);
+        }
+    }
 
-   @Override
-   public void deleteAll() {
-	   FileSystemUtils.deleteRecursively(rootLocation.toFile());
-	   EventLogger.logger.info("Deleting {}", this.rootLocation);
-   }
+    @Override
+    public void deleteAll() {
+        FileSystemUtils.deleteRecursively(rootLocation.toFile());
+        EventLogger.logger.info("Deleting {}", this.rootLocation);
+    }
 
-   @Override
-   public void init() {
-      try {
-         Files.createDirectory(rootLocation);
-      } catch (IOException e) {
-    	  EventLogger.logger.info("Failed to initialize storage service {}",this.rootLocation);
-    	  throw new StorageException("Failed to initialize storage service " + this.rootLocation, e);
-      }
-   }
+    @Override
+    public void init() {
+        try {
+            Files.createDirectory(rootLocation);
+        } catch (IOException e) {
+            EventLogger.logger.info("Failed to initialize storage service {}", this.rootLocation);
+            throw new StorageException("Failed to initialize storage service " + this.rootLocation, e);
+        }
+    }
 }
