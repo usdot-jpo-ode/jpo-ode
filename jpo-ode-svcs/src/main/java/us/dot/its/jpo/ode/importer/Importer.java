@@ -324,7 +324,8 @@ public class Importer implements Runnable {
 
                 // We register the folder to the service
                 // We watch for modification events
-                inboxFolderRoot.register(service, ENTRY_MODIFY);
+                inboxFolderBsm.register(service, ENTRY_MODIFY);
+                inboxFolderMessageFrame.register(service, ENTRY_MODIFY);
 
                 // Start the infinite polling loop
                 WatchKey key = null;
