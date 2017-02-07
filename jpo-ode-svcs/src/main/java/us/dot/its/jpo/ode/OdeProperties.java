@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode;
 
 import java.net.InetAddress;
-import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.UUID;
 
