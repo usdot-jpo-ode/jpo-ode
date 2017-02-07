@@ -67,21 +67,29 @@ public class FileUploadController {
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
    }
 
-   @PostMapping("/")
+   @PostMapping("/upload/{type}")
    @ResponseBody
-   public String handleFileUpload(@RequestParam("file") MultipartFile file) {
+   public String handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable("type") String type) {
        
-       String response = "{\"success\": true}";
+       if ( ("bsm").equals(type)) {
+           logger.debug("BSM file recieved: {}", file.getOriginalFilename());
+       } else if ( ("messageFrame").equals(type) ) {
+           logger.debug("Message Frame file recieved: {}", file.getOriginalFilename());
+       } else {
+           logger.error("File storage error: Unknown file type provided");
+           return "{\"success\": false}";
+       }
+       
 
-      logger.debug("File received: {}", file.getOriginalFilename());
+      logger.debug("File received at endpoint: {}, name={}", "/upload/" + type, file.getOriginalFilename());
       try {
-          storageService.store(file);
+          storageService.store(file, type);
       } catch (Exception e) {
           logger.error("File storage error: " + e);
-          response = "{\"success\": false}";
+          return "{\"success\": false}";
       }
 
-      return response;
+      return "{\"success\": true}";
    }
 
    @ExceptionHandler(StorageFileNotFoundException.class)

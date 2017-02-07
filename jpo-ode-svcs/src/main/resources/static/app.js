@@ -1,5 +1,4 @@
 var stompClient = null;
-var uploadedFileCount = 1;
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
@@ -51,9 +50,10 @@ function showMessage(message) {
 function upload() {
     var formData = new FormData();
     formData.append('file', $('#file').get(0).files[0]);
+    var uploadType = $('input[name=fileType]:checked').val();
     console.log("Ajax call submitted");
     $.ajax({
-        url: '/',
+        url: '/upload/' + uploadType,
         type: 'POST',
         data: formData,
         cache: false,
@@ -62,13 +62,10 @@ function upload() {
     }).done(function(response) {
         console.log("File upload response received: " + response);
         if ($.parseJSON(response).success) {
-            $( "#uploadResponse" ).html("<p>File upload request successful. (" + uploadedFileCount + ")</p>");
-            uploadedFileCount++;
+            $( "#uploadResponse" ).append("<tr><td>Success</td><td>" + $('#file').get(0).files[0].name + "</td></tr>");
         } else {
-            $( "#uploadResponse" ).html("<p>ERROR - Upload request failed.</p>");
-            console.log("Error uploading file: " + response);
+            $( "#uploadResponse" ).append("<tr><td>Error</td><td>" + $('#file').get(0).files[0].name + "</td></tr>");
         }
-        
     });
 }
 function sendSnmp() {
