@@ -20,7 +20,7 @@ addons:
     branches:
       - master
       - develop
-      - refactor
+      - feature/ode-138_messageFrame2 
 script:
   - mvn clean
   - mvn org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
