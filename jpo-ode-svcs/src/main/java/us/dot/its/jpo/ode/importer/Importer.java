@@ -235,6 +235,7 @@ public class Importer implements Runnable {
     public void disposeOfProcessedFile(Path filePath) {
         try {
             EventLogger.logger.info("Disposing file");
+            logger.info("Disposing file: " + filePath.toString());
             // TODO(Cris): handle other file types here...
             String processedFileName = Integer.toString((int) System.currentTimeMillis()) + "-"
                     + filePath.getFileName().toString().replaceFirst("uper", "pbo");
@@ -260,7 +261,7 @@ public class Importer implements Runnable {
                     if (filePath.startsWith(inboxFolderBsm)) {
                         this.bsmCoder.decodeFromStreamAndPublish(inputStream, OdeProperties.KAFKA_TOPIC_J2735_BSM);
                     } else if (filePath.startsWith(inboxFolderMessageFrame)) {
-                        this.messageFrameCoder.decodeFromStreamAndPublish(inputStream, OdeProperties.KAFKA_TOPIC_J2735_MESSAGE_FRAME);
+                        this.messageFrameCoder.decodeFromStreamAndPublish(inputStream, OdeProperties.KAFKA_TOPIC_J2735_BSM);
                     } else {
                         throw new Exception("Unable to determine coder type from filepath");
                     }
@@ -268,7 +269,7 @@ public class Importer implements Runnable {
                     if (filePath.startsWith(inboxFolderBsm)) {
                         this.bsmCoder.decodeFromHexAndPublish(inputStream, OdeProperties.KAFKA_TOPIC_J2735_BSM);
                     } else if (filePath.startsWith(inboxFolderMessageFrame)) {
-                        this.messageFrameCoder.decodeFromHexAndPublish(inputStream, OdeProperties.KAFKA_TOPIC_J2735_MESSAGE_FRAME);
+                        this.messageFrameCoder.decodeFromHexAndPublish(inputStream, OdeProperties.KAFKA_TOPIC_J2735_BSM);
                     } else {
                         throw new Exception("Unable to determine coder type from filepath");
                     }

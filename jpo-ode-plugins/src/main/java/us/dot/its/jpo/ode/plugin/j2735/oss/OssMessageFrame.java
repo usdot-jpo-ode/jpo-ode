@@ -37,8 +37,8 @@ public class OssMessageFrame {
             throws OssMessageFrameException, OssBsmPart2Exception {
 
         J2735MessageFrame genericMessageFrame = new J2735MessageFrame();
-
-        genericMessageFrame.setMessageId(J2735DSRCmsgID.values()[mf.messageId.intValue()]);
+        
+        genericMessageFrame.setMessageId( J2735DSRCmsgID.valueOf( mf.messageId.intValue() ));
 
         PERUnalignedCoder coder = J2735.getPERUnalignedCoder();
 

@@ -47,7 +47,7 @@ public class OssAsn1Coder implements Asn1Plugin {
         MessageFrame mf = new MessageFrame();
 
         J2735MessageFrame jmf = null;
-
+        
         try {
             coder.decode(ins, mf);
             jmf = OssMessageFrame.genericMessageFrame(mf);
@@ -106,19 +106,19 @@ public class OssAsn1Coder implements Asn1Plugin {
     
     @Override
     public Asn1Object UPER_DecodeMessageFrameStream(InputStream ins) {
-        BasicSafetyMessage bsm = new BasicSafetyMessage();
-        J2735Bsm gbsm = null;
+        MessageFrame mf = new MessageFrame();
+        J2735MessageFrame gmf = null;
 
         try {
             if (ins.available() > 0) {
-                coder.decode(ins, bsm);
-                gbsm = OssBsm.genericBsm(bsm);
+                coder.decode(ins, mf);
+                gmf = OssMessageFrame.genericMessageFrame(mf);
             }
         } catch (Exception e) {
             logger.debug("Error decoding ", e);
         }
 
-        return gbsm;
+        return gmf;
     }
 
     @Override
