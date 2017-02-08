@@ -121,49 +121,49 @@ public class Importer implements Runnable {
          * created.
          */
 
-        if (!Files.exists(inboxFolderRoot)) {
-            logger.warn("IMPORTER - Root inbox Folder does not exist. Expected at: " + inboxFolderRoot);
+        if (!inboxFolderRoot.toFile().exists()) {
+            logger.warn("IMPORTER - Root inbox Folder does not exist. Expected at: {}", inboxFolderRoot);
             try {
                 Files.createDirectory(inboxFolderRoot);
             } catch (IOException e) {
-                logger.error("IMPORTER - Could not create root inbox Folder " + e);
+                logger.error("IMPORTER - Could not create root inbox Folder {}", e);
                 importerStatus |= NO_INBOX_FOLDER | NO_BACKUP_FOLDER;
                 logger.info("IMPORTER - status: {}", importerStatus);
                 throw e;
             }
-            logger.info("IMPORTER - Root inbox folder create at: " + inboxFolderRoot);
+            logger.info("IMPORTER - Root inbox folder create at: {}", inboxFolderRoot);
         } else {
-            logger.info("IMPORTER - BSM Inbox Folder exists: " + inboxFolderBsm.toString());
+            logger.info("IMPORTER - BSM Inbox Folder exists: {}", inboxFolderBsm.toString());
         }
-        if (!Files.exists(inboxFolderBsm)) {
-            logger.warn("IMPORTER - BSM Inbox Folder does not exist. Expected at: " + inboxFolderBsm);
+        if (!inboxFolderBsm.toFile().exists()) {
+            logger.warn("IMPORTER - BSM Inbox Folder does not exist. Expected at: {}", inboxFolderBsm);
             try {
                 Files.createDirectory(inboxFolderBsm);
             } catch (IOException e) {
-                logger.error("IMPORTER - Could not create BSM Inbox Folder " + e);
+                logger.error("IMPORTER - Could not create BSM Inbox Folder {}", e);
                 importerStatus |= NO_INBOX_FOLDER | NO_BACKUP_FOLDER;
                 logger.info("IMPORTER - status: {}", importerStatus);
                 throw e;
             }
-            logger.info("IMPORTER - BSM inbox folder create at: " + inboxFolderBsm);
+            logger.info("IMPORTER - BSM inbox folder create at: {}", inboxFolderBsm);
         } else {
-            logger.info("IMPORTER - BSM Inbox Folder exists: " + inboxFolderBsm.toString());
+            logger.info("IMPORTER - BSM Inbox Folder exists: {}", inboxFolderBsm.toString());
         }
-        if (!Files.exists(inboxFolderMessageFrame)) {
-            logger.warn("IMPORTER - Message Frame Inbox Folder does not exist. Expected at: " + inboxFolderMessageFrame);
+        if (!inboxFolderMessageFrame.toFile().exists()) {
+            logger.warn("IMPORTER - Message Frame Inbox Folder does not exist. Expected at: {}", inboxFolderMessageFrame);
             try {
                 Files.createDirectory(inboxFolderMessageFrame);
             } catch (IOException e) {
-                logger.error("IMPORTER - Could not create Message Frame Inbox Folder " + e);
+                logger.error("IMPORTER - Could not create Message Frame Inbox Folder {}", e);
                 importerStatus |= NO_INBOX_FOLDER | NO_BACKUP_FOLDER;
                 logger.info("IMPORTER - status: {}", importerStatus);
                 throw e;
             }
-            logger.info("IMPORTER - Message frame inbox folder create at: " + inboxFolderMessageFrame);
+            logger.info("IMPORTER - Message frame inbox folder create at: {}", inboxFolderMessageFrame);
         } else {
-            logger.info("IMPORTER - Message Frame Inbox Folder exists: " + inboxFolderMessageFrame.toString());
+            logger.info("IMPORTER - Message Frame Inbox Folder exists: {}", inboxFolderMessageFrame);
         }
-        if (!Files.exists(backupFolder)) {
+        if (!backupFolder.toFile().exists()) {
             logger.warn("IMPORTER - Backup Folder does not exist");
             try {
                 Files.createDirectory(backupFolder);
@@ -173,9 +173,9 @@ public class Importer implements Runnable {
                 logger.info("IMPORTER - status: {}", importerStatus);
                 throw e;
             }
-            logger.info("IMPORTER - Backup folder create at: " + backupFolder);
+            logger.info("IMPORTER - Backup folder create at {} ", backupFolder);
         } else {
-            logger.info("IMPORTER - Backup Folder exists: " + backupFolder.toString());
+            logger.info("IMPORTER - Backup Folder exists {}", backupFolder);
         }
     }
 
@@ -193,11 +193,11 @@ public class Importer implements Runnable {
             verifyInboxFolder();
 
         } catch (Exception ex) {
-            logger.error("IMPORTER -  Error verifying inbox folder:" + ex);
+            logger.error("IMPORTER -  Error verifying inbox folder: {}", ex);
             return;
         }
-        logger.info("IMPORTER - Watching BSM inbox folder: " + inboxFolderBsm);
-        logger.info("IMPORTER - Watching Message Frame inbox folder: " + inboxFolderMessageFrame);
+        logger.info("IMPORTER - Watching BSM inbox folder: {}", inboxFolderBsm);
+        logger.info("IMPORTER - Watching Message Frame inbox folder: {}", inboxFolderMessageFrame);
 
         logger.info("IMPORTER - Instantiating BSM Coder...");
         bsmCoder = new BsmCoder(odeProps);
@@ -235,7 +235,7 @@ public class Importer implements Runnable {
     public void disposeOfProcessedFile(Path filePath) {
         try {
             EventLogger.logger.info("Disposing file");
-            logger.info("Disposing file: " + filePath.toString());
+            logger.info("Disposing file: {}", filePath.toString());
             // TODO(Cris): handle other file types here...
             String processedFileName = Integer.toString((int) System.currentTimeMillis()) + "-"
                     + filePath.getFileName().toString().replaceFirst("uper", "pbo");
@@ -244,7 +244,7 @@ public class Importer implements Runnable {
             Files.move(filePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             importerStatus |= MOVE2BACKUP_ERROR;
-            logger.error("Error moving file to temporary directory: " + filePath.toString(), e);
+            logger.error("Error moving file to temporary directory: {}", filePath.toString(), e);
             EventLogger.logger.info("Error moving file to temporary directory: {}", filePath.toString());
         }
     }
@@ -256,7 +256,7 @@ public class Importer implements Runnable {
         boolean fileProcessed = false;
         while (tryCount-- > 0) {
             try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
-                EventLogger.logger.info("Processing file " + filePath.toFile());
+                EventLogger.logger.info("Processing file {}", filePath.toFile());
                 if (filePath.toString().endsWith("uper")) {
                     if (filePath.startsWith(inboxFolderBsm)) {
                         this.bsmCoder.decodeFromStreamAndPublish(inputStream, OdeProperties.KAFKA_TOPIC_J2735_BSM);
@@ -277,7 +277,7 @@ public class Importer implements Runnable {
                 fileProcessed = true;
                 break;
             } catch (Exception e) {
-                logger.info("unable to open file: " + filePath + " retrying " + tryCount + " more times", e);
+                logger.info("unable to open file: {}", filePath + " retrying {}", tryCount + " more times", e);
                 Thread.sleep(1000);
             }
         }
@@ -292,17 +292,17 @@ public class Importer implements Runnable {
 
     public void processExistingFiles(Path pathToFileDirectory) {
         
-        logger.debug("IMPORTER -  Processing existing files at location: " + pathToFileDirectory);
+        logger.debug("IMPORTER -  Processing existing files at location: {}", pathToFileDirectory);
 
         // TODO (Cris): test to see what happens when new files are arriving
         // during the iteration
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(pathToFileDirectory, "*.{uper, bsm}")) {
             for (Path entry : stream) {
                 try {
-                    logger.debug("IMPORTER - Found a file to process: " + entry.getFileName());
+                    logger.debug("IMPORTER - Found a file to process: {}", entry.getFileName());
                     processFile(entry);
                 } catch (Exception e) {
-                    throw new IOException("Error processing file " + e);
+                    throw new IOException("Error processing file {}", e);
                 }
             }
         } catch (IOException e) {
@@ -344,19 +344,19 @@ public class Importer implements Runnable {
             WatchKey keyBsm = inboxFolderBsm.register(service,
                     StandardWatchEventKinds.ENTRY_CREATE,
                     StandardWatchEventKinds.ENTRY_MODIFY);
-            logger.info("IMPORTER - WatchService key registered for BSM inbox folder: " + inboxFolderBsm);
+            logger.info("IMPORTER - WatchService key registered for BSM inbox folder: {}", inboxFolderBsm);
             
             WatchKey keyMessageFrame = inboxFolderMessageFrame.register(service,
                     StandardWatchEventKinds.ENTRY_CREATE,
                     StandardWatchEventKinds.ENTRY_MODIFY);
-            logger.info("IMPORTER - WatchService key registered for Message Frame inbox folder: " + inboxFolderMessageFrame);
+            logger.info("IMPORTER - WatchService key registered for Message Frame inbox folder: {}", inboxFolderMessageFrame);
             
             keyPathMap.put(keyBsm, inboxFolderBsm);
             keyPathMap.put(keyMessageFrame, inboxFolderMessageFrame);
             
         } catch (Exception e) {
-            logger.error("Error creating and registering watch service " + e);
-            //throw new Exception("Error creating and registering watch service " + e);
+            logger.error("Error creating and registering watch service {}", e);
+            //throw new Exception("Error creating and registering watch service {}", e);
             return;
         }
 
@@ -368,7 +368,7 @@ public class Importer implements Runnable {
                 try {
                     key = service.take();
                 } catch (InterruptedException e) {
-                    logger.error("Error getting key from watch service" + e);
+                    logger.error("Error getting key from watch service{}", e);
                     break;
                 }
 
@@ -394,7 +394,7 @@ public class Importer implements Runnable {
                         try {
                             processFile(newPath);
                         } catch (Exception e) {
-                            logger.error("Error processing file: " + e);
+                            logger.error("Error processing file: {}", e);
                             break;
                         }
                     }

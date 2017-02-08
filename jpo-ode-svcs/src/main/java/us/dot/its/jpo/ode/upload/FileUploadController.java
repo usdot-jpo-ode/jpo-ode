@@ -81,7 +81,7 @@ public class FileUploadController {
        }
        
 
-      logger.debug("File received at endpoint: {}, name={}", "/upload/" + type, file.getOriginalFilename());
+      logger.debug("File received at endpoint: /upload/{}, name={}", type, file.getOriginalFilename());
       try {
           storageService.store(file, type);
       } catch (Exception e) {

@@ -46,11 +46,11 @@ public class OssAsn1Coder implements Asn1Plugin {
 
         MessageFrame mf = new MessageFrame();
 
-        J2735MessageFrame jmf = null;
+        J2735Bsm returnValue = null;
         
         try {
             coder.decode(ins, mf);
-            jmf = OssMessageFrame.genericMessageFrame(mf);
+            returnValue = OssMessageFrame.genericMessageFrame(mf).getValue();
         } catch (Exception e) {
             logger.error("Error decoding ", e);
         } finally {
@@ -61,7 +61,7 @@ public class OssAsn1Coder implements Asn1Plugin {
             }
         }
 
-        return jmf.getValue();
+        return returnValue;
     }
 
     @Override
