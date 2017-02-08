@@ -124,6 +124,8 @@ public class FileSystemStorageService implements StorageService {
     public void init() {
         try {
             Files.createDirectory(rootLocation);
+            Files.createDirectory(bsmLocation);
+            Files.createDirectory(messageFrameLocation);
         } catch (IOException e) {
             EventLogger.logger.info("Failed to initialize storage service {}", this.rootLocation);
             throw new StorageException("Failed to initialize storage service " + this.rootLocation, e);
