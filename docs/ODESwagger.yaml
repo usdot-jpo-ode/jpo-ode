@@ -1,0 +1,131 @@
+swagger: '2.0'
+info:
+  title: ODE Interface Guide
+  description: Process to use different user functionality within the Operational Data Environment
+  version: "0.0.1"
+# the domain of the service
+host: api.uber.com
+# array of all schemes that your API supports
+schemes:
+  - https
+# will be prefixed to all paths
+basePath: /v1
+produces:
+  - application/json
+paths:
+  /Traveler Information Message:
+    post:
+      summary: TIM Interface
+      operationId: Send TIM message
+      description: |
+        The TIM endpoint returns a constructed TravelerInformation message
+      parameters:
+        - name: msgcnt
+          in: query
+          description: Number of messgages.
+          required: true
+          type: number
+          format: integer
+        - name: timestamp
+          in: query
+          description: Minute of the Year.
+          required: false
+          type: number
+          format: integer
+        - name: packetID
+          in: query
+          description: Unique message ID
+          required: false
+          type: string
+          format: octet String
+        - name: urlB
+          in: query
+          description: URL_Base
+          required: false
+          type: string
+          format: IA5String
+        - name: TravelerDataFrameList
+          in: query
+          description: List of Traveler Data Frames
+          required: true
+          type: string
+          format: TravelerDataFrame
+        - name: Regional
+          in: query
+          description: Sequence
+          required: false
+          type: string
+          format: Sequence
+      tags:
+        - TIM
+      responses:
+        200:
+          description: An array of products
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/TravelerDataFrame'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /RSU SNMP:
+    get:
+      summary: RSU SNMP Query
+      operationId: Send SNMP Messages
+      description: Check the health and status of RSU devices through SNMP communication
+      parameters:
+        - name: IP
+          in: query
+          description: IP address of an RSU
+          required: true
+          type: number
+          format: string
+        - name: OID
+          in: query
+          description: OID of the attribute you wish to check on
+          required: true
+          type: number
+          format: string
+      tags:
+        - SNMP
+      responses:
+        200:
+          description: OID responses
+        400:
+          description: Value input error
+definitions:
+  TravelerDataFrame:
+    type: object
+    properties:
+      sspTimRights:
+        type: string
+        description: The SSP index is used to control the data elements that follow the occurrence of the index. The index relates back to the SSP contents in the CERT used to declare what content is allowed by that CERT. In the absence of a matching index in the message sender’s CERT, the message contents are not valid.
+      frameType:
+        type: string
+        description: The DE_TravelerInfoType data element provides the type of message to follow in the rest of the message frame structure. It is used in the traveler information message, which may contain several such structures.
+      msgId:
+        type: string
+        description: Link to other messages
+      startYear:
+        type: string
+        description: The DSRC year consists of integer values from zero to 4095 representing the year according to the Gregorian calendar date system. The value of zero shall represent an unknown value.
+      startTime:
+        type: string
+        description: The DE_MinuteOfTheYear data element expresses the number of elapsed minutes of the current year in the time system being used (typically UTC time). It is typically used to provide a longer range time stamp indicating when a message was created. Taken together with the DSecond data element, it provides a range of one full year with a resolution of 1mSecond.
+      durationTime:
+        type: string
+        description: The duration, in units of whole minutes, that a object persists for. A value of 32000 means that the object persists forever. The range 0..32000 provides for about 22.2 days of maximum duration.
+      priority:
+        type: string
+        description: The relative importance of the sign, on a scale from zero (least important) to seven (most important).
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message: 
+        type: string
+      fields:
+        type: string
