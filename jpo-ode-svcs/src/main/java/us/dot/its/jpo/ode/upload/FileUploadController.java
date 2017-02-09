@@ -58,21 +58,6 @@ public class FileUploadController {
 
    }
 
-   // @GetMapping("/")
-   // public String listUploadedFiles(Model model) throws IOException {
-   //
-   // model.addAttribute("files", storageService
-   // .loadAll()
-   // .map(path ->
-   // MvcUriComponentsBuilder
-   // .fromMethodName(FileUploadController.class, "serveFile",
-   // path.getFileName().toString())
-   // .build().toString())
-   // .collect(Collectors.toList()));
-   //
-   // return "uploadForm";
-   // }
-
    @GetMapping("/files/{filename:.+}")
    @ResponseBody
    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
@@ -82,20 +67,29 @@ public class FileUploadController {
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
    }
 
-   @PostMapping("/")
+   @PostMapping("/upload/{type}")
    @ResponseBody
-   public String handleFileUpload(@RequestParam("file") MultipartFile file) {
+   public String handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable("type") String type) {
+       
+       if ( ("bsm").equals(type)) {
+           logger.debug("BSM file recieved: {}", file.getOriginalFilename());
+       } else if ( ("messageFrame").equals(type) ) {
+           logger.debug("Message Frame file recieved: {}", file.getOriginalFilename());
+       } else {
+           logger.error("File storage error: Unknown file type provided");
+           return "{\"success\": false}";
+       }
+       
 
-      logger.debug("File received: {}", file.getOriginalFilename());
-      storageService.store(file);
-
-      /*
-       * redirectAttributes.addFlashAttribute("message",
-       * "You successfully uploaded " + file.getOriginalFilename() + "!");
-       */
+      logger.debug("File received at endpoint: /upload/{}, name={}", type, file.getOriginalFilename());
+      try {
+          storageService.store(file, type);
+      } catch (Exception e) {
+          logger.error("File storage error: " + e);
+          return "{\"success\": false}";
+      }
 
       return "{\"success\": true}";
-      // return "redirect:/helloworld";
    }
 
    @ExceptionHandler(StorageFileNotFoundException.class)

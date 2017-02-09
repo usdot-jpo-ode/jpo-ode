@@ -56,7 +56,7 @@ public class BsmCoder {
             empty = false;
             line = scanner.nextLine();
 
-            decoded = (J2735Bsm) asn1Coder.UPER_DecodeHex(line);
+            decoded = (J2735Bsm) asn1Coder.UPER_DecodeBsmHex(line);
             logger.debug("Decoded: {}", decoded);
             if (!OdeProperties.KAFKA_TOPIC_J2735_BSM.endsWith("json"))
                publish(topic, decoded);
@@ -79,7 +79,7 @@ public class BsmCoder {
 
       try {
          do {
-            decoded = (J2735Bsm) asn1Coder.UPER_DecodeStream(is);
+            decoded = (J2735Bsm) asn1Coder.UPER_DecodeBsmStream(is);
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);
                if (!OdeProperties.KAFKA_TOPIC_J2735_BSM.endsWith("json"))
