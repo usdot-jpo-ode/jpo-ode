@@ -18,7 +18,7 @@ addons:
     token:
       secure: $SONAR_SECURITY_TOKEN
     branches:
-      - /.*/ 
+      - .* 
 script:
   - mvn clean
   - mvn org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
