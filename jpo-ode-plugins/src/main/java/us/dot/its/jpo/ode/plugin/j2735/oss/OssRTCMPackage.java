@@ -9,20 +9,22 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class OssRTCMPackage {
 
-	public static J2735RTCMPackage genericRTCMPackage(RTCMPackage theRTCM) {
-		J2735RTCMPackage rtcm = new J2735RTCMPackage();
-		
-		Iterator<RTCMmessage> iter = theRTCM.msgs.elements.iterator();
-		
-		while (iter.hasNext()) {
-			rtcm.msgs.add(CodecUtils.toHex(iter.next().byteArrayValue()));
-		}
-		// Optional element
-		if (theRTCM.rtcmHeader != null) {
-		    rtcm.rtcmHeader = OssRTCMheader.genericRTCMheader(theRTCM.rtcmHeader);
-		}
-		
-		return rtcm ;
-	}
+    private OssRTCMPackage() {}
+
+    public static J2735RTCMPackage genericRTCMPackage(RTCMPackage theRTCM) {
+        J2735RTCMPackage rtcm = new J2735RTCMPackage();
+
+        Iterator<RTCMmessage> iter = theRTCM.msgs.elements.iterator();
+
+        while (iter.hasNext()) {
+            rtcm.getMsgs().add(CodecUtils.toHex(iter.next().byteArrayValue()));
+        }
+        // Optional element
+        if (theRTCM.rtcmHeader != null) {
+            rtcm.setRtcmHeader(OssRTCMheader.genericRTCMheader(theRTCM.rtcmHeader));
+        }
+
+        return rtcm;
+    }
 
 }

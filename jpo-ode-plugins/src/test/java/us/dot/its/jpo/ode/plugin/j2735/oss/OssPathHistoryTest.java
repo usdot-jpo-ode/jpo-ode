@@ -62,7 +62,7 @@ public class OssPathHistoryTest {
         
         J2735PathHistory actualPathHistory = OssPathHistory.genericPathHistory(testPathHistory);
         
-        assertTrue(actualPathHistory.crumbData.isEmpty());
+        assertTrue(actualPathHistory.getCrumbData().isEmpty());
     }
     
     /**
@@ -94,7 +94,7 @@ public class OssPathHistoryTest {
         
         J2735PathHistory actualPathHistory = OssPathHistory.genericPathHistory(testPathHistory);
         
-        BigDecimal actualValue = actualPathHistory.crumbData.get(0).getLatOffset();
+        BigDecimal actualValue = actualPathHistory.getCrumbData().get(0).getLatOffset();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -125,7 +125,7 @@ public class OssPathHistoryTest {
         
         J2735PathHistory actualPathHistory = OssPathHistory.genericPathHistory(testPathHistory);
         
-        BigDecimal actualValue = actualPathHistory.initialPosition.position.getLongitude();
+        BigDecimal actualValue = actualPathHistory.getInitialPosition().position.getLongitude();
         
         assertEquals(expectedValue, actualValue);
         
@@ -149,7 +149,7 @@ public class OssPathHistoryTest {
         
         J2735PathHistory actualPathHistory = OssPathHistory.genericPathHistory(testPathHistory);
         
-        for (Map.Entry<String, Boolean> curVal : actualPathHistory.currGNSSstatus.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal : actualPathHistory.getCurrGNSSstatus().entrySet()) {
             if(curVal.getKey() == elementTested1 || curVal.getKey() == elementTested2) {
                 assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {

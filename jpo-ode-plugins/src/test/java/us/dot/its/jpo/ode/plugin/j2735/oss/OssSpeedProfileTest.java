@@ -75,7 +75,7 @@ public class OssSpeedProfileTest {
         
         SpeedProfile testSpeedProfile = new SpeedProfile(testSpeedProfileMeasurementList);
         
-        Integer actualValue = OssSpeedProfile.genericSpeedProfile(testSpeedProfile).speedReports.get(0);
+        Integer actualValue = OssSpeedProfile.genericSpeedProfile(testSpeedProfile).getSpeedReports().get(0);
         
         assertEquals(expectedValue, actualValue);
         

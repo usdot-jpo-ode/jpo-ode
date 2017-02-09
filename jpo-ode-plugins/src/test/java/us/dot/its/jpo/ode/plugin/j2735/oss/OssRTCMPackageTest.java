@@ -54,7 +54,7 @@ public class OssRTCMPackageTest {
         RTCMPackage testRTCMpackage = new RTCMPackage();
         testRTCMpackage.msgs = testRTCMmessageList;
 
-        String actualValue = OssRTCMPackage.genericRTCMPackage(testRTCMpackage).msgs.get(0);
+        String actualValue = OssRTCMPackage.genericRTCMPackage(testRTCMpackage).getMsgs().get(0);
         
         assertEquals(expectedValue, actualValue);
         

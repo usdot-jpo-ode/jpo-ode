@@ -20,6 +20,8 @@ public class OssDDateTime {
     private static final long OFFSET_LOWER_BOUND = -840L;
     private static final long OFFSET_UPPER_BOUND = 840L;
 
+    private OssDDateTime() {}
+
     public static J2735DDateTime genericDDateTime(DDateTime dateTime) {
 
         // Bounds checks
@@ -49,30 +51,30 @@ public class OssDDateTime {
         J2735DDateTime dt = new J2735DDateTime();
 
         if (dateTime.year.intValue() != 0) {
-            dt.year = dateTime.year.intValue();
+            dt.setYear(dateTime.year.intValue());
         }
 
         if (dateTime.month.intValue() != 0) {
-            dt.month = dateTime.month.intValue();
+            dt.setMonth(dateTime.month.intValue());
         }
 
         if (dateTime.day.intValue() != 0) {
-            dt.day = dateTime.day.intValue();
+            dt.setDay(dateTime.day.intValue());
         }
 
         if (dateTime.hour.intValue() != 31) {
-            dt.hour = dateTime.hour.intValue();
+            dt.setHour(dateTime.hour.intValue());
         }
 
         if (dateTime.minute.intValue() != 60) {
-            dt.minute = dateTime.minute.intValue();
+            dt.setMinute(dateTime.minute.intValue());
         }
 
         if (dateTime.second.intValue() != 65535) {
-            dt.second = dateTime.second.intValue();
+            dt.setSecond(dateTime.second.intValue());
         }
 
-        dt.offset = dateTime.offset.intValue();
+        dt.setOffset(dateTime.offset.intValue());
 
         return dt;
     }

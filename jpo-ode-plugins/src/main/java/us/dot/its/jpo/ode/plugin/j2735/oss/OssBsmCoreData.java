@@ -64,7 +64,7 @@ public class OssBsmCoreData {
         // -- 0x7F = +127 to be used for unavailable
         BigDecimal angle = null;
         if (steeringWhealAngle != null && steeringWhealAngle.intValue() != 0x7F) {
-            angle = BigDecimal.valueOf(steeringWhealAngle.intValue() * 15, 1);
+            angle = BigDecimal.valueOf(steeringWhealAngle.intValue() * (long)15, 1);
         }
         return angle;
     }

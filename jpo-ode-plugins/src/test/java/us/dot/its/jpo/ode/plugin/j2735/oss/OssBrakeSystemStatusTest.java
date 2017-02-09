@@ -56,11 +56,11 @@ public class OssBrakeSystemStatusTest {
 
         J2735BrakeSystemStatus actualStatus = OssBrakeSystemStatus.genericBrakeSystemStatus(testBrakeSystemStatus);
 
-        assertEquals("unavailable", actualStatus.traction);
-        assertEquals("unavailable", actualStatus.abs);
-        assertEquals("unavailable", actualStatus.scs);
-        assertEquals("unavailable", actualStatus.brakeBoost);
-        assertEquals("unavailable", actualStatus.auxBrakes);
+        assertEquals("unavailable", actualStatus.getTraction());
+        assertEquals("unavailable", actualStatus.getAbs());
+        assertEquals("unavailable", actualStatus.getScs());
+        assertEquals("unavailable", actualStatus.getBrakeBoost());
+        assertEquals("unavailable", actualStatus.getAuxBrakes());
 
     }
 
@@ -96,11 +96,11 @@ public class OssBrakeSystemStatusTest {
 
         // assertEquals(false, actualStatus.wheelBrakes);
 
-        assertEquals("off", actualStatus.traction);
-        assertEquals("off", actualStatus.abs);
-        assertEquals("off", actualStatus.scs);
-        assertEquals("off", actualStatus.brakeBoost);
-        assertEquals("off", actualStatus.auxBrakes);
+        assertEquals("off", actualStatus.getTraction());
+        assertEquals("off", actualStatus.getAbs());
+        assertEquals("off", actualStatus.getScs());
+        assertEquals("off", actualStatus.getBrakeBoost());
+        assertEquals("off", actualStatus.getAuxBrakes());
 
     }
 
@@ -136,11 +136,11 @@ public class OssBrakeSystemStatusTest {
 
         // assertEquals(false, actualStatus.wheelBrakes);
 
-        assertEquals("on", actualStatus.traction);
-        assertEquals("on", actualStatus.abs);
-        assertEquals("on", actualStatus.scs);
-        assertEquals("on", actualStatus.brakeBoost);
-        assertEquals("on", actualStatus.auxBrakes);
+        assertEquals("on", actualStatus.getTraction());
+        assertEquals("on", actualStatus.getAbs());
+        assertEquals("on", actualStatus.getScs());
+        assertEquals("on", actualStatus.getBrakeBoost());
+        assertEquals("on", actualStatus.getAuxBrakes());
 
     }
 
@@ -176,8 +176,8 @@ public class OssBrakeSystemStatusTest {
 
         // assertEquals(false, actualStatus.wheelBrakes);
 
-        assertEquals("engaged", actualStatus.traction);
-        assertEquals("engaged", actualStatus.abs);
+        assertEquals("engaged", actualStatus.getTraction());
+        assertEquals("engaged", actualStatus.getAbs());
 
     }
     
@@ -198,7 +198,7 @@ public class OssBrakeSystemStatusTest {
 
         J2735BrakeSystemStatus actualStatus = OssBrakeSystemStatus.genericBrakeSystemStatus(testBrakeSystemStatus);
         
-        for (Map.Entry<String, Boolean> curVal : actualStatus.wheelBrakes.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal : actualStatus.getWheelBrakes().entrySet()) {
             assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
         }
 
@@ -220,7 +220,7 @@ public class OssBrakeSystemStatusTest {
 
         J2735BrakeSystemStatus actualStatus = OssBrakeSystemStatus.genericBrakeSystemStatus(testBrakeSystemStatus);
         
-        for (Map.Entry<String, Boolean> curVal : actualStatus.wheelBrakes.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal : actualStatus.getWheelBrakes().entrySet()) {
             assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
         }
     }
@@ -242,7 +242,7 @@ public class OssBrakeSystemStatusTest {
 
         J2735BrakeSystemStatus actualStatus = OssBrakeSystemStatus.genericBrakeSystemStatus(testBrakeSystemStatus);
         
-        for (Map.Entry<String, Boolean> curVal : actualStatus.wheelBrakes.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal : actualStatus.getWheelBrakes().entrySet()) {
             if (curVal.getKey().equals(elementTested)) {
                 assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {
@@ -269,7 +269,7 @@ public class OssBrakeSystemStatusTest {
 
         J2735BrakeSystemStatus actualStatus = OssBrakeSystemStatus.genericBrakeSystemStatus(testBrakeSystemStatus);
         
-        for (Map.Entry<String, Boolean> curVal : actualStatus.wheelBrakes.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal : actualStatus.getWheelBrakes().entrySet()) {
             if (curVal.getKey().equals(elementTested)) {
                 assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {
@@ -296,7 +296,7 @@ public class OssBrakeSystemStatusTest {
 
         J2735BrakeSystemStatus actualStatus = OssBrakeSystemStatus.genericBrakeSystemStatus(testBrakeSystemStatus);
         
-        for (Map.Entry<String, Boolean> curVal : actualStatus.wheelBrakes.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal : actualStatus.getWheelBrakes().entrySet()) {
             if (curVal.getKey().equals(elementTested)) {
                 assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {
@@ -324,7 +324,7 @@ public class OssBrakeSystemStatusTest {
 
         J2735BrakeSystemStatus actualStatus = OssBrakeSystemStatus.genericBrakeSystemStatus(testBrakeSystemStatus);
         
-        for (Map.Entry<String, Boolean> curVal : actualStatus.wheelBrakes.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal : actualStatus.getWheelBrakes().entrySet()) {
             if (curVal.getKey().equals(elementTested1) || curVal.getKey().equals(elementTested2)) {
                 assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {

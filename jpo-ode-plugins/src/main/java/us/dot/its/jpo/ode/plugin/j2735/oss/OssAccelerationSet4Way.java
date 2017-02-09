@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 import us.dot.its.jpo.ode.j2735.dsrc.AccelerationSet4Way;
 import us.dot.its.jpo.ode.plugin.j2735.J2735AccelerationSet4Way;
@@ -53,7 +52,7 @@ public class OssAccelerationSet4Way {
 		} else if (accelSet.vert.intValue() > 127) {
 			genericAccelerationSet4Way.setAccelVert(BigDecimal.valueOf(2.54));
 		} else {
-			genericAccelerationSet4Way.setAccelVert(BigDecimal.valueOf(accelSet.vert.intValue() * 2, 2));
+			genericAccelerationSet4Way.setAccelVert(BigDecimal.valueOf(accelSet.vert.intValue() * (long)2, 2));
 			
 		}
 
