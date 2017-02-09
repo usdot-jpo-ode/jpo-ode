@@ -56,6 +56,18 @@ paths:
           required: false
           type: string
           format: Sequence
+        - name: rsulist
+          in: query
+          description: List of IP's to send messages to
+          required: true
+          type: string
+          format: String
+        - name: snmp params
+          in: query
+          description: SNMP parameters for shipping information
+          required: true
+          type: string
+          format: string
       tags:
         - TIM
       responses:
