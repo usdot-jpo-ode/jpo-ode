@@ -37,13 +37,13 @@ paths:
           description: Unique message ID
           required: false
           type: string
-          format: octet String
+          format: String
         - name: urlB
           in: query
           description: URL_Base
           required: false
           type: string
-          format: IA5String
+          format: String
         - name: TravelerDataFrameList
           in: query
           description: List of Traveler Data Frames
