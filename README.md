@@ -6,8 +6,13 @@ Develop: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch
 US Department of Transportation Joint Program office (JPO) Operational Data Environment (ODE)
 
 In the context of ITS, an Operational Data Environment is a real-time data acquisition and distribution software system that processes and routes data from Connected-X devices –including connected vehicles (CV), personal mobile devices, and infrastructure components and sensors –to subscribing applications to support the operation, maintenance, and use of the transportation system, as well as related research and development efforts.
- 
+
 ## Release Notes
+### Sprint 6
+- ODE-138 Add Capability for Raw BSM Data (hex/bin) with Header Information
+- ODE-150 Encode TIM Message to ASN.1
+- ODE-148 Develop More Robust User Facing Documentation
+
 ### Sprint 5
 - ODE-126 ADD to ODE 58 - Log ODE Data Flows On/off without restarting ODE
 - ODE-74 RESTful SNMP Wrapper Service to pass SNMP messages to an RSU
@@ -51,7 +56,7 @@ https://usdotjpoode.atlassian.net/wiki/
 ### Continuous Integration and Delivery
 https://travis-ci.org/usdot-jpo-ode/jpo-ode
 
-To allow Travis run your build when you push your changes to your public fork of the jpo-ode repository, you must define the following secure environment variable using Travis CLI (https://github.com/travis-ci/travis.rb). 
+To allow Travis run your build when you push your changes to your public fork of the jpo-ode repository, you must define the following secure environment variable using Travis CLI (https://github.com/travis-ci/travis.rb).
 
 Run:
 
@@ -94,7 +99,7 @@ The following instructions describe the procedure to fetch, build and run the ap
 
 ```bash
 git config --global core.autocrlf false
-``` 
+```
 
 **Step 2**:  Clone the source code from GitHub and BitBucket repositories using Git commands:
 
@@ -107,7 +112,7 @@ git clone https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 
 #### Building Private Repository
 
-To build the application use maven command line. 
+To build the application use maven command line.
 
 **Step 4**: Navigate to the root directory of the jpo-ode-private project:
 
@@ -116,10 +121,10 @@ To build the application use maven command line.
  mvn clean
  mvn install
 ```
-It is important you run mvn clean first and then mvn install because mvn clean installs the required OSS jar file in your maven local repository. 
+It is important you run mvn clean first and then mvn install because mvn clean installs the required OSS jar file in your maven local repository.
 
 #### Building and deploying ODE
-**Step 5**: Navigate to the root directory of the jpo-ode project. 
+**Step 5**: Navigate to the root directory of the jpo-ode project.
 
 **Step 6**: (Optional Step) If you wish to change the application properties, such as change the location of the upload service via ode.uploadLocation property or set the ode.kafkaBrokers to something other than the $DOCKER_HOST_IP:9092, modify ```jpo-ode-svcs\src\main\resources\application.properties``` file as desired.
 
@@ -134,11 +139,11 @@ docker-compose up --build -d
 docker-compose ps
 ```
 
-#### Building ODE without Deploying 
+#### Building ODE without Deploying
 To build the ODE docker container images but not deploy it, run the following commands:
 
 ```bash
- cd jpo-ode (or cd ../jpo-ode if you are in the jpo-ode-private directory) 
+ cd jpo-ode (or cd ../jpo-ode if you are in the jpo-ode-private directory)
  mvn clean install
  docker-compose rm -f -v
  docker-compose build
@@ -147,7 +152,7 @@ To build the ODE docker container images but not deploy it, run the following co
 Alternatively, you may run the ```clean-build``` script.
 
 #### Deploying ODE Application on a Docker Host
-To deploy the the application on the docker host configured in your DOCKER_HOST_IP machine, run the following: 
+To deploy the the application on the docker host configured in your DOCKER_HOST_IP machine, run the following:
 
 ```bash
 docker-compose up --no-recreate -d
@@ -157,7 +162,7 @@ docker-compose up --no-recreate -d
 
 Alternatively, run ```deploy``` script.
 
-Check the deployment by running ```docker-compose ps```. You can start and stop service using ```docker-compose start``` and ```docker-compose stop``` commands. 
+Check the deployment by running ```docker-compose ps```. You can start and stop service using ```docker-compose start``` and ```docker-compose stop``` commands.
 If using the multi-broker docker-compose file, you can change the scaling by running ```docker-compose scale <service>=n``` where service is the service you would like to scale and n is the number of instances. For example, ```docker-compose scale kafka=3```.
 
 #### Running ODE Application on localhost
@@ -182,7 +187,7 @@ ALternatively, you may upload a file containing BSM messages in ASN.1 UPER encod
 3. Press ```Upload``` button to upload the file to ODE.
 
 Another way data can be uploaded to the ODE is through copying the file to the location specified by the ode.uploadLocation property. Default location is the ```uploads``` directory directly off of the directory where ODE is launched.
-The result of uploading and decoding of the message will be displayed on the UI screen. 
+The result of uploading and decoding of the message will be displayed on the UI screen.
 
 ![ODE UI](images/ode-ui.png)
 
@@ -203,4 +208,3 @@ Install the IDE of your choice:
 
 ## Kafka
 ![README.md](docker/kafka/README.md)
-

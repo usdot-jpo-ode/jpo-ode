@@ -32,13 +32,28 @@
                 </table>
                 <form>
                     <div class="form-group">
-                        <label for="exampleInputFile">File input</label>
+                        <p class="help-block">Upload a message file encoded in hex or UPER.</p>
+                        <label for="exampleInputFile">Select file</label>
                         <input type="file" id="file" name="file" />
-                        <p class="help-block">Upload a Decoded BSM JSON File.</p>
-                    </div>
+                        <label for="exampleInputFile">Message file format</label>
+                        <br/>
+                        <input type="radio" name="fileType" value="bsm" checked="true" /> BSM without header
+                        <br/>
+                        <input type="radio" name="fileType" value="messageFrame" /> BSM with header
+                        <br/> </div>
                     <button id="upload" class="btn btn-default" type="submit">Upload</button>
                 </form>
-                <div id="uploadResponse"></div>
+                <div>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>File</th>
+                            </tr>
+                        </thead>
+                        <tbody id="uploadResponse"></tbody>
+                    </table>
+                </div>
                 <div> </div>
                 <div>
                     <ul>

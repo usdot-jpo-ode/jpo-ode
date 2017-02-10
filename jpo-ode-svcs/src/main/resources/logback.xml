@@ -34,7 +34,7 @@
 	</appender>
 
 	<!-- additivity=false ensures data trace only goes to Data log -->
-	<logger name="us.dot.its.jpo.ode.eventlog.EventLogger" level="INFO" additivity="false">
+	<logger name="us.dot.its.jpo.ode.eventlog.EventLogger" level="ERROR" additivity="false">
 		<appender-ref ref="DATA-FILE" />
 	</logger>
 	
