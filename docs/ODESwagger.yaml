@@ -72,7 +72,7 @@ paths:
         - TIM
       responses:
         200:
-          description: An array of products
+          description: An array of TravelerInformation
           schema:
             type: array
             items:
