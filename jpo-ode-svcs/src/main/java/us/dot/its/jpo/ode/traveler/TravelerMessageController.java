@@ -1,19 +1,11 @@
 package us.dot.its.jpo.ode.traveler;
 
-import com.oss.asn1.AbstractData;
-import com.oss.asn1.PERUnalignedCoder;
-import com.oss.util.HexTool;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import us.dot.its.jpo.ode.j2735.J2735;
-import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 
 
 @Controller
@@ -24,60 +16,41 @@ public class TravelerMessageController {
 
     @RequestMapping(value = "/travelerMessage", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public static String timeMessage(@RequestBody String jsonString ) throws Exception {
+    public static String timMessage(@RequestBody String jsonString ) throws Exception {
 
-        PERUnalignedCoder coder = J2735.getPERUnalignedCoder();
-
-        byte[] output = new byte[0 ];
-
-        System.out.print(jsonString);
-
+        if (jsonString == null) {
+            throw new IllegalArgumentException("[ERROR] Endpoint received null TIM");
+        }
         JSONObject obj = new JSONObject(jsonString);
-        String timeToLive = obj.getJSONObject("deposit").getString("timeToLive");
-
-//        MsgCount msgCnt = new MsgCount(1);
-//        MinuteOfTheYear moty = new MinuteOfTheYear(1);
+//        String msgcnt = obj.getString("msgcnt");
 //
-//        int var = 1;
-//        byte[] myvar = var.getBytes();
-//        UniqueMSGID msdId = new UniqueMSGID(myvar);
+//        // Standard Tim Message
+//        String timHex = "3081C68001108109000000000000003714830101A481AE3081AB800102A11BA119A0108004194FBA1F8104CE45CE2382020A0681020006820102820207DE830301C17084027D00850102A6108004194FC1988104CE45DA4082020A008702016E880100A92430228002000EA21CA01AA31804040CE205A104040ADA04F70404068004D60404034D0704AA3AA0383006A004800235293006A0048002010C3006A004800231283006A004800222113006A0048002010C3006A004800231203006A0048002221185021001";
+//        byte [] tim_ba = HexTool.parseHex(timHex, false);
+//        InputStream ins = new ByteArrayInputStream(tim_ba);
 //
-//        URL_Base url = new URL_Base("www.google.con");
+//        TravelerInformation tim = new TravelerInformation();
 //
-////        TravelerDataFrame(SSPindex sspTimRights,
-////                TravelerInfoType frameType, MsgId msgId, DYear startYear,
-////                MinuteOfTheYear startTime, MinutesDuration duratonTime,
-////                SignPrority priority, SSPindex sspLocationRights,
-////                Regions regions, SSPindex sspMsgRights1,
-////                SSPindex sspMsgRights2, Content content, URL_Short url)
-////        {
+//        System.out.print(tim);
+//        try {
+//            coder.decode(ins, tim);
 //
-//        TravelerInformation decoder = new TravelerInformation();
-//        TravelerInformation travelerContent = new TravelerInformation();
+//        } catch (Exception e) {
+////            System.out.print( e);
+//        } finally {
+//            try {
+//                ins.close();
+//            } catch (IOException e) {
+//            }
+//        }
 //
-//        TravelerDataFrame dataFrame = new TravelerDataFrame();
-//
-//        TravelerDataFrameList dataFrameList = new TravelerDataFrameList();
-//        TravelerInformation.Regional regional = new TravelerInformation.Regional();
-//
-//
-//
-//        AbstractData abstractTim = new TravelerInformation(msgCnt, moty, msdId, url, dataFrameList, regional);
-//
-//        System.out.print(coder.encode(abstractTim));
-
-        String tim = "c44000000000001869f0001869f2a7709e801ce48895880029dc2251e73928468200000000ad9a0108c402000000000046544d52104e53b84a9a4e7249fa05cc0000c9f843669c000d1000480007253b84a9a4e7249fa05cc033ff3c010a0101ffe4ffb2ff707fe7804e10400188c800";
-        byte [] tim_ba = HexTool.parseHex(tim, false);
-        InputStream ins = new ByteArrayInputStream(tim_ba);
-
-        AbstractData bsm = new TravelerDataFrame();
-
-        coder.decode(ins, bsm);
-
-        System.out.print(bsm);
+//        MsgCount cnt = new MsgCount(msgcnt);
+//        tim.setMsgCnt(cnt);
+        TravelerSerializer timObject = new TravelerSerializer(jsonString);
+        System.out.print(timObject.getTravelerInformationObject());
 
 
-        return timeToLive;
+        return jsonString;
     }
     
 }
