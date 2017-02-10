@@ -35,11 +35,11 @@
                         <p class="help-block">Upload a message file encoded in hex or UPER.</p>
                         <label for="exampleInputFile">Select file</label>
                         <input type="file" id="file" name="file" />
-                        <label for="exampleInputFile">Header type</label>
+                        <label for="exampleInputFile">Message file format</label>
                         <br/>
-                        <input type="radio" name="fileType" value="bsm" checked="true" /> BSM
+                        <input type="radio" name="fileType" value="bsm" checked="true" /> BSM without header
                         <br/>
-                        <input type="radio" name="fileType" value="messageFrame" /> Message Frame
+                        <input type="radio" name="fileType" value="messageFrame" /> BSM with header
                         <br/> </div>
                     <button id="upload" class="btn btn-default" type="submit">Upload</button>
                 </form>
