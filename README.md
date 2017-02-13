@@ -9,8 +9,8 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 
 ## Release Notes
 ### Sprint 6
-- ODE-138 Add Capability for Raw BSM Data (hex/bin) with Header Information
-- ODE-150 Encode TIM Message to ASN.1
+- ODE-138 Add Capability for Raw BSM Data (bin format only) with Header Information
+- ODE-150 Encode TIM Message to ASN.1 (Inbound messages only)
 - ODE-148 Develop More Robust User Facing Documentation
 
 ### Sprint 5
