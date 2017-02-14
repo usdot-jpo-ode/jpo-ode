@@ -97,6 +97,11 @@
     </dependency>
     <dependency>
       <groupId>us.dot.its.jpo.ode</groupId>
+      <artifactId>j2735</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>us.dot.its.jpo.ode</groupId>
       <artifactId>jpo-ode-plugins</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
@@ -115,6 +120,7 @@
       <version>1.6.6</version>
     </dependency>
 
+    
   </dependencies>
 
   <build>
