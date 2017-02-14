@@ -23,18 +23,16 @@ import us.dot.its.jpo.ode.eventlog.EventLogger;
 public class FileSystemStorageService implements StorageService {
     private static Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
 
-    private OdeProperties properties;
     private final Path rootLocation;
     private final Path bsmLocation;
     private final Path messageFrameLocation;
 
     @Autowired
     public FileSystemStorageService(OdeProperties properties) {
-        this.properties = properties;
 
-        this.rootLocation = Paths.get(this.properties.getUploadLocationRoot());
-        this.bsmLocation = Paths.get(this.properties.getUploadLocationBsm());
-        this.messageFrameLocation = Paths.get(this.properties.getUploadLocationMessageFrame());
+        this.rootLocation = Paths.get(properties.getUploadLocationRoot());
+        this.bsmLocation = Paths.get(properties.getUploadLocationRoot(),properties.getUploadLocationBsm());
+        this.messageFrameLocation = Paths.get(properties.getUploadLocationRoot(), properties.getUploadLocationMessageFrame());
 
         logger.info("Upload location (root): {}", this.rootLocation);
         logger.info("Upload location (bsm): {}", this.bsmLocation);

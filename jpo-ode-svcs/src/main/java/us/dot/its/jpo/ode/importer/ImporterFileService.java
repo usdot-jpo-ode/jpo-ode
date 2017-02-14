@@ -42,7 +42,7 @@ public abstract class ImporterFileService implements ImporterService {
 
         // Check that the destination directory actually exists before moving the file
         if (!backupDir.toFile().exists()) {
-            throw new IOException("Backup directory does not exist");
+            throw new IOException("Backup directory does not exist: " + backupDir);
         }
 
         // Prepend file name with time and change extension to 'pbo'

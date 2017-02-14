@@ -36,7 +36,8 @@ public class FileUploadController {
     private static Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
     private final StorageService storageService;
-    private ExecutorService importer;
+    private ExecutorService importer1;
+    private ExecutorService importer2;
     private ExecutorService exporter;
 
     @Autowired
@@ -45,19 +46,25 @@ public class FileUploadController {
         super();
         this.storageService = storageService;
 
-        importer = Executors.newSingleThreadExecutor();
+        importer1 = Executors.newSingleThreadExecutor();
+        importer2 = Executors.newSingleThreadExecutor();
         exporter = Executors.newSingleThreadExecutor();
 
         Path bsmPath = Paths.get(odeProperties.getUploadLocationRoot(), odeProperties.getUploadLocationBsm());
+        logger.debug("UPLOADER - Bsm directory: {}", bsmPath);
+        
         Path messageFramePath = Paths.get(odeProperties.getUploadLocationRoot(),
                 odeProperties.getUploadLocationMessageFrame());
+        logger.debug("UPLOADER - Message Frame directory: {}", messageFramePath);
+        
         Path backupPath = Paths.get(odeProperties.getUploadLocationRoot(), "backup");
+        logger.debug("UPLOADER - Backup directory: {}", backupPath);
 
-        importer.submit(new ImporterWatchService(bsmPath, backupPath, new BsmCoder(odeProperties),
+        importer1.submit(new ImporterWatchService(bsmPath, backupPath, new BsmCoder(odeProperties),
                 LoggerFactory.getLogger(ImporterWatchService.class), odeProperties.filetypes,
                 odeProperties.KAFKA_TOPIC_J2735_BSM));
 
-        importer.submit(new ImporterWatchService(messageFramePath, backupPath, new MessageFrameCoder(odeProperties),
+        importer2.submit(new ImporterWatchService(messageFramePath, backupPath, new MessageFrameCoder(odeProperties),
                 LoggerFactory.getLogger(ImporterWatchService.class), odeProperties.filetypes,
                 odeProperties.KAFKA_TOPIC_J2735_BSM));
 
