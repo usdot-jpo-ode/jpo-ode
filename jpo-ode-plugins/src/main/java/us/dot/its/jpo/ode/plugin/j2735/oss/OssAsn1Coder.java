@@ -21,6 +21,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 
 public class OssAsn1Coder implements Asn1Plugin {
+    
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private PERUnalignedCoder coder;
@@ -186,6 +187,5 @@ public class OssAsn1Coder implements Asn1Plugin {
     public Asn1Object UPER_DecodeBsmHex(String hexMsg) {
         return UPER_DecodeBsmBytes(DatatypeConverter.parseHexBinary(hexMsg));
     }
-
 
 }

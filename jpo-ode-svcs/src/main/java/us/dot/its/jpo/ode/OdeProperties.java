@@ -1,7 +1,11 @@
 package us.dot.its.jpo.ode;
 
+import java.util.List;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -11,6 +15,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
+import us.dot.its.jpo.ode.coder.AbstractCoder;
+import us.dot.its.jpo.ode.coder.BsmCoder;
+import us.dot.its.jpo.ode.coder.MessageFrameCoder;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 
@@ -27,14 +34,17 @@ public class OdeProperties implements EnvironmentAware {
 
     @Autowired
     private Environment env;
+    
+    private List<Path> uploadLocations = new ArrayList<>();
 
     private String uploadLocationRoot = "uploads";
-    private String uploadLocationBsm = "uploads/bsm";
-    private String uploadLocationMessageFrame = "uploads/messageframe";
+    private String uploadLocationBsm = "bsm";
+    private String uploadLocationMessageFrame = "messageframe";
     private String pluginsLocations = "plugins";
     private String asn1CoderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder";
     private String kafkaBrokers = null;
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
+    public String filetypes = "*.{uper, bsm, bin, hex}";
 
     private String hostId;
 
@@ -43,6 +53,10 @@ public class OdeProperties implements EnvironmentAware {
         init();
     }
 
+    public List<Path> getUploadLocations() {
+        return this.uploadLocations;
+    }
+    
     public String getProperty(String key) {
         return env.getProperty(key);
     }
@@ -108,6 +122,11 @@ public class OdeProperties implements EnvironmentAware {
     }
 
     public void init() throws Exception {
+        
+        uploadLocations.add(Paths.get(uploadLocationRoot));
+        uploadLocations.add(Paths.get(uploadLocationRoot, uploadLocationBsm));
+        uploadLocations.add(Paths.get(uploadLocationRoot, uploadLocationMessageFrame));
+        
         String hostname;
         try {
             hostname = InetAddress.getLocalHost().getHostName();
