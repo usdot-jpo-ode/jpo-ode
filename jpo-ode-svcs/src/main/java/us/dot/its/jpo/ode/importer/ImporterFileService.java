@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-public class ImporterFileService implements ImporterService {
+public abstract class ImporterFileService implements ImporterService {
     
     /**
      * Attempts to create a directory given a String path.
