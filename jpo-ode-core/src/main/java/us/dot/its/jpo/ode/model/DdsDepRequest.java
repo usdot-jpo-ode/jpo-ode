@@ -43,7 +43,7 @@ public class DdsDepRequest extends DdsRequest {
 
    @Override
    public String toString() {
-      return "DEPOSIT:" + this.toJson();
+      return "DEPOSIT:" + this.toJson(false);
    }
 
    @Override
