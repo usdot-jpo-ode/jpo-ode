@@ -76,7 +76,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/TravelerDataFrame'
+              $ref: '#/definitions/TravelerInformation'
         default:
           description: Unexpected error
           schema:
@@ -107,7 +107,33 @@ paths:
         400:
           description: Value input error
 definitions:
+  TravelerInformation:
+    type: object
+    required: [msgCnt]
+    properties:
+      msgCnt:
+        type: integer 
+      timestamp:
+        type: integer
+      packetId: 
+        type: integer
+      urlB: 
+        type: string
+        description: UrlB
+      dataFrames: 
+        type: array
+        items: 
+          $ref: '#/definitions/TravelerDataFrame'
   TravelerDataFrame:
+    type: object
+    properties:
+      header:
+        $ref: '#/definitions/TravelerDataFrameHeader'
+      region:
+        $ref: '#/definitions/TravelerDataFrameRegion'
+      content:
+        $ref: '#/definitions/TravelerDataFrameContent'
+  TravelerDataFrameHeader:
     type: object
     properties:
       sspTimRights:
@@ -120,17 +146,33 @@ definitions:
         type: string
         description: Link to other messages
       startYear:
-        type: string
+        type: integer
         description: The DSRC year consists of integer values from zero to 4095 representing the year according to the Gregorian calendar date system. The value of zero shall represent an unknown value.
       startTime:
-        type: string
+        type: integer
         description: The DE_MinuteOfTheYear data element expresses the number of elapsed minutes of the current year in the time system being used (typically UTC time). It is typically used to provide a longer range time stamp indicating when a message was created. Taken together with the DSecond data element, it provides a range of one full year with a resolution of 1mSecond.
       durationTime:
-        type: string
+        type: integer
         description: The duration, in units of whole minutes, that a object persists for. A value of 32000 means that the object persists forever. The range 0..32000 provides for about 22.2 days of maximum duration.
       priority:
-        type: string
+        type: integer
         description: The relative importance of the sign, on a scale from zero (least important) to seven (most important).
+  TravelerDataFrameRegion:
+    type: object
+    properties:
+      sspLocationRights: 
+        type: integer
+      regions:
+        type: string
+  TravelerDataFrameContent:
+    type: object
+    properties: 
+      sspMsgRights1:
+        type: integer
+      sspMsgRights2:
+        type: integer
+      content: 
+        type: string
   Error:
     type: object
     properties:
