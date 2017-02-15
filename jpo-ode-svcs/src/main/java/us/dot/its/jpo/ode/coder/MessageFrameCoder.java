@@ -1,11 +1,10 @@
 package us.dot.its.jpo.ode.coder;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Scanner;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.util.SerializationUtils;
 
@@ -19,57 +18,25 @@ public class MessageFrameCoder extends AbstractCoder {
         super(properties);
     }
 
-    public void decodeFromHexAndPublish(InputStream is, String topic) throws IOException {
-        String line = null;
-        J2735MessageFrame decoded = null;
-
-        try (Scanner scanner = new Scanner(is)) {
-
-            boolean empty = true;
-            while (scanner.hasNextLine()) {
-                empty = false;
-                line = scanner.nextLine();
-
-                decoded = (J2735MessageFrame) asn1Coder.UPER_DecodeMessageFrameHex(line);
-                logger.debug("Decoded: {}", decoded);
-                if (!OdeProperties.KAFKA_TOPIC_J2735_MESSAGE_FRAME.endsWith("json"))
-                    publish(topic, decoded);
-                else
-                    publish(topic, decoded.toJson());
-            }
-            if (empty) {
-                EventLogger.logger.info("Empty file received");
-                throw new IOException("Empty file received");
-            }
-        } catch (Exception e) {
-            EventLogger.logger.info("Error occurred while decoding message: {}", line);
-            throw new IOException("Error decoding data: " + line, e);
-        }
+    @Override
+    public Asn1Object decode(String line) {
+       Asn1Object decoded = asn1Coder.UPER_DecodeMessageFrameHex(line);
+       logger.debug("Decoded: {}", decoded);
+       return decoded;
     }
 
-    public void decodeFromStreamAndPublish(InputStream is, String topic) throws IOException {
-        J2735MessageFrame decoded = null;
-
-        try {
-            do {
-                decoded = (J2735MessageFrame) asn1Coder.UPER_DecodeMessageFrameStream(is);
-                if (decoded != null) {
-                    logger.debug("Decoded: {}", decoded);
-                    if (!OdeProperties.KAFKA_TOPIC_J2735_MESSAGE_FRAME.endsWith("json"))
-                        publish(topic, decoded);
-                    else
-                        publish(topic, decoded.toJson());
-                }
-            } while (decoded != null);
-
-        } catch (Exception e) {
-            throw new IOException("Error decoding data.", e);
-        }
+    @Override
+    public Asn1Object decode(InputStream is) {
+       Asn1Object decoded = asn1Coder.UPER_DecodeMessageFrameStream(is);
+       logger.debug("Decoded: {}", decoded);
+       return decoded;
     }
 
-    public void publish(String topic, J2735MessageFrame msg) {
-        SerializationUtils<J2735MessageFrame> serializer = new SerializationUtils<>();
-        publish(topic, serializer.serialize(msg));
-        logger.debug("Published: {}", msg.toJson());
+    @Override
+    public void publish(String topic, Asn1Object msg) {
+        J2735MessageFrame msgFrame = (J2735MessageFrame)msg;
+        SerializationUtils<J2735Bsm> serializer = new SerializationUtils<J2735Bsm>();
+        publish(topic, serializer.serialize(msgFrame.getValue()));
+        logger.debug("Published: {}", msg.toJson(true));
     }
 }
