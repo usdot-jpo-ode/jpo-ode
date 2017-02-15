@@ -52,8 +52,27 @@ public class TravelerSerializer {
 //
 //        System.out.print(coder.encode(abstractTim));
 
+        //Get fully populated TIMcontent string
         JSONObject obj = new JSONObject(jsonInfo);
+        
+        //Populate pojo's for TIM
         String msgcnt = obj.getJSONObject("timContent").getString("msgcnt");
+        
+        //Populate pojo's for part1-header
+        int sspindex = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("header").getString("sspindex"));
+        
+        //Populate pojo's for part2-region
+        int index = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("header").getString("sspindex"));
+        
+        //Populate pojo's for part3-content
+        int sspMsgRights1 = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("header").getString("sspMsgRights1"));
+        
+        //Populate pojo's for SNMP
+        String target = obj.getJSONObject("RSUs").getString("target");
+        String userName = obj.getJSONObject("RSUs").getString("username");
+        String password = obj.getJSONObject("RSUs").getString("pass");
+        String retries = obj.getJSONObject("RSUs").getString("retries");
+        String timeout = obj.getJSONObject("RSUs").getString("timeout");
 
         // Standard Tim Message
         String timHex = "3081C68001108109000000000000003714830101A481AE3081AB800102A11BA119A0108004194FBA1F8104CE45CE2382020A0681020006820102820207DE830301C17084027D00850102A6108004194FC1988104CE45DA4082020A008702016E880100A92430228002000EA21CA01AA31804040CE205A104040ADA04F70404068004D60404034D0704AA3AA0383006A004800235293006A0048002010C3006A004800231283006A004800222113006A0048002010C3006A004800231203006A0048002221185021001";
