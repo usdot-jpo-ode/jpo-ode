@@ -11,17 +11,17 @@ import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public abstract class AbstractCoder implements Coder {
 
-    protected static Logger logger = LoggerFactory.getLogger(BsmCoder.class);
+    protected static Logger logger = LoggerFactory.getLogger(Coder.class);
 
     protected OdeProperties odeProperties;
     protected Asn1Plugin asn1Coder;
     protected SerializableMessageProducerPool<String, byte[]> messageProducerPool;
 
-    public AbstractCoder() {
+    protected AbstractCoder() {
         super();
     }
 
-    public AbstractCoder(OdeProperties properties) {
+    protected AbstractCoder(OdeProperties properties) {
         super();
         this.odeProperties = properties;
         if (this.asn1Coder == null) {

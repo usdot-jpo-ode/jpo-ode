@@ -1,11 +1,11 @@
 package us.dot.its.jpo.ode;
 
-import java.util.List;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -15,9 +15,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
-import us.dot.its.jpo.ode.coder.AbstractCoder;
-import us.dot.its.jpo.ode.coder.BsmCoder;
-import us.dot.its.jpo.ode.coder.MessageFrameCoder;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 
