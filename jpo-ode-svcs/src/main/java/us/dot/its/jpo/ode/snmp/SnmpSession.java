@@ -33,7 +33,7 @@ public class SnmpSession {
 
     /**
      * Constructor for SnmpConnection
-     * @param SnmpProperties - 
+     * @param props - SnmpProperties for the session (target address, retries, timeout, etc)
      * @throws IOException
      */
     public SnmpSession(SnmpProperties props) throws IOException {

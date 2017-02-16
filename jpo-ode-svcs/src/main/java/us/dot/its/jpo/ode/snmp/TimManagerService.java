@@ -37,7 +37,6 @@ public class TimManagerService {
             logger.error("TIM SERVICE - Failed to create SNMP session: {}", e);
         }
         
-        
         // Send the PDU
         ResponseEvent response = null;
         PDU pdu = createPDU(params);
@@ -51,6 +50,11 @@ public class TimManagerService {
         
     }
     
+    /**
+     * Assembles the various RSU elements of a TimParameters object into a usable PDU.
+     * @param params - TimParameters POJO that stores status, channel, payload, etc.
+     * @return PDU
+     */
     private static PDU createPDU(TimParameters params) {
         
         //////////////////////////////
