@@ -60,7 +60,14 @@ public class TravelerSerializer {
         
         //Populate pojo's for part1-header
         int sspindex = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("header").getString("sspindex"));
-        
+        String travelerInfoType = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getString("FurtherInfoID");
+        if (travelerInfoType.equals(null)) //Choice for msgid was roadsign
+        {
+           String latitude = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getJSONObject("position3D").getString("latitude");
+           String longitude = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getJSONObject("position3D").getString("longitude");
+           String elevation = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getJSONObject("position3D").getString("elevation");
+           String headingSlice = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getString("HeadingSlice");
+        }
         //Populate pojo's for part2-region
         int index = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("header").getString("sspindex"));
         
