@@ -19,10 +19,6 @@ public class SnmpProperties {
     private int version = SnmpConstants.version3;
     private int securityLevel = SecurityLevel.AUTH_NOPRIV;
 
-    public SnmpProperties() {
-        super();
-    }
-
     public SnmpProperties(Address tar, String user, String pass) {
         this.target = tar;
         this.username = user;

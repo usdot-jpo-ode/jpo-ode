@@ -23,7 +23,7 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
  * these objects correspond 1-to-1 with a destination server, SNMP is sent over
  * UDP.
  */
-public class SnmpConnection {
+public class SnmpSession {
 
     private Snmp snmp;
     private TransportMapping transport;
@@ -36,7 +36,7 @@ public class SnmpConnection {
      * @param SnmpProperties - 
      * @throws IOException
      */
-    public SnmpConnection(SnmpProperties props) throws IOException {
+    public SnmpSession(SnmpProperties props) throws IOException {
 
         // Create a "target" to which a request is sent
         target = new UserTarget();
@@ -70,12 +70,12 @@ public class SnmpConnection {
     }
 
     /**
-     * Sends a PDU to the target specified by the constructor.
+     * Sends a SET-type PDU to the target specified by the constructor.
      * @param pdu - The message content to be sent to the target
      * @return ResponseEvent
      * @throws IOException
      */
-    public ResponseEvent send(PDU pdu) throws IOException {
+    public ResponseEvent set(PDU pdu) throws IOException {
         
         // Ensure the object has been instantiated
         if (!ready) {
@@ -92,14 +92,13 @@ public class SnmpConnection {
         // Try to send the SNMP request
         ResponseEvent responseEvent = null;
         try {
-            responseEvent = snmp.send(pdu, target);
+            responseEvent = snmp.set(pdu, target);
             snmp.close();
         } catch (IOException e) {
             throw new IOException("Failed to send SNMP request: " + e);
         }
         
         return responseEvent;
-
     }
 
 }
