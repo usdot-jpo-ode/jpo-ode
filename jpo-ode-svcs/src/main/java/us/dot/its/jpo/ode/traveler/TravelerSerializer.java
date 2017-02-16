@@ -68,11 +68,61 @@ public class TravelerSerializer {
            String elevation = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getJSONObject("position3D").getString("elevation");
            String headingSlice = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getString("HeadingSlice");
         }
+        String minuteOfTheYear = obj.getJSONObject("timContent").getJSONObject("header").getString("sspindex");
+        String minuteDuration = obj.getJSONObject("timContent").getJSONObject("header").getString("sspindex");
+        String SignPriority = obj.getJSONObject("timContent").getJSONObject("header").getString("sspindex");
+        
         //Populate pojo's for part2-region
-        int index = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("header").getString("sspindex"));
+        int index = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("region").getString("sspindex"));
         
         //Populate pojo's for part3-content
-        int sspMsgRights1 = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("header").getString("sspMsgRights1"));
+        int sspMsgRights1 = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("content").getString("sspMsgRights1"));
+        int sspMsgRights2 = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("content").getString("sspMsgRights2"));
+        //Content choice
+        boolean adv = obj.getJSONObject("timContent").getJSONObject("content").isNull("advisory");
+        boolean work = obj.getJSONObject("timContent").getJSONObject("content").isNull("workZone");
+        boolean speed = obj.getJSONObject("timContent").getJSONObject("content").isNull("speedLimit");
+        boolean exitServ = obj.getJSONObject("timContent").getJSONObject("content").isNull("exitService");
+        if (!adv && !work && !speed)//ExitService
+        {
+           int len = obj.getJSONObject("timContent").getJSONObject("content").getJSONArray("advisory").length();
+           for (int i = 1; i <=len; i++)
+           {
+              String it = "item" + i;
+              String code = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
+              String text = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITIStext");
+           }
+        }
+        else if (!adv && !work && !exitServ)//Speed
+        {
+           int len = obj.getJSONObject("timContent").getJSONObject("content").getJSONArray("workZone").length();
+           for (int i = 1; i <=len; i++)
+           {
+              String it = "item" + i;
+              String code = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
+              String text = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITIStext");
+           }
+        }
+        else if (!adv && !speed && !exitServ)//work
+        {
+           int len = obj.getJSONObject("timContent").getJSONObject("content").getJSONArray("speedLimit").length();
+           for (int i = 1; i <=len; i++)
+           {
+              String it = "item" + i;
+              String code = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
+              String text = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITIStext");
+           }
+        }
+        else if (!work && !speed && !exitServ)//Advisory
+        {
+           int len = obj.getJSONObject("timContent").getJSONObject("content").getJSONArray("exitService").length();
+           for (int i = 1; i <=len; i++)
+           {
+              String it = "item" + i;
+              String code = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
+              String text = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITIStext");
+           }
+        }
         
         //Populate pojo's for SNMP
         String target = obj.getJSONObject("RSUs").getString("target");
