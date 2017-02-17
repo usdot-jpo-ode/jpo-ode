@@ -57,27 +57,50 @@ public class TravelerSerializer {
         
         //Populate pojo's for TIM
         String msgcnt = obj.getJSONObject("timContent").getString("msgcnt");
+        validateMessageCount(msgcnt);
         
         //Populate pojo's for part1-header
         int sspindex = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("header").getString("sspindex"));
+        validateHeaderIndex(sspindex);
         String travelerInfoType = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getString("FurtherInfoID");
+        validateInfoType(travelerInfoType);
+        
         if (travelerInfoType.equals(null)) //Choice for msgid was roadsign
         {
+           boolean notChecked = true;
            String latitude = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getJSONObject("position3D").getString("latitude");
+           validateLat(latitude);
            String longitude = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getJSONObject("position3D").getString("longitude");
-           String elevation = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getJSONObject("position3D").getString("elevation");
+           validateLong(longitude);
+           //String elevation = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getJSONObject("position3D").getString("elevation");
            String headingSlice = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getString("HeadingSlice");
+           if (headingSlice.equals("noHeading")) {//No bits were set
+              notChecked = false;
+           }
+           else if (headingSlice.equals("allHeadings")) {//All bits were set
+              notChecked = false;
+           }
+           if (notChecked){
+              validateHeading(headingSlice);
+           }
         }
-        String minuteOfTheYear = obj.getJSONObject("timContent").getJSONObject("header").getString("sspindex");
-        String minuteDuration = obj.getJSONObject("timContent").getJSONObject("header").getString("sspindex");
-        String SignPriority = obj.getJSONObject("timContent").getJSONObject("header").getString("sspindex");
+        String minuteOfTheYear = obj.getJSONObject("timContent").getJSONObject("header").getString("MinuteOfTheYear");
+        validateMinuteYear(minuteOfTheYear);
+        String minuteDuration = obj.getJSONObject("timContent").getJSONObject("header").getString("MinutesDuration");
+        validateMinutesDuration(minuteDuration);
+        String SignPriority = obj.getJSONObject("timContent").getJSONObject("header").getString("SignPriority");
+        validateSign(SignPriority);
         
         //Populate pojo's for part2-region
         int index = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("region").getString("sspindex"));
+        validateHeaderIndex(index);
         
         //Populate pojo's for part3-content
         int sspMsgRights1 = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("content").getString("sspMsgRights1"));
+        validateHeaderIndex(sspMsgRights1);
         int sspMsgRights2 = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("content").getString("sspMsgRights2"));
+        validateHeaderIndex(sspMsgRights2);
+        
         //Content choice
         boolean adv = obj.getJSONObject("timContent").getJSONObject("content").isNull("advisory");
         boolean work = obj.getJSONObject("timContent").getJSONObject("content").isNull("workZone");
@@ -89,8 +112,13 @@ public class TravelerSerializer {
            for (int i = 1; i <=len; i++)
            {
               String it = "item" + i;
-              String code = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
+              if (obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).isNull("ITIStext"))
+              {
+                 String code = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
+                 validateITISCodes(code);
+              }
               String text = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITIStext");
+              validateString(text);
            }
         }
         else if (!adv && !work && !exitServ)//Speed
@@ -99,8 +127,13 @@ public class TravelerSerializer {
            for (int i = 1; i <=len; i++)
            {
               String it = "item" + i;
-              String code = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
+              if (obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).isNull("ITIStext"))
+              {
+                 String code = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
+                 validateITISCodes(code);
+              }
               String text = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITIStext");
+              validateString(text);
            }
         }
         else if (!adv && !speed && !exitServ)//work
@@ -109,8 +142,13 @@ public class TravelerSerializer {
            for (int i = 1; i <=len; i++)
            {
               String it = "item" + i;
-              String code = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
+              if (obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).isNull("ITIStext"))
+              {
+                 String code = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
+                 validateITISCodes(code);
+              }
               String text = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITIStext");
+              validateString(text);
            }
         }
         else if (!work && !speed && !exitServ)//Advisory
@@ -119,8 +157,13 @@ public class TravelerSerializer {
            for (int i = 1; i <=len; i++)
            {
               String it = "item" + i;
-              String code = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
+              if (obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).isNull("ITIStext"))
+              {
+                 String code = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
+                 validateITISCodes(code);
+              }
               String text = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITIStext");
+              validateString(text);
            }
         }
         
@@ -164,6 +207,70 @@ public class TravelerSerializer {
 
     public TravelerInformation getTravelerInformationObject(){
         return travelerInfo;
+    }
+    
+    public void validateMessageCount(String msg){
+       int myMsg = Integer.parseInt(msg);
+       if (myMsg > 127 || myMsg < 0)
+          throw new IllegalArgumentException("Invalid message count");
+    }
+    
+    public void validateHeaderIndex(int count){
+       if (count < 0 || count > 31)
+            throw new IllegalArgumentException("Invalid header sspIndex");
+    }
+    
+    public void validateInfoType(String num){
+       int myNum = Integer.parseInt(num);
+       if (myNum < 0)
+          throw new IllegalArgumentException("Invalid enumeration");
+    }
+    
+    public void validateLat(String lat){
+       int myLat = Integer.parseInt(lat);
+       if (myLat < -900000000 || myLat > 900000001)
+          throw new IllegalArgumentException("Invalid Latitude");
+    }
+    
+    public void validateLong(String lonng){
+       int myLong = Integer.parseInt(lonng);
+       if (myLong < -1799999999 || myLong > 1800000001)
+          throw new IllegalArgumentException("Invalid Longitude");
+    }
+    
+    public void validateHeading(String head){//Needs to be updated
+       byte[] heads = head.getBytes();
+       if (heads.length > 2)
+          throw new IllegalArgumentException("Invalid BitString");
+    }
+    
+    public void validateMinuteYear(String min){
+       int myMin = Integer.parseInt(min);
+       if (myMin < 0 || myMin > 527040)
+             throw new IllegalArgumentException("Invalid Minute of the Year");
+    }
+    
+    public void validateMinutesDuration(String dur){
+       int myDur = Integer.parseInt(dur);
+       if (myDur < 0 || myDur > 32000)
+             throw new IllegalArgumentException("Invalid Duration");
+    }
+    
+    public void validateSign(String sign){
+       int mySign = Integer.parseInt(sign);
+       if (mySign < 0 || mySign > 7)
+             throw new IllegalArgumentException("Invalid Sign Priority");
+    }
+    
+    public void validateITISCodes(String code){
+       int myCode = Integer.parseInt(code);
+       if (myCode < 0 || myCode > 65535)
+          throw new IllegalArgumentException("Invalid ITIS code");
+    }
+    
+    public void validateString(String str){
+       if (str.isEmpty())
+          throw new IllegalArgumentException("Invalid Empty String");
     }
 
 }
