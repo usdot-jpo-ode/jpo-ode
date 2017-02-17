@@ -69,8 +69,7 @@ public class TravelerSerializer {
            ArrayList<String> part1 = buildTravelerMessagePart1(obj.getJSONObject("timContent").getJSONObject("travelerDataFrame").getJSONObject(curFrame));
            
            //Populate pojo's for part2-region
-           String index = obj.getJSONObject("timContent").getJSONObject("travelerDataFrame").getJSONObject(curFrame).getJSONObject("region").getString("sspindex");
-           validateHeaderIndex(index);
+           ArrayList<String> part2 = buildTravelerMessagePart2(obj.getJSONObject("timContent").getJSONObject("travelerDataFrame").getJSONObject(curFrame));
            
            //Populate pojo's for part3-content
            ArrayList<String> part3 = buildTravelerMessagePart3(obj.getJSONObject("timContent").getJSONObject("travelerDataFrame").getJSONObject(curFrame));
@@ -119,12 +118,13 @@ public class TravelerSerializer {
        String sspindex = ob.getJSONObject("header").getString("sspindex");
        validateHeaderIndex(sspindex);
        p1.add(sspindex);
-       String travelerInfoType = ob.getJSONObject("header").getJSONObject("msgId").getString("FurtherInfoID");
+       String travelerInfoType = ob.getJSONObject("header").getString("travelerInfoType");
        validateInfoType(travelerInfoType);
+       p1.add("travelerInfoType");
+       String msg = ob.getJSONObject("header").getJSONObject("msgId").getString("FurtherInfoID");
        
-       if (travelerInfoType.equals(null)) //Choice for msgid was roadsign
+       if (msg.equals(null)) //Choice for msgid was roadsign
        {
-          p1.add(travelerInfoType);
           boolean notChecked = true;
           String latitude = ob.getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getJSONObject("position3D").getString("latitude");
           validateLat(latitude);
@@ -142,26 +142,34 @@ public class TravelerSerializer {
           }
           if (notChecked){
              validateHeading(headingSlice);
-             p1.add(headingSlice);
           }
           p1.add(headingSlice);
        }
        else
        {
-          p1.add(travelerInfoType);
-          String minuteOfTheYear = ob.getJSONObject("header").getString("MinuteOfTheYear");
-          validateMinuteYear(minuteOfTheYear);
-          p1.add(minuteOfTheYear);
-          String minuteDuration = ob.getJSONObject("header").getString("MinutesDuration");
-          validateMinutesDuration(minuteDuration);
-          p1.add(minuteDuration);
-          String SignPriority = ob.getJSONObject("header").getString("SignPriority");
-          validateSign(SignPriority);
-          p1.add(SignPriority);
+          p1.add(msg);
        }
+       
+       String minuteOfTheYear = ob.getJSONObject("header").getString("MinuteOfTheYear");
+       validateMinuteYear(minuteOfTheYear);
+       p1.add(minuteOfTheYear);
+       String minuteDuration = ob.getJSONObject("header").getString("MinutesDuration");
+       validateMinutesDuration(minuteDuration);
+       p1.add(minuteDuration);
+       String SignPriority = ob.getJSONObject("header").getString("SignPriority");
+       validateSign(SignPriority);
+       p1.add(SignPriority);
        return p1;
     }
     
+    private ArrayList<String> buildTravelerMessagePart2(JSONObject ob){
+       ArrayList<String> p2 = null;
+       String index = ob.getJSONObject("region").getString("sspindex");
+       validateHeaderIndex(index);
+       p2.add(index);
+       
+       return p2;
+    }
     private ArrayList<String> buildTravelerMessagePart3(JSONObject ob){
        ArrayList<String> p3 = null;
        String sspMsgRights1 = ob.getJSONObject("content").getString("sspMsgRights1");
