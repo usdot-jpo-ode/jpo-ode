@@ -8,6 +8,9 @@ US Department of Transportation Joint Program office (JPO) Operational Data Envi
 In the context of ITS, an Operational Data Environment is a real-time data acquisition and distribution software system that processes and routes data from Connected-X devices –including connected vehicles (CV), personal mobile devices, and infrastructure components and sensors –to subscribing applications to support the operation, maintenance, and use of the transportation system, as well as related research and development efforts.
 
 ## Release Notes
+### Sprint 7
+- ODE-125 Expose empty field ODE output records when presented in JSON format
+
 ### Sprint 6
 - ODE-138 Add Capability for Raw BSM Data (bin format only) with Header Information
 - ODE-150 Encode TIM Message to ASN.1 (Inbound messages only)
@@ -175,22 +178,25 @@ You can run the application on your local machine while other services are deplo
 #### Testing ODE Application
 You should be able to access the jpo-ode UI at `localhost:8080`.
 
-Upload a file containing BSM messages in ASN.1 UPER encoded binary format. For example, try the file [data/bsm.uper](data/bsm.uper).
+1. Press the ```Connect``` button to connect to the ODE WebSocket service.
+2. Press ```Choose File``` button to select a file with J2735 BSM or MessageFrame records in ASN.1 UPER encoding
+3. Press ```Upload``` button to upload the file to ODE.
 
-ALternatively, you may upload a file containing BSM messages in ASN.1 UPER encoded headecimal format. For example, a file containing the following record:
+Upload a file containing BSM messages or J2735 MessageFrame in ASN.1 UPER encoded binary format. For example, try the file [data/bsm.uper](data/bsm.uper) or [data/messageFrame.uper](data/messageFrame.uper) and observe the decoded messages returned to the web UI page while connected tot he WebSocket interface.
+
+Alternatively, you may upload a file containing BSM messages in ASN.1 UPER encoded hexadecimal format. For example, a file containing the following pure BSM record and a file extension of ```.hex``` or  ```.txt``` would be processed and decoded by the ODE and results returned to the web UI page:
 ```text
 401480CA4000000000000000000000000000000000000000000000000000000000000000F800D9EFFFB7FFF00000000000000000000000000000000000000000000000000000001FE07000000000000000000000000000000000001FF0
 ```
+*Note: Hexadecimal file format is for test purposes only. ODE is not expected to receive ASN.1 data records in hexadecimal format from the field devices.*
 
-1. Press the ```Connect``` button to connect to the ODE WebSocket service.
-2. Press ```Choose File``` button to select the file with the ASN.1 Hex BSM record in it.
-3. Press ```Upload``` button to upload the file to ODE.
+Another way data can be uploaded to the ODE is through copying the file to the location specified by the ```ode.uploadLocationRoot/ode.uploadLocationBsm``` or ```ode.uploadLocationRoot/ode.uploadLocationMessageFrame``` property. If not specified,  Default locations would be ```uploads/bsm``` and ```uploads/messageframe``` sub-directories off of the location where ODE is launched.
 
-Another way data can be uploaded to the ODE is through copying the file to the location specified by the ode.uploadLocation property. Default location is the ```uploads``` directory directly off of the directory where ODE is launched.
 The result of uploading and decoding of the message will be displayed on the UI screen.
 
 ![ODE UI](images/ode-ui.png)
 
+*Notice that the empty fields in the J2735 message are represented by a ```null``` value. Also note that ODE output strips the MessageFrame header and returns a pure BSM in the J2735 BSM subscription topic.*
 ### Integrated Development Environment (IDE)
 
 Install the IDE of your choice:

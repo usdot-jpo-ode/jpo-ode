@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
@@ -87,12 +86,10 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
 
             EventLogger.logger.info("Processing file {}", filePath.toFile());
 
-            if (filePath.toString().endsWith("uper") || filePath.toString().endsWith("bin")) {
-                coder.decodeFromStreamAndPublish(inputStream, topic);
-            } else if (filePath.toString().endsWith("hex")) {
-                coder.decodeFromHexAndPublish(inputStream, topic);
+            if (filePath.toString().endsWith(".hex") || filePath.toString().endsWith(".txt")) {
+               coder.decodeFromHexAndPublish(inputStream, topic);
             } else {
-                throw new IOException("Unknown file extension.");
+               coder.decodeFromStreamAndPublish(inputStream, topic);
             }
         } catch (IOException e) {
             logger.error("IMPORTER - Unable to open file: {}", e);
