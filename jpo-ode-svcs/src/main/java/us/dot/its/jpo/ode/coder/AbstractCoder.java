@@ -17,7 +17,7 @@ import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public abstract class AbstractCoder implements Coder {
 
-    protected static Logger logger = LoggerFactory.getLogger(BsmCoder.class);
+    protected static Logger logger = LoggerFactory.getLogger(AbstractCoder.class);
 
     protected OdeProperties odeProperties;
     protected Asn1Plugin asn1Coder;
@@ -54,10 +54,7 @@ public abstract class AbstractCoder implements Coder {
                line = scanner.nextLine();
 
                decoded = decode(line);
-               if (OdeProperties.KAFKA_TOPIC_J2735_BSM.endsWith("json"))
-                  publish(topic, decoded.toJson(true));
-               else
-                  publish(topic, decoded);
+               publish(topic, decoded);
            }
            if (empty) {
                EventLogger.logger.info("Empty file received");
@@ -77,10 +74,7 @@ public abstract class AbstractCoder implements Coder {
                decoded = decode(is);
                if (decoded != null) {
                    logger.debug("Decoded: {}", decoded);
-                   if (OdeProperties.KAFKA_TOPIC_J2735_BSM.endsWith("json"))
-                      publish(topic, decoded.toJson(true));
-                   else
-                      publish(topic, decoded);
+                   publish(topic, decoded);
                }
            } while (decoded != null);
 

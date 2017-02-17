@@ -20,14 +20,12 @@ public class BsmCoder extends AbstractCoder {
     @Override
     public Asn1Object decode(String line) {
        Asn1Object decoded = asn1Coder.UPER_DecodeBsmHex(line);
-       logger.debug("Decoded: {}", decoded);
        return decoded;
     }
 
     @Override
     public Asn1Object decode(InputStream is) {
        Asn1Object decoded = asn1Coder.UPER_DecodeBsmStream(is);
-       logger.debug("Decoded: {}", decoded);
        return decoded;
     }
 
@@ -36,7 +34,6 @@ public class BsmCoder extends AbstractCoder {
         J2735Bsm bsm = (J2735Bsm)msg;
         SerializationUtils<J2735Bsm> serializer = new SerializationUtils<J2735Bsm>();
         publish(topic, serializer.serialize(bsm));
-        logger.debug("Published: {}", msg.toJson(true));
     }
 
 }

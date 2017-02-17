@@ -28,19 +28,14 @@ public class Exporter implements Runnable {
    @Override
    public void run() {
       logger.info("Subscribing to {}", OdeProperties.KAFKA_TOPIC_J2735_BSM);
-      if (OdeProperties.KAFKA_TOPIC_J2735_BSM.endsWith("json")) {
-         stringConsumer = MessageConsumer.defaultStringMessageConsumer(
-               odeProperties.getKafkaBrokers(),
-               odeProperties.getHostId() + this.getClass().getSimpleName(),
-               new StompStringMessageDistributor(template, topic));
-         stringConsumer.subscribe(OdeProperties.KAFKA_TOPIC_J2735_BSM);
-      } else {
-         byteArrayConsumer = MessageConsumer.defaultByteArrayMessageConsumer(
-               odeProperties.getKafkaBrokers(),
-               odeProperties.getHostId() + this.getClass().getSimpleName(),
-               new StompByteArrayMessageDistributor(template, topic));
-         byteArrayConsumer.subscribe(OdeProperties.KAFKA_TOPIC_J2735_BSM);
-      }
+
+      byteArrayConsumer = MessageConsumer.defaultByteArrayMessageConsumer(
+            odeProperties.getKafkaBrokers(),
+            odeProperties.getHostId() + this.getClass().getSimpleName(),
+            new StompByteArrayMessageDistributor(template, topic));
+
+      byteArrayConsumer.subscribe(OdeProperties.KAFKA_TOPIC_J2735_BSM);
+
       shutDown();
    }
 

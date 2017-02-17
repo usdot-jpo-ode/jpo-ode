@@ -196,7 +196,7 @@ The result of uploading and decoding of the message will be displayed on the UI 
 
 ![ODE UI](images/ode-ui.png)
 
-*Notice that the empty fields in the J2735 message are represented by a ```null``` value. Also note that ODE output strips the MessageFrame header and returns a pur BSM in the J2735 BSM subscription topic.*
+*Notice that the empty fields in the J2735 message are represented by a ```null``` value. Also note that ODE output strips the MessageFrame header and returns a pure BSM in the J2735 BSM subscription topic.*
 ### Integrated Development Environment (IDE)
 
 Install the IDE of your choice:

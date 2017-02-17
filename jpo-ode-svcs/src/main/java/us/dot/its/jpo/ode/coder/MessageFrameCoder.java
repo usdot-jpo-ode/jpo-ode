@@ -21,14 +21,12 @@ public class MessageFrameCoder extends AbstractCoder {
     @Override
     public Asn1Object decode(String line) {
        Asn1Object decoded = asn1Coder.UPER_DecodeMessageFrameHex(line);
-       logger.debug("Decoded: {}", decoded);
        return decoded;
     }
 
     @Override
     public Asn1Object decode(InputStream is) {
        Asn1Object decoded = asn1Coder.UPER_DecodeMessageFrameStream(is);
-       logger.debug("Decoded: {}", decoded);
        return decoded;
     }
 
@@ -37,6 +35,5 @@ public class MessageFrameCoder extends AbstractCoder {
         J2735MessageFrame msgFrame = (J2735MessageFrame)msg;
         SerializationUtils<J2735Bsm> serializer = new SerializationUtils<J2735Bsm>();
         publish(topic, serializer.serialize(msgFrame.getValue()));
-        logger.debug("Published: {}", msg.toJson(true));
     }
 }
