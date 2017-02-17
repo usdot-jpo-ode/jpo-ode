@@ -11,6 +11,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 
 /**
@@ -55,125 +56,32 @@ public class TravelerSerializer {
         //Get fully populated TIMcontent string
         JSONObject obj = new JSONObject(jsonInfo);
         
+        int frameList = obj.getJSONObject("timContent").getJSONObject("travelerDataFrame").length(); //Check the dataframe count
+        
         //Populate pojo's for TIM
         String msgcnt = obj.getJSONObject("timContent").getString("msgcnt");
         validateMessageCount(msgcnt);
         
-        //Populate pojo's for part1-header
-        int sspindex = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("header").getString("sspindex"));
-        validateHeaderIndex(sspindex);
-        String travelerInfoType = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getString("FurtherInfoID");
-        validateInfoType(travelerInfoType);
-        
-        if (travelerInfoType.equals(null)) //Choice for msgid was roadsign
+        for (int z = 1; z <= frameList; z++)
         {
-           boolean notChecked = true;
-           String latitude = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getJSONObject("position3D").getString("latitude");
-           validateLat(latitude);
-           String longitude = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getJSONObject("position3D").getString("longitude");
-           validateLong(longitude);
-           //String elevation = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getJSONObject("position3D").getString("elevation");
-           String headingSlice = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getString("HeadingSlice");
-           if (headingSlice.equals("noHeading")) {//No bits were set
-              notChecked = false;
-           }
-           else if (headingSlice.equals("allHeadings")) {//All bits were set
-              notChecked = false;
-           }
-           if (notChecked){
-              validateHeading(headingSlice);
-           }
+           String curFrame = "df" + z;
+           //Populate pojo's for part1-header
+           ArrayList<String> part1 = buildTravelerMessagePart1(obj.getJSONObject("timContent").getJSONObject("travelerDataFrame").getJSONObject(curFrame));
+           
+           //Populate pojo's for part2-region
+           String index = obj.getJSONObject("timContent").getJSONObject("travelerDataFrame").getJSONObject(curFrame).getJSONObject("region").getString("sspindex");
+           validateHeaderIndex(index);
+           
+           //Populate pojo's for part3-content
+           ArrayList<String> part3 = buildTravelerMessagePart3(obj.getJSONObject("timContent").getJSONObject("travelerDataFrame").getJSONObject(curFrame));
+           
+           //Populate pojo's for SNMP
+           String target = obj.getJSONObject("RSUs").getString("target");
+           String userName = obj.getJSONObject("RSUs").getString("username");
+           String password = obj.getJSONObject("RSUs").getString("pass");
+           String retries = obj.getJSONObject("RSUs").getString("retries");
+           String timeout = obj.getJSONObject("RSUs").getString("timeout");
         }
-        String minuteOfTheYear = obj.getJSONObject("timContent").getJSONObject("header").getString("MinuteOfTheYear");
-        validateMinuteYear(minuteOfTheYear);
-        String minuteDuration = obj.getJSONObject("timContent").getJSONObject("header").getString("MinutesDuration");
-        validateMinutesDuration(minuteDuration);
-        String SignPriority = obj.getJSONObject("timContent").getJSONObject("header").getString("SignPriority");
-        validateSign(SignPriority);
-        
-        //Populate pojo's for part2-region
-        int index = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("region").getString("sspindex"));
-        validateHeaderIndex(index);
-        
-        //Populate pojo's for part3-content
-        int sspMsgRights1 = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("content").getString("sspMsgRights1"));
-        validateHeaderIndex(sspMsgRights1);
-        int sspMsgRights2 = Integer.parseInt(obj.getJSONObject("timContent").getJSONObject("content").getString("sspMsgRights2"));
-        validateHeaderIndex(sspMsgRights2);
-        
-        //Content choice
-        boolean adv = obj.getJSONObject("timContent").getJSONObject("content").isNull("advisory");
-        boolean work = obj.getJSONObject("timContent").getJSONObject("content").isNull("workZone");
-        boolean speed = obj.getJSONObject("timContent").getJSONObject("content").isNull("speedLimit");
-        boolean exitServ = obj.getJSONObject("timContent").getJSONObject("content").isNull("exitService");
-        if (!adv && !work && !speed)//ExitService
-        {
-           int len = obj.getJSONObject("timContent").getJSONObject("content").getJSONArray("advisory").length();
-           for (int i = 1; i <=len; i++)
-           {
-              String it = "item" + i;
-              if (obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).isNull("ITIStext"))
-              {
-                 String code = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
-                 validateITISCodes(code);
-              }
-              String text = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITIStext");
-              validateString(text);
-           }
-        }
-        else if (!adv && !work && !exitServ)//Speed
-        {
-           int len = obj.getJSONObject("timContent").getJSONObject("content").getJSONArray("workZone").length();
-           for (int i = 1; i <=len; i++)
-           {
-              String it = "item" + i;
-              if (obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).isNull("ITIStext"))
-              {
-                 String code = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
-                 validateITISCodes(code);
-              }
-              String text = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITIStext");
-              validateString(text);
-           }
-        }
-        else if (!adv && !speed && !exitServ)//work
-        {
-           int len = obj.getJSONObject("timContent").getJSONObject("content").getJSONArray("speedLimit").length();
-           for (int i = 1; i <=len; i++)
-           {
-              String it = "item" + i;
-              if (obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).isNull("ITIStext"))
-              {
-                 String code = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
-                 validateITISCodes(code);
-              }
-              String text = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITIStext");
-              validateString(text);
-           }
-        }
-        else if (!work && !speed && !exitServ)//Advisory
-        {
-           int len = obj.getJSONObject("timContent").getJSONObject("content").getJSONArray("exitService").length();
-           for (int i = 1; i <=len; i++)
-           {
-              String it = "item" + i;
-              if (obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).isNull("ITIStext"))
-              {
-                 String code = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
-                 validateITISCodes(code);
-              }
-              String text = obj.getJSONObject("timContent").getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITIStext");
-              validateString(text);
-           }
-        }
-        
-        //Populate pojo's for SNMP
-        String target = obj.getJSONObject("RSUs").getString("target");
-        String userName = obj.getJSONObject("RSUs").getString("username");
-        String password = obj.getJSONObject("RSUs").getString("pass");
-        String retries = obj.getJSONObject("RSUs").getString("retries");
-        String timeout = obj.getJSONObject("RSUs").getString("timeout");
-
         // Standard Tim Message
         String timHex = "3081C68001108109000000000000003714830101A481AE3081AB800102A11BA119A0108004194FBA1F8104CE45CE2382020A0681020006820102820207DE830301C17084027D00850102A6108004194FC1988104CE45DA4082020A008702016E880100A92430228002000EA21CA01AA31804040CE205A104040ADA04F70404068004D60404034D0704AA3AA0383006A004800235293006A0048002010C3006A004800231283006A004800222113006A0048002010C3006A004800231203006A0048002221185021001";
         byte [] tim_ba = HexTool.parseHex(timHex, false);
@@ -204,6 +112,141 @@ public class TravelerSerializer {
     private TravelerDataFrameList setDataFrames(JSONObject dataFrame){
         return null ;
     }
+    
+    private ArrayList<String> buildTravelerMessagePart1(JSONObject ob){
+       ArrayList<String> p1 = null;
+       
+       String sspindex = ob.getJSONObject("header").getString("sspindex");
+       validateHeaderIndex(sspindex);
+       p1.add(sspindex);
+       String travelerInfoType = ob.getJSONObject("header").getJSONObject("msgId").getString("FurtherInfoID");
+       validateInfoType(travelerInfoType);
+       
+       if (travelerInfoType.equals(null)) //Choice for msgid was roadsign
+       {
+          p1.add(travelerInfoType);
+          boolean notChecked = true;
+          String latitude = ob.getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getJSONObject("position3D").getString("latitude");
+          validateLat(latitude);
+          p1.add(latitude);
+          String longitude = ob.getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getJSONObject("position3D").getString("longitude");
+          validateLong(longitude);
+          p1.add(longitude);
+          //String elevation = obj.getJSONObject("timContent").getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getJSONObject("position3D").getString("elevation");
+          String headingSlice = ob.getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getString("HeadingSlice");
+          if (headingSlice.equals("noHeading")) {//No bits were set
+             notChecked = false;
+          }
+          else if (headingSlice.equals("allHeadings")) {//All bits were set
+             notChecked = false;
+          }
+          if (notChecked){
+             validateHeading(headingSlice);
+             p1.add(headingSlice);
+          }
+          p1.add(headingSlice);
+       }
+       else
+       {
+          p1.add(travelerInfoType);
+          String minuteOfTheYear = ob.getJSONObject("header").getString("MinuteOfTheYear");
+          validateMinuteYear(minuteOfTheYear);
+          p1.add(minuteOfTheYear);
+          String minuteDuration = ob.getJSONObject("header").getString("MinutesDuration");
+          validateMinutesDuration(minuteDuration);
+          p1.add(minuteDuration);
+          String SignPriority = ob.getJSONObject("header").getString("SignPriority");
+          validateSign(SignPriority);
+          p1.add(SignPriority);
+       }
+       return p1;
+    }
+    
+    private ArrayList<String> buildTravelerMessagePart3(JSONObject ob){
+       ArrayList<String> p3 = null;
+       String sspMsgRights1 = ob.getJSONObject("content").getString("sspMsgRights1");
+       validateHeaderIndex(sspMsgRights1);
+       p3.add(sspMsgRights1);
+       String sspMsgRights2 = ob.getJSONObject("content").getString("sspMsgRights2");
+       validateHeaderIndex(sspMsgRights2);
+       p3.add(sspMsgRights2);
+       
+       //Content choice
+       boolean adv = ob.getJSONObject("content").isNull("advisory");
+       boolean work = ob.getJSONObject("content").isNull("workZone");
+       boolean speed = ob.getJSONObject("content").isNull("speedLimit");
+       boolean exitServ = ob.getJSONObject("content").isNull("exitService");
+       
+       if (!adv && !work && !speed)//ExitService
+       {
+          int len = ob.getJSONObject("content").getJSONArray("advisory").length();
+          for (int i = 1; i <=len; i++)
+          {
+             String it = "item" + i;
+             if (ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).isNull("ITIStext"))
+             {
+                String code = ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
+                validateITISCodes(code);
+                p3.add(code);
+             }
+             String text = ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITIStext");
+             validateString(text);
+             p3.add(text);
+          }
+       }
+       else if (!adv && !work && !exitServ)//Speed
+       {
+          int len = ob.getJSONObject("content").getJSONArray("workZone").length();
+          for (int i = 1; i <=len; i++)
+          {
+             String it = "item" + i;
+             if (ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).isNull("ITIStext"))
+             {
+                String code = ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
+                validateITISCodes(code);
+                p3.add(code);
+             }
+             String text = ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITIStext");
+             validateString(text);
+             p3.add(text);
+          }
+       }
+       else if (!adv && !speed && !exitServ)//work
+       {
+          int len = ob.getJSONObject("content").getJSONArray("speedLimit").length();
+          for (int i = 1; i <=len; i++)
+          {
+             String it = "item" + i;
+             if (ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).isNull("ITIStext"))
+             {
+                String code = ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
+                validateITISCodes(code);
+                p3.add(code);
+             }
+             String text = ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITIStext");
+             validateString(text);
+             p3.add(text);
+          }
+       }
+       else if (!work && !speed && !exitServ)//Advisory
+       {
+          int len = ob.getJSONObject("content").getJSONArray("exitService").length();
+          for (int i = 1; i <=len; i++)
+          {
+             String it = "item" + i;
+             if (ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).isNull("ITIStext"))
+             {
+                String code = ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
+                validateITISCodes(code);
+                p3.add(code);
+             }
+             String text = ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITIStext");
+             validateString(text);
+             p3.add(text);
+          }
+       }
+       return p3;
+    }
 
     public TravelerInformation getTravelerInformationObject(){
         return travelerInfo;
@@ -215,8 +258,9 @@ public class TravelerSerializer {
           throw new IllegalArgumentException("Invalid message count");
     }
     
-    public void validateHeaderIndex(int count){
-       if (count < 0 || count > 31)
+    public void validateHeaderIndex(String count){
+       int cnt = Integer.parseInt(count);
+       if (cnt < 0 || cnt > 31)
             throw new IllegalArgumentException("Invalid header sspIndex");
     }
     
