@@ -4,7 +4,6 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
 import us.dot.its.jpo.ode.util.GeoUtils;
-import us.dot.its.jpo.ode.util.OdeGeoUtils;
 
 public class OdeRoadSegment extends OdeObject {
 
