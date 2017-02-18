@@ -8,12 +8,12 @@ import java.math.BigDecimal;
 import org.junit.Before;
 import org.junit.Test;
 
-import us.dot.its.jpo.ode.model.OdeGeoRegion;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
+import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion;
 
 public class OdeGeoUtilsTest {
 
-    private OdeGeoRegion testRegion;
+    private J2735GeoRegion testRegion;
 
     /**
      * Create a known geo region (roughly Pennsylvania)
@@ -32,7 +32,7 @@ public class OdeGeoUtilsTest {
         J2735Position3D nwPoint = new J2735Position3D(nwLat, nwLon, elev);
         J2735Position3D sePoint = new J2735Position3D(seLat, seLon, elev);
 
-        testRegion = new OdeGeoRegion(nwPoint, sePoint);
+        testRegion = new J2735GeoRegion(nwPoint, sePoint);
 
     }
 
@@ -49,7 +49,7 @@ public class OdeGeoUtilsTest {
 
         J2735Position3D testPoint = new J2735Position3D(testLat, testLon, elev);
 
-        assertFalse(OdeGeoUtils.isPositionWithinRegion(testPoint, testRegion));
+        assertFalse(testRegion.contains(testPoint));
 
     }
 
@@ -66,7 +66,7 @@ public class OdeGeoUtilsTest {
 
         J2735Position3D testPoint = new J2735Position3D(testLat, testLon, elev);
 
-        assertTrue(OdeGeoUtils.isPositionWithinRegion(testPoint, testRegion));
+        assertTrue(testRegion.contains(testPoint));
 
     }
 
