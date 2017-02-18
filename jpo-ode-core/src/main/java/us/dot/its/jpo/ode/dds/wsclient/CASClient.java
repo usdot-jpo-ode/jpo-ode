@@ -14,7 +14,7 @@
  * Contributors:
  *     Booz | Allen | Hamilton - initial API and implementation
  *******************************************************************************/
-package us.dot.its.jpo.ode.sdcsdw.wsclient;
+package us.dot.its.jpo.ode.dds.wsclient;
 
 import java.io.IOException;
 import java.net.URL;
