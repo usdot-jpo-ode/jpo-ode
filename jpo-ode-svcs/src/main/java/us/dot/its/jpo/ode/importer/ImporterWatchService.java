@@ -26,17 +26,14 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
     private Path backup;
     private AbstractCoder coder;
     private Logger logger;
-    private String filetypes;
     private String topic;
 
-    public ImporterWatchService(Path dir, Path backupDir, AbstractCoder coder, Logger logger, String filetypes,
-            String kafkaTopic) {
+    public ImporterWatchService(Path dir, Path backupDir, AbstractCoder coder, Logger logger, String kafkaTopic) {
 
         this.inbox = dir;
         this.backup = backupDir;
         this.coder = coder;
         this.logger = logger;
-        this.filetypes = filetypes; // "*.{uper, bsm, bin, hex}"
         this.topic = kafkaTopic;
         init();
     }
@@ -61,7 +58,7 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
         int count = 0;
         // Process files already in the directory
         logger.debug("IMPORTER - Started processing existing files at location: {}", inbox);
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(inbox, filetypes)) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(inbox)) {
 
             if (stream == null) {
                 throw new IOException("Directory stream failed to create (null) for " + inbox);

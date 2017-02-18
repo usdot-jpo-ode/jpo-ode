@@ -1,9 +1,8 @@
-package us.dot.its.jpo.ode.model;
+package us.dot.its.jpo.ode.plugin.j2735;
 
 import java.math.BigDecimal;
 
 import junit.framework.TestCase;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 
 /**
  * The class <code>OdeGeoRegionTest</code> contains tests for the class {@link
@@ -17,14 +16,14 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
  *
  * @version $Revision$
  */
-public class OdeGeoRegionTest extends TestCase {
+public class J2735GeoRegionTest extends TestCase {
 
    /**
     * Construct new test instance
     *
     * @param name the test name
     */
-   public OdeGeoRegionTest(String name) {
+   public J2735GeoRegionTest(String name) {
       super(name);
    }
 
@@ -33,8 +32,8 @@ public class OdeGeoRegionTest extends TestCase {
     * @throws OdeException 
     */
    
-   public void testConstructorString() throws OdeException {
-      OdeGeoRegion fixture = new OdeGeoRegion("42.537903,-83.477903 42.305753,   -82.842753");
+   public void testConstructorString() throws Exception {
+      J2735GeoRegion fixture = new J2735GeoRegion("42.537903,-83.477903 42.305753,   -82.842753");
       assertEquals(BigDecimal.valueOf(42.537903), fixture.getNwCorner().getLatitude());
       assertEquals(BigDecimal.valueOf(-83.477903), fixture.getNwCorner().getLongitude());
       assertEquals(BigDecimal.valueOf(42.305753), fixture.getSeCorner().getLatitude());
@@ -46,7 +45,7 @@ public class OdeGeoRegionTest extends TestCase {
     */
    public void testGetNwCorner() {
       // add test code here
-      OdeGeoRegion fixture = new OdeGeoRegion();
+      J2735GeoRegion fixture = new J2735GeoRegion();
       J2735Position3D result = fixture.getNwCorner();
       assertTrue(true);
    }
@@ -56,9 +55,9 @@ public class OdeGeoRegionTest extends TestCase {
     */
    public void testSetNwCorner() {
       // add test code here
-      OdeGeoRegion fixture = new OdeGeoRegion();
+      J2735GeoRegion fixture = new J2735GeoRegion();
       J2735Position3D nwCorner = null;
-      OdeGeoRegion result = fixture.setNwCorner(nwCorner);
+      J2735GeoRegion result = fixture.setNwCorner(nwCorner);
       assertTrue(true);
    }
 
@@ -67,7 +66,7 @@ public class OdeGeoRegionTest extends TestCase {
     */
    public void testGetSeCorner() {
       // add test code here
-      OdeGeoRegion fixture = new OdeGeoRegion();
+      J2735GeoRegion fixture = new J2735GeoRegion();
       J2735Position3D result = fixture.getSeCorner();
       assertTrue(true);
    }
@@ -77,9 +76,9 @@ public class OdeGeoRegionTest extends TestCase {
     */
    public void testSetSeCorner() {
       // add test code here
-      OdeGeoRegion fixture = new OdeGeoRegion();
+      J2735GeoRegion fixture = new J2735GeoRegion();
       J2735Position3D seCorner = null;
-      OdeGeoRegion result = fixture.setSeCorner(seCorner);
+      J2735GeoRegion result = fixture.setSeCorner(seCorner);
       assertTrue(true);
    }
 
@@ -87,9 +86,9 @@ public class OdeGeoRegionTest extends TestCase {
     * Run the J2735Position3D getCenterPosition() method test
     * @throws OdeException 
     */
-   public void testGetCenterPosition() throws OdeException {
+   public void testGetCenterPosition() throws Exception {
       // add test code here
-      OdeGeoRegion fixture = new OdeGeoRegion("42.537903,-83.477903 42.305753,-82.842753");
+      J2735GeoRegion fixture = new J2735GeoRegion("42.537903,-83.477903 42.305753,-82.842753");
       J2735Position3D result = fixture.getCenterPosition();
       assertEquals(BigDecimal.valueOf(42.421828000000005), result.getLatitude());
       assertEquals(BigDecimal.valueOf(-83.16032799999999), result.getLongitude());
@@ -100,7 +99,7 @@ public class OdeGeoRegionTest extends TestCase {
     */
    public void testHashCode() {
       // add test code here
-      OdeGeoRegion fixture = new OdeGeoRegion();
+      J2735GeoRegion fixture = new J2735GeoRegion();
       int result = fixture.hashCode();
       assertTrue(true);
    }
@@ -110,7 +109,7 @@ public class OdeGeoRegionTest extends TestCase {
     */
    public void testEquals() {
       // add test code here
-      OdeGeoRegion fixture = new OdeGeoRegion();
+      J2735GeoRegion fixture = new J2735GeoRegion();
       Object obj = null;
       boolean result = fixture.equals(obj);
       assertTrue(true);

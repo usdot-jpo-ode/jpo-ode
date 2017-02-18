@@ -42,6 +42,10 @@ public class OdeProperties implements EnvironmentAware {
     private String kafkaBrokers = null;
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
     public static final String FILE_TYPES = "*.{uper, bsm, bin, hex}";
+    private String ddsCasUrl = "https://cas.connectedvcs.com/accounts/v1/tickets";
+    private String ddsCasUsername = "";
+    private String ddsCasPassword = "";
+    private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
 
     private String hostId;
 
@@ -166,5 +170,37 @@ public class OdeProperties implements EnvironmentAware {
     public void setUploadLocationRoot(String uploadLocationRoot) {
         this.uploadLocationRoot = uploadLocationRoot;
     }
+
+   public String getDdsCasUrl() {
+      return ddsCasUrl;
+   }
+
+   public void setDdsCasUrl(String ddsCasUrl) {
+      this.ddsCasUrl = ddsCasUrl;
+   }
+
+   public String getDdsCasUsername() {
+      return ddsCasUsername;
+   }
+
+   public void setDdsCasUsername(String ddsCasUsername) {
+      this.ddsCasUsername = ddsCasUsername;
+   }
+
+   public String getDdsCasPassword() {
+      return ddsCasPassword;
+   }
+
+   public void setDdsCasPassword(String ddsCasPassword) {
+      this.ddsCasPassword = ddsCasPassword;
+   }
+
+   public String getDdsWebsocketUrl() {
+      return ddsWebsocketUrl;
+   }
+
+   public void setDdsWebsocketUrl(String ddsWebsocketUrl) {
+      this.ddsWebsocketUrl = ddsWebsocketUrl;
+   }
 
 }
