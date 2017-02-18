@@ -14,7 +14,7 @@
  * Contributors:
  *     Booz | Allen | Hamilton - initial API and implementation
  *******************************************************************************/
-package us.dot.its.jpo.ode.sdcsdw.wsclient;
+package us.dot.its.jpo.ode.dds.wsclient;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -29,8 +29,8 @@ import javax.net.ssl.SSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import us.dot.its.jpo.ode.dds.wsclient.CASClient.CASException;
 import us.dot.its.jpo.ode.model.ControlMessage;
-import us.dot.its.jpo.ode.sdcsdw.wsclient.CASClient.CASException;
 import us.dot.its.jpo.ode.wrapper.SSLBuilder;
 import us.dot.its.jpo.ode.wrapper.SSLBuilder.SSLException;
 import us.dot.its.jpo.ode.wrapper.WebSocketClient;
