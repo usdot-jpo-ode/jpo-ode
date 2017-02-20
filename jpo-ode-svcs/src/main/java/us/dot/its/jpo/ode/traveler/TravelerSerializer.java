@@ -20,6 +20,13 @@ import java.util.ArrayList;
 public class TravelerSerializer {
 
     public TravelerInformation travelerInfo;
+    public final int ADVISORY = 0;
+    public final int WORKZONE = 1;
+    public final int GENERICSIGN = 2;
+    public final int SPEEDLIMIT = 3;
+    public final int EXITSERVICE = 4;
+    int contentType;
+    int contentLength;
     public TravelerSerializer(String jsonInfo){
         PERUnalignedCoder coder = J2735.getPERUnalignedCoder();
 //      MsgCount msgCnt = new MsgCount(1);
@@ -65,14 +72,17 @@ public class TravelerSerializer {
         for (int z = 1; z <= frameList; z++)
         {
            String curFrame = "df" + z;
-           //Populate pojo's for part1-header
+           //Populate pojo's for part1-header.
+           //Length will be 6 if FurtherInfoID is set, or 8 if RoadSign was selected
            ArrayList<String> part1 = buildTravelerMessagePart1(obj.getJSONObject("timContent").getJSONObject("travelerDataFrame").getJSONObject(curFrame));
            
            //Populate pojo's for part2-region
-           String index = obj.getJSONObject("timContent").getJSONObject("travelerDataFrame").getJSONObject(curFrame).getJSONObject("region").getString("sspindex");
-           validateHeaderIndex(index);
+           //Currently only length of 1
+           ArrayList<String> part2 = buildTravelerMessagePart2(obj.getJSONObject("timContent").getJSONObject("travelerDataFrame").getJSONObject(curFrame));
            
            //Populate pojo's for part3-content
+           //Reference global variable contentType for the type of content in the data frame
+           //Reference global variable contentLength for the length of the content when populating the TIM object
            ArrayList<String> part3 = buildTravelerMessagePart3(obj.getJSONObject("timContent").getJSONObject("travelerDataFrame").getJSONObject(curFrame));
            
            //Populate pojo's for SNMP
@@ -119,12 +129,13 @@ public class TravelerSerializer {
        String sspindex = ob.getJSONObject("header").getString("sspindex");
        validateHeaderIndex(sspindex);
        p1.add(sspindex);
-       String travelerInfoType = ob.getJSONObject("header").getJSONObject("msgId").getString("FurtherInfoID");
+       String travelerInfoType = ob.getJSONObject("header").getString("travelerInfoType");
        validateInfoType(travelerInfoType);
+       p1.add("travelerInfoType");
+       String msg = ob.getJSONObject("header").getJSONObject("msgId").getString("FurtherInfoID");
        
-       if (travelerInfoType.equals(null)) //Choice for msgid was roadsign
+       if (msg.equals(null)) //Choice for msgid was roadsign
        {
-          p1.add(travelerInfoType);
           boolean notChecked = true;
           String latitude = ob.getJSONObject("header").getJSONObject("msgId").getJSONObject("RoadSignID").getJSONObject("position3D").getString("latitude");
           validateLat(latitude);
@@ -142,26 +153,34 @@ public class TravelerSerializer {
           }
           if (notChecked){
              validateHeading(headingSlice);
-             p1.add(headingSlice);
           }
           p1.add(headingSlice);
        }
        else
        {
-          p1.add(travelerInfoType);
-          String minuteOfTheYear = ob.getJSONObject("header").getString("MinuteOfTheYear");
-          validateMinuteYear(minuteOfTheYear);
-          p1.add(minuteOfTheYear);
-          String minuteDuration = ob.getJSONObject("header").getString("MinutesDuration");
-          validateMinutesDuration(minuteDuration);
-          p1.add(minuteDuration);
-          String SignPriority = ob.getJSONObject("header").getString("SignPriority");
-          validateSign(SignPriority);
-          p1.add(SignPriority);
+          p1.add(msg);
        }
+       
+       String minuteOfTheYear = ob.getJSONObject("header").getString("MinuteOfTheYear");
+       validateMinuteYear(minuteOfTheYear);
+       p1.add(minuteOfTheYear);
+       String minuteDuration = ob.getJSONObject("header").getString("MinutesDuration");
+       validateMinutesDuration(minuteDuration);
+       p1.add(minuteDuration);
+       String SignPriority = ob.getJSONObject("header").getString("SignPriority");
+       validateSign(SignPriority);
+       p1.add(SignPriority);
        return p1;
     }
     
+    private ArrayList<String> buildTravelerMessagePart2(JSONObject ob){
+       ArrayList<String> p2 = null;
+       String index = ob.getJSONObject("region").getString("sspindex");
+       validateHeaderIndex(index);
+       p2.add(index);
+       
+       return p2;
+    }
     private ArrayList<String> buildTravelerMessagePart3(JSONObject ob){
        ArrayList<String> p3 = null;
        String sspMsgRights1 = ob.getJSONObject("content").getString("sspMsgRights1");
@@ -174,12 +193,15 @@ public class TravelerSerializer {
        //Content choice
        boolean adv = ob.getJSONObject("content").isNull("advisory");
        boolean work = ob.getJSONObject("content").isNull("workZone");
+       boolean sign = ob.getJSONObject("content").isNull("genericSign");
        boolean speed = ob.getJSONObject("content").isNull("speedLimit");
        boolean exitServ = ob.getJSONObject("content").isNull("exitService");
        
-       if (!adv && !work && !speed)//ExitService
+       if (!adv && !work && !speed && !sign)//ExitService "4"
        {
           int len = ob.getJSONObject("content").getJSONArray("advisory").length();
+          contentType = 4;
+          contentLength = len;
           for (int i = 1; i <=len; i++)
           {
              String it = "item" + i;
@@ -194,9 +216,11 @@ public class TravelerSerializer {
              p3.add(text);
           }
        }
-       else if (!adv && !work && !exitServ)//Speed
+       else if (!adv && !work && !exitServ && !sign)//Speed "3"
        {
           int len = ob.getJSONObject("content").getJSONArray("workZone").length();
+          contentType = 3;
+          contentLength = len;
           for (int i = 1; i <=len; i++)
           {
              String it = "item" + i;
@@ -211,9 +235,11 @@ public class TravelerSerializer {
              p3.add(text);
           }
        }
-       else if (!adv && !speed && !exitServ)//work
+       else if (!adv && !speed && !exitServ && !sign)//work "1"
        {
           int len = ob.getJSONObject("content").getJSONArray("speedLimit").length();
+          contentType = 1;
+          contentLength = len;
           for (int i = 1; i <=len; i++)
           {
              String it = "item" + i;
@@ -228,9 +254,30 @@ public class TravelerSerializer {
              p3.add(text);
           }
        }
-       else if (!work && !speed && !exitServ)//Advisory
+       else if (!work && !speed && !exitServ && !sign)//Advisory "0"
        {
           int len = ob.getJSONObject("content").getJSONArray("exitService").length();
+          contentType = 0;
+          contentLength = len;
+          for (int i = 1; i <=len; i++)
+          {
+             String it = "item" + i;
+             if (ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).isNull("ITIStext"))
+             {
+                String code = ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
+                validateITISCodes(code);
+                p3.add(code);
+             }
+             String text = ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITIStext");
+             validateString(text);
+             p3.add(text);
+          }
+       }
+       else
+       {
+          int len = ob.getJSONObject("content").getJSONArray("genericSign").length();
+          contentType = 2;
+          contentLength = len;
           for (int i = 1; i <=len; i++)
           {
              String it = "item" + i;
