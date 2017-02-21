@@ -1,7 +1,9 @@
-package us.dot.its.jpo.ode.model;
+package us.dot.its.jpo.ode.dds;
 
 import us.dot.its.jpo.ode.j2735.semi.GroupID;
 import us.dot.its.jpo.ode.j2735.semi.TimeToLive;
+import us.dot.its.jpo.ode.model.HasPosition;
+import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.util.CodecUtils;

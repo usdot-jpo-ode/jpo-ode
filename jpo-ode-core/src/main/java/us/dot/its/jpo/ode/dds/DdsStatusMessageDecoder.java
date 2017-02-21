@@ -14,52 +14,31 @@
  * Contributors:
  *     Booz | Allen | Hamilton - initial API and implementation
  *******************************************************************************/
-package us.dot.its.jpo.ode.dds.wsclient;
+package us.dot.its.jpo.ode.dds;
 
 import javax.websocket.DecodeException;
-import javax.websocket.EndpointConfig;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import us.dot.its.jpo.ode.model.ControlMessage;
-import us.dot.its.jpo.ode.model.ControlTag;
-import us.dot.its.jpo.ode.model.DdsRequest;
+import us.dot.its.jpo.ode.model.StatusTag;
 import us.dot.its.jpo.ode.util.JsonUtils;
-import us.dot.its.jpo.ode.wrapper.WebSocketMessageDecoder;
 
-public class DdsDecoder implements WebSocketMessageDecoder<ControlMessage> {
-
-   public static class DdsDecoderException extends Exception {
-
-      private static final long serialVersionUID = -4474047515873708804L;
-
-      public DdsDecoderException(String string) {
-         super(string);
-      }
-
-   }
+public class DdsStatusMessageDecoder extends DdsDecoder {
 
    private static final Logger logger = LoggerFactory
-         .getLogger(DdsDecoder.class);
+         .getLogger(DdsStatusMessageDecoder.class);
+   
    private static final int MSG_COMPONENT_TAG_INDEX = 0;
    private static final int MSG_COMPONENT_VALUE_INDEX = 1;
    private static final int RECORD_COUNT_VALUE_INDEX = 1;
 
-   @Override
-   public void init(EndpointConfig endpointConfig) {
-   }
+   protected static StatusTag getResponseTag(String tagName) {
+      StatusTag[] tags = StatusTag.values();
 
-   @Override
-   public void destroy() {
-   }
-
-   protected static ControlTag getResponseTag(String tagName) {
-      ControlTag[] tags = ControlTag.values();
-
-      for (ControlTag tag : tags) {
+      for (StatusTag tag : tags) {
          if (tagName.equals(tag.name())) {
             return tag;
          }
@@ -69,17 +48,17 @@ public class DdsDecoder implements WebSocketMessageDecoder<ControlMessage> {
    }
 
    @Override
-   public ControlMessage decode(String message) throws DecodeException {
-      ControlMessage controlMsg = null;
+   public DdsMessage decode(String message) throws DecodeException {
+      DdsStatusMessage statusMsg = null;
       try {
          String[] msgComponents = parseFullMsg(message);
-         ControlTag tag = getResponseTag(msgComponents[MSG_COMPONENT_TAG_INDEX]);
+         StatusTag tag = getResponseTag(msgComponents[MSG_COMPONENT_TAG_INDEX]);
          if (tag != null) {
-            controlMsg = new ControlMessage().setTag(tag);
+            statusMsg = new DdsStatusMessage().setTag(tag);
             switch(tag) {
             case CONNECTED: {
                String connectionDetails = msgComponents[MSG_COMPONENT_VALUE_INDEX];
-               controlMsg.setConnectionDetails(connectionDetails);
+               statusMsg.setConnectionDetails(connectionDetails);
             }
             break;
             case START: {
@@ -87,7 +66,7 @@ public class DdsDecoder implements WebSocketMessageDecoder<ControlMessage> {
                try {
                   ObjectNode rootNode = JsonUtils.toObjectNode(jsonMessage);
                   
-                  controlMsg
+                  statusMsg
                      .setDialog(DdsRequest.Dialog.getById(rootNode.get("dialogID").asInt()))
                      .setEncoding(rootNode.get("resultEncoding").textValue());
                         
@@ -101,8 +80,8 @@ public class DdsDecoder implements WebSocketMessageDecoder<ControlMessage> {
                String[] rcArray = patseRecordCount(recordCount);
                if (rcArray.length == 2) {
                   try {
-                     if (controlMsg != null) {
-                        controlMsg.setRecordCount(Integer.valueOf(rcArray[RECORD_COUNT_VALUE_INDEX]));
+                     if (statusMsg != null) {
+                        statusMsg.setRecordCount(Integer.valueOf(rcArray[RECORD_COUNT_VALUE_INDEX]));
                      }
                   } catch (Exception e) {
                      logger.error("Error processing STOP tag", e);
@@ -118,8 +97,8 @@ public class DdsDecoder implements WebSocketMessageDecoder<ControlMessage> {
             case DEPOSITED: {
                String depositCount = msgComponents[MSG_COMPONENT_VALUE_INDEX];
                try {
-                  if (controlMsg != null) {
-                     controlMsg.setRecordCount(Integer.valueOf(depositCount));
+                  if (statusMsg != null) {
+                     statusMsg.setRecordCount(Integer.valueOf(depositCount));
                   }
                } catch (Exception e) {
                   logger.error("Error processing DEPOSITED tag", e);
@@ -141,7 +120,7 @@ public class DdsDecoder implements WebSocketMessageDecoder<ControlMessage> {
       } finally {
       }
 
-      return controlMsg;
+      return statusMsg;
    }
 
    public String[] patseRecordCount(String recordCount) {
@@ -154,6 +133,6 @@ public class DdsDecoder implements WebSocketMessageDecoder<ControlMessage> {
 
    @Override
    public boolean willDecode(String message) {
-      return getResponseTag(parseFullMsg(message)[MSG_COMPONENT_TAG_INDEX]) == ControlTag.START;
+      return getResponseTag(parseFullMsg(message)[MSG_COMPONENT_TAG_INDEX]) == StatusTag.START;
    }
 }

@@ -14,7 +14,7 @@
  * Contributors:
  *     Booz | Allen | Hamilton - initial API and implementation
  *******************************************************************************/
-package us.dot.its.jpo.ode.dds.wsclient;
+package us.dot.its.jpo.ode.dds;
 
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
@@ -23,21 +23,33 @@ import javax.websocket.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.model.ControlMessage;
-import us.dot.its.jpo.ode.model.ControlTag;
+import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.OdeControlData;
-import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
+import us.dot.its.jpo.ode.model.OdeDataType;
+import us.dot.its.jpo.ode.model.OdeMessage;
+import us.dot.its.jpo.ode.model.OdeStatus;
+import us.dot.its.jpo.ode.model.OdeStatus.Code;
+import us.dot.its.jpo.ode.model.StatusTag;
+import us.dot.its.jpo.ode.model.WebSocketClient;
+import us.dot.its.jpo.ode.wrapper.AbstractWebsocketMessageHandler;
 
-public class ControlMessageHandler implements WebSocketMessageHandler<ControlMessage> {
+public class StatusMessageHandler 
+extends AbstractWebsocketMessageHandler<DdsStatusMessage> {
 
    private static final Logger logger = LoggerFactory
-         .getLogger(ControlMessageHandler.class);
+         .getLogger(StatusMessageHandler.class);
    
+   public StatusMessageHandler(WebSocketClient client) {
+      super(client);
+   }
+
    @Override
-   public void onMessage(ControlMessage controlMessage) {
+   public void onMessage(DdsStatusMessage statusMsg) {
+      super.onMessage(statusMsg);
+      
       try {
-         if (controlMessage != null) {
-            OdeControlData controlData = new OdeControlData(controlMessage);
+         if (statusMsg != null) {
+            OdeControlData controlData = new OdeControlData(statusMsg);
             handleControlMessage(controlData);
          }
       } catch (Exception e) {
@@ -48,11 +60,12 @@ public class ControlMessageHandler implements WebSocketMessageHandler<ControlMes
    
    private void handleControlMessage(OdeControlData controlData) {
       logger.info(controlData.toJson(false));
+      EventLogger.logger.info(controlData.toJson(false));
    }
    
    @Override
    public void onOpen(Session session, EndpointConfig config) {
-      OdeControlData controlData = new OdeControlData(ControlTag.OPENED);
+      OdeControlData controlData = new OdeControlData(StatusTag.OPENED);
       controlData.setMessage("WebSocket Connection to DDS Opened.");
 
       handleControlMessage(controlData);
@@ -60,7 +73,7 @@ public class ControlMessageHandler implements WebSocketMessageHandler<ControlMes
    
    @Override
    public void onClose(Session session, CloseReason reason) {
-      OdeControlData controlData = new OdeControlData(ControlTag.CLOSED);
+      OdeControlData controlData = new OdeControlData(StatusTag.CLOSED);
       controlData.setMessage("WebSocket Connection to DDS Closed. Reason: " + reason.getReasonPhrase());
 
       handleControlMessage(controlData);
@@ -68,10 +81,21 @@ public class ControlMessageHandler implements WebSocketMessageHandler<ControlMes
 
    @Override
    public void onError(Session session, Throwable t) {
-      OdeControlData controlData = new OdeControlData(ControlTag.ERROR);
+      OdeControlData controlData = new OdeControlData(StatusTag.ERROR);
       controlData.setMessage("WebSocket Connection to DDS Errored. Message: " + t.getMessage());
 
       handleControlMessage(controlData);
+   }
+
+   @Override
+   public OdeMessage buildOdeMessage(DdsStatusMessage message) {
+      OdeStatus status = new OdeStatus();
+      
+      status.setCode(Code.SUCCESS);
+      status.setDataType(OdeDataType.Status);
+      status.setMessage(message.toString());
+      
+      return status;
    }
    
 }
