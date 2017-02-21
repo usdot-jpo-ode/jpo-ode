@@ -20,23 +20,31 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
  * This object is used to abstract away the complexities of SNMP calls and allow
  * a user to more quickly and easily send SNMP requests. Note that the
  * "connection" aspect of this class is an abstraction meant to reinforce that
- * these objects correspond 1-to-1 with a destination server, SNMP is sent over
- * UDP.
+ * these objects correspond 1-to-1 with a destination server, while SNMP is sent
+ * over UDP and is actually connection-less.
  */
 public class SnmpSession {
 
-    private Snmp snmp;
-    private TransportMapping transport;
-    private UserTarget target;
-    
+    public Snmp snmp;
+    public TransportMapping transport;
+    public UserTarget target;
+
     private boolean ready = false;
 
     /**
-     * Constructor for SnmpConnection
-     * @param props - SnmpProperties for the session (target address, retries, timeout, etc)
+     * Constructor for SnmpSession
+     * 
+     * @param props
+     *            SnmpProperties for the session (target address, retries,
+     *            timeout, etc)
      * @throws IOException
      */
     public SnmpSession(SnmpProperties props) throws IOException {
+        
+        // Verify props object is not null
+        if (props == null) {
+            throw new IllegalArgumentException("SnmpProperties object is null");
+        }
 
         // Create a "target" to which a request is sent
         target = new UserTarget();
@@ -54,29 +62,31 @@ public class SnmpSession {
         } catch (IOException e) {
             throw new IOException("Failed to create UDP transport mapping: {}", e);
         }
-        
+
         // Instantiate the SNMP instance
         snmp = new Snmp(transport);
-        
+
         // Register the security options and create an SNMP "user"
         USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
         SecurityModels.getInstance().addSecurityModel(usm);
         snmp.getUSM().addUser(new OctetString(props.getUsername()), new UsmUser(new OctetString(props.getUsername()),
                 AuthMD5.ID, new OctetString(props.getPassword()), null, null));
-        
-        // Assert the ready flag so the user can begin .send()ing messages
+
+        // Assert the ready flag so the user can begin sending messages
         ready = true;
 
     }
 
     /**
      * Sends a SET-type PDU to the target specified by the constructor.
-     * @param pdu - The message content to be sent to the target
+     * 
+     * @param pdu
+     *            The message content to be sent to the target
      * @return ResponseEvent
      * @throws IOException
      */
-    public ResponseEvent set(PDU pdu) throws IOException {
-        
+    public ResponseEvent set(PDU pdu, Snmp snmpob, TransportMapping transportob, UserTarget targetob) throws IOException {
+
         // Ensure the object has been instantiated
         if (!ready) {
             throw new IOException("Tried to send PDU before SNMP sending service is ready.");
@@ -84,21 +94,20 @@ public class SnmpSession {
 
         // Start listening on UDP
         try {
-            transport.listen();
+            transportob.listen();
         } catch (IOException e) {
             throw new IOException("Unable to start UDP listener: " + e);
         }
 
-        // Try to send the SNMP request
+        // Try to send the SNMP request (synchronously)
         ResponseEvent responseEvent = null;
         try {
-            responseEvent = snmp.set(pdu, target);
-            snmp.close();
+            responseEvent = snmpob.set(pdu, targetob);
+            snmpob.close();
         } catch (IOException e) {
             throw new IOException("Failed to send SNMP request: " + e);
         }
-        
+
         return responseEvent;
     }
-
 }
