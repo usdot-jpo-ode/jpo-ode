@@ -248,7 +248,7 @@ public class TravelerSerializer {
             ExitService es = new ExitService();
 
             int len = ob.getJSONObject("content").getJSONObject("contentType").getJSONArray("exitService").length();
-            for (int i = 0; i <=len; i++)
+            for (int i = 0; i <len; i++)
             {
                 ExitService.Sequence_ seq = new ExitService.Sequence_();
                 ExitService.Sequence_.Item item = new ExitService.Sequence_.Item();
@@ -260,7 +260,7 @@ public class TravelerSerializer {
                    String code = ob.getJSONObject("content").getJSONObject("contentType").getJSONArray("exitService").getJSONObject(i).getString("ITISCodes");
                     validateITISCodes(code);
                     p3.add(code);
-                    item.setItis(Long.getLong(code));
+                    item.setItis(Long.parseLong(code));
                 }
                 else {
                    System.out.println("pass: " + i + " text"); 
@@ -268,7 +268,7 @@ public class TravelerSerializer {
                    System.out.println(text);
                    validateString(text);
                    p3.add(text);
-                   item.setItis(Long.getLong(text));
+                   item.setItis(Long.parseLong(text));
                 }
                 seq.setItem(item);
                 es.add(seq);
