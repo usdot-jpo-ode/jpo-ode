@@ -14,7 +14,9 @@
  * Contributors:
  *     Booz | Allen | Hamilton - initial API and implementation
  *******************************************************************************/
-package us.dot.its.jpo.ode.model;
+package us.dot.its.jpo.ode.dds;
+
+import us.dot.its.jpo.ode.model.BaseRequest;
 
 @SuppressWarnings("serial")
 public class DdsRequest extends BaseRequest {
@@ -63,7 +65,7 @@ public class DdsRequest extends BaseRequest {
       }
    }
 
-   public enum EncodeType {base64, hex, json}
+   public enum EncodeType {base64, hex}
 
    private int dialogID;
    private String resultEncoding;

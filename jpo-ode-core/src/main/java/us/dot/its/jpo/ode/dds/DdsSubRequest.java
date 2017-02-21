@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.model;
+package us.dot.its.jpo.ode.dds;
 
 
 public class DdsSubRequest extends DdsRequest {
