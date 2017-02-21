@@ -31,37 +31,38 @@ public class TravelerSerializer {
         //Get fully populated TIMcontent string
         JSONObject obj = new JSONObject(jsonInfo);
 
-        int frameList = obj.getJSONObject("timContent").getJSONObject("travelerDataFrame").length(); //Check the dataframe count
+        int frameList = obj.getJSONObject("timContent").getJSONArray("travelerDataFrame").length(); //Check the dataframe count
 
         //Populate pojo's for TIM
         String msgcnt = obj.getJSONObject("timContent").getString("msgcnt");
         validateMessageCount(msgcnt);
-        travelerInfo.setMsgCnt(new MsgCount(Integer.getInteger(msgcnt)));
+        travelerInfo.setMsgCnt(new MsgCount(Integer.parseInt(msgcnt)));
 
+        //TODO the travelerDataFrame can be a list
         TravelerDataFrameList dataFrames = new TravelerDataFrameList();
         for (int z = 1; z <= frameList; z++)
         {
             TravelerDataFrame dataFrame = new TravelerDataFrame();
             String curFrame = "df" + z;
             //Populate pojo's for part1-header
-            TravelerDataFrame part1 = buildTravelerMessagePart1(dataFrame, obj.getJSONObject("timContent").getJSONObject("travelerDataFrame").getJSONObject(curFrame));
+            TravelerDataFrame part1 = buildTravelerMessagePart1(dataFrame, obj.getJSONObject("timContent").getJSONArray("travelerDataFrame").getJSONObject(0));
 
             //Populate pojo's for part2-region
-            String index = obj.getJSONObject("timContent").getJSONObject("travelerDataFrame").getJSONObject(curFrame).getJSONObject("region").getString("sspindex");
+            String index = obj.getJSONObject("timContent").getJSONArray("travelerDataFrame").getJSONObject(0).getJSONObject("region").getString("sspindex");
             validateHeaderIndex(index);
             part1.setSspLocationRights(new SSPindex(Short.valueOf(index)));
             //TODO populate part 2 information
 
 
             //Populate pojo's for part3-content
-            TravelerDataFrame part3 = buildTravelerMessagePart3(part1, obj.getJSONObject("timContent").getJSONObject("travelerDataFrame").getJSONObject(curFrame));
+            TravelerDataFrame part3 = buildTravelerMessagePart3(part1, obj.getJSONObject("timContent").getJSONArray("travelerDataFrame").getJSONObject(0));
 
             //Populate pojo's for SNMP
-            String target = obj.getJSONObject("RSUs").getString("target");
-            String userName = obj.getJSONObject("RSUs").getString("username");
-            String password = obj.getJSONObject("RSUs").getString("pass");
-            String retries = obj.getJSONObject("RSUs").getString("retries");
-            String timeout = obj.getJSONObject("RSUs").getString("timeout");
+            String target = obj.getJSONArray("RSUs").getJSONObject(0).getString("target");
+            String userName = obj.getJSONArray("RSUs").getJSONObject(0).getString("username");
+            String password = obj.getJSONArray("RSUs").getJSONObject(0).getString("pass");
+            String retries = obj.getJSONArray("RSUs").getJSONObject(0).getString("retries");
+            String timeout = obj.getJSONArray("RSUs").getJSONObject(0).getString("timeout");
 
 
             //Generate List of Data Frames
@@ -91,8 +92,8 @@ public class TravelerSerializer {
             }
         }
 
-        MsgCount cnt = new MsgCount(Integer.parseInt(msgcnt));
-        travelerInfo.setMsgCnt(cnt);
+//        MsgCount cnt = new MsgCount(Integer.parseInt(msgcnt));
+//        travelerInfo.setMsgCnt(cnt);
     }
 
     private TravelerInformation.Regional setRegional(JSONObject dataFrame){
@@ -103,12 +104,11 @@ public class TravelerSerializer {
     }
 
     private TravelerDataFrame buildTravelerMessagePart1(TravelerDataFrame dataFrame, JSONObject ob){
-        ArrayList<String> p1 = null;
-
+        ArrayList<String> p1 = new ArrayList<>();
         String sspindex = ob.getJSONObject("header").getString("sspindex");
         validateHeaderIndex(sspindex);
         p1.add(sspindex);
-        dataFrame.setSspTimRights(new SSPindex(Integer.getInteger(sspindex)));
+        dataFrame.setSspTimRights(new SSPindex(Integer.parseInt(sspindex)));
 
         String travelerInfoType = ob.getJSONObject("header").getJSONObject("msgId").getString("FurtherInfoID");
         validateInfoType(travelerInfoType);
@@ -135,8 +135,8 @@ public class TravelerSerializer {
 
 //            final int elev = anchorPoint.getReferenceElevation();
             Position3D anchorPos = new Position3D(
-                    new Latitude(Short.valueOf(latitude)) ,
-                    new Longitude(Short.valueOf(longitude)));
+                    new Latitude(Short.parseShort(latitude)) ,
+                    new Longitude(Short.parseShort(longitude)));
 
 //            TODO Elevation Optional
 //            anchorPos.setElevation(new Elevation(elev));
@@ -173,19 +173,19 @@ public class TravelerSerializer {
             String minuteOfTheYear = ob.getJSONObject("header").getString("MinuteOfTheYear");
             validateMinuteYear(minuteOfTheYear);
             p1.add(minuteOfTheYear);
-            dataFrame.setStartTime(new MinuteOfTheYear(Integer.getInteger(minuteOfTheYear)));
+            dataFrame.setStartTime(new MinuteOfTheYear(Integer.parseInt(minuteOfTheYear)));
 
 
             String minuteDuration = ob.getJSONObject("header").getString("MinutesDuration");
             validateMinutesDuration(minuteDuration);
             p1.add(minuteDuration);
-            dataFrame.setDuratonTime(new MinutesDuration(Integer.getInteger(minuteDuration)));
+            dataFrame.setDuratonTime(new MinutesDuration(Integer.parseInt(minuteDuration)));
 
 
             String SignPriority = ob.getJSONObject("header").getString("SignPriority");
             validateSign(SignPriority);
             p1.add(SignPriority);
-            dataFrame.setPriority(new SignPrority(Integer.getInteger(SignPriority)));
+            dataFrame.setPriority(new SignPrority(Integer.parseInt(SignPriority)));
 
         }
 
@@ -195,17 +195,17 @@ public class TravelerSerializer {
     }
 
     private TravelerDataFrame buildTravelerMessagePart3(TravelerDataFrame dataFrame, JSONObject ob){
-        ArrayList<String> p3 = null;
+        ArrayList<String> p3 = new ArrayList<>();
 
         String sspMsgRights1 = ob.getJSONObject("content").getString("sspMsgRights1");
         validateHeaderIndex(sspMsgRights1);
         p3.add(sspMsgRights1);
-        dataFrame.setSspMsgRights1(new SSPindex(Short.valueOf(sspMsgRights1)));
+        dataFrame.setSspMsgRights1(new SSPindex(Short.parseShort(sspMsgRights1)));
 
         String sspMsgRights2 = ob.getJSONObject("content").getString("sspMsgRights2");
         validateHeaderIndex(sspMsgRights2);
         p3.add(sspMsgRights2);
-        dataFrame.setSspMsgRights2(new SSPindex(Short.valueOf(sspMsgRights1)));
+        dataFrame.setSspMsgRights2(new SSPindex(Short.parseShort(sspMsgRights1)));
 
         //Content choice
         boolean adv = ob.getJSONObject("content").isNull("advisory");
@@ -261,7 +261,7 @@ public class TravelerSerializer {
                     String code = ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
                     validateITISCodes(code);
                     p3.add(code);
-                    item.setItis(Long.getLong(code));
+                    item.setItis(Long.parseLong(code));
 
                 }
 
@@ -292,7 +292,7 @@ public class TravelerSerializer {
                     String code = ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
                     validateITISCodes(code);
                     p3.add(code);
-                    item.setItis(Long.getLong(code));
+                    item.setItis(Long.parseLong(code));
 
                 }
                 // TODO No sure where content is set
@@ -323,7 +323,7 @@ public class TravelerSerializer {
                     String code = ob.getJSONObject("content").getJSONObject("advisory").getJSONObject(it).getString("ITISCodes");
                     validateITISCodes(code);
                     p3.add(code);
-                    item.setItis(Long.getLong(code));
+                    item.setItis(Long.parseLong(code));
 
 
                 }
