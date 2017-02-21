@@ -31,7 +31,7 @@ public class TravelerSerializer {
         //Get fully populated TIMcontent string
         JSONObject obj = new JSONObject(jsonInfo);
 
-        int frameList = obj.getJSONObject("timContent").getJSONObject("travelerDataFrame").length(); //Check the dataframe count
+        int frameList = obj.getJSONObject("timContent").getJSONArray("travelerDataFrame").length(); //Check the dataframe count
 
         //Populate pojo's for TIM
         String msgcnt = obj.getJSONObject("timContent").getString("msgcnt");
