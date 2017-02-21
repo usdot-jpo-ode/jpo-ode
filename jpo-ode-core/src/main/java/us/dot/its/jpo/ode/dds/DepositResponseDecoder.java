@@ -14,29 +14,30 @@
  * Contributors:
  *     Booz | Allen | Hamilton - initial API and implementation
  *******************************************************************************/
-package us.dot.its.jpo.ode.dds.wsclient;
+package us.dot.its.jpo.ode.dds;
 
 import javax.websocket.DecodeException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.model.ControlMessage;
+import us.dot.its.jpo.ode.eventlog.EventLogger;
 
-public class DepositResponseDecoder extends DdsDecoder {
+public class DepositResponseDecoder extends DdsStatusMessageDecoder {
 
    private static final Logger logger = LoggerFactory
          .getLogger(DepositResponseDecoder.class);
 
    @Override
-   public ControlMessage decode(String message) throws DecodeException {
-      ControlMessage controlMsg;
+   public DdsMessage decode(String message) throws DecodeException {
+      DdsMessage statusMsg;
       try {
-         controlMsg = super.decode(message);
-         logger.debug("Deposit Response Received: {}", message);
+         statusMsg = super.decode(message);
+         logger.info("Deposit Response Received: {}", message);
+         EventLogger.logger.info("Deposit Response Received: {}", message);
       } finally {
       }
-      return controlMsg;
+      return statusMsg;
    }
 
    @Override

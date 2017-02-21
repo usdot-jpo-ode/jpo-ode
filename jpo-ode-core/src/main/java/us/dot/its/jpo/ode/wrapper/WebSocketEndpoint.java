@@ -41,9 +41,9 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.util.WebSocketUtils;
 
-public class WebSocketClient<T> extends Endpoint {
+public class WebSocketEndpoint<T> extends Endpoint {
    private static final Logger logger = LoggerFactory
-         .getLogger(WebSocketClient.class);
+         .getLogger(WebSocketEndpoint.class);
 
    private URI uri;
    private SSLContext sslContext;
@@ -74,7 +74,7 @@ public class WebSocketClient<T> extends Endpoint {
     *    - If uri string is null 
     *    - If the uri string violates RFC 2396, as augmented by the above deviations 
     */
-   public WebSocketClient(String uri, SSLContext sslContext,
+   public WebSocketEndpoint(String uri, SSLContext sslContext,
          Map<String, Object> userProperties,
          Map<String, Map<String, String>> wsHeaders,
          WebSocketMessageHandler<T> handler,
@@ -100,7 +100,7 @@ public class WebSocketClient<T> extends Endpoint {
     * @param decoders
     *           - the incoming message decoders (or null if no decoder needed)
     */
-   public WebSocketClient(URI uri, SSLContext sslContext,
+   public WebSocketEndpoint(URI uri, SSLContext sslContext,
          Map<String, Object> userProperties,
          Map<String, Map<String, String>> wsHeaders,
          WebSocketMessageHandler<T> handler,
@@ -145,7 +145,7 @@ public class WebSocketClient<T> extends Endpoint {
     * @param uri - URI of the WebSocket server
     * @return - this client object
     */
-   public WebSocketClient<T> setUri(URI uri) {
+   public WebSocketEndpoint<T> setUri(URI uri) {
       this.uri = uri;
       return this;
    }
@@ -157,7 +157,7 @@ public class WebSocketClient<T> extends Endpoint {
     *    - If uri string is null 
     *    - If the uri string violates RFC 2396, as augmented by the above deviations 
     */
-   public WebSocketClient<T> setUri(String uri) throws WebSocketException {
+   public WebSocketEndpoint<T> setUri(String uri) throws WebSocketException {
       try {
          this.uri = new URI(uri);
       } catch (Exception e) {
@@ -170,7 +170,7 @@ public class WebSocketClient<T> extends Endpoint {
       return sslContext;
    }
 
-   public WebSocketClient<T> setSslContext(SSLContext sslContext) {
+   public WebSocketEndpoint<T> setSslContext(SSLContext sslContext) {
       this.sslContext = sslContext;
       return this;
    }
@@ -179,7 +179,7 @@ public class WebSocketClient<T> extends Endpoint {
       return userProperties;
    }
 
-   public WebSocketClient<T> setUserProperties(
+   public WebSocketEndpoint<T> setUserProperties(
          Map<String, Object> userProperties) {
       this.userProperties = userProperties;
       return this;
@@ -189,7 +189,7 @@ public class WebSocketClient<T> extends Endpoint {
       return wsHeaders;
    }
 
-   public WebSocketClient<T> setWsHeaders(
+   public WebSocketEndpoint<T> setWsHeaders(
          Map<String, Map<String, String>> wsHeaders) {
       this.wsHeaders = wsHeaders;
       return this;
@@ -199,7 +199,7 @@ public class WebSocketClient<T> extends Endpoint {
       return handler;
    }
 
-   public WebSocketClient<T> setHandler(WebSocketMessageHandler<T> handler) {
+   public WebSocketEndpoint<T> setHandler(WebSocketMessageHandler<T> handler) {
       this.handler = handler;
       return this;
    }
@@ -208,7 +208,7 @@ public class WebSocketClient<T> extends Endpoint {
       return decoders;
    }
 
-   public WebSocketClient<T> setDecoders(List<Class<? extends Decoder>> decoders) {
+   public WebSocketEndpoint<T> setDecoders(List<Class<? extends Decoder>> decoders) {
       this.decoders = decoders;
       return this;
    }

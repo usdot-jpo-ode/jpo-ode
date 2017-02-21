@@ -14,7 +14,7 @@
  * Contributors:
  *     Booz | Allen | Hamilton - initial API and implementation
  *******************************************************************************/
-package us.dot.its.jpo.ode.dds.wsclient;
+package us.dot.its.jpo.ode.dds;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -29,35 +29,34 @@ import javax.net.ssl.SSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.dds.wsclient.CASClient.CASException;
-import us.dot.its.jpo.ode.model.ControlMessage;
+import us.dot.its.jpo.ode.dds.CASClient.CASException;
 import us.dot.its.jpo.ode.wrapper.SSLBuilder;
 import us.dot.its.jpo.ode.wrapper.SSLBuilder.SSLException;
-import us.dot.its.jpo.ode.wrapper.WebSocketClient;
+import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint;
 import us.dot.its.jpo.ode.wrapper.WebSocketMessageDecoder;
+import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
 
-public class DdsClientFactory {
+public class DdsClient<MessageType> {
 
    private static final Logger logger = LoggerFactory
-         .getLogger(DdsClientFactory.class);
+         .getLogger(DdsClient.class);
 
-   private static URI uri = null;
-   private static InputStream keystoreStream = null;
-   private static SSLContext sslContext = null;
+   private URI uri = null;
+   private InputStream keystoreStream = null;
+   private SSLContext sslContext = null;
+
+   private CASClient casClient;
    
 
-   public static WebSocketClient<ControlMessage> create(
+   public DdsClient(
          String ddsCasUrl,
          String ddsCasUsername,
          String ddsCasPassword,
          String websocketURL,
          String keystoreFile,
-         String keystorePass,
-         Class<? extends WebSocketMessageDecoder<?>> decoderClass)
+         String keystorePass)
          throws DdsClientException {
 
-      CASClient casClient = null;
-      WebSocketClient<ControlMessage> ddsClient = null;
       try {
 
          init(websocketURL,
@@ -69,30 +68,16 @@ public class DdsClientFactory {
                ddsCasUrl,
                ddsCasUsername,
                ddsCasPassword);
-         casClient.login(websocketURL);
          
-         Map<String, Map<String, String>> cookieHeader = Collections
-               .singletonMap("Cookie", Collections.singletonMap(
-                     CASClient.JSESSIONID_KEY, casClient.getSessionID()));
-
-         List<Class<? extends WebSocketMessageDecoder<?>>> decoders = 
-               new ArrayList<Class<? extends WebSocketMessageDecoder<?>>>();
-         decoders.add(decoderClass);
-         
-         ddsClient = new WebSocketClient<ControlMessage>(
-               uri, sslContext, null,
-               cookieHeader, new ControlMessageHandler(),
-               decoders);
-         
-         logger.info("DDS Client created.");
+         logger.info("CAS Client created.");
 
       } catch (Exception e) {
          throw new DdsClientException(e);
       }
-      return ddsClient;
    }
 
-   private static void init(String websocketURL,
+   private void init(
+         String websocketURL,
          String keystoreFile,
          String keystorePass
          ) throws URISyntaxException,
@@ -109,6 +94,37 @@ public class DdsClientFactory {
          sslContext = SSLBuilder.buildSSLContext(keystoreStream, keystorePass);
       }
 
+   }
+
+   public WebSocketEndpoint<MessageType> login (
+         Class<? extends WebSocketMessageDecoder<?>> decoderClass, 
+         WebSocketMessageHandler<MessageType> messageHandler)
+         throws DdsClientException {
+
+      WebSocketEndpoint<MessageType> ddsClient = null;
+      try {
+
+         casClient.login(uri.toString());
+
+         Map<String, Map<String, String>> cookieHeader = Collections
+               .singletonMap("Cookie", Collections.singletonMap(
+                     CASClient.JSESSIONID_KEY, casClient.getSessionID()));
+
+         List<Class<? extends WebSocketMessageDecoder<?>>> decoders = 
+               new ArrayList<Class<? extends WebSocketMessageDecoder<?>>>();
+         decoders.add(decoderClass);
+         
+         ddsClient = new WebSocketEndpoint<MessageType>(
+               uri, sslContext, null,
+               cookieHeader, messageHandler,
+               decoders);
+         
+         logger.info("DDS Client created.");
+
+      } catch (Exception e) {
+         throw new DdsClientException(e);
+      }
+      return ddsClient;
    }
 
    public static class DdsClientException extends Exception {

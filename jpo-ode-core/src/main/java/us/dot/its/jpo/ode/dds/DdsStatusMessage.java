@@ -14,33 +14,34 @@
  * Contributors:
  *     Booz | Allen | Hamilton - initial API and implementation
  *******************************************************************************/
-package us.dot.its.jpo.ode.model;
+package us.dot.its.jpo.ode.dds;
 
-import us.dot.its.jpo.ode.model.DdsRequest.Dialog;
+import us.dot.its.jpo.ode.dds.DdsRequest.Dialog;
+import us.dot.its.jpo.ode.model.StatusTag;
 
-public class ControlMessage {
-   private ControlTag tag;
+public class DdsStatusMessage implements DdsMessage {
+   private StatusTag tag;
    private String encoding;
    private Dialog dialog;
    private long recordCount;
    private String connectionDetails;
 
-   public ControlMessage() {
+   public DdsStatusMessage() {
       super();
    }
 
-   public ControlMessage(ControlTag tag, String encoding, Dialog dialog) {
+   public DdsStatusMessage(StatusTag tag, String encoding, Dialog dialog) {
       super();
       this.tag = tag;
       this.encoding = encoding;
       this.dialog = dialog;
    }
 
-   public ControlTag getTag() {
+   public StatusTag getTag() {
       return tag;
    }
 
-   public ControlMessage setTag(ControlTag tag) {
+   public DdsStatusMessage setTag(StatusTag tag) {
       this.tag = tag;
       return this;
    }
@@ -49,7 +50,7 @@ public class ControlMessage {
       return encoding;
    }
 
-   public ControlMessage setEncoding(String encoding) {
+   public DdsStatusMessage setEncoding(String encoding) {
       this.encoding = encoding;
       return this;
    }
@@ -58,7 +59,7 @@ public class ControlMessage {
       return dialog;
    }
 
-   public ControlMessage setDialog(Dialog dialog) {
+   public DdsStatusMessage setDialog(Dialog dialog) {
       this.dialog = dialog;
       return this;
    }
@@ -67,7 +68,7 @@ public class ControlMessage {
       return recordCount;
    }
 
-   public ControlMessage setRecordCount(long recordCount) {
+   public DdsStatusMessage setRecordCount(long recordCount) {
       this.recordCount = recordCount;
       return this;
    }
@@ -76,9 +77,16 @@ public class ControlMessage {
       return connectionDetails;
    }
 
-   public ControlMessage setConnectionDetails(String connectionDetails) {
+   public DdsStatusMessage setConnectionDetails(String connectionDetails) {
       this.connectionDetails = connectionDetails;
       return this;
    }
 
+   @Override
+   public String toString() {
+      return "DdsStatusMessage [tag=" + tag + ", encoding=" + encoding + ", dialog=" + dialog + ", recordCount="
+            + recordCount + ", connectionDetails=" + connectionDetails + "]";
+   }
+
+   
 }
