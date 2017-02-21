@@ -289,9 +289,9 @@
           ]
         },
         "content": {
-          "sspMsgRights1": "0",
-          "sspMsgRights2": "0",
-          "content": {
+          "sspMsgRights1": "1",
+          "sspMsgRights2": "2",
+          "contentType": {
             "advisory": [
               {
                 "ITISCodes": "1",
