@@ -22,6 +22,7 @@ import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.snmp.TimManagerService;
 import us.dot.its.jpo.ode.snmp.TimParameters;
 
+
 @Controller
 public class TravelerMessageController {
 
@@ -43,7 +44,7 @@ public class TravelerMessageController {
       }
    }
 
-   @ResponseBody
+    @ResponseBody
    @RequestMapping(value = "/tim", method = RequestMethod.POST, produces = "application/json")
    public String timMessage(@RequestBody String jsonString) 
          throws Exception {
@@ -51,12 +52,12 @@ public class TravelerMessageController {
       // TODO Loop through all RSUs in the JSON and create and send an SNMP
       // message to each
 
-      if (jsonString == null) {
+        if (jsonString == null) {
             throw new IllegalArgumentException("[ERROR] TIM CONTROLLER - Endpoint received null TIM");
-      }
+        }
 
       // Step 1 - Serialize the JSON into a TIM object
-      TravelerSerializer timObject = new TravelerSerializer(jsonString);
+        TravelerSerializer timObject = new TravelerSerializer(jsonString);
         logger.debug("TIM CONTROLLER - Serialized TIM: {}", timObject.getTravelerInformationObject().toString());
 
       // Step 2 - Populate the SnmpProperties object with SNMP preferences
@@ -78,13 +79,13 @@ public class TravelerMessageController {
          rsuSRMPayload = timObject.getHexTravelerInformation();
          if (rsuSRMPayload == null) {
             throw new TimMessageException("Returned null string");
-         }
+    }
       } catch (Exception e) {
          logger.error("TIM CONTROLLER - Failed to encode TIM: {}", e);
          return "{\"success\": false}";
       }
       logger.debug("TIM CONTROLLER - Encoded Hex TIM: {}", rsuSRMPayload);
-
+    
       // Step 3 - Populate the TimParameters object with OID values
       JSONObject snmpParams = obj.getJSONObject("snmp");
 
