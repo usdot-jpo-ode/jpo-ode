@@ -61,7 +61,7 @@ public class TimManagerService {
     private static ScopedPDU createPDU(TimParameters params) {
         
         //////////////////////////////
-        // - OID equivalence list - //
+        // - OID examples         - //
         //////////////////////////////
         // rsuSRMStatus.3 = 4 
         //     --> 1.4.1.11.3 = 4
