@@ -22,7 +22,7 @@ public class DdsSubRequest extends DdsRequest {
 
    @Override
    public String toString() {
-      return "SUBSCRIBE:" + this.toJson();
+      return "SUBSCRIBE:" + this.toJson(false);
    }
 
    @Override

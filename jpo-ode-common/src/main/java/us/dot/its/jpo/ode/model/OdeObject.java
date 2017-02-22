@@ -24,12 +24,16 @@ public class OdeObject implements Serializable {
    private static final long serialVersionUID = 7514526408925039533L;
 
    public String toJson() {
-      return JsonUtils.toJson(this);
+      return JsonUtils.toJson(this, false);
+   }
+
+   public String toJson(boolean verbose) {
+      return JsonUtils.toJson(this, verbose);
    }
 
    @Override
    public String toString() {
-      return this.toJson();
+      return this.toJson(true);
    }
 
 }

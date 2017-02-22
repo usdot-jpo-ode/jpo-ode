@@ -14,7 +14,7 @@ public abstract class ImporterFileService implements ImporterService {
      * @param dir
      * @throws IOException
      */
-    public void createDirectoryRecursively(Path dir) throws IOException {
+    protected void createDirectoryRecursively(Path dir) throws IOException {
 
         // Attempt to create a directory
         try {
@@ -38,7 +38,7 @@ public abstract class ImporterFileService implements ImporterService {
      * @param backup Path of backup directory
      * @throws IOException
      */
-    public void backupFile(Path file, Path backupDir) throws IOException {
+    protected void backupFile(Path file, Path backupDir) throws IOException {
 
         // Check that the destination directory actually exists before moving the file
         if (!backupDir.toFile().exists()) {

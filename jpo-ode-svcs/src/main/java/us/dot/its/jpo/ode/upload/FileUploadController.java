@@ -36,9 +36,9 @@ public class FileUploadController {
     private static Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
     private final StorageService storageService;
-    private ExecutorService importer1;
-    private ExecutorService importer2;
-    private ExecutorService exporter;
+    private ExecutorService bsmImporter;
+    private ExecutorService messageFrameImporter;
+    private ExecutorService bsmExporter;
 
     @Autowired
     public FileUploadController(StorageService storageService, OdeProperties odeProperties,
@@ -46,9 +46,9 @@ public class FileUploadController {
         super();
         this.storageService = storageService;
 
-        importer1 = Executors.newSingleThreadExecutor();
-        importer2 = Executors.newSingleThreadExecutor();
-        exporter = Executors.newSingleThreadExecutor();
+        bsmImporter = Executors.newSingleThreadExecutor();
+        messageFrameImporter = Executors.newSingleThreadExecutor();
+        bsmExporter = Executors.newSingleThreadExecutor();
 
         Path bsmPath = Paths.get(odeProperties.getUploadLocationRoot(), odeProperties.getUploadLocationBsm());
         logger.debug("UPLOADER - Bsm directory: {}", bsmPath);
@@ -60,16 +60,16 @@ public class FileUploadController {
         Path backupPath = Paths.get(odeProperties.getUploadLocationRoot(), "backup");
         logger.debug("UPLOADER - Backup directory: {}", backupPath);
 
-        importer1.submit(new ImporterWatchService(bsmPath, backupPath, new BsmCoder(odeProperties),
+        bsmImporter.submit(new ImporterWatchService(bsmPath, backupPath, new BsmCoder(odeProperties),
                 LoggerFactory.getLogger(ImporterWatchService.class), odeProperties.filetypes,
                 odeProperties.KAFKA_TOPIC_J2735_BSM));
 
-        importer2.submit(new ImporterWatchService(messageFramePath, backupPath, new MessageFrameCoder(odeProperties),
+        messageFrameImporter.submit(new ImporterWatchService(messageFramePath, backupPath, new MessageFrameCoder(odeProperties),
                 LoggerFactory.getLogger(ImporterWatchService.class), odeProperties.filetypes,
                 odeProperties.KAFKA_TOPIC_J2735_BSM));
 
         try {
-            exporter.submit(new Exporter(odeProperties, template, OUTPUT_TOPIC));
+            bsmExporter.submit(new Exporter(odeProperties, template, OUTPUT_TOPIC));
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             logger.error("Error launching Exporter", e);
         }

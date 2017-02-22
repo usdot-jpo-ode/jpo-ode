@@ -1,6 +1,9 @@
 package us.dot.its.jpo.ode.traveler;
 
-import com.oss.asn1.PERUnalignedCoder;
+import com.oss.asn1.Coder;
+import com.oss.asn1.EncodeFailedException;
+import com.oss.asn1.EncodeNotSupportedException;
+import org.apache.commons.codec.binary.Hex;
 import org.json.JSONObject;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.*;
@@ -9,8 +12,8 @@ import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.MsgId;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Regions;
 import us.dot.its.jpo.ode.j2735.itis.ITIScodesAndText;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-
 
 
 /**
@@ -26,7 +29,6 @@ public class TravelerSerializer {
     public final int EXITSERVICE = 4;
     int contentType;
     public TravelerSerializer(String jsonInfo){
-        PERUnalignedCoder coder = J2735.getPERUnalignedCoder();
 
         travelerInfo = new TravelerInformation();
 
@@ -54,7 +56,9 @@ public class TravelerSerializer {
             validateHeaderIndex(index);
 
             part1.setSspLocationRights(new SSPindex(Integer.parseInt(index)));
-            part1.setRegions(new Regions());
+            Regions regions = new Regions();
+            regions.add(new GeographicalPath());
+            part1.setRegions(regions);
             //TODO populate part 2 information
 
 
@@ -76,28 +80,7 @@ public class TravelerSerializer {
 
         // Adding data frames into TIM Object
         travelerInfo.setDataFrames(dataFrames);
-        // Standard Tim Message
-//        String timHex = "3081C68001108109000000000000003714830101A481AE3081AB800102A11BA119A0108004194FBA1F8104CE45CE2382020A0681020006820102820207DE830301C17084027D00850102A6108004194FC1988104CE45DA4082020A008702016E880100A92430228002000EA21CA01AA31804040CE205A104040ADA04F70404068004D60404034D0704AA3AA0383006A004800235293006A0048002010C3006A004800231283006A004800222113006A0048002010C3006A004800231203006A0048002221185021001";
-//        byte [] tim_ba = HexTool.parseHex(timHex, false);
-//        InputStream ins = new ByteArrayInputStream(tim_ba);
-//
-//        travelerInfo = new TravelerInformation();
-//
-//        System.out.print(travelerInfo);
-//        try {
-//            coder.decode(ins, travelerInfo);
-//
-//        } catch (Exception e) {
-////            System.out.print( e);
-//        } finally {
-//            try {
-//                ins.close();
-//            } catch (IOException e) {
-//            }
-//        }
 
-//        MsgCount cnt = new MsgCount(Integer.parseInt(msgcnt));
-//        travelerInfo.setMsgCnt(cnt);
     }
 
     private TravelerInformation.Regional setRegional(JSONObject dataFrame){
@@ -396,8 +379,17 @@ public class TravelerSerializer {
     }
 
     public TravelerInformation getTravelerInformationObject(){
+
         return travelerInfo;
     }
+    public String getHexTravelerInformation() throws EncodeFailedException, EncodeNotSupportedException {
+        Coder coder = J2735.getPERUnalignedCoder();
+        ByteArrayOutputStream sink = new ByteArrayOutputStream();
+        coder.encode(travelerInfo, sink);
+        byte[] bytes = sink.toByteArray();
+        return Hex.encodeHexString(bytes);
+    }
+
 
     public void validateMessageCount(String msg){
         int myMsg = Integer.parseInt(msg);
