@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class TestSnmpController {
+    
+    private TestSnmpController() {}
 
     @GetMapping("/test/snmp/{ip}/{message}")
     @ResponseBody

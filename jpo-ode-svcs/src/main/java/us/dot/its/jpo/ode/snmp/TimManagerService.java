@@ -45,7 +45,7 @@ public class TimManagerService {
         ScopedPDU pdu = createPDU(params);
         try {
             response = session.set(pdu, session.snmp, session.transport, session.target);
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             logger.error("TIM SERVICE - Error while sending PDU: {}", e);
         }
         

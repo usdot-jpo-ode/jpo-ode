@@ -42,6 +42,7 @@ public abstract class AbstractCoder implements Coder {
         messageProducerPool = new SerializableMessageProducerPool<>(odeProperties);
     }
 
+    @Override
     public void decodeFromHexAndPublish(InputStream is, String topic) throws IOException {
        String line = null;
        Asn1Object decoded = null;
@@ -66,6 +67,7 @@ public abstract class AbstractCoder implements Coder {
        }
    }
 
+    @Override
    public void decodeFromStreamAndPublish(InputStream is, String topic) throws IOException {
        Asn1Object decoded = null;
 
@@ -83,6 +85,7 @@ public abstract class AbstractCoder implements Coder {
        }
    }
 
+   @Override
    public void publish(String topic, String msg) {
         MessageProducer
                 .defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
@@ -91,6 +94,7 @@ public abstract class AbstractCoder implements Coder {
         logger.debug("Published: {}", msg);
     }
 
+   @Override
     public void publish(String topic, byte[] msg) {
         MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
         producer.send(topic, null, msg);
