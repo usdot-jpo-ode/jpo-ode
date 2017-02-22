@@ -1,18 +1,14 @@
 package us.dot.its.jpo.ode.traveler;
 
 import com.oss.asn1.PERUnalignedCoder;
-import com.oss.util.HexTool;
 import org.json.JSONObject;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.*;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Content;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.MsgId;
-
+import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Regions;
 import us.dot.its.jpo.ode.j2735.itis.ITIScodesAndText;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 
@@ -56,7 +52,9 @@ public class TravelerSerializer {
             //Populate pojo's for part2-region
             String index = obj.getJSONObject("timContent").getJSONArray("travelerDataFrame").getJSONObject(0).getJSONObject("region").getString("sspindex");
             validateHeaderIndex(index);
-            part1.setSspLocationRights(new SSPindex(Short.valueOf(index)));
+
+            part1.setSspLocationRights(new SSPindex(Integer.parseInt(index)));
+            part1.setRegions(new Regions());
             //TODO populate part 2 information
 
 
@@ -79,24 +77,24 @@ public class TravelerSerializer {
         // Adding data frames into TIM Object
         travelerInfo.setDataFrames(dataFrames);
         // Standard Tim Message
-        String timHex = "3081C68001108109000000000000003714830101A481AE3081AB800102A11BA119A0108004194FBA1F8104CE45CE2382020A0681020006820102820207DE830301C17084027D00850102A6108004194FC1988104CE45DA4082020A008702016E880100A92430228002000EA21CA01AA31804040CE205A104040ADA04F70404068004D60404034D0704AA3AA0383006A004800235293006A0048002010C3006A004800231283006A004800222113006A0048002010C3006A004800231203006A0048002221185021001";
-        byte [] tim_ba = HexTool.parseHex(timHex, false);
-        InputStream ins = new ByteArrayInputStream(tim_ba);
-
-        travelerInfo = new TravelerInformation();
-
-        System.out.print(travelerInfo);
-        try {
-            coder.decode(ins, travelerInfo);
-
-        } catch (Exception e) {
-//            System.out.print( e);
-        } finally {
-            try {
-                ins.close();
-            } catch (IOException e) {
-            }
-        }
+//        String timHex = "3081C68001108109000000000000003714830101A481AE3081AB800102A11BA119A0108004194FBA1F8104CE45CE2382020A0681020006820102820207DE830301C17084027D00850102A6108004194FC1988104CE45DA4082020A008702016E880100A92430228002000EA21CA01AA31804040CE205A104040ADA04F70404068004D60404034D0704AA3AA0383006A004800235293006A0048002010C3006A004800231283006A004800222113006A0048002010C3006A004800231203006A0048002221185021001";
+//        byte [] tim_ba = HexTool.parseHex(timHex, false);
+//        InputStream ins = new ByteArrayInputStream(tim_ba);
+//
+//        travelerInfo = new TravelerInformation();
+//
+//        System.out.print(travelerInfo);
+//        try {
+//            coder.decode(ins, travelerInfo);
+//
+//        } catch (Exception e) {
+////            System.out.print( e);
+//        } finally {
+//            try {
+//                ins.close();
+//            } catch (IOException e) {
+//            }
+//        }
 
 //        MsgCount cnt = new MsgCount(Integer.parseInt(msgcnt));
 //        travelerInfo.setMsgCnt(cnt);
@@ -208,12 +206,12 @@ public class TravelerSerializer {
         validateHeaderIndex(sspMsgRights1);
         p3.add(sspMsgRights1);
         System.out.println("msgrights: "+sspMsgRights1);
-        dataFrame.setSspMsgRights1(new SSPindex(Short.parseShort(sspMsgRights1)));
+        dataFrame.setSspMsgRights1(new SSPindex(Integer.parseInt(sspMsgRights1)));
 
         String sspMsgRights2 = ob.getJSONObject("content").getString("sspMsgRights2");
         validateHeaderIndex(sspMsgRights2);
         p3.add(sspMsgRights2);
-        dataFrame.setSspMsgRights2(new SSPindex(Short.parseShort(sspMsgRights1)));
+        dataFrame.setSspMsgRights2(new SSPindex(Integer.parseInt(sspMsgRights2)));
         JSONObject pos = ob.getJSONObject("content").getJSONObject("contentType");
 
         //Content choice
@@ -222,11 +220,20 @@ public class TravelerSerializer {
         int silen = pos.getJSONArray("genericSign").length();
         int splen = pos.getJSONArray("speedLimit").length();
         int elen = pos.getJSONArray("exitService").length();
+
         boolean adv = false;
         boolean work = false;
         boolean sign = false;
         boolean speed = false;
         boolean exitServ = false;
+
+        System.out.println(alen);
+        System.out.println(wlen);
+        System.out.println(silen);
+        System.out.println(splen);
+        System.out.println(elen);
+
+
         if (alen > 0){
            adv = true;
         }
@@ -341,18 +348,18 @@ public class TravelerSerializer {
             int len = pos.getJSONArray("advisory").length();
             ITIScodesAndText itisText = new ITIScodesAndText();
 
-            for (int i = 1; i <=len; i++)
+            for (int i = 0; i <len; i++)
             {
                 ITIScodesAndText.Sequence_ seq = new ITIScodesAndText.Sequence_();
                 ITIScodesAndText.Sequence_.Item item = new ITIScodesAndText.Sequence_.Item();
 
-                if (pos.getJSONArray("advisory").getJSONObject(i).isNull("ITIStext"))
-                {
+//                if (pos.getJSONArray("advisory").getJSONObject(i).isNull("ITIStext"))
+//                {
                     String code = pos.getJSONArray("advisory").getJSONObject(i).getString("ITISCodes");
                     validateITISCodes(code);
                     p3.add(code);
-                    item.setItis(Long.parseLong(code));
-                }
+                    item.setItis(Integer.parseInt(code));
+//                }
                 seq.setItem(item);
 
                 // TODO Not Exaclty sure where this goes into the ITIS Object
