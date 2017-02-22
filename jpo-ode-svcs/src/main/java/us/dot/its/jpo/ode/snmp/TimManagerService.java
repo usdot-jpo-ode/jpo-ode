@@ -2,6 +2,8 @@ package us.dot.its.jpo.ode.snmp;
 
 import java.io.IOException;
 
+import javax.xml.bind.DatatypeConverter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
@@ -83,14 +85,14 @@ public class TimManagerService {
         //      --> 1.4.1.10.3 = 1
         //////////////////////////////
         
-        VariableBinding rsuSRMPsid = new VariableBinding(new OID("1.0.15628.4.1.4.1.2.3"), new OctetString(params.rsuSRMPsid));
+        VariableBinding rsuSRMPsid = new VariableBinding(new OID("1.0.15628.4.1.4.1.2.3"), new OctetString(DatatypeConverter.parseHexBinary(params.rsuSRMPsid)));
         VariableBinding rsuSRMDsrcMsgId = new VariableBinding(new OID("1.0.15628.4.1.4.1.3.3"), new Integer32(params.rsuSRMDsrcMsgId));
         VariableBinding rsuSRMTxMode = new VariableBinding(new OID("1.0.15628.4.1.4.1.4.3"), new Integer32(params.rsuSRMTxMode));
         VariableBinding rsuSRMTxChannel = new VariableBinding(new OID("1.0.15628.4.1.4.1.5.3"), new Integer32(params.rsuSRMTxChannel));
         VariableBinding rsuSRMTxInterval = new VariableBinding(new OID("1.0.15628.4.1.4.1.6.3"), new Integer32(params.rsuSRMTxInterval));
-        VariableBinding rsuSRMDeliveryStart = new VariableBinding(new OID("1.0.15628.4.1.4.1.7.3"), new OctetString(params.rsuSRMDeliveryStart));
-        VariableBinding rsuSRMDeliveryStop = new VariableBinding(new OID("1.0.15628.4.1.4.1.8.3"), new OctetString(params.rsuSRMDeliveryStop));
-        VariableBinding rsuSRMPayload = new VariableBinding(new OID("1.0.15628.4.1.4.1.9.3"), new OctetString(params.rsuSRMPayload));
+        VariableBinding rsuSRMDeliveryStart = new VariableBinding(new OID("1.0.15628.4.1.4.1.7.3"), new OctetString(DatatypeConverter.parseHexBinary(params.rsuSRMDeliveryStart)));
+        VariableBinding rsuSRMDeliveryStop = new VariableBinding(new OID("1.0.15628.4.1.4.1.8.3"), new OctetString(DatatypeConverter.parseHexBinary(params.rsuSRMDeliveryStop)));
+        VariableBinding rsuSRMPayload = new VariableBinding(new OID("1.0.15628.4.1.4.1.9.3"), new OctetString(DatatypeConverter.parseHexBinary(params.rsuSRMPayload)));
         VariableBinding rsuSRMEnable = new VariableBinding(new OID("1.0.15628.4.1.4.1.10.3"), new Integer32(params.rsuSRMEnable));
         VariableBinding rsuSRMStatus = new VariableBinding(new OID("1.0.15628.4.1.4.1.11.3"), new Integer32(params.rsuSRMStatus));
         
