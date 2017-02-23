@@ -2,6 +2,8 @@ package us.dot.its.jpo.ode.traveler;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
@@ -17,22 +19,24 @@ import us.dot.its.jpo.ode.snmp.TimParameters;
 
 @Controller
 public class TravelerMessageController {
-
-
-    private static final String MESSAGE_DIR = "./src/test/resources/CVMessages/";
+    
+    private TravelerMessageController() {}
 
     @RequestMapping(value = "/travelerMessage", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public static String timMessage(@RequestBody String jsonString ) throws Exception {
+    public static String timMessage(@RequestBody String jsonString ) {
+        
+        Logger logger = LoggerFactory.getLogger(TravelerMessageController.class);
 
         if (jsonString == null) {
             throw new IllegalArgumentException("[ERROR] Endpoint received null TIM");
         }
-
+        
+        // Step 1 - Serialize the JSON into a TIM object
         TravelerSerializer timObject = new TravelerSerializer(jsonString);
         System.out.println(timObject.getTravelerInformationObject());
 
-        System.out.print(timObject.getHexTravelerInformation());
+
 
         JSONObject obj = new JSONObject(jsonString);
         JSONArray rsuList = obj.getJSONArray("RSUs");
@@ -40,15 +44,34 @@ public class TravelerMessageController {
 
         // TODO Needs to be a for loop
 
-        // SNMP Properties
+
         String ip = rsuList.getJSONObject(0).getString("target");
         String user = rsuList.getJSONObject(0).getString("username");
         String pass = rsuList.getJSONObject(0).getString("password");
         int retries = Integer.parseInt(rsuList.getJSONObject(0).getString("retries"));
         int timeout = Integer.parseInt(rsuList.getJSONObject(0).getString("timeout"));
 
-        // TIM parameters
-        String rsuSRMPayload = timObject.getHexTravelerInformation();
+        Address addr = GenericAddress.parse(ip + "/161");
+
+        SnmpProperties testProps = new SnmpProperties(addr, user, pass, retries, timeout);
+        logger.debug("TIM CONTROLLER - Serialized TIM: {}", timObject.getTravelerInformationObject().toString());
+        
+        // Step 2 - Encode the TIM object and then create the tim parameters object
+        String rsuSRMPayload = null;
+        try {
+            rsuSRMPayload = timObject.getHexTravelerInformation();
+            if (rsuSRMPayload == null) {
+                throw new TimMessageException("Returned null string"); 
+            }
+        } catch (Exception e) {
+            logger.error("TIM CONTROLLER - Failed to encode TIM: {}", e);
+            return "{\"success\": false}";
+        }
+        logger.debug("TIM CONTROLLER - Encoded Hex TIM: {}", rsuSRMPayload);
+        System.out.print(rsuSRMPayload);
+
+
+
         String rsuSRMPsid = snmpParams.getString("rsuid");
         int rsuSRMDsrcMsgId = Integer.parseInt(snmpParams.getString("msgid"));
         int rsuSRMTxMode = Integer.parseInt(snmpParams.getString("mode"));
@@ -58,27 +81,19 @@ public class TravelerMessageController {
         String rsuSRMDeliveryStop = snmpParams.getString("deliverystop");
         int rsuSRMEnable = Integer.parseInt(snmpParams.getString("enable"));
         int rsuSRMStatus = Integer.parseInt(snmpParams.getString("status"));
-
-
-
-        Address addr = GenericAddress.parse(ip + "/161");
-
-        SnmpProperties testProps = new SnmpProperties(addr, user, pass, retries, timeout);
+        
         TimParameters testParams = new TimParameters(rsuSRMPsid, rsuSRMDsrcMsgId, rsuSRMTxMode, rsuSRMTxChannel,
                 rsuSRMTxInterval, rsuSRMDeliveryStart, rsuSRMDeliveryStop, rsuSRMPayload,
                 rsuSRMEnable, rsuSRMStatus);
 
+        
+        // Step 4 - Send the request out
         ResponseEvent response = TimManagerService.createAndSend(testParams, testProps);
-
-
         if (response != null && response.getResponse() != null) {
-
             return response.getResponse().toString();
-
         } else {
-
+            logger.error("TIM CONTROLLER - Empty response from RSU");
             return "{\"success\": false}";
-
         }
     }
     
