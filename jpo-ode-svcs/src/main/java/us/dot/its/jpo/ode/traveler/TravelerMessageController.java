@@ -36,24 +36,34 @@ public class TravelerMessageController {
 
         JSONObject obj = new JSONObject(jsonString);
         JSONArray rsuList = obj.getJSONArray("RSUs");
+        JSONObject snmpParams= obj.getJSONObject("snmp");
 
-        // Needs to be a for loop
+        // TODO Needs to be a for loop
+
+        // SNMP Properties
         String ip = rsuList.getJSONObject(0).getString("target");
+        String user = rsuList.getJSONObject(0).getString("username");
+        String pass = rsuList.getJSONObject(0).getString("password");
+        int retries = Integer.parseInt(rsuList.getJSONObject(0).getString("retries"));
+        int timeout = Integer.parseInt(rsuList.getJSONObject(0).getString("timeout"));
 
-        String rsuSRMPsid = "8300";
-        int rsuSRMDsrcMsgId = 31;
-        int rsuSRMTxMode = 1;
-        int rsuSRMTxChannel = 178;
-        int rsuSRMTxInterval = 1;
-        String rsuSRMDeliveryStart = "010114111530";
-        String rsuSRMDeliveryStop = "010114130000";
+        // TIM parameters
         String rsuSRMPayload = timObject.getHexTravelerInformation();
-        int rsuSRMEnable = 1;
-        int rsuSRMStatus = 4;
+        String rsuSRMPsid = snmpParams.getString("rsuid");
+        int rsuSRMDsrcMsgId = Integer.parseInt(snmpParams.getString("msgid"));
+        int rsuSRMTxMode = Integer.parseInt(snmpParams.getString("mode"));
+        int rsuSRMTxChannel = Integer.parseInt(snmpParams.getString("channel"));
+        int rsuSRMTxInterval = Integer.parseInt(snmpParams.getString("interval"));
+        String rsuSRMDeliveryStart = snmpParams.getString("deliverystart");
+        String rsuSRMDeliveryStop = snmpParams.getString("deliverystop");
+        int rsuSRMEnable = Integer.parseInt(snmpParams.getString("enable"));
+        int rsuSRMStatus = Integer.parseInt(snmpParams.getString("status"));
+
+
 
         Address addr = GenericAddress.parse(ip + "/161");
 
-        SnmpProperties testProps = new SnmpProperties(addr, "v3user", "password");
+        SnmpProperties testProps = new SnmpProperties(addr, user, pass, retries, timeout);
         TimParameters testParams = new TimParameters(rsuSRMPsid, rsuSRMDsrcMsgId, rsuSRMTxMode, rsuSRMTxChannel,
                 rsuSRMTxInterval, rsuSRMDeliveryStart, rsuSRMDeliveryStop, rsuSRMPayload,
                 rsuSRMEnable, rsuSRMStatus);
