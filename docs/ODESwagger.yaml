@@ -26,7 +26,7 @@ paths:
           required: true
           schema: 
             $ref: '#/definitions/TravelerMessage'
-          
+         
       tags:
         - TIM
       responses:

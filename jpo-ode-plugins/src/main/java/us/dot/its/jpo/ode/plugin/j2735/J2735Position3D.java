@@ -21,116 +21,130 @@ import java.math.BigDecimal;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 public class J2735Position3D extends Asn1Object {
-	private static final long serialVersionUID = 1L;
-   
-   private BigDecimal latitude;  // in degrees
-   private BigDecimal longitude; // in degrees
-   private BigDecimal elevation; // in meters
+    private static final long serialVersionUID = 1L;
+
+    private BigDecimal latitude; // in degrees
+    private BigDecimal longitude; // in degrees
+    private BigDecimal elevation; // in meters
+
+    
+    public J2735Position3D() {
+      super();
+   }
 
    public J2735Position3D(BigDecimal latitude, BigDecimal longitude, BigDecimal elevation) {
-      super();
-      this.latitude = latitude;
-      this.longitude = longitude;
-      this.elevation = elevation;
-   }
+        super();
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.elevation = elevation;
+    }
 
-   public J2735Position3D(Long lat, Long lon, Long elev) {
-      // private OdePosition3D position;
-      //    Position3D ::=  SEQUENCE {
-      //       lat         Latitude,   -- in 1/10th micro degrees
-      //       long        Longitude,  -- in 1/10th micro degrees
-      //       elevation   Elevation   OPTIONAL  
-      //       }
-      //Latitude ::= INTEGER (-900000000..900000001)  
-      //      -- LSB = 1/10 micro degree
-      //      -- Providing a range of plus-minus 90 degrees
-      //Longitude ::= INTEGER (-1800000000..1800000001)  
-      //      -- LSB = 1/10 micro degree
-      //      -- Providing a range of plus-minus 180 degrees
-      // Elevation ::= OCTET STRING (SIZE(2))
-      // -- 1 decimeter LSB (10 cm) 
-      // -- Encode elevations from 0 to 6143.9 meters 
-      // -- above the reference ellipsoid as 0x0000 to 0xEFFF.  
-      // -- Encode elevations from -409.5 to -0.1 meters, 
-      // -- i.e. below the reference ellipsoid, as 0xF001 to 0xFFFF
-      // -- unknown as 0xF000
-      
-     setLatitude(lat != null ? BigDecimal.valueOf(lat, 7) : null);
-     setLongitude(lon != null ? BigDecimal.valueOf(lon, 7) : null);
-     if (elev != null) {
-        if (elev == 0xF000) {
-           setElevation(null);
-        } else if (elev >= 0x0000 && elev <= 0xEFFF) {
-           setElevation(BigDecimal.valueOf(elev, 1));
-        } else {
-           setElevation(BigDecimal.valueOf(-elev, 1));
+    public J2735Position3D(Long lat, Long lon, Long elev) {
+        // private OdePosition3D position;
+        // Position3D ::= SEQUENCE {
+        // lat Latitude, -- in 1/10th micro degrees
+        // long Longitude, -- in 1/10th micro degrees
+        // elevation Elevation OPTIONAL
+        // }
+        // Latitude ::= INTEGER (-900000000..900000001)
+        // -- LSB = 1/10 micro degree
+        // -- Providing a range of plus-minus 90 degrees
+        // Longitude ::= INTEGER (-1800000000..1800000001)
+        // -- LSB = 1/10 micro degree
+        // -- Providing a range of plus-minus 180 degrees
+        //Elevation ::= INTEGER (-4096..61439)
+        // -- In units of 10 cm steps above or below the reference ellipsoid
+        // -- Providing a range of -409.5 to + 6143.9 meters
+        // -- The value -4096 shall be used when Unknown is to be sent
+
+        if (lon != null) {
+            if (lon == 1800000001) {
+                setLongitude(null);
+            } else {
+                setLongitude(BigDecimal.valueOf(lon, 7));
+            }
         }
-     } else {
-        setElevation(null);
-     }
-   }
 
-   public BigDecimal getLatitude() {
-      return latitude;
-   }
+        if (lat != null) {
+            if (lat == 900000001) {
+                setLatitude(null);
+            } else {
+                setLatitude(BigDecimal.valueOf(lat, 7));
+            }
+        } else {
+            setLatitude(null);
+        }
 
-   public void setLatitude(BigDecimal latitude) {
-      this.latitude = latitude;
-   }
+        if (elev != null) {
+            if (elev == -4096) {
+                setElevation(null);
+            } else {
+                setElevation(BigDecimal.valueOf(elev, 1));
+            }
+        } else {
+            setElevation(null);
+        }
+    }
 
-   public BigDecimal getLongitude() {
-      return longitude;
-   }
+    public BigDecimal getLatitude() {
+        return latitude;
+    }
 
-   public void setLongitude(BigDecimal longitude) {
-      this.longitude = longitude;
-   }
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
+    }
 
-   public BigDecimal getElevation() {
-      return elevation;
-   }
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
 
-   public void setElevation(BigDecimal elevation) {
-      this.elevation = elevation;
-   }
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
 
-   @Override
-   public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result
-            + ((elevation == null) ? 0 : elevation.hashCode());
-      result = prime * result + ((latitude == null) ? 0 : latitude.hashCode());
-      result = prime * result
-            + ((longitude == null) ? 0 : longitude.hashCode());
-      return result;
-   }
+    public BigDecimal getElevation() {
+        return elevation;
+    }
 
-   @Override
-   public boolean equals(Object obj) {
-      if (this == obj)
-         return true;
-      if (obj == null)
-         return false;
-      if (getClass() != obj.getClass())
-         return false;
-      J2735Position3D other = (J2735Position3D) obj;
-      if (elevation == null) {
-         if (other.elevation != null)
+    public void setElevation(BigDecimal elevation) {
+        this.elevation = elevation;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((elevation == null) ? 0 : elevation.hashCode());
+        result = prime * result + ((latitude == null) ? 0 : latitude.hashCode());
+        result = prime * result + ((longitude == null) ? 0 : longitude.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
             return false;
-      } else if (!elevation.equals(other.elevation))
-         return false;
-      if (latitude == null) {
-         if (other.latitude != null)
+        if (getClass() != obj.getClass())
             return false;
-      } else if (!latitude.equals(other.latitude))
-         return false;
-      if (longitude == null) {
-         if (other.longitude != null)
+        J2735Position3D other = (J2735Position3D) obj;
+        if (elevation == null) {
+            if (other.elevation != null)
+                return false;
+        } else if (!elevation.equals(other.elevation))
             return false;
-      } else if (!longitude.equals(other.longitude))
-         return false;
-      return true;
-   }
+        if (latitude == null) {
+            if (other.latitude != null)
+                return false;
+        } else if (!latitude.equals(other.latitude))
+            return false;
+        if (longitude == null) {
+            if (other.longitude != null)
+                return false;
+        } else if (!longitude.equals(other.longitude))
+            return false;
+        return true;
+    }
 
 }
