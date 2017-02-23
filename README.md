@@ -10,6 +10,7 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 ## Release Notes
 ### Sprint 7
 - ODE-125 Expose empty field ODE output records when presented in JSON format
+- ODE-169 Encode TIM Message to ASN.1 - Outbound
 
 ### Sprint 6
 - ODE-138 Add Capability for Raw BSM Data (bin format only) with Header Information
