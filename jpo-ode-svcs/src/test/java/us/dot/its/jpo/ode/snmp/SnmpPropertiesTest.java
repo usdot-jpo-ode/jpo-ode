@@ -1,12 +1,12 @@
 package us.dot.its.jpo.ode.snmp;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Basic unit test for SnmpProperties. Simply tests the two constructors and
@@ -49,8 +49,7 @@ public class SnmpPropertiesTest {
         int testVersion = SnmpConstants.version3;
         int testSecurityLevel = SecurityLevel.AUTH_NOPRIV;
 
-        SnmpProperties actual = new SnmpProperties(testTarget, testUsername, testPassword, testRetries, testTimeout,
-                testVersion, testSecurityLevel);
+        SnmpProperties actual = new SnmpProperties(testTarget, testUsername, testPassword, testRetries, testTimeout);
 
         assertEquals("Incorrect target address", testTarget, actual.getTarget());
         assertEquals("Incorrect username", testUsername, actual.getUsername());
@@ -72,8 +71,7 @@ public class SnmpPropertiesTest {
         int testVersion = SnmpConstants.version3;
         int testSecurityLevel = SecurityLevel.AUTH_NOPRIV;
 
-        SnmpProperties props = new SnmpProperties(testTarget, testUsername, testPassword, testRetries, testTimeout,
-                testVersion, testSecurityLevel);
+        SnmpProperties props = new SnmpProperties(testTarget, testUsername, testPassword, testRetries, testTimeout);
         
         Address modifiedTestTarget = GenericAddress.parse("192.168.1.1" + "/161");
         String modifiedTestUsername = "modifiedTestUser";

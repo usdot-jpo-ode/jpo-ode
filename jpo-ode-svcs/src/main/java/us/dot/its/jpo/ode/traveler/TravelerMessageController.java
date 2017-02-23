@@ -22,9 +22,11 @@ public class TravelerMessageController {
     
     private TravelerMessageController() {}
 
-    @RequestMapping(value = "/travelerMessage", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/tim", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public static String timMessage(@RequestBody String jsonString ) {
+        
+        // TODO Loop through all RSUs in the JSON and create and send an SNMP message to each
         
         Logger logger = LoggerFactory.getLogger(TravelerMessageController.class);
 
@@ -32,11 +34,26 @@ public class TravelerMessageController {
             throw new IllegalArgumentException("[ERROR] Endpoint received null TIM");
         }
         
+        
         // Step 1 - Serialize the JSON into a TIM object
         TravelerSerializer timObject = new TravelerSerializer(jsonString);
+        
+        
+        // Step 2 - Populate the SnmpProperties object with SNMP preferences
+        JSONObject obj = new JSONObject(jsonString);
+        JSONArray rsuList = obj.getJSONArray("RSUs");
+        String ip = rsuList.getJSONObject(0).getString("target");
+        String user = rsuList.getJSONObject(0).getString("username");
+        String pass = rsuList.getJSONObject(0).getString("password");
+        int retries = Integer.parseInt(rsuList.getJSONObject(0).getString("retries"));
+        int timeout = Integer.parseInt(rsuList.getJSONObject(0).getString("timeout"));
+        
+        Address addr = GenericAddress.parse(ip + "/161");
+
+        SnmpProperties testProps = new SnmpProperties(addr, user, pass, retries, timeout);
         logger.debug("TIM CONTROLLER - Serialized TIM: {}", timObject.getTravelerInformationObject().toString());
         
-        // Step 2 - Encode the TIM object and then create the tim parameters object
+        // Step 2 - Encode the TIM object to a hex string
         String rsuSRMPayload = null;
         try {
             rsuSRMPayload = timObject.getHexTravelerInformation();
@@ -49,28 +66,24 @@ public class TravelerMessageController {
         }
         logger.debug("TIM CONTROLLER - Encoded Hex TIM: {}", rsuSRMPayload);
         
-        // TODO - Get these values from the JSON
-        String rsuSRMPsid = "8300";
-        int rsuSRMDsrcMsgId = 31;
-        int rsuSRMTxMode = 1;
-        int rsuSRMTxChannel = 178;
-        int rsuSRMTxInterval = 1;
-        String rsuSRMDeliveryStart = "010114111530";
-        String rsuSRMDeliveryStop = "010114130000";
-        int rsuSRMEnable = 1;
-        int rsuSRMStatus = 4;
+        
+        // Step 3 - Populate the TimParameters object with OID values
+        JSONObject snmpParams= obj.getJSONObject("snmp");
+
+        String rsuSRMPsid = snmpParams.getString("rsuid");
+        int rsuSRMDsrcMsgId = Integer.parseInt(snmpParams.getString("msgid"));
+        int rsuSRMTxMode = Integer.parseInt(snmpParams.getString("mode"));
+        int rsuSRMTxChannel = Integer.parseInt(snmpParams.getString("channel"));
+        int rsuSRMTxInterval = Integer.parseInt(snmpParams.getString("interval"));
+        String rsuSRMDeliveryStart = snmpParams.getString("deliverystart");
+        String rsuSRMDeliveryStop = snmpParams.getString("deliverystop");
+        int rsuSRMEnable = Integer.parseInt(snmpParams.getString("enable"));
+        int rsuSRMStatus = Integer.parseInt(snmpParams.getString("status"));
         
         TimParameters testParams = new TimParameters(rsuSRMPsid, rsuSRMDsrcMsgId, rsuSRMTxMode, rsuSRMTxChannel,
                 rsuSRMTxInterval, rsuSRMDeliveryStart, rsuSRMDeliveryStop, rsuSRMPayload,
                 rsuSRMEnable, rsuSRMStatus);
 
-        // Step 3 - Create the SNMP properties object
-        JSONObject obj = new JSONObject(jsonString);
-        JSONArray rsuList = obj.getJSONArray("RSUs");
-        String ip = rsuList.getJSONObject(0).getString("target");
-        Address addr = GenericAddress.parse(ip + "/161");
-        SnmpProperties testProps = new SnmpProperties(addr, "v3user", "password");
-        
         // Step 4 - Send the request out
         ResponseEvent response = TimManagerService.createAndSend(testParams, testProps);
         if (response != null && response.getResponse() != null) {

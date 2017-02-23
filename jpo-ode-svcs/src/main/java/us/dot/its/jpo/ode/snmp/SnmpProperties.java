@@ -25,14 +25,13 @@ public class SnmpProperties {
         this.password = pass;
     }
 
-    public SnmpProperties(Address tar, String user, String pass, int retries, int timeout, int version, int security) {
+    public SnmpProperties(Address tar, String user, String pass, int retries, int timeout) {
         this.target = tar;
         this.username = user;
         this.password = pass;
         this.retries = retries;
         this.timeout = timeout;
-        this.version = version;
-        this.securityLevel = security;
+
     }
 
     public Address getTarget() {
