@@ -22,7 +22,7 @@ public class TravelerMessageController {
     
     private TravelerMessageController() {}
 
-    @RequestMapping(value = "/travelerMessage", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/tim", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public static String timMessage(@RequestBody String jsonString ) {
         
