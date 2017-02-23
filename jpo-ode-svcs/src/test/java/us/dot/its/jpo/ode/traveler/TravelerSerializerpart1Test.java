@@ -43,7 +43,6 @@ public class TravelerSerializerpart1Test {
       TravelerInformation travelerInfo = new TravelerInformation();
       try {
          travelerInfo.setMsgCnt(new MsgCount(Integer.parseInt(msgcnt)));
-         fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
       {
