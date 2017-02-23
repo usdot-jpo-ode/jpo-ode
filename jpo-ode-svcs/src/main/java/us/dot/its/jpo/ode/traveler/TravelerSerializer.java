@@ -391,67 +391,69 @@ public class TravelerSerializer {
     }
 
 
-    public void validateMessageCount(String msg){
+    public static void validateMessageCount(String msg){
         int myMsg = Integer.parseInt(msg);
         if (myMsg > 127 || myMsg < 0)
             throw new IllegalArgumentException("Invalid message count");
     }
 
-    public void validateHeaderIndex(String count){
+    public static void validateHeaderIndex(String count){
         int cnt = Integer.parseInt(count);
         if (cnt < 0 || cnt > 31)
             throw new IllegalArgumentException("Invalid header sspIndex");
     }
 
-    public void validateInfoType(String num){
+    public static void validateInfoType(String num){
         int myNum = Integer.parseInt(num);
         if (myNum < 0)
             throw new IllegalArgumentException("Invalid enumeration");
     }
 
-    public void validateLat(String lat){
+    public static void validateLat(String lat){
         int myLat = Integer.parseInt(lat);
         if (myLat < -900000000 || myLat > 900000001)
             throw new IllegalArgumentException("Invalid Latitude");
     }
 
-    public void validateLong(String lonng){
+    public static void validateLong(String lonng){
         int myLong = Integer.parseInt(lonng);
         if (myLong < -1799999999 || myLong > 1800000001)
             throw new IllegalArgumentException("Invalid Longitude");
     }
 
-    public void validateHeading(String head){//Needs to be updated
+    public static void validateHeading(String head){
         byte[] heads = head.getBytes();
-        if (heads.length > 2)
-            throw new IllegalArgumentException("Invalid BitString");
+        if (heads.length != 16)
+        {
+           throw new IllegalArgumentException("Invalid BitString");
+        }
     }
 
-    public void validateMinuteYear(String min){
+    public static void validateMinuteYear(String min){
         int myMin = Integer.parseInt(min);
         if (myMin < 0 || myMin > 527040)
             throw new IllegalArgumentException("Invalid Minute of the Year");
     }
 
-    public void validateMinutesDuration(String dur){
+    public static void validateMinutesDuration(String dur){
         int myDur = Integer.parseInt(dur);
         if (myDur < 0 || myDur > 32000)
             throw new IllegalArgumentException("Invalid Duration");
     }
 
-    public void validateSign(String sign){
+    public static void validateSign(String sign){
         int mySign = Integer.parseInt(sign);
         if (mySign < 0 || mySign > 7)
             throw new IllegalArgumentException("Invalid Sign Priority");
     }
 
-    public void validateITISCodes(String code){
+    public static void validateITISCodes(String code){
         int myCode = Integer.parseInt(code);
         if (myCode < 0 || myCode > 65535)
             throw new IllegalArgumentException("Invalid ITIS code");
     }
 
-    public void validateString(String str){
+    public static void validateString(String str){
         if (str.isEmpty())
             throw new IllegalArgumentException("Invalid Empty String");
     }
