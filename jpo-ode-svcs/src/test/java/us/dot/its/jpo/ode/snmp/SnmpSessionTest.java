@@ -1,10 +1,5 @@
 package us.dot.its.jpo.ode.snmp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.snmp4j.PDU;
@@ -15,6 +10,11 @@ import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
+
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class SnmpSessionTest {
     
@@ -46,8 +46,7 @@ public class SnmpSessionTest {
         int testVersion = SnmpConstants.version3;
         int testSecurityLevel = SecurityLevel.AUTH_NOPRIV;
 
-        SnmpProperties testProps = new SnmpProperties(testTarget, testUsername, testPassword, testRetries, testTimeout,
-                testVersion, testSecurityLevel);
+        SnmpProperties testProps = new SnmpProperties(testTarget, testUsername, testPassword, testRetries, testTimeout);
         
         SnmpSession testSession = null;
         try {
