@@ -13,7 +13,7 @@ basePath: /v1
 produces:
   - application/json
 paths:
-  /Traveler Information Message:
+  /tim:
     post:
       summary: TIM Interface
       operationId: Send TIM message
@@ -76,7 +76,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/TravelerInformation'
+              $ref: '#/definitions/TravelerMessage'
         default:
           description: Unexpected error
           schema:
@@ -107,7 +107,18 @@ paths:
         400:
           description: Value input error
 definitions:
-  TravelerInformation:
+  TravelerMessage:
+    type: object
+    properties:
+      timeContent:
+         $ref: '#/definitions/TimContent'
+      RSUs:
+        type: array
+        items:
+           $ref: '#/definitions/RSU'
+      snmp: 
+         $ref: '#/definitions/SNMP'
+  TimContent:
     type: object
     required: [msgCnt]
     properties:
@@ -120,7 +131,7 @@ definitions:
       urlB: 
         type: string
         description: UrlB
-      dataFrames: 
+      travelerDataFrames: 
         type: array
         items: 
           $ref: '#/definitions/TravelerDataFrame'
@@ -135,35 +146,63 @@ definitions:
         $ref: '#/definitions/TravelerDataFrameContent'
   TravelerDataFrameHeader:
     type: object
+    required : [sspindex, travelerInfoType, SignPriority, MinuteOfTheYear]
     properties:
-      sspTimRights:
+      sspindex:
         type: string
         description: The SSP index is used to control the data elements that follow the occurrence of the index. The index relates back to the SSP contents in the CERT used to declare what content is allowed by that CERT. In the absence of a matching index in the message sender’s CERT, the message contents are not valid.
-      frameType:
+      travelerInfoType:
         type: string
         description: The DE_TravelerInfoType data element provides the type of message to follow in the rest of the message frame structure. It is used in the traveler information message, which may contain several such structures.
       msgId:
-        type: string
-        description: Link to other messages
-      startYear:
+        $ref: '#/definitions/MsgID'
+      DYear:
         type: integer
         description: The DSRC year consists of integer values from zero to 4095 representing the year according to the Gregorian calendar date system. The value of zero shall represent an unknown value.
-      startTime:
+      MinuteOfTheYear:
         type: integer
         description: The DE_MinuteOfTheYear data element expresses the number of elapsed minutes of the current year in the time system being used (typically UTC time). It is typically used to provide a longer range time stamp indicating when a message was created. Taken together with the DSecond data element, it provides a range of one full year with a resolution of 1mSecond.
-      durationTime:
-        type: integer
+      MinutesDuration:
+        type: string
         description: The duration, in units of whole minutes, that a object persists for. A value of 32000 means that the object persists forever. The range 0..32000 provides for about 22.2 days of maximum duration.
-      priority:
+      SignPriority:
         type: integer
         description: The relative importance of the sign, on a scale from zero (least important) to seven (most important).
-  TravelerDataFrameRegion:
+  MsgID:
     type: object
     properties:
-      sspLocationRights: 
-        type: integer
-      regions:
+      FurtherInfoID:
         type: string
+      RoadSignID:
+        $ref: '#/definitions/RoadSignID'
+  RoadSignID:
+    type: object
+    required: [position3D, HeadingSlice, MUTCDCode]
+    properties:
+      position3D: 
+        $ref: '#/definitions/Position3D'
+      HeadingSlice:
+        type: string
+      MUTCDCode:
+        type: string
+      MsgCRC:
+        type: string
+  Position3D:
+    type: object
+    properties:
+      latitude:
+        type: integer
+      longitude: 
+        type: integer
+      elevation:
+        type: integer
+    
+  TravelerDataFrameRegion:
+    type: object
+    required: [sspindex]
+    properties:
+      sspindex: 
+        type: integer
   TravelerDataFrameContent:
     type: object
     properties: 
@@ -172,7 +211,73 @@ definitions:
       sspMsgRights2:
         type: integer
       content: 
+        $ref: '#/definitions/ContentType'
+  ContentType:
+    type: object
+    properties:
+      advisory: 
+        type: array
+        items: 
+            $ref: '#/definitions/ITISObj'
+      workZone: 
+        type: array
+        items: 
+            $ref: '#/definitions/ITISObj'
+      genericSign: 
+        type: array
+        items: 
+            $ref: '#/definitions/ITISObj'
+      speedLimit: 
+        type: array
+        items: 
+            $ref: '#/definitions/ITISObj'
+      exitService: 
+        type: array
+        items: 
+            $ref: '#/definitions/ITISObj'
+      
+      
+  ITISObj:
+    type: object
+    properties:
+      ITISCodes:
+        type: integer
+      ITIStext:
         type: string
+  SNMP:
+    type: object
+    properties: 
+      rsuid:
+        type: string
+      msgid:
+        type: string
+      mode: 
+        type: string
+      channel: 
+        type: string
+      interval:
+        type: string
+      deliverystart:
+        type: string
+      deliverystop:
+        type: string
+      enable:
+        type: string
+      status:
+        type: string
+  RSU:
+    type: object
+    properties: 
+      target:
+        type: string
+      username:
+        type: string
+      password: 
+        type: string
+      retries:
+        type: string
+      timeoust: 
+        type: string 
   Error:
     type: object
     properties:

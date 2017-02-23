@@ -35,7 +35,7 @@ public class TravelerSerializer {
         //Get fully populated TIMcontent string
         JSONObject obj = new JSONObject(jsonInfo);
 
-        int frameList = obj.getJSONObject("timContent").getJSONArray("travelerDataFrame").length(); //Check the dataframe count
+        int frameCount = obj.getJSONObject("timContent").getJSONArray("travelerDataFrame").length(); //Check the dataframe count
 
         //Populate pojo's for TIM
         String msgcnt = obj.getJSONObject("timContent").getString("msgcnt");
@@ -44,7 +44,7 @@ public class TravelerSerializer {
 
         //TODO the travelerDataFrame can be a list
         TravelerDataFrameList dataFrames = new TravelerDataFrameList();
-        for (int z = 1; z <= frameList; z++)
+        for (int z = 1; z <= frameCount; z++)
         {
             TravelerDataFrame dataFrame = new TravelerDataFrame();
             String curFrame = "df" + z;
@@ -65,12 +65,6 @@ public class TravelerSerializer {
             //Populate pojo's for part3-content
             TravelerDataFrame part3 = buildTravelerMessagePart3(part1, obj.getJSONObject("timContent").getJSONArray("travelerDataFrame").getJSONObject(0));
 
-            //Populate pojo's for SNMP
-            String target = obj.getJSONArray("RSUs").getJSONObject(0).getString("target");
-            String userName = obj.getJSONArray("RSUs").getJSONObject(0).getString("username");
-            String password = obj.getJSONArray("RSUs").getJSONObject(0).getString("pass");
-            String retries = obj.getJSONArray("RSUs").getJSONObject(0).getString("retries");
-            String timeout = obj.getJSONArray("RSUs").getJSONObject(0).getString("timeout");
 
 
             //Generate List of Data Frames
@@ -277,19 +271,19 @@ public class TravelerSerializer {
                 SpeedLimit.Sequence_ seq = new SpeedLimit.Sequence_();
                 SpeedLimit.Sequence_.Item item = new SpeedLimit.Sequence_.Item();
 
-                if (pos.getJSONArray("speedLimit").getJSONObject(i).isNull("ITIStext"))
-                {
+//                if (pos.getJSONArray("speedLimit").getJSONObject(i).isNull("ITIStext"))
+//                {
                     String code = pos.getJSONArray("speedLimit").getJSONObject(i).getString("ITISCodes");
                     validateITISCodes(code);
                     p3.add(code);
                     item.setItis(Long.parseLong(code));
 
-                }
+//                }
 
                 // TODO not suer where text is set
-                String text = pos.getJSONArray("speedLimit").getJSONObject(i).getString("ITIStext");
-                validateString(text);
-                p3.add(text);
+//                String text = pos.getJSONArray("speedLimit").getJSONObject(i).getString("ITIStext");
+//                validateString(text);
+//                p3.add(text);
 
                 seq.setItem(item);
                 sl.add(seq);
@@ -307,18 +301,18 @@ public class TravelerSerializer {
                 WorkZone.Sequence_ seq = new WorkZone.Sequence_();
                 WorkZone.Sequence_.Item item = new WorkZone.Sequence_.Item();
 
-                if (pos.getJSONArray("workZone").getJSONObject(i).isNull("ITIStext"))
-                {
+//                if (pos.getJSONArray("workZone").getJSONObject(i).isNull("ITIStext"))
+//                {
                     String code = pos.getJSONArray("workZone").getJSONObject(i).getString("ITISCodes");
                     validateITISCodes(code);
                     p3.add(code);
                     item.setItis(Long.parseLong(code));
 
-                }
+//                }
                 // TODO No sure where content is set
-                String text = pos.getJSONArray("workZone").getJSONObject(i).getString("ITIStext");
-                validateString(text);
-                p3.add(text);
+//                String text = pos.getJSONArray("workZone").getJSONObject(i).getString("ITIStext");
+//                validateString(text);
+//                p3.add(text);
 
                 seq.setItem(item);
                 wz.add(seq);
@@ -346,9 +340,9 @@ public class TravelerSerializer {
                 seq.setItem(item);
 
                 // TODO Not Exaclty sure where this goes into the ITIS Object
-                String text = pos.getJSONArray("advisory").getJSONObject(i).getString("ITIStext");
-                validateString(text);
-                p3.add(text);
+//                String text = pos.getJSONArray("advisory").getJSONObject(i).getString("ITIStext");
+//                validateString(text);
+//                p3.add(text);
 
                 itisText.add(seq);
             }
@@ -360,15 +354,15 @@ public class TravelerSerializer {
            contentType = 2;
            for (int i = 1; i <=len; i++)
            {
-              if (pos.getJSONArray("advisory").getJSONObject(i).isNull("ITIStext"))
-              {
+//              if (pos.getJSONArray("advisory").getJSONObject(i).isNull("ITIStext"))
+//              {
                  String code = pos.getJSONArray("advisory").getJSONObject(i).getString("ITISCodes");
                  validateITISCodes(code);
                  p3.add(code);
-              }
-              String text = pos.getJSONArray("advisory").getJSONObject(i).getString("ITIStext");
-              validateString(text);
-              p3.add(text);
+//              }
+//              String text = pos.getJSONArray("advisory").getJSONObject(i).getString("ITIStext");
+//              validateString(text);
+//              p3.add(text);
            }
         }
 //      TODO Generic Signs
@@ -391,67 +385,69 @@ public class TravelerSerializer {
     }
 
 
-    public void validateMessageCount(String msg){
+    public static void validateMessageCount(String msg){
         int myMsg = Integer.parseInt(msg);
         if (myMsg > 127 || myMsg < 0)
             throw new IllegalArgumentException("Invalid message count");
     }
 
-    public void validateHeaderIndex(String count){
+    public static void validateHeaderIndex(String count){
         int cnt = Integer.parseInt(count);
         if (cnt < 0 || cnt > 31)
             throw new IllegalArgumentException("Invalid header sspIndex");
     }
 
-    public void validateInfoType(String num){
+    public static void validateInfoType(String num){
         int myNum = Integer.parseInt(num);
         if (myNum < 0)
             throw new IllegalArgumentException("Invalid enumeration");
     }
 
-    public void validateLat(String lat){
+    public static void validateLat(String lat){
         int myLat = Integer.parseInt(lat);
         if (myLat < -900000000 || myLat > 900000001)
             throw new IllegalArgumentException("Invalid Latitude");
     }
 
-    public void validateLong(String lonng){
+    public static void validateLong(String lonng){
         int myLong = Integer.parseInt(lonng);
         if (myLong < -1799999999 || myLong > 1800000001)
             throw new IllegalArgumentException("Invalid Longitude");
     }
 
-    public void validateHeading(String head){//Needs to be updated
+    public static void validateHeading(String head){
         byte[] heads = head.getBytes();
-        if (heads.length > 2)
-            throw new IllegalArgumentException("Invalid BitString");
+        if (heads.length != 16)
+        {
+           throw new IllegalArgumentException("Invalid BitString");
+        }
     }
 
-    public void validateMinuteYear(String min){
+    public static void validateMinuteYear(String min){
         int myMin = Integer.parseInt(min);
         if (myMin < 0 || myMin > 527040)
             throw new IllegalArgumentException("Invalid Minute of the Year");
     }
 
-    public void validateMinutesDuration(String dur){
+    public static void validateMinutesDuration(String dur){
         int myDur = Integer.parseInt(dur);
         if (myDur < 0 || myDur > 32000)
             throw new IllegalArgumentException("Invalid Duration");
     }
 
-    public void validateSign(String sign){
+    public static void validateSign(String sign){
         int mySign = Integer.parseInt(sign);
         if (mySign < 0 || mySign > 7)
             throw new IllegalArgumentException("Invalid Sign Priority");
     }
 
-    public void validateITISCodes(String code){
+    public static void validateITISCodes(String code){
         int myCode = Integer.parseInt(code);
         if (myCode < 0 || myCode > 65535)
             throw new IllegalArgumentException("Invalid ITIS code");
     }
 
-    public void validateString(String str){
+    public static void validateString(String str){
         if (str.isEmpty())
             throw new IllegalArgumentException("Invalid Empty String");
     }
