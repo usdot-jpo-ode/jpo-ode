@@ -65,6 +65,7 @@ extends AbstractWebsocketMessageHandler<DdsStatusMessage> {
    
    @Override
    public void onOpen(Session session, EndpointConfig config) {
+      this.getClient().onOpen(session);
       OdeControlData controlData = new OdeControlData(StatusTag.OPENED);
       controlData.setMessage("WebSocket Connection to DDS Opened.");
 
@@ -73,6 +74,7 @@ extends AbstractWebsocketMessageHandler<DdsStatusMessage> {
    
    @Override
    public void onClose(Session session, CloseReason reason) {
+      this.getClient().OnClose(reason);
       OdeControlData controlData = new OdeControlData(StatusTag.CLOSED);
       controlData.setMessage("WebSocket Connection to DDS Closed. Reason: " + reason.getReasonPhrase());
 
@@ -81,6 +83,7 @@ extends AbstractWebsocketMessageHandler<DdsStatusMessage> {
 
    @Override
    public void onError(Session session, Throwable t) {
+      this.getClient().onError(t);
       OdeControlData controlData = new OdeControlData(StatusTag.ERROR);
       controlData.setMessage("WebSocket Connection to DDS Errored. Message: " + t.getMessage());
 
