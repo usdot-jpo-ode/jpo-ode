@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.dds;
 
 import javax.websocket.CloseReason;
+import javax.websocket.Session;
 
 import us.dot.its.jpo.ode.model.AbstractWebSocketClient;
 import us.dot.its.jpo.ode.model.OdeMessage;
@@ -14,7 +15,7 @@ public class DdsDepositClient extends AbstractWebSocketClient {
    }
 
    @Override
-   public void onOpen() {
+   public void onOpen(Session session) {
       // TODO Auto-generated method stub
 
    }

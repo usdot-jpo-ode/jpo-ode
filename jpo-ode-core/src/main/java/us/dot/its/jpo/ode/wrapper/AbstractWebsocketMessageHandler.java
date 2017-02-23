@@ -37,7 +37,7 @@ implements WebSocketMessageHandler<MessageType> {
 
    @Override
    public void onOpen(Session session, EndpointConfig config) {
-      this.client.onOpen();
+      this.client.onOpen(session);
       
    }
 

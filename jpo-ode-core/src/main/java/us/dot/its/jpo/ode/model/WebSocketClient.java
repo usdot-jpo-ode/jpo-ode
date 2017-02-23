@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.model;
 
 import javax.websocket.CloseReason;
+import javax.websocket.Session;
 
 public interface WebSocketClient {
    
@@ -8,7 +9,7 @@ public interface WebSocketClient {
 
    void onMessage(OdeMessage message);
 
-   void onOpen();
+   void onOpen(Session session);
 
    void OnClose(CloseReason reason);
 
