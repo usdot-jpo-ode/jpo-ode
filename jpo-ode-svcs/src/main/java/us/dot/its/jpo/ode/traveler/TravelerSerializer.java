@@ -66,11 +66,11 @@ public class TravelerSerializer {
             TravelerDataFrame part3 = buildTravelerMessagePart3(part1, obj.getJSONObject("timContent").getJSONArray("travelerDataFrame").getJSONObject(0));
 
             //Populate pojo's for SNMP
-            String target = obj.getJSONArray("RSUs").getJSONObject(0).getString("target");
+            /*String target = obj.getJSONArray("RSUs").getJSONObject(0).getString("target");
             String userName = obj.getJSONArray("RSUs").getJSONObject(0).getString("username");
             String password = obj.getJSONArray("RSUs").getJSONObject(0).getString("pass");
             String retries = obj.getJSONArray("RSUs").getJSONObject(0).getString("retries");
-            String timeout = obj.getJSONArray("RSUs").getJSONObject(0).getString("timeout");
+            String timeout = obj.getJSONArray("RSUs").getJSONObject(0).getString("timeout");*/
 
 
             //Generate List of Data Frames
