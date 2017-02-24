@@ -31,13 +31,12 @@ public class TravelerMessageController {
         Logger logger = LoggerFactory.getLogger(TravelerMessageController.class);
 
         if (jsonString == null) {
-            throw new IllegalArgumentException("[ERROR] Endpoint received null TIM");
+            throw new IllegalArgumentException("[ERROR] TIM CONTROLLER - Endpoint received null TIM");
         }
-        
         
         // Step 1 - Serialize the JSON into a TIM object
         TravelerSerializer timObject = new TravelerSerializer(jsonString);
-        
+        logger.debug("TIM CONTROLLER - Serialized TIM: {}", timObject.getTravelerInformationObject().toString());
         
         // Step 2 - Populate the SnmpProperties object with SNMP preferences
         JSONObject obj = new JSONObject(jsonString);
@@ -45,13 +44,12 @@ public class TravelerMessageController {
         String ip = rsuList.getJSONObject(0).getString("target");
         String user = rsuList.getJSONObject(0).getString("username");
         String pass = rsuList.getJSONObject(0).getString("password");
-        int retries = Integer.parseInt(rsuList.getJSONObject(0).getString("retries"));
-        int timeout = Integer.parseInt(rsuList.getJSONObject(0).getString("timeout"));
+        int retries = rsuList.getJSONObject(0).getInt("retries");
+        int timeout = rsuList.getJSONObject(0).getInt("timeout");
         
         Address addr = GenericAddress.parse(ip + "/161");
 
         SnmpProperties testProps = new SnmpProperties(addr, user, pass, retries, timeout);
-        logger.debug("TIM CONTROLLER - Serialized TIM: {}", timObject.getTravelerInformationObject().toString());
         
         // Step 2 - Encode the TIM object to a hex string
         String rsuSRMPayload = null;
@@ -66,19 +64,18 @@ public class TravelerMessageController {
         }
         logger.debug("TIM CONTROLLER - Encoded Hex TIM: {}", rsuSRMPayload);
         
-        
         // Step 3 - Populate the TimParameters object with OID values
         JSONObject snmpParams= obj.getJSONObject("snmp");
 
         String rsuSRMPsid = snmpParams.getString("rsuid");
-        int rsuSRMDsrcMsgId = Integer.parseInt(snmpParams.getString("msgid"));
-        int rsuSRMTxMode = Integer.parseInt(snmpParams.getString("mode"));
-        int rsuSRMTxChannel = Integer.parseInt(snmpParams.getString("channel"));
-        int rsuSRMTxInterval = Integer.parseInt(snmpParams.getString("interval"));
+        int rsuSRMDsrcMsgId = snmpParams.getInt("msgid");
+        int rsuSRMTxMode = snmpParams.getInt("mode");
+        int rsuSRMTxChannel = snmpParams.getInt("channel");
+        int rsuSRMTxInterval = snmpParams.getInt("interval");
         String rsuSRMDeliveryStart = snmpParams.getString("deliverystart");
         String rsuSRMDeliveryStop = snmpParams.getString("deliverystop");
-        int rsuSRMEnable = Integer.parseInt(snmpParams.getString("enable"));
-        int rsuSRMStatus = Integer.parseInt(snmpParams.getString("status"));
+        int rsuSRMEnable = snmpParams.getInt("enable");
+        int rsuSRMStatus = snmpParams.getInt("status");
         
         TimParameters testParams = new TimParameters(rsuSRMPsid, rsuSRMDsrcMsgId, rsuSRMTxMode, rsuSRMTxChannel,
                 rsuSRMTxInterval, rsuSRMDeliveryStart, rsuSRMDeliveryStop, rsuSRMPayload,
