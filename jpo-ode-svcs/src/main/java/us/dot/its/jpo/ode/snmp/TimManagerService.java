@@ -38,6 +38,7 @@ public class TimManagerService {
             session = new SnmpSession(props);
         } catch (IOException e) {
             logger.error("TIM SERVICE - Failed to create SNMP session: {}", e);
+            return null;
         }
         
         // Send the PDU
@@ -47,6 +48,7 @@ public class TimManagerService {
             response = session.set(pdu, session.snmp, session.transport, session.target);
         } catch (IOException | NullPointerException e) {
             logger.error("TIM SERVICE - Error while sending PDU: {}", e);
+            return null;
         }
         
         return response;
@@ -58,7 +60,11 @@ public class TimManagerService {
      * @param params - TimParameters POJO that stores status, channel, payload, etc.
      * @return PDU
      */
-    private static ScopedPDU createPDU(TimParameters params) {
+    public static ScopedPDU createPDU(TimParameters params) {
+        
+        if (params == null) {
+            return null;
+        }
         
         //////////////////////////////
         // - OID examples         - //
