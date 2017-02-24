@@ -12,6 +12,7 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 - ODE-125 Expose empty field ODE output records when presented in JSON format
 - ODE-142 Outbound TIM Message Parameters - Phase 1
 - ODE-169 Encode TIM Message to ASN.1 - Outbound
+- ODE-171 Research 1609.2 Standard Implementation
 
 ### Sprint 6
 - ODE-138 Add Capability for Raw BSM Data (bin format only) with Header Information

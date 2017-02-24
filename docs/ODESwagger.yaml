@@ -20,54 +20,13 @@ paths:
       description: |
         The TIM endpoint returns a constructed TravelerInformation message
       parameters:
-        - name: msgcnt
-          in: query
+        - name: TravelerMessage
+          in: body
           description: Number of messgages.
           required: true
-          type: number
-          format: integer
-        - name: timestamp
-          in: query
-          description: Minute of the Year.
-          required: false
-          type: number
-          format: integer
-        - name: packetID
-          in: query
-          description: Unique message ID
-          required: false
-          type: string
-          format: String
-        - name: urlB
-          in: query
-          description: URL_Base
-          required: false
-          type: string
-          format: String
-        - name: TravelerDataFrameList
-          in: query
-          description: List of Traveler Data Frames
-          required: true
-          type: string
-          format: TravelerDataFrame
-        - name: Regional
-          in: query
-          description: Sequence
-          required: false
-          type: string
-          format: Sequence
-        - name: rsulist
-          in: query
-          description: List of IP's to send messages to
-          required: true
-          type: string
-          format: String
-        - name: snmp params
-          in: query
-          description: SNMP parameters for shipping information
-          required: true
-          type: string
-          format: string
+          schema: 
+            $ref: '#/definitions/TravelerMessage'
+         
       tags:
         - TIM
       responses:

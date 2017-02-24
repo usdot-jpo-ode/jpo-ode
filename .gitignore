@@ -81,6 +81,13 @@
 /jpo-ode-plugins/.classpath
 ode.log
 jpo-ode-consumer-example/target/
+
+/.idea
+/jpo-ode-svcs/SNMP_Error.log
+/jpo-ode-svcs/src/main/main.iml
+/jpo-ode-svcs/src/test/test.iml
+
 .idea
 *.iml
 /jpo-ode-svcs/SNMP_Error.log
+
