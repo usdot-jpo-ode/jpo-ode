@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import us.dot.its.jpo.ode.j2735.dsrc.Angle;
 
 public class OssAngle {
+    
+    private OssAngle() {}
 
     public static BigDecimal genericAngle(Angle angle) {
 

@@ -8,6 +8,8 @@ public class OssObstacleDetection {
 
     private static final Integer DIST_LOWER_BOUND = 0;
     private static final Integer DIST_UPPER_BOUND = 32767;
+    
+    private OssObstacleDetection() {}
 
     public static J2735ObstacleDetection genericObstacleDetection(ObstacleDetection obstacle) {
 

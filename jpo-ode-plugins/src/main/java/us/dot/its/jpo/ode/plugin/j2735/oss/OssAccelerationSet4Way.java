@@ -6,6 +6,9 @@ import us.dot.its.jpo.ode.j2735.dsrc.AccelerationSet4Way;
 import us.dot.its.jpo.ode.plugin.j2735.J2735AccelerationSet4Way;
 
 public class OssAccelerationSet4Way {
+    
+    private OssAccelerationSet4Way() {}
+    
 	public static J2735AccelerationSet4Way genericAccelerationSet4Way(
 			AccelerationSet4Way accelSet) {
 		J2735AccelerationSet4Way genericAccelerationSet4Way = 

@@ -14,6 +14,8 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735RegionalContent;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class OssEventDescription {
+    
+    private OssEventDescription() {}
 
     public static J2735EventDescription genericEventDescription(EventDescription description) {
 

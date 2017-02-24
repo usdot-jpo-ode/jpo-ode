@@ -10,6 +10,8 @@ public class OssWiperSet {
     private static final long STATUS_UPPER_BOUND = 6L;
     private static final Integer RATE_LOWER_BOUND = 0;
     private static final Integer RATE_UPPER_BOUND = 127;
+    
+    private OssWiperSet() {}
 
     public static J2735WiperSet genericWiperSet(WiperSet ws) {
 

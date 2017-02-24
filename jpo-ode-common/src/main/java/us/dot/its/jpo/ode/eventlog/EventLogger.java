@@ -8,7 +8,9 @@ import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 
 public class EventLogger {
-	public final static Logger logger;
+	public static final Logger logger;
+	
+	private EventLogger() {}
 	
 	static {
 		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();

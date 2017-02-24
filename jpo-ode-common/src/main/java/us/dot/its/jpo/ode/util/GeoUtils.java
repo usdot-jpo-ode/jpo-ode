@@ -4,6 +4,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
 public class GeoUtils {
+    
+    private GeoUtils() {}
 
    public static class QELLIPSOID {
       public double dEqRadius = 6378206.4;

@@ -6,6 +6,8 @@ import us.dot.its.jpo.ode.j2735.dsrc.PathHistoryPoint;
 import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistoryPoint;
 
 public class OssPathHistoryPoint {
+    
+    private OssPathHistoryPoint() {}
 
     public static J2735PathHistoryPoint genericPathHistoryPoint(PathHistoryPoint pathHistoryPoint) {
 

@@ -1,4 +1,6 @@
-package us.dot.its.jpo.ode.rsuHealth;
+package us.dot.its.jpo.ode.heartbeat;
+
+import java.io.IOException;
 
 import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
@@ -16,10 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class RsuHealthController {
+    
+    private RsuHealthController() {}
 
     @RequestMapping(value = "/rsuHeartbeat", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public static String heartBeat(@RequestParam("ip") String ip, @RequestParam("oid") String oid) throws Exception {
+    public static String heartBeat(@RequestParam("ip") String ip, @RequestParam("oid") String oid) throws IOException {
         
         if (ip == null) {
             throw new IllegalArgumentException("[ERROR] Endpoint received null ip");

@@ -20,20 +20,18 @@ public class MessageFrameCoder extends AbstractCoder {
 
     @Override
     public Asn1Object decode(String line) {
-       Asn1Object decoded = asn1Coder.UPER_DecodeMessageFrameHex(line);
-       return decoded;
+       return asn1Coder.UPER_DecodeMessageFrameHex(line);
     }
 
     @Override
     public Asn1Object decode(InputStream is) {
-       Asn1Object decoded = asn1Coder.UPER_DecodeMessageFrameStream(is);
-       return decoded;
+       return asn1Coder.UPER_DecodeMessageFrameStream(is);
     }
 
     @Override
     public void publish(String topic, Asn1Object msg) {
         J2735MessageFrame msgFrame = (J2735MessageFrame)msg;
-        SerializationUtils<J2735Bsm> serializer = new SerializationUtils<J2735Bsm>();
+        SerializationUtils<J2735Bsm> serializer = new SerializationUtils<>();
         publish(topic, serializer.serialize(msgFrame.getValue()));
     }
 }

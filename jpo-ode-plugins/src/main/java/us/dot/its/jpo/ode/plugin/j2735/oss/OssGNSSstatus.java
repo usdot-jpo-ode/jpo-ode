@@ -5,6 +5,8 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735GNSSstatus;
 
 public class OssGNSSstatus {
     
+    private OssGNSSstatus() {}
+    
     public static J2735GNSSstatus genericGNSSstatus (GNSSstatus s) {
         J2735GNSSstatus status = new J2735GNSSstatus();
         

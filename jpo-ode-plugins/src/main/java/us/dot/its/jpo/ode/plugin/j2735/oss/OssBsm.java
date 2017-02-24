@@ -35,6 +35,8 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735BsmCoreData;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
 
 public class OssBsm {
+    
+    private OssBsm() {}
 
     /**
      * Testing function for BSM population

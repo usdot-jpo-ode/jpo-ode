@@ -10,6 +10,8 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735TransmissionState;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class OssBsmCoreData {
+    
+    private OssBsmCoreData() {}
 
     public static J2735BsmCoreData genericBsmCoreData(BSMcoreData coreData) {
         J2735BsmCoreData genericBsmCoreData = new J2735BsmCoreData();

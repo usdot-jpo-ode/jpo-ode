@@ -8,9 +8,7 @@ public class FormattedTimer {
     /** */
     private long timerStart = 0L;
     /** */
-    private float seconds = 0f;
-    private int minutes = 0;
-    private int hours = 0;
+    
 
     /**
      * Starts the timer
@@ -26,6 +24,11 @@ public class FormattedTimer {
      * @return
      */
     protected String format(long time) {
+        
+        float seconds;
+        int minutes;
+        int hours;
+        
         StringBuilder sb = new StringBuilder();
             float timeInSeconds = ((float) (time)) / 1000;
             hours = (int) (timeInSeconds / 3600);

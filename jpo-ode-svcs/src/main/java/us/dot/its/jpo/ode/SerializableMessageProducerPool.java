@@ -18,6 +18,29 @@ public class SerializableMessageProducerPool<K, V> extends SerializableObjectPoo
    private String partitionerClass;
 
    private Properties props;
+   
+   public SerializableMessageProducerPool(OdeProperties odeProperties) {
+       super();
+       this.odeProperties = odeProperties;
+       this.brokers = odeProperties.getKafkaBrokers();
+       this.type = odeProperties.getKafkaProducerType();
+       this.partitionerClass = odeProperties.getProperty("kafka.partitionerClass");
+       init();
+    }
+
+    public SerializableMessageProducerPool(String brokers, String type, Serializer<K> keySerializer,
+          Serializer<V> valueSerializer, Properties props) {
+       this(brokers, type, null, keySerializer, valueSerializer, props);
+    }
+
+    public SerializableMessageProducerPool(String brokers, String type, String partitionerClass,
+          Serializer<K> keySerializer, Serializer<V> valueSerializer, Properties props) {
+       this.brokers = brokers;
+       this.type = type;
+       this.partitionerClass = partitionerClass;
+       this.props = props;
+       init();
+    }
 
    public SerializableMessageProducerPool<K, V> init() {
       props = new Properties();
@@ -49,32 +72,9 @@ public class SerializableMessageProducerPool<K, V> extends SerializableObjectPoo
       return this;
    }
 
-   public SerializableMessageProducerPool(OdeProperties odeProperties) {
-      super();
-      this.odeProperties = odeProperties;
-      this.brokers = odeProperties.getKafkaBrokers();
-      this.type = odeProperties.getKafkaProducerType();
-      this.partitionerClass = odeProperties.getProperty("kafka.partitionerClass");
-      init();
-   }
-
-   public SerializableMessageProducerPool(String brokers, String type, Serializer<K> keySerializer,
-         Serializer<V> valueSerializer, Properties props) {
-      this(brokers, type, null, keySerializer, valueSerializer, props);
-   }
-
-   public SerializableMessageProducerPool(String brokers, String type, String partitionerClass,
-         Serializer<K> keySerializer, Serializer<V> valueSerializer, Properties props) {
-      this.brokers = brokers;
-      this.type = type;
-      this.partitionerClass = partitionerClass;
-      this.props = props;
-      init();
-   }
-
    @Override
    protected MessageProducer<K, V> create() {
-      return new MessageProducer<K, V>(brokers, type, partitionerClass, props);
+      return new MessageProducer<>(brokers, type, partitionerClass, props);
    }
 
    @Override

@@ -29,6 +29,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class JsonUtils {
+    
+    private JsonUtils() {}
    
    private static Gson gsonCompact;
    private static Gson gsonVerbose;

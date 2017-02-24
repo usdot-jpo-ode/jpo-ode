@@ -15,6 +15,20 @@ public class SerializableMessageConsumerPool<K, V> extends SerializableObjectPoo
    private String groupId;
 
    private Properties props;
+   
+   public SerializableMessageConsumerPool(String groupId, OdeProperties odeProperties) {
+       this.odeProperties = odeProperties;
+       this.brokers = odeProperties.getKafkaBrokers();
+       this.groupId = groupId;
+       init();
+    }
+
+    public SerializableMessageConsumerPool(String brokers, String groupId, Properties consumerProps) {
+       this.brokers = brokers;
+       this.groupId = groupId;
+       this.props = consumerProps;
+       init();
+    }
 
    public SerializableMessageConsumerPool<K, V> init() {
       props = new Properties();
@@ -33,23 +47,9 @@ public class SerializableMessageConsumerPool<K, V> extends SerializableObjectPoo
       return this;
    }
 
-   public SerializableMessageConsumerPool(String groupId, OdeProperties odeProperties) {
-      this.odeProperties = odeProperties;
-      this.brokers = odeProperties.getKafkaBrokers();
-      this.groupId = groupId;
-      init();
-   }
-
-   public SerializableMessageConsumerPool(String brokers, String groupId, Properties consumerProps) {
-      this.brokers = brokers;
-      this.groupId = groupId;
-      this.props = consumerProps;
-      init();
-   }
-
    @Override
    protected MessageConsumer<K, V> create() {
-      return new MessageConsumer<K, V>(brokers, groupId, props);
+      return new MessageConsumer<>(brokers, groupId, props);
    }
 
    @Override

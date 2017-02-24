@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommonUtils {
+    
+    private CommonUtils() {}
    
    public static long getPidOfProcess(Process p) {
       long pid = -1;
@@ -25,7 +27,7 @@ public class CommonUtils {
     }
 
    public static List<URL> getClasspath() {
-	   ArrayList<URL> classpath = new ArrayList<URL>();
+	   ArrayList<URL> classpath = new ArrayList<>();
 	   
        ClassLoader cl = ClassLoader.getSystemClassLoader();
 

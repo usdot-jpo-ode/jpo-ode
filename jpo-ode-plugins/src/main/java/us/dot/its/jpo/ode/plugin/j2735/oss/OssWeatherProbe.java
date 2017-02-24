@@ -10,20 +10,19 @@ public class OssWeatherProbe {
     private static final Integer PRESSURE_LOWER_BOUND = 0;
     private static final Integer PRESSURE_UPPER_BOUND = 255;
 
+    private OssWeatherProbe() {
+    }
+
     public static J2735WeatherProbe genericWeatherProbe(WeatherProbe weatherProbe) {
 
-        if (weatherProbe.hasAirTemp()) {
-            if (weatherProbe.airTemp.intValue() < TEMP_LOWER_BOUND
-                    || weatherProbe.airTemp.intValue() > TEMP_UPPER_BOUND) {
-                throw new IllegalArgumentException("Ambient air temperature out of bounds [0..191]");
-            }
+        if (weatherProbe.hasAirTemp() && (weatherProbe.airTemp.intValue() < TEMP_LOWER_BOUND
+                || weatherProbe.airTemp.intValue() > TEMP_UPPER_BOUND)) {
+            throw new IllegalArgumentException("Ambient air temperature out of bounds [0..191]");
         }
 
-        if (weatherProbe.hasAirPressure()) {
-            if (weatherProbe.airPressure.intValue() < PRESSURE_LOWER_BOUND
-                    || weatherProbe.airPressure.intValue() > PRESSURE_UPPER_BOUND) {
-                throw new IllegalArgumentException("Ambient air pressure out of bounds [0..255]");
-            }
+        if (weatherProbe.hasAirPressure() && (weatherProbe.airPressure.intValue() < PRESSURE_LOWER_BOUND
+                || weatherProbe.airPressure.intValue() > PRESSURE_UPPER_BOUND)) {
+            throw new IllegalArgumentException("Ambient air pressure out of bounds [0..255]");
         }
 
         // Perform conversion

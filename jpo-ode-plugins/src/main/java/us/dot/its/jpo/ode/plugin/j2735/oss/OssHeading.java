@@ -6,6 +6,8 @@ import us.dot.its.jpo.ode.j2735.dsrc.CoarseHeading;
 import us.dot.its.jpo.ode.j2735.dsrc.Heading;
 
 public class OssHeading {
+    
+    private OssHeading() {}
 
     public static BigDecimal genericHeading(Heading heading) {
         return OssAngle.longToDecimal(heading.longValue());

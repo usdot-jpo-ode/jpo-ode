@@ -12,6 +12,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.snmp4j.Snmp;
 
+import us.dot.its.jpo.ode.heartbeat.RsuSnmp;
+
 public class RsuSnmpTest {
     
     @Mock private Snmp mockSnmp;
