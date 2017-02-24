@@ -13,4 +13,12 @@ public class OssGeoRegion {
       
    }
 
+   public static GeoRegion geoRegion(J2735GeoRegion geoRegion) {
+      
+      return new GeoRegion(
+            OssPosition3D.position3D(geoRegion.getNwCorner()), 
+            OssPosition3D.position3D(geoRegion.getSeCorner()));
+      
+   }
+
 }

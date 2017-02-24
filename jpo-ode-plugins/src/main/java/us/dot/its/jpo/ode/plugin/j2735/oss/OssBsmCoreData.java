@@ -24,8 +24,10 @@ public class OssBsmCoreData {
             genericBsmCoreData.secMark = null;
         }
 
-        genericBsmCoreData.position = new J2735Position3D(coreData.lat.longValue(), coreData._long.longValue(),
-                coreData.elev.longValue());
+        genericBsmCoreData.position = new J2735Position3D(
+              coreData.lat.longValue(), 
+              coreData._long.longValue(),
+              coreData.elev.longValue());
 
         genericBsmCoreData.accelSet = OssAccelerationSet4Way.genericAccelerationSet4Way(coreData.getAccelSet());
 
