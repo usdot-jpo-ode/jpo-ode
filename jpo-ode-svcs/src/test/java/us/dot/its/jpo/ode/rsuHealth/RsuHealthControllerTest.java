@@ -5,6 +5,8 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
+import us.dot.its.jpo.ode.heartbeat.RsuHealthController;
+
 public class RsuHealthControllerTest {
 
     @Test

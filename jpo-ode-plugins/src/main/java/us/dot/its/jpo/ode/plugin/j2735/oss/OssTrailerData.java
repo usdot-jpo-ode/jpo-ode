@@ -8,19 +8,22 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735TrailerData;
 
 public class OssTrailerData {
 
-	public static J2735TrailerData genericTrailerData(TrailerData trailers) {
-		J2735TrailerData td = new J2735TrailerData();
-		
-		td.connection = OssPivotPointDescription.genericPivotPointDescription(trailers.connection);
-		td.sspRights = trailers.sspRights.intValue();
-		
-		Iterator<TrailerUnitDescription> iter = trailers.units.elements.iterator();
-		
-		while(iter.hasNext()) {
-			td.units.add(OssTrailerUnitDescription.genericTrailerUnitDescription(iter.next()));
-		}
-		
-		return td ;
-	}
+    private OssTrailerData() {
+    }
+
+    public static J2735TrailerData genericTrailerData(TrailerData trailers) {
+        J2735TrailerData td = new J2735TrailerData();
+
+        td.connection = OssPivotPointDescription.genericPivotPointDescription(trailers.connection);
+        td.sspRights = trailers.sspRights.intValue();
+
+        Iterator<TrailerUnitDescription> iter = trailers.units.elements.iterator();
+
+        while (iter.hasNext()) {
+            td.units.add(OssTrailerUnitDescription.genericTrailerUnitDescription(iter.next()));
+        }
+
+        return td;
+    }
 
 }

@@ -11,6 +11,8 @@ public class OssPositionConfidenceSet {
     private static final long POS_UPPER_BOUND = 15L;
     private static final long ELEV_LOWER_BOUND = 0L;
     private static final long ELEV_UPPER_BOUND = 15L;
+    
+    private OssPositionConfidenceSet() {}
 
     public static J2735PositionConfidenceSet genericPositionConfidenceSet(PositionConfidenceSet posConfidence) {
         

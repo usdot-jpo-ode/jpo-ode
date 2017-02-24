@@ -9,10 +9,12 @@ import us.dot.its.jpo.ode.j2735.dsrc.PathHistoryPointList;
 import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistoryPoint;
 
 public class OssPathHistoryPointList {
+    
+    private OssPathHistoryPointList() {}
 
     public static List<J2735PathHistoryPoint> genericPathHistoryPointList(PathHistoryPointList crumbData) {
 
-        List<J2735PathHistoryPoint> phpl = new ArrayList<J2735PathHistoryPoint>();
+        List<J2735PathHistoryPoint> phpl = new ArrayList<>();
 
         Iterator<PathHistoryPoint> iter = crumbData.elements.iterator();
 

@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.rsuHealth;
+package us.dot.its.jpo.ode.heartbeat;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

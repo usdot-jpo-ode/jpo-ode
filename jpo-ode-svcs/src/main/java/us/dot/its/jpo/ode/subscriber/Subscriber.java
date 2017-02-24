@@ -4,9 +4,6 @@ public class Subscriber {
 
     private String content;
 
-    public Subscriber() {
-    }
-
     public Subscriber(String content) {
         this.content = content;
     }

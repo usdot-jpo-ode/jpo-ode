@@ -4,9 +4,6 @@ public class RegistrationMessage {
 
     private String name;
 
-    public RegistrationMessage() {
-    }
-
     public RegistrationMessage(String name) {
         this.name = name;
     }

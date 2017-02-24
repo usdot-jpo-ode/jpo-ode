@@ -8,31 +8,29 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.util.SerializationUtils;
 
 public class BsmCoder extends AbstractCoder {
-    
+
     public BsmCoder() {
         super();
     }
-    
+
     public BsmCoder(OdeProperties properties) {
         super(properties);
     }
 
     @Override
     public Asn1Object decode(String line) {
-       Asn1Object decoded = asn1Coder.UPER_DecodeBsmHex(line);
-       return decoded;
+        return asn1Coder.UPER_DecodeBsmHex(line);
     }
 
     @Override
     public Asn1Object decode(InputStream is) {
-       Asn1Object decoded = asn1Coder.UPER_DecodeBsmStream(is);
-       return decoded;
+        return asn1Coder.UPER_DecodeBsmStream(is);
     }
 
     @Override
     public void publish(String topic, Asn1Object msg) {
-        J2735Bsm bsm = (J2735Bsm)msg;
-        SerializationUtils<J2735Bsm> serializer = new SerializationUtils<J2735Bsm>();
+        J2735Bsm bsm = (J2735Bsm) msg;
+        SerializationUtils<J2735Bsm> serializer = new SerializationUtils<>();
         publish(topic, serializer.serialize(bsm));
     }
 

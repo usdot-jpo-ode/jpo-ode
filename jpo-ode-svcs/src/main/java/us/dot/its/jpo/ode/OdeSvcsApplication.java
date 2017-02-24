@@ -43,13 +43,13 @@ public class OdeSvcsApplication {
 
    @Bean
    CommandLineRunner init(OdeProperties odeProperties) {
-      return (args) -> {
+      return args -> {
          try {
             Files.createDirectory(Paths.get(odeProperties.getUploadLocationRoot()));
             Files.createDirectory(Paths.get(odeProperties.getUploadLocationBsm()));
             Files.createDirectory(Paths.get(odeProperties.getUploadLocationMessageFrame()));
          } catch (FileAlreadyExistsException fae) {
-            logger.info("Upload directory already exisits");
+            logger.info("Upload directory already exisits: {}", fae);
          } catch (IOException e) {
             throw new StorageException("Could not initialize storage", e);
          }
@@ -58,6 +58,7 @@ public class OdeSvcsApplication {
 
    @PreDestroy
    public void cleanup() {
+       // Unused
    }
 
 }

@@ -8,6 +8,8 @@ public class OssTransmissionAndSpeed {
 
     private static final long TRANSMISSION_LOWER_BOUND = 0L;
     private static final long TRANSMISSION_UPPER_BOUND = 7L;
+    
+    private OssTransmissionAndSpeed() {}
 
     public static J2735TransmissionAndSpeed genericTransmissionAndSpeed(TransmissionAndSpeed ts) {
 

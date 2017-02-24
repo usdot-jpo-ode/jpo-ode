@@ -15,6 +15,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
+import groovy.lang.MissingPropertyException;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 
@@ -40,7 +41,7 @@ public class OdeProperties implements EnvironmentAware {
     private String asn1CoderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder";
     private String kafkaBrokers = null;
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
-    public String filetypes = "*.{uper, bsm, bin, hex}";
+    public static final String FILE_TYPES = "*.{uper, bsm, bin, hex}";
 
     private String hostId;
 
@@ -129,6 +130,7 @@ public class OdeProperties implements EnvironmentAware {
         } catch (UnknownHostException e) {
             // Let's just use a random hostname
             hostname = UUID.randomUUID().toString();
+            logger.info("Unknown host error: {}, using random", e);
         }
         hostId = hostname;
         logger.info("Host ID: {}", hostId);
@@ -141,7 +143,7 @@ public class OdeProperties implements EnvironmentAware {
         }
 
         if (kafkaBrokers == null)
-            throw new Exception("ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
+            throw new MissingPropertyException("Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
     }
 
     @Override

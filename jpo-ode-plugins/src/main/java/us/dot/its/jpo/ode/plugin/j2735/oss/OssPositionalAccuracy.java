@@ -7,6 +7,9 @@ import us.dot.its.jpo.ode.j2735.dsrc.PositionalAccuracy;
 import us.dot.its.jpo.ode.plugin.j2735.J2735PositionalAccuracy;
 
 public class OssPositionalAccuracy {
+    
+    private OssPositionalAccuracy() {}
+    
     public static J2735PositionalAccuracy genericPositionalAccuracy(PositionalAccuracy positionalAccuracy) {
 
         if (positionalAccuracy.semiMajor.intValue() < 0 || positionalAccuracy.semiMajor.intValue() > 255) {
@@ -34,7 +37,7 @@ public class OssPositionalAccuracy {
         if (positionalAccuracy.orientation.intValue() != 65535) {
 
             genericPositionalAccuracy.orientation = BigDecimal
-                    .valueOf((double) (0.0054932479) * (double) (positionalAccuracy.orientation.longValue()))
+                    .valueOf((0.0054932479) * (double) (positionalAccuracy.orientation.longValue()))
                     .setScale(10, RoundingMode.HALF_EVEN);
 
         }

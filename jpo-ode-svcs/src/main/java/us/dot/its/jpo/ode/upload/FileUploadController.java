@@ -61,11 +61,11 @@ public class FileUploadController {
         logger.debug("UPLOADER - Backup directory: {}", backupPath);
 
         bsmImporter.submit(new ImporterWatchService(bsmPath, backupPath, new BsmCoder(odeProperties),
-                LoggerFactory.getLogger(ImporterWatchService.class), odeProperties.filetypes,
+                LoggerFactory.getLogger(ImporterWatchService.class), odeProperties.FILE_TYPES,
                 odeProperties.KAFKA_TOPIC_J2735_BSM));
 
         messageFrameImporter.submit(new ImporterWatchService(messageFramePath, backupPath, new MessageFrameCoder(odeProperties),
-                LoggerFactory.getLogger(ImporterWatchService.class), odeProperties.filetypes,
+                LoggerFactory.getLogger(ImporterWatchService.class), odeProperties.FILE_TYPES,
                 odeProperties.KAFKA_TOPIC_J2735_BSM));
 
         try {

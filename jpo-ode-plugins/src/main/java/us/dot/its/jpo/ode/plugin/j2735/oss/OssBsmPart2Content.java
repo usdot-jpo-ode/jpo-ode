@@ -22,6 +22,8 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleEventFlags;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleSafetyExtensions;
 
 public class OssBsmPart2Content {
+    
+    private OssBsmPart2Content() {}
 
     public static class OssBsmPart2Exception extends Exception {
 

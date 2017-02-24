@@ -32,6 +32,11 @@ public class TimManagerService {
         
         Logger logger = LoggerFactory.getLogger(TimManagerService.class);
         
+        if (params == null || props == null) {
+            logger.error("TIM SERVICE - Received null object");
+            return null;
+        }
+        
         // Initialize the SNMP session
         SnmpSession session = null;
         try {

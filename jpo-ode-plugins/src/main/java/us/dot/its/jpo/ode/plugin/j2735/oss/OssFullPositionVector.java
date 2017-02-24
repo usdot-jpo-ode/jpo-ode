@@ -7,20 +7,22 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735TimeConfidence;
 
 public class OssFullPositionVector {
     
-    private static final long _LONG_LOWER_BOUND = -1799999999L;
-    private static final long _LONG_UPPER_BOUND = 1800000001L;
+    private static final long LONG_LOWER_BOUND = -1799999999L;
+    private static final long LONG_UPPER_BOUND = 1800000001L;
     private static final long LAT_LOWER_BOUND = -900000000;
     private static final long LAT_UPPER_BOUND = 900000001;
     private static final long ELEV_LOWER_BOUND = -4096;
     private static final long ELEV_UPPER_BOUND = 61439;
     private static final long TIME_CONF_LOWER_BOUND = 0;
     private static final long TIME_CONF_UPPER_BOUND = 39;
-
+    
+    private OssFullPositionVector() {}
+    
     public static J2735FullPositionVector genericFullPositionVector(FullPositionVector initialPosition) {
         
         // Bounds checks
-        if (initialPosition._long.longValue() < _LONG_LOWER_BOUND 
-                || initialPosition._long.longValue() > _LONG_UPPER_BOUND) {
+        if (initialPosition._long.longValue() < LONG_LOWER_BOUND 
+                || initialPosition._long.longValue() > LONG_UPPER_BOUND) {
             throw new IllegalArgumentException("Longitude value out of bounds [-1799999999..1800000001]");
         }
         

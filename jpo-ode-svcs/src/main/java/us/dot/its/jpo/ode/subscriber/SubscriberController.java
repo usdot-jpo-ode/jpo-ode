@@ -17,23 +17,22 @@ public class SubscriberController {
     @Autowired
     private SimpMessagingTemplate template;
 
-
     @MessageMapping("/connect")
     @SendTo("/topic/subscribers")
-    public Subscriber greeting(RegistrationMessage message) throws Exception {
+    public Subscriber greeting(RegistrationMessage message) throws InterruptedException {
         Thread.sleep(10); // simulated delay
         return new Subscriber(message.getName());
     }
 
     @RequestMapping(value="/newMessage", method=RequestMethod.POST)
     @ResponseBody
-    public String messages() throws Exception {
+    public String messages() {
         template.convertAndSend("/topic/messages", new Subscriber("test"));
         return "{\"success\": true}" ;
     }
 
     @GetMapping("/")
-    public String test() throws Exception {
+    public String test() {
         return "index";
     }
 

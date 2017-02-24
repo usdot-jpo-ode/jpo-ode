@@ -6,6 +6,8 @@ import us.dot.its.jpo.ode.j2735.dsrc.PathPrediction;
 import us.dot.its.jpo.ode.plugin.j2735.J2735PathPrediction;
 
 public class OssPathPrediction {
+    
+    private OssPathPrediction() {}
 
     public static J2735PathPrediction genericPathPrediction(PathPrediction pathPrediction) {
         J2735PathPrediction pp = new J2735PathPrediction();

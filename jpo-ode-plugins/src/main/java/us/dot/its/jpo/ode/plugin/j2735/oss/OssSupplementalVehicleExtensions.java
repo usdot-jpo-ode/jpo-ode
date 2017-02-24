@@ -5,6 +5,8 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735RegionalContent;
 import us.dot.its.jpo.ode.plugin.j2735.J2735SupplementalVehicleExtensions;
 
 public class OssSupplementalVehicleExtensions {
+    
+    private OssSupplementalVehicleExtensions() {}
 
     public static J2735SupplementalVehicleExtensions genericSupplementalVehicleExtensions(
             SupplementalVehicleExtensions sve) {
