@@ -16,7 +16,6 @@ import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.snmp.TimManagerService;
 import us.dot.its.jpo.ode.snmp.TimParameters;
 
-
 @Controller
 public class TravelerMessageController {
     
