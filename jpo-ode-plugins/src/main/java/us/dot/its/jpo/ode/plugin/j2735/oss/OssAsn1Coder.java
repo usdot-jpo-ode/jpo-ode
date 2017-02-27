@@ -109,7 +109,7 @@ public class OssAsn1Coder implements Asn1Plugin {
             if (partialDecodedMessage != null) {
                 logger.debug("DECODER - Warning, message only partially decoded: {}", partialDecodedMessage);
             } else {
-                logger.debug("DECODER - Warning, invalid bytes detected in file.");
+                logger.debug("DECODER - Ignoring extraneous bytes at the end of the input stream.");
             }
         } catch (DecodeNotSupportedException e) {
             logger.error("DECODER - Error decoding, data does not represent valid message", e);
@@ -136,9 +136,9 @@ public class OssAsn1Coder implements Asn1Plugin {
         } catch (DecodeFailedException e) {
             AbstractData partialDecodedMessage = e.getDecodedData();
             if (partialDecodedMessage != null) {
-                logger.debug("DECODER - Warning, message only partially decoded: {}", partialDecodedMessage);
+                logger.debug("DECODER - Warning, message only partially decoded: {}", partialDecodedMessage.toString());
             } else {
-                logger.debug("DECODER - Warning, invalid bytes detected in file.");
+                logger.debug("DECODER - Ignoring extraneous bytes at the end of the input stream.");
             }
         } catch (DecodeNotSupportedException e) {
             logger.error("DECODER - Error decoding, data does not represent valid message", e);
