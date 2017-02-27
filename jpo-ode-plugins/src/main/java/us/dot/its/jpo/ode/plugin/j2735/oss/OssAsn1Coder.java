@@ -106,7 +106,7 @@ public class OssAsn1Coder implements Asn1Plugin {
         } catch (DecodeFailedException e) {
             AbstractData partialDecodedMessage = e.getDecodedData();
             if (partialDecodedMessage != null) {
-                logger.debug("DECODER - Warning, message only partially decoded: {}", partialDecodedMessage);
+                logger.error("DECODER - Error, message only partially decoded: {}", partialDecodedMessage.toString());
             } else {
                 logger.debug("DECODER - Ignoring extraneous bytes at the end of the input stream.");
             }
@@ -134,7 +134,7 @@ public class OssAsn1Coder implements Asn1Plugin {
         } catch (DecodeFailedException e) {
             AbstractData partialDecodedMessage = e.getDecodedData();
             if (partialDecodedMessage != null) {
-                logger.debug("DECODER - Warning, message only partially decoded: {}", partialDecodedMessage.toString());
+                logger.error("DECODER - Error, message only partially decoded: {}", partialDecodedMessage.toString());
             } else {
                 logger.debug("DECODER - Ignoring extraneous bytes at the end of the input stream.");
             }
