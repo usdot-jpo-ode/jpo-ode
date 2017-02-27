@@ -21,12 +21,12 @@ import java.util.ArrayList;
  */
 public class TravelerSerializer {
 
-    public TravelerInformation travelerInfo;
-    public final int ADVISORY = 0;
-    public final int WORKZONE = 1;
-    public final int GENERICSIGN = 2;
-    public final int SPEEDLIMIT = 3;
-    public final int EXITSERVICE = 4;
+    TravelerInformation travelerInfo;
+    public static final int ADVISORY = 0;
+    public static final int WORKZONE = 1;
+    public static final int GENERICSIGN = 2;
+    public static final int SPEEDLIMIT = 3;
+    public static final int EXITSERVICE = 4;
     int contentType;
     String timContent = "timContent";
     String travelerDataFrame = "travelerDataFrame";
@@ -46,12 +46,10 @@ public class TravelerSerializer {
         validateMessageCount(msgcnt);
         travelerInfo.setMsgCnt(new MsgCount(Integer.parseInt(msgcnt)));
 
-        //TODO the travelerDataFrame can be a list
         TravelerDataFrameList dataFrames = new TravelerDataFrameList();
         for (int z = 1; z <= frameCount; z++)
         {
             TravelerDataFrame dataFrame = new TravelerDataFrame();
-            String curFrame = "df" + z;
             //Populate pojo's for part1-header
             TravelerDataFrame part1 = buildTravelerMessagePart1(dataFrame, obj.getJSONObject(timContent).getJSONArray(travelerDataFrame).getJSONObject(0));
 
@@ -63,13 +61,9 @@ public class TravelerSerializer {
             Regions regions = new Regions();
             regions.add(new GeographicalPath());
             part1.setRegions(regions);
-            //TODO populate part 2 information
-
 
             //Populate pojo's for part3-content
             TravelerDataFrame part3 = buildTravelerMessagePart3(part1, obj.getJSONObject(timContent).getJSONArray(travelerDataFrame).getJSONObject(0));
-
-
 
             //Generate List of Data Frames
             dataFrames.add(part3);
@@ -127,7 +121,7 @@ public class TravelerSerializer {
 //            TODO Elevation Optional
 //            anchorPos.setElevation(new Elevation(elev));
 
-            if (headingSlice.equals("noHeading") || headingSlice.equals("allHeadings")) {
+            if (("noHeading").equals (headingSlice) || ("allHeadings").equals(headingSlice)) {
                 notChecked = false;
             }
             if (notChecked){
@@ -183,6 +177,8 @@ public class TravelerSerializer {
         String genericSign = "genericSign";
         String speedLimit = "speedLimit";
         String exitService = "exitService";
+        String itisCODES = "ITISCodes";
+        String itisTEXT = "ITIStext";
 
         String sspMsgRights1 = ob.getJSONObject(content).getString("sspMsgRights1");
         validateHeaderIndex(sspMsgRights1);
@@ -236,15 +232,15 @@ public class TravelerSerializer {
                 ExitService.Sequence_ seq = new ExitService.Sequence_();
                 ExitService.Sequence_.Item item = new ExitService.Sequence_.Item();
 
-                if (pos.getJSONArray(exitService).getJSONObject(i).isNull("ITIStext"))//ITISCode
+                if (pos.getJSONArray(exitService).getJSONObject(i).isNull(itisTEXT))//ITISCode
                 {
-                   String code = pos.getJSONArray(exitService).getJSONObject(i).getString("ITISCodes");
+                   String code = pos.getJSONArray(exitService).getJSONObject(i).getString(itisCODES);
                     validateITISCodes(code);
                     p3.add(code);
                     item.setItis(Long.parseLong(code));
                 }
                 else {
-                   String text = pos.getJSONArray(exitService).getJSONObject(i).getString("ITIStext");
+                   String text = pos.getJSONArray(exitService).getJSONObject(i).getString(itisTEXT);
                    validateString(text);
                    p3.add(text);
                    item.setItis(Long.parseLong(text));
@@ -264,21 +260,10 @@ public class TravelerSerializer {
             {
                 SpeedLimit.Sequence_ seq = new SpeedLimit.Sequence_();
                 SpeedLimit.Sequence_.Item item = new SpeedLimit.Sequence_.Item();
-
-//                if (pos.getJSONArray(speedLimit).getJSONObject(i).isNull("ITIStext"))
-//                {
-                    String code = pos.getJSONArray(speedLimit).getJSONObject(i).getString("ITISCodes");
-                    validateITISCodes(code);
-                    p3.add(code);
-                    item.setItis(Long.parseLong(code));
-
-//                }
-
-                // TODO not suer where text is set
-//                String text = pos.getJSONArray(speedLimit).getJSONObject(i).getString("ITIStext");
-//                validateString(text);
-//                p3.add(text);
-
+                String code = pos.getJSONArray(speedLimit).getJSONObject(i).getString(itisCODES);
+                validateITISCodes(code);
+                p3.add(code);
+                item.setItis(Long.parseLong(code));
                 seq.setItem(item);
                 sl.add(seq);
             }
@@ -294,20 +279,10 @@ public class TravelerSerializer {
             {
                 WorkZone.Sequence_ seq = new WorkZone.Sequence_();
                 WorkZone.Sequence_.Item item = new WorkZone.Sequence_.Item();
-
-//                if (pos.getJSONArray(workZone).getJSONObject(i).isNull("ITIStext"))
-//                {
-                    String code = pos.getJSONArray(workZone).getJSONObject(i).getString("ITISCodes");
-                    validateITISCodes(code);
-                    p3.add(code);
-                    item.setItis(Long.parseLong(code));
-
-//                }
-                // TODO No sure where content is set
-//                String text = pos.getJSONArray(workZone).getJSONObject(i).getString("ITIStext");
-//                validateString(text);
-//                p3.add(text);
-
+                String code = pos.getJSONArray(workZone).getJSONObject(i).getString(itisCODES);
+                validateITISCodes(code);
+                p3.add(code);
+                item.setItis(Long.parseLong(code));
                 seq.setItem(item);
                 wz.add(seq);
             }
@@ -323,21 +298,11 @@ public class TravelerSerializer {
             {
                 ITIScodesAndText.Sequence_ seq = new ITIScodesAndText.Sequence_();
                 ITIScodesAndText.Sequence_.Item item = new ITIScodesAndText.Sequence_.Item();
-
-//                if (pos.getJSONArray(advisory).getJSONObject(i).isNull("ITIStext"))
-//                {
-                    String code = pos.getJSONArray(advisory).getJSONObject(i).getString("ITISCodes");
-                    validateITISCodes(code);
-                    p3.add(code);
-                    item.setItis(Integer.parseInt(code));
-//                }
+                String code = pos.getJSONArray(advisory).getJSONObject(i).getString(itisCODES);
+                validateITISCodes(code);
+                p3.add(code);
+                item.setItis(Integer.parseInt(code));
                 seq.setItem(item);
-
-                // TODO Not Exaclty sure where this goes into the ITIS Object
-//                String text = pos.getJSONArray(advisory).getJSONObject(i).getString("ITIStext");
-//                validateString(text);
-//                p3.add(text);
-
                 itisText.add(seq);
             }
             content.setAdvisory(itisText);
@@ -348,15 +313,9 @@ public class TravelerSerializer {
            contentType = 2;
            for (int i = 1; i <=len; i++)
            {
-//              if (pos.getJSONArray(advisory).getJSONObject(i).isNull("ITIStext"))
-//              {
-                 String code = pos.getJSONArray(advisory).getJSONObject(i).getString("ITISCodes");
+                 String code = pos.getJSONArray(advisory).getJSONObject(i).getString(itisCODES);
                  validateITISCodes(code);
                  p3.add(code);
-//              }
-//              String text = pos.getJSONArray(advisory).getJSONObject(i).getString("ITIStext");
-//              validateString(text);
-//              p3.add(text);
            }
         }
 //      TODO Generic Signs
