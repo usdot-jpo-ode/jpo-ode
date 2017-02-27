@@ -100,7 +100,6 @@ public class OssAsn1Coder implements Asn1Plugin {
 
         try {
             if (ins.available() > 0) {
-                logger.debug("DECODER - Message Size = {}", ins.available());
                 coder.decode(ins, bsm);
                 gbsm = OssBsm.genericBsm(bsm);
             }
@@ -129,7 +128,6 @@ public class OssAsn1Coder implements Asn1Plugin {
 
         try {
             if (ins.available() > 0) {
-                logger.debug("DECODER - Message Size = {}", ins.available());
                 coder.decode(ins, mf);
                 gmf = OssMessageFrame.genericMessageFrame(mf);
             }
