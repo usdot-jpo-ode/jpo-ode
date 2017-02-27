@@ -69,7 +69,8 @@ public abstract class AbstractCoder implements Coder {
 
     @Override
    public void decodeFromStreamAndPublish(InputStream is, String topic) throws IOException {
-       Asn1Object decoded = null;
+       Asn1Object decoded;
+       
 
        try {
            do {
