@@ -50,9 +50,9 @@ public class DdsRequest extends BaseRequest {
    }
 
    public enum SystemName {
-      SDC ("SDC 2.2"),
-      SDW ("SDW 2.2"),
-      SDPC ("SDPC 2.2");
+      SDC ("SDC 2.3"),
+      SDW ("SDW 2.3"),
+      SDPC ("SDPC 2.3");
 
       private final String name;
 

@@ -67,17 +67,19 @@ public class AsdMessage extends OdeObject {
             new DHour(zdtStop.getHour()),
             new DMinute(zdtStop.getMinute()));
 
-      OctetString oAdvisoryMessage = new OctetString(advisoryMessage.getBytes());
+      byte[] fourRandomBytes = new byte[4];
+      new Random(System.currentTimeMillis()).nextBytes(fourRandomBytes);
+
+      OctetString oAdvisoryMessage = new OctetString(CodecUtils.fromHex(advisoryMessage));
       
+      byte[] distroType = {1};
       asd.asdmDetails = new AdvisoryDetails(
-            new TemporaryID(UUID.randomUUID().toString().getBytes()), 
+            new TemporaryID(fourRandomBytes), 
             AdvisoryBroadcastType.tim,
-            new DistributionType("01".getBytes()), dStartTime, dStopTime, oAdvisoryMessage);
+            new DistributionType(distroType), dStartTime, dStopTime, oAdvisoryMessage);
 
       asd.dialogID = new SemiDialogID(156);
       asd.groupID = new GroupID("jode".getBytes());
-      byte[] fourRandomBytes = new byte[4];
-      new Random(System.currentTimeMillis()).nextBytes(fourRandomBytes);
       asd.requestID = new TemporaryID(fourRandomBytes);
       asd.seqID = new SemiSequenceID(5);
       asd.serviceRegion = OssGeoRegion.geoRegion(serviceRegion);
