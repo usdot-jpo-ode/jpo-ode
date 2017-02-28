@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.text.ParseException;
+
 import org.junit.Test;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.event.ResponseEvent;
@@ -40,7 +42,7 @@ public class TimManagerServiceTest {
     }
 
     @Test
-    public void shouldCreatePDU() {
+    public void shouldCreatePDU() throws ParseException {
 
         String expectedResult = "[1.0.15628.4.1.4.1.2.3 = 11, 1.0.15628.4.1.4.1.3.3 = 2, 1.0.15628.4.1.4.1.4.3 = 3, 1.0.15628.4.1.4.1.5.3 = 4, 1.0.15628.4.1.4.1.6.3 = 5, 1.0.15628.4.1.4.1.7.3 = f, 1.0.15628.4.1.4.1.8.3 = w, 1.0.15628.4.1.4.1.9.3 = 88, 1.0.15628.4.1.4.1.10.3 = 9, 1.0.15628.4.1.4.1.11.3 = 10]";
 

@@ -46,7 +46,7 @@ public class AsdMessage extends OdeObject {
       oneYear
    }
 
-   private AdvisorySituationData asd;
+   private AdvisorySituationData asd = new AdvisorySituationData();
 
    public AsdMessage(String startTime, String stopTime, String advisoryMessage, J2735GeoRegion serviceRegion) throws ParseException {
       super();

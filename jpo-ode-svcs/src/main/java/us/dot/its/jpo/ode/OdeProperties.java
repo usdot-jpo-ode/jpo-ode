@@ -46,7 +46,7 @@ public class OdeProperties implements EnvironmentAware {
     private String ddsCasUsername = "";
     private String ddsCasPassword = "";
     private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
-    private String serviceRegion = null;
+    private String serviceRegion = "44.998459,-111.040817,41.104674,-104.111312";
 
     private String hostId;
 

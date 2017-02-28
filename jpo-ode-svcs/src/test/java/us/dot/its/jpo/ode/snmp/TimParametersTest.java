@@ -2,12 +2,14 @@ package us.dot.its.jpo.ode.snmp;
 
 import static org.junit.Assert.assertEquals;
 
+import java.text.ParseException;
+
 import org.junit.Test;
 
 public class TimParametersTest {
 
     @Test
-    public void shouldPopulate() {
+    public void shouldPopulate() throws ParseException {
 
         String testRsuSRMPsid = "1";
         int testRsuSRMDsrcMsgId = 2;
