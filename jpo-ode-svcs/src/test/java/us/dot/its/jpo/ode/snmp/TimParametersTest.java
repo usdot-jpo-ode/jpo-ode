@@ -16,14 +16,14 @@ public class TimParametersTest {
         int testRsuSRMTxMode = 3;
         int testRsuSRMTxChannel = 4;
         int testRsuSRMTxInterval = 5;
-        String testRsuSRMDeliveryStart = "6";
-        String testRsuSRMDeliveryStop = "7";
+        String testRsuSRMDeliveryStart = "0C011411112F";
+        String testRsuSRMDeliveryStop = "0C011411112F";
         String testRsuSRMPayload = "8";
         int testRsuSRMEnable = 9;
         int testRsuSRMStatus = 10;
 
         TimParameters actual = new TimParameters(testRsuSRMPsid, testRsuSRMDsrcMsgId, testRsuSRMTxMode,
-                testRsuSRMTxChannel, testRsuSRMTxInterval, testRsuSRMDeliveryStart, testRsuSRMDeliveryStop,
+                testRsuSRMTxChannel, testRsuSRMTxInterval, "2017-12-01T17:47:11-05:00", "2017-12-01T17:47:11-05:00",
                 testRsuSRMPayload, testRsuSRMEnable, testRsuSRMStatus);
         
         assertEquals(testRsuSRMPsid, actual.rsuSRMPsid);
