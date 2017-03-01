@@ -1,11 +1,11 @@
 package us.dot.its.jpo.ode.util;
 
-import us.dot.its.jpo.ode.model.OdeGeoRegion;
+import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 
 public class OdeGeoUtils {
 
-   public static boolean isPositionWithinRegion(J2735Position3D pos, OdeGeoRegion region) {
+   public static boolean isPositionWithinRegion(J2735Position3D pos, J2735GeoRegion region) {
       if (pos == null || region == null)
          return false;
       
