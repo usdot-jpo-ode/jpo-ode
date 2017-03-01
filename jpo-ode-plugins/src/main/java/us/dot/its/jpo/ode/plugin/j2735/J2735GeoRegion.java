@@ -150,8 +150,7 @@ public class J2735GeoRegion extends OdeObject{
    }
 
    public boolean contains(J2735GeoRegion requestRegion) {
-      return requestRegion.contains(requestRegion.getNwCorner())
-            && requestRegion.contains(requestRegion.getSeCorner());
+      return contains(requestRegion.getNwCorner()) && contains(requestRegion.getSeCorner());
    }
 
 }
