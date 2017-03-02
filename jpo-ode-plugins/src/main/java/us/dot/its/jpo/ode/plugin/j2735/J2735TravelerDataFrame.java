@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-public class J2735AdvisoryDataFrame extends Asn1Object {
+public class J2735TravelerDataFrame extends Asn1Object {
    private static final long serialVersionUID = 1031726280264573342L;
 
    public enum TravelerInfoType {
@@ -21,37 +21,9 @@ public class J2735AdvisoryDataFrame extends Asn1Object {
    private J2735Position3D commonAnchor;
    private Integer commonLaneWidth;
    private J2735DirectionOfUse commonDirectionality;
-   private ArrayList<J2735ValidRegion> regions;
+   private ArrayList<J2735GeographicalPath> regions;
    private J2735MessageContent content;
    private String url;
-
-   //TODO Move to us.dot.its.jpo.ode.plugin.j2735.oss.OssOdeAdvisoryDataFrame class
-//   public OdeAdvisoryDataFrame(Sequence_ element) {
-//      if (element.hasCommonAnchor())
-//         setCommonAnchor(new J2735Position3D(element.getCommonAnchor()));
-//      if (element.hasCommonDirectionality())
-//         setCommonDirectionality(OdeDirectionOfUse.valueOf(element.getCommonDirectionality().name()));
-//      if (element.hasCommonLaneWidth())
-//         setCommonLaneWidth(element.getCommonLaneWidth().intValue());
-//      if (element.content != null)
-//         setMessageContent(new MessageContent(element.content));
-//      if (element.duratonTime != null)
-//         setDuratonTime(element.duratonTime.intValue());
-//      if (element.frameType != null)
-//         setFrameType(TravelerInfoType.valueOf(element.frameType.name()));
-//      if (element.msgId != null)
-//         setMessageId(new MessageId(element.msgId));
-//      if (element.priority != null)
-//         setPriority(element.priority.intValue());
-//      if (element.regions != null)
-//         setRegions(OdeValidRegion.createList(element.regions));
-//      if (element.startTime != null)
-//         setStartTime(element.startTime.intValue());
-//      if (element.hasStartYear())
-//         setStartYear(element.getStartYear().intValue());
-//      if (element.url != null)
-//         setUrl(element.url.stringValue());
-//   }
 
    public TravelerInfoType getFrameType() {
       return frameType;
@@ -65,8 +37,9 @@ public class J2735AdvisoryDataFrame extends Asn1Object {
       return msgId;
    }
 
-   public void setMessageId(J2735MessageId msgId) {
+   public J2735TravelerDataFrame setMessageId(J2735MessageId msgId) {
       this.msgId = msgId;
+      return this;
    }
 
    public Integer getStartYear() {
@@ -125,12 +98,13 @@ public class J2735AdvisoryDataFrame extends Asn1Object {
       this.commonDirectionality = commonDirectionality;
    }
 
-   public ArrayList<J2735ValidRegion> getRegions() {
+   public ArrayList<J2735GeographicalPath> getRegions() {
       return regions;
    }
 
-   public void setRegions(ArrayList<J2735ValidRegion> regions) {
+   public J2735TravelerDataFrame setRegions(ArrayList<J2735GeographicalPath> regions) {
       this.regions = regions;
+      return this;
    }
 
    public J2735MessageContent getMessageContent() {

@@ -9,7 +9,6 @@ import us.dot.its.jpo.ode.j2735.dsrc.EventDescription.Description;
 import us.dot.its.jpo.ode.j2735.itis.ITIScodes;
 import us.dot.its.jpo.ode.plugin.j2735.J2735EventDescription;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Extent;
-import us.dot.its.jpo.ode.plugin.j2735.J2735HeadingSlice;
 import us.dot.its.jpo.ode.plugin.j2735.J2735RegionalContent;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
@@ -32,21 +31,7 @@ public class OssEventDescription {
             desc.priority = CodecUtils.toHex(description.priority.byteArrayValue());
         }
         if (description.hasHeading()) {
-            
-            J2735HeadingSlice headingSlice = new J2735HeadingSlice();
-            
-            for (int i = 0; i < description.heading.getSize(); i++) {
-
-                String headingBitName = description.heading.getNamedBits().getMemberName(i);
-                Boolean headingBitStatus = description.heading.getBit(i);
-
-                if (headingBitName != null) {
-                    headingSlice.put(headingBitName, headingBitStatus);
-                }
-            }
-            
-            desc.heading = headingSlice;
-            
+            OssHeadingSlice.genericHeadingSlice(description.heading);
         }
         if (description.hasExtent()) {
             desc.extent = J2735Extent.values()[description.extent.indexOf()];
@@ -57,7 +42,7 @@ public class OssEventDescription {
                         (us.dot.its.jpo.ode.j2735.dsrc.EventDescription.Regional.Sequence_) description.regional
                         .elements().nextElement();
                 desc.regional.add(new J2735RegionalContent().setId(element.regionId.intValue())
-                        .setValue(element.regExtValue.getEncodedValue()));
+                        .setHexValue(CodecUtils.toHex(element.regExtValue.getEncodedValue())));
             }
         }
 

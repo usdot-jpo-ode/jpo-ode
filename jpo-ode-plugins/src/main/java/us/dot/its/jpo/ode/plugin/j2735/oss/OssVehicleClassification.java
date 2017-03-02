@@ -7,6 +7,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735RegionalContent;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ResponderGroupAffected;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleClassification;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleType;
+import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class OssVehicleClassification {
 
@@ -56,7 +57,7 @@ public class OssVehicleClassification {
                 us.dot.its.jpo.ode.j2735.dsrc.VehicleClassification.Regional.Sequence_ element = (us.dot.its.jpo.ode.j2735.dsrc.VehicleClassification.Regional.Sequence_) vc.regional
                         .elements().nextElement();
                 gvc.regional.add(new J2735RegionalContent().setId(element.regionId.intValue())
-                        .setValue(element.regExtValue.getEncodedValue()));
+                        .setHexValue(CodecUtils.toHex(element.regExtValue.getEncodedValue())));
             }
         }
 

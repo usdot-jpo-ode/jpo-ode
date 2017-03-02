@@ -20,12 +20,12 @@ public final class OdeAdvisorySituationData extends J2735AdvisorySituationData
    @Override
    public ZonedDateTime getTimestamp() {
       try {
-         if (advisoryMessage.getStartTime() == null ||
-               advisoryMessage.getStopTime() == null) {
+         if (advisoryDetails.getStartTime() == null ||
+               advisoryDetails.getStopTime() == null) {
             return null;
          } else {
-            ZonedDateTime startTime = DateTimeUtils.isoDateTime(advisoryMessage.getStartTime());
-            ZonedDateTime endTime = DateTimeUtils.isoDateTime(advisoryMessage.getStopTime());
+            ZonedDateTime startTime = DateTimeUtils.isoDateTime(advisoryDetails.getStartTime());
+            ZonedDateTime endTime = DateTimeUtils.isoDateTime(advisoryDetails.getStopTime());
             return startTime.plusSeconds(endTime.toEpochSecond() - startTime.toEpochSecond());
          }
       } catch (ParseException e) {

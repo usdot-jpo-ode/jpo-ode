@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 import us.dot.its.jpo.ode.j2735.dsrc.SupplementalVehicleExtensions;
 import us.dot.its.jpo.ode.plugin.j2735.J2735RegionalContent;
 import us.dot.its.jpo.ode.plugin.j2735.J2735SupplementalVehicleExtensions;
+import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class OssSupplementalVehicleExtensions {
     
@@ -45,7 +46,7 @@ public class OssSupplementalVehicleExtensions {
                 us.dot.its.jpo.ode.j2735.dsrc.SupplementalVehicleExtensions.Regional.Sequence_ element = (us.dot.its.jpo.ode.j2735.dsrc.SupplementalVehicleExtensions.Regional.Sequence_) sve.regional
                         .elements().nextElement();
                 suppVeh.regional.add(new J2735RegionalContent().setId(element.regionId.intValue())
-                        .setValue(element.regExtValue.getEncodedValue()));
+                        .setHexValue(CodecUtils.toHex(element.regExtValue.getEncodedValue())));
             }
         }
         return suppVeh;

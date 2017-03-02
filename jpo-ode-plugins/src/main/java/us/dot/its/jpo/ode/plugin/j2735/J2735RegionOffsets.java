@@ -20,16 +20,6 @@ public class J2735RegionOffsets extends Asn1Object {
       this.zOffsetCm = zOffsetCm;
    }
 
-   //TODO Move to us.dot.its.jpo.ode.plugin.j2735.oss.OssRegionOffsets class
-//   public OdeRegionOffsets(RegionOffsets ofs) {
-//      this.xOffsetCm = ofs.getXOffset();
-//      
-//      this.yOffsetCm = ofs.getYOffset();
-//      
-//      if (ofs.hasZOffset())
-//         this.zOffsetCm = ofs.getZOffset();
-//   }
-
    public Long getxOffsetCm() {
    	return xOffsetCm;
    }
@@ -56,18 +46,5 @@ public class J2735RegionOffsets extends Asn1Object {
    	this.zOffsetCm = zOffsetCm;
    	return this;
    }
-
-   //TODO Move to us.dot.its.jpo.ode.plugin.j2735.oss.OssRegionList class
-//   public static List<OdeRegionOffsets> createList(RegionList regionList) {
-//      if (regionList == null)
-//         return null;
-//      
-//      ArrayList<OdeRegionOffsets> nl = new ArrayList<OdeRegionOffsets>();
-//
-//      for (RegionOffsets ofs : regionList.elements) {
-//         nl.add(new OdeRegionOffsets(ofs));
-//      }
-//      return nl;
-//   }
 
 }
