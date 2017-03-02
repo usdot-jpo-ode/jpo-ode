@@ -43,7 +43,7 @@ implements WebSocketMessageHandler<MessageType> {
 
    @Override
    public void onClose(Session session, CloseReason reason) {
-      this.client.OnClose(reason);
+      this.client.onClose(reason);
    }
 
    @Override

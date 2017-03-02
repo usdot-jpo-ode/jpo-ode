@@ -107,7 +107,8 @@ public class TravelerMessageController {
 
       // Deposit TIM to SDW
       J2735GeoRegion serviceRegion = new J2735GeoRegion(odeProperties.getServiceRegion());
-      depositor.deposit(rsuSRMDeliveryStart, rsuSRMDeliveryStop, rsuSRMPayload, serviceRegion);
+      AsdMessage message = new AsdMessage(rsuSRMDeliveryStart, rsuSRMDeliveryStop, rsuSRMPayload, serviceRegion);
+      depositor.deposit(message);
       
       if (response != null && response.getResponse() != null) {
          return response.getResponse().toString();
