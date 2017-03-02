@@ -20,7 +20,6 @@ import us.dot.its.jpo.ode.model.OdeDepRequest;
 import us.dot.its.jpo.ode.model.OdeMessage;
 import us.dot.its.jpo.ode.model.OdeRequest.DataSource;
 import us.dot.its.jpo.ode.model.OdeRequestType;
-import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion;
 import us.dot.its.jpo.ode.traveler.AsdMessage;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
 import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
@@ -28,6 +27,8 @@ import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
 public class DdsDepositor<MessageType> extends AbstractWebSocketClient {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+
     private OdeProperties odeProperties;
     private DdsRequestManager<MessageType> requestManager;
     private OdeDepRequest depRequest;
@@ -63,6 +64,15 @@ public class DdsDepositor<MessageType> extends AbstractWebSocketClient {
     }
 
     @Override
+    public void onClose(CloseReason reason) {
+        try {
+            this.requestManager.close();
+        } catch (DdsRequestManagerException e) {
+            logger.error("Error closing DDS Request Manager", e);
+        }
+    }
+    
+    @Override
     public void onMessage(OdeMessage message) {
         logger.info("Deposit Response: {}", message);
     }
@@ -73,15 +83,6 @@ public class DdsDepositor<MessageType> extends AbstractWebSocketClient {
     }
 
     @Override
-    public void onClose(CloseReason reason) {
-        try {
-            this.requestManager.close();
-        } catch (DdsRequestManagerException e) {
-            logger.error("Error closing DDS Request Manager", e);
-        }
-    }
-
-    @Override
     public void onError(Throwable t) {
         logger.error("Error reported by DDS Message Handler", t);
     }
@@ -89,18 +90,17 @@ public class DdsDepositor<MessageType> extends AbstractWebSocketClient {
     public OdeDepRequest getDepRequest() {
         return depRequest;
     }
-    
-    public DdsRequestManager<MessageType> getRequestManager() {
-        return requestManager;
-    }
 
     public void setRequestManager(DdsRequestManager<MessageType> requestManager) {
         this.requestManager = requestManager;
     }
     
-
     public OdeProperties getOdeProperties() {
         return odeProperties;
+    }
+    
+    public void setLogger(Logger logger) {
+        this.logger = logger;
     }
 
 }

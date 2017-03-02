@@ -2,28 +2,52 @@ package us.dot.its.jpo.ode.dds;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doThrow;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
 
-import java.text.ParseException;
+import javax.websocket.CloseReason;
+import javax.websocket.Session;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.slf4j.LoggerFactory;
 
-import com.oss.asn1.EncodeFailedException;
-import com.oss.asn1.EncodeNotSupportedException;
-
+import ch.qos.logback.classic.Logger;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.dds.DdsClient.DdsClientException;
 import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.model.OdeDataType;
 import us.dot.its.jpo.ode.model.OdeDepRequest;
+import us.dot.its.jpo.ode.model.OdeMessage;
 import us.dot.its.jpo.ode.model.OdeRequest.DataSource;
-import us.dot.its.jpo.ode.traveler.AsdMessage;
 import us.dot.its.jpo.ode.model.OdeRequestType;
-import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
-import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
+import us.dot.its.jpo.ode.traveler.AsdMessage;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({DdsDepositor.class, Logger.class, LoggerFactory.class})
 public class DdsDepositorTest {
+    
+    private Logger mockLogger;
+    
+    @Before
+    public void setup() {
+        if (mockLogger != null) {
+            reset(mockLogger);
+        }
+        mockStatic(LoggerFactory.class);
+        mockLogger = mock(Logger.class);
+        when(LoggerFactory.getLogger(any(Class.class))).thenReturn(mockLogger);
+        
+    }
 
     
     /**
@@ -32,7 +56,7 @@ public class DdsDepositorTest {
     @Test
     public void shouldConstruct() {
         
-        OdeProperties mockOdeProperties = Mockito.mock(OdeProperties.class);
+        OdeProperties mockOdeProperties = mock(OdeProperties.class);
         
         DdsDepositor<Object> testDdsDepositor = new DdsDepositor<Object>(mockOdeProperties);
         
@@ -53,22 +77,22 @@ public class DdsDepositorTest {
     public void shouldTryConnectingWhenConnectedFalse() {
         
         // Setup
-        OdeProperties mockOdeProperties = Mockito.mock(OdeProperties.class);
+        OdeProperties mockOdeProperties = mock(OdeProperties.class);
         
         DdsDepositor<Object> testDdsDepositor = new DdsDepositor<Object>(mockOdeProperties);
         
-        DdsRequestManager<Object> mockRequestManager = Mockito.mock(DdsRequestManager.class);
-        Mockito.when(mockRequestManager.isConnected()).thenReturn(false);
+        DdsRequestManager<Object> mockRequestManager = mock(DdsRequestManager.class);
+        when(mockRequestManager.isConnected()).thenReturn(false);
         
         testDdsDepositor.setRequestManager(mockRequestManager);
         
-        AsdMessage mockMessage = Mockito.mock(AsdMessage.class);
+        AsdMessage mockMessage = mock(AsdMessage.class);
         
         try {
             testDdsDepositor.deposit(mockMessage);
             
-            Mockito.verify(mockRequestManager, Mockito.times(1)).connect(Mockito.any(), Mockito.any());
-            Mockito.verify(mockRequestManager, Mockito.times(1)).sendRequest(Mockito.any());
+            verify(mockRequestManager, times(1)).connect(any(), any());
+            verify(mockRequestManager, times(1)).sendRequest(any());
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
@@ -82,28 +106,116 @@ public class DdsDepositorTest {
     public void shouldNotTryConnectingWhenConnectedTrue() {
         
         // Setup
-        OdeProperties mockOdeProperties = Mockito.mock(OdeProperties.class);
+        OdeProperties mockOdeProperties = mock(OdeProperties.class);
         
         DdsDepositor<Object> testDdsDepositor = new DdsDepositor<Object>(mockOdeProperties);
         
-        DdsRequestManager<Object> mockRequestManager = Mockito.mock(DdsRequestManager.class);
-        Mockito.when(mockRequestManager.isConnected()).thenReturn(true);
+        DdsRequestManager<Object> mockRequestManager = mock(DdsRequestManager.class);
+        when(mockRequestManager.isConnected()).thenReturn(true);
         
         testDdsDepositor.setRequestManager(mockRequestManager);
         
-        AsdMessage mockMessage = Mockito.mock(AsdMessage.class);
+        AsdMessage mockMessage = mock(AsdMessage.class);
         
         try {
             testDdsDepositor.deposit(mockMessage);
             
-            Mockito.verify(mockRequestManager, Mockito.times(0)).connect(Mockito.any(), Mockito.any());
-            Mockito.verify(mockRequestManager, Mockito.times(1)).sendRequest(Mockito.any());
+            verify(mockRequestManager, times(0)).connect(any(), any());
+            verify(mockRequestManager, times(1)).sendRequest(any());
             
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
     }
     
+    @Test
+    public void shouldCloseWithoutErrorMessage() {
+        
+        OdeProperties mockOdeProperties = mock(OdeProperties.class);
+        
+        DdsDepositor<Object> testDdsDepositor = new DdsDepositor<Object>(mockOdeProperties);
+        
+        DdsRequestManager<Object> mockRequestManager = mock(DdsRequestManager.class);
+        
+        testDdsDepositor.setRequestManager(mockRequestManager);
+        
+        testDdsDepositor.onClose(mock(CloseReason.class));
+        
+        try {
+            verify(mockRequestManager).close();
+        } catch (DdsRequestManagerException e) {
+            fail("Unexpected exception: " + e);
+        }
+    }
     
-
+    @Test
+    public void shouldCloseWithErrorMessageWhenFail() throws DdsRequestManagerException {
+        
+        OdeProperties mockOdeProperties = mock(OdeProperties.class);
+        
+        DdsDepositor<Object> testDdsDepositor = new DdsDepositor<Object>(mockOdeProperties);
+        
+        DdsRequestManager<Object> mockRequestManager = mock(DdsRequestManager.class);
+        
+        DdsRequestManagerException testException = new DdsRequestManagerException("test");
+        
+        doThrow(testException).when(mockRequestManager).close();
+        
+        testDdsDepositor.setRequestManager(mockRequestManager);
+        Logger mockLogger = mock(Logger.class);
+        testDdsDepositor.setLogger(mockLogger);
+        
+        testDdsDepositor.onClose(mock(CloseReason.class));
+        
+        verify(mockLogger).error("Error closing DDS Request Manager", testException);
+        
+    }
+    
+    @Test
+    public void shouldLogOnMessage() {
+        
+        OdeProperties mockOdeProperties = mock(OdeProperties.class);
+        DdsDepositor<Object> testDdsDepositor = new DdsDepositor<Object>(mockOdeProperties);
+        
+        Logger mockLogger = mock(Logger.class);
+        testDdsDepositor.setLogger(mockLogger);
+        
+        OdeMessage mockMessage = mock(OdeMessage.class);
+        
+        testDdsDepositor.onMessage(mockMessage);
+        
+        verify(mockLogger).info("Deposit Response: {}", mockMessage);
+    }
+    
+    @Test
+    public void shouldLogOnOpen() {
+        
+        OdeProperties mockOdeProperties = mock(OdeProperties.class);
+        DdsDepositor<Object> testDdsDepositor = new DdsDepositor<Object>(mockOdeProperties);
+        
+        Logger mockLogger = mock(Logger.class);
+        testDdsDepositor.setLogger(mockLogger);
+        
+        Session mockSession = mock(Session.class);
+        
+        testDdsDepositor.onOpen(mockSession);
+        
+        verify(mockLogger).info("DDS Message Handler Opened Session {} ", mockSession.getId());
+    }
+    
+    @Test
+    public void shouldLogOnError() {
+        
+        OdeProperties mockOdeProperties = mock(OdeProperties.class);
+        DdsDepositor<Object> testDdsDepositor = new DdsDepositor<Object>(mockOdeProperties);
+        
+        testDdsDepositor.setLogger(mockLogger);
+        
+        Throwable mockThrowable = mock(Throwable.class);
+        
+        testDdsDepositor.onError(mockThrowable);
+        
+        verify(mockLogger).error("Error reported by DDS Message Handler", mockThrowable);
+    }
+    
 }
