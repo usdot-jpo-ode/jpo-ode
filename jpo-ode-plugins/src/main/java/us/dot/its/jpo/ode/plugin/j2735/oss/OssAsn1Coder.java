@@ -103,10 +103,11 @@ public class OssAsn1Coder implements Asn1Plugin {
                 coder.decode(ins, bsm);
                 gbsm = OssBsm.genericBsm(bsm);
             }
-        } catch (DecodeFailedException e) {
+        } catch (DecodeFailedException e) { //NOSONAR
             AbstractData partialDecodedMessage = e.getDecodedData();
             if (partialDecodedMessage != null) {
-                logger.error("DECODER - Error, message only partially decoded: {}", partialDecodedMessage.toString());
+                logger.error("DECODER - Error, message only partially decoded: {}", 
+                      partialDecodedMessage.toString());
             } else {
                 logger.debug("DECODER - Ignoring extraneous bytes at the end of the input stream.");
             }
