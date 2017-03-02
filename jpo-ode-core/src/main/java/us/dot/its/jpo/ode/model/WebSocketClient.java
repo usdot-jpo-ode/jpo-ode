@@ -5,7 +5,7 @@ import javax.websocket.Session;
 
 public interface WebSocketClient {
    
-   OdeRequest getRequest();
+   BaseRequest getRequest();
 
    void onMessage(OdeMessage message);
 
