@@ -68,6 +68,7 @@ public class DdsDepositorTest {
             testDdsDepositor.deposit(mockMessage);
             
             Mockito.verify(mockRequestManager, Mockito.times(1)).connect(Mockito.any(), Mockito.any());
+            Mockito.verify(mockRequestManager, Mockito.times(1)).sendRequest(Mockito.any());
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
@@ -96,6 +97,8 @@ public class DdsDepositorTest {
             testDdsDepositor.deposit(mockMessage);
             
             Mockito.verify(mockRequestManager, Mockito.times(0)).connect(Mockito.any(), Mockito.any());
+            Mockito.verify(mockRequestManager, Mockito.times(1)).sendRequest(Mockito.any());
+            
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }

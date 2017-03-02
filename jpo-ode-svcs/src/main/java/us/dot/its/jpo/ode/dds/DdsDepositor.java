@@ -43,7 +43,7 @@ public class DdsDepositor<MessageType> extends AbstractWebSocketClient {
         depRequest.setRequestType(OdeRequestType.Deposit);
     }
 
-    @SuppressWarnings("unchecked")
+    //@SuppressWarnings("unchecked")
     public void deposit(AsdMessage asdMsg)
             throws DdsRequestManagerException, DdsClientException, WebSocketException, ParseException,
             EncodeFailedException, EncodeNotSupportedException {
