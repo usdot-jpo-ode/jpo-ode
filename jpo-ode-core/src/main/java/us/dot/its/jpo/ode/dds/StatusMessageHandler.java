@@ -74,7 +74,7 @@ extends AbstractWebsocketMessageHandler<DdsStatusMessage> {
    
    @Override
    public void onClose(Session session, CloseReason reason) {
-      this.getClient().OnClose(reason);
+      this.getClient().onClose(reason);
       OdeControlData controlData = new OdeControlData(StatusTag.CLOSED);
       controlData.setMessage("WebSocket Connection to DDS Closed. Reason: " + reason.getReasonPhrase());
 

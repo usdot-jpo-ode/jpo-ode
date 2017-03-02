@@ -11,7 +11,7 @@ public interface WebSocketClient {
 
    void onOpen(Session session);
 
-   void OnClose(CloseReason reason);
+   void onClose(CloseReason reason);
 
    void onError(Throwable t);
 }

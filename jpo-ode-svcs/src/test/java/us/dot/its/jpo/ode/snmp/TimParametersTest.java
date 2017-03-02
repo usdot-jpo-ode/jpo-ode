@@ -16,8 +16,8 @@ public class TimParametersTest {
         int testRsuSRMTxMode = 3;
         int testRsuSRMTxChannel = 4;
         int testRsuSRMTxInterval = 5;
-        String testRsuSRMDeliveryStart = "0C011411112F";
-        String testRsuSRMDeliveryStop = "0C011411112F";
+        String expectedRsuSRMDeliveryStart = "0C011411112F";
+        String expectedRsuSRMDeliveryStop = "0C011411112F";
         String testRsuSRMPayload = "8";
         int testRsuSRMEnable = 9;
         int testRsuSRMStatus = 10;
@@ -31,8 +31,8 @@ public class TimParametersTest {
         assertEquals(testRsuSRMTxMode, actual.rsuSRMTxMode);
         assertEquals(testRsuSRMTxChannel, actual.rsuSRMTxChannel);
         assertEquals(testRsuSRMTxInterval, actual.rsuSRMTxInterval);
-        assertEquals(testRsuSRMDeliveryStart, actual.rsuSRMDeliveryStart);
-        assertEquals(testRsuSRMDeliveryStop, actual.rsuSRMDeliveryStop);
+        assertEquals(expectedRsuSRMDeliveryStart, actual.rsuSRMDeliveryStart);
+        assertEquals(expectedRsuSRMDeliveryStop, actual.rsuSRMDeliveryStop);
         assertEquals(testRsuSRMPayload, actual.rsuSRMPayload);
         assertEquals(testRsuSRMEnable, actual.rsuSRMEnable);
         assertEquals(testRsuSRMStatus, actual.rsuSRMStatus);
