@@ -153,14 +153,48 @@ public class DdsDepositorTest {
         }
     }
 
+    /**
+     * Throw a control exception WITHOUT exception argument
+     */
     @Test
-    public void shouldCatchThrownExceptionWhenErrorOnClose(@Mocked OdeProperties mockOdeProperties,
+    public void shouldCatchThrownExceptionWhenErrorOnCloseWithoutExceptionParam(@Mocked OdeProperties mockOdeProperties,
             @Mocked DdsRequestManager<Object> mockRequestManager, @Mocked Logger mockLogger,
             @Mocked CloseReason mockCloseReason) throws DdsRequestManagerException {
 
         DdsDepositor<Object> testDdsDepositor = new DdsDepositor<Object>(mockOdeProperties);
 
         DdsRequestManagerException testException = new DdsRequestManagerException("test");
+
+        new Expectations() {
+            {
+                mockRequestManager.close();
+                result = testException;
+            }
+        };
+
+        testDdsDepositor.setRequestManager(mockRequestManager);
+        testDdsDepositor.setLogger(mockLogger);
+
+        testDdsDepositor.onClose(mockCloseReason);
+
+        new Verifications() {
+            {
+                mockLogger.error(anyString, withAny(testException));
+            }
+        };
+    }
+    
+    /**
+     * Throw a control exception WITH exception argument
+     */
+    @Test
+    public void shouldCatchThrownExceptionWhenErrorOnCloseWithExceptionParam(@Mocked OdeProperties mockOdeProperties,
+            @Mocked DdsRequestManager<Object> mockRequestManager, @Mocked Logger mockLogger,
+            @Mocked CloseReason mockCloseReason) throws DdsRequestManagerException {
+
+        DdsDepositor<Object> testDdsDepositor = new DdsDepositor<Object>(mockOdeProperties);
+
+        DdsRequestManagerException testException = new DdsRequestManagerException("test", new Exception("test"));
 
         new Expectations() {
             {

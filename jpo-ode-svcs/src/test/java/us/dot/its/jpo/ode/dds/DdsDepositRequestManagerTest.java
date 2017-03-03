@@ -170,4 +170,6 @@ public class DdsDepositRequestManagerTest {
         
         assertEquals("base64", actualDdsRequest.getResultEncoding());
     }
+    
+    
 }
