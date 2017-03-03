@@ -28,7 +28,6 @@ public class DdsDepositor<MessageType> extends AbstractWebSocketClient {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-
     private OdeProperties odeProperties;
     private DdsRequestManager<MessageType> requestManager;
     private OdeDepRequest depRequest;

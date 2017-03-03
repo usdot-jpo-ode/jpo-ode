@@ -17,8 +17,8 @@ import us.dot.its.jpo.ode.wrapper.WebSocketMessageDecoder;
 import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
 
 public abstract class DdsRequestManager<T> {
-   private static Logger logger = 
-         LoggerFactory.getLogger(DdsRequestManager.class);
+   private Logger logger = 
+         LoggerFactory.getLogger(this.getClass());
 
    private DdsClient<T> ddsClient;
    private Session session;
