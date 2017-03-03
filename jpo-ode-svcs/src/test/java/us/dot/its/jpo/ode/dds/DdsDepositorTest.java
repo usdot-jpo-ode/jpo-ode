@@ -3,15 +3,21 @@ package us.dot.its.jpo.ode.dds;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.text.ParseException;
+
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
 import org.junit.Test;
+
+import com.oss.asn1.EncodeFailedException;
+import com.oss.asn1.EncodeNotSupportedException;
 
 import ch.qos.logback.classic.Logger;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.dds.DdsClient.DdsClientException;
 import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.model.OdeDataType;
 import us.dot.its.jpo.ode.model.OdeDepRequest;
@@ -20,6 +26,7 @@ import us.dot.its.jpo.ode.model.OdeRequest;
 import us.dot.its.jpo.ode.model.OdeRequest.DataSource;
 import us.dot.its.jpo.ode.model.OdeRequestType;
 import us.dot.its.jpo.ode.traveler.AsdMessage;
+import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
 import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
 
 public class DdsDepositorTest {
@@ -41,6 +48,23 @@ public class DdsDepositorTest {
         assertEquals(OdeDataType.AsnHex, actualOdeDepRequest.getDataType());
         assertEquals("hex", actualOdeDepRequest.getEncodeType());
         assertEquals(OdeRequestType.Deposit, actualOdeDepRequest.getRequestType());
+    }
+    
+    @Test
+    public void shouldInitWhenRequestorNull(@Mocked DdsDepositor mockDdsDepositor, @Mocked AsdMessage mockAsdMessage) {
+        
+        mockDdsDepositor.setRequestManager(null);
+        
+        try {
+            mockDdsDepositor.deposit(mockAsdMessage);
+            
+            new Verifications() {{
+                mockDdsDepositor.initRequestManager();
+                times = 1;
+            }};
+        } catch (Exception e) {
+            fail("Unexpected exception: " + e);
+        }
     }
 
     /**

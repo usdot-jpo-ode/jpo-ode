@@ -49,7 +49,7 @@ public class DdsDepositor<MessageType> extends AbstractWebSocketClient {
             EncodeFailedException, EncodeNotSupportedException {
         
         if (this.requestManager == null) {
-            this.requestManager = (DdsRequestManager<MessageType>) new DdsDepositRequestManager(odeProperties);
+            initRequestManager();
         }
 
         if (!this.requestManager.isConnected()) {
@@ -60,6 +60,10 @@ public class DdsDepositor<MessageType> extends AbstractWebSocketClient {
         depRequest.setData(asdMsg.encodeHex());
 
         this.requestManager.sendRequest(depRequest);
+    }
+    
+    public void initRequestManager() throws DdsRequestManagerException {
+        this.requestManager = (DdsRequestManager<MessageType>) new DdsDepositRequestManager(this.odeProperties);
     }
 
     @Override
