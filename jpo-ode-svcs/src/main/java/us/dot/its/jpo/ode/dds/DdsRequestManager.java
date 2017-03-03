@@ -54,13 +54,11 @@ public abstract class DdsRequestManager<T> {
             // decoder = IsdDecoder.class;
             // }
             // }
-            ddsClient = new DdsClient<T>(this.odeProperties.getDdsCasUrl(), this.odeProperties.getDdsCasUsername(),
+            ddsClient = new DdsClient<>(this.odeProperties.getDdsCasUrl(), this.odeProperties.getDdsCasUsername(),
                     this.odeProperties.getDdsCasPassword(), this.odeProperties.getDdsWebsocketUrl(), null, null);
 
-            if (ddsClient == null)
-                throw new DdsRequestManagerException("Error creating DDS Client");
         } catch (Exception e) {
-            throw new DdsRequestManagerException("Error sending Data Request.", e);
+            throw new DdsRequestManagerException("Error initializing DdsRequestManager" + e);
         }
     }
 
@@ -306,5 +304,9 @@ public abstract class DdsRequestManager<T> {
             super(message);
         }
 
+    }
+    
+    public OdeProperties getOdeProperties() {
+        return odeProperties;
     }
 }

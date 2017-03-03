@@ -7,25 +7,35 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 
 public class DdsRequestManagerTest {
     
-    DdsRequestManager mockedDdsRequestManager;
-
-    @Ignore
-    @Before
-    public void shouldDoSomething() {
-        mockedDdsRequestManager = Mockito.mock(DdsRequestManager.class, Mockito.CALLS_REAL_METHODS);
+    public final class MockDdsRequestManager extends MockUp<DdsRequestManager> {
+        
     }
     
-    @Ignore
     @Test
     public void shouldConstruct() {
-        OdeProperties mockProps = Mockito.mock(OdeProperties.class);
-        
-        
-        
+        MockDdsRequestManager testMockDdsRequestManager = new MockDdsRequestManager();
     }
+
+//    @Test
+//    public void shouldConstruct(@Mocked DdsRequestManager mockDdsRequestManager,
+//            @Mocked OdeProperties mockOdeProperties) {
+//
+//        //mockDdsRequestManager = new MockUp<DdsRequestManager>(mockOdeProperties);
+//        
+//        new MockUp<DdsRequestManager>() {
+//            @Mock(invocations = 1)
+//            void $init(mockOdeProperties) {
+//                assertNotNull
+//            }
+//            
+//        };
+//    }
 
 }
