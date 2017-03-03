@@ -103,10 +103,11 @@ public class OssAsn1Coder implements Asn1Plugin {
                 coder.decode(ins, bsm);
                 gbsm = OssBsm.genericBsm(bsm);
             }
-        } catch (DecodeFailedException e) {
+        } catch (DecodeFailedException e) { //NOSONAR
             AbstractData partialDecodedMessage = e.getDecodedData();
             if (partialDecodedMessage != null) {
-                logger.error("DECODER - Error, message only partially decoded: {}", partialDecodedMessage.toString());
+                logger.error("DECODER - Error, message only partially decoded: {}", 
+                      partialDecodedMessage.toString());
             } else {
                 logger.debug("DECODER - Ignoring extraneous bytes at the end of the input stream.");
             }
@@ -131,7 +132,7 @@ public class OssAsn1Coder implements Asn1Plugin {
                 coder.decode(ins, mf);
                 gmf = OssMessageFrame.genericMessageFrame(mf);
             }
-        } catch (DecodeFailedException e) {
+        } catch (DecodeFailedException e) {//NOSONAR
             AbstractData partialDecodedMessage = e.getDecodedData();
             if (partialDecodedMessage != null) {
                 logger.error("DECODER - Error, message only partially decoded: {}", partialDecodedMessage.toString());
@@ -149,24 +150,6 @@ public class OssAsn1Coder implements Asn1Plugin {
         }
 
         return gmf;
-    }
-
-    @Override
-    public String UPER_DecodeBase64ToJson(String base64Msg) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String UPER_DecodeHexToJson(String hexMsg) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String UPER_DecodeBytesToJson(byte[] byteArrayMsg) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override
@@ -191,24 +174,6 @@ public class OssAsn1Coder implements Asn1Plugin {
             }
         }
 
-        return null;
-    }
-
-    @Override
-    public String UPER_EncodeBase64FromJson(String asn1Object) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String UPER_EncodeHexfromJson(String asn1Object) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public byte[] UPER_EncodeBytesFromJson(String asn1Object) {
-        // TODO Auto-generated method stub
         return null;
     }
 
