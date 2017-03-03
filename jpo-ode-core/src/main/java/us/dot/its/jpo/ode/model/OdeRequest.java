@@ -65,6 +65,12 @@ public class OdeRequest extends BaseRequest {
       OdeRequestType requestType = OdeRequestType.getByShortName(rtype);
       if (requestType == OdeRequestType.Deposit) {
          odeRequest = (OdeRequest) JsonUtils.fromJson(message, OdeDepRequest.class);
+//      } else if (requestType == OdeRequestType.Subscription) {
+//         odeRequest = (OdeRequest) JsonUtils.fromJson(message, OdeSubRequest.class);
+//      } else if (requestType == OdeRequestType.Query) {
+//         odeRequest = (OdeRequest) JsonUtils.fromJson(message, OdeQryRequest.class);
+//      } else if (requestType == OdeRequestType.Test) {
+//         odeRequest = (OdeRequest) JsonUtils.fromJson(message, OdeTstRequest.class);
       } else {
          OdeStatus status = new OdeStatus().setCode(OdeStatus.Code.INVALID_REQUEST_TYPE_ERROR).setMessage(String
                .format("Invalid request type %s. Valid request types are %s.", rtype, OdeRequestType.shortNames()));

@@ -83,12 +83,10 @@ public class DotWarehouseData extends OdeData
       this.serviceRegion = serviceRegion;
    }
 
-   @Override
    public J2735Position3D getPosition() {
       return getCenterPosition();
    }
 
-   @Override
    public boolean isWithinBounds(J2735GeoRegion region) {
       return region.contains(centerPosition);
    }

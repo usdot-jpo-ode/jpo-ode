@@ -79,20 +79,20 @@ public class CASClient {
          String ticketGrantingTicket = getTicketGrantingTicket(ddsCasUrl,
                ddsCasUsername,
                ddsCasPassword);
-         logger.info("Got ticketGrantingTicket " + ticketGrantingTicket);
+         logger.info("Got ticketGrantingTicket {}", ticketGrantingTicket);
 
          String httpWebsocketURL = 
-               "https" + websocketURL.substring(websocketURL.indexOf(":"));
+               "https" + websocketURL.substring(websocketURL.indexOf(':'));
          String ddsHttpWebSocketUrl = 
                new URL(httpWebsocketURL).toExternalForm();
          String serviceTicket = getServiceTicket(
                ddsCasUrl, 
                ticketGrantingTicket,
                ddsHttpWebSocketUrl);
-         logger.info("Got serviceTicket " + serviceTicket);
+         logger.info("Got serviceTicket {}", serviceTicket);
 
          sessionID = getServiceCall(ddsHttpWebSocketUrl, serviceTicket);
-         logger.info("Successful CAS login with sessionID " + sessionID);
+         logger.info("Successful CAS login with sessionID {}", sessionID);
 
          return sessionID;
       } catch (Exception e) {
@@ -136,7 +136,7 @@ public class CASClient {
          try {
             httpClient.close();
          } catch (HttpException e) {
-            throw new CASException(e);
+            logger.warn("Error closing HTTP client", e);
          }
       }
    }
@@ -169,7 +169,7 @@ public class CASClient {
          try {
             httpClient.close();
          } catch (HttpException e) {
-            throw new CASException(e);
+            logger.warn("Error closing HTTP client", e);
          }
       }
    }
@@ -202,16 +202,16 @@ public class CASClient {
          try {
             httpClient.close();
          } catch (HttpException e) {
-            throw new CASException(e);
+            logger.warn("Error closing HTTP client", e);
          }
       }
    }
 
    private String getSessionID(Map<String, String> cookies) {
       String sessionID = "";
-      for (String c : cookies.keySet()) {
-         if (c.equals(JSESSIONID_KEY)) {
-            sessionID = cookies.get(c);
+      for (Map.Entry<String, String> c : cookies.entrySet()) {
+         if (c.getKey().equals(JSESSIONID_KEY)) {
+            sessionID = c.getValue();
             break;
          }
       }

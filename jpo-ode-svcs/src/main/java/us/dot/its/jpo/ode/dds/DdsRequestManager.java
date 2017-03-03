@@ -62,8 +62,6 @@ public abstract class DdsRequestManager<T> {
                null,
                null);
          
-         if (ddsClient == null)
-            throw new DdsRequestManagerException("Error creating DDS Client");
       } catch (Exception e) {
          throw new DdsRequestManagerException("Error sending Data Request.", e);
       }

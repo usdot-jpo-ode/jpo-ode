@@ -1,15 +1,19 @@
 package us.dot.its.jpo.ode.model;
 
 public abstract class AbstractWebSocketClient implements WebSocketClient {
-   private BaseRequest request;
+   private OdeRequest odeRequest;
 
-   public void setRequest(BaseRequest request) {
-      this.request = request;
+   public OdeRequest getOdeRequest() {
+      return odeRequest;
+   }
+
+   public void setOdeRequest(OdeRequest odeRequest) {
+      this.odeRequest = odeRequest;
    }
 
    @Override
-   public BaseRequest getRequest() {
-      return request;
+   public OdeRequest getRequest() {
+      return odeRequest;
    }
    
 

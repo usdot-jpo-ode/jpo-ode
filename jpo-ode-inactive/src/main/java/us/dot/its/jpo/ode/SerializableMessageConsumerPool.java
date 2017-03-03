@@ -49,7 +49,7 @@ public class SerializableMessageConsumerPool<K, V> extends SerializableObjectPoo
 
    @Override
    protected MessageConsumer<K, V> create() {
-      return new MessageConsumer<>(brokers, groupId, props);
+      return new MessageConsumer<K, V>(brokers, groupId, props);
    }
 
    @Override
