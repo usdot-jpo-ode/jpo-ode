@@ -49,23 +49,6 @@ public class DdsDepositorTest {
         assertEquals("hex", actualOdeDepRequest.getEncodeType());
         assertEquals(OdeRequestType.Deposit, actualOdeDepRequest.getRequestType());
     }
-    
-    @Test
-    public void shouldInitWhenRequestorNull(@Mocked DdsDepositor mockDdsDepositor, @Mocked AsdMessage mockAsdMessage) {
-        
-        mockDdsDepositor.setRequestManager(null);
-        
-        try {
-            mockDdsDepositor.deposit(mockAsdMessage);
-            
-            new Verifications() {{
-                mockDdsDepositor.initRequestManager();
-                times = 1;
-            }};
-        } catch (Exception e) {
-            fail("Unexpected exception: " + e);
-        }
-    }
 
     /**
      * When the DdsRequestManager.isConnected() returns false, should try
