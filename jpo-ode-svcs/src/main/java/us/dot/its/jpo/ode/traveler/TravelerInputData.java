@@ -2,10 +2,8 @@ package us.dot.its.jpo.ode.traveler;
 
 import us.dot.its.jpo.ode.model.OdeObject;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 /**
  * Created by anthonychen on 2/17/17.
  */
@@ -26,8 +24,14 @@ public class TravelerInputData extends OdeObject {
                 + ", deposit=" + deposit + "]";
     }
 
+    public static class SDWObject {
+        public int test;
 
-
+        @Override
+        public String toString() {
+            return "test= "+test;
+        }
+    }
 
     public static class LaneNode {
         public int nodeNumber;
@@ -46,8 +50,6 @@ public class TravelerInputData extends OdeObject {
                     + "]";
         }
     }
-
-
 
 
     public static class DataFrame {
@@ -75,6 +77,7 @@ public class TravelerInputData extends OdeObject {
         public String[] heading;
         public int infoType;
         public Region[] regions;
+        public RoadSign roadSign;
         public String url;
 
 
@@ -89,7 +92,27 @@ public class TravelerInputData extends OdeObject {
                 return "Region [regionType=" + regionType
                         + ", laneNodes=" + Arrays.toString(laneNodes)
                         + ", extent=" + extent
-                        + ", refPoint=" + refPoint
+//                        + ", refPoint=" + refPoint
+                        + "]";
+            }
+        }
+
+        public static class RoadSign {
+            public double latitude;
+            public double longitude;
+            public double elevation;
+            public String[] viewAngle;
+            public String mutcdCode;
+            public String msgCrc;
+
+            @Override
+            public String toString() {
+                return "Road Sign [latitude=" + latitude
+                        + ", longitude=" + longitude
+                        + ", elevation=" + elevation
+                        + ", viewAngle=" + viewAngle
+                        + ", mutcdCode=" + mutcdCode
+                        + ", msgCrc=" + msgCrc
                         + "]";
             }
         }
@@ -105,19 +128,17 @@ public class TravelerInputData extends OdeObject {
                     + ", sspContentRights=" + sspMsgContent
                     + ", sspLocationRights=" + sspLocationRights
                     + ", packetID=" + packetID
+                    + ", RoadSign=" + roadSign
                     + ", content=" + content
                     + ", items=" + Arrays.toString(items)
                     + ", mutcd=" + mutcd
                     + ", priority=" + priority
                     + ", startTime=" + startTime
-                    + ", endTime=" + endTime
                     + ", heading=" + Arrays.toString(heading)
                     + ", infoType=" + infoType
                     + ", regions="+Arrays.toString(regions)+"]";
         }
     }
-
-
 
     public static class Deposit {
         public String systemName;
@@ -136,11 +157,6 @@ public class TravelerInputData extends OdeObject {
     }
 
 
-    public static void main(String args[]) throws JsonParseException, JsonMappingException, IOException {
-        String travJson = "{\r\n    \"regions\": [\r\n        {\r\n            \"laneWidth\": \"366\",\r\n            \"laneNodes\": [\r\n                {\r\n                    \"nodeNumber\": 0,\r\n                    \"nodeLat\": 42.33757684267676,\r\n                    \"nodeLong\": -83.05125328295235\r\n                },\r\n                {\r\n                    \"nodeNumber\": 1,\r\n                    \"nodeLat\": 42.33688687290945,\r\n                    \"nodeLong\": -83.05078657858425\r\n                }\r\n            ],\r\n            \"extent\": \"5\"\r\n        }\r\n    ],\r\n    \"anchorPoint\": {\r\n        \"name\": \"Work Zone\",\r\n        \"referenceLat\": 42.337656942112716,\r\n        \"referenceLon\": -83.05142065277923,\r\n        \"referenceElevation\": \"184\",\r\n        \"content\": \"testing\",\r\n        \"direction\": \"0\",\r\n        \"mutcd\": \"2\",\r\n        \"priority\": \"5\",\r\n        \"startTime\": \"05/26/2015 10:56 AM\",\r\n        \"endTime\": \"05/30/2015 10:56 AM\",\r\n        \"heading\": [\r\n            \"0001\",\r\n            \"0080\",\r\n            \"0100\",\r\n            \"8000\"\r\n        ],\r\n        \"infoType\": \"2\"\r\n    },\r\n    \"verifiedPoint\": {\r\n        \"verifiedMapLat\": 42.33791859880715,\r\n        \"verifiedMapLon\": -83.05089362151372,\r\n        \"verifiedMapElevation\": 180,\r\n        \"verifiedSurveyedLat\": \"42.13791859880715\",\r\n        \"verifiedSurveyedLon\": -83.01089362151372,\r\n        \"verifiedSurveyedElevation\": \"184\"\r\n    }\r\n}";
-        TravelerInputData trav = JSONMapper.jsonStringToPojo(travJson, TravelerInputData.class);
-        System.out.println(trav);
-    }
 
 }
 

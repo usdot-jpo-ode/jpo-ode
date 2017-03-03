@@ -1,19 +1,15 @@
 package us.dot.its.jpo.ode.traveler;
 
 
-import java.nio.ByteBuffer;
-import us.dot.its.jpo.ode.j2735.J2735;
-
+import com.oss.asn1.EncodeFailedException;
+import com.oss.asn1.EncodeNotSupportedException;
 import us.dot.its.jpo.ode.j2735.dsrc.*;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Content;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.MsgId;
-import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Regions;
 import us.dot.its.jpo.ode.j2735.itis.ITIScodesAndText;
 
+import java.nio.ByteBuffer;
 import java.text.ParseException;
-import com.oss.asn1.EncodeFailedException;
-import com.oss.asn1.EncodeNotSupportedException;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -61,7 +57,7 @@ public class TravelerMessageBuilder {
             dataFrame.setMsgId(getMessageId(inputDataFrame));
             dataFrame.setStartYear(new DYear(getStartYear(inputDataFrame)));
             dataFrame.setStartTime(new MinuteOfTheYear(getStartTime(inputDataFrame)));
-            dataFrame.setDuratonTime(new MinutesDuration(getDurationTime(inputDataFrame)));
+//            dataFrame.setDuratonTime(new MinutesDuration(getDurationTime(inputDataFrame)));
             dataFrame.setPriority(new SignPrority(inputDataFrame.priority));
 
             // -- Part II, Applicable Regions of Use
@@ -159,15 +155,15 @@ public class TravelerMessageBuilder {
         return gs;
     }
 
-    //TODO not hardcode for a road sign
+    //TODO not hardcode for a road sign an  dataframe anchor point
     private MsgId getMessageId(TravelerInputData.DataFrame dataFrame) {
         MsgId msgId = new MsgId();
-        // always using RoadSign for now
-        boolean isRoadSign = true;
-        if (isRoadSign) {
+
+        TravelerInputData.DataFrame.RoadSign roadSign = dataFrame.roadSign;
+        if (roadSign != null) {
             msgId.setChosenFlag(MsgId.roadSignID_chosen);
             RoadSignID roadSignID = new RoadSignID();
-            roadSignID.setPosition(getAnchorPointPosition(dataFrame));
+//            roadSignID.setPosition(getAnchorPointPosition(dataFrame));
             roadSignID.setViewAngle(getHeadingSlice(dataFrame));
             roadSignID.setMutcdCode(MUTCDCode.valueOf(dataFrame.mutcd));
             msgId.setRoadSignID(roadSignID);
@@ -194,57 +190,68 @@ public class TravelerMessageBuilder {
             return new HeadingSlice(ByteBuffer.allocate(2).putShort(result).array());
         }
     }
-    private static Position3D getAnchorPointPosition(TravelerInputData.DataFrame anchorPoint) {
-        assert(anchorPoint != null);
-        final int elev = anchorPoint.getReferenceElevation();
-        Position3D anchorPos = new Position3D(
-                new Latitude(J2735Util.convertGeoCoordinateToInt(anchorPoint.referenceLat)),
-                new Longitude(J2735Util.convertGeoCoordinateToInt(anchorPoint.referenceLon)));
-        anchorPos.setElevation(new Elevation(elev));
-        return anchorPos;
-    }
-    private Regions buildRegions(TravelerInputData.DataFrame travInputData) {
-        Regions regions = new Regions();
-        for (Region inputRegion: travInputData.regions) {
-            GeographicalPath geoPath = new GeographicalPath();
-            ValidRegion validRegion = new ValidRegion();
-            validRegion.setDirection(getHeadingSlice(travInputData));
-            if (inputRegion.extent != -1) {
-                validRegion.setExtent(Extent.valueOf(inputRegion.extent));
-            }
-            validRegion.setArea(buildArea(travInputData, inputRegion));
-            Description description = new Description();
-            description.setOldRegion(validRegion);
-            geoPath.setDescription(description);
-            regions.add(geoPath);
-        }
-        return regions;
-    }
-    private Area buildArea(TravelerInputData travInputData, Region inputRegion) {
-        Area area = new Area();
-        Position3D anchorPos = getAnchorPointPosition(travInputData.anchorPoint);
-        if (inputRegion.regionType.equals("lane")) {
-            ShapePointSet sps = new ShapePointSet();
-            sps.setAnchor(anchorPos);
-            sps.setLaneWidth(new LaneWidth(travInputData.anchorPoint.masterLaneWidth));
-            sps.setDirectionality(DirectionOfUse.valueOf(travInputData.anchorPoint.direction));
-            sps.setNodeList(buildNodeList(inputRegion.laneNodes, travInputData.anchorPoint.referenceElevation));
-            area.setShapePointSet(sps);
-        } else if (inputRegion.regionType.equals("region")) {
-            RegionPointSet rps = new RegionPointSet();
-            rps.setAnchor(anchorPos);
-            RegionList regionList = new RegionList();
-            GeoPoint refPoint = inputRegion.refPoint;
-            for (int i=0; i < inputRegion.laneNodes.length; i++) {
-                GeoPoint nextPoint = new GeoPoint(inputRegion.laneNodes[i].nodeLat, inputRegion.laneNodes[i].nodeLong);
-                regionList.add(buildRegionOffset(refPoint, nextPoint));
-                refPoint = nextPoint;
-            }
-            rps.setNodeList(regionList);
-            area.setRegionPointSet(rps);
-        }
-        return area;
-    }
+//    private static Position3D getAnchorPointPosition(TravelerInputData.DataFrame anchorPoint) {
+//        assert(anchorPoint != null);
+//        final int elev = anchorPoint.getReferenceElevation();
+//        Position3D anchorPos = new Position3D(
+//                new Latitude(J2735Util.convertGeoCoordinateToInt(anchorPoint.referenceLat)),
+//                new Longitude(J2735Util.convertGeoCoordinateToInt(anchorPoint.referenceLon)));
+//        anchorPos.setElevation(new Elevation(elev));
+//        return anchorPos;
+//    }
+//
+//    private static Position3D build3DPosition(TravelerInputData.DataFrame anchorPoint) {
+//        assert(anchorPoint != null);
+//        final int elev = anchorPoint.getReferenceElevation();
+//        Position3D anchorPos = new Position3D(
+//                new Latitude(J2735Util.convertGeoCoordinateToInt(anchorPoint.referenceLat)),
+//                new Longitude(J2735Util.convertGeoCoordinateToInt(anchorPoint.referenceLon)));
+//        anchorPos.setElevation(new Elevation(elev));
+//        return anchorPos;
+//    }
+//
+//    private Regions buildRegions(TravelerInputData.DataFrame travInputData) {
+//        Regions regions = new Regions();
+//        for (Region inputRegion: travInputData.regions) {
+//            GeographicalPath geoPath = new GeographicalPath();
+//            ValidRegion validRegion = new ValidRegion();
+//            validRegion.setDirection(getHeadingSlice(travInputData));
+//            if (inputRegion.extent != -1) {
+//                validRegion.setExtent(Extent.valueOf(inputRegion.extent));
+//            }
+//            validRegion.setArea(buildArea(travInputData, inputRegion));
+//            Description description = new Description();
+//            description.setOldRegion(validRegion);
+//            geoPath.setDescription(description);
+//            regions.add(geoPath);
+//        }
+//        return regions;
+//    }
+//    private Area buildArea(TravelerInputData travInputData, Region inputRegion) {
+//        Area area = new Area();
+//        Position3D anchorPos = getAnchorPointPosition(travInputData.anchorPoint);
+//        if (inputRegion.regionType.equals("lane")) {
+//            ShapePointSet sps = new ShapePointSet();
+//            sps.setAnchor(anchorPos);
+//            sps.setLaneWidth(new LaneWidth(travInputData.anchorPoint.masterLaneWidth));
+//            sps.setDirectionality(DirectionOfUse.valueOf(travInputData.anchorPoint.direction));
+//            sps.setNodeList(buildNodeList(inputRegion.laneNodes, travInputData.anchorPoint.referenceElevation));
+//            area.setShapePointSet(sps);
+//        } else if (inputRegion.regionType.equals("region")) {
+//            RegionPointSet rps = new RegionPointSet();
+//            rps.setAnchor(anchorPos);
+//            RegionList regionList = new RegionList();
+//            GeoPoint refPoint = inputRegion.refPoint;
+//            for (int i=0; i < inputRegion.laneNodes.length; i++) {
+//                GeoPoint nextPoint = new GeoPoint(inputRegion.laneNodes[i].nodeLat, inputRegion.laneNodes[i].nodeLong);
+//                regionList.add(buildRegionOffset(refPoint, nextPoint));
+//                refPoint = nextPoint;
+//            }
+//            rps.setNodeList(regionList);
+//            area.setRegionPointSet(rps);
+//        }
+//        return area;
+//    }
 
     private long getStartTime(TravelerInputData.DataFrame dataFrame) throws ParseException {
         Date startDate = sdf.parse(dataFrame.startTime);
@@ -261,25 +268,25 @@ public class TravelerMessageBuilder {
         return cal.get(Calendar.YEAR);
     }
 
-    private int getDurationTime(TravelerInputData.DataFrame dataFrame) throws ParseException {
-        Date startDate = sdf.parse(dataFrame.startTime);
-        Date endDate = sdf.parse(dataFrame.endTime);
-
-        long diff = endDate.getTime() - startDate.getTime();
-        int durationInMinutes = (int) diff / 1000 / 60;
-        if (durationInMinutes > MAX_MINUTES_DURATION)
-            durationInMinutes = MAX_MINUTES_DURATION;
-        return durationInMinutes;
-    }
-
-
+//    private int getDurationTime(TravelerInputData.DataFrame dataFrame) throws ParseException {
+//        Date startDate = sdf.parse(dataFrame.startTime);
+//        Date endDate = sdf.parse(dataFrame.endTime);
+//
+//        long diff = endDate.getTime() - startDate.getTime();
+//        int durationInMinutes = (int) diff / 1000 / 60;
+//        if (durationInMinutes > MAX_MINUTES_DURATION)
+//            durationInMinutes = MAX_MINUTES_DURATION;
+//        return durationInMinutes;
+//    }
 
 
-    private RegionOffsets buildRegionOffset(GeoPoint refPoint, GeoPoint nextPoint) {
-        short xOffset = nextPoint.getLonOffsetInMeters(refPoint);
-        short yOffset = nextPoint.getLatOffsetInMeters(refPoint);
-        RegionOffsets offsets = new RegionOffsets(new OffsetLL_B16(xOffset), new OffsetLL_B16(yOffset));
-        return offsets;
-    }
+
+
+//    private RegionOffsets buildRegionOffset(GeoPoint refPoint, GeoPoint nextPoint) {
+//        short xOffset = nextPoint.getLonOffsetInMeters(refPoint);
+//        short yOffset = nextPoint.getLatOffsetInMeters(refPoint);
+//        RegionOffsets offsets = new RegionOffsets(new OffsetLL_B16(xOffset), new OffsetLL_B16(yOffset));
+//        return offsets;
+//    }
 
 }
