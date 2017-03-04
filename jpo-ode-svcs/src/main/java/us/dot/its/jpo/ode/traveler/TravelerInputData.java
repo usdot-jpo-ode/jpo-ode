@@ -82,9 +82,21 @@ public class TravelerInputData extends OdeObject {
 
 
         public static class Region {
+            public String name;
+            public int regulatorID;
+            public int segmentID;
+            public long anchor_lat;
+            public long anchor_long;
+            public long anchor_elevation;
+            public int laneWidth;
+            public long directionality;
+            public boolean closedPath;
+            public String[] direction;
             public String regionType;
             public LaneNode[] laneNodes;
             public int extent = -1;
+
+
 //            public GeoPoint refPoint;
 
             @Override
@@ -98,12 +110,12 @@ public class TravelerInputData extends OdeObject {
         }
 
         public static class RoadSign {
-            public double latitude;
-            public double longitude;
-            public double elevation;
+            public long latitude;
+            public long longitude;
+            public long elevation;
             public String[] viewAngle;
-            public String mutcdCode;
-            public String msgCrc;
+            public int mutcdCode;
+            public byte[] msgCrc;
 
             @Override
             public String toString() {

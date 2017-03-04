@@ -6,17 +6,16 @@ import com.oss.asn1.EncodeNotSupportedException;
 import us.dot.its.jpo.ode.j2735.dsrc.*;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Content;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.MsgId;
+import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Regions;
 import us.dot.its.jpo.ode.j2735.itis.ITIScodesAndText;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssPosition3D;
 
 import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
-
-
-
 
 /**
  * Created by anthonychen on 2/16/17.
@@ -57,7 +56,7 @@ public class TravelerMessageBuilder {
             dataFrame.setMsgId(getMessageId(inputDataFrame));
             dataFrame.setStartYear(new DYear(getStartYear(inputDataFrame)));
             dataFrame.setStartTime(new MinuteOfTheYear(getStartTime(inputDataFrame)));
-//            dataFrame.setDuratonTime(new MinutesDuration(getDurationTime(inputDataFrame)));
+            dataFrame.setDuratonTime(new MinutesDuration(inputDataFrame.durationTime));
             dataFrame.setPriority(new SignPrority(inputDataFrame.priority));
 
             // -- Part II, Applicable Regions of Use
@@ -155,7 +154,6 @@ public class TravelerMessageBuilder {
         return gs;
     }
 
-    //TODO not hardcode for a road sign an  dataframe anchor point
     private MsgId getMessageId(TravelerInputData.DataFrame dataFrame) {
         MsgId msgId = new MsgId();
 
@@ -163,9 +161,10 @@ public class TravelerMessageBuilder {
         if (roadSign != null) {
             msgId.setChosenFlag(MsgId.roadSignID_chosen);
             RoadSignID roadSignID = new RoadSignID();
-//            roadSignID.setPosition(getAnchorPointPosition(dataFrame));
-            roadSignID.setViewAngle(getHeadingSlice(dataFrame));
-            roadSignID.setMutcdCode(MUTCDCode.valueOf(dataFrame.mutcd));
+            roadSignID.setPosition(getPosition3D(roadSign.latitude, roadSign.longitude, roadSign.elevation));
+            roadSignID.setViewAngle(getHeadingSlice(roadSign.viewAngle));
+            roadSignID.setMutcdCode(MUTCDCode.valueOf(roadSign.mutcdCode));
+            roadSignID.setCrc(new MsgCRC(roadSign.msgCrc));
             msgId.setRoadSignID(roadSignID);
         } else {
             msgId.setChosenFlag(MsgId.furtherInfoID_chosen);
@@ -174,22 +173,44 @@ public class TravelerMessageBuilder {
         return msgId;
     }
 
-    private HeadingSlice getHeadingSlice(TravelerInputData.DataFrame dataFrame) {
-        String[] heading = dataFrame.heading;
+    private Position3D getPosition3D(long latitude, long longitude, long elevation) {
+        J2735Position3D position = new J2735Position3D(latitude, longitude, elevation);
+        return OssPosition3D.position3D(position);
+
+    }
+
+    private HeadingSlice getHeadingSlice(String[] heading) {
         if (heading == null || heading.length == 0) {
-            return new HeadingSlice(new byte[] { 0x00,0x00 });
+            return new HeadingSlice(new byte[]{0x00, 0x00});
         } else {
             int[] nums = new int[heading.length];
-            for (int i=0; i<heading.length; i++) {
+            for (int i = 0; i < heading.length; i++) {
                 nums[i] = Integer.parseInt(heading[i], 16);
             }
             short result = 0;
-            for (int i=0; i<nums.length; i++) {
-                result|= nums[i];
+            for (int i = 0; i < nums.length; i++) {
+                result |= nums[i];
             }
             return new HeadingSlice(ByteBuffer.allocate(2).putShort(result).array());
         }
     }
+
+//    private HeadingSlice getHeadingSlice(TravelerInputData.DataFrame dataFrame) {
+//        String[] heading = dataFrame.heading;
+//        if (heading == null || heading.length == 0) {
+//            return new HeadingSlice(new byte[] { 0x00,0x00 });
+//        } else {
+//            int[] nums = new int[heading.length];
+//            for (int i=0; i<heading.length; i++) {
+//                nums[i] = Integer.parseInt(heading[i], 16);
+//            }
+//            short result = 0;
+//            for (int i=0; i<nums.length; i++) {
+//                result|= nums[i];
+//            }
+//            return new HeadingSlice(ByteBuffer.allocate(2).putShort(result).array());
+//        }
+//    }
 //    private static Position3D getAnchorPointPosition(TravelerInputData.DataFrame anchorPoint) {
 //        assert(anchorPoint != null);
 //        final int elev = anchorPoint.getReferenceElevation();
@@ -210,23 +231,31 @@ public class TravelerMessageBuilder {
 //        return anchorPos;
 //    }
 //
-//    private Regions buildRegions(TravelerInputData.DataFrame travInputData) {
-//        Regions regions = new Regions();
-//        for (Region inputRegion: travInputData.regions) {
-//            GeographicalPath geoPath = new GeographicalPath();
-//            ValidRegion validRegion = new ValidRegion();
-//            validRegion.setDirection(getHeadingSlice(travInputData));
-//            if (inputRegion.extent != -1) {
-//                validRegion.setExtent(Extent.valueOf(inputRegion.extent));
-//            }
+    private Regions buildRegions(TravelerInputData.DataFrame.Region[] inputRegions) {
+        Regions regions = new Regions();
+        for (TravelerInputData.DataFrame.Region inputRegion: inputRegions) {
+            GeographicalPath geoPath = new GeographicalPath();
+            geoPath.setName(new DescriptiveName(inputRegion.name));
+            geoPath.setId(new RoadSegmentReferenceID(new RoadRegulatorID(inputRegion.regulatorID), new RoadSegmentID(inputRegion.segmentID)));
+            geoPath.setAnchor(getPosition3D(inputRegion.anchor_lat, inputRegion.anchor_long, inputRegion.anchor_elevation));
+            geoPath.setLaneWidth(new LaneWidth(inputRegion.laneWidth));
+            geoPath.setDirectionality(new DirectionOfUse(inputRegion.directionality));
+            geoPath.setClosedPath(inputRegion.closedPath);
+            geoPath.setDirection(getHeadingSlice(inputRegion.direction));
+
+            ValidRegion validRegion = new ValidRegion();
+
+            if (inputRegion.extent != -1) {
+                validRegion.setExtent(Extent.valueOf(inputRegion.extent));
+            }
 //            validRegion.setArea(buildArea(travInputData, inputRegion));
 //            Description description = new Description();
 //            description.setOldRegion(validRegion);
 //            geoPath.setDescription(description);
-//            regions.add(geoPath);
-//        }
-//        return regions;
-//    }
+            regions.add(geoPath);
+        }
+        return regions;
+    }
 //    private Area buildArea(TravelerInputData travInputData, Region inputRegion) {
 //        Area area = new Area();
 //        Position3D anchorPos = getAnchorPointPosition(travInputData.anchorPoint);
