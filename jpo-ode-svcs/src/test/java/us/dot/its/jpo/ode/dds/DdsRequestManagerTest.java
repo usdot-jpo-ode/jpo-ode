@@ -107,5 +107,38 @@ public class DdsRequestManagerTest {
         assertEquals("Expected OdeRequestType.Query --> SDW: ", SystemName.SDW,
                 DdsRequestManager.systemName(mockOdeRequest));
     }
+    
+    /**
+     * Repeat above test but test default data source method
+     */
+    @Test
+    public void testSystemNameWithNullDataSource(@Mocked OdeRequest mockOdeRequest) {
+        
+        // Test 1: Subscription --> SDC
+        new Expectations() {
+            {
+                mockOdeRequest.getDataSource();
+                result = null;
+                mockOdeRequest.getRequestType();
+                result = OdeRequestType.Subscription;
+            }
+        };
+
+        assertEquals("Expected OdeRequestType.Subscription --> SDC: ", SystemName.SDC,
+                DdsRequestManager.systemName(mockOdeRequest));
+
+        // Test 2: Query --> SDW
+        new Expectations() {
+            {
+                mockOdeRequest.getDataSource();
+                result = null;
+                mockOdeRequest.getRequestType();
+                result = OdeRequestType.Query;
+            }
+        };
+        assertEquals("Expected OdeRequestType.Query --> SDW: ", SystemName.SDW,
+                DdsRequestManager.systemName(mockOdeRequest));
+        
+    }
 
 }
