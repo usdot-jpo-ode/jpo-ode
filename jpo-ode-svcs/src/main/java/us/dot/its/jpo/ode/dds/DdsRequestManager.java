@@ -106,10 +106,11 @@ public abstract class DdsRequestManager<T> {
         } catch (Exception e) {
             try {
                 wsClient.close();
+                connected = false;
             } catch (WebSocketException e1) {
                 logger.error("Error Closing DDS Client.", e1);
             }
-            throw new DdsRequestManagerException("Error sending Data Request.", e);
+            throw new DdsRequestManagerException("Error sending Data Request: " + e);
         }
     }
 
@@ -316,5 +317,9 @@ public abstract class DdsRequestManager<T> {
     
     public void setWsClient(WebSocketEndpoint<T> pWsClient) {
         this.wsClient = pWsClient;
+    }
+    
+    public void setLogger(Logger newLogger) {
+        this.logger = newLogger;
     }
 }
