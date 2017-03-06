@@ -27,10 +27,8 @@ public enum OdeDataType {
    Control("control", OdeControlData.class),
    Authorization("auth", OdeAuthorization.class),
    AggregateData("agg", OdeAggregateData.class),
-   WeatherData("weather", OdeWeatherData.class),
    AsnBase64("asnbase64", String.class),
    AsnHex("asnhex", String.class),
-   VehicleCount("vehCount", OdeVehicleCount.class),
    OtherData("other", OdeMsgPayload.class), 
    Unknown("unknown", OdeMsgPayload.class);
    

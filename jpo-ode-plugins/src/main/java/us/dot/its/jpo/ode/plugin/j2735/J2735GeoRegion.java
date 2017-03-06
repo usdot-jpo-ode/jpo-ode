@@ -22,6 +22,16 @@ import java.math.BigDecimal;
 import us.dot.its.jpo.ode.model.OdeObject;
 
 public class J2735GeoRegion extends OdeObject{
+   public class GeoRegionException extends Exception {
+
+      private static final long serialVersionUID = 1L;
+
+      public GeoRegionException(String string) {
+         super(string);
+      }
+
+   }
+
    private static final long serialVersionUID = 6646494196808253598L;
 
    private J2735Position3D nwCorner;
@@ -37,7 +47,7 @@ public class J2735GeoRegion extends OdeObject{
       this.seCorner = seCorner;
    }
 
-   public J2735GeoRegion(String serviceRegion) throws Exception {
+   public J2735GeoRegion(String serviceRegion) throws GeoRegionException {
       String[] region = serviceRegion.split("[, ] *");
       if (region != null && region.length == 4) {
          nwCorner = new J2735Position3D(
@@ -48,7 +58,7 @@ public class J2735GeoRegion extends OdeObject{
                BigDecimal.valueOf(Double.parseDouble(region[2])), 
                BigDecimal.valueOf(Double.parseDouble(region[3])), null);
       } else {
-         throw new Exception("Invalid service.region configuration.");
+         throw new GeoRegionException("Invalid service.region configuration.");
       }
    }
 
@@ -137,21 +147,25 @@ public class J2735GeoRegion extends OdeObject{
       J2735Position3D nw = this.getNwCorner();
       J2735Position3D se = this.getSeCorner();
       
-      if (nw == null || nw.getLatitude() == null || pos == null || pos.getLatitude().doubleValue() > nw.getLatitude().doubleValue())
+      if (nw == null || nw.getLatitude() == null  
+            || pos.getLatitude().doubleValue() > nw.getLatitude().doubleValue())
          return false;
-      if (nw.getLongitude() == null || pos.getLongitude().doubleValue() < nw.getLongitude().doubleValue())
+      if (nw.getLongitude() == null 
+            || pos.getLongitude().doubleValue() < nw.getLongitude().doubleValue())
          return false;
-      if (se == null || se.getLatitude() == null || pos.getLatitude().doubleValue() < se.getLatitude().doubleValue())
+      if (se == null || se.getLatitude() == null 
+            || pos.getLatitude().doubleValue() < se.getLatitude().doubleValue())
          return false;
-      if (se.getLongitude() == null || pos.getLongitude().doubleValue() > se.getLongitude().doubleValue())
+      if (se.getLongitude() == null 
+            || pos.getLongitude().doubleValue() > se.getLongitude().doubleValue())
          return false;
       
       return true;
    }
 
    public boolean contains(J2735GeoRegion requestRegion) {
-      return requestRegion.contains(requestRegion.getNwCorner())
-            && requestRegion.contains(requestRegion.getSeCorner());
+      return contains(requestRegion.getNwCorner())
+            && contains(requestRegion.getSeCorner());
    }
 
 }
