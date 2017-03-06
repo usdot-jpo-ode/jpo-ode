@@ -27,8 +27,8 @@ public class TravelerInputData extends OdeObject {
        public int mode;
        public int channel;
        public int interval;
-       public String deliveryStart;
-       public String deliveryStop;
+       public String deliverystart;
+       public String deliverystop;
        public int enable;
        public int status;
     }

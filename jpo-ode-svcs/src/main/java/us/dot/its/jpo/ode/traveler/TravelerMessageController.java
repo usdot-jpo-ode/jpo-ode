@@ -17,6 +17,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.snmp.TimManagerService;
 import us.dot.its.jpo.ode.snmp.TimParameters;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 @Controller
 public class TravelerMessageController {
@@ -36,13 +37,19 @@ public class TravelerMessageController {
         }
         
         // Step 1 - Serialize the JSON into a TIM object
-        TravelerSerializer timObject = new TravelerSerializer(jsonString);
-        TravelerMessageBuilder build = new TravelerMessageBuilder();
-        logger.debug("TIM CONTROLLER - Serialized TIM: {}", timObject.getTravelerInformationObject().toString());
-        TravelerInputData travelerInformation = timObject.getTravelerInformationObject();
-        TravelerInformation travelerInfo = null;
+        TravelerInputData travelerInfo = null;
         try {
-           travelerInfo = build.buildTravelerInformation(travelerInformation);
+           travelerInfo = (TravelerInputData) JsonUtils.fromJson(jsonString, TravelerInputData.class);
+        }
+        catch (Exception e) {
+           System.out.println("Error Deserializing TravelerInputData");
+        }
+        
+        TravelerMessageBuilder build = new TravelerMessageBuilder();
+        TravelerInformation traveler = null;
+        logger.debug("TIM CONTROLLER - Serialized TIM: {}", travelerInfo.toString());
+        try {
+           traveler = build.buildTravelerInformation(travelerInfo);
         }
         catch (Exception e)
         {
@@ -51,7 +58,7 @@ public class TravelerMessageController {
         
         // Step 2 - Populate the SnmpProperties object with SNMP preferences
         JSONObject obj = new JSONObject(jsonString);
-        JSONArray rsuList = obj.getJSONArray("RSUs");
+        JSONArray rsuList = obj.getJSONArray("rsus");
         String ip = rsuList.getJSONObject(0).getString("target");
         String user = rsuList.getJSONObject(0).getString("username");
         String pass = rsuList.getJSONObject(0).getString("password");
@@ -65,7 +72,7 @@ public class TravelerMessageController {
         // Step 2 - Encode the TIM object to a hex string
         String rsuSRMPayload = null;
         try {
-            rsuSRMPayload = build.getHexTravelerInformation(travelerInfo);
+            rsuSRMPayload = build.getHexTravelerInformation(traveler);
             if (rsuSRMPayload == null) {
                 throw new TimMessageException("Returned null string"); 
             }

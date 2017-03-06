@@ -28,7 +28,7 @@ public class TravelerSerializerpart1Test {
    public void checkLowerBoundMessageCount() {
       String msgcnt = "-1";
       try {
-         TravelerSerializer.validateMessageCount(msgcnt);
+         TravelerMessageBuilder.validateMessageCount(msgcnt);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -41,7 +41,7 @@ public class TravelerSerializerpart1Test {
    public void checkLowerMessageCount() {
       String msgcnt = "0";
       try {
-         TravelerSerializer.validateMessageCount(msgcnt);
+         TravelerMessageBuilder.validateMessageCount(msgcnt);
       }
       catch (RuntimeException e)
       {
@@ -53,7 +53,7 @@ public class TravelerSerializerpart1Test {
    public void checkUpperBoundMessageCount() {
       String msgcnt = "128";
       try {
-         TravelerSerializer.validateMessageCount(msgcnt);
+         TravelerMessageBuilder.validateMessageCount(msgcnt);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -66,7 +66,7 @@ public class TravelerSerializerpart1Test {
    public void checkUpperMessageCount() {
       String msgcnt = "127";
       try {
-         TravelerSerializer.validateMessageCount(msgcnt);
+         TravelerMessageBuilder.validateMessageCount(msgcnt);
       }
       catch (RuntimeException e)
       {
@@ -76,9 +76,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkLowerBoundSSPIndex() {
-      String index = "-1";
+      short index = -1;
       try {
-         TravelerSerializer.validateHeaderIndex(index);
+         TravelerMessageBuilder.validateHeaderIndex(index);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -89,9 +89,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkLowerSSPIndex() {
-      String index = "0";
+      short index = 0;
       try {
-         TravelerSerializer.validateHeaderIndex(index);
+         TravelerMessageBuilder.validateHeaderIndex(index);
       }
       catch (RuntimeException e)
       {
@@ -101,9 +101,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkUpperSSPIndex() {
-      String index = "0";
+      short index = 31;
       try {
-         TravelerSerializer.validateHeaderIndex(index);
+         TravelerMessageBuilder.validateHeaderIndex(index);
       }
       catch (RuntimeException e)
       {
@@ -113,9 +113,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkUpperBoundSSPIndex() {
-      String index = "32";
+      short index = 32;
       try {
-         TravelerSerializer.validateHeaderIndex(index);
+         TravelerMessageBuilder.validateHeaderIndex(index);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -126,9 +126,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkLowerBoundInfoType() {
-      String type = "-1";
+      int type = -1;
       try {
-         TravelerSerializer.validateInfoType(type);
+         TravelerMessageBuilder.validateInfoType(type);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -139,9 +139,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkLowerInfoType() {
-      String type = "0";
+      int type = 0;
       try {
-         TravelerSerializer.validateInfoType(type);
+         TravelerMessageBuilder.validateInfoType(type);
       }
       catch (RuntimeException e)
       {
@@ -151,9 +151,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkLowerBoundLat() {
-      String lat = "-900000001";
+      long lat = -900000001;
       try {
-         TravelerSerializer.validateLat(lat);
+         TravelerMessageBuilder.validateLat(lat);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -164,9 +164,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkUpperBoundLat() {
-      String lat = "900000002";
+      long lat = 900000002;
       try {
-         TravelerSerializer.validateLat(lat);
+         TravelerMessageBuilder.validateLat(lat);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -177,9 +177,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkLowerLat() {
-      String lat = "-900000000";
+      long lat = -900000000;
       try {
-         TravelerSerializer.validateLat(lat);
+         TravelerMessageBuilder.validateLat(lat);
       }
       catch (RuntimeException e)
       {
@@ -189,9 +189,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkUpperLat() {
-      String lat = "900000001";
+      long lat = 900000001;
       try {
-         TravelerSerializer.validateLat(lat);
+         TravelerMessageBuilder.validateLat(lat);
       }
       catch (RuntimeException e)
       {
@@ -201,9 +201,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkLowerBoundLong() {
-      String longg = "-1800000000";
+      long longg = -1800000000;
       try {
-         TravelerSerializer.validateLong(longg);
+         TravelerMessageBuilder.validateLong(longg);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -214,9 +214,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkUpperBoundLong() {
-      String longg = "1800000002";
+      long longg = 1800000002;
       try {
-         TravelerSerializer.validateLong(longg);
+         TravelerMessageBuilder.validateLong(longg);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -227,9 +227,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkLowerLong() {
-      String longg = "-1799999999";
+      long longg = -1799999999;
       try {
-         TravelerSerializer.validateLong(longg);
+         TravelerMessageBuilder.validateLong(longg);
       }
       catch (RuntimeException e)
       {
@@ -239,9 +239,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkUpperLong() {
-      String longg = "1800000001";
+      long longg = 1800000001;
       try {
-         TravelerSerializer.validateLong(longg);
+         TravelerMessageBuilder.validateLong(longg);
       }
       catch (RuntimeException e)
       {
@@ -253,7 +253,7 @@ public class TravelerSerializerpart1Test {
    public void checkUpperHeading() {
       String head = "100110110101010101011001";
       try {
-         TravelerSerializer.validateHeading(head);
+         TravelerMessageBuilder.validateHeading(head);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -266,7 +266,7 @@ public class TravelerSerializerpart1Test {
    public void checkLowerHeading() {
       String head = "01001010";
       try {
-         TravelerSerializer.validateHeading(head);
+         TravelerMessageBuilder.validateHeading(head);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -279,7 +279,7 @@ public class TravelerSerializerpart1Test {
    public void checkHeading() {
       String head = "1011011010101100";
       try {
-         TravelerSerializer.validateHeading(head);
+         TravelerMessageBuilder.validateHeading(head);
       }
       catch (RuntimeException e)
       {
@@ -291,7 +291,7 @@ public class TravelerSerializerpart1Test {
    public void checkLowerBoundMinute() {
       String min = "-1";
       try {
-         TravelerSerializer.validateMinuteYear(min);
+         TravelerMessageBuilder.validateMinuteYear(min);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -304,7 +304,7 @@ public class TravelerSerializerpart1Test {
    public void checkLowerMinute() {
       String min = "0";
       try {
-         TravelerSerializer.validateMinuteYear(min);
+         TravelerMessageBuilder.validateMinuteYear(min);
       }
       catch (RuntimeException e)
       {
@@ -316,7 +316,7 @@ public class TravelerSerializerpart1Test {
    public void checkUpperBoundMinute() {
       String min = "527041";
       try {
-         TravelerSerializer.validateMinuteYear(min);
+         TravelerMessageBuilder.validateMinuteYear(min);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -329,7 +329,7 @@ public class TravelerSerializerpart1Test {
    public void checkUpperMinute() {
       String min = "527040";
       try {
-         TravelerSerializer.validateMinuteYear(min);
+         TravelerMessageBuilder.validateMinuteYear(min);
       }
       catch (RuntimeException e)
       {
@@ -341,7 +341,7 @@ public class TravelerSerializerpart1Test {
    public void checkLowerBoundMinuteDuration() {
       String dur = "-1";
       try {
-         TravelerSerializer.validateMinutesDuration(dur);
+         TravelerMessageBuilder.validateMinutesDuration(dur);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -354,7 +354,7 @@ public class TravelerSerializerpart1Test {
    public void checkLowerMinuteDuration() {
       String dur = "0";
       try {
-         TravelerSerializer.validateMinutesDuration(dur);
+         TravelerMessageBuilder.validateMinutesDuration(dur);
       }
       catch (RuntimeException e)
       {
@@ -366,7 +366,7 @@ public class TravelerSerializerpart1Test {
    public void checkUpperBoundMinuteDuration() {
       String dur = "32001";
       try {
-         TravelerSerializer.validateMinutesDuration(dur);
+         TravelerMessageBuilder.validateMinutesDuration(dur);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -379,7 +379,7 @@ public class TravelerSerializerpart1Test {
    public void checkUpperMinuteDuration() {
       String dur = "32000";
       try {
-         TravelerSerializer.validateMinutesDuration(dur);
+         TravelerMessageBuilder.validateMinutesDuration(dur);
       }
       catch (RuntimeException e)
       {
@@ -389,9 +389,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkUpperBoundSign() {
-      String sign = "8";
+      int sign = 8;
       try {
-         TravelerSerializer.validateSign(sign);
+         TravelerMessageBuilder.validateSign(sign);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -402,9 +402,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkLowerBoundSign() {
-      String sign = "-1";
+      int sign = -1;
       try {
-         TravelerSerializer.validateSign(sign);
+         TravelerMessageBuilder.validateSign(sign);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -415,9 +415,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkLowerSign() {
-      String sign = "0";
+      int sign = 0;
       try {
-         TravelerSerializer.validateSign(sign);
+         TravelerMessageBuilder.validateSign(sign);
       }
       catch (RuntimeException e)
       {
@@ -427,9 +427,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkUpperSign() {
-      String sign = "7";
+      int sign = 7;
       try {
-         TravelerSerializer.validateSign(sign);
+         TravelerMessageBuilder.validateSign(sign);
       }
       catch (RuntimeException e)
       {
@@ -441,7 +441,7 @@ public class TravelerSerializerpart1Test {
    public void checkUpperBoundITISCodes() {
       String code = "65536";
       try {
-         TravelerSerializer.validateITISCodes(code);
+         TravelerMessageBuilder.validateITISCodes(code);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -454,7 +454,7 @@ public class TravelerSerializerpart1Test {
    public void checkLowerBoundITISCodes() {
       String code = "-1";
       try {
-         TravelerSerializer.validateITISCodes(code);
+         TravelerMessageBuilder.validateITISCodes(code);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -467,7 +467,7 @@ public class TravelerSerializerpart1Test {
    public void checkLowerITISCodes() {
       String code = "0";
       try {
-         TravelerSerializer.validateITISCodes(code);
+         TravelerMessageBuilder.validateITISCodes(code);
       }
       catch (RuntimeException e)
       {
@@ -479,7 +479,7 @@ public class TravelerSerializerpart1Test {
    public void checkUpperITISCodes() {
       String code = "65535";
       try {
-         TravelerSerializer.validateITISCodes(code);
+         TravelerMessageBuilder.validateITISCodes(code);
       }
       catch (RuntimeException e)
       {
@@ -491,7 +491,7 @@ public class TravelerSerializerpart1Test {
    public void checkEmptyString() {
       String str = "";
       try {
-         TravelerSerializer.validateString(str);
+         TravelerMessageBuilder.validateString(str);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -504,7 +504,7 @@ public class TravelerSerializerpart1Test {
    public void checkNonEmptyString() {
       String str = "a";
       try {
-         TravelerSerializer.validateString(str);
+         TravelerMessageBuilder.validateString(str);
       }
       catch (RuntimeException e)
       {

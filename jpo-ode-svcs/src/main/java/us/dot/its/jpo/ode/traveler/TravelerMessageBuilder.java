@@ -17,9 +17,11 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssPosition3D;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import org.apache.commons.codec.binary.Hex;
 
@@ -28,21 +30,18 @@ import org.apache.commons.codec.binary.Hex;
  */
 public class TravelerMessageBuilder {
     public static TravelerInformation travelerInfo;
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm a");
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm a", Locale.ENGLISH);
     private static final int MAX_MINUTES_DURATION = 32000; // DSRC spec
 
 
     public TravelerInformation buildTravelerInformation(TravelerInputData travInputData)
             throws ParseException, EncodeFailedException, EncodeNotSupportedException {
 
-
         travelerInfo = new TravelerInformation();
         travelerInfo.setMsgCnt(new MsgCount(travInputData.MsgCount));
-        travelerInfo.setPacketID(new UniqueMSGID(travInputData.UniqueMSGID.getBytes()));
-        travelerInfo.setUrlB(new URL_Base(travInputData.urlB));
-
+        //travelerInfo.setPacketID(new UniqueMSGID(travInputData.UniqueMSGID.getBytes()));
+        //travelerInfo.setUrlB(new URL_Base(travInputData.urlB));
         travelerInfo.setDataFrames(buildDataFrames(travInputData));
-        System.out.println("333333");
 
         return travelerInfo;
     }
@@ -57,27 +56,34 @@ public class TravelerMessageBuilder {
             TravelerDataFrame dataFrame = new TravelerDataFrame();
 
             // Part I, header
+            validateHeaderIndex(inputDataFrame.sspTimRights);
             dataFrame.setSspTimRights(new SSPindex(inputDataFrame.sspTimRights));
+            
+            validateInfoType(inputDataFrame.frameType);
             dataFrame.setFrameType(TravelerInfoType.valueOf(inputDataFrame.frameType));
+            
             dataFrame.setMsgId(getMessageId(inputDataFrame));
             dataFrame.setStartYear(new DYear(getStartYear(inputDataFrame)));
             dataFrame.setStartTime(new MinuteOfTheYear(getStartTime(inputDataFrame)));
             dataFrame.setDuratonTime(new MinutesDuration(inputDataFrame.durationTime));
+            validateSign(inputDataFrame.priority);
             dataFrame.setPriority(new SignPrority(inputDataFrame.priority));
 
             // -- Part II, Applicable Regions of Use
+            validateHeaderIndex(inputDataFrame.sspLocationRights);
             dataFrame.setSspLocationRights(new SSPindex(inputDataFrame.sspLocationRights));
 //            dataFrame.setRegions(buildRegions(travInputData));
 
             // -- Part III, Content
-            dataFrame.setSspMsgRights1(new SSPindex(inputDataFrame.sspTimRights));		// allowed message types
+            validateHeaderIndex(inputDataFrame.sspMsgTypes);
+            dataFrame.setSspMsgRights1(new SSPindex(inputDataFrame.sspMsgTypes));		// allowed message types
+            validateHeaderIndex(inputDataFrame.sspMsgContent);
             dataFrame.setSspMsgRights2(new SSPindex(inputDataFrame.sspMsgContent));	    // allowed message content
             dataFrame.setContent(buildContent(inputDataFrame));
-            dataFrame.setUrl(new URL_Short(inputDataFrame.url));
+            //dataFrame.setUrl(new URL_Short(inputDataFrame.url));
 
             dataFrames.add(dataFrame);
         }
-
         return dataFrames;
     }
     
@@ -110,12 +116,15 @@ public class TravelerMessageBuilder {
     private ITIScodesAndText buildAdvisory(String[] codes) {
         ITIScodesAndText itisText = new ITIScodesAndText();
         for (String code: codes) {
+            validateITISCodes(code);
             ITIScodesAndText.Sequence_ seq = new ITIScodesAndText.Sequence_();
             ITIScodesAndText.Sequence_.Item item = new ITIScodesAndText.Sequence_.Item();
             item.setItis(Long.parseLong(code));
             seq.setItem(item);
             itisText.add(seq);
+            System.out.println("Built sequence");
         }
+        System.out.println("Return items");
         return itisText;
     }
 
@@ -173,10 +182,15 @@ public class TravelerMessageBuilder {
         if ("RoadSignID".equals(dataFrame.msgID)) {
             msgId.setChosenFlag(MsgId.roadSignID_chosen);
             RoadSignID roadSignID = new RoadSignID();
+            validateLong(dataFrame.longitude);
+            validateLat(dataFrame.latitude);
+            validateElevation(dataFrame.elevation);
             roadSignID.setPosition(getPosition3D(dataFrame.latitude, dataFrame.longitude, dataFrame.elevation));
+            validateHeading(dataFrame.viewAngle);
             roadSignID.setViewAngle(getHeadingSlice(dataFrame.viewAngle));
+            validateMUTDCode(dataFrame.mutcd);
             roadSignID.setMutcdCode(MUTCDCode.valueOf(dataFrame.mutcd));
-            roadSignID.setCrc(new MsgCRC(dataFrame.crc.getBytes()));
+            //roadSignID.setCrc(new MsgCRC(dataFrame.crc.getBytes())); //Causing error while encoding
             msgId.setRoadSignID(roadSignID);
         } else {
             msgId.setChosenFlag(MsgId.furtherInfoID_chosen);
@@ -302,7 +316,7 @@ public class TravelerMessageBuilder {
         return minutes;
     }
 
-    private int getStartYear(TravelerInputData.DataFrame dataFrame) throws ParseException {
+   private int getStartYear(TravelerInputData.DataFrame dataFrame) throws ParseException {
         Date startDate = sdf.parse(dataFrame.startTime);
         Calendar cal = Calendar.getInstance();
         cal.setTime(startDate);
@@ -329,5 +343,77 @@ public class TravelerMessageBuilder {
 //        RegionOffsets offsets = new RegionOffsets(new OffsetLL_B16(xOffset), new OffsetLL_B16(yOffset));
 //        return offsets;
 //    }
+    
+    public static void validateMessageCount(String msg){
+       int myMsg = Integer.parseInt(msg);
+       if (myMsg > 127 || myMsg < 0)
+           throw new IllegalArgumentException("Invalid message count");
+   }
+
+   public static void validateHeaderIndex(short count){
+       if (count < 0 || count > 31)
+           throw new IllegalArgumentException("Invalid header sspIndex");
+   }
+
+   public static void validateInfoType(int num){
+       if (num < 0)
+           throw new IllegalArgumentException("Invalid enumeration");
+   }
+
+   public static void validateLat(long lat){
+       if (lat < -900000000 || lat > 900000001)
+           throw new IllegalArgumentException("Invalid Latitude");
+   }
+
+   public static void validateLong(long lonng){
+       if (lonng < -1799999999 || lonng > 1800000001)
+           throw new IllegalArgumentException("Invalid Longitude");
+   }
+   
+   public static void validateElevation(long elev) {
+      if (elev > 61439 || elev < -4096)
+         throw new IllegalArgumentException("Invalid Elevation");
+   }
+
+   public static void validateHeading(String head){
+       byte[] heads = head.getBytes();
+       if (heads.length != 16)
+       {
+          throw new IllegalArgumentException("Invalid BitString");
+       }
+   }
+   
+   public static void validateMUTDCode(int mutc){
+      if(mutc > 6 || mutc < 0)
+         throw new IllegalArgumentException("Invalid Enumeration");
+   }
+
+   public static void validateMinuteYear(String min){
+       int myMin = Integer.parseInt(min);
+       if (myMin < 0 || myMin > 527040)
+           throw new IllegalArgumentException("Invalid Minute of the Year");
+   }
+
+   public static void validateMinutesDuration(String dur){
+       int myDur = Integer.parseInt(dur);
+       if (myDur < 0 || myDur > 32000)
+           throw new IllegalArgumentException("Invalid Duration");
+   }
+
+   public static void validateSign(int sign){
+       if (sign < 0 || sign > 7)
+           throw new IllegalArgumentException("Invalid Sign Priority");
+   }
+
+   public static void validateITISCodes(String code){
+       int myCode = Integer.parseInt(code);
+       if (myCode < 0 || myCode > 65535)
+           throw new IllegalArgumentException("Invalid ITIS code");
+   }
+
+   public static void validateString(String str){
+       if (str.isEmpty())
+           throw new IllegalArgumentException("Invalid Empty String");
+   }
 
 }
