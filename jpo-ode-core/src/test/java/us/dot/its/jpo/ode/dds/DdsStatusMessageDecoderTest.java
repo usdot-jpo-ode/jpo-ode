@@ -9,7 +9,7 @@ import us.dot.its.jpo.ode.model.StatusTag;
 public class DdsStatusMessageDecoderTest {
 
 	@Test
-	public void TestGetResponseTag() {
+	public void testGetResponseTag() {
 		assertEquals(StatusTag.CLOSED, DdsStatusMessageDecoder.getResponseTag("CLOSED"));
 		assertEquals(StatusTag.DEPOSITED, DdsStatusMessageDecoder.getResponseTag("DEPOSITED"));
 		assertNotEquals(StatusTag.DEPOSITED, DdsStatusMessageDecoder.getResponseTag("OPENED"));
