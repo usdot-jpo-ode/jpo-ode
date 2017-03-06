@@ -436,18 +436,20 @@ public class DdsDepositRequestManagerTest {
                 {
                     mockWsClient.connect();
                     result = mockSession;
-                    
+
                     mockWsClient.send(anyString);
                 }
             };
-            
-            new Expectations() {{
-                mockOdeDepRequest.getDataSource();
-                result = DataSource.SDC;
-                mockOdeDepRequest.getEncodeType();
-                result = "base64";
-            }};
-            
+
+            new Expectations() {
+                {
+                    mockOdeDepRequest.getDataSource();
+                    result = DataSource.SDC;
+                    mockOdeDepRequest.getEncodeType();
+                    result = "base64";
+                }
+            };
+
         } catch (Exception e) {
             fail("Unexpected exception mocking expectations: " + e);
         }
@@ -533,5 +535,117 @@ public class DdsDepositRequestManagerTest {
         } catch (Exception e) {
             assertEquals(DdsRequestManagerException.class, e.getClass());
         }
+    }
+
+    @Test
+    public void closeShouldCloseSuccessfully(@Mocked OdeProperties mockOdeProperties,
+            @Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient, @Mocked Logger mockLogger) {
+
+        new Expectations() {
+            {
+                mockOdeProperties.getDdsCasUrl();
+                result = anyString;
+                mockOdeProperties.getDdsCasUsername();
+                result = anyString;
+                mockOdeProperties.getDdsCasPassword();
+                result = anyString;
+                mockOdeProperties.getDdsWebsocketUrl();
+                result = anyString;
+            }
+        };
+
+        try {
+            new Expectations() {
+                {
+                    mockWsClient.close();
+                }
+            };
+        } catch (WebSocketException e1) {
+            fail("Unexpected exception calling close on mock websocket client: " + e1);
+        }
+
+        new Expectations() {
+            {
+                mockLogger.info(anyString);
+            }
+        };
+
+        DdsDepositRequestManager testDdsDepositRequestManager = null;
+        try {
+            testDdsDepositRequestManager = new DdsDepositRequestManager(mockOdeProperties);
+
+        } catch (DdsRequestManagerException e) {
+            fail("Unexpected exception in DdsDepositRequestManager constructor: " + e);
+        }
+
+        testDdsDepositRequestManager.setWsClient(mockWsClient);
+        testDdsDepositRequestManager.setLogger(mockLogger);
+
+        try {
+            testDdsDepositRequestManager.close();
+        } catch (DdsRequestManagerException e) {
+            fail("Unexpected exception calling close: " + e);
+        }
+
+        assertFalse("Expected connected to be false.", testDdsDepositRequestManager.isConnected());
+        assertNull("Expected wsClient to be null.", testDdsDepositRequestManager.getWsClient());
+        assertNull("Expected session to be null.", testDdsDepositRequestManager.getSession());
+
+    }
+
+    @Test
+    public void closeShouldThrowException(@Mocked OdeProperties mockOdeProperties,
+            @Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient, @Mocked Logger mockLogger) {
+
+        new Expectations() {
+            {
+                mockOdeProperties.getDdsCasUrl();
+                result = anyString;
+                mockOdeProperties.getDdsCasUsername();
+                result = anyString;
+                mockOdeProperties.getDdsCasPassword();
+                result = anyString;
+                mockOdeProperties.getDdsWebsocketUrl();
+                result = anyString;
+            }
+        };
+
+        try {
+            new Expectations() {
+                {
+                    mockWsClient.close();
+                    result = new WebSocketException("test WebSocketException on close method");
+                }
+            };
+        } catch (WebSocketException e1) {
+            fail("Unexpected exception websocket client expectations: " + e1);
+        }
+
+        new Expectations() {
+            {
+                mockLogger.info(anyString);
+            }
+        };
+
+        DdsDepositRequestManager testDdsDepositRequestManager = null;
+        try {
+            testDdsDepositRequestManager = new DdsDepositRequestManager(mockOdeProperties);
+
+        } catch (DdsRequestManagerException e) {
+            fail("Unexpected exception in DdsDepositRequestManager constructor: " + e);
+        }
+
+        testDdsDepositRequestManager.setWsClient(mockWsClient);
+        testDdsDepositRequestManager.setLogger(mockLogger);
+
+        try {
+            testDdsDepositRequestManager.close();
+            fail("Expected DdsRequestManagerException to be thrown in close.");
+        } catch (Exception e) {
+            assertEquals("Incorrect exception thrown", DdsRequestManagerException.class, e.getClass());
+            assertTrue("Incorrect error message: " + e.getMessage(),
+                    e.getMessage().startsWith("Error closing DDS Client"));
+        }
+
     }
 }
