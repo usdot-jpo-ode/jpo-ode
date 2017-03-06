@@ -16,12 +16,16 @@
  *******************************************************************************/
 package us.dot.its.jpo.ode.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -57,14 +61,21 @@ public class JsonUtils {
    }
 
    public static Object fromJson(String s, Class<?> clazz) {
-      return gsonCompact.fromJson(s, clazz);
-//      Object o = null;
-//      try {
-//         o = mapper.readValue(s, clazz);
-//      } catch (IOException e) {
-//         e.printStackTrace();
-//      }
-//      return o;
+      //return gsonCompact.fromJson(s, clazz);
+      Object o = null;
+      try {
+         o = mapper.readValue(s, clazz);
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+      return o;
+   }
+   
+   public static <T> T jsonToPojo (String s, Class<T> generic) throws JsonParseException, JsonMappingException, IOException {
+      InputStream is = new ByteArrayInputStream(s.getBytes());
+      T configBean = mapper.readValue(is, generic);
+      System.out.println(mapper.readValue(is, generic));
+      return configBean;
    }
    
 // This method does not seem to work so commenting it out.

@@ -13,24 +13,33 @@ public class TravelerInputData extends OdeObject {
 //    private static final Logger logger = Logger.getLogger(TravelerInputData.class);
     private static final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm a");
 
-    public DataFrame[] dataframes;
-    public Deposit deposit;
-    public long packetID;
+    public int MsgCount;
+    public String MinuteOfTheYear;
+    public String UniqueMSGID;
     public String urlB;
-
-    @Override
-    public String toString() {
-        return "TravelerInputData [anchorPoint=" + Arrays.toString(dataframes)
-                + ", deposit=" + deposit + "]";
+    public DataFrame[] dataframes;
+    public RSUs[] rsus;
+    public SNMP snmp;
+    
+    public static class SNMP {
+       public int rsuid;
+       public int msgid;
+       public int mode;
+       public int channel;
+       public int interval;
+       public String deliveryStart;
+       public String deliveryStop;
+       public int enable;
+       public int status;
     }
-
-    public static class SDWObject {
-        public int test;
-
-        @Override
-        public String toString() {
-            return "test= "+test;
-        }
+    
+    public static class RSUs {
+       public String target;
+       public String username;
+       public String password;
+       public String retries;
+       public int timeout;
+       
     }
 
     public static class LaneNode {
@@ -51,63 +60,70 @@ public class TravelerInputData extends OdeObject {
         }
     }
 
-
     public static class DataFrame {
-        public String name;
-        public double latitude;
-        public double longitude;
-        public double elevation;
-        public short masterLaneWidth; // do we want to do something
-        public int  crc;
-        public int  frameType;
-        public String msgID;
-        public String infoString;
-        public long packetID;
-        public String content;
-        public String[] items;
-        public short sspTimRights;
-        public short sspMsgTypes;
-        public short sspMsgContent;
-        public short sspLocationRights;
-        public int mutcd;
-        public int priority;
-        public String startTime;
-        public String startYear;
-        public int durationTime;
-        public String[] heading;
-        public int infoType;
-        public Region[] regions;
-        public RoadSign roadSign;
-        public String url;
+       public short sspTimRights;//Start Header Information
+       public int  frameType;
+       public String msgID;
+       public long latitude;
+       public long longitude;
+       public long elevation;
+       public String viewAngle;
+       public int mutcd;
+       public String crc;
+       public String startYear;
+       public String startTime;
+       public int durationTime;
+       public int priority;//End header Information
+       public short sspLocationRights;//Start Region Information
+       public Region[] regions;
+       public short sspMsgTypes;//Start content Information
+       public short sspMsgContent;
+       public String content;
+       public String[] items;
+       public String url;//End content Information
+       
+       public static class Region {
+          public String name;
+          public int regulatorID;
+          public int segmentID;
+          public long anchor_lat;
+          public long anchor_long;
+          public long anchor_elevation;
+          public int laneWidth;
+          public long directionality;
+          public boolean closedPath;
+          public String direction;
+          public String regionType;
+          public LaneNode[] laneNodes;
+          public int extent = -1;
 
-
-        public static class Region {
-            public String name;
-            public int regulatorID;
-            public int segmentID;
-            public long anchor_lat;
-            public long anchor_long;
-            public long anchor_elevation;
-            public int laneWidth;
-            public long directionality;
-            public boolean closedPath;
-            public String[] direction;
-            public String regionType;
-            public LaneNode[] laneNodes;
-            public int extent = -1;
-
-
-//            public GeoPoint refPoint;
-
-            @Override
-            public String toString() {
-                return "Region [regionType=" + regionType
-                        + ", laneNodes=" + Arrays.toString(laneNodes)
-                        + ", extent=" + extent
-//                        + ", refPoint=" + refPoint
-                        + "]";
-            }
+          @Override
+          public String toString() {
+              return "Region [regionType=" + regionType
+                      + ", laneNodes=" + Arrays.toString(laneNodes)
+                      + ", extent=" + extent
+//                      + ", refPoint=" + refPoint
+                      + "]";
+          }
+      }
+        
+        @Override
+        public String toString() {
+            return "Frame [name=" + ", referenceLat="
+                    + latitude + ", referenceLon=" + longitude
+                    + ", referenceElevation=" + elevation
+                    + ", sspTimRights=" + sspTimRights
+                    + ", sspTypeRights=" + sspMsgTypes
+                    + ", sspContentRights=" + sspMsgContent
+                    + ", sspLocationRights=" + sspLocationRights
+                    + ", content=" + content
+                    + ", items=" + Arrays.toString(items)
+                    + ", mutcd=" + mutcd
+                    + ", priority=" + priority
+                    + ", startTime=" + startTime
+                    + ", regions="+Arrays.toString(regions)+"]";
         }
+    }
 
         public static class RoadSign {
             public long latitude;
@@ -129,29 +145,6 @@ public class TravelerInputData extends OdeObject {
             }
         }
 
-        @Override
-        public String toString() {
-            return "AnchorPoint [name=" + name + ", referenceLat="
-                    + latitude + ", referenceLon=" + longitude
-                    + ", referenceElevation=" + elevation
-                    + ", masterLaneWidth=" + masterLaneWidth
-                    + ", sspTimRights=" + sspTimRights
-                    + ", sspTypeRights=" + sspMsgTypes
-                    + ", sspContentRights=" + sspMsgContent
-                    + ", sspLocationRights=" + sspLocationRights
-                    + ", packetID=" + packetID
-                    + ", RoadSign=" + roadSign
-                    + ", content=" + content
-                    + ", items=" + Arrays.toString(items)
-                    + ", mutcd=" + mutcd
-                    + ", priority=" + priority
-                    + ", startTime=" + startTime
-                    + ", heading=" + Arrays.toString(heading)
-                    + ", infoType=" + infoType
-                    + ", regions="+Arrays.toString(regions)+"]";
-        }
-    }
-
     public static class Deposit {
         public String systemName;
         public double nwLat;
@@ -167,8 +160,6 @@ public class TravelerInputData extends OdeObject {
                     + seLon + ", timeToLive=" + timeToLive + "]";
         }
     }
-
-
 
 }
 

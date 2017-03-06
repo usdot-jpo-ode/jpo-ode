@@ -11,6 +11,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Content;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.MsgId;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Regions;
 import us.dot.its.jpo.ode.j2735.itis.ITIScodesAndText;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -21,7 +22,8 @@ import java.util.ArrayList;
  */
 public class TravelerSerializer {
 
-    TravelerInformation travelerInfo;
+    TravelerInputData travelerInfo;
+    TravelerInformation tI;
     public static final int ADVISORY = 0;
     public static final int WORKZONE = 1;
     public static final int GENERICSIGN = 2;
@@ -32,29 +34,37 @@ public class TravelerSerializer {
     String travelerDataFrame = "travelerDataFrame";
     String header = "header";
     String content = "content";
+    String msgID = "msgID";
     public TravelerSerializer(String jsonInfo){
 
-        travelerInfo = new TravelerInformation();
-
-        //Get fully populated TIMcontent string
-        JSONObject obj = new JSONObject(jsonInfo);
+       try {
+          //System.out.println(JsonUtils.jsonToPojo(jsonInfo, TravelerInputData.class));
+          //travelerInfo = JsonUtils.jsonToPojo(jsonInfo,TravelerInputData.class);
+          travelerInfo = (TravelerInputData) JsonUtils.fromJson(jsonInfo, TravelerInputData.class);
+          System.out.println("Success!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+       }
+       catch (Exception e) {
+          System.out.println("Error Parsing TravelerInputData ");
+       }
+       
+       /*JSONObject obj = new JSONObject(jsonInfo);
 
         int frameCount = obj.getJSONObject(timContent).getJSONArray(travelerDataFrame).length(); //Check the dataframe count
 
         //Populate pojo's for TIM
         String msgcnt = obj.getJSONObject(timContent).getString("msgcnt");
         validateMessageCount(msgcnt);
-        travelerInfo.setMsgCnt(new MsgCount(Integer.parseInt(msgcnt)));
+        tI.setMsgCnt(new MsgCount(Integer.parseInt(msgcnt)));
 
         TravelerDataFrameList dataFrames = new TravelerDataFrameList();
-        for (int z = 1; z <= frameCount; z++)
+        for (int z = 0; z < frameCount; z++)
         {
             TravelerDataFrame dataFrame = new TravelerDataFrame();
             //Populate pojo's for part1-header
-            TravelerDataFrame part1 = buildTravelerMessagePart1(dataFrame, obj.getJSONObject(timContent).getJSONArray(travelerDataFrame).getJSONObject(0));
+            TravelerDataFrame part1 = buildTravelerMessagePart1(dataFrame, obj.getJSONObject(timContent).getJSONArray(travelerDataFrame).getJSONObject(z));
 
             //Populate pojo's for part2-region
-            String index = obj.getJSONObject(timContent).getJSONArray(travelerDataFrame).getJSONObject(0).getJSONObject("region").getString("sspindex");
+            String index = obj.getJSONObject(timContent).getJSONArray(travelerDataFrame).getJSONObject(z).getJSONObject("region").getString("sspindex");
             validateHeaderIndex(index);
 
             part1.setSspLocationRights(new SSPindex(Integer.parseInt(index)));
@@ -63,7 +73,7 @@ public class TravelerSerializer {
             part1.setRegions(regions);
 
             //Populate pojo's for part3-content
-            TravelerDataFrame part3 = buildTravelerMessagePart3(part1, obj.getJSONObject(timContent).getJSONArray(travelerDataFrame).getJSONObject(0));
+            TravelerDataFrame part3 = buildTravelerMessagePart3(part1, obj.getJSONObject(timContent).getJSONArray(travelerDataFrame).getJSONObject(z));
 
             //Generate List of Data Frames
             dataFrames.add(part3);
@@ -71,8 +81,7 @@ public class TravelerSerializer {
         }
 
         // Adding data frames into TIM Object
-        travelerInfo.setDataFrames(dataFrames);
-
+       tI.setDataFrames(dataFrames);*/
     }
 
     private TravelerInformation.Regional setRegional(JSONObject dataFrame){
@@ -84,86 +93,78 @@ public class TravelerSerializer {
 
     private TravelerDataFrame buildTravelerMessagePart1(TravelerDataFrame dataFrame, JSONObject ob){
         ArrayList<String> p1 = new ArrayList<>();
-        String sspindex = ob.getJSONObject(header).getString("sspindex");
+        String sspindex = ob.getJSONObject(header).getString("sspTimRights");
         validateHeaderIndex(sspindex);
         p1.add(sspindex);
         dataFrame.setSspTimRights(new SSPindex(Integer.parseInt(sspindex)));
 
-        String travelerInfoType = ob.getJSONObject(header).getJSONObject("msgId").getString("FurtherInfoID");
+        String travelerInfoType = ob.getJSONObject(header).getString("travelerInfoType");
         validateInfoType(travelerInfoType);
+        dataFrame.setFrameType(TravelerInfoType.valueOf(Long.parseLong(travelerInfoType)));
+        p1.add(travelerInfoType);
         MsgId msgId = new MsgId();
+        String msg = ob.getJSONObject(header).getString(msgID);
+        JSONObject pos = ob.getJSONObject(header).getJSONObject("RoadSignID");
 
-
-        if (travelerInfoType == null) //Choice for msgid was roadsign
+        if ("RoadSignID".equals(msg)) //Choice for msgid was roadsign
         {
             msgId.setChosenFlag(MsgId.roadSignID_chosen);
-
-            p1.add(travelerInfoType);
-            dataFrame.setFrameType(TravelerInfoType.valueOf(Long.parseLong(travelerInfoType)));
-            JSONObject pos = ob.getJSONObject(header).getJSONObject("msgId").getJSONObject("RoadSignID");
-
             boolean notChecked = true;
-            String latitude = pos.getJSONObject("position3D").getString("latitude");
+            String latitude = pos.getString("latitude");
             validateLat(latitude);
             p1.add(latitude);
-            String longitude = pos.getJSONObject("position3D").getString("longitude");
+            String longitude = pos.getString("longitude");
             validateLong(longitude);
             p1.add(longitude);
-            //String elevation = obj.getJSONObject(timContent).getJSONObject(header).getJSONObject("msgId").getJSONObject("RoadSignID").getJSONObject("position3D").getString("elevation");
+            String elevation = pos.getString("elevation");
+            validateElevation(elevation);
+            p1.add(elevation);
             String headingSlice = pos.getString("HeadingSlice");
 
-
-//            final int elev = anchorPoint.getReferenceElevation();
             Position3D anchorPos = new Position3D(
                     new Latitude(Short.parseShort(latitude)) ,
                     new Longitude(Short.parseShort(longitude)));
 
-//            TODO Elevation Optional
-//            anchorPos.setElevation(new Elevation(elev));
-
             if (("noHeading").equals (headingSlice) || ("allHeadings").equals(headingSlice)) {
                 notChecked = false;
             }
-            if (notChecked){
+            if (notChecked){ //headingSlice is not a string value, able to validate
                 validateHeading(headingSlice);
-                p1.add(headingSlice);
             }
             p1.add(headingSlice);
+            
+            String mutcd = pos.getString("MUTCDCode");
+            validateMUTDCode(mutcd);
+            p1.add(mutcd);
+            String crc = pos.getString("MsgCRC");
 
             RoadSignID roadSignID = new RoadSignID();
             roadSignID.setPosition(anchorPos);
             roadSignID.setViewAngle(new HeadingSlice(headingSlice.getBytes()));
-
-            //            roadSignID.setMutcdCode(MUTCDCode.valueOf(travInputData.anchorPoint.mutcd));
+            roadSignID.setMutcdCode(new MUTCDCode(Integer.parseInt(mutcd)));
+            roadSignID.setCrc(new MsgCRC(crc.getBytes()));
+            
             msgId.setRoadSignID(roadSignID);
         }
         else
         {
             msgId.setChosenFlag(MsgId.furtherInfoID_chosen);
-
-            msgId.setFurtherInfoID(new FurtherInfoID(new byte[] { 0x00,0x00 }));
-
-            p1.add(travelerInfoType);
-            dataFrame.setFrameType(TravelerInfoType.valueOf(Long.parseLong(travelerInfoType)));
-
-            String minuteOfTheYear = ob.getJSONObject(header).getString("MinuteOfTheYear");
-            validateMinuteYear(minuteOfTheYear);
-            p1.add(minuteOfTheYear);
-            dataFrame.setStartTime(new MinuteOfTheYear(Integer.parseInt(minuteOfTheYear)));
-
-
-            String minuteDuration = ob.getJSONObject(header).getString("MinutesDuration");
-            validateMinutesDuration(minuteDuration);
-            p1.add(minuteDuration);
-            dataFrame.setDuratonTime(new MinutesDuration(Integer.parseInt(minuteDuration)));
-
-
-            String SignPriority = ob.getJSONObject(header).getString("SignPriority");
-            validateSign(SignPriority);
-            p1.add(SignPriority);
-            dataFrame.setPriority(new SignPrority(Integer.parseInt(SignPriority)));
-
+            String info = pos.getString("INFO");
+            msgId.setFurtherInfoID(new FurtherInfoID(info.getBytes()));
         }
+        
+        String minuteOfTheYear = ob.getJSONObject(header).getString("MinuteOfTheYear");
+        validateMinuteYear(minuteOfTheYear);
+        p1.add(minuteOfTheYear);
+        dataFrame.setStartTime(new MinuteOfTheYear(Integer.parseInt(minuteOfTheYear)));
+        String minuteDuration = ob.getJSONObject(header).getString("MinutesDuration");
+        validateMinutesDuration(minuteDuration);
+        p1.add(minuteDuration);
+        dataFrame.setDuratonTime(new MinutesDuration(Integer.parseInt(minuteDuration)));
+        String signPriority = ob.getJSONObject(header).getString("SignPriority");
+        validateSign(signPriority);
+        p1.add(signPriority);
+        dataFrame.setPriority(new SignPrority(Integer.parseInt(signPriority)));
 
         dataFrame.setMsgId(msgId);
 
@@ -325,18 +326,17 @@ public class TravelerSerializer {
         return dataFrame;
     }
 
-    public TravelerInformation getTravelerInformationObject(){
+    public TravelerInputData getTravelerInformationObject(){
 
         return travelerInfo;
     }
-    public String getHexTravelerInformation() throws EncodeFailedException, EncodeNotSupportedException {
+    /*public String getHexTravelerInformation() throws EncodeFailedException, EncodeNotSupportedException {
         Coder coder = J2735.getPERUnalignedCoder();
         ByteArrayOutputStream sink = new ByteArrayOutputStream();
-        coder.encode(travelerInfo, sink);
+        coder.encode(tI, sink);
         byte[] bytes = sink.toByteArray();
         return Hex.encodeHexString(bytes);
-    }
-
+    }*/
 
     public static void validateMessageCount(String msg){
         int myMsg = Integer.parseInt(msg);
@@ -367,6 +367,12 @@ public class TravelerSerializer {
         if (myLong < -1799999999 || myLong > 1800000001)
             throw new IllegalArgumentException("Invalid Longitude");
     }
+    
+    public static void validateElevation(String elev) {
+       int myElev = Integer.parseInt(elev);
+       if (myElev > 61439 || myElev < -4096)
+          throw new IllegalArgumentException("Invalid Elevation");
+    }
 
     public static void validateHeading(String head){
         byte[] heads = head.getBytes();
@@ -374,6 +380,12 @@ public class TravelerSerializer {
         {
            throw new IllegalArgumentException("Invalid BitString");
         }
+    }
+    
+    public static void validateMUTDCode(String mutc){
+       int myMutc = Integer.parseInt(mutc);
+       if(myMutc > 6 || myMutc < 0)
+          throw new IllegalArgumentException("Invalid Enumeration");
     }
 
     public static void validateMinuteYear(String min){

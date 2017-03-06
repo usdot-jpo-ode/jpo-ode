@@ -1,8 +1,11 @@
 package us.dot.its.jpo.ode.traveler;
 
 
+import com.oss.asn1.Coder;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
+
+import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.*;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Content;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.MsgId;
@@ -11,32 +14,35 @@ import us.dot.its.jpo.ode.j2735.itis.ITIScodesAndText;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssPosition3D;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.commons.codec.binary.Hex;
+
 /**
  * Created by anthonychen on 2/16/17.
  */
 public class TravelerMessageBuilder {
-    public TravelerInformation travelerInfo;
+    public static TravelerInformation travelerInfo;
     private static final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm a");
     private static final int MAX_MINUTES_DURATION = 32000; // DSRC spec
 
 
-    private TravelerInformation buildTravelerInformation(TravelerInputData travInputData)
+    public TravelerInformation buildTravelerInformation(TravelerInputData travInputData)
             throws ParseException, EncodeFailedException, EncodeNotSupportedException {
 
 
         travelerInfo = new TravelerInformation();
-        travelerInfo.setMsgCnt(new MsgCount(travelerInfo.getDataFrames().getSize()));
-        ByteBuffer buf = ByteBuffer.allocate(9).put((byte)0).putLong(travInputData.packetID);
-        travelerInfo.setPacketID(new UniqueMSGID(buf.array()));
+        travelerInfo.setMsgCnt(new MsgCount(travInputData.MsgCount));
+        travelerInfo.setPacketID(new UniqueMSGID(travInputData.UniqueMSGID.getBytes()));
         travelerInfo.setUrlB(new URL_Base(travInputData.urlB));
 
         travelerInfo.setDataFrames(buildDataFrames(travInputData));
+        System.out.println("333333");
 
         return travelerInfo;
     }
@@ -52,7 +58,7 @@ public class TravelerMessageBuilder {
 
             // Part I, header
             dataFrame.setSspTimRights(new SSPindex(inputDataFrame.sspTimRights));
-            dataFrame.setFrameType(TravelerInfoType.valueOf(inputDataFrame.infoType));
+            dataFrame.setFrameType(TravelerInfoType.valueOf(inputDataFrame.frameType));
             dataFrame.setMsgId(getMessageId(inputDataFrame));
             dataFrame.setStartYear(new DYear(getStartYear(inputDataFrame)));
             dataFrame.setStartTime(new MinuteOfTheYear(getStartTime(inputDataFrame)));
@@ -72,12 +78,20 @@ public class TravelerMessageBuilder {
             dataFrames.add(dataFrame);
         }
 
-
         return dataFrames;
     }
-    private Content buildContent(TravelerInputData.DataFrame dataFrame) {
-        String contentType = dataFrame.content;
-        String[] codes = dataFrame.items;
+    
+    public static String getHexTravelerInformation(TravelerInformation ti) throws EncodeFailedException, EncodeNotSupportedException {
+       Coder coder = J2735.getPERUnalignedCoder();
+       ByteArrayOutputStream sink = new ByteArrayOutputStream();
+       coder.encode(ti, sink);
+       byte[] bytes = sink.toByteArray();
+       return Hex.encodeHexString(bytes);
+   }
+    
+    private Content buildContent(TravelerInputData.DataFrame inputDataFrame) {
+        String contentType = inputDataFrame.content;
+        String[] codes = inputDataFrame.items;
         Content content = new Content();
         if ("Advisory".equals(contentType)) {
             content.setAdvisory(buildAdvisory(codes));
@@ -114,7 +128,6 @@ public class TravelerMessageBuilder {
             seq.setItem(item);
             wz.add(seq);
         }
-
         return wz;
     }
 
@@ -157,14 +170,13 @@ public class TravelerMessageBuilder {
     private MsgId getMessageId(TravelerInputData.DataFrame dataFrame) {
         MsgId msgId = new MsgId();
 
-        TravelerInputData.DataFrame.RoadSign roadSign = dataFrame.roadSign;
-        if (roadSign != null) {
+        if ("RoadSignID".equals(dataFrame.msgID)) {
             msgId.setChosenFlag(MsgId.roadSignID_chosen);
             RoadSignID roadSignID = new RoadSignID();
-            roadSignID.setPosition(getPosition3D(roadSign.latitude, roadSign.longitude, roadSign.elevation));
-            roadSignID.setViewAngle(getHeadingSlice(roadSign.viewAngle));
-            roadSignID.setMutcdCode(MUTCDCode.valueOf(roadSign.mutcdCode));
-            roadSignID.setCrc(new MsgCRC(roadSign.msgCrc));
+            roadSignID.setPosition(getPosition3D(dataFrame.latitude, dataFrame.longitude, dataFrame.elevation));
+            roadSignID.setViewAngle(getHeadingSlice(dataFrame.viewAngle));
+            roadSignID.setMutcdCode(MUTCDCode.valueOf(dataFrame.mutcd));
+            roadSignID.setCrc(new MsgCRC(dataFrame.crc.getBytes()));
             msgId.setRoadSignID(roadSignID);
         } else {
             msgId.setChosenFlag(MsgId.furtherInfoID_chosen);
@@ -179,13 +191,13 @@ public class TravelerMessageBuilder {
 
     }
 
-    private HeadingSlice getHeadingSlice(String[] heading) {
-        if (heading == null || heading.length == 0) {
+    private HeadingSlice getHeadingSlice(String heading) {
+        if (heading == null || heading.length() == 0) {
             return new HeadingSlice(new byte[]{0x00, 0x00});
         } else {
-            int[] nums = new int[heading.length];
-            for (int i = 0; i < heading.length; i++) {
-                nums[i] = Integer.parseInt(heading[i], 16);
+            int[] nums = new int[heading.length()];
+            for (int i = 0; i < heading.length(); i++) {
+                nums[i] = Integer.parseInt(heading.valueOf(i));
             }
             short result = 0;
             for (int i = 0; i < nums.length; i++) {

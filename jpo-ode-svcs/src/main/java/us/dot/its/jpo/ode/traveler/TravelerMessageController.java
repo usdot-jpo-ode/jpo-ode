@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.snmp.TimManagerService;
 import us.dot.its.jpo.ode.snmp.TimParameters;
@@ -35,7 +37,17 @@ public class TravelerMessageController {
         
         // Step 1 - Serialize the JSON into a TIM object
         TravelerSerializer timObject = new TravelerSerializer(jsonString);
+        TravelerMessageBuilder build = new TravelerMessageBuilder();
         logger.debug("TIM CONTROLLER - Serialized TIM: {}", timObject.getTravelerInformationObject().toString());
+        TravelerInputData travelerInformation = timObject.getTravelerInformationObject();
+        TravelerInformation travelerInfo = null;
+        try {
+           travelerInfo = build.buildTravelerInformation(travelerInformation);
+        }
+        catch (Exception e)
+        {
+           System.out.println("error Building travelerinfo");
+        }
         
         // Step 2 - Populate the SnmpProperties object with SNMP preferences
         JSONObject obj = new JSONObject(jsonString);
@@ -53,7 +65,7 @@ public class TravelerMessageController {
         // Step 2 - Encode the TIM object to a hex string
         String rsuSRMPayload = null;
         try {
-            rsuSRMPayload = timObject.getHexTravelerInformation();
+            rsuSRMPayload = build.getHexTravelerInformation(travelerInfo);
             if (rsuSRMPayload == null) {
                 throw new TimMessageException("Returned null string"); 
             }
