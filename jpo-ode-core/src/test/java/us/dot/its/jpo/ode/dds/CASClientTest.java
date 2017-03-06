@@ -42,6 +42,5 @@ public class CASClientTest {
 		}
 		assertEquals(casClient.getDdsCasUrl(), casUrl);
 		assertEquals(casClient.getDdsCasUsername() ,casUser);
-		assertEquals(casClient.getddsCasPassword(), casPass);
 	}
 }

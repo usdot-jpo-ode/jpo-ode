@@ -51,6 +51,14 @@ public class CASClient {
    public String getSessionID() {
       return sessionID;
    }
+   
+   public String getDdsCasUrl() {
+	      return ddsCasUrl;
+   }
+   
+   public String getDdsCasUsername() {
+	      return ddsCasUsername;
+   }
 
    public static CASClient configure(SSLContext sslContext,
          String ddsCasUrl,
