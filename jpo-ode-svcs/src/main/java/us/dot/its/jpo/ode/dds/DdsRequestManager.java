@@ -62,7 +62,7 @@ public abstract class DdsRequestManager<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    //@SuppressWarnings("unchecked")
     public Session connect(WebSocketMessageHandler<T> messageHandler, Class<?> decoder)
             throws DdsRequestManagerException {
 
@@ -218,13 +218,14 @@ public abstract class DdsRequestManager<T> {
     public static SystemName systemName(OdeRequest odeRequest) {
         SystemName sysName;
 
-        OdeRequest.DataSource dataSource = null;
-        if (odeRequest.getDataSource() != null)
+        OdeRequest.DataSource dataSource;
+        
+        if (odeRequest.getDataSource() != null) {
             dataSource = odeRequest.getDataSource();
-
-        if (dataSource == null)
+        } else {
             dataSource = defaultDataSource(odeRequest);
-
+        }
+            
         switch (dataSource) {
         case SDC:
         case DEPOSIT_SDC:
@@ -303,10 +304,17 @@ public abstract class DdsRequestManager<T> {
         public DdsRequestManagerException(String message) {
             super(message);
         }
-
     }
     
     public OdeProperties getOdeProperties() {
         return odeProperties;
+    }
+    
+    public void setDdsClient(DdsClient<T> pDdsClient) {
+        this.ddsClient = pDdsClient;
+    }
+    
+    public void setWsClient(WebSocketEndpoint<T> pWsClient) {
+        this.wsClient = pWsClient;
     }
 }
