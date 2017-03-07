@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsRequest.SystemName;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.model.OdeDepRequest;
 import us.dot.its.jpo.ode.model.OdeRequest;
 import us.dot.its.jpo.ode.model.OdeRequest.DataSource;
 import us.dot.its.jpo.ode.model.OdeRequestType;
@@ -33,27 +34,6 @@ public abstract class DdsRequestManager<T> {
         this.odeProperties = odeProperties;
 
         try {
-            // Class<?> decoder = null;
-            // if (odeRequest.getRequestType() == OdeRequestType.Deposit) {
-            // decoder = DepositResponseDecoder.class;
-            // } else {
-            // if (odeRequest.getDataType() == OdeDataType.VehicleData) {
-            // decoder = VsdDecoder.class;
-            // } else if (odeRequest.getDataType() == OdeDataType.AggregateData)
-            // {
-            // decoder = VsdDecoder.class;
-            // } else if (odeRequest.getDataType() ==
-            // OdeDataType.IntersectionData) {
-            // decoder = IsdDecoder.class;
-            // } else if (odeRequest.getDataType() == OdeDataType.AdvisoryData)
-            // {
-            // decoder = AsdDecoder.class;
-            // } else if (odeRequest.getDataType() == OdeDataType.MapData) {
-            // decoder = IsdDecoder.class;
-            // } else if (odeRequest.getDataType() == OdeDataType.SPaTData) {
-            // decoder = IsdDecoder.class;
-            // }
-            // }
             ddsClient = new DdsClient<>(this.odeProperties.getDdsCasUrl(), this.odeProperties.getDdsCasUsername(),
                     this.odeProperties.getDdsCasPassword(), this.odeProperties.getDdsWebsocketUrl(), null, null);
 
@@ -89,7 +69,7 @@ public abstract class DdsRequestManager<T> {
 
             if (session != null) {
                 // Send the new request
-                DdsRequest ddsRequest = buildDdsRequest(odeRequest);
+                DdsRequest ddsRequest = buildDdsRequest((OdeDepRequest)odeRequest);
                 if (ddsRequest != null) {
                     String sDdsRequest = ddsRequest.toString();
 
@@ -114,107 +94,7 @@ public abstract class DdsRequestManager<T> {
         }
     }
 
-    protected abstract DdsRequest buildDdsRequest(OdeRequest odeRequest) throws DdsRequestManagerException;
-
-    // private DdsRequest buildDdsRequest(OdeRequest odeRequest)
-    // throws DdsRequestManagerException, OdeException, IOException {
-    // OdeStatus status = new OdeStatus();
-    // DdsRequest ddsRequest;
-    // OdeRequestType requestType = odeRequest.getRequestType();
-    // if (requestType == OdeRequestType.Subscription) {
-    // ddsRequest = new DdsSubRequest()
-    // .setSystemSubName(systemName(odeRequest).getName());
-    // String serviceRegion = odeProperties.getServiceRegion();
-    // if (serviceRegion == null) {
-    // ddsRequest
-    // .setNwLat(odeRequest.getNwLat()).setNwLon(odeRequest.getNwLon())
-    // .setSeLat(odeRequest.getSeLat()).setSeLon(odeRequest.getSeLon());
-    // } else {
-    // J2735GeoRegion geoRegion = new J2735GeoRegion(serviceRegion);
-    // ddsRequest
-    // .setNwLat(geoRegion.getNwCorner().getLatitude())
-    // .setNwLon(geoRegion.getNwCorner().getLongitude())
-    // .setSeLat(geoRegion.getSeCorner().getLatitude())
-    // .setSeLon(geoRegion.getSeCorner().getLongitude());
-    // }
-    // } else if (requestType == OdeRequestType.Query) {
-    // DdsQryRequest qryRequest = new DdsQryRequest()
-    // .setSystemQueryName(systemName(odeRequest).getName());
-    //
-    // if (odeRequest instanceof OdeQryRequest) {
-    // OdeQryRequest odeQuery = (OdeQryRequest) odeRequest;
-    // qryRequest.setStartDate(odeQuery.getStartDate());
-    // qryRequest.setEndDate(odeQuery.getEndDate());
-    // /*
-    // * Because some data are bundled (VSD, for instance), never skip.
-    // * ODE will unbundle and skip the records as needed.
-    // */
-    // qryRequest.setSkip(0);
-    //
-    // /*
-    // * Because some data are bundled (VSD, for instance), add the skip
-    // * to the limit to ensure that we will get enough records to skip
-    // * and limit independent of the data source.
-    // */
-    // if (odeQuery.getLimit() != null) {
-    // qryRequest.setLimit(
-    // (odeQuery.getSkip() != null ? odeQuery.getSkip().intValue() : 0) +
-    // odeQuery.getLimit().intValue());
-    // }
-    // }
-    // ddsRequest = qryRequest;
-    // ddsRequest
-    // .setNwLat(odeRequest.getNwLat()).setNwLon(odeRequest.getNwLon())
-    // .setSeLat(odeRequest.getSeLat()).setSeLon(odeRequest.getSeLon());
-    // } else if (requestType == OdeRequestType.Deposit) {
-    // OdeDepRequest odeDepReq = (OdeDepRequest) odeRequest;
-    // if (StringUtils.isNotEmpty(odeDepReq.getData()))
-    // ddsRequest = buildDepositRequest(odeDepReq);
-    // else
-    // ddsRequest = null;
-    // } else {
-    // status.setCode(OdeStatus.Code.INVALID_REQUEST_TYPE_ERROR)
-    // .setMessage(
-    // String.format(
-    // "Invalid request type %s. Valid request types are %s",
-    // requestType.getShortName(),
-    // OdeRequestType.shortNames()));
-    // logger.error(status.toString());
-    // throw new DdsRequestManagerException(status.toString());
-    // }
-    //
-    // if (requestType != OdeRequestType.Deposit) {
-    // ddsRequest
-    // .setResultEncoding(DdsRequest.EncodeType.base64.name());
-    //
-    // OdeDataType dataType = odeRequest.getDataType();
-    // switch (dataType) {
-    // case IntersectionData:
-    // case MapData:
-    // case SPaTData:
-    // ddsRequest.setDialogID(DdsRequest.Dialog.ISD.getId());
-    // break;
-    // case VehicleData:
-    // case AggregateData:
-    // ddsRequest.setDialogID(DdsRequest.Dialog.VSD.getId());
-    // break;
-    // case AdvisoryData:
-    // ddsRequest.setDialogID(DdsRequest.Dialog.ASD.getId());
-    // break;
-    // default:
-    // status.setCode(OdeStatus.Code.DATA_TYPE_NOT_SUPPORTED)
-    // .setMessage(
-    // String.format(
-    // "Invalid data type %s requested. Valid data types are %s",
-    // dataType, OdeDataType.shortNames()));
-    // logger.error(status.toString());
-    // throw new DdsRequestManagerException(status.getMessage());
-    // }
-    // }
-    //
-    //
-    // return ddsRequest;
-    // }
+    protected abstract DdsRequest buildDdsRequest(OdeDepRequest odeDepRequest) throws DdsRequestManagerException;
 
     public static SystemName systemName(OdeRequest odeRequest) {
         SystemName sysName;

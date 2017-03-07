@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsRequest.EncodeType;
 import us.dot.its.jpo.ode.model.OdeDepRequest;
-import us.dot.its.jpo.ode.model.OdeRequest;
 
 public class DdsDepositRequestManager extends DdsRequestManager<DdsStatusMessage> {
 
@@ -17,24 +16,18 @@ public class DdsDepositRequestManager extends DdsRequestManager<DdsStatusMessage
     }
 
     @Override
-    protected DdsRequest buildDdsRequest(OdeRequest odeRequest) throws DdsRequestManagerException {
+    protected DdsRequest buildDdsRequest(OdeDepRequest odeDepRequest) throws DdsRequestManagerException {
+
         DdsDepRequest ddsDepReq = new DdsDepRequest();
 
-        if (odeRequest instanceof OdeDepRequest) {
-            OdeDepRequest odeDepReq = (OdeDepRequest) odeRequest;
-            String sEncodeType = StringUtils.lowerCase(odeDepReq.getEncodeType());
-            if (sEncodeType != null) {
-                EncodeType encodeType = DdsRequest.EncodeType.valueOf(sEncodeType);
-                ddsDepReq.setSystemDepositName(DdsDepositRequestManager
-                        .systemName(odeDepReq).getName())
-                        .setEncodeType(encodeType.name())
-                        .setEncodedMsg(odeDepReq.getData());
-            } else {
-                throw new DdsRequestManagerException("Invalid or unsupported EncodeType Deposit: " + sEncodeType
-                        + ". Supported encode types are: " + Arrays.asList(DdsRequest.EncodeType.values()));
-            }
+        String sEncodeType = StringUtils.lowerCase(odeDepRequest.getEncodeType());
+        if (sEncodeType != null) {
+            EncodeType encodeType = DdsRequest.EncodeType.valueOf(sEncodeType);
+            ddsDepReq.setSystemDepositName(DdsDepositRequestManager.systemName(odeDepRequest).getName())
+                    .setEncodeType(encodeType.name()).setEncodedMsg(odeDepRequest.getData());
         } else {
-            throw new DdsRequestManagerException("Invalid Request: " + odeRequest.toJson(false));
+            throw new DdsRequestManagerException("Invalid or unsupported EncodeType Deposit: " + sEncodeType
+                    + ". Supported encode types are: " + Arrays.asList(DdsRequest.EncodeType.values()));
         }
         return ddsDepReq;
     }

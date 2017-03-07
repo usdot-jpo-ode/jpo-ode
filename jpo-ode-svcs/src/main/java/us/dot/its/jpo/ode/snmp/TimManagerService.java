@@ -20,6 +20,8 @@ import org.snmp4j.smi.VariableBinding;
  */
 public class TimManagerService {
     
+    private static final Logger logger = LoggerFactory.getLogger(TimManagerService.class);
+    
     private TimManagerService() {}
     
     /**
@@ -30,9 +32,7 @@ public class TimManagerService {
      */
     public static ResponseEvent createAndSend(TimParameters params, SnmpProperties props) {
         
-        Logger logger = LoggerFactory.getLogger(TimManagerService.class);
-        
-        if (params == null || props == null) {
+        if (null == params || null == props) {
             logger.error("TIM SERVICE - Received null object");
             return null;
         }
@@ -50,7 +50,7 @@ public class TimManagerService {
         ResponseEvent response = null;
         ScopedPDU pdu = createPDU(params);
         try {
-            response = session.set(pdu, session.snmp, session.transport, session.target);
+            response = session.set(pdu, session.getSnmp(), session.getTransport(), session.getTarget());
         } catch (IOException | NullPointerException e) {
             logger.error("TIM SERVICE - Error while sending PDU: {}", e);
             return null;

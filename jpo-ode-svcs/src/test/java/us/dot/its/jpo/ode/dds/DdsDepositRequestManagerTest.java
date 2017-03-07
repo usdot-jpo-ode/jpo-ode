@@ -9,10 +9,13 @@ import static org.junit.Assert.fail;
 
 import javax.websocket.Session;
 
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 
 import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
@@ -26,78 +29,40 @@ import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
 
 public class DdsDepositRequestManagerTest {
 
+    @Injectable
+    DdsDepositRequestManager mockDdsDepositRequestManager;
+
+    @Mocked
+    OdeProperties mockOdeProperties;
+
+    @Before
+    public void setupOdePropertiesExpectations() {
+        new Expectations() {
+            {
+                mockOdeProperties.getDdsCasUrl();
+                result = anyString;
+                minTimes = 0;
+                mockOdeProperties.getDdsCasUsername();
+                result = anyString;
+                minTimes = 0;
+                mockOdeProperties.getDdsCasPassword();
+                result = anyString;
+                minTimes = 0;
+                mockOdeProperties.getDdsWebsocketUrl();
+                result = anyString;
+                minTimes = 0;
+            }
+        };
+    }
+
     /**
      * Verify the constructor populates odeProperties and ddsClient
      */
     @Test
-    public void shouldConstruct(@Mocked OdeProperties mockOdeProperties) {
+    public void shouldConstruct() {
 
-        new Expectations() {
-            {
-                mockOdeProperties.getDdsCasUrl();
-                result = anyString;
-                mockOdeProperties.getDdsCasUsername();
-                result = anyString;
-                mockOdeProperties.getDdsCasPassword();
-                result = anyString;
-                mockOdeProperties.getDdsWebsocketUrl();
-                result = anyString;
-            }
-        };
-
-        try {
-            DdsDepositRequestManager testDdsDepositRequestManager = new DdsDepositRequestManager(mockOdeProperties);
-
-            assertNotNull(testDdsDepositRequestManager.getOdeProperties());
-            assertNotNull(testDdsDepositRequestManager.getDdsClient());
-        } catch (DdsRequestManagerException e) {
-            fail("Unexpected exception: " + e);
-        }
-    }
-
-    /**
-     * Verify DdsRequestManagerException thrown when !(odeRequest instanceof
-     * OdeDepRequest)
-     */
-    @Test
-    public void shouldFailToBuildRequestWrongRequestType(@Mocked OdeProperties mockOdeProperties,
-            @Mocked OdeRequest mockOdeRequest) {
-
-        new Expectations() {
-            {
-                mockOdeProperties.getDdsCasUrl();
-                result = anyString;
-                mockOdeProperties.getDdsCasUsername();
-                result = anyString;
-                mockOdeProperties.getDdsCasPassword();
-                result = anyString;
-                mockOdeProperties.getDdsWebsocketUrl();
-                result = anyString;
-
-            }
-        };
-
-        new Expectations() {
-            {
-                mockOdeRequest.toJson(false);
-                result = "test123";
-            }
-        };
-
-        DdsDepositRequestManager testDdsDepositRequestManager = null;
-        try {
-            testDdsDepositRequestManager = new DdsDepositRequestManager(mockOdeProperties);
-        } catch (DdsRequestManagerException e) {
-            fail("Unexpected exception: " + e);
-        }
-
-        try {
-            testDdsDepositRequestManager.buildDdsRequest(mockOdeRequest);
-            fail("Expected DdsRequestManagerException");
-        } catch (Exception e) {
-            assertEquals(DdsRequestManagerException.class, e.getClass());
-            assertEquals("Invalid Request: test123", e.getMessage());
-        }
+        assertNotNull(mockDdsDepositRequestManager.getOdeProperties());
+        assertNotNull(mockDdsDepositRequestManager.getDdsClient());
     }
 
     /**
@@ -105,20 +70,12 @@ public class DdsDepositRequestManagerTest {
      * null
      */
     @Test
-    public void shouldFailToBuildEncodeTypeNull(@Mocked OdeProperties mockOdeProperties,
-            @Mocked OdeDepRequest mockOdeDepRequest) {
+    public void shouldFailToBuildEncodeTypeNull(@Mocked OdeDepRequest mockOdeDepRequest) {
 
-        new Expectations() {
+        new Expectations(StringUtils.class) {
             {
-                mockOdeProperties.getDdsCasUrl();
-                result = anyString;
-                mockOdeProperties.getDdsCasUsername();
-                result = anyString;
-                mockOdeProperties.getDdsCasPassword();
-                result = anyString;
-                mockOdeProperties.getDdsWebsocketUrl();
-                result = anyString;
-
+                StringUtils.lowerCase(anyString);
+                result = null;
             }
         };
 
@@ -129,15 +86,15 @@ public class DdsDepositRequestManagerTest {
             }
         };
 
-        DdsDepositRequestManager testDdsDepositRequestManager = null;
+        DdsDepositRequestManager mockDdsDepositRequestManager = null;
         try {
-            testDdsDepositRequestManager = new DdsDepositRequestManager(mockOdeProperties);
+            mockDdsDepositRequestManager = new DdsDepositRequestManager(mockOdeProperties);
         } catch (DdsRequestManagerException e) {
             fail("Unexpected exception: " + e);
         }
 
         try {
-            testDdsDepositRequestManager.buildDdsRequest(mockOdeDepRequest);
+            DdsRequest testDdsRequest = mockDdsDepositRequestManager.buildDdsRequest(mockOdeDepRequest);
             fail("Expected DdsRequestManagerException");
         } catch (Exception e) {
             assertEquals(DdsRequestManagerException.class, e.getClass());
@@ -145,21 +102,8 @@ public class DdsDepositRequestManagerTest {
         }
     }
 
-    public void shouldBuildSuccessfully(@Mocked OdeProperties mockOdeProperties,
-            @Mocked OdeDepRequest mockOdeDepRequest) {
-
-        new Expectations() {
-            {
-                mockOdeProperties.getDdsCasUrl();
-                result = anyString;
-                mockOdeProperties.getDdsCasUsername();
-                result = anyString;
-                mockOdeProperties.getDdsCasPassword();
-                result = anyString;
-                mockOdeProperties.getDdsWebsocketUrl();
-                result = anyString;
-            }
-        };
+    @Test
+    public void shouldBuildSuccessfully(@Mocked OdeDepRequest mockOdeDepRequest) {
 
         new Expectations() {
             {
@@ -175,36 +119,24 @@ public class DdsDepositRequestManagerTest {
             fail("Unexpected exception: " + e);
         }
 
-        DdsRequest actualDdsRequest = null;
+        DdsDepRequest actualDdsRequest = null;
         try {
-            actualDdsRequest = testDdsDepositRequestManager.buildDdsRequest(mockOdeDepRequest);
+            actualDdsRequest = (DdsDepRequest) testDdsDepositRequestManager.buildDdsRequest(mockOdeDepRequest);
             assertNotNull("Failed to build actualDdsRequest", actualDdsRequest);
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
 
-        assertEquals("base64", actualDdsRequest.getResultEncoding());
+        assertEquals("base64", actualDdsRequest.getEncodeType());
     }
 
     @Test
-    public void connectShouldTryToLoginAndConnect(@Mocked OdeProperties mockOdeProperties,
-            @Mocked DdsClient<DdsStatusMessage> mockDdsClient, @Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient,
+    public void connectShouldTryToLoginAndConnect(@Mocked DdsClient<DdsStatusMessage> mockDdsClient,
+            @Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient,
             @Mocked WebSocketMessageHandler<DdsStatusMessage> mockWebSocketMessageHandler,
             @Mocked WebSocketMessageDecoder<?> mockWebSocketMessageDecoder, @Mocked Session mockSession) {
 
         try {
-            new Expectations() {
-                {
-                    mockOdeProperties.getDdsCasUrl();
-                    result = anyString;
-                    mockOdeProperties.getDdsCasUsername();
-                    result = anyString;
-                    mockOdeProperties.getDdsCasPassword();
-                    result = anyString;
-                    mockOdeProperties.getDdsWebsocketUrl();
-                    result = anyString;
-                }
-            };
 
             new Expectations() {
                 {
@@ -230,7 +162,6 @@ public class DdsDepositRequestManagerTest {
         testDdsDepositRequestManager.setWsClient(mockWsClient);
 
         Session actualSession = null;
-
         try {
             actualSession = testDdsDepositRequestManager.connect(mockWebSocketMessageHandler,
                     mockWebSocketMessageDecoder.getClass());
@@ -238,29 +169,17 @@ public class DdsDepositRequestManagerTest {
             fail("Unexpected exception attempting to connect: " + e);
         }
 
-        assertEquals(mockSession, actualSession);
-        assertTrue(testDdsDepositRequestManager.isConnected());
+        assertEquals("Sessions do not match", mockSession, actualSession);
+        assertTrue("Expected isConnected() to return true", testDdsDepositRequestManager.isConnected());
     }
 
     @Test
-    public void connectShouldRethrowLoginException(@Mocked OdeProperties mockOdeProperties,
-            @Mocked DdsClient<DdsStatusMessage> mockDdsClient, @Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient,
+    public void connectShouldRethrowLoginException(@Mocked DdsClient<DdsStatusMessage> mockDdsClient,
+            @Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient,
             @Mocked WebSocketMessageHandler<DdsStatusMessage> mockWebSocketMessageHandler,
             @Mocked WebSocketMessageDecoder<?> mockWebSocketMessageDecoder, @Mocked Session mockSession) {
 
         try {
-            new Expectations() {
-                {
-                    mockOdeProperties.getDdsCasUrl();
-                    result = anyString;
-                    mockOdeProperties.getDdsCasUsername();
-                    result = anyString;
-                    mockOdeProperties.getDdsCasPassword();
-                    result = anyString;
-                    mockOdeProperties.getDdsWebsocketUrl();
-                    result = anyString;
-                }
-            };
 
             new Expectations() {
                 {
@@ -298,24 +217,12 @@ public class DdsDepositRequestManagerTest {
     }
 
     @Test
-    public void connectShouldSetConnectedFalseWhenSessionNull(@Mocked OdeProperties mockOdeProperties,
-            @Mocked DdsClient<DdsStatusMessage> mockDdsClient, @Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient,
+    public void connectShouldSetConnectedFalseWhenSessionNull(@Mocked DdsClient<DdsStatusMessage> mockDdsClient,
+            @Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient,
             @Mocked WebSocketMessageHandler<DdsStatusMessage> mockWebSocketMessageHandler,
             @Mocked WebSocketMessageDecoder<?> mockWebSocketMessageDecoder, @Mocked Session mockSession) {
 
         try {
-            new Expectations() {
-                {
-                    mockOdeProperties.getDdsCasUrl();
-                    result = anyString;
-                    mockOdeProperties.getDdsCasUsername();
-                    result = anyString;
-                    mockOdeProperties.getDdsCasPassword();
-                    result = anyString;
-                    mockOdeProperties.getDdsWebsocketUrl();
-                    result = anyString;
-                }
-            };
 
             new Expectations() {
                 {
@@ -353,25 +260,13 @@ public class DdsDepositRequestManagerTest {
     }
 
     @Test
-    public void sendRequestshouldThrowExceptionWhenSessionNull(@Mocked OdeProperties mockOdeProperties,
-            @Mocked DdsClient<DdsStatusMessage> mockDdsClient, @Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient,
+    public void sendRequestshouldThrowExceptionWhenSessionNull(@Mocked DdsClient<DdsStatusMessage> mockDdsClient,
+            @Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient,
             @Mocked WebSocketMessageHandler<DdsStatusMessage> mockWebSocketMessageHandler,
             @Mocked WebSocketMessageDecoder<?> mockWebSocketMessageDecoder, @Mocked Session mockSession,
             @Mocked OdeRequest mockOdeRequest) {
 
         try {
-            new Expectations() {
-                {
-                    mockOdeProperties.getDdsCasUrl();
-                    result = anyString;
-                    mockOdeProperties.getDdsCasUsername();
-                    result = anyString;
-                    mockOdeProperties.getDdsCasPassword();
-                    result = anyString;
-                    mockOdeProperties.getDdsWebsocketUrl();
-                    result = anyString;
-                }
-            };
 
             new Expectations() {
                 {
@@ -412,25 +307,13 @@ public class DdsDepositRequestManagerTest {
     }
 
     @Test
-    public void sendRequestShouldSendWithoutError(@Mocked OdeProperties mockOdeProperties,
-            @Mocked DdsClient<DdsStatusMessage> mockDdsClient, @Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient,
+    public void sendRequestShouldSendWithoutError(@Mocked DdsClient<DdsStatusMessage> mockDdsClient,
+            @Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient,
             @Mocked WebSocketMessageHandler<DdsStatusMessage> mockWebSocketMessageHandler,
             @Mocked WebSocketMessageDecoder<?> mockWebSocketMessageDecoder, @Mocked Session mockSession,
             @Mocked OdeDepRequest mockOdeDepRequest) {
 
         try {
-            new Expectations() {
-                {
-                    mockOdeProperties.getDdsCasUrl();
-                    result = anyString;
-                    mockOdeProperties.getDdsCasUsername();
-                    result = anyString;
-                    mockOdeProperties.getDdsCasPassword();
-                    result = anyString;
-                    mockOdeProperties.getDdsWebsocketUrl();
-                    result = anyString;
-                }
-            };
 
             new Expectations() {
                 {
@@ -476,25 +359,13 @@ public class DdsDepositRequestManagerTest {
     }
 
     @Test
-    public void sendRequestShouldLogWhenErrorClosingClient(@Mocked OdeProperties mockOdeProperties,
-            @Mocked DdsClient<DdsStatusMessage> mockDdsClient, @Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient,
+    public void sendRequestShouldLogWhenErrorClosingClient(@Mocked DdsClient<DdsStatusMessage> mockDdsClient,
+            @Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient,
             @Mocked WebSocketMessageHandler<DdsStatusMessage> mockWebSocketMessageHandler,
             @Mocked WebSocketMessageDecoder<?> mockWebSocketMessageDecoder, @Mocked Session mockSession,
             @Mocked OdeRequest mockOdeRequest, @Mocked Logger mockLogger) {
 
         try {
-            new Expectations() {
-                {
-                    mockOdeProperties.getDdsCasUrl();
-                    result = anyString;
-                    mockOdeProperties.getDdsCasUsername();
-                    result = anyString;
-                    mockOdeProperties.getDdsCasPassword();
-                    result = anyString;
-                    mockOdeProperties.getDdsWebsocketUrl();
-                    result = anyString;
-                }
-            };
 
             new Expectations() {
                 {
@@ -538,21 +409,8 @@ public class DdsDepositRequestManagerTest {
     }
 
     @Test
-    public void closeShouldCloseSuccessfully(@Mocked OdeProperties mockOdeProperties,
-            @Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient, @Mocked Logger mockLogger) {
-
-        new Expectations() {
-            {
-                mockOdeProperties.getDdsCasUrl();
-                result = anyString;
-                mockOdeProperties.getDdsCasUsername();
-                result = anyString;
-                mockOdeProperties.getDdsCasPassword();
-                result = anyString;
-                mockOdeProperties.getDdsWebsocketUrl();
-                result = anyString;
-            }
-        };
+    public void closeShouldCloseSuccessfully(@Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient,
+            @Mocked Logger mockLogger) {
 
         try {
             new Expectations() {
@@ -594,21 +452,8 @@ public class DdsDepositRequestManagerTest {
     }
 
     @Test
-    public void closeShouldThrowException(@Mocked OdeProperties mockOdeProperties,
-            @Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient, @Mocked Logger mockLogger) {
-
-        new Expectations() {
-            {
-                mockOdeProperties.getDdsCasUrl();
-                result = anyString;
-                mockOdeProperties.getDdsCasUsername();
-                result = anyString;
-                mockOdeProperties.getDdsCasPassword();
-                result = anyString;
-                mockOdeProperties.getDdsWebsocketUrl();
-                result = anyString;
-            }
-        };
+    public void closeShouldThrowException(@Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient,
+            @Mocked Logger mockLogger) {
 
         try {
             new Expectations() {
