@@ -123,9 +123,7 @@ public class TravelerMessageBuilder {
             item.setItis(Long.parseLong(code));
             seq.setItem(item);
             itisText.add(seq);
-            System.out.println("Built sequence");
         }
-        System.out.println("Return items");
         return itisText;
     }
 
@@ -269,14 +267,11 @@ public class TravelerMessageBuilder {
             geoPath.setDirectionality(new DirectionOfUse(inputRegion.directionality));
             geoPath.setClosedPath(Boolean.valueOf(inputRegion.closedPath));
             geoPath.setDirection(getHeadingSlice(inputRegion.direction));
-
-            ValidRegion validRegion = new ValidRegion();
-
-            if (inputRegion.extent != -1) {
+            
+            /*if (inputRegion.extent != -1) {
                 validRegion.setExtent(Extent.valueOf(inputRegion.extent));
-            }
-
-            if (inputRegion.description == "path"){
+            }*/
+            if ("path".equals(inputRegion.description)){
 
                 OffsetSystem offsetSystem = new OffsetSystem();
                 offsetSystem.setScale(new Zoom(inputRegion.path.scale));
@@ -287,7 +282,12 @@ public class TravelerMessageBuilder {
                 }
 //                NodeListXY nodeList = new NodeListXY(new NodeSetXY(new NodeXY[]));
 
-
+            }
+            else if ("geometry".equals(inputRegion.description)){
+               
+            }
+            else { //oldRegion
+               ValidRegion validRegion = new ValidRegion();
             }
 //            validRegion.setArea(buildArea(travInputData, inputRegion));
 //            Description description = new Description();
@@ -348,9 +348,6 @@ public class TravelerMessageBuilder {
 //            durationInMinutes = MAX_MINUTES_DURATION;
 //        return durationInMinutes;
 //    }
-
-
-
 
 //    private RegionOffsets buildRegionOffset(GeoPoint refPoint, GeoPoint nextPoint) {
 //        short xOffset = nextPoint.getLonOffsetInMeters(refPoint);

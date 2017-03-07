@@ -41,6 +41,57 @@ public class TravelerInputData extends OdeObject {
        public int timeout;
        
     }
+    
+    public static class ComputedLane {
+       public int laneID;
+       public int offsetSmallX;
+       public int offsetLargeX;
+       public int offsetSmallY;
+       public int offsetLargeY;
+       public int angle;
+       public int xScale;
+       public int yScale;
+    }
+    
+    public static class NodeXY {
+       public int XY1;
+       public int XY2;
+       public int XY3;
+       public int XY4;
+       public int XY5;
+       public int XY6;
+       public int LatLon;
+       public Attributes attributes;
+    }
+    public static class NodeList {
+       public String type;
+    }
+    public static class DisabledList {
+       public String type;
+    }
+    public static class EnabledList {
+       public String type;
+    }
+    public static class SpeedLimits {
+       public String type;
+       public int velocity;
+    }
+    public static class DataList {
+       public int pathEndpoint;
+       public int laneCrownCenter;
+       public int laneCrownLeft;
+       public int laneCrownRight;
+       public int laneAngle;
+       public SpeedLimits[] speedLimits;
+    }
+    public static class Attributes {
+       public NodeList[] nodeList;
+       public DisabledList[] disabledList;
+       public EnabledList[] enabledList;
+       public DataList[] dataList;
+       public int dWidth;
+       public int dElevation;
+    }
 
     public static class LaneNode {
         public int nodeNumber;
@@ -98,7 +149,50 @@ public class TravelerInputData extends OdeObject {
           public int extent = -1;
           public String description;
           public Path path;
+          public Geometry geometry;
+          public OldRegion oldRegion;
+          
+          public static class OldRegion {
+             public String direction;
+             public int extent;
+             public String area;
+             public ShapePoint shapepoint;
+             public Circle circle;
+             public RegionPoint regionPoint;
+             
+             public static class ShapePoint {
+                public int latitude;
+                public int longitude;
+                public int elevation;
+                public int laneWidth;
+                public int directionality;
+                public String nodeType;
+                public ComputedLane computedLane;
+                public Attributes attributes;
+             }
+             public static class Circle {
+                
+             }
+             public static class RegionPoint {
+                
+             }
+          }
 
+          public static class Geometry {
+             public String direction;
+             public int extent;
+             public int laneWidth;
+             public Circle circle;
+             
+             public static class Circle {
+                public int latitude;
+                public int longitude;
+                public int elevation;
+                public int radius;
+                public int units;
+             }
+          }
+          
           public static class Path {
               public int scale;
               public Node[] nodes;
