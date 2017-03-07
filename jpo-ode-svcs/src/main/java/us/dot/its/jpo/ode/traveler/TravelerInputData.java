@@ -168,13 +168,20 @@ public class TravelerInputData extends OdeObject {
                 public int directionality;
                 public String nodeType;
                 public ComputedLane computedLane;
-                public Attributes attributes;
-             }
-             public static class Circle {
-                
+                public NodeXY[] nodexy;
              }
              public static class RegionPoint {
+                public int latitude;
+                public int longitude;
+                public int elevation;
+                public int scale;
+                public RegionList[] regionList;
                 
+                public static class RegionList {
+                   public int xOffset;
+                   public int yOffset;
+                   public int zOffset;
+                }
              }
           }
 
@@ -183,14 +190,13 @@ public class TravelerInputData extends OdeObject {
              public int extent;
              public int laneWidth;
              public Circle circle;
-             
-             public static class Circle {
-                public int latitude;
-                public int longitude;
-                public int elevation;
-                public int radius;
-                public int units;
-             }
+          }
+          public static class Circle {
+             public int latitude;
+             public int longitude;
+             public int elevation;
+             public int radius;
+             public int units;
           }
           
           public static class Path {
