@@ -15,7 +15,7 @@ public class TravelerInputData extends OdeObject {
 
     public int MsgCount;
     public String MinuteOfTheYear;
-    public String UniqueMSGID;
+    public int UniqueMSGID;
     public String urlB;
     public DataFrame[] dataframes;
     public RSUs[] rsus;
@@ -96,7 +96,19 @@ public class TravelerInputData extends OdeObject {
           public String regionType;
           public LaneNode[] laneNodes;
           public int extent = -1;
+          public String description;
+          public Path path;
 
+          public static class Path {
+              public int scale;
+              public Node[] nodes;
+
+              public static class Node {
+                  public String nodeNumber;
+                  public String nodeLat;
+                  public String nodeLong;
+              }
+          }
           @Override
           public String toString() {
               return "Region [regionType=" + regionType

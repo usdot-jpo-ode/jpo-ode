@@ -4,7 +4,7 @@ package us.dot.its.jpo.ode.traveler;
 import com.oss.asn1.Coder;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
-
+import org.apache.commons.codec.binary.Hex;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.*;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Content;
@@ -17,13 +17,10 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssPosition3D;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-
-import org.apache.commons.codec.binary.Hex;
 
 /**
  * Created by anthonychen on 2/16/17.
@@ -39,8 +36,9 @@ public class TravelerMessageBuilder {
 
         travelerInfo = new TravelerInformation();
         travelerInfo.setMsgCnt(new MsgCount(travInputData.MsgCount));
-        //travelerInfo.setPacketID(new UniqueMSGID(travInputData.UniqueMSGID.getBytes()));
-        //travelerInfo.setUrlB(new URL_Base(travInputData.urlB));
+        ByteBuffer buf = ByteBuffer.allocate(9).put((byte)0).putLong(travInputData.UniqueMSGID);
+        travelerInfo.setPacketID(new UniqueMSGID(buf.array()));
+        travelerInfo.setUrlB(new URL_Base(travInputData.urlB));
         travelerInfo.setDataFrames(buildDataFrames(travInputData));
 
         return travelerInfo;
@@ -72,7 +70,10 @@ public class TravelerMessageBuilder {
             // -- Part II, Applicable Regions of Use
             validateHeaderIndex(inputDataFrame.sspLocationRights);
             dataFrame.setSspLocationRights(new SSPindex(inputDataFrame.sspLocationRights));
-//            dataFrame.setRegions(buildRegions(travInputData));
+            dataFrame.setRegions(buildRegions(inputDataFrame.regions));
+//            Regions regions = new Regions();
+//            regions.add(new GeographicalPath());
+//            dataFrame.setRegions(regions);
 
             // -- Part III, Content
             validateHeaderIndex(inputDataFrame.sspMsgTypes);
@@ -80,7 +81,7 @@ public class TravelerMessageBuilder {
             validateHeaderIndex(inputDataFrame.sspMsgContent);
             dataFrame.setSspMsgRights2(new SSPindex(inputDataFrame.sspMsgContent));	    // allowed message content
             dataFrame.setContent(buildContent(inputDataFrame));
-            //dataFrame.setUrl(new URL_Short(inputDataFrame.url));
+            dataFrame.setUrl(new URL_Short(inputDataFrame.url));
 
             dataFrames.add(dataFrame);
         }
@@ -266,13 +267,27 @@ public class TravelerMessageBuilder {
             geoPath.setAnchor(getPosition3D(inputRegion.anchor_lat, inputRegion.anchor_long, inputRegion.anchor_elevation));
             geoPath.setLaneWidth(new LaneWidth(inputRegion.laneWidth));
             geoPath.setDirectionality(new DirectionOfUse(inputRegion.directionality));
-            geoPath.setClosedPath(inputRegion.closedPath);
+            geoPath.setClosedPath(Boolean.valueOf(inputRegion.closedPath));
             geoPath.setDirection(getHeadingSlice(inputRegion.direction));
 
             ValidRegion validRegion = new ValidRegion();
 
             if (inputRegion.extent != -1) {
                 validRegion.setExtent(Extent.valueOf(inputRegion.extent));
+            }
+
+            if (inputRegion.description == "path"){
+
+                OffsetSystem offsetSystem = new OffsetSystem();
+                offsetSystem.setScale(new Zoom(inputRegion.path.scale));
+
+                NodeOffsetPointXY offsetPoint = new NodeOffsetPointXY();
+                for (TravelerInputData.DataFrame.Region.Path.Node node: inputRegion.path.nodes){
+
+                }
+//                NodeListXY nodeList = new NodeListXY(new NodeSetXY(new NodeXY[]));
+
+
             }
 //            validRegion.setArea(buildArea(travInputData, inputRegion));
 //            Description description = new Description();

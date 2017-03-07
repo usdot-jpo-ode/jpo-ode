@@ -4,7 +4,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
 import org.springframework.stereotype.Controller;
@@ -12,11 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
-import us.dot.its.jpo.ode.snmp.TimManagerService;
-import us.dot.its.jpo.ode.snmp.TimParameters;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 @Controller
@@ -94,19 +90,20 @@ public class TravelerMessageController {
         String rsuSRMDeliveryStop = snmpParams.getString("deliverystop");
         int rsuSRMEnable = snmpParams.getInt("enable");
         int rsuSRMStatus = snmpParams.getInt("status");
-        
-        TimParameters testParams = new TimParameters(rsuSRMPsid, rsuSRMDsrcMsgId, rsuSRMTxMode, rsuSRMTxChannel,
-                rsuSRMTxInterval, rsuSRMDeliveryStart, rsuSRMDeliveryStop, rsuSRMPayload,
-                rsuSRMEnable, rsuSRMStatus);
+
+        return "{\"success\": false}";
+//        TimParameters testParams = new TimParameters(rsuSRMPsid, rsuSRMDsrcMsgId, rsuSRMTxMode, rsuSRMTxChannel,
+//                rsuSRMTxInterval, rsuSRMDeliveryStart, rsuSRMDeliveryStop, rsuSRMPayload,
+//                rsuSRMEnable, rsuSRMStatus);
 
         // Step 4 - Send the request out
-        ResponseEvent response = TimManagerService.createAndSend(testParams, testProps);
-        if (response != null && response.getResponse() != null) {
-            return response.getResponse().toString();
-        } else {
-            logger.error("TIM CONTROLLER - Empty response from RSU");
-            return "{\"success\": false}";
-        }
+//        ResponseEvent response = TimManagerService.createAndSend(testParams, testProps);
+//        if (response != null && response.getResponse() != null) {
+//            return response.getResponse().toString();
+//        } else {
+//            logger.error("TIM CONTROLLER - Empty response from RSU");
+//            return "{\"success\": false}";
+//        }
     }
     
 }
