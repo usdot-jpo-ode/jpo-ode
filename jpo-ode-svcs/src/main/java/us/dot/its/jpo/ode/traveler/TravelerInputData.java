@@ -54,16 +54,14 @@ public class TravelerInputData extends OdeObject {
     }
     
     public static class NodeXY {
-       public int XY1;
-       public int XY2;
-       public int XY3;
-       public int XY4;
-       public int XY5;
-       public int XY6;
-       public int LatLon;
-       public Attributes attributes;
+        public String delta;
+        public int nodeLat;
+        public int nodeLong;
+        public int x;
+        public int y;
+        public Attributes attributes;
     }
-    public static class NodeList {
+    public static class LocalNode {
        public String type;
     }
     public static class DisabledList {
@@ -85,7 +83,7 @@ public class TravelerInputData extends OdeObject {
        public SpeedLimits[] speedLimits;
     }
     public static class Attributes {
-       public NodeList[] nodeList;
+       public LocalNode[] localNode;
        public DisabledList[] disabledList;
        public EnabledList[] enabledList;
        public DataList[] dataList;
@@ -120,7 +118,7 @@ public class TravelerInputData extends OdeObject {
        public long elevation;
        public String viewAngle;
        public int mutcd;
-       public String crc;
+       public int crc;
        public String startYear;
        public String startTime;
        public int durationTime;
@@ -151,7 +149,7 @@ public class TravelerInputData extends OdeObject {
           public Path path;
           public Geometry geometry;
           public OldRegion oldRegion;
-          
+
           public static class OldRegion {
              public String direction;
              public int extent;
@@ -204,9 +202,16 @@ public class TravelerInputData extends OdeObject {
               public Node[] nodes;
 
               public static class Node {
-                  public String nodeNumber;
-                  public String nodeLat;
-                  public String nodeLong;
+                  public String delta;
+                  public int nodeLat;
+                  public int nodeLong;
+                  public int x;
+                  public int y;
+                  public Attributes attributes;
+
+                  public static class Attributes{
+
+                  }
               }
           }
           @Override
@@ -232,8 +237,8 @@ public class TravelerInputData extends OdeObject {
                     + ", items=" + Arrays.toString(items)
                     + ", mutcd=" + mutcd
                     + ", priority=" + priority
-                    + ", startTime=" + startTime
-                    + ", regions="+Arrays.toString(regions)+"]";
+                    + ", startTime=" + startTime;
+//                    + ", regions="+Arrays.toString(regions)+"]";
         }
     }
 

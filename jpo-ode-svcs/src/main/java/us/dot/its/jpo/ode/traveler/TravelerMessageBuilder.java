@@ -70,10 +70,10 @@ public class TravelerMessageBuilder {
             // -- Part II, Applicable Regions of Use
             validateHeaderIndex(inputDataFrame.sspLocationRights);
             dataFrame.setSspLocationRights(new SSPindex(inputDataFrame.sspLocationRights));
-            dataFrame.setRegions(buildRegions(inputDataFrame.regions));
-//            Regions regions = new Regions();
-//            regions.add(new GeographicalPath());
-//            dataFrame.setRegions(regions);
+//            dataFrame.setRegions(buildRegions(inputDataFrame.regions));
+            Regions regions = new Regions();
+            regions.add(new GeographicalPath());
+            dataFrame.setRegions(regions);
 
             // -- Part III, Content
             validateHeaderIndex(inputDataFrame.sspMsgTypes);
@@ -189,11 +189,12 @@ public class TravelerMessageBuilder {
             roadSignID.setViewAngle(getHeadingSlice(dataFrame.viewAngle));
             validateMUTDCode(dataFrame.mutcd);
             roadSignID.setMutcdCode(MUTCDCode.valueOf(dataFrame.mutcd));
-            //roadSignID.setCrc(new MsgCRC(dataFrame.crc.getBytes())); //Causing error while encoding
+//            ByteBuffer buf = ByteBuffer.allocate(2).put((byte)0).putLong(dataFrame.crc);
+//            roadSignID.setCrc(new MsgCRC(new byte[] { 0xC0,0x2F })); //Causing error while encoding
             msgId.setRoadSignID(roadSignID);
         } else {
             msgId.setChosenFlag(MsgId.furtherInfoID_chosen);
-            msgId.setFurtherInfoID(new FurtherInfoID(new byte[] { 0x00,0x00 }));
+            msgId.setFurtherInfoID(new FurtherInfoID(new byte[] { 0x00,0x00 })); //TODO check this for actual value
         }
         return msgId;
     }
@@ -305,29 +306,61 @@ public class TravelerMessageBuilder {
         for (int i=0; i < inputNodes.length; i++) {
             TravelerInputData.DataFrame.Region.Path.Node point = inputNodes[i];
 
-            GeoPoint nextPoint = new GeoPoint(laneNode.nodeLat, laneNode.nodeLong);
+//            GeoPoint nextPoint = new GeoPoint(laneNode.nodeLat, laneNode.nodeLong);
             NodeXY node = new NodeXY();
-            Node_LLmD_64b node_LatLon = new Node_LLmD_64b(
-                    new Longitude(point.nodeLat),
-                    new Latitude(point.nodeLong);
             NodeOffsetPointXY nodePoint = new NodeOffsetPointXY();
-            nodePoint.setNode_LatLon(node_LatLon);
+
+            if ("node-XY1" == point.delta){
+                Node_XY_20b xy = new Node_XY_20b(new Offset_B10(point.x), new Offset_B10(point.y));
+                nodePoint.setNode_XY1(xy);
+            }
+
+            if (point.delta == "node-XY2"){
+                Node_XY_22b xy = new Node_XY_22b(new Offset_B11(point.x), new Offset_B11(point.y));
+                nodePoint.setNode_XY2(xy);
+            }
+
+            if (point.delta == "node-XY3"){
+                Node_XY_24b xy = new Node_XY_24b(new Offset_B12(point.x), new Offset_B12(point.y));
+                nodePoint.setNode_XY3(xy);
+            }
+
+            if (point.delta == "node-XY4"){
+                Node_XY_26b xy = new Node_XY_26b(new Offset_B13(point.x), new Offset_B13(point.y));
+                nodePoint.setNode_XY4(xy);
+            }
+
+            if (point.delta == "node-XY5"){
+                Node_XY_28b xy = new Node_XY_28b(new Offset_B14(point.x), new Offset_B14(point.y));
+                nodePoint.setNode_XY5(xy);
+            }
+
+            if (point.delta == "node-XY6"){
+                Node_XY_32b xy = new Node_XY_32b(new Offset_B16(point.x), new Offset_B16(point.y));
+                nodePoint.setNode_XY6(xy);
+            }
+
+            if (point.delta == "node-LatLon") {
+                Node_LLmD_64b nodeLatLong= new Node_LLmD_64b(new Longitude(point.nodeLat), new Latitude(point.nodeLong));
+                nodePoint.setNode_LatLon(nodeLatLong);
+            }
+
             node.setDelta(nodePoint);
 
-            NodeAttributeSetXY attributes = new NodeAttributeSetXY();
-            boolean hasAttributes = false;
-            if ( laneNode.laneWidth != 0 ) {
-                attributes.setDWidth(new Offset_B10(laneNode.laneWidth));
-                hasAttributes = true;
-            }
-            short elevDelta = IntersectionSituationDataBuilder.getElevationDelta(laneNode.nodeElevation, curElevation);
-            if ( elevDelta != 0 ) {
-                curElevation = laneNode.nodeElevation;
-                attributes.setDElevation(new Offset_B10(elevDelta));
-                hasAttributes = true;
-            }
-            if ( hasAttributes )
-                node.setAttributes(attributes);
+//            NodeAttributeSetXY attributes = new NodeAttributeSetXY();
+//            boolean hasAttributes = false;
+//            if ( laneNode.laneWidth != 0 ) {
+//                attributes.setDWidth(new Offset_B10(laneNode.laneWidth));
+//                hasAttributes = true;
+//            }
+//            short elevDelta = IntersectionSituationDataBuilder.getElevationDelta(laneNode.nodeElevation, curElevation);
+//            if ( elevDelta != 0 ) {
+//                curElevation = laneNode.nodeElevation;
+//                attributes.setDElevation(new Offset_B10(elevDelta));
+//                hasAttributes = true;
+//            }
+//            if ( hasAttributes )
+//                node.setAttributes(attributes);
 
             nodes.add(node);
         }
