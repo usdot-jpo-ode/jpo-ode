@@ -381,32 +381,32 @@ public class TravelerMessageBuilder {
                 nodePoint.setNode_XY1(xy);
             }
 
-            if (point.delta == "node-XY2") {
+            if ("node-XY2" == point.delta) {
                 Node_XY_22b xy = new Node_XY_22b(new Offset_B11(point.x), new Offset_B11(point.y));
                 nodePoint.setNode_XY2(xy);
             }
 
-            if (point.delta == "node-XY3") {
+            if ( "node-XY3" == point.delta) {
                 Node_XY_24b xy = new Node_XY_24b(new Offset_B12(point.x), new Offset_B12(point.y));
                 nodePoint.setNode_XY3(xy);
             }
 
-            if (point.delta == "node-XY4") {
+            if ("node-XY4" == point.delta) {
                 Node_XY_26b xy = new Node_XY_26b(new Offset_B13(point.x), new Offset_B13(point.y));
                 nodePoint.setNode_XY4(xy);
             }
 
-            if (point.delta == "node-XY5") {
+            if ("node-XY5" == point.delta) {
                 Node_XY_28b xy = new Node_XY_28b(new Offset_B14(point.x), new Offset_B14(point.y));
                 nodePoint.setNode_XY5(xy);
             }
 
-            if (point.delta == "node-XY6") {
+            if ("node-XY6" == point.delta) {
                 Node_XY_32b xy = new Node_XY_32b(new Offset_B16(point.x), new Offset_B16(point.y));
                 nodePoint.setNode_XY6(xy);
             }
 
-            if (point.delta == "node-LatLon") {
+            if ("node-LatLon" == point.delta) {
                 Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.nodeLat), new Latitude(point.nodeLong));
                 nodePoint.setNode_LatLon(nodeLatLong);
             }
@@ -430,6 +430,104 @@ public class TravelerMessageBuilder {
             SegmentAttributeXYList enabledNodeList = new SegmentAttributeXYList();
             for (TravelerInputData.EnabledList enabledList : point.attributes.enabledLists){
                 localNodeList.add(new NodeAttributeXY(enabledList.type));
+            }
+            attributes.setEnabled(enabledNodeList);
+
+            LaneDataAttributeList dataNodeList = new LaneDataAttributeList();
+            for (TravelerInputData.DataList dataList : point.attributes.dataLists){
+
+                LaneDataAttribute dataAttribute = new LaneDataAttribute();
+
+                dataAttribute.setPathEndPointAngle(new DeltaAngle(dataList.pathEndpointAngle));
+                dataAttribute.setLaneCrownPointCenter(new RoadwayCrownAngle(dataList.laneCrownCenter));
+                dataAttribute.setLaneCrownPointLeft(new RoadwayCrownAngle(dataList.laneCrownLeft));
+                dataAttribute.setLaneCrownPointRight(new RoadwayCrownAngle(dataList.laneCrownRight));
+                dataAttribute.setLaneAngle(new MergeDivergeNodeAngle(dataList.laneAngle));
+
+                SpeedLimitList speedDataList = new SpeedLimitList();
+                for (TravelerInputData.SpeedLimits speedLimit : dataList.speedLimits){
+                    speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.type), new Velocity(speedLimit.velocity)));
+                }
+
+                dataAttribute.setSpeedLimits(speedDataList);
+                dataNodeList.add(dataAttribute);
+            }
+
+            attributes.setDisabled(disabledNodeList);
+
+            attributes.setDWidth(new Offset_B10(point.attributes.dWidth));
+            attributes.setDElevation(new Offset_B10(point.attributes.dElevation));
+
+            node.setAttributes(attributes);
+
+            nodes.add(node);
+        }
+        nodeList.setNodes(nodes);
+        return nodeList;
+    }
+
+    private NodeListLL buildNodeLLList(TravelerInputData.NodeXY[] inputNodes) {
+        NodeListLL nodeList = new NodeListLL();
+        NodeSetLL nodes = new NodeSetLL();
+        for (int i = 0; i < inputNodes.length; i++) {
+            TravelerInputData.NodeXY point = inputNodes[i];
+
+            NodeLL node = new NodeLL();
+            NodeOffsetPointLL nodePoint = new NodeOffsetPointLL();
+
+            if ("node-LL1" == point.delta) {
+                Node_LL_24B xy = new Node_LL_24B(new OffsetLL_B12(point.nodeLat), new OffsetLL_B12(point.nodeLong));
+                nodePoint.setNode_LL1(xy);
+            }
+
+            if ("node-LL2" == point.delta) {
+                Node_LL_28B xy = new Node_LL_28B(new OffsetLL_B14(point.nodeLat), new OffsetLL_B14(point.nodeLong));
+                nodePoint.setNode_LL2(xy);
+            }
+
+            if ( "node-LL3" == point.delta) {
+                Node_LL_32B xy = new Node_LL_32B(new OffsetLL_B16(point.nodeLat), new OffsetLL_B16(point.nodeLong));
+                nodePoint.setNode_LL3(xy);
+            }
+
+            if ("node-LL4" == point.delta) {
+                Node_LL_36B xy = new Node_LL_36B(new OffsetLL_B18(point.nodeLat), new OffsetLL_B18(point.nodeLong));
+                nodePoint.setNode_LL4(xy);
+            }
+
+            if ("node-LL5" == point.delta) {
+                Node_LL_44B xy = new Node_LL_44B(new OffsetLL_B22(point.nodeLat), new OffsetLL_B22(point.nodeLong));
+                nodePoint.setNode_LL5(xy);
+            }
+
+            if ("node-LL6" == point.delta) {
+                Node_LL_48B xy = new Node_LL_48B(new OffsetLL_B24(point.nodeLat), new OffsetLL_B24(point.nodeLong));
+                nodePoint.setNode_LL6(xy);
+            }
+
+            if ("node-LatLon" == point.delta) {
+                Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.nodeLat), new Latitude(point.nodeLong));
+                nodePoint.setNode_LatLon(nodeLatLong);
+            }
+            node.setDelta(nodePoint);
+
+            NodeAttributeSetLL attributes = new NodeAttributeSetLL();
+
+            NodeAttributeLLList localNodeList = new NodeAttributeLLList();
+            for (TravelerInputData.LocalNode localNode : point.attributes.localNodes){
+                localNodeList.add(new NodeAttributeLL(localNode.type));
+            }
+            attributes.setLocalNode(localNodeList);
+
+            SegmentAttributeLLList disabledNodeList = new SegmentAttributeLLList();
+            for (TravelerInputData.DisabledList disabledList : point.attributes.disabledLists){
+                localNodeList.add(new NodeAttributeLL(disabledList.type));
+            }
+            attributes.setDisabled(disabledNodeList);
+
+            SegmentAttributeLLList enabledNodeList = new SegmentAttributeLLList();
+            for (TravelerInputData.EnabledList enabledList : point.attributes.enabledLists){
+                localNodeList.add(new NodeAttributeLL(enabledList.type));
             }
             attributes.setEnabled(enabledNodeList);
 
