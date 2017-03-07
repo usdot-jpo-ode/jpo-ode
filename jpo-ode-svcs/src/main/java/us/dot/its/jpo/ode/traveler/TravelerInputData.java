@@ -143,8 +143,6 @@ public class TravelerInputData extends OdeObject {
           public boolean closedPath;
           public String direction;
           public String regionType;
-          public LaneNode[] laneNodes;
-          public int extent = -1;
           public String description;
           public Path path;
           public Geometry geometry;
@@ -205,10 +203,10 @@ public class TravelerInputData extends OdeObject {
           @Override
           public String toString() {
               return "Region [regionType=" + regionType
-                      + ", laneNodes=" + Arrays.toString(laneNodes)
-                      + ", extent=" + extent
+                      + ", laneNodes="
+                      + ", extent=" +
 //                      + ", refPoint=" + refPoint
-                      + "]";
+                       "]";
           }
       }
         

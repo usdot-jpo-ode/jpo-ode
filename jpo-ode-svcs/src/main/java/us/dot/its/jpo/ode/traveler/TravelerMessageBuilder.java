@@ -36,8 +36,8 @@ public class TravelerMessageBuilder {
 
       travelerInfo = new TravelerInformation();
       travelerInfo.setMsgCnt(new MsgCount(travInputData.MsgCount));
-      ByteBuffer buf = ByteBuffer.allocate(9).put((byte) 0).putLong(travInputData.UniqueMSGID);
-      travelerInfo.setPacketID(new UniqueMSGID(buf.array()));
+      //ByteBuffer buf = ByteBuffer.allocate(9).put((byte) 0).putLong(travInputData.UniqueMSGID);
+      //travelerInfo.setPacketID(new UniqueMSGID(buf.array()));
       travelerInfo.setUrlB(new URL_Base(travInputData.urlB));
       travelerInfo.setDataFrames(buildDataFrames(travInputData));
 
@@ -65,14 +65,16 @@ public class TravelerMessageBuilder {
          dataFrame.setDuratonTime(new MinutesDuration(inputDataFrame.durationTime));
          validateSign(inputDataFrame.priority);
          dataFrame.setPriority(new SignPrority(inputDataFrame.priority));
+         System.out.println("passed part 1");
 
          // -- Part II, Applicable Regions of Use
          validateHeaderIndex(inputDataFrame.sspLocationRights);
          dataFrame.setSspLocationRights(new SSPindex(inputDataFrame.sspLocationRights));
-         // dataFrame.setRegions(buildRegions(inputDataFrame.regions));
-         Regions regions = new Regions();
+          dataFrame.setRegions(buildRegions(inputDataFrame.regions));
+         /*Regions regions = new Regions();
          regions.add(new GeographicalPath());
-         dataFrame.setRegions(regions);
+         dataFrame.setRegions(regions);*/
+          System.out.println("passed part 2");
 
          // -- Part III, Content
          validateHeaderIndex(inputDataFrame.sspMsgTypes);
@@ -87,6 +89,7 @@ public class TravelerMessageBuilder {
          dataFrame.setUrl(new URL_Short(inputDataFrame.url));
 
          dataFrames.add(dataFrame);
+         System.out.println("passed part 3");
       }
       return dataFrames;
    }
@@ -298,6 +301,8 @@ public class TravelerMessageBuilder {
             OffsetSystem offsetSystem = new OffsetSystem();
             offsetSystem.setScale(new Zoom(inputRegion.path.scale));
             buildNodeXYList(inputRegion.path.nodes);
+            description.setPath(offsetSystem);
+            geoPath.setDescription(description);
          } else if ("geometry".equals(inputRegion.description)) {
             GeometricProjection geo = new GeometricProjection();
             geo.setDirection(getHeadingSlice(inputRegion.geometry.direction));
@@ -305,6 +310,7 @@ public class TravelerMessageBuilder {
             geo.setLaneWidth(new LaneWidth(inputRegion.geometry.laneWidth));
             geo.setCircle(buildGeoCircle(inputRegion.geometry));
             description.setGeometry(geo);
+            geoPath.setDescription(description);
          } else { // oldRegion
             ValidRegion validRegion = new ValidRegion();
             validRegion.setDirection(getHeadingSlice(inputRegion.oldRegion.direction));
@@ -333,6 +339,7 @@ public class TravelerMessageBuilder {
                validRegion.setArea(area);
             }
             description.setOldRegion(validRegion);
+            geoPath.setDescription(description);
          }
          regions.add(geoPath);
       }
