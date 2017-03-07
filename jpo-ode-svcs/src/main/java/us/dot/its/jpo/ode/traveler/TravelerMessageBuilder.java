@@ -222,6 +222,8 @@ public class TravelerMessageBuilder {
         }
     }
 
+
+
 //    private HeadingSlice getHeadingSlice(TravelerInputData.DataFrame dataFrame) {
 //        String[] heading = dataFrame.heading;
 //        if (heading == null || heading.length == 0) {
@@ -280,8 +282,7 @@ public class TravelerMessageBuilder {
 
                 OffsetSystem offsetSystem = new OffsetSystem();
                 offsetSystem.setScale(new Zoom(inputRegion.path.scale));
-
-                NodeOffsetPointXY offsetPoint = new NodeOffsetPointXY();
+                buildNodeList(inputRegion.path.nodes);
                 for (TravelerInputData.DataFrame.Region.Path.Node node: inputRegion.path.nodes){
 
                 }
@@ -296,6 +297,42 @@ public class TravelerMessageBuilder {
             regions.add(geoPath);
         }
         return regions;
+    }
+
+    private NodeListXY buildNodeList(TravelerInputData.DataFrame.Region.Path.Node[] inputNodes) {
+        NodeListXY nodeList = new NodeListXY();
+        NodeSetXY nodes = new NodeSetXY();
+        for (int i=0; i < inputNodes.length; i++) {
+            TravelerInputData.DataFrame.Region.Path.Node point = inputNodes[i];
+
+            GeoPoint nextPoint = new GeoPoint(laneNode.nodeLat, laneNode.nodeLong);
+            NodeXY node = new NodeXY();
+            Node_LLmD_64b node_LatLon = new Node_LLmD_64b(
+                    new Longitude(point.nodeLat),
+                    new Latitude(point.nodeLong);
+            NodeOffsetPointXY nodePoint = new NodeOffsetPointXY();
+            nodePoint.setNode_LatLon(node_LatLon);
+            node.setDelta(nodePoint);
+
+            NodeAttributeSetXY attributes = new NodeAttributeSetXY();
+            boolean hasAttributes = false;
+            if ( laneNode.laneWidth != 0 ) {
+                attributes.setDWidth(new Offset_B10(laneNode.laneWidth));
+                hasAttributes = true;
+            }
+            short elevDelta = IntersectionSituationDataBuilder.getElevationDelta(laneNode.nodeElevation, curElevation);
+            if ( elevDelta != 0 ) {
+                curElevation = laneNode.nodeElevation;
+                attributes.setDElevation(new Offset_B10(elevDelta));
+                hasAttributes = true;
+            }
+            if ( hasAttributes )
+                node.setAttributes(attributes);
+
+            nodes.add(node);
+        }
+        nodeList.setNodes(nodes);
+        return nodeList;
     }
 //    private Area buildArea(TravelerInputData travInputData, Region inputRegion) {
 //        Area area = new Area();
