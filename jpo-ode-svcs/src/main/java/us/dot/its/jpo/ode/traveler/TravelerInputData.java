@@ -65,17 +65,17 @@ public class TravelerInputData extends OdeObject {
        public long type;
     }
     public static class DisabledList {
-       public String type;
+       public long type;
     }
     public static class EnabledList {
-       public String type;
+       public long type;
     }
     public static class SpeedLimits {
-       public String type;
+       public long type;
        public int velocity;
     }
     public static class DataList {
-       public int pathEndpoint;
+       public int pathEndpointAngle;
        public int laneCrownCenter;
        public int laneCrownLeft;
        public int laneCrownRight;
@@ -83,10 +83,10 @@ public class TravelerInputData extends OdeObject {
        public SpeedLimits[] speedLimits;
     }
     public static class Attributes {
-       public LocalNode[] localNode;
-       public DisabledList[] disabledList;
-       public EnabledList[] enabledList;
-       public DataList[] dataList;
+       public LocalNode[] localNodes;
+       public DisabledList[] disabledLists;
+       public EnabledList[] enabledLists;
+       public DataList[] dataLists;
        public int dWidth;
        public int dElevation;
     }

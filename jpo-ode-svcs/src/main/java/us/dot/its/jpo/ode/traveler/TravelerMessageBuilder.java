@@ -297,13 +297,7 @@ public class TravelerMessageBuilder {
          if ("path".equals(inputRegion.description)) {
             OffsetSystem offsetSystem = new OffsetSystem();
             offsetSystem.setScale(new Zoom(inputRegion.path.scale));
-            buildNodeList(inputRegion.path.nodes);
-            for (TravelerInputData.DataFrame.Region.Path.Node node : inputRegion.path.nodes) {
-
-            }
-            // NodeListXY nodeList = new NodeListXY(new NodeSetXY(new
-            // NodeXY[]));
-
+            buildNodeXYList(inputRegion.path.nodes);
          } else if ("geometry".equals(inputRegion.description)) {
             GeometricProjection geo = new GeometricProjection();
             geo.setDirection(getHeadingSlice(inputRegion.geometry.direction));
@@ -373,76 +367,104 @@ public class TravelerMessageBuilder {
       return circle;
    }
 
-   private NodeListXY buildNodeList(TravelerInputData.DataFrame.Region.Path.Node[] inputNodes) {
-      NodeListXY nodeList = new NodeListXY();
-      NodeSetXY nodes = new NodeSetXY();
-      for (int i = 0; i < inputNodes.length; i++) {
-         TravelerInputData.DataFrame.Region.Path.Node point = inputNodes[i];
+    private NodeListXY buildNodeXYList(TravelerInputData.NodeXY[] inputNodes) {
+        NodeListXY nodeList = new NodeListXY();
+        NodeSetXY nodes = new NodeSetXY();
+        for (int i = 0; i < inputNodes.length; i++) {
+            TravelerInputData.NodeXY point = inputNodes[i];
 
-         // GeoPoint nextPoint = new GeoPoint(laneNode.nodeLat,
-         // laneNode.nodeLong);
-         NodeXY node = new NodeXY();
-         NodeOffsetPointXY nodePoint = new NodeOffsetPointXY();
+            NodeXY node = new NodeXY();
+            NodeOffsetPointXY nodePoint = new NodeOffsetPointXY();
 
-         if ("node-XY1" == point.delta) {
-            Node_XY_20b xy = new Node_XY_20b(new Offset_B10(point.x), new Offset_B10(point.y));
-            nodePoint.setNode_XY1(xy);
-         }
+            if ("node-XY1" == point.delta) {
+                Node_XY_20b xy = new Node_XY_20b(new Offset_B10(point.x), new Offset_B10(point.y));
+                nodePoint.setNode_XY1(xy);
+            }
 
-         if (point.delta == "node-XY2") {
-            Node_XY_22b xy = new Node_XY_22b(new Offset_B11(point.x), new Offset_B11(point.y));
-            nodePoint.setNode_XY2(xy);
-         }
+            if (point.delta == "node-XY2") {
+                Node_XY_22b xy = new Node_XY_22b(new Offset_B11(point.x), new Offset_B11(point.y));
+                nodePoint.setNode_XY2(xy);
+            }
 
-         if (point.delta == "node-XY3") {
-            Node_XY_24b xy = new Node_XY_24b(new Offset_B12(point.x), new Offset_B12(point.y));
-            nodePoint.setNode_XY3(xy);
-         }
+            if (point.delta == "node-XY3") {
+                Node_XY_24b xy = new Node_XY_24b(new Offset_B12(point.x), new Offset_B12(point.y));
+                nodePoint.setNode_XY3(xy);
+            }
 
-         if (point.delta == "node-XY4") {
-            Node_XY_26b xy = new Node_XY_26b(new Offset_B13(point.x), new Offset_B13(point.y));
-            nodePoint.setNode_XY4(xy);
-         }
+            if (point.delta == "node-XY4") {
+                Node_XY_26b xy = new Node_XY_26b(new Offset_B13(point.x), new Offset_B13(point.y));
+                nodePoint.setNode_XY4(xy);
+            }
 
-         if (point.delta == "node-XY5") {
-            Node_XY_28b xy = new Node_XY_28b(new Offset_B14(point.x), new Offset_B14(point.y));
-            nodePoint.setNode_XY5(xy);
-         }
+            if (point.delta == "node-XY5") {
+                Node_XY_28b xy = new Node_XY_28b(new Offset_B14(point.x), new Offset_B14(point.y));
+                nodePoint.setNode_XY5(xy);
+            }
 
-         if (point.delta == "node-XY6") {
-            Node_XY_32b xy = new Node_XY_32b(new Offset_B16(point.x), new Offset_B16(point.y));
-            nodePoint.setNode_XY6(xy);
-         }
+            if (point.delta == "node-XY6") {
+                Node_XY_32b xy = new Node_XY_32b(new Offset_B16(point.x), new Offset_B16(point.y));
+                nodePoint.setNode_XY6(xy);
+            }
 
-         if (point.delta == "node-LatLon") {
-            Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.nodeLat), new Latitude(point.nodeLong));
-            nodePoint.setNode_LatLon(nodeLatLong);
-         }
+            if (point.delta == "node-LatLon") {
+                Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.nodeLat), new Latitude(point.nodeLong));
+                nodePoint.setNode_LatLon(nodeLatLong);
+            }
 
-         node.setDelta(nodePoint);
+            node.setDelta(nodePoint);
 
-         // NodeAttributeSetXY attributes = new NodeAttributeSetXY();
-         // boolean hasAttributes = false;
-         // if ( laneNode.laneWidth != 0 ) {
-         // attributes.setDWidth(new Offset_B10(laneNode.laneWidth));
-         // hasAttributes = true;
-         // }
-         // short elevDelta =
-         // IntersectionSituationDataBuilder.getElevationDelta(laneNode.nodeElevation,
-         // curElevation);
-         // if ( elevDelta != 0 ) {
-         // curElevation = laneNode.nodeElevation;
-         // attributes.setDElevation(new Offset_B10(elevDelta));
-         // hasAttributes = true;
-         // }
-         // if ( hasAttributes )
-         // node.setAttributes(attributes);
+            NodeAttributeSetXY attributes = new NodeAttributeSetXY();
 
-         nodes.add(node);
-      }
-      nodeList.setNodes(nodes);
-      return nodeList;
-   }
+            NodeAttributeXYList localNodeList = new NodeAttributeXYList();
+            for (TravelerInputData.LocalNode localNode : point.attributes.localNodes){
+                localNodeList.add(new NodeAttributeXY(localNode.type));
+            }
+            attributes.setLocalNode(localNodeList);
+
+            SegmentAttributeXYList disabledNodeList = new SegmentAttributeXYList();
+            for (TravelerInputData.DisabledList disabledList : point.attributes.disabledLists){
+                localNodeList.add(new NodeAttributeXY(disabledList.type));
+            }
+            attributes.setDisabled(disabledNodeList);
+
+            SegmentAttributeXYList enabledNodeList = new SegmentAttributeXYList();
+            for (TravelerInputData.EnabledList enabledList : point.attributes.enabledLists){
+                localNodeList.add(new NodeAttributeXY(enabledList.type));
+            }
+            attributes.setEnabled(enabledNodeList);
+
+            LaneDataAttributeList dataNodeList = new LaneDataAttributeList();
+            for (TravelerInputData.DataList dataList : point.attributes.dataLists){
+
+                LaneDataAttribute dataAttribute = new LaneDataAttribute();
+
+                dataAttribute.setPathEndPointAngle(new DeltaAngle(dataList.pathEndpointAngle));
+                dataAttribute.setLaneCrownPointCenter(new RoadwayCrownAngle(dataList.laneCrownCenter));
+                dataAttribute.setLaneCrownPointLeft(new RoadwayCrownAngle(dataList.laneCrownLeft));
+                dataAttribute.setLaneCrownPointRight(new RoadwayCrownAngle(dataList.laneCrownRight));
+                dataAttribute.setLaneAngle(new MergeDivergeNodeAngle(dataList.laneAngle));
+
+                SpeedLimitList speedDataList = new SpeedLimitList();
+                for (TravelerInputData.SpeedLimits speedLimit : dataList.speedLimits){
+                    speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.type), new Velocity(speedLimit.velocity)));
+                }
+
+                dataAttribute.setSpeedLimits(speedDataList);
+                dataNodeList.add(dataAttribute);
+            }
+
+            attributes.setDisabled(disabledNodeList);
+
+            attributes.setDWidth(new Offset_B10(point.attributes.dWidth));
+            attributes.setDElevation(new Offset_B10(point.attributes.dElevation));
+
+            node.setAttributes(attributes);
+
+            nodes.add(node);
+        }
+        nodeList.setNodes(nodes);
+        return nodeList;
+    }
    // private Area buildArea(TravelerInputData travInputData, Region
    // inputRegion) {
    // Area area = new Area();
