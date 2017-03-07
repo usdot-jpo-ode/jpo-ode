@@ -18,6 +18,7 @@ public class DdsDepositRequestManager extends DdsRequestManager<DdsStatusMessage
 
     @Override
     protected DdsRequest buildDdsRequest(OdeRequest odeRequest) throws DdsRequestManagerException {
+
         DdsDepRequest ddsDepReq = new DdsDepRequest();
 
         if (odeRequest instanceof OdeDepRequest) {

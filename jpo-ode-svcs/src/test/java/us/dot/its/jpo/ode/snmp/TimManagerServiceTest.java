@@ -4,37 +4,127 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.text.ParseException;
 
 import org.junit.Test;
 import org.snmp4j.ScopedPDU;
+import org.snmp4j.Snmp;
+import org.snmp4j.TransportMapping;
+import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
 
+import ch.qos.logback.classic.Logger;
+import kafka.network.RequestChannel.Response;
+import mockit.Expectations;
+import mockit.Injectable;
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Mocked;
+import mockit.Verifications;
+
 public class TimManagerServiceTest {
 
     // Create and send tests
+    /**
+     * Test that a null argument to createAndSend() short circuits, returns
+     * null, and logs error
+     */
     @Test
-    public void shouldReturnNullWhenGivenNullTimParameters() {
+    public void createAndSendshouldReturnNullWhenGivenNullArguments(@Mocked SnmpProperties mockSnmpProperties,
+            @Mocked final Logger logger) {
 
-        Address addr = GenericAddress.parse("127.0.0.1" + "/161");
-
-        SnmpProperties testProps = new SnmpProperties(addr, "v3user", "password");
         TimParameters testParams = null;
-        ResponseEvent response = null;
+
+        assertNull(TimManagerService.createAndSend(testParams, mockSnmpProperties));
+
+        new Verifications() {
+            {
+                logger.error("TIM SERVICE - Received null object");
+            }
+        };
+    }
+
+    /**
+     * Test that if initializing an SnmpSession returns null, null is returned
+     * and an exception is logged
+     */
+    @Test
+    public void createAndSendShouldReturnNullWhenSessionInitThrowsException(@Mocked TimParameters mockTimParameters,
+            @Mocked SnmpProperties mockSnmpProperties, @Mocked final Logger logger,
+            @Mocked SnmpSession mockSnmpSession) {
+
+        IOException expectedException = new IOException("testException123");
         try {
-            response = TimManagerService.createAndSend(testParams, testProps);
-        } catch (Exception e) {
+            new Expectations() {
+                {
+                    new SnmpSession((SnmpProperties) any);
+                    result = expectedException;
+                }
+            };
+        } catch (IOException e) {
             fail("Unexpected exception: " + e);
         }
 
-        assertNull(response);
+        assertNull(TimManagerService.createAndSend(mockTimParameters, mockSnmpProperties));
+
+        new Verifications() {
+            {
+                logger.error("TIM SERVICE - Failed to create SNMP session: {}", expectedException);
+            }
+        };
+
     }
+
+//    @Test
+//    public void createAndSendShouldReturnNullWhenSetThrowsException(@Mocked TimParameters mockTimParameters,
+//            @Mocked SnmpProperties mockSnmpProperties, @Mocked final Logger logger,
+//            @Mocked final SnmpSession mockSnmpSession, @Mocked final TimManagerService mockTimManagerService,
+//            @Mocked ScopedPDU mockScopedPDU, @Mocked Snmp mockSnmp, @Mocked TransportMapping mockTransport,
+//            @Mocked UserTarget mockTarget) {
+//
+//        IOException expectedException = new IOException("testException123");
+//        try {
+//            new Expectations() {
+//                {
+//                    new SnmpSession(mockSnmpProperties);
+//                    result = mockSnmpSession;
+//                    
+//                    mockSnmpSession.set((ScopedPDU) any, (Snmp) any, (TransportMapping) any, (UserTarget) any);
+//                    result = expectedException;
+//
+//                    mockSnmpSession.getSnmp();
+//                    result = mockSnmp;
+//                    mockSnmpSession.getTransport();
+//                    result = mockTransport;
+//                    mockSnmpSession.getTarget();
+//                    result = mockTarget;
+//                    
+//                    
+//                    TimManagerService.createPDU(mockTimParameters);
+//                    result = mockScopedPDU;
+//                    
+//                }
+//            };
+//            
+//        } catch (IOException e) {
+//            fail("Unexpected exception mocking SnmpSession constructor: " + e);
+//        }
+//        
+//        
+//        assertNull(TimManagerService.createAndSend(mockTimParameters, mockSnmpProperties));
+//        new Verifications() {
+//            {
+//                logger.error("TIM SERVICE - Error while sending PDU: {}", expectedException);
+//            }
+//        };
+//    }
 
     // Create PDU tests
     @Test
-    public void shouldReturnNullPDUWhenGivenNullParams() {
+    public void createPDUshouldReturnNullWhenGivenNullParams() {
 
         TimParameters nullParams = null;
         ScopedPDU result = TimManagerService.createPDU(nullParams);
@@ -58,7 +148,8 @@ public class TimManagerServiceTest {
         int rsuSRMStatus = 10;
 
         TimParameters testParams = new TimParameters(rsuSRMPsid, rsuSRMDsrcMsgId, rsuSRMTxMode, rsuSRMTxChannel,
-                rsuSRMTxInterval, "2017-12-02T17:47:11-05:00", "2017-12-02T17:47:11-05:00", rsuSRMPayload, rsuSRMEnable, rsuSRMStatus);
+                rsuSRMTxInterval, "2017-12-02T17:47:11-05:00", "2017-12-02T17:47:11-05:00", rsuSRMPayload, rsuSRMEnable,
+                rsuSRMStatus);
 
         ScopedPDU result = TimManagerService.createPDU(testParams);
 
