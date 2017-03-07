@@ -36,7 +36,6 @@ public class TimManagerService {
             logger.error("TIM SERVICE - Received null object");
             return null;
         }
-        
         // Initialize the SNMP session
         SnmpSession session = null;
         try {
@@ -55,7 +54,6 @@ public class TimManagerService {
             logger.error("TIM SERVICE - Error while sending PDU: {}", e);
             return null;
         }
-        
         return response;
         
     }
