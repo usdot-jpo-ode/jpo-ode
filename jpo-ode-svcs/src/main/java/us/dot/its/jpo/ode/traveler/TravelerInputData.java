@@ -62,7 +62,7 @@ public class TravelerInputData extends OdeObject {
         public Attributes attributes;
     }
     public static class LocalNode {
-       public String type;
+       public long type;
     }
     public static class DisabledList {
        public String type;
@@ -199,20 +199,8 @@ public class TravelerInputData extends OdeObject {
           
           public static class Path {
               public int scale;
-              public Node[] nodes;
+              public NodeXY[] nodes;
 
-              public static class Node {
-                  public String delta;
-                  public int nodeLat;
-                  public int nodeLong;
-                  public int x;
-                  public int y;
-                  public Attributes attributes;
-
-                  public static class Attributes{
-
-                  }
-              }
           }
           @Override
           public String toString() {
