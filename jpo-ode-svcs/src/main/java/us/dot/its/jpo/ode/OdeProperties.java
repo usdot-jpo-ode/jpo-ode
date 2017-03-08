@@ -41,12 +41,10 @@ public class OdeProperties implements EnvironmentAware {
     private String asn1CoderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder";
     private String kafkaBrokers = null;
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
-    public static final String FILE_TYPES = "*.{uper, bsm, bin, hex}";
     private String ddsCasUrl = "https://cas.connectedvcs.com/accounts/v1/tickets";
     private String ddsCasUsername = "";
     private String ddsCasPassword = "";
     private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
-    private String serviceRegion = "44.998459,-111.040817,41.104674,-104.111312";
 
     private String hostId;
 
@@ -204,11 +202,4 @@ public class OdeProperties implements EnvironmentAware {
       this.ddsWebsocketUrl = ddsWebsocketUrl;
    }
 
-   public String getServiceRegion() {
-      return serviceRegion;
-   }
-
-   public void setServiceRegion(String serviceRegion) {
-      this.serviceRegion = serviceRegion;
-   }
 }

@@ -129,4 +129,16 @@ public class FileSystemStorageService implements StorageService {
             throw new StorageException("Failed to initialize storage service " + this.rootLocation, e);
         }
     }
+
+    public Path getRootLocation() {
+        return rootLocation;
+    }
+
+    public Path getBsmLocation() {
+        return bsmLocation;
+    }
+
+    public Path getMessageFrameLocation() {
+        return messageFrameLocation;
+    }
 }
