@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.snmp;
 
+import java.text.ParseException;
+
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
@@ -15,7 +17,7 @@ public class TestSnmpController {
 
     @GetMapping("/test/snmp/{ip}/{message}")
     @ResponseBody
-    public String sendSnmpRequest(@PathVariable("ip") String ip, @PathVariable("message") String message) {
+    public String sendSnmpRequest(@PathVariable("ip") String ip, @PathVariable("message") String message) throws ParseException {
         
    //        snmpset -v3 
    //        -u v3user 

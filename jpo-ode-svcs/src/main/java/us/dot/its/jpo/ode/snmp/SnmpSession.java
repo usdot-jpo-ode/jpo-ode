@@ -25,9 +25,9 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
  */
 public class SnmpSession {
 
-    public Snmp snmp;
-    public TransportMapping transport;
-    public UserTarget target;
+    private Snmp snmp;
+    private TransportMapping transport;
+    private UserTarget target;
 
     private boolean ready = false;
 
@@ -109,5 +109,29 @@ public class SnmpSession {
         }
 
         return responseEvent;
+    }
+
+    public Snmp getSnmp() {
+        return snmp;
+    }
+
+    public void setSnmp(Snmp snmp) {
+        this.snmp = snmp;
+    }
+
+    public TransportMapping getTransport() {
+        return transport;
+    }
+
+    public void setTransport(TransportMapping transport) {
+        this.transport = transport;
+    }
+
+    public UserTarget getTarget() {
+        return target;
+    }
+
+    public void setTarget(UserTarget target) {
+        this.target = target;
     }
 }

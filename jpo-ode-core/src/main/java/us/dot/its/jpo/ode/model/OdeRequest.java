@@ -36,18 +36,14 @@ public class OdeRequest extends BaseRequest {
    }
 
    private String id;
-   private String dataSource;
+   private DataSource dataSource;
    private OdeRequestType requestType;
    private OdeDataType dataType;
-   private OdePolyline polyline;
 
-   
-   
    public OdeRequest() {
       super();
    }
 
-   
    public OdeRequest(OdeRequest other) {
       super();
       this.setDataSource(other.getDataSource());
@@ -55,69 +51,48 @@ public class OdeRequest extends BaseRequest {
       this.setId(other.getId());
       this.setNwLat(other.getNwLat());
       this.setNwLon(other.getNwLon());
-      this.setPolyline(other.getPolyline());
       this.setRequestType(other.getRequestType());
       this.setSeLat(other.getSeLat());
       this.setSeLon(other.getSeLon());
    }
 
-   public OdeRequest(BigDecimal nwLat, BigDecimal nwLon, BigDecimal seLat,
-         BigDecimal seLon) {
+   public OdeRequest(BigDecimal nwLat, BigDecimal nwLon, BigDecimal seLat, BigDecimal seLon) {
       super(nwLat, nwLon, seLat, seLon);
    }
 
-   public static OdeRequest create(String rtype, String dtype, String message)
-         throws OdeRequestException {
+   public static OdeRequest create(String rtype, String dtype, String message) throws OdeRequestException {
       OdeRequest odeRequest = null;
       OdeRequestType requestType = OdeRequestType.getByShortName(rtype);
-      if (requestType == OdeRequestType.Subscription) {
-         odeRequest = (OdeRequest) JsonUtils.fromJson(message,
-               OdeSubRequest.class);
-      } else if (requestType == OdeRequestType.Query) {
-         odeRequest = (OdeRequest) JsonUtils.fromJson(message,
-               OdeQryRequest.class);
-      } else if (requestType == OdeRequestType.Test) {
-         odeRequest = (OdeRequest) JsonUtils.fromJson(message,
-               OdeTstRequest.class);
-      } else if (requestType == OdeRequestType.Deposit) {
-         odeRequest = (OdeRequest) JsonUtils.fromJson(message,
-               OdeDepRequest.class);
+      if (requestType == OdeRequestType.Deposit) {
+         odeRequest = (OdeRequest) JsonUtils.fromJson(message, OdeDepRequest.class);
+//      } else if (requestType == OdeRequestType.Subscription) {
+//         odeRequest = (OdeRequest) JsonUtils.fromJson(message, OdeSubRequest.class);
+//      } else if (requestType == OdeRequestType.Query) {
+//         odeRequest = (OdeRequest) JsonUtils.fromJson(message, OdeQryRequest.class);
+//      } else if (requestType == OdeRequestType.Test) {
+//         odeRequest = (OdeRequest) JsonUtils.fromJson(message, OdeTstRequest.class);
       } else {
-         OdeStatus status = new OdeStatus()
-            .setCode(OdeStatus.Code.INVALID_REQUEST_TYPE_ERROR)
-            .setMessage(
-                  String.format(
-                        "Invalid request type %s. Valid request types are %s.",
-                        rtype, OdeRequestType.shortNames()));
+         OdeStatus status = new OdeStatus().setCode(OdeStatus.Code.INVALID_REQUEST_TYPE_ERROR).setMessage(String
+               .format("Invalid request type %s. Valid request types are %s.", rtype, OdeRequestType.shortNames()));
          throw new OdeRequestException(status.toString());
       }
       odeRequest.setRequestType(requestType);
 
       OdeDataType dataType = OdeDataType.getByShortName(dtype);
       if (dataType == null) {
-         OdeStatus status = new OdeStatus()
-            .setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR)
-            .setMessage(
-                  String.format(
-                        "Invalid data type %s. Valid data types are %s.",
-                        dtype, OdeDataType.shortNames()));
+         OdeStatus status = new OdeStatus().setCode(OdeStatus.Code.INVALID_DATA_TYPE_ERROR).setMessage(
+               String.format("Invalid data type %s. Valid data types are %s.", dtype, OdeDataType.shortNames()));
          throw new OdeRequestException(status.toString());
       }
       odeRequest.setDataType(dataType);
-      
-      OdePolyline polyline = odeRequest.getPolyline();
-      
-      if (polyline != null)
-         polyline.updateAllStartPoints();
-      
+
       odeRequest.setId(buildRequestId(odeRequest));
       return odeRequest;
    }
 
    public static String buildRequestId(OdeRequest odeRequest) {
-      return AppContext.getInstance().getParam(AppContext.ODE_HOSTNAME) +
-            odeRequest.getClass().getSimpleName() + 
-            String.valueOf(odeRequest.hashCode());
+      return AppContext.getInstance().getParam(AppContext.ODE_HOSTNAME) + odeRequest.getClass().getSimpleName()
+            + String.valueOf(odeRequest.hashCode());
    }
 
    public String getId() {
@@ -129,17 +104,17 @@ public class OdeRequest extends BaseRequest {
       return this;
    }
 
-public String getDataSource() {
+   public OdeRequestType getRequestType() {
+      return requestType;
+   }
+
+   public DataSource getDataSource() {
       return dataSource;
    }
 
-   public OdeRequest setDataSource(String dataSource) {
+   public OdeRequest setDataSource(DataSource dataSource) {
       this.dataSource = dataSource;
       return this;
-   }
-
-public OdeRequestType getRequestType() {
-      return requestType;
    }
 
    public OdeRequest setRequestType(OdeRequestType requestType) {
@@ -156,26 +131,14 @@ public OdeRequestType getRequestType() {
       return this;
    }
 
-   public OdePolyline getPolyline() {
-      return polyline;
-   }
-
-   public OdeRequest setPolyline(OdePolyline polyline) {
-      this.polyline = polyline;
-      return this;
-   }
-
    @Override
    public int hashCode() {
       final int prime = 31;
       int result = super.hashCode();
-      result = prime * result
-            + ((dataSource == null) ? 0 : dataSource.hashCode());
+      result = prime * result + ((dataSource == null) ? 0 : dataSource.hashCode());
       result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
       result = prime * result + ((id == null) ? 0 : id.hashCode());
-      result = prime * result + ((polyline == null) ? 0 : polyline.hashCode());
-      result = prime * result
-            + ((requestType == null) ? 0 : requestType.hashCode());
+      result = prime * result + ((requestType == null) ? 0 : requestType.hashCode());
       return result;
    }
 
@@ -188,10 +151,7 @@ public OdeRequestType getRequestType() {
       if (getClass() != obj.getClass())
          return false;
       OdeRequest other = (OdeRequest) obj;
-      if (dataSource == null) {
-         if (other.dataSource != null)
-            return false;
-      } else if (!dataSource.equals(other.dataSource))
+      if (dataSource != other.dataSource)
          return false;
       if (dataType != other.dataType)
          return false;
@@ -199,11 +159,6 @@ public OdeRequestType getRequestType() {
          if (other.id != null)
             return false;
       } else if (!id.equals(other.id))
-         return false;
-      if (polyline == null) {
-         if (other.polyline != null)
-            return false;
-      } else if (!polyline.equals(other.polyline))
          return false;
       if (requestType != other.requestType)
          return false;
