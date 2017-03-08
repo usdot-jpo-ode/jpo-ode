@@ -243,14 +243,19 @@ public class TravelerMessageBuilder {
       for (TravelerInputData.DataFrame.Region inputRegion : inputRegions) {
          GeographicalPath geoPath = new GeographicalPath();
          Description description = new Description();
+         validateGeoName(inputRegion.name);
          geoPath.setName(new DescriptiveName(inputRegion.name));
+         validateRoadID(inputRegion.regulatorID);
+         validateRoadID(inputRegion.segmentID);
          geoPath.setId(new RoadSegmentReferenceID(new RoadRegulatorID(inputRegion.regulatorID),
                new RoadSegmentID(inputRegion.segmentID)));
-         geoPath
-               .setAnchor(getPosition3D(inputRegion.anchor_lat, inputRegion.anchor_long, inputRegion.anchor_elevation));
+         geoPath.setAnchor(getPosition3D(inputRegion.anchor_lat, inputRegion.anchor_long, inputRegion.anchor_elevation));
+         validateLaneWidth(inputRegion.laneWidth);
          geoPath.setLaneWidth(new LaneWidth(inputRegion.laneWidth));
+         validateDirectionality(inputRegion.directionality);
          geoPath.setDirectionality(new DirectionOfUse(inputRegion.directionality));
          geoPath.setClosedPath(Boolean.valueOf(inputRegion.closedPath));
+         validateHeading(inputRegion.direction);
          geoPath.setDirection(getHeadingSlice(inputRegion.direction));
 
          if ("path".equals(inputRegion.description)) {
@@ -345,37 +350,37 @@ public class TravelerMessageBuilder {
          NodeXY node = new NodeXY();
          NodeOffsetPointXY nodePoint = new NodeOffsetPointXY();
 
-         if ("node-XY1" == point.delta) {
+         if ("node-XY1".equals(point.delta)) {
             Node_XY_20b xy = new Node_XY_20b(new Offset_B10(point.x), new Offset_B10(point.y));
             nodePoint.setNode_XY1(xy);
          }
 
-         if ("node-XY2" == point.delta) {
+         if ("node-XY2".equals(point.delta)) {
             Node_XY_22b xy = new Node_XY_22b(new Offset_B11(point.x), new Offset_B11(point.y));
             nodePoint.setNode_XY2(xy);
          }
 
-         if ("node-XY3" == point.delta) {
+         if ("node-XY3".equals(point.delta)) {
             Node_XY_24b xy = new Node_XY_24b(new Offset_B12(point.x), new Offset_B12(point.y));
             nodePoint.setNode_XY3(xy);
          }
 
-         if ("node-XY4" == point.delta) {
+         if ("node-XY4".equals(point.delta)) {
             Node_XY_26b xy = new Node_XY_26b(new Offset_B13(point.x), new Offset_B13(point.y));
             nodePoint.setNode_XY4(xy);
          }
 
-         if ("node-XY5" == point.delta) {
+         if ("node-XY5".equals(point.delta)) {
             Node_XY_28b xy = new Node_XY_28b(new Offset_B14(point.x), new Offset_B14(point.y));
             nodePoint.setNode_XY5(xy);
          }
 
-         if ("node-XY6" == point.delta) {
+         if ("node-XY6".equals(point.delta)) {
             Node_XY_32b xy = new Node_XY_32b(new Offset_B16(point.x), new Offset_B16(point.y));
             nodePoint.setNode_XY6(xy);
          }
 
-         if ("node-LatLon" == point.delta) {
+         if ("node-LatLon".equals(point.delta)) {
             Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.nodeLat), new Latitude(point.nodeLong));
             nodePoint.setNode_LatLon(nodeLatLong);
          }
@@ -445,37 +450,37 @@ public class TravelerMessageBuilder {
          NodeLL node = new NodeLL();
          NodeOffsetPointLL nodePoint = new NodeOffsetPointLL();
 
-         if ("node-LL1" == point.delta) {
+         if ("node-LL1".equals(point.delta)) {
             Node_LL_24B xy = new Node_LL_24B(new OffsetLL_B12(point.nodeLat), new OffsetLL_B12(point.nodeLong));
             nodePoint.setNode_LL1(xy);
          }
 
-         if ("node-LL2" == point.delta) {
+         if ("node-LL2".equals(point.delta)) {
             Node_LL_28B xy = new Node_LL_28B(new OffsetLL_B14(point.nodeLat), new OffsetLL_B14(point.nodeLong));
             nodePoint.setNode_LL2(xy);
          }
 
-         if ("node-LL3" == point.delta) {
+         if ("node-LL3".equals(point.delta)) {
             Node_LL_32B xy = new Node_LL_32B(new OffsetLL_B16(point.nodeLat), new OffsetLL_B16(point.nodeLong));
             nodePoint.setNode_LL3(xy);
          }
 
-         if ("node-LL4" == point.delta) {
+         if ("node-LL4".equals(point.delta)) {
             Node_LL_36B xy = new Node_LL_36B(new OffsetLL_B18(point.nodeLat), new OffsetLL_B18(point.nodeLong));
             nodePoint.setNode_LL4(xy);
          }
 
-         if ("node-LL5" == point.delta) {
+         if ("node-LL5".equals(point.delta)) {
             Node_LL_44B xy = new Node_LL_44B(new OffsetLL_B22(point.nodeLat), new OffsetLL_B22(point.nodeLong));
             nodePoint.setNode_LL5(xy);
          }
 
-         if ("node-LL6" == point.delta) {
+         if ("node-LL6".equals(point.delta)) {
             Node_LL_48B xy = new Node_LL_48B(new OffsetLL_B24(point.nodeLat), new OffsetLL_B24(point.nodeLong));
             nodePoint.setNode_LL6(xy);
          }
 
-         if ("node-LatLon" == point.delta) {
+         if ("node-LatLon".equals(point.delta)) {
             Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.nodeLat), new Latitude(point.nodeLong));
             nodePoint.setNode_LatLon(nodeLatLong);
          }
@@ -669,6 +674,26 @@ public class TravelerMessageBuilder {
    public static void validateString(String str) {
       if (str.isEmpty())
          throw new IllegalArgumentException("Invalid Empty String");
+   }
+   
+   public static void validateGeoName(String name) {
+      if (name.length() < 1 || name.length() > 63)
+         throw new IllegalArgumentException("Invalid Descriptive name");
+   }
+   
+   public static void validateRoadID(int id){
+      if (id < 0 || id > 65535)
+         throw new IllegalArgumentException("Invalid RoadID");
+   }
+   
+   public static void validateLaneWidth(int width){
+      if (width < 0 || width > 32767)
+         throw new IllegalArgumentException("Invalid lane width");
+   }
+   
+   public static void validateDirectionality(long dir) {
+      if (dir < 0 || dir > 3)
+         throw new IllegalArgumentException("Invalid enumeration");
    }
 
 }
