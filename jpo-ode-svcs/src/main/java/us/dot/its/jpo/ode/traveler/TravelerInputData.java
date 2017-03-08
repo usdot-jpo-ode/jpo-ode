@@ -197,6 +197,7 @@ public class TravelerInputData extends OdeObject {
           
           public static class Path {
               public int scale;
+              public String type;
               public NodeXY[] nodes;
 
           }
