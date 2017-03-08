@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
+import us.dot.its.jpo.ode.snmp.TimManagerService;
+import us.dot.its.jpo.ode.snmp.TimParameters;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 @Controller

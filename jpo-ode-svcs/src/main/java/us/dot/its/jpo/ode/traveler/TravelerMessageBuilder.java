@@ -260,6 +260,7 @@ public class TravelerMessageBuilder {
 
          if ("path".equals(inputRegion.description)) {
             OffsetSystem offsetSystem = new OffsetSystem();
+            validateZoom(inputRegion.path.scale);
             offsetSystem.setScale(new Zoom(inputRegion.path.scale));
             if ("xy".equals(inputRegion.path.type)) {
                offsetSystem.offset.setXy(buildNodeXYList(inputRegion.path.nodes));
@@ -270,8 +271,11 @@ public class TravelerMessageBuilder {
             geoPath.setDescription(description);
          } else if ("geometry".equals(inputRegion.description)) {
             GeometricProjection geo = new GeometricProjection();
+            validateHeading(inputRegion.geometry.direction);
             geo.setDirection(getHeadingSlice(inputRegion.geometry.direction));
-            // geo.setExtent(new Extent(inputRegion.geometry.extent));
+            validateExtent(inputRegion.geometry.extent);
+            geo.setExtent(new Extent(inputRegion.geometry.extent));
+            validateLaneWidth(inputRegion.geometry.laneWidth);
             geo.setLaneWidth(new LaneWidth(inputRegion.geometry.laneWidth));
             geo.setCircle(buildGeoCircle(inputRegion.geometry));
             description.setGeometry(geo);
@@ -280,22 +284,27 @@ public class TravelerMessageBuilder {
          } else { // oldRegion
 
             ValidRegion validRegion = new ValidRegion();
+            validateHeading(inputRegion.oldRegion.direction);
             validRegion.setDirection(getHeadingSlice(inputRegion.oldRegion.direction));
+            validateExtent(inputRegion.oldRegion.extent);
             validRegion.setExtent(new Extent(inputRegion.oldRegion.extent));
             Area area = new Area();
             if ("shapePointSet".equals(inputRegion.oldRegion.area)) {
                ShapePointSet sps = new ShapePointSet();
                sps.setAnchor(getPosition3D(inputRegion.oldRegion.shapepoint.latitude,
                      inputRegion.oldRegion.shapepoint.longitude, inputRegion.oldRegion.shapepoint.elevation));
+               validateLaneWidth(inputRegion.oldRegion.shapepoint.laneWidth);
                sps.setLaneWidth(new LaneWidth(inputRegion.oldRegion.shapepoint.laneWidth));
+               validateDirectionality(inputRegion.oldRegion.shapepoint.directionality);
                sps.setDirectionality(new DirectionOfUse(inputRegion.oldRegion.shapepoint.directionality));
-               // nodeList NodeListXY,
+               // nodeList NodeListXY, ADD HERE
                area.setShapePointSet(sps);
                validRegion.setArea(area);
             } else if ("regionPointSet".equals(inputRegion.oldRegion.area)) {
                RegionPointSet rps = new RegionPointSet();
                rps.setAnchor(getPosition3D(inputRegion.oldRegion.regionPoint.latitude,
                      inputRegion.oldRegion.regionPoint.longitude, inputRegion.oldRegion.regionPoint.elevation));
+               validateZoom(inputRegion.oldRegion.regionPoint.scale);
                rps.setScale(new Zoom(inputRegion.oldRegion.regionPoint.scale));
                RegionList rl = buildRegionOffsets(inputRegion.oldRegion.regionPoint.regionList);
                rps.setNodeList(rl);
@@ -317,8 +326,11 @@ public class TravelerMessageBuilder {
       RegionList myList = new RegionList();
       for (int i = 0; i < list.length; i++) {
          RegionOffsets ele = new RegionOffsets();
+         validatex16Offset(list[i].xOffset);
          ele.setXOffset(new OffsetLL_B16(list[i].xOffset));
+         validatey16Offset(list[i].yOffset);
          ele.setYOffset(new OffsetLL_B16(list[i].yOffset));
+         validatez16Offset(list[i].zOffset);
          ele.setZOffset(new OffsetLL_B16(list[i].zOffset));
          myList.add(ele);
       }
@@ -328,7 +340,9 @@ public class TravelerMessageBuilder {
    private Circle buildGeoCircle(TravelerInputData.DataFrame.Region.Geometry geo) {
       Circle circle = new Circle();
       circle.setCenter(getPosition3D(geo.circle.latitude, geo.circle.longitude, geo.circle.elevation));
+      validateRadius(geo.circle.radius);
       circle.setRadius(new Radius_B12(geo.circle.radius));
+      validateUnits(geo.circle.units);
       circle.setUnits(new DistanceUnits(geo.circle.units));
       return circle;
    }
@@ -336,7 +350,9 @@ public class TravelerMessageBuilder {
    private Circle buildOldCircle(TravelerInputData.DataFrame.Region.OldRegion reg) {
       Circle circle = new Circle();
       circle.setCenter(getPosition3D(reg.circle.latitude, reg.circle.longitude, reg.circle.elevation));
+      validateRadius(reg.circle.radius);
       circle.setRadius(new Radius_B12(reg.circle.radius));
+      validateUnits(reg.circle.units);
       circle.setUnits(new DistanceUnits(reg.circle.units));
       return circle;
    }
@@ -690,6 +706,41 @@ public class TravelerMessageBuilder {
    public static void validateDirectionality(long dir) {
       if (dir < 0 || dir > 3)
          throw new IllegalArgumentException("Invalid enumeration");
+   }
+   
+   public static void validateZoom(int z) {
+      if (z < 0 || z > 15)
+         throw new IllegalArgumentException("Invalid zoom");
+   }
+   
+   public static void validateExtent(int ex) {
+      if (ex < 0 || ex > 15)
+         throw new IllegalArgumentException("Invalid extent enumeration");
+   }
+   
+   public static void validateRadius(int rad) {
+      if (rad < 0 || rad > 4095)
+         throw new IllegalArgumentException("Invalid radius");
+   }
+   
+   public static void validateUnits(int unit) {
+      if (unit < 0 || unit > 7)
+         throw new IllegalArgumentException("Invalid units enumeration");
+   }
+   
+   public static void validatex16Offset(int x) {
+      if (x < -32768 || x > 32767)
+         throw new IllegalArgumentException("Invalid x offset");
+   }
+   
+   public static void validatey16Offset(int y) {
+      if (y < -32768 || y > 32767)
+         throw new IllegalArgumentException("Invalid y offset");
+   }
+   
+   public static void validatez16Offset(int z) {
+      if (z < -32768 || z > 32767)
+         throw new IllegalArgumentException("Invalid z offset");
    }
 
 }
