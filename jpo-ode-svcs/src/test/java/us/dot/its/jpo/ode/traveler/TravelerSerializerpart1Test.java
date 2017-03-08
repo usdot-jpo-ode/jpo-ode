@@ -26,7 +26,7 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkLowerBoundMessageCount() {
-      String msgcnt = "-1";
+      int msgcnt = -1;
       try {
          TravelerMessageBuilder.validateMessageCount(msgcnt);
          fail("Expected IllegalArgumentException");
@@ -39,7 +39,7 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkLowerMessageCount() {
-      String msgcnt = "0";
+      int msgcnt = 0;
       try {
          TravelerMessageBuilder.validateMessageCount(msgcnt);
       }
@@ -51,7 +51,7 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkUpperBoundMessageCount() {
-      String msgcnt = "128";
+      int msgcnt = 128;
       try {
          TravelerMessageBuilder.validateMessageCount(msgcnt);
          fail("Expected IllegalArgumentException");
@@ -64,7 +64,7 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkUpperMessageCount() {
-      String msgcnt = "127";
+      int msgcnt = 127;
       try {
          TravelerMessageBuilder.validateMessageCount(msgcnt);
       }

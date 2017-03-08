@@ -35,6 +35,7 @@ public class TravelerMessageBuilder {
          throws ParseException, EncodeFailedException, EncodeNotSupportedException {
 
       travelerInfo = new TravelerInformation();
+      validateMessageCount(travInputData.MsgCount);
       travelerInfo.setMsgCnt(new MsgCount(travInputData.MsgCount));
       //ByteBuffer buf = ByteBuffer.allocate(9).put((byte) 0).putLong(travInputData.UniqueMSGID);
       //travelerInfo.setPacketID(new UniqueMSGID(buf.array()));
@@ -71,9 +72,6 @@ public class TravelerMessageBuilder {
          validateHeaderIndex(inputDataFrame.sspLocationRights);
          dataFrame.setSspLocationRights(new SSPindex(inputDataFrame.sspLocationRights));
           dataFrame.setRegions(buildRegions(inputDataFrame.regions));
-         /*Regions regions = new Regions();
-         regions.add(new GeographicalPath());
-         dataFrame.setRegions(regions);*/
           System.out.println("passed part 2");
 
          // -- Part III, Content
@@ -214,9 +212,11 @@ public class TravelerMessageBuilder {
    }
 
    private Position3D getPosition3D(long latitude, long longitude, long elevation) {
+      validateLat(latitude);
+      validateLong(longitude);
+      validateElevation(elevation);
       J2735Position3D position = new J2735Position3D(latitude, longitude, elevation);
       return OssPosition3D.position3D(position);
-
    }
 
    private HeadingSlice getHeadingSlice(String heading) {
@@ -235,49 +235,6 @@ public class TravelerMessageBuilder {
       }
    }
 
-   // private HeadingSlice getHeadingSlice(TravelerInputData.DataFrame
-   // dataFrame) {
-   // String[] heading = dataFrame.heading;
-   // if (heading == null || heading.length == 0) {
-   // return new HeadingSlice(new byte[] { 0x00,0x00 });
-   // } else {
-   // int[] nums = new int[heading.length];
-   // for (int i=0; i<heading.length; i++) {
-   // nums[i] = Integer.parseInt(heading[i], 16);
-   // }
-   // short result = 0;
-   // for (int i=0; i<nums.length; i++) {
-   // result|= nums[i];
-   // }
-   // return new HeadingSlice(ByteBuffer.allocate(2).putShort(result).array());
-   // }
-   // }
-   // private static Position3D
-   // getAnchorPointPosition(TravelerInputData.DataFrame anchorPoint) {
-   // assert(anchorPoint != null);
-   // final int elev = anchorPoint.getReferenceElevation();
-   // Position3D anchorPos = new Position3D(
-   // new
-   // Latitude(J2735Util.convertGeoCoordinateToInt(anchorPoint.referenceLat)),
-   // new
-   // Longitude(J2735Util.convertGeoCoordinateToInt(anchorPoint.referenceLon)));
-   // anchorPos.setElevation(new Elevation(elev));
-   // return anchorPos;
-   // }
-   //
-   // private static Position3D build3DPosition(TravelerInputData.DataFrame
-   // anchorPoint) {
-   // assert(anchorPoint != null);
-   // final int elev = anchorPoint.getReferenceElevation();
-   // Position3D anchorPos = new Position3D(
-   // new
-   // Latitude(J2735Util.convertGeoCoordinateToInt(anchorPoint.referenceLat)),
-   // new
-   // Longitude(J2735Util.convertGeoCoordinateToInt(anchorPoint.referenceLon)));
-   // anchorPos.setElevation(new Elevation(elev));
-   // return anchorPos;
-   // }
-   //
    private Regions buildRegions(TravelerInputData.DataFrame.Region[] inputRegions) {
       Regions regions = new Regions();
       for (TravelerInputData.DataFrame.Region inputRegion : inputRegions) {
@@ -293,10 +250,6 @@ public class TravelerMessageBuilder {
          geoPath.setClosedPath(Boolean.valueOf(inputRegion.closedPath));
          geoPath.setDirection(getHeadingSlice(inputRegion.direction));
 
-         /*
-          * if (inputRegion.extent != -1) {
-          * validRegion.setExtent(Extent.valueOf(inputRegion.extent)); }
-          */
          if ("path".equals(inputRegion.description)) {
             OffsetSystem offsetSystem = new OffsetSystem();
             offsetSystem.setScale(new Zoom(inputRegion.path.scale));
@@ -570,35 +523,6 @@ public class TravelerMessageBuilder {
         nodeList.setNodes(nodes);
         return nodeList;
     }
-   // private Area buildArea(TravelerInputData travInputData, Region
-   // inputRegion) {
-   // Area area = new Area();
-   // Position3D anchorPos = getAnchorPointPosition(travInputData.anchorPoint);
-   // if (inputRegion.regionType.equals("lane")) {
-   // ShapePointSet sps = new ShapePointSet();
-   // sps.setAnchor(anchorPos);
-   // sps.setLaneWidth(new
-   // LaneWidth(travInputData.anchorPoint.masterLaneWidth));
-   // sps.setDirectionality(DirectionOfUse.valueOf(travInputData.anchorPoint.direction));
-   // sps.setNodeList(buildNodeList(inputRegion.laneNodes,
-   // travInputData.anchorPoint.referenceElevation));
-   // area.setShapePointSet(sps);
-   // } else if (inputRegion.regionType.equals("region")) {
-   // RegionPointSet rps = new RegionPointSet();
-   // rps.setAnchor(anchorPos);
-   // RegionList regionList = new RegionList();
-   // GeoPoint refPoint = inputRegion.refPoint;
-   // for (int i=0; i < inputRegion.laneNodes.length; i++) {
-   // GeoPoint nextPoint = new GeoPoint(inputRegion.laneNodes[i].nodeLat,
-   // inputRegion.laneNodes[i].nodeLong);
-   // regionList.add(buildRegionOffset(refPoint, nextPoint));
-   // refPoint = nextPoint;
-   // }
-   // rps.setNodeList(regionList);
-   // area.setRegionPointSet(rps);
-   // }
-   // return area;
-   // }
 
    private long getStartTime(TravelerInputData.DataFrame dataFrame) throws ParseException {
       Date startDate = sdf.parse(dataFrame.startTime);
@@ -636,9 +560,8 @@ public class TravelerMessageBuilder {
    // return offsets;
    // }
 
-   public static void validateMessageCount(String msg) {
-      int myMsg = Integer.parseInt(msg);
-      if (myMsg > 127 || myMsg < 0)
+   public static void validateMessageCount(int msg) {
+      if (msg > 127 || msg < 0)
          throw new IllegalArgumentException("Invalid message count");
    }
 
