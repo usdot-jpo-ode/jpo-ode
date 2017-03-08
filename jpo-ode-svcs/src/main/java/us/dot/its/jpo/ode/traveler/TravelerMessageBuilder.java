@@ -39,6 +39,7 @@ public class TravelerMessageBuilder {
       travelerInfo.setMsgCnt(new MsgCount(travInputData.MsgCount));
       //ByteBuffer buf = ByteBuffer.allocate(9).put((byte) 0).putLong(travInputData.UniqueMSGID);
       //travelerInfo.setPacketID(new UniqueMSGID(buf.array()));
+      validateURL(travInputData.urlB);
       travelerInfo.setUrlB(new URL_Base(travInputData.urlB));
       travelerInfo.setDataFrames(buildDataFrames(travInputData));
 
@@ -48,6 +49,7 @@ public class TravelerMessageBuilder {
    private TravelerDataFrameList buildDataFrames(TravelerInputData travInputData) throws ParseException {
       TravelerDataFrameList dataFrames = new TravelerDataFrameList();
 
+      validateFrameCount(travInputData.dataframes.length);
       int len = travInputData.dataframes.length;
       for (int i = 0; i < len; i++) {
          TravelerInputData.DataFrame inputDataFrame = travInputData.dataframes[i];
@@ -56,13 +58,12 @@ public class TravelerMessageBuilder {
          // Part I, header
          validateHeaderIndex(inputDataFrame.sspTimRights);
          dataFrame.setSspTimRights(new SSPindex(inputDataFrame.sspTimRights));
-
          validateInfoType(inputDataFrame.frameType);
          dataFrame.setFrameType(TravelerInfoType.valueOf(inputDataFrame.frameType));
-
          dataFrame.setMsgId(getMessageId(inputDataFrame));
          dataFrame.setStartYear(new DYear(getStartYear(inputDataFrame)));
          dataFrame.setStartTime(new MinuteOfTheYear(getStartTime(inputDataFrame)));
+         validateMinutesDuration(inputDataFrame.durationTime);
          dataFrame.setDuratonTime(new MinutesDuration(inputDataFrame.durationTime));
          validateSign(inputDataFrame.priority);
          dataFrame.setPriority(new SignPrority(inputDataFrame.priority));
@@ -72,13 +73,6 @@ public class TravelerMessageBuilder {
          validateHeaderIndex(inputDataFrame.sspLocationRights);
          dataFrame.setSspLocationRights(new SSPindex(inputDataFrame.sspLocationRights));
           dataFrame.setRegions(buildRegions(inputDataFrame.regions));
-<<<<<<< HEAD
-=======
-
-         /*Regions regions = new Regions();
-         regions.add(new GeographicalPath());
-         dataFrame.setRegions(regions);*/
->>>>>>> 45a8bde64aeaf9d5c8337f0ef189b374ea0ade06
           System.out.println("passed part 2");
 
          // -- Part III, Content
@@ -189,7 +183,8 @@ public class TravelerMessageBuilder {
 
    private MsgId getMessageId(TravelerInputData.DataFrame dataFrame) {
       MsgId msgId = new MsgId();
-
+      validateMessageID(dataFrame.msgID);
+      
       if ("RoadSignID".equals(dataFrame.msgID)) {
          msgId.setChosenFlag(MsgId.roadSignID_chosen);
          RoadSignID roadSignID = new RoadSignID();
@@ -201,10 +196,7 @@ public class TravelerMessageBuilder {
          roadSignID.setViewAngle(getHeadingSlice(dataFrame.viewAngle));
          validateMUTDCode(dataFrame.mutcd);
          roadSignID.setMutcdCode(MUTCDCode.valueOf(dataFrame.mutcd));
-         // ByteBuffer buf =
-         // ByteBuffer.allocate(2).put((byte)0).putLong(dataFrame.crc);
-         // roadSignID.setCrc(new MsgCRC(new byte[] { 0xC0,0x2F })); //Causing
-         // error while encoding
+         // roadSignID.setCrc(new MsgCRC(new byte[] { 0xC0,0x2F })); //Causing error while encoding
          msgId.setRoadSignID(roadSignID);
       } else {
          msgId.setChosenFlag(MsgId.furtherInfoID_chosen);
@@ -541,7 +533,8 @@ public class TravelerMessageBuilder {
       Date startDate = sdf.parse(dataFrame.startTime);
       String startOfYearTime = "01/01/" + getStartYear(dataFrame) + " 12:00 AM";
       Date startOfYearDate = sdf.parse(startOfYearTime);
-      long minutes = ((startDate.getTime() - startOfYearDate.getTime()) / 60000);
+      long minutes = (startDate.getTime() - startOfYearDate.getTime()) / 60000;
+      validateStartTime(minutes);
       return minutes;
    }
 
@@ -549,33 +542,43 @@ public class TravelerMessageBuilder {
       Date startDate = sdf.parse(dataFrame.startTime);
       Calendar cal = Calendar.getInstance();
       cal.setTime(startDate);
+      validateStartYear(Calendar.YEAR);
       return cal.get(Calendar.YEAR);
    }
-
-   // private int getDurationTime(TravelerInputData.DataFrame dataFrame) throws
-   // ParseException {
-   // Date startDate = sdf.parse(dataFrame.startTime);
-   // Date endDate = sdf.parse(dataFrame.endTime);
-   //
-   // long diff = endDate.getTime() - startDate.getTime();
-   // int durationInMinutes = (int) diff / 1000 / 60;
-   // if (durationInMinutes > MAX_MINUTES_DURATION)
-   // durationInMinutes = MAX_MINUTES_DURATION;
-   // return durationInMinutes;
-   // }
-
-   // private RegionOffsets buildRegionOffset(GeoPoint refPoint, GeoPoint
-   // nextPoint) {
-   // short xOffset = nextPoint.getLonOffsetInMeters(refPoint);
-   // short yOffset = nextPoint.getLatOffsetInMeters(refPoint);
-   // RegionOffsets offsets = new RegionOffsets(new OffsetLL_B16(xOffset), new
-   // OffsetLL_B16(yOffset));
-   // return offsets;
-   // }
 
    public static void validateMessageCount(int msg) {
       if (msg > 127 || msg < 0)
          throw new IllegalArgumentException("Invalid message count");
+   }
+   
+   public static void validateURL(String url) {
+      if (url.length() <1 || url.length() > 45)
+         throw new IllegalArgumentException("Invalid URL provided");
+   }
+   
+   public static void validateFrameCount(int count) {
+      if (count < 1 || count > 8)
+         throw new IllegalArgumentException("Invalid number of dataFrames");
+   }
+   
+   public static void validateMessageID(String str) {
+      if (!("RoadSignID").equals(str) || !("furtherInfoID").equals(str))
+         throw new IllegalArgumentException("Invalid messageID");
+   }
+   
+   public static void validateStartYear(int year) {
+      if (year < 0 || year > 4095)
+         throw new IllegalArgumentException("Not a valid start year");
+   }
+   
+   public static void validateStartTime(long time) {
+      if (time < 0 || time > 527040)
+         throw new IllegalArgumentException("Invalid start Time");
+   }
+   
+   public static void validateMinutesDuration(long dur) {
+      if (dur < 0 || dur > 32000)
+         throw new IllegalArgumentException("Invalid Duration");
    }
 
    public static void validateHeaderIndex(short count) {
@@ -613,18 +616,6 @@ public class TravelerMessageBuilder {
    public static void validateMUTDCode(int mutc) {
       if (mutc > 6 || mutc < 0)
          throw new IllegalArgumentException("Invalid Enumeration");
-   }
-
-   public static void validateMinuteYear(String min) {
-      int myMin = Integer.parseInt(min);
-      if (myMin < 0 || myMin > 527040)
-         throw new IllegalArgumentException("Invalid Minute of the Year");
-   }
-
-   public static void validateMinutesDuration(String dur) {
-      int myDur = Integer.parseInt(dur);
-      if (myDur < 0 || myDur > 32000)
-         throw new IllegalArgumentException("Invalid Duration");
    }
 
    public static void validateSign(int sign) {

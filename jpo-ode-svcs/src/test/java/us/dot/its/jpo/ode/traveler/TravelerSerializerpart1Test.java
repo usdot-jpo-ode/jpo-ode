@@ -289,9 +289,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkLowerBoundMinute() {
-      String min = "-1";
+      long min = -1;
       try {
-         TravelerMessageBuilder.validateMinuteYear(min);
+         TravelerMessageBuilder.validateStartTime(min);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -302,9 +302,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkLowerMinute() {
-      String min = "0";
+      long min = 0;
       try {
-         TravelerMessageBuilder.validateMinuteYear(min);
+         TravelerMessageBuilder.validateStartTime(min);
       }
       catch (RuntimeException e)
       {
@@ -314,9 +314,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkUpperBoundMinute() {
-      String min = "527041";
+      long min = 527041;
       try {
-         TravelerMessageBuilder.validateMinuteYear(min);
+         TravelerMessageBuilder.validateStartTime(min);
          fail("Expected IllegalArgumentException");
       }
       catch (RuntimeException e)
@@ -327,9 +327,9 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkUpperMinute() {
-      String min = "527040";
+      long min = 527040;
       try {
-         TravelerMessageBuilder.validateMinuteYear(min);
+         TravelerMessageBuilder.validateStartTime(min);
       }
       catch (RuntimeException e)
       {
@@ -339,7 +339,7 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkLowerBoundMinuteDuration() {
-      String dur = "-1";
+      long dur = -1;
       try {
          TravelerMessageBuilder.validateMinutesDuration(dur);
          fail("Expected IllegalArgumentException");
@@ -352,7 +352,7 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkLowerMinuteDuration() {
-      String dur = "0";
+      long dur = 0;
       try {
          TravelerMessageBuilder.validateMinutesDuration(dur);
       }
@@ -364,7 +364,7 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkUpperBoundMinuteDuration() {
-      String dur = "32001";
+      long dur = 32001;
       try {
          TravelerMessageBuilder.validateMinutesDuration(dur);
          fail("Expected IllegalArgumentException");
@@ -377,7 +377,7 @@ public class TravelerSerializerpart1Test {
    
    @Test
    public void checkUpperMinuteDuration() {
-      String dur = "32000";
+      long dur = 32000;
       try {
          TravelerMessageBuilder.validateMinutesDuration(dur);
       }
