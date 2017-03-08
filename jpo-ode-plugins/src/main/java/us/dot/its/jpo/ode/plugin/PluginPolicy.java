@@ -33,8 +33,8 @@ public class PluginPolicy extends Policy {
 
 	/**
 	 * Returns {@link AllPermission} for any code sources that do not end in
-	 * â€œ/rogue.jarâ€� and an empty set of permissions for code sources that do end
-	 * in â€œ/rogue.jarâ€�, denying access to all local resources to the rogue
+	 * rogue.jar and an empty set of permissions for code sources that do end
+	 * in rogue.jar, denying access to all local resources to the rogue
 	 * plugin.
 	 * 
 	 * @param codeSource
