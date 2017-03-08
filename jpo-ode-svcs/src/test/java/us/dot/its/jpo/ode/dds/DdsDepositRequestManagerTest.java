@@ -9,13 +9,11 @@ import static org.junit.Assert.fail;
 
 import javax.websocket.Session;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 
 import mockit.Expectations;
-import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
@@ -29,14 +27,13 @@ import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
 
 public class DdsDepositRequestManagerTest {
 
-    @Injectable
-    DdsDepositRequestManager mockDdsDepositRequestManager;
+    DdsDepositRequestManager testDdsDepositRequestManager;
 
-    @Mocked
-    OdeProperties mockOdeProperties;
-
+    @Mocked OdeProperties mockOdeProperties;
+    @Mocked Logger mockLogger;
+    
     @Before
-    public void setupOdePropertiesExpectations() {
+    public void setup() {
         new Expectations() {
             {
                 mockOdeProperties.getDdsCasUrl();
@@ -53,6 +50,15 @@ public class DdsDepositRequestManagerTest {
                 minTimes = 0;
             }
         };
+        
+        try {
+            testDdsDepositRequestManager = new DdsDepositRequestManager(mockOdeProperties);
+            testDdsDepositRequestManager.setLogger(mockLogger);
+        } catch (DdsRequestManagerException e) {
+            e.printStackTrace();
+            fail("Unexpected exception: " + e);
+        }
+
     }
 
     /**
@@ -61,8 +67,8 @@ public class DdsDepositRequestManagerTest {
     @Test
     public void shouldConstruct() {
 
-        assertNotNull(mockDdsDepositRequestManager.getOdeProperties());
-        assertNotNull(mockDdsDepositRequestManager.getDdsClient());
+        assertNotNull(testDdsDepositRequestManager.getOdeProperties());
+        assertNotNull(testDdsDepositRequestManager.getDdsClient());
     }
 
     /**
@@ -72,13 +78,6 @@ public class DdsDepositRequestManagerTest {
     @Test
     public void shouldFailToBuildEncodeTypeNull(@Mocked OdeDepRequest mockOdeDepRequest) {
 
-        new Expectations(StringUtils.class) {
-            {
-                StringUtils.lowerCase(anyString);
-                result = null;
-            }
-        };
-
         new Expectations() {
             {
                 mockOdeDepRequest.getEncodeType();
@@ -86,15 +85,10 @@ public class DdsDepositRequestManagerTest {
             }
         };
 
-        DdsDepositRequestManager mockDdsDepositRequestManager = null;
         try {
-            mockDdsDepositRequestManager = new DdsDepositRequestManager(mockOdeProperties);
-        } catch (DdsRequestManagerException e) {
-            fail("Unexpected exception: " + e);
-        }
-
-        try {
-            DdsRequest testDdsRequest = mockDdsDepositRequestManager.buildDdsRequest(mockOdeDepRequest);
+            OdeDepRequest odeDepRequest = new OdeDepRequest();
+            odeDepRequest.setEncodeType(null);
+            testDdsDepositRequestManager.buildDdsRequest(odeDepRequest );
             fail("Expected DdsRequestManagerException");
         } catch (Exception e) {
             assertEquals(DdsRequestManagerException.class, e.getClass());
@@ -111,14 +105,7 @@ public class DdsDepositRequestManagerTest {
                 result = "base64";
             }
         };
-
-        DdsDepositRequestManager testDdsDepositRequestManager = null;
-        try {
-            testDdsDepositRequestManager = new DdsDepositRequestManager(mockOdeProperties);
-        } catch (DdsRequestManagerException e) {
-            fail("Unexpected exception: " + e);
-        }
-
+        
         DdsDepRequest actualDdsRequest = null;
         try {
             actualDdsRequest = (DdsDepRequest) testDdsDepositRequestManager.buildDdsRequest(mockOdeDepRequest);
@@ -141,21 +128,12 @@ public class DdsDepositRequestManagerTest {
             new Expectations() {
                 {
                     mockDdsClient.login(withAny(DdsStatusMessageDecoder.class), (StatusMessageHandler) any);
-                    result = mockWsClient;
 
                     mockWsClient.connect();
-                    result = mockSession;
                 }
             };
         } catch (Exception e) {
             fail("Unexpected exception mocking expectations: " + e);
-        }
-
-        DdsDepositRequestManager testDdsDepositRequestManager = null;
-        try {
-            testDdsDepositRequestManager = new DdsDepositRequestManager(mockOdeProperties);
-        } catch (DdsRequestManagerException e) {
-            fail("Unexpected exception in DdsDepositRequestManager constructor: " + e);
         }
 
         testDdsDepositRequestManager.setDdsClient(mockDdsClient);
@@ -184,7 +162,6 @@ public class DdsDepositRequestManagerTest {
             new Expectations() {
                 {
                     mockDdsClient.login(withAny(DdsStatusMessageDecoder.class), (StatusMessageHandler) any);
-                    result = mockWsClient;
 
                     mockWsClient.connect();
                     result = new DdsRequestManagerException("test exception");
@@ -194,20 +171,11 @@ public class DdsDepositRequestManagerTest {
             fail("Unexpected exception mocking expectations: " + e);
         }
 
-        DdsDepositRequestManager testDdsDepositRequestManager = null;
-        try {
-            testDdsDepositRequestManager = new DdsDepositRequestManager(mockOdeProperties);
-        } catch (DdsRequestManagerException e) {
-            fail("Unexpected exception in DdsDepositRequestManager constructor: " + e);
-        }
-
         testDdsDepositRequestManager.setDdsClient(mockDdsClient);
         testDdsDepositRequestManager.setWsClient(mockWsClient);
 
-        Session actualSession = null;
-
         try {
-            actualSession = testDdsDepositRequestManager.connect(mockWebSocketMessageHandler,
+            testDdsDepositRequestManager.connect(mockWebSocketMessageHandler,
                     mockWebSocketMessageDecoder.getClass());
             fail("Expected DdsRequestManagerException");
         } catch (DdsRequestManagerException e) {
@@ -227,30 +195,19 @@ public class DdsDepositRequestManagerTest {
             new Expectations() {
                 {
                     mockDdsClient.login(withAny(DdsStatusMessageDecoder.class), (StatusMessageHandler) any);
-                    result = mockWsClient;
 
-                    mockWsClient.connect();
-                    result = null;
+                    mockWsClient.connect(); result = null;
                 }
             };
         } catch (Exception e) {
             fail("Unexpected exception mocking expectations: " + e);
         }
 
-        DdsDepositRequestManager testDdsDepositRequestManager = null;
-        try {
-            testDdsDepositRequestManager = new DdsDepositRequestManager(mockOdeProperties);
-        } catch (DdsRequestManagerException e) {
-            fail("Unexpected exception in DdsDepositRequestManager constructor: " + e);
-        }
-
         testDdsDepositRequestManager.setDdsClient(mockDdsClient);
         testDdsDepositRequestManager.setWsClient(mockWsClient);
 
-        Session actualSession = null;
-
         try {
-            actualSession = testDdsDepositRequestManager.connect(mockWebSocketMessageHandler,
+            testDdsDepositRequestManager.connect(mockWebSocketMessageHandler,
                     mockWebSocketMessageDecoder.getClass());
         } catch (DdsRequestManagerException e) {
             fail("Unexpected exception attempting to connect: " + e);
@@ -282,13 +239,6 @@ public class DdsDepositRequestManagerTest {
             fail("Unexpected exception mocking expectations: " + e);
         }
 
-        DdsDepositRequestManager testDdsDepositRequestManager = null;
-        try {
-            testDdsDepositRequestManager = new DdsDepositRequestManager(mockOdeProperties);
-        } catch (DdsRequestManagerException e) {
-            fail("Unexpected exception in DdsDepositRequestManager constructor: " + e);
-        }
-
         // Verify the session is null or the next part will be skipped
         assertNull(testDdsDepositRequestManager.getSession());
 
@@ -318,7 +268,6 @@ public class DdsDepositRequestManagerTest {
             new Expectations() {
                 {
                     mockWsClient.connect();
-                    result = mockSession;
 
                     mockWsClient.send(anyString);
                 }
@@ -335,13 +284,6 @@ public class DdsDepositRequestManagerTest {
 
         } catch (Exception e) {
             fail("Unexpected exception mocking expectations: " + e);
-        }
-
-        DdsDepositRequestManager testDdsDepositRequestManager = null;
-        try {
-            testDdsDepositRequestManager = new DdsDepositRequestManager(mockOdeProperties);
-        } catch (DdsRequestManagerException e) {
-            fail("Unexpected exception in DdsDepositRequestManager constructor: " + e);
         }
 
         // Verify the session is null or the next part will be skipped
@@ -363,14 +305,13 @@ public class DdsDepositRequestManagerTest {
             @Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient,
             @Mocked WebSocketMessageHandler<DdsStatusMessage> mockWebSocketMessageHandler,
             @Mocked WebSocketMessageDecoder<?> mockWebSocketMessageDecoder, @Mocked Session mockSession,
-            @Mocked OdeRequest mockOdeRequest, @Mocked Logger mockLogger) {
+            @Mocked OdeRequest mockOdeRequest) {
 
         try {
 
             new Expectations() {
                 {
                     mockWsClient.connect();
-                    result = mockSession;
 
                     mockWsClient.close();
                     result = new WebSocketException("test exception on .close()");
@@ -384,14 +325,6 @@ public class DdsDepositRequestManagerTest {
             };
         } catch (Exception e) {
             fail("Unexpected exception mocking expectations: " + e);
-        }
-
-        DdsDepositRequestManager testDdsDepositRequestManager = null;
-        try {
-            testDdsDepositRequestManager = new DdsDepositRequestManager(mockOdeProperties);
-            testDdsDepositRequestManager.setLogger(mockLogger);
-        } catch (DdsRequestManagerException e) {
-            fail("Unexpected exception in DdsDepositRequestManager constructor: " + e);
         }
 
         // Verify the session is null or the next part will be skipped
@@ -409,8 +342,7 @@ public class DdsDepositRequestManagerTest {
     }
 
     @Test
-    public void closeShouldCloseSuccessfully(@Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient,
-            @Mocked Logger mockLogger) {
+    public void closeShouldCloseSuccessfully(@Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient) {
 
         try {
             new Expectations() {
@@ -428,16 +360,7 @@ public class DdsDepositRequestManagerTest {
             }
         };
 
-        DdsDepositRequestManager testDdsDepositRequestManager = null;
-        try {
-            testDdsDepositRequestManager = new DdsDepositRequestManager(mockOdeProperties);
-
-        } catch (DdsRequestManagerException e) {
-            fail("Unexpected exception in DdsDepositRequestManager constructor: " + e);
-        }
-
         testDdsDepositRequestManager.setWsClient(mockWsClient);
-        testDdsDepositRequestManager.setLogger(mockLogger);
 
         try {
             testDdsDepositRequestManager.close();
@@ -452,8 +375,7 @@ public class DdsDepositRequestManagerTest {
     }
 
     @Test
-    public void closeShouldThrowException(@Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient,
-            @Mocked Logger mockLogger) {
+    public void closeShouldThrowException(@Mocked WebSocketEndpoint<DdsStatusMessage> mockWsClient) {
 
         try {
             new Expectations() {
@@ -472,16 +394,7 @@ public class DdsDepositRequestManagerTest {
             }
         };
 
-        DdsDepositRequestManager testDdsDepositRequestManager = null;
-        try {
-            testDdsDepositRequestManager = new DdsDepositRequestManager(mockOdeProperties);
-
-        } catch (DdsRequestManagerException e) {
-            fail("Unexpected exception in DdsDepositRequestManager constructor: " + e);
-        }
-
         testDdsDepositRequestManager.setWsClient(mockWsClient);
-        testDdsDepositRequestManager.setLogger(mockLogger);
 
         try {
             testDdsDepositRequestManager.close();

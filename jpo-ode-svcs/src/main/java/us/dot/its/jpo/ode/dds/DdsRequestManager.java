@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsRequest.SystemName;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
-import us.dot.its.jpo.ode.model.OdeDepRequest;
 import us.dot.its.jpo.ode.model.OdeRequest;
 import us.dot.its.jpo.ode.model.OdeRequest.DataSource;
 import us.dot.its.jpo.ode.model.OdeRequestType;
@@ -69,7 +68,7 @@ public abstract class DdsRequestManager<T> {
 
             if (session != null) {
                 // Send the new request
-                DdsRequest ddsRequest = buildDdsRequest((OdeDepRequest)odeRequest);
+                DdsRequest ddsRequest = buildDdsRequest(odeRequest);
                 if (ddsRequest != null) {
                     String sDdsRequest = ddsRequest.toString();
 
@@ -94,7 +93,7 @@ public abstract class DdsRequestManager<T> {
         }
     }
 
-    protected abstract DdsRequest buildDdsRequest(OdeDepRequest odeDepRequest) throws DdsRequestManagerException;
+    protected abstract DdsRequest buildDdsRequest(OdeRequest odeRequest) throws DdsRequestManagerException;
 
     public static SystemName systemName(OdeRequest odeRequest) {
         SystemName sysName;

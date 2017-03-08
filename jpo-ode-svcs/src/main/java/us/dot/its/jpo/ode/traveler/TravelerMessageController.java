@@ -104,7 +104,7 @@ public class TravelerMessageController {
         ResponseEvent response = TimManagerService.createAndSend(testParams, testProps);
 
         // Deposit TIM to SDW
-        J2735GeoRegion serviceRegion = new J2735GeoRegion(odeProperties.getServiceRegion());
+        J2735GeoRegion serviceRegion = new J2735GeoRegion("44.998459,-111.040817,41.104674,-104.111312");
         AsdMessage message = new AsdMessage(rsuSRMDeliveryStart, rsuSRMDeliveryStop, rsuSRMPayload, serviceRegion);
         depositor.deposit(message);
 
