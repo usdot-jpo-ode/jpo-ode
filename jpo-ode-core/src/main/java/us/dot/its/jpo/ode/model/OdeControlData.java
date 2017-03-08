@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.model;
 
+import us.dot.its.jpo.ode.dds.DdsStatusMessage;
+
 public class OdeControlData extends OdeMsgPayload {
 
    private static final long serialVersionUID = 1L;
@@ -8,23 +10,23 @@ public class OdeControlData extends OdeMsgPayload {
    private Long receivedRecordCount; 
    private Long sentRecordCount; 
    private Long depositCount; 
-   private ControlTag tag;
+   private StatusTag tag;
    private String message;
    
    public OdeControlData() {
       super();
    }
 
-   public OdeControlData(ControlTag tag) {
+   public OdeControlData(StatusTag tag) {
       super();
       setTag(tag);
    }
 
-   public OdeControlData(ControlMessage controlMessage) {
+   public OdeControlData(DdsStatusMessage controlMessage) {
       setTag(controlMessage.getTag());
-      if (controlMessage.getTag() == ControlTag.STOP)
+      if (controlMessage.getTag() == StatusTag.STOP)
          setDataSourceBundleCount(controlMessage.getRecordCount());
-      else if (controlMessage.getTag() == ControlTag.DEPOSITED)
+      else if (controlMessage.getTag() == StatusTag.DEPOSITED)
          setDepositCount(controlMessage.getRecordCount());
    }
 
@@ -63,11 +65,11 @@ public class OdeControlData extends OdeMsgPayload {
       this.depositCount = depositCount;
    }
 
-   public ControlTag getTag() {
+   public StatusTag getTag() {
       return tag;
    }
 
-   public void setTag(ControlTag tag) {
+   public void setTag(StatusTag tag) {
       this.tag = tag;
    }
 

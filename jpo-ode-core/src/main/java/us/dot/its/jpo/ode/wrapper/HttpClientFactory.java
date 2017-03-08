@@ -16,13 +16,6 @@
  *******************************************************************************/
 package us.dot.its.jpo.ode.wrapper;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.net.ssl.SSLContext;
-import javax.ws.rs.core.Response;
-
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -36,6 +29,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+
+import javax.net.ssl.SSLContext;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class provides an abstraction layer for making HTTP and HTTPS
@@ -150,17 +149,16 @@ public class HttpClientFactory {
             Map<String, String> params, RequestBuilder builder)
             throws IOException, ClientProtocolException {
          if (params != null) {
-            for (String param : params.keySet()) {
-               builder.addParameter(new BasicNameValuePair(param, params
-                     .get(param)));
+            for (Map.Entry<String,String> param : params.entrySet()) {
+               builder.addParameter(new BasicNameValuePair(param.getKey(), param.getValue()));
             }
          }
 
          HttpUriRequest request = builder.build();
 
          if (headers != null) {
-            for (String header : headers.keySet()) {
-               request.setHeader(header, headers.get(header));
+            for (Map.Entry<String, String> header : headers.entrySet()){
+               request.setHeader(header.getKey(), header.getValue());
             }
          }
 

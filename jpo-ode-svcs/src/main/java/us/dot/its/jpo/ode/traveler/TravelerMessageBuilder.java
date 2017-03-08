@@ -640,34 +640,30 @@ public class TravelerMessageBuilder {
    }
 
    public static void validateITISCodes(String code) {
-      if (code.matches("[a-zA-Z]")) // code is a string
+      int cd;
+      try {
+         cd = Integer.parseInt(code);
+         if (cd < 0 || cd > 65535)
+            throw new IllegalArgumentException("Invalid ITIS code");
+      }
+      catch (NumberFormatException e)
       {
          if (code.length() < 1 || code.length() > 500)
             throw new IllegalArgumentException("Invalid test Phrase");
-      } else {
-         try {
-            int myCode = Integer.parseInt(code);
-            if (myCode < 0 || myCode > 65535)
-               throw new IllegalArgumentException("Invalid ITIS code");
-         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid");
-         }
       }
    }
 
    public static void validateContentCodes(String code) {
-      if (code.matches("[a-zA-Z]")) // code is a string
+      int cd;
+      try {
+         cd = Integer.parseInt(code);
+         if (cd < 0 || cd > 65535)
+            throw new IllegalArgumentException("Invalid ITIS code");
+      }
+      catch (NumberFormatException e)
       {
          if (code.length() < 1 || code.length() > 16)
             throw new IllegalArgumentException("Invalid test Phrase");
-      } else {
-         try {
-            int myCode = Integer.parseInt(code);
-            if (myCode < 0 || myCode > 65535)
-               throw new IllegalArgumentException("Invalid ITIS code");
-         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid");
-         }
       }
    }
 
