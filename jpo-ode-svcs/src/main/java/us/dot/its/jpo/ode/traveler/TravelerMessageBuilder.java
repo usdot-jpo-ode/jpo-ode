@@ -68,6 +68,7 @@ public class TravelerMessageBuilder {
          dataFrame.setDuratonTime(new MinutesDuration(inputDataFrame.durationTime));
          validateSign(inputDataFrame.priority);
          dataFrame.setPriority(new SignPrority(inputDataFrame.priority));
+         System.out.println("Passed Part1");
 
          // -- Part II, Applicable Regions of Use
          validateHeaderIndex(inputDataFrame.sspLocationRights);
@@ -88,6 +89,7 @@ public class TravelerMessageBuilder {
          validateURLShort(inputDataFrame.url);
          dataFrame.setUrl(new URL_Short(inputDataFrame.url));
          dataFrames.add(dataFrame);
+         System.out.println("Passed part 3");
       }
       return dataFrames;
    }
@@ -197,7 +199,7 @@ public class TravelerMessageBuilder {
          roadSignID.setPosition(getPosition3D(dataFrame.latitude, dataFrame.longitude, dataFrame.elevation));
          validateHeading(dataFrame.viewAngle);
          roadSignID.setViewAngle(getHeadingSlice(dataFrame.viewAngle));
-         validateMUTDCode(dataFrame.mutcd);
+         validateMUTCDCode(dataFrame.mutcd);
          roadSignID.setMutcdCode(MUTCDCode.valueOf(dataFrame.mutcd));
          // roadSignID.setCrc(new MsgCRC(new byte[] { 0xC0,0x2F })); //Causing
          // error while encoding
@@ -253,10 +255,14 @@ public class TravelerMessageBuilder {
          validateLaneWidth(inputRegion.laneWidth);
          geoPath.setLaneWidth(new LaneWidth(inputRegion.laneWidth));
          validateDirectionality(inputRegion.directionality);
+         System.out.println("Passed halfway2");
          geoPath.setDirectionality(new DirectionOfUse(inputRegion.directionality));
          geoPath.setClosedPath(Boolean.valueOf(inputRegion.closedPath));
-         validateHeading(inputRegion.direction);
+         System.out.println("before direction");
+         //validateHeading(inputRegion.direction);
+         System.out.println("Passed halfway3");
          geoPath.setDirection(getHeadingSlice(inputRegion.direction));
+         System.out.println("Starting description");
 
          if ("path".equals(inputRegion.description)) {
             OffsetSystem offsetSystem = new OffsetSystem();
@@ -270,10 +276,12 @@ public class TravelerMessageBuilder {
             description.setPath(offsetSystem);
             geoPath.setDescription(description);
          } else if ("geometry".equals(inputRegion.description)) {
+            System.out.println("Inside geometry");
             GeometricProjection geo = new GeometricProjection();
-            validateHeading(inputRegion.geometry.direction);
+            //validateHeading(inputRegion.geometry.direction);
             geo.setDirection(getHeadingSlice(inputRegion.geometry.direction));
-            validateExtent(inputRegion.geometry.extent);
+            //validateExtent(inputRegion.geometry.extent);
+            System.out.println("After extent");
             geo.setExtent(new Extent(inputRegion.geometry.extent));
             validateLaneWidth(inputRegion.geometry.laneWidth);
             geo.setLaneWidth(new LaneWidth(inputRegion.geometry.laneWidth));
@@ -579,11 +587,15 @@ public class TravelerMessageBuilder {
    }
 
    public static void validateURL(String url) {
+      if (url.isEmpty())
+         throw new IllegalArgumentException("Invalid empty url");
       if (url.length() < 1 || url.length() > 45)
          throw new IllegalArgumentException("Invalid URL provided");
    }
 
    public static void validateURLShort(String url) {
+      if (url.isEmpty())
+         throw new IllegalArgumentException("Invalid empty url");
       if (url.length() < 1 || url.length() > 15)
          throw new IllegalArgumentException("Invalid URL provided");
    }
@@ -594,7 +606,9 @@ public class TravelerMessageBuilder {
    }
 
    public static void validateMessageID(String str) {
-      if (!("RoadSignID").equals(str) || !("furtherInfoID").equals(str))
+      if (str.isEmpty())
+         throw new IllegalArgumentException("Invalid empty string");
+      if (!("RoadSignID").equals(str) && !("furtherInfoID").equals(str))
          throw new IllegalArgumentException("Invalid messageID");
    }
 
@@ -634,19 +648,21 @@ public class TravelerMessageBuilder {
    }
 
    public static void validateElevation(long elev) {
-      if (elev > 61439 || elev < -4096)
+      if (elev < -4096 || elev > 61439)
          throw new IllegalArgumentException("Invalid Elevation");
    }
 
    public static void validateHeading(String head) {
+      if (head.isEmpty())
+         throw new IllegalArgumentException("Invalid empty heading string");
       byte[] heads = head.getBytes();
       if (heads.length != 16) {
          throw new IllegalArgumentException("Invalid BitString");
       }
    }
 
-   public static void validateMUTDCode(int mutc) {
-      if (mutc > 6 || mutc < 0)
+   public static void validateMUTCDCode(int mutc) {
+      if (mutc < 0 || mutc > 6)
          throw new IllegalArgumentException("Invalid Enumeration");
    }
 
@@ -664,6 +680,8 @@ public class TravelerMessageBuilder {
       }
       catch (NumberFormatException e)
       {
+         if (code.isEmpty())
+            throw new IllegalArgumentException("Invalid empty string");
          if (code.length() < 1 || code.length() > 500)
             throw new IllegalArgumentException("Invalid test Phrase");
       }
@@ -678,6 +696,8 @@ public class TravelerMessageBuilder {
       }
       catch (NumberFormatException e)
       {
+         if (code.isEmpty())
+            throw new IllegalArgumentException("Invalid empty string");
          if (code.length() < 1 || code.length() > 16)
             throw new IllegalArgumentException("Invalid test Phrase");
       }
