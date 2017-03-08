@@ -10,10 +10,10 @@ import us.dot.its.jpo.ode.j2735.dsrc.GeographicalPath.Description;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Content;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.MsgId;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Regions;
-import us.dot.its.jpo.ode.j2735.dsrc.ValidRegion.Area;
 import us.dot.its.jpo.ode.j2735.itis.ITIScodesAndText;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssPosition3D;
+import us.dot.its.jpo.ode.j2735.dsrc.ValidRegion.Area;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
@@ -71,6 +71,7 @@ public class TravelerMessageBuilder {
          validateHeaderIndex(inputDataFrame.sspLocationRights);
          dataFrame.setSspLocationRights(new SSPindex(inputDataFrame.sspLocationRights));
           dataFrame.setRegions(buildRegions(inputDataFrame.regions));
+
          /*Regions regions = new Regions();
          regions.add(new GeographicalPath());
          dataFrame.setRegions(regions);*/
@@ -286,8 +287,7 @@ public class TravelerMessageBuilder {
          geoPath.setName(new DescriptiveName(inputRegion.name));
          geoPath.setId(new RoadSegmentReferenceID(new RoadRegulatorID(inputRegion.regulatorID),
                new RoadSegmentID(inputRegion.segmentID)));
-         geoPath
-               .setAnchor(getPosition3D(inputRegion.anchor_lat, inputRegion.anchor_long, inputRegion.anchor_elevation));
+         geoPath.setAnchor(getPosition3D(inputRegion.anchor_lat, inputRegion.anchor_long, inputRegion.anchor_elevation));
          geoPath.setLaneWidth(new LaneWidth(inputRegion.laneWidth));
          geoPath.setDirectionality(new DirectionOfUse(inputRegion.directionality));
          geoPath.setClosedPath(Boolean.valueOf(inputRegion.closedPath));
@@ -300,18 +300,25 @@ public class TravelerMessageBuilder {
          if ("path".equals(inputRegion.description)) {
             OffsetSystem offsetSystem = new OffsetSystem();
             offsetSystem.setScale(new Zoom(inputRegion.path.scale));
-            buildNodeXYList(inputRegion.path.nodes);
+            if ("xy".equals(inputRegion.path.type)){
+                offsetSystem.offset.setXy(buildNodeXYList(inputRegion.path.nodes));
+            } else if ("ll".equals(inputRegion.path.type)){
+                offsetSystem.offset.setLl(buildNodeLLList(inputRegion.path.nodes));
+            }
             description.setPath(offsetSystem);
             geoPath.setDescription(description);
          } else if ("geometry".equals(inputRegion.description)) {
             GeometricProjection geo = new GeometricProjection();
             geo.setDirection(getHeadingSlice(inputRegion.geometry.direction));
-            geo.setExtent(new Extent(inputRegion.geometry.extent));
+//            geo.setExtent(new Extent(inputRegion.geometry.extent));
             geo.setLaneWidth(new LaneWidth(inputRegion.geometry.laneWidth));
             geo.setCircle(buildGeoCircle(inputRegion.geometry));
             description.setGeometry(geo);
             geoPath.setDescription(description);
+
          } else { // oldRegion
+
+
             ValidRegion validRegion = new ValidRegion();
             validRegion.setDirection(getHeadingSlice(inputRegion.oldRegion.direction));
             validRegion.setExtent(new Extent(inputRegion.oldRegion.extent));
