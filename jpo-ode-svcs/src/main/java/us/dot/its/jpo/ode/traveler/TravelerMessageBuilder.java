@@ -644,8 +644,7 @@ public class TravelerMessageBuilder {
    }
 
    public static void validateMessageID(String str) {
-      if (str.isEmpty())
-         throw new IllegalArgumentException("Invalid empty string");
+      validateString(str);
       if (!("RoadSignID").equals(str) && !("furtherInfoID").equals(str))
          throw new IllegalArgumentException("Invalid messageID");
    }
@@ -691,8 +690,7 @@ public class TravelerMessageBuilder {
    }
 
    public static void validateHeading(String head) {
-      if (head.isEmpty())
-         throw new IllegalArgumentException("Invalid empty heading string");
+      validateString(head);
       byte[] heads = head.getBytes();
       if (heads.length != 16) {
          throw new IllegalArgumentException("Invalid BitString");
@@ -898,7 +896,7 @@ public class TravelerMessageBuilder {
       if (myString.contains(cs)) {
          return;
       } else {
-         throw new IllegalArgumentException("Invalid NodeAttribute Enumeration");
+         throw new IllegalArgumentException("Invalid SegmentAttribute Enumeration");
       }
    }
    
@@ -908,7 +906,7 @@ public class TravelerMessageBuilder {
       if (myString.contains(cs)) {
          return;
       } else {
-         throw new IllegalArgumentException("Invalid NodeAttribute Enumeration");
+         throw new IllegalArgumentException("Invalid SpeedLimitAttribute Enumeration");
       }
    }
    
