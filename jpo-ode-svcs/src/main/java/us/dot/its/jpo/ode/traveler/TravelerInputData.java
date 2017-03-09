@@ -60,6 +60,7 @@ public class TravelerInputData extends OdeObject {
         public int x;
         public int y;
         public Attributes attributes;
+
     }
     public static class LocalNode {
        public long type;
@@ -199,6 +200,7 @@ public class TravelerInputData extends OdeObject {
               public int scale;
               public String type;
               public NodeXY[] nodes;
+              public ComputedLane computedLane;
 
           }
           @Override

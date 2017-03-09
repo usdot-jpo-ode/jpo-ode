@@ -263,7 +263,11 @@ public class TravelerMessageBuilder {
             validateZoom(inputRegion.path.scale);
             offsetSystem.setScale(new Zoom(inputRegion.path.scale));
             if ("xy".equals(inputRegion.path.type)) {
-               offsetSystem.offset.setXy(buildNodeXYList(inputRegion.path.nodes));
+               if (inputRegion.path.nodes.length > 0){
+                  offsetSystem.offset.setXy(buildNodeXYList(inputRegion.path.nodes));
+               } else {
+                  offsetSystem.offset.setXy(buildComputedLane(inputRegion.path.computedLane));
+               }
             } else if ("ll".equals(inputRegion.path.type)) {
                offsetSystem.offset.setLl(buildNodeLLList(inputRegion.path.nodes));
             }
@@ -297,7 +301,12 @@ public class TravelerMessageBuilder {
                sps.setLaneWidth(new LaneWidth(inputRegion.oldRegion.shapepoint.laneWidth));
                validateDirectionality(inputRegion.oldRegion.shapepoint.directionality);
                sps.setDirectionality(new DirectionOfUse(inputRegion.oldRegion.shapepoint.directionality));
-               // nodeList NodeListXY, ADD HERE
+               // nodeList NodeListXY, ADD HEREif ("xy".equals(inputRegion.path.type)) {
+               if (inputRegion.oldRegion.shapepoint.nodexy.length > 0){
+                  sps.setNodeList(buildNodeXYList(inputRegion.oldRegion.shapepoint.nodexy));
+               } else {
+                  sps.setNodeList(buildComputedLane(inputRegion.oldRegion.shapepoint.computedLane));
+               }
                area.setShapePointSet(sps);
                validRegion.setArea(area);
             } else if ("regionPointSet".equals(inputRegion.oldRegion.area)) {
@@ -453,7 +462,35 @@ public class TravelerMessageBuilder {
 
          nodes.add(node);
       }
+
+
       nodeList.setNodes(nodes);
+      return nodeList;
+   }
+
+   private NodeListXY buildComputedLane(TravelerInputData.ComputedLane inputLane){
+      NodeListXY nodeList = new NodeListXY();
+
+      ComputedLane computedLane = new ComputedLane();
+
+      computedLane.setReferenceLaneId(new LaneID(inputLane.laneID));
+      if (inputLane.offsetLargeX > 0) {
+         computedLane.offsetXaxis.setLarge(inputLane.offsetLargeX);
+      } else {
+         computedLane.offsetXaxis.setSmall(inputLane.offsetSmallX);
+      }
+
+      if (inputLane.offsetLargeX > 0){
+         computedLane.offsetYaxis.setLarge(inputLane.offsetLargeY);
+
+      } else {
+         computedLane.offsetYaxis.setSmall(inputLane.offsetSmallY);
+      }
+      computedLane.setRotateXY(new Angle(inputLane.angle));
+      computedLane.setScaleXaxis(new Scale_B12(inputLane.xScale));
+      computedLane.setScaleYaxis(new Scale_B12(inputLane.yScale));
+
+      nodeList.setComputed(computedLane);
       return nodeList;
    }
 
