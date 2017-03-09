@@ -1389,7 +1389,7 @@ public class TravelerSerializerTest {
 
    @Test
    public void checkLowerBoundB10Offset() {
-      int x = 512;
+      int x = 511;
       try {
          TravelerMessageBuilder.validateB10Offset(x);
       } catch (RuntimeException e) {
@@ -1629,11 +1629,11 @@ public class TravelerSerializerTest {
       }
    }
 
-   //
    @Test
-   public void checkLower() {
+   public void checkLowerLL12Offset() {
+      int x = -2049;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL12Offset(x);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1641,18 +1641,20 @@ public class TravelerSerializerTest {
    }
 
    @Test
-   public void checkLowerBound() {
+   public void checkLowerBoundLL12Offset() {
+      int x = -2048;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL12Offset(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
    }
 
    @Test
-   public void checkUpper() {
+   public void checkUpperLL12Offset() {
+      int x = 2048;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL12Offset(x);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1660,38 +1662,20 @@ public class TravelerSerializerTest {
    }
 
    @Test
-   public void checkUpperBound() {
+   public void checkUpperBoundLL12Offset() {
+      int x = 2047;
       try {
-         TravelerMessageBuilder.validate();
-      } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
-      }
-   }
-
-   //
-   @Test
-   public void checkLower() {
-      try {
-         TravelerMessageBuilder.validate();
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBound() {
-      try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL12Offset(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
    }
 
    @Test
-   public void checkUpper() {
+   public void checkLowerLL14Offset() {
+      int x = -8193;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL14Offset(x);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1699,38 +1683,20 @@ public class TravelerSerializerTest {
    }
 
    @Test
-   public void checkUpperBound() {
+   public void checkLowerBoundLL14Offset() {
+      int x = -8192;
       try {
-         TravelerMessageBuilder.validate();
-      } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
-      }
-   }
-
-   //
-   @Test
-   public void checkLower() {
-      try {
-         TravelerMessageBuilder.validate();
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBound() {
-      try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL14Offset(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
    }
 
    @Test
-   public void checkUpper() {
+   public void checkUpperLL14Offset() {
+      int x = 8192;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL14Offset(x);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1738,38 +1704,20 @@ public class TravelerSerializerTest {
    }
 
    @Test
-   public void checkUpperBound() {
+   public void checkUpperBoundLL14Offset() {
+      int x = 8191;
       try {
-         TravelerMessageBuilder.validate();
-      } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
-      }
-   }
-
-   //
-   @Test
-   public void checkLower() {
-      try {
-         TravelerMessageBuilder.validate();
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBound() {
-      try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL14Offset(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
    }
 
    @Test
-   public void checkUpper() {
+   public void checkLowerLL16Offset() {
+      int x = -32769;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL16Offset(x);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1777,38 +1725,20 @@ public class TravelerSerializerTest {
    }
 
    @Test
-   public void checkUpperBound() {
+   public void checkLowerBoundLL16Offset() {
+      int x = -32768;
       try {
-         TravelerMessageBuilder.validate();
-      } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
-      }
-   }
-
-   //
-   @Test
-   public void checkLower() {
-      try {
-         TravelerMessageBuilder.validate();
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBound() {
-      try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL16Offset(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
    }
 
    @Test
-   public void checkUpper() {
+   public void checkUpperLL16Offset() {
+      int x = 32768;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL16Offset(x);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1816,38 +1746,20 @@ public class TravelerSerializerTest {
    }
 
    @Test
-   public void checkUpperBound() {
+   public void checkUpperBoundLL16Offset() {
+      int x = 32767;
       try {
-         TravelerMessageBuilder.validate();
-      } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
-      }
-   }
-
-   //
-   @Test
-   public void checkLower() {
-      try {
-         TravelerMessageBuilder.validate();
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBound() {
-      try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL16Offset(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
    }
 
    @Test
-   public void checkUpper() {
+   public void checkLowerLL18Offset() {
+      int x = -131073;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL18Offset(x);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1855,38 +1767,20 @@ public class TravelerSerializerTest {
    }
 
    @Test
-   public void checkUpperBound() {
+   public void checkLowerBoundLL18Offset() {
+      int x = -131072;
       try {
-         TravelerMessageBuilder.validate();
-      } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
-      }
-   }
-
-   //
-   @Test
-   public void checkLower() {
-      try {
-         TravelerMessageBuilder.validate();
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBound() {
-      try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL18Offset(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
    }
 
    @Test
-   public void checkUpper() {
+   public void checkUpperLL18Offset() {
+      int x = 131072;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL18Offset(x);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1894,38 +1788,20 @@ public class TravelerSerializerTest {
    }
 
    @Test
-   public void checkUpperBound() {
+   public void checkUpperBoundLL18Offset() {
+      int x = 131071;
       try {
-         TravelerMessageBuilder.validate();
-      } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
-      }
-   }
-
-   //
-   @Test
-   public void checkLower() {
-      try {
-         TravelerMessageBuilder.validate();
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBound() {
-      try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL18Offset(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
    }
 
    @Test
-   public void checkUpper() {
+   public void checkLowerLL22Offset() {
+      int x = -2097153;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL22Offset(x);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1933,38 +1809,20 @@ public class TravelerSerializerTest {
    }
 
    @Test
-   public void checkUpperBound() {
+   public void checkLowerBoundLL22Offset() {
+      int x = -2097152;
       try {
-         TravelerMessageBuilder.validate();
-      } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
-      }
-   }
-
-   //
-   @Test
-   public void checkLower() {
-      try {
-         TravelerMessageBuilder.validate();
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBound() {
-      try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL22Offset(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
    }
 
    @Test
-   public void checkUpper() {
+   public void checkUpperLL22Offset() {
+      int x = 2097152;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL22Offset(x);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1972,38 +1830,20 @@ public class TravelerSerializerTest {
    }
 
    @Test
-   public void checkUpperBound() {
+   public void checkUpperBoundLL22Offset() {
+      int x = 2097151;
       try {
-         TravelerMessageBuilder.validate();
-      } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
-      }
-   }
-
-   //
-   @Test
-   public void checkLower() {
-      try {
-         TravelerMessageBuilder.validate();
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBound() {
-      try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL22Offset(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
    }
 
    @Test
-   public void checkUpper() {
+   public void checkLowerLL24Offset() {
+      int x = -8388609;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL24Offset(x);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -2011,38 +1851,20 @@ public class TravelerSerializerTest {
    }
 
    @Test
-   public void checkUpperBound() {
+   public void checkLowerBoundLL24Offset() {
+      int x = -8388608;
       try {
-         TravelerMessageBuilder.validate();
-      } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
-      }
-   }
-
-   //
-   @Test
-   public void checkLower() {
-      try {
-         TravelerMessageBuilder.validate();
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBound() {
-      try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL24Offset(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
    }
 
    @Test
-   public void checkUpper() {
+   public void checkUpperLL24Offset() {
+      int x = 8388608;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL24Offset(x);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -2050,38 +1872,20 @@ public class TravelerSerializerTest {
    }
 
    @Test
-   public void checkUpperBound() {
+   public void checkUpperBoundLL24Offset() {
+      int x = 8388607;
       try {
-         TravelerMessageBuilder.validate();
-      } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
-      }
-   }
-
-   //
-   @Test
-   public void checkLower() {
-      try {
-         TravelerMessageBuilder.validate();
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBound() {
-      try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLL24Offset(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
    }
 
    @Test
-   public void checkUpper() {
+   public void checkLowerLaneID() {
+      int x = -1;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLaneID(x);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -2089,38 +1893,20 @@ public class TravelerSerializerTest {
    }
 
    @Test
-   public void checkUpperBound() {
+   public void checkLowerBoundLaneID() {
+      int x = 0;
       try {
-         TravelerMessageBuilder.validate();
-      } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
-      }
-   }
-
-   //
-   @Test
-   public void checkLower() {
-      try {
-         TravelerMessageBuilder.validate();
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBound() {
-      try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLaneID(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
    }
 
    @Test
-   public void checkUpper() {
+   public void checkUpperLaneID() {
+      int x = 256;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLaneID(x);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -2128,38 +1914,20 @@ public class TravelerSerializerTest {
    }
 
    @Test
-   public void checkUpperBound() {
+   public void checkUpperBoundLaneID() {
+      int x = 255;
       try {
-         TravelerMessageBuilder.validate();
-      } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
-      }
-   }
-
-   //
-   @Test
-   public void checkLower() {
-      try {
-         TravelerMessageBuilder.validate();
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBound() {
-      try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateLaneID(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
    }
 
    @Test
-   public void checkUpper() {
+   public void checkLowerSmallDrivenLine() {
+      int x = -2048;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateSmallDrivenLine(x);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -2167,38 +1935,20 @@ public class TravelerSerializerTest {
    }
 
    @Test
-   public void checkUpperBound() {
+   public void checkLowerBoundSmallDrivenLine() {
+      int x = -2047;
       try {
-         TravelerMessageBuilder.validate();
-      } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
-      }
-   }
-
-   //
-   @Test
-   public void checkLower() {
-      try {
-         TravelerMessageBuilder.validate();
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBound() {
-      try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateSmallDrivenLine(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
    }
 
    @Test
-   public void checkUpper() {
+   public void checkUpperSmallDrivenLine() {
+      int x = 2048;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateSmallDrivenLine(x);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -2206,9 +1956,304 @@ public class TravelerSerializerTest {
    }
 
    @Test
-   public void checkUpperBound() {
+   public void checkUpperBoundSmallDrivenLine() {
+      int x = 2047;
       try {
-         TravelerMessageBuilder.validate();
+         TravelerMessageBuilder.validateSmallDrivenLine(x);
+      } catch (RuntimeException e) {
+         fail("Unexcpected Exception");
+      }
+   }
+
+   @Test
+   public void checkLowerLargeDrivenLine() {
+      int x = -32768;
+      try {
+         TravelerMessageBuilder.validateLargeDrivenLine(x);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkLowerBoundLargeDrivenLine() {
+      int x = -32767;
+      try {
+         TravelerMessageBuilder.validateLargeDrivenLine(x);
+      } catch (RuntimeException e) {
+         fail("Unexcpected Exception");
+      }
+   }
+
+   @Test
+   public void checkUpperLargeDrivenLine() {
+      int x = 32768;
+      try {
+         TravelerMessageBuilder.validateLargeDrivenLine(x);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkUpperBoundLargeDrivenLine() {
+      int x = 32767;
+      try {
+         TravelerMessageBuilder.validateLargeDrivenLine(x);
+      } catch (RuntimeException e) {
+         fail("Unexcpected Exception");
+      }
+   }
+
+   @Test
+   public void checkLowerAngle() {
+      int x = -1;
+      try {
+         TravelerMessageBuilder.validateAngle(x);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkLowerBoundAngle() {
+      int x = 0;
+      try {
+         TravelerMessageBuilder.validateAngle(x);
+      } catch (RuntimeException e) {
+         fail("Unexcpected Exception");
+      }
+   }
+
+   @Test
+   public void checkUpperAngle() {
+      int x = 28801;
+      try {
+         TravelerMessageBuilder.validateAngle(x);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkUpperBoundAngle() {
+      int x = 28800;
+      try {
+         TravelerMessageBuilder.validateAngle(x);
+      } catch (RuntimeException e) {
+         fail("Unexcpected Exception");
+      }
+   }
+
+   @Test
+   public void checkLowerB12Scale() {
+      int x = -2049;
+      try {
+         TravelerMessageBuilder.validateB12Scale(x);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkLowerBoundB12Scale() {
+      int x = -2048;
+      try {
+         TravelerMessageBuilder.validateB12Scale(x);
+      } catch (RuntimeException e) {
+         fail("Unexcpected Exception");
+      }
+   }
+
+   @Test
+   public void checkUpperB12Scale() {
+      int x = 2048;
+      try {
+         TravelerMessageBuilder.validateB12Scale(x);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkUpperBoundB12Scale() {
+      int x = 2047;
+      try {
+         TravelerMessageBuilder.validateB12Scale(x);
+      } catch (RuntimeException e) {
+         fail("Unexcpected Exception");
+      }
+   }
+
+   @Test
+   public void checkLowerVelocity() {
+      int x = -1;
+      try {
+         TravelerMessageBuilder.validateVelocity(x);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkLowerBoundVelocity() {
+      int x = 0;
+      try {
+         TravelerMessageBuilder.validateVelocity(x);
+      } catch (RuntimeException e) {
+         fail("Unexcpected Exception");
+      }
+   }
+
+   @Test
+   public void checkUpperVelocity() {
+      int x = 8192;
+      try {
+         TravelerMessageBuilder.validateVelocity(x);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkUpperBoundVelocity() {
+      int x = 8191;
+      try {
+         TravelerMessageBuilder.validateVelocity(x);
+      } catch (RuntimeException e) {
+         fail("Unexcpected Exception");
+      }
+   }
+
+   @Test
+   public void checkLowerDeltaAngle() {
+      int x = -151;
+      try {
+         TravelerMessageBuilder.validateDeltaAngle(x);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkLowerBoundDeltaAngle() {
+      int x = -150;
+      try {
+         TravelerMessageBuilder.validateDeltaAngle(x);
+      } catch (RuntimeException e) {
+         fail("Unexcpected Exception");
+      }
+   }
+
+   @Test
+   public void checkUpperDeltaAngle() {
+      int x = 151;
+      try {
+         TravelerMessageBuilder.validateDeltaAngle(x);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkUpperBoundDeltaAngle() {
+      int x = 150;
+      try {
+         TravelerMessageBuilder.validateDeltaAngle(x);
+      } catch (RuntimeException e) {
+         fail("Unexcpected Exception");
+      }
+   }
+
+   @Test
+   public void checkLowerCrownPoint() {
+      int x = -129;
+      try {
+         TravelerMessageBuilder.validateCrownPoint(x);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkLowerBoundCrownPoint() {
+      int x = -128;
+      try {
+         TravelerMessageBuilder.validateCrownPoint(x);
+      } catch (RuntimeException e) {
+         fail("Unexcpected Exception");
+      }
+   }
+
+   @Test
+   public void checkUpperCrownPoint() {
+      int x = 128;
+      try {
+         TravelerMessageBuilder.validateCrownPoint(x);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkUpperBoundCrownPoint() {
+      int x = 127;
+      try {
+         TravelerMessageBuilder.validateCrownPoint(x);
+      } catch (RuntimeException e) {
+         fail("Unexcpected Exception");
+      }
+   }
+
+   @Test
+   public void checkLowerLaneAngle() {
+      int x = -181;
+      try {
+         TravelerMessageBuilder.validateLaneAngle(x);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkLowerBoundLaneAngle() {
+      int x = -180;
+      try {
+         TravelerMessageBuilder.validateLaneAngle(x);
+      } catch (RuntimeException e) {
+         fail("Unexcpected Exception");
+      }
+   }
+
+   @Test
+   public void checkUpperLaneAngle() {
+      int x = 181;
+      try {
+         TravelerMessageBuilder.validateLaneAngle(x);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkUpperBoundLaneAngle() {
+      int x = 180;
+      try {
+         TravelerMessageBuilder.validateLaneAngle(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
