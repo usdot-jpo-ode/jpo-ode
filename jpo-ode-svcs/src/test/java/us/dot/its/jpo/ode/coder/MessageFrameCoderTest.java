@@ -15,15 +15,15 @@ import us.dot.its.jpo.ode.SerializableMessageProducerPool;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.util.SerializationUtils;
 
-public class BsmCoderTest {
+public class MessageFrameCoderTest {
 
     @Test
     public void shouldConstruct() {
         // trivial test that no exceptions are thrown
-        BsmCoder testBsmCoder = new BsmCoder();
+        MessageFrameCoder testMessageFrameCoder = new MessageFrameCoder();
     }
 
     @Test
@@ -45,11 +45,11 @@ public class BsmCoderTest {
         } catch (Exception e) {
             fail("Unexpected exception in expectations block: " + e);
         }
-        BsmCoder testBsmCoder = new BsmCoder(mockOdeProperties);
+        MessageFrameCoder testMessageFrameCoder = new MessageFrameCoder(mockOdeProperties);
 
-        assertNotNull("odeProperties null", testBsmCoder.odeProperties);
-        assertNotNull("asn1Coder null", testBsmCoder.asn1Coder);
-        assertNotNull("messageProducerPool null", testBsmCoder.messageProducerPool);
+        assertNotNull("odeProperties null", testMessageFrameCoder.odeProperties);
+        assertNotNull("asn1Coder null", testMessageFrameCoder.asn1Coder);
+        assertNotNull("messageProducerPool null", testMessageFrameCoder.messageProducerPool);
     }
 
     @Test
@@ -72,7 +72,7 @@ public class BsmCoderTest {
         } catch (Exception e) {
             fail("Unexpected exception in expectations block: " + e);
         }
-        BsmCoder testBsmCoder = new BsmCoder(mockOdeProperties);
+        MessageFrameCoder testMessageFrameCoder = new MessageFrameCoder(mockOdeProperties);
 
     }
 
@@ -89,7 +89,7 @@ public class BsmCoderTest {
                     PluginFactory.getPluginByName(anyString);
                     result = mockAsn1Plugin;
 
-                    mockAsn1Plugin.UPER_DecodeBsmHex(anyString);
+                    mockAsn1Plugin.UPER_DecodeMessageFrameHex(anyString);
                     result = mockAsn1Object;
 
                     new SerializableMessageProducerPool<>(mockOdeProperties);
@@ -99,7 +99,8 @@ public class BsmCoderTest {
             fail("Unexpected exception in expectations block: " + e);
         }
 
-        assertEquals("Incorrect object returned", mockAsn1Object, new BsmCoder(mockOdeProperties).decode("test"));
+        assertEquals("Incorrect object returned", mockAsn1Object,
+                new MessageFrameCoder(mockOdeProperties).decode("test"));
     }
 
     @Test
@@ -116,7 +117,7 @@ public class BsmCoderTest {
                     PluginFactory.getPluginByName(anyString);
                     result = mockAsn1Plugin;
 
-                    mockAsn1Plugin.UPER_DecodeBsmStream((InputStream) any);
+                    mockAsn1Plugin.UPER_DecodeMessageFrameStream((InputStream) any);
                     result = mockAsn1Object;
 
                     new SerializableMessageProducerPool<>(mockOdeProperties);
@@ -127,14 +128,15 @@ public class BsmCoderTest {
         }
 
         assertEquals("Incorrect object returned", mockAsn1Object,
-                new BsmCoder(mockOdeProperties).decode(mockInputStream));
+                new MessageFrameCoder(mockOdeProperties).decode(mockInputStream));
     }
 
     @Test
     public void shouldPublish(@Mocked OdeProperties mockOdeProperties, @Mocked final PluginFactory unused,
             @Mocked Asn1Plugin mockAsn1Plugin, @Mocked Asn1Object mockAsn1Object,
             @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
-            @Mocked SerializationUtils<J2735Bsm> mockSerializationUtils, @Mocked J2735Bsm mockJ2735Bsm) {
+            @Mocked SerializationUtils<J2735MessageFrame> mockSerializationUtils,
+            @Mocked J2735MessageFrame mockJ2735MessageFrame) {
         try {
             new Expectations() {
                 {
@@ -153,10 +155,10 @@ public class BsmCoderTest {
         } catch (Exception e) {
             fail("Unexpected exception in expectations block: " + e);
         }
-        
+
         String testTopic = "testTopic";
 
-        new BsmCoder(mockOdeProperties).publish(testTopic, mockJ2735Bsm);
+        new MessageFrameCoder(mockOdeProperties).publish(testTopic, mockJ2735MessageFrame);
 
     }
 
