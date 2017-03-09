@@ -82,7 +82,7 @@ public abstract class AbstractCoder implements Coder {
            } while (decoded != null);
 
        } catch (Exception e) {
-           throw new IOException("Error decoding data.", e);
+           throw new IOException("Error decoding data." + e);
        }
    }
 
