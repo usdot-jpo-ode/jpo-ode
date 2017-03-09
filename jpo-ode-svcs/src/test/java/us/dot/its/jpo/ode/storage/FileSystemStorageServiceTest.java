@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -53,25 +54,12 @@ public class FileSystemStorageServiceTest {
     @Test
     public void shouldConstruct(@Mocked final Logger mockLogger, @Mocked LoggerFactory unused) {
 
-//        new Expectations() {
-//            {
-//                LoggerFactory.getLogger(FileSystemStorageService.class);
-//                result = mockLogger;
-//            }
-//        };
-
         FileSystemStorageService testFileSystemStorageService = new FileSystemStorageService(mockOdeProperties);
 
         assertNotNull(testFileSystemStorageService.getRootLocation());
         assertNotNull(testFileSystemStorageService.getBsmLocation());
         assertNotNull(testFileSystemStorageService.getMessageFrameLocation());
 
-//        new Verifications() {
-//            {
-//                mockLogger.info(anyString, any);
-//                times = 3;
-//            }
-//        };
     }
 
     @Test
@@ -262,6 +250,18 @@ public class FileSystemStorageServiceTest {
         new Verifications() {{
             EventLogger.logger.info("Failed to read files stored in {}", (Path) any);
         }};
+    }
+    
+    @Test
+    public void loadShouldLoad(@Mocked Path mockRootPath) {
+        new Expectations() {{
+            Paths.get(mockOdeProperties.getUploadLocationRoot());
+            result = mockRootPath;
+            
+            mockRootPath.resolve(anyString);
+        }};
+        
+        
     }
 
 }

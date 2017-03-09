@@ -88,7 +88,6 @@ public class FileSystemStorageService implements StorageService {
             EventLogger.logger.info("Failed to read files stored in {}", this.rootLocation);
             throw new StorageException("Failed to read files stored in " + this.rootLocation, e);
         }
-
     }
 
     @Override
