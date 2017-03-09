@@ -30,6 +30,7 @@ import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.util.SerializationUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 @RunWith(JMockit.class)
@@ -68,11 +69,21 @@ public class AbstractCoderTest {
         new BsmCoder(mockOdeProperties).decodeFromStreamAndPublish(is, "topic");
     }
     
+    @Ignore
     @Test
-    public void shouldDecodeFromStreamAndPublish(@Mocked OdeProperties mockOdeProperties, @Mocked final PluginFactory unused,
-            @Mocked Asn1Plugin mockAsn1Plugin,
-            @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
-            @Mocked MessageProducer<String, byte[]> mockMessageProducer, @Mocked J2735Bsm mockAsn1Object, @Mocked InputStream mockInputStream, @Mocked final Scanner mockScanner) {
+    public void shouldDecodeFromStreamAndPublish(
+            //@Mocked OdeProperties mockOdeProperties, 
+            @Mocked final PluginFactory mockPluginFactory,
+            
+            
+            @Mocked BsmCoder mockBsmCoder,
+            @Injectable SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
+            @Mocked MessageProducer<String, byte[]> mockMessageProducer,
+            @Mocked Asn1Plugin mockAsn1Plugin
+            , @Injectable InputStream mockInputStream
+            , @Injectable SerializationUtils<J2735Bsm> mockSerializer
+            ) {
+        
         
         try {
             new Expectations() {
@@ -80,22 +91,41 @@ public class AbstractCoderTest {
                     mockOdeProperties.getAsn1CoderClassName();
                     result = anyString;
                     
-                    PluginFactory.getPluginByName(anyString);
-                    result = mockAsn1Plugin;
-                    
-                    mockAsn1Plugin.UPER_DecodeBsmStream((InputStream) any);
+                    //PluginFactory.getPluginByName(anyString);
+                    //result = mockAsn1Plugin;
+//                    
+                    mockAsn1Plugin.UPER_DecodeBsmStream((InputStream) any );
                     result = null;
+//                    
+                   new SerializableMessageProducerPool<>( (OdeProperties) any );
+                   
+                   new SerializationUtils<>();
+                   mockSerializer.serialize((J2735Bsm) any);
+                   result = null;
+                    
+                   mockSerializableMessagePool.checkOut();
+                    result = mockMessageProducer;
+                    
+                    mockMessageProducer.send(anyString, null, (byte[]) any);
+                    times = 1;
+                    
+                    mockSerializableMessagePool.checkIn((MessageProducer<String, byte[]>) any);
+                    times = 1;
+                    
                 }
             };
         } catch(Exception e) {
-            
+            fail("Unexpected exception in expectations block: " + e);
         }
         
+        BsmCoder testBsmCoder = new BsmCoder(mockOdeProperties);
+        testBsmCoder.setAsn1Plugin(mockAsn1Plugin);
         try {
-            new BsmCoder(mockOdeProperties).decodeFromStreamAndPublish(mockInputStream, "testTopic");
+            testBsmCoder.decodeFromStreamAndPublish(mockInputStream, null);
         } catch (IOException e) {
             fail("Unexpected exception: " + e);
         }
+        
     }
 
     @Test

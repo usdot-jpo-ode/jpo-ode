@@ -185,7 +185,8 @@ public class BsmCoderTest {
                     result = null;
                 }
             };
-        } catch(Exception e) {
+        } catch (Exception e) {
+            fail("Unexpected exception in expectations block: " + e);
             
         }
         
