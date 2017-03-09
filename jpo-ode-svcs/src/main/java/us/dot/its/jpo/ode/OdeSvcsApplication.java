@@ -48,8 +48,8 @@ public class OdeSvcsApplication {
             Files.createDirectory(Paths.get(odeProperties.getUploadLocationRoot()));
             Files.createDirectory(Paths.get(odeProperties.getUploadLocationBsm()));
             Files.createDirectory(Paths.get(odeProperties.getUploadLocationMessageFrame()));
-         } catch (FileAlreadyExistsException fae) {
-            logger.info("Upload directory already exisits: {}");//NOSONAR
+         } catch (FileAlreadyExistsException fae) {//NOSONAR
+            logger.info("Upload directory already exisits: {}");
          } catch (IOException e) {
             throw new StorageException("Could not initialize storage", e);
          }
