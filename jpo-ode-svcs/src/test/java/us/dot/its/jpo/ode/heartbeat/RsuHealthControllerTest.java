@@ -58,8 +58,7 @@ public class RsuHealthControllerTest {
                 }
             };
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            fail("Unexpected exception in expectations block" + e);
         }
 
         try {
