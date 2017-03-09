@@ -38,7 +38,6 @@
 	
     <!-- SonarQube Properties -->
     <sonar.exclusions>jpo-ode-common,jpo-ode-core</sonar.exclusions>
-    <sonar.modules>jpo-ode-plugins,jpo-ode-svcs</sonar.modules>	
   </properties>
 
   <dependencies>
