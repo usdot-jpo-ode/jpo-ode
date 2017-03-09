@@ -8,34 +8,24 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.UrlResource;
+import org.springframework.util.FileSystemUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-import mockit.Capturing;
-import mockit.Deencapsulation;
 import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
 import mockit.Verifications;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
-
-import org.springframework.core.io.UrlResource;
-import org.springframework.util.FileSystemUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 public class FileSystemStorageServiceTest {
 
@@ -438,17 +428,19 @@ public class FileSystemStorageServiceTest {
             }
         };
     }
-    
+
     @Test
     public void deleteAllShouldDeleteRecursivelyAndLog(@Mocked final FileSystemUtils unused) {
-        
+
         new FileSystemStorageService(mockOdeProperties).deleteAll();
-        
-        new Verifications() {{
-            FileSystemUtils.deleteRecursively((File) any);
-            EventLogger.logger.info("Deleting {}", (Path) any);
-        }};
-        
+
+        new Verifications() {
+            {
+                FileSystemUtils.deleteRecursively((File) any);
+                EventLogger.logger.info("Deleting {}", (Path) any);
+            }
+        };
+
     }
 
 }
