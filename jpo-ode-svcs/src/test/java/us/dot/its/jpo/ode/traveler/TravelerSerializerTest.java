@@ -1544,7 +1544,6 @@ public class TravelerSerializerTest {
       }
    }
 
-   //
    @Test
    public void checkLowerB14Offset() {
       int x = -8193;
