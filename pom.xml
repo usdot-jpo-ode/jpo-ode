@@ -36,7 +36,7 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
 	
-    <!-- SonarQube Properties -->
+    <!-- Set SonarQube Properties Here -->
     <sonar.modules>jpo-ode-plugins,jpo-ode-svcs</sonar.modules>
   </properties>
 
