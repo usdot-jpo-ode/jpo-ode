@@ -5,12 +5,14 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsRequest.SystemName;
 import us.dot.its.jpo.ode.model.OdeRequest;
@@ -21,6 +23,7 @@ import us.dot.its.jpo.ode.model.OdeRequest.DataSource;
  * Test set for DdsRequestManager static methods
  *
  */
+@RunWith(JMockit.class)
 public class DdsRequestManagerTest {
 
     /**

@@ -31,8 +31,9 @@ public class FileSystemStorageService implements StorageService {
     public FileSystemStorageService(OdeProperties properties) {
 
         this.rootLocation = Paths.get(properties.getUploadLocationRoot());
-        this.bsmLocation = Paths.get(properties.getUploadLocationRoot(),properties.getUploadLocationBsm());
-        this.messageFrameLocation = Paths.get(properties.getUploadLocationRoot(), properties.getUploadLocationMessageFrame());
+        this.bsmLocation = Paths.get(properties.getUploadLocationRoot(), properties.getUploadLocationBsm());
+        this.messageFrameLocation = Paths.get(properties.getUploadLocationRoot(),
+                properties.getUploadLocationMessageFrame());
 
         logger.info("Upload location (root): {}", this.rootLocation);
         logger.info("Upload location (bsm): {}", this.bsmLocation);
@@ -58,7 +59,7 @@ public class FileSystemStorageService implements StorageService {
             EventLogger.logger.info("File is empty: {}", path);
             throw new StorageException("File is empty: " + path);
         }
-        
+
         // Check file does not already exist (if so, delete existing)
         try {
             EventLogger.logger.info("Deleting existing file: {}", path);

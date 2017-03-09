@@ -8,6 +8,7 @@ import java.text.ParseException;
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
@@ -16,6 +17,7 @@ import ch.qos.logback.classic.Logger;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
+import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsClient.DdsClientException;
 import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
@@ -29,6 +31,7 @@ import us.dot.its.jpo.ode.traveler.AsdMessage;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
 import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
 
+@RunWith(JMockit.class)
 public class DdsDepositorTest {
 
     /**
