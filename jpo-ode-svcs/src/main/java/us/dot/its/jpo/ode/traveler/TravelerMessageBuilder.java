@@ -251,7 +251,8 @@ public class TravelerMessageBuilder {
          validateRoadID(inputRegion.segmentID);
          geoPath.setId(new RoadSegmentReferenceID(new RoadRegulatorID(inputRegion.regulatorID),
                new RoadSegmentID(inputRegion.segmentID)));
-         geoPath.setAnchor(getPosition3D(inputRegion.anchor_lat, inputRegion.anchor_long, inputRegion.anchor_elevation));
+         geoPath
+               .setAnchor(getPosition3D(inputRegion.anchor_lat, inputRegion.anchor_long, inputRegion.anchor_elevation));
          validateLaneWidth(inputRegion.laneWidth);
          geoPath.setLaneWidth(new LaneWidth(inputRegion.laneWidth));
          validateDirectionality(inputRegion.directionality);
@@ -259,7 +260,7 @@ public class TravelerMessageBuilder {
          geoPath.setDirectionality(new DirectionOfUse(inputRegion.directionality));
          geoPath.setClosedPath(Boolean.valueOf(inputRegion.closedPath));
          System.out.println("before direction");
-         //validateHeading(inputRegion.direction);
+         // validateHeading(inputRegion.direction);
          System.out.println("Passed halfway3");
          geoPath.setDirection(getHeadingSlice(inputRegion.direction));
          System.out.println("Starting description");
@@ -269,7 +270,7 @@ public class TravelerMessageBuilder {
             validateZoom(inputRegion.path.scale);
             offsetSystem.setScale(new Zoom(inputRegion.path.scale));
             if ("xy".equals(inputRegion.path.type)) {
-               if (inputRegion.path.nodes.length > 0){
+               if (inputRegion.path.nodes.length > 0) {
                   offsetSystem.offset.setXy(buildNodeXYList(inputRegion.path.nodes));
                } else {
                   offsetSystem.offset.setXy(buildComputedLane(inputRegion.path.computedLane));
@@ -282,9 +283,9 @@ public class TravelerMessageBuilder {
          } else if ("geometry".equals(inputRegion.description)) {
             System.out.println("Inside geometry");
             GeometricProjection geo = new GeometricProjection();
-            //validateHeading(inputRegion.geometry.direction);
+            // validateHeading(inputRegion.geometry.direction);
             geo.setDirection(getHeadingSlice(inputRegion.geometry.direction));
-            //validateExtent(inputRegion.geometry.extent);
+            // validateExtent(inputRegion.geometry.extent);
             System.out.println("After extent");
             geo.setExtent(new Extent(inputRegion.geometry.extent));
             validateLaneWidth(inputRegion.geometry.laneWidth);
@@ -309,8 +310,9 @@ public class TravelerMessageBuilder {
                sps.setLaneWidth(new LaneWidth(inputRegion.oldRegion.shapepoint.laneWidth));
                validateDirectionality(inputRegion.oldRegion.shapepoint.directionality);
                sps.setDirectionality(new DirectionOfUse(inputRegion.oldRegion.shapepoint.directionality));
-               // nodeList NodeListXY, ADD HEREif ("xy".equals(inputRegion.path.type)) {
-               if (inputRegion.oldRegion.shapepoint.nodexy.length > 0){
+               // nodeList NodeListXY, ADD HEREif
+               // ("xy".equals(inputRegion.path.type)) {
+               if (inputRegion.oldRegion.shapepoint.nodexy.length > 0) {
                   sps.setNodeList(buildNodeXYList(inputRegion.oldRegion.shapepoint.nodexy));
                } else {
                   sps.setNodeList(buildComputedLane(inputRegion.oldRegion.shapepoint.computedLane));
@@ -471,12 +473,11 @@ public class TravelerMessageBuilder {
          nodes.add(node);
       }
 
-
       nodeList.setNodes(nodes);
       return nodeList;
    }
 
-   private NodeListXY buildComputedLane(TravelerInputData.ComputedLane inputLane){
+   private NodeListXY buildComputedLane(TravelerInputData.ComputedLane inputLane) {
       NodeListXY nodeList = new NodeListXY();
 
       ComputedLane computedLane = new ComputedLane();
@@ -488,7 +489,7 @@ public class TravelerMessageBuilder {
          computedLane.offsetXaxis.setSmall(inputLane.offsetSmallX);
       }
 
-      if (inputLane.offsetLargeX > 0){
+      if (inputLane.offsetLargeX > 0) {
          computedLane.offsetYaxis.setLarge(inputLane.offsetLargeY);
 
       } else {
@@ -632,7 +633,7 @@ public class TravelerMessageBuilder {
 
    public static void validateURLShort(String url) {
       if (url.isEmpty())
-         throw new IllegalArgumentException("Invalid empty url");
+         throw new IllegalArgumentException("Invalid empty Short url");
       if (url.length() < 1 || url.length() > 15)
          throw new IllegalArgumentException("Invalid URL provided");
    }
@@ -714,9 +715,7 @@ public class TravelerMessageBuilder {
          cd = Integer.parseInt(code);
          if (cd < 0 || cd > 65535)
             throw new IllegalArgumentException("Invalid ITIS code");
-      }
-      catch (NumberFormatException e)
-      {
+      } catch (NumberFormatException e) {
          if (code.isEmpty())
             throw new IllegalArgumentException("Invalid empty string");
          if (code.length() < 1 || code.length() > 500)
@@ -730,9 +729,7 @@ public class TravelerMessageBuilder {
          cd = Integer.parseInt(code);
          if (cd < 0 || cd > 65535)
             throw new IllegalArgumentException("Invalid ITIS code");
-      }
-      catch (NumberFormatException e)
-      {
+      } catch (NumberFormatException e) {
          if (code.isEmpty())
             throw new IllegalArgumentException("Invalid empty string");
          if (code.length() < 1 || code.length() > 16)
@@ -744,60 +741,194 @@ public class TravelerMessageBuilder {
       if (str.isEmpty())
          throw new IllegalArgumentException("Invalid Empty String");
    }
-   
+
    public static void validateGeoName(String name) {
       if (name.length() < 1 || name.length() > 63)
          throw new IllegalArgumentException("Invalid Descriptive name");
    }
-   
-   public static void validateRoadID(int id){
+
+   public static void validateRoadID(int id) {
       if (id < 0 || id > 65535)
          throw new IllegalArgumentException("Invalid RoadID");
    }
-   
-   public static void validateLaneWidth(int width){
+
+   public static void validateLaneWidth(int width) {
       if (width < 0 || width > 32767)
          throw new IllegalArgumentException("Invalid lane width");
    }
-   
+
    public static void validateDirectionality(long dir) {
       if (dir < 0 || dir > 3)
          throw new IllegalArgumentException("Invalid enumeration");
    }
-   
+
    public static void validateZoom(int z) {
       if (z < 0 || z > 15)
          throw new IllegalArgumentException("Invalid zoom");
    }
-   
+
    public static void validateExtent(int ex) {
       if (ex < 0 || ex > 15)
          throw new IllegalArgumentException("Invalid extent enumeration");
    }
-   
+
    public static void validateRadius(int rad) {
       if (rad < 0 || rad > 4095)
          throw new IllegalArgumentException("Invalid radius");
    }
-   
+
    public static void validateUnits(int unit) {
       if (unit < 0 || unit > 7)
          throw new IllegalArgumentException("Invalid units enumeration");
    }
-   
+
    public static void validatex16Offset(int x) {
       if (x < -32768 || x > 32767)
          throw new IllegalArgumentException("Invalid x offset");
    }
-   
+
    public static void validatey16Offset(int y) {
       if (y < -32768 || y > 32767)
          throw new IllegalArgumentException("Invalid y offset");
    }
-   
+
    public static void validatez16Offset(int z) {
       if (z < -32768 || z > 32767)
          throw new IllegalArgumentException("Invalid z offset");
    }
 
+   public static void validateB10Offset(int b) {
+      if (b < -512 || b > 511)
+         throw new IllegalArgumentException("Invalid B10_Offset");
+   }
+
+   public static void validateB11Offset(int b) {
+      if (b < -1024 || b > 1023)
+         throw new IllegalArgumentException("Invalid B11_Offset");
+   }
+
+   public static void validateB12Offset(int b) {
+      if (b < -2048 || b > 2047)
+         throw new IllegalArgumentException("Invalid B12_Offset");
+   }
+
+   public static void validateB13Offset(int b) {
+      if (b < -4096 || b > 4095)
+         throw new IllegalArgumentException("Invalid B13_Offset");
+   }
+
+   public static void validateB14Offset(int b) {
+      if (b < -8192 || b > 8191)
+         throw new IllegalArgumentException("Invalid B14_Offset");
+   }
+
+   public static void validateB16Offset(int b) {
+      if (b < -32768 || b > 32767)
+         throw new IllegalArgumentException("Invalid B16_Offset");
+   }
+
+   public static void validateLL12Offset(int b) {
+      if (b < -2048 || b > 2047)
+         throw new IllegalArgumentException("Invalid B10_Offset");
+   }
+
+   public static void validateLL14Offset(int b) {
+      if (b < -8192 || b > 8191)
+         throw new IllegalArgumentException("Invalid B11_Offset");
+   }
+
+   public static void validateLL16Offset(int b) {
+      if (b < -32768 || b > 32767)
+         throw new IllegalArgumentException("Invalid B12_Offset");
+   }
+
+   public static void validateLL18Offset(int b) {
+      if (b < -131072 || b > 131071)
+         throw new IllegalArgumentException("Invalid B13_Offset");
+   }
+
+   public static void validateLL22Offset(int b) {
+      if (b < -2097152 || b > 2097151)
+         throw new IllegalArgumentException("Invalid B14_Offset");
+   }
+
+   public static void validateLL24Offset(int b) {
+      if (b < -8388608 || b > 8388607)
+         throw new IllegalArgumentException("Invalid B16_Offset");
+   }
+
+   public static void validateLaneID(int lane) {
+      if (lane < 0 || lane > 255)
+         throw new IllegalArgumentException("Invalid LaneID");
+   }
+
+   public static void validateSmallDrivenLine(int line) {
+      if (line < -2047 || line > 2047)
+         throw new IllegalArgumentException("Invalid Small Offset");
+   }
+
+   public static void validateLargeDrivenLine(int line) {
+      if (line < -32767 || line > 32767)
+         throw new IllegalArgumentException("Invalid Large Offset");
+   }
+
+   public static void validateAngle(int ang) {
+      if (ang < 0 || ang > 28800)
+         throw new IllegalArgumentException("Invalid Angle");
+   }
+
+   public static void validateB12Scale(int b) {
+      if (b < -2048 || b > 2047)
+         throw new IllegalArgumentException("Invalid B12 Scale");
+   }
+
+   public static void validateNodeAttribute(String str) {
+      String myString = "reserved stopLine roundedCapStyleA roundedCapStyleB mergePoint divergePoint downstreamStopLine donwstreamStartNode closedToTraffic safeIsland curbPresentAtStepOff hydrantPresent";
+      CharSequence cs = str;
+      if (myString.contains(cs)) {
+         return;
+      } else {
+         throw new IllegalArgumentException("Invalid NodeAttribute Enumeration");
+      }
+   }
+   
+   public static void validateSegmentAttribute(String str) {
+      String myString = "reserved doNotBlock whiteLine mergingLaneLeft mergingLaneRight curbOnLeft curbOnRight loadingzoneOnLeft loadingzoneOnRight turnOutPointOnLeft turnOutPointOnRight adjacentParkingOnLeft adjacentParkingOnRight sharedBikeLane bikeBoxInFront transitStopOnLeft transitStopOnRight transitStopInLane sharedWithTrackedVehicle safeIsland lowCurbsPresent rumbleStripPresent audibleSignalingPresent adaptiveTimingPresent rfSignalRequestPresent partialCurbIntrusion taperToLeft taperToRight taperToCenterLine parallelParking headInParking freeParking timeRestrictionsOnParking costToPark midBlockCurbPresent unEvenPavementPresent";
+      CharSequence cs = str;
+      if (myString.contains(cs)) {
+         return;
+      } else {
+         throw new IllegalArgumentException("Invalid NodeAttribute Enumeration");
+      }
+   }
+   
+   public static void validateSpeedLimitType(String str) {
+      String myString = "unknown maxSpeedInSchoolZone maxSpeedInSchoolZoneWhenChildrenArePresent maxSpeedInConstructionZone vehicleMinSpeed vehicleMaxSpeed vehicleNightMaxSpeed truckMinSpeed truckMaxSpeed truckNightMaxSpeed vehiclesWithTrailerMinSpeed vehiclesWithTrailersMaxSpeed vehiclesWithTrailersNightMaxSpeed";
+      CharSequence cs = str;
+      if (myString.contains(cs)) {
+         return;
+      } else {
+         throw new IllegalArgumentException("Invalid NodeAttribute Enumeration");
+      }
+   }
+   
+   public static void validateVelocity(int vel) {
+      if (vel < 0 || vel > 8191)
+         throw new IllegalArgumentException("Invalid Velocity");
+   }
+   
+   public static void validateDeltaAngle(int d) {
+      if (d < -150 || d > 150)
+         throw new IllegalArgumentException("Invalid Delta Angle");
+   }
+   
+   public static void validateCrownPoint(int c) {
+      if (c < -128 || c > 127)
+         throw new IllegalArgumentException("Invalid Crown Point");
+   }
+   
+   public static void validateLaneAngle(int a) {
+      if (a < -180 || a > 180)
+         throw new IllegalArgumentException("Invalid LaneAngle");
+   }
 }

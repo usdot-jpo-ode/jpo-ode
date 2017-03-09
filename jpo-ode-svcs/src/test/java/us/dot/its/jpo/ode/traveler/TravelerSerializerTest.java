@@ -1356,4 +1356,73 @@ public class TravelerSerializerTest {
          fail("Unexpected Exception");
       }
    }
+   
+   @Test
+   public void checkNodeEnumeration() {
+      String str = "reseved";
+      try {
+         TravelerMessageBuilder.validateNodeAttribute(str);
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkBoundNodeEnumeration() {
+      String str = "reserved";
+      try {
+         TravelerMessageBuilder.validateNodeAttribute(str);
+      }
+      catch (RuntimeException e) {
+         fail("Unexcpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkSegmentEnumeration() {
+      String str = "freParking";
+      try {
+         TravelerMessageBuilder.validateSegmentAttribute(str);
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkBoundSegmentEnumeration() {
+      String str = "freeParking";
+      try {
+         TravelerMessageBuilder.validateSegmentAttribute(str);
+      }
+      catch (RuntimeException e) {
+         fail("Unexcpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkSpeedLimitEnumeration() {
+      String str = "maxSpedInSchoolZoneWhenChildrenArePresent";
+      try {
+         TravelerMessageBuilder.validateSpeedLimitType(str);
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkBoundSpeedLimitEnumeration() {
+      String str = "maxSpeedInSchoolZoneWhenChildrenArePresent";
+      try {
+         TravelerMessageBuilder.validateSpeedLimitType(str);
+      }
+      catch (RuntimeException e) {
+         fail("Unexcpected Exception");
+      }
+   }
 }
