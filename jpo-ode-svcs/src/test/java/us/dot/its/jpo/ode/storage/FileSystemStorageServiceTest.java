@@ -5,9 +5,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,12 +24,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Capturing;
+import mockit.Deencapsulation;
 import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 import mockit.Verifications;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 
+import org.springframework.core.io.UrlResource;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileSystemStorageServiceTest {
@@ -193,13 +201,13 @@ public class FileSystemStorageServiceTest {
                 {
                     mockMultipartFile.getOriginalFilename();
                     result = anyString;
-                    
+
                     mockMultipartFile.isEmpty();
                     result = false;
-                    
+
                     mockMultipartFile.getInputStream();
                     result = mockInputStream;
-                    
+
                     Files.deleteIfExists((Path) any);
 
                     Files.copy((InputStream) any, (Path) any);
@@ -209,7 +217,7 @@ public class FileSystemStorageServiceTest {
         } catch (IOException e1) {
             fail("Unexpected exception creating test Expectations: " + e1);
         }
-        
+
         try {
             new FileSystemStorageService(mockOdeProperties).store(mockMultipartFile, testType);
             fail("Expected StorageException");
@@ -226,41 +234,220 @@ public class FileSystemStorageServiceTest {
             }
         };
     }
-    
+
     @Test
     public void loadAllShouldRethrowException(@Mocked Files unused) {
         try {
-            new Expectations() {{
-                Files.walk((Path) any, anyInt);//.filter(null).map(null);
-                result = new IOException("testException123");
-            }};
+            new Expectations() {
+                {
+                    Files.walk((Path) any, anyInt);// .filter(null).map(null);
+                    result = new IOException("testException123");
+                }
+            };
         } catch (IOException e) {
-           fail("Unexpected exception creating Expectations: " + e);
+            fail("Unexpected exception creating Expectations: " + e);
         }
-        
+
         try {
             new FileSystemStorageService(mockOdeProperties).loadAll();
             fail("Expected StorageException");
         } catch (Exception e) {
             assertEquals("Incorrect exception thrown", StorageException.class, e.getClass());
-            assertTrue("Incorrect message received",
-                    e.getMessage().startsWith("Failed to read files stored in"));
+            assertTrue("Incorrect message received", e.getMessage().startsWith("Failed to read files stored in"));
         }
-        
-        new Verifications() {{
-            EventLogger.logger.info("Failed to read files stored in {}", (Path) any);
-        }};
+
+        new Verifications() {
+            {
+                EventLogger.logger.info("Failed to read files stored in {}", (Path) any);
+            }
+        };
+    }
+
+    @Test
+    public void loadAsResourceShouldThrowExceptionWhenFileNotExists(@Mocked Path mockRootPath,
+            @Mocked Path mockResolvedPath, @Mocked UrlResource mockUrlResource) {
+
+        try {
+            new Expectations() {
+                {
+                    mockRootPath.resolve(anyString);
+                    result = mockResolvedPath;
+
+                    mockResolvedPath.toUri();
+
+                    new UrlResource((URI) any);
+                    mockUrlResource.exists();
+                    result = false;
+                }
+            };
+        } catch (MalformedURLException e) {
+            fail("Unexpected exception creating Expectations");
+        }
+
+        try {
+            FileSystemStorageService testFileSystemStorageService = new FileSystemStorageService(mockOdeProperties);
+            testFileSystemStorageService.setRootLocation(mockRootPath);
+            testFileSystemStorageService.loadAsResource("testFile");
+            fail("Expected StorageFileNotFoundException");
+        } catch (Exception e) {
+            assertEquals("Incorrect exception thrown.", StorageFileNotFoundException.class, e.getClass());
+            assertTrue("Incorrect exception message", e.getMessage().startsWith("Could not read file:"));
+        }
+    }
+
+    @Test
+    public void loadAsResourceShouldThrowExceptionWhenFileNotReadable(@Mocked Path mockRootPath,
+            @Mocked Path mockResolvedPath, @Mocked UrlResource mockUrlResource) {
+
+        try {
+            new Expectations() {
+                {
+                    mockRootPath.resolve(anyString);
+                    result = mockResolvedPath;
+
+                    mockResolvedPath.toUri();
+
+                    new UrlResource((URI) any);
+                    mockUrlResource.exists();
+                    result = true;
+                    mockUrlResource.isReadable();
+                    result = false;
+                }
+            };
+        } catch (MalformedURLException e) {
+            fail("Unexpected exception creating Expectations");
+        }
+
+        try {
+            FileSystemStorageService testFileSystemStorageService = new FileSystemStorageService(mockOdeProperties);
+            testFileSystemStorageService.setRootLocation(mockRootPath);
+            testFileSystemStorageService.loadAsResource("testFile");
+            fail("Expected StorageFileNotFoundException");
+        } catch (Exception e) {
+            assertEquals("Incorrect exception thrown.", StorageFileNotFoundException.class, e.getClass());
+            assertTrue("Incorrect exception message", e.getMessage().startsWith("Could not read file:"));
+        }
+    }
+
+    @Test
+    public void loadAsResourceShouldRethrowMalformedURLException(@Mocked Path mockRootPath,
+            @Mocked Path mockResolvedPath, @Mocked UrlResource mockUrlResource) {
+
+        try {
+            new Expectations() {
+                {
+                    mockRootPath.resolve(anyString);
+                    result = mockResolvedPath;
+
+                    mockResolvedPath.toUri();
+
+                    new UrlResource((URI) any);
+                    result = new MalformedURLException("testException123");
+                }
+            };
+        } catch (MalformedURLException e) {
+            fail("Unexpected exception creating Expectations");
+        }
+
+        try {
+            FileSystemStorageService testFileSystemStorageService = new FileSystemStorageService(mockOdeProperties);
+            testFileSystemStorageService.setRootLocation(mockRootPath);
+            testFileSystemStorageService.loadAsResource("testFile");
+            fail("Expected StorageFileNotFoundException");
+        } catch (Exception e) {
+            assertEquals("Incorrect exception thrown.", StorageFileNotFoundException.class, e.getClass());
+            assertTrue("Incorrect exception message", e.getMessage().startsWith("Could not read file:"));
+        }
+    }
+
+    @Test
+    public void loadAsResourceShouldReturnResource(@Mocked Path mockRootPath, @Mocked Path mockResolvedPath,
+            @Mocked UrlResource mockUrlResource) {
+
+        try {
+            new Expectations() {
+                {
+                    mockRootPath.resolve(anyString);
+                    result = mockResolvedPath;
+
+                    mockResolvedPath.toUri();
+
+                    new UrlResource((URI) any);
+
+                    mockUrlResource.exists();
+                    result = true;
+                    mockUrlResource.isReadable();
+                    result = true;
+                }
+            };
+        } catch (MalformedURLException e) {
+            fail("Unexpected exception creating Expectations");
+        }
+
+        try {
+            FileSystemStorageService testFileSystemStorageService = new FileSystemStorageService(mockOdeProperties);
+            testFileSystemStorageService.setRootLocation(mockRootPath);
+            assertEquals(UrlResource.class, testFileSystemStorageService.loadAsResource("testFile").getClass());
+        } catch (Exception e) {
+            fail("Unexpected exception: " + e);
+        }
+    }
+
+    @Test
+    public void initShouldCreateDirectories(@Mocked final Files unused) {
+
+        new FileSystemStorageService(mockOdeProperties).init();
+
+        try {
+            new Verifications() {
+                {
+                    Files.createDirectory((Path) any);
+                    times = 3;
+                }
+            };
+        } catch (IOException e) {
+            fail("Unexpected exception in verifications block: " + e);
+        }
+    }
+
+    @Test
+    public void initShouldRethrowAndLogException(@Mocked final Files unused) {
+
+        try {
+            new Expectations() {
+                {
+                    Files.createDirectory((Path) any);
+                    result = new IOException("testException123");
+                }
+            };
+        } catch (IOException e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+
+        try {
+            new FileSystemStorageService(mockOdeProperties).init();
+        } catch (Exception e) {
+            assertEquals("Incorrect exception thrown.", StorageException.class, e.getClass());
+            assertTrue("Incorrect exception message",
+                    e.getMessage().startsWith("Failed to initialize storage service"));
+        }
+
+        new Verifications() {
+            {
+                EventLogger.logger.info("Failed to initialize storage service {}", (Path) any);
+            }
+        };
     }
     
     @Test
-    public void loadShouldLoad(@Mocked Path mockRootPath) {
-        new Expectations() {{
-            Paths.get(mockOdeProperties.getUploadLocationRoot());
-            result = mockRootPath;
-            
-            mockRootPath.resolve(anyString);
-        }};
+    public void deleteAllShouldDeleteRecursivelyAndLog(@Mocked final FileSystemUtils unused) {
         
+        new FileSystemStorageService(mockOdeProperties).deleteAll();
+        
+        new Verifications() {{
+            FileSystemUtils.deleteRecursively((File) any);
+            EventLogger.logger.info("Deleting {}", (Path) any);
+        }};
         
     }
 

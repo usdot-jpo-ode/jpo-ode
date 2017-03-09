@@ -23,9 +23,9 @@ import us.dot.its.jpo.ode.eventlog.EventLogger;
 public class FileSystemStorageService implements StorageService {
     private static Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
 
-    private final Path rootLocation;
-    private final Path bsmLocation;
-    private final Path messageFrameLocation;
+    private Path rootLocation;
+    private Path bsmLocation;
+    private Path messageFrameLocation;
 
     @Autowired
     public FileSystemStorageService(OdeProperties properties) {
@@ -100,11 +100,10 @@ public class FileSystemStorageService implements StorageService {
         try {
             Path file = load(filename);
             Resource resource = new UrlResource(file.toUri());
-            if (resource.exists() || resource.isReadable()) {
+            if (resource.exists() && resource.isReadable()) {
                 return resource;
             } else {
                 throw new StorageFileNotFoundException("Could not read file: " + filename);
-
             }
         } catch (MalformedURLException e) {
             throw new StorageFileNotFoundException("Could not read file: " + filename, e);
@@ -139,5 +138,9 @@ public class FileSystemStorageService implements StorageService {
 
     public Path getMessageFrameLocation() {
         return messageFrameLocation;
+    }
+
+    public void setRootLocation(Path rootLocation) {
+        this.rootLocation = rootLocation;
     }
 }
