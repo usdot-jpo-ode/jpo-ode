@@ -91,12 +91,6 @@ public class JsonUtilsTest {
    }
 
    @Test
-   public void testFromJson() {
-//      A aj = (A) JsonUtils.fromJson(aJsonString, A.class);
-//      assertEquals(a, aj);
-   }
-
-   @Test
    public void testNewJson() {
       String j = JsonUtils.newJson("key", "value");
       assertEquals("{\"key\":value}", j);

@@ -62,21 +62,14 @@ public class JsonUtils {
    }
 
    public static Object fromJson(String s, Class<?> clazz) {
-      //return gsonCompact.fromJson(s, clazz);
-      Object o = null;
+      return gsonCompact.fromJson(s, clazz);
+      /*Object o = null;
       try {
          o = mapper.readValue(s, clazz);
       } catch (IOException e) {
          e.printStackTrace();
       }
-      return o;
-   }
-   
-   public static <T> T jsonToPojo (String s, Class<T> generic) throws JsonParseException, JsonMappingException, IOException {
-      InputStream is = new ByteArrayInputStream(s.getBytes());
-      T configBean = mapper.readValue(is, generic);
-      System.out.println(mapper.readValue(is, generic));
-      return configBean;
+      return o;*/
    }
    
 // This method does not seem to work so commenting it out.

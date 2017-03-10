@@ -19,6 +19,8 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion;
+import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.snmp.TimManagerService;
 import us.dot.its.jpo.ode.snmp.TimParameters;
@@ -57,15 +59,15 @@ public class TravelerMessageController {
         }
 
         // Step 1 - Serialize the JSON into a TIM object
-        TravelerInputData travelerInfo = null;
+        J2735TravelerInputData travelerInfo = null;
         try {
-           travelerInfo = (TravelerInputData) JsonUtils.fromJson(jsonString, TravelerInputData.class);
+           travelerInfo = (J2735TravelerInputData) JsonUtils.fromJson(jsonString, J2735TravelerInputData.class);
         }
         catch (Exception e) {
            System.out.println("Error Deserializing TravelerInputData");
         }
         
-        TravelerMessageBuilder build = new TravelerMessageBuilder();
+        OssTravelerMessageBuilder build = new OssTravelerMessageBuilder();
         TravelerInformation traveler = null;
         logger.debug("TIM CONTROLLER - Serialized TIM: {}", travelerInfo.toString());
         try {
