@@ -3,10 +3,7 @@ package us.dot.its.jpo.ode.dds;
 import static org.junit.Assert.*;
 
 import javax.websocket.DecodeException;
-
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import us.dot.its.jpo.ode.model.StatusTag;
 

@@ -3,7 +3,6 @@ package us.dot.its.jpo.ode.dds;
 import static org.junit.Assert.*;
 
 import javax.websocket.DecodeException;
-
 import org.junit.Test;
 
 public class DepositResponseDecoderTest {

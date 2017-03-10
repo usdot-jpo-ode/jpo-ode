@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.dds;
 
 import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 public class DdsDepRequestTest {

@@ -3,7 +3,6 @@ package us.dot.its.jpo.ode.dds;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-
 import mockit.*;
 import us.dot.its.jpo.ode.dds.DdsRequest.Dialog;
 import us.dot.its.jpo.ode.model.StatusTag;

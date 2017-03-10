@@ -60,7 +60,7 @@ public class OssMessageFrame {
             genericMessageFrame.setValue(OssBsm.genericBsm(bsm));
 
         } else {
-            throw new OssMessageFrameException("Unknown message type");
+            throw new OssMessageFrameException("Unknown message type: " + genericMessageFrame.getMessageId());
         }
 
         return genericMessageFrame;
