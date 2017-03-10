@@ -2,7 +2,21 @@ package us.dot.its.jpo.ode.traveler;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+
+import org.junit.Ignore;
 import org.junit.Test;
+
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+
+import mockit.Expectations;
+import mockit.Injectable;
+import mockit.Mocked;
+import us.dot.its.jpo.ode.j2735.dsrc.MsgCount;
+import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
+import us.dot.its.jpo.ode.j2735.dsrc.URL_Base;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 /**
  * @author 583114
@@ -2255,6 +2269,23 @@ public class TravelerSerializerTest {
          TravelerMessageBuilder.validateLaneAngle(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkTravelerMessageBuilder() {
+      TravelerInputData ti = new TravelerInputData();
+      TravelerInformation travelerinfo = new TravelerInformation();
+      ti.MsgCount = 10;
+      ti.urlB = "null";
+      ti.dataframes = null;
+      TravelerMessageBuilder build = new TravelerMessageBuilder();
+      try {
+         travelerinfo = build.buildTravelerInformation(ti);
+      }
+      catch (Exception e)
+      {
+         fail("Unexpected Exception");
       }
    }
 }

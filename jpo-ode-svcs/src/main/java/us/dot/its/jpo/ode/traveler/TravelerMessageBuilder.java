@@ -37,9 +37,8 @@ public class TravelerMessageBuilder {
       travelerInfo = new TravelerInformation();
       validateMessageCount(travInputData.MsgCount);
       travelerInfo.setMsgCnt(new MsgCount(travInputData.MsgCount));
-      // ByteBuffer buf = ByteBuffer.allocate(9).put((byte)
-      // 0).putLong(travInputData.UniqueMSGID);
-      // travelerInfo.setPacketID(new UniqueMSGID(buf.array()));
+      ByteBuffer buf = ByteBuffer.allocate(9).put((byte)0).putLong(travInputData.UniqueMSGID);
+      travelerInfo.setPacketID(new UniqueMSGID(buf.array()));
       validateURL(travInputData.urlB);
       travelerInfo.setUrlB(new URL_Base(travInputData.urlB));
       travelerInfo.setDataFrames(buildDataFrames(travInputData));
@@ -260,7 +259,7 @@ public class TravelerMessageBuilder {
          geoPath.setDirectionality(new DirectionOfUse(inputRegion.directionality));
          geoPath.setClosedPath(Boolean.valueOf(inputRegion.closedPath));
          System.out.println("before direction");
-         // validateHeading(inputRegion.direction);
+         validateHeading(inputRegion.direction);
          System.out.println("Passed halfway3");
          geoPath.setDirection(getHeadingSlice(inputRegion.direction));
          System.out.println("Starting description");
@@ -283,9 +282,9 @@ public class TravelerMessageBuilder {
          } else if ("geometry".equals(inputRegion.description)) {
             System.out.println("Inside geometry");
             GeometricProjection geo = new GeometricProjection();
-            // validateHeading(inputRegion.geometry.direction);
+            validateHeading(inputRegion.geometry.direction);
             geo.setDirection(getHeadingSlice(inputRegion.geometry.direction));
-            // validateExtent(inputRegion.geometry.extent);
+            validateExtent(inputRegion.geometry.extent);
             System.out.println("After extent");
             geo.setExtent(new Extent(inputRegion.geometry.extent));
             validateLaneWidth(inputRegion.geometry.laneWidth);
@@ -295,12 +294,13 @@ public class TravelerMessageBuilder {
             geoPath.setDescription(description);
 
          } else { // oldRegion
-
+            System.out.println("INside oldRegion description");
             ValidRegion validRegion = new ValidRegion();
             validateHeading(inputRegion.oldRegion.direction);
             validRegion.setDirection(getHeadingSlice(inputRegion.oldRegion.direction));
             validateExtent(inputRegion.oldRegion.extent);
             validRegion.setExtent(new Extent(inputRegion.oldRegion.extent));
+            System.out.println("before area");
             Area area = new Area();
             if ("shapePointSet".equals(inputRegion.oldRegion.area)) {
                ShapePointSet sps = new ShapePointSet();
@@ -319,10 +319,12 @@ public class TravelerMessageBuilder {
                }
                area.setShapePointSet(sps);
                validRegion.setArea(area);
-            } else if ("regionPointSet".equals(inputRegion.oldRegion.area)) {
+            } else if ("regionPoint".equals(inputRegion.oldRegion.area)) {
+               System.out.println("RegionPoint");
                RegionPointSet rps = new RegionPointSet();
                rps.setAnchor(getPosition3D(inputRegion.oldRegion.regionPoint.latitude,
                      inputRegion.oldRegion.regionPoint.longitude, inputRegion.oldRegion.regionPoint.elevation));
+               System.out.println("Before Zoom");
                validateZoom(inputRegion.oldRegion.regionPoint.scale);
                rps.setScale(new Zoom(inputRegion.oldRegion.regionPoint.scale));
                RegionList rl = buildRegionOffsets(inputRegion.oldRegion.regionPoint.regionList);
@@ -343,6 +345,7 @@ public class TravelerMessageBuilder {
 
    private RegionList buildRegionOffsets(TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] list) {
       RegionList myList = new RegionList();
+      System.out.println("INside region offset");
       for (int i = 0; i < list.length; i++) {
          RegionOffsets ele = new RegionOffsets();
          validatex16Offset(list[i].xOffset);
@@ -352,6 +355,7 @@ public class TravelerMessageBuilder {
          validatez16Offset(list[i].zOffset);
          ele.setZOffset(new OffsetLL_B16(list[i].zOffset));
          myList.add(ele);
+         System.out.println("End of regionlist");
       }
       return myList;
    }
