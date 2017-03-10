@@ -3,7 +3,6 @@ package us.dot.its.jpo.ode.dds;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-
 import mockit.*;
 import us.dot.its.jpo.ode.dds.DdsRequest.Dialog;
 import us.dot.its.jpo.ode.model.StatusTag;
@@ -11,7 +10,7 @@ import us.dot.its.jpo.ode.model.StatusTag;
 public class DdsStatusMessageTest {
 	
 	@Test
-	   public void TestConstructor1() {
+	   public void testConstructor1() {
 			DdsStatusMessage ddsStatusMessage = new DdsStatusMessage();
 			
 			assertNull(ddsStatusMessage.getTag());
@@ -20,7 +19,7 @@ public class DdsStatusMessageTest {
 	}
 	
 	@Test
-	   public void TestConstructor2(@Mocked StatusTag tag, @Mocked String encoding, @Mocked Dialog dialog) {
+	   public void testConstructor2(@Mocked StatusTag tag, @Mocked String encoding, @Mocked Dialog dialog) {
 			DdsStatusMessage ddsStatusMessage = new DdsStatusMessage(tag, encoding, dialog);
 			assertEquals(ddsStatusMessage.getTag(), tag);
 			assertEquals(ddsStatusMessage.getEncoding(), encoding);
@@ -37,7 +36,7 @@ public class DdsStatusMessageTest {
 	
 	
 	@Test
-	   public void TestRecordCount() {
+	   public void testRecordCount() {
 			DdsStatusMessage ddsStatusMessage = new DdsStatusMessage();
 			assertEquals(0, ddsStatusMessage.getRecordCount());
 			ddsStatusMessage.setRecordCount(5);
@@ -45,7 +44,7 @@ public class DdsStatusMessageTest {
 	}
 	
 	@Test
-	   public void TestConnectionDetails() {
+	   public void testConnectionDetails() {
 			DdsStatusMessage ddsStatusMessage = new DdsStatusMessage();
 			assertEquals(null, ddsStatusMessage.getConnectionDetails());
 			ddsStatusMessage.setConnectionDetails("testConnectionString");
@@ -53,7 +52,7 @@ public class DdsStatusMessageTest {
 	}
 	
 	@Test
-	   public void TestToString() {
+	   public void testToString() {
 			StatusTag tag = StatusTag.CONNECTED;
 			String encoding = "hex";
 			Dialog dialog = Dialog.ASD;
