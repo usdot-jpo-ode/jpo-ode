@@ -58,7 +58,7 @@ public class FileSystemStorageService implements StorageService {
             EventLogger.logger.info("File is empty: {}", path);
             throw new StorageException("File is empty: " + path);
         }
-
+        
         // Check file does not already exist (if so, delete existing)
         try {
             EventLogger.logger.info("Deleting existing file: {}", path);
@@ -73,7 +73,7 @@ public class FileSystemStorageService implements StorageService {
             logger.debug("Copying file {} to {}", file.getOriginalFilename(), path);
             EventLogger.logger.info("Copying file {} to {}", file.getOriginalFilename(), path);
             Files.copy(file.getInputStream(), path);
-        } catch (IOException e) {
+        } catch (Exception e) {
             EventLogger.logger.info("Failed to store file in shared directory {}", path);
             throw new StorageException("Failed to store file in shared directory " + path, e);
         }
@@ -128,5 +128,17 @@ public class FileSystemStorageService implements StorageService {
             EventLogger.logger.info("Failed to initialize storage service {}", this.rootLocation);
             throw new StorageException("Failed to initialize storage service " + this.rootLocation, e);
         }
+    }
+
+    public Path getRootLocation() {
+        return rootLocation;
+    }
+
+    public Path getBsmLocation() {
+        return bsmLocation;
+    }
+
+    public Path getMessageFrameLocation() {
+        return messageFrameLocation;
     }
 }
