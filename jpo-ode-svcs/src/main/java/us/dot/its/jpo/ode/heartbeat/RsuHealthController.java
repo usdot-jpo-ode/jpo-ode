@@ -18,29 +18,25 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class RsuHealthController {
-    
-    private RsuHealthController() {}
+
+    private RsuHealthController() {
+    }
 
     @RequestMapping(value = "/rsuHeartbeat", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public static String heartBeat(@RequestParam("ip") String ip, @RequestParam("oid") String oid) throws IOException {
-        
-        if (ip == null) {
-            throw new IllegalArgumentException("[ERROR] Endpoint received null ip");
+
+        if (ip == null || oid == null) {
+            throw new IllegalArgumentException("[ERROR] Endpoint received null argument.");
         }
-        if (oid == null) {
-            throw new IllegalArgumentException("[ERROR] Endpoint received null oid");
-        }
-        
+
         TransportMapping transport = new DefaultUdpTransportMapping();
         Snmp snmp = new Snmp(transport);
-        USM usm = new USM(SecurityProtocols.getInstance(),
-                          new OctetString(MPv3.createLocalEngineID()), 0);
+        USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
         SecurityModels.getInstance().addSecurityModel(usm);
         transport.listen();
-        
+
         return RsuSnmp.sendSnmpV3Request(ip, oid, snmp);
     }
-    
-}
 
+}

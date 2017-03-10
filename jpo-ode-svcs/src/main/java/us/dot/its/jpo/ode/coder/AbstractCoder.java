@@ -71,7 +71,6 @@ public abstract class AbstractCoder implements Coder {
    public void decodeFromStreamAndPublish(InputStream is, String topic) throws IOException {
        Asn1Object decoded;
        
-
        try {
            do {
                decoded = decode(is);
@@ -82,7 +81,7 @@ public abstract class AbstractCoder implements Coder {
            } while (decoded != null);
 
        } catch (Exception e) {
-           throw new IOException("Error decoding data.", e);
+           throw new IOException("Error decoding data." + e);
        }
    }
 
@@ -105,4 +104,8 @@ public abstract class AbstractCoder implements Coder {
     public abstract Asn1Object decode(String line);
     public abstract Asn1Object decode(InputStream is);
     public abstract void publish(String topic, Asn1Object msg);
+    
+    public void setAsn1Plugin(Asn1Plugin asn1Plugin) {
+        this.asn1Coder = asn1Plugin;
+    }
 }

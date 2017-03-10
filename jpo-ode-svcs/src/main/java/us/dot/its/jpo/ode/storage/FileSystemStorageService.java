@@ -23,16 +23,17 @@ import us.dot.its.jpo.ode.eventlog.EventLogger;
 public class FileSystemStorageService implements StorageService {
     private static Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
 
-    private final Path rootLocation;
-    private final Path bsmLocation;
-    private final Path messageFrameLocation;
+    private Path rootLocation;
+    private Path bsmLocation;
+    private Path messageFrameLocation;
 
     @Autowired
     public FileSystemStorageService(OdeProperties properties) {
 
         this.rootLocation = Paths.get(properties.getUploadLocationRoot());
-        this.bsmLocation = Paths.get(properties.getUploadLocationRoot(),properties.getUploadLocationBsm());
-        this.messageFrameLocation = Paths.get(properties.getUploadLocationRoot(), properties.getUploadLocationMessageFrame());
+        this.bsmLocation = Paths.get(properties.getUploadLocationRoot(), properties.getUploadLocationBsm());
+        this.messageFrameLocation = Paths.get(properties.getUploadLocationRoot(),
+                properties.getUploadLocationMessageFrame());
 
         logger.info("Upload location (root): {}", this.rootLocation);
         logger.info("Upload location (bsm): {}", this.bsmLocation);
@@ -58,7 +59,7 @@ public class FileSystemStorageService implements StorageService {
             EventLogger.logger.info("File is empty: {}", path);
             throw new StorageException("File is empty: " + path);
         }
-        
+
         // Check file does not already exist (if so, delete existing)
         try {
             EventLogger.logger.info("Deleting existing file: {}", path);
@@ -88,7 +89,6 @@ public class FileSystemStorageService implements StorageService {
             EventLogger.logger.info("Failed to read files stored in {}", this.rootLocation);
             throw new StorageException("Failed to read files stored in " + this.rootLocation, e);
         }
-
     }
 
     @Override
@@ -101,11 +101,10 @@ public class FileSystemStorageService implements StorageService {
         try {
             Path file = load(filename);
             Resource resource = new UrlResource(file.toUri());
-            if (resource.exists() || resource.isReadable()) {
+            if (resource.exists() && resource.isReadable()) {
                 return resource;
             } else {
                 throw new StorageFileNotFoundException("Could not read file: " + filename);
-
             }
         } catch (MalformedURLException e) {
             throw new StorageFileNotFoundException("Could not read file: " + filename, e);
@@ -140,5 +139,9 @@ public class FileSystemStorageService implements StorageService {
 
     public Path getMessageFrameLocation() {
         return messageFrameLocation;
+    }
+
+    public void setRootLocation(Path rootLocation) {
+        this.rootLocation = rootLocation;
     }
 }
