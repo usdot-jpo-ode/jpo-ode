@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import us.dot.its.jpo.ode.dds.DdsRequest.Dialog;
 import us.dot.its.jpo.ode.dds.DdsRequest.EncodeType;
 import us.dot.its.jpo.ode.dds.DdsRequest.SystemName;

@@ -2,14 +2,8 @@ package us.dot.its.jpo.ode.dds;
 
 import static org.junit.Assert.*;
 
-import mockit.Deencapsulation;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
-import mockit.Verifications;
+import mockit.*;
 import mockit.integration.junit4.JMockit;
-
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import javax.net.ssl.SSLContext;
