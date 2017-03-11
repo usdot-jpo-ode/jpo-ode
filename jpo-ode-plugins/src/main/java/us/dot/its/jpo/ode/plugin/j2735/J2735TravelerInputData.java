@@ -1,24 +1,39 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import us.dot.its.jpo.ode.model.OdeObject;
-
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
+
+import us.dot.its.jpo.ode.model.OdeObject;
 
 public class J2735TravelerInputData extends OdeObject {
 
-   private static final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm a");
+   private static final long serialVersionUID = 8769107278440796699L;
 
-   public int MsgCount;
-   public String MinuteOfTheYear;
-   public int UniqueMSGID;
-   public String urlB;
-   public DataFrame[] dataframes;
-   public RSUs[] rsus;
+   public TIM tim;
+   public RSU[] rsus;
    public SNMP snmp;
+   public ODE ode;
+   public SDW sdw;
 
+   public static class ODE {
+      public int version = 1;
+   }
+   
+   public static class SDW {
+      public enum TimeToLive {
+         oneMinute,
+         ThirtyMinutes,
+         oneDay,
+         oneWeek,
+         oneMonth,
+         oneYear
+      }
+
+      public J2735GeoRegion serviceRegion;
+      public TimeToLive ttl = TimeToLive.ThirtyMinutes;
+   }
+   
    public static class SNMP {
-      public int rsuid;
+      public String rsuid;
       public int msgid;
       public int mode;
       public int channel;
@@ -29,13 +44,20 @@ public class J2735TravelerInputData extends OdeObject {
       public int status;
    }
 
-   public static class RSUs {
+   public static class RSU {
       public String target;
       public String username;
       public String password;
-      public String retries;
+      public int retries;
       public int timeout;
+   }
 
+   public static class TIM { 
+      public int MsgCount;
+      public String MinuteOfTheYear;
+      public int UniqueMSGID;
+      public String urlB;
+      public DataFrame[] dataframes;
    }
 
    public static class ComputedLane {

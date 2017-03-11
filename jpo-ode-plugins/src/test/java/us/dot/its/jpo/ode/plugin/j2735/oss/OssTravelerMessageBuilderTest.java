@@ -1,11 +1,12 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
-import us.dot.its.jpo.ode.j2735.dsrc.MsgCount;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 
@@ -2263,12 +2264,15 @@ public class OssTravelerMessageBuilderTest {
    public void checkTravelerMessageBuilder() {
       J2735TravelerInputData ti = new J2735TravelerInputData();
       TravelerInformation travelerinfo = new TravelerInformation();
-      ti.MsgCount = 10;
-      ti.urlB = "null";
-      ti.dataframes = null;
-      OssTravelerMessageBuilder build = new OssTravelerMessageBuilder();
+      ti.tim.MsgCount = 10;
+      ti.tim.urlB = "null";
+      ti.tim.dataframes = null;
+      OssTravelerMessageBuilder builder = new OssTravelerMessageBuilder();
       try {
-         travelerinfo = build.buildTravelerInformation(ti);
+         travelerinfo = builder.buildTravelerInformation(ti);
+         assertEquals(10, travelerinfo.msgCnt);
+         assertEquals("null", travelerinfo.urlB);
+         assertNull(travelerinfo.dataFrames);
       }
       catch (Exception e)
       {

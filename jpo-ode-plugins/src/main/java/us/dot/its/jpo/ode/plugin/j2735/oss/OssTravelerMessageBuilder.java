@@ -1,8 +1,17 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 import com.oss.asn1.Coder;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
+
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.*;
 import us.dot.its.jpo.ode.j2735.dsrc.GeographicalPath.Description;
@@ -12,33 +21,23 @@ import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Regions;
 import us.dot.its.jpo.ode.j2735.dsrc.ValidRegion.Area;
 import us.dot.its.jpo.ode.j2735.itis.ITIScodesAndText;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssPosition3D;
-import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
-
-import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
+import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class OssTravelerMessageBuilder {
    public static TravelerInformation travelerInfo;
    private static final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm a", Locale.ENGLISH);
-   private static final int MAX_MINUTES_DURATION = 32000; // DSRC spec
 
    public TravelerInformation buildTravelerInformation(J2735TravelerInputData travInputData)
          throws ParseException, EncodeFailedException, EncodeNotSupportedException {
 
       travelerInfo = new TravelerInformation();
-      validateMessageCount(travInputData.MsgCount);
-      travelerInfo.setMsgCnt(new MsgCount(travInputData.MsgCount));
-      ByteBuffer buf = ByteBuffer.allocate(9).put((byte)0).putLong(travInputData.UniqueMSGID);
+      validateMessageCount(travInputData.tim.MsgCount);
+      travelerInfo.setMsgCnt(new MsgCount(travInputData.tim.MsgCount));
+      ByteBuffer buf = ByteBuffer.allocate(9).put((byte)0).putLong(travInputData.tim.UniqueMSGID);
       travelerInfo.setPacketID(new UniqueMSGID(buf.array()));
-      validateURL(travInputData.urlB);
-      travelerInfo.setUrlB(new URL_Base(travInputData.urlB));
+      validateURL(travInputData.tim.urlB);
+      travelerInfo.setUrlB(new URL_Base(travInputData.tim.urlB));
       travelerInfo.setDataFrames(buildDataFrames(travInputData));
 
       return travelerInfo;
@@ -47,10 +46,10 @@ public class OssTravelerMessageBuilder {
    private TravelerDataFrameList buildDataFrames(J2735TravelerInputData travInputData) throws ParseException {
       TravelerDataFrameList dataFrames = new TravelerDataFrameList();
 
-      validateFrameCount(travInputData.dataframes.length);
-      int len = travInputData.dataframes.length;
+      validateFrameCount(travInputData.tim.dataframes.length);
+      int len = travInputData.tim.dataframes.length;
       for (int i = 0; i < len; i++) {
-         J2735TravelerInputData.DataFrame inputDataFrame = travInputData.dataframes[i];
+         J2735TravelerInputData.DataFrame inputDataFrame = travInputData.tim.dataframes[i];
          TravelerDataFrame dataFrame = new TravelerDataFrame();
 
          // Part I, header
@@ -88,11 +87,11 @@ public class OssTravelerMessageBuilder {
       return dataFrames;
    }
 
-   public static String getHexTravelerInformation(TravelerInformation ti)
+   public String getHexTravelerInformation()
          throws EncodeFailedException, EncodeNotSupportedException {
       Coder coder = J2735.getPERUnalignedCoder();
       ByteArrayOutputStream sink = new ByteArrayOutputStream();
-      coder.encode(ti, sink);
+      coder.encode(travelerInfo, sink);
       byte[] bytes = sink.toByteArray();
       return CodecUtils.toHex(bytes);
    }
@@ -222,13 +221,12 @@ public class OssTravelerMessageBuilder {
       if (heading == null || heading.length() == 0) {
          return new HeadingSlice(new byte[] { 0x00, 0x00 });
       } else {
-         int[] nums = new int[heading.length()];
-         for (int i = 0; i < heading.length(); i++) {
-            nums[i] = Integer.parseInt(heading.valueOf(i));
-         }
          short result = 0;
-         for (int i = 0; i < nums.length; i++) {
-            result |= nums[i];
+         for (int i = 0; i < 16; i++) {
+            if (heading.charAt(i) == '1') {
+               result |= 1;
+            }
+            result <<= 1;
          }
          return new HeadingSlice(ByteBuffer.allocate(2).putShort(result).array());
       }
@@ -702,8 +700,7 @@ public class OssTravelerMessageBuilder {
 
    public static void validateHeading(String head) {
       validateString(head);
-      byte[] heads = head.getBytes();
-      if (heads.length != 16) {
+      if (head.length() != 16) {
          throw new IllegalArgumentException("Invalid BitString");
       }
    }

@@ -1,66 +1,69 @@
 {
-  "MsgCount": "13",
-  "MinuteOfTheYear": "34",
-  "UniqueMSGID": "1",
-  "urlB": "null",
-  "dataframes": [
-    {
-      "sspTimRights": "0",
-      "frameType": "0",
-      "msgID": "RoadSignID",
-      "latitude": "10",
-      "longitude": "11",
-      "elevation": "77",
-      "viewAngle": "1010101010101010",
-      "mutcd": "5",
-      "crc": "6",
-      "startYear": "10/22/1993 12:22 am",
-      "startTime": "10/22/1994 12:20 am",
-      "durationTime": "22",
-      "priority": "0",
-      "sspLocationRights": "3",
-      "regions": [
-        {
-          "name": "bob",
-          "regulatorID": "23",
-          "segmentID": "33",
-          "anchor_lat": "2",
-          "anchor_long": "55",
-          "anchor_elevation": "44",
-          "laneWidth": "7",
-          "directionality": "3",
-          "closedPath": "false",
-          "direction": "1010101010101010",
-          "description": "oldRegion",
-          "oldRegion": {
+  "ode": {"version":2},
+  "tim": {
+    "MsgCount": "13",
+    "MinuteOfTheYear": "34",
+    "UniqueMSGID": "1",
+    "urlB": "null",
+    "dataframes": [
+      {
+        "sspTimRights": "0",
+        "frameType": "0",
+        "msgID": "RoadSignID",
+        "latitude": "10",
+        "longitude": "11",
+        "elevation": "77",
+        "viewAngle": "1010101010101010",
+        "mutcd": "5",
+        "crc": "6",
+        "startYear": "10/22/1993 12:22 am",
+        "startTime": "10/22/1994 12:20 am",
+        "durationTime": "22",
+        "priority": "0",
+        "sspLocationRights": "3",
+        "regions": [
+          {
+            "name": "bob",
+            "regulatorID": "23",
+            "segmentID": "33",
+            "anchor_lat": "2",
+            "anchor_long": "55",
+            "anchor_elevation": "44",
+            "laneWidth": "7",
+            "directionality": "3",
+            "closedPath": "false",
             "direction": "1010101010101010",
-            "extent": "1",
-            "area": "regionPoint",
-            "regionPoint": {
-              "latitude": "44",
-              "longitude": "71",
-              "elevation": "32",
-              "scale": "15",
-              "regionList": [
-                {
-                  "xOffset": "5",
-                  "yOffset": "10",
-                  "zOffset": "15"
-                }
-              ]
+            "description": "oldRegion",
+            "oldRegion": {
+              "direction": "1010101010101010",
+              "extent": "1",
+              "area": "regionPoint",
+              "regionPoint": {
+                "latitude": "44",
+                "longitude": "71",
+                "elevation": "32",
+                "scale": "15",
+                "regionList": [
+                  {
+                    "xOffset": "5",
+                    "yOffset": "10",
+                    "zOffset": "15"
+                  }
+                ]
+              }
             }
           }
-        }
-      ],
-      "sspMsgTypes": "2",
-      "sspMsgContent": "3",
-      "content": "Advisory",
-      "items": [
-        "250"
-      ],
-      "url": "null"
-    }
-  ],
+        ],
+        "sspMsgTypes": "2",
+        "sspMsgContent": "3",
+        "content": "Advisory",
+        "items": [
+          "250"
+        ],
+        "url": "null"
+      }
+    ]
+  },
   "rsus": [
     {
       "target": "127.0.0.1",
@@ -80,5 +83,17 @@
     "deliverystop": "2017-12-01T17:47:11-05:15",
     "enable": "1",
     "status": "4"
+  },
+  "sdw": {
+    "serviceRegion": {
+      "nwCorner": {
+        "latitude": "44.998459",
+        "longitude": "-111.040817"
+      },
+      "seCorner": {
+        "latitude": "41.104674",
+        "longitude": "-104.111312"
+      }
+    }
   }
 }
