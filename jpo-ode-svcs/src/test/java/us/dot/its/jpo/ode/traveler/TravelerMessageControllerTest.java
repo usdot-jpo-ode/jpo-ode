@@ -48,7 +48,7 @@ public class TravelerMessageControllerTest {
          new TravelerMessageController(odeProperties).timMessage(jsonString);
          fail("Expected IllegalArgumentException");
       } catch (Exception e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
+         assertEquals(TimMessageException.class, e.getClass());
       }
    }
 
