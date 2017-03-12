@@ -1,8 +1,5 @@
 package us.dot.its.jpo.ode.traveler;
 
-import java.text.ParseException;
-import java.util.Objects;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.event.ResponseEvent;
@@ -14,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
@@ -27,6 +23,9 @@ import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.snmp.TimManagerService;
 import us.dot.its.jpo.ode.snmp.TimParameters;
 import us.dot.its.jpo.ode.util.JsonUtils;
+
+import java.text.ParseException;
+import java.util.Objects;
 
 @Controller
 public class TravelerMessageController {

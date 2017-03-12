@@ -25,7 +25,7 @@ paths:
           description: Number of messgages.
           required: true
           schema: 
-            $ref: '#/definitions/TravelerMessage'
+            $ref: '#/definitions/tim'
          
       tags:
         - TIM
@@ -35,7 +35,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/TravelerMessage'
+              $ref: '#/definitions/tim'
         default:
           description: Unexpected error
           schema:
@@ -66,20 +66,8 @@ paths:
         400:
           description: Value input error
 definitions:
-  TravelerMessage:
+  tim:
     type: object
-    properties:
-      timeContent:
-         $ref: '#/definitions/TimContent'
-      RSUs:
-        type: array
-        items:
-           $ref: '#/definitions/RSU'
-      snmp: 
-         $ref: '#/definitions/SNMP'
-  TimContent:
-    type: object
-    required: [msgCnt]
     properties:
       msgCnt:
         type: integer 
@@ -90,10 +78,17 @@ definitions:
       urlB: 
         type: string
         description: UrlB
-      travelerDataFrames: 
+      dataFrames: 
         type: array
         items: 
-          $ref: '#/definitions/TravelerDataFrame'
+          $ref: '#/definitions/TravelerDataFrameRegion'
+      RSUs:
+        type: array
+        items:
+           $ref: '#/definitions/RSU'
+      snmp: 
+         $ref: '#/definitions/SNMP'
+      
   TravelerDataFrame:
     type: object
     properties:
@@ -162,6 +157,160 @@ definitions:
     properties:
       sspindex: 
         type: integer
+      frameType: 
+        type: integer
+      msgID: 
+        type: string
+      latitude:
+        type: integer
+      longitude": 
+        type: integer
+      elevation: 
+        type: integer
+      viewAngle: 
+        type: string
+      mutcd: 
+        type: integer
+      crc:
+        type: integer
+      startYear: 
+        type: string
+      startTime:
+        type: string
+      durationTime:
+        type: integer
+      priority: 
+        type: integer
+      sspLocationRights: 
+        type: integer
+      region:
+        $ref: '#/definitions/Region'
+  Region:
+    type: object
+    properties: 
+      name: 
+        type: string
+      regulatorID":
+        type: integer
+      segmentId:
+        type: integer
+      anchor_lat:
+        type: integer
+      anchor_long:
+        type: integer
+      anchor_eleveation:
+        type: integer
+      laneWidth:
+        type: integer
+      directionality:
+        type: integer
+      closedPath:
+        type: string
+      direction: 
+        type: integer
+      description:
+        type: string
+      path:
+        $ref: '#/definitions/Path'
+      oldRegion:
+        $ref: '#/definitions/OldRegion'
+      sspMsgTypes:
+        type: integer
+      sspMsgContent:
+        type: integer
+      content: 
+        type: string
+      itemss:
+        type: array
+        items:
+          type: integer
+            
+  Path:
+    type: object
+    properties:
+      type: 
+        type: string
+      scale: 
+        type: integer
+      nodes:
+        type: array
+        items:
+          $ref: '#/definitions/RegionNode'
+          
+  RegionNode:
+    type: object
+    properties:
+      delta: 
+        type: string
+      x: 
+        type: integer
+      y:
+        type: integer
+      nodeLat: 
+        type: integer
+      nodeLong:
+        type: integer
+    
+      attributes:
+        $ref: '#/definitions/Attribute'
+  Attribute:
+    type: object
+    properties:
+      localNodes:
+        type: array
+        items:
+          type: integer
+      disabledLists: 
+        type: array
+        items:
+          type: integer
+      enabledLists: 
+        type: array
+        items:
+          type: integer
+      dataLists:
+        type: array
+        items:
+          type: integer
+          
+          
+      
+  OldRegion:
+    type: object
+    properties:
+      direction:
+        type: string
+      extent: 
+        type: integer
+      area: 
+        type: string
+      regionPoint:
+        $ref: '#/definitions/RegionPoint'
+  RegionPoint:
+    type: object
+    properties:
+      latitude:
+        type: integer
+      longitude:
+        type: integer
+      elevation:
+        type: integer
+      scale:
+        type: integer
+      regionList:
+        type: array
+        items:
+          $ref: '#/definitions/RegionList'
+  RegionList:
+    type: object
+    properties:
+      xOffset: 
+        type: integer
+      yOffset: 
+        type: integer
+      zOffset:
+        type: integer
+      
   TravelerDataFrameContent:
     type: object
     properties: 

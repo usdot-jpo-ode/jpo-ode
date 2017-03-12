@@ -1,68 +1,93 @@
 {
   "ode": {"version":2},
-  "tim": {
-    "MsgCount": "13",
-    "MinuteOfTheYear": "34",
-    "UniqueMSGID": "1",
-    "urlB": "null",
-    "dataframes": [
-      {
-        "sspTimRights": "0",
-        "frameType": "0",
-        "msgID": "RoadSignID",
-        "latitude": "10",
-        "longitude": "11",
-        "elevation": "77",
-        "viewAngle": "1010101010101010",
-        "mutcd": "5",
-        "crc": "6",
-        "startYear": "10/22/1993 12:22 am",
-        "startTime": "10/22/1994 12:20 am",
-        "durationTime": "22",
-        "priority": "0",
-        "sspLocationRights": "3",
-        "regions": [
-          {
-            "name": "bob",
-            "regulatorID": "23",
-            "segmentID": "33",
-            "anchor_lat": "2",
-            "anchor_long": "55",
-            "anchor_elevation": "44",
-            "laneWidth": "7",
-            "directionality": "3",
-            "closedPath": "false",
-            "direction": "1010101010101010",
-            "description": "oldRegion",
-            "oldRegion": {
+  "tim":  { 
+  "MsgCount": "1",
+  "MinuteOfTheYear": "34",
+  "UniqueMSGID": "1",
+  "urlB": "null",
+  "dataframes": [
+    {
+      "sspTimRights": "0",
+      "frameType": "1",
+      "msgID": "RoadSignID",
+      "latitude": "404742319",
+      "longitude": "-1049692981",
+      "elevation": "15120",
+      "viewAngle": "1010101010101010",
+      "mutcd": "1",
+      "crc": "6",
+      "startYear": "03/11/2017 12:22 am",
+      "startTime": "03/11/2017 12:22 am",
+      "durationTime": "835",
+      "priority": "2",
+      "sspLocationRights": "0",
+      "regions": [
+        {
+          "name": "SpeedLimit",
+          "regulatorID": "23",
+          "segmentID": "33",
+          "anchor_lat": "404742319",
+          "anchor_long": "-1049692981",
+          "anchor_elevation": "15120",
+          "laneWidth": "366",
+          "directionality": "0",
+          "closedPath": "false",
+          "direction": "0200040008000000",
+          "description": "oldRegion",
+           "oldRegion": {
               "direction": "1010101010101010",
               "extent": "1",
               "area": "regionPoint",
               "regionPoint": {
-                "latitude": "44",
-                "longitude": "71",
-                "elevation": "32",
-                "scale": "15",
+                "latitude": "404742319",
+                "longitude": "-1049692981",
+                "elevation": "15120",
+                "scale": "0",
                 "regionList": [
                   {
-                    "xOffset": "5",
-                    "yOffset": "10",
-                    "zOffset": "15"
+                    "xOffset": "-36",
+                    "yOffset": "21",
+                    "zOffset": "0"
+                  },
+                   {
+                    "xOffset": "72",
+                    "yOffset": "29",
+                    "zOffset": "0"
+                  },
+                   {
+                    "xOffset": "16",
+                    "yOffset": "-36",
+                    "zOffset": "0"
+                  },
+                   {
+                    "xOffset": "-110",
+                    "yOffset": "-76",
+                    "zOffset": "0"
+                  },
+                   {
+                    "xOffset": "-16",
+                    "yOffset": "19",
+                    "zOffset": "0"
+                  },
+                   {
+                    "xOffset": "38",
+                    "yOffset": "64",
+                    "zOffset": "0"
                   }
                 ]
               }
-            }
-          }
-        ],
-        "sspMsgTypes": "2",
-        "sspMsgContent": "3",
-        "content": "Advisory",
-        "items": [
-          "250"
-        ],
-        "url": "null"
-      }
-    ]
+        }
+        }
+      ],
+      "sspMsgTypes": "0",
+      "sspMsgContent": "0",
+      "content": "speedLimit",
+      "items": [
+        "12579"
+      ],
+      "url": "null"
+    }
+  ]
   },
   "rsus": [
     {

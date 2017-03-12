@@ -1,17 +1,8 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
-import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-
 import com.oss.asn1.Coder;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
-
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.*;
 import us.dot.its.jpo.ode.j2735.dsrc.GeographicalPath.Description;
@@ -23,6 +14,14 @@ import us.dot.its.jpo.ode.j2735.itis.ITIScodesAndText;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.util.CodecUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class OssTravelerMessageBuilder {
    public static TravelerInformation travelerInfo;
@@ -310,7 +309,7 @@ public class OssTravelerMessageBuilder {
                }
                area.setShapePointSet(sps);
                validRegion.setArea(area);
-            } else if ("regionPoint".equals(inputRegion.oldRegion.area)) {
+            } else if ("regionPointSet".equals(inputRegion.oldRegion.area)) {
                RegionPointSet rps = new RegionPointSet();
                rps.setAnchor(getPosition3D(inputRegion.oldRegion.regionPoint.latitude,
                      inputRegion.oldRegion.regionPoint.longitude, inputRegion.oldRegion.regionPoint.elevation));
