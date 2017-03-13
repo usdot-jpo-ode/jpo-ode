@@ -1,39 +1,135 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.text.ParseException;
+import java.time.ZonedDateTime;
+
 import com.oss.asn1.Coder;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
+
 import us.dot.its.jpo.ode.j2735.J2735;
-import us.dot.its.jpo.ode.j2735.dsrc.*;
+import us.dot.its.jpo.ode.j2735.dsrc.Angle;
+import us.dot.its.jpo.ode.j2735.dsrc.Circle;
+import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane;
+import us.dot.its.jpo.ode.j2735.dsrc.DYear;
+import us.dot.its.jpo.ode.j2735.dsrc.DeltaAngle;
+import us.dot.its.jpo.ode.j2735.dsrc.DescriptiveName;
+import us.dot.its.jpo.ode.j2735.dsrc.DirectionOfUse;
+import us.dot.its.jpo.ode.j2735.dsrc.DistanceUnits;
+import us.dot.its.jpo.ode.j2735.dsrc.ExitService;
+import us.dot.its.jpo.ode.j2735.dsrc.Extent;
+import us.dot.its.jpo.ode.j2735.dsrc.FurtherInfoID;
+import us.dot.its.jpo.ode.j2735.dsrc.GenericSignage;
+import us.dot.its.jpo.ode.j2735.dsrc.GeographicalPath;
 import us.dot.its.jpo.ode.j2735.dsrc.GeographicalPath.Description;
+import us.dot.its.jpo.ode.j2735.dsrc.GeometricProjection;
+import us.dot.its.jpo.ode.j2735.dsrc.HeadingSlice;
+import us.dot.its.jpo.ode.j2735.dsrc.LaneDataAttribute;
+import us.dot.its.jpo.ode.j2735.dsrc.LaneDataAttributeList;
+import us.dot.its.jpo.ode.j2735.dsrc.LaneID;
+import us.dot.its.jpo.ode.j2735.dsrc.LaneWidth;
+import us.dot.its.jpo.ode.j2735.dsrc.Latitude;
+import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
+import us.dot.its.jpo.ode.j2735.dsrc.MUTCDCode;
+import us.dot.its.jpo.ode.j2735.dsrc.MergeDivergeNodeAngle;
+import us.dot.its.jpo.ode.j2735.dsrc.MinuteOfTheYear;
+import us.dot.its.jpo.ode.j2735.dsrc.MinutesDuration;
+import us.dot.its.jpo.ode.j2735.dsrc.MsgCount;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeLL;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeLLList;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeSetLL;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeSetXY;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeXY;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeXYList;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeLL;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeListLL;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeListXY;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeOffsetPointLL;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeOffsetPointXY;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeSetLL;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeSetXY;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeXY;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_24B;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_28B;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_32B;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_36B;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_44B;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_48B;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_LLmD_64b;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_20b;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_22b;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_24b;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_26b;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_28b;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_32b;
+import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B12;
+import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B14;
+import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B16;
+import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B18;
+import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B22;
+import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B24;
+import us.dot.its.jpo.ode.j2735.dsrc.OffsetSystem;
+import us.dot.its.jpo.ode.j2735.dsrc.Offset_B10;
+import us.dot.its.jpo.ode.j2735.dsrc.Offset_B11;
+import us.dot.its.jpo.ode.j2735.dsrc.Offset_B12;
+import us.dot.its.jpo.ode.j2735.dsrc.Offset_B13;
+import us.dot.its.jpo.ode.j2735.dsrc.Offset_B14;
+import us.dot.its.jpo.ode.j2735.dsrc.Offset_B16;
+import us.dot.its.jpo.ode.j2735.dsrc.Radius_B12;
+import us.dot.its.jpo.ode.j2735.dsrc.RegionList;
+import us.dot.its.jpo.ode.j2735.dsrc.RegionOffsets;
+import us.dot.its.jpo.ode.j2735.dsrc.RegionPointSet;
+import us.dot.its.jpo.ode.j2735.dsrc.RegulatorySpeedLimit;
+import us.dot.its.jpo.ode.j2735.dsrc.RoadRegulatorID;
+import us.dot.its.jpo.ode.j2735.dsrc.RoadSegmentID;
+import us.dot.its.jpo.ode.j2735.dsrc.RoadSegmentReferenceID;
+import us.dot.its.jpo.ode.j2735.dsrc.RoadSignID;
+import us.dot.its.jpo.ode.j2735.dsrc.RoadwayCrownAngle;
+import us.dot.its.jpo.ode.j2735.dsrc.SSPindex;
+import us.dot.its.jpo.ode.j2735.dsrc.Scale_B12;
+import us.dot.its.jpo.ode.j2735.dsrc.SegmentAttributeLL;
+import us.dot.its.jpo.ode.j2735.dsrc.SegmentAttributeLLList;
+import us.dot.its.jpo.ode.j2735.dsrc.SegmentAttributeXY;
+import us.dot.its.jpo.ode.j2735.dsrc.SegmentAttributeXYList;
+import us.dot.its.jpo.ode.j2735.dsrc.ShapePointSet;
+import us.dot.its.jpo.ode.j2735.dsrc.SignPrority;
+import us.dot.its.jpo.ode.j2735.dsrc.SpeedLimit;
+import us.dot.its.jpo.ode.j2735.dsrc.SpeedLimitList;
+import us.dot.its.jpo.ode.j2735.dsrc.SpeedLimitType;
+import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Content;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.MsgId;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Regions;
+import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrameList;
+import us.dot.its.jpo.ode.j2735.dsrc.TravelerInfoType;
+import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
+import us.dot.its.jpo.ode.j2735.dsrc.URL_Base;
+import us.dot.its.jpo.ode.j2735.dsrc.URL_Short;
+import us.dot.its.jpo.ode.j2735.dsrc.UniqueMSGID;
+import us.dot.its.jpo.ode.j2735.dsrc.ValidRegion;
 import us.dot.its.jpo.ode.j2735.dsrc.ValidRegion.Area;
+import us.dot.its.jpo.ode.j2735.dsrc.Velocity;
+import us.dot.its.jpo.ode.j2735.dsrc.WorkZone;
+import us.dot.its.jpo.ode.j2735.dsrc.Zoom;
 import us.dot.its.jpo.ode.j2735.itis.ITIScodesAndText;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.util.CodecUtils;
-
-import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
+import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class OssTravelerMessageBuilder {
    public static TravelerInformation travelerInfo;
-   private static final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm a", Locale.ENGLISH);
 
    public TravelerInformation buildTravelerInformation(J2735TravelerInputData travInputData)
          throws ParseException, EncodeFailedException, EncodeNotSupportedException {
 
       travelerInfo = new TravelerInformation();
-      validateMessageCount(travInputData.tim.MsgCount);
-      travelerInfo.setMsgCnt(new MsgCount(travInputData.tim.MsgCount));
-      ByteBuffer buf = ByteBuffer.allocate(9).put((byte)0).putLong(travInputData.tim.UniqueMSGID);
+      validateMessageCount(travInputData.tim.msgCnt);
+      travelerInfo.setMsgCnt(new MsgCount(travInputData.tim.msgCnt));
+      travelerInfo.setTimeStamp(new MinuteOfTheYear(getMinuteOfTheYear(travInputData.tim.timeStamp)));
+      ByteBuffer buf = ByteBuffer.allocate(9).put((byte)0).putLong(travInputData.tim.packetID);
       travelerInfo.setPacketID(new UniqueMSGID(buf.array()));
       validateURL(travInputData.tim.urlB);
       travelerInfo.setUrlB(new URL_Base(travInputData.tim.urlB));
@@ -57,8 +153,8 @@ public class OssTravelerMessageBuilder {
          validateInfoType(inputDataFrame.frameType);
          dataFrame.setFrameType(TravelerInfoType.valueOf(inputDataFrame.frameType));
          dataFrame.setMsgId(getMessageId(inputDataFrame));
-         dataFrame.setStartYear(new DYear(getStartYear(inputDataFrame)));
-         dataFrame.setStartTime(new MinuteOfTheYear(getStartTime(inputDataFrame)));
+         dataFrame.setStartYear(new DYear(DateTimeUtils.isoDateTime(inputDataFrame.startDateTime).getYear()));
+         dataFrame.setStartTime(new MinuteOfTheYear(getMinuteOfTheYear(inputDataFrame.startDateTime)));
          validateMinutesDuration(inputDataFrame.durationTime);
          dataFrame.setDuratonTime(new MinutesDuration(inputDataFrame.durationTime));
          validateSign(inputDataFrame.priority);
@@ -185,10 +281,8 @@ public class OssTravelerMessageBuilder {
       if ("RoadSignID".equals(dataFrame.msgID)) {
          msgId.setChosenFlag(MsgId.roadSignID_chosen);
          RoadSignID roadSignID = new RoadSignID();
-         validateLong(dataFrame.longitude);
-         validateLat(dataFrame.latitude);
-         validateElevation(dataFrame.elevation);
-         roadSignID.setPosition(getPosition3D(dataFrame.latitude, dataFrame.longitude, dataFrame.elevation));
+         validatePosition(dataFrame.position);
+         roadSignID.setPosition(OssPosition3D.position3D(dataFrame.position));
          validateHeading(dataFrame.viewAngle);
          roadSignID.setViewAngle(getHeadingSlice(dataFrame.viewAngle));
          validateMUTCDCode(dataFrame.mutcd);
@@ -206,14 +300,6 @@ public class OssTravelerMessageBuilder {
                                                                                // value
       }
       return msgId;
-   }
-
-   private Position3D getPosition3D(long latitude, long longitude, long elevation) {
-      validateLat(latitude);
-      validateLong(longitude);
-      validateElevation(elevation);
-      J2735Position3D position = new J2735Position3D(latitude, longitude, elevation);
-      return OssPosition3D.position3D(position);
    }
 
    private HeadingSlice getHeadingSlice(String heading) {
@@ -243,7 +329,7 @@ public class OssTravelerMessageBuilder {
          geoPath.setId(new RoadSegmentReferenceID(new RoadRegulatorID(inputRegion.regulatorID),
                new RoadSegmentID(inputRegion.segmentID)));
          geoPath
-               .setAnchor(getPosition3D(inputRegion.anchor_lat, inputRegion.anchor_long, inputRegion.anchor_elevation));
+               .setAnchor(OssPosition3D.position3D(inputRegion.anchorPosition));
          validateLaneWidth(inputRegion.laneWidth);
          geoPath.setLaneWidth(new LaneWidth(inputRegion.laneWidth));
          validateDirectionality(inputRegion.directionality);
@@ -294,8 +380,7 @@ public class OssTravelerMessageBuilder {
             Area area = new Area();
             if ("shapePointSet".equals(inputRegion.oldRegion.area)) {
                ShapePointSet sps = new ShapePointSet();
-               sps.setAnchor(getPosition3D(inputRegion.oldRegion.shapepoint.latitude,
-                     inputRegion.oldRegion.shapepoint.longitude, inputRegion.oldRegion.shapepoint.elevation));
+               sps.setAnchor(OssPosition3D.position3D(inputRegion.oldRegion.shapepoint.position));
                validateLaneWidth(inputRegion.oldRegion.shapepoint.laneWidth);
                sps.setLaneWidth(new LaneWidth(inputRegion.oldRegion.shapepoint.laneWidth));
                validateDirectionality(inputRegion.oldRegion.shapepoint.directionality);
@@ -311,8 +396,7 @@ public class OssTravelerMessageBuilder {
                validRegion.setArea(area);
             } else if ("regionPointSet".equals(inputRegion.oldRegion.area)) {
                RegionPointSet rps = new RegionPointSet();
-               rps.setAnchor(getPosition3D(inputRegion.oldRegion.regionPoint.latitude,
-                     inputRegion.oldRegion.regionPoint.longitude, inputRegion.oldRegion.regionPoint.elevation));
+               rps.setAnchor(OssPosition3D.position3D(inputRegion.oldRegion.regionPoint.position));
                validateZoom(inputRegion.oldRegion.regionPoint.scale);
                rps.setScale(new Zoom(inputRegion.oldRegion.regionPoint.scale));
                RegionList rl = buildRegionOffsets(inputRegion.oldRegion.regionPoint.regionList);
@@ -348,7 +432,7 @@ public class OssTravelerMessageBuilder {
 
    private Circle buildGeoCircle(J2735TravelerInputData.DataFrame.Region.Geometry geo) {
       Circle circle = new Circle();
-      circle.setCenter(getPosition3D(geo.circle.latitude, geo.circle.longitude, geo.circle.elevation));
+      circle.setCenter(OssPosition3D.position3D(geo.circle.position));
       validateRadius(geo.circle.radius);
       circle.setRadius(new Radius_B12(geo.circle.radius));
       validateUnits(geo.circle.units);
@@ -358,7 +442,7 @@ public class OssTravelerMessageBuilder {
 
    private Circle buildOldCircle(J2735TravelerInputData.DataFrame.Region.OldRegion reg) {
       Circle circle = new Circle();
-      circle.setCenter(getPosition3D(reg.circle.latitude, reg.circle.longitude, reg.circle.elevation));
+      circle.setCenter(OssPosition3D.position3D(reg.circle.position));
       validateRadius(reg.circle.radius);
       circle.setRadius(new Radius_B12(reg.circle.radius));
       validateUnits(reg.circle.units);
@@ -610,21 +694,14 @@ public class OssTravelerMessageBuilder {
       return nodeList;
    }
 
-   private long getStartTime(J2735TravelerInputData.DataFrame dataFrame) throws ParseException {
-      Date startDate = sdf.parse(dataFrame.startTime);
-      String startOfYearTime = "01/01/" + getStartYear(dataFrame) + " 12:00 AM";
-      Date startOfYearDate = sdf.parse(startOfYearTime);
-      long minutes = (startDate.getTime() - startOfYearDate.getTime()) / 60000;
+   private long getMinuteOfTheYear(String timestamp) throws ParseException {
+      ZonedDateTime start = DateTimeUtils.isoDateTime(timestamp);
+      long diff = DateTimeUtils.difference( 
+            DateTimeUtils.isoDateTime(start.getYear() + "-01-01T00:00:00+00:00"),
+            start);
+      long minutes = diff / 60000;
       validateStartTime(minutes);
       return minutes;
-   }
-
-   private int getStartYear(J2735TravelerInputData.DataFrame dataFrame) throws ParseException {
-      Date startDate = sdf.parse(dataFrame.startTime);
-      Calendar cal = Calendar.getInstance();
-      cal.setTime(startDate);
-      validateStartYear(Calendar.YEAR);
-      return cal.get(Calendar.YEAR);
    }
 
    public static void validateMessageCount(int msg) {
@@ -682,18 +759,12 @@ public class OssTravelerMessageBuilder {
          throw new IllegalArgumentException("Invalid enumeration");
    }
 
-   public static void validateLat(long lat) {
-      if (lat < -900000000 || lat > 900000001)
+   public static void validatePosition(J2735Position3D position) {
+      if (position.getLatitude().doubleValue() < -90.0 || position.getLatitude().doubleValue() > 90.0)
          throw new IllegalArgumentException("Invalid Latitude");
-   }
-
-   public static void validateLong(long lonng) {
-      if (lonng < -1799999999 || lonng > 1800000001)
+      if (position.getLongitude().doubleValue() < -180.0 || position.getLongitude().doubleValue() > 180.0)
          throw new IllegalArgumentException("Invalid Longitude");
-   }
-
-   public static void validateElevation(long elev) {
-      if (elev < -4096 || elev > 61439)
+      if (position.getElevation().doubleValue() < -409.5 || position.getElevation().doubleValue() > 6143.9)
          throw new IllegalArgumentException("Invalid Elevation");
    }
 
