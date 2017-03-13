@@ -37,7 +37,7 @@
            "oldRegion": {
               "direction": "1010101010101010",
               "extent": "1",
-              "area": "regionPoint",
+              "area": "regionPointSet",
               "regionPoint": {
                 "latitude": "404742319",
                 "longitude": "-1049692981",
