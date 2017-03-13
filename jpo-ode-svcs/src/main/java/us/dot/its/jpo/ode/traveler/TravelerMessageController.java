@@ -99,7 +99,7 @@ public class TravelerMessageController {
         boolean success = true;
         try {
            // Step 3 - Send TIM to all specified RSUs if rsus element exists
-           if (travelerinputData.snmp != null) {
+           /*if (travelerinputData.snmp != null) {
               if (travelerinputData.rsus != null)  {
                  for (RSU rsu : travelerinputData.rsus) {
                     ResponseEvent response = sendToRSU(rsu, travelerinputData.snmp, rsuSRMPayload);
@@ -115,7 +115,7 @@ public class TravelerMessageController {
                       throw new TimMessageException(msg);
                    }
                  }
-              }
+              }*/
               
               // Step 4 - Step Deposit TIM to SDW if sdw element exists
               if (travelerinputData.sdw != null) {
@@ -127,7 +127,6 @@ public class TravelerMessageController {
                      travelerinputData.sdw.ttl);
                  depositor.deposit(message);
               }
-           }
       } catch (Exception e) {
          String msg = "TIM CONTROLLER ERROR";
          log(false, msg , e);
