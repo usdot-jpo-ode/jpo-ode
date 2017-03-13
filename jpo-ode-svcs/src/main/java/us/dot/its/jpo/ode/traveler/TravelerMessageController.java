@@ -66,7 +66,7 @@ public class TravelerMessageController {
         }
         catch (Exception e) {
            log(false, "Error Deserializing TravelerInputData", e);
-           throw new TimMessageException("Error Deserializing TravelerInputData", e);
+           throw new TimMessageException(e);
         }
         
         OssTravelerMessageBuilder builder = new OssTravelerMessageBuilder();
@@ -77,7 +77,7 @@ public class TravelerMessageController {
         {
            String msg = "Error Building travelerinfo";
            log(false, msg, e);
-           throw new TimMessageException(msg, e);
+           throw new TimMessageException(e);
         }
         
         // Step 2 - Encode the TIM object to a hex string
@@ -92,41 +92,46 @@ public class TravelerMessageController {
         } catch (Exception e) {
            String msg = "TIM CONTROLLER - Failed to encode TIM";
            log(false, msg, e);
-           throw new TimMessageException(msg);
+           throw new TimMessageException(e);
         }
         logger.debug("TIM CONTROLLER - Encoded Hex TIM: {}", rsuSRMPayload);
 
         boolean success = true;
         try {
            // Step 3 - Send TIM to all specified RSUs if rsus element exists
-           if (travelerinputData.rsus != null) {
-              for (RSU rsu : travelerinputData.rsus) {
-                 ResponseEvent response = sendToRSU(rsu, travelerinputData.snmp, rsuSRMPayload);
-                 if (response != null && response.getResponse() != null) {
-                    EventLogger.logger.info("RSU {} Response: {}", rsu.target, response.getResponse());
-                    logger.info("RSU {} Response: {}", rsu.target, response.getResponse());
-                } else {
-                   success = false;
-                   EventLogger.logger.error("Empty response from RSU {}", rsu.target);
-                   logger.error("Empty response from RSU {}", rsu.target);
-                }
+           if (travelerinputData.snmp != null) {
+              if (travelerinputData.rsus != null)  {
+                 for (RSU rsu : travelerinputData.rsus) {
+                    ResponseEvent response = sendToRSU(rsu, travelerinputData.snmp, rsuSRMPayload);
+                    if (response != null && response.getResponse() != null) {
+                       String msg = String.format("RSU %1$s Response: %2$s", rsu.target, response.getResponse());
+                       EventLogger.logger.info(msg);
+                       logger.info(rsu.target, response.getResponse());
+                   } else {
+                      success = false;
+                      String msg = String.format("Empty response from RSU %1$s", rsu.target);
+                      EventLogger.logger.error(msg);
+                      logger.error(msg);
+                      throw new TimMessageException(msg);
+                   }
+                 }
               }
-           }
-           
-           // Step 4 - Step Deposit TIM to SDW if sdw element exists
-           if (travelerinputData.sdw != null) {
-              AsdMessage message = new AsdMessage(
-                  travelerinputData.snmp.deliverystart, 
-                  travelerinputData.snmp.deliverystop,
-                  rsuSRMPayload,
-                  travelerinputData.sdw.serviceRegion,
-                  travelerinputData.sdw.ttl);
-              depositor.deposit(message);
+              
+              // Step 4 - Step Deposit TIM to SDW if sdw element exists
+              if (travelerinputData.sdw != null) {
+                 AsdMessage message = new AsdMessage(
+                     travelerinputData.snmp.deliverystart, 
+                     travelerinputData.snmp.deliverystop,
+                     rsuSRMPayload,
+                     travelerinputData.sdw.serviceRegion,
+                     travelerinputData.sdw.ttl);
+                 depositor.deposit(message);
+              }
            }
       } catch (Exception e) {
          String msg = "TIM CONTROLLER ERROR";
          log(false, msg , e);
-         throw new TimMessageException(msg);
+         throw new TimMessageException(e);
       }
 
       return log(success, "TIM CONTROLLER RESPONSE", null);

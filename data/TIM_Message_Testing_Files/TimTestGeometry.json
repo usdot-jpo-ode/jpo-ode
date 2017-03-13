@@ -1,23 +1,26 @@
 {
-  "ode": {"version":2},
+  "ode": {
+    "version": 2
+  },
   "tim": {
-    "MsgCount": "13",
-    "MinuteOfTheYear": "34",
-    "UniqueMSGID": "1",
+    "msgCnt": "13",
+    "timeStamp": "2017-03-13T01:07:11-05:00",
+    "packetID": "1",
     "urlB": "null",
     "dataframes": [
       {
         "sspTimRights": "0",
         "frameType": "0",
         "msgID": "RoadSignID",
-        "latitude": "10",
-        "longitude": "11",
-        "elevation": "77",
+        "position": {
+          "latitude": "41.678473",
+          "longitude": "-108.782775",
+          "elevation": "917.1432"
+        },
         "viewAngle": "1010101010101010",
         "mutcd": "5",
         "crc": "6",
-        "startYear": "10/22/1993 12:22 am",
-        "startTime": "10/22/1994 12:20 am",
+        "startDateTime": "2017-12-01T17:47:11-05:00",
         "durationTime": "22",
         "priority": "0",
         "sspLocationRights": "3",
@@ -26,9 +29,11 @@
             "name": "bob",
             "regulatorID": "23",
             "segmentID": "33",
-            "anchor_lat": "2",
-            "anchor_long": "55",
-            "anchor_elevation": "44",
+            "anchorPosition": {
+              "latitude": "41.678473",
+              "longitude": "-108.782775",
+              "elevation": "917.1432"
+            },
             "laneWidth": "7",
             "directionality": "3",
             "closedPath": "false",
@@ -39,9 +44,11 @@
               "extent": "1",
               "laneWidth": "33",
               "circle": {
-                "latitude": "44",
-                "longitude": "71",
-                "elevation": "32",
+                "position": {
+                  "latitude": "41.678473",
+                  "longitude": "-108.782775",
+                  "elevation": "917.1432"
+                },
                 "radius": "15",
                 "units": "7"
               }

@@ -53,9 +53,9 @@ public class J2735TravelerInputData extends OdeObject {
    }
 
    public static class TIM { 
-      public int MsgCount;
-      public String MinuteOfTheYear;
-      public int UniqueMSGID;
+      public int msgCnt;
+      public String timeStamp;
+      public int packetID;
       public String urlB;
       public DataFrame[] dataframes;
    }
@@ -134,14 +134,11 @@ public class J2735TravelerInputData extends OdeObject {
       public short sspTimRights;// Start Header Information
       public int frameType;
       public String msgID;
-      public long latitude;
-      public long longitude;
-      public long elevation;
+      public J2735Position3D position;
       public String viewAngle;
       public int mutcd;
       public int crc;
-      public String startYear;
-      public String startTime;
+      public String startDateTime;
       public int durationTime;
       public int priority;// End header Information
       public short sspLocationRights;// Start Region Information
@@ -156,9 +153,7 @@ public class J2735TravelerInputData extends OdeObject {
          public String name;
          public int regulatorID;
          public int segmentID;
-         public long anchor_lat;
-         public long anchor_long;
-         public long anchor_elevation;
+         public J2735Position3D anchorPosition;
          public int laneWidth;
          public long directionality;
          public boolean closedPath;
@@ -178,9 +173,7 @@ public class J2735TravelerInputData extends OdeObject {
             public RegionPoint regionPoint;
 
             public static class ShapePoint {
-               public int latitude;
-               public int longitude;
-               public int elevation;
+               public J2735Position3D position;
                public int laneWidth;
                public int directionality;
                public String nodeType;
@@ -189,9 +182,7 @@ public class J2735TravelerInputData extends OdeObject {
             }
 
             public static class RegionPoint {
-               public int latitude;
-               public int longitude;
-               public int elevation;
+               public J2735Position3D position;
                public int scale;
                public RegionList[] regionList;
 
@@ -211,9 +202,7 @@ public class J2735TravelerInputData extends OdeObject {
          }
 
          public static class Circle {
-            public int latitude;
-            public int longitude;
-            public int elevation;
+            public J2735Position3D position;
             public int radius;
             public int units;
          }
@@ -236,41 +225,24 @@ public class J2735TravelerInputData extends OdeObject {
 
       @Override
       public String toString() {
-         return "Frame [name=" + ", referenceLat=" + latitude + ", referenceLon=" + longitude + ", referenceElevation="
-               + elevation + ", sspTimRights=" + sspTimRights + ", sspTypeRights=" + sspMsgTypes + ", sspContentRights="
+         return "Frame [name=" + ", referencePosition=" + position.toJson() + ", sspTimRights=" + sspTimRights + ", sspTypeRights=" + sspMsgTypes + ", sspContentRights="
                + sspMsgContent + ", sspLocationRights=" + sspLocationRights + ", content=" + content + ", items="
-               + Arrays.toString(items) + ", mutcd=" + mutcd + ", priority=" + priority + ", startTime=" + startTime;
+               + Arrays.toString(items) + ", mutcd=" + mutcd + ", priority=" + priority + ", startDateTime=" + startDateTime;
          // + ", regions="+Arrays.toString(regions)+"]";
       }
    }
 
    public static class RoadSign {
-      public long latitude;
-      public long longitude;
-      public long elevation;
+      public J2735Position3D position;
       public String[] viewAngle;
       public int mutcdCode;
       public byte[] msgCrc;
 
       @Override
       public String toString() {
-         return "Road Sign [latitude=" + latitude + ", longitude=" + longitude + ", elevation=" + elevation
+         return "Road Sign [position=" + position.toJson()
                + ", viewAngle=" + viewAngle + ", mutcdCode=" + mutcdCode + ", msgCrc=" + msgCrc + "]";
       }
    }
 
-   public static class Deposit {
-      public String systemName;
-      public double nwLat;
-      public double nwLon;
-      public double seLat;
-      public double seLon;
-      public short timeToLive = -1;
-
-      @Override
-      public String toString() {
-         return "Deposit [systemName=" + systemName + ", nwLat=" + nwLat + ", nwLon=" + nwLon + ", seLat=" + seLat
-               + ", seLon=" + seLon + ", timeToLive=" + timeToLive + "]";
-      }
-   }
 }

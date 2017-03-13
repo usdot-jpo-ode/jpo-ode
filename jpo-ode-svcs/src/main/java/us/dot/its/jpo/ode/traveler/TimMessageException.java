@@ -16,4 +16,8 @@ public class TimMessageException extends RuntimeException {
       super (message, e);
    }
 
+   public TimMessageException(Exception e) {
+      super(e);
+   }
+
 }

@@ -4,10 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.math.BigDecimal;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 
 public class OssTravelerMessageBuilderTest {
@@ -412,9 +415,12 @@ public class OssTravelerMessageBuilderTest {
 
    @Test
    public void checkLowerBoundLat() {
-      long lat = -900000001;
+      J2735Position3D position = new J2735Position3D(
+            BigDecimal.valueOf(-90.1),
+            BigDecimal.valueOf(45.0),
+            BigDecimal.valueOf(1000.0));
       try {
-         OssTravelerMessageBuilder.validateLat(lat);
+         OssTravelerMessageBuilder.validatePosition(position);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -423,9 +429,12 @@ public class OssTravelerMessageBuilderTest {
 
    @Test
    public void checkUpperBoundLat() {
-      long lat = 900000002;
+      J2735Position3D position = new J2735Position3D(
+            BigDecimal.valueOf(90.1),
+            BigDecimal.valueOf(45.0),
+            BigDecimal.valueOf(1000.0));
       try {
-         OssTravelerMessageBuilder.validateLat(lat);
+         OssTravelerMessageBuilder.validatePosition(position);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -434,9 +443,12 @@ public class OssTravelerMessageBuilderTest {
 
    @Test
    public void checkLowerLat() {
-      long lat = -900000000;
+      J2735Position3D position = new J2735Position3D(
+            BigDecimal.valueOf(-90.0),
+            BigDecimal.valueOf(45.0),
+            BigDecimal.valueOf(1000.0));
       try {
-         OssTravelerMessageBuilder.validateLat(lat);
+         OssTravelerMessageBuilder.validatePosition(position);
       } catch (RuntimeException e) {
          fail("Unexcpeted Exception");
       }
@@ -444,9 +456,12 @@ public class OssTravelerMessageBuilderTest {
 
    @Test
    public void checkUpperLat() {
-      long lat = 900000001;
+      J2735Position3D position = new J2735Position3D(
+            BigDecimal.valueOf(90.0),
+            BigDecimal.valueOf(45.0),
+            BigDecimal.valueOf(1000.0));
       try {
-         OssTravelerMessageBuilder.validateLat(lat);
+         OssTravelerMessageBuilder.validatePosition(position);
       } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
@@ -454,9 +469,12 @@ public class OssTravelerMessageBuilderTest {
 
    @Test
    public void checkLowerBoundLong() {
-      long longg = -1800000000;
+      J2735Position3D position = new J2735Position3D(
+            BigDecimal.valueOf(45.0),
+            BigDecimal.valueOf(-180.1),
+            BigDecimal.valueOf(1000.0));
       try {
-         OssTravelerMessageBuilder.validateLong(longg);
+         OssTravelerMessageBuilder.validatePosition(position);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -465,9 +483,12 @@ public class OssTravelerMessageBuilderTest {
 
    @Test
    public void checkUpperBoundLong() {
-      long longg = 1800000002;
+      J2735Position3D position = new J2735Position3D(
+            BigDecimal.valueOf(45),
+            BigDecimal.valueOf(180.1),
+            BigDecimal.valueOf(1000.0));
       try {
-         OssTravelerMessageBuilder.validateLong(longg);
+         OssTravelerMessageBuilder.validatePosition(position);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -476,9 +497,12 @@ public class OssTravelerMessageBuilderTest {
 
    @Test
    public void checkLowerLong() {
-      long longg = -1799999999;
+      J2735Position3D position = new J2735Position3D(
+            BigDecimal.valueOf(45),
+            BigDecimal.valueOf(-180.0),
+            BigDecimal.valueOf(1000.0));
       try {
-         OssTravelerMessageBuilder.validateLong(longg);
+         OssTravelerMessageBuilder.validatePosition(position);
       } catch (RuntimeException e) {
          fail("Unexcpeted Exception");
       }
@@ -486,9 +510,66 @@ public class OssTravelerMessageBuilderTest {
 
    @Test
    public void checkUpperLong() {
-      long longg = 1800000001;
+      J2735Position3D position = new J2735Position3D(
+            BigDecimal.valueOf(45),
+            BigDecimal.valueOf(180.0),
+            BigDecimal.valueOf(1000.0));
       try {
-         OssTravelerMessageBuilder.validateLong(longg);
+         OssTravelerMessageBuilder.validatePosition(position);
+      } catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+
+   @Test
+   public void checkLowerBoundElevation() {
+      J2735Position3D position = new J2735Position3D(
+            BigDecimal.valueOf(45),
+            BigDecimal.valueOf(45.0),
+            BigDecimal.valueOf(-409.6));
+      try {
+         OssTravelerMessageBuilder.validatePosition(position);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkUpperBoundElevation() {
+      J2735Position3D position = new J2735Position3D(
+            BigDecimal.valueOf(45),
+            BigDecimal.valueOf(45.0),
+            BigDecimal.valueOf(6143.91));
+      try {
+         OssTravelerMessageBuilder.validatePosition(position);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkLowerElevation() {
+      J2735Position3D position = new J2735Position3D(
+            BigDecimal.valueOf(45),
+            BigDecimal.valueOf(45.0),
+            BigDecimal.valueOf(-409.5));
+      try {
+         OssTravelerMessageBuilder.validatePosition(position);
+      } catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+
+   @Test
+   public void checkUpperElevation() {
+      J2735Position3D position = new J2735Position3D(
+            BigDecimal.valueOf(45),
+            BigDecimal.valueOf(45.0),
+            BigDecimal.valueOf(6143.9));
+      try {
+         OssTravelerMessageBuilder.validatePosition(position);
       } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
@@ -502,48 +583,6 @@ public class OssTravelerMessageBuilderTest {
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerElevation() {
-      long elev = -4097;
-      try {
-         OssTravelerMessageBuilder.validateElevation(elev);
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBoundElevation() {
-      long elev = -4096;
-      try {
-         OssTravelerMessageBuilder.validateElevation(elev);
-      } catch (RuntimeException e) {
-         fail("Unexpected Exception");
-      }
-   }
-
-   @Test
-   public void checkUpperElevation() {
-      long elev = 61440;
-      try {
-         OssTravelerMessageBuilder.validateElevation(elev);
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkUpperBoundElevation() {
-      long elev = 61439;
-      try {
-         OssTravelerMessageBuilder.validateElevation(elev);
-      } catch (RuntimeException e) {
-         fail("Unexpected Exception");
       }
    }
 
@@ -2264,7 +2303,7 @@ public class OssTravelerMessageBuilderTest {
    public void checkTravelerMessageBuilder() {
       J2735TravelerInputData ti = new J2735TravelerInputData();
       TravelerInformation travelerinfo = new TravelerInformation();
-      ti.tim.MsgCount = 10;
+      ti.tim.msgCnt = 10;
       ti.tim.urlB = "null";
       ti.tim.dataframes = null;
       OssTravelerMessageBuilder builder = new OssTravelerMessageBuilder();
