@@ -99,32 +99,34 @@ public class TravelerMessageController {
         boolean success = true;
         try {
            // Step 3 - Send TIM to all specified RSUs if rsus element exists
-           if (travelerinputData.rsus != null && travelerinputData.snmp != null) {
-              for (RSU rsu : travelerinputData.rsus) {
-                 ResponseEvent response = sendToRSU(rsu, travelerinputData.snmp, rsuSRMPayload);
-                 if (response != null && response.getResponse() != null) {
-                    String msg = String.format("RSU %1$s Response: %2$s", rsu.target, response.getResponse());
-                    EventLogger.logger.info(msg);
-                    logger.info(rsu.target, response.getResponse());
-                } else {
-                   success = false;
-                   String msg = String.format("Empty response from RSU %1$s", rsu.target);
-                   EventLogger.logger.error(msg);
-                   logger.error(msg);
-                   throw new TimMessageException(msg);
-                }
+           if (travelerinputData.snmp != null) {
+              if (travelerinputData.rsus != null)  {
+                 for (RSU rsu : travelerinputData.rsus) {
+                    ResponseEvent response = sendToRSU(rsu, travelerinputData.snmp, rsuSRMPayload);
+                    if (response != null && response.getResponse() != null) {
+                       String msg = String.format("RSU %1$s Response: %2$s", rsu.target, response.getResponse());
+                       EventLogger.logger.info(msg);
+                       logger.info(rsu.target, response.getResponse());
+                   } else {
+                      success = false;
+                      String msg = String.format("Empty response from RSU %1$s", rsu.target);
+                      EventLogger.logger.error(msg);
+                      logger.error(msg);
+                      throw new TimMessageException(msg);
+                   }
+                 }
               }
-           }
-           
-           // Step 4 - Step Deposit TIM to SDW if sdw element exists
-           if (travelerinputData.sdw != null) {
-              AsdMessage message = new AsdMessage(
-                  travelerinputData.snmp.deliverystart, 
-                  travelerinputData.snmp.deliverystop,
-                  rsuSRMPayload,
-                  travelerinputData.sdw.serviceRegion,
-                  travelerinputData.sdw.ttl);
-              depositor.deposit(message);
+              
+              // Step 4 - Step Deposit TIM to SDW if sdw element exists
+              if (travelerinputData.sdw != null) {
+                 AsdMessage message = new AsdMessage(
+                     travelerinputData.snmp.deliverystart, 
+                     travelerinputData.snmp.deliverystop,
+                     rsuSRMPayload,
+                     travelerinputData.sdw.serviceRegion,
+                     travelerinputData.sdw.ttl);
+                 depositor.deposit(message);
+              }
            }
       } catch (Exception e) {
          String msg = "TIM CONTROLLER ERROR";
