@@ -11,8 +11,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.oss.asn1.EncodeFailedException;
+import com.oss.asn1.EncodeNotSupportedException;
+
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.dds.DdsClient.DdsClientException;
 import us.dot.its.jpo.ode.dds.DdsDepositor;
+import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
@@ -23,6 +29,7 @@ import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.snmp.TimManagerService;
 import us.dot.its.jpo.ode.snmp.TimParameters;
 import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
 
 import java.text.ParseException;
 import java.util.Objects;
@@ -99,7 +106,7 @@ public class TravelerMessageController {
         boolean success = true;
         try {
            // Step 3 - Send TIM to all specified RSUs if rsus element exists
-           /*if (travelerinputData.snmp != null) {
+           if (travelerinputData.snmp != null) {
               if (travelerinputData.rsus != null)  {
                  for (RSU rsu : travelerinputData.rsus) {
                     ResponseEvent response = sendToRSU(rsu, travelerinputData.snmp, rsuSRMPayload);
@@ -107,26 +114,19 @@ public class TravelerMessageController {
                        String msg = String.format("RSU %1$s Response: %2$s", rsu.target, response.getResponse());
                        EventLogger.logger.info(msg);
                        logger.info(rsu.target, response.getResponse());
+                       depositToDDS(travelerinputData, rsuSRMPayload);
                    } else {
                       success = false;
                       String msg = String.format("Empty response from RSU %1$s", rsu.target);
                       EventLogger.logger.error(msg);
                       logger.error(msg);
+                      depositToDDS(travelerinputData, rsuSRMPayload);
                       throw new TimMessageException(msg);
                    }
                  }
-              }*/
-              
-              // Step 4 - Step Deposit TIM to SDW if sdw element exists
-              if (travelerinputData.sdw != null) {
-                 AsdMessage message = new AsdMessage(
-                     travelerinputData.snmp.deliverystart, 
-                     travelerinputData.snmp.deliverystop,
-                     rsuSRMPayload,
-                     travelerinputData.sdw.serviceRegion,
-                     travelerinputData.sdw.ttl);
-                 depositor.deposit(message);
               }
+              
+           }
       } catch (Exception e) {
          String msg = "TIM CONTROLLER ERROR";
          log(false, msg , e);
@@ -135,6 +135,21 @@ public class TravelerMessageController {
 
       return log(success, "TIM CONTROLLER RESPONSE", null);
     }
+
+   private void depositToDDS(J2735TravelerInputData travelerinputData, String rsuSRMPayload)
+         throws ParseException, DdsRequestManagerException, DdsClientException, WebSocketException,
+         EncodeFailedException, EncodeNotSupportedException {
+      // Step 4 - Step Deposit TIM to SDW if sdw element exists
+        if (travelerinputData.sdw != null) {
+           AsdMessage message = new AsdMessage(
+               travelerinputData.snmp.deliverystart, 
+               travelerinputData.snmp.deliverystop,
+               rsuSRMPayload,
+               travelerinputData.sdw.serviceRegion,
+               travelerinputData.sdw.ttl);
+           depositor.deposit(message);
+        }
+   }
 
     private String log(boolean success, String msg, Throwable t) {
        if (success) {
