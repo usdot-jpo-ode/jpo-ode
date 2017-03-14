@@ -18,6 +18,8 @@ package us.dot.its.jpo.ode.model;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.util.JsonUtils;
 

@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.util.Random;
-import java.util.UUID;
 
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
@@ -29,6 +28,7 @@ import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
 import us.dot.its.jpo.ode.j2735.semi.TimeToLive;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion;
+import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssGeoRegion;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
@@ -37,18 +37,14 @@ public class AsdMessage extends OdeObject {
 
    private static final long serialVersionUID = 8870804435074223135L;
    
-   enum TTL {
-      oneMinute,
-      ThirtyMinutes,
-      oneDay,
-      oneWeek,
-      oneMonth,
-      oneYear
-   }
-
    private AdvisorySituationData asd = new AdvisorySituationData();
 
-   public AsdMessage(String startTime, String stopTime, String advisoryMessage, J2735GeoRegion serviceRegion) throws ParseException {
+   public AsdMessage(
+         String startTime,
+         String stopTime,
+         String advisoryMessage,
+         J2735GeoRegion serviceRegion,
+         J2735TravelerInputData.SDW.TimeToLive ttl) throws ParseException {
       super();
       
       ZonedDateTime zdtStart = DateTimeUtils.isoDateTime(startTime);
@@ -83,7 +79,10 @@ public class AsdMessage extends OdeObject {
       asd.requestID = new TemporaryID(fourRandomBytes);
       asd.seqID = new SemiSequenceID(5);
       asd.serviceRegion = OssGeoRegion.geoRegion(serviceRegion);
-      asd.timeToLive = new TimeToLive(TTL.ThirtyMinutes.ordinal());
+      if (ttl != null)
+         asd.timeToLive = new TimeToLive(ttl.ordinal());
+      else
+         asd.timeToLive = new TimeToLive(J2735TravelerInputData.SDW.TimeToLive.ThirtyMinutes.ordinal());
    }
 
    public String encodeHex() throws EncodeFailedException, EncodeNotSupportedException {

@@ -25,7 +25,7 @@ paths:
           description: Number of messgages.
           required: true
           schema: 
-            $ref: '#/definitions/TravelerMessage'
+            $ref: '#/definitions/J2735MessageTraveler'
          
       tags:
         - TIM
@@ -35,7 +35,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/TravelerMessage'
+              $ref: '#/definitions/tim'
         default:
           description: Unexpected error
           schema:
@@ -66,20 +66,8 @@ paths:
         400:
           description: Value input error
 definitions:
-  TravelerMessage:
+  tim:
     type: object
-    properties:
-      timeContent:
-         $ref: '#/definitions/TimContent'
-      RSUs:
-        type: array
-        items:
-           $ref: '#/definitions/RSU'
-      snmp: 
-         $ref: '#/definitions/SNMP'
-  TimContent:
-    type: object
-    required: [msgCnt]
     properties:
       msgCnt:
         type: integer 
@@ -90,19 +78,29 @@ definitions:
       urlB: 
         type: string
         description: UrlB
-      travelerDataFrames: 
+      dataFrames: 
         type: array
         items: 
           $ref: '#/definitions/TravelerDataFrame'
-  TravelerDataFrame:
+     
+      snmp: 
+        $ref: '#/definitions/SNMP'
+      sdw:
+        $ref: '#/definitions/SDW'
+      
+  J2735MessageTraveler:
     type: object
     properties:
-      header:
-        $ref: '#/definitions/TravelerDataFrameHeader'
-      region:
-        $ref: '#/definitions/TravelerDataFrameRegion'
-      content:
-        $ref: '#/definitions/TravelerDataFrameContent'
+      tim:
+        $ref: '#/definitions/tim'
+      rsus:
+        type: array
+        items:
+           $ref: '#/definitions/RSU'
+      snmp: 
+        $ref: '#/definitions/SNMP'
+      sdw:
+        $ref: '#/definitions/SDW'
   TravelerDataFrameHeader:
     type: object
     required : [sspindex, travelerInfoType, SignPriority, MinuteOfTheYear]
@@ -156,12 +154,258 @@ definitions:
       elevation:
         type: integer
     
-  TravelerDataFrameRegion:
+  TravelerDataFrame:
     type: object
     required: [sspindex]
     properties:
       sspindex: 
         type: integer
+      frameType: 
+        type: integer
+      msgID: 
+        type: string
+      position:
+        $ref: '#/definitions/J2735Position3D'
+      viewAngle: 
+        type: string
+      mutcd: 
+        type: integer
+      crc:
+        type: integer
+      startDateTime: 
+        type: string
+      durationTime:
+        type: integer
+      priority: 
+        type: integer
+      sspLocationRights: 
+        type: integer
+      sspMsgTypes:
+        type: integer
+      sspMsgContent:
+        type: integer
+      content: 
+        type: string
+      items: 
+        type: array
+        items:
+          $ref: '#/definitions/ITISObj'
+      region:
+        $ref: '#/definitions/Region'
+  Region:
+    type: object
+    properties: 
+      name: 
+        type: string
+      regulatorID":
+        type: integer
+      segmentId:
+        type: integer
+      anchor_lat:
+        type: integer
+      anchor_long:
+        type: integer
+      anchor_eleveation:
+        type: integer
+      laneWidth:
+        type: integer
+      directionality:
+        type: integer
+      closedPath:
+        type: string
+      direction: 
+        type: integer
+      description:
+        type: string
+      path:
+        $ref: '#/definitions/Path'
+      oldRegion:
+        $ref: '#/definitions/OldRegion'
+      geometry:
+        $ref: '#/definitions/Geometry'
+      
+      content: 
+        type: string
+      itemss:
+        type: array
+        items:
+          type: integer
+  ComputedLane:
+    type: object
+    properties:
+      laneID: 
+        type: integer
+      offsetSmallX:
+        type: integer
+      offsetLargeX:
+        type: integer
+      offsetSmallY:
+        type: integer
+      offsetLargeY:
+        type: integer
+      angle:
+        type: integer
+      xScale:
+        type: integer
+      yScale:
+        type: integer
+      
+  Path:
+    type: object
+    properties:
+      type: 
+        type: string
+      scale: 
+        type: integer
+      nodes:
+        type: array
+        items:
+          $ref: '#/definitions/NodeXY'
+      computedLane:
+        $ref: '#/definitions/ComputedLane'
+          
+  Attribute:
+    type: object
+    properties:
+      localNodes:
+        type: array
+        items:
+          type: integer
+      disabledLists: 
+        type: array
+        items:
+          type: integer
+      enabledLists: 
+        type: array
+        items:
+          type: integer
+      dataLists:
+        type: array
+        items:
+          $ref: '#/definitions/DataList'
+      dWidth:
+        type: integer
+      dEleveation:
+        type: integer
+  DataList:
+    type: object
+    properties:
+      pathEndpointAngle:
+        type: integer
+      laneCrownCenter:
+        type: integer
+      laneCrownRight:
+        type: integer
+      laneCrownLeft:
+        type: integer
+      laneAngle:
+        type: integer
+      speedLimits:
+        $ref: '#/definitions/SpeedLimit'
+  SpeedLimit:
+    type: object
+    properties:
+      type:
+        type: integer
+      velocity:
+        type: integer
+      
+  Geometry:
+    type: object
+    properties: 
+      direction: 
+        type: string
+      extent:
+        type: integer
+      laneWidth:
+        type: integer
+      circle:
+        $ref: '#/definitions/Circle'
+      
+  OldRegion:
+    type: object
+    properties:
+      direction:
+        type: string
+      extent: 
+        type: integer
+      area: 
+        type: string
+      regionPoint:
+        $ref: '#/definitions/RegionPoint'
+      circle:
+        $ref: '#/definitions/Circle'
+      shapePoint:
+        $ref: '#/definitions/ShapePoint'
+  Circle:
+    type: object
+    properties:
+      position:
+        $ref: '#/definitions/J2735Position3D'
+      radius:
+        type: integer
+      units:
+        type: integer
+  ShapePoint:
+    type: object
+    properties:
+      position:
+        $ref: '#/definitions/J2735Position3D'
+      directionality:
+        type: integer
+      nodeType:
+        type: string
+      computedLane:
+        $ref: '#/definitions/ComputedLane'
+      nodexy:
+        type: array
+        items:
+          $ref: "#/definitions/NodeXY"
+  RegionPoint:
+    type: object
+    properties:
+      position:
+        $ref: '#/definitions/J2735Position3D'
+      scale:
+        type: integer
+      regionList:
+        type: array
+        items:
+          $ref: '#/definitions/RegionList'
+  RegionList:
+    type: object
+    properties:
+      xOffset: 
+        type: integer
+      yOffset: 
+        type: integer
+      zOffset:
+        type: integer
+  J2735Position3D:
+    type: object
+    properties:
+      latitude:
+        type: number
+      longitude:
+        type: number
+      elevation:
+        type: integer
+  NodeXY:
+    type: object
+    properties:
+      delta:
+        type: string
+      nodeLat:
+        type: integer
+      nodeLong:
+        type: integer
+      x:
+        type: integer
+      y: 
+        type: integer
+      attributes:
+        $ref: '#/definitions/Attribute'
+
   TravelerDataFrameContent:
     type: object
     properties: 
@@ -237,6 +481,25 @@ definitions:
         type: string
       timeoust: 
         type: string 
+  SDW:
+    type: object
+    properties:
+      nwCorner:
+        type: object
+        properties:
+          latitude:
+            type: string
+          longitude:
+            type: string
+      seCorner:
+        type: object
+        properties:
+          latitude:
+            type: string
+          longitude:
+            type: string
+            
+    
   Error:
     type: object
     properties:
