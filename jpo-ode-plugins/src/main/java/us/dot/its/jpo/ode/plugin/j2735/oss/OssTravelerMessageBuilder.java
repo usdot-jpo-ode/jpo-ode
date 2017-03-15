@@ -120,7 +120,7 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class OssTravelerMessageBuilder {
-   public static TravelerInformation travelerInfo;
+   public TravelerInformation travelerInfo;
 
    public TravelerInformation buildTravelerInformation(J2735TravelerInputData travInputData)
          throws ParseException, EncodeFailedException, EncodeNotSupportedException {
@@ -190,7 +190,7 @@ public class OssTravelerMessageBuilder {
       return CodecUtils.toHex(bytes);
    }
 
-   public static Content buildContent(J2735TravelerInputData.DataFrame inputDataFrame) {
+   public Content buildContent(J2735TravelerInputData.DataFrame inputDataFrame) {
       String contentType = inputDataFrame.content;
       String[] codes = inputDataFrame.items;
       Content content = new Content();
@@ -208,7 +208,7 @@ public class OssTravelerMessageBuilder {
       return content;
    }
 
-   private static ITIScodesAndText buildAdvisory(String[] codes) {
+   public ITIScodesAndText buildAdvisory(String[] codes) {
       ITIScodesAndText itisText = new ITIScodesAndText();
       for (String code : codes) {
          validateITISCodes(code);
@@ -221,7 +221,7 @@ public class OssTravelerMessageBuilder {
       return itisText;
    }
 
-   private static WorkZone buildWorkZone(String[] codes) {
+   public WorkZone buildWorkZone(String[] codes) {
       WorkZone wz = new WorkZone();
       for (String code : codes) {
          validateContentCodes(code);
@@ -234,7 +234,7 @@ public class OssTravelerMessageBuilder {
       return wz;
    }
 
-   private static SpeedLimit buildSpeedLimit(String[] codes) {
+   public SpeedLimit buildSpeedLimit(String[] codes) {
       SpeedLimit sl = new SpeedLimit();
       for (String code : codes) {
          validateContentCodes(code);
@@ -247,7 +247,7 @@ public class OssTravelerMessageBuilder {
       return sl;
    }
 
-   private static ExitService buildExitService(String[] codes) {
+   public ExitService buildExitService(String[] codes) {
       ExitService es = new ExitService();
       for (String code : codes) {
          validateContentCodes(code);
@@ -260,7 +260,7 @@ public class OssTravelerMessageBuilder {
       return es;
    }
 
-   private static GenericSignage buildGenericSignage(String[] codes) {
+   public GenericSignage buildGenericSignage(String[] codes) {
       GenericSignage gs = new GenericSignage();
       for (String code : codes) {
          validateContentCodes(code);
@@ -413,7 +413,7 @@ public class OssTravelerMessageBuilder {
       return regions;
    }
 
-   public static RegionList buildRegionOffsets(
+   public RegionList buildRegionOffsets(
          J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] list) {
       RegionList myList = new RegionList();
       for (int i = 0; i < list.length; i++) {
@@ -429,7 +429,7 @@ public class OssTravelerMessageBuilder {
       return myList;
    }
 
-   public static Circle buildGeoCircle(J2735TravelerInputData.DataFrame.Region.Geometry geo) {
+   public Circle buildGeoCircle(J2735TravelerInputData.DataFrame.Region.Geometry geo) {
       Circle circle = new Circle();
       circle.setCenter(OssPosition3D.position3D(geo.circle.position));
       validateRadius(geo.circle.radius);
