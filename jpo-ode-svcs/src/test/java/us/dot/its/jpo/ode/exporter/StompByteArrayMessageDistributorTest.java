@@ -5,15 +5,18 @@ import static org.junit.Assert.*;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
+import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.subscriber.Subscriber;
 import us.dot.its.jpo.ode.util.SerializationUtils;
 
+@RunWith(JMockit.class)
 public class StompByteArrayMessageDistributorTest {
 
     @Test

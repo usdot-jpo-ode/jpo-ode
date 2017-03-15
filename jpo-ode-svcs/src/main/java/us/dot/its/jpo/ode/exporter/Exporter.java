@@ -47,4 +47,8 @@ public class Exporter implements Runnable {
       if (byteArrayConsumer != null)
          byteArrayConsumer.close();
    }
+   
+   public void setStringConsumer(MessageConsumer<String, String> newStringConsumer) {
+       this.stringConsumer = newStringConsumer;
+   }
 }
