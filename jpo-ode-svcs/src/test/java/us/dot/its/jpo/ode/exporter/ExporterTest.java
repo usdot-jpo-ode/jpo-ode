@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.exporter;
 
 import static org.junit.Assert.fail;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -16,6 +17,7 @@ import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 @RunWith(JMockit.class)
 public class ExporterTest {
 
+    @Ignore
     @Test
     public void shouldRun(@Mocked OdeProperties mockOdeProperties,
             @Injectable SimpMessagingTemplate mockSimpMessagingTemplate,
