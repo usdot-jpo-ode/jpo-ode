@@ -191,7 +191,7 @@ public class OssTravelerMessageBuilder {
       return CodecUtils.toHex(bytes);
    }
 
-   private Content buildContent(J2735TravelerInputData.DataFrame inputDataFrame) {
+   public static Content buildContent(J2735TravelerInputData.DataFrame inputDataFrame) {
       String contentType = inputDataFrame.content;
       String[] codes = inputDataFrame.items;
       Content content = new Content();
@@ -209,7 +209,7 @@ public class OssTravelerMessageBuilder {
       return content;
    }
 
-   private ITIScodesAndText buildAdvisory(String[] codes) {
+   private static ITIScodesAndText buildAdvisory(String[] codes) {
       ITIScodesAndText itisText = new ITIScodesAndText();
       for (String code : codes) {
          validateITISCodes(code);
@@ -222,7 +222,7 @@ public class OssTravelerMessageBuilder {
       return itisText;
    }
 
-   private WorkZone buildWorkZone(String[] codes) {
+   private static WorkZone buildWorkZone(String[] codes) {
       WorkZone wz = new WorkZone();
       for (String code : codes) {
          validateContentCodes(code);
@@ -235,7 +235,7 @@ public class OssTravelerMessageBuilder {
       return wz;
    }
 
-   private SpeedLimit buildSpeedLimit(String[] codes) {
+   private static SpeedLimit buildSpeedLimit(String[] codes) {
       SpeedLimit sl = new SpeedLimit();
       for (String code : codes) {
          validateContentCodes(code);
@@ -248,7 +248,7 @@ public class OssTravelerMessageBuilder {
       return sl;
    }
 
-   private ExitService buildExitService(String[] codes) {
+   private static ExitService buildExitService(String[] codes) {
       ExitService es = new ExitService();
       for (String code : codes) {
          validateContentCodes(code);
@@ -261,7 +261,7 @@ public class OssTravelerMessageBuilder {
       return es;
    }
 
-   private GenericSignage buildGenericSignage(String[] codes) {
+   private static GenericSignage buildGenericSignage(String[] codes) {
       GenericSignage gs = new GenericSignage();
       for (String code : codes) {
          validateContentCodes(code);
