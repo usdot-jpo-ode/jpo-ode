@@ -29,7 +29,7 @@ public class OssAsn1Coder implements Asn1Plugin {
 
     private static Logger logger = LoggerFactory.getLogger(OssAsn1Coder.class);
 
-    private PERUnalignedCoder coder = J2735.getPERUnalignedCoder();
+    private PERUnalignedCoder coder;
 
     public OssAsn1Coder() {
         coder = J2735.getPERUnalignedCoder();
