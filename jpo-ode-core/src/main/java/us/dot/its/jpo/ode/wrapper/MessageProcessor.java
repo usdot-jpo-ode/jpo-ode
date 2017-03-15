@@ -28,5 +28,9 @@ public abstract class MessageProcessor<K, V> implements Callable<Object> {
       }
       return processedOffsets;
    }
+   
+   public void setRecord(ConsumerRecord<K, V> newRecord) {
+       this.record = newRecord;
+   }
 
 }

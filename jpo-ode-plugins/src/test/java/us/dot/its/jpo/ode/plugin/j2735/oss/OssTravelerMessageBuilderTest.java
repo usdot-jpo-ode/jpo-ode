@@ -9,7 +9,11 @@ import java.math.BigDecimal;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import us.dot.its.jpo.ode.j2735.dsrc.GeometricProjection;
+import us.dot.its.jpo.ode.j2735.dsrc.RegionList;
+import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
+import us.dot.its.jpo.ode.j2735.dsrc.ValidRegion.Area;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 
@@ -2295,6 +2299,293 @@ public class OssTravelerMessageBuilderTest {
          OssTravelerMessageBuilder.validateLaneAngle(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkContentAdvisory() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Advisory";
+      String[] codes = {"250","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkBadContentAdvisory() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Advisory";
+      String[] codes = {"-1","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkContentWorkZone() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Work Zone";
+      String[] codes = {"250","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkBadContentWorkZone() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Work Zone";
+      String[] codes = {"-1","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkContentSpeedLimit() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Speed Limit";
+      String[] codes = {"250","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkBadContentSpeedLimit() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Speed Limit";
+      String[] codes = {"-1","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkContentExitService() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Exit Service";
+      String[] codes = {"250","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkBadContentExitService() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Exit Service";
+      String[] codes = {"-1","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkContentGenericSignage() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Generic Signage";
+      String[] codes = {"250","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkBadContentGenericSignage() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Generic Signage";
+      String[] codes = {"-1","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkBadXRegionOffset() {
+      J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList();
+      J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
+      RegionList rList;
+      rl.xOffset = -32769;
+      rl.yOffset = 0;
+      rl.zOffset = 0;
+      myList[0] = rl;
+      
+      try {
+         rList = OssTravelerMessageBuilder.buildRegionOffsets(myList);
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkBadYRegionOffset() {
+      J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList();
+      J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
+      RegionList rList;
+      rl.xOffset = 0;
+      rl.yOffset = -32769;
+      rl.zOffset = 0;
+      myList[0] = rl;
+      
+      try {
+         rList = OssTravelerMessageBuilder.buildRegionOffsets(myList);
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkBadZRegionOffset() {
+      J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList();
+      J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
+      RegionList rList;
+      rl.xOffset = 0;
+      rl.yOffset = 0;
+      rl.zOffset = -32769;
+      myList[0] = rl;
+      
+      try {
+         rList = OssTravelerMessageBuilder.buildRegionOffsets(myList);
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkRegionOffset() {
+      J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList();
+      J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
+      RegionList rList;
+      rl.xOffset = 0;
+      rl.yOffset = 0;
+      rl.zOffset = 0;
+      myList[0] = rl;
+      
+      try {
+         rList = OssTravelerMessageBuilder.buildRegionOffsets(myList);
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkBadGeoCircle() {
+      //Area area = new Area();
+      GeometricProjection geo = new GeometricProjection();
+      J2735TravelerInputData.DataFrame.Region.Geometry g = new J2735TravelerInputData.DataFrame.Region.Geometry();
+      J2735TravelerInputData.DataFrame.Region.Circle c = new J2735TravelerInputData.DataFrame.Region.Circle();
+      J2735Position3D pos = new J2735Position3D((long) 0.0, (long) 0.0, (long) 0.0);
+      c.position = pos;
+      c.radius = 5;
+      c.units = 10;
+      g.circle = c;
+      g.direction = "1010101010101010";
+      g.extent = -1;
+      g.laneWidth = 10;
+      
+      try {
+         geo.setCircle(OssTravelerMessageBuilder.buildGeoCircle(g));
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkGeoCircle() {
+      //Area area = new Area();
+      GeometricProjection geo = new GeometricProjection();
+      J2735TravelerInputData.DataFrame.Region.Geometry g = new J2735TravelerInputData.DataFrame.Region.Geometry();
+      J2735TravelerInputData.DataFrame.Region.Circle c = new J2735TravelerInputData.DataFrame.Region.Circle();
+      J2735Position3D pos = new J2735Position3D((long) 0.0, (long) 0.0, (long) 0.0);
+      c.position = pos;
+      c.radius = 5;
+      c.units = 6;
+      g.circle = c;
+      g.direction = "1010101010101010";
+      g.extent = 1;
+      g.laneWidth = 10;
+      
+      try {
+         geo.setCircle(OssTravelerMessageBuilder.buildGeoCircle(g));
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
       }
    }
    

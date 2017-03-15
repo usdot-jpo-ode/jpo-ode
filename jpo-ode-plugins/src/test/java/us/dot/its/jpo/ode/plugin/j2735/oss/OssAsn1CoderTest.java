@@ -3,16 +3,23 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
+
+import mockit.Mocked;
 
 public class OssAsn1CoderTest {
+    
+    @Mocked(stubOutClassInitialization = true)
+    final LoggerFactory unused = null;
 
-    static OssAsn1Coder coder;
+    OssAsn1Coder coder;
 
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         coder = new OssAsn1Coder();
     }
 
