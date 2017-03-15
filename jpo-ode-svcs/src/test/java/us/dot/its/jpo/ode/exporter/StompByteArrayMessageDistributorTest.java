@@ -17,8 +17,8 @@ import us.dot.its.jpo.ode.util.SerializationUtils;
 public class StompByteArrayMessageDistributorTest {
 
     @Test
-    public void shouldConstructAndCall(@Injectable SimpMessagingTemplate mockSimpMessagingTemplate,
-            @Injectable ConsumerRecord<String, byte[]> mockConsumerRecord,
+    public void shouldConstructAndCall(@Mocked SimpMessagingTemplate mockSimpMessagingTemplate,
+            @Mocked ConsumerRecord<String, byte[]> mockConsumerRecord,
             @Mocked final SerializationUtils<J2735Bsm> mockSerializationUtils, @Mocked Object mockObject) {
 
         String testTopic = "testTopic123";
