@@ -27,9 +27,9 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssMessageFrame.OssMessageFrameExcept
 
 public class OssAsn1Coder implements Asn1Plugin {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static Logger logger = LoggerFactory.getLogger(OssAsn1Coder.class);
 
-    private PERUnalignedCoder coder;
+    private PERUnalignedCoder coder = J2735.getPERUnalignedCoder();
 
     public OssAsn1Coder() {
         coder = J2735.getPERUnalignedCoder();
