@@ -129,7 +129,7 @@ public class OssTravelerMessageBuilder {
       validateMessageCount(travInputData.tim.msgCnt);
       travelerInfo.setMsgCnt(new MsgCount(travInputData.tim.msgCnt));
       travelerInfo.setTimeStamp(new MinuteOfTheYear(getMinuteOfTheYear(travInputData.tim.timeStamp)));
-      ByteBuffer buf = ByteBuffer.allocate(9).put((byte)0).putLong(travInputData.tim.packetID);
+      ByteBuffer buf = ByteBuffer.allocate(9).put((byte) 0).putLong(travInputData.tim.packetID);
       travelerInfo.setPacketID(new UniqueMSGID(buf.array()));
       validateURL(travInputData.tim.urlB);
       travelerInfo.setUrlB(new URL_Base(travInputData.tim.urlB));
@@ -182,8 +182,7 @@ public class OssTravelerMessageBuilder {
       return dataFrames;
    }
 
-   public String getHexTravelerInformation()
-         throws EncodeFailedException, EncodeNotSupportedException {
+   public String getHexTravelerInformation() throws EncodeFailedException, EncodeNotSupportedException {
       Coder coder = J2735.getPERUnalignedCoder();
       ByteArrayOutputStream sink = new ByteArrayOutputStream();
       coder.encode(travelerInfo, sink);
@@ -328,8 +327,7 @@ public class OssTravelerMessageBuilder {
          validateRoadID(inputRegion.segmentID);
          geoPath.setId(new RoadSegmentReferenceID(new RoadRegulatorID(inputRegion.regulatorID),
                new RoadSegmentID(inputRegion.segmentID)));
-         geoPath
-               .setAnchor(OssPosition3D.position3D(inputRegion.anchorPosition));
+         geoPath.setAnchor(OssPosition3D.position3D(inputRegion.anchorPosition));
          validateLaneWidth(inputRegion.laneWidth);
          geoPath.setLaneWidth(new LaneWidth(inputRegion.laneWidth));
          validateDirectionality(inputRegion.directionality);
@@ -343,7 +341,7 @@ public class OssTravelerMessageBuilder {
             validateZoom(inputRegion.path.scale);
             offsetSystem.setScale(new Zoom(inputRegion.path.scale));
             if ("xy".equals(inputRegion.path.type)) {
-               if (inputRegion.path.nodes.length > 0){
+               if (inputRegion.path.nodes.length > 0) {
 
                   offsetSystem.setOffset(new OffsetSystem.Offset());
                   offsetSystem.offset.setXy(buildNodeXYList(inputRegion.path.nodes));
@@ -415,7 +413,8 @@ public class OssTravelerMessageBuilder {
       return regions;
    }
 
-   private RegionList buildRegionOffsets(J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] list) {
+   public static RegionList buildRegionOffsets(
+         J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] list) {
       RegionList myList = new RegionList();
       for (int i = 0; i < list.length; i++) {
          RegionOffsets ele = new RegionOffsets();
@@ -459,46 +458,46 @@ public class OssTravelerMessageBuilder {
          NodeXY node = new NodeXY();
          NodeOffsetPointXY nodePoint = new NodeOffsetPointXY();
 
-            if ("node-XY1".equals(point.delta)) {
-               Node_XY_20b xy = new Node_XY_20b(new Offset_B10(point.x), new Offset_B10(point.y));
-               nodePoint.setNode_XY1(xy);
-            }
+         if ("node-XY1".equals(point.delta)) {
+            Node_XY_20b xy = new Node_XY_20b(new Offset_B10(point.x), new Offset_B10(point.y));
+            nodePoint.setNode_XY1(xy);
+         }
 
-            if ("node-XY2".equals(point.delta)) {
-               Node_XY_22b xy = new Node_XY_22b(new Offset_B11(point.x), new Offset_B11(point.y));
-               nodePoint.setNode_XY2(xy);
-            }
+         if ("node-XY2".equals(point.delta)) {
+            Node_XY_22b xy = new Node_XY_22b(new Offset_B11(point.x), new Offset_B11(point.y));
+            nodePoint.setNode_XY2(xy);
+         }
 
-            if ("node-XY3".equals(point.delta)) {
-               Node_XY_24b xy = new Node_XY_24b(new Offset_B12(point.x), new Offset_B12(point.y));
-               nodePoint.setNode_XY3(xy);
-            }
+         if ("node-XY3".equals(point.delta)) {
+            Node_XY_24b xy = new Node_XY_24b(new Offset_B12(point.x), new Offset_B12(point.y));
+            nodePoint.setNode_XY3(xy);
+         }
 
-            if ("node-XY4".equals(point.delta)) {
-               Node_XY_26b xy = new Node_XY_26b(new Offset_B13(point.x), new Offset_B13(point.y));
-               nodePoint.setNode_XY4(xy);
-            }
+         if ("node-XY4".equals(point.delta)) {
+            Node_XY_26b xy = new Node_XY_26b(new Offset_B13(point.x), new Offset_B13(point.y));
+            nodePoint.setNode_XY4(xy);
+         }
 
-            if ("node-XY5".equals(point.delta)) {
-               Node_XY_28b xy = new Node_XY_28b(new Offset_B14(point.x), new Offset_B14(point.y));
-               nodePoint.setNode_XY5(xy);
-            }
+         if ("node-XY5".equals(point.delta)) {
+            Node_XY_28b xy = new Node_XY_28b(new Offset_B14(point.x), new Offset_B14(point.y));
+            nodePoint.setNode_XY5(xy);
+         }
 
-            if ("node-XY6".equals(point.delta)) {
-               Node_XY_32b xy = new Node_XY_32b(new Offset_B16(point.x), new Offset_B16(point.y));
-               nodePoint.setNode_XY6(xy);
-            }
+         if ("node-XY6".equals(point.delta)) {
+            Node_XY_32b xy = new Node_XY_32b(new Offset_B16(point.x), new Offset_B16(point.y));
+            nodePoint.setNode_XY6(xy);
+         }
 
-            if ("node-LatLon".equals(point.delta)) {
-               Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.nodeLat), new Latitude(point.nodeLong));
-               nodePoint.setNode_LatLon(nodeLatLong);
-            }
+         if ("node-LatLon".equals(point.delta)) {
+            Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.nodeLat), new Latitude(point.nodeLong));
+            nodePoint.setNode_LatLon(nodeLatLong);
+         }
 
-            node.setDelta(nodePoint);
-         if (!point.attributes.equals("")){
+         node.setDelta(nodePoint);
+         if (!point.attributes.equals("")) {
             NodeAttributeSetXY attributes = new NodeAttributeSetXY();
 
-            if (point.attributes.localNodes.length >0 ) {
+            if (point.attributes.localNodes.length > 0) {
                NodeAttributeXYList localNodeList = new NodeAttributeXYList();
                for (J2735TravelerInputData.LocalNode localNode : point.attributes.localNodes) {
                   localNodeList.add(new NodeAttributeXY(localNode.type));
@@ -514,7 +513,7 @@ public class OssTravelerMessageBuilder {
                attributes.setDisabled(disabledNodeList);
             }
 
-            if (point.attributes.enabledLists.length > 0 ) {
+            if (point.attributes.enabledLists.length > 0) {
                SegmentAttributeXYList enabledNodeList = new SegmentAttributeXYList();
                for (J2735TravelerInputData.EnabledList enabledList : point.attributes.enabledLists) {
                   enabledNodeList.add(new SegmentAttributeXY(enabledList.type));
@@ -536,8 +535,8 @@ public class OssTravelerMessageBuilder {
 
                   SpeedLimitList speedDataList = new SpeedLimitList();
                   for (J2735TravelerInputData.SpeedLimits speedLimit : dataList.speedLimits) {
-                     speedDataList.add(
-                             new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.type), new Velocity(speedLimit.velocity)));
+                     speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.type),
+                           new Velocity(speedLimit.velocity)));
                   }
 
                   dataAttribute.setSpeedLimits(speedDataList);
@@ -551,7 +550,6 @@ public class OssTravelerMessageBuilder {
             attributes.setDElevation(new Offset_B10(point.attributes.dElevation));
 
             node.setAttributes(attributes);
-
 
          }
          nodes.add(node);
@@ -634,7 +632,7 @@ public class OssTravelerMessageBuilder {
 
          NodeAttributeSetLL attributes = new NodeAttributeSetLL();
 
-         if (point.attributes.localNodes.length >0 ) {
+         if (point.attributes.localNodes.length > 0) {
             NodeAttributeLLList localNodeList = new NodeAttributeLLList();
             for (J2735TravelerInputData.LocalNode localNode : point.attributes.localNodes) {
                localNodeList.add(new NodeAttributeLL(localNode.type));
@@ -650,7 +648,7 @@ public class OssTravelerMessageBuilder {
             attributes.setDisabled(disabledNodeList);
          }
 
-         if (point.attributes.enabledLists.length > 0 ) {
+         if (point.attributes.enabledLists.length > 0) {
             SegmentAttributeLLList enabledNodeList = new SegmentAttributeLLList();
             for (J2735TravelerInputData.EnabledList enabledList : point.attributes.enabledLists) {
                enabledNodeList.add(new SegmentAttributeLL(enabledList.type));
@@ -672,8 +670,8 @@ public class OssTravelerMessageBuilder {
 
                SpeedLimitList speedDataList = new SpeedLimitList();
                for (J2735TravelerInputData.SpeedLimits speedLimit : dataList.speedLimits) {
-                  speedDataList.add(
-                          new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.type), new Velocity(speedLimit.velocity)));
+                  speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.type),
+                        new Velocity(speedLimit.velocity)));
                }
 
                dataAttribute.setSpeedLimits(speedDataList);
@@ -696,9 +694,7 @@ public class OssTravelerMessageBuilder {
 
    private long getMinuteOfTheYear(String timestamp) throws ParseException {
       ZonedDateTime start = DateTimeUtils.isoDateTime(timestamp);
-      long diff = DateTimeUtils.difference( 
-            DateTimeUtils.isoDateTime(start.getYear() + "-01-01T00:00:00+00:00"),
-            start);
+      long diff = DateTimeUtils.difference(DateTimeUtils.isoDateTime(start.getYear() + "-01-01T00:00:00+00:00"), start);
       long minutes = diff / 60000;
       validateStartTime(minutes);
       return minutes;
@@ -706,83 +702,83 @@ public class OssTravelerMessageBuilder {
 
    public static void validateMessageCount(int msg) {
       if (msg > 127 || msg < 0)
-         throw new IllegalArgumentException("Invalid message count");
+         throw new IllegalArgumentException("Invalid message count [0-127]");
    }
 
    public static void validateURL(String url) {
       if (url.isEmpty())
          throw new IllegalArgumentException("Invalid empty url");
       if (url.length() < 1 || url.length() > 45)
-         throw new IllegalArgumentException("Invalid URL provided");
+         throw new IllegalArgumentException("Invalid URL length [1-45]");
    }
 
    public static void validateURLShort(String url) {
       if (url.isEmpty())
          throw new IllegalArgumentException("Invalid empty Short url");
       if (url.length() < 1 || url.length() > 15)
-         throw new IllegalArgumentException("Invalid URL provided");
+         throw new IllegalArgumentException("Invalid URL lenth [1-15]");
    }
 
    public static void validateFrameCount(int count) {
       if (count < 1 || count > 8)
-         throw new IllegalArgumentException("Invalid number of dataFrames");
+         throw new IllegalArgumentException("Invalid number of dataFrames[1-8]");
    }
 
    public static void validateMessageID(String str) {
       validateString(str);
       if (!("RoadSignID").equals(str) && !("furtherInfoID").equals(str))
-         throw new IllegalArgumentException("Invalid messageID");
+         throw new IllegalArgumentException("Invalid messageID \"RoadSignID or furtherInfoID\"");
    }
 
    public static void validateStartYear(int year) {
       if (year < 0 || year > 4095)
-         throw new IllegalArgumentException("Not a valid start year");
+         throw new IllegalArgumentException("Not a valid start year [0-4095]");
    }
 
    public static void validateStartTime(long time) {
       if (time < 0 || time > 527040)
-         throw new IllegalArgumentException("Invalid start Time");
+         throw new IllegalArgumentException("Invalid start Time [0-527040]");
    }
 
    public static void validateMinutesDuration(long dur) {
       if (dur < 0 || dur > 32000)
-         throw new IllegalArgumentException("Invalid Duration");
+         throw new IllegalArgumentException("Invalid Duration [0-32000]");
    }
 
    public static void validateHeaderIndex(short count) {
       if (count < 0 || count > 31)
-         throw new IllegalArgumentException("Invalid header sspIndex");
+         throw new IllegalArgumentException("Invalid header sspIndex[0-31]");
    }
 
    public static void validateInfoType(int num) {
       if (num < 0)
-         throw new IllegalArgumentException("Invalid enumeration");
+         throw new IllegalArgumentException("Invalid enumeration [0<]");
    }
 
    public static void validatePosition(J2735Position3D position) {
       if (position.getLatitude().doubleValue() < -90.0 || position.getLatitude().doubleValue() > 90.0)
-         throw new IllegalArgumentException("Invalid Latitude");
+         throw new IllegalArgumentException("Invalid Latitude [-90 - 90]");
       if (position.getLongitude().doubleValue() < -180.0 || position.getLongitude().doubleValue() > 180.0)
-         throw new IllegalArgumentException("Invalid Longitude");
+         throw new IllegalArgumentException("Invalid Longitude [-180 - 180]");
       if (position.getElevation().doubleValue() < -409.5 || position.getElevation().doubleValue() > 6143.9)
-         throw new IllegalArgumentException("Invalid Elevation");
+         throw new IllegalArgumentException("Invalid Elevation [-409.5 - 6143.9]");
    }
 
    public static void validateHeading(String head) {
       validateString(head);
       if (head.length() != 16) {
-         throw new IllegalArgumentException("Invalid BitString");
+         throw new IllegalArgumentException("Invalid BitString, must be 16 bits!");
       }
    }
 
    public static void validateMUTCDCode(int mutc) {
       if (mutc < 0 || mutc > 6)
-         throw new IllegalArgumentException("Invalid Enumeration");
+         throw new IllegalArgumentException("Invalid Enumeration [0-6]");
    }
 
    public static void validateSign(int sign) {
       if (sign < 0 || sign > 7)
-         throw new IllegalArgumentException("Invalid Sign Priority");
+         throw new IllegalArgumentException("Invalid Sign Priority [0-7]");
    }
 
    public static void validateITISCodes(String code) {
@@ -790,12 +786,12 @@ public class OssTravelerMessageBuilder {
       try {
          cd = Integer.parseInt(code);
          if (cd < 0 || cd > 65535)
-            throw new IllegalArgumentException("Invalid ITIS code");
+            throw new IllegalArgumentException("Invalid ITIS code [0-65535]");
       } catch (NumberFormatException e) {
          if (code.isEmpty())
             throw new IllegalArgumentException("Invalid empty string");
          if (code.length() < 1 || code.length() > 500)
-            throw new IllegalArgumentException("Invalid test Phrase");
+            throw new IllegalArgumentException("Invalid test Phrase length [1-500]");
       }
    }
 
@@ -804,12 +800,12 @@ public class OssTravelerMessageBuilder {
       try {
          cd = Integer.parseInt(code);
          if (cd < 0 || cd > 65535)
-            throw new IllegalArgumentException("Invalid ITIS code");
+            throw new IllegalArgumentException("Invalid ITIS code [0-65535]");
       } catch (NumberFormatException e) {
          if (code.isEmpty())
             throw new IllegalArgumentException("Invalid empty string");
          if (code.length() < 1 || code.length() > 16)
-            throw new IllegalArgumentException("Invalid test Phrase");
+            throw new IllegalArgumentException("Invalid test Phrase length [1-16]");
       }
    }
 
@@ -820,142 +816,142 @@ public class OssTravelerMessageBuilder {
 
    public static void validateGeoName(String name) {
       if (name.length() < 1 || name.length() > 63)
-         throw new IllegalArgumentException("Invalid Descriptive name");
+         throw new IllegalArgumentException("Invalid Descriptive name length [1-63]");
    }
 
    public static void validateRoadID(int id) {
       if (id < 0 || id > 65535)
-         throw new IllegalArgumentException("Invalid RoadID");
+         throw new IllegalArgumentException("Invalid RoadID [0-65535]");
    }
 
    public static void validateLaneWidth(int width) {
       if (width < 0 || width > 32767)
-         throw new IllegalArgumentException("Invalid lane width");
+         throw new IllegalArgumentException("Invalid lane width [0-32767]");
    }
 
    public static void validateDirectionality(long dir) {
       if (dir < 0 || dir > 3)
-         throw new IllegalArgumentException("Invalid enumeration");
+         throw new IllegalArgumentException("Invalid enumeration [0-3]");
    }
 
    public static void validateZoom(int z) {
       if (z < 0 || z > 15)
-         throw new IllegalArgumentException("Invalid zoom");
+         throw new IllegalArgumentException("Invalid zoom [0-15]");
    }
 
    public static void validateExtent(int ex) {
       if (ex < 0 || ex > 15)
-         throw new IllegalArgumentException("Invalid extent enumeration");
+         throw new IllegalArgumentException("Invalid extent enumeration [0-15]");
    }
 
    public static void validateRadius(int rad) {
       if (rad < 0 || rad > 4095)
-         throw new IllegalArgumentException("Invalid radius");
+         throw new IllegalArgumentException("Invalid radius [0-4095]");
    }
 
    public static void validateUnits(int unit) {
       if (unit < 0 || unit > 7)
-         throw new IllegalArgumentException("Invalid units enumeration");
+         throw new IllegalArgumentException("Invalid units enumeration [0-7]");
    }
 
    public static void validatex16Offset(int x) {
       if (x < -32768 || x > 32767)
-         throw new IllegalArgumentException("Invalid x offset");
+         throw new IllegalArgumentException("Invalid x offset [-32768 - 32767]");
    }
 
    public static void validatey16Offset(int y) {
       if (y < -32768 || y > 32767)
-         throw new IllegalArgumentException("Invalid y offset");
+         throw new IllegalArgumentException("Invalid y offset [-32768 - 32767]");
    }
 
    public static void validatez16Offset(int z) {
       if (z < -32768 || z > 32767)
-         throw new IllegalArgumentException("Invalid z offset");
+         throw new IllegalArgumentException("Invalid z offset [-32768 - 32767]");
    }
 
    public static void validateB10Offset(int b) {
       if (b < -512 || b > 511)
-         throw new IllegalArgumentException("Invalid B10_Offset");
+         throw new IllegalArgumentException("Invalid B10_Offset [-512 - 511]");
    }
 
    public static void validateB11Offset(int b) {
       if (b < -1024 || b > 1023)
-         throw new IllegalArgumentException("Invalid B11_Offset");
+         throw new IllegalArgumentException("Invalid B11_Offset [-1024 - 1023]");
    }
 
    public static void validateB12Offset(int b) {
       if (b < -2048 || b > 2047)
-         throw new IllegalArgumentException("Invalid B12_Offset");
+         throw new IllegalArgumentException("Invalid B12_Offset [-2048 - 2047]");
    }
 
    public static void validateB13Offset(int b) {
       if (b < -4096 || b > 4095)
-         throw new IllegalArgumentException("Invalid B13_Offset");
+         throw new IllegalArgumentException("Invalid B13_Offset [-4096 - 4095]");
    }
 
    public static void validateB14Offset(int b) {
       if (b < -8192 || b > 8191)
-         throw new IllegalArgumentException("Invalid B14_Offset");
+         throw new IllegalArgumentException("Invalid B14_Offset [-8192 - 8191]");
    }
 
    public static void validateB16Offset(int b) {
       if (b < -32768 || b > 32767)
-         throw new IllegalArgumentException("Invalid B16_Offset");
+         throw new IllegalArgumentException("Invalid B16_Offset [-32768 - 32767]");
    }
 
    public static void validateLL12Offset(int b) {
       if (b < -2048 || b > 2047)
-         throw new IllegalArgumentException("Invalid B10_Offset");
+         throw new IllegalArgumentException("Invalid B10_Offset [-2048 - 2047]");
    }
 
    public static void validateLL14Offset(int b) {
       if (b < -8192 || b > 8191)
-         throw new IllegalArgumentException("Invalid B11_Offset");
+         throw new IllegalArgumentException("Invalid B11_Offset [-8192 - 8191]");
    }
 
    public static void validateLL16Offset(int b) {
       if (b < -32768 || b > 32767)
-         throw new IllegalArgumentException("Invalid B12_Offset");
+         throw new IllegalArgumentException("Invalid B12_Offset [-32768 - 32767]");
    }
 
    public static void validateLL18Offset(int b) {
       if (b < -131072 || b > 131071)
-         throw new IllegalArgumentException("Invalid B13_Offset");
+         throw new IllegalArgumentException("Invalid B13_Offset [-131072 - 131071]");
    }
 
    public static void validateLL22Offset(int b) {
       if (b < -2097152 || b > 2097151)
-         throw new IllegalArgumentException("Invalid B14_Offset");
+         throw new IllegalArgumentException("Invalid B14_Offset [-2097152 - 2097151]");
    }
 
    public static void validateLL24Offset(int b) {
       if (b < -8388608 || b > 8388607)
-         throw new IllegalArgumentException("Invalid B16_Offset");
+         throw new IllegalArgumentException("Invalid B16_Offset [-8388608 - 8388608]");
    }
 
    public static void validateLaneID(int lane) {
       if (lane < 0 || lane > 255)
-         throw new IllegalArgumentException("Invalid LaneID");
+         throw new IllegalArgumentException("Invalid LaneID [0 - 255]");
    }
 
    public static void validateSmallDrivenLine(int line) {
       if (line < -2047 || line > 2047)
-         throw new IllegalArgumentException("Invalid Small Offset");
+         throw new IllegalArgumentException("Invalid Small Offset [-2047 - 2047]");
    }
 
    public static void validateLargeDrivenLine(int line) {
       if (line < -32767 || line > 32767)
-         throw new IllegalArgumentException("Invalid Large Offset");
+         throw new IllegalArgumentException("Invalid Large Offset [-32767 - 32767]");
    }
 
    public static void validateAngle(int ang) {
       if (ang < 0 || ang > 28800)
-         throw new IllegalArgumentException("Invalid Angle");
+         throw new IllegalArgumentException("Invalid Angle [0 - 28800]");
    }
 
    public static void validateB12Scale(int b) {
       if (b < -2048 || b > 2047)
-         throw new IllegalArgumentException("Invalid B12 Scale");
+         throw new IllegalArgumentException("Invalid B12 Scale [-2048 - 2047]");
    }
 
    public static void validateNodeAttribute(String str) {
@@ -967,7 +963,7 @@ public class OssTravelerMessageBuilder {
          throw new IllegalArgumentException("Invalid NodeAttribute Enumeration");
       }
    }
-   
+
    public static void validateSegmentAttribute(String str) {
       String myString = "reserved doNotBlock whiteLine mergingLaneLeft mergingLaneRight curbOnLeft curbOnRight loadingzoneOnLeft loadingzoneOnRight turnOutPointOnLeft turnOutPointOnRight adjacentParkingOnLeft adjacentParkingOnRight sharedBikeLane bikeBoxInFront transitStopOnLeft transitStopOnRight transitStopInLane sharedWithTrackedVehicle safeIsland lowCurbsPresent rumbleStripPresent audibleSignalingPresent adaptiveTimingPresent rfSignalRequestPresent partialCurbIntrusion taperToLeft taperToRight taperToCenterLine parallelParking headInParking freeParking timeRestrictionsOnParking costToPark midBlockCurbPresent unEvenPavementPresent";
       CharSequence cs = str;
@@ -977,7 +973,7 @@ public class OssTravelerMessageBuilder {
          throw new IllegalArgumentException("Invalid SegmentAttribute Enumeration");
       }
    }
-   
+
    public static void validateSpeedLimitType(String str) {
       String myString = "unknown maxSpeedInSchoolZone maxSpeedInSchoolZoneWhenChildrenArePresent maxSpeedInConstructionZone vehicleMinSpeed vehicleMaxSpeed vehicleNightMaxSpeed truckMinSpeed truckMaxSpeed truckNightMaxSpeed vehiclesWithTrailerMinSpeed vehiclesWithTrailersMaxSpeed vehiclesWithTrailersNightMaxSpeed";
       CharSequence cs = str;
@@ -987,24 +983,24 @@ public class OssTravelerMessageBuilder {
          throw new IllegalArgumentException("Invalid SpeedLimitAttribute Enumeration");
       }
    }
-   
+
    public static void validateVelocity(int vel) {
       if (vel < 0 || vel > 8191)
-         throw new IllegalArgumentException("Invalid Velocity");
+         throw new IllegalArgumentException("Invalid Velocity [0 - 8191]");
    }
-   
+
    public static void validateDeltaAngle(int d) {
       if (d < -150 || d > 150)
-         throw new IllegalArgumentException("Invalid Delta Angle");
+         throw new IllegalArgumentException("Invalid Delta Angle [-150 - 150]");
    }
-   
+
    public static void validateCrownPoint(int c) {
       if (c < -128 || c > 127)
-         throw new IllegalArgumentException("Invalid Crown Point");
+         throw new IllegalArgumentException("Invalid Crown Point [-128 - 127]");
    }
-   
+
    public static void validateLaneAngle(int a) {
       if (a < -180 || a > 180)
-         throw new IllegalArgumentException("Invalid LaneAngle");
+         throw new IllegalArgumentException("Invalid LaneAngle [-180 -180]");
    }
 }

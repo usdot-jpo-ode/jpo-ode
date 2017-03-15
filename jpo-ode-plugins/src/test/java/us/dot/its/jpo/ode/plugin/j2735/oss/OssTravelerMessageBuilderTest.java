@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import us.dot.its.jpo.ode.j2735.dsrc.RegionList;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
@@ -2461,6 +2462,83 @@ public class OssTravelerMessageBuilderTest {
       }
       catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkBadXRegionOffset() {
+      //J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[]
+      //-32768 32767
+      J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList();
+      J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
+      RegionList rList;
+      rl.xOffset = -32769;
+      rl.yOffset = 0;
+      rl.zOffset = 0;
+      myList[0] = rl;
+      
+      try {
+         rList = OssTravelerMessageBuilder.buildRegionOffsets(myList);
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkBadYRegionOffset() {
+      J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList();
+      J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
+      RegionList rList;
+      rl.xOffset = 0;
+      rl.yOffset = -32769;
+      rl.zOffset = 0;
+      myList[0] = rl;
+      
+      try {
+         rList = OssTravelerMessageBuilder.buildRegionOffsets(myList);
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkBadZRegionOffset() {
+      J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList();
+      J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
+      RegionList rList;
+      rl.xOffset = 0;
+      rl.yOffset = 0;
+      rl.zOffset = -32769;
+      myList[0] = rl;
+      
+      try {
+         rList = OssTravelerMessageBuilder.buildRegionOffsets(myList);
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkRegionOffset() {
+      J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList();
+      J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
+      RegionList rList;
+      rl.xOffset = 0;
+      rl.yOffset = 0;
+      rl.zOffset = 0;
+      myList[0] = rl;
+      
+      try {
+         rList = OssTravelerMessageBuilder.buildRegionOffsets(myList);
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
       }
    }
    
