@@ -4,6 +4,7 @@ import static org.junit.Assert.fail;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
@@ -16,7 +17,8 @@ import us.dot.its.jpo.ode.util.SerializationUtils;
 
 public class StompByteArrayMessageDistributorTest {
 
-    @Test
+   @Ignore 
+   @Test
     public void shouldConstructAndCall(@Injectable SimpMessagingTemplate mockSimpMessagingTemplate,
             @Injectable ConsumerRecord<String, byte[]> mockConsumerRecord,
             @Mocked final SerializationUtils<J2735Bsm> mockSerializationUtils, @Mocked Object mockObject) {
