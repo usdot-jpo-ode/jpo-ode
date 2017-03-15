@@ -151,18 +151,19 @@ public class TravelerMessageController {
         }
    }
 
-    private String log(boolean success, String msg, Throwable t) {
-       if (success) {
-          EventLogger.logger.info(msg);
-         logger.error(msg);
-         return "{success: true}";
+   private String log(boolean success, String msg, Throwable t) {
+      if (success) {
+         EventLogger.logger.info(msg);
+         msg = String.format("{success: true, message:\"%1$s\"}", msg);
+         logger.info(msg);
+         return msg;
       } else {
          if (Objects.nonNull(t)) {
             EventLogger.logger.error(msg, t);
             logger.error(msg, t);
          } else {
-           EventLogger.logger.error(msg);
-           logger.error(msg);
+            EventLogger.logger.error(msg);
+            logger.error(msg);
          }
          return "{success: false, message: \"" + msg + "\"}";
       }
