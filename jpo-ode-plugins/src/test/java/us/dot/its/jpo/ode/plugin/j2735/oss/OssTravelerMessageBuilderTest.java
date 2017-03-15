@@ -9,9 +9,11 @@ import java.math.BigDecimal;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import us.dot.its.jpo.ode.j2735.dsrc.GeometricProjection;
 import us.dot.its.jpo.ode.j2735.dsrc.RegionList;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
+import us.dot.its.jpo.ode.j2735.dsrc.ValidRegion.Area;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 
@@ -2436,7 +2438,7 @@ public class OssTravelerMessageBuilderTest {
    public void checkContentGenericSignage() {
       J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
-      df.content = "Advisory";
+      df.content = "Generic Signage";
       String[] codes = {"250","10"};
       df.items = codes;
       
@@ -2452,7 +2454,7 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadContentGenericSignage() {
       J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
-      df.content = "Advisory";
+      df.content = "Generic Signage";
       String[] codes = {"-1","10"};
       df.items = codes;
       
@@ -2467,8 +2469,6 @@ public class OssTravelerMessageBuilderTest {
    
    @Test
    public void checkBadXRegionOffset() {
-      //J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[]
-      //-32768 32767
       J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList();
       J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
       RegionList rList;
@@ -2536,6 +2536,53 @@ public class OssTravelerMessageBuilderTest {
       
       try {
          rList = OssTravelerMessageBuilder.buildRegionOffsets(myList);
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkBadGeoCircle() {
+      //Area area = new Area();
+      GeometricProjection geo = new GeometricProjection();
+      J2735TravelerInputData.DataFrame.Region.Geometry g = new J2735TravelerInputData.DataFrame.Region.Geometry();
+      J2735TravelerInputData.DataFrame.Region.Circle c = new J2735TravelerInputData.DataFrame.Region.Circle();
+      J2735Position3D pos = new J2735Position3D((long) 0.0, (long) 0.0, (long) 0.0);
+      c.position = pos;
+      c.radius = 5;
+      c.units = 10;
+      g.circle = c;
+      g.direction = "1010101010101010";
+      g.extent = -1;
+      g.laneWidth = 10;
+      
+      try {
+         geo.setCircle(OssTravelerMessageBuilder.buildGeoCircle(g));
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkGeoCircle() {
+      //Area area = new Area();
+      GeometricProjection geo = new GeometricProjection();
+      J2735TravelerInputData.DataFrame.Region.Geometry g = new J2735TravelerInputData.DataFrame.Region.Geometry();
+      J2735TravelerInputData.DataFrame.Region.Circle c = new J2735TravelerInputData.DataFrame.Region.Circle();
+      J2735Position3D pos = new J2735Position3D((long) 0.0, (long) 0.0, (long) 0.0);
+      c.position = pos;
+      c.radius = 5;
+      c.units = 6;
+      g.circle = c;
+      g.direction = "1010101010101010";
+      g.extent = 1;
+      g.laneWidth = 10;
+      
+      try {
+         geo.setCircle(OssTravelerMessageBuilder.buildGeoCircle(g));
       }
       catch (RuntimeException e) {
          fail("Unexpected Exception");

@@ -202,7 +202,7 @@ public class OssTravelerMessageBuilder {
          content.setSpeedLimit(buildSpeedLimit(codes));
       } else if ("Exit Service".equals(contentType)) {
          content.setExitService(buildExitService(codes));
-      } else {
+      } else if ("Generic Signage".equals(contentType)) {
          content.setGenericSign(buildGenericSignage(codes));
       }
       return content;
@@ -429,7 +429,7 @@ public class OssTravelerMessageBuilder {
       return myList;
    }
 
-   private Circle buildGeoCircle(J2735TravelerInputData.DataFrame.Region.Geometry geo) {
+   public static Circle buildGeoCircle(J2735TravelerInputData.DataFrame.Region.Geometry geo) {
       Circle circle = new Circle();
       circle.setCenter(OssPosition3D.position3D(geo.circle.position));
       validateRadius(geo.circle.radius);
