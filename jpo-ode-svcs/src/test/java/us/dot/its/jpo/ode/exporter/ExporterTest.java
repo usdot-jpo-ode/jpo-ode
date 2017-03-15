@@ -17,7 +17,7 @@ import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 @RunWith(JMockit.class)
 public class ExporterTest {
 
-    @Ignore
+    
     @Test
     public void shouldRun(@Mocked OdeProperties mockOdeProperties,
             @Injectable SimpMessagingTemplate mockSimpMessagingTemplate,
