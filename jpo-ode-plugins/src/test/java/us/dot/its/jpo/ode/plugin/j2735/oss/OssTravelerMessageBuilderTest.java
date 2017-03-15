@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
@@ -2295,6 +2296,171 @@ public class OssTravelerMessageBuilderTest {
          OssTravelerMessageBuilder.validateLaneAngle(x);
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkContentAdvisory() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Advisory";
+      String[] codes = {"250","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkBadContentAdvisory() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Advisory";
+      String[] codes = {"-1","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkContentWorkZone() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Work Zone";
+      String[] codes = {"250","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkBadContentWorkZone() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Work Zone";
+      String[] codes = {"-1","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkContentSpeedLimit() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Speed Limit";
+      String[] codes = {"250","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkBadContentSpeedLimit() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Speed Limit";
+      String[] codes = {"-1","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkContentExitService() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Exit Service";
+      String[] codes = {"250","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkBadContentExitService() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Exit Service";
+      String[] codes = {"-1","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkContentGenericSignage() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Advisory";
+      String[] codes = {"250","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkBadContentGenericSignage() {
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      TravelerDataFrame dataFrame = new TravelerDataFrame();
+      df.content = "Advisory";
+      String[] codes = {"-1","10"};
+      df.items = codes;
+      
+      try {
+         dataFrame.setContent(OssTravelerMessageBuilder.buildContent(df));
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
    
