@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.exporter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
@@ -21,7 +21,8 @@ public class StompByteArrayMessageDistributorTest {
 
     @Test
     public void shouldConstructAndCall(@Injectable SimpMessagingTemplate mockSimpMessagingTemplate,
-            @Injectable ConsumerRecord<String, byte[]> mockConsumerRecord, @Mocked final SerializationUtils<J2735Bsm> mockSerializationUtils, @Mocked Object mockObject) {
+            @Injectable ConsumerRecord<String, byte[]> mockConsumerRecord,
+            @Mocked final SerializationUtils<J2735Bsm> mockSerializationUtils, @Mocked Object mockObject) {
 
         String testTopic = "testTopic123";
 
@@ -29,33 +30,32 @@ public class StompByteArrayMessageDistributorTest {
             {
                 mockConsumerRecord.value();
                 result = (byte[]) any;
-                
-//                mockConsumerRecord.topic();
-//                result = null;
-//                mockConsumerRecord.partition();
-//                result = null;
-//                mockConsumerRecord.offset();
-//                result = null;
-                
+
+                // mockConsumerRecord.topic();
+                // result = null;
+                // mockConsumerRecord.partition();
+                // result = null;
+                // mockConsumerRecord.offset();
+                // result = null;
+
                 new TopicPartition(anyString, anyInt);
                 result = null;
-                
+
                 new SerializationUtils<>();
                 mockSerializationUtils.deserialize((byte[]) any);
                 result = mockObject;
-                
+
                 mockObject.toString();
                 result = "testExpectedResult123";
-                
+
                 mockSimpMessagingTemplate.convertAndSend(testTopic, (Subscriber) any);
-                
-                
+
             }
         };
 
         StompByteArrayMessageDistributor testSSNMP = new StompByteArrayMessageDistributor(mockSimpMessagingTemplate,
                 testTopic);
-        
+
         testSSNMP.setRecord(mockConsumerRecord);
 
         try {
