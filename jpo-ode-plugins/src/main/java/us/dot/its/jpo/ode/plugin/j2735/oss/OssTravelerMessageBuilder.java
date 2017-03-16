@@ -458,51 +458,49 @@ public class OssTravelerMessageBuilder {
          NodeXY node = new NodeXY();
          NodeOffsetPointXY nodePoint = new NodeOffsetPointXY();
 
-         if ("node-XY1".equals(point.delta)) {
+         switch(point.delta) {
+         case "node-XY1":
             validateB10Offset(point.x);
             validateB10Offset(point.y);
             Node_XY_20b xy = new Node_XY_20b(new Offset_B10(point.x), new Offset_B10(point.y));
             nodePoint.setNode_XY1(xy);
-         }
-
-         if ("node-XY2".equals(point.delta)) {
+            break;
+         case "node-XY2":
             validateB11Offset(point.x);
             validateB11Offset(point.y);
-            Node_XY_22b xy = new Node_XY_22b(new Offset_B11(point.x), new Offset_B11(point.y));
-            nodePoint.setNode_XY2(xy);
-         }
-
-         if ("node-XY3".equals(point.delta)) {
+            Node_XY_22b xy2 = new Node_XY_22b(new Offset_B11(point.x), new Offset_B11(point.y));
+            nodePoint.setNode_XY2(xy2);
+            break;
+         case "node-XY3":
             validateB12Offset(point.x);
             validateB12Offset(point.y);
-            Node_XY_24b xy = new Node_XY_24b(new Offset_B12(point.x), new Offset_B12(point.y));
-            nodePoint.setNode_XY3(xy);
-         }
-
-         if ("node-XY4".equals(point.delta)) {
+            Node_XY_24b xy3 = new Node_XY_24b(new Offset_B12(point.x), new Offset_B12(point.y));
+            nodePoint.setNode_XY3(xy3);
+            break;
+         case "node-XY4":
             validateB13Offset(point.x);
             validateB13Offset(point.y);
-            Node_XY_26b xy = new Node_XY_26b(new Offset_B13(point.x), new Offset_B13(point.y));
-            nodePoint.setNode_XY4(xy);
-         }
-
-         if ("node-XY5".equals(point.delta)) {
+            Node_XY_26b xy4 = new Node_XY_26b(new Offset_B13(point.x), new Offset_B13(point.y));
+            nodePoint.setNode_XY4(xy4);
+            break;
+         case "node-XY5":
             validateB14Offset(point.x);
             validateB14Offset(point.y);
-            Node_XY_28b xy = new Node_XY_28b(new Offset_B14(point.x), new Offset_B14(point.y));
-            nodePoint.setNode_XY5(xy);
-         }
-
-         if ("node-XY6".equals(point.delta)) {
+            Node_XY_28b xy5 = new Node_XY_28b(new Offset_B14(point.x), new Offset_B14(point.y));
+            nodePoint.setNode_XY5(xy5);
+            break;
+         case "node-XY6":
             validateB16Offset(point.x);
             validateB16Offset(point.y);
-            Node_XY_32b xy = new Node_XY_32b(new Offset_B16(point.x), new Offset_B16(point.y));
-            nodePoint.setNode_XY6(xy);
-         }
-
-         if ("node-LatLon".equals(point.delta)) {
+            Node_XY_32b xy6 = new Node_XY_32b(new Offset_B16(point.x), new Offset_B16(point.y));
+            nodePoint.setNode_XY6(xy6);
+            break;
+         case "node-LatLon":
             Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.nodeLat), new Latitude(point.nodeLong));
             nodePoint.setNode_LatLon(nodeLatLong);
+            break;
+         default:
+            break;
          }
 
          node.setDelta(nodePoint);
