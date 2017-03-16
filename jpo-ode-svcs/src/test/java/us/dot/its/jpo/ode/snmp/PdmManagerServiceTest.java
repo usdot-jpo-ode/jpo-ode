@@ -11,7 +11,6 @@ import ch.qos.logback.classic.Logger;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
-import us.dot.its.jpo.ode.pdm.PdmParameters;
 
 public class PdmManagerServiceTest {
 
@@ -24,7 +23,7 @@ public class PdmManagerServiceTest {
     public void createAndSendshouldReturnNullWhenGivenNullArguments(@Mocked SnmpProperties mockSnmpProperties,
             @Mocked final Logger logger) {
 
-        PdmParameters testParams = null;
+        us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagement.PdmParameters testParams = null;
 
         assertNull(PdmManagerService.createAndSend(testParams, mockSnmpProperties));
 
@@ -40,7 +39,7 @@ public class PdmManagerServiceTest {
      * and an exception is logged
      */
     @Test
-    public void createAndSendShouldReturnNullWhenSessionInitThrowsException(@Mocked PdmParameters mockPdmParameters,
+    public void createAndSendShouldReturnNullWhenSessionInitThrowsException(@Mocked us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagement.PdmParameters mockPdmParameters,
             @Mocked SnmpProperties mockSnmpProperties, @Mocked final Logger logger,
             @Mocked SnmpSession mockSnmpSession) {
 
@@ -70,7 +69,7 @@ public class PdmManagerServiceTest {
     @Test
     public void createPDUshouldReturnNullWhenGivenNullParams() {
 
-        PdmParameters nullParams = null;
+        us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagement.PdmParameters nullParams = null;
         ScopedPDU result = PdmManagerService.createPDU(nullParams);
         assertNull(result);
     }
