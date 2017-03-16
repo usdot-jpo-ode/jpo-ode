@@ -19,8 +19,10 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagement.PdmParameters;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData.SNMP;
+import us.dot.its.jpo.ode.snmp.PdmManagerService;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.snmp.TimManagerService;
 import us.dot.its.jpo.ode.snmp.TimParameters;
@@ -64,18 +66,12 @@ public class PDMController {
       }
    }
 
-   private ResponseEvent sendToRSU(RSU rsu, SNMP snmp, String payload) throws ParseException {
+   private ResponseEvent sendToRSU(RSU rsu, PdmParameters params, String payload) throws ParseException {
       Address addr = GenericAddress.parse(rsu.target + "/161");
 
       // Populate the SnmpProperties object with SNMP preferences
       SnmpProperties testProps = new SnmpProperties(addr, rsu.username, rsu.password, rsu.retries, rsu.timeout);
 
-      // Populate the TimParameters object with OID values
-
-      // Send the request out
-      // ResponseEvent response = TimManagerService.createAndSend(testParams,
-      // testProps);
-
-      return null;
+      return PdmManagerService.createAndSend(params,testProps);
    }
 }
