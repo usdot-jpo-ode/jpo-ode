@@ -11,7 +11,7 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 ### Sprint 8
 - ODE-143 Outbound TIM Message Parameters - Phase 2
 - ODE-146 Provide generic SDW Deposit Capability
-- ODE-147 Deposit TIM message to SDW
+- ODE-147 Deposit TIM message to SDW.
 
 ### Sprint 7
 - ODE-125 Expose empty field ODE output records when presented in JSON format
