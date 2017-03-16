@@ -78,50 +78,6 @@ public class TimManagerServiceTest {
 
     }
 
-//    @Test
-//    public void createAndSendShouldReturnNullWhenSetThrowsException(@Mocked TimParameters mockTimParameters,
-//            @Mocked SnmpProperties mockSnmpProperties, @Mocked final Logger logger,
-//            @Mocked final SnmpSession mockSnmpSession, @Mocked final TimManagerService mockTimManagerService,
-//            @Mocked ScopedPDU mockScopedPDU, @Mocked Snmp mockSnmp, @Mocked TransportMapping mockTransport,
-//            @Mocked UserTarget mockTarget) {
-//
-//        IOException expectedException = new IOException("testException123");
-//        try {
-//            new Expectations() {
-//                {
-//                    new SnmpSession(mockSnmpProperties);
-//                    result = mockSnmpSession;
-//                    
-//                    mockSnmpSession.set((ScopedPDU) any, (Snmp) any, (TransportMapping) any, (UserTarget) any);
-//                    result = expectedException;
-//
-//                    mockSnmpSession.getSnmp();
-//                    result = mockSnmp;
-//                    mockSnmpSession.getTransport();
-//                    result = mockTransport;
-//                    mockSnmpSession.getTarget();
-//                    result = mockTarget;
-//                    
-//                    
-//                    TimManagerService.createPDU(mockTimParameters);
-//                    result = mockScopedPDU;
-//                    
-//                }
-//            };
-//            
-//        } catch (IOException e) {
-//            fail("Unexpected exception mocking SnmpSession constructor: " + e);
-//        }
-//        
-//        
-//        assertNull(TimManagerService.createAndSend(mockTimParameters, mockSnmpProperties));
-//        new Verifications() {
-//            {
-//                logger.error("TIM SERVICE - Error while sending PDU: {}", expectedException);
-//            }
-//        };
-//    }
-
     // Create PDU tests
     @Test
     public void createPDUshouldReturnNullWhenGivenNullParams() {
