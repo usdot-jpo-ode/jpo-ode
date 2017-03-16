@@ -439,7 +439,7 @@ public class OssTravelerMessageBuilder {
       return circle;
    }
 
-   private Circle buildOldCircle(J2735TravelerInputData.DataFrame.Region.OldRegion reg) {
+   public Circle buildOldCircle(J2735TravelerInputData.DataFrame.Region.OldRegion reg) {
       Circle circle = new Circle();
       circle.setCenter(OssPosition3D.position3D(reg.circle.position));
       validateRadius(reg.circle.radius);
@@ -449,7 +449,7 @@ public class OssTravelerMessageBuilder {
       return circle;
    }
 
-   private NodeListXY buildNodeXYList(J2735TravelerInputData.NodeXY[] inputNodes) {
+   public NodeListXY buildNodeXYList(J2735TravelerInputData.NodeXY[] inputNodes) {
       NodeListXY nodeList = new NodeListXY();
       NodeSetXY nodes = new NodeSetXY();
       for (int i = 0; i < inputNodes.length; i++) {
@@ -459,31 +459,43 @@ public class OssTravelerMessageBuilder {
          NodeOffsetPointXY nodePoint = new NodeOffsetPointXY();
 
          if ("node-XY1".equals(point.delta)) {
+            validateB10Offset(point.x);
+            validateB10Offset(point.y);
             Node_XY_20b xy = new Node_XY_20b(new Offset_B10(point.x), new Offset_B10(point.y));
             nodePoint.setNode_XY1(xy);
          }
 
          if ("node-XY2".equals(point.delta)) {
+            validateB11Offset(point.x);
+            validateB11Offset(point.y);
             Node_XY_22b xy = new Node_XY_22b(new Offset_B11(point.x), new Offset_B11(point.y));
             nodePoint.setNode_XY2(xy);
          }
 
          if ("node-XY3".equals(point.delta)) {
+            validateB12Offset(point.x);
+            validateB12Offset(point.y);
             Node_XY_24b xy = new Node_XY_24b(new Offset_B12(point.x), new Offset_B12(point.y));
             nodePoint.setNode_XY3(xy);
          }
 
          if ("node-XY4".equals(point.delta)) {
+            validateB13Offset(point.x);
+            validateB13Offset(point.y);
             Node_XY_26b xy = new Node_XY_26b(new Offset_B13(point.x), new Offset_B13(point.y));
             nodePoint.setNode_XY4(xy);
          }
 
          if ("node-XY5".equals(point.delta)) {
+            validateB14Offset(point.x);
+            validateB14Offset(point.y);
             Node_XY_28b xy = new Node_XY_28b(new Offset_B14(point.x), new Offset_B14(point.y));
             nodePoint.setNode_XY5(xy);
          }
 
          if ("node-XY6".equals(point.delta)) {
+            validateB16Offset(point.x);
+            validateB16Offset(point.y);
             Node_XY_32b xy = new Node_XY_32b(new Offset_B16(point.x), new Offset_B16(point.y));
             nodePoint.setNode_XY6(xy);
          }
