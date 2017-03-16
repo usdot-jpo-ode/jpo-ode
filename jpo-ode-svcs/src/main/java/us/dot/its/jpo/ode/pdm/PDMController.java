@@ -8,33 +8,22 @@ import org.slf4j.LoggerFactory;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.dds.DdsDepositor;
-import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagement.PdmParameters;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData.RSU;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData.SNMP;
 import us.dot.its.jpo.ode.snmp.PdmManagerService;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
-import us.dot.its.jpo.ode.snmp.TimManagerService;
-import us.dot.its.jpo.ode.snmp.TimParameters;
 import us.dot.its.jpo.ode.traveler.TimMessageException;
-import us.dot.its.jpo.ode.traveler.TravelerMessageController;
 
 @Controller
 public class PDMController {
    private static Logger logger = LoggerFactory.getLogger(PDMController.class);
-
-   private OdeProperties odeProperties;
-   private String myString;
 
    @ResponseBody
    @RequestMapping(value = "/pdm", method = RequestMethod.POST, produces = "application/json")
@@ -51,9 +40,9 @@ public class PDMController {
    private String log(boolean success, String msg, Throwable t) {
       if (success) {
          EventLogger.logger.info(msg);
-         msg = String.format("{success: true, message:\"%1$s\"}", msg);
-         logger.info(msg);
-         return msg;
+         String myMsg = String.format("{success: true, message:\"%1$s\"}", msg);
+         logger.info(myMsg);
+         return myMsg;
       } else {
          if (Objects.nonNull(t)) {
             EventLogger.logger.error(msg, t);

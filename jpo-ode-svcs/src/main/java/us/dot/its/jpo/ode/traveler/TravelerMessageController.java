@@ -154,9 +154,9 @@ public class TravelerMessageController {
    private String log(boolean success, String msg, Throwable t) {
       if (success) {
          EventLogger.logger.info(msg);
-         msg = String.format("{success: true, message:\"%1$s\"}", msg);
-         logger.info(msg);
-         return msg;
+         String myMsg = String.format("{success: true, message:\"%1$s\"}", msg);
+         logger.info(myMsg);
+         return myMsg;
       } else {
          if (Objects.nonNull(t)) {
             EventLogger.logger.error(msg, t);
