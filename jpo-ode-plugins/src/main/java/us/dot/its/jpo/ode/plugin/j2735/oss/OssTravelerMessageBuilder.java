@@ -496,7 +496,9 @@ public class OssTravelerMessageBuilder {
             nodePoint.setNode_XY6(xy6);
             break;
          case "node-LatLon":
-            Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.nodeLat), new Latitude(point.nodeLong));
+            validateLatitude(point.nodeLat);
+            validateLongitude(point.nodeLong);
+            Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.nodeLong), new Latitude(point.nodeLat));
             nodePoint.setNode_LatLon(nodeLatLong);
             break;
          default:
@@ -702,7 +704,7 @@ public class OssTravelerMessageBuilder {
       return nodeList;
    }
 
-   private long getMinuteOfTheYear(String timestamp) throws ParseException {
+   public long getMinuteOfTheYear(String timestamp) throws ParseException {
       ZonedDateTime start = DateTimeUtils.isoDateTime(timestamp);
       long diff = DateTimeUtils.difference(DateTimeUtils.isoDateTime(start.getYear() + "-01-01T00:00:00+00:00"), start);
       long minutes = diff / 60000;
@@ -772,6 +774,16 @@ public class OssTravelerMessageBuilder {
          throw new IllegalArgumentException("Invalid Longitude [-180 - 180]");
       if (position.getElevation().doubleValue() < -409.5 || position.getElevation().doubleValue() > 6143.9)
          throw new IllegalArgumentException("Invalid Elevation [-409.5 - 6143.9]");
+   }
+   
+   public static void validateLatitude(long lat) {
+      if (lat < -90.0 || lat > 90)
+         throw new IllegalArgumentException("Invalid Latitude[-90 - 90]");
+   }
+   
+   public static void validateLongitude(long lonng) {
+      if (lonng < -180.0 || lonng > 180.0)
+         throw new IllegalArgumentException("Invalid Longitude[-180 - 180]");
    }
 
    public static void validateHeading(String head) {

@@ -73,8 +73,8 @@ public class J2735TravelerInputData extends OdeObject {
 
    public static class NodeXY {
       public String delta;
-      public int nodeLat;
-      public int nodeLong;
+      public long nodeLat;
+      public long nodeLong;
       public int x;
       public int y;
       public Attributes attributes;
