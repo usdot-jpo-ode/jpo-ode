@@ -32,9 +32,20 @@ public class MessageProducer<K, V> {
    // ByteArraySerializer(), props);
    //
    // }
+   
+   public MessageProducer(String brokers, String type, String partitionerClass, Properties props) {
+       props.put("bootstrap.servers", brokers);
+       if (partitionerClass != null)
+          props.put("partitioner.class", partitionerClass);
+
+       producer = new KafkaProducer<>(props);
+
+       logger.info("Producer Created");
+    }
 
    public static MessageProducer<String, String> defaultStringMessageProducer(String brokers, String type) {
 
+       //NOSONAR
       Properties props = new Properties();
       props.put("acks", DEFAULT_PRODUCER_ACKS); // Set acknowledgments for
       // producer requests.
@@ -51,29 +62,21 @@ public class MessageProducer<K, V> {
       props.put("key.serializer", SERIALIZATION_STRING_SERIALIZER);
       props.put("value.serializer", SERIALIZATION_STRING_SERIALIZER);
 
-      MessageProducer<String, String> msgProducer = new MessageProducer<String, String>(brokers, type, null, props);
+      MessageProducer<String, String> msgProducer = new MessageProducer<>(brokers, type, null, props);
 
       logger.info("Default String Message Producer Created");
 
       return msgProducer;
    }
 
-   public MessageProducer(String brokers, String type, String partitionerClass, Properties props) {
-      props.put("bootstrap.servers", brokers);
-      if (partitionerClass != null)
-         props.put("partitioner.class", partitionerClass);
-
-      producer = new KafkaProducer<K, V>(props);
-
-      logger.info("Producer Created");
-   }
+   
 
    public void send(String topic, K key, V value) {
       ProducerRecord<K, V> data;
       if (key == null)
-         data = new ProducerRecord<K, V>(topic, value);
+         data = new ProducerRecord<>(topic, value);
       else
-         data = new ProducerRecord<K, V>(topic, key, value);
+         data = new ProducerRecord<>(topic, key, value);
 
       producer.send(data);
    }

@@ -1,43 +1,80 @@
 package us.dot.its.jpo.ode.wrapper;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
 import java.util.Properties;
+
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.junit.Ignore;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mocked;
 
 public class MessageProducerTest {
 
-    @Ignore
-    @Test
-    public void shouldReturnDefaultStringMessageProducer(@Mocked MessageProducer mockMp,
-            @Mocked KafkaProducer mockKafkaProducer) {
+    @Injectable
+    Properties mockProps;
+    @Mocked
+    KafkaProducer<?, ?> mockKafkaProducer;
+    @Mocked
+    Producer<String, String> mockProducer;
+    @Injectable
+    ProducerRecord<String, String> mockProducerRecord;
 
-        String testBrokers = "bootstrap.servers";
-        String testType = "testType123";
-
-        Properties expectedProps = new Properties();
-        expectedProps.put("acks", MessageProducer.DEFAULT_PRODUCER_ACKS);
-        expectedProps.put("retries", MessageProducer.DEFAULT_PRODUCER_RETRIES);
-        expectedProps.put("batch.size", MessageProducer.DEFAULT_PRODUCER_BATCH_SIZE_BYTES);
-        expectedProps.put("linger.ms", MessageProducer.DEFAULT_PRODUCER_LINGER_MS);
-        expectedProps.put("buffer.memory", MessageProducer.DEFAULT_PRODUCER_BUFFER_MEMORY_BYTES);
-        expectedProps.put("key.serializer", MessageProducer.SERIALIZATION_STRING_SERIALIZER);
-        expectedProps.put("value.serializer", MessageProducer.SERIALIZATION_STRING_SERIALIZER);
-
+    @Before
+    public void setUp() {
         new Expectations() {
-            KafkaProducer<String, String> mockKafkaProducer;
             {
-                new KafkaProducer<>(expectedProps);
-                //new MessageProducer<String, String>(testBrokers, testType, null, expectedProps);
+                new KafkaProducer<>((Properties) any);
             }
         };
+    }
 
-        MessageProducer<?, ?> actualProducer = MessageProducer.defaultStringMessageProducer(testBrokers, testType);
+    @Test
+    public void shouldConstruct() {
 
+        MessageProducer<String, String> testMessageProducer = new MessageProducer<String, String>("testBrokers", null,
+                "testPartitioner", mockProps);
+    }
+
+    @Test
+    public void testSendNoTopic() {
+
+        MessageProducer<String, String> testMessageProducer = new MessageProducer<String, String>("testBrokers", null,
+                "testPartitioner", mockProps);
+        testMessageProducer.send(mockProducerRecord);
+    }
+
+    @Test
+    public void testSendWithTopic() {
+
+        MessageProducer<String, String> testMessageProducer = new MessageProducer<String, String>("testBrokers", null,
+                "testPartitioner", mockProps);
+
+        testMessageProducer.setProducer(mockProducer);
+        testMessageProducer.send("testTopic", "testKey", "testValue");
+    }
+
+    @Test
+    public void testSendWithTopicNullKey() {
+
+        MessageProducer<String, String> testMessageProducer = new MessageProducer<String, String>("testBrokers", null,
+                "testPartitioner", mockProps);
+
+        testMessageProducer.send("testTopic", null, "testValue");
+        assertEquals(KafkaProducer.class, testMessageProducer.getProducer().getClass());
+    }
+
+    @Test
+    public void testClose() {
+
+        MessageProducer<String, String> testMessageProducer = new MessageProducer<String, String>("testBrokers", null,
+                "testPartitioner", mockProps);
+        testMessageProducer.close();
     }
 
 }

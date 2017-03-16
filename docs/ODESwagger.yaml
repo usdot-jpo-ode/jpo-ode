@@ -72,26 +72,20 @@ paths:
       description: |
         The PDM endpoint returns a constructed PDM message
       parameters:
-        - name: PDMObject
+        - name: ProbeDataManagement
           in: body
-          description: Number of messgages.
+          description: PDM Message
           required: true
           schema: 
-            $ref: '#/definitions/J2735PDM'
+            $ref: '#/definitions/J2735ProbeDataManagement'
          
       tags:
         - PDM
       responses:
         200:
-          description: An array of TravelerInformation
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/tim'
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          description: OID responses
+        400:
+          description: Unexpected Error
 definitions:
   tim:
     type: object
@@ -127,7 +121,7 @@ definitions:
         $ref: '#/definitions/SNMP'
       sdw:
         $ref: '#/definitions/SDW'
-  J2735PDM:
+  J2735ProbeDataManagement:
     type: object
     properties:
       pdm:
@@ -138,8 +132,6 @@ definitions:
            $ref: '#/definitions/RSU'
       snmp: 
         $ref: '#/definitions/SNMP'
-      sdw:
-        $ref: '#/definitions/SDW'
   TravelerDataFrameHeader:
     type: object
     required : [sspindex, travelerInfoType, SignPriority, MinuteOfTheYear]
@@ -537,6 +529,7 @@ definitions:
             type: string
           longitude:
             type: string
+  
   PDM:
     type: object
     properties:
@@ -552,55 +545,45 @@ definitions:
       directions:
         type: string
       term:
-        type: object
-        properties:
-          termTime:
-            type: integer
-          termDistance:
-            type: integer
+        type: string
+      termTime:
+        type: integer
+      termDistance:
+        type: integer
       snapshot:
-        $ref: '#/definitions/Snapshot'
+        type: string
+      snapshotTime:
+        $ref: '#/definitions/SnapshotTime'
+      snapshotDistance:
+        $ref: '#/definitions/SnapshotDistance'
       txInterval:
         type: integer
       dataElements:
         type: array
         items:
           $ref: '#/definitions/DataElement'
-      dataFrames: 
-        type: array
-        items: 
-          $ref: '#/definitions/TravelerDataFrame'
-      snmp: 
-        $ref: '#/definitions/SNMP'
-      sdw:
-        $ref: '#/definitions/SDW'  
-        
-  Snapshot:
+  SnapshotTime:
     type: object
     properties:
-      snapshotTime:
-        type: object
-        properties:
-          speed1:
-            type: integer
-          time1:
-            type: integer
-          speed2:
-            type: integer
-          time2:
-            type: integer
-      snapshotDistance:
-        type: object
-        properties:
-          distance1:
-            type: integer
-          time1:
-            type: integer
-          distance2:
-            type: integer
-          time2:
-            type: integer
-          
+      speed1:
+        type: integer
+      time1:
+        type: integer
+      speed2:
+        type: integer
+      time2:
+        type: integer
+  SnapshotDistance:
+    type: object
+    properties:
+      distance1:
+        type: integer
+      time1:
+        type: integer
+      distance2:
+        type: integer
+      time2:
+        type: integer
   DataElement:
     type: object
     properties:
@@ -614,6 +597,7 @@ definitions:
         type: integer
       sendAll:
         type: string
+        
   Error:
     type: object
     properties:
