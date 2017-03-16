@@ -332,7 +332,7 @@ public class OssTravelerMessageBuilder {
          geoPath.setLaneWidth(new LaneWidth(inputRegion.laneWidth));
          validateDirectionality(inputRegion.directionality);
          geoPath.setDirectionality(new DirectionOfUse(inputRegion.directionality));
-         geoPath.setClosedPath(Boolean.valueOf(inputRegion.closedPath));
+         geoPath.setClosedPath(inputRegion.closedPath);
          validateHeading(inputRegion.direction);
          geoPath.setDirection(getHeadingSlice(inputRegion.direction));
 

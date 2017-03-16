@@ -11,7 +11,8 @@ import ch.qos.logback.classic.Logger;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
-import us.dot.its.jpo.ode.pdm.PdmParameters;
+
+import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagement.PdmParameters;
 
 public class PdmManagerServiceTest {
 
