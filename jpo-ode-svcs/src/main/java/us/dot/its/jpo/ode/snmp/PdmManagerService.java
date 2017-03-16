@@ -11,8 +11,8 @@ import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
 
-import us.dot.its.jpo.ode.pdm.PdmParameters;
-import us.dot.its.jpo.ode.pdm.PdmVehicleStatusEntry;
+import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagement.PdmParameters;
+import us.dot.its.jpo.ode.plugin.pdm.PdmVehicleStatusEntry;
 
 public class PdmManagerService {
 

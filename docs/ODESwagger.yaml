@@ -65,6 +65,27 @@ paths:
           description: OID responses
         400:
           description: Value input error
+  /pdm:
+    post:
+      summary: PDM Interface
+      operationId: Send pdm message
+      description: |
+        The PDM endpoint returns a constructed PDM message
+      parameters:
+        - name: ProbeDataManagement
+          in: body
+          description: PDM Message
+          required: true
+          schema: 
+            $ref: '#/definitions/J2735ProbeDataManagement'
+         
+      tags:
+        - PDM
+      responses:
+        200:
+          description: OID responses
+        400:
+          description: Unexpected Error
 definitions:
   tim:
     type: object
@@ -87,7 +108,6 @@ definitions:
         $ref: '#/definitions/SNMP'
       sdw:
         $ref: '#/definitions/SDW'
-      
   J2735MessageTraveler:
     type: object
     properties:
@@ -101,6 +121,17 @@ definitions:
         $ref: '#/definitions/SNMP'
       sdw:
         $ref: '#/definitions/SDW'
+  J2735ProbeDataManagement:
+    type: object
+    properties:
+      pdm:
+        $ref: '#/definitions/PDM'
+      rsus:
+        type: array
+        items:
+           $ref: '#/definitions/RSU'
+      snmp: 
+        $ref: '#/definitions/SNMP'
   TravelerDataFrameHeader:
     type: object
     required : [sspindex, travelerInfoType, SignPriority, MinuteOfTheYear]
@@ -214,7 +245,7 @@ definitions:
       closedPath:
         type: string
       direction: 
-        type: integer
+        type: string
       description:
         type: string
       path:
@@ -498,8 +529,75 @@ definitions:
             type: string
           longitude:
             type: string
-            
-    
+  
+  PDM:
+    type: object
+    properties:
+      timeStamp:
+        type: integer
+      sample:
+        type: object
+        properties:
+          sampleStart:
+            type: integer
+          sampleEnd:
+            type: integer
+      directions:
+        type: string
+      term:
+        type: string
+      termTime:
+        type: integer
+      termDistance:
+        type: integer
+      snapshot:
+        type: string
+      snapshotTime:
+        $ref: '#/definitions/SnapshotTime'
+      snapshotDistance:
+        $ref: '#/definitions/SnapshotDistance'
+      txInterval:
+        type: integer
+      dataElements:
+        type: array
+        items:
+          $ref: '#/definitions/DataElement'
+  SnapshotTime:
+    type: object
+    properties:
+      speed1:
+        type: integer
+      time1:
+        type: integer
+      speed2:
+        type: integer
+      time2:
+        type: integer
+  SnapshotDistance:
+    type: object
+    properties:
+      distance1:
+        type: integer
+      time1:
+        type: integer
+      distance2:
+        type: integer
+      time2:
+        type: integer
+  DataElement:
+    type: object
+    properties:
+      dataType:
+        type: integer
+      subType:
+        type: integer
+      sendOnLessThenValue:
+        type: integer
+      sendOnMoreThenValue:
+        type: integer
+      sendAll:
+        type: string
+        
   Error:
     type: object
     properties:
