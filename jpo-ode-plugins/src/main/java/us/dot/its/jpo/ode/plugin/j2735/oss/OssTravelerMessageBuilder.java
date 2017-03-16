@@ -506,7 +506,7 @@ public class OssTravelerMessageBuilder {
          }
 
          node.setDelta(nodePoint);
-         if (!point.attributes.equals("")) {
+         if (point.attributes != null) {
             NodeAttributeSetXY attributes = new NodeAttributeSetXY();
 
             if (point.attributes.localNodes.length > 0) {
