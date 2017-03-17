@@ -2290,9 +2290,9 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
-      df.content = "Advisory";
+      df.setContent("Advisory");
       String[] codes = { "250", "10" };
-      df.items = codes;
+      df.setItems(codes);
 
       try {
          dataFrame.setContent(b.buildContent(df));
@@ -2306,9 +2306,9 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
-      df.content = "Advisory";
+      df.setContent("Advisory");
       String[] codes = { "-1", "10" };
-      df.items = codes;
+      df.setItems(codes);
 
       try {
          dataFrame.setContent(b.buildContent(df));
@@ -2323,9 +2323,9 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
-      df.content = "Work Zone";
+      df.setContent("Work Zone");
       String[] codes = { "250", "10" };
-      df.items = codes;
+      df.setItems(codes);
 
       try {
          dataFrame.setContent(b.buildContent(df));
@@ -2339,9 +2339,9 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
-      df.content = "Work Zone";
+      df.setContent("Work Zone");
       String[] codes = { "-1", "10" };
-      df.items = codes;
+      df.setItems(codes);
 
       try {
          dataFrame.setContent(b.buildContent(df));
@@ -2356,9 +2356,9 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
-      df.content = "Speed Limit";
+      df.setContent("Speed Limit");
       String[] codes = { "250", "10" };
-      df.items = codes;
+      df.setItems(codes);
 
       try {
          dataFrame.setContent(b.buildContent(df));
@@ -2372,9 +2372,9 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
-      df.content = "Speed Limit";
+      df.setContent("Speed Limit");
       String[] codes = { "-1", "10" };
-      df.items = codes;
+      df.setItems(codes);
 
       try {
          dataFrame.setContent(b.buildContent(df));
@@ -2389,9 +2389,9 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
-      df.content = "Exit Service";
+      df.setContent("Exit Service");
       String[] codes = { "250", "10" };
-      df.items = codes;
+      df.setItems(codes);
 
       try {
          dataFrame.setContent(b.buildContent(df));
@@ -2405,9 +2405,9 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
-      df.content = "Exit Service";
+      df.setContent("Exit Service");
       String[] codes = { "-1", "10" };
-      df.items = codes;
+      df.setItems(codes);
 
       try {
          dataFrame.setContent(b.buildContent(df));
@@ -2422,9 +2422,9 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
-      df.content = "Generic Signage";
+      df.setContent("Generic Signage");
       String[] codes = { "250", "10" };
-      df.items = codes;
+      df.setItems(codes);
 
       try {
          dataFrame.setContent(b.buildContent(df));
@@ -2438,9 +2438,9 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
-      df.content = "Generic Signage";
+      df.setContent("Generic Signage");
       String[] codes = { "-1", "10" };
-      df.items = codes;
+      df.setItems(codes);
 
       try {
          dataFrame.setContent(b.buildContent(df));
@@ -2455,9 +2455,9 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList();
       J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
-      rl.xOffset = -32769;
-      rl.yOffset = 0;
-      rl.zOffset = 0;
+      rl.setxOffset(-32769);
+      rl.setyOffset(0);
+      rl.setzOffset(0);
       myList[0] = rl;
 
       try {
@@ -2473,9 +2473,9 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList();
       J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
-      rl.xOffset = 0;
-      rl.yOffset = -32769;
-      rl.zOffset = 0;
+      rl.setxOffset(0);
+      rl.setyOffset(-32769);
+      rl.setzOffset(0);
       myList[0] = rl;
 
       try {
@@ -2491,9 +2491,9 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList();
       J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
-      rl.xOffset = 0;
-      rl.yOffset = 0;
-      rl.zOffset = -32769;
+      rl.setxOffset(0);
+      rl.setyOffset(0);
+      rl.setzOffset(-32769);
       myList[0] = rl;
 
       try {
@@ -2509,9 +2509,9 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList();
       J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
-      rl.xOffset = 0;
-      rl.yOffset = 0;
-      rl.zOffset = 0;
+      rl.setxOffset(0);
+      rl.setyOffset(0);
+      rl.setzOffset(0);
       myList[0] = rl;
 
       try {
@@ -2528,13 +2528,13 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.DataFrame.Region.Geometry g = new J2735TravelerInputData.DataFrame.Region.Geometry();
       J2735TravelerInputData.DataFrame.Region.Circle c = new J2735TravelerInputData.DataFrame.Region.Circle();
       J2735Position3D pos = new J2735Position3D((long) 0.0, (long) 0.0, (long) 0.0);
-      c.position = pos;
-      c.radius = 5;
-      c.units = 10;
-      g.circle = c;
-      g.direction = "1010101010101010";
-      g.extent = -1;
-      g.laneWidth = 10;
+      c.setPosition(pos);
+      c.setRadius(5);
+      c.setUnits(10);
+      g.setCircle(c);
+      g.setDirection("1010101010101010");
+      g.setExtent(-1);
+      g.setLaneWidth(10);
 
       try {
          geo.setCircle(b.buildGeoCircle(g));
@@ -2551,13 +2551,13 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.DataFrame.Region.Geometry g = new J2735TravelerInputData.DataFrame.Region.Geometry();
       J2735TravelerInputData.DataFrame.Region.Circle c = new J2735TravelerInputData.DataFrame.Region.Circle();
       J2735Position3D pos = new J2735Position3D((long) 0.0, (long) 0.0, (long) 0.0);
-      c.position = pos;
-      c.radius = 5;
-      c.units = 6;
-      g.circle = c;
-      g.direction = "1010101010101010";
-      g.extent = 1;
-      g.laneWidth = 10;
+      c.setPosition(pos);
+      c.setRadius(5);
+      c.setUnits(6);
+      g.setCircle(c);
+      g.setDirection("1010101010101010");
+      g.setExtent(1);
+      g.setLaneWidth(10);
 
       try {
          geo.setCircle(b.buildGeoCircle(g));
@@ -2573,10 +2573,10 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.DataFrame.Region.OldRegion r = new J2735TravelerInputData.DataFrame.Region.OldRegion();
       J2735Position3D pos = new J2735Position3D((long) 0.0, (long) 0.0, (long) 0.0);
       Circle c = new Circle();
-      c.position = pos;
-      c.radius = 3;
-      c.units = 80;
-      r.circle = c;
+      c.setPosition(pos);
+      c.setRadius(3);
+      c.setUnits(80);
+      r.setCircle(c);
       try {
          area.setCircle(b.buildOldCircle(r));
          fail("Expected IllegalArgumentException");
@@ -2609,34 +2609,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-XY1";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = Integer.MIN_VALUE;
-      n.y = Integer.MAX_VALUE;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-XY1");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(Integer.MIN_VALUE);
+      n.setY(Integer.MAX_VALUE);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -2671,34 +2671,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-XY1";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = 10;
-      n.y = 10;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-XY1");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(10);
+      n.setY(10);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -2732,34 +2732,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-XY2";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = Integer.MIN_VALUE;
-      n.y = Integer.MAX_VALUE;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-XY2");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(Integer.MIN_VALUE);
+      n.setY(Integer.MAX_VALUE);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -2794,34 +2794,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-XY2";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = 10;
-      n.y = 10;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-XY2");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(10);
+      n.setY(10);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -2855,34 +2855,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-XY3";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = Integer.MIN_VALUE;
-      n.y = Integer.MAX_VALUE;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-XY3");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(Integer.MIN_VALUE);
+      n.setY(Integer.MAX_VALUE);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -2917,34 +2917,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-XY3";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = 10;
-      n.y = 10;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-XY3");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(10);
+      n.setY(10);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -2978,34 +2978,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-XY4";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = Integer.MIN_VALUE;
-      n.y = Integer.MAX_VALUE;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-XY4");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(Integer.MIN_VALUE);
+      n.setY(Integer.MAX_VALUE);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -3040,34 +3040,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-XY4";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = 10;
-      n.y = 10;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-XY4");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(10);
+      n.setY(10);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -3101,34 +3101,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-XY5";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = Integer.MIN_VALUE;
-      n.y = Integer.MAX_VALUE;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-XY5");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(Integer.MIN_VALUE);
+      n.setY(Integer.MAX_VALUE);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -3163,34 +3163,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-XY5";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = 10;
-      n.y = 10;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-XY5");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(10);
+      n.setY(10);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -3224,34 +3224,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-XY6";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = Integer.MIN_VALUE;
-      n.y = Integer.MAX_VALUE;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-XY6");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(Integer.MIN_VALUE);
+      n.setY(Integer.MAX_VALUE);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -3286,34 +3286,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-XY6";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = 10;
-      n.y = 10;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-XY6");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(10);
+      n.setY(10);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -3347,34 +3347,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-LatLon";
-      n.nodeLat = Long.MAX_VALUE;
-      n.nodeLong = 10;
-      n.x = Integer.MIN_VALUE;
-      n.y = Integer.MAX_VALUE;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LatLon");
+      n.setNodeLat(Long.MAX_VALUE);
+      n.setNodeLong(10);
+      n.setX(Integer.MIN_VALUE);
+      n.setY(Integer.MAX_VALUE);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -3409,34 +3409,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-LatLon";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = 10;
-      n.y = 10;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LatLon");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(10);
+      n.setY(10);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -3471,34 +3471,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-XY6";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = 0;
-      n.y = 0;
-      n.attributes = null;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-XY6");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(0);
+      n.setY(0);
+      n.setAttributes(null);
       node[0] = n;
 
       try {
@@ -3533,34 +3533,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-LL1";
-      n.nodeLat = Long.MAX_VALUE;
-      n.nodeLong = 10;
-      n.x = Integer.MIN_VALUE;
-      n.y = Integer.MAX_VALUE;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LL1");
+      n.setNodeLat(Long.MAX_VALUE);
+      n.setNodeLong(10);
+      n.setX(Integer.MIN_VALUE);
+      n.setY(Integer.MAX_VALUE);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -3595,34 +3595,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-LL1";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = 10;
-      n.y = 10;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LL1");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(10);
+      n.setY(10);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -3656,34 +3656,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-LL2";
-      n.nodeLat = Long.MAX_VALUE;
-      n.nodeLong = 10;
-      n.x = Integer.MIN_VALUE;
-      n.y = Integer.MAX_VALUE;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LL2");
+      n.setNodeLat(Long.MAX_VALUE);
+      n.setNodeLong(10);
+      n.setX(Integer.MIN_VALUE);
+      n.setY(Integer.MAX_VALUE);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -3718,34 +3718,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-LL2";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = 10;
-      n.y = 10;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LL2");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(10);
+      n.setY(10);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -3779,34 +3779,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-LL3";
-      n.nodeLat = Long.MAX_VALUE;
-      n.nodeLong = 10;
-      n.x = Integer.MIN_VALUE;
-      n.y = Integer.MAX_VALUE;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LL3");
+      n.setNodeLat(Long.MAX_VALUE);
+      n.setNodeLong(10);
+      n.setX(Integer.MIN_VALUE);
+      n.setY(Integer.MAX_VALUE);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -3841,34 +3841,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-LL3";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = 10;
-      n.y = 10;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LL3");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(10);
+      n.setY(10);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -3902,34 +3902,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-LL4";
-      n.nodeLat = Long.MAX_VALUE;
-      n.nodeLong = 10;
-      n.x = Integer.MIN_VALUE;
-      n.y = Integer.MAX_VALUE;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LL4");
+      n.setNodeLat(Long.MAX_VALUE);
+      n.setNodeLong(10);
+      n.setX(Integer.MIN_VALUE);
+      n.setY(Integer.MAX_VALUE);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -3964,34 +3964,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-LL4";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = 10;
-      n.y = 10;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LL4");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(10);
+      n.setY(10);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -4025,34 +4025,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-LL5";
-      n.nodeLat = Long.MAX_VALUE;
-      n.nodeLong = 10;
-      n.x = Integer.MIN_VALUE;
-      n.y = Integer.MAX_VALUE;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LL5");
+      n.setNodeLat(Long.MAX_VALUE);
+      n.setNodeLong(10);
+      n.setX(Integer.MIN_VALUE);
+      n.setY(Integer.MAX_VALUE);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -4087,34 +4087,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-LL5";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = 10;
-      n.y = 10;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LL5");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(10);
+      n.setY(10);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -4148,34 +4148,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-LL6";
-      n.nodeLat = Long.MAX_VALUE;
-      n.nodeLong = 10;
-      n.x = Integer.MIN_VALUE;
-      n.y = Integer.MAX_VALUE;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LL6");
+      n.setNodeLat(Long.MAX_VALUE);
+      n.setNodeLong(10);
+      n.setX(Integer.MIN_VALUE);
+      n.setY(Integer.MAX_VALUE);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -4210,34 +4210,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-LL6";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = 10;
-      n.y = 10;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LL6");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(10);
+      n.setY(10);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -4271,34 +4271,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-LatLon";
-      n.nodeLat = Long.MAX_VALUE;
-      n.nodeLong = 10;
-      n.x = Integer.MIN_VALUE;
-      n.y = Integer.MAX_VALUE;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LatLon");
+      n.setNodeLat(Long.MAX_VALUE);
+      n.setNodeLong(10);
+      n.setX(Integer.MIN_VALUE);
+      n.setY(Integer.MAX_VALUE);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -4333,34 +4333,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-LatLon";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = 10;
-      n.y = 10;
-      n.attributes = at;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LatLon");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(10);
+      n.setY(10);
+      n.setAttributes(at);
       node[0] = n;
 
       try {
@@ -4395,34 +4395,34 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
       J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
 
-      sl.type = 1;
-      sl.velocity = 1;
-      dataL.laneAngle = 1;
-      dataL.laneCrownCenter = 1;
-      dataL.laneCrownLeft = 1;
-      dataL.laneCrownRight = 1;
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
       slimits[0] = sl;
-      dataL.speedLimits = slimits;
+      dataL.setSpeedLimits(slimits);
 
-      ln.type = 1;
+      ln.setType(1);
       lnode[0] = ln;
-      at.localNodes = lnode;
-      dl.type = 1;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
       dlist[0] = dl;
-      at.disabledLists = dlist;
-      el.type = 1;
+      at.setDisabledLists(dlist);
+      el.setType(1);
       elist[0] = el;
-      at.enabledLists = elist;
+      at.setEnabledLists(elist);
       dataList[0] = dataL;
-      at.dataLists = dataList;
-      at.dWidth = 10;
-      at.dElevation = 10;
-      n.delta = "node-LL6";
-      n.nodeLat = 10;
-      n.nodeLong = 10;
-      n.x = Integer.MIN_VALUE;
-      n.y = Integer.MAX_VALUE;
-      n.attributes = null;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LL6");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(Integer.MIN_VALUE);
+      n.setY(Integer.MAX_VALUE);
+      n.setAttributes(null);
       node[0] = n;
 
       try {
@@ -4440,10 +4440,10 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInputData.DataFrame.Region.OldRegion r = new J2735TravelerInputData.DataFrame.Region.OldRegion();
       J2735Position3D pos = new J2735Position3D((long) 0.0, (long) 0.0, (long) 0.0);
       Circle c = new Circle();
-      c.position = pos;
-      c.radius = 3;
-      c.units = 6;
-      r.circle = c;
+      c.setPosition(pos);
+      c.setRadius(3);
+      c.setUnits(6);
+      r.setCircle(c);
       try {
          area.setCircle(b.buildOldCircle(r));
       } catch (RuntimeException e) {
@@ -4479,9 +4479,9 @@ public class OssTravelerMessageBuilderTest {
    public void checkTravelerMessageBuilder() {
       J2735TravelerInputData ti = new J2735TravelerInputData();
       TravelerInformation travelerinfo = new TravelerInformation();
-      ti.tim.msgCnt = 10;
-      ti.tim.urlB = "null";
-      ti.tim.dataframes = null;
+      ti.getTim().setMsgCnt(10);
+      ti.getTim().setUrlB("null");
+      ti.getTim().setDataframes(null);
       OssTravelerMessageBuilder builder = new OssTravelerMessageBuilder();
       try {
          travelerinfo = builder.buildTravelerInformation(ti);

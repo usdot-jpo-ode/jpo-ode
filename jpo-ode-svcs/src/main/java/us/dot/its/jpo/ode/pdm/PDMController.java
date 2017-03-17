@@ -56,10 +56,10 @@ public class PDMController {
    }
 
    private ResponseEvent sendToRSU(RSU rsu, PdmParameters params, String payload) throws ParseException {
-      Address addr = GenericAddress.parse(rsu.target + "/161");
+      Address addr = GenericAddress.parse(rsu.getTarget() + "/161");
 
       // Populate the SnmpProperties object with SNMP preferences
-      SnmpProperties testProps = new SnmpProperties(addr, rsu.username, rsu.password, rsu.retries, rsu.timeout);
+      SnmpProperties testProps = new SnmpProperties(addr, rsu.getUsername(), rsu.getPassword(), rsu.getRetries(), rsu.getTimeout());
 
       return PdmManagerService.createAndSend(params,testProps);
    }
