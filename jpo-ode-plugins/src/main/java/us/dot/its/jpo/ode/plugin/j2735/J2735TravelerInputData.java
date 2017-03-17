@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.plugin.j2735;
 import java.util.Arrays;
 
 import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.plugin.GenericSnmp.SNMP;
 
 public class J2735TravelerInputData extends OdeObject {
 
@@ -17,31 +18,14 @@ public class J2735TravelerInputData extends OdeObject {
    public static class ODE {
       public int version = 1;
    }
-   
+
    public static class SDW {
       public enum TimeToLive {
-         oneMinute,
-         ThirtyMinutes,
-         oneDay,
-         oneWeek,
-         oneMonth,
-         oneYear
+         ONEMINUTE, THIRTYMINUTES, ONEDAY, ONEWEEK, ONEMONTH, ONEYEAR
       }
 
       public J2735GeoRegion serviceRegion;
-      public TimeToLive ttl = TimeToLive.ThirtyMinutes;
-   }
-   
-   public static class SNMP {
-      public String rsuid;
-      public int msgid;
-      public int mode;
-      public int channel;
-      public int interval;
-      public String deliverystart;
-      public String deliverystop;
-      public int enable;
-      public int status;
+      public TimeToLive ttl = TimeToLive.THIRTYMINUTES;
    }
 
    public static class RSU {
@@ -52,7 +36,7 @@ public class J2735TravelerInputData extends OdeObject {
       public int timeout;
    }
 
-   public static class TIM { 
+   public static class TIM {
       public int msgCnt;
       public String timeStamp;
       public int packetID;
@@ -225,10 +209,11 @@ public class J2735TravelerInputData extends OdeObject {
 
       @Override
       public String toString() {
-         return "Frame [name=" + ", referencePosition=" + position.toJson() + ", sspTimRights=" + sspTimRights + ", sspTypeRights=" + sspMsgTypes + ", sspContentRights="
-               + sspMsgContent + ", sspLocationRights=" + sspLocationRights + ", content=" + content + ", items="
-               + Arrays.toString(items) + ", mutcd=" + mutcd + ", priority=" + priority + ", startDateTime=" + startDateTime;
-         // + ", regions="+Arrays.toString(regions)+"]";
+         return "Frame [name=" + ", referencePosition=" + position.toJson() + ", sspTimRights=" + sspTimRights
+               + ", sspTypeRights=" + sspMsgTypes + ", sspContentRights=" + sspMsgContent + ", sspLocationRights="
+               + sspLocationRights + ", content=" + content + ", items=" + Arrays.toString(items) + ", mutcd=" + mutcd
+               + ", priority=" + priority + ", startDateTime=" + startDateTime + ", regions=" + Arrays.toString(regions)
+               + "]";
       }
    }
 
@@ -240,8 +225,8 @@ public class J2735TravelerInputData extends OdeObject {
 
       @Override
       public String toString() {
-         return "Road Sign [position=" + position.toJson()
-               + ", viewAngle=" + viewAngle + ", mutcdCode=" + mutcdCode + ", msgCrc=" + msgCrc + "]";
+         return "Road Sign [position=" + position.toJson() + ", viewAngle=" + viewAngle + ", mutcdCode=" + mutcdCode
+               + ", msgCrc=" + msgCrc + "]";
       }
    }
 

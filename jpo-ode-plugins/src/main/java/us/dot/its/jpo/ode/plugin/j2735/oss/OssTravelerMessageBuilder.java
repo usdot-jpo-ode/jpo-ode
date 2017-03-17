@@ -342,18 +342,15 @@ public class OssTravelerMessageBuilder {
             offsetSystem.setScale(new Zoom(inputRegion.path.scale));
             if ("xy".equals(inputRegion.path.type)) {
                if (inputRegion.path.nodes.length > 0) {
-
                   offsetSystem.setOffset(new OffsetSystem.Offset());
                   offsetSystem.offset.setXy(buildNodeXYList(inputRegion.path.nodes));
                } else {
                   offsetSystem.setOffset(new OffsetSystem.Offset());
                   offsetSystem.offset.setXy(buildComputedLane(inputRegion.path.computedLane));
                }
-            } else if ("ll".equals(inputRegion.path.type)) {
-               if (inputRegion.path.nodes.length > 0) {
+            } else if ("ll".equals(inputRegion.path.type) && inputRegion.path.nodes.length > 0) {
                   offsetSystem.setOffset(new OffsetSystem.Offset());
                   offsetSystem.offset.setLl(buildNodeLLList(inputRegion.path.nodes));
-               }
             }
             description.setPath(offsetSystem);
             geoPath.setDescription(description);
@@ -383,8 +380,6 @@ public class OssTravelerMessageBuilder {
                sps.setLaneWidth(new LaneWidth(inputRegion.oldRegion.shapepoint.laneWidth));
                validateDirectionality(inputRegion.oldRegion.shapepoint.directionality);
                sps.setDirectionality(new DirectionOfUse(inputRegion.oldRegion.shapepoint.directionality));
-               // nodeList NodeListXY, ADD HEREif
-               // ("xy".equals(inputRegion.path.type)) {
                if (inputRegion.oldRegion.shapepoint.nodexy.length > 0) {
                   sps.setNodeList(buildNodeXYList(inputRegion.oldRegion.shapepoint.nodexy));
                } else {

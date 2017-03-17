@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.plugin.j2735;
 import java.util.List;
 
 import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.plugin.GenericSnmp.SNMP;
 import us.dot.its.jpo.ode.plugin.pdm.PdmVehicleStatusEntry;
 
 public class J2735ProbeDataManagement extends OdeObject {
@@ -22,13 +23,11 @@ public class J2735ProbeDataManagement extends OdeObject {
       public int sampleStart; // 0-255
       public int sampleEnd; // 0-255
       public String heading; // 16 bit string
-      public String term; // Choice of termtime or termDistance
       public int termTime; // 1-1800
       public int termDistance; // 1-30000
       public String snapshot; // Choice of SnapshotTime or SnapshotDistance
       public SnapshotTime sTime;
       public SnapshotDistance sDistance;
-      public int second; // 0-61
       public DataElements[] dataList; // 1-32
       public PdmParameters params;
    }
@@ -70,9 +69,9 @@ public class J2735ProbeDataManagement extends OdeObject {
                                         // units of seconds
       public int rsuPDMMaxSnapshotTime; // 15628.4.1.200.10 INTEGER (0..61) --
                                         // units of seconds
-      public int rsuPDMMinSnapshotDistnace; // 15628.4.1.200.11 INTEGER
+      public int rsuPDMMinSnapshotDistance; // 15628.4.1.200.11 INTEGER
                                             // (0..1023) -- Units of 1.00 meters
-      public int rsuPDMMaxSnapshotDistnace; // 15628.4.1.200.12 INTEGER
+      public int rsuPDMMaxSnapshotDistance; // 15628.4.1.200.12 INTEGER
                                             // (0..1023) -- Units of 1.00 meters
       public int rsuPDMSnapshotMinSpeed; // 15628.4.1.200.13 INTEGER (0..31) --
                                          // Units of 1.00 m/s
@@ -82,17 +81,5 @@ public class J2735ProbeDataManagement extends OdeObject {
                                    // of seconds
 
       public List<PdmVehicleStatusEntry> rsuPDMVSReqListTable; // 15628.4.1.200.16
-   }
-
-   public static class SNMP {
-      public String rsuid;
-      public int msgid;
-      public int mode;
-      public int channel;
-      public int interval;
-      public String deliverystart;
-      public String deliverystop;
-      public int enable;
-      public int status;
    }
 }
