@@ -83,10 +83,10 @@ public class PdmManagerService {
                 new Integer32(params.rsuPDMMaxSnapshotTime));
 
         VariableBinding rsuPDMMinSnapshotDistnace = new VariableBinding(new OID("1.0.15628.4.1.200.11"),
-                new Integer32(params.rsuPDMMinSnapshotDistnace));
+                new Integer32(params.rsuPDMMinSnapshotDistance));
 
         VariableBinding rsuPDMMaxSnapshotDistnace = new VariableBinding(new OID("1.0.15628.4.1.200.12"),
-                new Integer32(params.rsuPDMMaxSnapshotDistnace));
+                new Integer32(params.rsuPDMMaxSnapshotDistance));
 
         VariableBinding rsuPDMSnapshotMinSpeed = new VariableBinding(new OID("1.0.15628.4.1.200.13"),
                 new Integer32(params.rsuPDMSnapshotMinSpeed));

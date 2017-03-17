@@ -1,0 +1,66 @@
+{
+  "ode": {
+    "version": 2
+  },
+  "pdm": {
+    "timestamp": "2017-12-01T17:47:11-05:00",
+    "sampleStart": "200",
+    "sampleEnd": "220",
+    "heading": "1010101010101010",
+    "termTime": "400",
+    "snapshot": "SnapshotTime",
+    "sTime": {
+      "speed1": "15",
+      "speed2": "20",
+      "second1": "5",
+      "second2": "7"
+    },
+    "tsInterval": "50",
+    "dataList": [
+      {
+        "dataType": "5",
+        "subType": "7",
+        "sendOnLessThanValue": "-1500",
+        "sendOnMoreThanValue": "-1000",
+        "sendAll": "true"
+      }
+    ],
+    "params": {
+      "rsuPDMSampleStart": "100",
+      "rsuPDMSampleEnd": "150",
+      "rsuPDMDirections": "1010101010101010",
+      "rsuPDMTermChoice": "1",
+      "rsuPDMTermTime": "900",
+      "rsuPDMTermDistance": "50",
+      "rsuPDMSnapshotChoice": "1",
+      "rsuPDMMinSnapshotTime": "30",
+      "rsuPDMMaxSnapshotTime": "45",
+      "rsuPDMMinSnapshotDistance": "100",
+      "rsuPDMMaxSnapshotDistance": "150",
+      "rsuPDMSnapshotMinSpeed": "15",
+      "rsuPDMSnapshotMaxSpeed": "20",
+      "rsuPDMTxInterval": "45",
+      "rsuPDMVSReqStatus": "10"
+    }
+  },
+  "rsus": [
+    {
+      "target": "127.0.0.1",
+      "username": "user",
+      "password": "password",
+      "retries": "1",
+      "timeout": "2000"
+    }
+  ],
+  "snmp": {
+    "rsuid": "8300",
+    "msgid": "31",
+    "mode": "1",
+    "channel": "178",
+    "interval": "1",
+    "deliverystart": "2017-12-01T17:47:11-05:00",
+    "deliverystop": "2017-12-01T17:47:11-05:15",
+    "enable": "1",
+    "status": "4"
+  }
+}
