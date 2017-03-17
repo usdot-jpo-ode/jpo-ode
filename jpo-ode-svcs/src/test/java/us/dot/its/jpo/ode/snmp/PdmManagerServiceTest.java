@@ -1,73 +1,102 @@
 package us.dot.its.jpo.ode.snmp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
 import org.junit.Test;
+import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
+import org.snmp4j.Snmp;
+import org.snmp4j.TransportMapping;
+import org.snmp4j.UserTarget;
+import org.snmp4j.event.ResponseEvent;
 
-import ch.qos.logback.classic.Logger;
 import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mocked;
-import mockit.Verifications;
-
 import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagement.PdmParameters;
 
 public class PdmManagerServiceTest {
 
- // Create and send tests
-    /**
-     * Test that a null argument to createAndSend() short circuits, returns
-     * null, and logs error
-     */
+    @Injectable
+    SnmpProperties mockSnmpProperties;
+    @Injectable
+    PdmParameters mockPdmParameters;
+
     @Test
-    public void createAndSendshouldReturnNullWhenGivenNullArguments(@Mocked SnmpProperties mockSnmpProperties,
-            @Mocked final Logger logger) {
+    public void createAndSendshouldReturnNullWhenGivenNullPdmParameters() {
 
-        PdmParameters testParams = null;
+        PdmParameters testNullParams = null;
 
-        assertNull(PdmManagerService.createAndSend(testParams, mockSnmpProperties));
-
-        new Verifications() {
-            {
-                logger.error("PDM SERVICE - Received null object");
-            }
-        };
+        assertNull(PdmManagerService.createAndSend(testNullParams, mockSnmpProperties));
     }
 
-    /**
-     * Test that if initializing an SnmpSession returns null, null is returned
-     * and an exception is logged
-     */
     @Test
-    public void createAndSendShouldReturnNullWhenSessionInitThrowsException(@Mocked PdmParameters mockPdmParameters,
-            @Mocked SnmpProperties mockSnmpProperties, @Mocked final Logger logger,
-            @Mocked SnmpSession mockSnmpSession) {
+    public void createAndSendshouldReturnNullWhenGivenNullSnmpProperties() {
 
-        IOException expectedException = new IOException("testException123");
+        SnmpProperties testNullSnmpProperties = null;
+
+        assertNull(PdmManagerService.createAndSend(mockPdmParameters, testNullSnmpProperties));
+    }
+
+    @Test
+    public void createAndSendShouldReturnNullFailedToCreateSnmpSession(@Mocked final SnmpSession mockSnmpSession) {
+
         try {
             new Expectations() {
                 {
                     new SnmpSession((SnmpProperties) any);
-                    result = expectedException;
+                    result = new IOException("testException123");
                 }
             };
         } catch (IOException e) {
-            fail("Unexpected exception: " + e);
+            fail("Unexpected exception in expectations block: " + e);
         }
 
         assertNull(PdmManagerService.createAndSend(mockPdmParameters, mockSnmpProperties));
-
-        new Verifications() {
-            {
-                logger.error("PDM SERVICE - Failed to create SNMP session: {}", expectedException);
-            }
-        };
-
     }
 
-    // Create PDU tests
+    @Test
+    public void createAndSendShouldReturnNullWhenSetThrowsException(@Mocked final SnmpSession mockSnmpSession) {
+
+        try {
+            new Expectations() {
+                {
+                    new SnmpSession((SnmpProperties) any);
+
+                    mockSnmpSession.set((PDU) any, (Snmp) any, (TransportMapping) any, (UserTarget) any);
+                    result = new IOException("testException123");
+                }
+            };
+        } catch (IOException e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+
+        assertNull(PdmManagerService.createAndSend(mockPdmParameters, mockSnmpProperties));
+    }
+
+    @Test
+    public void testCreateAndSendShould(@Mocked final SnmpSession mockSnmpSession) {
+
+        try {
+            new Expectations() {
+                {
+                    new SnmpSession((SnmpProperties) any);
+
+                    mockSnmpSession.set((PDU) any, (Snmp) any, (TransportMapping) any, (UserTarget) any);
+                }
+            };
+        } catch (IOException e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+
+        assertEquals(ResponseEvent.class,
+                PdmManagerService.createAndSend(mockPdmParameters, mockSnmpProperties).getClass());
+    }
+
     @Test
     public void createPDUshouldReturnNullWhenGivenNullParams() {
 

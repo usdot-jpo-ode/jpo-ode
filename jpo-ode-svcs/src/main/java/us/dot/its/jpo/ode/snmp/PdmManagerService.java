@@ -12,7 +12,6 @@ import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagement.PdmParameters;
-import us.dot.its.jpo.ode.plugin.pdm.PdmVehicleStatusEntry;
 
 public class PdmManagerService {
 
@@ -97,11 +96,11 @@ public class PdmManagerService {
         VariableBinding rsuPDMTxInterval = new VariableBinding(new OID("1.0.15628.4.1.200.15"),
                 new Integer32(params.rsuPDMTxInterval));
 
-        for (PdmVehicleStatusEntry entry : params.rsuPDMVSReqListTable) {
-            // TODO
-            // create variable binding
-            // add it to pdu
-        }
+        // for (PdmVehicleStatusEntry entry : params.rsuPDMVSReqListTable) {
+        // // TODO
+        // // create variable binding
+        // // add it to pdu
+        // }
 
         ScopedPDU pdu = new ScopedPDU();
         pdu.add(rsuPDMSampleStart);
