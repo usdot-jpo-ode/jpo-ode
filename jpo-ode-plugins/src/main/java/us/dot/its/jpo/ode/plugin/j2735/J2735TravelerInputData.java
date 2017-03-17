@@ -16,7 +16,15 @@ public class J2735TravelerInputData extends OdeObject {
    private SDW sdw;
 
    public static class ODE {
-      public int version = 1;
+      private int version = 1;
+
+      public int getVersion() {
+         return version;
+      }
+
+      public void setVersion(int version) {
+         this.version = version;
+      }
    }
 
    public static class SDW {
@@ -24,8 +32,20 @@ public class J2735TravelerInputData extends OdeObject {
          ONEMINUTE, THIRTYMINUTES, ONEDAY, ONEWEEK, ONEMONTH, ONEYEAR
       }
 
-      public J2735GeoRegion serviceRegion;
-      public TimeToLive ttl = TimeToLive.THIRTYMINUTES;
+      private J2735GeoRegion serviceRegion;
+      private TimeToLive ttl = TimeToLive.THIRTYMINUTES;
+      public J2735GeoRegion getServiceRegion() {
+         return serviceRegion;
+      }
+      public void setServiceRegion(J2735GeoRegion serviceRegion) {
+         this.serviceRegion = serviceRegion;
+      }
+      public TimeToLive getTtl() {
+         return ttl;
+      }
+      public void setTtl(TimeToLive ttl) {
+         this.ttl = ttl;
+      }
    }
 
    public static class RSU {

@@ -55,46 +55,46 @@ public class PdmManagerService {
         }
 
         VariableBinding rsuPDMSampleStart = new VariableBinding(new OID("1.0.15628.4.1.200.1"),
-                new Integer32(params.rsuPDMSampleStart));
+                new Integer32(params.getRsuPDMSampleStart()));
 
         VariableBinding rsuPDMSampleEnd = new VariableBinding(new OID("1.0.15628.4.1.200.2"),
-                new Integer32(params.rsuPDMSampleEnd));
+                new Integer32(params.getRsuPDMSampleEnd()));
 
         VariableBinding rsuPDMDirections = new VariableBinding(new OID("1.0.15628.4.1.200.3"),
-                new Integer32(params.rsuPDMDirections));
+                new Integer32(params.getRsuPDMDirections()));
 
         VariableBinding rsuPDMTermChoice = new VariableBinding(new OID("1.0.15628.4.1.200.4"),
-                new Integer32(params.rsuPDMTermChoice));
+                new Integer32(params.getRsuPDMTermChoice()));
 
         VariableBinding rsuPDMTermTime = new VariableBinding(new OID("1.0.15628.4.1.200.5"),
-                new Integer32(params.rsuPDMTermTime));
+                new Integer32(params.getRsuPDMTermTime()));
 
         VariableBinding rsuPDMTermDistance = new VariableBinding(new OID("1.0.15628.4.1.200.6"),
-                new Integer32(params.rsuPDMTermDistance));
+                new Integer32(params.getRsuPDMTermDistance()));
 
         VariableBinding rsuPDMSnapshotChoice = new VariableBinding(new OID("1.0.15628.4.1.200.7"),
-                new Integer32(params.rsuPDMSnapshotChoice));
+                new Integer32(params.getRsuPDMSnapshotChoice()));
 
         VariableBinding rsuPDMMinSnapshotTime = new VariableBinding(new OID("1.0.15628.4.1.200.9"),
-                new Integer32(params.rsuPDMMinSnapshotTime));
+                new Integer32(params.getRsuPDMMinSnapshotTime()));
 
         VariableBinding rsuPDMMaxSnapshotTime = new VariableBinding(new OID("1.0.15628.4.1.200.10"),
-                new Integer32(params.rsuPDMMaxSnapshotTime));
+                new Integer32(params.getRsuPDMMaxSnapshotTime()));
 
         VariableBinding rsuPDMMinSnapshotDistnace = new VariableBinding(new OID("1.0.15628.4.1.200.11"),
-                new Integer32(params.rsuPDMMinSnapshotDistance));
+                new Integer32(params.getRsuPDMMinSnapshotDistance()));
 
         VariableBinding rsuPDMMaxSnapshotDistnace = new VariableBinding(new OID("1.0.15628.4.1.200.12"),
-                new Integer32(params.rsuPDMMaxSnapshotDistance));
+                new Integer32(params.getRsuPDMMaxSnapshotDistance()));
 
         VariableBinding rsuPDMSnapshotMinSpeed = new VariableBinding(new OID("1.0.15628.4.1.200.13"),
-                new Integer32(params.rsuPDMSnapshotMinSpeed));
+                new Integer32(params.getRsuPDMSnapshotMinSpeed()));
 
         VariableBinding rsuPDMSnapshotMaxSpeed = new VariableBinding(new OID("1.0.15628.4.1.200.14"),
-                new Integer32(params.rsuPDMSnapshotMaxSpeed));
+                new Integer32(params.getRsuPDMSnapshotMaxSpeed()));
 
         VariableBinding rsuPDMTxInterval = new VariableBinding(new OID("1.0.15628.4.1.200.15"),
-                new Integer32(params.rsuPDMTxInterval));
+                new Integer32(params.getRsuPDMTxInterval()));
 
         // for (PdmVehicleStatusEntry entry : params.rsuPDMVSReqListTable) {
         // // TODO

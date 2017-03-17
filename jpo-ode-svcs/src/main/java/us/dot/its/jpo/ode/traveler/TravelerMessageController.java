@@ -145,8 +145,8 @@ public class TravelerMessageController {
                travelerinputData.getSnmp().getDeliverystart(), 
                travelerinputData.getSnmp().getDeliverystop(),
                rsuSRMPayload,
-               travelerinputData.getSdw().serviceRegion,
-               travelerinputData.getSdw().ttl);
+               travelerinputData.getSdw().getServiceRegion(),
+               travelerinputData.getSdw().getTtl());
            depositor.deposit(message);
         }
    }
