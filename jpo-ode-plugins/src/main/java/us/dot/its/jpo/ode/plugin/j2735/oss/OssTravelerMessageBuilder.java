@@ -458,7 +458,7 @@ public class OssTravelerMessageBuilder {
          NodeXY node = new NodeXY();
          NodeOffsetPointXY nodePoint = new NodeOffsetPointXY();
 
-         switch(point.delta) {
+         switch (point.delta) {
          case "node-XY1":
             validateB10Offset(point.x);
             validateB10Offset(point.y);
@@ -597,7 +597,7 @@ public class OssTravelerMessageBuilder {
       return nodeList;
    }
 
-   private NodeListLL buildNodeLLList(J2735TravelerInputData.NodeXY[] inputNodes) {
+   public NodeListLL buildNodeLLList(J2735TravelerInputData.NodeXY[] inputNodes) {
       NodeListLL nodeList = new NodeListLL();
       NodeSetLL nodes = new NodeSetLL();
       for (int i = 0; i < inputNodes.length; i++) {
@@ -606,98 +606,111 @@ public class OssTravelerMessageBuilder {
          NodeLL node = new NodeLL();
          NodeOffsetPointLL nodePoint = new NodeOffsetPointLL();
 
-         if ("node-LL1".equals(point.delta)) {
-            Node_LL_24B xy = new Node_LL_24B(new OffsetLL_B12(point.nodeLat), new OffsetLL_B12(point.nodeLong));
-            nodePoint.setNode_LL1(xy);
-         }
-
-         if ("node-LL2".equals(point.delta)) {
-            Node_LL_28B xy = new Node_LL_28B(new OffsetLL_B14(point.nodeLat), new OffsetLL_B14(point.nodeLong));
-            nodePoint.setNode_LL2(xy);
-         }
-
-         if ("node-LL3".equals(point.delta)) {
-            Node_LL_32B xy = new Node_LL_32B(new OffsetLL_B16(point.nodeLat), new OffsetLL_B16(point.nodeLong));
-            nodePoint.setNode_LL3(xy);
-         }
-
-         if ("node-LL4".equals(point.delta)) {
-            Node_LL_36B xy = new Node_LL_36B(new OffsetLL_B18(point.nodeLat), new OffsetLL_B18(point.nodeLong));
-            nodePoint.setNode_LL4(xy);
-         }
-
-         if ("node-LL5".equals(point.delta)) {
-            Node_LL_44B xy = new Node_LL_44B(new OffsetLL_B22(point.nodeLat), new OffsetLL_B22(point.nodeLong));
-            nodePoint.setNode_LL5(xy);
-         }
-
-         if ("node-LL6".equals(point.delta)) {
-            Node_LL_48B xy = new Node_LL_48B(new OffsetLL_B24(point.nodeLat), new OffsetLL_B24(point.nodeLong));
-            nodePoint.setNode_LL6(xy);
-         }
-
-         if ("node-LatLon".equals(point.delta)) {
-            Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.nodeLat), new Latitude(point.nodeLong));
+         switch (point.delta) {
+         case "node-LL1":
+            validateLL12Offset(point.nodeLat);
+            validateLL12Offset(point.nodeLong);
+            Node_LL_24B xy1 = new Node_LL_24B(new OffsetLL_B12(point.nodeLat), new OffsetLL_B12(point.nodeLong));
+            nodePoint.setNode_LL1(xy1);
+            break;
+         case "node-LL2":
+            validateLL14Offset(point.nodeLat);
+            validateLL14Offset(point.nodeLong);
+            Node_LL_28B xy2 = new Node_LL_28B(new OffsetLL_B14(point.nodeLat), new OffsetLL_B14(point.nodeLong));
+            nodePoint.setNode_LL2(xy2);
+            break;
+         case "node-LL3":
+            validateLL16Offset(point.nodeLat);
+            validateLL16Offset(point.nodeLong);
+            Node_LL_32B xy3 = new Node_LL_32B(new OffsetLL_B16(point.nodeLat), new OffsetLL_B16(point.nodeLong));
+            nodePoint.setNode_LL3(xy3);
+            break;
+         case "node-LL4":
+            validateLL18Offset(point.nodeLat);
+            validateLL18Offset(point.nodeLong);
+            Node_LL_36B xy4 = new Node_LL_36B(new OffsetLL_B18(point.nodeLat), new OffsetLL_B18(point.nodeLong));
+            nodePoint.setNode_LL4(xy4);
+            break;
+         case "node-LL5":
+            validateLL22Offset(point.nodeLat);
+            validateLL22Offset(point.nodeLong);
+            Node_LL_44B xy5 = new Node_LL_44B(new OffsetLL_B22(point.nodeLat), new OffsetLL_B22(point.nodeLong));
+            nodePoint.setNode_LL5(xy5);
+            break;
+         case "node-LL6":
+            validateLL24Offset(point.nodeLat);
+            validateLL24Offset(point.nodeLong);
+            Node_LL_48B xy6 = new Node_LL_48B(new OffsetLL_B24(point.nodeLat), new OffsetLL_B24(point.nodeLong));
+            nodePoint.setNode_LL6(xy6);
+            break;
+         case "node-LatLon":
+            validateLatitude(point.nodeLat);
+            validateLongitude(point.nodeLong);
+            Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.nodeLong), new Latitude(point.nodeLat));
             nodePoint.setNode_LatLon(nodeLatLong);
+            break;
+         default:
+            break;
          }
+
          node.setDelta(nodePoint);
+         if (point.attributes != null) {
+            NodeAttributeSetLL attributes = new NodeAttributeSetLL();
 
-         NodeAttributeSetLL attributes = new NodeAttributeSetLL();
-
-         if (point.attributes.localNodes.length > 0) {
-            NodeAttributeLLList localNodeList = new NodeAttributeLLList();
-            for (J2735TravelerInputData.LocalNode localNode : point.attributes.localNodes) {
-               localNodeList.add(new NodeAttributeLL(localNode.type));
+            if (point.attributes.localNodes.length > 0) {
+               NodeAttributeLLList localNodeList = new NodeAttributeLLList();
+               for (J2735TravelerInputData.LocalNode localNode : point.attributes.localNodes) {
+                  localNodeList.add(new NodeAttributeLL(localNode.type));
+               }
+               attributes.setLocalNode(localNodeList);
             }
-            attributes.setLocalNode(localNodeList);
-         }
 
-         if (point.attributes.disabledLists.length > 0) {
-            SegmentAttributeLLList disabledNodeList = new SegmentAttributeLLList();
-            for (J2735TravelerInputData.DisabledList disabledList : point.attributes.disabledLists) {
-               disabledNodeList.add(new SegmentAttributeLL(disabledList.type));
+            if (point.attributes.disabledLists.length > 0) {
+               SegmentAttributeLLList disabledNodeList = new SegmentAttributeLLList();
+               for (J2735TravelerInputData.DisabledList disabledList : point.attributes.disabledLists) {
+                  disabledNodeList.add(new SegmentAttributeLL(disabledList.type));
+               }
+               attributes.setDisabled(disabledNodeList);
             }
-            attributes.setDisabled(disabledNodeList);
-         }
 
-         if (point.attributes.enabledLists.length > 0) {
-            SegmentAttributeLLList enabledNodeList = new SegmentAttributeLLList();
-            for (J2735TravelerInputData.EnabledList enabledList : point.attributes.enabledLists) {
-               enabledNodeList.add(new SegmentAttributeLL(enabledList.type));
+            if (point.attributes.enabledLists.length > 0) {
+               SegmentAttributeLLList enabledNodeList = new SegmentAttributeLLList();
+               for (J2735TravelerInputData.EnabledList enabledList : point.attributes.enabledLists) {
+                  enabledNodeList.add(new SegmentAttributeLL(enabledList.type));
+               }
+               attributes.setEnabled(enabledNodeList);
             }
-            attributes.setEnabled(enabledNodeList);
-         }
 
-         if (point.attributes.dataLists.length > 0) {
-            LaneDataAttributeList dataNodeList = new LaneDataAttributeList();
-            for (J2735TravelerInputData.DataList dataList : point.attributes.dataLists) {
+            if (point.attributes.dataLists.length > 0) {
+               LaneDataAttributeList dataNodeList = new LaneDataAttributeList();
+               for (J2735TravelerInputData.DataList dataList : point.attributes.dataLists) {
 
-               LaneDataAttribute dataAttribute = new LaneDataAttribute();
+                  LaneDataAttribute dataAttribute = new LaneDataAttribute();
 
-               dataAttribute.setPathEndPointAngle(new DeltaAngle(dataList.pathEndpointAngle));
-               dataAttribute.setLaneCrownPointCenter(new RoadwayCrownAngle(dataList.laneCrownCenter));
-               dataAttribute.setLaneCrownPointLeft(new RoadwayCrownAngle(dataList.laneCrownLeft));
-               dataAttribute.setLaneCrownPointRight(new RoadwayCrownAngle(dataList.laneCrownRight));
-               dataAttribute.setLaneAngle(new MergeDivergeNodeAngle(dataList.laneAngle));
+                  dataAttribute.setPathEndPointAngle(new DeltaAngle(dataList.pathEndpointAngle));
+                  dataAttribute.setLaneCrownPointCenter(new RoadwayCrownAngle(dataList.laneCrownCenter));
+                  dataAttribute.setLaneCrownPointLeft(new RoadwayCrownAngle(dataList.laneCrownLeft));
+                  dataAttribute.setLaneCrownPointRight(new RoadwayCrownAngle(dataList.laneCrownRight));
+                  dataAttribute.setLaneAngle(new MergeDivergeNodeAngle(dataList.laneAngle));
 
-               SpeedLimitList speedDataList = new SpeedLimitList();
-               for (J2735TravelerInputData.SpeedLimits speedLimit : dataList.speedLimits) {
-                  speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.type),
-                        new Velocity(speedLimit.velocity)));
+                  SpeedLimitList speedDataList = new SpeedLimitList();
+                  for (J2735TravelerInputData.SpeedLimits speedLimit : dataList.speedLimits) {
+                     speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.type),
+                           new Velocity(speedLimit.velocity)));
+                  }
+
+                  dataAttribute.setSpeedLimits(speedDataList);
+                  dataNodeList.add(dataAttribute);
                }
 
-               dataAttribute.setSpeedLimits(speedDataList);
-               dataNodeList.add(dataAttribute);
+               attributes.setData(dataNodeList);
             }
 
-            attributes.setData(dataNodeList);
+            attributes.setDWidth(new Offset_B10(point.attributes.dWidth));
+            attributes.setDElevation(new Offset_B10(point.attributes.dElevation));
+
+            node.setAttributes(attributes);
          }
-
-         attributes.setDWidth(new Offset_B10(point.attributes.dWidth));
-         attributes.setDElevation(new Offset_B10(point.attributes.dElevation));
-
-         node.setAttributes(attributes);
-
          nodes.add(node);
       }
       nodeList.setNodes(nodes);
@@ -775,12 +788,12 @@ public class OssTravelerMessageBuilder {
       if (position.getElevation().doubleValue() < -409.5 || position.getElevation().doubleValue() > 6143.9)
          throw new IllegalArgumentException("Invalid Elevation [-409.5 - 6143.9]");
    }
-   
+
    public static void validateLatitude(long lat) {
       if (lat < -90.0 || lat > 90)
          throw new IllegalArgumentException("Invalid Latitude[-90 - 90]");
    }
-   
+
    public static void validateLongitude(long lonng) {
       if (lonng < -180.0 || lonng > 180.0)
          throw new IllegalArgumentException("Invalid Longitude[-180 - 180]");
@@ -921,32 +934,32 @@ public class OssTravelerMessageBuilder {
          throw new IllegalArgumentException("Invalid B16_Offset [-32768 - 32767]");
    }
 
-   public static void validateLL12Offset(int b) {
+   public static void validateLL12Offset(long b) {
       if (b < -2048 || b > 2047)
          throw new IllegalArgumentException("Invalid B10_Offset [-2048 - 2047]");
    }
 
-   public static void validateLL14Offset(int b) {
+   public static void validateLL14Offset(long b) {
       if (b < -8192 || b > 8191)
          throw new IllegalArgumentException("Invalid B11_Offset [-8192 - 8191]");
    }
 
-   public static void validateLL16Offset(int b) {
+   public static void validateLL16Offset(long b) {
       if (b < -32768 || b > 32767)
          throw new IllegalArgumentException("Invalid B12_Offset [-32768 - 32767]");
    }
 
-   public static void validateLL18Offset(int b) {
+   public static void validateLL18Offset(long b) {
       if (b < -131072 || b > 131071)
          throw new IllegalArgumentException("Invalid B13_Offset [-131072 - 131071]");
    }
 
-   public static void validateLL22Offset(int b) {
+   public static void validateLL22Offset(long b) {
       if (b < -2097152 || b > 2097151)
          throw new IllegalArgumentException("Invalid B14_Offset [-2097152 - 2097151]");
    }
 
-   public static void validateLL24Offset(int b) {
+   public static void validateLL24Offset(long b) {
       if (b < -8388608 || b > 8388607)
          throw new IllegalArgumentException("Invalid B16_Offset [-8388608 - 8388608]");
    }

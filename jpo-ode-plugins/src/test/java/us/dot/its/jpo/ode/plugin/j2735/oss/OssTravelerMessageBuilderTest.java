@@ -2515,7 +2515,7 @@ public class OssTravelerMessageBuilderTest {
       myList[0] = rl;
 
       try {
-        b.buildRegionOffsets(myList);
+         b.buildRegionOffsets(myList);
       } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
@@ -2707,7 +2707,7 @@ public class OssTravelerMessageBuilderTest {
          fail("Unexpected Exception");
       }
    }
-   
+
    @Test
    public void checkBadNodeXY2() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
@@ -2830,7 +2830,7 @@ public class OssTravelerMessageBuilderTest {
          fail("Unexpected Exception");
       }
    }
-   
+
    @Test
    public void checkBadNodeXY3() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
@@ -2953,7 +2953,7 @@ public class OssTravelerMessageBuilderTest {
          fail("Unexpected Exception");
       }
    }
-   
+
    @Test
    public void checkBadNodeXY4() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
@@ -3076,7 +3076,7 @@ public class OssTravelerMessageBuilderTest {
          fail("Unexpected Exception");
       }
    }
-   
+
    @Test
    public void checkBadNodeXY5() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
@@ -3199,7 +3199,7 @@ public class OssTravelerMessageBuilderTest {
          fail("Unexpected Exception");
       }
    }
-   
+
    @Test
    public void checkBadNodeXY6() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
@@ -3322,7 +3322,7 @@ public class OssTravelerMessageBuilderTest {
          fail("Unexpected Exception");
       }
    }
-   
+
    @Test
    public void checkBadNodeXYLatLon() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
@@ -3443,6 +3443,993 @@ public class OssTravelerMessageBuilderTest {
          b.buildNodeXYList(node);
       } catch (RuntimeException e) {
          fail("Unexpected Exception");
+      }
+   }
+
+   @Ignore
+   @Test
+   public void checkBadNodeXYAttribute() {
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+
+      sl.type = 1;
+      sl.velocity = 1;
+      dataL.laneAngle = 1;
+      dataL.laneCrownCenter = 1;
+      dataL.laneCrownLeft = 1;
+      dataL.laneCrownRight = 1;
+      slimits[0] = sl;
+      dataL.speedLimits = slimits;
+
+      ln.type = 1;
+      lnode[0] = ln;
+      at.localNodes = lnode;
+      dl.type = 1;
+      dlist[0] = dl;
+      at.disabledLists = dlist;
+      el.type = 1;
+      elist[0] = el;
+      at.enabledLists = elist;
+      dataList[0] = dataL;
+      at.dataLists = dataList;
+      at.dWidth = 10;
+      at.dElevation = 10;
+      n.delta = "node-XY6";
+      n.nodeLat = 10;
+      n.nodeLong = 10;
+      n.x = 0;
+      n.y = 0;
+      n.attributes = null;
+      node[0] = n;
+
+      try {
+         b.buildNodeXYList(node);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkBadNodeLL1() {
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+
+      sl.type = 1;
+      sl.velocity = 1;
+      dataL.laneAngle = 1;
+      dataL.laneCrownCenter = 1;
+      dataL.laneCrownLeft = 1;
+      dataL.laneCrownRight = 1;
+      slimits[0] = sl;
+      dataL.speedLimits = slimits;
+
+      ln.type = 1;
+      lnode[0] = ln;
+      at.localNodes = lnode;
+      dl.type = 1;
+      dlist[0] = dl;
+      at.disabledLists = dlist;
+      el.type = 1;
+      elist[0] = el;
+      at.enabledLists = elist;
+      dataList[0] = dataL;
+      at.dataLists = dataList;
+      at.dWidth = 10;
+      at.dElevation = 10;
+      n.delta = "node-LL1";
+      n.nodeLat = Long.MAX_VALUE;
+      n.nodeLong = 10;
+      n.x = Integer.MIN_VALUE;
+      n.y = Integer.MAX_VALUE;
+      n.attributes = at;
+      node[0] = n;
+
+      try {
+         b.buildNodeLLList(node);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkNodeLL1() {
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+
+      sl.type = 1;
+      sl.velocity = 1;
+      dataL.laneAngle = 1;
+      dataL.laneCrownCenter = 1;
+      dataL.laneCrownLeft = 1;
+      dataL.laneCrownRight = 1;
+      slimits[0] = sl;
+      dataL.speedLimits = slimits;
+
+      ln.type = 1;
+      lnode[0] = ln;
+      at.localNodes = lnode;
+      dl.type = 1;
+      dlist[0] = dl;
+      at.disabledLists = dlist;
+      el.type = 1;
+      elist[0] = el;
+      at.enabledLists = elist;
+      dataList[0] = dataL;
+      at.dataLists = dataList;
+      at.dWidth = 10;
+      at.dElevation = 10;
+      n.delta = "node-LL1";
+      n.nodeLat = 10;
+      n.nodeLong = 10;
+      n.x = 10;
+      n.y = 10;
+      n.attributes = at;
+      node[0] = n;
+
+      try {
+         b.buildNodeLLList(node);
+      } catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+
+   @Test
+   public void checkBadNodeLL2() {
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+
+      sl.type = 1;
+      sl.velocity = 1;
+      dataL.laneAngle = 1;
+      dataL.laneCrownCenter = 1;
+      dataL.laneCrownLeft = 1;
+      dataL.laneCrownRight = 1;
+      slimits[0] = sl;
+      dataL.speedLimits = slimits;
+
+      ln.type = 1;
+      lnode[0] = ln;
+      at.localNodes = lnode;
+      dl.type = 1;
+      dlist[0] = dl;
+      at.disabledLists = dlist;
+      el.type = 1;
+      elist[0] = el;
+      at.enabledLists = elist;
+      dataList[0] = dataL;
+      at.dataLists = dataList;
+      at.dWidth = 10;
+      at.dElevation = 10;
+      n.delta = "node-LL2";
+      n.nodeLat = Long.MAX_VALUE;
+      n.nodeLong = 10;
+      n.x = Integer.MIN_VALUE;
+      n.y = Integer.MAX_VALUE;
+      n.attributes = at;
+      node[0] = n;
+
+      try {
+         b.buildNodeLLList(node);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkNodeLL2() {
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+
+      sl.type = 1;
+      sl.velocity = 1;
+      dataL.laneAngle = 1;
+      dataL.laneCrownCenter = 1;
+      dataL.laneCrownLeft = 1;
+      dataL.laneCrownRight = 1;
+      slimits[0] = sl;
+      dataL.speedLimits = slimits;
+
+      ln.type = 1;
+      lnode[0] = ln;
+      at.localNodes = lnode;
+      dl.type = 1;
+      dlist[0] = dl;
+      at.disabledLists = dlist;
+      el.type = 1;
+      elist[0] = el;
+      at.enabledLists = elist;
+      dataList[0] = dataL;
+      at.dataLists = dataList;
+      at.dWidth = 10;
+      at.dElevation = 10;
+      n.delta = "node-LL2";
+      n.nodeLat = 10;
+      n.nodeLong = 10;
+      n.x = 10;
+      n.y = 10;
+      n.attributes = at;
+      node[0] = n;
+
+      try {
+         b.buildNodeLLList(node);
+      } catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+
+   @Test
+   public void checkBadNodeLL3() {
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+
+      sl.type = 1;
+      sl.velocity = 1;
+      dataL.laneAngle = 1;
+      dataL.laneCrownCenter = 1;
+      dataL.laneCrownLeft = 1;
+      dataL.laneCrownRight = 1;
+      slimits[0] = sl;
+      dataL.speedLimits = slimits;
+
+      ln.type = 1;
+      lnode[0] = ln;
+      at.localNodes = lnode;
+      dl.type = 1;
+      dlist[0] = dl;
+      at.disabledLists = dlist;
+      el.type = 1;
+      elist[0] = el;
+      at.enabledLists = elist;
+      dataList[0] = dataL;
+      at.dataLists = dataList;
+      at.dWidth = 10;
+      at.dElevation = 10;
+      n.delta = "node-LL3";
+      n.nodeLat = Long.MAX_VALUE;
+      n.nodeLong = 10;
+      n.x = Integer.MIN_VALUE;
+      n.y = Integer.MAX_VALUE;
+      n.attributes = at;
+      node[0] = n;
+
+      try {
+         b.buildNodeLLList(node);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkNodeLL3() {
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+
+      sl.type = 1;
+      sl.velocity = 1;
+      dataL.laneAngle = 1;
+      dataL.laneCrownCenter = 1;
+      dataL.laneCrownLeft = 1;
+      dataL.laneCrownRight = 1;
+      slimits[0] = sl;
+      dataL.speedLimits = slimits;
+
+      ln.type = 1;
+      lnode[0] = ln;
+      at.localNodes = lnode;
+      dl.type = 1;
+      dlist[0] = dl;
+      at.disabledLists = dlist;
+      el.type = 1;
+      elist[0] = el;
+      at.enabledLists = elist;
+      dataList[0] = dataL;
+      at.dataLists = dataList;
+      at.dWidth = 10;
+      at.dElevation = 10;
+      n.delta = "node-LL3";
+      n.nodeLat = 10;
+      n.nodeLong = 10;
+      n.x = 10;
+      n.y = 10;
+      n.attributes = at;
+      node[0] = n;
+
+      try {
+         b.buildNodeLLList(node);
+      } catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+
+   @Test
+   public void checkBadNodeLL4() {
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+
+      sl.type = 1;
+      sl.velocity = 1;
+      dataL.laneAngle = 1;
+      dataL.laneCrownCenter = 1;
+      dataL.laneCrownLeft = 1;
+      dataL.laneCrownRight = 1;
+      slimits[0] = sl;
+      dataL.speedLimits = slimits;
+
+      ln.type = 1;
+      lnode[0] = ln;
+      at.localNodes = lnode;
+      dl.type = 1;
+      dlist[0] = dl;
+      at.disabledLists = dlist;
+      el.type = 1;
+      elist[0] = el;
+      at.enabledLists = elist;
+      dataList[0] = dataL;
+      at.dataLists = dataList;
+      at.dWidth = 10;
+      at.dElevation = 10;
+      n.delta = "node-LL4";
+      n.nodeLat = Long.MAX_VALUE;
+      n.nodeLong = 10;
+      n.x = Integer.MIN_VALUE;
+      n.y = Integer.MAX_VALUE;
+      n.attributes = at;
+      node[0] = n;
+
+      try {
+         b.buildNodeLLList(node);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkNodeLL4() {
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+
+      sl.type = 1;
+      sl.velocity = 1;
+      dataL.laneAngle = 1;
+      dataL.laneCrownCenter = 1;
+      dataL.laneCrownLeft = 1;
+      dataL.laneCrownRight = 1;
+      slimits[0] = sl;
+      dataL.speedLimits = slimits;
+
+      ln.type = 1;
+      lnode[0] = ln;
+      at.localNodes = lnode;
+      dl.type = 1;
+      dlist[0] = dl;
+      at.disabledLists = dlist;
+      el.type = 1;
+      elist[0] = el;
+      at.enabledLists = elist;
+      dataList[0] = dataL;
+      at.dataLists = dataList;
+      at.dWidth = 10;
+      at.dElevation = 10;
+      n.delta = "node-LL4";
+      n.nodeLat = 10;
+      n.nodeLong = 10;
+      n.x = 10;
+      n.y = 10;
+      n.attributes = at;
+      node[0] = n;
+
+      try {
+         b.buildNodeLLList(node);
+      } catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+
+   @Test
+   public void checkBadNodeLL5() {
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+
+      sl.type = 1;
+      sl.velocity = 1;
+      dataL.laneAngle = 1;
+      dataL.laneCrownCenter = 1;
+      dataL.laneCrownLeft = 1;
+      dataL.laneCrownRight = 1;
+      slimits[0] = sl;
+      dataL.speedLimits = slimits;
+
+      ln.type = 1;
+      lnode[0] = ln;
+      at.localNodes = lnode;
+      dl.type = 1;
+      dlist[0] = dl;
+      at.disabledLists = dlist;
+      el.type = 1;
+      elist[0] = el;
+      at.enabledLists = elist;
+      dataList[0] = dataL;
+      at.dataLists = dataList;
+      at.dWidth = 10;
+      at.dElevation = 10;
+      n.delta = "node-LL5";
+      n.nodeLat = Long.MAX_VALUE;
+      n.nodeLong = 10;
+      n.x = Integer.MIN_VALUE;
+      n.y = Integer.MAX_VALUE;
+      n.attributes = at;
+      node[0] = n;
+
+      try {
+         b.buildNodeLLList(node);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkNodeLL5() {
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+
+      sl.type = 1;
+      sl.velocity = 1;
+      dataL.laneAngle = 1;
+      dataL.laneCrownCenter = 1;
+      dataL.laneCrownLeft = 1;
+      dataL.laneCrownRight = 1;
+      slimits[0] = sl;
+      dataL.speedLimits = slimits;
+
+      ln.type = 1;
+      lnode[0] = ln;
+      at.localNodes = lnode;
+      dl.type = 1;
+      dlist[0] = dl;
+      at.disabledLists = dlist;
+      el.type = 1;
+      elist[0] = el;
+      at.enabledLists = elist;
+      dataList[0] = dataL;
+      at.dataLists = dataList;
+      at.dWidth = 10;
+      at.dElevation = 10;
+      n.delta = "node-LL5";
+      n.nodeLat = 10;
+      n.nodeLong = 10;
+      n.x = 10;
+      n.y = 10;
+      n.attributes = at;
+      node[0] = n;
+
+      try {
+         b.buildNodeLLList(node);
+      } catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+
+   @Test
+   public void checkBadNodeLL6() {
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+
+      sl.type = 1;
+      sl.velocity = 1;
+      dataL.laneAngle = 1;
+      dataL.laneCrownCenter = 1;
+      dataL.laneCrownLeft = 1;
+      dataL.laneCrownRight = 1;
+      slimits[0] = sl;
+      dataL.speedLimits = slimits;
+
+      ln.type = 1;
+      lnode[0] = ln;
+      at.localNodes = lnode;
+      dl.type = 1;
+      dlist[0] = dl;
+      at.disabledLists = dlist;
+      el.type = 1;
+      elist[0] = el;
+      at.enabledLists = elist;
+      dataList[0] = dataL;
+      at.dataLists = dataList;
+      at.dWidth = 10;
+      at.dElevation = 10;
+      n.delta = "node-LL6";
+      n.nodeLat = Long.MAX_VALUE;
+      n.nodeLong = 10;
+      n.x = Integer.MIN_VALUE;
+      n.y = Integer.MAX_VALUE;
+      n.attributes = at;
+      node[0] = n;
+
+      try {
+         b.buildNodeLLList(node);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkNodeLL6() {
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+
+      sl.type = 1;
+      sl.velocity = 1;
+      dataL.laneAngle = 1;
+      dataL.laneCrownCenter = 1;
+      dataL.laneCrownLeft = 1;
+      dataL.laneCrownRight = 1;
+      slimits[0] = sl;
+      dataL.speedLimits = slimits;
+
+      ln.type = 1;
+      lnode[0] = ln;
+      at.localNodes = lnode;
+      dl.type = 1;
+      dlist[0] = dl;
+      at.disabledLists = dlist;
+      el.type = 1;
+      elist[0] = el;
+      at.enabledLists = elist;
+      dataList[0] = dataL;
+      at.dataLists = dataList;
+      at.dWidth = 10;
+      at.dElevation = 10;
+      n.delta = "node-LL6";
+      n.nodeLat = 10;
+      n.nodeLong = 10;
+      n.x = 10;
+      n.y = 10;
+      n.attributes = at;
+      node[0] = n;
+
+      try {
+         b.buildNodeLLList(node);
+      } catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+
+   @Test
+   public void checkBadNodeLLLatLon() {
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+
+      sl.type = 1;
+      sl.velocity = 1;
+      dataL.laneAngle = 1;
+      dataL.laneCrownCenter = 1;
+      dataL.laneCrownLeft = 1;
+      dataL.laneCrownRight = 1;
+      slimits[0] = sl;
+      dataL.speedLimits = slimits;
+
+      ln.type = 1;
+      lnode[0] = ln;
+      at.localNodes = lnode;
+      dl.type = 1;
+      dlist[0] = dl;
+      at.disabledLists = dlist;
+      el.type = 1;
+      elist[0] = el;
+      at.enabledLists = elist;
+      dataList[0] = dataL;
+      at.dataLists = dataList;
+      at.dWidth = 10;
+      at.dElevation = 10;
+      n.delta = "node-LatLon";
+      n.nodeLat = Long.MAX_VALUE;
+      n.nodeLong = 10;
+      n.x = Integer.MIN_VALUE;
+      n.y = Integer.MAX_VALUE;
+      n.attributes = at;
+      node[0] = n;
+
+      try {
+         b.buildNodeLLList(node);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void checkNodeLLLatLon() {
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+
+      sl.type = 1;
+      sl.velocity = 1;
+      dataL.laneAngle = 1;
+      dataL.laneCrownCenter = 1;
+      dataL.laneCrownLeft = 1;
+      dataL.laneCrownRight = 1;
+      slimits[0] = sl;
+      dataL.speedLimits = slimits;
+
+      ln.type = 1;
+      lnode[0] = ln;
+      at.localNodes = lnode;
+      dl.type = 1;
+      dlist[0] = dl;
+      at.disabledLists = dlist;
+      el.type = 1;
+      elist[0] = el;
+      at.enabledLists = elist;
+      dataList[0] = dataL;
+      at.dataLists = dataList;
+      at.dWidth = 10;
+      at.dElevation = 10;
+      n.delta = "node-LatLon";
+      n.nodeLat = 10;
+      n.nodeLong = 10;
+      n.x = 10;
+      n.y = 10;
+      n.attributes = at;
+      node[0] = n;
+
+      try {
+         b.buildNodeLLList(node);
+      } catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+
+   @Ignore
+   @Test
+   public void checkBadNodeLLAttribute() {
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+
+      sl.type = 1;
+      sl.velocity = 1;
+      dataL.laneAngle = 1;
+      dataL.laneCrownCenter = 1;
+      dataL.laneCrownLeft = 1;
+      dataL.laneCrownRight = 1;
+      slimits[0] = sl;
+      dataL.speedLimits = slimits;
+
+      ln.type = 1;
+      lnode[0] = ln;
+      at.localNodes = lnode;
+      dl.type = 1;
+      dlist[0] = dl;
+      at.disabledLists = dlist;
+      el.type = 1;
+      elist[0] = el;
+      at.enabledLists = elist;
+      dataList[0] = dataL;
+      at.dataLists = dataList;
+      at.dWidth = 10;
+      at.dElevation = 10;
+      n.delta = "node-LL6";
+      n.nodeLat = 10;
+      n.nodeLong = 10;
+      n.x = Integer.MIN_VALUE;
+      n.y = Integer.MAX_VALUE;
+      n.attributes = null;
+      node[0] = n;
+
+      try {
+         b.buildNodeXYList(node);
+         fail("Expected IllegalArgumentException");
+      } catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
 
