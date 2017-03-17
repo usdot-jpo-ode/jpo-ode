@@ -54,7 +54,6 @@ extends AbstractWebsocketMessageHandler<DdsStatusMessage> {
          }
       } catch (Exception e) {
          logger.error("Error handling ControlMessage. ", e);
-      } finally {
       }
    }
    
