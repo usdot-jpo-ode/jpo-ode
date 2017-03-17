@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.plugin.j2735;
 import java.util.List;
 
 import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.plugin.GenericSnmp.SNMP;
 import us.dot.its.jpo.ode.plugin.pdm.PdmVehicleStatusEntry;
 
 public class J2735ProbeDataManagement extends OdeObject {
@@ -80,17 +81,5 @@ public class J2735ProbeDataManagement extends OdeObject {
                                    // of seconds
 
       public List<PdmVehicleStatusEntry> rsuPDMVSReqListTable; // 15628.4.1.200.16
-   }
-
-   public static class SNMP {
-      public String rsuid;
-      public int msgid;
-      public int mode;
-      public int channel;
-      public int interval;
-      public String deliverystart;
-      public String deliverystop;
-      public int enable;
-      public int status;
    }
 }
