@@ -25,24 +25,6 @@
         "sendAll": "true"
       }
     ],
-    "params": {
-      "rsuPDMSampleStart": "100",
-      "rsuPDMSampleEnd": "150",
-      "rsuPDMDirections": "1010101010101010",
-      "rsuPDMTermChoice": "1",
-      "rsuPDMTermTime": "900",
-      "rsuPDMTermDistance": "50",
-      "rsuPDMSnapshotChoice": "1",
-      "rsuPDMMinSnapshotTime": "30",
-      "rsuPDMMaxSnapshotTime": "45",
-      "rsuPDMMinSnapshotDistance": "100",
-      "rsuPDMMaxSnapshotDistance": "150",
-      "rsuPDMSnapshotMinSpeed": "15",
-      "rsuPDMSnapshotMaxSpeed": "20",
-      "rsuPDMTxInterval": "45",
-      "rsuPDMVSReqStatus": "10"
-    }
-  },
   "rsus": [
     {
       "target": "127.0.0.1",

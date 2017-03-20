@@ -4,6 +4,7 @@ import java.util.List;
 
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.plugin.GenericSnmp.SNMP;
+import us.dot.its.jpo.ode.plugin.RoadSignUnit.RSU;
 import us.dot.its.jpo.ode.plugin.pdm.PdmVehicleStatusEntry;
 
 public class J2735ProbeDataManagement extends OdeObject {
@@ -11,7 +12,7 @@ public class J2735ProbeDataManagement extends OdeObject {
    private static final long serialVersionUID = 2154315328067723844L;
 
    private ODE ode;
-   private PDM pdm;
+   private RSU[] rsu;
    private SNMP snmp;
 
    public static class ODE {
@@ -23,186 +24,6 @@ public class J2735ProbeDataManagement extends OdeObject {
 
       public void setVersion(int version) {
          this.version = version;
-      }
-   }
-
-   public static class PDM {
-      private String timeStamp; // 0-527040
-      private int sampleStart; // 0-255
-      private int sampleEnd; // 0-255
-      private String heading; // 16 bit string
-      private int termTime; // 1-1800
-      private int termDistance; // 1-30000
-      private String snapshot; // Choice of SnapshotTime or SnapshotDistance
-      private SnapshotTime sTime;
-      private SnapshotDistance sDistance;
-      private DataElements[] dataList; // 1-32
-      private PdmParameters params;
-      public String getTimeStamp() {
-         return timeStamp;
-      }
-      public void setTimeStamp(String timeStamp) {
-         this.timeStamp = timeStamp;
-      }
-      public int getSampleStart() {
-         return sampleStart;
-      }
-      public void setSampleStart(int sampleStart) {
-         this.sampleStart = sampleStart;
-      }
-      public int getSampleEnd() {
-         return sampleEnd;
-      }
-      public void setSampleEnd(int sampleEnd) {
-         this.sampleEnd = sampleEnd;
-      }
-      public String getHeading() {
-         return heading;
-      }
-      public void setHeading(String heading) {
-         this.heading = heading;
-      }
-      public int getTermTime() {
-         return termTime;
-      }
-      public void setTermTime(int termTime) {
-         this.termTime = termTime;
-      }
-      public int getTermDistance() {
-         return termDistance;
-      }
-      public void setTermDistance(int termDistance) {
-         this.termDistance = termDistance;
-      }
-      public String getSnapshot() {
-         return snapshot;
-      }
-      public void setSnapshot(String snapshot) {
-         this.snapshot = snapshot;
-      }
-      public SnapshotTime getsTime() {
-         return sTime;
-      }
-      public void setsTime(SnapshotTime sTime) {
-         this.sTime = sTime;
-      }
-      public SnapshotDistance getsDistance() {
-         return sDistance;
-      }
-      public void setsDistance(SnapshotDistance sDistance) {
-         this.sDistance = sDistance;
-      }
-      public PdmParameters getParams() {
-         return params;
-      }
-      public void setParams(PdmParameters params) {
-         this.params = params;
-      }
-      public DataElements[] getDataList() {
-         return dataList;
-      }
-      public void setDataList(DataElements[] dataList) {
-         this.dataList = dataList;
-      }
-   }
-
-   public static class SnapshotTime {
-      private int speed1; // 0-31
-      private int second1; // 0-61
-      private int speed2; // 0-31
-      private int second2; // 0-61
-      public int getSpeed1() {
-         return speed1;
-      }
-      public void setSpeed1(int speed1) {
-         this.speed1 = speed1;
-      }
-      public int getSecond1() {
-         return second1;
-      }
-      public void setSecond1(int second1) {
-         this.second1 = second1;
-      }
-      public int getSpeed2() {
-         return speed2;
-      }
-      public void setSpeed2(int speed2) {
-         this.speed2 = speed2;
-      }
-      public int getSecond2() {
-         return second2;
-      }
-      public void setSecond2(int second2) {
-         this.second2 = second2;
-      }
-   }
-
-   public static class SnapshotDistance {
-      private int distance1; // 0-1023
-      private int speed1; // 0-31
-      private int distance2; // 0-1023
-      private int speed2; // 0-31
-      public int getDistance1() {
-         return distance1;
-      }
-      public void setDistance1(int distance1) {
-         this.distance1 = distance1;
-      }
-      public int getSpeed1() {
-         return speed1;
-      }
-      public void setSpeed1(int speed1) {
-         this.speed1 = speed1;
-      }
-      public int getDistance2() {
-         return distance2;
-      }
-      public void setDistance2(int distance2) {
-         this.distance2 = distance2;
-      }
-      public int getSpeed2() {
-         return speed2;
-      }
-      public void setSpeed2(int speed2) {
-         this.speed2 = speed2;
-      }
-   }
-
-   public static class DataElements {
-      private int deviceTag; // Enumeration 0-28
-      private int subType; // 0-15
-      private int lessThan; // -32767-32767
-      private int moreThan; // -32767-32767
-      private boolean sendAll; // true or false
-      public int getDeviceTag() {
-         return deviceTag;
-      }
-      public void setDeviceTag(int deviceTag) {
-         this.deviceTag = deviceTag;
-      }
-      public int getSubType() {
-         return subType;
-      }
-      public void setSubType(int subType) {
-         this.subType = subType;
-      }
-      public int getLessThan() {
-         return lessThan;
-      }
-      public void setLessThan(int lessThan) {
-         this.lessThan = lessThan;
-      }
-      public int getMoreThan() {
-         return moreThan;
-      }
-      public void setMoreThan(int moreThan) {
-         this.moreThan = moreThan;
-      }
-      public boolean isSendAll() {
-         return sendAll;
-      }
-      public void setSendAll(boolean sendAll) {
-         this.sendAll = sendAll;
       }
    }
 
@@ -355,6 +176,106 @@ public class J2735ProbeDataManagement extends OdeObject {
       }
    }
 
+   public static class SnapshotTime {
+      private int speed1; // 0-31
+      private int second1; // 0-61
+      private int speed2; // 0-31
+      private int second2; // 0-61
+      public int getSpeed1() {
+         return speed1;
+      }
+      public void setSpeed1(int speed1) {
+         this.speed1 = speed1;
+      }
+      public int getSecond1() {
+         return second1;
+      }
+      public void setSecond1(int second1) {
+         this.second1 = second1;
+      }
+      public int getSpeed2() {
+         return speed2;
+      }
+      public void setSpeed2(int speed2) {
+         this.speed2 = speed2;
+      }
+      public int getSecond2() {
+         return second2;
+      }
+      public void setSecond2(int second2) {
+         this.second2 = second2;
+      }
+   }
+
+   public static class SnapshotDistance {
+      private int distance1; // 0-1023
+      private int speed1; // 0-31
+      private int distance2; // 0-1023
+      private int speed2; // 0-31
+      public int getDistance1() {
+         return distance1;
+      }
+      public void setDistance1(int distance1) {
+         this.distance1 = distance1;
+      }
+      public int getSpeed1() {
+         return speed1;
+      }
+      public void setSpeed1(int speed1) {
+         this.speed1 = speed1;
+      }
+      public int getDistance2() {
+         return distance2;
+      }
+      public void setDistance2(int distance2) {
+         this.distance2 = distance2;
+      }
+      public int getSpeed2() {
+         return speed2;
+      }
+      public void setSpeed2(int speed2) {
+         this.speed2 = speed2;
+      }
+   }
+
+   public static class DataElements {
+      private int deviceTag; // Enumeration 0-28
+      private int subType; // 0-15
+      private int lessThan; // -32767-32767
+      private int moreThan; // -32767-32767
+      private boolean sendAll; // true or false
+      public int getDeviceTag() {
+         return deviceTag;
+      }
+      public void setDeviceTag(int deviceTag) {
+         this.deviceTag = deviceTag;
+      }
+      public int getSubType() {
+         return subType;
+      }
+      public void setSubType(int subType) {
+         this.subType = subType;
+      }
+      public int getLessThan() {
+         return lessThan;
+      }
+      public void setLessThan(int lessThan) {
+         this.lessThan = lessThan;
+      }
+      public int getMoreThan() {
+         return moreThan;
+      }
+      public void setMoreThan(int moreThan) {
+         this.moreThan = moreThan;
+      }
+      public boolean isSendAll() {
+         return sendAll;
+      }
+      public void setSendAll(boolean sendAll) {
+         this.sendAll = sendAll;
+      }
+   }
+
    public ODE getOde() {
       return ode;
    }
@@ -362,20 +283,19 @@ public class J2735ProbeDataManagement extends OdeObject {
    public void setOde(ODE ode) {
       this.ode = ode;
    }
-
-   public PDM getPdm() {
-      return pdm;
-   }
-
-   public void setPdm(PDM pdm) {
-      this.pdm = pdm;
-   }
-
    public SNMP getSnmp() {
       return snmp;
    }
 
    public void setSnmp(SNMP snmp) {
       this.snmp = snmp;
+   }
+
+   public RSU[] getRsu() {
+      return rsu;
+   }
+
+   public void setRsu(RSU[] rsu) {
+      this.rsu = rsu;
    }
 }
