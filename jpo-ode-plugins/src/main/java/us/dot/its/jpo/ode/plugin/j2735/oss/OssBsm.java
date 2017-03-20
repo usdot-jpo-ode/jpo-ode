@@ -53,9 +53,9 @@ public class OssBsm {
         basicSafetyMessage.coreData.msgCnt = new MsgCount(1);
         basicSafetyMessage.coreData.id = new TemporaryID("1234".getBytes());
         basicSafetyMessage.coreData.secMark = new DSecond(1);
-        basicSafetyMessage.coreData.setLat(new Latitude(coreData.position.getLatitude().longValue()));
-        basicSafetyMessage.coreData.set_long(new Longitude(coreData.position.getLongitude().longValue()));
-        basicSafetyMessage.coreData.setElev(new Elevation(coreData.position.getElevation().longValue()));
+        basicSafetyMessage.coreData.setLat(new Latitude(coreData.getPosition().getLatitude().longValue()));
+        basicSafetyMessage.coreData.set_long(new Longitude(coreData.getPosition().getLongitude().longValue()));
+        basicSafetyMessage.coreData.setElev(new Elevation(coreData.getPosition().getElevation().longValue()));
 
         basicSafetyMessage.coreData.accuracy = new PositionalAccuracy(new SemiMajorAxisAccuracy(0),
                 new SemiMinorAxisAccuracy(0), new SemiMajorAxisOrientation(0));
