@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
@@ -11,23 +10,11 @@ import java.time.format.DateTimeParseException;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.oss.asn1.EncodeFailedException;
-import com.oss.asn1.EncodeNotSupportedException;
-
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
 import us.dot.its.jpo.ode.j2735.dsrc.GeometricProjection;
-import us.dot.its.jpo.ode.j2735.dsrc.RegionList;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame;
-import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.j2735.dsrc.ValidRegion.Area;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData.DataList;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData.DisabledList;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData.EnabledList;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData.LocalNode;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData.DataFrame.Region.Circle;
 
 public class OssTravelerMessageBuilderTest {
@@ -4538,6 +4525,258 @@ public class OssTravelerMessageBuilderTest {
          fail("Unexpected exception");
       }
    }
+   
+   @Test
+   public void checkTravelerMessageBuilderPathXY() {
+      J2735TravelerInputData ti = new J2735TravelerInputData();
+      J2735TravelerInputData.TIM tim = new J2735TravelerInputData.TIM();
+      tim.setMsgCnt(10);
+      tim.setTimeStamp("2017-03-13T01:07:11-05:00");
+      tim.setUrlB("www");
+      tim.setPacketID(10);
+      J2735TravelerInputData.DataFrame[] dframes = new J2735TravelerInputData.DataFrame[1];
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      df.setsspTimRights((short) 0);
+      df.setFrameType(0);
+      df.setMsgID("RoadSignID");
+      df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      df.setViewAngle("1010101010101010");
+      df.setMutcd(5);
+      df.setCrc(6);
+      df.setStartDateTime("2017-12-01T17:47:11-05:00");
+      df.setDurationTime(22);
+      df.setPriority(0);
+      df.setsspLocationRights((short) 3);
+      J2735TravelerInputData.DataFrame.Region[] reg = new J2735TravelerInputData.DataFrame.Region[1];
+      J2735TravelerInputData.DataFrame.Region r = new J2735TravelerInputData.DataFrame.Region();
+      df.setsspMsgTypes((short) 2);
+      df.setsspMsgContent((short) 3);
+      df.setUrl("www");
+      r.setName("bob");
+      r.setRegulatorID(23);
+      r.setSegmentID(33);
+      r.setAnchorPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      r.setLaneWidth(7);
+      r.setDirectionality((long) 3);
+      r.setClosedPath(false);
+      r.setDirection("1010101010101010");
+      r.setDescription("path");
+      J2735TravelerInputData.DataFrame.Region.Path p = new J2735TravelerInputData.DataFrame.Region.Path();
+      p.setScale(2);
+      p.setType("xy");
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
+      slimits[0] = sl;
+      dataL.setSpeedLimits(slimits);
+      ln.setType(1);
+      lnode[0] = ln;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
+      dlist[0] = dl;
+      at.setDisabledLists(dlist);
+      el.setType(1);
+      elist[0] = el;
+      at.setEnabledLists(elist);
+      dataList[0] = dataL;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LL1");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(10);
+      n.setY(10);
+      n.setAttributes(at);
+      node[0] = n;
+      p.setNodes(node);
+      r.setPath(p);
+      reg[0] = r;
+      df.setRegions(reg);
+      dframes[0] = df;
+      tim.setDataframes(dframes);
+      ti.setTim(tim);
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+      try {
+         b.buildTravelerInformation(ti);
+      } catch (Exception e) {
+         fail("Unexpected exception");
+      }
+   }
+   
+   @Test
+   public void checkTravelerMessageBuilderPathLL() {
+      J2735TravelerInputData ti = new J2735TravelerInputData();
+      J2735TravelerInputData.TIM tim = new J2735TravelerInputData.TIM();
+      tim.setMsgCnt(10);
+      tim.setTimeStamp("2017-03-13T01:07:11-05:00");
+      tim.setUrlB("www");
+      tim.setPacketID(10);
+      J2735TravelerInputData.DataFrame[] dframes = new J2735TravelerInputData.DataFrame[1];
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      df.setsspTimRights((short) 0);
+      df.setFrameType(0);
+      df.setMsgID("RoadSignID");
+      df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      df.setViewAngle("1010101010101010");
+      df.setMutcd(5);
+      df.setCrc(6);
+      df.setStartDateTime("2017-12-01T17:47:11-05:00");
+      df.setDurationTime(22);
+      df.setPriority(0);
+      df.setsspLocationRights((short) 3);
+      J2735TravelerInputData.DataFrame.Region[] reg = new J2735TravelerInputData.DataFrame.Region[1];
+      J2735TravelerInputData.DataFrame.Region r = new J2735TravelerInputData.DataFrame.Region();
+      df.setsspMsgTypes((short) 2);
+      df.setsspMsgContent((short) 3);
+      df.setUrl("www");
+      r.setName("bob");
+      r.setRegulatorID(23);
+      r.setSegmentID(33);
+      r.setAnchorPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      r.setLaneWidth(7);
+      r.setDirectionality((long) 3);
+      r.setClosedPath(false);
+      r.setDirection("1010101010101010");
+      r.setDescription("path");
+      J2735TravelerInputData.DataFrame.Region.Path p = new J2735TravelerInputData.DataFrame.Region.Path();
+      p.setScale(2);
+      p.setType("ll");
+      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
+      J2735TravelerInputData.NodeXY[] node = new J2735TravelerInputData.NodeXY[1];
+      J2735TravelerInputData.Attributes at = new J2735TravelerInputData.Attributes();
+      J2735TravelerInputData.LocalNode ln = new J2735TravelerInputData.LocalNode();
+      J2735TravelerInputData.LocalNode[] lnode = new J2735TravelerInputData.LocalNode[1];
+      J2735TravelerInputData.DisabledList dl = new J2735TravelerInputData.DisabledList();
+      J2735TravelerInputData.DisabledList[] dlist = new J2735TravelerInputData.DisabledList[1];
+      J2735TravelerInputData.EnabledList el = new J2735TravelerInputData.EnabledList();
+      J2735TravelerInputData.EnabledList[] elist = new J2735TravelerInputData.EnabledList[1];
+      J2735TravelerInputData.DataList dataL = new J2735TravelerInputData.DataList();
+      J2735TravelerInputData.DataList[] dataList = new J2735TravelerInputData.DataList[1];
+      J2735TravelerInputData.SpeedLimits sl = new J2735TravelerInputData.SpeedLimits();
+      J2735TravelerInputData.SpeedLimits[] slimits = new J2735TravelerInputData.SpeedLimits[1];
+      sl.setType(1);
+      sl.setVelocity(1);
+      dataL.setLaneAngle(1);
+      dataL.setLaneCrownCenter(1);
+      dataL.setLaneCrownLeft(1);
+      dataL.setLaneCrownRight(1);
+      slimits[0] = sl;
+      dataL.setSpeedLimits(slimits);
+      ln.setType(1);
+      lnode[0] = ln;
+      at.setLocalNodes(lnode);
+      dl.setType(1);
+      dlist[0] = dl;
+      at.setDisabledLists(dlist);
+      el.setType(1);
+      elist[0] = el;
+      at.setEnabledLists(elist);
+      dataList[0] = dataL;
+      at.setDataLists(dataList);
+      at.setdWidth(10);
+      at.setdElevation(10);
+      n.setDelta("node-LL1");
+      n.setNodeLat(10);
+      n.setNodeLong(10);
+      n.setX(10);
+      n.setY(10);
+      n.setAttributes(at);
+      node[0] = n;
+      p.setNodes(node);
+      r.setPath(p);
+      reg[0] = r;
+      df.setRegions(reg);
+      dframes[0] = df;
+      tim.setDataframes(dframes);
+      ti.setTim(tim);
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+      try {
+         b.buildTravelerInformation(ti);
+      } catch (Exception e) {
+         fail("Unexpected exception");
+      }
+   }
+   
+   @Test
+   public void checkTravelerMessageBuilderPathComputedLane() {
+      J2735TravelerInputData ti = new J2735TravelerInputData();
+      J2735TravelerInputData.TIM tim = new J2735TravelerInputData.TIM();
+      tim.setMsgCnt(10);
+      tim.setTimeStamp("2017-03-13T01:07:11-05:00");
+      tim.setUrlB("www");
+      tim.setPacketID(10);
+      J2735TravelerInputData.DataFrame[] dframes = new J2735TravelerInputData.DataFrame[1];
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      df.setsspTimRights((short) 0);
+      df.setFrameType(0);
+      df.setMsgID("RoadSignID");
+      df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      df.setViewAngle("1010101010101010");
+      df.setMutcd(5);
+      df.setCrc(6);
+      df.setStartDateTime("2017-12-01T17:47:11-05:00");
+      df.setDurationTime(22);
+      df.setPriority(0);
+      df.setsspLocationRights((short) 3);
+      J2735TravelerInputData.DataFrame.Region[] reg = new J2735TravelerInputData.DataFrame.Region[1];
+      J2735TravelerInputData.DataFrame.Region r = new J2735TravelerInputData.DataFrame.Region();
+      df.setsspMsgTypes((short) 2);
+      df.setsspMsgContent((short) 3);
+      df.setUrl("www");
+      r.setName("bob");
+      r.setRegulatorID(23);
+      r.setSegmentID(33);
+      r.setAnchorPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      r.setLaneWidth(7);
+      r.setDirectionality((long) 3);
+      r.setClosedPath(false);
+      r.setDirection("1010101010101010");
+      r.setDescription("path");
+      J2735TravelerInputData.DataFrame.Region.Path p = new J2735TravelerInputData.DataFrame.Region.Path();
+      p.setScale(2);
+      p.setType("xy");
+      J2735TravelerInputData.NodeXY[] node = null;
+      J2735TravelerInputData.ComputedLane cl = new J2735TravelerInputData.ComputedLane();
+      cl.setAngle(5);
+      cl.setLaneID(1);
+      cl.setOffsetLargeX(5);
+      cl.setOffsetSmallX(3);
+      cl.setOffsetLargeY(5);
+      cl.setOffsetSmallY(3);
+      cl.setxScale(2);
+      cl.setyScale(2);
+      p.setComputedLane(cl);
+      p.setNodes(node);
+      r.setPath(p);
+      reg[0] = r;
+      df.setRegions(reg);
+      dframes[0] = df;
+      tim.setDataframes(dframes);
+      ti.setTim(tim);
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+      try {
+         b.buildTravelerInformation(ti);
+      } catch (Exception e) {
+         fail("Unexpected exception");
+      }
+   }
 
    @Test
    public void checkOldRegion() {
@@ -4748,7 +4987,6 @@ public class OssTravelerMessageBuilderTest {
       sp.setLaneWidth(10);
       sp.setDirectionality(2);
       sp.setNodeType("xy");
-      J2735TravelerInputData.NodeXY n = new J2735TravelerInputData.NodeXY();
       J2735TravelerInputData.NodeXY[] node = null;
       J2735TravelerInputData.ComputedLane cl = new J2735TravelerInputData.ComputedLane();
       cl.setAngle(5);
