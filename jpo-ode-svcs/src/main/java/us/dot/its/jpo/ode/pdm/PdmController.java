@@ -50,9 +50,15 @@ public class PdmController {
                 if (null == response || null == response.getResponse()) {
                     responseList.put(curRsu.getTarget(),
                             log(false, "PDM CONTROLLER - No response from RSU IP=" + curRsu.getTarget(), null));
+                } else if (0 == response.getResponse().getErrorStatus()) {
+                    responseList.put(curRsu.getTarget(), log(true, "PDM CONTROLLER - SNMP deposit successful", null));
                 } else {
-                    responseList.put(curRsu.getTarget(), log(true, "PDM CONTROLLER - Got response from RSU IP="
-                            + curRsu.getTarget() + ": {" + response.getResponse().getVariableBindings() + "}", null));
+                    responseList.put(curRsu.getTarget(),
+                            log(false,
+                                    "PDM CONTROLLER - Error, SNMP deposit failed, error code="
+                                            + response.getResponse().getErrorStatus() + "("
+                                            + response.getResponse().getErrorStatusText() + ")",
+                                    null));
                 }
 
             } catch (ParseException e) {
