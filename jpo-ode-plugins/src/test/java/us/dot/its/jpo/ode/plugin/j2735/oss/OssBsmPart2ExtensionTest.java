@@ -349,18 +349,18 @@ public class OssBsmPart2ExtensionTest {
                 (J2735SupplementalVehicleExtensions) OssBsmPart2Extension
                 .genericSupplementalVehicleExtensions(testsve);
         
-        assertEquals("Incorrect ObstacleDistance", expectedObstacleDistance, actualValue.obstacle.obDist);
-        assertEquals("Incorrect ObstacleDirection", expectedObstacleDirection, actualValue.obstacle.obDirect);
-        assertEquals("Incorrect ObstacleDescription", expectedObstacleDescription, actualValue.obstacle.description);
-        assertEquals("Incorrect LocationDetails", expectedObstacleLocationDetails, actualValue.obstacle.locationDetails.name);
-        assertEquals("Incorrect Year", expectedYear, actualValue.obstacle.dateTime.getYear());
-        assertEquals("Incorrect Month", expectedMonth, actualValue.obstacle.dateTime.getMonth());
-        assertEquals("Incorrect Day", expectedDay, actualValue.obstacle.dateTime.getDay());
-        assertEquals("Incorrect Hour", expectedHour, actualValue.obstacle.dateTime.getHour());
-        assertEquals("Incorrect Minute", expectedMinute, actualValue.obstacle.dateTime.getMinute());
-        assertEquals("Incorrect Second", expectedSecond, actualValue.obstacle.dateTime.getSecond());
-        assertEquals("Incorrect TimeOffset", expectedOffset, actualValue.obstacle.dateTime.getOffset());
-        for (Map.Entry<String, Boolean> curVal : actualValue.obstacle.vertEvent.entrySet()) { 
+        assertEquals("Incorrect ObstacleDistance", expectedObstacleDistance, actualValue.obstacle.getObDist());
+        assertEquals("Incorrect ObstacleDirection", expectedObstacleDirection, actualValue.obstacle.getObDirect());
+        assertEquals("Incorrect ObstacleDescription", expectedObstacleDescription, actualValue.obstacle.getDescription());
+        assertEquals("Incorrect LocationDetails", expectedObstacleLocationDetails, actualValue.obstacle.getLocationDetails().name);
+        assertEquals("Incorrect Year", expectedYear, actualValue.obstacle.getDateTime().getYear());
+        assertEquals("Incorrect Month", expectedMonth, actualValue.obstacle.getDateTime().getMonth());
+        assertEquals("Incorrect Day", expectedDay, actualValue.obstacle.getDateTime().getDay());
+        assertEquals("Incorrect Hour", expectedHour, actualValue.obstacle.getDateTime().getHour());
+        assertEquals("Incorrect Minute", expectedMinute, actualValue.obstacle.getDateTime().getMinute());
+        assertEquals("Incorrect Second", expectedSecond, actualValue.obstacle.getDateTime().getSecond());
+        assertEquals("Incorrect TimeOffset", expectedOffset, actualValue.obstacle.getDateTime().getOffset());
+        for (Map.Entry<String, Boolean> curVal : actualValue.obstacle.getVertEvent().entrySet()) { 
             if (curVal.getKey().equals(expectedVerticalAccelerationThreshold)) {
                 assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {

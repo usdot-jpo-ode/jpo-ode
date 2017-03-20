@@ -136,7 +136,7 @@ public class OssObstacleDetectionTest {
         
         Integer actualValue = OssObstacleDetection
                 .genericObstacleDetection(testObstacleDetection)
-                .obDist;
+                .getObDist();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -165,7 +165,7 @@ public class OssObstacleDetectionTest {
         
         Integer actualValue = OssObstacleDetection
                 .genericObstacleDetection(testObstacleDetection)
-                .obDist;
+                .getObDist();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -194,7 +194,7 @@ public class OssObstacleDetectionTest {
         
         Integer actualValue = OssObstacleDetection
                 .genericObstacleDetection(testObstacleDetection)
-                .obDist;
+                .getObDist();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -223,7 +223,7 @@ public class OssObstacleDetectionTest {
         
         Integer actualValue = OssObstacleDetection
                 .genericObstacleDetection(testObstacleDetection)
-                .obDist;
+                .getObDist();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -252,7 +252,7 @@ public class OssObstacleDetectionTest {
         
         Integer actualValue = OssObstacleDetection
                 .genericObstacleDetection(testObstacleDetection)
-                .obDist;
+                .getObDist();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -342,7 +342,7 @@ public class OssObstacleDetectionTest {
         
         J2735VertEvent actualVertEvent = OssObstacleDetection
                 .genericObstacleDetection(testObstacleDetection)
-                .vertEvent;
+                .getVertEvent();
         
         for (Map.Entry<String, Boolean> curVal : actualVertEvent.entrySet()) {
             assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
@@ -372,7 +372,7 @@ public class OssObstacleDetectionTest {
         
         J2735VertEvent actualVertEvent = OssObstacleDetection
                 .genericObstacleDetection(testObstacleDetection)
-                .vertEvent;
+                .getVertEvent();
         
         for (Map.Entry<String, Boolean> curVal : actualVertEvent.entrySet()) {
             assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
@@ -403,7 +403,7 @@ public class OssObstacleDetectionTest {
         
         J2735VertEvent actualVertEvent = OssObstacleDetection
                 .genericObstacleDetection(testObstacleDetection)
-                .vertEvent;
+                .getVertEvent();
         
         for (Map.Entry<String, Boolean> curVal : actualVertEvent.entrySet()) {
             if(curVal.getKey() == elementTested) {
@@ -437,7 +437,7 @@ public class OssObstacleDetectionTest {
         
         J2735VertEvent actualVertEvent = OssObstacleDetection
                 .genericObstacleDetection(testObstacleDetection)
-                .vertEvent;
+                .getVertEvent();
         
         for (Map.Entry<String, Boolean> curVal : actualVertEvent.entrySet()) {
             if(curVal.getKey() == elementTested) {
@@ -472,7 +472,7 @@ public class OssObstacleDetectionTest {
         
         J2735VertEvent actualVertEvent = OssObstacleDetection
                 .genericObstacleDetection(testObstacleDetection)
-                .vertEvent;
+                .getVertEvent();
         
         for (Map.Entry<String, Boolean> curVal : actualVertEvent.entrySet()) {
             if(curVal.getKey() == elementTested) {
@@ -507,7 +507,7 @@ public class OssObstacleDetectionTest {
         
         J2735VertEvent actualVertEvent = OssObstacleDetection
                 .genericObstacleDetection(testObstacleDetection)
-                .vertEvent;
+                .getVertEvent();
         
         for (Map.Entry<String, Boolean> curVal : actualVertEvent.entrySet()) {
             if(curVal.getKey() == elementTested) {
@@ -543,7 +543,7 @@ public class OssObstacleDetectionTest {
         
         J2735VertEvent actualVertEvent = OssObstacleDetection
                 .genericObstacleDetection(testObstacleDetection)
-                .vertEvent;
+                .getVertEvent();
         
         for (Map.Entry<String, Boolean> curVal : actualVertEvent.entrySet()) {
             if(curVal.getKey() == elementTested1 || curVal.getKey() == elementTested2) {
