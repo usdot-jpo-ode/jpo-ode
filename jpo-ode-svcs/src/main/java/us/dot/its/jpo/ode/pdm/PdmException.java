@@ -4,18 +4,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-public class PDMException extends RuntimeException {
+public class PdmException extends RuntimeException {
    private static final long serialVersionUID = 1L;
 
-   public PDMException(String message) {
+   public PdmException(String message) {
            super(message);
        }
 
-  public PDMException(String message, Exception e) {
+  public PdmException(String message, Exception e) {
      super (message, e);
   }
 
-  public PDMException(Exception e) {
+  public PdmException(Exception e) {
      super(e);
   }
 }
