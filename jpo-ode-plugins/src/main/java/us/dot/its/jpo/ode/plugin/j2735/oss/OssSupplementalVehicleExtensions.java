@@ -14,37 +14,37 @@ public class OssSupplementalVehicleExtensions {
 
         // All elements of this class are optional
         if (sve.hasClassification()) {
-            suppVeh.classification = sve.classification.intValue();
+            suppVeh.setClassification(sve.classification.intValue());
         }
         if (sve.hasClassDetails()) {
-            suppVeh.classDetails = OssVehicleClassification.genericVehicleClassification(sve.classDetails);
+            suppVeh.setClassDetails(OssVehicleClassification.genericVehicleClassification(sve.classDetails));
         }
         if (sve.hasVehicleData()) {
-            suppVeh.vehicleData = OssVehicleData.genericVehicleData(sve.vehicleData);
+            suppVeh.setVehicleData(OssVehicleData.genericVehicleData(sve.vehicleData));
         }
         if (sve.hasWeatherReport()) {
-            suppVeh.weatherReport = OssWeatherReport.genericWeatherReport(sve.weatherReport);
+            suppVeh.setWeatherReport(OssWeatherReport.genericWeatherReport(sve.weatherReport));
         }
         if (sve.hasWeatherProbe()) {
-            suppVeh.weatherProbe = OssWeatherProbe.genericWeatherProbe(sve.weatherProbe);
+            suppVeh.setWeatherProbe(OssWeatherProbe.genericWeatherProbe(sve.weatherProbe));
         }
         if (sve.hasObstacle()) {
-            suppVeh.obstacle = OssObstacleDetection.genericObstacleDetection(sve.obstacle);
+            suppVeh.setObstacle(OssObstacleDetection.genericObstacleDetection(sve.obstacle));
         }
         if (sve.hasStatus()) {
-            suppVeh.status = OssDisabledVehicle.genericDisabledVehicle(sve.status);
+            suppVeh.setStatus(OssDisabledVehicle.genericDisabledVehicle(sve.status));
         }
         if (sve.hasSpeedProfile()) {
-            suppVeh.speedProfile = OssSpeedProfile.genericSpeedProfile(sve.speedProfile);
+            suppVeh.setSpeedProfile(OssSpeedProfile.genericSpeedProfile(sve.speedProfile));
         }
         if (sve.hasTheRTCM()) {
-            suppVeh.theRTCM = OssRTCMPackage.genericRTCMPackage(sve.theRTCM);
+            suppVeh.setTheRTCM(OssRTCMPackage.genericRTCMPackage(sve.theRTCM));
         }
         if (sve.hasRegional()) {
             while (sve.regional.elements().hasMoreElements()) {
                 us.dot.its.jpo.ode.j2735.dsrc.SupplementalVehicleExtensions.Regional.Sequence_ element = (us.dot.its.jpo.ode.j2735.dsrc.SupplementalVehicleExtensions.Regional.Sequence_) sve.regional
                         .elements().nextElement();
-                suppVeh.regional.add(new J2735RegionalContent().setId(element.regionId.intValue())
+                suppVeh.getRegional().add(new J2735RegionalContent().setId(element.regionId.intValue())
                         .setValue(element.regExtValue.getEncodedValue()));
             }
         }

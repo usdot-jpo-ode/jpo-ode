@@ -183,7 +183,7 @@ public class OssBsmPart2ContentTest {
         } catch (OssBsmPart2Exception e) {
             fail("Unexpected exception: " + e.getClass());
         }
-        assertEquals(expectedBasicVehicleClass, actualValue.classification);
+        assertEquals(expectedBasicVehicleClass, actualValue.getClassification());
         
     }
     
