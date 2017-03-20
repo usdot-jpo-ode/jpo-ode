@@ -345,51 +345,6 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class LaneNode {
-      private int nodeNumber;
-      private double nodeLat;
-      private double nodeLong;
-      private double nodeElevation;
-      private short laneWidth; // lane width delta -512 to 511
-      
-      public short getlaneWidth() {
-         return laneWidth;
-      }
-      public void setlaneWidth(short laneWidth) {
-         this.laneWidth = laneWidth;
-      }
-      public double getnodeElevation() {
-         return nodeElevation;
-      }
-      public void setnodeElevation(double nodeElevation) {
-         this.nodeElevation = nodeElevation;
-      }
-      public double getnodeLong() {
-         return nodeLong;
-      }
-      public void setnodeLong(double nodeLong) {
-         this.nodeLong = nodeLong;
-      }
-      public double getnodeLat() {
-         return nodeLat;
-      }
-      public void setnodeLat(double nodeLat) {
-         this.nodeLat = nodeLat;
-      }
-      public int getnodeNumber() {
-         return nodeNumber;
-      }
-      public void setnodeNumber(int nodeNumber) {
-         this.nodeNumber = nodeNumber;
-      }
-
-      @Override
-      public String toString() {
-         return "LaneNode [nodeNumber=" + nodeNumber + ", nodeLat=" + nodeLat + ", nodeLong=" + nodeLong
-               + ", nodeElevation=" + nodeElevation + ", laneWidth=" + laneWidth + "]";
-      }
-   }
-
    public static class DataFrame {
       private short sspTimRights;// Start Header Information
       private int frameType;
