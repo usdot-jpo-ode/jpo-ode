@@ -242,10 +242,10 @@ public class OssBsmPart2ContentTest {
         } catch (OssBsmPart2Exception e) {
             fail("Unexpected exception: " + e.getClass());
         }
-        assertEquals("Incorrect radius of curvature", expectedRadiusOfCurvature, actualValue.pathPrediction.radiusOfCurve);
-        assertEquals("Incorrect confidence", expectedConfidence, actualValue.pathPrediction.confidence);
+        assertEquals("Incorrect radius of curvature", expectedRadiusOfCurvature, actualValue.getPathPrediction().radiusOfCurve);
+        assertEquals("Incorrect confidence", expectedConfidence, actualValue.getPathPrediction().confidence);
         
-        for (Map.Entry<String, Boolean> curVal1 : actualValue.events.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal1 : actualValue.getEvents().entrySet()) {
             if (curVal1.getKey().equals(expectedVehicleEventFlag1) || curVal1.getKey().equals(expectedVehicleEventFlag2)) {
                 assertTrue("Expected " + curVal1.getKey() + " to be true", curVal1.getValue());
             } else {
@@ -253,7 +253,7 @@ public class OssBsmPart2ContentTest {
             }
         }
         
-        for (Map.Entry<String, Boolean> curVal2 : actualValue.lights.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal2 : actualValue.getLights().entrySet()) {
             if (curVal2.getKey().equals(expectedExteriorLights1) || curVal2.getKey().equals(expectedExteriorLights2)) {
                 assertTrue("Expected " + curVal2.getKey() + " to be true", curVal2.getValue());
             } else {

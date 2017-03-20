@@ -131,7 +131,7 @@ public class OssBsmPart2Content {
                         eventFlags.put(flagName, flagStatus);
                     }
                 }
-                vehSafety.events = eventFlags;
+                vehSafety.setEvents(eventFlags);
             }
             if (vse.hasLights()) {
                 
@@ -146,14 +146,14 @@ public class OssBsmPart2Content {
                     }
                 }
                 
-                vehSafety.lights = exteriorLights;
+                vehSafety.setLights(exteriorLights);
                 
             }
             if (vse.hasPathHistory()) {
-                vehSafety.pathHistory = OssPathHistory.genericPathHistory(vse.pathHistory);
+                vehSafety.setPathHistory(OssPathHistory.genericPathHistory(vse.pathHistory));
             }
             if (vse.hasPathPrediction()) {
-                vehSafety.pathPrediction = OssPathPrediction.genericPathPrediction(vse.pathPrediction);
+                vehSafety.setPathPrediction(OssPathPrediction.genericPathPrediction(vse.pathPrediction));
             }
 
             break;
