@@ -11,6 +11,12 @@ import java.time.format.DateTimeParseException;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.oss.asn1.EncodeFailedException;
+import com.oss.asn1.EncodeNotSupportedException;
+
+import mockit.Expectations;
+import mockit.Injectable;
+import mockit.Mocked;
 import us.dot.its.jpo.ode.j2735.dsrc.GeometricProjection;
 import us.dot.its.jpo.ode.j2735.dsrc.RegionList;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame;
@@ -4474,22 +4480,60 @@ public class OssTravelerMessageBuilderTest {
       }
    }
 
-   @Ignore
    @Test
    public void checkTravelerMessageBuilder() {
       J2735TravelerInputData ti = new J2735TravelerInputData();
-      TravelerInformation travelerinfo = new TravelerInformation();
-      ti.getTim().setMsgCnt(10);
-      ti.getTim().setUrlB("null");
-      ti.getTim().setDataframes(null);
-      OssTravelerMessageBuilder builder = new OssTravelerMessageBuilder();
+      J2735TravelerInputData.TIM tim = new J2735TravelerInputData.TIM();
+      tim.setMsgCnt(10);
+      tim.setTimeStamp("2017-03-13T01:07:11-05:00");
+      tim.setUrlB("www");
+      J2735TravelerInputData.DataFrame[] dframes = new J2735TravelerInputData.DataFrame[1];
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      df.setsspTimRights((short) 0);
+      df.setFrameType(0);
+      df.setMsgID("RoadSignID");
+      df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      df.setViewAngle("1010101010101010");
+      df.setMutcd(5);
+      df.setCrc(6);
+      df.setStartDateTime("2017-12-01T17:47:11-05:00");
+      df.setDurationTime(22);
+      df.setPriority(0);
+      df.setsspLocationRights((short) 3);
+      J2735TravelerInputData.DataFrame.Region[] reg = new J2735TravelerInputData.DataFrame.Region[1];
+      J2735TravelerInputData.DataFrame.Region r = new J2735TravelerInputData.DataFrame.Region();
+      df.setsspMsgTypes((short) 2);
+      df.setsspMsgContent((short) 3);
+      df.setUrl("www");
+      r.setName("bob");
+      r.setRegulatorID(23);
+      r.setSegmentID(33);
+      r.setAnchorPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      r.setLaneWidth(7);
+      r.setDirectionality((long)3);
+      r.setClosedPath(false);
+      r.setDirection("1010101010101010");
+      r.setDescription("geometry");
+      J2735TravelerInputData.DataFrame.Region.Geometry g = new J2735TravelerInputData.DataFrame.Region.Geometry();
+      g.setDirection("1010101010101010");
+      g.setExtent(1);
+      g.setLaneWidth(33);
+      J2735TravelerInputData.DataFrame.Region.Circle c = new J2735TravelerInputData.DataFrame.Region.Circle();
+      c.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      c.setRadius(15);
+      c.setUnits(7);
+      g.setCircle(c);
+      r.setGeometry(g);
+      reg[0] = r;
+      df.setRegions(reg);
+      dframes[0] = df;
+      tim.setDataframes(dframes);
+      ti.setTim(tim);
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       try {
-         travelerinfo = builder.buildTravelerInformation(ti);
-         assertEquals(10, travelerinfo.msgCnt);
-         assertEquals("null", travelerinfo.urlB);
-         assertNull(travelerinfo.dataFrames);
+         b.buildTravelerInformation(ti);
       } catch (Exception e) {
-         fail("Unexpected Exception");
+         fail("Unexpected exception");
       }
    }
 }

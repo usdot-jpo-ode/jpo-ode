@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagement.PdmParameters;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData.RSU;
+import us.dot.its.jpo.ode.plugin.RoadSignUnit.RSU;
 import us.dot.its.jpo.ode.snmp.PdmManagerService;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.traveler.TimMessageException;
