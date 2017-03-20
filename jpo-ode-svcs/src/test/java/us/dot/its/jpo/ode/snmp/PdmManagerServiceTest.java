@@ -17,7 +17,7 @@ import org.snmp4j.event.ResponseEvent;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
-import us.dot.its.jpo.ode.plugin.j2735.pdm.J2735ProbeDataManagement.PdmParameters;
+import us.dot.its.jpo.ode.plugin.j2735.pdm.PdmParameters;
 
 public class PdmManagerServiceTest {
 
