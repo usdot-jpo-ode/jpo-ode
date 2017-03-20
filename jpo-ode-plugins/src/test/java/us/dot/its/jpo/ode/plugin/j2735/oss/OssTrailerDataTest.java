@@ -102,8 +102,8 @@ public class OssTrailerDataTest {
            
            assertEquals("Incorrect heading", 
                    BigDecimal.valueOf(22.5), 
-                   actualTrailerData.units.get(0).crumbData.get(0).heading);
-           assertEquals("Incorrect dolly status", false, actualTrailerData.units.get(0).isDolly.booleanValue());
+                   actualTrailerData.units.get(0).getCrumbData().get(0).heading);
+           assertEquals("Incorrect dolly status", false, actualTrailerData.units.get(0).getIsDolly().booleanValue());
            assertEquals("Incorrect SSP rights", 5, actualTrailerData.sspRights.intValue());
         } catch (Exception e) {
             fail("Unexpected exception: " + e.getClass());
