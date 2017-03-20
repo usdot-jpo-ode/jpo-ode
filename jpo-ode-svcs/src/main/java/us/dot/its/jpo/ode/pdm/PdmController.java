@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.pdm;
 
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.RoadSignUnit.RSU;
+import us.dot.its.jpo.ode.plugin.j2735.pdm.J2735ProbeDataManagement;
 import us.dot.its.jpo.ode.plugin.j2735.pdm.PdmParameters;
 import us.dot.its.jpo.ode.snmp.PdmManagerService;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.traveler.TimMessageException;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 @Controller
 public class PdmController {
@@ -34,9 +37,31 @@ public class PdmController {
             throw new TimMessageException(msg);
         }
 
-        // TODO parse json to J2735ProbeDataManagement
+        J2735ProbeDataManagement pdm = (J2735ProbeDataManagement) JsonUtils.fromJson(jsonString,
+                J2735ProbeDataManagement.class);
 
-        return null;
+        HashMap<String, String> responseList = new HashMap<>();
+        for (RSU curRsu : pdm.getRsuList()) {
+
+            ResponseEvent response = null;
+            try {
+                response = sendToRsu(curRsu, pdm.getPdmParameters());
+
+                if (null == response || null == response.getResponse()) {
+                    responseList.put(curRsu.getTarget(),
+                            log(false, "PDM CONTROLLER - No response from RSU IP=" + curRsu.getTarget(), null));
+                } else {
+                    responseList.put(curRsu.getTarget(), log(true, "PDM CONTROLLER - Got response from RSU IP="
+                            + curRsu.getTarget() + ": {" + response.getResponse().getVariableBindings() + "}", null));
+                }
+
+            } catch (ParseException e) {
+                responseList.put(curRsu.getTarget(),
+                        log(false, "PDM CONTROLLER - Exception while sending message to RSU", e));
+            }
+        }
+
+        return responseList.toString();
     }
 
     private String log(boolean success, String msg, Throwable t) {
@@ -57,7 +82,7 @@ public class PdmController {
         }
     }
 
-    private ResponseEvent sendToRSU(RSU rsu, PdmParameters params) throws ParseException {
+    private ResponseEvent sendToRsu(RSU rsu, PdmParameters params) throws ParseException {
         Address addr = GenericAddress.parse(rsu.getTarget() + "/161");
 
         // Populate the SnmpProperties object with SNMP preferences
