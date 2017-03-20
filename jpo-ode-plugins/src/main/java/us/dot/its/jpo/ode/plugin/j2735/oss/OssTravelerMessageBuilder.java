@@ -13,6 +13,8 @@ import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.Angle;
 import us.dot.its.jpo.ode.j2735.dsrc.Circle;
 import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane;
+import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane.OffsetXaxis;
+import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane.OffsetYaxis;
 import us.dot.its.jpo.ode.j2735.dsrc.DYear;
 import us.dot.its.jpo.ode.j2735.dsrc.DeltaAngle;
 import us.dot.its.jpo.ode.j2735.dsrc.DescriptiveName;
@@ -380,7 +382,7 @@ public class OssTravelerMessageBuilder {
                sps.setLaneWidth(new LaneWidth(inputRegion.getOldRegion().getShapepoint().getLaneWidth()));
                validateDirectionality(inputRegion.getOldRegion().getShapepoint().getDirectionality());
                sps.setDirectionality(new DirectionOfUse(inputRegion.getOldRegion().getShapepoint().getDirectionality()));
-               if (inputRegion.getOldRegion().getShapepoint().getNodexy().length > 0) {
+               if (inputRegion.getOldRegion().getShapepoint().getNodexy() != null) {
                   sps.setNodeList(buildNodeXYList(inputRegion.getOldRegion().getShapepoint().getNodexy()));
                } else {
                   sps.setNodeList(buildComputedLane(inputRegion.getOldRegion().getShapepoint().getComputedLane()));
@@ -570,19 +572,24 @@ public class OssTravelerMessageBuilder {
       NodeListXY nodeList = new NodeListXY();
 
       ComputedLane computedLane = new ComputedLane();
-
+      OffsetXaxis ox = new OffsetXaxis();
+      OffsetYaxis oy = new OffsetYaxis();
+      
       computedLane.setReferenceLaneId(new LaneID(inputLane.getLaneID()));
       if (inputLane.getOffsetLargeX() > 0) {
-         computedLane.offsetXaxis.setLarge(inputLane.getOffsetLargeX());
+         ox.setLarge(inputLane.getOffsetLargeX());
+         computedLane.offsetXaxis = ox;
       } else {
-         computedLane.offsetXaxis.setSmall(inputLane.getOffsetSmallX());
+         ox.setSmall(inputLane.getOffsetSmallX());
+         computedLane.offsetXaxis = ox;
       }
 
-      if (inputLane.getOffsetLargeX() > 0) {
-         computedLane.offsetYaxis.setLarge(inputLane.getOffsetLargeY());
-
+      if (inputLane.getOffsetLargeY() > 0) {
+         oy.setLarge(inputLane.getOffsetLargeY());
+         computedLane.offsetYaxis = oy;
       } else {
-         computedLane.offsetYaxis.setSmall(inputLane.getOffsetSmallY());
+         oy.setSmall(inputLane.getOffsetSmallY());
+         computedLane.offsetYaxis = oy;
       }
       computedLane.setRotateXY(new Angle(inputLane.getAngle()));
       computedLane.setScaleXaxis(new Scale_B12(inputLane.getxScale()));
