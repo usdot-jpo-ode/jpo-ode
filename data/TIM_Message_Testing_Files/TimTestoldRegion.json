@@ -98,8 +98,8 @@
   },
   "rsus": [
     {
-      "target": "127.0.0.1",
-      "username": "user",
+      "target": "24.56.178.134 ",
+      "username": "v3user",
       "password": "password",
       "retries": "1",
       "timeout": "2000"

@@ -926,43 +926,6 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class RoadSign {
-      private J2735Position3D position;
-      private String[] viewAngle;
-      private int mutcdCode;
-      private byte[] msgCrc;
-      public byte[] getMsgCrc() {
-         return msgCrc;
-      }
-      public void setMsgCrc(byte[] msgCrc) {
-         this.msgCrc = msgCrc;
-      }
-      public int getMutcdCode() {
-         return mutcdCode;
-      }
-      public void setMutcdCode(int mutcdCode) {
-         this.mutcdCode = mutcdCode;
-      }
-      public String[] getViewAngle() {
-         return viewAngle;
-      }
-      public void setViewAngle(String[] viewAngle) {
-         this.viewAngle = viewAngle;
-      }
-      public J2735Position3D getPosition() {
-         return position;
-      }
-      public void setPosition(J2735Position3D position) {
-         this.position = position;
-      }
-      
-      @Override
-      public String toString() {
-         return "Road Sign [position=" + position.toJson() + ", viewAngle=" + viewAngle + ", mutcdCode=" + mutcdCode
-               + ", msgCrc=" + msgCrc + "]";
-      }
-   }
-
    public TIM getTim() {
       return tim;
    }

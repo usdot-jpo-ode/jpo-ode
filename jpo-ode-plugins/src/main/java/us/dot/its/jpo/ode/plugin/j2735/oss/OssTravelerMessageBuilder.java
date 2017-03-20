@@ -343,7 +343,7 @@ public class OssTravelerMessageBuilder {
             validateZoom(inputRegion.getPath().getScale());
             offsetSystem.setScale(new Zoom(inputRegion.getPath().getScale()));
             if ("xy".equals(inputRegion.getPath().getType())) {
-               if (inputRegion.getPath().getNodes().length > 0) {
+               if (inputRegion.getPath().getNodes() != null) {
                   offsetSystem.setOffset(new OffsetSystem.Offset());
                   offsetSystem.offset.setXy(buildNodeXYList(inputRegion.getPath().getNodes()));
                } else {
