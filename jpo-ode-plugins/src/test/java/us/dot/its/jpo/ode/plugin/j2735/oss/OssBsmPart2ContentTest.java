@@ -144,10 +144,10 @@ public class OssBsmPart2ContentTest {
             fail("Unexpected exception: " + e.getClass());
         }
         
-        assertEquals("Incorrect SSPrights", expectedSspRights, actualValue.vehicleAlerts.sspRights);
-        assertEquals("Incorrect SirenInUse", expectedSirenInUse, actualValue.vehicleAlerts.sirenUse.name());
-        assertEquals("Incorrect LightbarInUse", expectedLightbarInUse, actualValue.vehicleAlerts.lightsUse.name());
-        assertEquals("Incorrect MultiVehicleResponse", expectedMultiVehicleResponse, actualValue.vehicleAlerts.multi.name());
+        assertEquals("Incorrect SSPrights", expectedSspRights, actualValue.vehicleAlerts.getSspRights());
+        assertEquals("Incorrect SirenInUse", expectedSirenInUse, actualValue.vehicleAlerts.getSirenUse().name());
+        assertEquals("Incorrect LightbarInUse", expectedLightbarInUse, actualValue.vehicleAlerts.getLightsUse().name());
+        assertEquals("Incorrect MultiVehicleResponse", expectedMultiVehicleResponse, actualValue.vehicleAlerts.getMulti().name());
         assertEquals("Incorrect EventType", expectedTypeEvent, actualValue.description.typeEvent);
     }
     

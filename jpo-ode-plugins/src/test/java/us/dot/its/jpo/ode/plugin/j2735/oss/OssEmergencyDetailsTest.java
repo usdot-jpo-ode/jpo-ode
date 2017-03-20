@@ -116,7 +116,7 @@ public class OssEmergencyDetailsTest {
         
         Integer actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .sspRights.intValue();
+                .getSspRights().intValue();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -141,7 +141,7 @@ public class OssEmergencyDetailsTest {
         
         Integer actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .sspRights.intValue();
+                .getSspRights().intValue();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -166,7 +166,7 @@ public class OssEmergencyDetailsTest {
         
         Integer actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .sspRights.intValue();
+                .getSspRights().intValue();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -192,7 +192,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .sirenUse.name();
+                .getSirenUse().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -217,7 +217,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .sirenUse.name();
+                .getSirenUse().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -242,7 +242,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .sirenUse.name();
+                .getSirenUse().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -267,7 +267,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .sirenUse.name();
+                .getSirenUse().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -293,7 +293,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .lightsUse.name();
+                .getLightsUse().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -318,7 +318,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .lightsUse.name();
+                .getLightsUse().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -343,7 +343,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .lightsUse.name();
+                .getLightsUse().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -368,7 +368,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .lightsUse.name();
+                .getLightsUse().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -393,7 +393,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .lightsUse.name();
+                .getLightsUse().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -419,7 +419,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .multi.name();
+                .getMulti().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -444,7 +444,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .multi.name();
+                .getMulti().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -469,7 +469,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .multi.name();
+                .getMulti().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -494,7 +494,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .multi.name();
+                .getMulti().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -520,7 +520,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .responseType.name();
+                .getResponseType().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -545,7 +545,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .responseType.name();
+                .getResponseType().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -570,7 +570,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .responseType.name();
+                .getResponseType().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -595,7 +595,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .responseType.name();
+                .getResponseType().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -620,7 +620,7 @@ public class OssEmergencyDetailsTest {
         
         String actualValue = OssEmergencyDetails
                 .genericEmergencyDetails(testEmergencyDetails)
-                .responseType.name();
+                .getResponseType().name();
         
         assertEquals(expectedValue, actualValue);
     }
