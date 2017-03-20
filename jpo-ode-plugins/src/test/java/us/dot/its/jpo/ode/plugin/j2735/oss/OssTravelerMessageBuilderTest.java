@@ -4762,6 +4762,7 @@ public class OssTravelerMessageBuilderTest {
       cl.setOffsetSmallY(3);
       cl.setxScale(2);
       cl.setyScale(2);
+      p.setComputedLane(cl);
       p.setNodes(node);
       r.setPath(p);
       reg[0] = r;
