@@ -148,7 +148,7 @@ public class OssBsmPart2ContentTest {
         assertEquals("Incorrect SirenInUse", expectedSirenInUse, actualValue.vehicleAlerts.getSirenUse().name());
         assertEquals("Incorrect LightbarInUse", expectedLightbarInUse, actualValue.vehicleAlerts.getLightsUse().name());
         assertEquals("Incorrect MultiVehicleResponse", expectedMultiVehicleResponse, actualValue.vehicleAlerts.getMulti().name());
-        assertEquals("Incorrect EventType", expectedTypeEvent, actualValue.description.typeEvent);
+        assertEquals("Incorrect EventType", expectedTypeEvent, actualValue.description.getTypeEvent());
     }
     
     
