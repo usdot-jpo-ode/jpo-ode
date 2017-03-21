@@ -85,7 +85,7 @@ public class DdsRequestTest {
 	
 	@Test
 	public void testEquals() {
-		EncodeType encodeType = EncodeType.hex;
+		EncodeType encodeType = EncodeType.HEX;
 		DdsRequest ddsRequest2 = new DdsRequest();
 		assertTrue(ddsRequest.equals(ddsRequest2));
 
@@ -102,7 +102,7 @@ public class DdsRequestTest {
 		assertTrue(ddsRequest.equals(ddsRequest2));
 		assertTrue(ddsRequest.equals(ddsRequest));
 		
-		ddsRequest2.setResultEncoding(EncodeType.base64.name());
+		ddsRequest2.setResultEncoding(EncodeType.BASE64.name());
 		assertFalse(ddsRequest.equals(ddsRequest2));
 	}
 }

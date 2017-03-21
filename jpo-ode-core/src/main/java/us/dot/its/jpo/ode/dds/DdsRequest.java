@@ -65,7 +65,7 @@ public class DdsRequest extends BaseRequest {
       }
    }
 
-   public enum EncodeType {base64, hex}
+   public enum EncodeType {BASE64, HEX}
 
    private int dialogID;
    private String resultEncoding;
