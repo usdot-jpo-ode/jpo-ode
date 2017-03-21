@@ -54,7 +54,7 @@ public class OdeProperties implements EnvironmentAware {
         init();
     }
     
-    public void init() throws Exception {
+    public void init() throws MissingPropertyException {
 
         uploadLocations.add(Paths.get(uploadLocationRoot));
         uploadLocations.add(Paths.get(uploadLocationRoot, uploadLocationBsm));
