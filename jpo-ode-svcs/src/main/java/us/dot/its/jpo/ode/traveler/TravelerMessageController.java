@@ -69,7 +69,8 @@ public class TravelerMessageController {
         try {
            travelerinputData = (J2735TravelerInputData) JsonUtils.fromJson(
                  jsonString, J2735TravelerInputData.class);
-           logger.debug("TIM CONTROLLER - Serialized TIM: {}", travelerinputData.toString());
+           String travelerinputDataStr = travelerinputData.toString();
+           logger.debug("TIM CONTROLLER - Serialized TIM: {}", travelerinputDataStr);
         }
         catch (Exception e) {
            log(false, "Error Deserializing TravelerInputData", e);
