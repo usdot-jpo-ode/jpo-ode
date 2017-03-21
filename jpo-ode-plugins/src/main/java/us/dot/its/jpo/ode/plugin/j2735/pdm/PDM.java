@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.pdm;
 
-public class PdmParameters {
+public class PDM {
 
     private int sampleStart;
     private int sampleEnd;

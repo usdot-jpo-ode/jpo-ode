@@ -18,10 +18,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.RoadSignUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.pdm.J2735ProbeDataManagement;
-import us.dot.its.jpo.ode.plugin.j2735.pdm.PdmParameters;
+import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
 import us.dot.its.jpo.ode.snmp.PdmManagerService;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
-import us.dot.its.jpo.ode.traveler.TimMessageException;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 @Controller
@@ -31,10 +30,10 @@ public class PdmController {
     @ResponseBody
     @RequestMapping(value = "/pdm", method = RequestMethod.POST, produces = "application/json")
     public String pdmMessage(@RequestBody String jsonString) {
-        if (jsonString == null) {
+        if (null == jsonString) {
             String msg = "PDM CONTROLLER - Endpoint received null request";
             log(false, msg, null);
-            throw new TimMessageException(msg);
+            throw new PdmException(msg);
         }
 
         J2735ProbeDataManagement pdm = (J2735ProbeDataManagement) JsonUtils.fromJson(jsonString,
@@ -88,7 +87,7 @@ public class PdmController {
         }
     }
 
-    private ResponseEvent sendToRsu(RSU rsu, PdmParameters params) throws ParseException {
+    private ResponseEvent sendToRsu(RSU rsu, PDM params) throws ParseException {
         Address addr = GenericAddress.parse(rsu.getTarget() + "/161");
 
         // Populate the SnmpProperties object with SNMP preferences

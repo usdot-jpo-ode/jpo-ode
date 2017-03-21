@@ -10,7 +10,7 @@ public class J2735ProbeDataManagement extends OdeObject {
     private ODE ode;
     private RSU[] rsuList;
 
-    private PdmParameters pdmParameters;
+    private PDM pdm;
 
     public static class ODE {
         private int version = 1;
@@ -40,12 +40,12 @@ public class J2735ProbeDataManagement extends OdeObject {
         this.rsuList = rsuList;
     }
 
-    public PdmParameters getPdmParameters() {
-        return pdmParameters;
+    public PDM getPdmParameters() {
+        return pdm;
     }
 
-    public void setPdmParameters(PdmParameters pdmParameters) {
-        this.pdmParameters = pdmParameters;
+    public void setPdmParameters(PDM pdmParameters) {
+        this.pdm = pdmParameters;
     }
 
 }

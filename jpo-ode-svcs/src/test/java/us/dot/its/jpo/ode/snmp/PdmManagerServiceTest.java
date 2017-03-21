@@ -17,19 +17,19 @@ import org.snmp4j.event.ResponseEvent;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
-import us.dot.its.jpo.ode.plugin.j2735.pdm.PdmParameters;
+import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
 
 public class PdmManagerServiceTest {
 
     @Injectable
     SnmpProperties mockSnmpProperties;
     @Injectable
-    PdmParameters mockPdmParameters;
+    PDM mockPdmParameters;
 
     @Test
     public void createAndSendshouldReturnNullWhenGivenNullPdmParameters() {
 
-        PdmParameters testNullParams = null;
+        PDM testNullParams = null;
 
         assertNull(PdmManagerService.createAndSend(testNullParams, mockSnmpProperties));
     }
@@ -100,7 +100,7 @@ public class PdmManagerServiceTest {
     @Test
     public void createPDUshouldReturnNullWhenGivenNullParams() {
 
-        PdmParameters nullParams = null;
+        PDM nullParams = null;
         ScopedPDU result = PdmManagerService.createPDU(nullParams);
         assertNull(result);
     }
