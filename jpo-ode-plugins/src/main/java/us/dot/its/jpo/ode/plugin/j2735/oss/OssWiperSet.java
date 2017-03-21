@@ -33,10 +33,10 @@ public class OssWiperSet {
 
         J2735WiperSet gws = new J2735WiperSet();
 
-        gws.rateFront = ws.rateFront.intValue();
-        gws.rateRear = ws.rateRear.intValue();
-        gws.statusFront = J2735WiperStatus.values()[ws.statusFront.indexOf()];
-        gws.statusRear = J2735WiperStatus.values()[ws.statusRear.indexOf()];
+        gws.setRateFront(ws.rateFront.intValue());
+        gws.setRateRear(ws.rateRear.intValue());
+        gws.setStatusFront(J2735WiperStatus.values()[ws.statusFront.indexOf()]);
+        gws.setStatusRear(J2735WiperStatus.values()[ws.statusRear.indexOf()]);
 
         return gws;
     }

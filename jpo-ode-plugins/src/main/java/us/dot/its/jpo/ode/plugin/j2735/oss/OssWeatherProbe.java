@@ -29,19 +29,19 @@ public class OssWeatherProbe {
         J2735WeatherProbe gwp = new J2735WeatherProbe();
 
         if (weatherProbe.hasAirTemp() && weatherProbe.airTemp.intValue() != 191) {
-            gwp.airTemp = weatherProbe.airTemp.intValue() - 40;
+            gwp.setAirTemp(weatherProbe.airTemp.intValue() - 40);
         } else {
-            gwp.airTemp = null;
+            gwp.setAirTemp(null);
         }
 
         if (weatherProbe.hasAirPressure() && weatherProbe.airPressure.intValue() != 0) {
-            gwp.airPressure = ((weatherProbe.airPressure.intValue() - 1) * 2) + 580;
+            gwp.setAirPressure(((weatherProbe.airPressure.intValue() - 1) * 2) + 580);
         } else {
-            gwp.airPressure = null;
+            gwp.setAirPressure(null);
         }
 
         if (weatherProbe.hasRainRates()) {
-            gwp.rainRates = OssWiperSet.genericWiperSet(weatherProbe.rainRates);
+            gwp.setRainRates(OssWiperSet.genericWiperSet(weatherProbe.rainRates));
         }
 
         return gwp;

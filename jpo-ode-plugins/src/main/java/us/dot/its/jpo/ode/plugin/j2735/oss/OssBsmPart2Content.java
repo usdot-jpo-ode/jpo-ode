@@ -73,13 +73,13 @@ public class OssBsmPart2Content {
             }
 
             if (sp.hasVehicleAlerts()) {
-                specVeh.vehicleAlerts = OssEmergencyDetails.genericEmergencyDetails(sp.vehicleAlerts);
+                specVeh.setVehicleAlerts(OssEmergencyDetails.genericEmergencyDetails(sp.vehicleAlerts));
             }
             if (sp.hasDescription()) {
-                specVeh.description = OssEventDescription.genericEventDescription(sp.description);
+                specVeh.setDescription(OssEventDescription.genericEventDescription(sp.description));
             }
             if (sp.hasTrailers()) {
-                specVeh.trailers = OssTrailerData.genericTrailerData(sp.trailers);
+                specVeh.setTrailers(OssTrailerData.genericTrailerData(sp.trailers));
             }
             break;
         case supplementalVehicleExt:

@@ -70,7 +70,7 @@ public class OssRTCMheaderTest {
         
         J2735RTCMheader actualHeader = OssRTCMheader.genericRTCMheader(testHeader);
         
-        for (Map.Entry<String, Boolean> curVal : actualHeader.status.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal : actualHeader.getStatus().entrySet()) {
             if(curVal.getKey() == elementTested) {
                 assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {
@@ -107,7 +107,7 @@ public class OssRTCMheaderTest {
         testHeader.offsetSet = testAntennaOffsetSet;
         testHeader.status = testGNSSstatus;
         
-        BigDecimal actualValue = OssRTCMheader.genericRTCMheader(testHeader).offsetSet.getAntOffsetX();
+        BigDecimal actualValue = OssRTCMheader.genericRTCMheader(testHeader).getOffsetSet().getAntOffsetX();
         
         assertEquals(expectedValue, actualValue);
     }

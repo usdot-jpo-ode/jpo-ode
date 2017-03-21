@@ -555,7 +555,7 @@ public class OssTrailerUnitDescriptionTest {
         J2735TrailerUnitDescription actualtud = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud);
         
         assertEquals(1, actualtud.getCrumbData().size());
-        assertEquals(expectedHeading, actualtud.getCrumbData().get(0).heading);
+        assertEquals(expectedHeading, actualtud.getCrumbData().get(0).getHeading());
     }
 
 }

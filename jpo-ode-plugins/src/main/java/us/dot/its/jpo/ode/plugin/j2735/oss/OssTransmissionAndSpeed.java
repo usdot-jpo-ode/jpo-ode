@@ -20,8 +20,8 @@ public class OssTransmissionAndSpeed {
 
         J2735TransmissionAndSpeed gts = new J2735TransmissionAndSpeed();
 
-        gts.speed = OssSpeedOrVelocity.genericVelocity(ts.speed);
-        gts.transmisson = J2735TransmissionState.values()[ts.transmisson.indexOf()];
+        gts.setSpeed(OssSpeedOrVelocity.genericVelocity(ts.speed));
+        gts.setTransmisson(J2735TransmissionState.values()[ts.transmisson.indexOf()]);
 
         return gts;
     }

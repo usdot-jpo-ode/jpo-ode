@@ -114,7 +114,7 @@ public class OssSpeedandHeadingandThrottleConfidenceTest {
         J2735SpeedandHeadingandThrottleConfidence actualshtc = 
                 OssSpeedandHeadingandThrottleConfidence.genericSpeedandHeadingandThrottleConfidence(testshtc);
         
-        assertEquals(expectedValue, actualshtc.heading);
+        assertEquals(expectedValue, actualshtc.getHeading());
         
     }
     
@@ -139,7 +139,7 @@ public class OssSpeedandHeadingandThrottleConfidenceTest {
         J2735SpeedandHeadingandThrottleConfidence actualshtc =
                 OssSpeedandHeadingandThrottleConfidence.genericSpeedandHeadingandThrottleConfidence(testshtc);
         
-        assertEquals(expectedValue, actualshtc.heading);
+        assertEquals(expectedValue, actualshtc.getHeading());
         
     }
     
@@ -164,7 +164,7 @@ public class OssSpeedandHeadingandThrottleConfidenceTest {
         J2735SpeedandHeadingandThrottleConfidence actualshtc =
                 OssSpeedandHeadingandThrottleConfidence.genericSpeedandHeadingandThrottleConfidence(testshtch);
         
-        assertEquals(expectedValue, actualshtc.heading);
+        assertEquals(expectedValue, actualshtc.getHeading());
         
     }
     
@@ -245,7 +245,7 @@ public class OssSpeedandHeadingandThrottleConfidenceTest {
         J2735SpeedandHeadingandThrottleConfidence actualshtc = 
                 OssSpeedandHeadingandThrottleConfidence.genericSpeedandHeadingandThrottleConfidence(testshtc);
         
-        assertEquals(expectedValue, actualshtc.speed);
+        assertEquals(expectedValue, actualshtc.getSpeed());
         
     }
     
@@ -270,7 +270,7 @@ public class OssSpeedandHeadingandThrottleConfidenceTest {
         J2735SpeedandHeadingandThrottleConfidence actualshtc =
                 OssSpeedandHeadingandThrottleConfidence.genericSpeedandHeadingandThrottleConfidence(testshtc);
         
-        assertEquals(expectedValue, actualshtc.speed);
+        assertEquals(expectedValue, actualshtc.getSpeed());
         
     }
     
@@ -295,7 +295,7 @@ public class OssSpeedandHeadingandThrottleConfidenceTest {
         J2735SpeedandHeadingandThrottleConfidence actualshtc = 
                 OssSpeedandHeadingandThrottleConfidence.genericSpeedandHeadingandThrottleConfidence(testshtc);
         
-        assertEquals(expectedValue, actualshtc.speed);
+        assertEquals(expectedValue, actualshtc.getSpeed());
         
     }
     
@@ -376,7 +376,7 @@ public class OssSpeedandHeadingandThrottleConfidenceTest {
         J2735SpeedandHeadingandThrottleConfidence actualshtc = 
                 OssSpeedandHeadingandThrottleConfidence.genericSpeedandHeadingandThrottleConfidence(testshtc);
         
-        assertEquals(expectedValue, actualshtc.throttle);
+        assertEquals(expectedValue, actualshtc.getThrottle());
         
     }
     
@@ -401,7 +401,7 @@ public class OssSpeedandHeadingandThrottleConfidenceTest {
         J2735SpeedandHeadingandThrottleConfidence actualshtc = 
                 OssSpeedandHeadingandThrottleConfidence.genericSpeedandHeadingandThrottleConfidence(testshtc);
         
-        assertEquals(expectedValue, actualshtc.throttle);
+        assertEquals(expectedValue, actualshtc.getThrottle());
         
     }
     
@@ -426,7 +426,7 @@ public class OssSpeedandHeadingandThrottleConfidenceTest {
         J2735SpeedandHeadingandThrottleConfidence actualshtc = 
                 OssSpeedandHeadingandThrottleConfidence.genericSpeedandHeadingandThrottleConfidence(testshtc);
         
-        assertEquals(expectedValue, actualshtc.throttle);
+        assertEquals(expectedValue, actualshtc.getThrottle());
         
     }
     

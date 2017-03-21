@@ -11,16 +11,16 @@ public class OssVehicleData {
         J2735VehicleData vd = new J2735VehicleData();
 
         if (vehicleData.bumpers != null) {
-            vd.bumpers = OssBumperHeights.genericBumperHeights(vehicleData.bumpers);
+            vd.setBumpers(OssBumperHeights.genericBumperHeights(vehicleData.bumpers));
         }
         if (vehicleData.height != null) {
-            vd.height = OssHeight.genericHeight(vehicleData.height);
+            vd.setHeight(OssHeight.genericHeight(vehicleData.height));
         }
         if (vehicleData.mass != null) {
-            vd.mass = OssMassOrWeight.genericMass(vehicleData.mass);
+            vd.setMass(OssMassOrWeight.genericMass(vehicleData.mass));
         }
         if (vehicleData.trailerWeight != null) {
-            vd.trailerWeight = OssMassOrWeight.genericWeight(vehicleData.trailerWeight);
+            vd.setTrailerWeight(OssMassOrWeight.genericWeight(vehicleData.trailerWeight));
         }
 
         return vd;

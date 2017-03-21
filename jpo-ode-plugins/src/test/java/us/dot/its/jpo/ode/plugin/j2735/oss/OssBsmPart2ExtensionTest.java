@@ -182,11 +182,11 @@ public class OssBsmPart2ExtensionTest {
                 (J2735SupplementalVehicleExtensions) OssBsmPart2Extension
                 .genericSupplementalVehicleExtensions(testsve);
         
-        assertEquals("Incorrect VehicleHeight", expectedVehicleHeight, actualValue.getVehicleData().height);
-        assertEquals("Incorrect front BumperHeight", expectedBumperHeightFront, actualValue.getVehicleData().bumpers.front);
-        assertEquals("Incorrect rear BumperHeight", expectedBumperHeightRear, actualValue.getVehicleData().bumpers.rear);
-        assertEquals("Incorrect VehicleMass", expectedVehicleMass, actualValue.getVehicleData().mass);
-        assertEquals("Incorrect TrailerWeight", expectedTrailerWeight, actualValue.getVehicleData().trailerWeight);
+        assertEquals("Incorrect VehicleHeight", expectedVehicleHeight, actualValue.getVehicleData().getHeight());
+        assertEquals("Incorrect front BumperHeight", expectedBumperHeightFront, actualValue.getVehicleData().getBumpers().front);
+        assertEquals("Incorrect rear BumperHeight", expectedBumperHeightRear, actualValue.getVehicleData().getBumpers().rear);
+        assertEquals("Incorrect VehicleMass", expectedVehicleMass, actualValue.getVehicleData().getMass());
+        assertEquals("Incorrect TrailerWeight", expectedTrailerWeight, actualValue.getVehicleData().getTrailerWeight());
     }
     
     /**
@@ -228,12 +228,12 @@ public class OssBsmPart2ExtensionTest {
                 (J2735SupplementalVehicleExtensions) OssBsmPart2Extension
                 .genericSupplementalVehicleExtensions(testsve);
         
-        assertEquals("Incorrect EssPrecipYesNo", expectedEssPrecipYesNo, actualValue.getWeatherReport().isRaining.name());
-        assertEquals("Incorrect EssPrecipRate", expectedEssPrecipRate, actualValue.getWeatherReport().rainRate);
-        assertEquals("Incorrect EssPrecipSituation", expectedEssPrecipSituation, actualValue.getWeatherReport().precipSituation.name());
-        assertEquals("Incorrect EssSolarRadiation", expectedEssSolarRadiation, actualValue.getWeatherReport().solarRadiation);
-        assertEquals("Incorrect EssMobileFriction", expectedEssMobileFriction, actualValue.getWeatherReport().friction);
-        assertEquals("Incorrect CoefficientOfFriction", expectedCoefficientOfFriction, actualValue.getWeatherReport().roadFriction);
+        assertEquals("Incorrect EssPrecipYesNo", expectedEssPrecipYesNo, actualValue.getWeatherReport().getIsRaining().name());
+        assertEquals("Incorrect EssPrecipRate", expectedEssPrecipRate, actualValue.getWeatherReport().getRainRate());
+        assertEquals("Incorrect EssPrecipSituation", expectedEssPrecipSituation, actualValue.getWeatherReport().getPrecipSituation().name());
+        assertEquals("Incorrect EssSolarRadiation", expectedEssSolarRadiation, actualValue.getWeatherReport().getSolarRadiation());
+        assertEquals("Incorrect EssMobileFriction", expectedEssMobileFriction, actualValue.getWeatherReport().getFriction());
+        assertEquals("Incorrect CoefficientOfFriction", expectedCoefficientOfFriction, actualValue.getWeatherReport().getRoadFriction());
     }
     
     /**
@@ -277,12 +277,12 @@ public class OssBsmPart2ExtensionTest {
                 (J2735SupplementalVehicleExtensions) OssBsmPart2Extension
                 .genericSupplementalVehicleExtensions(testsve);
         
-        assertEquals("Incorrect AmbientAirTemperature", expectedAmbientAirTemperature, actualValue.getWeatherProbe().airTemp);
-        assertEquals("Incorrect AmbientAirPressure", expectedAmbientAirPressure, actualValue.getWeatherProbe().airPressure);
-        assertEquals("Incorrect front WiperStatus", expectedWiperStatusFront, actualValue.getWeatherProbe().rainRates.statusFront.name());
-        assertEquals("Incorrect front WiperRate", expectedWiperRateFront, actualValue.getWeatherProbe().rainRates.rateFront);
-        assertEquals("Incorrect rear WiperStatus", expectedWiperStatusRear, actualValue.getWeatherProbe().rainRates.statusRear.name());
-        assertEquals("Incorrect rear WiperRate", expectedWiperRateRear, actualValue.getWeatherProbe().rainRates.rateRear);
+        assertEquals("Incorrect AmbientAirTemperature", expectedAmbientAirTemperature, actualValue.getWeatherProbe().getAirTemp());
+        assertEquals("Incorrect AmbientAirPressure", expectedAmbientAirPressure, actualValue.getWeatherProbe().getAirPressure());
+        assertEquals("Incorrect front WiperStatus", expectedWiperStatusFront, actualValue.getWeatherProbe().getRainRates().getStatusFront().name());
+        assertEquals("Incorrect front WiperRate", expectedWiperRateFront, actualValue.getWeatherProbe().getRainRates().getRateFront());
+        assertEquals("Incorrect rear WiperStatus", expectedWiperStatusRear, actualValue.getWeatherProbe().getRainRates().getStatusRear().name());
+        assertEquals("Incorrect rear WiperRate", expectedWiperRateRear, actualValue.getWeatherProbe().getRainRates().getRateRear());
     }
     
     /**
