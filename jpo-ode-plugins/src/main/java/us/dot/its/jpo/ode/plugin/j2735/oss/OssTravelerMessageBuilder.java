@@ -122,7 +122,7 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class OssTravelerMessageBuilder {
-   public TravelerInformation travelerInfo;
+   private TravelerInformation travelerInfo;
 
    public TravelerInformation buildTravelerInformation(J2735TravelerInputData travInputData)
          throws ParseException, EncodeFailedException, EncodeNotSupportedException {

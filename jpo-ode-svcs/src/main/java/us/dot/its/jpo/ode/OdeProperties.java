@@ -44,7 +44,7 @@ public class OdeProperties implements EnvironmentAware {
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
     private String ddsCasUrl = "https://cas.connectedvcs.com/accounts/v1/tickets";
     private String ddsCasUsername = "";
-    private String ddsCasPassword = "";
+    private String ddsCasPass = "";
     private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
 
     private String hostId;
@@ -190,11 +190,11 @@ public class OdeProperties implements EnvironmentAware {
     }
 
     public String getDdsCasPassword() {
-        return ddsCasPassword;
+        return ddsCasPass;
     }
 
     public void setDdsCasPassword(String ddsCasPassword) {
-        this.ddsCasPassword = ddsCasPassword;
+        this.ddsCasPass = ddsCasPassword;
     }
 
     public String getDdsWebsocketUrl() {
