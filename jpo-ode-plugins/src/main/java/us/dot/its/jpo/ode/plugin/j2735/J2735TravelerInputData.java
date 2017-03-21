@@ -10,11 +10,11 @@ public class J2735TravelerInputData extends OdeObject {
 
    private static final long serialVersionUID = 8769107278440796699L;
 
-   private transient TIM tim;
-   private transient RSU[] rsus;
-   private transient SNMP snmp;
-   private transient ODE ode;
-   private transient SDW sdw;
+   private TIM tim;
+   private RSU[] rsus;
+   private SNMP snmp;
+   private ODE ode;
+   private SDW sdw;
 
    public static class ODE {
       private int version = 1;
