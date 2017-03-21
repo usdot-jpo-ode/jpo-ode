@@ -23,13 +23,13 @@ public class OssVehicleClassification {
                 throw new IllegalArgumentException("Fuel type value out of bounds [0..9]");
             }
 
-            gvc.fuelType = J2735FuelType.values()[vc.fuelType.intValue()];
+            gvc.setFuelType(J2735FuelType.values()[vc.fuelType.intValue()]);
         }
         if (vc.hasHpmsType()) {
-            gvc.hpmsType = J2735VehicleType.values()[vc.hpmsType.indexOf()];
+            gvc.setHpmsType(J2735VehicleType.values()[vc.hpmsType.indexOf()]);
         }
         if (vc.hasIso3883()) {
-            gvc.iso3883 = vc.iso3883.intValue();
+            gvc.setIso3883(vc.iso3883.intValue());
         }
         if (vc.hasKeyType()) {
 
@@ -37,25 +37,25 @@ public class OssVehicleClassification {
                 throw new IllegalArgumentException("Basic vehicle classification out of bounds [0..255]");
             }
 
-            gvc.keyType = vc.keyType.intValue();
+            gvc.setKeyType(vc.keyType.intValue());
         }
         if (vc.hasResponderType()) {
-            gvc.responderType = J2735ResponderGroupAffected.values()[vc.responderType.indexOf()];
+            gvc.setResponderType(J2735ResponderGroupAffected.values()[vc.responderType.indexOf()]);
         }
         if (vc.hasResponseEquip()) {
-            gvc.responseEquip = OssNamedNumber.genericIncidentResponseEquipment(vc.responseEquip);
+            gvc.setResponseEquip(OssNamedNumber.genericIncidentResponseEquipment(vc.responseEquip));
         }
         if (vc.hasRole()) {
-            gvc.role = J2735BasicVehicleRole.values()[vc.role.indexOf()];
+            gvc.setRole(J2735BasicVehicleRole.values()[vc.role.indexOf()]);
         }
         if (vc.hasVehicleType()) {
-            gvc.vehicleType = OssNamedNumber.genericVehicleGroupAffected(vc.vehicleType);
+            gvc.setVehicleType(OssNamedNumber.genericVehicleGroupAffected(vc.vehicleType));
         }
         if (vc.hasRegional()) {
             while (vc.regional.elements().hasMoreElements()) {
                 us.dot.its.jpo.ode.j2735.dsrc.VehicleClassification.Regional.Sequence_ element = (us.dot.its.jpo.ode.j2735.dsrc.VehicleClassification.Regional.Sequence_) vc.regional
                         .elements().nextElement();
-                gvc.regional.add(new J2735RegionalContent().setId(element.regionId.intValue())
+                gvc.getRegional().add(new J2735RegionalContent().setId(element.regionId.intValue())
                         .setValue(element.regExtValue.getEncodedValue()));
             }
         }

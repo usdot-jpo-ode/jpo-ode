@@ -136,14 +136,14 @@ public class OssBsmPart2ExtensionTest {
                 (J2735SupplementalVehicleExtensions) OssBsmPart2Extension
                 .genericSupplementalVehicleExtensions(testsve);
         
-        assertEquals("Incorrect BasicVehicleClass", expectedBasicVehicleClass, actualValue.getClassDetails().keyType);
-        assertEquals("Incorrect BasicVehicleRole", expectedBasicVehicleRole, actualValue.getClassDetails().role.name());
-        assertEquals("Incorrect Iso3883VehicleType", expectedVCIso3833VehicleType, actualValue.getClassDetails().iso3883);
-        assertEquals("Incorrect HpmsType", expectedVehicleType, actualValue.getClassDetails().hpmsType.name());
-        assertEquals("Incorrect VehicleGroupAffected", expectedVehicleGroupAffected, actualValue.getClassDetails().vehicleType.name);
-        assertEquals("Incorrect IncidentResponseEquipment", expectedIncidentResponseEquipment, actualValue.getClassDetails().responseEquip.name);
-        assertEquals("Incorrect ResponderGroupAffected", expectedResponderGroupAffected, actualValue.getClassDetails().responderType.name());
-        assertEquals("Incorrect FuelType", expectedFuelType, actualValue.getClassDetails().fuelType.name());
+        assertEquals("Incorrect BasicVehicleClass", expectedBasicVehicleClass, actualValue.getClassDetails().getKeyType());
+        assertEquals("Incorrect BasicVehicleRole", expectedBasicVehicleRole, actualValue.getClassDetails().getRole().name());
+        assertEquals("Incorrect Iso3883VehicleType", expectedVCIso3833VehicleType, actualValue.getClassDetails().getIso3883());
+        assertEquals("Incorrect HpmsType", expectedVehicleType, actualValue.getClassDetails().getHpmsType().name());
+        assertEquals("Incorrect VehicleGroupAffected", expectedVehicleGroupAffected, actualValue.getClassDetails().getVehicleType().name);
+        assertEquals("Incorrect IncidentResponseEquipment", expectedIncidentResponseEquipment, actualValue.getClassDetails().getResponseEquip().name);
+        assertEquals("Incorrect ResponderGroupAffected", expectedResponderGroupAffected, actualValue.getClassDetails().getResponderType().name());
+        assertEquals("Incorrect FuelType", expectedFuelType, actualValue.getClassDetails().getFuelType().name());
     }
     
     /**
