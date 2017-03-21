@@ -47,12 +47,12 @@ public class PdmController {
                 response = sendToRsu(curRsu, pdm.getPdm());
 
                 if (null == response || null == response.getResponse()) {
-                    responseList.put(curRsu.getTarget(),
-                            log(false, "PDM CONTROLLER - No response from RSU IP=" + curRsu.getTarget(), null));
+                    responseList.put(curRsu.getrsuTarget(),
+                            log(false, "PDM CONTROLLER - No response from RSU IP=" + curRsu.getrsuTarget(), null));
                 } else if (0 == response.getResponse().getErrorStatus()) {
-                    responseList.put(curRsu.getTarget(), log(true, "PDM CONTROLLER - SNMP deposit successful", null));
+                    responseList.put(curRsu.getrsuTarget(), log(true, "PDM CONTROLLER - SNMP deposit successful", null));
                 } else {
-                    responseList.put(curRsu.getTarget(),
+                    responseList.put(curRsu.getrsuTarget(),
                             log(false,
                                     "PDM CONTROLLER - Error, SNMP deposit failed, error code="
                                             + response.getResponse().getErrorStatus() + "("
@@ -61,7 +61,7 @@ public class PdmController {
                 }
 
             } catch (ParseException e) {
-                responseList.put(curRsu.getTarget(),
+                responseList.put(curRsu.getrsuTarget(),
                         log(false, "PDM CONTROLLER - Exception while sending message to RSU", e));
             }
         }
@@ -88,11 +88,11 @@ public class PdmController {
     }
 
     private ResponseEvent sendToRsu(RSU rsu, PDM params) throws ParseException {
-        Address addr = GenericAddress.parse(rsu.getTarget() + "/161");
+        Address addr = GenericAddress.parse(rsu.getrsuTarget() + "/161");
 
         // Populate the SnmpProperties object with SNMP preferences
-        SnmpProperties testProps = new SnmpProperties(addr, rsu.getUsername(), rsu.getPassword(), rsu.getRetries(),
-                rsu.getTimeout());
+        SnmpProperties testProps = new SnmpProperties(addr, rsu.getrsuUsername(), rsu.getrsuPassword(), rsu.getrsuRetries(),
+                rsu.getrsuTimeout());
 
         return PdmManagerService.createAndSend(params, testProps);
     }

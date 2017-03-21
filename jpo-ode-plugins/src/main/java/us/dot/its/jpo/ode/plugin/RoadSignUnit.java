@@ -2,40 +2,40 @@ package us.dot.its.jpo.ode.plugin;
 
 public class RoadSignUnit {
    public static class RSU {
-      private String target;
-      private String username;
-      private String password;
-      private int retries;
-      private int timeout;
-      public String getTarget() {
-         return target;
+      private String rsuTarget;
+      private String rsuUsername;
+      private String rsuPassword;
+      private int rsuRetries;
+      private int rsuTimeout;
+      public String getrsuTarget() {
+         return rsuTarget;
       }
-      public void setTarget(String target) {
-         this.target = target;
+      public void setrsuTarget(String rsuTarget) {
+         this.rsuTarget = rsuTarget;
       }
-      public String getUsername() {
-         return username;
+      public String getrsuUsername() {
+         return rsuUsername;
       }
-      public void setUsername(String username) {
-         this.username = username;
+      public void setrsuUsername(String rsuUsername) {
+         this.rsuUsername = rsuUsername;
       }
-      public String getPassword() {
-         return password;
+      public String getrsuPassword() {
+         return rsuPassword;
       }
-      public void setPassword(String password) {
-         this.password = password;
+      public void setrsuPassword(String rsuPassword) {
+         this.rsuPassword = rsuPassword;
       }
-      public int getRetries() {
-         return retries;
+      public int getrsuRetries() {
+         return rsuRetries;
       }
-      public void setRetries(int retries) {
-         this.retries = retries;
+      public void setrsuRetries(int rsuRetries) {
+         this.rsuRetries = rsuRetries;
       }
-      public int getTimeout() {
-         return timeout;
+      public int getrsuTimeout() {
+         return rsuTimeout;
       }
-      public void setTimeout(int timeout) {
-         this.timeout = timeout;
+      public void setTimeout(int rsuTimeout) {
+         this.rsuTimeout = rsuTimeout;
       }
    }
    private RoadSignUnit() {

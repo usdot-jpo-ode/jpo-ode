@@ -111,12 +111,12 @@ public class TravelerMessageController {
                  for (RSU rsu : travelerinputData.getRsus()) {
                     ResponseEvent response = sendToRSU(rsu, travelerinputData.getSnmp(), rsuSRMPayload);
                     if (response != null && response.getResponse() != null) {
-                       String msg = String.format("RSU %1$s Response: %2$s", rsu.getTarget(), response.getResponse());
+                       String msg = String.format("RSU %1$s Response: %2$s", rsu.getrsuTarget(), response.getResponse());
                        EventLogger.logger.info(msg);
-                       logger.info(rsu.getTarget(), response.getResponse());
+                       logger.info(rsu.getrsuTarget(), response.getResponse());
                        depositToDDS(travelerinputData, rsuSRMPayload);
                    } else {
-                      String msg = String.format("Empty response from RSU %1$s", rsu.getTarget());
+                      String msg = String.format("Empty response from RSU %1$s", rsu.getrsuTarget());
                       EventLogger.logger.error(msg);
                       logger.error(msg);
                       depositToDDS(travelerinputData, rsuSRMPayload);
@@ -169,10 +169,10 @@ public class TravelerMessageController {
    }
 
     private ResponseEvent sendToRSU(RSU rsu, SNMP snmp, String payload) throws ParseException {
-       Address addr = GenericAddress.parse(rsu.getTarget() + "/161");
+       Address addr = GenericAddress.parse(rsu.getrsuTarget() + "/161");
 
        // Populate the SnmpProperties object with SNMP preferences
-       SnmpProperties testProps = new SnmpProperties(addr, rsu.getUsername(), rsu.getPassword(), rsu.getRetries(), rsu.getTimeout());
+       SnmpProperties testProps = new SnmpProperties(addr, rsu.getrsuUsername(), rsu.getrsuPassword(), rsu.getrsuRetries(), rsu.getrsuTimeout());
 
        // Populate the TimParameters object with OID values
        TimParameters testParams = new TimParameters(
