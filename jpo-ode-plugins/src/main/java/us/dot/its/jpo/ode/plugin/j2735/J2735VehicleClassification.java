@@ -1,10 +1,12 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class J2735VehicleClassification {
-
+public class J2735VehicleClassification implements Serializable{
+	private static final long serialVersionUID = 1L;
+	
 	private J2735FuelType fuelType;
 	private J2735VehicleType hpmsType;
 	private Integer iso3883;
