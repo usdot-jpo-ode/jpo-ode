@@ -23,7 +23,7 @@ public class DdsDepositRequestManager extends DdsRequestManager<DdsStatusMessage
 
         if (odeRequest instanceof OdeDepRequest) {
             OdeDepRequest odeDepReq = (OdeDepRequest) odeRequest;
-            String sEncodeType = StringUtils.lowerCase(odeDepReq.getEncodeType());
+            String sEncodeType = StringUtils.upperCase(odeDepReq.getEncodeType());
             if (sEncodeType != null) {
                 EncodeType encodeType = DdsRequest.EncodeType.valueOf(sEncodeType);
                 ddsDepReq.setSystemDepositName(DdsDepositRequestManager
