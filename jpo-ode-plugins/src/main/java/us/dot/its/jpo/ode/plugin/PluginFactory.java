@@ -44,7 +44,8 @@ public final class PluginFactory {
 		OdePlugin result = (OdePlugin) buildObject(coderClassName);
 		
 		if (null != result) {
-		    logger.info("Got Plugin: {}", result.toString());
+			String resultStr = result.toString();
+		    logger.info("Got Plugin: {}", resultStr);
 		} else {
 		    logger.info("Failed to load plugin for {}", coderClassName);
 		}
