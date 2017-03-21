@@ -199,9 +199,9 @@ public class OssBsmCoreDataTest {
         assertEquals("Incorrect lat position", expectedLat, actualcd.getPosition().getLatitude());
         assertEquals("Incorrect long position", expectedLong, actualcd.getPosition().getLongitude());
         assertEquals("Incorrect elev position", expectedElev, actualcd.getPosition().getElevation());
-        assertEquals("Incorrect semi major accuracy", expectedSemiMajorAxisAccuracy, actualcd.getAccuracy().semiMajor);
-        assertEquals("Incorrect semi minor accuracy", expectedSemiMinorAxisAccuracy, actualcd.getAccuracy().semiMinor);
-        assertEquals("Incorrect semi major orient", expectedSemiMajorAxisOrientation, actualcd.getAccuracy().orientation);
+        assertEquals("Incorrect semi major accuracy", expectedSemiMajorAxisAccuracy, actualcd.getAccuracy().getSemiMajor());
+        assertEquals("Incorrect semi minor accuracy", expectedSemiMinorAxisAccuracy, actualcd.getAccuracy().getSemiMinor());
+        assertEquals("Incorrect semi major orient", expectedSemiMajorAxisOrientation, actualcd.getAccuracy().getOrientation());
         assertEquals("Incorrect transmission state", expectedTransmissionState, actualcd.getTransmission());
         assertEquals("Incorrect speed", expectedSpeed, actualcd.getSpeed());
         assertEquals("Incorrect heading", expectedHeading, actualcd.getHeading());
@@ -355,9 +355,9 @@ public class OssBsmCoreDataTest {
         assertEquals("Incorrect lat position", expectedLat, actualcd.getPosition().getLatitude());
         assertEquals("Incorrect long position", expectedLong, actualcd.getPosition().getLongitude());
         assertEquals("Incorrect elev position", expectedElev, actualcd.getPosition().getElevation());
-        assertEquals("Incorrect semi major accuracy", expectedSemiMajorAxisAccuracy, actualcd.getAccuracy().semiMajor);
-        assertEquals("Incorrect semi minor accuracy", expectedSemiMinorAxisAccuracy, actualcd.getAccuracy().semiMinor);
-        assertEquals("Incorrect semi major orient", expectedSemiMajorAxisOrientation, actualcd.getAccuracy().orientation);
+        assertEquals("Incorrect semi major accuracy", expectedSemiMajorAxisAccuracy, actualcd.getAccuracy().getSemiMajor());
+        assertEquals("Incorrect semi minor accuracy", expectedSemiMinorAxisAccuracy, actualcd.getAccuracy().getSemiMinor());
+        assertEquals("Incorrect semi major orient", expectedSemiMajorAxisOrientation, actualcd.getAccuracy().getOrientation());
         assertEquals("Incorrect transmission state", expectedTransmissionState, actualcd.getTransmission().name());
         assertEquals("Incorrect speed", expectedSpeed, actualcd.getSpeed());
         assertEquals("Incorrect heading", expectedHeading, actualcd.getHeading());
@@ -510,9 +510,9 @@ public class OssBsmCoreDataTest {
         assertEquals("Incorrect lat position", expectedLat, actualcd.getPosition().getLatitude());
         assertEquals("Incorrect long position", expectedLong, actualcd.getPosition().getLongitude());
         assertEquals("Incorrect elev position", expectedElev, actualcd.getPosition().getElevation());
-        assertEquals("Incorrect semi major accuracy", expectedSemiMajorAxisAccuracy, actualcd.getAccuracy().semiMajor);
-        assertEquals("Incorrect semi minor accuracy", expectedSemiMinorAxisAccuracy, actualcd.getAccuracy().semiMinor);
-        assertEquals("Incorrect semi major orient", expectedSemiMajorAxisOrientation, actualcd.getAccuracy().orientation);
+        assertEquals("Incorrect semi major accuracy", expectedSemiMajorAxisAccuracy, actualcd.getAccuracy().getSemiMajor());
+        assertEquals("Incorrect semi minor accuracy", expectedSemiMinorAxisAccuracy, actualcd.getAccuracy().getSemiMinor());
+        assertEquals("Incorrect semi major orient", expectedSemiMajorAxisOrientation, actualcd.getAccuracy().getOrientation());
         assertEquals("Incorrect transmission state", expectedTransmissionState, actualcd.getTransmission().name());
         assertEquals("Incorrect speed", expectedSpeed, actualcd.getSpeed());
         assertEquals("Incorrect heading", expectedHeading, actualcd.getHeading());

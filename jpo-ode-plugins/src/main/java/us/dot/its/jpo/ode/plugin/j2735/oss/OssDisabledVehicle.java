@@ -11,11 +11,11 @@ public class OssDisabledVehicle {
         J2735DisabledVehicle gstatus = new J2735DisabledVehicle();
 
         // Required element
-        gstatus.statusDetails = status.statusDetails.intValue();
+        gstatus.setStatusDetails(status.statusDetails.intValue());
 
         // Optional element
         if (status.hasLocationDetails()) {
-            gstatus.locationDetails = OssNamedNumber.genericGenericLocations(status.locationDetails);
+            gstatus.setLocationDetails(OssNamedNumber.genericGenericLocations(status.locationDetails));
         }
 
         return gstatus;

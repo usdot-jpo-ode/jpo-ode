@@ -47,7 +47,7 @@ public class OssBsm {
     public static BasicSafetyMessage basicSafetyMessage(J2735Bsm genericBsm) {
         BasicSafetyMessage basicSafetyMessage = new BasicSafetyMessage();
 
-        J2735BsmCoreData coreData = genericBsm.coreData;
+        J2735BsmCoreData coreData = genericBsm.getCoreData();
 
         basicSafetyMessage.coreData = new BSMcoreData();
         basicSafetyMessage.coreData.msgCnt = new MsgCount(1);
@@ -90,11 +90,11 @@ public class OssBsm {
     public static J2735Bsm genericBsm(BasicSafetyMessage basicSafetyMessage) throws OssBsmPart2Exception {
         J2735Bsm genericBsm = new J2735Bsm();
         if (basicSafetyMessage.coreData != null) {
-            genericBsm.coreData = OssBsmCoreData.genericBsmCoreData(basicSafetyMessage.coreData);
+            genericBsm.setCoreData(OssBsmCoreData.genericBsmCoreData(basicSafetyMessage.coreData));
         }
 
         if (basicSafetyMessage.partII != null) {
-            OssBsmPart2Content.buildGenericPart2(basicSafetyMessage.partII.elements, genericBsm.partII);
+            OssBsmPart2Content.buildGenericPart2(basicSafetyMessage.partII.elements, genericBsm.getPartII());
         }
 
         return genericBsm;

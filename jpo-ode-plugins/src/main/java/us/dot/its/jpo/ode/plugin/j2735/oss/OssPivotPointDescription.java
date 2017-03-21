@@ -21,11 +21,11 @@ public class OssPivotPointDescription {
         } else if (ppd.pivotOffset.intValue() == -1024) {
             ppd.pivotOffset = null;
         } else {
-            gppd.pivotOffset = BigDecimal.valueOf(ppd.pivotOffset.intValue(), 2);
+            gppd.setPivotOffset(BigDecimal.valueOf(ppd.pivotOffset.intValue(), 2));
         }
 
-        gppd.pivotAngle = OssAngle.genericAngle(ppd.pivotAngle);
-        gppd.pivots = ppd.pivots.booleanValue();
+        gppd.setPivotAngle(OssAngle.genericAngle(ppd.pivotAngle));
+        gppd.setPivots(ppd.pivots.booleanValue());
 
         return gppd;
     }

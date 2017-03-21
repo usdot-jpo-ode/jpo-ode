@@ -112,10 +112,10 @@ public class OssPositionConfidenceSetTest {
         
         assertEquals("Expected PositionConfidence value unavailable", 
                 J2735PositionConfidence.unavailable,
-                testJ2735PositionConfidenceSet.pos);
+                testJ2735PositionConfidenceSet.getPos());
         assertEquals("Expected ElevationConfidence value unavailable",
                 J2735ElevationConfidence.unavailable,
-                testJ2735PositionConfidenceSet.elevation);
+                testJ2735PositionConfidenceSet.getElevation());
         
         
     }
@@ -141,12 +141,12 @@ public class OssPositionConfidenceSetTest {
        
         assertEquals("Expected PositionConfidence value a500m", 
                 J2735PositionConfidence.a500m, 
-                testJ2735PositionConfidenceSet.pos);
+                testJ2735PositionConfidenceSet.getPos());
         
         
         assertEquals("Expected ElevationConfidence value elev-500-00", 
                 J2735ElevationConfidence.elev_500_00,
-                testJ2735PositionConfidenceSet.elevation);
+                testJ2735PositionConfidenceSet.getElevation());
         
     }
     
@@ -173,11 +173,11 @@ public class OssPositionConfidenceSetTest {
         
         assertEquals("Expected PositionConfidence value a200m",
                 expectedPositionValue,
-                actualJ2735PositionConfidenceSet.pos);
+                actualJ2735PositionConfidenceSet.getPos());
         
         assertEquals("Expected ElevationConfidence value elev_200_00",
                 expectedElevationValue,
-                actualJ2735PositionConfidenceSet.elevation);
+                actualJ2735PositionConfidenceSet.getElevation());
         
     }
     
@@ -204,11 +204,11 @@ public class OssPositionConfidenceSetTest {
         
         assertEquals("Expected PositionConfidence value a2cm",
                 expectedPositionValue,
-                actualJ2735PositionConfidenceSet.pos);
+                actualJ2735PositionConfidenceSet.getPos());
         
         assertEquals("Expected ElevationConfidence value elev_000_02",
                 expectedElevationValue,
-                actualJ2735PositionConfidenceSet.elevation);
+                actualJ2735PositionConfidenceSet.getElevation());
         
     }
     
@@ -235,11 +235,11 @@ public class OssPositionConfidenceSetTest {
         
         assertEquals("Exected PositionConfidence value a1cm",
                 expectedPositionValue,
-                actualJ2735PositionConfidenceSet.pos);
+                actualJ2735PositionConfidenceSet.getPos());
         
         assertEquals("Expected ElevationConfidence value elev_000_01",
                 expectedElevationValue,
-                actualJ2735PositionConfidenceSet.elevation);
+                actualJ2735PositionConfidenceSet.getElevation());
         
     }
     

@@ -14,15 +14,15 @@ public class OssPathPrediction {
 
         if (pathPrediction.radiusOfCurve.longValue() >= 32767 
                 || pathPrediction.radiusOfCurve.longValue() < -32767) {
-            pp.radiusOfCurve = BigDecimal.ZERO.setScale(1);
+            pp.setRadiusOfCurve(BigDecimal.ZERO.setScale(1));
         } else {
-            pp.radiusOfCurve = BigDecimal.valueOf(pathPrediction.radiusOfCurve.longValue(), 1);
+            pp.setRadiusOfCurve(BigDecimal.valueOf(pathPrediction.radiusOfCurve.longValue(), 1));
         }
         
         if (pathPrediction.confidence.longValue() < 0 || pathPrediction.confidence.longValue() > 200) {
             throw new IllegalArgumentException("Confidence value out of bounds [0..200]");
         } else {
-            pp.confidence = BigDecimal.valueOf(pathPrediction.confidence.longValue() * 5, 1);
+            pp.setConfidence(BigDecimal.valueOf(pathPrediction.confidence.longValue() * 5, 1));
         }
 
         return pp;

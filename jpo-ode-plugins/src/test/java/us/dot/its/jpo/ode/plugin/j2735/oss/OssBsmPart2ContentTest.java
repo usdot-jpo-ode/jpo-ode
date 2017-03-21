@@ -242,8 +242,8 @@ public class OssBsmPart2ContentTest {
         } catch (OssBsmPart2Exception e) {
             fail("Unexpected exception: " + e.getClass());
         }
-        assertEquals("Incorrect radius of curvature", expectedRadiusOfCurvature, actualValue.getPathPrediction().radiusOfCurve);
-        assertEquals("Incorrect confidence", expectedConfidence, actualValue.getPathPrediction().confidence);
+        assertEquals("Incorrect radius of curvature", expectedRadiusOfCurvature, actualValue.getPathPrediction().getRadiusOfCurve());
+        assertEquals("Incorrect confidence", expectedConfidence, actualValue.getPathPrediction().getConfidence());
         
         for (Map.Entry<String, Boolean> curVal1 : actualValue.getEvents().entrySet()) {
             if (curVal1.getKey().equals(expectedVehicleEventFlag1) || curVal1.getKey().equals(expectedVehicleEventFlag2)) {

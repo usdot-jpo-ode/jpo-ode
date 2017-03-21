@@ -13,24 +13,24 @@ public class OssNamedNumber {
     public static J2735NamedNumber genericGenericLocations(GenericLocations locationDetails) {
         J2735NamedNumber gnn = new J2735NamedNumber();
 
-        gnn.name = locationDetails.name();
-        gnn.value = locationDetails.longValue();
+        gnn.setName(locationDetails.name());
+        gnn.setValue(locationDetails.longValue());
         return gnn;
     }
 
     public static J2735NamedNumber genericIncidentResponseEquipment(IncidentResponseEquipment responseEquip) {
         J2735NamedNumber gnn = new J2735NamedNumber();
 
-        gnn.name = responseEquip.name();
-        gnn.value = responseEquip.longValue();
+        gnn.setName(responseEquip.name());
+        gnn.setValue(responseEquip.longValue());
         return gnn;
     }
 
     public static J2735NamedNumber genericVehicleGroupAffected(VehicleGroupAffected vehicleType) {
         J2735NamedNumber gnn = new J2735NamedNumber();
 
-        gnn.name = vehicleType.name();
-        gnn.value = vehicleType.longValue();
+        gnn.setName(vehicleType.name());
+        gnn.setValue(vehicleType.longValue());
         return gnn;
     }
 

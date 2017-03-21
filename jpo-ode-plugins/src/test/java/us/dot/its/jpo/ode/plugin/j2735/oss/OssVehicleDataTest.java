@@ -104,8 +104,8 @@ public class OssVehicleDataTest {
             J2735BumperHeights actualBumperHeights = OssVehicleData
                     .genericVehicleData(testVehicleData)
                     .getBumpers();
-            assertEquals(expectedValue, actualBumperHeights.front);
-            assertEquals(expectedValue, actualBumperHeights.rear);
+            assertEquals(expectedValue, actualBumperHeights.getFront());
+            assertEquals(expectedValue, actualBumperHeights.getRear());
         } catch (RuntimeException e) {
             fail("Unexpected RuntimeException: " + e.getClass());
         }

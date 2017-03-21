@@ -576,10 +576,10 @@ public class OssVehicleClassificationTest {
         
         String actualName = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .getVehicleType().name;
+                .getVehicleType().getName();
         Long actualValue = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .getVehicleType().value;
+                .getVehicleType().getValue();
         
         assertEquals(expectedName, actualName);
         assertEquals(expectedValue, actualValue);
@@ -602,10 +602,10 @@ public class OssVehicleClassificationTest {
         
         String actualName = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .getVehicleType().name;
+                .getVehicleType().getName();
         Long actualValue = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .getVehicleType().value;
+                .getVehicleType().getValue();
         
         assertEquals(expectedName, actualName);
         assertEquals(expectedValue, actualValue);
@@ -629,10 +629,10 @@ public class OssVehicleClassificationTest {
         
         String actualName = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .getVehicleType().name;
+                .getVehicleType().getName();
         Long actualValue = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .getVehicleType().value;
+                .getVehicleType().getValue();
         
         assertEquals(expectedName, actualName);
         assertEquals(expectedValue, actualValue);
@@ -656,10 +656,10 @@ public class OssVehicleClassificationTest {
         
         String actualName = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .getVehicleType().name;
+                .getVehicleType().getName();
         Long actualValue = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .getVehicleType().value;
+                .getVehicleType().getValue();
         
         assertEquals(expectedName, actualName);
         assertEquals(expectedValue, actualValue);
@@ -683,10 +683,10 @@ public class OssVehicleClassificationTest {
         
         String actualName = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .getVehicleType().name;
+                .getVehicleType().getName();
         Long actualValue = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .getVehicleType().value;
+                .getVehicleType().getValue();
         
         assertEquals(expectedName, actualName);
         assertEquals(expectedValue, actualValue);

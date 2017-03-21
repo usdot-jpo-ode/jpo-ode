@@ -53,8 +53,8 @@ public class OssBumperHeightsTest {
 
         BumperHeights testBumperHeights = new BumperHeights(testBumperHeightFront, testBumperHeightRear);
 
-        BigDecimal actualBumperHeightsFront = OssBumperHeights.genericBumperHeights(testBumperHeights).front;
-        BigDecimal actualBumperHeightsRear = OssBumperHeights.genericBumperHeights(testBumperHeights).rear;
+        BigDecimal actualBumperHeightsFront = OssBumperHeights.genericBumperHeights(testBumperHeights).getFront();
+        BigDecimal actualBumperHeightsRear = OssBumperHeights.genericBumperHeights(testBumperHeights).getRear();
 
         assertEquals("Minimum front bumper height 0 should return 0:", expectedValue, actualBumperHeightsFront);
         assertEquals("Minimum rear bumper height 0 should return 0:", expectedValue, actualBumperHeightsRear);
@@ -75,8 +75,8 @@ public class OssBumperHeightsTest {
         
         BumperHeights testBumperHeights = new BumperHeights(testBumperHeightFront, testBumperHeightRear);
 
-        BigDecimal actualBumperHeightsFront = OssBumperHeights.genericBumperHeights(testBumperHeights).front;
-        BigDecimal actualBumperHeightsRear = OssBumperHeights.genericBumperHeights(testBumperHeights).rear;
+        BigDecimal actualBumperHeightsFront = OssBumperHeights.genericBumperHeights(testBumperHeights).getFront();
+        BigDecimal actualBumperHeightsRear = OssBumperHeights.genericBumperHeights(testBumperHeights).getRear();
 
         assertEquals("Maximum front bumper height 127 should return 1.27", expectedValue, actualBumperHeightsFront);
         assertEquals("Maximum rear bumper height 127 should return 1.27", expectedValue, actualBumperHeightsRear);
@@ -98,8 +98,8 @@ public class OssBumperHeightsTest {
 
         J2735BumperHeights actualBumperHeights = OssBumperHeights.genericBumperHeights(testBumperHeights);
 
-        assertEquals("Known front bumper height 85 should return 0.85", expectedValue, actualBumperHeights.front);
-        assertEquals("Known rear bumper height 85 should return 0.85", expectedValue, actualBumperHeights.rear);
+        assertEquals("Known front bumper height 85 should return 0.85", expectedValue, actualBumperHeights.getFront());
+        assertEquals("Known rear bumper height 85 should return 0.85", expectedValue, actualBumperHeights.getRear());
 
     }
 

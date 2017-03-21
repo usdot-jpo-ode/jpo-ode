@@ -66,7 +66,7 @@ public class OssDisabledVehicleTest {
 
         J2735DisabledVehicle actualDisabledVehicleStatus = OssDisabledVehicle.genericDisabledVehicle(testVehicleStatus);
 
-        assertEquals(expectedValue, actualDisabledVehicleStatus.statusDetails);
+        assertEquals(expectedValue, actualDisabledVehicleStatus.getStatusDetails());
 
     }
 
@@ -87,7 +87,7 @@ public class OssDisabledVehicleTest {
 
         J2735DisabledVehicle actualDisabledVehicleStatus = OssDisabledVehicle.genericDisabledVehicle(testVehicleStatus);
 
-        assertEquals(expectedValue, actualDisabledVehicleStatus.statusDetails);
+        assertEquals(expectedValue, actualDisabledVehicleStatus.getStatusDetails());
 
     }
 
@@ -108,7 +108,7 @@ public class OssDisabledVehicleTest {
 
         J2735DisabledVehicle actualDisabledVehicleStatus = OssDisabledVehicle.genericDisabledVehicle(testVehicleStatus);
 
-        assertEquals(expectedValue, actualDisabledVehicleStatus.statusDetails);
+        assertEquals(expectedValue, actualDisabledVehicleStatus.getStatusDetails());
 
     }
 

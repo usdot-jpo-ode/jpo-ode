@@ -93,7 +93,7 @@ public class OssPositionalAccuracyTest {
         
         BigDecimal actualValue = OssPositionalAccuracy
                 .genericPositionalAccuracy(testPositionalAccuracy)
-                .semiMajor;
+                .getSemiMajor();
         
         assertEquals(expectedValue, actualValue);
         
@@ -121,7 +121,7 @@ public class OssPositionalAccuracyTest {
         
         BigDecimal actualValue = OssPositionalAccuracy
                 .genericPositionalAccuracy(testPositionalAccuracy)
-                .semiMajor;
+                .getSemiMajor();
         
         assertEquals(expectedValue, actualValue);
         
@@ -147,7 +147,7 @@ public class OssPositionalAccuracyTest {
         
         BigDecimal actualValue = OssPositionalAccuracy
                 .genericPositionalAccuracy(testPositionalAccuracy)
-                .semiMajor;
+                .getSemiMajor();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -228,7 +228,7 @@ public class OssPositionalAccuracyTest {
         
         BigDecimal actualValue = OssPositionalAccuracy
                 .genericPositionalAccuracy(testPositionalAccuracy)
-                .semiMinor;
+                .getSemiMinor();
         
         assertEquals(expectedValue, actualValue);
         
@@ -254,7 +254,7 @@ public class OssPositionalAccuracyTest {
         
         BigDecimal actualValue = OssPositionalAccuracy
                 .genericPositionalAccuracy(testPositionalAccuracy)
-                .semiMinor;
+                .getSemiMinor();
         
         assertEquals(expectedValue, actualValue);
     
@@ -280,7 +280,7 @@ public class OssPositionalAccuracyTest {
         
         BigDecimal actualValue = OssPositionalAccuracy
                 .genericPositionalAccuracy(testPositionalAccuracy)
-                .semiMinor;
+                .getSemiMinor();
         
         assertEquals(expectedValue, actualValue);
        
@@ -362,7 +362,7 @@ public class OssPositionalAccuracyTest {
         
         BigDecimal actualValue = OssPositionalAccuracy
                 .genericPositionalAccuracy(testPositionalAccuracy)
-                .orientation;
+                .getOrientation();
         
         assertEquals(expectedValue, actualValue);
         
@@ -388,7 +388,7 @@ public class OssPositionalAccuracyTest {
         
         BigDecimal actualValue = OssPositionalAccuracy
                 .genericPositionalAccuracy(testPositionalAccuracy)
-                .orientation;
+                .getOrientation();
         
         assertEquals(expectedValue, actualValue);
         
@@ -414,7 +414,7 @@ public class OssPositionalAccuracyTest {
         
         BigDecimal actualValue = OssPositionalAccuracy
                 .genericPositionalAccuracy(testPositionalAccuracy)
-                .orientation;
+                .getOrientation();
         
         assertEquals(expectedValue, actualValue);
         
@@ -441,7 +441,7 @@ public class OssPositionalAccuracyTest {
         
         BigDecimal actualValue = OssPositionalAccuracy
                 .genericPositionalAccuracy(testPositionalAccuracy)
-                .orientation;
+                .getOrientation();
         
         assertEquals(expectedValue, actualValue);
         
