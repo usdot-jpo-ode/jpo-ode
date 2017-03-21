@@ -43,7 +43,12 @@ public final class PluginFactory {
 		logger.info("Getting Plugin: {}", coderClassName);
 		OdePlugin result = (OdePlugin) buildObject(coderClassName);
 		
-		logger.info("Got Plugin: {}", result.toString());
+		if (null != result) {
+		    logger.info("Got Plugin: {}", result.toString());
+		} else {
+		    logger.info("Failed to load plugin for {}", coderClassName);
+		}
+		
 		return result;
 	}
 
@@ -81,8 +86,6 @@ public final class PluginFactory {
 
 	private static void printClasspath(ClassLoader cl) {
 		URL[] urls = ((URLClassLoader)cl).getURLs();
-
-		urls = ((URLClassLoader)cl).getURLs();
 		
 		for(URL url: urls){
 			logger.info("Classpath: {}", url.getFile());

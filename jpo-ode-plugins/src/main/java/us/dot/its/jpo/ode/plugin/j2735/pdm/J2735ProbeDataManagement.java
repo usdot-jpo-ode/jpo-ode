@@ -40,12 +40,12 @@ public class J2735ProbeDataManagement extends OdeObject {
         this.rsuList = rsuList;
     }
 
-    public PDM getPdmParameters() {
+    public PDM getPdm() {
         return pdm;
     }
 
-    public void setPdmParameters(PDM pdmParameters) {
-        this.pdm = pdmParameters;
+    public void setPdm(PDM pdm) {
+        this.pdm = pdm;
     }
 
 }

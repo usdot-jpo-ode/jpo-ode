@@ -44,7 +44,7 @@ public class PdmController {
 
             ResponseEvent response = null;
             try {
-                response = sendToRsu(curRsu, pdm.getPdmParameters());
+                response = sendToRsu(curRsu, pdm.getPdm());
 
                 if (null == response || null == response.getResponse()) {
                     responseList.put(curRsu.getTarget(),
