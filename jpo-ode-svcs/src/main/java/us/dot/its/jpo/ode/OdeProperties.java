@@ -49,7 +49,7 @@ public class OdeProperties implements EnvironmentAware {
 
     private String hostId;
 
-    public OdeProperties() throws Exception {
+    public OdeProperties() throws MissingPropertyException {
         super();
         init();
     }
