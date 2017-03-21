@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 
 public class J2735VehicleData implements Serializable{
 	private static final long serialVersionUID = 1L;
-	
 	private J2735BumperHeights bumpers;
 	private BigDecimal height;
 	private Integer mass;
