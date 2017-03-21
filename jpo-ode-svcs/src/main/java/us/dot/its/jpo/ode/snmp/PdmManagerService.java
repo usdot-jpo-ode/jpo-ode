@@ -11,7 +11,7 @@ import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
 
-import us.dot.its.jpo.ode.plugin.j2735.pdm.PdmParameters;
+import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
 
 public class PdmManagerService {
 
@@ -20,7 +20,7 @@ public class PdmManagerService {
     private PdmManagerService() {
     }
 
-    public static ResponseEvent createAndSend(PdmParameters params, SnmpProperties props) {
+    public static ResponseEvent createAndSend(PDM params, SnmpProperties props) {
 
         if (null == params || null == props) {
             logger.error("PDM SERVICE - Received null object");
@@ -48,7 +48,7 @@ public class PdmManagerService {
 
     }
 
-    public static ScopedPDU createPDU(PdmParameters params) {
+    public static ScopedPDU createPDU(PDM params) {
 
         // Filter null request
         if (params == null) {
