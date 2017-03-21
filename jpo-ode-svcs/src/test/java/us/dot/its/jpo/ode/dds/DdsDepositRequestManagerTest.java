@@ -104,7 +104,7 @@ public class DdsDepositRequestManagerTest {
         new Expectations() {
             {
                 mockOdeDepRequest.getEncodeType();
-                result = "base64";
+                result = "BASE64";
             }
         };
         
@@ -116,7 +116,7 @@ public class DdsDepositRequestManagerTest {
             fail("Unexpected exception: " + e);
         }
 
-        assertEquals("base64", actualDdsRequest.getEncodeType());
+        assertEquals("BASE64", actualDdsRequest.getEncodeType());
     }
 
     @Test
@@ -280,7 +280,7 @@ public class DdsDepositRequestManagerTest {
                     mockOdeDepRequest.getDataSource();
                     result = DataSource.SDC;
                     mockOdeDepRequest.getEncodeType();
-                    result = "base64";
+                    result = "BASE64";
                 }
             };
 
