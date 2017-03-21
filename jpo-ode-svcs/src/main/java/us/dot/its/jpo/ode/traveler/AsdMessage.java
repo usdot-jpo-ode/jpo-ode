@@ -93,7 +93,4 @@ public class AsdMessage extends OdeObject {
 
       return CodecUtils.toHex(binAsd.array());
    }
-   
-   
-   
 }
