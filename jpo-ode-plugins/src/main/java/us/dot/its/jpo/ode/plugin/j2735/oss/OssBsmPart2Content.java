@@ -54,7 +54,7 @@ public class OssBsmPart2Content {
         PERUnalignedCoder coder = J2735.getPERUnalignedCoder();
 
         switch (part2Content.getId()) {
-        case specialVehicleExt:
+        case SPECIALVEHICLEEXT:
             J2735SpecialVehicleExtensions specVeh = new J2735SpecialVehicleExtensions();
             part2Content.setValue(specVeh);
 
@@ -82,7 +82,7 @@ public class OssBsmPart2Content {
                 specVeh.setTrailers(OssTrailerData.genericTrailerData(sp.trailers));
             }
             break;
-        case supplementalVehicleExt:
+        case SUPPLEMENTALVEHICLEEXT:
             J2735SupplementalVehicleExtensions supVeh = new J2735SupplementalVehicleExtensions();
             part2Content.setValue(supVeh);
             
@@ -103,7 +103,7 @@ public class OssBsmPart2Content {
                     .genericSupplementalVehicleExtensions(sve));
 
             break;
-        case vehicleSafetyExt:
+        case VEHICLESAFETYEXT:
             J2735VehicleSafetyExtensions vehSafety = new J2735VehicleSafetyExtensions();
             part2Content.setValue(vehSafety);
 

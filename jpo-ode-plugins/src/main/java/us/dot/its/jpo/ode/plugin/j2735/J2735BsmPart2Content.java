@@ -6,8 +6,8 @@ public class J2735BsmPart2Content extends Asn1Object {
 	private static final long serialVersionUID = 1L;
 
 	public enum J2735BsmPart2Id {
-		vehicleSafetyExt(J2735VehicleSafetyExtensions.class), specialVehicleExt(
-				J2735SpecialVehicleExtensions.class), supplementalVehicleExt(J2735SupplementalVehicleExtensions.class);
+		VEHICLESAFETYEXT(J2735VehicleSafetyExtensions.class), SPECIALVEHICLEEXT(
+				J2735SpecialVehicleExtensions.class), SUPPLEMENTALVEHICLEEXT(J2735SupplementalVehicleExtensions.class);
 
 		Class<?> type;
 
