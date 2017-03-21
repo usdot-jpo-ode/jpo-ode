@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.plugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.Policy;
@@ -11,7 +12,12 @@ import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class OdePluginImpl implements Plugin {
+
+    private static final Logger logger = LoggerFactory.getLogger(OdePluginImpl.class);
 
     public static class OdePluginException extends Exception {
 
@@ -23,7 +29,7 @@ public class OdePluginImpl implements Plugin {
 
     }
 
-    private List<Class<?>> classes = new ArrayList<Class<?>>();
+    private List<Class<?>> classes = new ArrayList<>();
 
     @Override
     public void load(Properties properties) throws OdePluginException {
@@ -42,11 +48,13 @@ public class OdePluginImpl implements Plugin {
     }
 
     private void loadAllClasses(File file) throws OdePluginException {
+
+        URLClassLoader loader = null;
         try (JarFile jarFile = new JarFile(file)) {
 
             Enumeration<JarEntry> e = jarFile.entries();
 
-            URLClassLoader loader = URLClassLoader.newInstance(new URL[] { file.toURI().toURL() });
+            loader = URLClassLoader.newInstance(new URL[] { file.toURI().toURL() });
 
             while (e.hasMoreElements()) {
                 JarEntry je = e.nextElement();
@@ -57,10 +65,20 @@ public class OdePluginImpl implements Plugin {
                 String className = je.getName().substring(0, je.getName().length() - 6);
                 className = className.replace('/', '.');
                 classes.add(loader.loadClass(className));
+
             }
+            loader.close();
             jarFile.close();
+
         } catch (Exception e) {
             throw new OdePluginException("Error loading plugins", e);
+        } finally {
+            if (null != loader)
+                try {
+                    loader.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing URLClassLoader: {}", e);
+                }
         }
     }
 
