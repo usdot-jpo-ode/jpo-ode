@@ -11,8 +11,8 @@ public class OssRTCMheader {
     public static J2735RTCMheader genericRTCMheader(RTCMheader rtcmHeader) {
         J2735RTCMheader header = new J2735RTCMheader();
 
-        header.offsetSet = OssAntennaOffsetSet.genericAntennaOffsetSet(rtcmHeader.offsetSet);
-        header.status = OssGNSSstatus.genericGNSSstatus(rtcmHeader.status);
+        header.setOffsetSet(OssAntennaOffsetSet.genericAntennaOffsetSet(rtcmHeader.offsetSet));
+        header.setStatus(OssGNSSstatus.genericGNSSstatus(rtcmHeader.status));
 
         return header;
     }

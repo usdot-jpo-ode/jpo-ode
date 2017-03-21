@@ -125,7 +125,7 @@ public class OssPathHistoryTest {
         
         J2735PathHistory actualPathHistory = OssPathHistory.genericPathHistory(testPathHistory);
         
-        BigDecimal actualValue = actualPathHistory.getInitialPosition().position.getLongitude();
+        BigDecimal actualValue = actualPathHistory.getInitialPosition().getPosition().getLongitude();
         
         assertEquals(expectedValue, actualValue);
         

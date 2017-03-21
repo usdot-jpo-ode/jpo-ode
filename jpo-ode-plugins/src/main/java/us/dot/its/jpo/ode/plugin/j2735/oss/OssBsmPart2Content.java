@@ -73,13 +73,13 @@ public class OssBsmPart2Content {
             }
 
             if (sp.hasVehicleAlerts()) {
-                specVeh.vehicleAlerts = OssEmergencyDetails.genericEmergencyDetails(sp.vehicleAlerts);
+                specVeh.setVehicleAlerts(OssEmergencyDetails.genericEmergencyDetails(sp.vehicleAlerts));
             }
             if (sp.hasDescription()) {
-                specVeh.description = OssEventDescription.genericEventDescription(sp.description);
+                specVeh.setDescription(OssEventDescription.genericEventDescription(sp.description));
             }
             if (sp.hasTrailers()) {
-                specVeh.trailers = OssTrailerData.genericTrailerData(sp.trailers);
+                specVeh.setTrailers(OssTrailerData.genericTrailerData(sp.trailers));
             }
             break;
         case supplementalVehicleExt:
@@ -131,7 +131,7 @@ public class OssBsmPart2Content {
                         eventFlags.put(flagName, flagStatus);
                     }
                 }
-                vehSafety.events = eventFlags;
+                vehSafety.setEvents(eventFlags);
             }
             if (vse.hasLights()) {
                 
@@ -146,14 +146,14 @@ public class OssBsmPart2Content {
                     }
                 }
                 
-                vehSafety.lights = exteriorLights;
+                vehSafety.setLights(exteriorLights);
                 
             }
             if (vse.hasPathHistory()) {
-                vehSafety.pathHistory = OssPathHistory.genericPathHistory(vse.pathHistory);
+                vehSafety.setPathHistory(OssPathHistory.genericPathHistory(vse.pathHistory));
             }
             if (vse.hasPathPrediction()) {
-                vehSafety.pathPrediction = OssPathPrediction.genericPathPrediction(vse.pathPrediction);
+                vehSafety.setPathPrediction(OssPathPrediction.genericPathPrediction(vse.pathPrediction));
             }
 
             break;

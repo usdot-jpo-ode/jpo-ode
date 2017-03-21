@@ -56,12 +56,12 @@ public class OssTrailerHistoryPointTest {
         
         try {
             J2735TrailerHistoryPoint actualthp = OssTrailerHistoryPoint.genericTrailerHistoryPoint(testthp);
-            assertEquals("Incorrect angle", BigDecimal.ZERO.setScale(4), actualthp.pivotAngle);
-            assertEquals("Incorrect time offset", BigDecimal.valueOf(0.01), actualthp.timeOffset);
-            assertEquals("Incorrect position offset x", BigDecimal.ZERO.setScale(2), actualthp.positionOffset.getX());
-            assertEquals("Incorrect position offset y", BigDecimal.ZERO.setScale(2), actualthp.positionOffset.getY());
-            assertEquals("Incorrect elevation offset", BigDecimal.ZERO.setScale(1), actualthp.elevationOffset);
-            assertEquals("Incorrect heading", BigDecimal.ZERO.setScale(1), actualthp.heading);
+            assertEquals("Incorrect angle", BigDecimal.ZERO.setScale(4), actualthp.getPivotAngle());
+            assertEquals("Incorrect time offset", BigDecimal.valueOf(0.01), actualthp.getTimeOffset());
+            assertEquals("Incorrect position offset x", BigDecimal.ZERO.setScale(2), actualthp.getPositionOffset().getX());
+            assertEquals("Incorrect position offset y", BigDecimal.ZERO.setScale(2), actualthp.getPositionOffset().getY());
+            assertEquals("Incorrect elevation offset", BigDecimal.ZERO.setScale(1), actualthp.getElevationOffset());
+            assertEquals("Incorrect heading", BigDecimal.ZERO.setScale(1), actualthp.getHeading());
         } catch (Exception e) {
             fail("Unexpected exception: " + e.getClass());
         }

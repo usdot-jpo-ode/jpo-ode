@@ -219,7 +219,7 @@ public class OssBsmTest {
         try {
             actualbsm = OssBsm.genericBsm(testbsm);
             
-            if (actualbsm.coreData == null) {
+            if (actualbsm.getCoreData() == null) {
                 fail("Bsm core data failed to populate");
             }
             
@@ -227,39 +227,39 @@ public class OssBsmTest {
             fail("Unexpected exception: " + e.getClass());
         }
         
-        J2735BsmCoreData actualcd = actualbsm.coreData;
+        J2735BsmCoreData actualcd = actualbsm.getCoreData();
         
-        assertEquals("Incorrect message count", expectedMsgCnt, actualcd.msgCnt);
-        assertEquals("Incorrect message id", expectedId, actualcd.id);
-        assertEquals("Incorrect second", expectedSec, actualcd.secMark);
-        assertEquals("Incorrect lat position", expectedLat, actualcd.position.getLatitude());
-        assertEquals("Incorrect long position", expectedLong, actualcd.position.getLongitude());
-        assertEquals("Incorrect elev position", expectedElev, actualcd.position.getElevation());
-        assertEquals("Incorrect semi major accuracy", expectedSemiMajorAxisAccuracy, actualcd.accuracy.semiMajor);
-        assertEquals("Incorrect semi minor accuracy", expectedSemiMinorAxisAccuracy, actualcd.accuracy.semiMinor);
-        assertEquals("Incorrect semi major orient", expectedSemiMajorAxisOrientation, actualcd.accuracy.orientation);
-        assertEquals("Incorrect transmission state", expectedTransmissionState, actualcd.transmission.name());
-        assertEquals("Incorrect speed", expectedSpeed, actualcd.speed);
-        assertEquals("Incorrect heading", expectedHeading, actualcd.heading);
-        assertEquals("Incorrect steering wheel angle", expectedSteeringWheelAngle, actualcd.angle);
-        assertEquals("Incorrect accel long", expectedAccelLong, actualcd.accelSet.getAccelLong());
-        assertEquals("Incorrect accel lat", expectedAccelLat, actualcd.accelSet.getAccelLat());
-        assertEquals("Incorrect accel vert", expectedAccelVert, actualcd.accelSet.getAccelVert());
-        assertEquals("Incorrect accel yaw", expectedAccelYaw, actualcd.accelSet.getAccelYaw());
-        for (Map.Entry<String, Boolean> curVal: actualcd.brakes.getWheelBrakes().entrySet()) {
+        assertEquals("Incorrect message count", expectedMsgCnt, actualcd.getMsgCnt());
+        assertEquals("Incorrect message id", expectedId, actualcd.getId());
+        assertEquals("Incorrect second", expectedSec, actualcd.getSecMark());
+        assertEquals("Incorrect lat position", expectedLat, actualcd.getPosition().getLatitude());
+        assertEquals("Incorrect long position", expectedLong, actualcd.getPosition().getLongitude());
+        assertEquals("Incorrect elev position", expectedElev, actualcd.getPosition().getElevation());
+        assertEquals("Incorrect semi major accuracy", expectedSemiMajorAxisAccuracy, actualcd.getAccuracy().getSemiMajor());
+        assertEquals("Incorrect semi minor accuracy", expectedSemiMinorAxisAccuracy, actualcd.getAccuracy().getSemiMinor());
+        assertEquals("Incorrect semi major orient", expectedSemiMajorAxisOrientation, actualcd.getAccuracy().getOrientation());
+        assertEquals("Incorrect transmission state", expectedTransmissionState, actualcd.getTransmission().name());
+        assertEquals("Incorrect speed", expectedSpeed, actualcd.getSpeed());
+        assertEquals("Incorrect heading", expectedHeading, actualcd.getHeading());
+        assertEquals("Incorrect steering wheel angle", expectedSteeringWheelAngle, actualcd.getAngle());
+        assertEquals("Incorrect accel long", expectedAccelLong, actualcd.getAccelSet().getAccelLong());
+        assertEquals("Incorrect accel lat", expectedAccelLat, actualcd.getAccelSet().getAccelLat());
+        assertEquals("Incorrect accel vert", expectedAccelVert, actualcd.getAccelSet().getAccelVert());
+        assertEquals("Incorrect accel yaw", expectedAccelYaw, actualcd.getAccelSet().getAccelYaw());
+        for (Map.Entry<String, Boolean> curVal: actualcd.getBrakes().getWheelBrakes().entrySet()) {
             if (curVal.getKey() == expectedBrakeAppliedStatus) {
                 assertTrue("Incorrect brake applied status, expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {
                 assertFalse("Incorrect brake applied status, expected " + curVal.getKey() + " to be false", curVal.getValue());
             }
         }
-        assertEquals("Incorrect brake tcs status", expectedTractionControlStatus, actualcd.brakes.getTraction());
-        assertEquals("Incorrect brake abs status", expectedAntiLockBrakeStatus, actualcd.brakes.getAbs());
-        assertEquals("Incorrect brake scs status", expectedStabilityControlStatus, actualcd.brakes.getScs());
-        assertEquals("Incorrect brake boost status", expectedBrakeBoostApplied, actualcd.brakes.getBrakeBoost());
-        assertEquals("Incorrect brake aux status", expectedAuxiliaryBrakeStatus, actualcd.brakes.getAuxBrakes());
-        assertEquals("Incorrect vehicle width", expectedVehicleWidth, actualcd.size.getWidth());
-        assertEquals("Incorrect vehicle length", expectedVehicleLength, actualcd.size.getLength());
+        assertEquals("Incorrect brake tcs status", expectedTractionControlStatus, actualcd.getBrakes().getTraction());
+        assertEquals("Incorrect brake abs status", expectedAntiLockBrakeStatus, actualcd.getBrakes().getAbs());
+        assertEquals("Incorrect brake scs status", expectedStabilityControlStatus, actualcd.getBrakes().getScs());
+        assertEquals("Incorrect brake boost status", expectedBrakeBoostApplied, actualcd.getBrakes().getBrakeBoost());
+        assertEquals("Incorrect brake aux status", expectedAuxiliaryBrakeStatus, actualcd.getBrakes().getAuxBrakes());
+        assertEquals("Incorrect vehicle width", expectedVehicleWidth, actualcd.getSize().getWidth());
+        assertEquals("Incorrect vehicle length", expectedVehicleLength, actualcd.getSize().getLength());
     }
 
 }

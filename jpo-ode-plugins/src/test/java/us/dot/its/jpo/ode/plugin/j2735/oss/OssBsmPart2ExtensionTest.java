@@ -84,7 +84,7 @@ public class OssBsmPart2ExtensionTest {
                 (J2735SupplementalVehicleExtensions) OssBsmPart2Extension
                 .genericSupplementalVehicleExtensions(testsve);
         
-        assertEquals(testInput, actualValue.classification);
+        assertEquals(testInput, actualValue.getClassification());
         
     }
     
@@ -136,14 +136,14 @@ public class OssBsmPart2ExtensionTest {
                 (J2735SupplementalVehicleExtensions) OssBsmPart2Extension
                 .genericSupplementalVehicleExtensions(testsve);
         
-        assertEquals("Incorrect BasicVehicleClass", expectedBasicVehicleClass, actualValue.classDetails.keyType);
-        assertEquals("Incorrect BasicVehicleRole", expectedBasicVehicleRole, actualValue.classDetails.role.name());
-        assertEquals("Incorrect Iso3883VehicleType", expectedVCIso3833VehicleType, actualValue.classDetails.iso3883);
-        assertEquals("Incorrect HpmsType", expectedVehicleType, actualValue.classDetails.hpmsType.name());
-        assertEquals("Incorrect VehicleGroupAffected", expectedVehicleGroupAffected, actualValue.classDetails.vehicleType.name);
-        assertEquals("Incorrect IncidentResponseEquipment", expectedIncidentResponseEquipment, actualValue.classDetails.responseEquip.name);
-        assertEquals("Incorrect ResponderGroupAffected", expectedResponderGroupAffected, actualValue.classDetails.responderType.name());
-        assertEquals("Incorrect FuelType", expectedFuelType, actualValue.classDetails.fuelType.name());
+        assertEquals("Incorrect BasicVehicleClass", expectedBasicVehicleClass, actualValue.getClassDetails().getKeyType());
+        assertEquals("Incorrect BasicVehicleRole", expectedBasicVehicleRole, actualValue.getClassDetails().getRole().name());
+        assertEquals("Incorrect Iso3883VehicleType", expectedVCIso3833VehicleType, actualValue.getClassDetails().getIso3883());
+        assertEquals("Incorrect HpmsType", expectedVehicleType, actualValue.getClassDetails().getHpmsType().name());
+        assertEquals("Incorrect VehicleGroupAffected", expectedVehicleGroupAffected, actualValue.getClassDetails().getVehicleType().getName());
+        assertEquals("Incorrect IncidentResponseEquipment", expectedIncidentResponseEquipment, actualValue.getClassDetails().getResponseEquip().getName());
+        assertEquals("Incorrect ResponderGroupAffected", expectedResponderGroupAffected, actualValue.getClassDetails().getResponderType().name());
+        assertEquals("Incorrect FuelType", expectedFuelType, actualValue.getClassDetails().getFuelType().name());
     }
     
     /**
@@ -182,11 +182,11 @@ public class OssBsmPart2ExtensionTest {
                 (J2735SupplementalVehicleExtensions) OssBsmPart2Extension
                 .genericSupplementalVehicleExtensions(testsve);
         
-        assertEquals("Incorrect VehicleHeight", expectedVehicleHeight, actualValue.vehicleData.height);
-        assertEquals("Incorrect front BumperHeight", expectedBumperHeightFront, actualValue.vehicleData.bumpers.front);
-        assertEquals("Incorrect rear BumperHeight", expectedBumperHeightRear, actualValue.vehicleData.bumpers.rear);
-        assertEquals("Incorrect VehicleMass", expectedVehicleMass, actualValue.vehicleData.mass);
-        assertEquals("Incorrect TrailerWeight", expectedTrailerWeight, actualValue.vehicleData.trailerWeight);
+        assertEquals("Incorrect VehicleHeight", expectedVehicleHeight, actualValue.getVehicleData().getHeight());
+        assertEquals("Incorrect front BumperHeight", expectedBumperHeightFront, actualValue.getVehicleData().getBumpers().getFront());
+        assertEquals("Incorrect rear BumperHeight", expectedBumperHeightRear, actualValue.getVehicleData().getBumpers().getRear());
+        assertEquals("Incorrect VehicleMass", expectedVehicleMass, actualValue.getVehicleData().getMass());
+        assertEquals("Incorrect TrailerWeight", expectedTrailerWeight, actualValue.getVehicleData().getTrailerWeight());
     }
     
     /**
@@ -228,12 +228,12 @@ public class OssBsmPart2ExtensionTest {
                 (J2735SupplementalVehicleExtensions) OssBsmPart2Extension
                 .genericSupplementalVehicleExtensions(testsve);
         
-        assertEquals("Incorrect EssPrecipYesNo", expectedEssPrecipYesNo, actualValue.weatherReport.isRaining.name());
-        assertEquals("Incorrect EssPrecipRate", expectedEssPrecipRate, actualValue.weatherReport.rainRate);
-        assertEquals("Incorrect EssPrecipSituation", expectedEssPrecipSituation, actualValue.weatherReport.precipSituation.name());
-        assertEquals("Incorrect EssSolarRadiation", expectedEssSolarRadiation, actualValue.weatherReport.solarRadiation);
-        assertEquals("Incorrect EssMobileFriction", expectedEssMobileFriction, actualValue.weatherReport.friction);
-        assertEquals("Incorrect CoefficientOfFriction", expectedCoefficientOfFriction, actualValue.weatherReport.roadFriction);
+        assertEquals("Incorrect EssPrecipYesNo", expectedEssPrecipYesNo, actualValue.getWeatherReport().getIsRaining().name());
+        assertEquals("Incorrect EssPrecipRate", expectedEssPrecipRate, actualValue.getWeatherReport().getRainRate());
+        assertEquals("Incorrect EssPrecipSituation", expectedEssPrecipSituation, actualValue.getWeatherReport().getPrecipSituation().name());
+        assertEquals("Incorrect EssSolarRadiation", expectedEssSolarRadiation, actualValue.getWeatherReport().getSolarRadiation());
+        assertEquals("Incorrect EssMobileFriction", expectedEssMobileFriction, actualValue.getWeatherReport().getFriction());
+        assertEquals("Incorrect CoefficientOfFriction", expectedCoefficientOfFriction, actualValue.getWeatherReport().getRoadFriction());
     }
     
     /**
@@ -277,12 +277,12 @@ public class OssBsmPart2ExtensionTest {
                 (J2735SupplementalVehicleExtensions) OssBsmPart2Extension
                 .genericSupplementalVehicleExtensions(testsve);
         
-        assertEquals("Incorrect AmbientAirTemperature", expectedAmbientAirTemperature, actualValue.weatherProbe.airTemp);
-        assertEquals("Incorrect AmbientAirPressure", expectedAmbientAirPressure, actualValue.weatherProbe.airPressure);
-        assertEquals("Incorrect front WiperStatus", expectedWiperStatusFront, actualValue.weatherProbe.rainRates.statusFront.name());
-        assertEquals("Incorrect front WiperRate", expectedWiperRateFront, actualValue.weatherProbe.rainRates.rateFront);
-        assertEquals("Incorrect rear WiperStatus", expectedWiperStatusRear, actualValue.weatherProbe.rainRates.statusRear.name());
-        assertEquals("Incorrect rear WiperRate", expectedWiperRateRear, actualValue.weatherProbe.rainRates.rateRear);
+        assertEquals("Incorrect AmbientAirTemperature", expectedAmbientAirTemperature, actualValue.getWeatherProbe().getAirTemp());
+        assertEquals("Incorrect AmbientAirPressure", expectedAmbientAirPressure, actualValue.getWeatherProbe().getAirPressure());
+        assertEquals("Incorrect front WiperStatus", expectedWiperStatusFront, actualValue.getWeatherProbe().getRainRates().getStatusFront().name());
+        assertEquals("Incorrect front WiperRate", expectedWiperRateFront, actualValue.getWeatherProbe().getRainRates().getRateFront());
+        assertEquals("Incorrect rear WiperStatus", expectedWiperStatusRear, actualValue.getWeatherProbe().getRainRates().getStatusRear().name());
+        assertEquals("Incorrect rear WiperRate", expectedWiperRateRear, actualValue.getWeatherProbe().getRainRates().getRateRear());
     }
     
     /**
@@ -349,18 +349,18 @@ public class OssBsmPart2ExtensionTest {
                 (J2735SupplementalVehicleExtensions) OssBsmPart2Extension
                 .genericSupplementalVehicleExtensions(testsve);
         
-        assertEquals("Incorrect ObstacleDistance", expectedObstacleDistance, actualValue.obstacle.obDist);
-        assertEquals("Incorrect ObstacleDirection", expectedObstacleDirection, actualValue.obstacle.obDirect);
-        assertEquals("Incorrect ObstacleDescription", expectedObstacleDescription, actualValue.obstacle.description);
-        assertEquals("Incorrect LocationDetails", expectedObstacleLocationDetails, actualValue.obstacle.locationDetails.name);
-        assertEquals("Incorrect Year", expectedYear, actualValue.obstacle.dateTime.getYear());
-        assertEquals("Incorrect Month", expectedMonth, actualValue.obstacle.dateTime.getMonth());
-        assertEquals("Incorrect Day", expectedDay, actualValue.obstacle.dateTime.getDay());
-        assertEquals("Incorrect Hour", expectedHour, actualValue.obstacle.dateTime.getHour());
-        assertEquals("Incorrect Minute", expectedMinute, actualValue.obstacle.dateTime.getMinute());
-        assertEquals("Incorrect Second", expectedSecond, actualValue.obstacle.dateTime.getSecond());
-        assertEquals("Incorrect TimeOffset", expectedOffset, actualValue.obstacle.dateTime.getOffset());
-        for (Map.Entry<String, Boolean> curVal : actualValue.obstacle.vertEvent.entrySet()) { 
+        assertEquals("Incorrect ObstacleDistance", expectedObstacleDistance, actualValue.getObstacle().getObDist());
+        assertEquals("Incorrect ObstacleDirection", expectedObstacleDirection, actualValue.getObstacle().getObDirect());
+        assertEquals("Incorrect ObstacleDescription", expectedObstacleDescription, actualValue.getObstacle().getDescription());
+        assertEquals("Incorrect LocationDetails", expectedObstacleLocationDetails, actualValue.getObstacle().getLocationDetails().getName());
+        assertEquals("Incorrect Year", expectedYear, actualValue.getObstacle().getDateTime().getYear());
+        assertEquals("Incorrect Month", expectedMonth, actualValue.getObstacle().getDateTime().getMonth());
+        assertEquals("Incorrect Day", expectedDay, actualValue.getObstacle().getDateTime().getDay());
+        assertEquals("Incorrect Hour", expectedHour, actualValue.getObstacle().getDateTime().getHour());
+        assertEquals("Incorrect Minute", expectedMinute, actualValue.getObstacle().getDateTime().getMinute());
+        assertEquals("Incorrect Second", expectedSecond, actualValue.getObstacle().getDateTime().getSecond());
+        assertEquals("Incorrect TimeOffset", expectedOffset, actualValue.getObstacle().getDateTime().getOffset());
+        for (Map.Entry<String, Boolean> curVal : actualValue.getObstacle().getVertEvent().entrySet()) { 
             if (curVal.getKey().equals(expectedVerticalAccelerationThreshold)) {
                 assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {
@@ -393,8 +393,8 @@ public class OssBsmPart2ExtensionTest {
                 (J2735SupplementalVehicleExtensions) OssBsmPart2Extension
                 .genericSupplementalVehicleExtensions(testsve);
         
-        assertEquals(expectedStatusDetails, actualValue.status.statusDetails);
-        assertEquals(expectedLocationDetails, actualValue.status.locationDetails.name);
+        assertEquals(expectedStatusDetails, actualValue.getStatus().getStatusDetails());
+        assertEquals(expectedLocationDetails, actualValue.getStatus().getLocationDetails().getName());
     }
 
 }

@@ -65,7 +65,7 @@ public class OssTransmissionAndSpeedTest {
                 testVelocity);
         
         J2735TransmissionState actualValue = 
-                OssTransmissionAndSpeed.genericTransmissionAndSpeed(testTransmissionandSpeed).transmisson;
+                OssTransmissionAndSpeed.genericTransmissionAndSpeed(testTransmissionandSpeed).getTransmisson();
         
         assertEquals(expectedValue, actualValue);
         
@@ -88,7 +88,7 @@ public class OssTransmissionAndSpeedTest {
                 testVelocity);
         
         J2735TransmissionState actualValue = 
-                OssTransmissionAndSpeed.genericTransmissionAndSpeed(testTransmissionandSpeed).transmisson;
+                OssTransmissionAndSpeed.genericTransmissionAndSpeed(testTransmissionandSpeed).getTransmisson();
         
         assertEquals(expectedValue, actualValue);
         
@@ -111,7 +111,7 @@ public class OssTransmissionAndSpeedTest {
                 testVelocity);
         
         J2735TransmissionState actualValue = 
-                OssTransmissionAndSpeed.genericTransmissionAndSpeed(testTransmissionandSpeed).transmisson;
+                OssTransmissionAndSpeed.genericTransmissionAndSpeed(testTransmissionandSpeed).getTransmisson();
         
         assertEquals(expectedValue, actualValue);
         
@@ -132,7 +132,7 @@ public class OssTransmissionAndSpeedTest {
 
         try {
             J2735TransmissionState actualValue = OssTransmissionAndSpeed
-                    .genericTransmissionAndSpeed(testTransmissionandSpeed).transmisson;
+                    .genericTransmissionAndSpeed(testTransmissionandSpeed).getTransmisson();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -155,7 +155,7 @@ public class OssTransmissionAndSpeedTest {
 
         try {
             J2735TransmissionState actualValue = OssTransmissionAndSpeed
-                    .genericTransmissionAndSpeed(testTransmissionandSpeed).transmisson;
+                    .genericTransmissionAndSpeed(testTransmissionandSpeed).getTransmisson();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());

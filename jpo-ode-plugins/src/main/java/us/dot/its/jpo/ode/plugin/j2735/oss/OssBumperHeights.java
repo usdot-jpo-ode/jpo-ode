@@ -20,8 +20,8 @@ public class OssBumperHeights {
         }
 
         J2735BumperHeights bhs = new J2735BumperHeights();
-        bhs.front = BigDecimal.valueOf(bumperHeights.front.longValue(), 2);
-        bhs.rear = BigDecimal.valueOf(bumperHeights.rear.longValue(), 2);
+        bhs.setFront(BigDecimal.valueOf(bumperHeights.front.longValue(), 2));
+        bhs.setRear(BigDecimal.valueOf(bumperHeights.rear.longValue(), 2));
         return bhs;
     }
 

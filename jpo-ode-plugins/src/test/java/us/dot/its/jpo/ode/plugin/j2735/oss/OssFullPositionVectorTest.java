@@ -121,7 +121,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getLongitude();
         
         assertEquals(expectedValue, actualValue);
@@ -150,7 +150,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getLongitude();
         
         assertEquals(expectedValue, actualValue);
@@ -179,7 +179,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getLongitude();
         
         assertEquals(expectedValue, actualValue);
@@ -208,7 +208,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getLongitude();
         
         assertEquals(expectedValue, actualValue);
@@ -237,7 +237,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getLongitude();
         
         assertEquals(expectedValue, actualValue);
@@ -266,7 +266,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getLongitude();
         
         assertEquals(expectedValue, actualValue);
@@ -295,7 +295,7 @@ public class OssFullPositionVectorTest {
         try {
            BigDecimal actualValue = OssFullPositionVector
                    .genericFullPositionVector(testFPV)
-                   .position
+                   .getPosition()
                    .getLongitude();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
@@ -326,7 +326,7 @@ public class OssFullPositionVectorTest {
         try {
            BigDecimal actualValue = OssFullPositionVector
                    .genericFullPositionVector(testFPV)
-                   .position
+                   .getPosition()
                    .getLongitude();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
@@ -359,7 +359,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getLatitude();
         
         assertEquals(expectedValue, actualValue);
@@ -388,7 +388,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getLatitude();
         
         assertEquals(expectedValue, actualValue);
@@ -416,7 +416,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getLatitude();
         
         assertEquals(expectedValue, actualValue);
@@ -445,7 +445,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getLatitude();
         
         assertEquals(expectedValue, actualValue);
@@ -474,7 +474,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getLatitude();
         
         assertEquals(expectedValue, actualValue);
@@ -503,7 +503,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getLatitude();
         
         assertEquals(expectedValue, actualValue);
@@ -532,7 +532,7 @@ public class OssFullPositionVectorTest {
         try {
            BigDecimal actualValue = OssFullPositionVector
                    .genericFullPositionVector(testFPV)
-                   .position
+                   .getPosition()
                    .getLatitude();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
@@ -563,7 +563,7 @@ public class OssFullPositionVectorTest {
         try {
            BigDecimal actualValue = OssFullPositionVector
                    .genericFullPositionVector(testFPV)
-                   .position
+                   .getPosition()
                    .getLatitude();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
@@ -596,7 +596,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getElevation();
         
         assertEquals(expectedValue, actualValue);
@@ -624,7 +624,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getElevation();
         
         assertEquals(expectedValue, actualValue);
@@ -652,7 +652,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getElevation();
         
         assertEquals(expectedValue, actualValue);
@@ -680,7 +680,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getElevation();
         
         assertEquals(expectedValue, actualValue);
@@ -708,7 +708,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getElevation();
         
         assertEquals(expectedValue, actualValue);
@@ -736,7 +736,7 @@ public class OssFullPositionVectorTest {
         
         BigDecimal actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .position
+                .getPosition()
                 .getElevation();
         
         assertEquals(expectedValue, actualValue);
@@ -764,7 +764,7 @@ public class OssFullPositionVectorTest {
         try {
            BigDecimal actualValue = OssFullPositionVector
                    .genericFullPositionVector(testFPV)
-                   .position
+                   .getPosition()
                    .getElevation();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
@@ -795,7 +795,7 @@ public class OssFullPositionVectorTest {
         try {
            BigDecimal actualValue = OssFullPositionVector
                    .genericFullPositionVector(testFPV)
-                   .position
+                   .getPosition()
                    .getElevation();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
@@ -827,7 +827,7 @@ public class OssFullPositionVectorTest {
         
         J2735TimeConfidence actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .timeConfidence;
+                .getTimeConfidence();
         
         assertEquals(expectedValue, actualValue);
         
@@ -855,7 +855,7 @@ public class OssFullPositionVectorTest {
         
         J2735TimeConfidence actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .timeConfidence;
+                .getTimeConfidence();
         
         assertEquals(expectedValue, actualValue);
         
@@ -883,7 +883,7 @@ public class OssFullPositionVectorTest {
         
         J2735TimeConfidence actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .timeConfidence;
+                .getTimeConfidence();
         
         assertEquals(expectedValue, actualValue);
         
@@ -911,7 +911,7 @@ public class OssFullPositionVectorTest {
         
         J2735TimeConfidence actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .timeConfidence;
+                .getTimeConfidence();
         
         assertEquals(expectedValue, actualValue);
         
@@ -939,7 +939,7 @@ public class OssFullPositionVectorTest {
         
         J2735TimeConfidence actualValue = OssFullPositionVector
                 .genericFullPositionVector(testFPV)
-                .timeConfidence;
+                .getTimeConfidence();
         
         assertEquals(expectedValue, actualValue);
         
@@ -967,7 +967,7 @@ public class OssFullPositionVectorTest {
         try {
            J2735TimeConfidence actualValue = OssFullPositionVector
                    .genericFullPositionVector(testFPV)
-                   .timeConfidence;
+                   .getTimeConfidence();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -997,7 +997,7 @@ public class OssFullPositionVectorTest {
         try {
            J2735TimeConfidence actualValue = OssFullPositionVector
                    .genericFullPositionVector(testFPV)
-                   .timeConfidence;
+                   .getTimeConfidence();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());

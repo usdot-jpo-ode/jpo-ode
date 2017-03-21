@@ -14,13 +14,13 @@ public class OssTrailerData {
     public static J2735TrailerData genericTrailerData(TrailerData trailers) {
         J2735TrailerData td = new J2735TrailerData();
 
-        td.connection = OssPivotPointDescription.genericPivotPointDescription(trailers.connection);
-        td.sspRights = trailers.sspRights.intValue();
+        td.setConnection(OssPivotPointDescription.genericPivotPointDescription(trailers.connection));
+        td.setSspRights(trailers.sspRights.intValue());
 
         Iterator<TrailerUnitDescription> iter = trailers.units.elements.iterator();
 
         while (iter.hasNext()) {
-            td.units.add(OssTrailerUnitDescription.genericTrailerUnitDescription(iter.next()));
+            td.getUnits().add(OssTrailerUnitDescription.genericTrailerUnitDescription(iter.next()));
         }
 
         return td;

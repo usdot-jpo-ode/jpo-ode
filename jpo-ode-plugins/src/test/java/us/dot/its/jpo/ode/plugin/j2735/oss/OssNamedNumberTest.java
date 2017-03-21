@@ -50,8 +50,8 @@ public class OssNamedNumberTest {
 
         J2735NamedNumber testNamedNumber = OssNamedNumber.genericGenericLocations(gl);
 
-        assertNull(testNamedNumber.name);
-        assertNull(testNamedNumber.value);
+        assertNull(testNamedNumber.getName());
+        assertNull(testNamedNumber.getValue());
 
     }
 
@@ -74,8 +74,8 @@ public class OssNamedNumberTest {
         J2735NamedNumber testNamedNumberByName = OssNamedNumber.genericGenericLocations(glByName);
         J2735NamedNumber testNamedNumberByValue = OssNamedNumber.genericGenericLocations(glByValue);
 
-        assertEquals(expectedName, testNamedNumberByValue.name);
-        assertEquals(expectedValue, testNamedNumberByName.value);
+        assertEquals(expectedName, testNamedNumberByValue.getName());
+        assertEquals(expectedValue, testNamedNumberByName.getValue());
 
     }
 
@@ -98,8 +98,8 @@ public class OssNamedNumberTest {
         J2735NamedNumber testNamedNumberByName = OssNamedNumber.genericGenericLocations(glByName);
         J2735NamedNumber testNamedNumberByValue = OssNamedNumber.genericGenericLocations(glByValue);
 
-        assertEquals(expectedName, testNamedNumberByValue.name);
-        assertEquals(expectedValue, testNamedNumberByName.value);
+        assertEquals(expectedName, testNamedNumberByValue.getName());
+        assertEquals(expectedValue, testNamedNumberByName.getValue());
 
     }
 

@@ -141,7 +141,7 @@ public class OssEventDescriptionTest {
         try {
            Integer actualValue = OssEventDescription
                    .genericEventDescription(testEventDescription)
-                   .typeEvent.intValue();
+                   .getTypeEvent().intValue();
            assertEquals(expectedValue, actualValue);
         } catch (Exception e) {
             fail("Unexpected exception: " + e.getClass());
@@ -177,7 +177,7 @@ public class OssEventDescriptionTest {
         
         List<Integer> actualDesc = OssEventDescription
                 .genericEventDescription(testEventDescription)
-                .description;
+                .getDescription();
         
         assertEquals(expectedValue1, actualDesc.get(0));
         assertEquals(expectedValue2, actualDesc.get(1));
@@ -202,7 +202,7 @@ public class OssEventDescriptionTest {
         testEventDescription.setTypeEvent(new ITIScodes(9123));
         testEventDescription.setPriority(testPriority);
         
-        String actualValue = OssEventDescription.genericEventDescription(testEventDescription).priority;
+        String actualValue = OssEventDescription.genericEventDescription(testEventDescription).getPriority();
         assertEquals(expectedValue, actualValue);
     }
     
@@ -225,7 +225,7 @@ public class OssEventDescriptionTest {
         
         J2735EventDescription actualEventDescription = OssEventDescription.genericEventDescription(testEventDescription);
         
-        for (Map.Entry<String, Boolean> curVal : actualEventDescription.heading.entrySet()) {     
+        for (Map.Entry<String, Boolean> curVal : actualEventDescription.getHeading().entrySet()) {     
             assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
         }
     }
@@ -248,7 +248,7 @@ public class OssEventDescriptionTest {
         
         J2735EventDescription actualEventDescription = OssEventDescription.genericEventDescription(testEventDescription);
         
-        for (Map.Entry<String, Boolean> curVal : actualEventDescription.heading.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal : actualEventDescription.getHeading().entrySet()) {
             assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
         }
     }
@@ -273,7 +273,7 @@ public class OssEventDescriptionTest {
         
         J2735EventDescription actualEventDescription = OssEventDescription.genericEventDescription(testEventDescription);
         
-        for (Map.Entry<String, Boolean> curVal : actualEventDescription.heading.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal : actualEventDescription.getHeading().entrySet()) {
             if (curVal.getKey().equals(elementTested)) {
                 assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {
@@ -302,7 +302,7 @@ public class OssEventDescriptionTest {
         
         J2735EventDescription actualEventDescription = OssEventDescription.genericEventDescription(testEventDescription);
         
-        for (Map.Entry<String, Boolean> curVal : actualEventDescription.heading.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal : actualEventDescription.getHeading().entrySet()) {
             if (curVal.getKey().equals(elementTested)) {
                 assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {
@@ -327,7 +327,7 @@ public class OssEventDescriptionTest {
         testEventDescription.setTypeEvent(new ITIScodes(9123));
         testEventDescription.setExtent(testExtent);
         
-        String actualValue = OssEventDescription.genericEventDescription(testEventDescription).extent.name();
+        String actualValue = OssEventDescription.genericEventDescription(testEventDescription).getExtent().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -347,7 +347,7 @@ public class OssEventDescriptionTest {
         testEventDescription.setTypeEvent(new ITIScodes(9123));
         testEventDescription.setExtent(testExtent);
         
-        String actualValue = OssEventDescription.genericEventDescription(testEventDescription).extent.name();
+        String actualValue = OssEventDescription.genericEventDescription(testEventDescription).getExtent().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -367,7 +367,7 @@ public class OssEventDescriptionTest {
         testEventDescription.setTypeEvent(new ITIScodes(9123));
         testEventDescription.setExtent(testExtent);
         
-        String actualValue = OssEventDescription.genericEventDescription(testEventDescription).extent.name();
+        String actualValue = OssEventDescription.genericEventDescription(testEventDescription).getExtent().name();
         
         assertEquals(expectedValue, actualValue);
     }

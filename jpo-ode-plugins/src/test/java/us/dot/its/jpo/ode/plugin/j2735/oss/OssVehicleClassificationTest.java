@@ -215,7 +215,7 @@ public class OssVehicleClassificationTest {
         testvc.setKeyType(testBasicVehicleClass);
         
         Integer actualValue = OssVehicleClassification
-                .genericVehicleClassification(testvc).keyType;
+                .genericVehicleClassification(testvc).getKeyType();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -235,7 +235,7 @@ public class OssVehicleClassificationTest {
         testvc.setKeyType(testBasicVehicleClass);
         
         Integer actualValue = OssVehicleClassification
-                .genericVehicleClassification(testvc).keyType;
+                .genericVehicleClassification(testvc).getKeyType();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -255,7 +255,7 @@ public class OssVehicleClassificationTest {
         testvc.setKeyType(testBasicVehicleClass);
         
         Integer actualValue = OssVehicleClassification
-                .genericVehicleClassification(testvc).keyType;
+                .genericVehicleClassification(testvc).getKeyType();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -275,7 +275,7 @@ public class OssVehicleClassificationTest {
         testvc.setKeyType(testBasicVehicleClass);
         
         Integer actualValue = OssVehicleClassification
-                .genericVehicleClassification(testvc).keyType;
+                .genericVehicleClassification(testvc).getKeyType();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -295,7 +295,7 @@ public class OssVehicleClassificationTest {
         testvc.setKeyType(testBasicVehicleClass);
         
         Integer actualValue = OssVehicleClassification
-                .genericVehicleClassification(testvc).keyType;
+                .genericVehicleClassification(testvc).getKeyType();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -315,7 +315,7 @@ public class OssVehicleClassificationTest {
         
         try {
            Integer actualValue = OssVehicleClassification
-                   .genericVehicleClassification(testvc).keyType;
+                   .genericVehicleClassification(testvc).getKeyType();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -337,7 +337,7 @@ public class OssVehicleClassificationTest {
         
         try {
            Integer actualValue = OssVehicleClassification
-                   .genericVehicleClassification(testvc).keyType;
+                   .genericVehicleClassification(testvc).getKeyType();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -361,7 +361,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .role.toString();
+                .getRole().toString();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -382,7 +382,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .role.toString();
+                .getRole().toString();
         
         assertEquals(expectedValue, actualValue);
         
@@ -404,7 +404,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .role.toString();
+                .getRole().toString();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -425,7 +425,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .role.toString();
+                .getRole().toString();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -446,7 +446,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .role.toString();
+                .getRole().toString();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -468,7 +468,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .hpmsType.toString();
+                .getHpmsType().toString();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -489,7 +489,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .hpmsType.toString();
+                .getHpmsType().toString();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -510,7 +510,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .hpmsType.toString();
+                .getHpmsType().toString();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -531,7 +531,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .hpmsType.toString();
+                .getHpmsType().toString();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -552,7 +552,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .hpmsType.toString();
+                .getHpmsType().toString();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -576,10 +576,10 @@ public class OssVehicleClassificationTest {
         
         String actualName = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .vehicleType.name;
+                .getVehicleType().getName();
         Long actualValue = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .vehicleType.value;
+                .getVehicleType().getValue();
         
         assertEquals(expectedName, actualName);
         assertEquals(expectedValue, actualValue);
@@ -602,10 +602,10 @@ public class OssVehicleClassificationTest {
         
         String actualName = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .vehicleType.name;
+                .getVehicleType().getName();
         Long actualValue = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .vehicleType.value;
+                .getVehicleType().getValue();
         
         assertEquals(expectedName, actualName);
         assertEquals(expectedValue, actualValue);
@@ -629,10 +629,10 @@ public class OssVehicleClassificationTest {
         
         String actualName = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .vehicleType.name;
+                .getVehicleType().getName();
         Long actualValue = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .vehicleType.value;
+                .getVehicleType().getValue();
         
         assertEquals(expectedName, actualName);
         assertEquals(expectedValue, actualValue);
@@ -656,10 +656,10 @@ public class OssVehicleClassificationTest {
         
         String actualName = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .vehicleType.name;
+                .getVehicleType().getName();
         Long actualValue = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .vehicleType.value;
+                .getVehicleType().getValue();
         
         assertEquals(expectedName, actualName);
         assertEquals(expectedValue, actualValue);
@@ -683,10 +683,10 @@ public class OssVehicleClassificationTest {
         
         String actualName = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .vehicleType.name;
+                .getVehicleType().getName();
         Long actualValue = OssVehicleClassification
                 .genericVehicleClassification(testcv)
-                .vehicleType.value;
+                .getVehicleType().getValue();
         
         assertEquals(expectedName, actualName);
         assertEquals(expectedValue, actualValue);
@@ -710,7 +710,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .responderType.name();
+                .getResponderType().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -732,7 +732,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .responderType.name();
+                .getResponderType().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -754,7 +754,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .responderType.name();
+                .getResponderType().name();
         
         assertEquals(expectedValue, actualValue);
         
@@ -777,7 +777,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .responderType.name();
+                .getResponderType().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -799,7 +799,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .responderType.name();
+                .getResponderType().name();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -821,7 +821,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .fuelType.toString();
+                .getFuelType().toString();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -842,7 +842,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .fuelType.toString();
+                .getFuelType().toString();
         
         assertEquals(expectedValue, actualValue); 
     }
@@ -863,7 +863,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .fuelType.toString();
+                .getFuelType().toString();
         
         assertEquals(expectedValue, actualValue); 
     }
@@ -884,7 +884,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .fuelType.toString();
+                .getFuelType().toString();
         
         assertEquals(expectedValue, actualValue); 
     }
@@ -905,7 +905,7 @@ public class OssVehicleClassificationTest {
         
         String actualValue = OssVehicleClassification
                 .genericVehicleClassification(testvc)
-                .fuelType.toString();
+                .getFuelType().toString();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -926,7 +926,7 @@ public class OssVehicleClassificationTest {
         try {
            String actualValue = OssVehicleClassification
                    .genericVehicleClassification(testvc)
-                   .fuelType.toString();
+                   .getFuelType().toString();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -949,7 +949,7 @@ public class OssVehicleClassificationTest {
         try {
            String actualValue = OssVehicleClassification
                    .genericVehicleClassification(testvc)
-                   .fuelType.toString();
+                   .getFuelType().toString();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());

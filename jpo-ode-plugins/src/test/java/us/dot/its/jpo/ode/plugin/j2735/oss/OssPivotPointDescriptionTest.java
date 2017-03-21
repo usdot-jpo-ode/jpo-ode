@@ -99,7 +99,7 @@ public class OssPivotPointDescriptionTest {
         
         BigDecimal actualValue = OssPivotPointDescription
                 .genericPivotPointDescription(testPivotPointDescription)
-                .pivotOffset;
+                .getPivotOffset();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -124,7 +124,7 @@ public class OssPivotPointDescriptionTest {
         
         BigDecimal actualValue = OssPivotPointDescription
                 .genericPivotPointDescription(testPivotPointDescription)
-                .pivotOffset;
+                .getPivotOffset();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -149,7 +149,7 @@ public class OssPivotPointDescriptionTest {
         
         BigDecimal actualValue = OssPivotPointDescription
                 .genericPivotPointDescription(testPivotPointDescription)
-                .pivotOffset;
+                .getPivotOffset();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -174,7 +174,7 @@ public class OssPivotPointDescriptionTest {
         
         BigDecimal actualValue = OssPivotPointDescription
                 .genericPivotPointDescription(testPivotPointDescription)
-                .pivotOffset;
+                .getPivotOffset();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -199,7 +199,7 @@ public class OssPivotPointDescriptionTest {
         
         BigDecimal actualValue = OssPivotPointDescription
                 .genericPivotPointDescription(testPivotPointDescription)
-                .pivotOffset;
+                .getPivotOffset();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -224,7 +224,7 @@ public class OssPivotPointDescriptionTest {
         
         BigDecimal actualValue = OssPivotPointDescription
                 .genericPivotPointDescription(testPivotPointDescription)
-                .pivotOffset;
+                .getPivotOffset();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -249,7 +249,7 @@ public class OssPivotPointDescriptionTest {
         try {
            BigDecimal actualValue = OssPivotPointDescription
                    .genericPivotPointDescription(testPivotPointDescription)
-                   .pivotOffset;
+                   .getPivotOffset();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -276,7 +276,7 @@ public class OssPivotPointDescriptionTest {
         try {
            BigDecimal actualValue = OssPivotPointDescription
                    .genericPivotPointDescription(testPivotPointDescription)
-                   .pivotOffset;
+                   .getPivotOffset();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -304,7 +304,7 @@ public class OssPivotPointDescriptionTest {
         
         BigDecimal actualValue = OssPivotPointDescription
                 .genericPivotPointDescription(testPivotPointDescription)
-                .pivotAngle;
+                .getPivotAngle();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -329,7 +329,7 @@ public class OssPivotPointDescriptionTest {
         
         BigDecimal actualValue = OssPivotPointDescription
                 .genericPivotPointDescription(testPivotPointDescription)
-                .pivotAngle;
+                .getPivotAngle();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -354,7 +354,7 @@ public class OssPivotPointDescriptionTest {
         
         BigDecimal actualValue = OssPivotPointDescription
                 .genericPivotPointDescription(testPivotPointDescription)
-                .pivotAngle;
+                .getPivotAngle();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -379,7 +379,7 @@ public class OssPivotPointDescriptionTest {
         
         BigDecimal actualValue = OssPivotPointDescription
                 .genericPivotPointDescription(testPivotPointDescription)
-                .pivotAngle;
+                .getPivotAngle();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -404,7 +404,7 @@ public class OssPivotPointDescriptionTest {
         
         BigDecimal actualValue = OssPivotPointDescription
                 .genericPivotPointDescription(testPivotPointDescription)
-                .pivotAngle;
+                .getPivotAngle();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -429,7 +429,7 @@ public class OssPivotPointDescriptionTest {
         
         BigDecimal actualValue = OssPivotPointDescription
                 .genericPivotPointDescription(testPivotPointDescription)
-                .pivotAngle;
+                .getPivotAngle();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -454,7 +454,7 @@ public class OssPivotPointDescriptionTest {
         try {
            BigDecimal actualValue = OssPivotPointDescription
                    .genericPivotPointDescription(testPivotPointDescription)
-                   .pivotAngle;
+                   .getPivotAngle();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -481,7 +481,7 @@ public class OssPivotPointDescriptionTest {
         try {
            BigDecimal actualValue = OssPivotPointDescription
                    .genericPivotPointDescription(testPivotPointDescription)
-                   .pivotAngle;
+                   .getPivotAngle();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -509,7 +509,7 @@ public class OssPivotPointDescriptionTest {
         
         Boolean actualValue = OssPivotPointDescription
                 .genericPivotPointDescription(testPivotPointDescription)
-                .pivots;
+                .getPivots();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -534,7 +534,7 @@ public class OssPivotPointDescriptionTest {
         
         Boolean actualValue = OssPivotPointDescription
                 .genericPivotPointDescription(testPivotPointDescription)
-                .pivots;
+                .getPivots();
         
         assertEquals(expectedValue, actualValue);
     }

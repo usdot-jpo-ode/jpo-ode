@@ -48,8 +48,8 @@ public class UnavailableNumericFieldTest {
       String hBsm = "004C4C8CCD00005AD27494B5A4E8CB8BB40000000000050000FD7D07D07F7FFF0000050050000000000000000000000000000000000000000000000000000000";
       
       J2735Bsm bsm = (J2735Bsm) coder.UPER_DecodeBsmHex(hBsm);
-      assertEquals(0, bsm.coreData.speed.compareTo(BigDecimal.valueOf(0.2)));
-      assertNull(bsm.coreData.angle);
+      assertEquals(0, bsm.getCoreData().getSpeed().compareTo(BigDecimal.valueOf(0.2)));
+      assertNull(bsm.getCoreData().getAngle());
       
       hBsm = "004C4C8CCD00005AD27494B5A4E8CB8BB4000000000FFF8000FC7D07D07F7FFF0000050050000000000000000000000000000000000000000000000000000000";
       
@@ -57,8 +57,8 @@ public class UnavailableNumericFieldTest {
 //      bsm.coreData.angle = new SteeringWheelAngle(126);
 
       bsm = (J2735Bsm) coder.UPER_DecodeBsmHex(hBsm);
-      assertNull(bsm.coreData.speed);
-      assertEquals(0, bsm.coreData.angle.compareTo(BigDecimal.valueOf(189.0)));
+      assertNull(bsm.getCoreData().getSpeed());
+      assertEquals(0, bsm.getCoreData().getAngle().compareTo(BigDecimal.valueOf(189.0)));
    }
 
 }
