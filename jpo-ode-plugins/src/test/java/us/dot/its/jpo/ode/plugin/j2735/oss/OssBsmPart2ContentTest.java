@@ -138,7 +138,7 @@ public class OssBsmPart2ContentTest {
         
         J2735SpecialVehicleExtensions actualValue = null;
         try {
-            actualValue = (J2735SpecialVehicleExtensions) OssBsmPart2Content.genericPart2Content(testSequence).value;
+            actualValue = (J2735SpecialVehicleExtensions) OssBsmPart2Content.genericPart2Content(testSequence).getValue();
             assertNotNull("J2735BsmPart2Content null", actualValue);
         } catch (OssBsmPart2Exception e) {
             fail("Unexpected exception: " + e.getClass());
@@ -178,7 +178,7 @@ public class OssBsmPart2ContentTest {
 
         J2735SupplementalVehicleExtensions actualValue = null;
         try {
-            actualValue = (J2735SupplementalVehicleExtensions) OssBsmPart2Content.genericPart2Content(testSequence).value;
+            actualValue = (J2735SupplementalVehicleExtensions) OssBsmPart2Content.genericPart2Content(testSequence).getValue();
             assertNotNull("J2735BsmPart2Content null", actualValue);
         } catch (OssBsmPart2Exception e) {
             fail("Unexpected exception: " + e.getClass());
@@ -237,7 +237,7 @@ public class OssBsmPart2ContentTest {
         
         J2735VehicleSafetyExtensions actualValue = null;
         try {
-            actualValue = (J2735VehicleSafetyExtensions) OssBsmPart2Content.genericPart2Content(testSequence).value;
+            actualValue = (J2735VehicleSafetyExtensions) OssBsmPart2Content.genericPart2Content(testSequence).getValue();
             assertNotNull("J2735BsmPart2Content null", actualValue);
         } catch (OssBsmPart2Exception e) {
             fail("Unexpected exception: " + e.getClass());

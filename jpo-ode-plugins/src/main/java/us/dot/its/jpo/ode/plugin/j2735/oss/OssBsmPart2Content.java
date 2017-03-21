@@ -49,14 +49,14 @@ public class OssBsmPart2Content {
             throws OssBsmPart2Exception {
         J2735BsmPart2Content part2Content = new J2735BsmPart2Content();
 
-        part2Content.id = id;
+        part2Content.setId(id);
 
         PERUnalignedCoder coder = J2735.getPERUnalignedCoder();
 
-        switch (part2Content.id) {
+        switch (part2Content.getId()) {
         case specialVehicleExt:
             J2735SpecialVehicleExtensions specVeh = new J2735SpecialVehicleExtensions();
-            part2Content.value = specVeh;
+            part2Content.setValue(specVeh);
 
             SpecialVehicleExtensions sp;
             if (value.getDecodedValue() != null) {
@@ -84,7 +84,7 @@ public class OssBsmPart2Content {
             break;
         case supplementalVehicleExt:
             J2735SupplementalVehicleExtensions supVeh = new J2735SupplementalVehicleExtensions();
-            part2Content.value = supVeh;
+            part2Content.setValue(supVeh);
             
             SupplementalVehicleExtensions sve;
             if (value.getDecodedValue() != null) {
@@ -99,13 +99,13 @@ public class OssBsmPart2Content {
             } else {
                 throw new OssBsmPart2Exception("No OpenType value");
             }
-            part2Content.value = OssSupplementalVehicleExtensions
-                    .genericSupplementalVehicleExtensions(sve);
+            part2Content.setValue(OssSupplementalVehicleExtensions
+                    .genericSupplementalVehicleExtensions(sve));
 
             break;
         case vehicleSafetyExt:
             J2735VehicleSafetyExtensions vehSafety = new J2735VehicleSafetyExtensions();
-            part2Content.value = vehSafety;
+            part2Content.setValue(vehSafety);
 
             VehicleSafetyExtensions vse;
             if (value.getDecodedValue() != null) {
