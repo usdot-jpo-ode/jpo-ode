@@ -10,6 +10,8 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 ## Release Notes
 ### Sprint 9
 - ODE-227 Probe Data Management (PDM) - Outbound
+- ODE-230 Interface Control Document (ICD) Template
+- ODE-202 Evaluate Current 1609.2 Leidos Code
 
 ### Sprint 8
 - ODE-143 Outbound TIM Message Parameters - Phase 2
