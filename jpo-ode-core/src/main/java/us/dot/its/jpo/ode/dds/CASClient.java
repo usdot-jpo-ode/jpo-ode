@@ -44,6 +44,8 @@ public class CASClient {
    private String ddsCasUrl;
    private String ddsCasUsername;
    private String ddsCasPassword;
+   private String body = " body: ";
+   private String http = "Error closing HTTP client";
 
    private HttpClientFactory httpClientFactory;
    private String sessionID;
@@ -114,7 +116,7 @@ public class CASClient {
       HttpClient httpClient = httpClientFactory.createHttpClient();
       try {
 
-         ConcurrentHashMap<String, String> params = new ConcurrentHashMap<String, String>();
+         ConcurrentHashMap<String, String> params = new ConcurrentHashMap<>();
          params.put("username", username);
          params.put("password", password);
          HttpResponse response = httpClient.post(server, null, params, null);
@@ -135,7 +137,7 @@ public class CASClient {
          } else {
             throw new CASException(
                   "CAS getTicketGrantingTicket failed. Response code: "
-                        + statusCode + " body: " + responseBody);
+                        + statusCode + body + responseBody);
          }
 
       } catch (Exception e) {
@@ -144,7 +146,7 @@ public class CASClient {
          try {
             httpClient.close();
          } catch (HttpException e) {
-            logger.warn("Error closing HTTP client", e);
+            logger.warn(http, e);
          }
       }
    }
@@ -168,7 +170,7 @@ public class CASClient {
          } else {
             throw new CASException(
                   "CAS getServiceTicket failed. Response code: " + statusCode
-                        + " body: " + responseBody);
+                        + body + responseBody);
          }
 
       } catch (HttpException e) {
@@ -177,7 +179,7 @@ public class CASClient {
          try {
             httpClient.close();
          } catch (HttpException e) {
-            logger.warn("Error closing HTTP client", e);
+            logger.warn(http, e);
          }
       }
    }
@@ -201,7 +203,7 @@ public class CASClient {
             return getSessionID(httpClient.getCookies());
          } else {
             throw new CASException("CAS getServiceCall failed. Response code: "
-                  + statusCode + " body: " + responseBody);
+                  + statusCode + body + responseBody);
          }
 
       } catch (HttpException e) {
@@ -210,13 +212,13 @@ public class CASClient {
          try {
             httpClient.close();
          } catch (HttpException e) {
-            logger.warn("Error closing HTTP client", e);
+            logger.warn(http, e);
          }
       }
    }
 
    private String getSessionID(Map<String, String> cookies) {
-      String sessionID = "";
+      sessionID = "";
       for (Map.Entry<String, String> c : cookies.entrySet()) {
          if (c.getKey().equals(JSESSIONID_KEY)) {
             sessionID = c.getValue();
