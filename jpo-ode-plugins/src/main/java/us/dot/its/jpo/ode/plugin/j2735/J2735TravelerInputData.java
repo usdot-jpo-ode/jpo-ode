@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.plugin.GenericSnmp.SNMP;
-import us.dot.its.jpo.ode.plugin.RoadSignUnit.RSU;
+import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 
 public class J2735TravelerInputData extends OdeObject {
 

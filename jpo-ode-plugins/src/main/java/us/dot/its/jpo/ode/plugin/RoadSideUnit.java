@@ -2,7 +2,7 @@ package us.dot.its.jpo.ode.plugin;
 
 import us.dot.its.jpo.ode.model.OdeObject;
 
-public class RoadSignUnit {
+public class RoadSideUnit {
     public static class RSU extends OdeObject {
 
         private static final long serialVersionUID = 3149576493038209597L;
@@ -54,7 +54,7 @@ public class RoadSignUnit {
         }
     }
 
-    private RoadSignUnit() {
+    private RoadSideUnit() {
 
     }
 }

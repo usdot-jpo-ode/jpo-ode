@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
-import us.dot.its.jpo.ode.plugin.RoadSignUnit.RSU;
+import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 
 @RunWith(JMockit.class)
 public class J2735ProbeDataManagementTest {

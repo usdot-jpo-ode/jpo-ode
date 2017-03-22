@@ -1,7 +1,11 @@
 package us.dot.its.jpo.ode.plugin.j2735.pdm;
 
-public class PDM {
+import us.dot.its.jpo.ode.model.OdeObject;
 
+public class PDM extends OdeObject {
+
+    private static final long serialVersionUID = 6638057737585466892L;
+    
     private int sampleStart;
     private int sampleEnd;
     private int directions;
