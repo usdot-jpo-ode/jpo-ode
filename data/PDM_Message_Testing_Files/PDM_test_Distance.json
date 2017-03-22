@@ -7,7 +7,7 @@
     "sampleStart": "200",
     "sampleEnd": "220",
     "heading": "1010101010101010",
-    "termTime": "400",
+    "termDistance": "400",
     "snapshot": "SnapshotTime",
     "sTime": {
       "speed1": "15",
