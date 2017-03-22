@@ -16,8 +16,11 @@ public class J2735TravelerInputData extends OdeObject {
    private ODE ode;
    private SDW sdw;
 
-   public static class ODE {
-      private int version = 1;
+   public static class ODE extends OdeObject {
+       
+    private static final long serialVersionUID = 664813454587275001L;
+    
+    private int version = 1;
 
       public int getVersion() {
          return version;
@@ -28,8 +31,11 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class SDW {
-      public enum TimeToLive {
+   public static class SDW extends OdeObject {
+       
+    private static final long serialVersionUID = -7731139391317960325L;
+    
+    public enum TimeToLive {
          ONEMINUTE, THIRTYMINUTES, ONEDAY, ONEWEEK, ONEMONTH, ONEYEAR
       }
 
@@ -49,8 +55,11 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class TIM {
-      private int msgCnt;
+   public static class TIM extends OdeObject {
+       
+    private static final long serialVersionUID = -200529140190872305L;
+    
+    private int msgCnt;
       private String timeStamp;
       private int packetID;
       private String urlB;
