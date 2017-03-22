@@ -215,8 +215,10 @@ public class J2735TravelerInputData extends OdeObject {
 
    }
 
-   public static class LocalNode {
-      private long type;
+   public static class LocalNode extends OdeObject {
+
+    private static final long serialVersionUID = 3872400520330034244L;
+    private long type;
 
       public long getType() {
          return type;
@@ -227,8 +229,10 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class DisabledList {
-      private long type;
+   public static class DisabledList extends OdeObject {
+
+    private static final long serialVersionUID = 1009869811306803991L;
+    private long type;
 
       public long getType() {
          return type;
@@ -239,8 +243,10 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class EnabledList {
-      private long type;
+   public static class EnabledList extends OdeObject {
+
+    private static final long serialVersionUID = 5797889223766230223L;
+    private long type;
 
       public long getType() {
          return type;
@@ -251,8 +257,10 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class SpeedLimits {
-      private long type;
+   public static class SpeedLimits extends OdeObject {
+
+    private static final long serialVersionUID = -8729406522600137038L;
+    private long type;
       private int velocity;
       public long getType() {
          return type;
@@ -268,8 +276,10 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class DataList {
-      private int pathEndpointAngle;
+   public static class DataList extends OdeObject {
+
+    private static final long serialVersionUID = -1391200532738540024L;
+    private int pathEndpointAngle;
       private int laneCrownCenter;
       private int laneCrownLeft;
       private int laneCrownRight;
@@ -313,8 +323,10 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class Attributes {
-      private LocalNode[] localNodes;
+   public static class Attributes extends OdeObject {
+
+    private static final long serialVersionUID = -6476758554962944513L;
+    private LocalNode[] localNodes;
       private DisabledList[] disabledLists;
       private EnabledList[] enabledLists;
       private DataList[] dataLists;
