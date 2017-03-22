@@ -1,6 +1,11 @@
 package us.dot.its.jpo.ode.plugin.j2735.pdm;
 
-public class VehicleStatusRequest {
+import us.dot.its.jpo.ode.model.OdeObject;
+
+public class VehicleStatusRequest extends OdeObject {
+
+    private static final long serialVersionUID = 2137805895544104045L;
+    
     private int tag;
     private int subTag;
     private int lessThenValue;

@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.plugin.GenericSnmp.SNMP;
-import us.dot.its.jpo.ode.plugin.RoadSignUnit.RSU;
+import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 
 public class J2735TravelerInputData extends OdeObject {
 
@@ -16,8 +16,11 @@ public class J2735TravelerInputData extends OdeObject {
    private ODE ode;
    private SDW sdw;
 
-   public static class ODE {
-      private int version = 1;
+   public static class ODE extends OdeObject {
+       
+    private static final long serialVersionUID = 664813454587275001L;
+    
+    private int version = 1;
 
       public int getVersion() {
          return version;
@@ -28,8 +31,11 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class SDW {
-      public enum TimeToLive {
+   public static class SDW extends OdeObject {
+       
+    private static final long serialVersionUID = -7731139391317960325L;
+    
+    public enum TimeToLive {
          ONEMINUTE, THIRTYMINUTES, ONEDAY, ONEWEEK, ONEMONTH, ONEYEAR
       }
 
@@ -49,8 +55,11 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class TIM {
-      private int msgCnt;
+   public static class TIM extends OdeObject {
+       
+    private static final long serialVersionUID = -200529140190872305L;
+    
+    private int msgCnt;
       private String timeStamp;
       private int packetID;
       private String urlB;
@@ -97,8 +106,10 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class ComputedLane {
-      private int laneID;
+   public static class ComputedLane extends OdeObject {
+
+    private static final long serialVersionUID = 7337344402648755924L;
+    private int laneID;
       private int offsetSmallX;
       private int offsetLargeX;
       private int offsetSmallY;
@@ -156,8 +167,10 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class NodeXY {
-      private String delta;
+   public static class NodeXY extends OdeObject {
+
+    private static final long serialVersionUID = -3250256624514759524L;
+    private String delta;
       private long nodeLat;
       private long nodeLong;
       private int x;
@@ -202,8 +215,10 @@ public class J2735TravelerInputData extends OdeObject {
 
    }
 
-   public static class LocalNode {
-      private long type;
+   public static class LocalNode extends OdeObject {
+
+    private static final long serialVersionUID = 3872400520330034244L;
+    private long type;
 
       public long getType() {
          return type;
@@ -214,8 +229,10 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class DisabledList {
-      private long type;
+   public static class DisabledList extends OdeObject {
+
+    private static final long serialVersionUID = 1009869811306803991L;
+    private long type;
 
       public long getType() {
          return type;
@@ -226,8 +243,10 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class EnabledList {
-      private long type;
+   public static class EnabledList extends OdeObject {
+
+    private static final long serialVersionUID = 5797889223766230223L;
+    private long type;
 
       public long getType() {
          return type;
@@ -238,8 +257,10 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class SpeedLimits {
-      private long type;
+   public static class SpeedLimits extends OdeObject {
+
+    private static final long serialVersionUID = -8729406522600137038L;
+    private long type;
       private int velocity;
       public long getType() {
          return type;
@@ -255,8 +276,10 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class DataList {
-      private int pathEndpointAngle;
+   public static class DataList extends OdeObject {
+
+    private static final long serialVersionUID = -1391200532738540024L;
+    private int pathEndpointAngle;
       private int laneCrownCenter;
       private int laneCrownLeft;
       private int laneCrownRight;
@@ -300,8 +323,10 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class Attributes {
-      private LocalNode[] localNodes;
+   public static class Attributes extends OdeObject {
+
+    private static final long serialVersionUID = -6476758554962944513L;
+    private LocalNode[] localNodes;
       private DisabledList[] disabledLists;
       private EnabledList[] enabledLists;
       private DataList[] dataLists;
@@ -345,8 +370,10 @@ public class J2735TravelerInputData extends OdeObject {
       }
    }
 
-   public static class DataFrame {
-      private short sspTimRights;// Start Header Information
+   public static class DataFrame extends OdeObject {
+
+    private static final long serialVersionUID = 537503046055742396L;
+    private short sspTimRights;// Start Header Information
       private int frameType;
       private String msgID;
       private J2735Position3D position;
@@ -364,8 +391,10 @@ public class J2735TravelerInputData extends OdeObject {
       private String[] items;
       private String url;// End content Information
 
-      public static class Region {
-         private String name;
+      public static class Region extends OdeObject {
+
+        private static final long serialVersionUID = 8011973280114768008L;
+        private String name;
          private int regulatorID;
          private int segmentID;
          private J2735Position3D anchorPosition;
@@ -379,7 +408,9 @@ public class J2735TravelerInputData extends OdeObject {
          private Geometry geometry;
          private OldRegion oldRegion;
 
-         public static class OldRegion {
+         public static class OldRegion extends OdeObject {
+
+            private static final long serialVersionUID = 1650366042178220073L;
             private String direction;
             private int extent;
             private String area;
@@ -387,8 +418,10 @@ public class J2735TravelerInputData extends OdeObject {
             private Circle circle;
             private RegionPoint regionPoint;
 
-            public static class ShapePoint {
-               private J2735Position3D position;
+            public static class ShapePoint extends OdeObject {
+
+                private static final long serialVersionUID = -209874574767391032L;
+            private J2735Position3D position;
                private int laneWidth;
                private int directionality;
                private String nodeType;
@@ -432,13 +465,17 @@ public class J2735TravelerInputData extends OdeObject {
                }
             }
 
-            public static class RegionPoint {
-               private J2735Position3D position;
+            public static class RegionPoint extends OdeObject {
+
+                private static final long serialVersionUID = -3978458353968571032L;
+            private J2735Position3D position;
                private int scale;
                private RegionList[] regionList;
 
-               public static class RegionList {
-                  private int xOffset;
+               public static class RegionList extends OdeObject {
+
+                private static final long serialVersionUID = -5307620155601900634L;
+                private int xOffset;
                   private int yOffset;
                   private int zOffset;
                   public int getzOffset() {
@@ -535,7 +572,9 @@ public class J2735TravelerInputData extends OdeObject {
             }
          }
 
-         public static class Geometry {
+         public static class Geometry extends OdeObject {
+
+            private static final long serialVersionUID = -7664796173893464468L;
             private String direction;
             private int extent;
             private int laneWidth;
@@ -566,7 +605,9 @@ public class J2735TravelerInputData extends OdeObject {
             }
          }
 
-         public static class Circle {
+         public static class Circle extends OdeObject {
+
+            private static final long serialVersionUID = -8156052898034497978L;
             private J2735Position3D position;
             private int radius;
             private int units;
@@ -590,7 +631,9 @@ public class J2735TravelerInputData extends OdeObject {
             }
          }
 
-         public static class Path {
+         public static class Path extends OdeObject {
+
+            private static final long serialVersionUID = 3293758823626661508L;
             private int scale;
             private String type;
             private NodeXY[] nodes;

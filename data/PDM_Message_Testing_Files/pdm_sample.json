@@ -2,7 +2,7 @@
     "ode": {
         "version": 1
     }
-    , "pdmParameters": {
+    , "pdm": {
         "sampleStart": "100"
         , "sampleEnd": "150"
         , "directions": "32678"
@@ -27,10 +27,10 @@
         }]
     }
     , "rsuList": [{
-        "target": "127.0.0.1"
-        , "username": "user"
-        , "password": "password"
-        , "retries": "1"
-        , "timeout": "2000"
+        "rsuTarget": "127.0.0.1"
+        , "rsuUsername": "user"
+        , "rsuPassword": "password"
+        , "rsuRetries": "1"
+        , "rsuTimeout": "2000"
     }]
 }
