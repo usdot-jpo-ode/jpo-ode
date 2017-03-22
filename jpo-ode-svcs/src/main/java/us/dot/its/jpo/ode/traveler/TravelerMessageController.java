@@ -33,7 +33,6 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
 
 import java.text.ParseException;
-import java.util.Objects;
 
 @Controller
 public class TravelerMessageController {

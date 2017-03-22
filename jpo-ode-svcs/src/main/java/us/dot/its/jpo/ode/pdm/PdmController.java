@@ -2,10 +2,7 @@ package us.dot.its.jpo.ode.pdm;
 
 import java.text.ParseException;
 import java.util.HashMap;
-import java.util.Objects;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
@@ -16,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import us.dot.its.jpo.ode.ManagerAndControllerServices;
-import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.pdm.J2735ProbeDataManagement;
 import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
@@ -26,7 +22,6 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 
 @Controller
 public class PdmController {
-    private static Logger logger = LoggerFactory.getLogger(PdmController.class);
 
     @ResponseBody
     @RequestMapping(value = "/pdm", method = RequestMethod.POST, produces = "application/json")
