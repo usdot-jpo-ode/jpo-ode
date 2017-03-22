@@ -19,10 +19,14 @@ import org.springframework.core.env.Environment;
 import groovy.lang.MissingPropertyException;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.model.OdeObject;
 
 @ConfigurationProperties("ode")
 @PropertySource("classpath:application.properties")
-public class OdeProperties implements EnvironmentAware {
+public class OdeProperties extends OdeObject  implements EnvironmentAware {
+
+    private static final long serialVersionUID = 939375839050980667L;
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /////////////////////////////////////////////////////////////////////////////
