@@ -36,7 +36,7 @@ import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint;
 import us.dot.its.jpo.ode.wrapper.WebSocketMessageDecoder;
 import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
 
-public class DdsClient<MessageType> {
+public class DdsClient<MessageType> {	//NOSONAR
 
    private static final Logger logger = LoggerFactory
          .getLogger(DdsClient.class);
@@ -111,10 +111,10 @@ public class DdsClient<MessageType> {
                      CASClient.JSESSIONID_KEY, casClient.getSessionID()));
 
          List<Class<? extends WebSocketMessageDecoder<?>>> decoders = 
-               new ArrayList<Class<? extends WebSocketMessageDecoder<?>>>();
+               new ArrayList<>();
          decoders.add(decoderClass);
          
-         ddsClient = new WebSocketEndpoint<MessageType>(
+         ddsClient = new WebSocketEndpoint<>(
                uri, sslContext, null,
                cookieHeader, messageHandler,
                decoders);

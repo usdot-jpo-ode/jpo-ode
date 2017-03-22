@@ -31,12 +31,10 @@ public class DepositResponseDecoder extends DdsStatusMessageDecoder {
    @Override
    public DdsMessage decode(String message) throws DecodeException {
       DdsMessage statusMsg;
-      try {
-         statusMsg = super.decode(message);
-         logger.info("Deposit Response Received: {}", message);
-         EventLogger.logger.info("Deposit Response Received: {}", message);
-      } finally {
-      }
+      statusMsg = super.decode(message);
+      logger.info("Deposit Response Received: {}", message);
+      EventLogger.logger.info("Deposit Response Received: {}", message);
+
       return statusMsg;
    }
 
