@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData.ODE;
 
 @RunWith(JMockit.class)
 public class J2735ProbeDataManagementTest {
@@ -20,7 +21,7 @@ public class J2735ProbeDataManagementTest {
 
         int testOdeVersion = 3;
 
-        J2735ProbeDataManagement.ODE testODE = new J2735ProbeDataManagement.ODE();
+        ODE testODE = new ODE();
         testODE.setVersion(testOdeVersion);
 
         testJ2735ProbeDataManagement.setOde(testODE);
