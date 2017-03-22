@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import us.dot.its.jpo.ode.ManagerAndControllerServices;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
-import us.dot.its.jpo.ode.plugin.RoadSignUnit.RSU;
+import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.pdm.J2735ProbeDataManagement;
 import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
 import us.dot.its.jpo.ode.snmp.PdmManagerService;
@@ -39,7 +39,7 @@ public class PdmController {
 
         J2735ProbeDataManagement pdm = (J2735ProbeDataManagement) JsonUtils.fromJson(jsonString,
                 J2735ProbeDataManagement.class);
-
+        
         HashMap<String, String> responseList = new HashMap<>();
         for (RSU curRsu : pdm.getRsuList()) {
 
