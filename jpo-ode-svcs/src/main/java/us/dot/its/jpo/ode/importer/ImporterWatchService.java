@@ -134,6 +134,7 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
             try {
                 wk = watcher.take();
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); 
                 logger.error("[CRITICAL] IMPORTER - Watch service interrupted: {}", e);
                 return;
             }
