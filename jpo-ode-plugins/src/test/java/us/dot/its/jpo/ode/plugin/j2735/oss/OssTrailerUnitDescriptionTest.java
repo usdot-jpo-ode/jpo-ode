@@ -114,7 +114,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setFrontPivot(new PivotPointDescription(new Offset_B11(0), new Angle(0), new PivotingAllowed(true)));
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
-        Boolean actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).isDolly;
+        Boolean actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getIsDolly();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -137,7 +137,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setFrontPivot(new PivotPointDescription(new Offset_B11(0), new Angle(0), new PivotingAllowed(true)));
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
-        Boolean actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).isDolly;
+        Boolean actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getIsDolly();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -161,7 +161,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setFrontPivot(new PivotPointDescription(new Offset_B11(0), new Angle(0), new PivotingAllowed(true)));
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
-        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).width;
+        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getWidth();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -184,7 +184,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setFrontPivot(new PivotPointDescription(new Offset_B11(0), new Angle(0), new PivotingAllowed(true)));
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
-        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).width;
+        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getWidth();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -207,7 +207,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setFrontPivot(new PivotPointDescription(new Offset_B11(0), new Angle(0), new PivotingAllowed(true)));
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
-        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).width;
+        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getWidth();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -230,7 +230,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setFrontPivot(new PivotPointDescription(new Offset_B11(0), new Angle(0), new PivotingAllowed(true)));
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
-        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).width;
+        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getWidth();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -253,7 +253,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setFrontPivot(new PivotPointDescription(new Offset_B11(0), new Angle(0), new PivotingAllowed(true)));
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
-        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).width;
+        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getWidth();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -276,7 +276,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setFrontPivot(new PivotPointDescription(new Offset_B11(0), new Angle(0), new PivotingAllowed(true)));
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
-        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).width;
+        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getWidth();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -299,7 +299,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
         try {
-           Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).width;
+           Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getWidth();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -324,7 +324,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
         try {
-           Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).width;
+           Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getWidth();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -350,7 +350,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setFrontPivot(new PivotPointDescription(new Offset_B11(0), new Angle(0), new PivotingAllowed(true)));
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
-        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).length;
+        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getLength();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -373,7 +373,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setFrontPivot(new PivotPointDescription(new Offset_B11(0), new Angle(0), new PivotingAllowed(true)));
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
-        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).length;
+        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getLength();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -396,7 +396,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setFrontPivot(new PivotPointDescription(new Offset_B11(0), new Angle(0), new PivotingAllowed(true)));
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
-        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).length;
+        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getLength();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -419,7 +419,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setFrontPivot(new PivotPointDescription(new Offset_B11(0), new Angle(0), new PivotingAllowed(true)));
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
-        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).length;
+        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getLength();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -442,7 +442,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setFrontPivot(new PivotPointDescription(new Offset_B11(0), new Angle(0), new PivotingAllowed(true)));
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
-        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).length;
+        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getLength();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -465,7 +465,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setFrontPivot(new PivotPointDescription(new Offset_B11(0), new Angle(0), new PivotingAllowed(true)));
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
-        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).length;
+        Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getLength();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -488,7 +488,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
         try {
-            Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).length;
+            Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getLength();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -513,7 +513,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
         try {
-            Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).length;
+            Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getLength();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -554,8 +554,8 @@ public class OssTrailerUnitDescriptionTest {
         // Perform conversion
         J2735TrailerUnitDescription actualtud = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud);
         
-        assertEquals(1, actualtud.crumbData.size());
-        assertEquals(expectedHeading, actualtud.crumbData.get(0).heading);
+        assertEquals(1, actualtud.getCrumbData().size());
+        assertEquals(expectedHeading, actualtud.getCrumbData().get(0).getHeading());
     }
 
 }

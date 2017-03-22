@@ -13,6 +13,8 @@ import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.Angle;
 import us.dot.its.jpo.ode.j2735.dsrc.Circle;
 import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane;
+import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane.OffsetXaxis;
+import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane.OffsetYaxis;
 import us.dot.its.jpo.ode.j2735.dsrc.DYear;
 import us.dot.its.jpo.ode.j2735.dsrc.DeltaAngle;
 import us.dot.its.jpo.ode.j2735.dsrc.DescriptiveName;
@@ -120,19 +122,19 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class OssTravelerMessageBuilder {
-   public static TravelerInformation travelerInfo;
+   private TravelerInformation travelerInfo;
 
    public TravelerInformation buildTravelerInformation(J2735TravelerInputData travInputData)
          throws ParseException, EncodeFailedException, EncodeNotSupportedException {
 
       travelerInfo = new TravelerInformation();
-      validateMessageCount(travInputData.tim.msgCnt);
-      travelerInfo.setMsgCnt(new MsgCount(travInputData.tim.msgCnt));
-      travelerInfo.setTimeStamp(new MinuteOfTheYear(getMinuteOfTheYear(travInputData.tim.timeStamp)));
-      ByteBuffer buf = ByteBuffer.allocate(9).put((byte) 0).putLong(travInputData.tim.packetID);
+      validateMessageCount(travInputData.getTim().getMsgCnt());
+      travelerInfo.setMsgCnt(new MsgCount(travInputData.getTim().getMsgCnt()));
+      travelerInfo.setTimeStamp(new MinuteOfTheYear(getMinuteOfTheYear(travInputData.getTim().getTimeStamp())));
+      ByteBuffer buf = ByteBuffer.allocate(9).put((byte) 0).putLong(travInputData.getTim().getPacketID());
       travelerInfo.setPacketID(new UniqueMSGID(buf.array()));
-      validateURL(travInputData.tim.urlB);
-      travelerInfo.setUrlB(new URL_Base(travInputData.tim.urlB));
+      validateURL(travInputData.getTim().getUrlB());
+      travelerInfo.setUrlB(new URL_Base(travInputData.getTim().getUrlB()));
       travelerInfo.setDataFrames(buildDataFrames(travInputData));
 
       return travelerInfo;
@@ -141,42 +143,42 @@ public class OssTravelerMessageBuilder {
    private TravelerDataFrameList buildDataFrames(J2735TravelerInputData travInputData) throws ParseException {
       TravelerDataFrameList dataFrames = new TravelerDataFrameList();
 
-      validateFrameCount(travInputData.tim.dataframes.length);
-      int len = travInputData.tim.dataframes.length;
+      validateFrameCount(travInputData.getTim().getDataframes().length);
+      int len = travInputData.getTim().getDataframes().length;
       for (int i = 0; i < len; i++) {
-         J2735TravelerInputData.DataFrame inputDataFrame = travInputData.tim.dataframes[i];
+         J2735TravelerInputData.DataFrame inputDataFrame = travInputData.getTim().getDataframes()[i];
          TravelerDataFrame dataFrame = new TravelerDataFrame();
 
          // Part I, header
-         validateHeaderIndex(inputDataFrame.sspTimRights);
-         dataFrame.setSspTimRights(new SSPindex(inputDataFrame.sspTimRights));
-         validateInfoType(inputDataFrame.frameType);
-         dataFrame.setFrameType(TravelerInfoType.valueOf(inputDataFrame.frameType));
+         validateHeaderIndex(inputDataFrame.getsspTimRights());
+         dataFrame.setSspTimRights(new SSPindex(inputDataFrame.getsspTimRights()));
+         validateInfoType(inputDataFrame.getFrameType());
+         dataFrame.setFrameType(TravelerInfoType.valueOf(inputDataFrame.getFrameType()));
          dataFrame.setMsgId(getMessageId(inputDataFrame));
-         dataFrame.setStartYear(new DYear(DateTimeUtils.isoDateTime(inputDataFrame.startDateTime).getYear()));
-         dataFrame.setStartTime(new MinuteOfTheYear(getMinuteOfTheYear(inputDataFrame.startDateTime)));
-         validateMinutesDuration(inputDataFrame.durationTime);
-         dataFrame.setDuratonTime(new MinutesDuration(inputDataFrame.durationTime));
-         validateSign(inputDataFrame.priority);
-         dataFrame.setPriority(new SignPrority(inputDataFrame.priority));
+         dataFrame.setStartYear(new DYear(DateTimeUtils.isoDateTime(inputDataFrame.getStartDateTime()).getYear()));
+         dataFrame.setStartTime(new MinuteOfTheYear(getMinuteOfTheYear(inputDataFrame.getStartDateTime())));
+         validateMinutesDuration(inputDataFrame.getDurationTime());
+         dataFrame.setDuratonTime(new MinutesDuration(inputDataFrame.getDurationTime()));
+         validateSign(inputDataFrame.getPriority());
+         dataFrame.setPriority(new SignPrority(inputDataFrame.getPriority()));
 
          // -- Part II, Applicable Regions of Use
-         validateHeaderIndex(inputDataFrame.sspLocationRights);
-         dataFrame.setSspLocationRights(new SSPindex(inputDataFrame.sspLocationRights));
-         dataFrame.setRegions(buildRegions(inputDataFrame.regions));
+         validateHeaderIndex(inputDataFrame.getsspLocationRights());
+         dataFrame.setSspLocationRights(new SSPindex(inputDataFrame.getsspLocationRights()));
+         dataFrame.setRegions(buildRegions(inputDataFrame.getRegions()));
 
          // -- Part III, Content
-         validateHeaderIndex(inputDataFrame.sspMsgTypes);
-         dataFrame.setSspMsgRights1(new SSPindex(inputDataFrame.sspMsgTypes)); // allowed
+         validateHeaderIndex(inputDataFrame.getsspMsgTypes());
+         dataFrame.setSspMsgRights1(new SSPindex(inputDataFrame.getsspMsgTypes())); // allowed
                                                                                // message
                                                                                // types
-         validateHeaderIndex(inputDataFrame.sspMsgContent);
-         dataFrame.setSspMsgRights2(new SSPindex(inputDataFrame.sspMsgContent)); // allowed
+         validateHeaderIndex(inputDataFrame.getsspMsgContent());
+         dataFrame.setSspMsgRights2(new SSPindex(inputDataFrame.getsspMsgContent())); // allowed
                                                                                  // message
                                                                                  // content
          dataFrame.setContent(buildContent(inputDataFrame));
-         validateURLShort(inputDataFrame.url);
-         dataFrame.setUrl(new URL_Short(inputDataFrame.url));
+         validateURLShort(inputDataFrame.getUrl());
+         dataFrame.setUrl(new URL_Short(inputDataFrame.getUrl()));
          dataFrames.add(dataFrame);
       }
       return dataFrames;
@@ -190,9 +192,9 @@ public class OssTravelerMessageBuilder {
       return CodecUtils.toHex(bytes);
    }
 
-   public static Content buildContent(J2735TravelerInputData.DataFrame inputDataFrame) {
-      String contentType = inputDataFrame.content;
-      String[] codes = inputDataFrame.items;
+   public Content buildContent(J2735TravelerInputData.DataFrame inputDataFrame) {
+      String contentType = inputDataFrame.getContent();
+      String[] codes = inputDataFrame.getItems();
       Content content = new Content();
       if ("Advisory".equals(contentType)) {
          content.setAdvisory(buildAdvisory(codes));
@@ -208,7 +210,7 @@ public class OssTravelerMessageBuilder {
       return content;
    }
 
-   private static ITIScodesAndText buildAdvisory(String[] codes) {
+   public ITIScodesAndText buildAdvisory(String[] codes) {
       ITIScodesAndText itisText = new ITIScodesAndText();
       for (String code : codes) {
          validateITISCodes(code);
@@ -221,7 +223,7 @@ public class OssTravelerMessageBuilder {
       return itisText;
    }
 
-   private static WorkZone buildWorkZone(String[] codes) {
+   public WorkZone buildWorkZone(String[] codes) {
       WorkZone wz = new WorkZone();
       for (String code : codes) {
          validateContentCodes(code);
@@ -234,7 +236,7 @@ public class OssTravelerMessageBuilder {
       return wz;
    }
 
-   private static SpeedLimit buildSpeedLimit(String[] codes) {
+   public SpeedLimit buildSpeedLimit(String[] codes) {
       SpeedLimit sl = new SpeedLimit();
       for (String code : codes) {
          validateContentCodes(code);
@@ -247,7 +249,7 @@ public class OssTravelerMessageBuilder {
       return sl;
    }
 
-   private static ExitService buildExitService(String[] codes) {
+   public ExitService buildExitService(String[] codes) {
       ExitService es = new ExitService();
       for (String code : codes) {
          validateContentCodes(code);
@@ -260,7 +262,7 @@ public class OssTravelerMessageBuilder {
       return es;
    }
 
-   private static GenericSignage buildGenericSignage(String[] codes) {
+   public GenericSignage buildGenericSignage(String[] codes) {
       GenericSignage gs = new GenericSignage();
       for (String code : codes) {
          validateContentCodes(code);
@@ -275,17 +277,17 @@ public class OssTravelerMessageBuilder {
 
    private MsgId getMessageId(J2735TravelerInputData.DataFrame dataFrame) {
       MsgId msgId = new MsgId();
-      validateMessageID(dataFrame.msgID);
+      validateMessageID(dataFrame.getMsgID());
 
-      if ("RoadSignID".equals(dataFrame.msgID)) {
+      if ("RoadSignID".equals(dataFrame.getMsgID())) {
          msgId.setChosenFlag(MsgId.roadSignID_chosen);
          RoadSignID roadSignID = new RoadSignID();
-         validatePosition(dataFrame.position);
-         roadSignID.setPosition(OssPosition3D.position3D(dataFrame.position));
-         validateHeading(dataFrame.viewAngle);
-         roadSignID.setViewAngle(getHeadingSlice(dataFrame.viewAngle));
-         validateMUTCDCode(dataFrame.mutcd);
-         roadSignID.setMutcdCode(MUTCDCode.valueOf(dataFrame.mutcd));
+         validatePosition(dataFrame.getPosition());
+         roadSignID.setPosition(OssPosition3D.position3D(dataFrame.getPosition()));
+         validateHeading(dataFrame.getViewAngle());
+         roadSignID.setViewAngle(getHeadingSlice(dataFrame.getViewAngle()));
+         validateMUTCDCode(dataFrame.getMutcd());
+         roadSignID.setMutcdCode(MUTCDCode.valueOf(dataFrame.getMutcd()));
          // roadSignID.setCrc(new MsgCRC(new byte[] { 0xC0,0x2F })); //Causing
          // error while encoding
          msgId.setRoadSignID(roadSignID);
@@ -321,88 +323,83 @@ public class OssTravelerMessageBuilder {
       for (J2735TravelerInputData.DataFrame.Region inputRegion : inputRegions) {
          GeographicalPath geoPath = new GeographicalPath();
          Description description = new Description();
-         validateGeoName(inputRegion.name);
-         geoPath.setName(new DescriptiveName(inputRegion.name));
-         validateRoadID(inputRegion.regulatorID);
-         validateRoadID(inputRegion.segmentID);
-         geoPath.setId(new RoadSegmentReferenceID(new RoadRegulatorID(inputRegion.regulatorID),
-               new RoadSegmentID(inputRegion.segmentID)));
-         geoPath.setAnchor(OssPosition3D.position3D(inputRegion.anchorPosition));
-         validateLaneWidth(inputRegion.laneWidth);
-         geoPath.setLaneWidth(new LaneWidth(inputRegion.laneWidth));
-         validateDirectionality(inputRegion.directionality);
-         geoPath.setDirectionality(new DirectionOfUse(inputRegion.directionality));
-         geoPath.setClosedPath(Boolean.valueOf(inputRegion.closedPath));
-         validateHeading(inputRegion.direction);
-         geoPath.setDirection(getHeadingSlice(inputRegion.direction));
+         validateGeoName(inputRegion.getName());
+         geoPath.setName(new DescriptiveName(inputRegion.getName()));
+         validateRoadID(inputRegion.getRegulatorID());
+         validateRoadID(inputRegion.getSegmentID());
+         geoPath.setId(new RoadSegmentReferenceID(new RoadRegulatorID(inputRegion.getRegulatorID()),
+               new RoadSegmentID(inputRegion.getSegmentID())));
+         geoPath.setAnchor(OssPosition3D.position3D(inputRegion.getAnchorPosition()));
+         validateLaneWidth(inputRegion.getLaneWidth());
+         geoPath.setLaneWidth(new LaneWidth(inputRegion.getLaneWidth()));
+         validateDirectionality(inputRegion.getDirectionality());
+         geoPath.setDirectionality(new DirectionOfUse(inputRegion.getDirectionality()));
+         geoPath.setClosedPath(inputRegion.isClosedPath());
+         validateHeading(inputRegion.getDirection());
+         geoPath.setDirection(getHeadingSlice(inputRegion.getDirection()));
 
-         if ("path".equals(inputRegion.description)) {
+         if ("path".equals(inputRegion.getDescription())) {
             OffsetSystem offsetSystem = new OffsetSystem();
-            validateZoom(inputRegion.path.scale);
-            offsetSystem.setScale(new Zoom(inputRegion.path.scale));
-            if ("xy".equals(inputRegion.path.type)) {
-               if (inputRegion.path.nodes.length > 0) {
-
+            validateZoom(inputRegion.getPath().getScale());
+            offsetSystem.setScale(new Zoom(inputRegion.getPath().getScale()));
+            if ("xy".equals(inputRegion.getPath().getType())) {
+               if (inputRegion.getPath().getNodes() != null) {
                   offsetSystem.setOffset(new OffsetSystem.Offset());
-                  offsetSystem.offset.setXy(buildNodeXYList(inputRegion.path.nodes));
+                  offsetSystem.offset.setXy(buildNodeXYList(inputRegion.getPath().getNodes()));
                } else {
                   offsetSystem.setOffset(new OffsetSystem.Offset());
-                  offsetSystem.offset.setXy(buildComputedLane(inputRegion.path.computedLane));
+                  offsetSystem.offset.setXy(buildComputedLane(inputRegion.getPath().getComputedLane()));
                }
-            } else if ("ll".equals(inputRegion.path.type)) {
-               if (inputRegion.path.nodes.length > 0) {
+            } else if ("ll".equals(inputRegion.getPath().getType()) && inputRegion.getPath().getNodes().length > 0) {
                   offsetSystem.setOffset(new OffsetSystem.Offset());
-                  offsetSystem.offset.setLl(buildNodeLLList(inputRegion.path.nodes));
-               }
+                  offsetSystem.offset.setLl(buildNodeLLList(inputRegion.getPath().getNodes()));
             }
             description.setPath(offsetSystem);
             geoPath.setDescription(description);
-         } else if ("geometry".equals(inputRegion.description)) {
+         } else if ("geometry".equals(inputRegion.getDescription())) {
             GeometricProjection geo = new GeometricProjection();
-            validateHeading(inputRegion.geometry.direction);
-            geo.setDirection(getHeadingSlice(inputRegion.geometry.direction));
-            validateExtent(inputRegion.geometry.extent);
-            geo.setExtent(new Extent(inputRegion.geometry.extent));
-            validateLaneWidth(inputRegion.geometry.laneWidth);
-            geo.setLaneWidth(new LaneWidth(inputRegion.geometry.laneWidth));
-            geo.setCircle(buildGeoCircle(inputRegion.geometry));
+            validateHeading(inputRegion.getGeometry().getDirection());
+            geo.setDirection(getHeadingSlice(inputRegion.getGeometry().getDirection()));
+            validateExtent(inputRegion.getGeometry().getExtent());
+            geo.setExtent(new Extent(inputRegion.getGeometry().getExtent()));
+            validateLaneWidth(inputRegion.getGeometry().getLaneWidth());
+            geo.setLaneWidth(new LaneWidth(inputRegion.getGeometry().getLaneWidth()));
+            geo.setCircle(buildGeoCircle(inputRegion.getGeometry()));
             description.setGeometry(geo);
             geoPath.setDescription(description);
 
          } else { // oldRegion
             ValidRegion validRegion = new ValidRegion();
-            validateHeading(inputRegion.oldRegion.direction);
-            validRegion.setDirection(getHeadingSlice(inputRegion.oldRegion.direction));
-            validateExtent(inputRegion.oldRegion.extent);
-            validRegion.setExtent(new Extent(inputRegion.oldRegion.extent));
+            validateHeading(inputRegion.getOldRegion().getDirection());
+            validRegion.setDirection(getHeadingSlice(inputRegion.getOldRegion().getDirection()));
+            validateExtent(inputRegion.getOldRegion().getExtent());
+            validRegion.setExtent(new Extent(inputRegion.getOldRegion().getExtent()));
             Area area = new Area();
-            if ("shapePointSet".equals(inputRegion.oldRegion.area)) {
+            if ("shapePointSet".equals(inputRegion.getOldRegion().getArea())) {
                ShapePointSet sps = new ShapePointSet();
-               sps.setAnchor(OssPosition3D.position3D(inputRegion.oldRegion.shapepoint.position));
-               validateLaneWidth(inputRegion.oldRegion.shapepoint.laneWidth);
-               sps.setLaneWidth(new LaneWidth(inputRegion.oldRegion.shapepoint.laneWidth));
-               validateDirectionality(inputRegion.oldRegion.shapepoint.directionality);
-               sps.setDirectionality(new DirectionOfUse(inputRegion.oldRegion.shapepoint.directionality));
-               // nodeList NodeListXY, ADD HEREif
-               // ("xy".equals(inputRegion.path.type)) {
-               if (inputRegion.oldRegion.shapepoint.nodexy.length > 0) {
-                  sps.setNodeList(buildNodeXYList(inputRegion.oldRegion.shapepoint.nodexy));
+               sps.setAnchor(OssPosition3D.position3D(inputRegion.getOldRegion().getShapepoint().getPosition()));
+               validateLaneWidth(inputRegion.getOldRegion().getShapepoint().getLaneWidth());
+               sps.setLaneWidth(new LaneWidth(inputRegion.getOldRegion().getShapepoint().getLaneWidth()));
+               validateDirectionality(inputRegion.getOldRegion().getShapepoint().getDirectionality());
+               sps.setDirectionality(new DirectionOfUse(inputRegion.getOldRegion().getShapepoint().getDirectionality()));
+               if (inputRegion.getOldRegion().getShapepoint().getNodexy() != null) {
+                  sps.setNodeList(buildNodeXYList(inputRegion.getOldRegion().getShapepoint().getNodexy()));
                } else {
-                  sps.setNodeList(buildComputedLane(inputRegion.oldRegion.shapepoint.computedLane));
+                  sps.setNodeList(buildComputedLane(inputRegion.getOldRegion().getShapepoint().getComputedLane()));
                }
                area.setShapePointSet(sps);
                validRegion.setArea(area);
-            } else if ("regionPointSet".equals(inputRegion.oldRegion.area)) {
+            } else if ("regionPointSet".equals(inputRegion.getOldRegion().getArea())) {
                RegionPointSet rps = new RegionPointSet();
-               rps.setAnchor(OssPosition3D.position3D(inputRegion.oldRegion.regionPoint.position));
-               validateZoom(inputRegion.oldRegion.regionPoint.scale);
-               rps.setScale(new Zoom(inputRegion.oldRegion.regionPoint.scale));
-               RegionList rl = buildRegionOffsets(inputRegion.oldRegion.regionPoint.regionList);
+               rps.setAnchor(OssPosition3D.position3D(inputRegion.getOldRegion().getRegionPoint().getPosition()));
+               validateZoom(inputRegion.getOldRegion().getRegionPoint().getScale());
+               rps.setScale(new Zoom(inputRegion.getOldRegion().getRegionPoint().getScale()));
+               RegionList rl = buildRegionOffsets(inputRegion.getOldRegion().getRegionPoint().getRegionList());
                rps.setNodeList(rl);
                area.setRegionPointSet(rps);
                validRegion.setArea(area);
             } else {// circle
-               area.setCircle(buildOldCircle(inputRegion.oldRegion));
+               area.setCircle(buildOldCircle(inputRegion.getOldRegion()));
                validRegion.setArea(area);
             }
             description.setOldRegion(validRegion);
@@ -413,43 +410,43 @@ public class OssTravelerMessageBuilder {
       return regions;
    }
 
-   public static RegionList buildRegionOffsets(
+   public RegionList buildRegionOffsets(
          J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] list) {
       RegionList myList = new RegionList();
       for (int i = 0; i < list.length; i++) {
          RegionOffsets ele = new RegionOffsets();
-         validatex16Offset(list[i].xOffset);
-         ele.setXOffset(new OffsetLL_B16(list[i].xOffset));
-         validatey16Offset(list[i].yOffset);
-         ele.setYOffset(new OffsetLL_B16(list[i].yOffset));
-         validatez16Offset(list[i].zOffset);
-         ele.setZOffset(new OffsetLL_B16(list[i].zOffset));
+         validatex16Offset(list[i].getxOffset());
+         ele.setXOffset(new OffsetLL_B16(list[i].getxOffset()));
+         validatey16Offset(list[i].getyOffset());
+         ele.setYOffset(new OffsetLL_B16(list[i].getyOffset()));
+         validatez16Offset(list[i].getzOffset());
+         ele.setZOffset(new OffsetLL_B16(list[i].getzOffset()));
          myList.add(ele);
       }
       return myList;
    }
 
-   public static Circle buildGeoCircle(J2735TravelerInputData.DataFrame.Region.Geometry geo) {
+   public Circle buildGeoCircle(J2735TravelerInputData.DataFrame.Region.Geometry geo) {
       Circle circle = new Circle();
-      circle.setCenter(OssPosition3D.position3D(geo.circle.position));
-      validateRadius(geo.circle.radius);
-      circle.setRadius(new Radius_B12(geo.circle.radius));
-      validateUnits(geo.circle.units);
-      circle.setUnits(new DistanceUnits(geo.circle.units));
+      circle.setCenter(OssPosition3D.position3D(geo.getCircle().getPosition()));
+      validateRadius(geo.getCircle().getRadius());
+      circle.setRadius(new Radius_B12(geo.getCircle().getRadius()));
+      validateUnits(geo.getCircle().getUnits());
+      circle.setUnits(new DistanceUnits(geo.getCircle().getUnits()));
       return circle;
    }
 
-   private Circle buildOldCircle(J2735TravelerInputData.DataFrame.Region.OldRegion reg) {
+   public Circle buildOldCircle(J2735TravelerInputData.DataFrame.Region.OldRegion reg) {
       Circle circle = new Circle();
-      circle.setCenter(OssPosition3D.position3D(reg.circle.position));
-      validateRadius(reg.circle.radius);
-      circle.setRadius(new Radius_B12(reg.circle.radius));
-      validateUnits(reg.circle.units);
-      circle.setUnits(new DistanceUnits(reg.circle.units));
+      circle.setCenter(OssPosition3D.position3D(reg.getCircle().getPosition()));
+      validateRadius(reg.getCircle().getRadius());
+      circle.setRadius(new Radius_B12(reg.getCircle().getRadius()));
+      validateUnits(reg.getCircle().getUnits());
+      circle.setUnits(new DistanceUnits(reg.getCircle().getUnits()));
       return circle;
    }
 
-   private NodeListXY buildNodeXYList(J2735TravelerInputData.NodeXY[] inputNodes) {
+   public NodeListXY buildNodeXYList(J2735TravelerInputData.NodeXY[] inputNodes) {
       NodeListXY nodeList = new NodeListXY();
       NodeSetXY nodes = new NodeSetXY();
       for (int i = 0; i < inputNodes.length; i++) {
@@ -458,85 +455,97 @@ public class OssTravelerMessageBuilder {
          NodeXY node = new NodeXY();
          NodeOffsetPointXY nodePoint = new NodeOffsetPointXY();
 
-         if ("node-XY1".equals(point.delta)) {
-            Node_XY_20b xy = new Node_XY_20b(new Offset_B10(point.x), new Offset_B10(point.y));
+         switch (point.getDelta()) {
+         case "node-XY1":
+            validateB10Offset(point.getX());
+            validateB10Offset(point.getY());
+            Node_XY_20b xy = new Node_XY_20b(new Offset_B10(point.getX()), new Offset_B10(point.getY()));
             nodePoint.setNode_XY1(xy);
-         }
-
-         if ("node-XY2".equals(point.delta)) {
-            Node_XY_22b xy = new Node_XY_22b(new Offset_B11(point.x), new Offset_B11(point.y));
-            nodePoint.setNode_XY2(xy);
-         }
-
-         if ("node-XY3".equals(point.delta)) {
-            Node_XY_24b xy = new Node_XY_24b(new Offset_B12(point.x), new Offset_B12(point.y));
-            nodePoint.setNode_XY3(xy);
-         }
-
-         if ("node-XY4".equals(point.delta)) {
-            Node_XY_26b xy = new Node_XY_26b(new Offset_B13(point.x), new Offset_B13(point.y));
-            nodePoint.setNode_XY4(xy);
-         }
-
-         if ("node-XY5".equals(point.delta)) {
-            Node_XY_28b xy = new Node_XY_28b(new Offset_B14(point.x), new Offset_B14(point.y));
-            nodePoint.setNode_XY5(xy);
-         }
-
-         if ("node-XY6".equals(point.delta)) {
-            Node_XY_32b xy = new Node_XY_32b(new Offset_B16(point.x), new Offset_B16(point.y));
-            nodePoint.setNode_XY6(xy);
-         }
-
-         if ("node-LatLon".equals(point.delta)) {
-            Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.nodeLat), new Latitude(point.nodeLong));
+            break;
+         case "node-XY2":
+            validateB11Offset(point.getX());
+            validateB11Offset(point.getY());
+            Node_XY_22b xy2 = new Node_XY_22b(new Offset_B11(point.getX()), new Offset_B11(point.getY()));
+            nodePoint.setNode_XY2(xy2);
+            break;
+         case "node-XY3":
+            validateB12Offset(point.getX());
+            validateB12Offset(point.getY());
+            Node_XY_24b xy3 = new Node_XY_24b(new Offset_B12(point.getX()), new Offset_B12(point.getY()));
+            nodePoint.setNode_XY3(xy3);
+            break;
+         case "node-XY4":
+            validateB13Offset(point.getX());
+            validateB13Offset(point.getY());
+            Node_XY_26b xy4 = new Node_XY_26b(new Offset_B13(point.getX()), new Offset_B13(point.getY()));
+            nodePoint.setNode_XY4(xy4);
+            break;
+         case "node-XY5":
+            validateB14Offset(point.getX());
+            validateB14Offset(point.getY());
+            Node_XY_28b xy5 = new Node_XY_28b(new Offset_B14(point.getX()), new Offset_B14(point.getY()));
+            nodePoint.setNode_XY5(xy5);
+            break;
+         case "node-XY6":
+            validateB16Offset(point.getX());
+            validateB16Offset(point.getY());
+            Node_XY_32b xy6 = new Node_XY_32b(new Offset_B16(point.getX()), new Offset_B16(point.getY()));
+            nodePoint.setNode_XY6(xy6);
+            break;
+         case "node-LatLon":
+            validateLatitude(point.getNodeLat());
+            validateLongitude(point.getNodeLong());
+            Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.getNodeLong()), new Latitude(point.getNodeLat()));
             nodePoint.setNode_LatLon(nodeLatLong);
+            break;
+         default:
+            break;
          }
 
          node.setDelta(nodePoint);
-         if (!point.attributes.equals("")) {
+         if (point.getAttributes() != null) {
             NodeAttributeSetXY attributes = new NodeAttributeSetXY();
 
-            if (point.attributes.localNodes.length > 0) {
+            if (point.getAttributes().getLocalNodes().length > 0) {
                NodeAttributeXYList localNodeList = new NodeAttributeXYList();
-               for (J2735TravelerInputData.LocalNode localNode : point.attributes.localNodes) {
-                  localNodeList.add(new NodeAttributeXY(localNode.type));
+               for (J2735TravelerInputData.LocalNode localNode : point.getAttributes().getLocalNodes()) {
+                  localNodeList.add(new NodeAttributeXY(localNode.getType()));
                }
                attributes.setLocalNode(localNodeList);
             }
 
-            if (point.attributes.disabledLists.length > 0) {
+            if (point.getAttributes().getDisabledLists().length > 0) {
                SegmentAttributeXYList disabledNodeList = new SegmentAttributeXYList();
-               for (J2735TravelerInputData.DisabledList disabledList : point.attributes.disabledLists) {
-                  disabledNodeList.add(new SegmentAttributeXY(disabledList.type));
+               for (J2735TravelerInputData.DisabledList disabledList : point.getAttributes().getDisabledLists()) {
+                  disabledNodeList.add(new SegmentAttributeXY(disabledList.getType()));
                }
                attributes.setDisabled(disabledNodeList);
             }
 
-            if (point.attributes.enabledLists.length > 0) {
+            if (point.getAttributes().getEnabledLists().length > 0) {
                SegmentAttributeXYList enabledNodeList = new SegmentAttributeXYList();
-               for (J2735TravelerInputData.EnabledList enabledList : point.attributes.enabledLists) {
-                  enabledNodeList.add(new SegmentAttributeXY(enabledList.type));
+               for (J2735TravelerInputData.EnabledList enabledList : point.getAttributes().getEnabledLists()) {
+                  enabledNodeList.add(new SegmentAttributeXY(enabledList.getType()));
                }
                attributes.setEnabled(enabledNodeList);
             }
 
-            if (point.attributes.dataLists.length > 0) {
+            if (point.getAttributes().getDataLists().length > 0) {
                LaneDataAttributeList dataNodeList = new LaneDataAttributeList();
-               for (J2735TravelerInputData.DataList dataList : point.attributes.dataLists) {
+               for (J2735TravelerInputData.DataList dataList : point.getAttributes().getDataLists()) {
 
                   LaneDataAttribute dataAttribute = new LaneDataAttribute();
 
-                  dataAttribute.setPathEndPointAngle(new DeltaAngle(dataList.pathEndpointAngle));
-                  dataAttribute.setLaneCrownPointCenter(new RoadwayCrownAngle(dataList.laneCrownCenter));
-                  dataAttribute.setLaneCrownPointLeft(new RoadwayCrownAngle(dataList.laneCrownLeft));
-                  dataAttribute.setLaneCrownPointRight(new RoadwayCrownAngle(dataList.laneCrownRight));
-                  dataAttribute.setLaneAngle(new MergeDivergeNodeAngle(dataList.laneAngle));
+                  dataAttribute.setPathEndPointAngle(new DeltaAngle(dataList.getPathEndpointAngle()));
+                  dataAttribute.setLaneCrownPointCenter(new RoadwayCrownAngle(dataList.getLaneCrownCenter()));
+                  dataAttribute.setLaneCrownPointLeft(new RoadwayCrownAngle(dataList.getLaneCrownLeft()));
+                  dataAttribute.setLaneCrownPointRight(new RoadwayCrownAngle(dataList.getLaneCrownRight()));
+                  dataAttribute.setLaneAngle(new MergeDivergeNodeAngle(dataList.getLaneAngle()));
 
                   SpeedLimitList speedDataList = new SpeedLimitList();
-                  for (J2735TravelerInputData.SpeedLimits speedLimit : dataList.speedLimits) {
-                     speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.type),
-                           new Velocity(speedLimit.velocity)));
+                  for (J2735TravelerInputData.SpeedLimits speedLimit : dataList.getSpeedLimits()) {
+                     speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.getType()),
+                           new Velocity(speedLimit.getVelocity())));
                   }
 
                   dataAttribute.setSpeedLimits(speedDataList);
@@ -546,8 +555,8 @@ public class OssTravelerMessageBuilder {
                attributes.setData(dataNodeList);
             }
 
-            attributes.setDWidth(new Offset_B10(point.attributes.dWidth));
-            attributes.setDElevation(new Offset_B10(point.attributes.dElevation));
+            attributes.setDWidth(new Offset_B10(point.getAttributes().getdWidth()));
+            attributes.setDElevation(new Offset_B10(point.getAttributes().getdElevation()));
 
             node.setAttributes(attributes);
 
@@ -563,29 +572,34 @@ public class OssTravelerMessageBuilder {
       NodeListXY nodeList = new NodeListXY();
 
       ComputedLane computedLane = new ComputedLane();
-
-      computedLane.setReferenceLaneId(new LaneID(inputLane.laneID));
-      if (inputLane.offsetLargeX > 0) {
-         computedLane.offsetXaxis.setLarge(inputLane.offsetLargeX);
+      OffsetXaxis ox = new OffsetXaxis();
+      OffsetYaxis oy = new OffsetYaxis();
+      
+      computedLane.setReferenceLaneId(new LaneID(inputLane.getLaneID()));
+      if (inputLane.getOffsetLargeX() > 0) {
+         ox.setLarge(inputLane.getOffsetLargeX());
+         computedLane.offsetXaxis = ox;
       } else {
-         computedLane.offsetXaxis.setSmall(inputLane.offsetSmallX);
+         ox.setSmall(inputLane.getOffsetSmallX());
+         computedLane.offsetXaxis = ox;
       }
 
-      if (inputLane.offsetLargeX > 0) {
-         computedLane.offsetYaxis.setLarge(inputLane.offsetLargeY);
-
+      if (inputLane.getOffsetLargeY() > 0) {
+         oy.setLarge(inputLane.getOffsetLargeY());
+         computedLane.offsetYaxis = oy;
       } else {
-         computedLane.offsetYaxis.setSmall(inputLane.offsetSmallY);
+         oy.setSmall(inputLane.getOffsetSmallY());
+         computedLane.offsetYaxis = oy;
       }
-      computedLane.setRotateXY(new Angle(inputLane.angle));
-      computedLane.setScaleXaxis(new Scale_B12(inputLane.xScale));
-      computedLane.setScaleYaxis(new Scale_B12(inputLane.yScale));
+      computedLane.setRotateXY(new Angle(inputLane.getAngle()));
+      computedLane.setScaleXaxis(new Scale_B12(inputLane.getxScale()));
+      computedLane.setScaleYaxis(new Scale_B12(inputLane.getyScale()));
 
       nodeList.setComputed(computedLane);
       return nodeList;
    }
 
-   private NodeListLL buildNodeLLList(J2735TravelerInputData.NodeXY[] inputNodes) {
+   public NodeListLL buildNodeLLList(J2735TravelerInputData.NodeXY[] inputNodes) {
       NodeListLL nodeList = new NodeListLL();
       NodeSetLL nodes = new NodeSetLL();
       for (int i = 0; i < inputNodes.length; i++) {
@@ -594,105 +608,118 @@ public class OssTravelerMessageBuilder {
          NodeLL node = new NodeLL();
          NodeOffsetPointLL nodePoint = new NodeOffsetPointLL();
 
-         if ("node-LL1".equals(point.delta)) {
-            Node_LL_24B xy = new Node_LL_24B(new OffsetLL_B12(point.nodeLat), new OffsetLL_B12(point.nodeLong));
-            nodePoint.setNode_LL1(xy);
-         }
-
-         if ("node-LL2".equals(point.delta)) {
-            Node_LL_28B xy = new Node_LL_28B(new OffsetLL_B14(point.nodeLat), new OffsetLL_B14(point.nodeLong));
-            nodePoint.setNode_LL2(xy);
-         }
-
-         if ("node-LL3".equals(point.delta)) {
-            Node_LL_32B xy = new Node_LL_32B(new OffsetLL_B16(point.nodeLat), new OffsetLL_B16(point.nodeLong));
-            nodePoint.setNode_LL3(xy);
-         }
-
-         if ("node-LL4".equals(point.delta)) {
-            Node_LL_36B xy = new Node_LL_36B(new OffsetLL_B18(point.nodeLat), new OffsetLL_B18(point.nodeLong));
-            nodePoint.setNode_LL4(xy);
-         }
-
-         if ("node-LL5".equals(point.delta)) {
-            Node_LL_44B xy = new Node_LL_44B(new OffsetLL_B22(point.nodeLat), new OffsetLL_B22(point.nodeLong));
-            nodePoint.setNode_LL5(xy);
-         }
-
-         if ("node-LL6".equals(point.delta)) {
-            Node_LL_48B xy = new Node_LL_48B(new OffsetLL_B24(point.nodeLat), new OffsetLL_B24(point.nodeLong));
-            nodePoint.setNode_LL6(xy);
-         }
-
-         if ("node-LatLon".equals(point.delta)) {
-            Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.nodeLat), new Latitude(point.nodeLong));
+         switch (point.getDelta()) {
+         case "node-LL1":
+            validateLL12Offset(point.getNodeLat());
+            validateLL12Offset(point.getNodeLong());
+            Node_LL_24B xy1 = new Node_LL_24B(new OffsetLL_B12(point.getNodeLat()), new OffsetLL_B12(point.getNodeLong()));
+            nodePoint.setNode_LL1(xy1);
+            break;
+         case "node-LL2":
+            validateLL14Offset(point.getNodeLat());
+            validateLL14Offset(point.getNodeLong());
+            Node_LL_28B xy2 = new Node_LL_28B(new OffsetLL_B14(point.getNodeLat()), new OffsetLL_B14(point.getNodeLong()));
+            nodePoint.setNode_LL2(xy2);
+            break;
+         case "node-LL3":
+            validateLL16Offset(point.getNodeLat());
+            validateLL16Offset(point.getNodeLong());
+            Node_LL_32B xy3 = new Node_LL_32B(new OffsetLL_B16(point.getNodeLat()), new OffsetLL_B16(point.getNodeLong()));
+            nodePoint.setNode_LL3(xy3);
+            break;
+         case "node-LL4":
+            validateLL18Offset(point.getNodeLat());
+            validateLL18Offset(point.getNodeLong());
+            Node_LL_36B xy4 = new Node_LL_36B(new OffsetLL_B18(point.getNodeLat()), new OffsetLL_B18(point.getNodeLong()));
+            nodePoint.setNode_LL4(xy4);
+            break;
+         case "node-LL5":
+            validateLL22Offset(point.getNodeLat());
+            validateLL22Offset(point.getNodeLong());
+            Node_LL_44B xy5 = new Node_LL_44B(new OffsetLL_B22(point.getNodeLat()), new OffsetLL_B22(point.getNodeLong()));
+            nodePoint.setNode_LL5(xy5);
+            break;
+         case "node-LL6":
+            validateLL24Offset(point.getNodeLat());
+            validateLL24Offset(point.getNodeLong());
+            Node_LL_48B xy6 = new Node_LL_48B(new OffsetLL_B24(point.getNodeLat()), new OffsetLL_B24(point.getNodeLong()));
+            nodePoint.setNode_LL6(xy6);
+            break;
+         case "node-LatLon":
+            validateLatitude(point.getNodeLat());
+            validateLongitude(point.getNodeLong());
+            Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.getNodeLong()), new Latitude(point.getNodeLat()));
             nodePoint.setNode_LatLon(nodeLatLong);
+            break;
+         default:
+            break;
          }
+
          node.setDelta(nodePoint);
+         if (point.getAttributes() != null) {
+            NodeAttributeSetLL attributes = new NodeAttributeSetLL();
 
-         NodeAttributeSetLL attributes = new NodeAttributeSetLL();
-
-         if (point.attributes.localNodes.length > 0) {
-            NodeAttributeLLList localNodeList = new NodeAttributeLLList();
-            for (J2735TravelerInputData.LocalNode localNode : point.attributes.localNodes) {
-               localNodeList.add(new NodeAttributeLL(localNode.type));
+            if (point.getAttributes().getLocalNodes().length > 0) {
+               NodeAttributeLLList localNodeList = new NodeAttributeLLList();
+               for (J2735TravelerInputData.LocalNode localNode : point.getAttributes().getLocalNodes()) {
+                  localNodeList.add(new NodeAttributeLL(localNode.getType()));
+               }
+               attributes.setLocalNode(localNodeList);
             }
-            attributes.setLocalNode(localNodeList);
-         }
 
-         if (point.attributes.disabledLists.length > 0) {
-            SegmentAttributeLLList disabledNodeList = new SegmentAttributeLLList();
-            for (J2735TravelerInputData.DisabledList disabledList : point.attributes.disabledLists) {
-               disabledNodeList.add(new SegmentAttributeLL(disabledList.type));
+            if (point.getAttributes().getDisabledLists().length > 0) {
+               SegmentAttributeLLList disabledNodeList = new SegmentAttributeLLList();
+               for (J2735TravelerInputData.DisabledList disabledList : point.getAttributes().getDisabledLists()) {
+                  disabledNodeList.add(new SegmentAttributeLL(disabledList.getType()));
+               }
+               attributes.setDisabled(disabledNodeList);
             }
-            attributes.setDisabled(disabledNodeList);
-         }
 
-         if (point.attributes.enabledLists.length > 0) {
-            SegmentAttributeLLList enabledNodeList = new SegmentAttributeLLList();
-            for (J2735TravelerInputData.EnabledList enabledList : point.attributes.enabledLists) {
-               enabledNodeList.add(new SegmentAttributeLL(enabledList.type));
+            if (point.getAttributes().getEnabledLists().length > 0) {
+               SegmentAttributeLLList enabledNodeList = new SegmentAttributeLLList();
+               for (J2735TravelerInputData.EnabledList enabledList : point.getAttributes().getEnabledLists()) {
+                  enabledNodeList.add(new SegmentAttributeLL(enabledList.getType()));
+               }
+               attributes.setEnabled(enabledNodeList);
             }
-            attributes.setEnabled(enabledNodeList);
-         }
 
-         if (point.attributes.dataLists.length > 0) {
-            LaneDataAttributeList dataNodeList = new LaneDataAttributeList();
-            for (J2735TravelerInputData.DataList dataList : point.attributes.dataLists) {
+            if (point.getAttributes().getDataLists().length > 0) {
+               LaneDataAttributeList dataNodeList = new LaneDataAttributeList();
+               for (J2735TravelerInputData.DataList dataList : point.getAttributes().getDataLists()) {
 
-               LaneDataAttribute dataAttribute = new LaneDataAttribute();
+                  LaneDataAttribute dataAttribute = new LaneDataAttribute();
 
-               dataAttribute.setPathEndPointAngle(new DeltaAngle(dataList.pathEndpointAngle));
-               dataAttribute.setLaneCrownPointCenter(new RoadwayCrownAngle(dataList.laneCrownCenter));
-               dataAttribute.setLaneCrownPointLeft(new RoadwayCrownAngle(dataList.laneCrownLeft));
-               dataAttribute.setLaneCrownPointRight(new RoadwayCrownAngle(dataList.laneCrownRight));
-               dataAttribute.setLaneAngle(new MergeDivergeNodeAngle(dataList.laneAngle));
+                  dataAttribute.setPathEndPointAngle(new DeltaAngle(dataList.getPathEndpointAngle()));
+                  dataAttribute.setLaneCrownPointCenter(new RoadwayCrownAngle(dataList.getLaneCrownCenter()));
+                  dataAttribute.setLaneCrownPointLeft(new RoadwayCrownAngle(dataList.getLaneCrownLeft()));
+                  dataAttribute.setLaneCrownPointRight(new RoadwayCrownAngle(dataList.getLaneCrownRight()));
+                  dataAttribute.setLaneAngle(new MergeDivergeNodeAngle(dataList.getLaneAngle()));
 
-               SpeedLimitList speedDataList = new SpeedLimitList();
-               for (J2735TravelerInputData.SpeedLimits speedLimit : dataList.speedLimits) {
-                  speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.type),
-                        new Velocity(speedLimit.velocity)));
+                  SpeedLimitList speedDataList = new SpeedLimitList();
+                  for (J2735TravelerInputData.SpeedLimits speedLimit : dataList.getSpeedLimits()) {
+                     speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.getType()),
+                           new Velocity(speedLimit.getVelocity())));
+                  }
+
+                  dataAttribute.setSpeedLimits(speedDataList);
+                  dataNodeList.add(dataAttribute);
                }
 
-               dataAttribute.setSpeedLimits(speedDataList);
-               dataNodeList.add(dataAttribute);
+               attributes.setData(dataNodeList);
             }
 
-            attributes.setData(dataNodeList);
+            attributes.setDWidth(new Offset_B10(point.getAttributes().getdWidth()));
+            attributes.setDElevation(new Offset_B10(point.getAttributes().getdElevation()));
+
+            node.setAttributes(attributes);
          }
-
-         attributes.setDWidth(new Offset_B10(point.attributes.dWidth));
-         attributes.setDElevation(new Offset_B10(point.attributes.dElevation));
-
-         node.setAttributes(attributes);
-
          nodes.add(node);
       }
       nodeList.setNodes(nodes);
       return nodeList;
    }
 
-   private long getMinuteOfTheYear(String timestamp) throws ParseException {
+   public long getMinuteOfTheYear(String timestamp) throws ParseException {
       ZonedDateTime start = DateTimeUtils.isoDateTime(timestamp);
       long diff = DateTimeUtils.difference(DateTimeUtils.isoDateTime(start.getYear() + "-01-01T00:00:00+00:00"), start);
       long minutes = diff / 60000;
@@ -762,6 +789,16 @@ public class OssTravelerMessageBuilder {
          throw new IllegalArgumentException("Invalid Longitude [-180 - 180]");
       if (position.getElevation().doubleValue() < -409.5 || position.getElevation().doubleValue() > 6143.9)
          throw new IllegalArgumentException("Invalid Elevation [-409.5 - 6143.9]");
+   }
+
+   public static void validateLatitude(long lat) {
+      if (lat < -90.0 || lat > 90)
+         throw new IllegalArgumentException("Invalid Latitude[-90 - 90]");
+   }
+
+   public static void validateLongitude(long lonng) {
+      if (lonng < -180.0 || lonng > 180.0)
+         throw new IllegalArgumentException("Invalid Longitude[-180 - 180]");
    }
 
    public static void validateHeading(String head) {
@@ -899,32 +936,32 @@ public class OssTravelerMessageBuilder {
          throw new IllegalArgumentException("Invalid B16_Offset [-32768 - 32767]");
    }
 
-   public static void validateLL12Offset(int b) {
+   public static void validateLL12Offset(long b) {
       if (b < -2048 || b > 2047)
          throw new IllegalArgumentException("Invalid B10_Offset [-2048 - 2047]");
    }
 
-   public static void validateLL14Offset(int b) {
+   public static void validateLL14Offset(long b) {
       if (b < -8192 || b > 8191)
          throw new IllegalArgumentException("Invalid B11_Offset [-8192 - 8191]");
    }
 
-   public static void validateLL16Offset(int b) {
+   public static void validateLL16Offset(long b) {
       if (b < -32768 || b > 32767)
          throw new IllegalArgumentException("Invalid B12_Offset [-32768 - 32767]");
    }
 
-   public static void validateLL18Offset(int b) {
+   public static void validateLL18Offset(long b) {
       if (b < -131072 || b > 131071)
          throw new IllegalArgumentException("Invalid B13_Offset [-131072 - 131071]");
    }
 
-   public static void validateLL22Offset(int b) {
+   public static void validateLL22Offset(long b) {
       if (b < -2097152 || b > 2097151)
          throw new IllegalArgumentException("Invalid B14_Offset [-2097152 - 2097151]");
    }
 
-   public static void validateLL24Offset(int b) {
+   public static void validateLL24Offset(long b) {
       if (b < -8388608 || b > 8388607)
          throw new IllegalArgumentException("Invalid B16_Offset [-8388608 - 8388608]");
    }

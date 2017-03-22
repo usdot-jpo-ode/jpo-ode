@@ -138,17 +138,17 @@ public class OssBsmPart2ContentTest {
         
         J2735SpecialVehicleExtensions actualValue = null;
         try {
-            actualValue = (J2735SpecialVehicleExtensions) OssBsmPart2Content.genericPart2Content(testSequence).value;
+            actualValue = (J2735SpecialVehicleExtensions) OssBsmPart2Content.genericPart2Content(testSequence).getValue();
             assertNotNull("J2735BsmPart2Content null", actualValue);
         } catch (OssBsmPart2Exception e) {
             fail("Unexpected exception: " + e.getClass());
         }
         
-        assertEquals("Incorrect SSPrights", expectedSspRights, actualValue.vehicleAlerts.sspRights);
-        assertEquals("Incorrect SirenInUse", expectedSirenInUse, actualValue.vehicleAlerts.sirenUse.name());
-        assertEquals("Incorrect LightbarInUse", expectedLightbarInUse, actualValue.vehicleAlerts.lightsUse.name());
-        assertEquals("Incorrect MultiVehicleResponse", expectedMultiVehicleResponse, actualValue.vehicleAlerts.multi.name());
-        assertEquals("Incorrect EventType", expectedTypeEvent, actualValue.description.typeEvent);
+        assertEquals("Incorrect SSPrights", expectedSspRights, actualValue.getVehicleAlerts().getSspRights());
+        assertEquals("Incorrect SirenInUse", expectedSirenInUse, actualValue.getVehicleAlerts().getSirenUse().name());
+        assertEquals("Incorrect LightbarInUse", expectedLightbarInUse, actualValue.getVehicleAlerts().getLightsUse().name());
+        assertEquals("Incorrect MultiVehicleResponse", expectedMultiVehicleResponse, actualValue.getVehicleAlerts().getMulti().name());
+        assertEquals("Incorrect EventType", expectedTypeEvent, actualValue.getDescription().getTypeEvent());
     }
     
     
@@ -178,12 +178,12 @@ public class OssBsmPart2ContentTest {
 
         J2735SupplementalVehicleExtensions actualValue = null;
         try {
-            actualValue = (J2735SupplementalVehicleExtensions) OssBsmPart2Content.genericPart2Content(testSequence).value;
+            actualValue = (J2735SupplementalVehicleExtensions) OssBsmPart2Content.genericPart2Content(testSequence).getValue();
             assertNotNull("J2735BsmPart2Content null", actualValue);
         } catch (OssBsmPart2Exception e) {
             fail("Unexpected exception: " + e.getClass());
         }
-        assertEquals(expectedBasicVehicleClass, actualValue.classification);
+        assertEquals(expectedBasicVehicleClass, actualValue.getClassification());
         
     }
     
@@ -237,15 +237,15 @@ public class OssBsmPart2ContentTest {
         
         J2735VehicleSafetyExtensions actualValue = null;
         try {
-            actualValue = (J2735VehicleSafetyExtensions) OssBsmPart2Content.genericPart2Content(testSequence).value;
+            actualValue = (J2735VehicleSafetyExtensions) OssBsmPart2Content.genericPart2Content(testSequence).getValue();
             assertNotNull("J2735BsmPart2Content null", actualValue);
         } catch (OssBsmPart2Exception e) {
             fail("Unexpected exception: " + e.getClass());
         }
-        assertEquals("Incorrect radius of curvature", expectedRadiusOfCurvature, actualValue.pathPrediction.radiusOfCurve);
-        assertEquals("Incorrect confidence", expectedConfidence, actualValue.pathPrediction.confidence);
+        assertEquals("Incorrect radius of curvature", expectedRadiusOfCurvature, actualValue.getPathPrediction().getRadiusOfCurve());
+        assertEquals("Incorrect confidence", expectedConfidence, actualValue.getPathPrediction().getConfidence());
         
-        for (Map.Entry<String, Boolean> curVal1 : actualValue.events.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal1 : actualValue.getEvents().entrySet()) {
             if (curVal1.getKey().equals(expectedVehicleEventFlag1) || curVal1.getKey().equals(expectedVehicleEventFlag2)) {
                 assertTrue("Expected " + curVal1.getKey() + " to be true", curVal1.getValue());
             } else {
@@ -253,7 +253,7 @@ public class OssBsmPart2ContentTest {
             }
         }
         
-        for (Map.Entry<String, Boolean> curVal2 : actualValue.lights.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal2 : actualValue.getLights().entrySet()) {
             if (curVal2.getKey().equals(expectedExteriorLights1) || curVal2.getKey().equals(expectedExteriorLights2)) {
                 assertTrue("Expected " + curVal2.getKey() + " to be true", curVal2.getValue());
             } else {

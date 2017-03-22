@@ -98,11 +98,11 @@
   },
   "rsus": [
     {
-      "target": "127.0.0.1",
-      "username": "user",
-      "password": "password",
-      "retries": "1",
-      "timeout": "2000"
+      "rsuTarget": "127.0.0.1",
+      "rsuUsername": "user",
+      "rsuPassword": "password",
+      "rsuRetries": "1",
+      "rsuTimeout": "2000"
     }
   ],
   "snmp": {

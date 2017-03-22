@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
 import groovy.lang.MissingPropertyException;
@@ -20,8 +21,9 @@ import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 
 @ConfigurationProperties("ode")
-@org.springframework.context.annotation.PropertySource("classpath:application.properties")
+@PropertySource("classpath:application.properties")
 public class OdeProperties implements EnvironmentAware {
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /////////////////////////////////////////////////////////////////////////////
@@ -31,7 +33,7 @@ public class OdeProperties implements EnvironmentAware {
 
     @Autowired
     private Environment env;
-    
+
     private List<Path> uploadLocations = new ArrayList<>();
 
     private String uploadLocationRoot = "uploads";
@@ -43,20 +45,50 @@ public class OdeProperties implements EnvironmentAware {
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
     private String ddsCasUrl = "https://cas.connectedvcs.com/accounts/v1/tickets";
     private String ddsCasUsername = "";
-    private String ddsCasPassword = "";
+    private String ddsCasPass = "";
     private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
 
     private String hostId;
 
-    public OdeProperties() throws Exception {
+    public OdeProperties() {
         super();
         init();
+    }
+    
+    public void init() {
+
+        uploadLocations.add(Paths.get(uploadLocationRoot));
+        uploadLocations.add(Paths.get(uploadLocationRoot, uploadLocationBsm));
+        uploadLocations.add(Paths.get(uploadLocationRoot, uploadLocationMessageFrame));
+
+        String hostname;
+        try {
+            hostname = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            // Let's just use a random hostname
+            hostname = UUID.randomUUID().toString();
+            logger.info("Unknown host error: {}, using random", e);
+        }
+        hostId = hostname;
+        logger.info("Host ID: {}", hostId);
+        EventLogger.logger.info("Initializing services on host {}", hostId);
+
+        if (kafkaBrokers == null) {
+            logger.info(
+                    "ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP from which will derive the Kafka bootstrap-server");
+            
+            kafkaBrokers = System.getenv("DOCKER_HOST_IP") + ":9092";
+        }
+
+        if (kafkaBrokers == null)
+            throw new MissingPropertyException(
+                    "Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
     }
 
     public List<Path> getUploadLocations() {
         return this.uploadLocations;
     }
-    
+
     public String getProperty(String key) {
         return env.getProperty(key);
     }
@@ -121,34 +153,6 @@ public class OdeProperties implements EnvironmentAware {
         this.env = env;
     }
 
-    public void init() throws Exception {
-        
-        uploadLocations.add(Paths.get(uploadLocationRoot));
-        uploadLocations.add(Paths.get(uploadLocationRoot, uploadLocationBsm));
-        uploadLocations.add(Paths.get(uploadLocationRoot, uploadLocationMessageFrame));
-        
-        String hostname;
-        try {
-            hostname = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            // Let's just use a random hostname
-            hostname = UUID.randomUUID().toString();
-            logger.info("Unknown host error: {}, using random", e);
-        }
-        hostId = hostname;
-        logger.info("Host ID: {}", hostId);
-        EventLogger.logger.info("Initializing services on host {}", hostId);
-
-        if (kafkaBrokers == null) {
-            logger.info(
-                    "ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP from which will derive the Kafka bootstrap-server");
-            kafkaBrokers = System.getenv("DOCKER_HOST_IP") + ":9092";
-        }
-
-        if (kafkaBrokers == null)
-            throw new MissingPropertyException("Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
-    }
-
     @Override
     public void setEnvironment(Environment environment) {
         env = environment;
@@ -170,36 +174,36 @@ public class OdeProperties implements EnvironmentAware {
         this.uploadLocationRoot = uploadLocationRoot;
     }
 
-   public String getDdsCasUrl() {
-      return ddsCasUrl;
-   }
+    public String getDdsCasUrl() {
+        return ddsCasUrl;
+    }
 
-   public void setDdsCasUrl(String ddsCasUrl) {
-      this.ddsCasUrl = ddsCasUrl;
-   }
+    public void setDdsCasUrl(String ddsCasUrl) {
+        this.ddsCasUrl = ddsCasUrl;
+    }
 
-   public String getDdsCasUsername() {
-      return ddsCasUsername;
-   }
+    public String getDdsCasUsername() {
+        return ddsCasUsername;
+    }
 
-   public void setDdsCasUsername(String ddsCasUsername) {
-      this.ddsCasUsername = ddsCasUsername;
-   }
+    public void setDdsCasUsername(String ddsCasUsername) {
+        this.ddsCasUsername = ddsCasUsername;
+    }
 
-   public String getDdsCasPassword() {
-      return ddsCasPassword;
-   }
+    public String getDdsCasPassword() {
+        return ddsCasPass;
+    }
 
-   public void setDdsCasPassword(String ddsCasPassword) {
-      this.ddsCasPassword = ddsCasPassword;
-   }
+    public void setDdsCasPassword(String ddsCasPassword) {
+        this.ddsCasPass = ddsCasPassword;
+    }
 
-   public String getDdsWebsocketUrl() {
-      return ddsWebsocketUrl;
-   }
+    public String getDdsWebsocketUrl() {
+        return ddsWebsocketUrl;
+    }
 
-   public void setDdsWebsocketUrl(String ddsWebsocketUrl) {
-      this.ddsWebsocketUrl = ddsWebsocketUrl;
-   }
+    public void setDdsWebsocketUrl(String ddsWebsocketUrl) {
+        this.ddsWebsocketUrl = ddsWebsocketUrl;
+    }
 
 }

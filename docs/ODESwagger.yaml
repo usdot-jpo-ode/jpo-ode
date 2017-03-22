@@ -65,6 +65,26 @@ paths:
           description: OID responses
         400:
           description: Value input error
+  /pdm:
+    post:
+      summary: PDM Interface
+      operationId: Send pdm message
+      description: |
+        The PDM endpoint returns a constructed PDM message
+      parameters:
+        - name: ProbeDataManagement
+          in: body
+          description: PDM Message
+          required: true
+          schema: 
+            $ref: '#/definitions/J2735ProbeDataManagement'
+      tags:
+        - PDM
+      responses:
+        200:
+          description: A list of RSUs with a success status, and 0 as the error status code.
+        400:
+          description: If RSU responds but deposit fails, then it returns snmp error status. If RSU does not respond, then it returns empty response error.
 definitions:
   tim:
     type: object
@@ -87,7 +107,6 @@ definitions:
         $ref: '#/definitions/SNMP'
       sdw:
         $ref: '#/definitions/SDW'
-      
   J2735MessageTraveler:
     type: object
     properties:
@@ -101,6 +120,22 @@ definitions:
         $ref: '#/definitions/SNMP'
       sdw:
         $ref: '#/definitions/SDW'
+  J2735ProbeDataManagement:
+    type: object
+    properties:
+      ode:
+        $ref: '#/definitions/Ode'
+      pdm:
+        $ref: '#/definitions/PDM'
+      rsuList:
+        type: array
+        items:
+           $ref: '#/definitions/RSU'
+  Ode:
+    type: object
+    properties:
+      version:
+        type: integer
   TravelerDataFrameHeader:
     type: object
     required : [sspindex, travelerInfoType, SignPriority, MinuteOfTheYear]
@@ -214,7 +249,7 @@ definitions:
       closedPath:
         type: string
       direction: 
-        type: integer
+        type: string
       description:
         type: string
       path:
@@ -471,15 +506,15 @@ definitions:
   RSU:
     type: object
     properties: 
-      target:
+      rsuTarget:
         type: string
-      username:
+      rsuUsername:
         type: string
-      password: 
+      rsuPassword: 
         type: string
-      retries:
+      rsuRetries:
         type: string
-      timeoust: 
+      rsuTimeout: 
         type: string 
   SDW:
     type: object
@@ -498,8 +533,57 @@ definitions:
             type: string
           longitude:
             type: string
-            
-    
+  
+  PDM:
+    type: object
+    properties:
+      sampleStart:
+        type: string
+      sampleEnd:
+        type: string
+      directions:
+        type: string
+      termChoice:
+        type: string
+      termTime:
+        type: string
+      termDistance:
+        type: string
+      snapshotChoice:
+        type: string
+      minSnapshotTime:
+        type: string
+      maxSnapshotTime:
+        type: string
+      minSnapshotDistance:
+        type: string
+      maxSnapshotDistance:
+        type: string
+      snapshotMinSpeed:
+        type: string
+      snapshotMaxSpeed:
+        type: string
+      txInterval:
+        type: string
+      vehicleStatusRequestList:
+        type: array
+        items:
+          $ref: '#/definitions/VehicleStatusRequest'
+  VehicleStatusRequest:
+    type: object
+    properties:
+      tag:
+        type: string
+      subTag:
+        type: string
+      lessThenValue:
+        type: string
+      moreThenValue:
+        type: string
+      sendAll:
+        type: string
+      status:
+        type: string
   Error:
     type: object
     properties:

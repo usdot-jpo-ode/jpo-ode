@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.importer;
 
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
@@ -134,6 +133,7 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
             try {
                 wk = watcher.take();
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); 
                 logger.error("[CRITICAL] IMPORTER - Watch service interrupted: {}", e);
                 return;
             }

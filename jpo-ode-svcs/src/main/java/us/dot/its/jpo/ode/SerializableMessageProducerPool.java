@@ -11,7 +11,7 @@ public class SerializableMessageProducerPool<K, V> extends SerializableObjectPoo
 
    private static final long serialVersionUID = -2293786403623236678L;
 
-   OdeProperties odeProperties;
+   transient OdeProperties odeProperties;
 
    private String brokers;
    private String type;

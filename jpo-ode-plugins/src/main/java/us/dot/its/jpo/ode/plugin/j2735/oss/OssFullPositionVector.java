@@ -44,39 +44,39 @@ public class OssFullPositionVector {
         // Required elements
         J2735FullPositionVector fpv = new J2735FullPositionVector();
         
-        fpv.position = new J2735Position3D(
+        fpv.setPosition(new J2735Position3D(
                 initialPosition.lat.longValue(), 
                 initialPosition._long.longValue(),
-                initialPosition.elevation.longValue());
+                initialPosition.elevation.longValue()));
         
         // Optional elements
         if (initialPosition.heading != null) {
-            fpv.heading = OssHeading.genericHeading(initialPosition.heading);
+            fpv.setHeading(OssHeading.genericHeading(initialPosition.heading));
         }
 
         if (initialPosition.posAccuracy != null) {
-            fpv.posAccuracy = OssPositionalAccuracy.genericPositionalAccuracy(initialPosition.posAccuracy);
+            fpv.setPosAccuracy(OssPositionalAccuracy.genericPositionalAccuracy(initialPosition.posAccuracy));
         }
 
         if (initialPosition.posConfidence != null) {
-            fpv.posConfidence = OssPositionConfidenceSet.genericPositionConfidenceSet(initialPosition.posConfidence);
+            fpv.setPosConfidence(OssPositionConfidenceSet.genericPositionConfidenceSet(initialPosition.posConfidence));
         }
 
         if (initialPosition.speed != null) {
-            fpv.speed = OssTransmissionAndSpeed.genericTransmissionAndSpeed(initialPosition.speed);
+            fpv.setSpeed(OssTransmissionAndSpeed.genericTransmissionAndSpeed(initialPosition.speed));
         }
 
         if (initialPosition.speedConfidence != null) {
-            fpv.speedConfidence = OssSpeedandHeadingandThrottleConfidence
-                    .genericSpeedandHeadingandThrottleConfidence(initialPosition.speedConfidence);
+            fpv.setSpeedConfidence(OssSpeedandHeadingandThrottleConfidence
+                    .genericSpeedandHeadingandThrottleConfidence(initialPosition.speedConfidence));
         }
 
         if (initialPosition.timeConfidence != null) {
-            fpv.timeConfidence = J2735TimeConfidence.values()[initialPosition.timeConfidence.indexOf()];
+            fpv.setTimeConfidence(J2735TimeConfidence.values()[initialPosition.timeConfidence.indexOf()]);
         }
 
         if (initialPosition.utcTime != null) {
-            fpv.utcTime = OssDDateTime.genericDDateTime(initialPosition.utcTime);
+            fpv.setUtcTime(OssDDateTime.genericDDateTime(initialPosition.utcTime));
         }
 
         return fpv;

@@ -30,8 +30,8 @@ public class OssPrivilegedEvents {
             }
         }
 
-        pe.event = flags;
-        pe.sspRights = events.sspRights.intValue();
+        pe.setEvent(flags);
+        pe.setSspRights(events.sspRights.intValue());
 
         return pe;
     }

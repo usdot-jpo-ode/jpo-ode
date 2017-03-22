@@ -22,14 +22,14 @@ public class OssEventDescription {
         J2735EventDescription desc = new J2735EventDescription();
 
         // Required element
-        desc.typeEvent = description.typeEvent.intValue();
+        desc.setTypeEvent(description.typeEvent.intValue());
 
         // Optional elements
         if (description.hasDescription()) {
-            desc.description = buildDescription(description.description);
+            desc.setDescription(buildDescription(description.description));
         }
         if (description.hasPriority()) {
-            desc.priority = CodecUtils.toHex(description.priority.byteArrayValue());
+            desc.setPriority(CodecUtils.toHex(description.priority.byteArrayValue()));
         }
         if (description.hasHeading()) {
             
@@ -45,18 +45,18 @@ public class OssEventDescription {
                 }
             }
             
-            desc.heading = headingSlice;
+            desc.setHeading(headingSlice);
             
         }
         if (description.hasExtent()) {
-            desc.extent = J2735Extent.values()[description.extent.indexOf()];
+            desc.setExtent(J2735Extent.values()[description.extent.indexOf()]);
         }
         if (description.hasRegional()) {
             while (description.regional.elements().hasMoreElements()) {
                 us.dot.its.jpo.ode.j2735.dsrc.EventDescription.Regional.Sequence_ element = 
                         (us.dot.its.jpo.ode.j2735.dsrc.EventDescription.Regional.Sequence_) description.regional
                         .elements().nextElement();
-                desc.regional.add(new J2735RegionalContent().setId(element.regionId.intValue())
+                desc.getRegional().add(new J2735RegionalContent().setId(element.regionId.intValue())
                         .setValue(element.regExtValue.getEncodedValue()));
             }
         }

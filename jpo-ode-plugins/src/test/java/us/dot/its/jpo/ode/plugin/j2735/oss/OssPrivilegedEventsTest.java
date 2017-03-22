@@ -4,10 +4,8 @@ import static org.junit.Assert.*;
 
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
-import com.oss.asn1.BitString;
 
 import us.dot.its.jpo.ode.j2735.dsrc.PrivilegedEventFlags;
 import us.dot.its.jpo.ode.j2735.dsrc.PrivilegedEvents;
@@ -88,7 +86,7 @@ public class OssPrivilegedEventsTest {
         
         J2735PrivilegedEvents actualEvents = OssPrivilegedEvents.genericPrivilegedEvents(testEvents);
         
-        assertEquals(expectedValue, actualEvents.sspRights);
+        assertEquals(expectedValue, actualEvents.getSspRights());
         
     }
     
@@ -111,7 +109,7 @@ public class OssPrivilegedEventsTest {
         
         J2735PrivilegedEvents actualEvents = OssPrivilegedEvents.genericPrivilegedEvents(testEvents);
         
-        assertEquals(expectedValue, actualEvents.sspRights);
+        assertEquals(expectedValue, actualEvents.getSspRights());
     }
     
     /**
@@ -132,7 +130,7 @@ public class OssPrivilegedEventsTest {
         
         J2735PrivilegedEvents actualEvents = OssPrivilegedEvents.genericPrivilegedEvents(testEvents);
         
-        assertEquals(expectedValue, actualEvents.sspRights);
+        assertEquals(expectedValue, actualEvents.getSspRights());
     }
     
     /**
@@ -154,7 +152,7 @@ public class OssPrivilegedEventsTest {
         
         J2735PrivilegedEvents actualEvents = OssPrivilegedEvents.genericPrivilegedEvents(testEvents);
         
-        assertEquals(expectedValue, actualEvents.sspRights);
+        assertEquals(expectedValue, actualEvents.getSspRights());
     }
     
     /**
@@ -176,7 +174,7 @@ public class OssPrivilegedEventsTest {
         
         J2735PrivilegedEvents actualEvents = OssPrivilegedEvents.genericPrivilegedEvents(testEvents);
         
-        assertEquals(expectedValue, actualEvents.sspRights);
+        assertEquals(expectedValue, actualEvents.getSspRights());
     }
     
     /**
@@ -245,7 +243,7 @@ public class OssPrivilegedEventsTest {
         
         J2735PrivilegedEvents actualEvents = OssPrivilegedEvents.genericPrivilegedEvents(testEvents);
         
-        for (Map.Entry<String, Boolean> entry : actualEvents.event.entrySet()) {
+        for (Map.Entry<String, Boolean> entry : actualEvents.getEvent().entrySet()) {
             
             assertFalse("Expected " + entry.getKey() + " to be false", entry.getValue());
             
@@ -269,7 +267,7 @@ public class OssPrivilegedEventsTest {
         
         J2735PrivilegedEvents actualEvents = OssPrivilegedEvents.genericPrivilegedEvents(testEvents);
         
-        for (Map.Entry<String, Boolean> entry : actualEvents.event.entrySet()) {
+        for (Map.Entry<String, Boolean> entry : actualEvents.getEvent().entrySet()) {
             assertTrue("Expected " + entry.getKey() + " to be true", entry.getValue());
         }
         
@@ -293,7 +291,7 @@ public class OssPrivilegedEventsTest {
         
         J2735PrivilegedEvents actualEvents = OssPrivilegedEvents.genericPrivilegedEvents(testEvents);
         
-        for (Map.Entry<String, Boolean> curVal : actualEvents.event.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal : actualEvents.getEvent().entrySet()) {
             if(curVal.getKey() == elementTested) {
                 assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {
@@ -321,7 +319,7 @@ public class OssPrivilegedEventsTest {
         
         J2735PrivilegedEvents actualEvents = OssPrivilegedEvents.genericPrivilegedEvents(testEvents);
         
-        for (Map.Entry<String, Boolean> curVal : actualEvents.event.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal : actualEvents.getEvent().entrySet()) {
             if(curVal.getKey() == elementTested) {
                 assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {
@@ -349,7 +347,7 @@ public class OssPrivilegedEventsTest {
         
         J2735PrivilegedEvents actualEvents = OssPrivilegedEvents.genericPrivilegedEvents(testEvents);
         
-        for (Map.Entry<String, Boolean> curVal : actualEvents.event.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal : actualEvents.getEvent().entrySet()) {
             if(curVal.getKey() == elementTested) {
                 assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {
@@ -377,7 +375,7 @@ public class OssPrivilegedEventsTest {
         
         J2735PrivilegedEvents actualEvents = OssPrivilegedEvents.genericPrivilegedEvents(testEvents);
         
-        for (Map.Entry<String, Boolean> curVal : actualEvents.event.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal : actualEvents.getEvent().entrySet()) {
             if(curVal.getKey() == elementTested) {
                 assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {
@@ -407,7 +405,7 @@ public class OssPrivilegedEventsTest {
         
         J2735PrivilegedEvents actualEvents = OssPrivilegedEvents.genericPrivilegedEvents(testEvents);
         
-        for (Map.Entry<String, Boolean> curVal : actualEvents.event.entrySet()) {
+        for (Map.Entry<String, Boolean> curVal : actualEvents.getEvent().entrySet()) {
             if(curVal.getKey() == elementTested1 || curVal.getKey() == elementTested2) {
                 assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
             } else {

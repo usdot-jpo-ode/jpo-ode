@@ -20,16 +20,16 @@ public class OssObstacleDetection {
 
         // Required elements
         J2735ObstacleDetection ob = new J2735ObstacleDetection();
-        ob.obDist = obstacle.obDist.intValue();
-        ob.obDirect = OssAngle.genericAngle(obstacle.obDirect);
-        ob.dateTime = OssDDateTime.genericDDateTime(obstacle.dateTime);
+        ob.setObDist(obstacle.obDist.intValue());
+        ob.setObDirect(OssAngle.genericAngle(obstacle.obDirect));
+        ob.setDateTime(OssDDateTime.genericDDateTime(obstacle.dateTime));
 
         // Optional elements
         if (obstacle.description != null) {
-            ob.description = obstacle.description.intValue();
+            ob.setDescription(obstacle.description.intValue());
         }
         if (obstacle.locationDetails != null) {
-            ob.locationDetails = OssNamedNumber.genericGenericLocations(obstacle.locationDetails);
+            ob.setLocationDetails(OssNamedNumber.genericGenericLocations(obstacle.locationDetails));
         }
 
         J2735VertEvent event = new J2735VertEvent();
@@ -43,7 +43,7 @@ public class OssObstacleDetection {
             }
         }
 
-        ob.vertEvent = event;
+        ob.setVertEvent(event);
 
         return ob;
     }

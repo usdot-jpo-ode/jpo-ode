@@ -37,9 +37,9 @@ public class OssSpeedandHeadingandThrottleConfidence {
 
         J2735SpeedandHeadingandThrottleConfidence shtc = new J2735SpeedandHeadingandThrottleConfidence();
 
-        shtc.heading = J2735HeadingConfidence.values()[speedConfidence.heading.indexOf()];
-        shtc.speed = J2735SpeedConfidence.values()[speedConfidence.speed.indexOf()];
-        shtc.throttle = J2735ThrottleConfidence.values()[speedConfidence.throttle.indexOf()];
+        shtc.setHeading(J2735HeadingConfidence.values()[speedConfidence.heading.indexOf()]);
+        shtc.setSpeed(J2735SpeedConfidence.values()[speedConfidence.speed.indexOf()]);
+        shtc.setThrottle(J2735ThrottleConfidence.values()[speedConfidence.throttle.indexOf()]);
 
         return shtc;
     }

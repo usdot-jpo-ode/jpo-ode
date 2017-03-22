@@ -23,6 +23,7 @@ import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import mockit.Tested;
 import mockit.Verifications;
 
 public class TimManagerServiceTest {
@@ -78,50 +79,6 @@ public class TimManagerServiceTest {
 
     }
 
-//    @Test
-//    public void createAndSendShouldReturnNullWhenSetThrowsException(@Mocked TimParameters mockTimParameters,
-//            @Mocked SnmpProperties mockSnmpProperties, @Mocked final Logger logger,
-//            @Mocked final SnmpSession mockSnmpSession, @Mocked final TimManagerService mockTimManagerService,
-//            @Mocked ScopedPDU mockScopedPDU, @Mocked Snmp mockSnmp, @Mocked TransportMapping mockTransport,
-//            @Mocked UserTarget mockTarget) {
-//
-//        IOException expectedException = new IOException("testException123");
-//        try {
-//            new Expectations() {
-//                {
-//                    new SnmpSession(mockSnmpProperties);
-//                    result = mockSnmpSession;
-//                    
-//                    mockSnmpSession.set((ScopedPDU) any, (Snmp) any, (TransportMapping) any, (UserTarget) any);
-//                    result = expectedException;
-//
-//                    mockSnmpSession.getSnmp();
-//                    result = mockSnmp;
-//                    mockSnmpSession.getTransport();
-//                    result = mockTransport;
-//                    mockSnmpSession.getTarget();
-//                    result = mockTarget;
-//                    
-//                    
-//                    TimManagerService.createPDU(mockTimParameters);
-//                    result = mockScopedPDU;
-//                    
-//                }
-//            };
-//            
-//        } catch (IOException e) {
-//            fail("Unexpected exception mocking SnmpSession constructor: " + e);
-//        }
-//        
-//        
-//        assertNull(TimManagerService.createAndSend(mockTimParameters, mockSnmpProperties));
-//        new Verifications() {
-//            {
-//                logger.error("TIM SERVICE - Error while sending PDU: {}", expectedException);
-//            }
-//        };
-//    }
-
     // Create PDU tests
     @Test
     public void createPDUshouldReturnNullWhenGivenNullParams() {
@@ -155,5 +112,61 @@ public class TimManagerServiceTest {
 
         assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result.getType());
         assertEquals(expectedResult, result.getVariableBindings().toString());
+    }
+    
+    @Tested @Mocked TimManagerService timManagerServiceTest;
+    
+    @Test
+    public void createAndSendShouldSendPDU(@Mocked TimParameters mockTimParameters,
+            @Mocked SnmpProperties mockSnmpProperties, @Mocked final Logger logger,
+            @Mocked SnmpSession mockSnmpSession,
+            @Mocked ScopedPDU mockScopedPDU,
+            @Mocked ResponseEvent mockResponseEvent) {
+
+        try {
+            new Expectations() {
+                {
+                	TimManagerService.createPDU((TimParameters)any);
+                    result = mockScopedPDU;
+                    mockSnmpSession.set(mockScopedPDU, (Snmp)any, (TransportMapping)any, (UserTarget)any);
+                    result = mockResponseEvent;
+                    
+                }
+            };
+        } catch (IOException e) {
+            fail("Unexpected exception: " + e);
+        }
+
+        assertEquals(mockResponseEvent, TimManagerService.createAndSend(mockTimParameters, mockSnmpProperties));
+    }
+    
+    @Test
+    public void createAndSendShouldThrowPDUException(@Mocked TimParameters mockTimParameters,
+            @Mocked SnmpProperties mockSnmpProperties, @Mocked final Logger logger,
+            @Mocked SnmpSession mockSnmpSession,
+            @Mocked ScopedPDU mockScopedPDU,
+            @Mocked ResponseEvent mockResponseEvent) {
+
+        IOException expectedException = new IOException("testException123");
+        try {
+            new Expectations() {
+                {
+                	TimManagerService.createPDU((TimParameters)any);
+                    result = mockScopedPDU;
+                    mockSnmpSession.set(mockScopedPDU, (Snmp)any, (TransportMapping)any, (UserTarget)any);
+                    result = expectedException;
+                }
+            };
+        } catch (IOException e) {
+            fail("Unexpected exception: " + e);
+        }
+        System.out.println("test 2");
+        assertNull(TimManagerService.createAndSend(mockTimParameters, mockSnmpProperties));
+
+        new Verifications() {
+            {
+                logger.error("TIM SERVICE - Error while sending PDU: {}", expectedException);
+            }
+        };
     }
 }

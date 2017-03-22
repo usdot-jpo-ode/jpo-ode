@@ -49,14 +49,14 @@ public class OssBsmPart2Content {
             throws OssBsmPart2Exception {
         J2735BsmPart2Content part2Content = new J2735BsmPart2Content();
 
-        part2Content.id = id;
+        part2Content.setId(id);
 
         PERUnalignedCoder coder = J2735.getPERUnalignedCoder();
 
-        switch (part2Content.id) {
-        case specialVehicleExt:
+        switch (part2Content.getId()) {
+        case SPECIALVEHICLEEXT:
             J2735SpecialVehicleExtensions specVeh = new J2735SpecialVehicleExtensions();
-            part2Content.value = specVeh;
+            part2Content.setValue(specVeh);
 
             SpecialVehicleExtensions sp;
             if (value.getDecodedValue() != null) {
@@ -73,18 +73,18 @@ public class OssBsmPart2Content {
             }
 
             if (sp.hasVehicleAlerts()) {
-                specVeh.vehicleAlerts = OssEmergencyDetails.genericEmergencyDetails(sp.vehicleAlerts);
+                specVeh.setVehicleAlerts(OssEmergencyDetails.genericEmergencyDetails(sp.vehicleAlerts));
             }
             if (sp.hasDescription()) {
-                specVeh.description = OssEventDescription.genericEventDescription(sp.description);
+                specVeh.setDescription(OssEventDescription.genericEventDescription(sp.description));
             }
             if (sp.hasTrailers()) {
-                specVeh.trailers = OssTrailerData.genericTrailerData(sp.trailers);
+                specVeh.setTrailers(OssTrailerData.genericTrailerData(sp.trailers));
             }
             break;
-        case supplementalVehicleExt:
+        case SUPPLEMENTALVEHICLEEXT:
             J2735SupplementalVehicleExtensions supVeh = new J2735SupplementalVehicleExtensions();
-            part2Content.value = supVeh;
+            part2Content.setValue(supVeh);
             
             SupplementalVehicleExtensions sve;
             if (value.getDecodedValue() != null) {
@@ -99,13 +99,13 @@ public class OssBsmPart2Content {
             } else {
                 throw new OssBsmPart2Exception("No OpenType value");
             }
-            part2Content.value = OssSupplementalVehicleExtensions
-                    .genericSupplementalVehicleExtensions(sve);
+            part2Content.setValue(OssSupplementalVehicleExtensions
+                    .genericSupplementalVehicleExtensions(sve));
 
             break;
-        case vehicleSafetyExt:
+        case VEHICLESAFETYEXT:
             J2735VehicleSafetyExtensions vehSafety = new J2735VehicleSafetyExtensions();
-            part2Content.value = vehSafety;
+            part2Content.setValue(vehSafety);
 
             VehicleSafetyExtensions vse;
             if (value.getDecodedValue() != null) {
@@ -131,7 +131,7 @@ public class OssBsmPart2Content {
                         eventFlags.put(flagName, flagStatus);
                     }
                 }
-                vehSafety.events = eventFlags;
+                vehSafety.setEvents(eventFlags);
             }
             if (vse.hasLights()) {
                 
@@ -146,14 +146,14 @@ public class OssBsmPart2Content {
                     }
                 }
                 
-                vehSafety.lights = exteriorLights;
+                vehSafety.setLights(exteriorLights);
                 
             }
             if (vse.hasPathHistory()) {
-                vehSafety.pathHistory = OssPathHistory.genericPathHistory(vse.pathHistory);
+                vehSafety.setPathHistory(OssPathHistory.genericPathHistory(vse.pathHistory));
             }
             if (vse.hasPathPrediction()) {
-                vehSafety.pathPrediction = OssPathPrediction.genericPathPrediction(vse.pathPrediction);
+                vehSafety.setPathPrediction(OssPathPrediction.genericPathPrediction(vse.pathPrediction));
             }
 
             break;

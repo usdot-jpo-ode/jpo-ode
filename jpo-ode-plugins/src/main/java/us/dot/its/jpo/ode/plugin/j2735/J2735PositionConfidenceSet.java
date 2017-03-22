@@ -42,7 +42,23 @@ public class J2735PositionConfidenceSet extends Asn1Object {
 		elev_000_01
 	}
 	
-	public J2735PositionConfidence pos;
-	public J2735ElevationConfidence elevation;
+	private J2735PositionConfidence pos;
+	private J2735ElevationConfidence elevation;
+
+	public J2735PositionConfidence getPos() {
+		return pos;
+	}
+
+	public void setPos(J2735PositionConfidence pos) {
+		this.pos = pos;
+	}
+
+	public J2735ElevationConfidence getElevation() {
+		return elevation;
+	}
+
+	public void setElevation(J2735ElevationConfidence elevation) {
+		this.elevation = elevation;
+	}
 
 }

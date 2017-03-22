@@ -28,8 +28,8 @@ public class OssPositionConfidenceSet {
 
         J2735PositionConfidenceSet pc = new J2735PositionConfidenceSet();
         
-        pc.pos = J2735PositionConfidence.values()[posConfidence.pos.indexOf()];
-        pc.elevation = J2735ElevationConfidence.values()[posConfidence.elevation.indexOf()];
+        pc.setPos(J2735PositionConfidence.values()[posConfidence.pos.indexOf()]);
+        pc.setElevation(J2735ElevationConfidence.values()[posConfidence.elevation.indexOf()]);
         
         return pc;
     }

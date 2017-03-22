@@ -1,0 +1,48 @@
+{
+  "ode": {
+    "version": 2
+  },
+  "pdm": {
+    "timeStamp": "2017-12-01T17:47:11-05:00",
+    "sampleStart": "200",
+    "sampleEnd": "220",
+    "heading": "1010101010101010",
+    "termTime": "400",
+    "snapshot": "SnapshotTime",
+    "sTime": {
+      "speed1": "15",
+      "speed2": "20",
+      "second1": "5",
+      "second2": "7"
+    },
+    "tsInterval": "50",
+    "dataList": [
+      {
+        "dataType": "5",
+        "subType": "7",
+        "sendOnLessThanValue": "-1500",
+        "sendOnMoreThanValue": "-1000",
+        "sendAll": "true"
+      }
+    ],
+  "rsus": [
+    {
+      "rsuTarget": "127.0.0.1",
+      "rsuUsername": "user",
+      "rsuPassword": "password",
+      "rsuRetries": "1",
+      "rsuTimeout": "2000"
+    }
+  ],
+  "snmp": {
+    "rsuid": "8300",
+    "msgid": "31",
+    "mode": "1",
+    "channel": "178",
+    "interval": "1",
+    "deliverystart": "2017-12-01T17:47:11-05:00",
+    "deliverystop": "2017-12-01T17:47:11-05:15",
+    "enable": "1",
+    "status": "4"
+  }
+}

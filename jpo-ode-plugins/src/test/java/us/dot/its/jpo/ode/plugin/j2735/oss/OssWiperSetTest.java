@@ -79,7 +79,7 @@ public class OssWiperSetTest {
                 testWiperStatusRear,
                 testWiperRateRear);
         
-        J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).statusFront;
+        J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).getStatusFront();
         
         assertEquals(expectedValue, actualValue);
         
@@ -104,7 +104,7 @@ public class OssWiperSetTest {
                 testWiperStatusRear,
                 testWiperRateRear);
         
-        J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).statusFront;
+        J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).getStatusFront();
         
         assertEquals(expectedValue, actualValue);
         
@@ -129,7 +129,7 @@ public class OssWiperSetTest {
                 testWiperStatusRear,
                 testWiperRateRear);
         
-        J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).statusFront;
+        J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).getStatusFront();
         
         assertEquals(expectedValue, actualValue);
         
@@ -154,7 +154,7 @@ public class OssWiperSetTest {
                 testWiperRateRear);
         
         try {
-            J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).statusFront;
+            J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).getStatusFront();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -181,7 +181,7 @@ public class OssWiperSetTest {
                 testWiperRateRear);
         
         try {
-            J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).statusFront;
+            J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).getStatusFront();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -209,7 +209,7 @@ public class OssWiperSetTest {
                 testWiperStatusRear,
                 testWiperRateRear);
         
-        J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).statusRear;
+        J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).getStatusRear();
         
         assertEquals(expectedValue, actualValue);
         
@@ -234,7 +234,7 @@ public class OssWiperSetTest {
                 testWiperStatusRear,
                 testWiperRateRear);
         
-        J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).statusRear;
+        J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).getStatusRear();
         
         assertEquals(expectedValue, actualValue);
         
@@ -259,7 +259,7 @@ public class OssWiperSetTest {
                 testWiperStatusRear,
                 testWiperRateRear);
         
-        J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).statusRear;
+        J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).getStatusRear();
         
         assertEquals(expectedValue, actualValue);
         
@@ -284,7 +284,7 @@ public class OssWiperSetTest {
                 testWiperRateRear);
         
         try {
-            J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).statusRear;
+            J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).getStatusRear();
             fail("Exepcted IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -311,7 +311,7 @@ public class OssWiperSetTest {
                 testWiperRateRear);
         
         try {
-            J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).statusRear;
+            J2735WiperStatus actualValue = OssWiperSet.genericWiperSet(testWiperSet).getStatusRear();
             fail("Exepcted IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -340,7 +340,7 @@ public class OssWiperSetTest {
                 testWiperStatusRear,
                 testWiperRateRear);
         
-        Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).rateFront;
+        Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).getRateFront();
         
         assertEquals(expectedValue, actualValue);
         
@@ -365,7 +365,7 @@ public class OssWiperSetTest {
                 testWiperStatusRear,
                 testWiperRateRear);
         
-        Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).rateFront;
+        Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).getRateFront();
         
         assertEquals(expectedValue, actualValue);
         
@@ -390,7 +390,7 @@ public class OssWiperSetTest {
                 testWiperStatusRear,
                 testWiperRateRear);
         
-        Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).rateFront;
+        Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).getRateFront();
         
         assertEquals(expectedValue, actualValue);
         
@@ -415,7 +415,7 @@ public class OssWiperSetTest {
                 testWiperStatusRear,
                 testWiperRateRear);
         
-        Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).rateFront;
+        Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).getRateFront();
         
         assertEquals(expectedValue, actualValue);
         
@@ -440,7 +440,7 @@ public class OssWiperSetTest {
                 testWiperRateRear);
         
         try {
-            Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).rateFront;
+            Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).getRateFront();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -467,7 +467,7 @@ public class OssWiperSetTest {
                 testWiperRateRear);
         
         try {
-            Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).rateFront;
+            Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).getRateFront();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -496,7 +496,7 @@ public class OssWiperSetTest {
                 testWiperStatusRear,
                 testWiperRateRear);
         
-        Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).rateRear;
+        Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).getRateRear();
         
         assertEquals(expectedValue, actualValue);
         
@@ -521,7 +521,7 @@ public class OssWiperSetTest {
                 testWiperStatusRear,
                 testWiperRateRear);
         
-        Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).rateRear;
+        Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).getRateRear();
         
         assertEquals(expectedValue, actualValue);
         
@@ -546,7 +546,7 @@ public class OssWiperSetTest {
                 testWiperStatusRear,
                 testWiperRateRear);
         
-        Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).rateRear;
+        Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).getRateRear();
         
         assertEquals(expectedValue, actualValue);
         
@@ -571,7 +571,7 @@ public class OssWiperSetTest {
                 testWiperStatusRear,
                 testWiperRateRear);
         
-        Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).rateRear;
+        Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).getRateRear();
         
         assertEquals(expectedValue, actualValue);
         
@@ -596,7 +596,7 @@ public class OssWiperSetTest {
                 testWiperRateRear);
         
         try {
-            Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).rateRear;
+            Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).getRateRear();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -623,7 +623,7 @@ public class OssWiperSetTest {
                 testWiperRateRear);
         
         try {
-            Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).rateRear;
+            Integer actualValue = OssWiperSet.genericWiperSet(testWiperSet).getRateRear();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());

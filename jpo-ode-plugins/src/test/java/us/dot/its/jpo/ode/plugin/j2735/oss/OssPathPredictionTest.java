@@ -77,7 +77,7 @@ public class OssPathPredictionTest {
         
         PathPrediction testPathPrediction = new PathPrediction(testRadiusOfCurvature, testConfidence);
         
-        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).radiusOfCurve;
+        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).getRadiusOfCurve();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -96,7 +96,7 @@ public class OssPathPredictionTest {
         
         PathPrediction testPathPrediction = new PathPrediction(testRadiusOfCurvature, testConfidence);
         
-        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).radiusOfCurve;
+        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).getRadiusOfCurve();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -115,7 +115,7 @@ public class OssPathPredictionTest {
         
         PathPrediction testPathPrediction = new PathPrediction(testRadiusOfCurvature, testConfidence);
         
-        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).radiusOfCurve;
+        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).getRadiusOfCurve();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -134,7 +134,7 @@ public class OssPathPredictionTest {
         
         PathPrediction testPathPrediction = new PathPrediction(testRadiusOfCurvature, testConfidence);
         
-        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).radiusOfCurve;
+        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).getRadiusOfCurve();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -153,7 +153,7 @@ public class OssPathPredictionTest {
         
         PathPrediction testPathPrediction = new PathPrediction(testRadiusOfCurvature, testConfidence);
         
-        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).radiusOfCurve;
+        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).getRadiusOfCurve();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -172,7 +172,7 @@ public class OssPathPredictionTest {
         
         PathPrediction testPathPrediction = new PathPrediction(testRadiusOfCurvature, testConfidence);
         
-        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).radiusOfCurve;
+        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).getRadiusOfCurve();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -192,7 +192,7 @@ public class OssPathPredictionTest {
         
         PathPrediction testPathPrediction = new PathPrediction(testRadiusOfCurvature, testConfidence);
         
-        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).radiusOfCurve;
+        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).getRadiusOfCurve();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -212,7 +212,7 @@ public class OssPathPredictionTest {
         
         PathPrediction testPathPrediction = new PathPrediction(testRadiusOfCurvature, testConfidence);
         
-        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).radiusOfCurve;
+        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).getRadiusOfCurve();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -232,7 +232,7 @@ public class OssPathPredictionTest {
         
         PathPrediction testPathPrediction = new PathPrediction(testRadiusOfCurvature, testConfidence);
         
-        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).confidence;
+        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).getConfidence();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -251,7 +251,7 @@ public class OssPathPredictionTest {
         
         PathPrediction testPathPrediction = new PathPrediction(testRadiusOfCurvature, testConfidence);
         
-        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).confidence;
+        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).getConfidence();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -270,7 +270,7 @@ public class OssPathPredictionTest {
         
         PathPrediction testPathPrediction = new PathPrediction(testRadiusOfCurvature, testConfidence);
         
-        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).confidence;
+        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).getConfidence();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -289,7 +289,7 @@ public class OssPathPredictionTest {
         
         PathPrediction testPathPrediction = new PathPrediction(testRadiusOfCurvature, testConfidence);
         
-        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).confidence;
+        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).getConfidence();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -308,7 +308,7 @@ public class OssPathPredictionTest {
         
         PathPrediction testPathPrediction = new PathPrediction(testRadiusOfCurvature, testConfidence);
         
-        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).confidence;
+        BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).getConfidence();
         
         assertEquals(expectedValue, actualValue);
     }
@@ -327,7 +327,7 @@ public class OssPathPredictionTest {
         PathPrediction testPathPrediction = new PathPrediction(testRadiusOfCurvature, testConfidence);
         
         try {
-            BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).confidence;
+            BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).getConfidence();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -348,7 +348,7 @@ public class OssPathPredictionTest {
         PathPrediction testPathPrediction = new PathPrediction(testRadiusOfCurvature, testConfidence);
         
         try {
-            BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).confidence;
+            BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).getConfidence();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());

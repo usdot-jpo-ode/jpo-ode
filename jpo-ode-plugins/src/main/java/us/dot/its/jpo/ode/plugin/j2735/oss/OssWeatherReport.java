@@ -24,7 +24,7 @@ public class OssWeatherReport {
         J2735WeatherReport gwr = new J2735WeatherReport();
 
         // Required element
-        gwr.isRaining = J2735EssPrecipYesNo.values()[weatherReport.isRaining.indexOf()];
+        gwr.setIsRaining(J2735EssPrecipYesNo.values()[weatherReport.isRaining.indexOf()]);
 
         // Optional elements
         if (weatherReport.friction != null) {
@@ -33,11 +33,11 @@ public class OssWeatherReport {
                     || weatherReport.friction.intValue() > FRICTION_UPPER_BOUND) {
                 throw new IllegalArgumentException("Friction value out of bounds [0..101]");
             }
-            gwr.friction = weatherReport.friction != null && weatherReport.friction.intValue() >= 0
-                    && weatherReport.friction.intValue() <= 100 ? weatherReport.friction.intValue() : null;
+            gwr.setFriction(weatherReport.friction != null && weatherReport.friction.intValue() >= 0
+                    && weatherReport.friction.intValue() <= 100 ? weatherReport.friction.intValue() : null);
         }
         if (weatherReport.precipSituation != null) {
-            gwr.precipSituation = J2735EssPrecipSituation.values()[weatherReport.precipSituation.indexOf()];
+            gwr.setPrecipSituation(J2735EssPrecipSituation.values()[weatherReport.precipSituation.indexOf()]);
         }
         if (weatherReport.rainRate != null) {
 
@@ -46,8 +46,8 @@ public class OssWeatherReport {
                 throw new IllegalArgumentException("Rain rate out of bounds [0..65535]");
             }
 
-            gwr.rainRate = weatherReport.rainRate.longValue() != 65535
-                    ? BigDecimal.valueOf(weatherReport.rainRate.longValue(), 1) : null;
+            gwr.setRainRate(weatherReport.rainRate.longValue() != 65535
+                    ? BigDecimal.valueOf(weatherReport.rainRate.longValue(), 1) : null);
         }
         /*
          * CoefficientOfFriction ::= INTEGER (0..50) -- where 0 = 0.00 micro
@@ -61,8 +61,8 @@ public class OssWeatherReport {
                 throw new IllegalArgumentException("Road friction value out of bounds [0..50]");
             }
             
-            gwr.roadFriction = weatherReport.roadFriction != null && weatherReport.roadFriction.intValue() != 0
-                    ? BigDecimal.valueOf(weatherReport.roadFriction.longValue() * 2, 2) : null;
+            gwr.setRoadFriction(weatherReport.roadFriction != null && weatherReport.roadFriction.intValue() != 0
+                    ? BigDecimal.valueOf(weatherReport.roadFriction.longValue() * 2, 2) : null);
         }
         if (weatherReport.solarRadiation != null) {
             
@@ -71,8 +71,8 @@ public class OssWeatherReport {
                 throw new IllegalArgumentException("Solar radiation value out of bounds [0..65535]");
             }
             
-            gwr.solarRadiation = weatherReport.solarRadiation.longValue() != 65535
-                    ? weatherReport.solarRadiation.intValue() : null;
+            gwr.setSolarRadiation(weatherReport.solarRadiation.longValue() != 65535
+                    ? weatherReport.solarRadiation.intValue() : null);
         }
 
         return gwr;

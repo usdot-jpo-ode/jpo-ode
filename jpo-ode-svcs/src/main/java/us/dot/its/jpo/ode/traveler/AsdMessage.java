@@ -82,7 +82,7 @@ public class AsdMessage extends OdeObject {
       if (ttl != null)
          asd.timeToLive = new TimeToLive(ttl.ordinal());
       else
-         asd.timeToLive = new TimeToLive(J2735TravelerInputData.SDW.TimeToLive.ThirtyMinutes.ordinal());
+         asd.timeToLive = new TimeToLive(J2735TravelerInputData.SDW.TimeToLive.THIRTYMINUTES.ordinal());
    }
 
    public String encodeHex() throws EncodeFailedException, EncodeNotSupportedException {
@@ -93,7 +93,4 @@ public class AsdMessage extends OdeObject {
 
       return CodecUtils.toHex(binAsd.array());
    }
-   
-   
-   
 }

@@ -74,7 +74,7 @@ public class OssVehicleDataTest {
         try {
             BigDecimal actualValue = OssVehicleData
                     .genericVehicleData(testVehicleData)
-                    .height;
+                    .getHeight();
             assertEquals(expectedValue, actualValue);
         } catch (RuntimeException e) {
             fail("Unexpected RuntimeException: " + e.getClass());
@@ -103,9 +103,9 @@ public class OssVehicleDataTest {
         try {
             J2735BumperHeights actualBumperHeights = OssVehicleData
                     .genericVehicleData(testVehicleData)
-                    .bumpers;
-            assertEquals(expectedValue, actualBumperHeights.front);
-            assertEquals(expectedValue, actualBumperHeights.rear);
+                    .getBumpers();
+            assertEquals(expectedValue, actualBumperHeights.getFront());
+            assertEquals(expectedValue, actualBumperHeights.getRear());
         } catch (RuntimeException e) {
             fail("Unexpected RuntimeException: " + e.getClass());
         }
@@ -129,7 +129,7 @@ public class OssVehicleDataTest {
         try {
             Integer actualValue = OssVehicleData
                     .genericVehicleData(testVehicleData)
-                    .mass;
+                    .getMass();
             assertEquals(expectedValue, actualValue);
         } catch (RuntimeException e) {
             fail("Unexpected RuntimeException: " + e.getClass());
@@ -154,7 +154,7 @@ public class OssVehicleDataTest {
         try {
             Integer actualValue = OssVehicleData
                     .genericVehicleData(testVehicleData)
-                    .trailerWeight;
+                    .getTrailerWeight();
             assertEquals(expectedValue, actualValue);
         } catch (RuntimeException e) {
             fail("Unexpected RuntimeException: " + e.getClass());
