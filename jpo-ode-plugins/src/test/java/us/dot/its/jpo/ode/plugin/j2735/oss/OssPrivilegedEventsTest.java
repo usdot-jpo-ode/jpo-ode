@@ -4,10 +4,8 @@ import static org.junit.Assert.*;
 
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
-import com.oss.asn1.BitString;
 
 import us.dot.its.jpo.ode.j2735.dsrc.PrivilegedEventFlags;
 import us.dot.its.jpo.ode.j2735.dsrc.PrivilegedEvents;

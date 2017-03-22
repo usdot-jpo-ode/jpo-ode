@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 
+import us.dot.its.jpo.ode.ManagerAndControllerServices;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsClient.DdsClientException;
 import us.dot.its.jpo.ode.dds.DdsDepositor;
@@ -60,7 +61,7 @@ public class TravelerMessageController {
     public String timMessage(@RequestBody String jsonString) {
         if (jsonString == null) {
            String msg = "TIM CONTROLLER - Endpoint received null request";
-           log(false, msg, null);
+           ManagerAndControllerServices.log(false, msg, null);
            throw new TimMessageException(msg);
         }
 
@@ -73,7 +74,7 @@ public class TravelerMessageController {
            logger.debug("TIM CONTROLLER - Serialized TIM: {}", travelerinputDataStr);
         }
         catch (Exception e) {
-           log(false, "Error Deserializing TravelerInputData", e);
+           ManagerAndControllerServices.log(false, "Error Deserializing TravelerInputData", e);
            throw new TimMessageException(e);
         }
         
@@ -84,7 +85,7 @@ public class TravelerMessageController {
         catch (Exception e)
         {
            String msg = "Error Building travelerinfo";
-           log(false, msg, e);
+           ManagerAndControllerServices.log(false, msg, e);
            throw new TimMessageException(e);
         }
         
@@ -94,12 +95,12 @@ public class TravelerMessageController {
             rsuSRMPayload = builder.getHexTravelerInformation();
             if (rsuSRMPayload == null) {
                String msg = "TIM Builder returned null";
-               log(false, msg, null);
+               ManagerAndControllerServices.log(false, msg, null);
                throw new TimMessageException(msg);
             }
         } catch (Exception e) {
            String msg = "TIM CONTROLLER - Failed to encode TIM";
-           log(false, msg, e);
+           ManagerAndControllerServices.log(false, msg, e);
            throw new TimMessageException(e);
         }
         logger.debug("TIM CONTROLLER - Encoded Hex TIM: {}", rsuSRMPayload);
@@ -107,8 +108,7 @@ public class TravelerMessageController {
         boolean success = true;
         try {
            // Step 3 - Send TIM to all specified RSUs if rsus element exists
-           if (travelerinputData.getSnmp() != null) {
-              if (travelerinputData.getRsus() != null)  {
+           if (travelerinputData.getSnmp() != null && travelerinputData.getRsus() != null) {
                  for (RSU rsu : travelerinputData.getRsus()) {
                     ResponseEvent response = sendToRSU(rsu, travelerinputData.getSnmp(), rsuSRMPayload);
                     if (response != null && response.getResponse() != null) {
@@ -124,16 +124,14 @@ public class TravelerMessageController {
                       throw new TimMessageException(msg);
                    }
                  }
-              }
-              
            }
       } catch (Exception e) {
          String msg = "TIM CONTROLLER ERROR";
-         log(false, msg , e);
+         ManagerAndControllerServices.log(false, msg , e);
          throw new TimMessageException(e);
       }
 
-      return log(success, "TIM CONTROLLER RESPONSE", null);
+      return ManagerAndControllerServices.log(success, "TIM CONTROLLER RESPONSE", null);
     }
 
    private void depositToDDS(J2735TravelerInputData travelerinputData, String rsuSRMPayload)
@@ -151,24 +149,6 @@ public class TravelerMessageController {
         }
    }
 
-   private String log(boolean success, String msg, Throwable t) {
-      if (success) {
-         EventLogger.logger.info(msg);
-         String myMsg = String.format("{success: true, message:\"%1$s\"}", msg);
-         logger.info(myMsg);
-         return myMsg;
-      } else {
-         if (Objects.nonNull(t)) {
-            EventLogger.logger.error(msg, t);
-            logger.error(msg, t);
-         } else {
-            EventLogger.logger.error(msg);
-            logger.error(msg);
-         }
-         return "{success: false, message: \"" + msg + "\"}";
-      }
-   }
-
     private ResponseEvent sendToRSU(RSU rsu, SNMP snmp, String payload) throws ParseException {
        Address addr = GenericAddress.parse(rsu.getrsuTarget() + "/161");
 
@@ -182,8 +162,7 @@ public class TravelerMessageController {
              payload, snmp.getEnable(), snmp.getStatus());
 
        // Send the request out
-       ResponseEvent response = TimManagerService.createAndSend(testParams, testProps);
+       return TimManagerService.createAndSend(testParams, testProps);
 
-       return response;
     }
 }

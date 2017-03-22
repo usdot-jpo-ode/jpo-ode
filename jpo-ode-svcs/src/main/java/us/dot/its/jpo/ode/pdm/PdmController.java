@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import us.dot.its.jpo.ode.ManagerAndControllerServices;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.RoadSignUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.pdm.J2735ProbeDataManagement;
@@ -32,7 +33,7 @@ public class PdmController {
     public String pdmMessage(@RequestBody String jsonString) {
         if (null == jsonString) {
             String msg = "PDM CONTROLLER - Endpoint received null request";
-            log(false, msg, null);
+            ManagerAndControllerServices.log(false, msg, null);
             throw new PdmException(msg);
         }
 
@@ -48,12 +49,12 @@ public class PdmController {
 
                 if (null == response || null == response.getResponse()) {
                     responseList.put(curRsu.getrsuTarget(),
-                            log(false, "PDM CONTROLLER - No response from RSU IP=" + curRsu.getrsuTarget(), null));
+                          ManagerAndControllerServices.log(false, "PDM CONTROLLER - No response from RSU IP=" + curRsu.getrsuTarget(), null));
                 } else if (0 == response.getResponse().getErrorStatus()) {
-                    responseList.put(curRsu.getrsuTarget(), log(true, "PDM CONTROLLER - SNMP deposit successful", null));
+                    responseList.put(curRsu.getrsuTarget(), ManagerAndControllerServices.log(true, "PDM CONTROLLER - SNMP deposit successful", null));
                 } else {
                     responseList.put(curRsu.getrsuTarget(),
-                            log(false,
+                          ManagerAndControllerServices.log(false,
                                     "PDM CONTROLLER - Error, SNMP deposit failed, error code="
                                             + response.getResponse().getErrorStatus() + "("
                                             + response.getResponse().getErrorStatusText() + ")",
@@ -62,29 +63,11 @@ public class PdmController {
 
             } catch (ParseException e) {
                 responseList.put(curRsu.getrsuTarget(),
-                        log(false, "PDM CONTROLLER - Exception while sending message to RSU", e));
+                      ManagerAndControllerServices.log(false, "PDM CONTROLLER - Exception while sending message to RSU", e));
             }
         }
 
         return responseList.toString();
-    }
-
-    private String log(boolean success, String msg, Throwable t) {
-        if (success) {
-            EventLogger.logger.info(msg);
-            String myMsg = String.format("{success: true, message:\"%1$s\"}", msg);
-            logger.info(myMsg);
-            return myMsg;
-        } else {
-            if (Objects.nonNull(t)) {
-                EventLogger.logger.error(msg, t);
-                logger.error(msg, t);
-            } else {
-                EventLogger.logger.error(msg);
-                logger.error(msg);
-            }
-            return "{success: false, message: \"" + msg + "\"}";
-        }
     }
 
     private ResponseEvent sendToRsu(RSU rsu, PDM params) throws ParseException {
