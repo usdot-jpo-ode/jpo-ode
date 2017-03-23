@@ -11,11 +11,11 @@ public interface Asn1Plugin extends OdePlugin {
     Asn1Object decodeUPERMessageFrameHex(String hexMsg);
     Asn1Object decodeUPERBsmHex(String hexMsg);
 
-    String UPER_EncodeBase64(Asn1Object asn1Object);
+    String encodeUPERBase64(Asn1Object asn1Object);
 
-    String UPER_EncodeHex(Asn1Object asn1Object);
+    String encodeUPERHex(Asn1Object asn1Object);
 
-    byte[] UPER_EncodeBytes(Asn1Object asn1Object);
+    byte[] encodeUPERBytes(Asn1Object asn1Object);
 
     Asn1Object decodeUPERBsmBytes(byte[] byteArrayMsg);
 

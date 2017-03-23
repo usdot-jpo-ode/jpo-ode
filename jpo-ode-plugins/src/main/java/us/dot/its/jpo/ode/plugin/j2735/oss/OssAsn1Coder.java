@@ -153,17 +153,17 @@ public class OssAsn1Coder implements Asn1Plugin {
     }
 
     @Override
-    public String UPER_EncodeBase64(Asn1Object asn1Object) {
-        return DatatypeConverter.printBase64Binary(UPER_EncodeBytes(asn1Object));
+    public String encodeUPERBase64(Asn1Object asn1Object) {
+        return DatatypeConverter.printBase64Binary(encodeUPERBytes(asn1Object));
     }
 
     @Override
-    public String UPER_EncodeHex(Asn1Object asn1Object) {
-        return DatatypeConverter.printHexBinary(UPER_EncodeBytes(asn1Object));
+    public String encodeUPERHex(Asn1Object asn1Object) {
+        return DatatypeConverter.printHexBinary(encodeUPERBytes(asn1Object));
     }
 
     @Override
-    public byte[] UPER_EncodeBytes(Asn1Object asn1Object) {
+    public byte[] encodeUPERBytes(Asn1Object asn1Object) {
         if (asn1Object instanceof J2735Bsm) {
             J2735Bsm genericBsm = (J2735Bsm) asn1Object;
             try {
