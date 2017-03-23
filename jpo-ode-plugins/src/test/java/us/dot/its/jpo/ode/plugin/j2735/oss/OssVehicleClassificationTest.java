@@ -314,7 +314,7 @@ public class OssVehicleClassificationTest {
         testvc.setKeyType(testBasicVehicleClass);
         
         try {
-           Integer actualValue = OssVehicleClassification
+           OssVehicleClassification
                    .genericVehicleClassification(testvc).getKeyType();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
@@ -336,7 +336,7 @@ public class OssVehicleClassificationTest {
         testvc.setKeyType(testBasicVehicleClass);
         
         try {
-           Integer actualValue = OssVehicleClassification
+           OssVehicleClassification
                    .genericVehicleClassification(testvc).getKeyType();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
@@ -701,7 +701,7 @@ public class OssVehicleClassificationTest {
         
         Integer testInput = 9729;
         
-        String expectedValue = "emergency_vehicle_units";
+        String expectedValue = "EMERGENCY_VEHICLE_UNITS";
         
         ResponderGroupAffected testResponderGroupAffected = new ResponderGroupAffected(testInput);
         
@@ -723,7 +723,7 @@ public class OssVehicleClassificationTest {
         
         Integer testInput = 9730;
         
-        String expectedValue = "federal_law_enforcement_units";
+        String expectedValue = "FEDERAL_LAW_ENFORCEMENT_UNITS";
         
         ResponderGroupAffected testResponderGroupAffected = new ResponderGroupAffected(testInput);
         
@@ -745,7 +745,7 @@ public class OssVehicleClassificationTest {
         
         Integer testInput = 9731;
         
-        String expectedValue = "state_police_units";
+        String expectedValue = "STATE_POLICE_UNITS";
         
         ResponderGroupAffected testResponderGroupAffected = new ResponderGroupAffected(testInput);
         
@@ -768,7 +768,7 @@ public class OssVehicleClassificationTest {
         
         Integer testInput = 9741;
         
-        String expectedValue = "transportation_response_units";
+        String expectedValue = "TRANSPORTATION_RESPONSE_UNITS";
         
         ResponderGroupAffected testResponderGroupAffected = new ResponderGroupAffected(testInput);
         
@@ -790,7 +790,7 @@ public class OssVehicleClassificationTest {
         
         Integer testInput = 9742;
         
-        String expectedValue = "private_contractor_response_units";
+        String expectedValue = "PRIVATE_CONTRACTOR_RESPONSE_UNITS";
         
         ResponderGroupAffected testResponderGroupAffected = new ResponderGroupAffected(testInput);
         

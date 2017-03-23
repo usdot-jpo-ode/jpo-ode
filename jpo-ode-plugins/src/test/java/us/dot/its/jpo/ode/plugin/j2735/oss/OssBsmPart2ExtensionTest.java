@@ -112,7 +112,7 @@ public class OssBsmPart2ExtensionTest {
         String expectedIncidentResponseEquipment = "ground-fire-suppression";
         
         Integer testResponderGroupAffected = 9729;
-        String expectedResponderGroupAffected = "emergency_vehicle_units";
+        String expectedResponderGroupAffected = "EMERGENCY_VEHICLE_UNITS";
         
         Integer testFuelType = 0;
         String expectedFuelType = "UNKNOWNFUEL";
