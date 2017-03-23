@@ -98,7 +98,7 @@ public class OssWeatherReportTest {
     public void shouldReturnIsRainingPrecip() {
         
         Integer testInput = 1;
-        String expectedValue = "precip";
+        String expectedValue = "PRECIP";
         
         EssPrecipYesNo testEssPrecipYesNo = new EssPrecipYesNo(testInput);
         WeatherReport testWeatherReport = new WeatherReport(testEssPrecipYesNo);
@@ -118,7 +118,7 @@ public class OssWeatherReportTest {
     public void shouldReturnIsRainingNoPrecip() {
         
         Integer testInput = 2;
-        String expectedValue = "noPrecip";
+        String expectedValue = "NOPRECIP";
         
         EssPrecipYesNo testEssPrecipYesNo = new EssPrecipYesNo(testInput);
         WeatherReport testWeatherReport = new WeatherReport(testEssPrecipYesNo);
@@ -138,7 +138,7 @@ public class OssWeatherReportTest {
     public void shouldReturnIsRainingError() {
         
         Integer testInput = 3;
-        String expectedValue = "error";
+        String expectedValue = "ERROR";
         
         EssPrecipYesNo testEssPrecipYesNo = new EssPrecipYesNo(testInput);
         WeatherReport testWeatherReport = new WeatherReport(testEssPrecipYesNo);
@@ -274,7 +274,7 @@ public class OssWeatherReportTest {
         testWeatherReport.rainRate = new EssPrecipRate(testInput);
         
         try {
-            BigDecimal actualValue = OssWeatherReport.genericWeatherReport(testWeatherReport).getRainRate();
+            OssWeatherReport.genericWeatherReport(testWeatherReport).getRainRate();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -294,7 +294,7 @@ public class OssWeatherReportTest {
         testWeatherReport.rainRate = new EssPrecipRate(testInput);
         
         try {
-            BigDecimal actualValue = OssWeatherReport.genericWeatherReport(testWeatherReport).getRainRate();
+            OssWeatherReport.genericWeatherReport(testWeatherReport).getRainRate();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -309,7 +309,7 @@ public class OssWeatherReportTest {
     public void shouldReturnMinimumPrecipSituation() {
         
         Integer testInput = 1;
-        String expectedValue = "other";
+        String expectedValue = "OTHER";
         
         WeatherReport testWeatherReport = new WeatherReport();
         testWeatherReport.isRaining = new EssPrecipYesNo(1);
@@ -329,7 +329,7 @@ public class OssWeatherReportTest {
     public void shouldReturnCornerCaseMinimumPrecipSituation() {
         
         Integer testInput = 2;
-        String expectedValue = "unknown";
+        String expectedValue = "UNKNOWN";
         
         WeatherReport testWeatherReport = new WeatherReport();
         testWeatherReport.isRaining = new EssPrecipYesNo(1);
@@ -349,7 +349,7 @@ public class OssWeatherReportTest {
     public void shouldReturnMiddlePrecipSituation() {
         
         Integer testInput = 8;
-        String expectedValue = "snowModerate";
+        String expectedValue = "SNOWMODERATE";
         
         WeatherReport testWeatherReport = new WeatherReport();
         testWeatherReport.isRaining = new EssPrecipYesNo(1);
@@ -369,7 +369,7 @@ public class OssWeatherReportTest {
     public void shouldReturnCornerCaseMaximumPrecipSituation() {
         
         Integer testInput = 14;
-        String expectedValue = "frozenPrecipitationModerate";
+        String expectedValue = "FROZENPRECIPITATIONMODERATE";
         
         WeatherReport testWeatherReport = new WeatherReport();
         testWeatherReport.isRaining = new EssPrecipYesNo(1);
@@ -389,7 +389,7 @@ public class OssWeatherReportTest {
     public void shouldReturnMaximumPrecipSituation() {
         
         Integer testInput = 15;
-        String expectedValue = "frozenPrecipitationHeavy";
+        String expectedValue = "FROZENPRECIPITATIONHEAVY";
         
         WeatherReport testWeatherReport = new WeatherReport();
         testWeatherReport.isRaining = new EssPrecipYesNo(1);
@@ -525,7 +525,7 @@ public class OssWeatherReportTest {
         testWeatherReport.solarRadiation = new EssSolarRadiation(testInput);
         
         try {
-            Integer actualValue = OssWeatherReport.genericWeatherReport(testWeatherReport).getSolarRadiation();
+            OssWeatherReport.genericWeatherReport(testWeatherReport).getSolarRadiation();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -545,7 +545,7 @@ public class OssWeatherReportTest {
         testWeatherReport.solarRadiation = new EssSolarRadiation(testInput);
         
         try {
-            Integer actualValue = OssWeatherReport.genericWeatherReport(testWeatherReport).getSolarRadiation();
+            OssWeatherReport.genericWeatherReport(testWeatherReport).getSolarRadiation();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -674,7 +674,7 @@ public class OssWeatherReportTest {
         testWeatherReport.friction = new EssMobileFriction(testInput);
         
         try {
-            Integer actualValue = OssWeatherReport.genericWeatherReport(testWeatherReport).getFriction();
+            OssWeatherReport.genericWeatherReport(testWeatherReport).getFriction();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -694,7 +694,7 @@ public class OssWeatherReportTest {
         testWeatherReport.friction = new EssMobileFriction(testInput);
         
         try {
-            Integer actualValue = OssWeatherReport.genericWeatherReport(testWeatherReport).getFriction();
+            OssWeatherReport.genericWeatherReport(testWeatherReport).getFriction();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -806,7 +806,7 @@ public class OssWeatherReportTest {
         testWeatherReport.roadFriction = new CoefficientOfFriction(testInput);
         
         try {
-            BigDecimal actualValue = OssWeatherReport.genericWeatherReport(testWeatherReport).getRoadFriction();
+            OssWeatherReport.genericWeatherReport(testWeatherReport).getRoadFriction();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -826,7 +826,7 @@ public class OssWeatherReportTest {
         testWeatherReport.roadFriction = new CoefficientOfFriction(testInput);
         
         try {
-            BigDecimal actualValue = OssWeatherReport.genericWeatherReport(testWeatherReport).getRoadFriction();
+            OssWeatherReport.genericWeatherReport(testWeatherReport).getRoadFriction();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());

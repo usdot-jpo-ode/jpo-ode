@@ -812,7 +812,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnMinimumFuelType() {
         
         Integer testInput = 0;
-        String expectedValue = "unknownFuel";
+        String expectedValue = "UNKNOWNFUEL";
         
         FuelType testFuelType = new FuelType(testInput);
         
@@ -833,7 +833,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnCornerCaseMinimumFuelType() {
         
         Integer testInput = 1;
-        String expectedValue = "gasoline";
+        String expectedValue = "GASOLINE";
         
         FuelType testFuelType = new FuelType(testInput);
         
@@ -854,7 +854,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnMiddleFuelType() {
         
         Integer testInput = 4;
-        String expectedValue = "electric";
+        String expectedValue = "ELECTRIC";
         
         FuelType testFuelType = new FuelType(testInput);
         
@@ -875,7 +875,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnCornerCaseMaximumFuelType() {
         
         Integer testInput = 8;
-        String expectedValue = "natGasComp";
+        String expectedValue = "NATGASCOMP";
         
         FuelType testFuelType = new FuelType(testInput);
         
@@ -896,7 +896,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnMaximumFuelType() {
         
         Integer testInput = 9;
-        String expectedValue = "propane";
+        String expectedValue = "PROPANE";
         
         FuelType testFuelType = new FuelType(testInput);
         

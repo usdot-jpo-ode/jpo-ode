@@ -115,7 +115,7 @@ public class OssBsmPart2ExtensionTest {
         String expectedResponderGroupAffected = "emergency_vehicle_units";
         
         Integer testFuelType = 0;
-        String expectedFuelType = "unknownFuel";
+        String expectedFuelType = "UNKNOWNFUEL";
         
         VehicleClassification testVehicleClassification = new VehicleClassification(
                 new BasicVehicleClass(testBasicVehicleClass),
@@ -195,13 +195,13 @@ public class OssBsmPart2ExtensionTest {
     public void shouldCreateWeatherReport() {
         
         Integer testEssPrecipYesNo = 1;
-        String expectedEssPrecipYesNo = "precip";
+        String expectedEssPrecipYesNo = "PRECIP";
         
         Integer testEssPrecipRate = 0;
         BigDecimal expectedEssPrecipRate = BigDecimal.ZERO.setScale(1);
         
         Integer testEssPrecipSituation = 1;
-        String expectedEssPrecipSituation = "other";
+        String expectedEssPrecipSituation = "OTHER";
         
         Integer testEssSolarRadiation = 0;
         Integer expectedEssSolarRadiation = 0;

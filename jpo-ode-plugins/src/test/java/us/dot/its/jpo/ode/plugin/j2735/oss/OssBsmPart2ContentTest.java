@@ -103,10 +103,10 @@ public class OssBsmPart2ContentTest {
         String expectedSirenInUse = "inUse";
         
         Integer testLightbarInUse = 3;
-        String expectedLightbarInUse = "yellowCautionLights";
+        String expectedLightbarInUse = "YELLOWCAUTIONLIGHTS";
         
         Integer testMultiVehicleResponse = 2;
-        String expectedMultiVehicleResponse = "multiVehicle";
+        String expectedMultiVehicleResponse = "MULTIVEHICLE";
         
         EmergencyDetails testEmergencyDetails = new EmergencyDetails(
                 new SSPindex(testSspRights),
