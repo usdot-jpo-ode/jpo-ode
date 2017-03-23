@@ -32,7 +32,7 @@ public class PdmControllerTest {
     
     @Mocked J2735ProbeDataManagement mockPdm;
     
-    @Mocked PdmManagerService mockPdmManagerService;
+    @Mocked ManagerAndControllerServices mockPdmManagerService;
     
     @Injectable RSU mockRsu;
     @Mocked ResponseEvent mockResponseEvent;
