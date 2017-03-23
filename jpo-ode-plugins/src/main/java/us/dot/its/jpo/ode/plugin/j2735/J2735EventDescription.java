@@ -12,7 +12,7 @@ public class J2735EventDescription extends Asn1Object {
 	private J2735Extent extent;
 	private J2735HeadingSlice heading;
 	private String priority;
-	private List<J2735RegionalContent> regional = new ArrayList<J2735RegionalContent>();
+	private List<J2735RegionalContent> regional = new ArrayList<>();
 	private Integer typeEvent;
 
 	public List<Integer> getDescription() {
