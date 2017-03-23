@@ -21,7 +21,7 @@ public class SubscriberControllerTest {
     SimpMessagingTemplate template;
 
     @Test
-    public void testGreeting(@Mocked RegistrationMessage mockRegistrationMessage) {
+    public void testGreeting(@Mocked Thread unused, @Mocked RegistrationMessage mockRegistrationMessage) {
         try {
             testSubscriberController.greeting(mockRegistrationMessage);
         } catch (InterruptedException e) {
