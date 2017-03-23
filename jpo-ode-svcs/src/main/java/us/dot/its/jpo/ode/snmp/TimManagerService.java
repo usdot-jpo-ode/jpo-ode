@@ -26,40 +26,6 @@ public class TimManagerService {
     private TimManagerService() {}
     
     /**
-     * Create an SNMP session given the values in 
-     * @param tim - The TIM parameters (payload, channel, mode, etc)
-     * @param props - The SNMP properties (ip, username, password, etc)
-     * @return ResponseEvent
-     */
-    public static ResponseEvent createAndSend(TimParameters params, SnmpProperties props) {
-        
-        if (null == params || null == props) {
-            logger.error("TIM SERVICE - Received null object");
-            return null;
-        }
-        // Initialize the SNMP session
-        SnmpSession session = null;
-        try {
-            session = new SnmpSession(props);
-        } catch (IOException e) {
-            logger.error("TIM SERVICE - Failed to create SNMP session: {}", e);
-            return null;
-        }
-        
-        // Send the PDU
-        ResponseEvent response = null;
-        ScopedPDU pdu = createPDU(params);
-        try {
-            response = session.set(pdu, session.getSnmp(), session.getTransport(), session.getTarget());
-        } catch (IOException | NullPointerException e) {
-            logger.error("TIM SERVICE - Error while sending PDU: {}", e);
-            return null;
-        }
-        return response;
-        
-    }
-    
-    /**
      * Assembles the various RSU elements of a TimParameters object into a usable PDU.
      * @param params - TimParameters POJO that stores status, channel, payload, etc.
      * @return PDU

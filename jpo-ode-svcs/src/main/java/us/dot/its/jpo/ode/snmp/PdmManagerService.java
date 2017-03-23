@@ -20,34 +20,6 @@ public class PdmManagerService {
     private PdmManagerService() {
     }
 
-    public static ResponseEvent createAndSend(PDM params, SnmpProperties props) {
-
-        if (null == params || null == props) {
-            logger.error("PDM SERVICE - Received null object");
-            return null;
-        }
-        // Initialize the SNMP session
-        SnmpSession session = null;
-        try {
-            session = new SnmpSession(props);
-        } catch (IOException e) {
-            logger.error("PDM SERVICE - Failed to create SNMP session: {}", e);
-            return null;
-        }
-
-        // Send the PDU
-        ResponseEvent response = null;
-        ScopedPDU pdu = createPDU(params);
-        try {
-            response = session.set(pdu, session.getSnmp(), session.getTransport(), session.getTarget());
-        } catch (IOException | NullPointerException e) {
-            logger.error("PDM SERVICE - Error while sending PDU: {}", e);
-            return null;
-        }
-        return response;
-
-    }
-
     public static ScopedPDU createPDU(PDM params) {
 
         // Filter null request
