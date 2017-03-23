@@ -4716,7 +4716,7 @@ public class OssTravelerMessageBuilderTest {
    }
    
    @Test
-   public void checkTravelerMessageBuilderPathComputedLane() {
+   public void checkTravelerMessageBuilderPathComputedLaneLarge() {
       J2735TravelerInputData ti = new J2735TravelerInputData();
       TravelerInformationMessage.TIM tim = new TravelerInformationMessage.TIM();
       tim.setMsgCnt(10);
@@ -4760,6 +4760,70 @@ public class OssTravelerMessageBuilderTest {
       cl.setOffsetLargeX(5);
       cl.setOffsetSmallX(3);
       cl.setOffsetLargeY(5);
+      cl.setOffsetSmallY(3);
+      cl.setxScale(2);
+      cl.setyScale(2);
+      p.setComputedLane(cl);
+      p.setNodes(node);
+      r.setPath(p);
+      reg[0] = r;
+      df.setRegions(reg);
+      dframes[0] = df;
+      tim.setDataframes(dframes);
+      ti.setTim(tim);
+      OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
+      try {
+         b.buildTravelerInformation(ti);
+      } catch (Exception e) {
+         fail("Unexpected exception");
+      }
+   }
+   
+   @Test
+   public void checkTravelerMessageBuilderPathComputedLaneSmall() {
+      J2735TravelerInputData ti = new J2735TravelerInputData();
+      TravelerInformationMessage.TIM tim = new TravelerInformationMessage.TIM();
+      tim.setMsgCnt(10);
+      tim.setTimeStamp("2017-03-13T01:07:11-05:00");
+      tim.setUrlB("www");
+      tim.setPacketID(10);
+      J2735TravelerInputData.DataFrame[] dframes = new J2735TravelerInputData.DataFrame[1];
+      J2735TravelerInputData.DataFrame df = new J2735TravelerInputData.DataFrame();
+      df.setsspTimRights((short) 0);
+      df.setFrameType(0);
+      df.setMsgID("RoadSignID");
+      df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      df.setViewAngle("1010101010101010");
+      df.setMutcd(5);
+      df.setCrc(6);
+      df.setStartDateTime("2017-12-01T17:47:11-05:00");
+      df.setDurationTime(22);
+      df.setPriority(0);
+      df.setsspLocationRights((short) 3);
+      J2735TravelerInputData.DataFrame.Region[] reg = new J2735TravelerInputData.DataFrame.Region[1];
+      J2735TravelerInputData.DataFrame.Region r = new J2735TravelerInputData.DataFrame.Region();
+      df.setsspMsgTypes((short) 2);
+      df.setsspMsgContent((short) 3);
+      df.setUrl("www");
+      r.setName("bob");
+      r.setRegulatorID(23);
+      r.setSegmentID(33);
+      r.setAnchorPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      r.setLaneWidth(7);
+      r.setDirectionality((long) 3);
+      r.setClosedPath(false);
+      r.setDirection("1010101010101010");
+      r.setDescription("path");
+      J2735TravelerInputData.DataFrame.Region.Path p = new J2735TravelerInputData.DataFrame.Region.Path();
+      p.setScale(2);
+      p.setType("xy");
+      J2735TravelerInputData.NodeXY[] node = null;
+      J2735TravelerInputData.ComputedLane cl = new J2735TravelerInputData.ComputedLane();
+      cl.setAngle(5);
+      cl.setLaneID(1);
+      cl.setOffsetLargeX(0);
+      cl.setOffsetSmallX(3);
+      cl.setOffsetLargeY(0);
       cl.setOffsetSmallY(3);
       cl.setxScale(2);
       cl.setyScale(2);

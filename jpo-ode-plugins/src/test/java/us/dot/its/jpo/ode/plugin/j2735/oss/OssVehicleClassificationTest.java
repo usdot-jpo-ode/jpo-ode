@@ -352,7 +352,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnMinimumBasicVehicleRole() {
         
         Integer testInput = 0;
-        String expectedValue = "basicVehicle";
+        String expectedValue = "BASICVEHICLE";
         
         BasicVehicleRole testBasicVehicleRole = new BasicVehicleRole(testInput);
         
@@ -373,7 +373,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnCornerCaseMinimumBasicVehicleRole() {
         
         Integer testInput = 1;
-        String expectedValue = "publicTransport";
+        String expectedValue = "PUBLICTRANSPORT";
         
         BasicVehicleRole testBasicVehicleRole = new BasicVehicleRole(testInput);
         
@@ -395,7 +395,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnMiddleBasicVehicleRole() {
         
         Integer testInput = 10;
-        String expectedValue = "motorcycle";
+        String expectedValue = "MOTORCYCLE";
         
         BasicVehicleRole testBasicVehicleRole = new BasicVehicleRole(testInput);
         
@@ -416,7 +416,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnCornerCaseMaximumBasicVehicleRole() {
         
         Integer testInput = 21;
-        String expectedValue = "nonMotorized";
+        String expectedValue = "NONMOTORIZED";
         
         BasicVehicleRole testBasicVehicleRole = new BasicVehicleRole(testInput);
         
@@ -437,7 +437,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnMaximumBasicVehicleRole() {
         
         Integer testInput = 22;
-        String expectedValue = "military";
+        String expectedValue = "MILITARY";
         
         BasicVehicleRole testBasicVehicleRole = new BasicVehicleRole(testInput);
         

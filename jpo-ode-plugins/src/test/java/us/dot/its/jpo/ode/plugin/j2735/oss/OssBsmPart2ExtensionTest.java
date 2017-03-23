@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.AmbientAirPressure;
@@ -98,7 +97,7 @@ public class OssBsmPart2ExtensionTest {
         Integer expectedBasicVehicleClass = 0;
         
         Integer testBasicVehicleRole = 0;
-        String expectedBasicVehicleRole = "basicVehicle";
+        String expectedBasicVehicleRole = "BASICVEHICLE";
         
         Integer testIso3833VehicleType = 0;
         Integer expectedVCIso3833VehicleType = 0;

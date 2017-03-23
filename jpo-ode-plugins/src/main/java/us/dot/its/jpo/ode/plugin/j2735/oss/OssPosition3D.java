@@ -12,23 +12,6 @@ public class OssPosition3D {
    
    public static J2735Position3D geneticPosition3D(Position3D pos) {
       J2735Position3D jpos = new J2735Position3D();
-      
-         // private OdePosition3D position;
-         // Position3D ::= SEQUENCE {
-         // lat Latitude, -- in 1/10th micro degrees
-         // long Longitude, -- in 1/10th micro degrees
-         // elevation Elevation OPTIONAL
-         // }
-         // Latitude ::= INTEGER (-900000000..900000001)
-         // -- LSB = 1/10 micro degree
-         // -- Providing a range of plus-minus 90 degrees
-         // Longitude ::= INTEGER (-1800000000..1800000001)
-         // -- LSB = 1/10 micro degree
-         // -- Providing a range of plus-minus 180 degrees
-         //Elevation ::= INTEGER (-4096..61439)
-         // -- In units of 10 cm steps above or below the reference ellipsoid
-         // -- Providing a range of -409.5 to + 6143.9 meters
-         // -- The value -4096 shall be used when Unknown is to be sent
 
          if (pos._long != null) {
              if (pos._long.longValue() == 1800000001) {

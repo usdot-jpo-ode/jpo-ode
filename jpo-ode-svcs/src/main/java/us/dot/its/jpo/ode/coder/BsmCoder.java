@@ -19,12 +19,12 @@ public class BsmCoder extends AbstractCoder {
 
     @Override
     public Asn1Object decode(String line) {
-        return asn1Coder.UPER_DecodeBsmHex(line);
+        return asn1Coder.decodeUPERBsmHex(line);
     }
 
     @Override
     public Asn1Object decode(InputStream is) {
-        return asn1Coder.UPER_DecodeBsmStream(is);
+        return asn1Coder.decodeUPERBsmStream(is);
     }
 
     @Override
