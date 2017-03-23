@@ -46,7 +46,7 @@ public class PdmController {
                     responseList.put(curRsu.getrsuTarget(),
                           ManagerAndControllerServices.log(false, "PDM CONTROLLER - No response from RSU IP=" + curRsu.getrsuTarget(), null));
                 } else if (0 == response.getResponse().getErrorStatus()) {
-                    responseList.put(curRsu.getrsuTarget(), ManagerAndControllerServices.log(true, "PDM CONTROLLER - SNMP deposit successful", null));
+                    responseList.put(curRsu.getrsuTarget(), ManagerAndControllerServices.log(true, "PDM CONTROLLER - SNMP deposit successful: " + response.getResponse(), null));
                 } else {
                     responseList.put(curRsu.getrsuTarget(),
                           ManagerAndControllerServices.log(false,

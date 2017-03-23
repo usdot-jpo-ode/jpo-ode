@@ -21,7 +21,7 @@ addons:
       - .* 
 script:
   - mvn clean
-  - mvn org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
+  - sudo mvn org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
 cache:
   directories:
     - "$HOME/.m2/repository"
