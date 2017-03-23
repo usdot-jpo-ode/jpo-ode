@@ -13,6 +13,7 @@ import org.junit.Test;
 import us.dot.its.jpo.ode.j2735.dsrc.GeometricProjection;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame;
 import us.dot.its.jpo.ode.j2735.dsrc.ValidRegion.Area;
+import us.dot.its.jpo.ode.plugin.TravelerInformationMessage;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData.DataFrame.Region.Circle;
@@ -4471,7 +4472,7 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkTravelerMessageBuilder() {
       J2735TravelerInputData ti = new J2735TravelerInputData();
-      J2735TravelerInputData.TIM tim = new J2735TravelerInputData.TIM();
+      TravelerInformationMessage.TIM tim = new TravelerInformationMessage.TIM();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
@@ -4529,7 +4530,7 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkTravelerMessageBuilderPathXY() {
       J2735TravelerInputData ti = new J2735TravelerInputData();
-      J2735TravelerInputData.TIM tim = new J2735TravelerInputData.TIM();
+      TravelerInformationMessage.TIM tim = new TravelerInformationMessage.TIM();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
@@ -4623,7 +4624,7 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkTravelerMessageBuilderPathLL() {
       J2735TravelerInputData ti = new J2735TravelerInputData();
-      J2735TravelerInputData.TIM tim = new J2735TravelerInputData.TIM();
+      TravelerInformationMessage.TIM tim = new TravelerInformationMessage.TIM();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
@@ -4717,7 +4718,7 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkTravelerMessageBuilderPathComputedLane() {
       J2735TravelerInputData ti = new J2735TravelerInputData();
-      J2735TravelerInputData.TIM tim = new J2735TravelerInputData.TIM();
+      TravelerInformationMessage.TIM tim = new TravelerInformationMessage.TIM();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
@@ -4781,7 +4782,7 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkOldRegion() {
       J2735TravelerInputData ti = new J2735TravelerInputData();
-      J2735TravelerInputData.TIM tim = new J2735TravelerInputData.TIM();
+      TravelerInformationMessage.TIM tim = new TravelerInformationMessage.TIM();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
@@ -4845,7 +4846,7 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkShapepointXY() {
       J2735TravelerInputData ti = new J2735TravelerInputData();
-      J2735TravelerInputData.TIM tim = new J2735TravelerInputData.TIM();
+      TravelerInformationMessage.TIM tim = new TravelerInformationMessage.TIM();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
@@ -4946,7 +4947,7 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkShapepointComputedLane() {
       J2735TravelerInputData ti = new J2735TravelerInputData();
-      J2735TravelerInputData.TIM tim = new J2735TravelerInputData.TIM();
+      TravelerInformationMessage.TIM tim = new TravelerInformationMessage.TIM();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");

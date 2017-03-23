@@ -2,7 +2,7 @@ package us.dot.its.jpo.ode.plugin.j2735.pdm;
 
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData.ODE;
+import us.dot.its.jpo.ode.plugin.OperationalDataEnvironment.ODE;
 
 public class J2735ProbeDataManagement extends OdeObject {
 
