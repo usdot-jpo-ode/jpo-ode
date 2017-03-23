@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -179,7 +178,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnSirenUseUnavailable() {
         
         Integer testInput = 0;
-        String expectedValue = "unavailable";
+        String expectedValue = "UNAVAILABLE";
         
         SirenInUse testSirenInUse = new SirenInUse(testInput);
         
@@ -204,7 +203,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnSirenUseNotInUse() {
         
         Integer testInput = 1;
-        String expectedValue = "notInUse";
+        String expectedValue = "NOTINUSE";
         
         SirenInUse testSirenInUse = new SirenInUse(testInput);
         
@@ -229,7 +228,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnSirenUseInUse() {
         
         Integer testInput = 2;
-        String expectedValue = "inUse";
+        String expectedValue = "INUSE";
         
         SirenInUse testSirenInUse = new SirenInUse(testInput);
         
@@ -254,7 +253,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnSirenUseReserved() {
         
         Integer testInput = 3;
-        String expectedValue = "reserved";
+        String expectedValue = "RESERVED";
         
         SirenInUse testSirenInUse = new SirenInUse(testInput);
         
@@ -507,7 +506,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnMinimumResponseType() {
         
         Integer testInput = 0;
-        String expectedValue = "notInUseOrNotEquipped";
+        String expectedValue = "NOTINUSEORNOTEQUIPPED";
         
         ResponseType testResponseType = new ResponseType(testInput);
         
@@ -532,7 +531,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnCornerCaseMinimumResponseType() {
         
         Integer testInput = 1;
-        String expectedValue = "emergency";
+        String expectedValue = "EMERGENCY";
         
         ResponseType testResponseType = new ResponseType(testInput);
         
@@ -557,7 +556,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnMiddleResponseType() {
         
         Integer testInput = 3;
-        String expectedValue = "pursuit";
+        String expectedValue = "PURSUIT";
         
         ResponseType testResponseType = new ResponseType(testInput);
         
@@ -582,7 +581,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnCornerCaseMaximumResponseType() {
         
         Integer testInput = 5;
-        String expectedValue = "slowMoving";
+        String expectedValue = "SLOWMOVING";
         
         ResponseType testResponseType = new ResponseType(testInput);
         
@@ -607,7 +606,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnMaximumResponseType() {
         
         Integer testInput = 6;
-        String expectedValue = "stopAndGoMovement";
+        String expectedValue = "STOPANDGOMOVEMENT";
         
         ResponseType testResponseType = new ResponseType(testInput);
         

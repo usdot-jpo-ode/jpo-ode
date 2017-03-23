@@ -103,7 +103,7 @@ public class OssBsmPart2ExtensionTest {
         Integer expectedVCIso3833VehicleType = 0;
         
         Integer testVehicleType = 0;
-        String expectedVehicleType = "none";
+        String expectedVehicleType = "NONE";
         
         Integer testVehicleGroupAffected = 9217;
         String expectedVehicleGroupAffected = "all-vehicles";
@@ -248,13 +248,13 @@ public class OssBsmPart2ExtensionTest {
         Integer expectedAmbientAirPressure = 580;
         
         Integer testWiperStatusFront = 0;
-        String expectedWiperStatusFront = "unavailable";
+        String expectedWiperStatusFront = "UNAVAILABLE";
         
         Integer testWiperRateFront = 0;
         Integer expectedWiperRateFront = 0;
         
         Integer testWiperStatusRear = 0;
-        String expectedWiperStatusRear = "unavailable";
+        String expectedWiperStatusRear = "UNAVAILABLE";
         
         Integer testWiperRateRear = 0;
         Integer expectedWiperRateRear = 0;

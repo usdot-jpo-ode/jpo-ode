@@ -9,7 +9,6 @@ import static org.junit.Assert.fail;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.oss.asn1.OpenType;
@@ -100,7 +99,7 @@ public class OssBsmPart2ContentTest {
         Integer expectedSspRights = 5;
         
         Integer testSirenInUse = 2;
-        String expectedSirenInUse = "inUse";
+        String expectedSirenInUse = "INUSE";
         
         Integer testLightbarInUse = 3;
         String expectedLightbarInUse = "YELLOWCAUTIONLIGHTS";

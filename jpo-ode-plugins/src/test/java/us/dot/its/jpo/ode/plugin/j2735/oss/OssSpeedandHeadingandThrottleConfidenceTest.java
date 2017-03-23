@@ -209,7 +209,7 @@ public class OssSpeedandHeadingandThrottleConfidenceTest {
    public void shouldReturnUnavailableSpeedConfidence() {
 
       Integer testInput = 0;
-      J2735SpeedConfidence expectedValue = J2735SpeedConfidence.unavailable;
+      J2735SpeedConfidence expectedValue = J2735SpeedConfidence.UNAVAILABLE;
 
       HeadingConfidence testHeadingConfidence = new HeadingConfidence(0);
       SpeedConfidence testSpeedConfidence = new SpeedConfidence(testInput);
@@ -232,7 +232,7 @@ public class OssSpeedandHeadingandThrottleConfidenceTest {
    public void shouldReturnMinimumSpeedConfidence() {
 
       Integer testInput = 1;
-      J2735SpeedConfidence expectedValue = J2735SpeedConfidence.prec100ms;
+      J2735SpeedConfidence expectedValue = J2735SpeedConfidence.PREC100MS;
 
       HeadingConfidence testHeadingConfidence = new HeadingConfidence(0);
       SpeedConfidence testSpeedConfidence = new SpeedConfidence(testInput);
@@ -255,7 +255,7 @@ public class OssSpeedandHeadingandThrottleConfidenceTest {
    public void shouldReturnMaximumSpeedConfidence() {
 
       Integer testInput = 7;
-      J2735SpeedConfidence expectedValue = J2735SpeedConfidence.prec0_01ms;
+      J2735SpeedConfidence expectedValue = J2735SpeedConfidence.PREC0_01MS;
 
       HeadingConfidence testHeadingConfidence = new HeadingConfidence(0);
       SpeedConfidence testSpeedConfidence = new SpeedConfidence(testInput);
@@ -330,7 +330,7 @@ public class OssSpeedandHeadingandThrottleConfidenceTest {
    public void shouldReturnUnavailableThrottleConfidence() {
 
       Integer testInput = 0;
-      J2735ThrottleConfidence expectedValue = J2735ThrottleConfidence.unavailable;
+      J2735ThrottleConfidence expectedValue = J2735ThrottleConfidence.UNAVAILABLE;
 
       HeadingConfidence testHeadingConfidence = new HeadingConfidence(0);
       SpeedConfidence testSpeedConfidence = new SpeedConfidence(0);
@@ -354,7 +354,7 @@ public class OssSpeedandHeadingandThrottleConfidenceTest {
    public void shouldReturnMinimumThrottleConfidence() {
 
       Integer testInput = 1;
-      J2735ThrottleConfidence expectedValue = J2735ThrottleConfidence.prec10percent;
+      J2735ThrottleConfidence expectedValue = J2735ThrottleConfidence.PREC10PERCENT;
 
       HeadingConfidence testHeadingConfidence = new HeadingConfidence(0);
       SpeedConfidence testSpeedConfidence = new SpeedConfidence(0);
@@ -378,7 +378,7 @@ public class OssSpeedandHeadingandThrottleConfidenceTest {
    public void shouldReturnMaximumThrottleConfidence() {
 
       Integer testInput = 3;
-      J2735ThrottleConfidence expectedValue = J2735ThrottleConfidence.prec0_5percent;
+      J2735ThrottleConfidence expectedValue = J2735ThrottleConfidence.PREC0_5PERCENT;
 
       HeadingConfidence testHeadingConfidence = new HeadingConfidence(0);
       SpeedConfidence testSpeedConfidence = new SpeedConfidence(0);

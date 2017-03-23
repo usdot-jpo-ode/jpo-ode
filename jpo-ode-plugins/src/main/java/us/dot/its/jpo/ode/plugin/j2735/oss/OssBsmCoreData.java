@@ -35,7 +35,7 @@ public class OssBsmCoreData {
 
         genericBsmCoreData.setAccuracy(OssPositionalAccuracy.genericPositionalAccuracy(coreData.accuracy));
 
-        if (coreData.transmission != null && coreData.transmission.indexOf() != J2735TransmissionState.unavailable.ordinal()) {
+        if (coreData.transmission != null && coreData.transmission.indexOf() != J2735TransmissionState.UNAVAILABLE.ordinal()) {
                 genericBsmCoreData.setTransmission(J2735TransmissionState.values()[coreData.transmission.indexOf()]);
             }
 
