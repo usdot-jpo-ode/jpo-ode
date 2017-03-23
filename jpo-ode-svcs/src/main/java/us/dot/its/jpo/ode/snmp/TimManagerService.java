@@ -1,14 +1,9 @@
 package us.dot.its.jpo.ode.snmp;
 
-import java.io.IOException;
-
 import javax.xml.bind.DatatypeConverter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
-import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
@@ -20,8 +15,6 @@ import org.snmp4j.smi.VariableBinding;
  * encoded TIM payload, and then send a request to the RSU.
  */
 public class TimManagerService {
-    
-    private static final Logger logger = LoggerFactory.getLogger(TimManagerService.class);
     
     private TimManagerService() {}
     

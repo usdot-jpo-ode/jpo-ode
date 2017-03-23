@@ -13,15 +13,9 @@ import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
-import org.snmp4j.smi.Address;
-import org.snmp4j.smi.GenericAddress;
 
 import ch.qos.logback.classic.Logger;
-import kafka.network.RequestChannel.Response;
 import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
 import mockit.Tested;
 import mockit.Verifications;
@@ -99,8 +93,6 @@ public class TimManagerServiceTest {
         int rsuSRMTxMode = 3;
         int rsuSRMTxChannel = 4;
         int rsuSRMTxInterval = 5;
-        String rsuSRMDeliveryStart = "0C011411112F";
-        String rsuSRMDeliveryStop = "0C011411112F";
         String rsuSRMPayload = "88";
         int rsuSRMEnable = 9;
         int rsuSRMStatus = 10;

@@ -27,7 +27,6 @@ import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
 import us.dot.its.jpo.ode.plugin.GenericSnmp.SNMP;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
-import us.dot.its.jpo.ode.snmp.TimManagerService;
 import us.dot.its.jpo.ode.snmp.TimParameters;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
@@ -49,7 +48,7 @@ public class TravelerMessageController {
         this.odeProperties = odeProperties;
 
         try {
-            depositor = new DdsDepositor<DdsStatusMessage>(this.odeProperties);
+            depositor = new DdsDepositor<>(this.odeProperties);
         } catch (Exception e) {
             logger.error("Error starting SDW depositor", e);
         }

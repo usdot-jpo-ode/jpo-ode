@@ -20,7 +20,6 @@ import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.pdm.J2735ProbeDataManagement;
 import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
-import us.dot.its.jpo.ode.snmp.PdmManagerService;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import java.text.ParseException;

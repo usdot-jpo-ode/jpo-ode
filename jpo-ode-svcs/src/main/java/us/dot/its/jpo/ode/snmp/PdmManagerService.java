@@ -1,12 +1,7 @@
 package us.dot.its.jpo.ode.snmp;
 
-import java.io.IOException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
-import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
@@ -14,8 +9,6 @@ import org.snmp4j.smi.VariableBinding;
 import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
 
 public class PdmManagerService {
-
-    private static final Logger logger = LoggerFactory.getLogger(PdmManagerService.class);
 
     private PdmManagerService() {
     }

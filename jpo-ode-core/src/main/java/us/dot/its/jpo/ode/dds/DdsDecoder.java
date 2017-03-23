@@ -43,8 +43,5 @@ public abstract class DdsDecoder implements WebSocketMessageDecoder<DdsMessage> 
 
    @Override
    public abstract DdsMessage decode(String message) throws DecodeException;
-   
-   @Override
-   public abstract boolean willDecode(String message);
 
 }
