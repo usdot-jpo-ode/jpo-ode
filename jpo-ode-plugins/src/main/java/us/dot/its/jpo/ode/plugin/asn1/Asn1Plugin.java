@@ -6,10 +6,10 @@ import us.dot.its.jpo.ode.plugin.OdePlugin;
 
 public interface Asn1Plugin extends OdePlugin {
 
-    Asn1Object UPER_DecodeBase64(String base64Msg);
+    Asn1Object decodeUPERBase64(String base64Msg);
 
-    Asn1Object UPER_DecodeMessageFrameHex(String hexMsg);
-    Asn1Object UPER_DecodeBsmHex(String hexMsg);
+    Asn1Object decodeUPERMessageFrameHex(String hexMsg);
+    Asn1Object decodeUPERBsmHex(String hexMsg);
 
     String UPER_EncodeBase64(Asn1Object asn1Object);
 
@@ -17,12 +17,12 @@ public interface Asn1Plugin extends OdePlugin {
 
     byte[] UPER_EncodeBytes(Asn1Object asn1Object);
 
-    Asn1Object UPER_DecodeBsmBytes(byte[] byteArrayMsg);
+    Asn1Object decodeUPERBsmBytes(byte[] byteArrayMsg);
 
-    Asn1Object UPER_DecodeMessageFrameBytes(byte[] byteArrayMsg);
+    Asn1Object decodeUPERMessageFrameBytes(byte[] byteArrayMsg);
 
-    Asn1Object UPER_DecodeMessageFrameStream(InputStream ins);
+    Asn1Object decodeUPERMessageFrameStream(InputStream ins);
 
-    Asn1Object UPER_DecodeBsmStream(InputStream ins);
+    Asn1Object decodeUPERBsmStream(InputStream ins);
 
 }

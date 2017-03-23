@@ -95,7 +95,7 @@ public class BsmCoderTest {
                     PluginFactory.getPluginByName(anyString);
                     result = mockAsn1Plugin;
 
-                    mockAsn1Plugin.UPER_DecodeBsmHex(anyString);
+                    mockAsn1Plugin.decodeUPERBsmHex(anyString);
                     result = mockAsn1Object;
 
                     new SerializableMessageProducerPool<>(mockOdeProperties);
@@ -122,7 +122,7 @@ public class BsmCoderTest {
                     PluginFactory.getPluginByName(anyString);
                     result = mockAsn1Plugin;
 
-                    mockAsn1Plugin.UPER_DecodeBsmStream((InputStream) any);
+                    mockAsn1Plugin.decodeUPERBsmStream((InputStream) any);
                     result = mockAsn1Object;
 
                     new SerializableMessageProducerPool<>(mockOdeProperties);
@@ -181,7 +181,7 @@ public class BsmCoderTest {
                     PluginFactory.getPluginByName(anyString);
                     result = mockAsn1Plugin;
                     
-                    mockAsn1Plugin.UPER_DecodeBsmStream((InputStream) any);
+                    mockAsn1Plugin.decodeUPERBsmStream((InputStream) any);
                     result = null;
                 }
             };
