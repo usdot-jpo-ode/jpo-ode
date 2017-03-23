@@ -15,6 +15,7 @@ import mockit.Mocked;
 import mockit.Tested;
 import mockit.Verifications;
 import mockit.integration.junit4.JMockit;
+import us.dot.its.jpo.ode.ManagerAndControllerServices;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.pdm.J2735ProbeDataManagement;
@@ -65,7 +66,7 @@ public class PdmControllerTest {
                 mockPdm.getRsuList();
                 result = new RSU[]{mockRsu};
                 
-                PdmManagerService.createAndSend((PDM)any, (SnmpProperties)any);
+                ManagerAndControllerServices.createAndSend((PDM)any, (SnmpProperties)any);
                 result = null;
             }
         };
@@ -94,7 +95,7 @@ public class PdmControllerTest {
                 mockPdm.getRsuList();
                 result = new RSU[]{mockRsu};
                 
-                PdmManagerService.createAndSend((PDM)any, (SnmpProperties)any);
+                ManagerAndControllerServices.createAndSend((PDM)any, (SnmpProperties)any);
                 result = mockResponseEvent;
                 
                 mockResponseEvent.getResponse();
@@ -126,7 +127,7 @@ public class PdmControllerTest {
                 mockPdm.getRsuList();
                 result = new RSU[]{mockRsu};
                 
-                PdmManagerService.createAndSend((PDM)any, (SnmpProperties)any);
+                ManagerAndControllerServices.createAndSend((PDM)any, (SnmpProperties)any);
                 result = mockResponseEvent;
                 
                 mockResponseEvent.getResponse().getErrorStatus();
@@ -158,7 +159,7 @@ public class PdmControllerTest {
                 mockPdm.getRsuList();
                 result = new RSU[]{mockRsu};
                 
-                PdmManagerService.createAndSend((PDM)any, (SnmpProperties)any);
+                ManagerAndControllerServices.createAndSend((PDM)any, (SnmpProperties)any);
                 result = mockResponseEvent;
                 
                 mockResponseEvent.getResponse().getErrorStatus();

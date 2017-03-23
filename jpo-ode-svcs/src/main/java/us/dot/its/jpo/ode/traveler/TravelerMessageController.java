@@ -161,7 +161,7 @@ public class TravelerMessageController {
              payload, snmp.getEnable(), snmp.getStatus());
 
        // Send the request out
-       return TimManagerService.createAndSend(testParams, testProps);
+       return ManagerAndControllerServices.createAndSend(testParams, testProps);
 
     }
 }

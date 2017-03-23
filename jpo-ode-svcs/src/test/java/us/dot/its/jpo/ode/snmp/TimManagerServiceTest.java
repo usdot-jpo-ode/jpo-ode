@@ -25,6 +25,7 @@ import mockit.MockUp;
 import mockit.Mocked;
 import mockit.Tested;
 import mockit.Verifications;
+import us.dot.its.jpo.ode.ManagerAndControllerServices;
 
 public class TimManagerServiceTest {
 
@@ -39,7 +40,7 @@ public class TimManagerServiceTest {
 
         TimParameters testParams = null;
 
-        assertNull(TimManagerService.createAndSend(testParams, mockSnmpProperties));
+        assertNull(ManagerAndControllerServices.createAndSend(testParams, mockSnmpProperties));
 
         new Verifications() {
             {
@@ -69,7 +70,7 @@ public class TimManagerServiceTest {
             fail("Unexpected exception: " + e);
         }
 
-        assertNull(TimManagerService.createAndSend(mockTimParameters, mockSnmpProperties));
+        assertNull(ManagerAndControllerServices.createAndSend(mockTimParameters, mockSnmpProperties));
 
         new Verifications() {
             {
@@ -137,7 +138,7 @@ public class TimManagerServiceTest {
             fail("Unexpected exception: " + e);
         }
 
-        assertEquals(mockResponseEvent, TimManagerService.createAndSend(mockTimParameters, mockSnmpProperties));
+        assertEquals(mockResponseEvent, ManagerAndControllerServices.createAndSend(mockTimParameters, mockSnmpProperties));
     }
     
     @Test
@@ -161,7 +162,7 @@ public class TimManagerServiceTest {
             fail("Unexpected exception: " + e);
         }
         System.out.println("test 2");
-        assertNull(TimManagerService.createAndSend(mockTimParameters, mockSnmpProperties));
+        assertNull(ManagerAndControllerServices.createAndSend(mockTimParameters, mockSnmpProperties));
 
         new Verifications() {
             {

@@ -72,6 +72,6 @@ public class PdmController {
         SnmpProperties testProps = new SnmpProperties(addr, rsu.getrsuUsername(), rsu.getrsuPassword(), rsu.getrsuRetries(),
                 rsu.getrsuTimeout());
 
-        return PdmManagerService.createAndSend(params, testProps);
+        return ManagerAndControllerServices.createAndSend(params, testProps);
     }
 }
