@@ -10,7 +10,7 @@ public class J2735VehicleClassification implements Serializable{
 	private J2735VehicleType hpmsType;
 	private Integer iso3883;
 	private Integer keyType;
-	private List<J2735RegionalContent> regional = new ArrayList<J2735RegionalContent>();
+	private List<J2735RegionalContent> regional = new ArrayList<>();
 	private J2735ResponderGroupAffected responderType;
 	private J2735NamedNumber responseEquip;
 	private J2735BasicVehicleRole role;
