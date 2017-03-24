@@ -17,6 +17,7 @@ import org.snmp4j.event.ResponseEvent;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
+import us.dot.its.jpo.ode.ManagerAndControllerServices;
 import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
 
 public class PdmManagerServiceTest {
@@ -31,7 +32,7 @@ public class PdmManagerServiceTest {
 
         PDM testNullParams = null;
 
-        assertNull(PdmManagerService.createAndSend(testNullParams, mockSnmpProperties));
+        assertNull(ManagerAndControllerServices.createAndSend(testNullParams, mockSnmpProperties));
     }
 
     @Test
@@ -39,7 +40,7 @@ public class PdmManagerServiceTest {
 
         SnmpProperties testNullSnmpProperties = null;
 
-        assertNull(PdmManagerService.createAndSend(mockPdmParameters, testNullSnmpProperties));
+        assertNull(ManagerAndControllerServices.createAndSend(mockPdmParameters, testNullSnmpProperties));
     }
 
     @Test
@@ -56,7 +57,7 @@ public class PdmManagerServiceTest {
             fail("Unexpected exception in expectations block: " + e);
         }
 
-        assertNull(PdmManagerService.createAndSend(mockPdmParameters, mockSnmpProperties));
+        assertNull(ManagerAndControllerServices.createAndSend(mockPdmParameters, mockSnmpProperties));
     }
 
     @Test
@@ -75,7 +76,7 @@ public class PdmManagerServiceTest {
             fail("Unexpected exception in expectations block: " + e);
         }
 
-        assertNull(PdmManagerService.createAndSend(mockPdmParameters, mockSnmpProperties));
+        assertNull(ManagerAndControllerServices.createAndSend(mockPdmParameters, mockSnmpProperties));
     }
 
     @Test
@@ -94,7 +95,7 @@ public class PdmManagerServiceTest {
         }
 
         assertEquals(ResponseEvent.class,
-                PdmManagerService.createAndSend(mockPdmParameters, mockSnmpProperties).getClass());
+              ManagerAndControllerServices.createAndSend(mockPdmParameters, mockSnmpProperties).getClass());
     }
 
     @Test

@@ -2,18 +2,16 @@ package us.dot.its.jpo.ode.traveler;
 
 import static org.junit.Assert.fail;
 
-import java.text.ParseException;
 import java.time.ZonedDateTime;
 
 import org.junit.Test;
 
-import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.j2735.J2735;
+import us.dot.its.jpo.ode.plugin.SituationDataWarehouse;
 import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
@@ -31,7 +29,7 @@ public class AsdMessageTest {
     @Injectable
     J2735GeoRegion serviceRegion;
     @Injectable
-    J2735TravelerInputData.SDW.TimeToLive ttl = J2735TravelerInputData.SDW.TimeToLive.ONEMINUTE;
+    SituationDataWarehouse.SDW.TimeToLive ttl = SituationDataWarehouse.SDW.TimeToLive.ONEMINUTE;
 
     @Mocked
     ZonedDateTime mockZonedDateTimeStart;

@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.AmbientAirPressure;
@@ -98,13 +97,13 @@ public class OssBsmPart2ExtensionTest {
         Integer expectedBasicVehicleClass = 0;
         
         Integer testBasicVehicleRole = 0;
-        String expectedBasicVehicleRole = "basicVehicle";
+        String expectedBasicVehicleRole = "BASICVEHICLE";
         
         Integer testIso3833VehicleType = 0;
         Integer expectedVCIso3833VehicleType = 0;
         
         Integer testVehicleType = 0;
-        String expectedVehicleType = "none";
+        String expectedVehicleType = "NONE";
         
         Integer testVehicleGroupAffected = 9217;
         String expectedVehicleGroupAffected = "all-vehicles";
@@ -113,10 +112,10 @@ public class OssBsmPart2ExtensionTest {
         String expectedIncidentResponseEquipment = "ground-fire-suppression";
         
         Integer testResponderGroupAffected = 9729;
-        String expectedResponderGroupAffected = "emergency_vehicle_units";
+        String expectedResponderGroupAffected = "EMERGENCY_VEHICLE_UNITS";
         
         Integer testFuelType = 0;
-        String expectedFuelType = "unknownFuel";
+        String expectedFuelType = "UNKNOWNFUEL";
         
         VehicleClassification testVehicleClassification = new VehicleClassification(
                 new BasicVehicleClass(testBasicVehicleClass),
@@ -196,13 +195,13 @@ public class OssBsmPart2ExtensionTest {
     public void shouldCreateWeatherReport() {
         
         Integer testEssPrecipYesNo = 1;
-        String expectedEssPrecipYesNo = "precip";
+        String expectedEssPrecipYesNo = "PRECIP";
         
         Integer testEssPrecipRate = 0;
         BigDecimal expectedEssPrecipRate = BigDecimal.ZERO.setScale(1);
         
         Integer testEssPrecipSituation = 1;
-        String expectedEssPrecipSituation = "other";
+        String expectedEssPrecipSituation = "OTHER";
         
         Integer testEssSolarRadiation = 0;
         Integer expectedEssSolarRadiation = 0;
@@ -249,13 +248,13 @@ public class OssBsmPart2ExtensionTest {
         Integer expectedAmbientAirPressure = 580;
         
         Integer testWiperStatusFront = 0;
-        String expectedWiperStatusFront = "unavailable";
+        String expectedWiperStatusFront = "UNAVAILABLE";
         
         Integer testWiperRateFront = 0;
         Integer expectedWiperRateFront = 0;
         
         Integer testWiperStatusRear = 0;
-        String expectedWiperStatusRear = "unavailable";
+        String expectedWiperStatusRear = "UNAVAILABLE";
         
         Integer testWiperRateRear = 0;
         Integer expectedWiperRateRear = 0;

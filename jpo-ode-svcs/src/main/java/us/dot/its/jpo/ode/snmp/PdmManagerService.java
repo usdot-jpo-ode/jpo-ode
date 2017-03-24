@@ -1,12 +1,7 @@
 package us.dot.its.jpo.ode.snmp;
 
-import java.io.IOException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
-import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
@@ -15,37 +10,7 @@ import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
 
 public class PdmManagerService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PdmManagerService.class);
-
     private PdmManagerService() {
-    }
-
-    public static ResponseEvent createAndSend(PDM params, SnmpProperties props) {
-
-        if (null == params || null == props) {
-            logger.error("PDM SERVICE - Received null object");
-            return null;
-        }
-        // Initialize the SNMP session
-        SnmpSession session = null;
-        try {
-            session = new SnmpSession(props);
-        } catch (IOException e) {
-            logger.error("PDM SERVICE - Failed to create SNMP session: {}", e);
-            return null;
-        }
-
-        // Send the PDU
-        ResponseEvent response = null;
-        ScopedPDU pdu = createPDU(params);
-        try {
-            response = session.set(pdu, session.getSnmp(), session.getTransport(), session.getTarget());
-        } catch (IOException | NullPointerException e) {
-            logger.error("PDM SERVICE - Error while sending PDU: {}", e);
-            return null;
-        }
-        return response;
-
     }
 
     public static ScopedPDU createPDU(PDM params) {

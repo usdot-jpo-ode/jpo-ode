@@ -24,7 +24,7 @@ import us.dot.its.jpo.ode.traveler.AsdMessage;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
 import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
 
-public class DdsDepositor<MessageType> extends AbstractWebSocketClient {
+public class DdsDepositor<MessageType> extends AbstractWebSocketClient {	//NOSONAR
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 

@@ -92,7 +92,7 @@ public class MessageFrameCoderTest {
                     PluginFactory.getPluginByName(anyString);
                     result = mockAsn1Plugin;
 
-                    mockAsn1Plugin.UPER_DecodeMessageFrameHex(anyString);
+                    mockAsn1Plugin.decodeUPERMessageFrameHex(anyString);
                     result = mockAsn1Object;
 
                     new SerializableMessageProducerPool<>(mockOdeProperties);
@@ -120,7 +120,7 @@ public class MessageFrameCoderTest {
                     PluginFactory.getPluginByName(anyString);
                     result = mockAsn1Plugin;
 
-                    mockAsn1Plugin.UPER_DecodeMessageFrameStream((InputStream) any);
+                    mockAsn1Plugin.decodeUPERMessageFrameStream((InputStream) any);
                     result = mockAsn1Object;
 
                     new SerializableMessageProducerPool<>(mockOdeProperties);

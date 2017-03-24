@@ -11,7 +11,7 @@ public class J2735TrailerUnitDescription extends Asn1Object {
 
 	private J2735BumperHeights bumperHeights;
 	private BigDecimal centerOfGravity;
-	private List<J2735TrailerHistoryPoint> crumbData = new ArrayList<J2735TrailerHistoryPoint>();
+	private List<J2735TrailerHistoryPoint> crumbData = new ArrayList<>();
 	private BigDecimal elevationOffset;
 	private J2735PivotPointDescription frontPivot;
 	private BigDecimal height;

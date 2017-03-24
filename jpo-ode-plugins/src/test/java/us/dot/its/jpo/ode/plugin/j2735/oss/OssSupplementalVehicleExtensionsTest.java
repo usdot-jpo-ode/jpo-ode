@@ -73,7 +73,7 @@ public class OssSupplementalVehicleExtensionsTest {
         try {
            J2735SupplementalVehicleExtensions actualsve = OssSupplementalVehicleExtensions
                    .genericSupplementalVehicleExtensions(testsve);
-           assertEquals("precip", actualsve.getWeatherReport().getIsRaining().toString());
+           assertEquals("PRECIP", actualsve.getWeatherReport().getIsRaining().toString());
         } catch (Exception e) {
             fail("Unexpected exception: " + e.getClass());
         }

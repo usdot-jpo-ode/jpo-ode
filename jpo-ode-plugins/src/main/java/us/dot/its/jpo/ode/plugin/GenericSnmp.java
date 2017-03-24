@@ -90,7 +90,7 @@ public class GenericSnmp {
         }
     }
 
-    private GenericSnmp() {
+    private GenericSnmp() {//NOSONAR
 
     }
 }

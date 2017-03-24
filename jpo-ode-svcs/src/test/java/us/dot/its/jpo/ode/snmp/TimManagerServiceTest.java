@@ -13,18 +13,13 @@ import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
-import org.snmp4j.smi.Address;
-import org.snmp4j.smi.GenericAddress;
 
 import ch.qos.logback.classic.Logger;
-import kafka.network.RequestChannel.Response;
 import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
 import mockit.Tested;
 import mockit.Verifications;
+import us.dot.its.jpo.ode.ManagerAndControllerServices;
 
 public class TimManagerServiceTest {
 
@@ -39,7 +34,7 @@ public class TimManagerServiceTest {
 
         TimParameters testParams = null;
 
-        assertNull(TimManagerService.createAndSend(testParams, mockSnmpProperties));
+        assertNull(ManagerAndControllerServices.createAndSend(testParams, mockSnmpProperties));
 
         new Verifications() {
             {
@@ -69,7 +64,7 @@ public class TimManagerServiceTest {
             fail("Unexpected exception: " + e);
         }
 
-        assertNull(TimManagerService.createAndSend(mockTimParameters, mockSnmpProperties));
+        assertNull(ManagerAndControllerServices.createAndSend(mockTimParameters, mockSnmpProperties));
 
         new Verifications() {
             {
@@ -98,8 +93,6 @@ public class TimManagerServiceTest {
         int rsuSRMTxMode = 3;
         int rsuSRMTxChannel = 4;
         int rsuSRMTxInterval = 5;
-        String rsuSRMDeliveryStart = "0C011411112F";
-        String rsuSRMDeliveryStop = "0C011411112F";
         String rsuSRMPayload = "88";
         int rsuSRMEnable = 9;
         int rsuSRMStatus = 10;
@@ -137,7 +130,7 @@ public class TimManagerServiceTest {
             fail("Unexpected exception: " + e);
         }
 
-        assertEquals(mockResponseEvent, TimManagerService.createAndSend(mockTimParameters, mockSnmpProperties));
+        assertEquals(mockResponseEvent, ManagerAndControllerServices.createAndSend(mockTimParameters, mockSnmpProperties));
     }
     
     @Test
@@ -161,7 +154,7 @@ public class TimManagerServiceTest {
             fail("Unexpected exception: " + e);
         }
         System.out.println("test 2");
-        assertNull(TimManagerService.createAndSend(mockTimParameters, mockSnmpProperties));
+        assertNull(ManagerAndControllerServices.createAndSend(mockTimParameters, mockSnmpProperties));
 
         new Verifications() {
             {

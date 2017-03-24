@@ -1,19 +1,19 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
 public enum J2735ResponderGroupAffected {
-	emergency_vehicle_units,
-	federal_law_enforcement_units,
-	state_police_units,
-	county_police_units,
-	local_police_units,
-	ambulance_units,
-	rescue_units,
-	fire_units,
-	hAZMAT_units,
-	light_tow_unit,
-	heavy_tow_unit,
-	freeway_service_patrols,
-	transportation_response_units,
-	private_contractor_response_units
+	EMERGENCY_VEHICLE_UNITS,
+	FEDERAL_LAW_ENFORCEMENT_UNITS,
+	STATE_POLICE_UNITS,
+	COUNTY_POLICE_UNITS,
+	LOCAL_POLICE_UNITS,
+	AMBULANCE_UNITS,
+	RESCUE_UNITS,
+	FIRE_UNITS,
+	HAZMAT_UNITS,
+	LIGHT_TOW_UNIT,
+	HEAVY_TOW_UNIT,
+	FREEWAY_SERVICE_PATROLS,
+	TRANSPORTATION_RESPONSE_UNITS,
+	PRIVATE_CONTRACTOR_RESPONSE_UNITS
 
 }
