@@ -1,10 +1,11 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import java.util.Arrays;
-
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.plugin.GenericSnmp.SNMP;
+import us.dot.its.jpo.ode.plugin.OperationalDataEnvironment.ODE;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
+import us.dot.its.jpo.ode.plugin.TravelerInformationMessage.TIM;
 
 public class J2735TravelerInputData extends OdeObject {
 
@@ -15,96 +16,6 @@ public class J2735TravelerInputData extends OdeObject {
    private SNMP snmp;
    private ODE ode;
    private SDW sdw;
-
-   public static class ODE extends OdeObject {
-       
-    private static final long serialVersionUID = 664813454587275001L;
-    
-    private int version = 1;
-
-      public int getVersion() {
-         return version;
-      }
-
-      public void setVersion(int version) {
-         this.version = version;
-      }
-   }
-
-   public static class SDW extends OdeObject {
-       
-    private static final long serialVersionUID = -7731139391317960325L;
-    
-    public enum TimeToLive {
-         ONEMINUTE, THIRTYMINUTES, ONEDAY, ONEWEEK, ONEMONTH, ONEYEAR
-      }
-
-      private J2735GeoRegion serviceRegion;
-      private TimeToLive ttl = TimeToLive.THIRTYMINUTES;
-      public J2735GeoRegion getServiceRegion() {
-         return serviceRegion;
-      }
-      public void setServiceRegion(J2735GeoRegion serviceRegion) {
-         this.serviceRegion = serviceRegion;
-      }
-      public TimeToLive getTtl() {
-         return ttl;
-      }
-      public void setTtl(TimeToLive ttl) {
-         this.ttl = ttl;
-      }
-   }
-
-   public static class TIM extends OdeObject {
-       
-    private static final long serialVersionUID = -200529140190872305L;
-    
-    private int msgCnt;
-      private String timeStamp;
-      private int packetID;
-      private String urlB;
-      private DataFrame[] dataframes;
-
-      public int getMsgCnt() {
-         return msgCnt;
-      }
-
-      public void setMsgCnt(int msgCnt) {
-         this.msgCnt = msgCnt;
-      }
-
-      public String getTimeStamp() {
-         return timeStamp;
-      }
-
-      public void setTimeStamp(String timeStamp) {
-         this.timeStamp = timeStamp;
-      }
-
-      public int getPacketID() {
-         return packetID;
-      }
-
-      public void setPacketID(int packetID) {
-         this.packetID = packetID;
-      }
-
-      public DataFrame[] getDataframes() {
-         return dataframes;
-      }
-
-      public void setDataframes(DataFrame[] dataframes) {
-         this.dataframes = dataframes;
-      }
-
-      public String getUrlB() {
-         return urlB;
-      }
-
-      public void setUrlB(String urlB) {
-         this.urlB = urlB;
-      }
-   }
 
    public static class ComputedLane extends OdeObject {
 
@@ -665,13 +576,6 @@ public class J2735TravelerInputData extends OdeObject {
 
          }
 
-         @Override
-         public String toString() {
-            return "Region [regionType=" + regionType + ", laneNodes=" + ", extent=" +
-            // + ", refPoint=" + refPoint
-                  "]";
-         }
-
          public OldRegion getOldRegion() {
             return oldRegion;
          }
@@ -914,14 +818,6 @@ public class J2735TravelerInputData extends OdeObject {
          this.position = position;
       }
       
-      @Override
-      public String toString() {
-         return "Frame [name=" + ", referencePosition=" + position.toJson() + ", sspTimRights=" + sspTimRights
-               + ", sspTypeRights=" + sspMsgTypes + ", sspContentRights=" + sspMsgContent + ", sspLocationRights="
-               + sspLocationRights + ", content=" + content + ", items=" + Arrays.toString(items) + ", mutcd=" + mutcd
-               + ", priority=" + priority + ", startDateTime=" + startDateTime + ", regions=" + Arrays.toString(regions)
-               + "]";
-      }
    }
 
    public TIM getTim() {

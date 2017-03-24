@@ -36,17 +36,17 @@ public class OssAsn1Coder implements Asn1Plugin {
     }
 
     @Override
-    public Asn1Object UPER_DecodeBase64(String base64Msg) {
-        return UPER_DecodeMessageFrameBytes(DatatypeConverter.parseBase64Binary(base64Msg));
+    public Asn1Object decodeUPERBase64(String base64Msg) {
+        return decodeUPERMessageFrameBytes(DatatypeConverter.parseBase64Binary(base64Msg));
     }
 
     @Override
-    public Asn1Object UPER_DecodeMessageFrameHex(String hexMsg) {
-        return UPER_DecodeMessageFrameBytes(DatatypeConverter.parseHexBinary(hexMsg));
+    public Asn1Object decodeUPERMessageFrameHex(String hexMsg) {
+        return decodeUPERMessageFrameBytes(DatatypeConverter.parseHexBinary(hexMsg));
     }
 
     @Override
-    public Asn1Object UPER_DecodeMessageFrameBytes(byte[] byteArrayMsg) {
+    public Asn1Object decodeUPERMessageFrameBytes(byte[] byteArrayMsg) {
 
         InputStream ins = new ByteArrayInputStream(byteArrayMsg);
 
@@ -71,7 +71,7 @@ public class OssAsn1Coder implements Asn1Plugin {
     }
 
     @Override
-    public Asn1Object UPER_DecodeBsmBytes(byte[] byteArrayMsg) {
+    public Asn1Object decodeUPERBsmBytes(byte[] byteArrayMsg) {
         InputStream ins = new ByteArrayInputStream(byteArrayMsg);
 
         BasicSafetyMessage bsm = new BasicSafetyMessage();
@@ -94,7 +94,7 @@ public class OssAsn1Coder implements Asn1Plugin {
     }
 
     @Override
-    public Asn1Object UPER_DecodeBsmStream(InputStream ins) {
+    public Asn1Object decodeUPERBsmStream(InputStream ins) {
         BasicSafetyMessage bsm = new BasicSafetyMessage();
         J2735Bsm gbsm = null;
 
@@ -123,7 +123,7 @@ public class OssAsn1Coder implements Asn1Plugin {
     }
 
     @Override
-    public Asn1Object UPER_DecodeMessageFrameStream(InputStream ins) {
+    public Asn1Object decodeUPERMessageFrameStream(InputStream ins) {
         MessageFrame mf = new MessageFrame();
         J2735MessageFrame gmf = null;
 
@@ -153,17 +153,17 @@ public class OssAsn1Coder implements Asn1Plugin {
     }
 
     @Override
-    public String UPER_EncodeBase64(Asn1Object asn1Object) {
-        return DatatypeConverter.printBase64Binary(UPER_EncodeBytes(asn1Object));
+    public String encodeUPERBase64(Asn1Object asn1Object) {
+        return DatatypeConverter.printBase64Binary(encodeUPERBytes(asn1Object));
     }
 
     @Override
-    public String UPER_EncodeHex(Asn1Object asn1Object) {
-        return DatatypeConverter.printHexBinary(UPER_EncodeBytes(asn1Object));
+    public String encodeUPERHex(Asn1Object asn1Object) {
+        return DatatypeConverter.printHexBinary(encodeUPERBytes(asn1Object));
     }
 
     @Override
-    public byte[] UPER_EncodeBytes(Asn1Object asn1Object) {
+    public byte[] encodeUPERBytes(Asn1Object asn1Object) {
         if (asn1Object instanceof J2735Bsm) {
             J2735Bsm genericBsm = (J2735Bsm) asn1Object;
             try {
@@ -178,8 +178,8 @@ public class OssAsn1Coder implements Asn1Plugin {
     }
 
     @Override
-    public Asn1Object UPER_DecodeBsmHex(String hexMsg) {
-        return UPER_DecodeBsmBytes(DatatypeConverter.parseHexBinary(hexMsg));
+    public Asn1Object decodeUPERBsmHex(String hexMsg) {
+        return decodeUPERBsmBytes(DatatypeConverter.parseHexBinary(hexMsg));
     }
 
 }

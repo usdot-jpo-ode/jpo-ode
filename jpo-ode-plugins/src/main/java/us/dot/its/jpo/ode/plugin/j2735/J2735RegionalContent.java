@@ -9,10 +9,10 @@ public class J2735RegionalContent extends Asn1Object {
 	private static final long serialVersionUID = 1L;
 	
 	public enum RegionId {
-				noRegion(J2735RegionalExtension.class), //Use default supplied stubs
-				addGrpA(J2735RegionalExtension.class),  //RegionId ::= 1 -- USA
-				addGrpB(J2735RegionalExtension.class),  //RegionId ::= 2 -- Japan
-				addGrpC(J2735RegionalExtension.class)   //RegionId ::= 3 -- EU
+				NOREGION(J2735RegionalExtension.class), //Use default supplied stubs
+				ADDGRPA(J2735RegionalExtension.class),  //RegionId ::= 1 -- USA
+				ADDGRPB(J2735RegionalExtension.class),  //RegionId ::= 2 -- Japan
+				ADDGRPC(J2735RegionalExtension.class)   //RegionId ::= 3 -- EU
 				; 
 		
 		Class<?> type;

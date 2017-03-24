@@ -265,7 +265,7 @@ public class OssBsmCoreDataTest {
         
         
         Integer testTransmissionState = 0;
-        String expectedTransmissionState = "neutral";
+        String expectedTransmissionState = "NEUTRAL";
         
         Integer testSpeed = 0;
         BigDecimal expectedSpeed = BigDecimal.ZERO.setScale(2);
@@ -419,7 +419,7 @@ public class OssBsmCoreDataTest {
         
         
         Integer testTransmissionState = 6;
-        String expectedTransmissionState = "reserved3";
+        String expectedTransmissionState = "RESERVED3";
         
         Integer testSpeed = 8190;
         BigDecimal expectedSpeed = BigDecimal.valueOf(163.80).setScale(2);

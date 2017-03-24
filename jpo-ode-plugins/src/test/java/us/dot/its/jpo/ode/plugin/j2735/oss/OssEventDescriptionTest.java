@@ -319,7 +319,7 @@ public class OssEventDescriptionTest {
     public void shouldReturnMinimumExtent() {
         
         Integer testInput = 0;
-        String expectedValue = "useInstantlyOnly";
+        String expectedValue = "USEINSTANTLYONLY";
         
         Extent testExtent = new Extent(testInput);
         
@@ -339,7 +339,7 @@ public class OssEventDescriptionTest {
     public void shouldReturnKnownExtent() {
         
         Integer testInput = 5;
-        String expectedValue = "useFor500meters";
+        String expectedValue = "USEFOR500METERS";
         
         Extent testExtent = new Extent(testInput);
         
@@ -359,7 +359,7 @@ public class OssEventDescriptionTest {
     public void shouldReturnMaximumExtent() {
         
         Integer testInput = 15;
-        String expectedValue = "forever";
+        String expectedValue = "FOREVER";
         
         Extent testExtent = new Extent(testInput);
         

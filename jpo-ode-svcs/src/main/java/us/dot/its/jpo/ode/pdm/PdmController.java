@@ -16,7 +16,6 @@ import us.dot.its.jpo.ode.ManagerAndControllerServices;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.pdm.J2735ProbeDataManagement;
 import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
-import us.dot.its.jpo.ode.snmp.PdmManagerService;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
@@ -72,6 +71,6 @@ public class PdmController {
         SnmpProperties testProps = new SnmpProperties(addr, rsu.getrsuUsername(), rsu.getrsuPassword(), rsu.getrsuRetries(),
                 rsu.getrsuTimeout());
 
-        return PdmManagerService.createAndSend(params, testProps);
+        return ManagerAndControllerServices.createAndSend(params, testProps);
     }
 }

@@ -85,7 +85,7 @@ public class OssMessageFrameTest {
         
         
         Integer testTransmissionState = 6;
-        String expectedTransmissionState = "reserved3";
+        String expectedTransmissionState = "RESERVED3";
         
         Integer testSpeed = 8190;
         BigDecimal expectedSpeed = BigDecimal.valueOf(163.80).setScale(2);

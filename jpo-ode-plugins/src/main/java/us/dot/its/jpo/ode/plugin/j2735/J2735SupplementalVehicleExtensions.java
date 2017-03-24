@@ -17,7 +17,7 @@ public class J2735SupplementalVehicleExtensions extends Asn1Object implements J2
 	private J2735DisabledVehicle status;
 	private J2735SpeedProfile speedProfile;
 	private J2735RTCMPackage theRTCM;
-	private List<J2735RegionalContent> regional = new ArrayList<J2735RegionalContent>();
+	private List<J2735RegionalContent> regional = new ArrayList<>();
 
 	public Integer getClassification() {
 		return classification;

@@ -10,7 +10,7 @@ public class J2735TrailerData extends Asn1Object {
 
 	private J2735PivotPointDescription connection;
 	private Integer sspRights;
-	private List<J2735TrailerUnitDescription> units = new ArrayList<J2735TrailerUnitDescription>();
+	private List<J2735TrailerUnitDescription> units = new ArrayList<>();
 
 	public J2735PivotPointDescription getConnection() {
 		return connection;

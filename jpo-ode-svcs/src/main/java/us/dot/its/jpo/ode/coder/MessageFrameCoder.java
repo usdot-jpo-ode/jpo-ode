@@ -20,12 +20,12 @@ public class MessageFrameCoder extends AbstractCoder {
 
     @Override
     public Asn1Object decode(String line) {
-       return asn1Coder.UPER_DecodeMessageFrameHex(line);
+       return asn1Coder.decodeUPERMessageFrameHex(line);
     }
 
     @Override
     public Asn1Object decode(InputStream is) {
-       return asn1Coder.UPER_DecodeMessageFrameStream(is);
+       return asn1Coder.decodeUPERMessageFrameStream(is);
     }
 
     @Override

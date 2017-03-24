@@ -56,71 +56,78 @@ public class DdsStatusMessageDecoder extends DdsDecoder {
          if (tag != null) {
             statusMsg = new DdsStatusMessage().setTag(tag);
             switch(tag) {
-            case CONNECTED: {
-               String connectionDetails = msgComponents[MSG_COMPONENT_VALUE_INDEX];
-               statusMsg.setConnectionDetails(connectionDetails);
-            }
-            break;
-            case START: {
-               String jsonMessage = msgComponents[MSG_COMPONENT_VALUE_INDEX];
-               try {
-                  ObjectNode rootNode = JsonUtils.toObjectNode(jsonMessage);
-                  
-                  statusMsg
-                     .setDialog(DdsRequest.Dialog.getById(rootNode.get("dialogID").asInt()))
-                     .setEncoding(rootNode.get("resultEncoding").textValue());
-                        
-               } catch (Exception e) {
-                  logger.error("Error processing START tag", e);
-               }
-            }
-            break;
-            case STOP: {
-               String recordCount = msgComponents[MSG_COMPONENT_VALUE_INDEX];
-               String[] rcArray = patseRecordCount(recordCount);
-               if (rcArray.length == 2) {
-                  try {
-                     if (statusMsg != null) {
-                        statusMsg.setRecordCount(Integer.valueOf(rcArray[RECORD_COUNT_VALUE_INDEX]));
-                     }
-                  } catch (Exception e) {
-                     logger.error("Error processing STOP tag", e);
-                  }
-               } else {
-                  logger.error("Invalid format for recordCount. "
-                        + "Expecting \"recordCount=n\" but received \"{}\"", 
-                        recordCount);
-               }
-            }
-            break;
-            
-            case DEPOSITED: {
-               String depositCount = msgComponents[MSG_COMPONENT_VALUE_INDEX];
-               try {
-                  if (statusMsg != null) {
-                     statusMsg.setRecordCount(Integer.valueOf(depositCount));
-                  }
-               } catch (Exception e) {
-                  logger.error("Error processing DEPOSITED tag", e);
-               }
-            }
-            break;
-            
-            case ERROR: {
+            case CONNECTED:
+            	evaluateConnected(statusMsg, msgComponents);
+            	break;
+            case START:
+            	evaluateStart(statusMsg, msgComponents);
+            	break;
+            case STOP:
+            	evaluateStop(statusMsg, msgComponents);
+            	break;
+            case DEPOSITED:
+            	evaluateDeposited(statusMsg, msgComponents);
+            	break;   
+            case ERROR:
                logger.error("Received Error message from DDS: {}", message);
-            }
-            break;
-            
+               break;
             default:
                logger.error("Received {} message: {}", tag, message);
             }
          }
       } catch (Exception e) {
          logger.error("Error decoding ", e);
-      } finally {
       }
 
       return statusMsg;
+   }
+   
+   private void evaluateConnected(DdsStatusMessage statusMsg, String[] msgComponents){
+       String connectionDetails = msgComponents[MSG_COMPONENT_VALUE_INDEX];
+       statusMsg.setConnectionDetails(connectionDetails);
+   }
+   
+   private void evaluateStart(DdsStatusMessage statusMsg, String[] msgComponents){
+	   String jsonMessage = msgComponents[MSG_COMPONENT_VALUE_INDEX];
+       try {
+          ObjectNode rootNode = JsonUtils.toObjectNode(jsonMessage);
+          
+          statusMsg
+             .setDialog(DdsRequest.Dialog.getById(rootNode.get("dialogID").asInt()))
+             .setEncoding(rootNode.get("resultEncoding").textValue());
+                
+       } catch (Exception e) {
+          logger.error("Error processing START tag", e);
+       }
+   }
+   
+   private void evaluateStop(DdsStatusMessage statusMsg, String[] msgComponents){
+	   String recordCount = msgComponents[MSG_COMPONENT_VALUE_INDEX];
+       String[] rcArray = patseRecordCount(recordCount);
+       if (rcArray.length == 2) {
+          try {
+             if (statusMsg != null) {
+                statusMsg.setRecordCount(Integer.valueOf(rcArray[RECORD_COUNT_VALUE_INDEX]));
+             }
+          } catch (Exception e) {
+             logger.error("Error processing STOP tag", e);
+          }
+       } else {
+          logger.error("Invalid format for recordCount. "
+                + "Expecting \"recordCount=n\" but received \"{}\"", 
+                recordCount);
+       }
+   }
+   
+   private void evaluateDeposited(DdsStatusMessage statusMsg, String[] msgComponents){
+	   String depositCount = msgComponents[MSG_COMPONENT_VALUE_INDEX];
+       try {
+          if (statusMsg != null) {
+             statusMsg.setRecordCount(Integer.valueOf(depositCount));
+          }
+       } catch (Exception e) {
+          logger.error("Error processing DEPOSITED tag", e);
+       }
    }
 
    public String[] patseRecordCount(String recordCount) {

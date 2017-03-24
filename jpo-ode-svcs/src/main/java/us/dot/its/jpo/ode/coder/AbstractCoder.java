@@ -100,10 +100,6 @@ public abstract class AbstractCoder implements Coder {
         producer.send(topic, null, msg);
         messageProducerPool.checkIn(producer);
     }
-
-    public abstract Asn1Object decode(String line);
-    public abstract Asn1Object decode(InputStream is);
-    public abstract void publish(String topic, Asn1Object msg);
     
     public void setAsn1Plugin(Asn1Plugin asn1Plugin) {
         this.asn1Coder = asn1Plugin;

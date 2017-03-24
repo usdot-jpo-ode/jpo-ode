@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -179,7 +178,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnSirenUseUnavailable() {
         
         Integer testInput = 0;
-        String expectedValue = "unavailable";
+        String expectedValue = "UNAVAILABLE";
         
         SirenInUse testSirenInUse = new SirenInUse(testInput);
         
@@ -204,7 +203,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnSirenUseNotInUse() {
         
         Integer testInput = 1;
-        String expectedValue = "notInUse";
+        String expectedValue = "NOTINUSE";
         
         SirenInUse testSirenInUse = new SirenInUse(testInput);
         
@@ -229,7 +228,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnSirenUseInUse() {
         
         Integer testInput = 2;
-        String expectedValue = "inUse";
+        String expectedValue = "INUSE";
         
         SirenInUse testSirenInUse = new SirenInUse(testInput);
         
@@ -254,7 +253,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnSirenUseReserved() {
         
         Integer testInput = 3;
-        String expectedValue = "reserved";
+        String expectedValue = "RESERVED";
         
         SirenInUse testSirenInUse = new SirenInUse(testInput);
         
@@ -280,7 +279,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnMinimumLightbarInUse() {
         
         Integer testInput = 0;
-        String expectedValue = "unavailable";
+        String expectedValue = "UNAVAILABLE";
         
         LightbarInUse testLightbarInUse = new LightbarInUse(testInput);
         
@@ -305,7 +304,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnCornerCaseMinimumLightbarInUse() {
         
         Integer testInput = 1;
-        String expectedValue = "notInUse";
+        String expectedValue = "NOTINUSE";
         
         LightbarInUse testLightbarInUse = new LightbarInUse(testInput);
         
@@ -330,7 +329,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnMiddleLightbarInUse() {
         
         Integer testInput = 3;
-        String expectedValue = "yellowCautionLights";
+        String expectedValue = "YELLOWCAUTIONLIGHTS";
         
         LightbarInUse testLightbarInUse = new LightbarInUse(testInput);
         
@@ -355,7 +354,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnCornerCaseMaximumLightbarInUse() {
         
         Integer testInput = 6;
-        String expectedValue = "slowMovingVehicle";
+        String expectedValue = "SLOWMOVINGVEHICLE";
         
         LightbarInUse testLightbarInUse = new LightbarInUse(testInput);
         
@@ -380,7 +379,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnMaximumLightbarInUse() {
         
         Integer testInput = 7;
-        String expectedValue = "freqStops";
+        String expectedValue = "FREQSTOPS";
         
         LightbarInUse testLightbarInUse = new LightbarInUse(testInput);
         
@@ -406,7 +405,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnMultiVehicleResponseUnavailable() {
         
         Integer testInput = 0;
-        String expectedValue = "unavailable";
+        String expectedValue = "UNAVAILABLE";
         
         MultiVehicleResponse testMultiVehicleResponse = new MultiVehicleResponse(testInput);
         
@@ -431,7 +430,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnMultiVehicleResponseSingleVehicle() {
         
         Integer testInput = 1;
-        String expectedValue = "singleVehicle";
+        String expectedValue = "SINGLEVEHICLE";
         
         MultiVehicleResponse testMultiVehicleResponse = new MultiVehicleResponse(testInput);
         
@@ -456,7 +455,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnMultiVehicleResponseMultiVehicle() {
         
         Integer testInput = 2;
-        String expectedValue = "multiVehicle";
+        String expectedValue = "MULTIVEHICLE";
         
         MultiVehicleResponse testMultiVehicleResponse = new MultiVehicleResponse(testInput);
         
@@ -481,7 +480,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnMultiVehicleResponseReserved() {
         
         Integer testInput = 3;
-        String expectedValue = "reserved";
+        String expectedValue = "RESERVED";
         
         MultiVehicleResponse testMultiVehicleResponse = new MultiVehicleResponse(testInput);
         
@@ -507,7 +506,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnMinimumResponseType() {
         
         Integer testInput = 0;
-        String expectedValue = "notInUseOrNotEquipped";
+        String expectedValue = "NOTINUSEORNOTEQUIPPED";
         
         ResponseType testResponseType = new ResponseType(testInput);
         
@@ -532,7 +531,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnCornerCaseMinimumResponseType() {
         
         Integer testInput = 1;
-        String expectedValue = "emergency";
+        String expectedValue = "EMERGENCY";
         
         ResponseType testResponseType = new ResponseType(testInput);
         
@@ -557,7 +556,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnMiddleResponseType() {
         
         Integer testInput = 3;
-        String expectedValue = "pursuit";
+        String expectedValue = "PURSUIT";
         
         ResponseType testResponseType = new ResponseType(testInput);
         
@@ -582,7 +581,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnCornerCaseMaximumResponseType() {
         
         Integer testInput = 5;
-        String expectedValue = "slowMoving";
+        String expectedValue = "SLOWMOVING";
         
         ResponseType testResponseType = new ResponseType(testInput);
         
@@ -607,7 +606,7 @@ public class OssEmergencyDetailsTest {
     public void shouldReturnMaximumResponseType() {
         
         Integer testInput = 6;
-        String expectedValue = "stopAndGoMovement";
+        String expectedValue = "STOPANDGOMOVEMENT";
         
         ResponseType testResponseType = new ResponseType(testInput);
         

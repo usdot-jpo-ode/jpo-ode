@@ -1,20 +1,20 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
 public enum J2735Extent {
-	useInstantlyOnly,
-	useFor3meters,
-	useFor10meters,
-	useFor50meters,
-	useFor100meters,
-	useFor500meters,
-	useFor1000meters,
-	useFor5000meters,
-	useFor10000meters,
-	useFor50000meters,
-	useFor100000meters,
-	useFor500000meters,
-	useFor1000000meters,
-	useFor5000000meters,
-	useFor10000000meters,
-	forever
+	USEINSTANTLYONLY,
+	USEFOR3METERS,
+	USEFOR10METERS,
+	USEFOR50METERS,
+	USEFOR100METERS,
+	USEFOR500METERS,
+	USEFOR1000METERS,
+	USEFOR5000METERS,
+	USEFOR10000METERS,
+	USEFOR50000METERS,
+	USEFOR100000METERS,
+	USEFOR500000METERS,
+	USEFOR1000000METERS,
+	USEFOR5000000METERS,
+	USEFOR10000000METERS,
+	FOREVER
 }

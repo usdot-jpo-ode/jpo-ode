@@ -41,6 +41,7 @@ public class PluginPolicy extends Policy {
 	 *            The code source to get the permissiosn for
 	 * @return The permissions for the given code source
 	 */
+	@Override
 	public PermissionCollection getPermissions(CodeSource codeSource) {
 		Permissions p = new Permissions();
 		Certificate[] certificates = codeSource.getCertificates();
@@ -54,11 +55,4 @@ public class PluginPolicy extends Policy {
 		
 		return p;
 	}
-
-	/**
-	 * Does nothing.
-	 */
-	public void refresh() {
-	}
-
 }

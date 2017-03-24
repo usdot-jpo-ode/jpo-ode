@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.coder;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
@@ -16,16 +15,12 @@ import org.slf4j.Logger;
 
 import mockit.Expectations;
 import mockit.Injectable;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
-import mockit.Tested;
 import mockit.Verifications;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
-import us.dot.its.jpo.ode.plugin.OdePlugin;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
@@ -56,10 +51,10 @@ public class AbstractCoderTest {
         Asn1Object decoded = new J2735Bsm();
         new Expectations() {
             {
-                asn1Coder.UPER_DecodeBsmStream(is);
+                asn1Coder.decodeUPERBsmStream(is);
                 result = decoded;
                 times = 1;
-                asn1Coder.UPER_DecodeBsmStream(is);
+                asn1Coder.decodeUPERBsmStream(is);
                 result = null;
                 times = 1;
                 //bsmCoder.publish("topic", decoded);
@@ -94,7 +89,7 @@ public class AbstractCoderTest {
                     //PluginFactory.getPluginByName(anyString);
                     //result = mockAsn1Plugin;
 //                    
-                    mockAsn1Plugin.UPER_DecodeBsmStream((InputStream) any );
+                    mockAsn1Plugin.decodeUPERBsmStream((InputStream) any );
                     result = null;
 //                    
                    new SerializableMessageProducerPool<>( (OdeProperties) any );
@@ -179,7 +174,7 @@ public class AbstractCoderTest {
                     PluginFactory.getPluginByName(anyString);
                     result = mockAsn1Plugin;
                     
-                    mockAsn1Plugin.UPER_DecodeBsmHex(anyString);
+                    mockAsn1Plugin.decodeUPERBsmHex(anyString);
                     result = mockAsn1Object;
 
                     new SerializableMessageProducerPool<>(mockOdeProperties);

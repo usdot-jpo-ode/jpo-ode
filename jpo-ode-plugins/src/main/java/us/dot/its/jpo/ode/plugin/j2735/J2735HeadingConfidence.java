@@ -1,13 +1,13 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
 public enum J2735HeadingConfidence {
-	unavailable,
-	prec10deg,
-	prec05deg,
-	prec01deg,
-	prec0_1deg,
-	prec0_05deg,
-	prec0_01deg,
-	prec0_0125deg
+	UNAVAILABLE,
+	PREC10DEG,
+	PREC05DEG,
+	PREC01DEG,
+	PREC0_1DEG,
+	PREC0_05DEG,
+	PREC0_01DEG,
+	PREC0_0125DEG
 
 }

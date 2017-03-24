@@ -27,8 +27,8 @@ import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
 import us.dot.its.jpo.ode.j2735.semi.TimeToLive;
 import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.plugin.SituationDataWarehouse;
 import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssGeoRegion;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
@@ -44,7 +44,7 @@ public class AsdMessage extends OdeObject {
          String stopTime,
          String advisoryMessage,
          J2735GeoRegion serviceRegion,
-         J2735TravelerInputData.SDW.TimeToLive ttl) throws ParseException {
+         SituationDataWarehouse.SDW.TimeToLive ttl) throws ParseException {
       super();
       
       ZonedDateTime zdtStart = DateTimeUtils.isoDateTime(startTime);
@@ -82,7 +82,7 @@ public class AsdMessage extends OdeObject {
       if (ttl != null)
          asd.timeToLive = new TimeToLive(ttl.ordinal());
       else
-         asd.timeToLive = new TimeToLive(J2735TravelerInputData.SDW.TimeToLive.THIRTYMINUTES.ordinal());
+         asd.timeToLive = new TimeToLive(SituationDataWarehouse.SDW.TimeToLive.THIRTYMINUTES.ordinal());
    }
 
    public String encodeHex() throws EncodeFailedException, EncodeNotSupportedException {
