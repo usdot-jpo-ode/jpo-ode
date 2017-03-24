@@ -65,7 +65,7 @@ public class OssEventDescription {
     }
 
     private static List<Integer> buildDescription(Description description) {
-        List<Integer> desc = new ArrayList<Integer>();
+        List<Integer> desc = new ArrayList<>();
 
         Iterator<ITIScodes> iter = description.elements.iterator();
 

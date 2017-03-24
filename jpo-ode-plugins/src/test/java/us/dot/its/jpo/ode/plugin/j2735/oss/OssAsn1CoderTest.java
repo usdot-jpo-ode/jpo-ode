@@ -22,18 +22,6 @@ public class OssAsn1CoderTest {
         coder = new OssAsn1Coder();
     }
 
-    @Ignore
-    @Test
-    public void testOssAsn1Coder() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    @Test
-    public void testUPER_DecodeBase64() {
-        fail("Not yet implemented");
-    }
-
     @Test
     public void testUPER_DecodeBsmHex() {
         String inputString = "401480CA4000000000000000000000000000000000000000000000000000000000000000F800D9EFFFB7FFF00000000000000000000000000000000000000000000000000000001FE07000000000000000000000000000000000001FF0";
@@ -51,66 +39,6 @@ public class OssAsn1CoderTest {
 
         assertEquals(expectedValue, coder.decodeUPERMessageFrameHex(inputString).toJson(false));
 
-    }
-
-    @Ignore
-    @Test
-    public void testUPER_DecodeBytes() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    @Test
-    public void testUPER_DecodeBase64ToJson() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    @Test
-    public void testUPER_DecodeHexToJson() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    @Test
-    public void testUPER_DecodeBytesToJson() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    @Test
-    public void testUPER_EncodeBase64() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    @Test
-    public void testUPER_EncodeHex() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    @Test
-    public void testUPER_EncodeBytes() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    @Test
-    public void testUPER_EncodeBase64FromJson() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    @Test
-    public void testUPER_EncodeHexfromJson() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    @Test
-    public void testUPER_EncodeBytesFromJson() {
-        fail("Not yet implemented");
     }
 
 }
