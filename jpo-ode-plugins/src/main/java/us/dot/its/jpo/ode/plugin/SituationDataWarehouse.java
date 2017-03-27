@@ -32,7 +32,6 @@ public class SituationDataWarehouse {
       }
    }
    //NOSONAR
-   private SituationDataWarehouse() {//NOSONAR
-   }//NOSONAR
-   //NOSONAR
+   private SituationDataWarehouse() {
+   }
 }
