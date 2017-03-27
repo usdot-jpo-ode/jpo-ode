@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
 import org.junit.Test;
@@ -32,8 +33,18 @@ public class SituationDataWarehouseTest {
       TimeToLive ttl = TimeToLive.THIRTYMINUTES;
       testSDW.setTtl(ttl);
       assertEquals(ttl, testSDW.getTtl());
-      SituationDataWarehouse sdw = null; 
-      assertNull(sdw);
+   }
+   
+   @Test
+   public void testTheConstructor() throws NoSuchMethodException, IllegalAccessException {
+      Constructor<SituationDataWarehouse> sdw;
+      try {
+         sdw = SituationDataWarehouse.class.getDeclaredConstructor();
+         assertNotNull(sdw);
+      }
+      catch (NoSuchMethodException e) {
+         fail("unexpected Exception");
+      }
    }
 
    @Test
