@@ -91,6 +91,5 @@ public class GenericSnmp {
     }
 
     private GenericSnmp() {//NOSONAR
-
-    }
+    }//NOSONAR
 }
