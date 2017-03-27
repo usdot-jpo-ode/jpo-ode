@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.plugin.generic;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -31,13 +32,8 @@ public class SituationDataWarehouseTest {
       TimeToLive ttl = TimeToLive.THIRTYMINUTES;
       testSDW.setTtl(ttl);
       assertEquals(ttl, testSDW.getTtl());
-      Constructor<SituationDataWarehouse> constructor;
-      try {
-         constructor = SituationDataWarehouse.class.getDeclaredConstructor();
-         assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-      } catch (NoSuchMethodException | UnsupportedOperationException e) {
-         fail("Unexpected Exception");
-      }
+      SituationDataWarehouse sdw = null; 
+      assertNull(sdw);
    }
 
    @Test
