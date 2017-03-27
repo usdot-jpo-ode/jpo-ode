@@ -31,7 +31,7 @@ public class SituationDataWarehouse {
          this.ttl = ttl;
       }
    }
-   //NOSONAR
+   @SuppressWarnings("all")
    private SituationDataWarehouse() {
    }
 }
