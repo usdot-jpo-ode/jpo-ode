@@ -35,7 +35,7 @@ public class SituationDataWarehouseTest {
       try {
          constructor = SituationDataWarehouse.class.getDeclaredConstructor();
          assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-      } catch (NoSuchMethodException e) {
+      } catch (NoSuchMethodException | UnsupportedOperationException e) {
          fail("Unexpected Exception");
       }
    }

@@ -31,7 +31,7 @@ public class SituationDataWarehouse {
          this.ttl = ttl;
       }
    }
-   @SuppressWarnings("all")
    private SituationDataWarehouse() {
+      throw new UnsupportedOperationException();
    }
 }
