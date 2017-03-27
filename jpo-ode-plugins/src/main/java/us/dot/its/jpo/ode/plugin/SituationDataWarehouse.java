@@ -31,7 +31,8 @@ public class SituationDataWarehouse {
          this.ttl = ttl;
       }
    }
-
+   //NOSONAR
    private SituationDataWarehouse() {//NOSONAR
    }//NOSONAR
+   //NOSONAR
 }
