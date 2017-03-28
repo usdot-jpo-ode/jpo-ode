@@ -16,13 +16,15 @@ install: true #must disable pre-installation of dependencies because it fails du
 addons:
   sonarqube:
     token:
-      #secure: $SONAR_SECURITY_TOKEN
       secure: $SONAR_TOKEN_TEST_NEW_ORG
     branches:
       - .* 
 script:
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent
-  - mvn -e install sonar:sonar
+  - mvn -e install sonar:sonar \
+    -Dsonar.host.url=https://sonarqube.com \
+    -Dsonar.organization=usdot-jpo-test1 \
+    -Dsonar.login=$SONAR_TOKEN_TEST_NEW_ORG
 cache:
   directories:
     - "$HOME/.m2/repository"
