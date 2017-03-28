@@ -21,10 +21,7 @@ addons:
     branches:
       - .* 
 script:
-  - mvn -e clean
-  - mvn -e org.jacoco:jacoco-maven-plugin:prepare-agent 
-  - mvn -e install
-  - mvn -e sonar:sonar -Dsonar.organization="default" 
+  - mvn -e clean org.jacoco:jacoco-maven-plugin:prepare-agent verify sonar:sonar -Dsonar.host.url=https://sonarqube.com -Dsonar.login=$SONAR_SECURITY_TOKEN -Dsonar.organization=$SONAR_ORGANIZATION
 cache:
   directories:
     - "$HOME/.m2/repository"
