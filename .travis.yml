@@ -15,16 +15,13 @@ before_install:
 install: true #must disable pre-installation of dependencies because it fails due to missing oss.runtime dependency install 
 addons:
   sonarqube:
+    organization: "usdot-jpo-test1"
     token:
       secure: $SONAR_TOKEN_TEST_NEW_ORG
     branches:
       - .* 
 script:
-  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent
-  - mvn -e install sonar:sonar \
-    -Dsonar.host.url=https://sonarqube.com \
-    -Dsonar.organization=usdot-jpo-test1 \
-    -Dsonar.login=$SONAR_TOKEN_TEST_NEW_ORG
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
 cache:
   directories:
     - "$HOME/.m2/repository"
