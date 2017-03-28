@@ -16,7 +16,8 @@ install: true #must disable pre-installation of dependencies because it fails du
 addons:
   sonarqube:
     token:
-      secure: $SONAR_SECURITY_TOKEN
+      #secure: $SONAR_SECURITY_TOKEN
+      secure: $SONAR_TOKEN_TEST_NEW_ORG
     branches:
       - .* 
 script:
