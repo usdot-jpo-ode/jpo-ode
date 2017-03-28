@@ -24,7 +24,7 @@ script:
   - mvn -e clean
   - mvn -e org.jacoco:jacoco-maven-plugin:prepare-agent 
   - mvn -e install
-  - mvn -e org.codehaus.mojo:sonar-maven-plugin:3.2:sonar
+  - mvn -e sonar:sonar -Dsonar.organization="default" 
 cache:
   directories:
     - "$HOME/.m2/repository"
