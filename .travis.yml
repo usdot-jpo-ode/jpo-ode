@@ -4,7 +4,7 @@ jdk: oraclejdk8
 #  only:
 #    - master
 #    - develop
-sudo: true 
+sudo: false 
 before_install:
   - echo "installing private repository"
   - git clone $PRIVATE_REPO_URL_UN_PW jpo-ode-private 
@@ -20,7 +20,7 @@ addons:
     branches:
       - .* 
 script:
-  - mvn -e clean org.jacoco:jacoco-maven-plugin:prepare-agent
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent
 after_success:
   - mvn -e sonar:sonar -Dsonar.host.url=https://sonarqube.com -Dsonar.organization=default -Dsonar.login=$SONAR_SECURITY_KEY
 cache:
