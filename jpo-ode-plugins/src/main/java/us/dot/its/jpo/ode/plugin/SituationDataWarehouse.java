@@ -31,7 +31,7 @@ public class SituationDataWarehouse {
          this.ttl = ttl;
       }
    }
-
-   private SituationDataWarehouse() {//NOSONAR
-   }//NOSONAR
+   private SituationDataWarehouse() {
+      throw new UnsupportedOperationException();
+   }
 }

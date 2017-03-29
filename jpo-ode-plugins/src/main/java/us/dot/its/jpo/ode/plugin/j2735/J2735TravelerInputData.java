@@ -291,7 +291,7 @@ public class J2735TravelerInputData extends OdeObject {
       private J2735Position3D position;
       private String viewAngle;
       private int mutcd;
-      private int crc;
+      private String crc;
       private String startDateTime;
       private int durationTime;
       private int priority;// End header Information
@@ -763,11 +763,11 @@ public class J2735TravelerInputData extends OdeObject {
          this.startDateTime = startDateTime;
       }
 
-      public int getCrc() {
+      public String getCrc() {
          return crc;
       }
 
-      public void setCrc(int crc) {
+      public void setCrc(String crc) {
          this.crc = crc;
       }
       

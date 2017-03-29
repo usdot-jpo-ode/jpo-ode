@@ -2,10 +2,12 @@ package us.dot.its.jpo.ode.plugin.generic;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
 import org.junit.Test;
@@ -31,12 +33,17 @@ public class SituationDataWarehouseTest {
       TimeToLive ttl = TimeToLive.THIRTYMINUTES;
       testSDW.setTtl(ttl);
       assertEquals(ttl, testSDW.getTtl());
-      Constructor<SituationDataWarehouse> constructor;
+   }
+   
+   @Test
+   public void testTheConstructor() throws NoSuchMethodException, IllegalAccessException {
+      Constructor<SituationDataWarehouse> sdw;
       try {
-         constructor = SituationDataWarehouse.class.getDeclaredConstructor();
-         assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-      } catch (NoSuchMethodException e) {
-         fail("Unexpected Exception");
+         sdw = SituationDataWarehouse.class.getDeclaredConstructor();
+         assertNotNull(sdw);
+      }
+      catch (NoSuchMethodException e) {
+         fail("unexpected Exception");
       }
    }
 
