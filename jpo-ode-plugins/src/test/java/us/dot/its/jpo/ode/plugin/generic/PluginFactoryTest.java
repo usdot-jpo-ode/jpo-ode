@@ -16,7 +16,7 @@ public class PluginFactoryTest {
    @Test
    public void testConstructorIsPrivate()
          throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-      Constructor<PluginFactory> constructor = PluginFactory.class.getDeclaredConstructor();
+      final Constructor<PluginFactory> constructor = PluginFactory.class.getDeclaredConstructor();
       assertTrue(Modifier.isPrivate(constructor.getModifiers()));
       constructor.setAccessible(true);
       try {
