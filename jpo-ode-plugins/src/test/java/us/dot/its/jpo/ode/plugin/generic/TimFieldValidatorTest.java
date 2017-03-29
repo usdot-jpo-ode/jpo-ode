@@ -2384,4 +2384,59 @@ public class TimFieldValidatorTest {
          assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
+   
+   @Test
+   public void checknullHeadingSlice() {
+      String str = null;
+      try {
+         TimFieldValidator.getHeadingSlice(str);
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkEmptyHeadingSlice() {
+      String str = "";
+      try {
+         TimFieldValidator.getHeadingSlice(str);
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checknullMessageCRC() {
+      String str = null;
+      try {
+         TimFieldValidator.getMsgCrc(str);
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkEmptyMessageCRC() {
+      String str = "";
+      try {
+         TimFieldValidator.getMsgCrc(str);
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkMessageCRC() {
+      String str = "1010101010101010";
+      try {
+         TimFieldValidator.getMsgCrc(str);
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
 }
