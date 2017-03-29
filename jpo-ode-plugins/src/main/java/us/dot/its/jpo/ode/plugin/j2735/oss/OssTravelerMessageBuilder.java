@@ -291,14 +291,22 @@ public class OssTravelerMessageBuilder {
          // roadSignID.setCrc(new MsgCRC(new byte[] { 0xC0,0x2F })); //Causing
          // error while encoding
          msgId.setRoadSignID(roadSignID);
-      } else {
+      } else if ("FurtherInfoID".equals(dataFrame.getMsgID())){
          msgId.setChosenFlag(MsgId.furtherInfoID_chosen);
-         msgId.setFurtherInfoID(new FurtherInfoID(new byte[] { 0x00, 0x00 })); // TODO
-                                                                               // check
-                                                                               // this
-                                                                               // for
-                                                                               // actual
-                                                                               // value
+         String info = dataFrame.getFurtherInfoID();
+         if(info == null || info.length() == 0) {
+            msgId.setFurtherInfoID(new FurtherInfoID(new byte[] { 0x00, 0x00 }));
+         }
+         else {
+            short result = 0;
+            for (int i = 0; i < 16; i++) {
+               if (info.charAt(i) == '1') {
+                  result |= 1;
+               }
+               result <<= 1;
+            }
+            msgId.setFurtherInfoID(new FurtherInfoID(ByteBuffer.allocate(2).putShort(result).array()));
+         }
       }
       return msgId;
    }

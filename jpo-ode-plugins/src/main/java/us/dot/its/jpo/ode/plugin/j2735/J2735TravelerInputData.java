@@ -287,6 +287,7 @@ public class J2735TravelerInputData extends OdeObject {
     private short sspTimRights;// Start Header Information
       private int frameType;
       private String msgID;
+      private String furtherInfoID;
       private J2735Position3D position;
       private String viewAngle;
       private int mutcd;
@@ -816,6 +817,14 @@ public class J2735TravelerInputData extends OdeObject {
 
       public void setPosition(J2735Position3D position) {
          this.position = position;
+      }
+
+      public String getFurtherInfoID() {
+         return furtherInfoID;
+      }
+
+      public void setFurtherInfoID(String furtherInfoID) {
+         this.furtherInfoID = furtherInfoID;
       }
       
    }
