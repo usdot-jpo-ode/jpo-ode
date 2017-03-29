@@ -204,7 +204,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkFurtherMessageID() {
-      String str = "furtherInfoID";
+      String str = "FurtherInfoID";
       try {
          TimFieldValidator.validateMessageID(str);
       } catch (RuntimeException e) {
