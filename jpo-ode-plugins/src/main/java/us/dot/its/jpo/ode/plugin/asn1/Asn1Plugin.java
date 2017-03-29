@@ -6,8 +6,6 @@ import us.dot.its.jpo.ode.plugin.OdePlugin;
 
 public interface Asn1Plugin extends OdePlugin {
 
-    Asn1Object decodeUPERBase64(String base64Msg);
-
     Asn1Object decodeUPERMessageFrameHex(String hexMsg);
     Asn1Object decodeUPERBsmHex(String hexMsg);
 

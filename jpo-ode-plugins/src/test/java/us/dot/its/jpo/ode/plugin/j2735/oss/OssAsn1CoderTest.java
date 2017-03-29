@@ -3,24 +3,38 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import org.junit.Before;
-import org.junit.Ignore;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.xml.bind.DatatypeConverter;
+
 import org.junit.Test;
-import org.slf4j.LoggerFactory;
+import org.junit.runner.RunWith;
 
+import com.oss.asn1.AbstractData;
+import com.oss.asn1.DecodeFailedException;
+import com.oss.asn1.DecodeNotSupportedException;
+import com.oss.asn1.EncodeFailedException;
+import com.oss.asn1.EncodeNotSupportedException;
+import com.oss.asn1.PERUnalignedCoder;
+
+import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mocked;
+import mockit.Tested;
+import mockit.integration.junit4.JMockit;
+import us.dot.its.jpo.ode.j2735.J2735;
+import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
+import us.dot.its.jpo.ode.j2735.dsrc.MessageFrame;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssMessageFrame.OssMessageFrameException;
 
+@RunWith(JMockit.class)
 public class OssAsn1CoderTest {
-    
-    @Mocked(stubOutClassInitialization = true)
-    final LoggerFactory unused = null;
 
+    @Tested
     OssAsn1Coder coder;
-
-    @Before
-    public void setUp() throws Exception {
-        coder = new OssAsn1Coder();
-    }
 
     @Test
     public void testUPER_DecodeBsmHex() {
@@ -39,6 +53,328 @@ public class OssAsn1CoderTest {
 
         assertEquals(expectedValue, coder.decodeUPERMessageFrameHex(inputString).toJson(false));
 
+    }
+
+    @Test
+    public void test_decodeUPERBsmStream_throwsDecodeFailedException_someBytes(
+            @Mocked final PERUnalignedCoder mockPERUnalignedCoder, @Mocked final J2735 mockJ2735,
+            @Injectable InputStream mockInputStream, @Mocked final OssBsm mockOssBsm,
+            @Mocked DecodeFailedException mockDecodeFailedException) {
+
+        try {
+            new Expectations() {
+                {
+                    J2735.getPERUnalignedCoder();
+                    result = mockPERUnalignedCoder;
+
+                    mockPERUnalignedCoder.decode(mockInputStream, (AbstractData) any);
+
+                    mockInputStream.available();
+                    result = 2;
+
+                    OssBsm.genericBsm((BasicSafetyMessage) any);
+                    result = mockDecodeFailedException;
+
+                    mockDecodeFailedException.getDecodedData();
+                    result = any;
+                }
+            };
+        } catch (Exception e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+
+        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+
+        testOssAsn1Coder.decodeUPERBsmStream(mockInputStream);
+    }
+
+    // Bsm tests
+    @Test
+    public void test_decodeUPERBsmStream_throwsDecodeFailedException_nullBytes(
+            @Mocked final PERUnalignedCoder mockPERUnalignedCoder, @Mocked final J2735 mockJ2735,
+            @Injectable InputStream mockInputStream, @Mocked final OssBsm mockOssBsm,
+            @Mocked DecodeFailedException mockDecodeFailedException) {
+
+        try {
+            new Expectations() {
+                {
+                    J2735.getPERUnalignedCoder();
+                    result = mockPERUnalignedCoder;
+
+                    mockPERUnalignedCoder.decode(mockInputStream, (AbstractData) any);
+
+                    mockInputStream.available();
+                    result = 2;
+
+                    OssBsm.genericBsm((BasicSafetyMessage) any);
+                    result = mockDecodeFailedException;
+
+                    mockDecodeFailedException.getDecodedData();
+                }
+            };
+        } catch (Exception e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+
+        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+
+        testOssAsn1Coder.decodeUPERBsmStream(mockInputStream);
+    }
+
+    @Test
+    public void test_decodeUPERBsmStream_noException(@Mocked final PERUnalignedCoder mockPERUnalignedCoder,
+            @Mocked final J2735 mockJ2735, @Injectable InputStream mockInputStream, @Mocked final OssBsm mockOssBsm,
+            @Mocked DecodeNotSupportedException mockDecodeNotSupportedException) {
+
+        try {
+            new Expectations() {
+                {
+                    J2735.getPERUnalignedCoder();
+                    result = mockPERUnalignedCoder;
+
+                    mockPERUnalignedCoder.decode(mockInputStream, (AbstractData) any);
+
+                    mockInputStream.available();
+                    result = 2;
+
+                    OssBsm.genericBsm((BasicSafetyMessage) any);
+                    result = null;
+
+                }
+            };
+        } catch (Exception e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+
+        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+
+        testOssAsn1Coder.decodeUPERBsmStream(mockInputStream);
+    }
+
+    @Test
+    public void test_decodeUPERBsmStream_noAvailableBytes(@Mocked final PERUnalignedCoder mockPERUnalignedCoder,
+            @Mocked final J2735 mockJ2735, @Injectable InputStream mockInputStream, @Mocked final OssBsm mockOssBsm,
+            @Mocked DecodeNotSupportedException mockDecodeNotSupportedException) {
+
+        try {
+            new Expectations() {
+                {
+                    J2735.getPERUnalignedCoder();
+                    result = mockPERUnalignedCoder;
+
+                    // mockPERUnalignedCoder.decode(mockInputStream,
+                    // (AbstractData) any);
+
+                    mockInputStream.available();
+                    result = 0;
+
+                }
+            };
+        } catch (Exception e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+
+        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+
+        testOssAsn1Coder.decodeUPERBsmStream(mockInputStream);
+    }
+
+    // Message Frame tests
+    @Test
+    public void test_decodeUPERMessageFrameStream_throwsDecodeFailedException_nullBytes(
+            @Mocked final PERUnalignedCoder mockPERUnalignedCoder, @Mocked final J2735 mockJ2735,
+            @Injectable InputStream mockInputStream, @Mocked final OssMessageFrame mockOssMessageFrame,
+            @Mocked DecodeFailedException mockDecodeFailedException) {
+
+        try {
+            new Expectations() {
+                {
+                    J2735.getPERUnalignedCoder();
+                    result = mockPERUnalignedCoder;
+
+                    mockPERUnalignedCoder.decode(mockInputStream, (AbstractData) any);
+
+                    mockInputStream.available();
+                    result = 2;
+
+                    OssMessageFrame.genericMessageFrame((MessageFrame) any);
+                    result = mockDecodeFailedException;
+
+                    mockDecodeFailedException.getDecodedData();
+                }
+            };
+        } catch (Exception e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+
+        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+
+        testOssAsn1Coder.decodeUPERMessageFrameStream(mockInputStream);
+    }
+
+    @Test
+    public void test_decodeUPERMessageFrameStream_noException(@Mocked final PERUnalignedCoder mockPERUnalignedCoder,
+            @Mocked final J2735 mockJ2735, @Injectable InputStream mockInputStream,
+            @Mocked final OssMessageFrame mockOssMessageFrame,
+            @Mocked DecodeNotSupportedException mockDecodeNotSupportedException) {
+
+        try {
+            new Expectations() {
+                {
+                    J2735.getPERUnalignedCoder();
+                    result = mockPERUnalignedCoder;
+
+                    mockPERUnalignedCoder.decode(mockInputStream, (AbstractData) any);
+
+                    mockInputStream.available();
+                    result = 2;
+
+                    OssMessageFrame.genericMessageFrame((MessageFrame) any);
+                    result = null;
+
+                }
+            };
+        } catch (Exception e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+
+        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+
+        testOssAsn1Coder.decodeUPERMessageFrameStream(mockInputStream);
+    }
+
+    @Test
+    public void test_decodeUPERMessageFrameStream_noAvailableBytes(
+            @Mocked final PERUnalignedCoder mockPERUnalignedCoder, @Mocked final J2735 mockJ2735,
+            @Injectable InputStream mockInputStream, @Mocked final OssMessageFrame mockOssMessageFrame,
+            @Mocked DecodeNotSupportedException mockDecodeNotSupportedException) {
+
+        try {
+            new Expectations() {
+                {
+                    J2735.getPERUnalignedCoder();
+                    result = mockPERUnalignedCoder;
+
+                    mockInputStream.available();
+                    result = 0;
+
+                }
+            };
+        } catch (Exception e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+
+        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+
+        testOssAsn1Coder.decodeUPERMessageFrameStream(mockInputStream);
+    }
+
+    // handleDecodeException tests
+    @Test
+    public void test_handleDecodeException_DecodeNotSupportedException(
+            @Injectable DecodeNotSupportedException mockDecodeNotSupportedException) {
+        coder.handleDecodeException(mockDecodeNotSupportedException);
+    }
+
+    @Test
+    public void test_handleDecodeException_IOException() {
+        coder.handleDecodeException(new IOException("testException123"));
+    }
+
+    @Test
+    public void test_handleDecodeException_OssBsmPart2Exception(
+            @Injectable OssBsmPart2Exception mockOssBsmPart2Exception) {
+        coder.handleDecodeException(mockOssBsmPart2Exception);
+    }
+
+    @Test
+    public void test_handleDecodeException_OssMessageFrameException(
+            @Injectable OssMessageFrameException mockOssMessageFrameException) {
+        coder.handleDecodeException(mockOssMessageFrameException);
+    }
+
+    @Test
+    public void test_handleDecodeException_GenericException() {
+        coder.handleDecodeException(new Exception("testException123"));
+    }
+
+    // Other tests
+    @Test
+    public void test_encodeUPERBase64(@Mocked final DatatypeConverter mockDatatypeConverter) {
+
+        new Expectations() {
+            {
+                DatatypeConverter.printBase64Binary((byte[]) any);
+            }
+        };
+
+        coder.encodeUPERBase64(null);
+    }
+
+    @Test
+    public void test_encodeUPERHex(@Mocked final DatatypeConverter mockDatatypeConverter) {
+
+        new Expectations() {
+            {
+                DatatypeConverter.printHexBinary((byte[]) any);
+            }
+        };
+
+        coder.encodeUPERHex(null);
+    }
+
+    @Test
+    public void test_encodeUPERBytes_nullInput() {
+        coder.encodeUPERBytes(null);
+    }
+
+    @Test
+    public void test_encodeUPERBytes_mockJ2735Bsm(@Mocked final J2735 mockJ2735,
+            @Mocked PERUnalignedCoder mockPERUnalignedCoder, @Injectable J2735Bsm mockJ2735Bsm,
+            @Mocked final OssBsm mockOssBsm) {
+
+        try {
+            new Expectations() {
+                {
+                    J2735.getPERUnalignedCoder();
+                    result = mockPERUnalignedCoder;
+
+                    OssBsm.basicSafetyMessage((J2735Bsm) any);
+
+                    mockPERUnalignedCoder.encode((BasicSafetyMessage) any);
+                }
+            };
+        } catch (EncodeFailedException | EncodeNotSupportedException e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+
+        testOssAsn1Coder.encodeUPERBytes(mockJ2735Bsm);
+    }
+
+    @Test
+    public void test_encodeUPERBytes_shouldCatchException(@Mocked final J2735 mockJ2735,
+            @Mocked PERUnalignedCoder mockPERUnalignedCoder, @Injectable J2735Bsm mockJ2735Bsm,
+            @Mocked final OssBsm mockOssBsm, @Mocked EncodeFailedException mockEncodeFailedException) {
+
+        try {
+            new Expectations() {
+                {
+                    J2735.getPERUnalignedCoder();
+                    result = mockPERUnalignedCoder;
+
+                    OssBsm.basicSafetyMessage((J2735Bsm) any);
+
+                    mockPERUnalignedCoder.encode((BasicSafetyMessage) any);
+                    result = mockEncodeFailedException;
+                }
+            };
+        } catch (EncodeFailedException | EncodeNotSupportedException e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+
+        testOssAsn1Coder.encodeUPERBytes(mockJ2735Bsm);
     }
 
 }
