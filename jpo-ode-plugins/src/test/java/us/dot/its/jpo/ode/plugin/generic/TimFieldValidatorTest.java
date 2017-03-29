@@ -1,8 +1,12 @@
 package us.dot.its.jpo.ode.plugin.generic;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.format.DateTimeParseException;
@@ -13,6 +17,20 @@ import us.dot.its.jpo.ode.plugin.TimFieldValidator;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 
 public class TimFieldValidatorTest {
+   @Test
+   public void testConstructorIsPrivate()
+         throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<TimFieldValidator> constructor = TimFieldValidator.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+         constructor.newInstance();
+         fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+         assertEquals(InvocationTargetException.class, e.getClass());
+      }
+   }
+
    @Test
    public void checkLowerBoundMessageCount() {
       int msgcnt = -1;
@@ -2292,150 +2310,137 @@ public class TimFieldValidatorTest {
          assertEquals(DateTimeParseException.class, e.getClass());
       }
    }
-   
+
    @Test
    public void checkLatitudeLower() {
       long lat = (long) -90.0;
       try {
          TimFieldValidator.validateLatitude(lat);
-      }
-      catch (RuntimeException e) {
+      } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
    }
-   
+
    @Test
    public void checkLatitudeLowerBound() {
       long lat = (long) -91.0;
       try {
          TimFieldValidator.validateLatitude(lat);
          fail("Expected IllegalArgumentException");
-      }
-      catch (RuntimeException e) {
+      } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
-   
+
    @Test
    public void checkLatitudeUpper() {
       long lat = (long) 90.0;
       try {
          TimFieldValidator.validateLatitude(lat);
-      }
-      catch (RuntimeException e) {
+      } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
    }
-   
+
    @Test
    public void checkLatitudeUpperBound() {
       long lat = (long) 91.0;
       try {
          TimFieldValidator.validateLatitude(lat);
          fail("Expected IllegalArgumentException");
-      }
-      catch (RuntimeException e) {
+      } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
-   
+
    @Test
    public void checkLongitudeLower() {
       long lonng = (long) -180.0;
       try {
          TimFieldValidator.validateLongitude(lonng);
-      }
-      catch (RuntimeException e) {
+      } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
    }
-   
+
    @Test
    public void checkLongitudeLowerBound() {
       long lonng = (long) -181.0;
       try {
          TimFieldValidator.validateLongitude(lonng);
          fail("Expected IllegalArgumentException");
-      }
-      catch (RuntimeException e) {
+      } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
-   
+
    @Test
    public void checkLongitudeUpper() {
       long lonng = (long) 180.0;
       try {
          TimFieldValidator.validateLongitude(lonng);
-      }
-      catch (RuntimeException e) {
+      } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
    }
-   
+
    @Test
    public void checkLongitudeUpperBound() {
       long lonng = (long) 181.0;
       try {
          TimFieldValidator.validateLongitude(lonng);
          fail("Expected IllegalArgumentException");
-      }
-      catch (RuntimeException e) {
+      } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
-   
+
    @Test
    public void checknullHeadingSlice() {
       String str = null;
       try {
          TimFieldValidator.getHeadingSlice(str);
-      }
-      catch (RuntimeException e) {
+      } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
    }
-   
+
    @Test
    public void checkEmptyHeadingSlice() {
       String str = "";
       try {
          TimFieldValidator.getHeadingSlice(str);
-      }
-      catch (RuntimeException e) {
+      } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
    }
-   
+
    @Test
    public void checknullMessageCRC() {
       String str = null;
       try {
          TimFieldValidator.getMsgCrc(str);
-      }
-      catch (RuntimeException e) {
+      } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
    }
-   
+
    @Test
    public void checkEmptyMessageCRC() {
       String str = "";
       try {
          TimFieldValidator.getMsgCrc(str);
-      }
-      catch (RuntimeException e) {
+      } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
    }
-   
+
    @Test
    public void checkMessageCRC() {
       String str = "1010101010101010";
       try {
          TimFieldValidator.getMsgCrc(str);
-      }
-      catch (RuntimeException e) {
+      } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
    }

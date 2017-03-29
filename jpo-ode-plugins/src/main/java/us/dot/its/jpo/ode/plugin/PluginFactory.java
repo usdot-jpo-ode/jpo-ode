@@ -11,6 +11,9 @@ public final class PluginFactory {
 
 	private static Logger logger = LoggerFactory.getLogger(PluginFactory.class);
 	
+	private PluginFactory() {
+	   throw new UnsupportedOperationException();
+	}
 
 	/**
 	 * Read in configuration data that maps names of interfaces to names of

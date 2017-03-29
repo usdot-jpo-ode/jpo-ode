@@ -11,7 +11,7 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class TimFieldValidator {
    private TimFieldValidator() {
-      
+      throw new UnsupportedOperationException();
    }
    
    public static void validateMessageCount(int msg) {

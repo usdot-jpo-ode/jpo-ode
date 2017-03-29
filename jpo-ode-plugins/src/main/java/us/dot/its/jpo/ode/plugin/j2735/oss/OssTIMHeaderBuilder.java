@@ -21,7 +21,7 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class OssTIMHeaderBuilder {
    private OssTIMHeaderBuilder() {
-
+      throw new UnsupportedOperationException();
    }
 
    public static TravelerDataFrame buildTimHeader(J2735TravelerInputData.DataFrame inputDataFrame,
