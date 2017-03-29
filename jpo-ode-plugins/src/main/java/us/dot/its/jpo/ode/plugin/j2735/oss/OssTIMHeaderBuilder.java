@@ -40,7 +40,7 @@ public class OssTIMHeaderBuilder {
       return dataFrame;
    }
    
-   private static MsgId getMessageId(J2735TravelerInputData.DataFrame dataFrame) {
+   public static MsgId getMessageId(J2735TravelerInputData.DataFrame dataFrame) {
       MsgId msgId = new MsgId();
       TimFieldValidator.validateMessageID(dataFrame.getMsgID());
 
