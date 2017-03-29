@@ -4,7 +4,7 @@ jdk: oraclejdk8
 #  only:
 #    - master
 #    - develop
-sudo: false
+sudo: false 
 before_install:
   - echo "installing private repository"
   - git clone $PRIVATE_REPO_URL_UN_PW jpo-ode-private 
@@ -15,13 +15,13 @@ before_install:
 install: true #must disable pre-installation of dependencies because it fails due to missing oss.runtime dependency install 
 addons:
   sonarqube:
+    organization: "usdot-jpo-test"
     token:
-      secure: $SONAR_SECURITY_TOKEN
+      secure: $SONAR_TOKEN_TEST_NEW_ORG
     branches:
       - .* 
 script:
-  - mvn clean
-  - mvn org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
 cache:
   directories:
     - "$HOME/.m2/repository"
