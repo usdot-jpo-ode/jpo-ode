@@ -112,7 +112,7 @@ public class TravelerMessageController {
                     if (response != null && response.getResponse() != null) {
                        String msg = String.format("RSU %1$s Response: %2$s", rsu.getrsuTarget(), response.getResponse());
                        EventLogger.logger.info(msg);
-                       logger.info(rsu.getrsuTarget(), response.getResponse());
+                       logger.info(msg);
                        depositToDDS(travelerinputData, rsuSRMPayload);
                    } else {
                       String msg = String.format("Empty response from RSU %1$s", rsu.getrsuTarget());
