@@ -1075,7 +1075,7 @@ public class TimFieldValidatorTest {
          fail("Unexpected Exception");
       }
    }
-   
+
    @Test
    public void checkLowerExtent() {
       int extent = -1;
@@ -2125,7 +2125,7 @@ public class TimFieldValidatorTest {
          fail("Unexcpected Exception");
       }
    }
-   
+
    @Test
    public void checkUpperVelocity() {
       int x = 8192;
@@ -2272,7 +2272,7 @@ public class TimFieldValidatorTest {
          fail("Unexcpected Exception");
       }
    }
-   
+
    @Test
    public void checkMinuteOfYear() {
 
@@ -2290,6 +2290,98 @@ public class TimFieldValidatorTest {
          fail("Expected DateTimeParseException");
       } catch (DateTimeParseException | ParseException e) {
          assertEquals(DateTimeParseException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkLatitudeLower() {
+      long lat = (long) -90.0;
+      try {
+         TimFieldValidator.validateLatitude(lat);
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkLatitudeLowerBound() {
+      long lat = (long) -91.0;
+      try {
+         TimFieldValidator.validateLatitude(lat);
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkLatitudeUpper() {
+      long lat = (long) 90.0;
+      try {
+         TimFieldValidator.validateLatitude(lat);
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkLatitudeUpperBound() {
+      long lat = (long) 91.0;
+      try {
+         TimFieldValidator.validateLatitude(lat);
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkLongitudeLower() {
+      long lonng = (long) -180.0;
+      try {
+         TimFieldValidator.validateLongitude(lonng);
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkLongitudeLowerBound() {
+      long lonng = (long) -181.0;
+      try {
+         TimFieldValidator.validateLongitude(lonng);
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checkLongitudeUpper() {
+      long lonng = (long) 180.0;
+      try {
+         TimFieldValidator.validateLongitude(lonng);
+      }
+      catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
+   @Test
+   public void checkLongitudeUpperBound() {
+      long lonng = (long) 181.0;
+      try {
+         TimFieldValidator.validateLongitude(lonng);
+         fail("Expected IllegalArgumentException");
+      }
+      catch (RuntimeException e) {
+         assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
 }

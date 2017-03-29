@@ -22,14 +22,14 @@ public class TimFieldValidator {
    public static void validateURL(String url) {
       if (url.isEmpty())
          throw new IllegalArgumentException("Invalid empty url");
-      if (url.length() < 1 || url.length() > 45)
+      if (url.length() > 45)
          throw new IllegalArgumentException("Invalid URL length [1-45]");
    }
 
    public static void validateURLShort(String url) {
       if (url.isEmpty())
          throw new IllegalArgumentException("Invalid empty Short url");
-      if (url.length() < 1 || url.length() > 15)
+      if (url.length() > 15)
          throw new IllegalArgumentException("Invalid URL lenth [1-15]");
    }
 
@@ -114,7 +114,7 @@ public class TimFieldValidator {
       } catch (NumberFormatException e) {
          if (code.isEmpty())
             throw new IllegalArgumentException("Invalid empty string");
-         if (code.length() < 1 || code.length() > 500)
+         if (code.length() > 500)
             throw new IllegalArgumentException("Invalid test Phrase length [1-500]");
       }
    }
@@ -128,7 +128,7 @@ public class TimFieldValidator {
       } catch (NumberFormatException e) {
          if (code.isEmpty())
             throw new IllegalArgumentException("Invalid empty string");
-         if (code.length() < 1 || code.length() > 16)
+         if (code.length() > 16)
             throw new IllegalArgumentException("Invalid test Phrase length [1-16]");
       }
    }
