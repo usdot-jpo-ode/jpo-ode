@@ -3,9 +3,7 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.BumperHeight;
@@ -120,7 +118,7 @@ public class OssBumperHeightsTest {
         BumperHeights testBumperHeights = new BumperHeights(testBumperHeightFront, testBumperHeightRear);
         
         try {
-            J2735BumperHeights actualBumperHeights = OssBumperHeights.genericBumperHeights(testBumperHeights);
+            OssBumperHeights.genericBumperHeights(testBumperHeights);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -145,7 +143,7 @@ public class OssBumperHeightsTest {
         BumperHeights testBumperHeights = new BumperHeights(testBumperHeightFront, testBumperHeightRear);
         
         try {
-            J2735BumperHeights actualBumperHeights = OssBumperHeights.genericBumperHeights(testBumperHeights);
+            OssBumperHeights.genericBumperHeights(testBumperHeights);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -170,7 +168,7 @@ public class OssBumperHeightsTest {
         BumperHeights testBumperHeights = new BumperHeights(testBumperHeightFront, testBumperHeightRear);
         
         try {
-            J2735BumperHeights actualBumperHeights = OssBumperHeights.genericBumperHeights(testBumperHeights);
+            OssBumperHeights.genericBumperHeights(testBumperHeights);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -195,7 +193,7 @@ public class OssBumperHeightsTest {
         BumperHeights testBumperHeights = new BumperHeights(testBumperHeightFront, testBumperHeightRear);
         
         try {
-            J2735BumperHeights actualBumperHeights = OssBumperHeights.genericBumperHeights(testBumperHeights);
+            OssBumperHeights.genericBumperHeights(testBumperHeights);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());

@@ -11,7 +11,6 @@ import us.dot.its.jpo.ode.j2735.dsrc.AntennaOffsetSet;
 import us.dot.its.jpo.ode.j2735.dsrc.Offset_B09;
 import us.dot.its.jpo.ode.j2735.dsrc.Offset_B10;
 import us.dot.its.jpo.ode.j2735.dsrc.Offset_B12;
-import us.dot.its.jpo.ode.plugin.j2735.J2735AntennaOffsetSet;
 
 /**
  * -- Summary --
@@ -218,7 +217,7 @@ public class OssAntennaOffsetSetTest {
                 testZOffset);
         
         try {
-            J2735AntennaOffsetSet actualValue = OssAntennaOffsetSet.genericAntennaOffsetSet(testAntennaOffsetSet);
+            OssAntennaOffsetSet.genericAntennaOffsetSet(testAntennaOffsetSet);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -243,7 +242,7 @@ public class OssAntennaOffsetSetTest {
                 testZOffset);
         
         try {
-            J2735AntennaOffsetSet actualValue = OssAntennaOffsetSet.genericAntennaOffsetSet(testAntennaOffsetSet);
+            OssAntennaOffsetSet.genericAntennaOffsetSet(testAntennaOffsetSet);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -421,7 +420,7 @@ public class OssAntennaOffsetSetTest {
                 testZOffset);
         
         try {
-            J2735AntennaOffsetSet actualValue = OssAntennaOffsetSet.genericAntennaOffsetSet(testAntennaOffsetSet);
+            OssAntennaOffsetSet.genericAntennaOffsetSet(testAntennaOffsetSet);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -446,7 +445,7 @@ public class OssAntennaOffsetSetTest {
                 testZOffset);
         
         try {
-            J2735AntennaOffsetSet actualValue = OssAntennaOffsetSet.genericAntennaOffsetSet(testAntennaOffsetSet);
+            OssAntennaOffsetSet.genericAntennaOffsetSet(testAntennaOffsetSet);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -621,7 +620,7 @@ public class OssAntennaOffsetSetTest {
                 testYOffset,
                 testZOffset);
         try {
-            J2735AntennaOffsetSet actualValue = OssAntennaOffsetSet
+            OssAntennaOffsetSet
                     .genericAntennaOffsetSet(testAntennaOffsetSet);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
@@ -646,7 +645,7 @@ public class OssAntennaOffsetSetTest {
                 testYOffset,
                 testZOffset);
         try {
-            J2735AntennaOffsetSet actualValue = OssAntennaOffsetSet
+            OssAntennaOffsetSet
                     .genericAntennaOffsetSet(testAntennaOffsetSet);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {

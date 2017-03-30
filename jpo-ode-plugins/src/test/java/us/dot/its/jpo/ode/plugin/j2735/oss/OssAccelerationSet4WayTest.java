@@ -490,7 +490,7 @@ public class OssAccelerationSet4WayTest {
         AccelerationSet4Way testAccelSet = new AccelerationSet4Way(testLong, testLat, testVert, testYaw);
 
         try {
-            BigDecimal actualValue = OssAccelerationSet4Way.genericAccelerationSet4Way(testAccelSet).getAccelYaw();
+            OssAccelerationSet4Way.genericAccelerationSet4Way(testAccelSet).getAccelYaw();
             fail("Expected IllegalArgumentException");
         } catch (Exception e) {
             assertTrue(e.getClass().equals(IllegalArgumentException.class));
@@ -519,7 +519,7 @@ public class OssAccelerationSet4WayTest {
         AccelerationSet4Way testAccelSet = new AccelerationSet4Way(testLong, testLat, testVert, testYaw);
 
         try {
-            BigDecimal actualValue = OssAccelerationSet4Way.genericAccelerationSet4Way(testAccelSet).getAccelYaw();
+            OssAccelerationSet4Way.genericAccelerationSet4Way(testAccelSet).getAccelYaw();
             fail("Expected IllegalArgumentException");
         } catch (Exception e) {
             assertTrue(e.getClass().equals(IllegalArgumentException.class));

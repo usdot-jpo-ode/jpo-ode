@@ -299,7 +299,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
         try {
-           Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getWidth();
+           OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getWidth();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -324,7 +324,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
         try {
-           Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getWidth();
+           OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getWidth();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -488,7 +488,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
         try {
-            Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getLength();
+            OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getLength();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -513,7 +513,7 @@ public class OssTrailerUnitDescriptionTest {
         testtud.setPositionOffset(new Node_XY_24b(new Offset_B12(0), new Offset_B12(0)));
         
         try {
-            Integer actualValue = OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getLength();
+            OssTrailerUnitDescription.genericTrailerUnitDescription(testtud).getLength();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());

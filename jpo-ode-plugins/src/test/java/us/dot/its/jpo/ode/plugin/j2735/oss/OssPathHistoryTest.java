@@ -5,10 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.Elevation;
@@ -24,7 +22,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.TimeConfidence;
 import us.dot.its.jpo.ode.j2735.dsrc.TimeOffset;
 import us.dot.its.jpo.ode.j2735.dsrc.VertOffset_B12;
 import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistory;
-import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistoryPoint;
+
 
 /**
  * -- Summary --

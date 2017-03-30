@@ -327,7 +327,7 @@ public class OssPathPredictionTest {
         PathPrediction testPathPrediction = new PathPrediction(testRadiusOfCurvature, testConfidence);
         
         try {
-            BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).getConfidence();
+            OssPathPrediction.genericPathPrediction(testPathPrediction).getConfidence();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -348,7 +348,7 @@ public class OssPathPredictionTest {
         PathPrediction testPathPrediction = new PathPrediction(testRadiusOfCurvature, testConfidence);
         
         try {
-            BigDecimal actualValue = OssPathPrediction.genericPathPrediction(testPathPrediction).getConfidence();
+            OssPathPrediction.genericPathPrediction(testPathPrediction).getConfidence();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());

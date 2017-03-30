@@ -247,7 +247,7 @@ public class OssPivotPointDescriptionTest {
                 testPivotingAllowed);
         
         try {
-           BigDecimal actualValue = OssPivotPointDescription
+           OssPivotPointDescription
                    .genericPivotPointDescription(testPivotPointDescription)
                    .getPivotOffset();
            fail("Expected IllegalArgumentException");
@@ -274,7 +274,7 @@ public class OssPivotPointDescriptionTest {
                 testPivotingAllowed);
         
         try {
-           BigDecimal actualValue = OssPivotPointDescription
+           OssPivotPointDescription
                    .genericPivotPointDescription(testPivotPointDescription)
                    .getPivotOffset();
            fail("Expected IllegalArgumentException");
@@ -452,7 +452,7 @@ public class OssPivotPointDescriptionTest {
                 testPivotingAllowed);
         
         try {
-           BigDecimal actualValue = OssPivotPointDescription
+           OssPivotPointDescription
                    .genericPivotPointDescription(testPivotPointDescription)
                    .getPivotAngle();
            fail("Expected IllegalArgumentException");
@@ -479,7 +479,7 @@ public class OssPivotPointDescriptionTest {
                 testPivotingAllowed);
         
         try {
-           BigDecimal actualValue = OssPivotPointDescription
+           OssPivotPointDescription
                    .genericPivotPointDescription(testPivotPointDescription)
                    .getPivotAngle();
            fail("Expected IllegalArgumentException");

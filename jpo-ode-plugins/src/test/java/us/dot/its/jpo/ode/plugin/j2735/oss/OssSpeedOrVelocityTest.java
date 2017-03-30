@@ -3,9 +3,7 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.Speed;
@@ -117,7 +115,7 @@ public class OssSpeedOrVelocityTest {
         Speed testSpeed = new Speed(testValue);
 
         try {
-            BigDecimal actualValue = OssSpeedOrVelocity.genericSpeed(testSpeed);
+            OssSpeedOrVelocity.genericSpeed(testSpeed);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -135,7 +133,7 @@ public class OssSpeedOrVelocityTest {
         Speed testSpeed = new Speed(testValue);
 
         try {
-            BigDecimal actualValue = OssSpeedOrVelocity.genericSpeed(testSpeed);
+            OssSpeedOrVelocity.genericSpeed(testSpeed);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -219,7 +217,7 @@ public class OssSpeedOrVelocityTest {
         Velocity testVelocity = new Velocity(testValue);
 
         try {
-            BigDecimal actualValue = OssSpeedOrVelocity.genericVelocity(testVelocity);
+            OssSpeedOrVelocity.genericVelocity(testVelocity);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -238,7 +236,7 @@ public class OssSpeedOrVelocityTest {
         Velocity testVelocity = new Velocity(testValue);
 
         try {
-            BigDecimal actualValue = OssSpeedOrVelocity.genericVelocity(testVelocity);
+            OssSpeedOrVelocity.genericVelocity(testVelocity);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());

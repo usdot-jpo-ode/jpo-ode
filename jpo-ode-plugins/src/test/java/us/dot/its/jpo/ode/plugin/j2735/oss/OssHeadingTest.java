@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.CoarseHeading;
@@ -100,7 +99,7 @@ public class OssHeadingTest {
         CoarseHeading testHeading = new CoarseHeading(testInput);
 
         try {
-            BigDecimal actualValue = OssHeading.genericHeading(testHeading);
+            OssHeading.genericHeading(testHeading);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -118,7 +117,7 @@ public class OssHeadingTest {
         CoarseHeading testHeading = new CoarseHeading(testInput);
         
         try {
-            BigDecimal actualHeading = OssHeading.genericHeading(testHeading);
+            OssHeading.genericHeading(testHeading);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());

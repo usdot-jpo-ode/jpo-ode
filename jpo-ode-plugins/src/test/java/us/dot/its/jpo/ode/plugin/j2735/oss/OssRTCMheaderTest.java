@@ -11,7 +11,6 @@ import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.AntennaOffsetSet;
@@ -20,7 +19,6 @@ import us.dot.its.jpo.ode.j2735.dsrc.Offset_B09;
 import us.dot.its.jpo.ode.j2735.dsrc.Offset_B10;
 import us.dot.its.jpo.ode.j2735.dsrc.Offset_B12;
 import us.dot.its.jpo.ode.j2735.dsrc.RTCMheader;
-import us.dot.its.jpo.ode.plugin.j2735.J2735GNSSstatus;
 import us.dot.its.jpo.ode.plugin.j2735.J2735RTCMheader;
 
 /**

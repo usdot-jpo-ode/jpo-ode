@@ -15,7 +15,9 @@ public class OssSpeedandHeadingandThrottleConfidence {
     private static final long THROTTLE_LOWER_BOUND = 0;
     private static final long THROTTLE_UPPER_BOUND = 3;
     
-    private OssSpeedandHeadingandThrottleConfidence(){}
+    private OssSpeedandHeadingandThrottleConfidence(){
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735SpeedandHeadingandThrottleConfidence genericSpeedandHeadingandThrottleConfidence(
             SpeedandHeadingandThrottleConfidence speedConfidence) {

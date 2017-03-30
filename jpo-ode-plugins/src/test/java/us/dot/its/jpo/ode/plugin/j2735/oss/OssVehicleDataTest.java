@@ -14,7 +14,6 @@ import us.dot.its.jpo.ode.j2735.dsrc.VehicleData;
 import us.dot.its.jpo.ode.j2735.dsrc.VehicleHeight;
 import us.dot.its.jpo.ode.j2735.dsrc.VehicleMass;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BumperHeights;
-import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleData;
 
 /**
  * -- Summary --
@@ -48,7 +47,7 @@ public class OssVehicleDataTest {
         VehicleData testVehicleData = new VehicleData();
         
         try {
-            J2735VehicleData actualVehicleData = OssVehicleData.genericVehicleData(testVehicleData);
+            OssVehicleData.genericVehicleData(testVehicleData);
             return; // implicit test pass
         } catch (RuntimeException e) {
             fail("Unexpected RuntimeException: " + e.getClass());

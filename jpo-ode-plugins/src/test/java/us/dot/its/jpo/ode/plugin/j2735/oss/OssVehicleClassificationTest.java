@@ -924,7 +924,7 @@ public class OssVehicleClassificationTest {
         testvc.setFuelType(testFuelType);
         
         try {
-           String actualValue = OssVehicleClassification
+           OssVehicleClassification
                    .genericVehicleClassification(testvc)
                    .getFuelType().toString();
            fail("Expected IllegalArgumentException");
@@ -947,7 +947,7 @@ public class OssVehicleClassificationTest {
         testvc.setFuelType(testFuelType);
         
         try {
-           String actualValue = OssVehicleClassification
+           OssVehicleClassification
                    .genericVehicleClassification(testvc)
                    .getFuelType().toString();
            fail("Expected IllegalArgumentException");

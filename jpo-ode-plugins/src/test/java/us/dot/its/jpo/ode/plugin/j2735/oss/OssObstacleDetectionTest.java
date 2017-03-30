@@ -5,6 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 
 import org.junit.Before;
@@ -22,7 +25,6 @@ import us.dot.its.jpo.ode.j2735.dsrc.ObstacleDetection;
 import us.dot.its.jpo.ode.j2735.dsrc.ObstacleDirection;
 import us.dot.its.jpo.ode.j2735.dsrc.ObstacleDistance;
 import us.dot.its.jpo.ode.j2735.dsrc.VerticalAccelerationThreshold;
-import us.dot.its.jpo.ode.plugin.j2735.J2735ObstacleDetection;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VertEvent;
 
 /**
@@ -279,7 +281,7 @@ public class OssObstacleDetectionTest {
         testObstacleDetection.setDateTime(mockDDateTime);
         
         try {
-            J2735ObstacleDetection actualValue = OssObstacleDetection
+            OssObstacleDetection
                     .genericObstacleDetection(testObstacleDetection);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
@@ -309,7 +311,7 @@ public class OssObstacleDetectionTest {
         testObstacleDetection.setDateTime(mockDDateTime);
         
         try {
-            J2735ObstacleDetection actualValue = OssObstacleDetection
+            OssObstacleDetection
                     .genericObstacleDetection(testObstacleDetection);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
@@ -553,6 +555,19 @@ public class OssObstacleDetectionTest {
             }
         }
         
+    }
+    
+    @Test
+    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<OssObstacleDetection > constructor = OssObstacleDetection.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+        constructor.newInstance();
+        fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+        assertEquals(InvocationTargetException.class, e.getClass());
+      }
     }
 
 }

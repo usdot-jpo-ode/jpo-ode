@@ -57,7 +57,6 @@ import us.dot.its.jpo.ode.j2735.ntcip.EssPrecipRate;
 import us.dot.its.jpo.ode.j2735.ntcip.EssPrecipSituation;
 import us.dot.its.jpo.ode.j2735.ntcip.EssPrecipYesNo;
 import us.dot.its.jpo.ode.j2735.ntcip.EssSolarRadiation;
-import us.dot.its.jpo.ode.plugin.SituationDataWarehouse;
 import us.dot.its.jpo.ode.plugin.j2735.J2735SupplementalVehicleExtensions;
 
 /**

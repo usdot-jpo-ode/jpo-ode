@@ -165,7 +165,7 @@ public class OssVehicleSizeTest {
         VehicleSize testVehicleSize = new VehicleSize(testWidth, testLength);
         
         try {
-            OssVehicleSize actualVehicleSize = new OssVehicleSize(testVehicleSize);
+            new OssVehicleSize(testVehicleSize);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -187,7 +187,7 @@ public class OssVehicleSizeTest {
         VehicleSize testVehicleSize = new VehicleSize(testWidth, testLength);
         
         try {
-            OssVehicleSize actualVehicleSize = new OssVehicleSize(testVehicleSize);
+            new OssVehicleSize(testVehicleSize);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -320,7 +320,7 @@ public class OssVehicleSizeTest {
         VehicleSize testVehicleSize = new VehicleSize(testWidth, testLength);
         
         try {
-            OssVehicleSize actualVehicleSize = new OssVehicleSize(testVehicleSize);
+            new OssVehicleSize(testVehicleSize);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -342,7 +342,7 @@ public class OssVehicleSizeTest {
         VehicleSize testVehicleSize = new VehicleSize(testWidth, testLength);
         
         try {
-            OssVehicleSize actualVehicleSize = new OssVehicleSize(testVehicleSize);
+            new OssVehicleSize(testVehicleSize);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());

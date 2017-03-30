@@ -104,7 +104,7 @@ public class OssAngleTest {
         Angle testAngle = new Angle(testValue);
 
         try {
-            BigDecimal actualValue = OssAngle.genericAngle(testAngle);
+            OssAngle.genericAngle(testAngle);
             fail("Expected IllegalArgumentException");
         } catch (Exception e) {
             assertTrue(e.getClass().equals(IllegalArgumentException.class));
@@ -121,7 +121,7 @@ public class OssAngleTest {
         Angle testAngle = new Angle(testValue);
 
         try {
-            BigDecimal actualValue = OssAngle.genericAngle(testAngle);
+            OssAngle.genericAngle(testAngle);
             fail("Expected IllegalArgumentException");
         } catch (Exception e) {
             assertTrue(e.getClass().equals(IllegalArgumentException.class));

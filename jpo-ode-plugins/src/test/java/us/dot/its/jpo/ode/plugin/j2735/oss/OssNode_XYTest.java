@@ -176,7 +176,7 @@ public class OssNode_XYTest {
         Node_XY_24b testNode = new Node_XY_24b(testOffsetX, testOffsetY);
         
         try {
-            J2735Node_XY actualNode = OssNode_XY.genericNode_XY(testNode);
+            OssNode_XY.genericNode_XY(testNode);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -198,7 +198,7 @@ public class OssNode_XYTest {
         Node_XY_24b testNode = new Node_XY_24b(testOffsetX, testOffsetY);
         
         try {
-            J2735Node_XY actualNode = OssNode_XY.genericNode_XY(testNode);
+            OssNode_XY.genericNode_XY(testNode);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -219,7 +219,7 @@ public class OssNode_XYTest {
         Node_XY_24b testNode = new Node_XY_24b(testOffsetX, testOffsetY);
         
         try {
-            J2735Node_XY actualNode = OssNode_XY.genericNode_XY(testNode);
+            OssNode_XY.genericNode_XY(testNode);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -240,7 +240,7 @@ public class OssNode_XYTest {
         Node_XY_24b testNode = new Node_XY_24b(testOffsetX, testOffsetY);
         
         try {
-            J2735Node_XY actualNode = OssNode_XY.genericNode_XY(testNode);
+            OssNode_XY.genericNode_XY(testNode);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());

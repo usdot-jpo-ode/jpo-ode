@@ -4,11 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import us.dot.its.jpo.ode.j2735.dsrc.GrossSpeed;
 import us.dot.its.jpo.ode.j2735.dsrc.SpeedProfile;
 import us.dot.its.jpo.ode.j2735.dsrc.SpeedProfileMeasurement;
 import us.dot.its.jpo.ode.j2735.dsrc.SpeedProfileMeasurementList;
-import us.dot.its.jpo.ode.plugin.j2735.J2735SpeedProfile;
 
 /**
  * -- Summary --

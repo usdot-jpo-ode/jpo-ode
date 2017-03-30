@@ -210,7 +210,7 @@ public class OssWeatherProbeTest {
                 mockWiperSet);
         
         try {
-            Integer actualValue = OssWeatherProbe.genericWeatherProbe(testWeatherProbe).getAirTemp();
+            OssWeatherProbe.genericWeatherProbe(testWeatherProbe).getAirTemp();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -235,7 +235,7 @@ public class OssWeatherProbeTest {
                 mockWiperSet);
         
         try {
-            Integer actualValue = OssWeatherProbe.genericWeatherProbe(testWeatherProbe).getAirTemp();
+            OssWeatherProbe.genericWeatherProbe(testWeatherProbe).getAirTemp();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -377,7 +377,7 @@ public class OssWeatherProbeTest {
                 mockWiperSet);
         
         try {
-            Integer actualValue = OssWeatherProbe.genericWeatherProbe(testWeatherProbe).getAirPressure();
+            OssWeatherProbe.genericWeatherProbe(testWeatherProbe).getAirPressure();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -402,7 +402,7 @@ public class OssWeatherProbeTest {
                 mockWiperSet);
         
         try {
-            Integer actualValue = OssWeatherProbe.genericWeatherProbe(testWeatherProbe).getAirPressure();
+            OssWeatherProbe.genericWeatherProbe(testWeatherProbe).getAirPressure();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
