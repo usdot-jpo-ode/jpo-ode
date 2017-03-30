@@ -6,6 +6,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735RTCMheader;
 public class OssRTCMheader {
 
     private OssRTCMheader() {
+       throw new UnsupportedOperationException();
     }
 
     public static J2735RTCMheader genericRTCMheader(RTCMheader rtcmHeader) {
