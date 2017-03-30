@@ -18,6 +18,7 @@ import mockit.Tested;
 import mockit.Verifications;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.ManagerAndControllerServices;
+import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
@@ -29,6 +30,8 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 public class TravelerMessageControllerTest {
    @Tested
    TravelerMessageController tmc;
+   @Injectable
+   OdeProperties mockOdeProperties;
    @Mocked
    J2735TravelerInputData mockTim;
 
