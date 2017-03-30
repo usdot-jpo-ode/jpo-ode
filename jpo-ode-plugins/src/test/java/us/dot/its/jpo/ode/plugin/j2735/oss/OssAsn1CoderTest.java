@@ -10,6 +10,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.LoggerFactory;
 
 import com.oss.asn1.AbstractData;
 import com.oss.asn1.DecodeFailedException;
@@ -32,6 +33,9 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssMessageFrame.OssMessageFrameExcept
 
 @RunWith(JMockit.class)
 public class OssAsn1CoderTest {
+    
+    @Mocked(stubOutClassInitialization = true)
+    final LoggerFactory unused = null;
 
     @Tested
     OssAsn1Coder coder;

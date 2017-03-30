@@ -2,7 +2,7 @@ package us.dot.its.jpo.ode.plugin;
 
 import java.util.Properties;
 
-import us.dot.its.jpo.ode.plugin.OdePluginImpl.OdePluginException;
+import us.dot.its.jpo.ode.plugin.OdePluginException;
 
 @FunctionalInterface
 public interface Plugin {
