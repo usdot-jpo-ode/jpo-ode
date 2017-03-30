@@ -10,111 +10,14 @@ import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 
 import us.dot.its.jpo.ode.j2735.J2735;
-import us.dot.its.jpo.ode.j2735.dsrc.Angle;
-import us.dot.its.jpo.ode.j2735.dsrc.Circle;
-import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane;
+import us.dot.its.jpo.ode.j2735.dsrc.*;
 import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane.OffsetXaxis;
 import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane.OffsetYaxis;
-import us.dot.its.jpo.ode.j2735.dsrc.DYear;
-import us.dot.its.jpo.ode.j2735.dsrc.DeltaAngle;
-import us.dot.its.jpo.ode.j2735.dsrc.DescriptiveName;
-import us.dot.its.jpo.ode.j2735.dsrc.DirectionOfUse;
-import us.dot.its.jpo.ode.j2735.dsrc.DistanceUnits;
-import us.dot.its.jpo.ode.j2735.dsrc.ExitService;
-import us.dot.its.jpo.ode.j2735.dsrc.Extent;
-import us.dot.its.jpo.ode.j2735.dsrc.FurtherInfoID;
-import us.dot.its.jpo.ode.j2735.dsrc.GenericSignage;
-import us.dot.its.jpo.ode.j2735.dsrc.GeographicalPath;
 import us.dot.its.jpo.ode.j2735.dsrc.GeographicalPath.Description;
-import us.dot.its.jpo.ode.j2735.dsrc.GeometricProjection;
-import us.dot.its.jpo.ode.j2735.dsrc.HeadingSlice;
-import us.dot.its.jpo.ode.j2735.dsrc.LaneDataAttribute;
-import us.dot.its.jpo.ode.j2735.dsrc.LaneDataAttributeList;
-import us.dot.its.jpo.ode.j2735.dsrc.LaneID;
-import us.dot.its.jpo.ode.j2735.dsrc.LaneWidth;
-import us.dot.its.jpo.ode.j2735.dsrc.Latitude;
-import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
-import us.dot.its.jpo.ode.j2735.dsrc.MUTCDCode;
-import us.dot.its.jpo.ode.j2735.dsrc.MergeDivergeNodeAngle;
-import us.dot.its.jpo.ode.j2735.dsrc.MinuteOfTheYear;
-import us.dot.its.jpo.ode.j2735.dsrc.MinutesDuration;
-import us.dot.its.jpo.ode.j2735.dsrc.MsgCount;
-import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeLL;
-import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeLLList;
-import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeSetLL;
-import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeSetXY;
-import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeXY;
-import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeXYList;
-import us.dot.its.jpo.ode.j2735.dsrc.NodeLL;
-import us.dot.its.jpo.ode.j2735.dsrc.NodeListLL;
-import us.dot.its.jpo.ode.j2735.dsrc.NodeListXY;
-import us.dot.its.jpo.ode.j2735.dsrc.NodeOffsetPointLL;
-import us.dot.its.jpo.ode.j2735.dsrc.NodeOffsetPointXY;
-import us.dot.its.jpo.ode.j2735.dsrc.NodeSetLL;
-import us.dot.its.jpo.ode.j2735.dsrc.NodeSetXY;
-import us.dot.its.jpo.ode.j2735.dsrc.NodeXY;
-import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_24B;
-import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_28B;
-import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_32B;
-import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_36B;
-import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_44B;
-import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_48B;
-import us.dot.its.jpo.ode.j2735.dsrc.Node_LLmD_64b;
-import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_20b;
-import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_22b;
-import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_24b;
-import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_26b;
-import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_28b;
-import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_32b;
-import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B12;
-import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B14;
-import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B16;
-import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B18;
-import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B22;
-import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B24;
-import us.dot.its.jpo.ode.j2735.dsrc.OffsetSystem;
-import us.dot.its.jpo.ode.j2735.dsrc.Offset_B10;
-import us.dot.its.jpo.ode.j2735.dsrc.Offset_B11;
-import us.dot.its.jpo.ode.j2735.dsrc.Offset_B12;
-import us.dot.its.jpo.ode.j2735.dsrc.Offset_B13;
-import us.dot.its.jpo.ode.j2735.dsrc.Offset_B14;
-import us.dot.its.jpo.ode.j2735.dsrc.Offset_B16;
-import us.dot.its.jpo.ode.j2735.dsrc.Radius_B12;
-import us.dot.its.jpo.ode.j2735.dsrc.RegionList;
-import us.dot.its.jpo.ode.j2735.dsrc.RegionOffsets;
-import us.dot.its.jpo.ode.j2735.dsrc.RegionPointSet;
-import us.dot.its.jpo.ode.j2735.dsrc.RegulatorySpeedLimit;
-import us.dot.its.jpo.ode.j2735.dsrc.RoadRegulatorID;
-import us.dot.its.jpo.ode.j2735.dsrc.RoadSegmentID;
-import us.dot.its.jpo.ode.j2735.dsrc.RoadSegmentReferenceID;
-import us.dot.its.jpo.ode.j2735.dsrc.RoadSignID;
-import us.dot.its.jpo.ode.j2735.dsrc.RoadwayCrownAngle;
-import us.dot.its.jpo.ode.j2735.dsrc.SSPindex;
-import us.dot.its.jpo.ode.j2735.dsrc.Scale_B12;
-import us.dot.its.jpo.ode.j2735.dsrc.SegmentAttributeLL;
-import us.dot.its.jpo.ode.j2735.dsrc.SegmentAttributeLLList;
-import us.dot.its.jpo.ode.j2735.dsrc.SegmentAttributeXY;
-import us.dot.its.jpo.ode.j2735.dsrc.SegmentAttributeXYList;
-import us.dot.its.jpo.ode.j2735.dsrc.ShapePointSet;
-import us.dot.its.jpo.ode.j2735.dsrc.SignPrority;
-import us.dot.its.jpo.ode.j2735.dsrc.SpeedLimit;
-import us.dot.its.jpo.ode.j2735.dsrc.SpeedLimitList;
-import us.dot.its.jpo.ode.j2735.dsrc.SpeedLimitType;
-import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Content;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.MsgId;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Regions;
-import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrameList;
-import us.dot.its.jpo.ode.j2735.dsrc.TravelerInfoType;
-import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
-import us.dot.its.jpo.ode.j2735.dsrc.URL_Base;
-import us.dot.its.jpo.ode.j2735.dsrc.URL_Short;
-import us.dot.its.jpo.ode.j2735.dsrc.UniqueMSGID;
-import us.dot.its.jpo.ode.j2735.dsrc.ValidRegion;
 import us.dot.its.jpo.ode.j2735.dsrc.ValidRegion.Area;
-import us.dot.its.jpo.ode.j2735.dsrc.Velocity;
-import us.dot.its.jpo.ode.j2735.dsrc.WorkZone;
-import us.dot.its.jpo.ode.j2735.dsrc.Zoom;
 import us.dot.its.jpo.ode.j2735.itis.ITIScodesAndText;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
@@ -288,11 +191,11 @@ public class OssTravelerMessageBuilder {
          roadSignID.setViewAngle(getHeadingSlice(dataFrame.getViewAngle()));
          validateMUTCDCode(dataFrame.getMutcd());
          roadSignID.setMutcdCode(MUTCDCode.valueOf(dataFrame.getMutcd()));
-         // roadSignID.setCrc(new MsgCRC(new byte[] { 0xC0,0x2F })); //Causing
-         // error while encoding
+         roadSignID.setCrc(getMsgCrc(dataFrame.getCrc()));
+         //roadSignID.setCrc(new MsgCRC(new byte[] { 0x00,0x00 }));
          msgId.setRoadSignID(roadSignID);
       } else {
-         msgId.setChosenFlag(MsgId.furtherInfoID_chosen);
+         msgId.setChosenFlag(MsgId.furtherInfoID_chosen);// 0 when not present
          msgId.setFurtherInfoID(new FurtherInfoID(new byte[] { 0x00, 0x00 })); // TODO
                                                                                // check
                                                                                // this
@@ -301,6 +204,22 @@ public class OssTravelerMessageBuilder {
                                                                                // value
       }
       return msgId;
+   }
+   
+   private MsgCRC getMsgCrc(String sum) {
+      if (sum.length() == 0 || sum == null) {
+         return new MsgCRC(new byte[] {0X00,0X00});
+      }
+      else {
+         short result = 0;
+         for (int i = 0; i < 16; i++) {
+            if (sum.charAt(i) == '1') {
+               result |= 1;
+            }
+            result <<= 1;
+         }
+         return new MsgCRC(ByteBuffer.allocate(2).putShort(result).array());
+      }
    }
 
    private HeadingSlice getHeadingSlice(String heading) {

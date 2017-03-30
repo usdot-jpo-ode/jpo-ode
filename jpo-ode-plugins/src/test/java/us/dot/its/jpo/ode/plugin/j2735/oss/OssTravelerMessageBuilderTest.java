@@ -4485,7 +4485,7 @@ public class OssTravelerMessageBuilderTest {
       df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
-      df.setCrc(6);
+      df.setCrc("1111111111111111");
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -4543,7 +4543,7 @@ public class OssTravelerMessageBuilderTest {
       df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
-      df.setCrc(6);
+      df.setCrc("1111111111111111");
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -4637,7 +4637,7 @@ public class OssTravelerMessageBuilderTest {
       df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
-      df.setCrc(6);
+      df.setCrc("1111111111111111");
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -4731,7 +4731,7 @@ public class OssTravelerMessageBuilderTest {
       df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
-      df.setCrc(6);
+      df.setCrc("1111111111111111");
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -4795,7 +4795,7 @@ public class OssTravelerMessageBuilderTest {
       df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
-      df.setCrc(6);
+      df.setCrc("1111111111111111");
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -4859,7 +4859,7 @@ public class OssTravelerMessageBuilderTest {
       df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
-      df.setCrc(6);
+      df.setCrc("1111111111111111");
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -4923,7 +4923,7 @@ public class OssTravelerMessageBuilderTest {
       df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
-      df.setCrc(6);
+      df.setCrc("1111111111111111");
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -5024,7 +5024,7 @@ public class OssTravelerMessageBuilderTest {
       df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
-      df.setCrc(6);
+      df.setCrc("1111111111111111");
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);

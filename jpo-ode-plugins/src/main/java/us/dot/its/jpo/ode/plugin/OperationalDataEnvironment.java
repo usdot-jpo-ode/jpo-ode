@@ -18,7 +18,6 @@ public class OperationalDataEnvironment {
       }
    }
 
-   private OperationalDataEnvironment() {
-
-   }
+   private OperationalDataEnvironment() {//NOSONAR
+   }//NOSONAR
 }
