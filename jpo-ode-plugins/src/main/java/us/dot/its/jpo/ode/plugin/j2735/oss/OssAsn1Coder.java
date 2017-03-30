@@ -127,7 +127,7 @@ public class OssAsn1Coder implements Asn1Plugin {
         if (DecodeFailedException.class == e.getClass()) {
             AbstractData partialDecodedMessage = ((DecodeFailedException) e).getDecodedData();
             if (partialDecodedMessage != null) {
-                logger.error("DECODER - Error, message only partially decoded: {}", partialDecodedMessage.toString());
+                logger.error("DECODER - Error, message only partially decoded: {}", partialDecodedMessage);
             } else {
                 logger.debug("DECODER - Ignoring extraneous bytes at the end of the input stream.");
             }
