@@ -13,4 +13,12 @@ public class J2735Position3DTest {
       assertTrue(po.equals(pos));
       assertEquals(po.hashCode(), pos.hashCode());
    }
+   
+   @Test
+   public void checkEqualsAndHashCodeValues() {
+      J2735Position3D po = new J2735Position3D((long) 1, (long) 2, (long) 3);
+      J2735Position3D pos = new J2735Position3D((long) 1, (long) 2, (long) 3);
+      assertTrue(po.equals(pos));
+      assertEquals(po.hashCode(), pos.hashCode());
+   }
 }
