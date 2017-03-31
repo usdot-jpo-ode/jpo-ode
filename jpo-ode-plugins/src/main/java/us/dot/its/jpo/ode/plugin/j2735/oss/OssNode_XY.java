@@ -6,6 +6,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Node_XY;
 public class OssNode_XY {
 
     private OssNode_XY() {
+       throw new UnsupportedOperationException();
     }
 
     public static J2735Node_XY genericNode_XY(Node_XY_24b node) {

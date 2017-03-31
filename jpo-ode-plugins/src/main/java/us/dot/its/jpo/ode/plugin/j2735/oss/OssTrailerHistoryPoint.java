@@ -6,6 +6,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735TrailerHistoryPoint;
 public class OssTrailerHistoryPoint {
 
     private OssTrailerHistoryPoint() {
+       throw new UnsupportedOperationException();
     }
 
     public static J2735TrailerHistoryPoint genericTrailerHistoryPoint(TrailerHistoryPoint thp) {

@@ -5,6 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 
@@ -370,6 +373,19 @@ public class OssEventDescriptionTest {
         String actualValue = OssEventDescription.genericEventDescription(testEventDescription).getExtent().name();
         
         assertEquals(expectedValue, actualValue);
+    }
+    
+    @Test
+    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<OssEventDescription> constructor = OssEventDescription.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+        constructor.newInstance();
+        fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+        assertEquals(InvocationTargetException.class, e.getClass());
+      }
     }
 
 }

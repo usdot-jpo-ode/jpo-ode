@@ -5,7 +5,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistory;
 
 public class OssPathHistory {
 
-    private OssPathHistory() {}
+    private OssPathHistory() {
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735PathHistory genericPathHistory(PathHistory pathHistory) {
         J2735PathHistory ph = new J2735PathHistory();

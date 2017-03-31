@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
+import java.time.ZonedDateTime;
 
 import com.oss.asn1.Coder;
 import com.oss.asn1.EncodeFailedException;
@@ -20,6 +21,7 @@ import us.dot.its.jpo.ode.j2735.itis.ITIScodesAndText;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.plugin.TimFieldValidator;
 import us.dot.its.jpo.ode.util.CodecUtils;
+import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class OssTravelerMessageBuilder {
    private TravelerInformation travelerInfo;
@@ -31,7 +33,7 @@ public class OssTravelerMessageBuilder {
       TimFieldValidator.validateMessageCount(travInputData.getTim().getMsgCnt());
       travelerInfo.setMsgCnt(new MsgCount(travInputData.getTim().getMsgCnt()));
       travelerInfo.setTimeStamp(
-            new MinuteOfTheYear(TimFieldValidator.getMinuteOfTheYear(travInputData.getTim().getTimeStamp())));
+            new MinuteOfTheYear(getMinuteOfTheYear(travInputData.getTim().getTimeStamp())));
       ByteBuffer buf = ByteBuffer.allocate(9).put((byte) 0).putLong(travInputData.getTim().getPacketID());
       travelerInfo.setPacketID(new UniqueMSGID(buf.array()));
       TimFieldValidator.validateURL(travInputData.getTim().getUrlB());
@@ -184,7 +186,7 @@ public class OssTravelerMessageBuilder {
          geoPath.setDirectionality(new DirectionOfUse(inputRegion.getDirectionality()));
          geoPath.setClosedPath(inputRegion.isClosedPath());
          TimFieldValidator.validateHeading(inputRegion.getDirection());
-         geoPath.setDirection(TimFieldValidator.getHeadingSlice(inputRegion.getDirection()));
+         geoPath.setDirection(getHeadingSlice(inputRegion.getDirection()));
 
          if ("path".equals(inputRegion.getDescription())) {
             OffsetSystem offsetSystem = new OffsetSystem();
@@ -207,7 +209,7 @@ public class OssTravelerMessageBuilder {
          } else if ("geometry".equals(inputRegion.getDescription())) {
             GeometricProjection geo = new GeometricProjection();
             TimFieldValidator.validateHeading(inputRegion.getGeometry().getDirection());
-            geo.setDirection(TimFieldValidator.getHeadingSlice(inputRegion.getGeometry().getDirection()));
+            geo.setDirection(getHeadingSlice(inputRegion.getGeometry().getDirection()));
             TimFieldValidator.validateExtent(inputRegion.getGeometry().getExtent());
             geo.setExtent(new Extent(inputRegion.getGeometry().getExtent()));
             TimFieldValidator.validateLaneWidth(inputRegion.getGeometry().getLaneWidth());
@@ -219,7 +221,7 @@ public class OssTravelerMessageBuilder {
          } else { // oldRegion
             ValidRegion validRegion = new ValidRegion();
             TimFieldValidator.validateHeading(inputRegion.getOldRegion().getDirection());
-            validRegion.setDirection(TimFieldValidator.getHeadingSlice(inputRegion.getOldRegion().getDirection()));
+            validRegion.setDirection(getHeadingSlice(inputRegion.getOldRegion().getDirection()));
             TimFieldValidator.validateExtent(inputRegion.getOldRegion().getExtent());
             validRegion.setExtent(new Extent(inputRegion.getOldRegion().getExtent()));
             Area area = new Area();
@@ -574,6 +576,44 @@ public class OssTravelerMessageBuilder {
       }
       nodeList.setNodes(nodes);
       return nodeList;
+   }
+   
+   public static long getMinuteOfTheYear(String timestamp) throws ParseException {
+      ZonedDateTime start = DateTimeUtils.isoDateTime(timestamp);
+      long diff = DateTimeUtils.difference(DateTimeUtils.isoDateTime(start.getYear() + "-01-01T00:00:00+00:00"), start);
+      long minutes = diff / 60000;
+      TimFieldValidator.validateStartTime(minutes);
+      return minutes;
+   }
+   
+   public static HeadingSlice getHeadingSlice(String heading) {
+      if (heading == null || heading.length() == 0) {
+         return new HeadingSlice(new byte[] { 0x00, 0x00 });
+      } else {
+         short result = 0;
+         for (int i = 0; i < 16; i++) {
+            if (heading.charAt(i) == '1') {
+               result |= 1;
+            }
+            result <<= 1;
+         }
+         return new HeadingSlice(ByteBuffer.allocate(2).putShort(result).array());
+      }
+   }
+   
+   public static MsgCRC getMsgCrc(String sum) {
+      if (sum == null || sum.length() == 0) {
+         return new MsgCRC(new byte[] { 0X00, 0X00 });
+      } else {
+         short result = 0;
+         for (int i = 0; i < 16; i++) {
+            if (sum.charAt(i) == '1') {
+               result |= 1;
+            }
+            result <<= 1;
+         }
+         return new MsgCRC(ByteBuffer.allocate(2).putShort(result).array());
+      }
    }
 
 }

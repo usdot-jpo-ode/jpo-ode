@@ -3,6 +3,9 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.text.ParseException;
+import java.time.format.DateTimeParseException;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -16,6 +19,76 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData.DataFrame.Region.C
 
 public class OssTravelerMessageBuilderTest {
 
+   @Test
+   public void checkMinuteOfYear() {
+
+      try {
+         OssTravelerMessageBuilder.getMinuteOfTheYear("2017-12-01T17:47:11-05:00");
+      } catch (ParseException e) {
+         fail("Unexpected Exception");
+      }
+   }
+
+   @Test
+   public void checkBadMinuteOfYear() {
+      try {
+         OssTravelerMessageBuilder.getMinuteOfTheYear("hi");
+         fail("Expected DateTimeParseException");
+      } catch (DateTimeParseException | ParseException e) {
+         assertEquals(DateTimeParseException.class, e.getClass());
+      }
+   }
+   
+   @Test
+   public void checknullHeadingSlice() {
+      String str = null;
+      try {
+         OssTravelerMessageBuilder.getHeadingSlice(str);
+      } catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+
+   @Test
+   public void checkEmptyHeadingSlice() {
+      String str = "";
+      try {
+         OssTravelerMessageBuilder.getHeadingSlice(str);
+      } catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+
+   @Test
+   public void checknullMessageCRC() {
+      String str = null;
+      try {
+         OssTravelerMessageBuilder.getMsgCrc(str);
+      } catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+
+   @Test
+   public void checkEmptyMessageCRC() {
+      String str = "";
+      try {
+         OssTravelerMessageBuilder.getMsgCrc(str);
+      } catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+
+   @Test
+   public void checkMessageCRC() {
+      String str = "1010101010101010";
+      try {
+         OssTravelerMessageBuilder.getMsgCrc(str);
+      } catch (RuntimeException e) {
+         fail("Unexpected Exception");
+      }
+   }
+   
    @Test
    public void checkContentAdvisory() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();

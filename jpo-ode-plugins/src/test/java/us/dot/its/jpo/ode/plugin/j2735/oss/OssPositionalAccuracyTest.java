@@ -2,6 +2,9 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 
 import org.junit.Test;
@@ -10,7 +13,6 @@ import us.dot.its.jpo.ode.j2735.dsrc.PositionalAccuracy;
 import us.dot.its.jpo.ode.j2735.dsrc.SemiMajorAxisAccuracy;
 import us.dot.its.jpo.ode.j2735.dsrc.SemiMajorAxisOrientation;
 import us.dot.its.jpo.ode.j2735.dsrc.SemiMinorAxisAccuracy;
-import us.dot.its.jpo.ode.plugin.j2735.J2735PositionalAccuracy;
 
 /**
  * -- Summary --
@@ -170,7 +172,7 @@ public class OssPositionalAccuracyTest {
                 testMajorOrientation);
         
         try {
-            J2735PositionalAccuracy actualValue = OssPositionalAccuracy
+            OssPositionalAccuracy
                     .genericPositionalAccuracy(testPositionalAccuracy);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
@@ -197,7 +199,7 @@ public class OssPositionalAccuracyTest {
                 testMajorOrientation);
         
         try {
-            J2735PositionalAccuracy actualValue = OssPositionalAccuracy
+            OssPositionalAccuracy
                     .genericPositionalAccuracy(testPositionalAccuracy);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
@@ -304,7 +306,7 @@ public class OssPositionalAccuracyTest {
                 testMajorOrientation);
         
         try { 
-            J2735PositionalAccuracy actualValue = OssPositionalAccuracy
+            OssPositionalAccuracy
                     .genericPositionalAccuracy(testPositionalAccuracy);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
@@ -331,7 +333,7 @@ public class OssPositionalAccuracyTest {
                 testMajorOrientation);
         
         try {
-            J2735PositionalAccuracy actualValue = OssPositionalAccuracy
+            OssPositionalAccuracy
                     .genericPositionalAccuracy(testPositionalAccuracy);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
@@ -465,7 +467,7 @@ public class OssPositionalAccuracyTest {
                 testMajorOrientation);
         
         try {
-            J2735PositionalAccuracy actualValue = OssPositionalAccuracy
+            OssPositionalAccuracy
                     .genericPositionalAccuracy(testPositionalAccuracy);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
@@ -492,13 +494,26 @@ public class OssPositionalAccuracyTest {
                 testMajorOrientation);
         
         try {
-            J2735PositionalAccuracy actualValue = OssPositionalAccuracy
+            OssPositionalAccuracy
                     .genericPositionalAccuracy(testPositionalAccuracy);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
         }
         
+    }
+    
+    @Test
+    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<OssPositionalAccuracy > constructor = OssPositionalAccuracy.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+        constructor.newInstance();
+        fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+        assertEquals(InvocationTargetException.class, e.getClass());
+      }
     }
     
 }

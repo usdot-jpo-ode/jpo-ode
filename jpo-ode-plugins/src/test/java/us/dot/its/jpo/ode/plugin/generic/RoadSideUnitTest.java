@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
 import org.junit.Test;
@@ -23,27 +24,32 @@ public class RoadSideUnitTest {
    @Test
    public void testGettersAndSetters() {
       String rsuTarget = "target";
-      testRSU.setrsuTarget(rsuTarget);
-      assertEquals(rsuTarget, testRSU.getrsuTarget());
+      testRSU.setRsuTarget(rsuTarget);
+      assertEquals(rsuTarget, testRSU.getRsuTarget());
       String rsuUsername = "name";
-      testRSU.setrsuUsername(rsuUsername);
-      assertEquals(rsuUsername, testRSU.getrsuUsername());
+      testRSU.setRsuUsername(rsuUsername);
+      assertEquals(rsuUsername, testRSU.getRsuUsername());
       String rsuPassword = "password";
-      testRSU.setrsuPassword(rsuPassword);
-      assertEquals(rsuPassword, testRSU.getrsuPassword());
+      testRSU.setRsuPassword(rsuPassword);
+      assertEquals(rsuPassword, testRSU.getRsuPassword());
       int rsuRetries = 2;
-      testRSU.setrsuRetries(rsuRetries);
-      assertEquals(rsuRetries, testRSU.getrsuRetries());
+      testRSU.setRsuRetries(rsuRetries);
+      assertEquals(rsuRetries, testRSU.getRsuRetries());
       int rsuTimeout = 10000;
-      testRSU.setTimeout(rsuTimeout);
-      assertEquals(rsuTimeout, testRSU.getrsuTimeout());
-      Constructor<RoadSideUnit> constructor;
-      try {
-         constructor = RoadSideUnit.class.getDeclaredConstructor();
-         assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-      }
-      catch (NoSuchMethodException e) {
-         fail("Unexpected Exception");
-      }
+      testRSU.setRsuTimeout(rsuTimeout);
+      assertEquals(rsuTimeout, testRSU.getRsuTimeout());
+   }
+    
+   @Test
+   public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+     Constructor<RoadSideUnit > constructor = RoadSideUnit.class.getDeclaredConstructor();
+     assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+     constructor.setAccessible(true);
+     try {
+       constructor.newInstance();
+       fail("Expected IllegalAccessException.class");
+     } catch (Exception e) {
+       assertEquals(InvocationTargetException.class, e.getClass());
+     }
    }
 }

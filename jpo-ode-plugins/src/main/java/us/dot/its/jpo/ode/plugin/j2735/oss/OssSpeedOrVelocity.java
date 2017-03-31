@@ -7,7 +7,9 @@ import us.dot.its.jpo.ode.j2735.dsrc.Velocity;
 
 public class OssSpeedOrVelocity {
 
-    private OssSpeedOrVelocity() {}
+    private OssSpeedOrVelocity() {
+       throw new UnsupportedOperationException();
+    }
 
     public static BigDecimal genericSpeed(Speed speed) {
         return genericSpeedOrVelocity(speed.intValue());

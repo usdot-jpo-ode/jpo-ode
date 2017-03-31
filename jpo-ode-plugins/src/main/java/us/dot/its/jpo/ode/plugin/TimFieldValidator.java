@@ -1,13 +1,6 @@
 package us.dot.its.jpo.ode.plugin;
 
-import java.nio.ByteBuffer;
-import java.text.ParseException;
-import java.time.ZonedDateTime;
-
-import us.dot.its.jpo.ode.j2735.dsrc.HeadingSlice;
-import us.dot.its.jpo.ode.j2735.dsrc.MsgCRC;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
-import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class TimFieldValidator {
    private TimFieldValidator() {
@@ -328,41 +321,4 @@ public class TimFieldValidator {
          throw new IllegalArgumentException("Invalid LaneAngle [-180 -180]");
    }
    
-   public static long getMinuteOfTheYear(String timestamp) throws ParseException {
-      ZonedDateTime start = DateTimeUtils.isoDateTime(timestamp);
-      long diff = DateTimeUtils.difference(DateTimeUtils.isoDateTime(start.getYear() + "-01-01T00:00:00+00:00"), start);
-      long minutes = diff / 60000;
-      validateStartTime(minutes);
-      return minutes;
-   }
-   
-   public static HeadingSlice getHeadingSlice(String heading) {
-      if (heading == null || heading.length() == 0) {
-         return new HeadingSlice(new byte[] { 0x00, 0x00 });
-      } else {
-         short result = 0;
-         for (int i = 0; i < 16; i++) {
-            if (heading.charAt(i) == '1') {
-               result |= 1;
-            }
-            result <<= 1;
-         }
-         return new HeadingSlice(ByteBuffer.allocate(2).putShort(result).array());
-      }
-   }
-   
-   public static MsgCRC getMsgCrc(String sum) {
-      if (sum == null || sum.length() == 0) {
-         return new MsgCRC(new byte[] { 0X00, 0X00 });
-      } else {
-         short result = 0;
-         for (int i = 0; i < 16; i++) {
-            if (sum.charAt(i) == '1') {
-               result |= 1;
-            }
-            result <<= 1;
-         }
-         return new MsgCRC(ByteBuffer.allocate(2).putShort(result).array());
-      }
-   }
 }

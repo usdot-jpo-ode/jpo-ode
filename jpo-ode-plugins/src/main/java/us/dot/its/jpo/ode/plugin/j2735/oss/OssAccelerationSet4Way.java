@@ -7,7 +7,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735AccelerationSet4Way;
 
 public class OssAccelerationSet4Way {
     
-    private OssAccelerationSet4Way() {}
+    private OssAccelerationSet4Way() {
+       throw new UnsupportedOperationException();
+    }
     
 	public static J2735AccelerationSet4Way genericAccelerationSet4Way(
 			AccelerationSet4Way accelSet) {

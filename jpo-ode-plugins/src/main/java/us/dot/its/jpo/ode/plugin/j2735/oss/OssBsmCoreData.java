@@ -11,7 +11,9 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class OssBsmCoreData {
     
-    private OssBsmCoreData() {}
+    private OssBsmCoreData() {
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735BsmCoreData genericBsmCoreData(BSMcoreData coreData) {
         J2735BsmCoreData genericBsmCoreData = new J2735BsmCoreData();

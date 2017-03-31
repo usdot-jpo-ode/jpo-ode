@@ -5,7 +5,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735AntennaOffsetSet;
 
 public class OssAntennaOffsetSet {
     
-    private OssAntennaOffsetSet() {}
+    private OssAntennaOffsetSet() {
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735AntennaOffsetSet genericAntennaOffsetSet(AntennaOffsetSet offsetSet) {
 

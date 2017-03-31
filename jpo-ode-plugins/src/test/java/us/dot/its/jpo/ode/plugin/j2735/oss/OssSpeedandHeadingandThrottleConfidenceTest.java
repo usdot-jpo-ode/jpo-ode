@@ -2,6 +2,10 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.HeadingConfidence;
@@ -442,5 +446,18 @@ public class OssSpeedandHeadingandThrottleConfidenceTest {
          assertEquals(IllegalArgumentException.class, e.getClass());
       }
 
+   }
+   
+   @Test
+   public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+     Constructor<OssSpeedandHeadingandThrottleConfidence > constructor = OssSpeedandHeadingandThrottleConfidence.class.getDeclaredConstructor();
+     assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+     constructor.setAccessible(true);
+     try {
+       constructor.newInstance();
+       fail("Expected IllegalAccessException.class");
+     } catch (Exception e) {
+       assertEquals(InvocationTargetException.class, e.getClass());
+     }
    }
 }

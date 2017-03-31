@@ -7,7 +7,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735BumperHeights;
 
 public class OssBumperHeights {
 
-    private OssBumperHeights() {}
+    private OssBumperHeights() {
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735BumperHeights genericBumperHeights(BumperHeights bumperHeights) {
 

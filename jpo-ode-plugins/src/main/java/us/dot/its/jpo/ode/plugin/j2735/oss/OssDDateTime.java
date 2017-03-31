@@ -20,7 +20,9 @@ public class OssDDateTime {
     private static final long OFFSET_LOWER_BOUND = -840L;
     private static final long OFFSET_UPPER_BOUND = 840L;
 
-    private OssDDateTime() {}
+    private OssDDateTime() {
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735DDateTime genericDDateTime(DDateTime dateTime) {
 

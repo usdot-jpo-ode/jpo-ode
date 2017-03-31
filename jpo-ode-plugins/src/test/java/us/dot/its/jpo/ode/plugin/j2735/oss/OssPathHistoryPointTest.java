@@ -1,8 +1,12 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 
 import org.junit.Test;
@@ -945,7 +949,7 @@ public class OssPathHistoryPointTest {
         testPathHistoryPoint.setTimeOffset(testTimeOffset);
         
         try {
-           BigDecimal actualValue = OssPathHistoryPoint
+           OssPathHistoryPoint
                    .genericPathHistoryPoint(testPathHistoryPoint)
                    .getTimeOffset();
            fail("Expected IllegalArgumentException");
@@ -1180,7 +1184,7 @@ public class OssPathHistoryPointTest {
         testPathHistoryPoint.setSpeed(testSpeed);
         
         try {
-           BigDecimal actualValue = OssPathHistoryPoint
+           OssPathHistoryPoint
                    .genericPathHistoryPoint(testPathHistoryPoint)
                    .getSpeed();
            fail("Expected IllegalArgumentException");
@@ -1211,7 +1215,7 @@ public class OssPathHistoryPointTest {
         testPathHistoryPoint.setSpeed(testSpeed);
         
         try {
-           BigDecimal actualValue = OssPathHistoryPoint
+           OssPathHistoryPoint
                    .genericPathHistoryPoint(testPathHistoryPoint)
                    .getSpeed();
            fail("Expected IllegalArgumentException");
@@ -1417,7 +1421,7 @@ public class OssPathHistoryPointTest {
         testPathHistoryPoint.setHeading(testHeading);
         
         try {
-           BigDecimal actualValue = OssPathHistoryPoint
+           OssPathHistoryPoint
                    .genericPathHistoryPoint(testPathHistoryPoint)
                    .getHeading();
            fail("Expected IllegalArgumentException");
@@ -1448,13 +1452,26 @@ public class OssPathHistoryPointTest {
         testPathHistoryPoint.setHeading(testHeading);
         
         try {
-           BigDecimal actualValue = OssPathHistoryPoint
+           OssPathHistoryPoint
                    .genericPathHistoryPoint(testPathHistoryPoint)
                    .getHeading();
            fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
         }  
+    }
+    
+    @Test
+    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<OssPathHistoryPoint > constructor = OssPathHistoryPoint.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+        constructor.newInstance();
+        fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+        assertEquals(InvocationTargetException.class, e.getClass());
+      }
     }
 
 }

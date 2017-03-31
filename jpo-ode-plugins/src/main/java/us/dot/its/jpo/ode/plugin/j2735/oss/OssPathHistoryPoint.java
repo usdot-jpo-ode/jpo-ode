@@ -7,7 +7,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistoryPoint;
 
 public class OssPathHistoryPoint {
     
-    private OssPathHistoryPoint() {}
+    private OssPathHistoryPoint() {
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735PathHistoryPoint genericPathHistoryPoint(PathHistoryPoint pathHistoryPoint) {
 

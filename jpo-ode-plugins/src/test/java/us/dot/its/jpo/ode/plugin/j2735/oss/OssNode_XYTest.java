@@ -2,6 +2,9 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 
 import org.junit.Test;
@@ -176,7 +179,7 @@ public class OssNode_XYTest {
         Node_XY_24b testNode = new Node_XY_24b(testOffsetX, testOffsetY);
         
         try {
-            J2735Node_XY actualNode = OssNode_XY.genericNode_XY(testNode);
+            OssNode_XY.genericNode_XY(testNode);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -198,7 +201,7 @@ public class OssNode_XYTest {
         Node_XY_24b testNode = new Node_XY_24b(testOffsetX, testOffsetY);
         
         try {
-            J2735Node_XY actualNode = OssNode_XY.genericNode_XY(testNode);
+            OssNode_XY.genericNode_XY(testNode);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -219,7 +222,7 @@ public class OssNode_XYTest {
         Node_XY_24b testNode = new Node_XY_24b(testOffsetX, testOffsetY);
         
         try {
-            J2735Node_XY actualNode = OssNode_XY.genericNode_XY(testNode);
+            OssNode_XY.genericNode_XY(testNode);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -240,12 +243,24 @@ public class OssNode_XYTest {
         Node_XY_24b testNode = new Node_XY_24b(testOffsetX, testOffsetY);
         
         try {
-            J2735Node_XY actualNode = OssNode_XY.genericNode_XY(testNode);
+            OssNode_XY.genericNode_XY(testNode);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
         }
     }
-
+    
+    @Test
+    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<OssNode_XY> constructor = OssNode_XY.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+        constructor.newInstance();
+        fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+        assertEquals(InvocationTargetException.class, e.getClass());
+      }
+    }
 
 }

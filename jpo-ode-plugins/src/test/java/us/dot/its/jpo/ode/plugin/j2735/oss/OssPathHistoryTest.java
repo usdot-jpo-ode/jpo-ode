@@ -3,12 +3,14 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.Elevation;
@@ -24,7 +26,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.TimeConfidence;
 import us.dot.its.jpo.ode.j2735.dsrc.TimeOffset;
 import us.dot.its.jpo.ode.j2735.dsrc.VertOffset_B12;
 import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistory;
-import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistoryPoint;
+
 
 /**
  * -- Summary --
@@ -157,5 +159,18 @@ public class OssPathHistoryTest {
             }
         }
         
+    }
+    
+    @Test
+    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<OssPathHistory> constructor = OssPathHistory.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+        constructor.newInstance();
+        fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+        assertEquals(InvocationTargetException.class, e.getClass());
+      }
     }
 }

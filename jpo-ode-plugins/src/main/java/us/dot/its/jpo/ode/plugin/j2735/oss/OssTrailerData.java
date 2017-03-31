@@ -9,6 +9,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735TrailerData;
 public class OssTrailerData {
 
     private OssTrailerData() {
+       throw new UnsupportedOperationException();
     }
 
     public static J2735TrailerData genericTrailerData(TrailerData trailers) {
