@@ -18,7 +18,9 @@ public class OssWeatherReport {
     private static final Integer ROAD_FRICTION_LOWER_BOUND = 0;
     private static final Integer ROAD_FRICTION_UPPER_BOUND = 50;
     
-    private OssWeatherReport() {}
+    private OssWeatherReport() {
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735WeatherReport genericWeatherReport(WeatherReport weatherReport) {
         J2735WeatherReport gwr = new J2735WeatherReport();

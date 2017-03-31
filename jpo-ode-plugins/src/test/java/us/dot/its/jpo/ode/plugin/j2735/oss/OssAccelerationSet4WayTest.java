@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 
 import org.junit.Test;
@@ -525,6 +528,19 @@ public class OssAccelerationSet4WayTest {
             assertTrue(e.getClass().equals(IllegalArgumentException.class));
         }
 
+    }
+    
+    @Test
+    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<OssAccelerationSet4Way> constructor = OssAccelerationSet4Way.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+        constructor.newInstance();
+        fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+        assertEquals(InvocationTargetException.class, e.getClass());
+      }
     }
 
 }

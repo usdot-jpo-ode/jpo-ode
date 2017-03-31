@@ -7,7 +7,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735PathPrediction;
 
 public class OssPathPrediction {
     
-    private OssPathPrediction() {}
+    private OssPathPrediction() {
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735PathPrediction genericPathPrediction(PathPrediction pathPrediction) {
         J2735PathPrediction pp = new J2735PathPrediction();

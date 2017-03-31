@@ -5,7 +5,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735DisabledVehicle;
 
 public class OssDisabledVehicle {
     
-    private OssDisabledVehicle() {}
+    private OssDisabledVehicle() {
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735DisabledVehicle genericDisabledVehicle(DisabledVehicle status) {
         J2735DisabledVehicle gstatus = new J2735DisabledVehicle();

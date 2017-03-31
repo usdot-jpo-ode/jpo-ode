@@ -8,7 +8,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735SpeedProfile;
 
 public class OssSpeedProfile {
 
-    private OssSpeedProfile() {}
+    private OssSpeedProfile() {
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735SpeedProfile genericSpeedProfile(SpeedProfile speedProfile) {
         J2735SpeedProfile sp = new J2735SpeedProfile();

@@ -10,7 +10,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistoryPoint;
 
 public class OssPathHistoryPointList {
     
-    private OssPathHistoryPointList() {}
+    private OssPathHistoryPointList() {
+       throw new UnsupportedOperationException();
+    }
 
     public static List<J2735PathHistoryPoint> genericPathHistoryPointList(PathHistoryPointList crumbData) {
 

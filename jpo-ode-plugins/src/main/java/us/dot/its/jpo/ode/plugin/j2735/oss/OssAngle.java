@@ -6,7 +6,9 @@ import us.dot.its.jpo.ode.j2735.dsrc.Angle;
 
 public class OssAngle {
     
-    private OssAngle() {}
+    private OssAngle() {
+       throw new UnsupportedOperationException();
+    }
 
     public static BigDecimal genericAngle(Angle angle) {
 

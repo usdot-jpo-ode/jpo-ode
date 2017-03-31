@@ -2,6 +2,10 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.itis.GenericLocations;
@@ -100,6 +104,19 @@ public class OssNamedNumberTest {
         assertEquals(expectedName, testNamedNumberByValue.getName());
         assertEquals(expectedValue, testNamedNumberByName.getValue());
 
+    }
+    
+    @Test
+    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<OssNamedNumber> constructor = OssNamedNumber.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+        constructor.newInstance();
+        fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+        assertEquals(InvocationTargetException.class, e.getClass());
+      }
     }
 
 }

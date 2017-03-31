@@ -20,5 +20,9 @@ public class OssGeoRegion {
             OssPosition3D.position3D(geoRegion.getSeCorner()));
       
    }
+   
+   private OssGeoRegion() {
+      throw new UnsupportedOperationException();
+   }
 
 }
