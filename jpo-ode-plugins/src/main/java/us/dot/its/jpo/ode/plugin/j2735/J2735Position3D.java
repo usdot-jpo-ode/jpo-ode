@@ -18,14 +18,24 @@ package us.dot.its.jpo.ode.plugin.j2735;
 
 import java.math.BigDecimal;
 
+import us.dot.its.jpo.ode.j2735.dsrc.Elevation;
+import us.dot.its.jpo.ode.j2735.dsrc.Latitude;
+import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
+import us.dot.its.jpo.ode.j2735.dsrc.Position3D;
+import us.dot.its.jpo.ode.j2735.dsrc.Position3D.Regional;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssPosition3D;
 
 public class J2735Position3D extends Asn1Object {
-	private static final long serialVersionUID = 1L;
-   
-   private BigDecimal latitude;  // in degrees
+   private static final long serialVersionUID = 1L;
+
+   private BigDecimal latitude; // in degrees
    private BigDecimal longitude; // in degrees
    private BigDecimal elevation; // in meters
+
+   public J2735Position3D() {
+      super();
+   }
 
    public J2735Position3D(BigDecimal latitude, BigDecimal longitude, BigDecimal elevation) {
       super();
@@ -35,39 +45,11 @@ public class J2735Position3D extends Asn1Object {
    }
 
    public J2735Position3D(Long lat, Long lon, Long elev) {
-      // private OdePosition3D position;
-      //    Position3D ::=  SEQUENCE {
-      //       lat         Latitude,   -- in 1/10th micro degrees
-      //       long        Longitude,  -- in 1/10th micro degrees
-      //       elevation   Elevation   OPTIONAL  
-      //       }
-      //Latitude ::= INTEGER (-900000000..900000001)  
-      //      -- LSB = 1/10 micro degree
-      //      -- Providing a range of plus-minus 90 degrees
-      //Longitude ::= INTEGER (-1800000000..1800000001)  
-      //      -- LSB = 1/10 micro degree
-      //      -- Providing a range of plus-minus 180 degrees
-      // Elevation ::= OCTET STRING (SIZE(2))
-      // -- 1 decimeter LSB (10 cm) 
-      // -- Encode elevations from 0 to 6143.9 meters 
-      // -- above the reference ellipsoid as 0x0000 to 0xEFFF.  
-      // -- Encode elevations from -409.5 to -0.1 meters, 
-      // -- i.e. below the reference ellipsoid, as 0xF001 to 0xFFFF
-      // -- unknown as 0xF000
-      
-     setLatitude(lat != null ? BigDecimal.valueOf(lat, 7) : null);
-     setLongitude(lon != null ? BigDecimal.valueOf(lon, 7) : null);
-     if (elev != null) {
-        if (elev == 0xF000) {
-           setElevation(null);
-        } else if (elev >= 0x0000 && elev <= 0xEFFF) {
-           setElevation(BigDecimal.valueOf(elev, 1));
-        } else {
-           setElevation(BigDecimal.valueOf(-elev, 1));
-        }
-     } else {
-        setElevation(null);
-     }
+      J2735Position3D gpos = OssPosition3D.geneticPosition3D(
+            new Position3D(new Latitude(lat), new Longitude(lon), new Elevation(elev), new Regional()));
+      this.latitude = gpos.latitude;
+      this.longitude = gpos.longitude;
+      this.elevation = gpos.elevation;
    }
 
    public BigDecimal getLatitude() {
@@ -98,11 +80,9 @@ public class J2735Position3D extends Asn1Object {
    public int hashCode() {
       final int prime = 31;
       int result = 1;
-      result = prime * result
-            + ((elevation == null) ? 0 : elevation.hashCode());
+      result = prime * result + ((elevation == null) ? 0 : elevation.hashCode());
       result = prime * result + ((latitude == null) ? 0 : latitude.hashCode());
-      result = prime * result
-            + ((longitude == null) ? 0 : longitude.hashCode());
+      result = prime * result + ((longitude == null) ? 0 : longitude.hashCode());
       return result;
    }
 

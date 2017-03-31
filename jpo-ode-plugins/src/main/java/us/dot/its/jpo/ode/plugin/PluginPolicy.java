@@ -33,14 +33,15 @@ public class PluginPolicy extends Policy {
 
 	/**
 	 * Returns {@link AllPermission} for any code sources that do not end in
-	 * â€œ/rogue.jarâ€� and an empty set of permissions for code sources that do end
-	 * in â€œ/rogue.jarâ€�, denying access to all local resources to the rogue
+	 * rogue.jar and an empty set of permissions for code sources that do end
+	 * in rogue.jar, denying access to all local resources to the rogue
 	 * plugin.
 	 * 
 	 * @param codeSource
 	 *            The code source to get the permissiosn for
 	 * @return The permissions for the given code source
 	 */
+	@Override
 	public PermissionCollection getPermissions(CodeSource codeSource) {
 		Permissions p = new Permissions();
 		Certificate[] certificates = codeSource.getCertificates();
@@ -54,11 +55,4 @@ public class PluginPolicy extends Policy {
 		
 		return p;
 	}
-
-	/**
-	 * Does nothing.
-	 */
-	public void refresh() {
-	}
-
 }

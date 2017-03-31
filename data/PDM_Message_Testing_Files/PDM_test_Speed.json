@@ -1,0 +1,40 @@
+{
+  "ode": {
+    "version": 2
+  },
+  "pdm": {
+    "sampleStart": "200",
+    "sampleEnd": "220",
+    "directions": "32678",
+    "termChoice": "2",
+    "termTime": "900",
+    "termDistance": "50",
+    "snapshotChoice": "2",
+    "minSnapshotTime": "15",
+    "maxSnapshotTime": "20",
+    "minSnapshotDistance": null,
+    "maxSnapshotDistance": null,
+    "snapshotMinSpeed": "15",
+    "snapshotMaxSpeed": "20",
+    "txInterval": "45",
+    "vehicleStatusRequestList": [
+      {
+        "tag": "0",
+        "subTag": "1",
+        "lessThenValue": "5",
+        "moreThenValue": "17",
+        "sendAll": "0",
+        "status": "1"
+      }
+    ]
+  },
+  "rsus": [
+    {
+      "rsuTarget": "127.0.0.1",
+      "rsuUsername": "user",
+      "rsuPassword": "password",
+      "rsuRetries": "1",
+      "rsuTimeout": "2000"
+    }
+  ]
+}

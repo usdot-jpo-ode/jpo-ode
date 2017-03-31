@@ -1,0 +1,38 @@
+version: '2'
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+  kafka:
+    build: ./docker/kafka
+    ports:
+      - "9092:9092"
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      ZK: ${DOCKER_HOST_IP}:2181
+      KAFKA_ADVERTISED_HOST_NAME: ${DOCKER_HOST_IP}
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_DELETE_TOPIC_ENABLED: "true"
+      KAFKA_CLEANUP_POLICY: "delete" # delete old logs
+      KAFKA_LOG_RETENTION_HOURS: 48
+      KAFKA_RETENTION_MS: 172800000  # delete old logs after 2 days
+      KAFKA_SEGMENT_MS: 172800000    # roll segment logs every 2 days. 
+                                     # This configuration controls the period of time after 
+                                     # which Kafka will force the log to roll even if the segment
+                                     # file isn't full to ensure that retention can delete or compact old data.
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  ode:
+    build: .
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      ZK: ${DOCKER_HOST_IP}:2181
+    depends_on:
+      - kafka
+    links:
+      - kafka

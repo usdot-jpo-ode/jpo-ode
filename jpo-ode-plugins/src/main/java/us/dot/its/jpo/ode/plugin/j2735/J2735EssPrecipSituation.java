@@ -1,22 +1,20 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
-
 public enum J2735EssPrecipSituation {
-	other,
-	unknown,
-	noPrecipitation,
-	unidentifiedSlight,
-	unidentifiedModerate,
-	unidentifiedHeavy,
-	snowSlight,
-	snowModerate,
-	snowHeavy,
-	rainSlight,
-	rainModerate,
-	rainHeavy,
-	frozenPrecipitationSlight,
-	frozenPrecipitationModerate,
-	frozenPrecipitationHeavy
+	OTHER,
+	UNKNOWN,
+	NOPRECIPITATION,
+	UNIDENTIFIEDSLIGHT,
+	UNIDENTIFIEDMODERATE,
+	UNIDENTIFIEDHEAVY,
+	SNOWSLIGHT,
+	SNOWMODERATE,
+	SNOWHEAVY,
+	RAINSLIGHT,
+	RAINMODERATE,
+	RAINHEAVY,
+	FROZENPRECIPITATIONSLIGHT,
+	FROZENPRECIPITATIONMODERATE,
+	FROZENPRECIPITATIONHEAVY
 
 }

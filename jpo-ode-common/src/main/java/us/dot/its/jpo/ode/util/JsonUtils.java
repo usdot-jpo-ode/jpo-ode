@@ -26,17 +26,27 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class JsonUtils {
+    
+    private JsonUtils() {}
    
-   private static Gson gson = new Gson();
-   private static ObjectMapper mapper = new ObjectMapper();
+   private static Gson gsonCompact;
+   private static Gson gsonVerbose;
+   private static ObjectMapper mapper;
    
-   public static String toJson(Object o) {
+   static {
+      gsonCompact = new GsonBuilder().create();
+      gsonVerbose = new GsonBuilder().serializeNulls().create();
+      mapper = new ObjectMapper();
+   }
+
+   public static String toJson(Object o, boolean verbose) {
 
       // convert java object to JSON format,
       // and returned as JSON formatted string
-      return gson.toJson(o);
+      return verbose ? gsonVerbose.toJson(o) : gsonCompact.toJson(o);
 //      String json = null;
 //      try {
 //         json = mapper.writeValueAsString(o);
@@ -47,14 +57,14 @@ public class JsonUtils {
    }
 
    public static Object fromJson(String s, Class<?> clazz) {
-      return gson.fromJson(s, clazz);
-//      Object o = null;
-//      try {
-//         o = mapper.readValue(s, clazz);
-//      } catch (IOException e) {
-//         e.printStackTrace();
-//      }
-//      return o;
+      return gsonCompact.fromJson(s, clazz);
+      /*Object o = null;
+      try {
+         o = mapper.readValue(s, clazz);
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+      return o;*/
    }
    
 // This method does not seem to work so commenting it out.

@@ -12,48 +12,78 @@ import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class OdePluginImpl implements Plugin {
 
-	private List<Class<?>> classes = new ArrayList<Class<?>>();
+    private static final Logger logger = LoggerFactory.getLogger(OdePluginImpl.class);
 
-	@Override
-	public void load(Properties properties) throws ClassNotFoundException, IOException {
-		Policy.setPolicy(new PluginPolicy());
-		System.setSecurityManager(new SecurityManager());
+    public static class OdePluginException extends Exception {
 
-		File plugins = new File("plugins");
-		
-		if (plugins.exists() && plugins.isDirectory()) {
-			File[] files = plugins.listFiles();
-			
-			for (File pluginJarFile : files) {
-				loadAllClasses(pluginJarFile);
-			}
-		}
-	}
-	
-	private void loadAllClasses (File file) throws IOException, ClassNotFoundException {
-		JarFile jarFile = new JarFile(file);
-		Enumeration<JarEntry> e = jarFile.entries();
+        private static final long serialVersionUID = 1L;
 
-		URLClassLoader loader = URLClassLoader.newInstance(new URL[] { file.toURI().toURL() });
-		
-		while (e.hasMoreElements()) {
-		    JarEntry je = e.nextElement();
-		    if(je.isDirectory() || !je.getName().endsWith(".class")){
-		        continue;
-		    }
-		    // -6 because of .class
-		    String className = je.getName().substring(0,je.getName().length()-6);
-		    className = className.replace('/', '.');
-		    classes.add(loader.loadClass(className));
-		}
-		jarFile.close();
-	}
+        public OdePluginException(String string, Exception e) {
+            super(string, e);
+        }
 
-	public List<Class<?>> getClasses() {
-		return classes;
-	}
+    }
 
+    private List<Class<?>> classes = new ArrayList<>();
+
+    @Override
+    public void load(Properties properties) throws OdePluginException {
+        Policy.setPolicy(new PluginPolicy());
+        System.setSecurityManager(new SecurityManager());
+
+        File plugins = new File("plugins");
+
+        if (plugins.exists() && plugins.isDirectory()) {
+            File[] files = plugins.listFiles();
+
+            for (File pluginJarFile : files) {
+                loadAllClasses(pluginJarFile);
+            }
+        }
+    }
+
+    private void loadAllClasses(File file) throws OdePluginException {
+
+        URLClassLoader loader = null;
+        try (JarFile jarFile = new JarFile(file)) {
+
+            Enumeration<JarEntry> e = jarFile.entries();
+
+            loader = URLClassLoader.newInstance(new URL[] { file.toURI().toURL() });
+
+            while (e.hasMoreElements()) {
+                JarEntry je = e.nextElement();
+                if (je.isDirectory() || !je.getName().endsWith(".class")) {
+                    continue;
+                }
+                // -6 because of .class
+                String className = je.getName().substring(0, je.getName().length() - 6);
+                className = className.replace('/', '.');
+                classes.add(loader.loadClass(className));
+
+            }
+            loader.close();
+            jarFile.close();
+
+        } catch (Exception e) {
+            throw new OdePluginException("Error loading plugins", e);
+        } finally {
+            if (null != loader)
+                try {
+                    loader.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing URLClassLoader: {}", e);
+                }
+        }
+    }
+
+    public List<Class<?>> getClasses() {
+        return classes;
+    }
 
 }

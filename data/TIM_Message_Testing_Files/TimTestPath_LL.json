@@ -1,0 +1,122 @@
+{
+  "ode": {
+    "version": 2
+  },
+  "tim": {
+    "msgCnt": "13",
+    "timeStamp": "2017-03-13T01:07:11-05:00",
+    "packetID": "1",
+    "urlB": "null",
+    "dataframes": [
+      {
+        "sspTimRights": "0",
+        "frameType": "0",
+        "msgID": "RoadSignID",
+        "position": {
+          "latitude": "41.678473",
+          "longitude": "-108.782775",
+          "elevation": "917.1432"
+        },
+        "viewAngle": "1010101010101010",
+        "mutcd": "5",
+        "crc": "6",
+        "startDateTime": "2017-12-01T17:47:11-05:00",
+        "durationTime": "835",
+        "priority": "2",
+        "sspLocationRights": "0",
+        "regions": [
+          {
+            "name": "SpeedLimit",
+            "regulatorID": "23",
+            "segmentID": "33",
+            "anchorPosition": {
+              "latitude": "41.678473",
+              "longitude": "-108.782775",
+              "elevation": "917.1432"
+            },
+            "laneWidth": "7",
+            "directionality": "3",
+            "closedPath": "false",
+            "direction": "1000100010001000",
+            "description": "path",
+            "path": {
+              "scale": "1",
+              "type": "ll",
+              "nodes": [
+                {
+                  "delta": "node-LL2",
+                  "nodeLong": "2",
+                  "nodeLat": "2",
+                  "attributes": {
+                    "localNodes": [
+                      {
+                        "type": "1"
+                      }
+                    ],
+                    "disabledLists": [],
+                    "enabledLists": [],
+                    "dataLists": []
+                  }
+                },
+                {
+                  "delta": "node-LL1",
+                  "nodeLat": "1",
+                  "nodeLong": "1",
+                  "attributes": {
+                    "localNodes": [
+                      {
+                        "type": "1"
+                      }
+                    ],
+                    "disabledLists": [],
+                    "enabledLists": [],
+                    "dataLists": []
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "sspMsgTypes": "2",
+        "sspMsgContent": "3",
+        "content": "Advisory",
+        "items": [
+          "250"
+        ],
+        "url": "null"
+      }
+    ]
+  },
+  "rsus": [
+    {
+      "rsuTarget": "127.0.0.1",
+      "rsuUsername": "user",
+      "rsuPassword": "password",
+      "rsuRetries": "1",
+      "rsuTimeout": "2000"
+    }
+  ],
+  "snmp": {
+    "rsuid": "8300",
+    "msgid": "31",
+    "mode": "1",
+    "channel": "178",
+    "interval": "1",
+    "deliverystart": "2017-12-01T17:47:11-05:00",
+    "deliverystop": "2017-12-01T17:47:11-05:15",
+    "enable": "1",
+    "status": "4"
+  },
+  "sdw": {
+    "serviceRegion": {
+      "nwCorner": {
+        "latitude": "44.998459",
+        "longitude": "-111.040817"
+      },
+      "seCorner": {
+        "latitude": "41.104674",
+        "longitude": "-104.111312"
+      }
+    }
+  }
+}

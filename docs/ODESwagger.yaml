@@ -1,0 +1,596 @@
+swagger: '2.0'
+info:
+  title: ODE Interface Guide
+  description: Process to use different user functionality within the Operational Data Environment
+  version: "0.0.1"
+# the domain of the service
+host: api.uber.com
+# array of all schemes that your API supports
+schemes:
+  - https
+# will be prefixed to all paths
+basePath: /v1
+produces:
+  - application/json
+paths:
+  /tim:
+    post:
+      summary: TIM Interface
+      operationId: Send TIM message
+      description: |
+        The TIM endpoint returns a constructed TravelerInformation message
+      parameters:
+        - name: TravelerMessage
+          in: body
+          description: Number of messgages.
+          required: true
+          schema: 
+            $ref: '#/definitions/J2735MessageTraveler'
+         
+      tags:
+        - TIM
+      responses:
+        200:
+          description: An array of TravelerInformation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/tim'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /RSU SNMP:
+    get:
+      summary: RSU SNMP Query
+      operationId: Send SNMP Messages
+      description: Check the health and status of RSU devices through SNMP communication
+      parameters:
+        - name: IP
+          in: query
+          description: IP address of an RSU
+          required: true
+          type: number
+          format: string
+        - name: OID
+          in: query
+          description: OID of the attribute you wish to check on
+          required: true
+          type: number
+          format: string
+      tags:
+        - SNMP
+      responses:
+        200:
+          description: OID responses
+        400:
+          description: Value input error
+  /pdm:
+    post:
+      summary: PDM Interface
+      operationId: Send pdm message
+      description: |
+        The PDM endpoint returns a constructed PDM message
+      parameters:
+        - name: ProbeDataManagement
+          in: body
+          description: PDM Message
+          required: true
+          schema: 
+            $ref: '#/definitions/J2735ProbeDataManagement'
+      tags:
+        - PDM
+      responses:
+        200:
+          description: A list of RSUs with a success status, and 0 as the error status code.
+        400:
+          description: If RSU responds but deposit fails, then it returns snmp error status. If RSU does not respond, then it returns empty response error.
+definitions:
+  tim:
+    type: object
+    properties:
+      msgCnt:
+        type: integer 
+      timestamp:
+        type: integer
+      packetId: 
+        type: integer
+      urlB: 
+        type: string
+        description: UrlB
+      dataFrames: 
+        type: array
+        items: 
+          $ref: '#/definitions/TravelerDataFrame'
+     
+      snmp: 
+        $ref: '#/definitions/SNMP'
+      sdw:
+        $ref: '#/definitions/SDW'
+  J2735MessageTraveler:
+    type: object
+    properties:
+      tim:
+        $ref: '#/definitions/tim'
+      rsus:
+        type: array
+        items:
+           $ref: '#/definitions/RSU'
+      snmp: 
+        $ref: '#/definitions/SNMP'
+      sdw:
+        $ref: '#/definitions/SDW'
+  J2735ProbeDataManagement:
+    type: object
+    properties:
+      ode:
+        $ref: '#/definitions/Ode'
+      pdm:
+        $ref: '#/definitions/PDM'
+      rsuList:
+        type: array
+        items:
+           $ref: '#/definitions/RSU'
+  Ode:
+    type: object
+    properties:
+      version:
+        type: integer
+  TravelerDataFrameHeader:
+    type: object
+    required : [sspindex, travelerInfoType, SignPriority, MinuteOfTheYear]
+    properties:
+      sspindex:
+        type: string
+        description: The SSP index is used to control the data elements that follow the occurrence of the index. The index relates back to the SSP contents in the CERT used to declare what content is allowed by that CERT. In the absence of a matching index in the message sender’s CERT, the message contents are not valid.
+      travelerInfoType:
+        type: string
+        description: The DE_TravelerInfoType data element provides the type of message to follow in the rest of the message frame structure. It is used in the traveler information message, which may contain several such structures.
+      msgId:
+        $ref: '#/definitions/MsgID'
+      DYear:
+        type: integer
+        description: The DSRC year consists of integer values from zero to 4095 representing the year according to the Gregorian calendar date system. The value of zero shall represent an unknown value.
+      MinuteOfTheYear:
+        type: integer
+        description: The DE_MinuteOfTheYear data element expresses the number of elapsed minutes of the current year in the time system being used (typically UTC time). It is typically used to provide a longer range time stamp indicating when a message was created. Taken together with the DSecond data element, it provides a range of one full year with a resolution of 1mSecond.
+      MinutesDuration:
+        type: string
+        description: The duration, in units of whole minutes, that a object persists for. A value of 32000 means that the object persists forever. The range 0..32000 provides for about 22.2 days of maximum duration.
+      SignPriority:
+        type: integer
+        description: The relative importance of the sign, on a scale from zero (least important) to seven (most important).
+  MsgID:
+    type: object
+    properties:
+      FurtherInfoID:
+        type: string
+      RoadSignID:
+        $ref: '#/definitions/RoadSignID'
+  RoadSignID:
+    type: object
+    required: [position3D, HeadingSlice, MUTCDCode]
+    properties:
+      position3D: 
+        $ref: '#/definitions/Position3D'
+      HeadingSlice:
+        type: string
+      MUTCDCode:
+        type: string
+      MsgCRC:
+        type: string
+  Position3D:
+    type: object
+    properties:
+      latitude:
+        type: integer
+      longitude: 
+        type: integer
+      elevation:
+        type: integer
+    
+  TravelerDataFrame:
+    type: object
+    required: [sspindex]
+    properties:
+      sspindex: 
+        type: integer
+      frameType: 
+        type: integer
+      msgID: 
+        type: string
+      position:
+        $ref: '#/definitions/J2735Position3D'
+      viewAngle: 
+        type: string
+      mutcd: 
+        type: integer
+      crc:
+        type: integer
+      startDateTime: 
+        type: string
+      durationTime:
+        type: integer
+      priority: 
+        type: integer
+      sspLocationRights: 
+        type: integer
+      sspMsgTypes:
+        type: integer
+      sspMsgContent:
+        type: integer
+      content: 
+        type: string
+      items: 
+        type: array
+        items:
+          $ref: '#/definitions/ITISObj'
+      region:
+        $ref: '#/definitions/Region'
+  Region:
+    type: object
+    properties: 
+      name: 
+        type: string
+      regulatorID":
+        type: integer
+      segmentId:
+        type: integer
+      anchor_lat:
+        type: integer
+      anchor_long:
+        type: integer
+      anchor_eleveation:
+        type: integer
+      laneWidth:
+        type: integer
+      directionality:
+        type: integer
+      closedPath:
+        type: string
+      direction: 
+        type: string
+      description:
+        type: string
+      path:
+        $ref: '#/definitions/Path'
+      oldRegion:
+        $ref: '#/definitions/OldRegion'
+      geometry:
+        $ref: '#/definitions/Geometry'
+      
+      content: 
+        type: string
+      itemss:
+        type: array
+        items:
+          type: integer
+  ComputedLane:
+    type: object
+    properties:
+      laneID: 
+        type: integer
+      offsetSmallX:
+        type: integer
+      offsetLargeX:
+        type: integer
+      offsetSmallY:
+        type: integer
+      offsetLargeY:
+        type: integer
+      angle:
+        type: integer
+      xScale:
+        type: integer
+      yScale:
+        type: integer
+      
+  Path:
+    type: object
+    properties:
+      type: 
+        type: string
+      scale: 
+        type: integer
+      nodes:
+        type: array
+        items:
+          $ref: '#/definitions/NodeXY'
+      computedLane:
+        $ref: '#/definitions/ComputedLane'
+          
+  Attribute:
+    type: object
+    properties:
+      localNodes:
+        type: array
+        items:
+          type: integer
+      disabledLists: 
+        type: array
+        items:
+          type: integer
+      enabledLists: 
+        type: array
+        items:
+          type: integer
+      dataLists:
+        type: array
+        items:
+          $ref: '#/definitions/DataList'
+      dWidth:
+        type: integer
+      dEleveation:
+        type: integer
+  DataList:
+    type: object
+    properties:
+      pathEndpointAngle:
+        type: integer
+      laneCrownCenter:
+        type: integer
+      laneCrownRight:
+        type: integer
+      laneCrownLeft:
+        type: integer
+      laneAngle:
+        type: integer
+      speedLimits:
+        $ref: '#/definitions/SpeedLimit'
+  SpeedLimit:
+    type: object
+    properties:
+      type:
+        type: integer
+      velocity:
+        type: integer
+      
+  Geometry:
+    type: object
+    properties: 
+      direction: 
+        type: string
+      extent:
+        type: integer
+      laneWidth:
+        type: integer
+      circle:
+        $ref: '#/definitions/Circle'
+      
+  OldRegion:
+    type: object
+    properties:
+      direction:
+        type: string
+      extent: 
+        type: integer
+      area: 
+        type: string
+      regionPoint:
+        $ref: '#/definitions/RegionPoint'
+      circle:
+        $ref: '#/definitions/Circle'
+      shapePoint:
+        $ref: '#/definitions/ShapePoint'
+  Circle:
+    type: object
+    properties:
+      position:
+        $ref: '#/definitions/J2735Position3D'
+      radius:
+        type: integer
+      units:
+        type: integer
+  ShapePoint:
+    type: object
+    properties:
+      position:
+        $ref: '#/definitions/J2735Position3D'
+      directionality:
+        type: integer
+      nodeType:
+        type: string
+      computedLane:
+        $ref: '#/definitions/ComputedLane'
+      nodexy:
+        type: array
+        items:
+          $ref: "#/definitions/NodeXY"
+  RegionPoint:
+    type: object
+    properties:
+      position:
+        $ref: '#/definitions/J2735Position3D'
+      scale:
+        type: integer
+      regionList:
+        type: array
+        items:
+          $ref: '#/definitions/RegionList'
+  RegionList:
+    type: object
+    properties:
+      xOffset: 
+        type: integer
+      yOffset: 
+        type: integer
+      zOffset:
+        type: integer
+  J2735Position3D:
+    type: object
+    properties:
+      latitude:
+        type: number
+      longitude:
+        type: number
+      elevation:
+        type: integer
+  NodeXY:
+    type: object
+    properties:
+      delta:
+        type: string
+      nodeLat:
+        type: integer
+      nodeLong:
+        type: integer
+      x:
+        type: integer
+      y: 
+        type: integer
+      attributes:
+        $ref: '#/definitions/Attribute'
+
+  TravelerDataFrameContent:
+    type: object
+    properties: 
+      sspMsgRights1:
+        type: integer
+      sspMsgRights2:
+        type: integer
+      content: 
+        $ref: '#/definitions/ContentType'
+  ContentType:
+    type: object
+    properties:
+      advisory: 
+        type: array
+        items: 
+            $ref: '#/definitions/ITISObj'
+      workZone: 
+        type: array
+        items: 
+            $ref: '#/definitions/ITISObj'
+      genericSign: 
+        type: array
+        items: 
+            $ref: '#/definitions/ITISObj'
+      speedLimit: 
+        type: array
+        items: 
+            $ref: '#/definitions/ITISObj'
+      exitService: 
+        type: array
+        items: 
+            $ref: '#/definitions/ITISObj'
+      
+      
+  ITISObj:
+    type: object
+    properties:
+      ITISCodes:
+        type: integer
+      ITIStext:
+        type: string
+  SNMP:
+    type: object
+    properties: 
+      rsuid:
+        type: string
+      msgid:
+        type: string
+      mode: 
+        type: string
+      channel: 
+        type: string
+      interval:
+        type: string
+      deliverystart:
+        type: string
+      deliverystop:
+        type: string
+      enable:
+        type: string
+      status:
+        type: string
+  RSU:
+    type: object
+    properties: 
+      rsuTarget:
+        type: string
+      rsuUsername:
+        type: string
+      rsuPassword: 
+        type: string
+      rsuRetries:
+        type: string
+      rsuTimeout: 
+        type: string 
+  SDW:
+    type: object
+    properties:
+      nwCorner:
+        type: object
+        properties:
+          latitude:
+            type: string
+          longitude:
+            type: string
+      seCorner:
+        type: object
+        properties:
+          latitude:
+            type: string
+          longitude:
+            type: string
+  
+  PDM:
+    type: object
+    properties:
+      sampleStart:
+        type: string
+      sampleEnd:
+        type: string
+      directions:
+        type: string
+      termChoice:
+        type: string
+      termTime:
+        type: string
+      termDistance:
+        type: string
+      snapshotChoice:
+        type: string
+      minSnapshotTime:
+        type: string
+      maxSnapshotTime:
+        type: string
+      minSnapshotDistance:
+        type: string
+      maxSnapshotDistance:
+        type: string
+      snapshotMinSpeed:
+        type: string
+      snapshotMaxSpeed:
+        type: string
+      txInterval:
+        type: string
+      vehicleStatusRequestList:
+        type: array
+        items:
+          $ref: '#/definitions/VehicleStatusRequest'
+  VehicleStatusRequest:
+    type: object
+    properties:
+      tag:
+        type: string
+      subTag:
+        type: string
+      lessThenValue:
+        type: string
+      moreThenValue:
+        type: string
+      sendAll:
+        type: string
+      status:
+        type: string
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message: 
+        type: string
+      fields:
+        type: string

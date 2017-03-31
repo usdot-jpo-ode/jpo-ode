@@ -22,15 +22,18 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
+
 public enum OdeDataType {
    Status("status", OdeStatus.class),
    Control("control", OdeControlData.class),
    Authorization("auth", OdeAuthorization.class),
+   BasicSafetyMessage("bsm", J2735Bsm.class),
+   TravelerInformationMessage("tim", J2735TravelerInputData.class),
    AggregateData("agg", OdeAggregateData.class),
-   WeatherData("weather", OdeWeatherData.class),
    AsnBase64("asnbase64", String.class),
    AsnHex("asnhex", String.class),
-   VehicleCount("vehCount", OdeVehicleCount.class),
    OtherData("other", OdeMsgPayload.class), 
    Unknown("unknown", OdeMsgPayload.class);
    
