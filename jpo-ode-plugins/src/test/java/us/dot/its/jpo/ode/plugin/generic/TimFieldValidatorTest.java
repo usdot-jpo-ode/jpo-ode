@@ -8,8 +8,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.time.format.DateTimeParseException;
 
 import org.junit.Test;
 
@@ -2292,26 +2290,6 @@ public class TimFieldValidatorTest {
    }
 
    @Test
-   public void checkMinuteOfYear() {
-
-      try {
-         TimFieldValidator.getMinuteOfTheYear("2017-12-01T17:47:11-05:00");
-      } catch (ParseException e) {
-         fail("Unexpected Exception");
-      }
-   }
-
-   @Test
-   public void checkBadMinuteOfYear() {
-      try {
-         TimFieldValidator.getMinuteOfTheYear("hi");
-         fail("Expected DateTimeParseException");
-      } catch (DateTimeParseException | ParseException e) {
-         assertEquals(DateTimeParseException.class, e.getClass());
-      }
-   }
-
-   @Test
    public void checkLatitudeLower() {
       long lat = (long) -90.0;
       try {
@@ -2392,56 +2370,6 @@ public class TimFieldValidatorTest {
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checknullHeadingSlice() {
-      String str = null;
-      try {
-         TimFieldValidator.getHeadingSlice(str);
-      } catch (RuntimeException e) {
-         fail("Unexpected Exception");
-      }
-   }
-
-   @Test
-   public void checkEmptyHeadingSlice() {
-      String str = "";
-      try {
-         TimFieldValidator.getHeadingSlice(str);
-      } catch (RuntimeException e) {
-         fail("Unexpected Exception");
-      }
-   }
-
-   @Test
-   public void checknullMessageCRC() {
-      String str = null;
-      try {
-         TimFieldValidator.getMsgCrc(str);
-      } catch (RuntimeException e) {
-         fail("Unexpected Exception");
-      }
-   }
-
-   @Test
-   public void checkEmptyMessageCRC() {
-      String str = "";
-      try {
-         TimFieldValidator.getMsgCrc(str);
-      } catch (RuntimeException e) {
-         fail("Unexpected Exception");
-      }
-   }
-
-   @Test
-   public void checkMessageCRC() {
-      String str = "1010101010101010";
-      try {
-         TimFieldValidator.getMsgCrc(str);
-      } catch (RuntimeException e) {
-         fail("Unexpected Exception");
       }
    }
 }

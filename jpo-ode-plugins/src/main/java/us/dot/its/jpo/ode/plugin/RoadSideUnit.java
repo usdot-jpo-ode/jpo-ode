@@ -13,47 +13,48 @@ public class RoadSideUnit {
       private int rsuRetries;
       private int rsuTimeout;
 
-      public String getrsuTarget() {
+      public String getRsuTarget() {
          return rsuTarget;
       }
 
-      public void setrsuTarget(String rsuTarget) {
+      public void setRsuTarget(String rsuTarget) {
          this.rsuTarget = rsuTarget;
       }
 
-      public String getrsuUsername() {
+      public String getRsuUsername() {
          return rsuUsername;
       }
 
-      public void setrsuUsername(String rsuUsername) {
+      public void setRsuUsername(String rsuUsername) {
          this.rsuUsername = rsuUsername;
       }
 
-      public String getrsuPassword() {
+      public String getRsuPassword() {
          return rsuPassword;
       }
 
-      public void setrsuPassword(String rsuPassword) {
+      public void setRsuPassword(String rsuPassword) {
          this.rsuPassword = rsuPassword;
       }
 
-      public int getrsuRetries() {
+      public int getRsuRetries() {
          return rsuRetries;
       }
 
-      public void setrsuRetries(int rsuRetries) {
+      public void setRsuRetries(int rsuRetries) {
          this.rsuRetries = rsuRetries;
       }
 
-      public int getrsuTimeout() {
+      public int getRsuTimeout() {
          return rsuTimeout;
       }
 
-      public void setTimeout(int rsuTimeout) {
+      public void setRsuTimeout(int rsuTimeout) {
          this.rsuTimeout = rsuTimeout;
       }
    }
 
-   private RoadSideUnit() {//NOSONAR
-   }//NOSONAR
+   private RoadSideUnit() {
+      throw new UnsupportedOperationException();
+   }
 }

@@ -34,12 +34,12 @@ public class J2735ProbeDataManagementTest {
         String testTarget = "testTarget123";
 
         RSU testRsu = new RSU();
-        testRsu.setrsuTarget(testTarget);
+        testRsu.setRsuTarget(testTarget);
 
         RSU[] testRsuList = new RSU[] { testRsu };
 
         testJ2735ProbeDataManagement.setRsuList(testRsuList);
-        assertEquals(testTarget, testJ2735ProbeDataManagement.getRsuList()[0].getrsuTarget());
+        assertEquals(testTarget, testJ2735ProbeDataManagement.getRsuList()[0].getRsuTarget());
     }
 
     @Test
