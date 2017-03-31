@@ -10,18 +10,18 @@
   <description>JPO ODE Plugins Library</description>
 
   <parent>
-    <groupId>us.dot.its.jpo.ode</groupId>
+    <groupId>test.us.dot.its.jpo.ode</groupId>
     <artifactId>jpo-ode</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <dependencies>
     <dependency>
-      <groupId>us.dot.its.jpo.ode</groupId>
+      <groupId>test.us.dot.its.jpo.ode</groupId>
       <artifactId>jpo-ode-common</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>us.dot.its.jpo.ode</groupId>
+      <groupId>test.us.dot.its.jpo.ode</groupId>
       <artifactId>j2735</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
