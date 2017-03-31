@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.traveler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.text.ParseException;
@@ -79,6 +80,35 @@ public class TravelerMessageControllerTest {
                EventLogger.logger.info(anyString);
            }
        };
+   }
+   
+   @Test
+   public void nullResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {
+      
+      new Expectations() {
+         {
+            JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
+            result = new TimMessageException("");
+            
+            mockTim.getRsus();
+            result = new RSU[]{mockRsu};
+            
+            ManagerAndControllerServices.createAndSend((TimParameters)any, (SnmpProperties)any);
+            result = mockResponseEvent;
+         }
+      };
+      
+      try {
+         tmc.timMessage("");
+      } catch (Exception e) {
+         assertEquals(TimMessageException.class + ": " , "class " + e.getMessage());
+      }
+      
+      new Verifications() {
+         {
+            EventLogger.logger.info(anyString);
+         }
+      };
    }
 
 }
