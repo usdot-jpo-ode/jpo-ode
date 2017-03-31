@@ -55,6 +55,7 @@ public class TravelerInformationMessage {
       }
    }
 
-   private TravelerInformationMessage() {//NOSONAR
-   }//NOSONAR
+   private TravelerInformationMessage() {
+      throw new UnsupportedOperationException();
+   }
 }

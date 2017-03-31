@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
 import org.junit.Test;
@@ -59,14 +60,18 @@ public class GenericSNMPTest {
       int status = 2;
       testSNMP.setStatus(status);
       assertEquals(status,testSNMP.getStatus());
-      
-      Constructor<GenericSnmp> constructor;
-      try {
-         constructor = GenericSnmp.class.getDeclaredConstructor();
-         assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-      }
-      catch (NoSuchMethodException e) {
-         fail("Unexpected Exception");
-      }
+   }
+   
+   @Test
+   public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+     Constructor<GenericSnmp > constructor = GenericSnmp.class.getDeclaredConstructor();
+     assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+     constructor.setAccessible(true);
+     try {
+       constructor.newInstance();
+       fail("Expected IllegalAccessException.class");
+     } catch (Exception e) {
+       assertEquals(InvocationTargetException.class, e.getClass());
+     }
    }
 }

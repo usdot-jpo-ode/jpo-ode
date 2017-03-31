@@ -90,6 +90,7 @@ public class GenericSnmp {
         }
     }
 
-    private GenericSnmp() {//NOSONAR
-    }//NOSONAR
+    private GenericSnmp() {
+       throw new UnsupportedOperationException();
+    }
 }
