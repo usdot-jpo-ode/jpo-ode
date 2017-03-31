@@ -10,7 +10,7 @@
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
-  <groupId>test.us.dot.its.jpo.ode</groupId>
+  <groupId>usdot.jpo.ode</groupId>
   <artifactId>jpo-ode</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
