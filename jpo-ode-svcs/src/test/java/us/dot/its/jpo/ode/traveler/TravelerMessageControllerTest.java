@@ -89,12 +89,6 @@ public class TravelerMessageControllerTest {
          {
             JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
             result = new TimMessageException("");
-            
-            mockTim.getRsus();
-            result = new RSU[]{mockRsu};
-            
-            ManagerAndControllerServices.createAndSend((TimParameters)any, (SnmpProperties)any);
-            result = mockResponseEvent;
          }
       };
       
