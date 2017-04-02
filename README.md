@@ -95,7 +95,7 @@ travis env set SONAR_SECURITY_TOKEN <key> -pr <user-account>/<repo-name>
 ```
 
 ### Static Code Analysis
-https://sonarqube.com/dashboard/index?id=us.dot.its.jpo.ode%3Ajpo-ode%3Adevelop
+https://sonarqube.com/organizations/usdot-jpo-ode/projects
 
 ## Getting Started
 
