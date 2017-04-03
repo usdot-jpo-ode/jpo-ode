@@ -144,7 +144,7 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
                 if (OVERFLOW == kind) {
                     continue;
                 } else if (ENTRY_MODIFY == kind) {
-                    logger.error("IMPORTER - Notable watch event kind: {}", event.kind());
+                    logger.debug("IMPORTER - Notable watch event kind: {}", event.kind());
 
                     @SuppressWarnings("unchecked")
                     WatchEvent<Path> ev = (WatchEvent<Path>) event;
