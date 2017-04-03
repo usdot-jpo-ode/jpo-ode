@@ -6,7 +6,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735BrakeSystemStatus;
 
 public class OssBrakeSystemStatus {
 
-    private OssBrakeSystemStatus() {}
+    private OssBrakeSystemStatus() {
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735BrakeSystemStatus genericBrakeSystemStatus(BrakeSystemStatus brakesStatus) {
         J2735BrakeSystemStatus genericBrakesStatus = new J2735BrakeSystemStatus();

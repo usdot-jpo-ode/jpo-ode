@@ -8,6 +8,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735NamedNumber;
 public class OssNamedNumber {
 
     private OssNamedNumber() {
+       throw new UnsupportedOperationException();
     }
 
     public static J2735NamedNumber genericGenericLocations(GenericLocations locationDetails) {

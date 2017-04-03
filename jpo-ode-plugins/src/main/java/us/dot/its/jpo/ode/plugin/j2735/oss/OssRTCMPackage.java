@@ -9,7 +9,9 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class OssRTCMPackage {
 
-    private OssRTCMPackage() {}
+    private OssRTCMPackage() {
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735RTCMPackage genericRTCMPackage(RTCMPackage theRTCM) {
         J2735RTCMPackage rtcm = new J2735RTCMPackage();

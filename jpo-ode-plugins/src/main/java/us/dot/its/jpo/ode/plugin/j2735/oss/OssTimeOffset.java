@@ -9,7 +9,9 @@ public class OssTimeOffset {
     private static final Integer TIME_OFFSET_LOWER_BOUND = 1;
     private static final Integer TIME_OFFSET_UPPER_BOUND = 65535;
     
-    private OssTimeOffset() {}
+    private OssTimeOffset() {
+       throw new UnsupportedOperationException();
+    }
 
     public static BigDecimal genericTimeOffset(TimeOffset timeOffset) {
 

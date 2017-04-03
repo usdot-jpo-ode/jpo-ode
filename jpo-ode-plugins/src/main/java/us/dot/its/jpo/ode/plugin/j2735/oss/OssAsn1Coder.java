@@ -36,11 +36,6 @@ public class OssAsn1Coder implements Asn1Plugin {
     }
 
     @Override
-    public Asn1Object decodeUPERBase64(String base64Msg) {
-        return decodeUPERMessageFrameBytes(DatatypeConverter.parseBase64Binary(base64Msg));
-    }
-
-    @Override
     public Asn1Object decodeUPERMessageFrameHex(String hexMsg) {
         return decodeUPERMessageFrameBytes(DatatypeConverter.parseHexBinary(hexMsg));
     }
@@ -103,20 +98,8 @@ public class OssAsn1Coder implements Asn1Plugin {
                 coder.decode(ins, bsm);
                 gbsm = OssBsm.genericBsm(bsm);
             }
-        } catch (DecodeFailedException e) { //NOSONAR
-            AbstractData partialDecodedMessage = e.getDecodedData();
-            if (partialDecodedMessage != null) {
-                logger.error("DECODER - Error, message only partially decoded: {}", 
-                      partialDecodedMessage.toString());
-            } else {
-                logger.debug("DECODER - Ignoring extraneous bytes at the end of the input stream.");
-            }
-        } catch (DecodeNotSupportedException e) {
-            logger.error("DECODER - Error decoding, data does not represent valid message", e);
-        } catch (IOException e) {
-            logger.error("DECODER - Error decoding, general error: {}", e);
-        } catch (OssBsmPart2Exception e) {
-            logger.error("DECODER - Error decoding, unable to parse BSM part 2: {}", e);
+        } catch (Exception e) {
+            handleDecodeException(e);
         }
         
         return gbsm;
@@ -132,24 +115,33 @@ public class OssAsn1Coder implements Asn1Plugin {
                 coder.decode(ins, mf);
                 gmf = OssMessageFrame.genericMessageFrame(mf);
             }
-        } catch (DecodeFailedException e) {//NOSONAR
-            AbstractData partialDecodedMessage = e.getDecodedData();
-            if (partialDecodedMessage != null) {
-                logger.error("DECODER - Error, message only partially decoded: {}", partialDecodedMessage.toString());
-            } else {
-                logger.debug("DECODER - Ignoring extraneous bytes at the end of the input stream.");
-            }
-        } catch (DecodeNotSupportedException e) {
-            logger.error("DECODER - Error decoding, data does not represent valid message", e);
-        } catch (IOException e) {
-            logger.error("DECODER - Error decoding, general error: {}", e);
-        } catch (OssBsmPart2Exception e) {
-            logger.error("DECODER - Error decoding, unable to parse BSM part 2: {}", e);
-        } catch (OssMessageFrameException e) {
-            logger.error("DECODER - Error decoding, message frame exception: {}", e);
+        } catch (Exception e) {
+            handleDecodeException(e);
         }
 
         return gmf;
+    }
+    
+    public void handleDecodeException(Exception e) {
+        
+        if (DecodeFailedException.class == e.getClass()) {
+            AbstractData partialDecodedMessage = ((DecodeFailedException) e).getDecodedData();
+            if (partialDecodedMessage != null) {
+                logger.error("DECODER - Error, message only partially decoded: {}", partialDecodedMessage);
+            } else {
+                logger.debug("DECODER - Ignoring extraneous bytes at the end of the input stream.");
+            }
+        } else if (DecodeNotSupportedException.class == e.getClass()) {
+            logger.error("DECODER - Error decoding, data does not represent valid message", e);
+        } else if (IOException.class == e.getClass()) {
+            logger.error("DECODER - Error decoding, general error: {}", e);
+        } else if (OssBsmPart2Exception.class == e.getClass()) {
+            logger.error("DECODER - Error decoding, unable to parse BSM part 2: {}", e);
+        } else if (OssMessageFrameException.class == e.getClass()) {
+            logger.error("DECODER - Error decoding, message frame exception: {}", e);
+        } else {
+            logger.error("DECODER - Unknown error: {}", e);
+        }
     }
 
     @Override
@@ -174,7 +166,7 @@ public class OssAsn1Coder implements Asn1Plugin {
             }
         }
 
-        return null;
+        return new byte[0];
     }
 
     @Override

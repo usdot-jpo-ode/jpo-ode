@@ -9,7 +9,9 @@ public class OssPrivilegedEvents {
     private static final Integer SSP_LOWER_BOUND = 0;
     private static final Integer SSP_UPPER_BOUND = 31;
     
-    private OssPrivilegedEvents() {}
+    private OssPrivilegedEvents() {
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735PrivilegedEvents genericPrivilegedEvents(PrivilegedEvents events) {
 

@@ -17,6 +17,7 @@ public class OssOffset {
     private static final Integer OFF_B10_UPPER_BOUND = 511;
 
     private OssOffset() {
+       throw new UnsupportedOperationException();
     }
 
     public static BigDecimal genericOffset(VertOffset_B07 offset) {

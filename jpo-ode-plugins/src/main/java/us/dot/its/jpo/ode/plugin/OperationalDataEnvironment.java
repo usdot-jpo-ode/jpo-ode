@@ -18,6 +18,7 @@ public class OperationalDataEnvironment {
       }
    }
 
-   private OperationalDataEnvironment() {//NOSONAR
-   }//NOSONAR
+   private OperationalDataEnvironment() {
+      throw new UnsupportedOperationException();
+   }
 }

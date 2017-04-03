@@ -10,7 +10,9 @@ public class OssPivotPointDescription {
     private static final Integer PIVOT_OFFSET_LOWER_BOUND = -1024;
     private static final Integer PIVOT_OFFSET_UPPER_BOUND = 1023;
     
-    private OssPivotPointDescription() {}
+    private OssPivotPointDescription() {
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735PivotPointDescription genericPivotPointDescription(PivotPointDescription ppd) {
         J2735PivotPointDescription gppd = new J2735PivotPointDescription();

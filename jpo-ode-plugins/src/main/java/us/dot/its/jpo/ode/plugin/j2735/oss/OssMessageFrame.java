@@ -13,7 +13,9 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Excepti
 
 public class OssMessageFrame {
 
-    private OssMessageFrame() {}
+    private OssMessageFrame() {
+       throw new UnsupportedOperationException();
+    }
 
     // Custom exception
     public static class OssMessageFrameException extends Exception {

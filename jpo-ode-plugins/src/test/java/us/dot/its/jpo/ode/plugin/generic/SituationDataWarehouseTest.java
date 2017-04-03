@@ -2,7 +2,6 @@ package us.dot.its.jpo.ode.plugin.generic;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -45,6 +44,19 @@ public class SituationDataWarehouseTest {
       catch (NoSuchMethodException e) {
          fail("unexpected Exception");
       }
+   }
+   
+   @Test
+   public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+     Constructor<SituationDataWarehouse > constructor = SituationDataWarehouse.class.getDeclaredConstructor();
+     assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+     constructor.setAccessible(true);
+     try {
+       constructor.newInstance();
+       fail("Expected IllegalAccessException.class");
+     } catch (Exception e) {
+       assertEquals(InvocationTargetException.class, e.getClass());
+     }
    }
 
    @Test

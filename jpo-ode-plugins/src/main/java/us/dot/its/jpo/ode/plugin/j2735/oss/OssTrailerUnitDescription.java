@@ -9,6 +9,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735TrailerUnitDescription;
 public class OssTrailerUnitDescription {
 
     private OssTrailerUnitDescription() {
+       throw new UnsupportedOperationException();
     }
 
     public static J2735TrailerUnitDescription genericTrailerUnitDescription(TrailerUnitDescription tud) {

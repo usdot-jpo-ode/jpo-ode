@@ -6,6 +6,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -259,6 +262,19 @@ public class OssBsmPart2ContentTest {
                 assertFalse("Expected " + curVal2.getKey() + " to be false", curVal2.getValue());
             }
         }
+    }
+    
+    @Test
+    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<OssBsmPart2Content> constructor = OssBsmPart2Content.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+        constructor.newInstance();
+        fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+        assertEquals(InvocationTargetException.class, e.getClass());
+      }
     }
 
 }

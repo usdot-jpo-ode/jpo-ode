@@ -42,12 +42,12 @@ public class PdmController {
                 response = sendToRsu(curRsu, pdm.getPdm());
 
                 if (null == response || null == response.getResponse()) {
-                    responseList.put(curRsu.getrsuTarget(),
-                          ManagerAndControllerServices.log(false, "PDM CONTROLLER - No response from RSU IP=" + curRsu.getrsuTarget(), null));
+                    responseList.put(curRsu.getRsuTarget(),
+                          ManagerAndControllerServices.log(false, "PDM CONTROLLER - No response from RSU IP=" + curRsu.getRsuTarget(), null));
                 } else if (0 == response.getResponse().getErrorStatus()) {
-                    responseList.put(curRsu.getrsuTarget(), ManagerAndControllerServices.log(true, "PDM CONTROLLER - SNMP deposit successful: " + response.getResponse(), null));
+                    responseList.put(curRsu.getRsuTarget(), ManagerAndControllerServices.log(true, "PDM CONTROLLER - SNMP deposit successful: " + response.getResponse(), null));
                 } else {
-                    responseList.put(curRsu.getrsuTarget(),
+                    responseList.put(curRsu.getRsuTarget(),
                           ManagerAndControllerServices.log(false,
                                     "PDM CONTROLLER - Error, SNMP deposit failed, error code="
                                             + response.getResponse().getErrorStatus() + "("
@@ -56,7 +56,7 @@ public class PdmController {
                 }
 
             } catch (ParseException e) {
-                responseList.put(curRsu.getrsuTarget(),
+                responseList.put(curRsu.getRsuTarget(),
                       ManagerAndControllerServices.log(false, "PDM CONTROLLER - Exception while sending message to RSU", e));
             }
         }
@@ -65,11 +65,11 @@ public class PdmController {
     }
 
     private ResponseEvent sendToRsu(RSU rsu, PDM params) throws ParseException {
-        Address addr = GenericAddress.parse(rsu.getrsuTarget() + "/161");
+        Address addr = GenericAddress.parse(rsu.getRsuTarget() + "/161");
 
         // Populate the SnmpProperties object with SNMP preferences
-        SnmpProperties testProps = new SnmpProperties(addr, rsu.getrsuUsername(), rsu.getrsuPassword(), rsu.getrsuRetries(),
-                rsu.getrsuTimeout());
+        SnmpProperties testProps = new SnmpProperties(addr, rsu.getRsuUsername(), rsu.getRsuPassword(), rsu.getRsuRetries(),
+                rsu.getRsuTimeout());
 
         return ManagerAndControllerServices.createAndSend(params, testProps);
     }

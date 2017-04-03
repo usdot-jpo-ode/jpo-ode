@@ -16,7 +16,9 @@ public class OssFullPositionVector {
     private static final long TIME_CONF_LOWER_BOUND = 0;
     private static final long TIME_CONF_UPPER_BOUND = 39;
     
-    private OssFullPositionVector() {}
+    private OssFullPositionVector() {
+       throw new UnsupportedOperationException();
+    }
     
     public static J2735FullPositionVector genericFullPositionVector(FullPositionVector initialPosition) {
         

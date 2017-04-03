@@ -2,6 +2,10 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.VehicleLength;
@@ -165,7 +169,7 @@ public class OssVehicleSizeTest {
         VehicleSize testVehicleSize = new VehicleSize(testWidth, testLength);
         
         try {
-            OssVehicleSize actualVehicleSize = new OssVehicleSize(testVehicleSize);
+            new OssVehicleSize(testVehicleSize);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -187,7 +191,7 @@ public class OssVehicleSizeTest {
         VehicleSize testVehicleSize = new VehicleSize(testWidth, testLength);
         
         try {
-            OssVehicleSize actualVehicleSize = new OssVehicleSize(testVehicleSize);
+            new OssVehicleSize(testVehicleSize);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -320,7 +324,7 @@ public class OssVehicleSizeTest {
         VehicleSize testVehicleSize = new VehicleSize(testWidth, testLength);
         
         try {
-            OssVehicleSize actualVehicleSize = new OssVehicleSize(testVehicleSize);
+            new OssVehicleSize(testVehicleSize);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -342,7 +346,7 @@ public class OssVehicleSizeTest {
         VehicleSize testVehicleSize = new VehicleSize(testWidth, testLength);
         
         try {
-            OssVehicleSize actualVehicleSize = new OssVehicleSize(testVehicleSize);
+            new OssVehicleSize(testVehicleSize);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());

@@ -15,7 +15,9 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class OssEventDescription {
     
-    private OssEventDescription() {}
+    private OssEventDescription() {
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735EventDescription genericEventDescription(EventDescription description) {
 
