@@ -21,7 +21,7 @@
       <version>0.10.1.0</version>
     </dependency>
     <dependency>
-      <groupId>us.dot.its.jpo.ode</groupId>
+      <groupId>usdot.jpo.ode</groupId>
       <artifactId>jpo-ode-core</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>

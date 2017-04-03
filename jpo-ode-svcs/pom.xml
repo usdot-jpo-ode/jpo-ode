@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>us.dot.its.jpo.ode</groupId>
+    <groupId>usdot.jpo.ode</groupId>
     <artifactId>jpo-ode</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
@@ -93,7 +93,7 @@
     </dependency>
 
     <dependency>
-      <groupId>us.dot.its.jpo.ode</groupId>
+      <groupId>usdot.jpo.ode</groupId>
       <artifactId>jpo-ode-core</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
@@ -103,7 +103,7 @@
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>us.dot.its.jpo.ode</groupId>
+      <groupId>usdot.jpo.ode</groupId>
       <artifactId>jpo-ode-plugins</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
