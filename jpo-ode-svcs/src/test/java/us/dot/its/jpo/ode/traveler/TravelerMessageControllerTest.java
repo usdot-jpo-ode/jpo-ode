@@ -116,7 +116,8 @@ public class TravelerMessageControllerTest {
       };
       
       try {
-         JsonUtils.fromJson("testString", J2735TravelerInputData.class);
+         @SuppressWarnings("unused")
+         J2735TravelerInputData input = (J2735TravelerInputData) JsonUtils.fromJson("testString", J2735TravelerInputData.class);
       } catch (Exception e) {
          fail("Unexpected Exception");
          e.printStackTrace();
