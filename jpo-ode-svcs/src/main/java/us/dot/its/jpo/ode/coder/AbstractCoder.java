@@ -104,4 +104,8 @@ public abstract class AbstractCoder implements Coder {
     public void setAsn1Plugin(Asn1Plugin asn1Plugin) {
         this.asn1Coder = asn1Plugin;
     }
+
+    public void setMessageProducerPool(SerializableMessageProducerPool<String, byte[]> messageProducerPool) {
+        this.messageProducerPool = messageProducerPool;
+    }
 }
