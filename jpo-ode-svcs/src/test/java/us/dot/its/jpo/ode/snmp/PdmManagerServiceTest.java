@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.snmp;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
@@ -19,12 +20,13 @@ import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.ManagerAndControllerServices;
 import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
+import us.dot.its.jpo.ode.plugin.j2735.pdm.VehicleStatusRequest;
 
 public class PdmManagerServiceTest {
 
 	@Injectable
 	SnmpProperties mockSnmpProperties;
-	@Injectable
+	@Mocked
 	PDM mockPdmParameters;
 
 	@Test
@@ -104,6 +106,17 @@ public class PdmManagerServiceTest {
 		PDM nullParams = null;
 		ScopedPDU result = PdmManagerService.createPDU(nullParams);
 		assertNull(result);
+	}
+	
+	@Test
+	public void createPDUshouldNotReturnNUll(@Mocked VehicleStatusRequest vehicleStatusRequest) {
+		VehicleStatusRequest[] vehicleStatusRequestList = {vehicleStatusRequest};
+		new Expectations(){{
+			mockPdmParameters.getVehicleStatusRequestList();
+			result = vehicleStatusRequestList;
+		}};
+		ScopedPDU result = PdmManagerService.createPDU(mockPdmParameters);
+		assertNotNull(result);
 	}
 
 }
