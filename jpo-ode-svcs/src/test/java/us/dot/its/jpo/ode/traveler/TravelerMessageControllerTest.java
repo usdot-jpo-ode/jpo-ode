@@ -113,7 +113,7 @@ public class TravelerMessageControllerTest {
       new Expectations() {
          {
             mockBuilder.buildTravelerInformation(mockTim);
-            result = new TimMessageException("");
+            result = new ParseException("Error Building travelerinfo",1);
          }
       };
       
@@ -121,8 +121,8 @@ public class TravelerMessageControllerTest {
          mockBuilder.buildTravelerInformation(mockTim);
          fail("Expected exception");
       } catch (Exception e) {
-         assertEquals(TimMessageException.class, e.getClass());
-         assertEquals("", e.getMessage());
+         assertEquals(ParseException.class, e.getClass());
+         assertEquals("Error Building travelerinfo", e.getMessage());
       }
    }
 
