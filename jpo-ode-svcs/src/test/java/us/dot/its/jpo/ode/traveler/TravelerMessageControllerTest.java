@@ -112,17 +112,21 @@ public class TravelerMessageControllerTest {
       
       new Expectations() {
          {
+            JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
+            result = mockTim;
+            
             mockBuilder.buildTravelerInformation(mockTim);
-            result = new ParseException("Error Building travelerinfo",1);
+            result = null;
          }
       };
       
       try {
-         mockBuilder.buildTravelerInformation(mockTim);
+         tmc.timMessage("");
          fail("Expected exception");
       } catch (Exception e) {
-         assertEquals(ParseException.class, e.getClass());
-         assertEquals("Error Building travelerinfo", e.getMessage());
+         assertEquals(TimMessageException.class, e.getClass());
+         assertEquals(TimMessageException.class + ": TIM Builder returned null", "class " + e.getMessage());
+         e.printStackTrace();
       }
    }
 
