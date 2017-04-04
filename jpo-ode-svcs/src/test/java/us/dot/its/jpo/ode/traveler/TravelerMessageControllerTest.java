@@ -104,5 +104,30 @@ public class TravelerMessageControllerTest {
          }
       };
    }
+   
+   @Test
+   public void ResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {
+      
+      new Expectations() {
+         {
+            JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
+            result = mockTim;
+         }
+      };
+      
+      try {
+         @SuppressWarnings("unused")
+         J2735TravelerInputData input = (J2735TravelerInputData) JsonUtils.fromJson("testString", J2735TravelerInputData.class);
+      } catch (Exception e) {
+         fail("Unexpected Exception");
+         e.printStackTrace();
+      }
+      
+      new Verifications() {
+         {
+            EventLogger.logger.info(anyString);
+         }
+      };
+   }
 
 }
