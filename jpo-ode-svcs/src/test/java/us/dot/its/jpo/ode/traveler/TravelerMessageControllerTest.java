@@ -28,6 +28,7 @@ import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.pdm.PdmException;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.snmp.TimParameters;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -43,6 +44,8 @@ public class TravelerMessageControllerTest {
    DdsDepositor<DdsStatusMessage> mockDepositor;
    @Mocked
    J2735TravelerInputData mockTim;
+   @Mocked
+   OssTravelerMessageBuilder mockBuilder;
 
    @Mocked
    ManagerAndControllerServices mockTimManagerService;
@@ -106,20 +109,10 @@ public class TravelerMessageControllerTest {
    }
    
    @Test
-   public void ResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {
-      
-      new Expectations() {
-         {
-            JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
-            result = mockTim;
-         }
-      };
-      
+   public void ResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {      
       try {
-         @SuppressWarnings("unused")
-         J2735TravelerInputData input = (J2735TravelerInputData) JsonUtils.fromJson("testString", J2735TravelerInputData.class);
+         mockBuilder.buildTravelerInformation(mockTim);
       } catch (Exception e) {
-         fail("Unexpected Exception");
          e.printStackTrace();
       }
       
