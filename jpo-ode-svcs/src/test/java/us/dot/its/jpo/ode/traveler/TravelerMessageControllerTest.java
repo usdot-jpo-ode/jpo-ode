@@ -12,7 +12,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.snmp4j.event.ResponseEvent;
-import org.snmp4j.smi.GenericAddress;
+
+import com.oss.asn1.EncodeFailedException;
+import com.oss.asn1.EncodeNotSupportedException;
 
 import mockit.Expectations;
 import mockit.Injectable;
@@ -25,12 +27,9 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
-import us.dot.its.jpo.ode.pdm.PdmException;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
-import us.dot.its.jpo.ode.snmp.SnmpProperties;
-import us.dot.its.jpo.ode.snmp.TimParameters;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 @RunWith(JMockit.class)
@@ -109,18 +108,22 @@ public class TravelerMessageControllerTest {
    }
    
    @Test
-   public void ResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {      
-      try {
-         mockBuilder.buildTravelerInformation(null);
-      } catch (Exception e) {
-         assertEquals(TimMessageException.class, e.getClass());
-      }
+   public void ResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) throws EncodeFailedException, ParseException, EncodeNotSupportedException {      
       
-      new Verifications() {
+      new Expectations() {
          {
-            EventLogger.logger.info(anyString);
+            mockBuilder.buildTravelerInformation(mockTim);
+            result = new TimMessageException("");
          }
       };
+      
+      try {
+         mockBuilder.buildTravelerInformation(mockTim);
+         fail("Expected exception");
+      } catch (Exception e) {
+         assertEquals(TimMessageException.class, e.getClass());
+         assertEquals("", e.getMessage());
+      }
    }
 
 }
