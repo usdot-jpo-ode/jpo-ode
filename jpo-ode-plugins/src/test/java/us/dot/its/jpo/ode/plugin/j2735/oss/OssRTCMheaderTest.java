@@ -5,10 +5,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.AntennaOffsetSet;
@@ -17,7 +19,6 @@ import us.dot.its.jpo.ode.j2735.dsrc.Offset_B09;
 import us.dot.its.jpo.ode.j2735.dsrc.Offset_B10;
 import us.dot.its.jpo.ode.j2735.dsrc.Offset_B12;
 import us.dot.its.jpo.ode.j2735.dsrc.RTCMheader;
-import us.dot.its.jpo.ode.plugin.j2735.J2735GNSSstatus;
 import us.dot.its.jpo.ode.plugin.j2735.J2735RTCMheader;
 
 /**
@@ -110,6 +111,20 @@ public class OssRTCMheaderTest {
         BigDecimal actualValue = OssRTCMheader.genericRTCMheader(testHeader).getOffsetSet().getAntOffsetX();
         
         assertEquals(expectedValue, actualValue);
+    }
+    
+    @Test
+    public void testConstructorIsPrivate()
+          throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+       Constructor<OssRTCMheader> constructor = OssRTCMheader.class.getDeclaredConstructor();
+       assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+       constructor.setAccessible(true);
+       try {
+          constructor.newInstance();
+          fail("Expected IllegalAccessException.class");
+       } catch (Exception e) {
+          assertEquals(InvocationTargetException.class, e.getClass());
+       }
     }
 
 }

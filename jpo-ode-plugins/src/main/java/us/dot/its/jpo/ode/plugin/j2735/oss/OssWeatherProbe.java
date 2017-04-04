@@ -11,6 +11,7 @@ public class OssWeatherProbe {
     private static final Integer PRESSURE_UPPER_BOUND = 255;
 
     private OssWeatherProbe() {
+       throw new UnsupportedOperationException();
     }
 
     public static J2735WeatherProbe genericWeatherProbe(WeatherProbe weatherProbe) {

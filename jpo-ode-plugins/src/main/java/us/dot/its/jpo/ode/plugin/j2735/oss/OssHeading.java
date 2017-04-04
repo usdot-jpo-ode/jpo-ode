@@ -7,7 +7,9 @@ import us.dot.its.jpo.ode.j2735.dsrc.Heading;
 
 public class OssHeading {
     
-    private OssHeading() {}
+    private OssHeading() {
+       throw new UnsupportedOperationException();
+    }
 
     public static BigDecimal genericHeading(Heading heading) {
         return OssAngle.longToDecimal(heading.longValue());

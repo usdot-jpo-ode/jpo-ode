@@ -9,87 +9,93 @@ import org.slf4j.LoggerFactory;
 /** Return concrete implementations for specific, known interfaces. */
 public final class PluginFactory {
 
-	private static Logger logger = LoggerFactory.getLogger(PluginFactory.class);
-	
+   private static Logger logger = LoggerFactory.getLogger(PluginFactory.class);
 
-	/**
-	 * Read in configuration data that maps names of interfaces to names of
-	 * corresponding concrete implementation classes. Called early upon startup,
-	 * before any implementations are needed by the rest of the program.
-	 * 
-	 * <P>
-	 * Example of a possible entry in such a config file : myapp.TimeSource =
-	 * myapp.TimeSourceOneDayAdvance
-	 */
-	public static void init() {
-		//TODO
-		// perhaps a properties file is read, perhaps some other source is used
-	}
+   private PluginFactory() {
+      throw new UnsupportedOperationException();
+   }
 
-	/*
-	 * Another variation: allow the caller to swap in different implementation
-	 * classes at runtime, after calling init. This allows testing code to swap
-	 * in various implementations.
-	 */
+   /**
+    * Read in configuration data that maps names of interfaces to names of
+    * corresponding concrete implementation classes. Called early upon startup,
+    * before any implementations are needed by the rest of the program.
+    * 
+    * <P>
+    * Example of a possible entry in such a config file : myapp.TimeSource =
+    * myapp.TimeSourceOneDayAdvance
+    */
+   public static void init() {
+      // TODO
+      // perhaps a properties file is read, perhaps some other source is used
+   }
 
-	/**
-	 * Return the concrete implementation of a OdePlugin interface.
-	 * @param coderClassName 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 * @throws ClassNotFoundException 
-	 */
-	public static OdePlugin getPluginByName(String coderClassName) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		logger.info("Getting Plugin: {}", coderClassName);
-		OdePlugin result = (OdePlugin) buildObject(coderClassName);
-		
-		if (null != result) {
-			String resultStr = result.toString();
-		    logger.info("Got Plugin: {}", resultStr);
-		} else {
-		    logger.info("Failed to load plugin for {}", coderClassName);
-		}
-		
-		return result;
-	}
+   /*
+    * Another variation: allow the caller to swap in different implementation
+    * classes at runtime, after calling init. This allows testing code to swap
+    * in various implementations.
+    */
 
-	private static Object buildObject(String aClassName) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		Object result = null;
-		try {
-			ClassLoader cl = Thread.currentThread().getContextClassLoader();
+   /**
+    * Return the concrete implementation of a OdePlugin interface.
+    * 
+    * @param coderClassName
+    * @throws IllegalAccessException
+    * @throws InstantiationException
+    * @throws ClassNotFoundException
+    */
+   public static OdePlugin getPluginByName(String coderClassName)
+         throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+      logger.info("Getting Plugin: {}", coderClassName);
+      OdePlugin result = (OdePlugin) buildObject(coderClassName);
 
-        	printClasspath(cl);
- 
-			result = buildObject(cl, aClassName);
-		} catch (Exception ex) {
-			logger.error("Error instantiating an object of " + aClassName, ex);
-		
-			ClassLoader cl = ClassLoader.getSystemClassLoader();
-        	printClasspath(cl);
-			result = buildObject(cl, aClassName);
-		}
-		return result;
-	}
+      if (null != result) {
+         String resultStr = result.toString();
+         logger.info("Got Plugin: {}", resultStr);
+      } else {
+         logger.info("Failed to load plugin for {}", coderClassName);
+      }
 
-	private static Object buildObject(ClassLoader cl, String aClassName)
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		Object result;
-		logger.info("Getting class: {}", aClassName);
+      return result;
+   }
 
-		// note that, with this style, the implementation needs to have a
-		// no-argument constructor!
-		Class<?> implClass = cl.loadClass(aClassName);
-		
-		logger.info("creating an instance of: {}", implClass);
-		result = implClass.newInstance();
-		return result;
-	}
+   private static Object buildObject(String aClassName)
+         throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+      Object result = null;
+      try {
+         ClassLoader cl = Thread.currentThread().getContextClassLoader();
 
-	private static void printClasspath(ClassLoader cl) {
-		URL[] urls = ((URLClassLoader)cl).getURLs();
-		
-		for(URL url: urls){
-			logger.info("Classpath: {}", url.getFile());
-		}
-	}
+         printClasspath(cl);
+
+         result = buildObject(cl, aClassName);
+      } catch (Exception ex) {
+         logger.error("Error instantiating an object of " + aClassName, ex);
+
+         ClassLoader cl = ClassLoader.getSystemClassLoader();
+         printClasspath(cl);
+         result = buildObject(cl, aClassName);
+      }
+      return result;
+   }
+
+   private static Object buildObject(ClassLoader cl, String aClassName)
+         throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+      Object result;
+      logger.info("Getting class: {}", aClassName);
+
+      // note that, with this style, the implementation needs to have a
+      // no-argument constructor!
+      Class<?> implClass = cl.loadClass(aClassName);
+
+      logger.info("creating an instance of: {}", implClass);
+      result = implClass.newInstance();
+      return result;
+   }
+
+   private static void printClasspath(ClassLoader cl) {
+      URL[] urls = ((URLClassLoader) cl).getURLs();
+
+      for (URL url : urls) {
+         logger.info("Classpath: {}", url.getFile());
+      }
+   }
 }

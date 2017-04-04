@@ -2,9 +2,10 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.*;
 
-import java.math.BigDecimal;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.TrailerMass;
@@ -138,7 +139,7 @@ public class OssMassOrWeightTest {
         TrailerMass testTrailerMass = new TrailerMass(testMass);
 
         try {
-            Integer actualValue = OssMassOrWeight.genericMass(testTrailerMass);
+            OssMassOrWeight.genericMass(testTrailerMass);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -156,7 +157,7 @@ public class OssMassOrWeightTest {
         TrailerMass testTrailerMass = new TrailerMass(testMass);
 
         try {
-            Integer actualValue = OssMassOrWeight.genericMass(testTrailerMass);
+            OssMassOrWeight.genericMass(testTrailerMass);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -231,7 +232,7 @@ public class OssMassOrWeightTest {
         TrailerWeight testTrailerWeight = new TrailerWeight(testWeight);
 
         try {
-            Integer actualValue = OssMassOrWeight.genericWeight(testTrailerWeight);
+            OssMassOrWeight.genericWeight(testTrailerWeight);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -250,7 +251,7 @@ public class OssMassOrWeightTest {
         TrailerWeight testTrailerWeight = new TrailerWeight(testWeight);
 
         try {
-            Integer actualValue = OssMassOrWeight.genericWeight(testTrailerWeight);
+            OssMassOrWeight.genericWeight(testTrailerWeight);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -423,7 +424,7 @@ public class OssMassOrWeightTest {
         VehicleMass testVehicleMass = new VehicleMass(testMass);
 
         try {
-            Integer actualValue = OssMassOrWeight.genericMass(testVehicleMass);
+            OssMassOrWeight.genericMass(testVehicleMass);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -442,12 +443,25 @@ public class OssMassOrWeightTest {
         VehicleMass testVehicleMass = new VehicleMass(testMass);
 
         try {
-            Integer actualValue = OssMassOrWeight.genericMass(testVehicleMass);
+            OssMassOrWeight.genericMass(testVehicleMass);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
         }
 
+    }
+    
+    @Test
+    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<OssMassOrWeight> constructor = OssMassOrWeight.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+        constructor.newInstance();
+        fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+        assertEquals(InvocationTargetException.class, e.getClass());
+      }
     }
 
 }

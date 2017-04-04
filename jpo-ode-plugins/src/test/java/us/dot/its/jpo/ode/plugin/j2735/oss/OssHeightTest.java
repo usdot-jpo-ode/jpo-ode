@@ -2,10 +2,11 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.VehicleHeight;
@@ -86,7 +87,7 @@ public class OssHeightTest {
         VehicleHeight testHeight = new VehicleHeight(testValue);
 
         try {
-            BigDecimal actualValue = OssHeight.genericHeight(testHeight);
+            OssHeight.genericHeight(testHeight);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -104,12 +105,25 @@ public class OssHeightTest {
         VehicleHeight testHeight = new VehicleHeight(testValue);
 
         try {
-            BigDecimal actualValue = OssHeight.genericHeight(testHeight);
+            OssHeight.genericHeight(testHeight);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
         }
 
+    }
+    
+    @Test
+    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<OssHeight> constructor = OssHeight.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+        constructor.newInstance();
+        fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+        assertEquals(InvocationTargetException.class, e.getClass());
+      }
     }
 
 }

@@ -2,6 +2,10 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -210,7 +214,7 @@ public class OssWeatherProbeTest {
                 mockWiperSet);
         
         try {
-            Integer actualValue = OssWeatherProbe.genericWeatherProbe(testWeatherProbe).getAirTemp();
+            OssWeatherProbe.genericWeatherProbe(testWeatherProbe).getAirTemp();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -235,7 +239,7 @@ public class OssWeatherProbeTest {
                 mockWiperSet);
         
         try {
-            Integer actualValue = OssWeatherProbe.genericWeatherProbe(testWeatherProbe).getAirTemp();
+            OssWeatherProbe.genericWeatherProbe(testWeatherProbe).getAirTemp();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -377,7 +381,7 @@ public class OssWeatherProbeTest {
                 mockWiperSet);
         
         try {
-            Integer actualValue = OssWeatherProbe.genericWeatherProbe(testWeatherProbe).getAirPressure();
+            OssWeatherProbe.genericWeatherProbe(testWeatherProbe).getAirPressure();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -402,12 +406,25 @@ public class OssWeatherProbeTest {
                 mockWiperSet);
         
         try {
-            Integer actualValue = OssWeatherProbe.genericWeatherProbe(testWeatherProbe).getAirPressure();
+            OssWeatherProbe.genericWeatherProbe(testWeatherProbe).getAirPressure();
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
         }
         
+    }
+    
+    @Test
+    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<OssWeatherProbe> constructor = OssWeatherProbe.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+        constructor.newInstance();
+        fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+        assertEquals(InvocationTargetException.class, e.getClass());
+      }
     }
 
 }

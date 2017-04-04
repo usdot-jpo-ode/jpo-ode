@@ -7,6 +7,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.VehicleHeight;
 public class OssHeight {
 
     private OssHeight() {
+       throw new UnsupportedOperationException();
     }
 
     public static BigDecimal genericHeight(VehicleHeight height) {

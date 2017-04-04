@@ -26,6 +26,7 @@ public class OssBsmPart2Content {
 	private static final String NO_OPEN_TYPE = "No OpenType value";
 
 	private OssBsmPart2Content() {
+	   throw new UnsupportedOperationException();
 	}
 
 	public static class OssBsmPart2Exception extends Exception {

@@ -9,7 +9,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735SirenInUse;
 
 public class OssEmergencyDetails {
     
-    private OssEmergencyDetails() {}
+    private OssEmergencyDetails() {
+       throw new UnsupportedOperationException();
+    }
 
 	public static J2735EmergencyDetails genericEmergencyDetails(EmergencyDetails vehicleAlerts) {
 		J2735EmergencyDetails va = new J2735EmergencyDetails();

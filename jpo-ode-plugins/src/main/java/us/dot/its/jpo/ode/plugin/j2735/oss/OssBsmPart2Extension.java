@@ -5,7 +5,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735BsmPart2Extension;
 
 public class OssBsmPart2Extension {
     
-    private OssBsmPart2Extension() {}
+    private OssBsmPart2Extension() {
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735BsmPart2Extension genericSupplementalVehicleExtensions(SupplementalVehicleExtensions sve) {
         return OssSupplementalVehicleExtensions.genericSupplementalVehicleExtensions(sve);

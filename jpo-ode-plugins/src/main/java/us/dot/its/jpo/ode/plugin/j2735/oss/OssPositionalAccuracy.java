@@ -8,7 +8,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735PositionalAccuracy;
 
 public class OssPositionalAccuracy {
     
-    private OssPositionalAccuracy() {}
+    private OssPositionalAccuracy() {
+       throw new UnsupportedOperationException();
+    }
     
     public static J2735PositionalAccuracy genericPositionalAccuracy(PositionalAccuracy positionalAccuracy) {
 

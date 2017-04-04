@@ -1,8 +1,12 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 
 import org.junit.Test;
@@ -14,7 +18,6 @@ import us.dot.its.jpo.ode.j2735.dsrc.VehicleData;
 import us.dot.its.jpo.ode.j2735.dsrc.VehicleHeight;
 import us.dot.its.jpo.ode.j2735.dsrc.VehicleMass;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BumperHeights;
-import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleData;
 
 /**
  * -- Summary --
@@ -48,7 +51,7 @@ public class OssVehicleDataTest {
         VehicleData testVehicleData = new VehicleData();
         
         try {
-            J2735VehicleData actualVehicleData = OssVehicleData.genericVehicleData(testVehicleData);
+            OssVehicleData.genericVehicleData(testVehicleData);
             return; // implicit test pass
         } catch (RuntimeException e) {
             fail("Unexpected RuntimeException: " + e.getClass());
@@ -159,6 +162,19 @@ public class OssVehicleDataTest {
         } catch (RuntimeException e) {
             fail("Unexpected RuntimeException: " + e.getClass());
         }
+    }
+    
+    @Test
+    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<OssVehicleData> constructor = OssVehicleData.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+        constructor.newInstance();
+        fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+        assertEquals(InvocationTargetException.class, e.getClass());
+      }
     }
 
 }

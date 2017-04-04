@@ -3,7 +3,6 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
-import java.nio.ByteBuffer;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -13,15 +12,8 @@ import org.junit.Test;
 
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
-import com.oss.asn1.PERUnalignedCoder;
 
-import us.dot.its.jpo.ode.j2735.J2735;
-import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
-import us.dot.its.jpo.ode.j2735.dsrc.Speed;
-import us.dot.its.jpo.ode.j2735.dsrc.SteeringWheelAngle;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.util.CodecUtils;
-import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class UnavailableNumericFieldTest {
 

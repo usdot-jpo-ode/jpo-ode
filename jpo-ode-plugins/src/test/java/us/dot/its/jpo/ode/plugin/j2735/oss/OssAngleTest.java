@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 
 import org.junit.Test;
@@ -104,7 +107,7 @@ public class OssAngleTest {
         Angle testAngle = new Angle(testValue);
 
         try {
-            BigDecimal actualValue = OssAngle.genericAngle(testAngle);
+            OssAngle.genericAngle(testAngle);
             fail("Expected IllegalArgumentException");
         } catch (Exception e) {
             assertTrue(e.getClass().equals(IllegalArgumentException.class));
@@ -121,11 +124,24 @@ public class OssAngleTest {
         Angle testAngle = new Angle(testValue);
 
         try {
-            BigDecimal actualValue = OssAngle.genericAngle(testAngle);
+            OssAngle.genericAngle(testAngle);
             fail("Expected IllegalArgumentException");
         } catch (Exception e) {
             assertTrue(e.getClass().equals(IllegalArgumentException.class));
         }
+    }
+    
+    @Test
+    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<OssAngle> constructor = OssAngle.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+        constructor.newInstance();
+        fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+        assertEquals(InvocationTargetException.class, e.getClass());
+      }
     }
 
 }

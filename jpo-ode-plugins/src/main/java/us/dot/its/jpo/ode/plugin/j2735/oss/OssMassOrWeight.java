@@ -7,6 +7,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.VehicleMass;
 public class OssMassOrWeight {
 
     private OssMassOrWeight() {
+       throw new UnsupportedOperationException();
     }
 
     public static Integer genericMass(TrailerMass mass) {

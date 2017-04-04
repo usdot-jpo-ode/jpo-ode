@@ -2,6 +2,9 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 
 import org.junit.Test;
@@ -194,7 +197,7 @@ public class OssPrivilegedEventsTest {
         PrivilegedEvents testEvents = new PrivilegedEvents(testSSPindex, testPrivilegedEventsFlags);
         
         try {
-            J2735PrivilegedEvents actualEvents = OssPrivilegedEvents.genericPrivilegedEvents(testEvents);
+            OssPrivilegedEvents.genericPrivilegedEvents(testEvents);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -218,7 +221,7 @@ public class OssPrivilegedEventsTest {
         PrivilegedEvents testEvents = new PrivilegedEvents(testSSPindex, testPrivilegedEventsFlags);
         
         try {
-            J2735PrivilegedEvents actualEvents = OssPrivilegedEvents.genericPrivilegedEvents(testEvents);
+            OssPrivilegedEvents.genericPrivilegedEvents(testEvents);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -412,6 +415,19 @@ public class OssPrivilegedEventsTest {
                 assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
             }
         }
+    }
+    
+    @Test
+    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<OssPrivilegedEvents > constructor = OssPrivilegedEvents.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+        constructor.newInstance();
+        fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+        assertEquals(InvocationTargetException.class, e.getClass());
+      }
     }
 
 }

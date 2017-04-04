@@ -11,6 +11,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleType;
 public class OssVehicleClassification {
 
     private OssVehicleClassification() {
+       throw new UnsupportedOperationException();
     }
 
     public static J2735VehicleClassification genericVehicleClassification(VehicleClassification vc) {

@@ -6,7 +6,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735SupplementalVehicleExtensions;
 
 public class OssSupplementalVehicleExtensions {
     
-    private OssSupplementalVehicleExtensions() {}
+    private OssSupplementalVehicleExtensions() {
+       throw new UnsupportedOperationException();
+    }
 
     public static J2735SupplementalVehicleExtensions genericSupplementalVehicleExtensions(
             SupplementalVehicleExtensions sve) {

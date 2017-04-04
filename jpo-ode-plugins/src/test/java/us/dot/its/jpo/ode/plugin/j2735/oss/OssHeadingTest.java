@@ -2,9 +2,11 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.CoarseHeading;
@@ -100,7 +102,7 @@ public class OssHeadingTest {
         CoarseHeading testHeading = new CoarseHeading(testInput);
 
         try {
-            BigDecimal actualValue = OssHeading.genericHeading(testHeading);
+            OssHeading.genericHeading(testHeading);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -118,12 +120,25 @@ public class OssHeadingTest {
         CoarseHeading testHeading = new CoarseHeading(testInput);
         
         try {
-            BigDecimal actualHeading = OssHeading.genericHeading(testHeading);
+            OssHeading.genericHeading(testHeading);
             fail("Expected IllegalArgumentException");
         } catch (RuntimeException e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
         }
         
+    }
+    
+    @Test
+    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<OssHeading> constructor = OssHeading.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+        constructor.newInstance();
+        fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+        assertEquals(InvocationTargetException.class, e.getClass());
+      }
     }
 
 }
