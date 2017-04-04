@@ -24,7 +24,7 @@ public class AbstractCoderTest2 {
     @Mocked
     Asn1Plugin mockAsn1Plugin;
 
-    @SuppressWarnings("rawtypes")
+    //@SuppressWarnings("rawtypes")
     @Test
     public void testPublish(@Mocked final PluginFactory mockPluginFactory,
             @Mocked final MessageProducer mockMessageProducer,

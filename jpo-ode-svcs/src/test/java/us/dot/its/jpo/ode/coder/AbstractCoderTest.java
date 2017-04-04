@@ -58,7 +58,7 @@ public class AbstractCoderTest {
         };
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    //@SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void test_decodeFromHexAndPublish(@Mocked final Scanner mockScanner,
             @Mocked final SerializationUtils mockSerializationUtils) {
