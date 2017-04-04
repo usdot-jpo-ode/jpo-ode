@@ -12,6 +12,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.snmp4j.event.ResponseEvent;
+import org.snmp4j.smi.GenericAddress;
 
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
@@ -27,6 +28,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
@@ -43,6 +45,8 @@ public class TravelerMessageControllerTest {
    DdsDepositor<DdsStatusMessage> mockDepositor;
    @Mocked
    J2735TravelerInputData mockTim;
+   @Mocked
+   TravelerInformation mockInfo;
    @Mocked
    OssTravelerMessageBuilder mockBuilder;
 
@@ -128,6 +132,37 @@ public class TravelerMessageControllerTest {
          assertEquals(TimMessageException.class + ": TIM Builder returned null", "class " + e.getMessage());
          e.printStackTrace();
       }
+   }
+   
+   @Test
+   public void BadResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) throws EncodeFailedException, ParseException, EncodeNotSupportedException {      
+      
+      new Expectations() {
+         {
+            JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
+            result = mockTim;
+            
+            mockBuilder.buildTravelerInformation(mockTim);
+            result = mockInfo;
+            
+            mockBuilder.getHexTravelerInformation();
+            result = anyString;
+            
+            mockTim.getRsus();
+            result = null;
+         }
+      };
+      
+      try {
+         tmc.timMessage("testMessage123");
+      } catch (Exception e) {
+      }
+      
+      new Verifications() {
+         {
+             EventLogger.logger.info(anyString);
+         }
+     };
    }
 
 }
