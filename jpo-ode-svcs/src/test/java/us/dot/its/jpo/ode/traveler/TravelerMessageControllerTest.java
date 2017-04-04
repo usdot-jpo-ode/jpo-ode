@@ -12,7 +12,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.snmp4j.event.ResponseEvent;
-import org.snmp4j.smi.GenericAddress;
+
+import com.oss.asn1.EncodeFailedException;
+import com.oss.asn1.EncodeNotSupportedException;
 
 import mockit.Expectations;
 import mockit.Injectable;
@@ -25,11 +27,9 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
-import us.dot.its.jpo.ode.pdm.PdmException;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
-import us.dot.its.jpo.ode.snmp.SnmpProperties;
-import us.dot.its.jpo.ode.snmp.TimParameters;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 @RunWith(JMockit.class)
@@ -43,6 +43,8 @@ public class TravelerMessageControllerTest {
    DdsDepositor<DdsStatusMessage> mockDepositor;
    @Mocked
    J2735TravelerInputData mockTim;
+   @Mocked
+   OssTravelerMessageBuilder mockBuilder;
 
    @Mocked
    ManagerAndControllerServices mockTimManagerService;
@@ -106,27 +108,26 @@ public class TravelerMessageControllerTest {
    }
    
    @Test
-   public void ResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {
+   public void ResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) throws EncodeFailedException, ParseException, EncodeNotSupportedException {      
       
       new Expectations() {
          {
             JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
             result = mockTim;
+            
+            mockBuilder.buildTravelerInformation(mockTim);
+            result = null;
          }
       };
       
       try {
-         JsonUtils.fromJson("testString", J2735TravelerInputData.class);
+         tmc.timMessage("");
+         fail("Expected exception");
       } catch (Exception e) {
-         fail("Unexpected Exception");
+         assertEquals(TimMessageException.class, e.getClass());
+         assertEquals(TimMessageException.class + ": TIM Builder returned null", "class " + e.getMessage());
          e.printStackTrace();
       }
-      
-      new Verifications() {
-         {
-            EventLogger.logger.info(anyString);
-         }
-      };
    }
 
 }
