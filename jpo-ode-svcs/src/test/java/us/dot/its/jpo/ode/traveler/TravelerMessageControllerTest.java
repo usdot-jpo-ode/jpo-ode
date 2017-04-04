@@ -111,9 +111,9 @@ public class TravelerMessageControllerTest {
    @Test
    public void ResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {      
       try {
-         mockBuilder.buildTravelerInformation(mockTim);
+         mockBuilder.buildTravelerInformation(null);
       } catch (Exception e) {
-         e.printStackTrace();
+         assertEquals(TimMessageException.class, e.getClass());
       }
       
       new Verifications() {
