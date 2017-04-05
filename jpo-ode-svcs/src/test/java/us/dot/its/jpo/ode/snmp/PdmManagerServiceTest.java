@@ -3,9 +3,13 @@ package us.dot.its.jpo.ode.snmp;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 
 import org.junit.Test;
 import org.snmp4j.PDU;
@@ -19,6 +23,7 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.ManagerAndControllerServices;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssHeight;
 import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
 import us.dot.its.jpo.ode.plugin.j2735.pdm.VehicleStatusRequest;
 
@@ -118,5 +123,18 @@ public class PdmManagerServiceTest {
 		ScopedPDU result = PdmManagerService.createPDU(mockPdmParameters);
 		assertNotNull(result);
 	}
+	
+	@Test
+   public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+     Constructor<PdmManagerService> constructor = PdmManagerService.class.getDeclaredConstructor();
+     assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+     constructor.setAccessible(true);
+     try {
+       constructor.newInstance();
+       fail("Expected IllegalAccessException.class");
+     } catch (Exception e) {
+       assertEquals(InvocationTargetException.class, e.getClass());
+     }
+   }
 
 }

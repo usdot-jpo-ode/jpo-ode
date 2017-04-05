@@ -16,7 +16,9 @@ import org.snmp4j.smi.VariableBinding;
  */
 public class TimManagerService {
     
-    private TimManagerService() {}
+    private TimManagerService() {
+       throw new UnsupportedOperationException();
+    }
     
     /**
      * Assembles the various RSU elements of a TimParameters object into a usable PDU.

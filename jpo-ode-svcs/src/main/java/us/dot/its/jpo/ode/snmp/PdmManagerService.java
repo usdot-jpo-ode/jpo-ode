@@ -11,6 +11,7 @@ import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
 public class PdmManagerService {
 
     private PdmManagerService() {
+       throw new UnsupportedOperationException();
     }
 
     public static ScopedPDU createPDU(PDM params) {
