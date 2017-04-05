@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.snmp4j.PDU;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.GenericAddress;
 
@@ -33,6 +34,8 @@ import us.dot.its.jpo.ode.plugin.GenericSnmp.SNMP;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
+import us.dot.its.jpo.ode.snmp.SnmpProperties;
+import us.dot.its.jpo.ode.snmp.TimParameters;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 @RunWith(JMockit.class)
@@ -58,9 +61,15 @@ public class TravelerMessageControllerTest {
    RSU mockRsu;
    @Injectable
    SNMP mockSnmp;
+   @Injectable
+   SnmpProperties mockProps;
+   @Injectable
+   TimParameters mockParams;
    
    @Mocked
    ResponseEvent mockResponseEvent;
+   @Mocked
+   PDU mockPdu;
 
    @Before
    public void setup() {
@@ -193,6 +202,47 @@ public class TravelerMessageControllerTest {
       try {
          tmc.timMessage("testMessage123");
       } catch (Exception e) {
+      }
+      
+      new Verifications() {
+         {
+             EventLogger.logger.info(anyString);
+         }
+     };
+   }
+   
+   @Test
+   public void CheckResponseEvent(@Mocked final JsonUtils jsonUtils) throws EncodeFailedException, ParseException, EncodeNotSupportedException {      
+      
+      new Expectations() {
+         {
+            JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
+            result = mockTim;
+            
+            mockBuilder.buildTravelerInformation(mockTim);
+            result = mockInfo;
+            
+            mockBuilder.getHexTravelerInformation();
+            result = anyString;
+            
+            mockTim.getRsus();
+            result = mockRsu;
+            
+            mockTim.getSnmp();
+            result = mockSnmp;
+            
+            TravelerMessageController.sendToRSU(mockRsu, mockSnmp, anyString);
+            result = mockResponseEvent;
+            
+            mockResponseEvent.getResponse();
+            result = null;
+         }
+      };
+      
+      try {
+         tmc.timMessage("testMessage123");
+      } catch (Exception e) {
+         assertEquals(TimMessageException.class, e.getClass());
       }
       
       new Verifications() {
