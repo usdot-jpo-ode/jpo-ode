@@ -1,22 +1,13 @@
 package us.dot.its.jpo.ode.traveler;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-import java.text.ParseException;
-
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.snmp4j.PDU;
 import org.snmp4j.event.ResponseEvent;
-import org.snmp4j.smi.GenericAddress;
-
-import com.oss.asn1.EncodeFailedException;
-import com.oss.asn1.EncodeNotSupportedException;
 
 import mockit.Expectations;
 import mockit.Injectable;
@@ -36,6 +27,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.snmp.TimParameters;
+import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 @RunWith(JMockit.class)
@@ -53,9 +45,6 @@ public class TravelerMessageControllerTest {
    TravelerInformation mockInfo;
    @Mocked
    OssTravelerMessageBuilder mockBuilder;
-
-   @Mocked
-   ManagerAndControllerServices mockTimManagerService;
 
    @Injectable
    RSU mockRsu;
@@ -167,9 +156,6 @@ public class TravelerMessageControllerTest {
 
                mockTim.getRsus();
                result = null;
-               
-               mockTim.getSnmp();
-               result = null;
             }
          };
       } catch (Exception e) {
@@ -208,15 +194,6 @@ public class TravelerMessageControllerTest {
 
                mockTim.getSnmp();
                result = mockSnmp;
-               
-               /*mockTim.getSnmp().getEnable();
-               result = 1;
-               
-               mockTim.getSnmp().getStatus();
-               result = 1;
-               
-               mockResponseEvent.getResponse();
-               result = null;*/
             }
          };
       } catch (Exception e) {
@@ -235,9 +212,10 @@ public class TravelerMessageControllerTest {
       };
    }
 
-   @Ignore
    @Test
-   public void checkResponseEvent(@Mocked final JsonUtils jsonUtils) {
+   public void checkResponseEvent(@Mocked final JsonUtils jsonUtils,
+         @Mocked ManagerAndControllerServices mockTimManagerService, @Mocked final DateTimeUtils mockDateTimeUtils,
+         @Mocked final DdsDepositor<DdsStatusMessage> mockDepositor) {
 
       try {
          new Expectations() {
@@ -257,11 +235,8 @@ public class TravelerMessageControllerTest {
                mockTim.getSnmp();
                result = mockSnmp;
 
-               ManagerAndControllerServices.createAndSend(mockParams, mockProps);
-               result = null;
-
-               // mockResponseEvent.getResponse();
-               // result = mockPdu;
+               ManagerAndControllerServices.createAndSend((TimParameters) any, (SnmpProperties) any);
+               result = mockResponseEvent;
             }
          };
       } catch (Exception e) {
@@ -271,9 +246,7 @@ public class TravelerMessageControllerTest {
       try {
          tmc.timMessage("testMessage123");
       } catch (Exception e) {
-         fail("Unexpected Exception" + e);
-         // assertEquals(TimMessageException.class, e.getClass());
-         // assertEquals("RSU %1$s Response: %2$s",e.getMessage());
+         fail("Unexpected exception" + e);
       }
 
       new Verifications() {
