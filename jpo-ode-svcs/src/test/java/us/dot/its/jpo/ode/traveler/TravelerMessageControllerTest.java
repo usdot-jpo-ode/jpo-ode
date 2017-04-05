@@ -29,6 +29,7 @@ import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
+import us.dot.its.jpo.ode.plugin.GenericSnmp.SNMP;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
@@ -55,6 +56,8 @@ public class TravelerMessageControllerTest {
 
    @Injectable
    RSU mockRsu;
+   @Injectable
+   SNMP mockSnmp;
    
    @Mocked
    ResponseEvent mockResponseEvent;
@@ -150,6 +153,40 @@ public class TravelerMessageControllerTest {
             
             mockTim.getRsus();
             result = null;
+         }
+      };
+      
+      try {
+         tmc.timMessage("testMessage123");
+      } catch (Exception e) {
+      }
+      
+      new Verifications() {
+         {
+             EventLogger.logger.info(anyString);
+         }
+     };
+   }
+   
+   @Test
+   public void GoodResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) throws EncodeFailedException, ParseException, EncodeNotSupportedException {      
+      
+      new Expectations() {
+         {
+            JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
+            result = mockTim;
+            
+            mockBuilder.buildTravelerInformation(mockTim);
+            result = mockInfo;
+            
+            mockBuilder.getHexTravelerInformation();
+            result = anyString;
+            
+            mockTim.getRsus();
+            result = mockRsu;
+            
+            mockTim.getSnmp();
+            result = mockSnmp;
          }
       };
       
