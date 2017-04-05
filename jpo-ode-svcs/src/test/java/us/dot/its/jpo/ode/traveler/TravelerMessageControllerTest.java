@@ -65,7 +65,7 @@ public class TravelerMessageControllerTest {
    SnmpProperties mockProps;
    @Injectable
    TimParameters mockParams;
-   
+
    @Mocked
    ResponseEvent mockResponseEvent;
    @Mocked
@@ -81,61 +81,65 @@ public class TravelerMessageControllerTest {
          }
       };
    }
-   
+
    @Test
    public void nullRequestShouldLogAndThrowException(@Mocked final EventLogger eventLogger) {
 
-       try {
-           tmc.timMessage(null);
-           fail("Expected timException");
-       } catch (Exception e) {
-           assertEquals(TimMessageException.class, e.getClass());
-           assertEquals("TIM CONTROLLER - Endpoint received null request", e.getMessage());
-       }
-
-       new Verifications() {
-           {
-               EventLogger.logger.info(anyString);
-           }
-       };
-   }
-   
-   @Test
-   public void nullResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {
-      
-      new Expectations() {
-         {
-            JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
-            result = new TimMessageException("");
-         }
-      };
-      
       try {
-         tmc.timMessage("");
+         tmc.timMessage(null);
+         fail("Expected timException");
       } catch (Exception e) {
-         assertEquals(TimMessageException.class + ": " , "class " + e.getMessage());
+         assertEquals(TimMessageException.class, e.getClass());
+         assertEquals("TIM CONTROLLER - Endpoint received null request", e.getMessage());
       }
-      
+
       new Verifications() {
          {
             EventLogger.logger.info(anyString);
          }
       };
    }
-   
+
    @Test
-   public void responseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) throws EncodeFailedException, ParseException, EncodeNotSupportedException {      
-      
+   public void nullResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {
+
       new Expectations() {
          {
             JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
-            result = mockTim;
-            
-            mockBuilder.buildTravelerInformation(mockTim);
-            result = null;
+            result = new TimMessageException("");
          }
       };
-      
+
+      try {
+         tmc.timMessage("");
+      } catch (Exception e) {
+         assertEquals(TimMessageException.class + ": ", "class " + e.getMessage());
+      }
+
+      new Verifications() {
+         {
+            EventLogger.logger.info(anyString);
+         }
+      };
+   }
+
+   @Test
+   public void responseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {
+
+      try {
+         new Expectations() {
+            {
+               JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
+               result = mockTim;
+
+               mockBuilder.buildTravelerInformation(mockTim);
+               result = null;
+            }
+         };
+      } catch (Exception e) {
+         fail("Unexpected Exception in expectations block: " + e);
+      }
+
       try {
          tmc.timMessage("");
          fail("Expected exception");
@@ -145,112 +149,138 @@ public class TravelerMessageControllerTest {
          e.printStackTrace();
       }
    }
-   
+
    @Test
-   public void badResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) throws EncodeFailedException, ParseException, EncodeNotSupportedException {      
-      
-      new Expectations() {
-         {
-            JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
-            result = mockTim;
-            
-            mockBuilder.buildTravelerInformation(mockTim);
-            result = mockInfo;
-            
-            mockBuilder.getHexTravelerInformation();
-            result = anyString;
-            
-            mockTim.getRsus();
-            result = null;
-         }
-      };
-      
+   public void badResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {
+
+      try {
+         new Expectations() {
+            {
+               JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
+               result = mockTim;
+
+               mockBuilder.buildTravelerInformation(mockTim);
+               result = mockInfo;
+
+               mockBuilder.getHexTravelerInformation();
+               result = anyString;
+
+               mockTim.getRsus();
+               result = null;
+               
+               mockTim.getSnmp();
+               result = null;
+            }
+         };
+      } catch (Exception e) {
+         fail("Unexpected Exception in expectations block: " + e);
+      }
+
       try {
          tmc.timMessage("testMessage123");
       } catch (Exception e) {
       }
-      
+
       new Verifications() {
          {
-             EventLogger.logger.info(anyString);
-         }
-     };
-   }
-   
-   @Test
-   public void goodResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) throws EncodeFailedException, ParseException, EncodeNotSupportedException {      
-      
-      new Expectations() {
-         {
-            JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
-            result = mockTim;
-            
-            mockBuilder.buildTravelerInformation(mockTim);
-            result = mockInfo;
-            
-            mockBuilder.getHexTravelerInformation();
-            result = anyString;
-            
-            mockTim.getRsus();
-            result = new RSU[] {mockRsu};
-            
-            mockTim.getSnmp();
-            result = mockSnmp;
+            EventLogger.logger.info(anyString);
          }
       };
-      
+   }
+
+   @Test
+   public void goodResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {
+
+      try {
+         new Expectations() {
+            {
+               JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
+               result = mockTim;
+
+               mockBuilder.buildTravelerInformation(mockTim);
+               result = mockInfo;
+
+               mockBuilder.getHexTravelerInformation();
+               result = anyString;
+
+               mockTim.getRsus();
+               result = new RSU[] { mockRsu };
+
+               mockTim.getSnmp();
+               result = mockSnmp;
+               
+               /*mockTim.getSnmp().getEnable();
+               result = 1;
+               
+               mockTim.getSnmp().getStatus();
+               result = 1;
+               
+               mockResponseEvent.getResponse();
+               result = null;*/
+            }
+         };
+      } catch (Exception e) {
+         fail("Unexpected Exception in expectations block: " + e);
+      }
+
       try {
          tmc.timMessage("testMessage123");
       } catch (Exception e) {
       }
-      
+
       new Verifications() {
          {
-             EventLogger.logger.info(anyString);
+            EventLogger.logger.info(anyString);
          }
-     };
+      };
    }
-   
+
    @Ignore
    @Test
-   public void checkResponseEvent(@Mocked final JsonUtils jsonUtils) throws EncodeFailedException, ParseException, EncodeNotSupportedException {      
-      
-      new Expectations() {
-         {
-            JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
-            result = mockTim;
-            
-            mockBuilder.buildTravelerInformation(mockTim);
-            result = mockInfo;
-            
-            mockBuilder.getHexTravelerInformation();
-            result = anyString;
-            
-            mockTim.getRsus();
-            result = new RSU[] {mockRsu};
-            
-            mockTim.getSnmp();
-            result = mockSnmp;
-            
-            //sendToRSU(mockRsu, mockSnmp, anyString);
-            //result = mockResponseEvent;
-            
-            mockResponseEvent.getResponse();
-            result = null;
-         }
-      };
-      
+   public void checkResponseEvent(@Mocked final JsonUtils jsonUtils) {
+
+      try {
+         new Expectations() {
+            {
+               JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
+               result = mockTim;
+
+               mockBuilder.buildTravelerInformation(mockTim);
+               result = mockInfo;
+
+               mockBuilder.getHexTravelerInformation();
+               result = anyString;
+
+               mockTim.getRsus();
+               result = new RSU[] { mockRsu };
+
+               mockTim.getSnmp();
+               result = mockSnmp;
+
+               ManagerAndControllerServices.createAndSend(mockParams, mockProps);
+               result = null;
+
+               // mockResponseEvent.getResponse();
+               // result = mockPdu;
+            }
+         };
+      } catch (Exception e) {
+         fail("Unexpected Exception in expectations block: " + e);
+      }
+
       try {
          tmc.timMessage("testMessage123");
       } catch (Exception e) {
-         assertEquals(TimMessageException.class, e.getClass());
+         fail("Unexpected Exception" + e);
+         // assertEquals(TimMessageException.class, e.getClass());
+         // assertEquals("RSU %1$s Response: %2$s",e.getMessage());
       }
-      
+
       new Verifications() {
          {
-             EventLogger.logger.info(anyString);
+            EventLogger.logger.info(anyString);
          }
-     };
+      };
    }
 
 }
