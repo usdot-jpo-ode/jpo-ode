@@ -70,6 +70,15 @@ public class TravelerMessageControllerTest {
          }
       };
    }
+   
+   @Test
+   public void checkNullDepositor(@Mocked final DdsDepositor mockDdsDepositor) {
+      new Expectations(){ {
+         new DdsDepositor(mockOdeProperties);
+         result = new Exception();
+      }};
+         TravelerMessageController bad = new TravelerMessageController(mockOdeProperties);
+   }
 
    @Test
    public void nullRequestShouldLogAndThrowException(@Mocked final EventLogger eventLogger) {
@@ -247,6 +256,52 @@ public class TravelerMessageControllerTest {
          tmc.timMessage("testMessage123");
       } catch (Exception e) {
          fail("Unexpected exception" + e);
+      }
+
+      new Verifications() {
+         {
+            EventLogger.logger.info(anyString);
+         }
+      };
+   }
+   
+   @Test
+   public void checkNullResponseEvent(@Mocked final JsonUtils jsonUtils,
+         @Mocked ManagerAndControllerServices mockTimManagerService, @Mocked final DateTimeUtils mockDateTimeUtils,
+         @Mocked final DdsDepositor<DdsStatusMessage> mockDepositor) {
+
+      try {
+         new Expectations() {
+            {
+               JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
+               result = mockTim;
+
+               mockBuilder.buildTravelerInformation(mockTim);
+               result = mockInfo;
+
+               mockBuilder.getHexTravelerInformation();
+               result = anyString;
+
+               mockTim.getRsus();
+               result = new RSU[] { mockRsu };
+
+               mockTim.getSnmp();
+               result = mockSnmp;
+
+               ManagerAndControllerServices.createAndSend((TimParameters) any, (SnmpProperties) any);
+               result = null;
+            }
+         };
+      } catch (Exception e) {
+         fail("Unexpected Exception in expectations block: " + e);
+      }
+
+      try {
+         tmc.timMessage("testMessage123");
+         fail("Expected Exception");
+      } catch (Exception e) {
+         assertEquals(TimMessageException.class,e.getClass());
+         assertEquals(TimMessageException.class + ": Empty response from RSU null", "class " +e.getMessage());
       }
 
       new Verifications() {
