@@ -124,7 +124,7 @@ public class TravelerMessageControllerTest {
    }
    
    @Test
-   public void ResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) throws EncodeFailedException, ParseException, EncodeNotSupportedException {      
+   public void responseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) throws EncodeFailedException, ParseException, EncodeNotSupportedException {      
       
       new Expectations() {
          {
@@ -147,7 +147,7 @@ public class TravelerMessageControllerTest {
    }
    
    @Test
-   public void BadResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) throws EncodeFailedException, ParseException, EncodeNotSupportedException {      
+   public void badResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) throws EncodeFailedException, ParseException, EncodeNotSupportedException {      
       
       new Expectations() {
          {
@@ -178,7 +178,7 @@ public class TravelerMessageControllerTest {
    }
    
    @Test
-   public void GoodResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) throws EncodeFailedException, ParseException, EncodeNotSupportedException {      
+   public void goodResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) throws EncodeFailedException, ParseException, EncodeNotSupportedException {      
       
       new Expectations() {
          {
@@ -192,7 +192,7 @@ public class TravelerMessageControllerTest {
             result = anyString;
             
             mockTim.getRsus();
-            result = mockRsu;
+            result = new RSU[] {mockRsu};
             
             mockTim.getSnmp();
             result = mockSnmp;
@@ -212,7 +212,7 @@ public class TravelerMessageControllerTest {
    }
    
    @Test
-   public void CheckResponseEvent(@Mocked final JsonUtils jsonUtils) throws EncodeFailedException, ParseException, EncodeNotSupportedException {      
+   public void checkResponseEvent(@Mocked final JsonUtils jsonUtils) throws EncodeFailedException, ParseException, EncodeNotSupportedException {      
       
       new Expectations() {
          {
@@ -226,12 +226,12 @@ public class TravelerMessageControllerTest {
             result = anyString;
             
             mockTim.getRsus();
-            result = mockRsu;
+            result = new RSU[] {mockRsu};
             
             mockTim.getSnmp();
             result = mockSnmp;
             
-            TravelerMessageController.sendToRSU(mockRsu, mockSnmp, anyString);
+            sendToRSU(mockRsu, mockSnmp, anyString);
             result = mockResponseEvent;
             
             mockResponseEvent.getResponse();

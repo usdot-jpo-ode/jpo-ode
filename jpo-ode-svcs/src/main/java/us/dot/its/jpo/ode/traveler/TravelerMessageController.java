@@ -147,7 +147,7 @@ public class TravelerMessageController {
         }
    }
 
-    public static ResponseEvent sendToRSU(RSU rsu, SNMP snmp, String payload) throws ParseException {
+    private ResponseEvent sendToRSU(RSU rsu, SNMP snmp, String payload) throws ParseException {
        Address addr = GenericAddress.parse(rsu.getRsuTarget() + "/161");
 
        // Populate the SnmpProperties object with SNMP preferences
