@@ -21,8 +21,8 @@ addons:
     branches:
       - .* 
 script:
-  - mvn clean -Dtest=*Test verify install
-  - mvn -e org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
+  - mvn clean -Dtest=*Test verify org.jacoco:jacoco-maven-plugin:prepare-agent
+  - mvn -e package sonar:sonar
 cache:
   directories:
     - "$HOME/.m2/repository"
