@@ -14,23 +14,22 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 @RunWith(JMockit.class)
-public class AbstractCoderTest2 {
+public class AbstractCoderSecondTest {
 
     @Tested
-    BsmCoder testBsmCoder;
+    AbstractCoder testAbstractCoder;
     @Injectable
     OdeProperties mockOdeProperties;
 
     @Mocked
     Asn1Plugin mockAsn1Plugin;
 
-    //@SuppressWarnings("rawtypes")
     @Test
     public void testPublish(@Mocked final PluginFactory mockPluginFactory,
-            @Mocked final MessageProducer mockMessageProducer,
-            @Mocked final SerializableMessageProducerPool mockSerializableMessageProducerPool) {
+            @Mocked final MessageProducer<?, ?> mockMessageProducer,
+            @Mocked final SerializableMessageProducerPool<?, ?> mockSerializableMessageProducerPool) {
 
-        testBsmCoder.publish("testTopic", "testMessage");
+        testAbstractCoder.publish("testTopic", "testMessage");
     }
 
 }
