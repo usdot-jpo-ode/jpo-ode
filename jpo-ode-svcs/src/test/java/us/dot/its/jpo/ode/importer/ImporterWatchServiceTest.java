@@ -4,14 +4,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.WatchEvent.Kind;
 
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 
 import mockit.Expectations;
@@ -20,6 +22,7 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.coder.AbstractCoder;
 
+import java.nio.file.WatchService;
 public class ImporterWatchServiceTest {
 
     @Tested // (fullyInitialized=false)
@@ -175,6 +178,110 @@ public class ImporterWatchServiceTest {
             result = new IOException("testException123");
         }};
         testImporterWatchService.processFile(mockFile);
+    }
+    
+    @Test
+    public void processFileShouldDetectHex() {
+        
+        TemporaryFolder tmpFolder = new TemporaryFolder();
+        
+        File tmpFile = null;
+        try {
+            tmpFolder.create();
+            tmpFile = tmpFolder.newFile("tmpHexFile.hex");
+        } catch (IOException e) {
+            fail("Failed to create temp hex file: " + e);
+        }
+        
+        try {
+            new Expectations() {{
+                coder.decodeFromHexAndPublish((InputStream)any, anyString);
+            }};
+        } catch (IOException e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+        
+        testImporterWatchService.processFile(tmpFile.toPath());
+    }
+    
+    @Test
+    public void processFileShouldDetectTxt() {
+        
+        TemporaryFolder tmpFolder = new TemporaryFolder();
+        
+        File tmpFile = null;
+        try {
+            tmpFolder.create();
+            tmpFile = tmpFolder.newFile("tmpTxtFile.txt");
+        } catch (IOException e) {
+            fail("Failed to create temp txt file: " + e);
+        }
+        
+        try {
+            new Expectations() {{
+                coder.decodeFromHexAndPublish((InputStream)any, anyString);
+            }};
+        } catch (IOException e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+        
+        testImporterWatchService.processFile(tmpFile.toPath());
+    }
+    
+    @Test
+    public void processFileShouldDecodeMiscFilesAsBinary() {
+        
+        TemporaryFolder tmpFolder = new TemporaryFolder();
+        
+        File tmpFile = null;
+        try {
+            tmpFolder.create();
+            tmpFile = tmpFolder.newFile("tmpBinFile.bin");
+        } catch (IOException e) {
+            fail("Failed to create temp bin file: " + e);
+        }
+        
+        try {
+            new Expectations() {{
+                coder.decodeFromStreamAndPublish((InputStream)any, anyString);
+            }};
+        } catch (IOException e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+        
+        testImporterWatchService.processFile(tmpFile.toPath());
+    }
+    
+    @Test
+    public void runShouldCatchExceptionNullWatchService() {
+        
+        try {
+            new Expectations() {{
+                dir.getFileSystem().newWatchService();
+                result = null;
+            }};
+        } catch (IOException e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+        
+        testImporterWatchService.run();
+    }
+    
+    @Test
+    public void runShouldCatchExceptionNullWatchKey(@Mocked WatchService mockWatchService) {
+        try {
+            new Expectations() {{
+                dir.getFileSystem().newWatchService();
+                result = mockWatchService;
+                
+                dir.register((WatchService) any, (Kind) any);
+                result = null;
+            }};
+        } catch (IOException e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+        
+        testImporterWatchService.run();
     }
     
 
