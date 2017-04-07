@@ -27,6 +27,7 @@ import mockit.Verifications;
 import us.dot.its.jpo.ode.ManagerAndControllerServices;
 
 public class TimManagerServiceTest {
+    
 
    // Create and send tests
    /**
@@ -166,9 +167,9 @@ public class TimManagerServiceTest {
       constructor.setAccessible(true);
       try {
          constructor.newInstance();
-         fail("Expected IllegalAccessException.class");
+         fail("Expected InvocationTargetException.class");
       } catch (Exception e) {
-         assertEquals(InvocationTargetException.class, e.getClass());
+         assertTrue(e instanceof InvocationTargetException);
       }
    }
 }

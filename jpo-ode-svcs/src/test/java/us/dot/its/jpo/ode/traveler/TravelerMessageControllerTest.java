@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.event.ResponseEvent;
 
@@ -72,9 +73,9 @@ public class TravelerMessageControllerTest {
    }
    
    @Test
-   public void checkNullDepositor(@Mocked final DdsDepositor mockDdsDepositor) {
+   public void checkNullDepositor(@Mocked final DdsDepositor<?> mockDdsDepositor, @Mocked final LoggerFactory mockLoggerFactory) {
       new Expectations(){ {
-         new DdsDepositor(mockOdeProperties);
+         new DdsDepositor<>(mockOdeProperties);
          result = new Exception();
       }};
          TravelerMessageController bad = new TravelerMessageController(mockOdeProperties);
@@ -99,7 +100,7 @@ public class TravelerMessageControllerTest {
    }
 
    @Test
-   public void nullResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {
+   public void nullResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils, @Mocked final EventLogger mockLoggerFactory) {
 
       new Expectations() {
          {
@@ -110,6 +111,7 @@ public class TravelerMessageControllerTest {
 
       try {
          tmc.timMessage("");
+         fail("Expected TimMessageException");
       } catch (Exception e) {
          assertEquals(TimMessageException.class + ": ", "class " + e.getMessage());
       }
@@ -122,7 +124,7 @@ public class TravelerMessageControllerTest {
    }
 
    @Test
-   public void responseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {
+   public void responseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils, @Mocked final EventLogger eventLogger) {
 
       try {
          new Expectations() {
@@ -144,12 +146,11 @@ public class TravelerMessageControllerTest {
       } catch (Exception e) {
          assertEquals(TimMessageException.class, e.getClass());
          assertEquals(TimMessageException.class + ": TIM Builder returned null", "class " + e.getMessage());
-         e.printStackTrace();
       }
    }
 
    @Test
-   public void badResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {
+   public void badResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils, @Mocked final EventLogger eventLogger) {
 
       try {
          new Expectations() {
@@ -174,6 +175,7 @@ public class TravelerMessageControllerTest {
       try {
          tmc.timMessage("testMessage123");
       } catch (Exception e) {
+          fail("Unexpected exception: " + e);
       }
 
       new Verifications() {
@@ -184,7 +186,7 @@ public class TravelerMessageControllerTest {
    }
 
    @Test
-   public void goodResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {
+   public void goodResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils, @Mocked final EventLogger eventLogger) {
 
       try {
          new Expectations() {
@@ -223,8 +225,8 @@ public class TravelerMessageControllerTest {
 
    @Test
    public void checkResponseEvent(@Mocked final JsonUtils jsonUtils,
-         @Mocked ManagerAndControllerServices mockTimManagerService, @Mocked final DateTimeUtils mockDateTimeUtils,
-         @Mocked final DdsDepositor<DdsStatusMessage> mockDepositor) {
+         @Mocked final ManagerAndControllerServices mockTimManagerService, @Mocked final DateTimeUtils mockDateTimeUtils,
+         @Mocked final DdsDepositor<DdsStatusMessage> mockDepositor, @Mocked final EventLogger eventLogger) {
 
       try {
          new Expectations() {
@@ -267,8 +269,8 @@ public class TravelerMessageControllerTest {
    
    @Test
    public void checkNullResponseEvent(@Mocked final JsonUtils jsonUtils,
-         @Mocked ManagerAndControllerServices mockTimManagerService, @Mocked final DateTimeUtils mockDateTimeUtils,
-         @Mocked final DdsDepositor<DdsStatusMessage> mockDepositor) {
+         @Mocked final ManagerAndControllerServices mockTimManagerService, @Mocked final DateTimeUtils mockDateTimeUtils,
+         @Mocked final DdsDepositor<DdsStatusMessage> mockDepositor, @Mocked final EventLogger eventLogger) {
 
       try {
          new Expectations() {

@@ -11,6 +11,7 @@ import java.util.Scanner;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.LoggerFactory;
 
 import mockit.Expectations;
 import mockit.Injectable;
@@ -36,6 +37,10 @@ public class BsmCoderTest {
     SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool;
     @Mocked
     Asn1Object mockAsn1Object;
+    
+    // Override the logger factory for cleaner build logs
+    @Mocked 
+    LoggerFactory mockLoggerFactory;
 
     @Test
     public void shouldConstruct() {
@@ -149,36 +154,5 @@ public class BsmCoderTest {
 
         new BsmCoder(mockOdeProperties).publish(testTopic, mockJ2735Bsm);
 
-    }
-
-    @Ignore
-    @Test
-    public void shouldDecodeFromStreamAndPublish(@Mocked final PluginFactory unused,
-            @Mocked MessageProducer<String, byte[]> mockMessageProducer, @Mocked J2735Bsm mockAsn1Object,
-            @Mocked InputStream mockInputStream, @Mocked final Scanner mockScanner) {
-
-        try {
-            new Expectations() {
-                {
-                    mockOdeProperties.getAsn1CoderClassName();
-                    result = anyString;
-
-                    PluginFactory.getPluginByName(anyString);
-                    result = mockAsn1Plugin;
-
-                    mockAsn1Plugin.decodeUPERBsmStream((InputStream) any);
-                    result = null;
-                }
-            };
-        } catch (Exception e) {
-            fail("Unexpected exception in expectations block: " + e);
-
-        }
-
-        try {
-            new BsmCoder(mockOdeProperties).decodeFromStreamAndPublish(mockInputStream, "testTopic");
-        } catch (IOException e) {
-            fail("Unexpected exception: " + e);
-        }
     }
 }

@@ -1,20 +1,18 @@
 package us.dot.its.jpo.ode;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
-import groovy.lang.MissingPropertyException;
 import mockit.Expectations;
 import mockit.Injectable;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
@@ -26,6 +24,7 @@ public class OdePropertiesTest {
     OdeProperties testOdeProperties;
     @Injectable
     Environment mockEnv;
+    
     
 
     @Test
