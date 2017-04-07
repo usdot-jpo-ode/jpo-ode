@@ -22,7 +22,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.util.SerializationUtils;
 
 @RunWith(JMockit.class)
-public class AbstractCoderTest {
+public class FirstAbstractCoderTest {
 
     @Tested
     BsmCoder testBsmCoder;
@@ -58,7 +58,6 @@ public class AbstractCoderTest {
         };
     }
 
-    //@SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void test_decodeFromHexAndPublish(@Mocked final Scanner mockScanner,
             @Mocked final SerializationUtils<Object> mockSerializationUtils) {

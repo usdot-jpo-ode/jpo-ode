@@ -14,7 +14,7 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 @RunWith(JMockit.class)
-public class AbstractCoderSecondTest {
+public class SecondAbstractCoderTest {
 
     @Tested
     AbstractCoder testAbstractCoder;
