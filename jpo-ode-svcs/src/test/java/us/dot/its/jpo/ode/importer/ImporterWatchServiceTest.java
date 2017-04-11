@@ -195,7 +195,7 @@ public class ImporterWatchServiceTest {
         
         try {
             new Expectations() {{
-                coder.decodeFromHexAndPublish((InputStream)any, anyString);
+                coder.decodeFromHexAndPublish((InputStream)any);
             }};
         } catch (IOException e) {
             fail("Unexpected exception in expectations block: " + e);
@@ -219,7 +219,7 @@ public class ImporterWatchServiceTest {
         
         try {
             new Expectations() {{
-                coder.decodeFromHexAndPublish((InputStream)any, anyString);
+                coder.decodeFromHexAndPublish((InputStream)any);
             }};
         } catch (IOException e) {
             fail("Unexpected exception in expectations block: " + e);
@@ -243,7 +243,7 @@ public class ImporterWatchServiceTest {
         
         try {
             new Expectations() {{
-                coder.decodeFromStreamAndPublish((InputStream)any, anyString);
+                coder.decodeFromStreamAndPublish((InputStream)any);
             }};
         } catch (IOException e) {
             fail("Unexpected exception in expectations block: " + e);

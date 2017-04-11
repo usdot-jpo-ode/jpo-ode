@@ -43,7 +43,7 @@ public abstract class AbstractCoder implements Coder {
     }
 
     @Override
-    public void decodeFromHexAndPublish(InputStream is, String topic) throws IOException {
+    public void decodeFromHexAndPublish(InputStream is) throws IOException {
        String line = null;
        Asn1Object decoded = null;
 
@@ -55,7 +55,8 @@ public abstract class AbstractCoder implements Coder {
                line = scanner.nextLine();
 
                decoded = decode(line);
-               publish(topic, decoded);
+               publishRaw(decoded);
+               publishJson(decoded.toJson());
            }
            if (empty) {
                EventLogger.logger.info("Empty file received");
@@ -68,7 +69,7 @@ public abstract class AbstractCoder implements Coder {
    }
 
     @Override
-   public void decodeFromStreamAndPublish(InputStream is, String topic) throws IOException {
+   public void decodeFromStreamAndPublish(InputStream is) throws IOException {
        Asn1Object decoded;
        
        try {
@@ -76,7 +77,8 @@ public abstract class AbstractCoder implements Coder {
                decoded = decode(is);
                if (decoded != null) {
                    logger.debug("Decoded: {}", decoded);
-                   publish(topic, decoded);
+                   publishRaw(decoded);
+                   publishJson(decoded.toJson());
                }
            } while (decoded != null);
 
@@ -86,18 +88,21 @@ public abstract class AbstractCoder implements Coder {
    }
 
    @Override
-   public void publish(String topic, String msg) {
+   public void publishJson(String msg) {
+       System.out.println("alpha");
         MessageProducer
                 .defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
-                .send(topic, null, msg);
+                .send(OdeProperties.KAFKA_TOPIC_J2735_BSM_JSON, null, msg);
+        
+        System.out.println("beta");
 
         logger.debug("Published: {}", msg);
     }
 
    @Override
-    public void publish(String topic, byte[] msg) {
+    public void publishByte(byte[] msg) {
         MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
-        producer.send(topic, null, msg);
+        producer.send(OdeProperties.KAFKA_TOPIC_J2735_BSM, null, msg);
         messageProducerPool.checkIn(producer);
     }
     
