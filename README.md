@@ -8,9 +8,15 @@ US Department of Transportation Joint Program office (JPO) Operational Data Envi
 In the context of ITS, an Operational Data Environment is a real-time data acquisition and distribution software system that processes and routes data from Connected-X devices –including connected vehicles (CV), personal mobile devices, and infrastructure components and sensors –to subscribing applications to support the operation, maintenance, and use of the transportation system, as well as related research and development efforts.
  
 ## Release Notes
+### Sprint 11
+
+### Sprint 10
+ODE-259	Interface Control Document (ICD) - Updated
+ODE-268 Fixed Message CRC field in TIM messages causing error
+
 ### Sprint 9
 - ODE-227 Probe Data Management (PDM) - Outbound
-- ODE-230 Interface Control Document (ICD) Template
+- ODE-230 Interface Control Document (ICD) - Created
 - ODE-202 Evaluate Current 1609.2 Leidos Code
 
 ### Sprint 8
@@ -48,8 +54,9 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 ## Documentation
 ODE provides the following living documents to keep ODE users and stakeholders informed of the latest developments:
 
-1. [docs/JPO_ODE_Architecture.pdf](docs/JPO_ODE_Architecture.pdf)
-2. [docs/JPO_ODE_User_Guide.pdf](docs/JPO_ODE_User_Guide.pdf)
+1. [docs/JPO_ODE_Architecture.doc](docs/JPO_ODE_Architecture.doc)
+2. [docs/JPO_ODE_User_Guide.doc](docs/JPO_ODE_User_Guide.doc)
+3. [docs/ODESwagger.yaml](docs/ODESwagger.yaml)
 
 All stakeholders are invited to provide input to these documents. Stakeholders should direct all input on this document to the JPO Product Owner at DOT, FHWA, JPO. To provide feedback, we recommend that you create an "issue" in this repository (https://github.com/usdot-jpo-ode/jpo-ode/issues). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
 
