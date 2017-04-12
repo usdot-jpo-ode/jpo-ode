@@ -151,7 +151,7 @@ public class BsmCoderTest {
         }
 
 
-        new BsmCoder(mockOdeProperties).publishRaw(mockJ2735Bsm);
+        new BsmCoder(mockOdeProperties).publish(mockJ2735Bsm);
 
     }
 }

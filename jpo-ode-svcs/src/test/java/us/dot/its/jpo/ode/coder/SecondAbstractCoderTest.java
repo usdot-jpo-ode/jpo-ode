@@ -29,7 +29,7 @@ public class SecondAbstractCoderTest {
             @Mocked final MessageProducer<?, ?> mockMessageProducer,
             @Mocked final SerializableMessageProducerPool<?, ?> mockSerializableMessageProducerPool) {
 
-        testAbstractCoder.publishJson("{testJsonString}");
+        testAbstractCoder.publish("{testJsonString}");
     }
 
 }

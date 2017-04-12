@@ -12,7 +12,7 @@ public interface Coder {
     public Asn1Object decode(String line);
     public Asn1Object decode(InputStream is);
     
-    public void publishJson(String msg);
-    public void publishByte(byte[] msg);
-    public void publishRaw(Asn1Object msg);
+    public void publish(String msg);
+    public void publish(byte[] msg);
+    public void publish(Asn1Object msg);
 }

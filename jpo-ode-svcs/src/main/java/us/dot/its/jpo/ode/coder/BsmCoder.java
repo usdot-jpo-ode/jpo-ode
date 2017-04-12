@@ -28,10 +28,10 @@ public class BsmCoder extends AbstractCoder {
     }
 
     @Override
-    public void publishRaw(Asn1Object msg) {
+    public void publish(Asn1Object msg) {
         J2735Bsm bsm = (J2735Bsm) msg;
         SerializationUtils<J2735Bsm> serializer = new SerializationUtils<>();
-        publishByte(serializer.serialize(bsm));
+        publish(serializer.serialize(bsm));
     }
 
 }

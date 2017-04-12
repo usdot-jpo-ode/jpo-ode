@@ -44,68 +44,65 @@ public abstract class AbstractCoder implements Coder {
 
     @Override
     public void decodeFromHexAndPublish(InputStream is) throws IOException {
-       String line = null;
-       Asn1Object decoded = null;
+        String line = null;
+        Asn1Object decoded = null;
 
-       try (Scanner scanner = new Scanner(is)) {
+        try (Scanner scanner = new Scanner(is)) {
 
-           boolean empty = true;
-           while (scanner.hasNextLine()) {
-               empty = false;
-               line = scanner.nextLine();
+            boolean empty = true;
+            while (scanner.hasNextLine()) {
+                empty = false;
+                line = scanner.nextLine();
 
-               decoded = decode(line);
-               publishRaw(decoded);
-               publishJson(decoded.toJson());
-           }
-           if (empty) {
-               EventLogger.logger.info("Empty file received");
-               throw new IOException("Empty file received");
-           }
-       } catch (IOException e) {
-           EventLogger.logger.info("Error occurred while decoding message: {}", line);
-           throw new IOException("Error decoding data: " + line, e);
-       }
-   }
+                decoded = decode(line);
+                publish(decoded);
+                publish(decoded.toJson());
+            }
+            if (empty) {
+                EventLogger.logger.info("Empty file received");
+                throw new IOException("Empty file received");
+            }
+        } catch (IOException e) {
+            EventLogger.logger.info("Error occurred while decoding message: {}", line);
+            throw new IOException("Error decoding data: " + line, e);
+        }
+    }
 
     @Override
-   public void decodeFromStreamAndPublish(InputStream is) throws IOException {
-       Asn1Object decoded;
-       
-       try {
-           do {
-               decoded = decode(is);
-               if (decoded != null) {
-                   logger.debug("Decoded: {}", decoded);
-                   publishRaw(decoded);
-                   publishJson(decoded.toJson());
-               }
-           } while (decoded != null);
+    public void decodeFromStreamAndPublish(InputStream is) throws IOException {
+        Asn1Object decoded;
 
-       } catch (Exception e) {
-           throw new IOException("Error decoding data." + e);
-       }
-   }
+        try {
+            do {
+                decoded = decode(is);
+                if (decoded != null) {
+                    logger.debug("Decoded: {}", decoded);
+                    publish(decoded);
+                    publish(decoded.toJson());
+                }
+            } while (decoded != null);
 
-   @Override
-   public void publishJson(String msg) {
-       System.out.println("alpha");
+        } catch (Exception e) {
+            throw new IOException("Error decoding data." + e);
+        }
+    }
+
+    @Override
+    public void publish(String msg) {
         MessageProducer
                 .defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
-                .send(OdeProperties.KAFKA_TOPIC_J2735_BSM_JSON, null, msg);
-        
-        System.out.println("beta");
+                .send(odeProperties.getBsmKafkaTopicJson(), null, msg);
 
         logger.debug("Published: {}", msg);
     }
 
-   @Override
-    public void publishByte(byte[] msg) {
+    @Override
+    public void publish(byte[] msg) {
         MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
-        producer.send(OdeProperties.KAFKA_TOPIC_J2735_BSM, null, msg);
+        producer.send(odeProperties.getBsmKafkaTopicSerial(), null, msg);
         messageProducerPool.checkIn(producer);
     }
-    
+
     public void setAsn1Plugin(Asn1Plugin asn1Plugin) {
         this.asn1Coder = asn1Plugin;
     }

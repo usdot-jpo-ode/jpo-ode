@@ -29,9 +29,9 @@ public class MessageFrameCoder extends AbstractCoder {
     }
 
     @Override
-    public void publishRaw(Asn1Object msg) {
+    public void publish(Asn1Object msg) {
         J2735MessageFrame msgFrame = (J2735MessageFrame)msg;
         SerializationUtils<J2735Bsm> serializer = new SerializationUtils<>();
-        publishByte(serializer.serialize(msgFrame.getValue()));
+        publish(serializer.serialize(msgFrame.getValue()));
     }
 }
