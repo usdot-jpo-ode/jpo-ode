@@ -12,15 +12,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import mockit.Verifications;
 import mockit.integration.junit4.JMockit;
+import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.util.SerializationUtils;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 @RunWith(JMockit.class)
 public class FirstAbstractCoderTest {
@@ -59,27 +63,33 @@ public class FirstAbstractCoderTest {
         };
     }
 
-    @Ignore
     @Test
-    public void test_decodeFromHexAndPublish(@Mocked final Scanner mockScanner,
-            @Mocked final SerializationUtils<Object> mockSerializationUtils) {
+    public void test_decodeFromHexAndPublish(@Mocked final PluginFactory mockPluginFactory,
+            @Injectable OdeProperties mockOdeProperties, @Mocked final Scanner mockScanner,
+            @Mocked final SerializationUtils<Object> mockSerializationUtils,
+            @Mocked final SerializableMessageProducerPool<?, ?> unusedSerializableMessageProducerPool,
+            @Mocked final MessageProducer<?, ?> unusedMessageProducer) {
 
-        new Expectations() {
-            {
-                mockScanner.hasNextLine();
-                returns(true, false);
-
-                mockAsn1Plugin.decodeUPERBsmHex(anyString);
-                result = mockJ2735Bsm;
-
-                mockSerializationUtils.serialize(any);
-            }
-        };
+        BsmCoder hexTestBsmCoder = new BsmCoder(mockOdeProperties);
 
         try {
-            testBsmCoder.setAsn1Plugin(mockAsn1Plugin);
-            testBsmCoder.setMessageProducerPool(mockSerializableMessageProducerPool);
-            testBsmCoder.decodeFromHexAndPublish(null);
+            new Expectations() {
+                {
+                    mockScanner.hasNextLine();
+                    returns(true, false);
+
+                    mockAsn1Plugin.decodeUPERBsmHex(anyString);
+                    result = mockJ2735Bsm;
+
+                    mockSerializationUtils.serialize(any);
+                }
+            };
+        } catch (Exception e) {
+            fail("Unexpected exception in expectations block: " + e);
+        }
+
+        try {
+            hexTestBsmCoder.decodeFromHexAndPublish(null);
 
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
@@ -104,9 +114,12 @@ public class FirstAbstractCoderTest {
         }
     }
 
-    @Ignore
     @Test
-    public void test_decodeFromStreamAndPublish() {
+    public void test_decodeFromStreamAndPublish(@Mocked final PluginFactory mockPluginFactory,
+            @Injectable OdeProperties mockOdeProperties, @Mocked final Scanner mockScanner,
+            @Mocked final SerializationUtils<Object> mockSerializationUtils,
+            @Mocked final SerializableMessageProducerPool<?, ?> unusedSerializableMessageProducerPool,
+            @Mocked final MessageProducer<?, ?> unusedMessageProducer) {
 
         new Expectations() {
             {
