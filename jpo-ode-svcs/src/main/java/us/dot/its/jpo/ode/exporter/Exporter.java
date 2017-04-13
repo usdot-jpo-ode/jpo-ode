@@ -26,13 +26,13 @@ public class Exporter implements Runnable {
 
     @Override
     public void run() {
-        logger.info("Subscribing to {}", odeProperties.getBsmKafkaTopicSerial());
+        logger.info("Subscribing to {}", odeProperties.getKafkaTopicBsmSerializedPOJO());
 
         byteArrayConsumer = MessageConsumer.defaultByteArrayMessageConsumer(odeProperties.getKafkaBrokers(),
                 odeProperties.getHostId() + this.getClass().getSimpleName(),
                 new StompByteArrayMessageDistributor(template, topic));
 
-        byteArrayConsumer.subscribe(odeProperties.getBsmKafkaTopicSerial());
+        byteArrayConsumer.subscribe(odeProperties.getKafkaTopicBsmSerializedPOJO());
 
         shutDown();
     }
