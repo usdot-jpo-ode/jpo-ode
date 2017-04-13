@@ -203,20 +203,20 @@ public class OdeProperties implements EnvironmentAware {
         this.ddsWebsocketUrl = ddsWebsocketUrl;
     }
 
-    public String getBsmKafkaTopicSerial() {
+    public String getKafkaTopicBsmSerializedPOJO() {
         return kafkaTopicBsmSerializedPOJO;
     }
 
-    public void setBsmKafkaTopicSerial(String bsmKafkaTopicSerial) {
-        this.kafkaTopicBsmSerializedPOJO = bsmKafkaTopicSerial;
+    public void setKafkaTopicBsmSerializedPOJO(String kafkaTopicBsmSerializedPOJO) {
+        this.kafkaTopicBsmSerializedPOJO = kafkaTopicBsmSerializedPOJO;
     }
 
-    public String getBsmKafkaTopicJson() {
+    public String getKafkaTopicBsmJSON() {
         return kafkaTopicBsmJSON;
     }
 
-    public void setBsmKafkaTopicJson(String bsmKafkaTopicJson) {
-        this.kafkaTopicBsmJSON = bsmKafkaTopicJson;
+    public void setKafkaTopicBsmJSON(String kafkaTopicBsmJSON) {
+        this.kafkaTopicBsmJSON = kafkaTopicBsmJSON;
     }
 
 }
