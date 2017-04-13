@@ -48,8 +48,8 @@ public class OdeProperties implements EnvironmentAware {
     private String ddsCasUsername = "";
     private String ddsCasPass = "";
     private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
-    private String bsmKafkaTopicSerial = "topic.J2735Bsm";
-    private String bsmKafkaTopicJson = "topic.J2735BsmRawJSON";
+    private String kafkaTopicBsmSerializedPOJO = "topic.J2735Bsm";
+    private String kafkaTopicBsmJSON = "topic.J2735BsmRawJSON";
 
     private String hostId;
 
@@ -210,19 +210,19 @@ public class OdeProperties implements EnvironmentAware {
     }
 
     public String getBsmKafkaTopicSerial() {
-        return bsmKafkaTopicSerial;
+        return kafkaTopicBsmSerializedPOJO;
     }
 
     public void setBsmKafkaTopicSerial(String bsmKafkaTopicSerial) {
-        this.bsmKafkaTopicSerial = bsmKafkaTopicSerial;
+        this.kafkaTopicBsmSerializedPOJO = bsmKafkaTopicSerial;
     }
 
     public String getBsmKafkaTopicJson() {
-        return bsmKafkaTopicJson;
+        return kafkaTopicBsmJSON;
     }
 
     public void setBsmKafkaTopicJson(String bsmKafkaTopicJson) {
-        this.bsmKafkaTopicJson = bsmKafkaTopicJson;
+        this.kafkaTopicBsmJSON = bsmKafkaTopicJson;
     }
 
 }
