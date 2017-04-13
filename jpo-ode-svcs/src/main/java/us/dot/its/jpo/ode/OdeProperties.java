@@ -26,12 +26,6 @@ public class OdeProperties implements EnvironmentAware {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    /////////////////////////////////////////////////////////////////////////////
-    // Kafka Topics
-    //public static final String KAFKA_TOPIC_J2735_BSM = "topic.J2735Bsm";
-    //public static final String KAFKA_TOPIC_J2735_BSM_JSON = "topic.J2735BsmRawJSON";
-    /////////////////////////////////////////////////////////////////////////////
-
     @Autowired
     private Environment env;
 
