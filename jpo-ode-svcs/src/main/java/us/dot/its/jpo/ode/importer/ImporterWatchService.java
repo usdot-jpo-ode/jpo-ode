@@ -25,15 +25,13 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
     private Path backup;
     private AbstractCoder coder;
     private Logger logger;
-    private String topic;
 
-    public ImporterWatchService(Path dir, Path backupDir, AbstractCoder coder, Logger logger, String kafkaTopic) {
+    public ImporterWatchService(Path dir, Path backupDir, AbstractCoder coder, Logger logger) {
 
         this.inbox = dir;
         this.backup = backupDir;
         this.coder = coder;
         this.logger = logger;
-        this.topic = kafkaTopic;
         init();
     }
 
@@ -83,9 +81,9 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
             EventLogger.logger.info("Processing file {}", filePath.toFile());
 
             if (filePath.toString().endsWith(".hex") || filePath.toString().endsWith(".txt")) {
-               coder.decodeFromHexAndPublish(inputStream, topic);
+               coder.decodeFromHexAndPublish(inputStream);
             } else {
-               coder.decodeFromStreamAndPublish(inputStream, topic);
+               coder.decodeFromStreamAndPublish(inputStream);
             }
         } catch (IOException e) {
             logger.error("IMPORTER - Unable to open file: {}", e);

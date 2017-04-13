@@ -26,11 +26,6 @@ public class OdeProperties implements EnvironmentAware {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    /////////////////////////////////////////////////////////////////////////////
-    // Kafka Topics
-    public static final String KAFKA_TOPIC_J2735_BSM = "topic.J2735Bsm";
-    /////////////////////////////////////////////////////////////////////////////
-
     @Autowired
     private Environment env;
 
@@ -47,6 +42,8 @@ public class OdeProperties implements EnvironmentAware {
     private String ddsCasUsername = "";
     private String ddsCasPass = "";
     private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
+    private String kafkaTopicBsmSerializedPOJO = "topic.J2735Bsm";
+    private String kafkaTopicBsmJSON = "topic.J2735BsmRawJSON";
 
     private String hostId;
 
@@ -204,6 +201,22 @@ public class OdeProperties implements EnvironmentAware {
 
     public void setDdsWebsocketUrl(String ddsWebsocketUrl) {
         this.ddsWebsocketUrl = ddsWebsocketUrl;
+    }
+
+    public String getKafkaTopicBsmSerializedPOJO() {
+        return kafkaTopicBsmSerializedPOJO;
+    }
+
+    public void setKafkaTopicBsmSerializedPOJO(String kafkaTopicBsmSerializedPOJO) {
+        this.kafkaTopicBsmSerializedPOJO = kafkaTopicBsmSerializedPOJO;
+    }
+
+    public String getKafkaTopicBsmJSON() {
+        return kafkaTopicBsmJSON;
+    }
+
+    public void setKafkaTopicBsmJSON(String kafkaTopicBsmJSON) {
+        this.kafkaTopicBsmJSON = kafkaTopicBsmJSON;
     }
 
 }

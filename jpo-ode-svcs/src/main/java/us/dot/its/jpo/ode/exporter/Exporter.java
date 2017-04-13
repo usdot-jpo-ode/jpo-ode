@@ -22,18 +22,17 @@ public class Exporter implements Runnable {
         this.odeProperties = odeProps;
         this.template = template;
         this.topic = topic;
-
     }
 
     @Override
     public void run() {
-        logger.info("Subscribing to {}", OdeProperties.KAFKA_TOPIC_J2735_BSM);
+        logger.info("Subscribing to {}", odeProperties.getKafkaTopicBsmSerializedPOJO());
 
         byteArrayConsumer = MessageConsumer.defaultByteArrayMessageConsumer(odeProperties.getKafkaBrokers(),
                 odeProperties.getHostId() + this.getClass().getSimpleName(),
                 new StompByteArrayMessageDistributor(template, topic));
 
-        byteArrayConsumer.subscribe(OdeProperties.KAFKA_TOPIC_J2735_BSM);
+        byteArrayConsumer.subscribe(odeProperties.getKafkaTopicBsmSerializedPOJO());
 
         shutDown();
     }

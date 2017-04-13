@@ -150,9 +150,8 @@ public class BsmCoderTest {
             fail("Unexpected exception in expectations block: " + e);
         }
 
-        String testTopic = "testTopic";
 
-        new BsmCoder(mockOdeProperties).publish(testTopic, mockJ2735Bsm);
+        new BsmCoder(mockOdeProperties).publish(mockJ2735Bsm);
 
     }
 }

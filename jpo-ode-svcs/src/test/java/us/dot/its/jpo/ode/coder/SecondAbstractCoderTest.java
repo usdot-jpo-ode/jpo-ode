@@ -25,11 +25,10 @@ public class SecondAbstractCoderTest {
     Asn1Plugin mockAsn1Plugin;
 
     @Test
-    public void testPublish(@Mocked final PluginFactory mockPluginFactory,
+    public void testPublishJson(@Mocked final PluginFactory mockPluginFactory,
             @Mocked final MessageProducer<?, ?> mockMessageProducer,
             @Mocked final SerializableMessageProducerPool<?, ?> mockSerializableMessageProducerPool) {
 
-        testAbstractCoder.publish("testTopic", "testMessage");
+        testAbstractCoder.publish("{testJsonString}");
     }
-
 }

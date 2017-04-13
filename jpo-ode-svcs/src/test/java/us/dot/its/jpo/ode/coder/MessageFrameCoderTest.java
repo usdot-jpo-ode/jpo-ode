@@ -161,7 +161,7 @@ public class MessageFrameCoderTest {
 
         String testTopic = "testTopic";
 
-        new MessageFrameCoder(mockOdeProperties).publish(testTopic, mockJ2735MessageFrame);
+        new MessageFrameCoder(mockOdeProperties).publish(mockJ2735MessageFrame);
 
     }
 
