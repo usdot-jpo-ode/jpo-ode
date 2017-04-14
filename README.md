@@ -9,8 +9,7 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
  
 ## Release Notes
 ### Sprint 11
-- ODE-77 Geofence-Based Filtering 
-- ODE-282 De-Identification Input/Output Interfaces to the ODE
+- (ODE-77 Subtask) ODE-274 Publish to J2735BsmRawJson
 
 ### Sprint 10
 - ODE-259 Interface Control Document (ICD) - Updated
