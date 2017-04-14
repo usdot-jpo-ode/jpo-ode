@@ -9,10 +9,12 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
  
 ## Release Notes
 ### Sprint 11
+- ODE-77 Geofence-Based Filtering 
+- ODE-282 De-Identification Input/Output Interfaces to the ODE
 
 ### Sprint 10
-ODE-259	Interface Control Document (ICD) - Updated
-ODE-268 Fixed Message CRC field in TIM messages causing error
+- ODE-259 Interface Control Document (ICD) - Updated
+- ODE-268 Fixed Message CRC field in TIM messages causing error
 
 ### Sprint 9
 - ODE-227 Probe Data Management (PDM) - Outbound
@@ -230,7 +232,7 @@ Install the IDE of your choice:
 ### Deployment
 
 ## Docker
-![README.md](docker/README.md)
+[README.md](docker/README.md)
 
 ## Kafka
-![README.md](docker/kafka/README.md)
+[README.md](docker/kafka/README.md)
