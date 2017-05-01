@@ -1,8 +1,8 @@
-package us.dot.its.jpo.ode.plugin.j2735.pdm;
+package us.dot.its.jpo.ode.plugin.j2735;
 
 import us.dot.its.jpo.ode.model.OdeObject;
 
-public class VehicleStatusRequest extends OdeObject {
+public class J2735VehicleStatusRequest extends OdeObject {
 
     private static final long serialVersionUID = 2137805895544104045L;
     
@@ -13,7 +13,7 @@ public class VehicleStatusRequest extends OdeObject {
     private int sendAll;
     private int status;
 
-    public VehicleStatusRequest() {
+    public J2735VehicleStatusRequest() {
         // empty constructor
     }
 

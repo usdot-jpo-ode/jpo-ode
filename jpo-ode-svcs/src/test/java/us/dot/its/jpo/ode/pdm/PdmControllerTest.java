@@ -18,8 +18,7 @@ import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.ManagerAndControllerServices;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.plugin.j2735.pdm.J2735ProbeDataManagement;
-import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
+import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import java.text.ParseException;
@@ -29,7 +28,7 @@ public class PdmControllerTest {
     @Tested
     PdmController testPdmController;
     
-    @Mocked J2735ProbeDataManagement mockPdm;
+    @Mocked J2735PdmRequest mockPdm;
     
     @Mocked ManagerAndControllerServices mockPdmManagerService;
     
@@ -59,13 +58,13 @@ public class PdmControllerTest {
 
         new Expectations() {
             {
-                JsonUtils.fromJson(anyString, J2735ProbeDataManagement.class);
+                JsonUtils.fromJson(anyString, J2735PdmRequest.class);
                 result = mockPdm;
                 
                 mockPdm.getRsuList();
                 result = new RSU[]{mockRsu};
                 
-                ManagerAndControllerServices.createAndSend((PDM)any, (SnmpProperties)any);
+                ManagerAndControllerServices.createAndSend((J2735ProbeDataManagment)any, (SnmpProperties)any);
                 result = null;
             }
         };
@@ -88,13 +87,13 @@ public class PdmControllerTest {
 
         new Expectations() {
             {
-                JsonUtils.fromJson(anyString, J2735ProbeDataManagement.class);
+                JsonUtils.fromJson(anyString, J2735PdmRequest.class);
                 result = mockPdm;
                 
                 mockPdm.getRsuList();
                 result = new RSU[]{mockRsu};
                 
-                ManagerAndControllerServices.createAndSend((PDM)any, (SnmpProperties)any);
+                ManagerAndControllerServices.createAndSend((J2735ProbeDataManagment)any, (SnmpProperties)any);
                 result = mockResponseEvent;
                 
                 mockResponseEvent.getResponse();
@@ -120,13 +119,13 @@ public class PdmControllerTest {
 
         new Expectations() {
             {
-                JsonUtils.fromJson(anyString, J2735ProbeDataManagement.class);
+                JsonUtils.fromJson(anyString, J2735PdmRequest.class);
                 result = mockPdm;
                 
                 mockPdm.getRsuList();
                 result = new RSU[]{mockRsu};
                 
-                ManagerAndControllerServices.createAndSend((PDM)any, (SnmpProperties)any);
+                ManagerAndControllerServices.createAndSend((J2735ProbeDataManagment)any, (SnmpProperties)any);
                 result = mockResponseEvent;
                 
                 mockResponseEvent.getResponse().getErrorStatus();
@@ -152,13 +151,13 @@ public class PdmControllerTest {
 
         new Expectations() {
             {
-                JsonUtils.fromJson(anyString, J2735ProbeDataManagement.class);
+                JsonUtils.fromJson(anyString, J2735PdmRequest.class);
                 result = mockPdm;
                 
                 mockPdm.getRsuList();
                 result = new RSU[]{mockRsu};
                 
-                ManagerAndControllerServices.createAndSend((PDM)any, (SnmpProperties)any);
+                ManagerAndControllerServices.createAndSend((J2735ProbeDataManagment)any, (SnmpProperties)any);
                 result = mockResponseEvent;
                 
                 mockResponseEvent.getResponse().getErrorStatus();
@@ -186,7 +185,7 @@ public class PdmControllerTest {
 
         new Expectations() {
             {
-                JsonUtils.fromJson(anyString, J2735ProbeDataManagement.class);
+                JsonUtils.fromJson(anyString, J2735PdmRequest.class);
                 result = mockPdm;
                 
                 mockPdm.getRsuList();

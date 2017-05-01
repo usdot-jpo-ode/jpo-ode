@@ -1,16 +1,17 @@
-package us.dot.its.jpo.ode.plugin.j2735.pdm;
+package us.dot.its.jpo.ode.pdm;
 
 import us.dot.its.jpo.ode.model.OdeObject;
-import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.OperationalDataEnvironment.ODE;
+import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
 
-public class J2735ProbeDataManagement extends OdeObject {
+public class J2735PdmRequest extends OdeObject {
 
    private static final long serialVersionUID = 2154315328067723844L;
 
    private ODE ode;
    private RSU[] rsuList;
-   private PDM pdm;
+   private J2735ProbeDataManagment pdm;
 
    public ODE getOde() {
       return ode;
@@ -28,11 +29,11 @@ public class J2735ProbeDataManagement extends OdeObject {
       this.rsuList = rsuList;
    }
 
-   public PDM getPdm() {
+   public J2735ProbeDataManagment getPdm() {
       return pdm;
    }
 
-   public void setPdm(PDM pdm) {
+   public void setPdm(J2735ProbeDataManagment pdm) {
       this.pdm = pdm;
    }
 

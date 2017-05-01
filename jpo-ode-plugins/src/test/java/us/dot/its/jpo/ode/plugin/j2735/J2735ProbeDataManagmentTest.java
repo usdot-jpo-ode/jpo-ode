@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.plugin.j2735.pdm;
+package us.dot.its.jpo.ode.plugin.j2735;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -8,12 +8,13 @@ import org.junit.runner.RunWith;
 
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
+import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
 
 @RunWith(JMockit.class)
-public class PDMTest {
+public class J2735ProbeDataManagmentTest {
 
     @Tested
-    PDM testPDM;
+    J2735ProbeDataManagment testPDM;
 
     @Test
     public void testSettersAndGetters() {

@@ -1,8 +1,8 @@
-package us.dot.its.jpo.ode.plugin.j2735.pdm;
+package us.dot.its.jpo.ode.plugin.j2735;
 
 import us.dot.its.jpo.ode.model.OdeObject;
 
-public class PDM extends OdeObject {
+public class J2735ProbeDataManagment extends OdeObject {
 
     private static final long serialVersionUID = 6638057737585466892L;
     
@@ -21,7 +21,7 @@ public class PDM extends OdeObject {
     private int snapshotMaxSpeed;
     private int txInterval;
 
-    private VehicleStatusRequest[] vehicleStatusRequestList;
+    private J2735VehicleStatusRequest[] vehicleStatusRequestList;
 
     public int getSampleStart() {
         return sampleStart;
@@ -135,11 +135,11 @@ public class PDM extends OdeObject {
         this.txInterval = txInterval;
     }
 
-    public VehicleStatusRequest[] getVehicleStatusRequestList() {
+    public J2735VehicleStatusRequest[] getVehicleStatusRequestList() {
         return vehicleStatusRequestList;
     }
 
-    public void setVehicleStatusRequestList(VehicleStatusRequest[] vehicleStatusRequestList) {
+    public void setVehicleStatusRequestList(J2735VehicleStatusRequest[] vehicleStatusRequestList) {
         this.vehicleStatusRequestList = vehicleStatusRequestList;
     }
 
