@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.vsdm;
 
-//import gov.usdot.asn1.generated.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.Acceleration;
 import us.dot.its.jpo.ode.j2735.dsrc.AccelerationSet4Way;
@@ -44,9 +43,9 @@ import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage.Bundle;
 import gov.usdot.asn1.j2735.CVSampleMessageBuilder;
 import gov.usdot.asn1.j2735.CVTypeHelper;
 import gov.usdot.asn1.j2735.J2735Util;
-import gov.usdot.cv.common.asn1.GroupIDHelper;
-import gov.usdot.cv.common.asn1.TemporaryIDHelper;
-import gov.usdot.cv.common.asn1.TransmissionAndSpeedHelper;
+import us.dot.its.jpo.ode.common.asn1.GroupIDHelper;
+import us.dot.its.jpo.ode.common.asn1.TemporaryIDHelper;
+import us.dot.its.jpo.ode.common.asn1.TransmissionAndSpeedHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.net.DatagramPacket;
@@ -66,10 +65,10 @@ import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 
 /**
- * This is not a unit test that runs during build time. This is more of
- * a application that sends data the LCSDW for integration testing purpose.
- */
-public class VsdmDepositor {
+* This is not a unit test that runs during build time. This is more of
+* a application that sends data the LCSDW for integration testing purpose.
+*/
+public class VsdmDepositorTest {
 	
 	private static Coder coder;
 
@@ -305,3 +304,4 @@ public class VsdmDepositor {
 	}
 	
 }
+
