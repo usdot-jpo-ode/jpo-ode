@@ -63,6 +63,7 @@ import com.oss.asn1.AbstractData;
 import com.oss.asn1.Coder;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
+import com.oss.asn1.PERUnalignedCoder;
 
 /**
 * This is not a unit test that runs during build time. This is more of
@@ -78,12 +79,15 @@ public class VsdmDepositorTest {
 		coder = J2735.getPERUnalignedCoder();
 	}
 	
-	@Test @Ignore
+	@Test
 	public void testFeedData2LCSDW() throws Exception {
-		System.out.println("Initializing data feed to LCSDW ...");
+		System.out.println("Initializing data feed to SDC ...");
 		
-		String targetHost = "54.242.96.40";
-		int targetPort = 46751;
+//		String targetHost = "54.242.96.40";
+//		int targetPort = 46751;
+		
+		String targetHost = "127.0.0.1";
+		int targetPort = 4445;
 		
 		DatagramSocket socket = new DatagramSocket(targetPort);
 		socket.setSoTimeout(3000);
