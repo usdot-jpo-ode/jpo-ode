@@ -37,13 +37,11 @@ paths:
         '200':
           description: TravelerInputData was submitted successfully
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/tim'
-        default:
-          description: Unexpected error
+            $ref: '#/definitions/Status'
+        '400':
+          description: Bad Request
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/Status'
   /RSU SNMP:
     get:
       summary: RSU SNMP Query
@@ -67,8 +65,12 @@ paths:
       responses:
         '200':
           description: OID responses
+          schema:
+            $ref: '#/definitions/Status'
         '400':
           description: Value input error
+          schema:
+            $ref: '#/definitions/Status'
   /pdm:
     post:
       summary: PDM Interface
@@ -89,11 +91,15 @@ paths:
           description: >-
             A list of RSUs with a success status, and 0 as the error status
             code.
+          schema:
+            $ref: '#/definitions/Status'
         '400':
           description: >-
             If RSU responds but deposit fails, then it returns snmp error
             status. If RSU does not respond, then it returns empty response
             error.
+          schema:
+            $ref: '#/definitions/Status'
 definitions:
   tim:
     type: object
@@ -505,13 +511,10 @@ definitions:
         type: string
       status:
         type: string
-  Error:
+  Status:
     type: object
     properties:
-      code:
-        type: integer
-        format: int32
+      success:
+        type: boolean
       message:
-        type: string
-      fields:
         type: string

@@ -87,8 +87,8 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
             } else {
                coder.decodeBinaryAndPublish(inputStream);
             }
-        } catch (IOException e) {
-            logger.error("IMPORTER - Unable to open file: {}", e);
+        } catch (Exception e) {
+            logger.error("IMPORTER - Unable to open or process file: {}", e);
         }
 
         try {
