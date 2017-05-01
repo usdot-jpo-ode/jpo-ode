@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import us.dot.its.jpo.ode.ManagerAndControllerServices;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.plugin.j2735.pdm.J2735ProbeDataManagement;
-import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
+import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
@@ -31,8 +30,8 @@ public class PdmController {
             throw new PdmException(msg);
         }
 
-        J2735ProbeDataManagement pdm = (J2735ProbeDataManagement) JsonUtils.fromJson(jsonString,
-                J2735ProbeDataManagement.class);
+        J2735PdmRequest pdm = (J2735PdmRequest) JsonUtils.fromJson(jsonString,
+                J2735PdmRequest.class);
         
         HashMap<String, String> responseList = new HashMap<>();
         for (RSU curRsu : pdm.getRsuList()) {
@@ -64,7 +63,7 @@ public class PdmController {
         return responseList.toString();
     }
 
-    private ResponseEvent sendToRsu(RSU rsu, PDM params) throws ParseException {
+    private ResponseEvent sendToRsu(RSU rsu, J2735ProbeDataManagment params) throws ParseException {
         Address addr = GenericAddress.parse(rsu.getRsuTarget() + "/161");
 
         // Populate the SnmpProperties object with SNMP preferences

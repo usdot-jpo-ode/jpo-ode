@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.plugin.j2735.pdm;
+package us.dot.its.jpo.ode.pdm;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,13 +8,15 @@ import org.junit.runner.RunWith;
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
+import us.dot.its.jpo.ode.pdm.J2735PdmRequest;
 import us.dot.its.jpo.ode.plugin.OperationalDataEnvironment.ODE;
 
 @RunWith(JMockit.class)
-public class J2735ProbeDataManagementTest {
+public class J2735PdmRequestTest {
 
     @Tested
-    J2735ProbeDataManagement testJ2735ProbeDataManagement;
+    J2735PdmRequest testJ2735ProbeDataManagement;
 
     @Test
     public void testSetOdeAndGetOde() {
@@ -47,7 +49,7 @@ public class J2735ProbeDataManagementTest {
 
         int testDirections = 7;
 
-        PDM testPdm = new PDM();
+        J2735ProbeDataManagment testPdm = new J2735ProbeDataManagment();
         testPdm.setDirections(testDirections);
 
         testJ2735ProbeDataManagement.setPdm(testPdm);

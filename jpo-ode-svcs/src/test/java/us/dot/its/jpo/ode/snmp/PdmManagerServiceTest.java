@@ -23,21 +23,21 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.ManagerAndControllerServices;
+import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
+import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleStatusRequest;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssHeight;
-import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
-import us.dot.its.jpo.ode.plugin.j2735.pdm.VehicleStatusRequest;
 
 public class PdmManagerServiceTest {
 
 	@Injectable
 	SnmpProperties mockSnmpProperties;
 	@Mocked
-	PDM mockPdmParameters;
+	J2735ProbeDataManagment mockPdmParameters;
 
 	@Test
 	public void createAndSendshouldReturnNullWhenGivenNullPdmParameters() {
 
-		PDM testNullParams = null;
+		J2735ProbeDataManagment testNullParams = null;
 
 		assertNull(ManagerAndControllerServices.createAndSend(testNullParams, mockSnmpProperties));
 	}
@@ -108,14 +108,14 @@ public class PdmManagerServiceTest {
 	@Test
 	public void createPDUshouldReturnNullWhenGivenNullParams() {
 
-		PDM nullParams = null;
+		J2735ProbeDataManagment nullParams = null;
 		ScopedPDU result = PdmManagerService.createPDU(nullParams);
 		assertNull(result);
 	}
 	
 	@Test
-	public void createPDUshouldNotReturnNUll(@Mocked VehicleStatusRequest vehicleStatusRequest) {
-		VehicleStatusRequest[] vehicleStatusRequestList = {vehicleStatusRequest};
+	public void createPDUshouldNotReturnNUll(@Mocked J2735VehicleStatusRequest vehicleStatusRequest) {
+		J2735VehicleStatusRequest[] vehicleStatusRequestList = {vehicleStatusRequest};
 		new Expectations(){{
 			mockPdmParameters.getVehicleStatusRequestList();
 			result = vehicleStatusRequestList;

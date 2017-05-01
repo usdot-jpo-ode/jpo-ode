@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.plugin.j2735.pdm;
+package us.dot.its.jpo.ode.plugin.j2735;
 
 import static org.junit.Assert.assertEquals;
 
@@ -7,12 +7,13 @@ import org.junit.runner.RunWith;
 
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
+import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleStatusRequest;
 
 @RunWith(JMockit.class)
-public class VehicleStatusRequestTest {
+public class J2735VehicleStatusRequestTest {
 
     @Tested
-    VehicleStatusRequest testVehicleStatusRequest;
+    J2735VehicleStatusRequest testVehicleStatusRequest;
 
     @Test
     public void testSettersAndGetters() {

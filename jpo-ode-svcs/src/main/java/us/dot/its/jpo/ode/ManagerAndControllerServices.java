@@ -9,7 +9,7 @@ import org.snmp4j.ScopedPDU;
 import org.snmp4j.event.ResponseEvent;
 
 import us.dot.its.jpo.ode.eventlog.EventLogger;
-import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
+import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
 import us.dot.its.jpo.ode.snmp.PdmManagerService;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
@@ -60,7 +60,7 @@ public class ManagerAndControllerServices {
 		}
 	}
 
-	public static ResponseEvent createAndSend(PDM pdmParams, SnmpProperties props) {
+	public static ResponseEvent createAndSend(J2735ProbeDataManagment pdmParams, SnmpProperties props) {
 		SnmpSession session = null;
 		if (pdmParams != null)
 			session = initialize(pdmParams, props, pdmParams.getClass().getName());
