@@ -33,7 +33,6 @@ import us.dot.its.jpo.ode.j2735.dsrc.YawRate;
 import us.dot.its.jpo.ode.j2735.dsrc.VehicleSize;
 import us.dot.its.jpo.ode.j2735.semi.FundamentalSituationalStatus;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
-import us.dot.its.jpo.ode.j2735.semi.GroupID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
@@ -52,21 +51,18 @@ import java.io.ByteArrayOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.oss.asn1.AbstractData;
 import com.oss.asn1.Coder;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
-import com.oss.asn1.PERUnalignedCoder;
 
 /**
 * This is not a unit test that runs during build time. This is more of
@@ -152,6 +148,9 @@ public class VsdmDepositorTest {
 				new InetSocketAddress(targetHost, targetPort)
 			));
 		
+		if(socket != null)
+			socket.close();
+		
 //		System.out.println("Flooding the LCSDW with vehicle situation data ...");
 //		boolean sendByNumRecords = true; // Toggle this flag to by # records or by messages/second
 //		if (sendByNumRecords) {
@@ -219,7 +218,7 @@ public class VsdmDepositorTest {
 		}
 	}
 	
-	@Test @Ignore
+	@Test
 	public void testBuildVehSitDataMessage() throws Exception {
 		createEncodedVehSitDataMessage(-83.4309083816587, 42.4478318657929);
 	}
