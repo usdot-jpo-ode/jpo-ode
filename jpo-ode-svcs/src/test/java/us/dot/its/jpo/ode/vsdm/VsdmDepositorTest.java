@@ -33,6 +33,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.YawRate;
 import us.dot.its.jpo.ode.j2735.dsrc.VehicleSize;
 import us.dot.its.jpo.ode.j2735.semi.FundamentalSituationalStatus;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
+import us.dot.its.jpo.ode.j2735.semi.GroupID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
@@ -54,6 +55,8 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -72,30 +75,32 @@ import com.oss.asn1.PERUnalignedCoder;
 public class VsdmDepositorTest {
 	
 	private static Coder coder;
+	private static ExecutorService vsdmReceiverExecutor;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {		
 		J2735.initialize();
 		coder = J2735.getPERUnalignedCoder();
+		vsdmReceiverExecutor = Executors.newSingleThreadExecutor();
+        System.out.println("---------------------- Executing VsdmReceiver ----------------------");
+        vsdmReceiverExecutor.submit(new VsdmReceiver());
 	}
 	
 	@Test
 	public void testFeedData2LCSDW() throws Exception {
-		System.out.println("Initializing data feed to SDC ...");
+		System.out.println("ODE: Initializing VSD deposit to SDC ...");
 		
 //		String targetHost = "54.242.96.40";
 //		int targetPort = 46751;
 		
 		String targetHost = "127.0.0.1";
+		int sourcePort = 4444;
 		int targetPort = 4445;
 		
-		DatagramSocket socket = new DatagramSocket(targetPort);
+		DatagramSocket socket = new DatagramSocket(sourcePort);
 		socket.setSoTimeout(3000);
 		
-		ServiceRequest sr = new ServiceRequest();
-		sr.setDialogID(SemiDialogID.vehSitData);
-		sr.setSeqID(SemiSequenceID.svcReq);
-		sr.setRequestID(new TemporaryID(ByteBuffer.allocate(4).putInt(1001).array()));
+		ServiceRequest sr = CVSampleMessageBuilder.buildVehicleSituationDataServiceRequest();
 		
 		ByteArrayOutputStream sink = new ByteArrayOutputStream();
 		coder.encode(sr, sink);
@@ -105,7 +110,7 @@ public class VsdmDepositorTest {
 		
 		// Perform the trust establishment
 		
-		System.out.println("Sending ServiceRequest ...");
+		System.out.println("ODE: Sending VSD deposit ServiceRequest ...");
 		socket.send(new DatagramPacket(
 			payload,
 			length,
@@ -114,14 +119,15 @@ public class VsdmDepositorTest {
 		
 		try {
 			byte [] buffer = new byte[10000];
+			System.out.println("ODE: Waiting for VSD deposit ServiceResponse ...");
 			DatagramPacket responeDp = new DatagramPacket(buffer, buffer.length);
 			socket.receive(responeDp);
 	
-			System.out.println("Waiting for ServiceResponse ...");
+			System.out.println("ODE: Received VSD deposit ServiceResponse ...");
 			if (buffer != null && buffer.length > 0) {
 				AbstractData response = J2735Util.decode(coder, buffer);
 				if (response instanceof ServiceResponse) {
-					System.out.println("Printing ServiceResponse ...");
+					System.out.println("ODE: Printing VSD deposit ServiceResponse ...");
 					System.out.println(response);
 				}
 			}
@@ -133,19 +139,26 @@ public class VsdmDepositorTest {
 		
 		// Now we prepare and send situation data to the LCSDW
 		
-		System.out.println("Preparing vehicle situation data ...");
+		System.out.println("ODE: Preparing VSD deposit ...");
 		VehSitDataMessage vsdm = CVSampleMessageBuilder.buildVehSitDataMessage();
 		VsmType vsmType = new VsmType(CVTypeHelper.VsmType.VEHSTAT.arrayValue());
 		vsdm.setType(vsmType);
 		byte [] encodedMsg = CVSampleMessageBuilder.messageToEncodedBytes(vsdm);
 		
-		System.out.println("Flooding the LCSDW with vehicle situation data ...");
-		boolean sendByNumRecords = true; // Toggle this flag to by # records or by messages/second
-		if (sendByNumRecords) {
-			sendByNumberRecords(socket, targetHost, targetPort, encodedMsg, 100, 0);
-		} else {
-			sendWithLocalhostSpeed(socket, targetHost, targetPort, encodedMsg, 5);
-		}
+		System.out.println("ODE: Sending VSD message to SDC");
+		socket.send(new DatagramPacket(
+				encodedMsg,
+				encodedMsg.length,
+				new InetSocketAddress(targetHost, targetPort)
+			));
+		
+//		System.out.println("Flooding the LCSDW with vehicle situation data ...");
+//		boolean sendByNumRecords = true; // Toggle this flag to by # records or by messages/second
+//		if (sendByNumRecords) {
+//			sendByNumberRecords(socket, targetHost, targetPort, encodedMsg, 100, 0);
+//		} else {
+//			sendWithLocalhostSpeed(socket, targetHost, targetPort, encodedMsg, 5);
+//		}
 	}
 	
 	private void sendByNumberRecords(

@@ -28,6 +28,7 @@ import us.dot.its.jpo.ode.exporter.Exporter;
 import us.dot.its.jpo.ode.importer.ImporterWatchService;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
+import us.dot.its.jpo.ode.vsdm.VsdmReceiver;
 
 @Controller
 public class FileUploadController {
@@ -39,6 +40,7 @@ public class FileUploadController {
     private ExecutorService bsmImporter;
     private ExecutorService messageFrameImporter;
     private ExecutorService bsmExporter;
+    private ExecutorService vsdmReceiverExecutor;
 
     @Autowired
     public FileUploadController(StorageService storageService, OdeProperties odeProperties,
@@ -49,7 +51,8 @@ public class FileUploadController {
         bsmImporter = Executors.newSingleThreadExecutor();
         messageFrameImporter = Executors.newSingleThreadExecutor();
         bsmExporter = Executors.newSingleThreadExecutor();
-
+        vsdmReceiverExecutor = Executors.newSingleThreadExecutor();
+        
         Path bsmPath = Paths.get(odeProperties.getUploadLocationRoot(), odeProperties.getUploadLocationBsm());
         logger.debug("UPLOADER - Bsm directory: {}", bsmPath);
         
@@ -59,6 +62,9 @@ public class FileUploadController {
         
         Path backupPath = Paths.get(odeProperties.getUploadLocationRoot(), "backup");
         logger.debug("UPLOADER - Backup directory: {}", backupPath);
+        
+        //logger.info("---------------------- Executing VsdmReceiver ----------------------");
+       // vsdmReceiverExecutor.submit(new VsdmReceiver());
 
         bsmImporter.submit(new ImporterWatchService(bsmPath, backupPath, new BsmCoder(odeProperties),
                 LoggerFactory.getLogger(ImporterWatchService.class)));
