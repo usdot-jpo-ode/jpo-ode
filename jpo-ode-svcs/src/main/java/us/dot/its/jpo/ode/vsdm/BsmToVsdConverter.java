@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.vsdm;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import us.dot.its.jpo.ode.j2735.dsrc.BSMcoreData;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
@@ -30,7 +31,7 @@ public class BsmToVsdConverter {
 	 * @param bsmList ArrayList&lt;BasicSafetyMessage&gt; containing 1-10 BasicSafetyMessage objects
 	 * @return VehSitDataMessage
 	 */
-	public static VehSitDataMessage convertBsmToVsd(ServiceRequest sr, ArrayList<BasicSafetyMessage> bsmList) {
+	public static VehSitDataMessage convertBsmToVsd(ServiceRequest sr, List<BasicSafetyMessage> bsmList) {
 
 		VehSitDataMessage vsdm = new VehSitDataMessage();
 
