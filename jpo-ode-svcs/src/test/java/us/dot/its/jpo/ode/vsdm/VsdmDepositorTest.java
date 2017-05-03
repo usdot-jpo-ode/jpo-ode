@@ -34,13 +34,10 @@ import us.dot.its.jpo.ode.j2735.dsrc.VehicleSize;
 import us.dot.its.jpo.ode.j2735.semi.FundamentalSituationalStatus;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
-import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
-import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.j2735.semi.VehSitRecord;
 import us.dot.its.jpo.ode.j2735.semi.VsmType;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage.Bundle;
-import gov.usdot.asn1.j2735.CVSampleMessageBuilder;
 import gov.usdot.asn1.j2735.CVTypeHelper;
 import gov.usdot.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.common.asn1.GroupIDHelper;
@@ -48,18 +45,15 @@ import us.dot.its.jpo.ode.common.asn1.TemporaryIDHelper;
 import us.dot.its.jpo.ode.common.asn1.TransmissionAndSpeedHelper;
 
 import java.io.ByteArrayOutputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import com.oss.asn1.AbstractData;
 import com.oss.asn1.Coder;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
@@ -71,154 +65,23 @@ import com.oss.asn1.EncodeNotSupportedException;
 public class VsdmDepositorTest {
 	
 	private static Coder coder;
-	private static ExecutorService vsdmReceiverExecutor;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {		
 		J2735.initialize();
 		coder = J2735.getPERUnalignedCoder();
-		vsdmReceiverExecutor = Executors.newSingleThreadExecutor();
+		ExecutorService vsdmReceiverExecutor = Executors.newSingleThreadExecutor();
         System.out.println("---------------------- Executing VsdmReceiver ----------------------");
-        vsdmReceiverExecutor.submit(new VsdmReceiver());
+        vsdmReceiverExecutor.submit(new VsdmReceiver(5555));
 	}
 	
 	@Test
-	public void testFeedData2LCSDW() throws Exception {
-		System.out.println("ODE: Initializing VSD deposit to SDC ...");
-		
-//		String targetHost = "54.242.96.40";
-//		int targetPort = 46751;
-		
-		String targetHost = "127.0.0.1";
-		int sourcePort = 4444;
-		int targetPort = 4445;
-		
-		DatagramSocket socket = new DatagramSocket(sourcePort);
-		socket.setSoTimeout(3000);
-		
-		ServiceRequest sr = CVSampleMessageBuilder.buildVehicleSituationDataServiceRequest();
-		
-		ByteArrayOutputStream sink = new ByteArrayOutputStream();
-		coder.encode(sr, sink);
-		
-		byte [] payload = sink.toByteArray();
-		int length = payload.length;
-		
-		// Perform the trust establishment
-		
-		System.out.println("ODE: Sending VSD deposit ServiceRequest ...");
-		socket.send(new DatagramPacket(
-			payload,
-			length,
-			new InetSocketAddress(targetHost, targetPort)
-		));
-		
-		try {
-			byte [] buffer = new byte[10000];
-			System.out.println("ODE: Waiting for VSD deposit ServiceResponse ...");
-			DatagramPacket responeDp = new DatagramPacket(buffer, buffer.length);
-			socket.receive(responeDp);
-	
-			System.out.println("ODE: Received VSD deposit ServiceResponse ...");
-			if (buffer != null && buffer.length > 0) {
-				AbstractData response = J2735Util.decode(coder, buffer);
-				if (response instanceof ServiceResponse) {
-					System.out.println("ODE: Printing VSD deposit ServiceResponse ...");
-					System.out.println(response);
-				}
-			}
-		} catch (Exception ex) {
-			// We didn't get a response back from the trust establishment, we are
-			// going to ignore it and process with sending sitdata.
-			System.out.println("Failed to receive service response. Message: " + ex.getMessage());
-		}
-		
-		// Now we prepare and send situation data to the LCSDW
-		
-		System.out.println("ODE: Preparing VSD deposit ...");
-		VehSitDataMessage vsdm = CVSampleMessageBuilder.buildVehSitDataMessage();
-		VsmType vsmType = new VsmType(CVTypeHelper.VsmType.VEHSTAT.arrayValue());
-		vsdm.setType(vsmType);
-		byte [] encodedMsg = CVSampleMessageBuilder.messageToEncodedBytes(vsdm);
-		
-		System.out.println("ODE: Sending VSD message to SDC");
-		socket.send(new DatagramPacket(
-				encodedMsg,
-				encodedMsg.length,
-				new InetSocketAddress(targetHost, targetPort)
-			));
-		
-		if(socket != null)
-			socket.close();
-		
-//		System.out.println("Flooding the LCSDW with vehicle situation data ...");
-//		boolean sendByNumRecords = true; // Toggle this flag to by # records or by messages/second
-//		if (sendByNumRecords) {
-//			sendByNumberRecords(socket, targetHost, targetPort, encodedMsg, 100, 0);
-//		} else {
-//			sendWithLocalhostSpeed(socket, targetHost, targetPort, encodedMsg, 5);
-//		}
+	public void testVsdMessageDeposit() throws Exception {
+		VsdmDepositor vsdmDepositor = new VsdmDepositor("127.0.0.1", 5555, 5556);
+		vsdmDepositor.depositVsdm();
 	}
 	
-	private void sendByNumberRecords(
-			DatagramSocket socket,
-			String host, 
-			int port, 
-			byte [] encodedMsg,
-			int numRecords,
-			int waitTimePerRecordInMillis) {
-		int count = 0;
-		long start = System.currentTimeMillis();
-		while (count < numRecords) try {
-			socket.send(new DatagramPacket(
-				encodedMsg,
-				encodedMsg.length,
-				new InetSocketAddress(host, port)
-			));
-			count++;
-			if (waitTimePerRecordInMillis > 0) {
-				Thread.sleep(waitTimePerRecordInMillis);
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		long duration = System.currentTimeMillis() - start;
-		System.out.println("Sent " + count + " messages and it took " + duration + " milliseconds.");
-	}
-	
-	private void sendWithLocalhostSpeed(
-			DatagramSocket socket,
-			String host, 
-			int port, 
-			byte [] encodedMsg,
-			int sleepIntervalInMillis) {
-		int count = 0;
-		long start = System.currentTimeMillis();
-		while (true) try {
-			socket.send(new DatagramPacket(
-				encodedMsg,
-				encodedMsg.length,
-				new InetSocketAddress(host, port)
-			));
-			count++;
-			long duration = System.currentTimeMillis() - start;
-			if (duration >= 1000) {
-				float avg = (float) count / ((float) duration / 1000f);
-				System.out.println("Feeding in " + avg + " messages/second.");
-				
-				count = 0;
-				start = System.currentTimeMillis();
-			}
-			// Tweak the sleep interval for control flow.
-			// The avg message/second is heavily depended
-			// on the hardware you are running on.
-			Thread.sleep(sleepIntervalInMillis);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-	
-	@Test
+	@Test @Ignore
 	public void testBuildVehSitDataMessage() throws Exception {
 		createEncodedVehSitDataMessage(-83.4309083816587, 42.4478318657929);
 	}
