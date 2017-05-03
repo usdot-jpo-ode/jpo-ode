@@ -21,6 +21,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.http.BadRequestException;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.plugin.GenericSnmp.SNMP;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
@@ -78,7 +79,7 @@ public class TravelerMessageControllerTest {
          new DdsDepositor<>(mockOdeProperties);
          result = new Exception();
       }};
-         TravelerMessageController bad = new TravelerMessageController(mockOdeProperties);
+      new TravelerMessageController(mockOdeProperties);
    }
 
    @Test
@@ -88,7 +89,7 @@ public class TravelerMessageControllerTest {
          tmc.timMessage(null);
          fail("Expected timException");
       } catch (Exception e) {
-         assertEquals(TimMessageException.class, e.getClass());
+         assertEquals(BadRequestException.class, e.getClass());
          assertEquals("TIM CONTROLLER - Endpoint received null request", e.getMessage());
       }
 
@@ -105,15 +106,15 @@ public class TravelerMessageControllerTest {
       new Expectations() {
          {
             JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
-            result = new TimMessageException("");
+            result = new BadRequestException("");
          }
       };
 
       try {
          tmc.timMessage("");
-         fail("Expected TimMessageException");
+         fail("Expected BadRequestException");
       } catch (Exception e) {
-         assertEquals(TimMessageException.class + ": ", "class " + e.getMessage());
+         assertEquals(BadRequestException.class + ": ", "class " + e.getMessage());
       }
 
       new Verifications() {
@@ -144,8 +145,8 @@ public class TravelerMessageControllerTest {
          tmc.timMessage("");
          fail("Expected exception");
       } catch (Exception e) {
-         assertEquals(TimMessageException.class, e.getClass());
-         assertEquals(TimMessageException.class + ": TIM Builder returned null", "class " + e.getMessage());
+         assertEquals(BadRequestException.class, e.getClass());
+         assertEquals(BadRequestException.class + ": TIM Builder returned null", "class " + e.getMessage());
       }
    }
 
@@ -302,8 +303,8 @@ public class TravelerMessageControllerTest {
          tmc.timMessage("testMessage123");
          fail("Expected Exception");
       } catch (Exception e) {
-         assertEquals(TimMessageException.class,e.getClass());
-         assertEquals(TimMessageException.class + ": Empty response from RSU null", "class " +e.getMessage());
+         assertEquals(BadRequestException.class,e.getClass());
+         assertEquals(BadRequestException.class + ": Empty response from RSU null", "class " +e.getMessage());
       }
 
       new Verifications() {

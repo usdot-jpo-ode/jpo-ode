@@ -17,6 +17,7 @@ import mockit.Verifications;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.ManagerAndControllerServices;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.http.BadRequestException;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
@@ -42,7 +43,7 @@ public class PdmControllerTest {
             testPdmController.pdmMessage(null);
             fail("Expected PdmException");
         } catch (Exception e) {
-            assertEquals(PdmException.class, e.getClass());
+            assertEquals(BadRequestException.class, e.getClass());
             assertEquals("PDM CONTROLLER - Endpoint received null request", e.getMessage());
         }
 

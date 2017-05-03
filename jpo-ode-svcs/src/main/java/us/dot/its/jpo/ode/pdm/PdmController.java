@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import us.dot.its.jpo.ode.ManagerAndControllerServices;
+import us.dot.its.jpo.ode.http.BadRequestException;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
 import us.dot.its.jpo.ode.snmp.SnmpProperties;
@@ -25,9 +26,9 @@ public class PdmController {
     @RequestMapping(value = "/pdm", method = RequestMethod.POST, produces = "application/json")
     public String pdmMessage(@RequestBody String jsonString) {
         if (null == jsonString) {
-            String msg = "PDM CONTROLLER - Endpoint received null request";
+            String msg = "Endpoint received null request";
             ManagerAndControllerServices.log(false, msg, null);
-            throw new PdmException(msg);
+            throw new BadRequestException(msg);
         }
 
         J2735PdmRequest pdm = (J2735PdmRequest) JsonUtils.fromJson(jsonString,
@@ -42,21 +43,22 @@ public class PdmController {
 
                 if (null == response || null == response.getResponse()) {
                     responseList.put(curRsu.getRsuTarget(),
-                          ManagerAndControllerServices.log(false, "PDM CONTROLLER - No response from RSU IP=" + curRsu.getRsuTarget(), null));
+                          ManagerAndControllerServices.log(false, "No response from RSU IP=" + curRsu.getRsuTarget(), null));
                 } else if (0 == response.getResponse().getErrorStatus()) {
-                    responseList.put(curRsu.getRsuTarget(), ManagerAndControllerServices.log(true, "PDM CONTROLLER - SNMP deposit successful: " + response.getResponse(), null));
+                    responseList.put(curRsu.getRsuTarget(), 
+                          ManagerAndControllerServices.log(true, "SNMP deposit successful: " + response.getResponse(), null));
                 } else {
                     responseList.put(curRsu.getRsuTarget(),
                           ManagerAndControllerServices.log(false,
-                                    "PDM CONTROLLER - Error, SNMP deposit failed, error code="
+                                    "Error, SNMP deposit failed, error code="
                                             + response.getResponse().getErrorStatus() + "("
                                             + response.getResponse().getErrorStatusText() + ")",
                                     null));
                 }
 
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 responseList.put(curRsu.getRsuTarget(),
-                      ManagerAndControllerServices.log(false, "PDM CONTROLLER - Exception while sending message to RSU", e));
+                      ManagerAndControllerServices.log(false, "Exception while sending message to RSU", e));
             }
         }
 
