@@ -1,15 +1,19 @@
 package us.dot.its.jpo.ode.vsdm;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import us.dot.its.jpo.ode.j2735.dsrc.BSMcoreData;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.dsrc.DDateTime;
 import us.dot.its.jpo.ode.j2735.dsrc.Position3D;
+import us.dot.its.jpo.ode.j2735.dsrc.TransmissionAndSpeed;
+import us.dot.its.jpo.ode.j2735.dsrc.Velocity;
 import us.dot.its.jpo.ode.j2735.semi.Environmental;
 import us.dot.its.jpo.ode.j2735.semi.FundamentalSituationalStatus;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
+import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage.Bundle;
 import us.dot.its.jpo.ode.j2735.semi.VehSitRecord;
 import us.dot.its.jpo.ode.j2735.semi.VehicleSituationStatus;
 import us.dot.its.jpo.ode.j2735.semi.Weather;
@@ -27,10 +31,11 @@ public class BsmToVsdConverter {
 	 * @param bsmList ArrayList&lt;BasicSafetyMessage&gt; containing 1-10 BasicSafetyMessage objects
 	 * @return VehSitDataMessage
 	 */
-	public static VehSitDataMessage convertBsmToVsd(ServiceRequest sr, ArrayList<BasicSafetyMessage> bsmList) {
+	public static VehSitDataMessage convertBsmToVsd(ServiceRequest sr, List<BasicSafetyMessage> bsmList) {
 
 		VehSitDataMessage vsdm = new VehSitDataMessage();
 
+		vsdm.bundle = new Bundle();
 		vsdm.dialogID = sr.dialogID;
 		vsdm.seqID = sr.seqID;
 		vsdm.groupID = sr.groupID;
@@ -70,9 +75,10 @@ public class BsmToVsdConverter {
 	private static FundamentalSituationalStatus createFundamentalSituationalStatus(BSMcoreData bsmCoreData) {
 
 		FundamentalSituationalStatus fss = new FundamentalSituationalStatus();
-
+		
+		fss.speed = new TransmissionAndSpeed();
 		fss.speed.transmisson = bsmCoreData.transmission;
-		fss.speed.speed.setValue(bsmCoreData.speed.intValue());
+		fss.speed.speed = new Velocity(bsmCoreData.speed.intValue());
 		fss.heading = bsmCoreData.heading;
 		fss.steeringAngle = bsmCoreData.angle;
 		fss.accelSet = bsmCoreData.accelSet;
