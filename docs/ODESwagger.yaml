@@ -19,9 +19,8 @@ paths:
         Vehicles.
       operationId: tim_post
       description: >-
-        The TIM endpoint accepts a TravelerInputData from which it constructs a
-        Traveler Information Message message and sends it to all specified RSUs
-        and SDW.
+        Submits a TIM message to ODE for distribution to the specified RSUs and
+        SDW.
       parameters:
         - name: TravelerInputData
           in: body
@@ -35,17 +34,19 @@ paths:
         - TIM
       responses:
         '200':
-          description: TravelerInputData was submitted successfully
+          description: TravelerInputData was submitted successfully.
           schema:
             $ref: '#/definitions/Status'
         '400':
-          description: Bad Request
+          description: >-
+            Bad Request. Issued if request is invalid or failed to be executed.
+            See the response body or ODE User Guide for details.
           schema:
             $ref: '#/definitions/Status'
   /RSU SNMP:
     get:
       summary: RSU SNMP Query
-      operationId: Send SNMP Messages
+      operationId: snmp_get
       description: Check the health and status of RSU devices through SNMP communication
       parameters:
         - name: IP
@@ -74,9 +75,10 @@ paths:
   /pdm:
     post:
       summary: PDM Interface
-      operationId: Send pdm message
-      description: |
-        The PDM endpoint returns a constructed PDM message
+      operationId: pdm_post
+      description: >-
+        Submits a Probe Data Management message to ODE for distribution to the
+        specified RSUs.
       parameters:
         - name: ProbeDataManagement
           in: body
@@ -88,16 +90,13 @@ paths:
         - PDM
       responses:
         '200':
-          description: >-
-            A list of RSUs with a success status, and 0 as the error status
-            code.
+          description: Probe Data Management message was submitted successfully.
           schema:
             $ref: '#/definitions/Status'
         '400':
           description: >-
-            If RSU responds but deposit fails, then it returns snmp error
-            status. If RSU does not respond, then it returns empty response
-            error.
+            Bad Request. Issued if request is invalid or failed to be executed.
+            See the response body or ODE User Guide for details.
           schema:
             $ref: '#/definitions/Status'
 definitions:
