@@ -23,20 +23,18 @@ import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.http.BadRequestException;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
-import us.dot.its.jpo.ode.plugin.GenericSnmp.SNMP;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
-import us.dot.its.jpo.ode.snmp.SnmpProperties;
-import us.dot.its.jpo.ode.snmp.TimParameters;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 @RunWith(JMockit.class)
-public class TravelerMessageControllerTest {
+public class TIMControllerTest {
 
    @Tested
-   TravelerMessageController tmc;
+   TIMController tmc;
    @Injectable
    OdeProperties mockOdeProperties;
    @Injectable
@@ -52,10 +50,6 @@ public class TravelerMessageControllerTest {
    RSU mockRsu;
    @Injectable
    SNMP mockSnmp;
-   @Injectable
-   SnmpProperties mockProps;
-   @Injectable
-   TimParameters mockParams;
 
    @Mocked
    ResponseEvent mockResponseEvent;
@@ -79,7 +73,7 @@ public class TravelerMessageControllerTest {
          new DdsDepositor<>(mockOdeProperties);
          result = new Exception();
       }};
-      new TravelerMessageController(mockOdeProperties);
+      new TIMController(mockOdeProperties);
    }
 
    @Test
@@ -247,7 +241,8 @@ public class TravelerMessageControllerTest {
                mockTim.getSnmp();
                result = mockSnmp;
 
-               ManagerAndControllerServices.createAndSend((TimParameters) any, (SnmpProperties) any);
+               TIMController.createAndSend(
+                     (SNMP) any, (RSU) any, anyString);
                result = mockResponseEvent;
             }
          };
@@ -291,7 +286,7 @@ public class TravelerMessageControllerTest {
                mockTim.getSnmp();
                result = mockSnmp;
 
-               ManagerAndControllerServices.createAndSend((TimParameters) any, (SnmpProperties) any);
+               TIMController.createAndSend((SNMP) any, (RSU) any, anyString);
                result = null;
             }
          };

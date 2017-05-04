@@ -1,12 +1,13 @@
 package us.dot.its.jpo.ode.traveler;
 
+import java.io.IOException;
 import java.text.ParseException;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.snmp4j.ScopedPDU;
 import org.snmp4j.event.ResponseEvent;
-import org.snmp4j.smi.Address;
-import org.snmp4j.smi.GenericAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -24,28 +25,28 @@ import us.dot.its.jpo.ode.dds.DdsClient.DdsClientException;
 import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
-import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.http.BadRequestException;
-import us.dot.its.jpo.ode.plugin.GenericSnmp.SNMP;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
-import us.dot.its.jpo.ode.snmp.SnmpProperties;
-import us.dot.its.jpo.ode.snmp.TimParameters;
+import us.dot.its.jpo.ode.snmp.SnmpSession;
+import us.dot.its.jpo.ode.snmp.TimManagerService;
+import us.dot.its.jpo.ode.snmp.TimManagerService.TimManagerServiceException;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
 
 @Controller
-public class TravelerMessageController {
+public class TIMController {
 
-    private static Logger logger = LoggerFactory.getLogger(TravelerMessageController.class);
+    private static Logger logger = LoggerFactory.getLogger(TIMController.class);
 
     private OdeProperties odeProperties;
 
     private DdsDepositor<DdsStatusMessage> depositor;
 
     @Autowired
-    public TravelerMessageController(OdeProperties odeProperties) {
+    public TIMController(OdeProperties odeProperties) {
         super();
         this.odeProperties = odeProperties;
 
@@ -59,25 +60,28 @@ public class TravelerMessageController {
     @ResponseBody
     @RequestMapping(value = "/tim", method = RequestMethod.POST, produces = "application/json")
     public String timMessage(@RequestBody String jsonString) {
+       logger.debug("Received request: {}", jsonString);
         if (StringUtils.isEmpty(jsonString)) {
            String msg = "Endpoint received null request";
            msg = ManagerAndControllerServices.log(false, msg, null);
            throw new BadRequestException(msg);
         }
 
-        // Step 1 - Serialize the JSON into a TIM object
         J2735TravelerInputData travelerinputData = null;
         try {
            travelerinputData = (J2735TravelerInputData) JsonUtils.fromJson(
-                 jsonString, J2735TravelerInputData.class);
-           String travelerinputDataStr = travelerinputData.toString();
-           logger.debug("Serialized TIM: {}", travelerinputDataStr);
+                 jsonString,
+                 J2735TravelerInputData.class);
+
+           logger.debug("J2735TravelerInputData: {}", travelerinputData.toJson(true));
+           
         }
         catch (Exception e) {
            ManagerAndControllerServices.log(false, "Error Deserializing TravelerInputData", e);
            throw new BadRequestException(e);
         }
         
+
         OssTravelerMessageBuilder builder = new OssTravelerMessageBuilder();
         try {
            builder.buildTravelerInformation(travelerinputData);
@@ -104,33 +108,48 @@ public class TravelerMessageController {
         }
         logger.debug("Encoded Hex TIM: {}", rsuSRMPayload);
 
-        boolean success = true;
-        try {
-           // Step 3 - Send TIM to all specified RSUs if rsus element exists
-           if (travelerinputData.getSnmp() != null && travelerinputData.getRsus() != null) {
-              for (RSU rsu : travelerinputData.getRsus()) {
-                 ResponseEvent response = sendToRSU(rsu, travelerinputData.getSnmp(), rsuSRMPayload);
-                 if (response != null && response.getResponse() != null) {
-                    String msg = String.format("RSU %1$s Response: %2$s", rsu.getRsuTarget(), response.getResponse());
-                    EventLogger.logger.info(msg);
-                    logger.info(msg);
-                    depositToDDS(travelerinputData, rsuSRMPayload);
-                 } else {
-                    String msg = String.format("Empty response from RSU %1$s", rsu.getRsuTarget());
-                    EventLogger.logger.error(msg);
-                    logger.error(msg);
-                    depositToDDS(travelerinputData, rsuSRMPayload);
-                    throw new BadRequestException(msg);
-                 }
+        HashMap<String, String> responseList = new HashMap<>();
+        for (RSU curRsu : travelerinputData.getRsus()) {
+
+           ResponseEvent response = null;
+           try {
+              response = createAndSend(
+                    travelerinputData.getSnmp(), curRsu, rsuSRMPayload);
+
+              if (null == response || null == response.getResponse()) {
+                 responseList.put(curRsu.getRsuTarget(),
+                       ManagerAndControllerServices.log(false, "No response from RSU IP=" + curRsu.getRsuTarget(), null));
+              } else if (0 == response.getResponse().getErrorStatus()) {
+                 responseList.put(curRsu.getRsuTarget(), ManagerAndControllerServices.log(true,
+                       "SNMP deposit successful: " + response.getResponse(), null));
+              } else {
+                 responseList.put(curRsu.getRsuTarget(),
+                       ManagerAndControllerServices.log(false,
+                             "Error, SNMP deposit failed, error code=" + response.getResponse().getErrorStatus() + "("
+                                   + response.getResponse().getErrorStatusText() + ")",
+                             null));
               }
+
+           } catch (Exception e) {
+              responseList.put(curRsu.getRsuTarget(),
+                    ManagerAndControllerServices.log(false, "Exception while sending message to RSU", e));
            }
+        }
+
+        
+        
+        try {
+           depositToDDS(travelerinputData, rsuSRMPayload);
+           responseList.put("SDW",
+                 ManagerAndControllerServices.log(
+                       true, "Deposit to SDW was successful", null));
         } catch (Exception e) {
-           String msg = "Error sending TIM to RSUs or SDW";
+           String msg = "Error depositing to SDW";
            ManagerAndControllerServices.log(false, msg , e);
            throw new BadRequestException(e);
         }
 
-        return ManagerAndControllerServices.log(success, "Traveler Information Message submitted successfully", null);
+        return responseList.toString();
     }
 
    private void depositToDDS(J2735TravelerInputData travelerinputData, String rsuSRMPayload)
@@ -148,20 +167,35 @@ public class TravelerMessageController {
         }
    }
 
-    private ResponseEvent sendToRSU(RSU rsu, SNMP snmp, String payload) throws ParseException {
-       Address addr = GenericAddress.parse(rsu.getRsuTarget() + "/161");
+    /**
+     * Create an SNMP session given the values in
+     * 
+     * @param tim
+     *            - The TIM parameters (payload, channel, mode, etc)
+     * @param props
+     *            - The SNMP properties (ip, username, password, etc)
+     * @return ResponseEvent
+    * @throws TimManagerServiceException 
+     */
+    public static ResponseEvent createAndSend(
+          SNMP snmp, RSU rsu, String payload) throws TimManagerServiceException {
+       SnmpSession session = null;
+       if (snmp != null)
+          session = ManagerAndControllerServices.createSnmpSession(rsu);
 
-       // Populate the SnmpProperties object with SNMP preferences
-       SnmpProperties testProps = new SnmpProperties(addr, rsu.getRsuUsername(), rsu.getRsuPassword(), rsu.getRsuRetries(), rsu.getRsuTimeout());
+       if (session == null)
+          return null;
 
-       // Populate the TimParameters object with OID values
-       TimParameters testParams = new TimParameters(
-             snmp.getRsuid(), snmp.getMsgid(), snmp.getMode(), snmp.getChannel(),
-             snmp.getInterval(), snmp.getDeliverystart(), snmp.getDeliverystop(), 
-             payload, snmp.getEnable(), snmp.getStatus());
-
-       // Send the request out
-       return ManagerAndControllerServices.createAndSend(testParams, testProps);
+       // Send the PDU
+       ResponseEvent response = null;
+       ScopedPDU pdu = TimManagerService.createPDU(snmp, payload);
+       try {
+          response = session.set(pdu, session.getSnmp(), session.getTransport(), session.getTarget());
+       } catch (IOException | NullPointerException e) {
+          logger.error("Error sending PDU: {}", e);
+          return null;
+       }
+       return response;
 
     }
 }

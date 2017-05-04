@@ -22,15 +22,15 @@ import org.snmp4j.event.ResponseEvent;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
-import us.dot.its.jpo.ode.ManagerAndControllerServices;
+import us.dot.its.jpo.ode.pdm.PdmController;
+import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleStatusRequest;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssHeight;
 
 public class PdmManagerServiceTest {
 
 	@Injectable
-	SnmpProperties mockSnmpProperties;
+	RSU mockSnmpProperties;
 	@Mocked
 	J2735ProbeDataManagment mockPdmParameters;
 
@@ -39,24 +39,17 @@ public class PdmManagerServiceTest {
 
 		J2735ProbeDataManagment testNullParams = null;
 
-		assertNull(ManagerAndControllerServices.createAndSend(testNullParams, mockSnmpProperties));
+		assertNull(PdmController.createAndSend(testNullParams, mockSnmpProperties));
 	}
 
 	@Test
-	public void createAndSendshouldReturnNullWhenGivenNullSnmpProperties() {
-
-		SnmpProperties testNullSnmpProperties = null;
-
-		assertNull(ManagerAndControllerServices.createAndSend(mockPdmParameters, testNullSnmpProperties));
-	}
-
-	@Test
-	public void createAndSendShouldReturnNullFailedToCreateSnmpSession(@Mocked final SnmpSession mockSnmpSession) {
+	public void createAndSendShouldReturnNullFailedToCreateSnmpSession(
+	      @Mocked final SnmpSession mockSnmpSession) {
 
 		try {
 			new Expectations() {
 				{
-					new SnmpSession((SnmpProperties) any);
+					new SnmpSession((RSU) any);
 					result = new IOException("testException123");
 				}
 			};
@@ -64,7 +57,7 @@ public class PdmManagerServiceTest {
 			fail("Unexpected exception in expectations block: " + e);
 		}
 
-		assertNull(ManagerAndControllerServices.createAndSend(mockPdmParameters, mockSnmpProperties));
+		assertNull(PdmController.createAndSend(mockPdmParameters, mockSnmpProperties));
 	}
 
 	@Test
@@ -73,7 +66,7 @@ public class PdmManagerServiceTest {
 		try {
 			new Expectations() {
 				{
-					new SnmpSession((SnmpProperties) any);
+					new SnmpSession((RSU) any);
 
 					mockSnmpSession.set((PDU) any, (Snmp) any, (TransportMapping) any, (UserTarget) any);
 					result = new IOException("testException123");
@@ -83,7 +76,7 @@ public class PdmManagerServiceTest {
 			fail("Unexpected exception in expectations block: " + e);
 		}
 
-		assertNull(ManagerAndControllerServices.createAndSend(mockPdmParameters, mockSnmpProperties));
+		assertNull(PdmController.createAndSend(mockPdmParameters, mockSnmpProperties));
 	}
 
 	@Test
@@ -92,7 +85,7 @@ public class PdmManagerServiceTest {
 		try {
 			new Expectations() {
 				{
-					new SnmpSession((SnmpProperties) any);
+					new SnmpSession((RSU) any);
 
 					mockSnmpSession.set((PDU) any, (Snmp) any, (TransportMapping) any, (UserTarget) any);
 				}
@@ -102,7 +95,7 @@ public class PdmManagerServiceTest {
 		}
 
 		assertEquals(ResponseEvent.class,
-				ManagerAndControllerServices.createAndSend(mockPdmParameters, mockSnmpProperties).getClass());
+		      PdmController.createAndSend(mockPdmParameters, mockSnmpProperties).getClass());
 	}
 
 	@Test

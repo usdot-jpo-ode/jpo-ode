@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.text.ParseException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.snmp4j.event.ResponseEvent;
@@ -20,9 +22,7 @@ import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.http.BadRequestException;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
-import us.dot.its.jpo.ode.snmp.SnmpProperties;
 import us.dot.its.jpo.ode.util.JsonUtils;
-import java.text.ParseException;
 @RunWith(JMockit.class)
 public class PdmControllerTest {
 
@@ -65,7 +65,7 @@ public class PdmControllerTest {
                 mockPdm.getRsuList();
                 result = new RSU[]{mockRsu};
                 
-                ManagerAndControllerServices.createAndSend((J2735ProbeDataManagment)any, (SnmpProperties)any);
+                PdmController.createAndSend((J2735ProbeDataManagment)any, (RSU)any);
                 result = null;
             }
         };
@@ -94,7 +94,7 @@ public class PdmControllerTest {
                 mockPdm.getRsuList();
                 result = new RSU[]{mockRsu};
                 
-                ManagerAndControllerServices.createAndSend((J2735ProbeDataManagment)any, (SnmpProperties)any);
+                PdmController.createAndSend((J2735ProbeDataManagment)any, (RSU)any);
                 result = mockResponseEvent;
                 
                 mockResponseEvent.getResponse();
@@ -126,7 +126,7 @@ public class PdmControllerTest {
                 mockPdm.getRsuList();
                 result = new RSU[]{mockRsu};
                 
-                ManagerAndControllerServices.createAndSend((J2735ProbeDataManagment)any, (SnmpProperties)any);
+                PdmController.createAndSend((J2735ProbeDataManagment)any, (RSU)any);
                 result = mockResponseEvent;
                 
                 mockResponseEvent.getResponse().getErrorStatus();
@@ -158,7 +158,8 @@ public class PdmControllerTest {
                 mockPdm.getRsuList();
                 result = new RSU[]{mockRsu};
                 
-                ManagerAndControllerServices.createAndSend((J2735ProbeDataManagment)any, (SnmpProperties)any);
+                PdmController.createAndSend(
+                      (J2735ProbeDataManagment)any, (RSU)any);
                 result = mockResponseEvent;
                 
                 mockResponseEvent.getResponse().getErrorStatus();

@@ -10,16 +10,108 @@ import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 
 import us.dot.its.jpo.ode.j2735.J2735;
-import us.dot.its.jpo.ode.j2735.dsrc.*;
+import us.dot.its.jpo.ode.j2735.dsrc.Angle;
+import us.dot.its.jpo.ode.j2735.dsrc.Circle;
+import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane;
 import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane.OffsetXaxis;
 import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane.OffsetYaxis;
+import us.dot.its.jpo.ode.j2735.dsrc.DeltaAngle;
+import us.dot.its.jpo.ode.j2735.dsrc.DescriptiveName;
+import us.dot.its.jpo.ode.j2735.dsrc.DirectionOfUse;
+import us.dot.its.jpo.ode.j2735.dsrc.DistanceUnits;
+import us.dot.its.jpo.ode.j2735.dsrc.ExitService;
+import us.dot.its.jpo.ode.j2735.dsrc.Extent;
+import us.dot.its.jpo.ode.j2735.dsrc.GenericSignage;
+import us.dot.its.jpo.ode.j2735.dsrc.GeographicalPath;
 import us.dot.its.jpo.ode.j2735.dsrc.GeographicalPath.Description;
+import us.dot.its.jpo.ode.j2735.dsrc.GeometricProjection;
+import us.dot.its.jpo.ode.j2735.dsrc.HeadingSlice;
+import us.dot.its.jpo.ode.j2735.dsrc.LaneDataAttribute;
+import us.dot.its.jpo.ode.j2735.dsrc.LaneDataAttributeList;
+import us.dot.its.jpo.ode.j2735.dsrc.LaneID;
+import us.dot.its.jpo.ode.j2735.dsrc.LaneWidth;
+import us.dot.its.jpo.ode.j2735.dsrc.Latitude;
+import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
+import us.dot.its.jpo.ode.j2735.dsrc.MergeDivergeNodeAngle;
+import us.dot.its.jpo.ode.j2735.dsrc.MinuteOfTheYear;
+import us.dot.its.jpo.ode.j2735.dsrc.MsgCRC;
+import us.dot.its.jpo.ode.j2735.dsrc.MsgCount;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeLL;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeLLList;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeSetLL;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeSetXY;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeXY;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeAttributeXYList;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeLL;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeListLL;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeListXY;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeOffsetPointLL;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeOffsetPointXY;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeSetLL;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeSetXY;
+import us.dot.its.jpo.ode.j2735.dsrc.NodeXY;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_24B;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_28B;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_32B;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_36B;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_44B;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_LL_48B;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_LLmD_64b;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_20b;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_22b;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_24b;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_26b;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_28b;
+import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_32b;
+import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B12;
+import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B14;
+import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B16;
+import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B18;
+import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B22;
+import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B24;
+import us.dot.its.jpo.ode.j2735.dsrc.OffsetSystem;
+import us.dot.its.jpo.ode.j2735.dsrc.Offset_B10;
+import us.dot.its.jpo.ode.j2735.dsrc.Offset_B11;
+import us.dot.its.jpo.ode.j2735.dsrc.Offset_B12;
+import us.dot.its.jpo.ode.j2735.dsrc.Offset_B13;
+import us.dot.its.jpo.ode.j2735.dsrc.Offset_B14;
+import us.dot.its.jpo.ode.j2735.dsrc.Offset_B16;
+import us.dot.its.jpo.ode.j2735.dsrc.Radius_B12;
+import us.dot.its.jpo.ode.j2735.dsrc.RegionList;
+import us.dot.its.jpo.ode.j2735.dsrc.RegionOffsets;
+import us.dot.its.jpo.ode.j2735.dsrc.RegionPointSet;
+import us.dot.its.jpo.ode.j2735.dsrc.RegulatorySpeedLimit;
+import us.dot.its.jpo.ode.j2735.dsrc.RoadRegulatorID;
+import us.dot.its.jpo.ode.j2735.dsrc.RoadSegmentID;
+import us.dot.its.jpo.ode.j2735.dsrc.RoadSegmentReferenceID;
+import us.dot.its.jpo.ode.j2735.dsrc.RoadwayCrownAngle;
+import us.dot.its.jpo.ode.j2735.dsrc.SSPindex;
+import us.dot.its.jpo.ode.j2735.dsrc.Scale_B12;
+import us.dot.its.jpo.ode.j2735.dsrc.SegmentAttributeLL;
+import us.dot.its.jpo.ode.j2735.dsrc.SegmentAttributeLLList;
+import us.dot.its.jpo.ode.j2735.dsrc.SegmentAttributeXY;
+import us.dot.its.jpo.ode.j2735.dsrc.SegmentAttributeXYList;
+import us.dot.its.jpo.ode.j2735.dsrc.ShapePointSet;
+import us.dot.its.jpo.ode.j2735.dsrc.SpeedLimit;
+import us.dot.its.jpo.ode.j2735.dsrc.SpeedLimitList;
+import us.dot.its.jpo.ode.j2735.dsrc.SpeedLimitType;
+import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Content;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.Regions;
+import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrameList;
+import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
+import us.dot.its.jpo.ode.j2735.dsrc.URL_Base;
+import us.dot.its.jpo.ode.j2735.dsrc.URL_Short;
+import us.dot.its.jpo.ode.j2735.dsrc.UniqueMSGID;
+import us.dot.its.jpo.ode.j2735.dsrc.ValidRegion;
 import us.dot.its.jpo.ode.j2735.dsrc.ValidRegion.Area;
+import us.dot.its.jpo.ode.j2735.dsrc.Velocity;
+import us.dot.its.jpo.ode.j2735.dsrc.WorkZone;
+import us.dot.its.jpo.ode.j2735.dsrc.Zoom;
 import us.dot.its.jpo.ode.j2735.itis.ITIScodesAndText;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.plugin.TimFieldValidator;
+import us.dot.its.jpo.ode.plugin.TravelerInformationMessage;
+import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
@@ -49,7 +141,7 @@ public class OssTravelerMessageBuilder {
       TimFieldValidator.validateFrameCount(travInputData.getTim().getDataframes().length);
       int len = travInputData.getTim().getDataframes().length;
       for (int i = 0; i < len; i++) {
-         J2735TravelerInputData.DataFrame inputDataFrame = travInputData.getTim().getDataframes()[i];
+         TravelerInformationMessage.DataFrame inputDataFrame = travInputData.getTim().getDataframes()[i];
          TravelerDataFrame dataFrame = new TravelerDataFrame();
 
          // Part I, header
@@ -85,7 +177,7 @@ public class OssTravelerMessageBuilder {
       return CodecUtils.toHex(bytes);
    }
 
-   public Content buildContent(J2735TravelerInputData.DataFrame inputDataFrame) {
+   public Content buildContent(TravelerInformationMessage.DataFrame inputDataFrame) {
       String contentType = inputDataFrame.getContent();
       String[] codes = inputDataFrame.getItems();
       Content content = new Content();
@@ -168,9 +260,9 @@ public class OssTravelerMessageBuilder {
       return gs;
    }
 
-   private Regions buildRegions(J2735TravelerInputData.DataFrame.Region[] inputRegions) {
+   private Regions buildRegions(TravelerInformationMessage.DataFrame.Region[] inputRegions) {
       Regions regions = new Regions();
-      for (J2735TravelerInputData.DataFrame.Region inputRegion : inputRegions) {
+      for (TravelerInformationMessage.DataFrame.Region inputRegion : inputRegions) {
          GeographicalPath geoPath = new GeographicalPath();
          Description description = new Description();
          TimFieldValidator.validateGeoName(inputRegion.getName());
@@ -262,7 +354,7 @@ public class OssTravelerMessageBuilder {
    }
 
    public RegionList buildRegionOffsets(
-         J2735TravelerInputData.DataFrame.Region.OldRegion.RegionPoint.RegionList[] list) {
+         TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[] list) {
       RegionList myList = new RegionList();
       for (int i = 0; i < list.length; i++) {
          RegionOffsets ele = new RegionOffsets();
@@ -277,7 +369,7 @@ public class OssTravelerMessageBuilder {
       return myList;
    }
 
-   public Circle buildGeoCircle(J2735TravelerInputData.DataFrame.Region.Geometry geo) {
+   public Circle buildGeoCircle(TravelerInformationMessage.DataFrame.Region.Geometry geo) {
       Circle circle = new Circle();
       circle.setCenter(OssPosition3D.position3D(geo.getCircle().getPosition()));
       TimFieldValidator.validateRadius(geo.getCircle().getRadius());
@@ -287,7 +379,7 @@ public class OssTravelerMessageBuilder {
       return circle;
    }
 
-   public Circle buildOldCircle(J2735TravelerInputData.DataFrame.Region.OldRegion reg) {
+   public Circle buildOldCircle(TravelerInformationMessage.DataFrame.Region.OldRegion reg) {
       Circle circle = new Circle();
       circle.setCenter(OssPosition3D.position3D(reg.getCircle().getPosition()));
       TimFieldValidator.validateRadius(reg.getCircle().getRadius());
@@ -297,11 +389,11 @@ public class OssTravelerMessageBuilder {
       return circle;
    }
 
-   public NodeListXY buildNodeXYList(J2735TravelerInputData.NodeXY[] inputNodes) {
+   public NodeListXY buildNodeXYList(TravelerInformationMessage.NodeXY[] inputNodes) {
       NodeListXY nodeList = new NodeListXY();
       NodeSetXY nodes = new NodeSetXY();
       for (int i = 0; i < inputNodes.length; i++) {
-         J2735TravelerInputData.NodeXY point = inputNodes[i];
+         TravelerInformationMessage.NodeXY point = inputNodes[i];
 
          NodeXY node = new NodeXY();
          NodeOffsetPointXY nodePoint = new NodeOffsetPointXY();
@@ -360,7 +452,7 @@ public class OssTravelerMessageBuilder {
 
             if (point.getAttributes().getLocalNodes().length > 0) {
                NodeAttributeXYList localNodeList = new NodeAttributeXYList();
-               for (J2735TravelerInputData.LocalNode localNode : point.getAttributes().getLocalNodes()) {
+               for (TravelerInformationMessage.LocalNode localNode : point.getAttributes().getLocalNodes()) {
                   localNodeList.add(new NodeAttributeXY(localNode.getType()));
                }
                attributes.setLocalNode(localNodeList);
@@ -368,7 +460,7 @@ public class OssTravelerMessageBuilder {
 
             if (point.getAttributes().getDisabledLists().length > 0) {
                SegmentAttributeXYList disabledNodeList = new SegmentAttributeXYList();
-               for (J2735TravelerInputData.DisabledList disabledList : point.getAttributes().getDisabledLists()) {
+               for (TravelerInformationMessage.DisabledList disabledList : point.getAttributes().getDisabledLists()) {
                   disabledNodeList.add(new SegmentAttributeXY(disabledList.getType()));
                }
                attributes.setDisabled(disabledNodeList);
@@ -376,7 +468,7 @@ public class OssTravelerMessageBuilder {
 
             if (point.getAttributes().getEnabledLists().length > 0) {
                SegmentAttributeXYList enabledNodeList = new SegmentAttributeXYList();
-               for (J2735TravelerInputData.EnabledList enabledList : point.getAttributes().getEnabledLists()) {
+               for (TravelerInformationMessage.EnabledList enabledList : point.getAttributes().getEnabledLists()) {
                   enabledNodeList.add(new SegmentAttributeXY(enabledList.getType()));
                }
                attributes.setEnabled(enabledNodeList);
@@ -384,7 +476,7 @@ public class OssTravelerMessageBuilder {
 
             if (point.getAttributes().getDataLists().length > 0) {
                LaneDataAttributeList dataNodeList = new LaneDataAttributeList();
-               for (J2735TravelerInputData.DataList dataList : point.getAttributes().getDataLists()) {
+               for (TravelerInformationMessage.DataList dataList : point.getAttributes().getDataLists()) {
 
                   LaneDataAttribute dataAttribute = new LaneDataAttribute();
 
@@ -395,7 +487,7 @@ public class OssTravelerMessageBuilder {
                   dataAttribute.setLaneAngle(new MergeDivergeNodeAngle(dataList.getLaneAngle()));
 
                   SpeedLimitList speedDataList = new SpeedLimitList();
-                  for (J2735TravelerInputData.SpeedLimits speedLimit : dataList.getSpeedLimits()) {
+                  for (TravelerInformationMessage.SpeedLimits speedLimit : dataList.getSpeedLimits()) {
                      speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.getType()),
                            new Velocity(speedLimit.getVelocity())));
                   }
@@ -420,7 +512,7 @@ public class OssTravelerMessageBuilder {
       return nodeList;
    }
 
-   private NodeListXY buildComputedLane(J2735TravelerInputData.ComputedLane inputLane) {
+   private NodeListXY buildComputedLane(TravelerInformationMessage.ComputedLane inputLane) {
       NodeListXY nodeList = new NodeListXY();
 
       ComputedLane computedLane = new ComputedLane();
@@ -451,11 +543,11 @@ public class OssTravelerMessageBuilder {
       return nodeList;
    }
 
-   public NodeListLL buildNodeLLList(J2735TravelerInputData.NodeXY[] inputNodes) {
+   public NodeListLL buildNodeLLList(TravelerInformationMessage.NodeXY[] inputNodes) {
       NodeListLL nodeList = new NodeListLL();
       NodeSetLL nodes = new NodeSetLL();
       for (int i = 0; i < inputNodes.length; i++) {
-         J2735TravelerInputData.NodeXY point = inputNodes[i];
+         TravelerInformationMessage.NodeXY point = inputNodes[i];
 
          NodeLL node = new NodeLL();
          NodeOffsetPointLL nodePoint = new NodeOffsetPointLL();
@@ -520,7 +612,7 @@ public class OssTravelerMessageBuilder {
 
             if (point.getAttributes().getLocalNodes().length > 0) {
                NodeAttributeLLList localNodeList = new NodeAttributeLLList();
-               for (J2735TravelerInputData.LocalNode localNode : point.getAttributes().getLocalNodes()) {
+               for (TravelerInformationMessage.LocalNode localNode : point.getAttributes().getLocalNodes()) {
                   localNodeList.add(new NodeAttributeLL(localNode.getType()));
                }
                attributes.setLocalNode(localNodeList);
@@ -528,7 +620,7 @@ public class OssTravelerMessageBuilder {
 
             if (point.getAttributes().getDisabledLists().length > 0) {
                SegmentAttributeLLList disabledNodeList = new SegmentAttributeLLList();
-               for (J2735TravelerInputData.DisabledList disabledList : point.getAttributes().getDisabledLists()) {
+               for (TravelerInformationMessage.DisabledList disabledList : point.getAttributes().getDisabledLists()) {
                   disabledNodeList.add(new SegmentAttributeLL(disabledList.getType()));
                }
                attributes.setDisabled(disabledNodeList);
@@ -536,7 +628,7 @@ public class OssTravelerMessageBuilder {
 
             if (point.getAttributes().getEnabledLists().length > 0) {
                SegmentAttributeLLList enabledNodeList = new SegmentAttributeLLList();
-               for (J2735TravelerInputData.EnabledList enabledList : point.getAttributes().getEnabledLists()) {
+               for (TravelerInformationMessage.EnabledList enabledList : point.getAttributes().getEnabledLists()) {
                   enabledNodeList.add(new SegmentAttributeLL(enabledList.getType()));
                }
                attributes.setEnabled(enabledNodeList);
@@ -544,7 +636,7 @@ public class OssTravelerMessageBuilder {
 
             if (point.getAttributes().getDataLists().length > 0) {
                LaneDataAttributeList dataNodeList = new LaneDataAttributeList();
-               for (J2735TravelerInputData.DataList dataList : point.getAttributes().getDataLists()) {
+               for (TravelerInformationMessage.DataList dataList : point.getAttributes().getDataLists()) {
 
                   LaneDataAttribute dataAttribute = new LaneDataAttribute();
 
@@ -555,7 +647,7 @@ public class OssTravelerMessageBuilder {
                   dataAttribute.setLaneAngle(new MergeDivergeNodeAngle(dataList.getLaneAngle()));
 
                   SpeedLimitList speedDataList = new SpeedLimitList();
-                  for (J2735TravelerInputData.SpeedLimits speedLimit : dataList.getSpeedLimits()) {
+                  for (TravelerInformationMessage.SpeedLimits speedLimit : dataList.getSpeedLimits()) {
                      speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.getType()),
                            new Velocity(speedLimit.getVelocity())));
                   }
