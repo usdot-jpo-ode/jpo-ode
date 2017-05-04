@@ -1,11 +1,5 @@
 package us.dot.its.jpo.ode.plugin.generic;
 
-import org.junit.runner.RunWith;
-
-import mockit.Tested;
-import mockit.integration.junit4.JMockit;
-import us.dot.its.jpo.ode.plugin.GenericSnmp;
-import us.dot.its.jpo.ode.plugin.GenericSnmp.SNMP;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -15,6 +9,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import mockit.Tested;
+import mockit.integration.junit4.JMockit;
+import us.dot.its.jpo.ode.plugin.SNMP;
 
 @RunWith(JMockit.class)
 public class GenericSNMPTest {
@@ -64,7 +63,7 @@ public class GenericSNMPTest {
    
    @Test
    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-     Constructor<GenericSnmp > constructor = GenericSnmp.class.getDeclaredConstructor();
+     Constructor<SNMP > constructor = SNMP.class.getDeclaredConstructor();
      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
      constructor.setAccessible(true);
      try {

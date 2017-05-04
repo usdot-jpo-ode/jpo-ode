@@ -10,12 +10,12 @@ import java.lang.reflect.Modifier;
 
 import org.junit.Test;
 
-import us.dot.its.jpo.ode.plugin.TravelerInformationMessage;
+import us.dot.its.jpo.ode.plugin.TravelerInformationMessage.TIM;
 
 public class TravelerInformationMessageTest {
    @Test
    public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-     Constructor<TravelerInformationMessage > constructor = TravelerInformationMessage.class.getDeclaredConstructor();
+     Constructor<TIM> constructor = TIM.class.getDeclaredConstructor();
      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
      constructor.setAccessible(true);
      try {
