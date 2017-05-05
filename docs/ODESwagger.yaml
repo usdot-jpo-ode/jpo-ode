@@ -34,15 +34,29 @@ paths:
         - TIM
       responses:
         '200':
-          description: TravelerInputData was submitted successfully.
+          description: >-
+            Traveleer Information Message was submitted successfully. See the
+            response body or ODE User Guide for details.
           schema:
-            $ref: '#/definitions/Status'
+            type: array
+            items:
+              $ref: '#/definitions/Status'
         '400':
           description: >-
             Bad Request. Issued if request is invalid or failed to be executed.
             See the response body or ODE User Guide for details.
           schema:
-            $ref: '#/definitions/Status'
+            type: array
+            items:
+              $ref: '#/definitions/Status'
+        '500':
+          description: >-
+            Internal Server Error. See the response body or ODE User Guide for
+            details.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Status'
   /RSU SNMP:
     get:
       summary: RSU SNMP Query
@@ -90,15 +104,29 @@ paths:
         - PDM
       responses:
         '200':
-          description: Probe Data Management message was submitted successfully.
+          description: >-
+            Probe Data Management message was submitted successfully. See the
+            response body or ODE User Guide for details.
           schema:
-            $ref: '#/definitions/Status'
+            type: array
+            items:
+              $ref: '#/definitions/Status'
         '400':
           description: >-
             Bad Request. Issued if request is invalid or failed to be executed.
             See the response body or ODE User Guide for details.
           schema:
-            $ref: '#/definitions/Status'
+            type: array
+            items:
+              $ref: '#/definitions/Status'
+        '500':
+          description: >-
+            Internal Server Error. See the response body or ODE User Guide for
+            details.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Status'
 definitions:
   tim:
     type: object

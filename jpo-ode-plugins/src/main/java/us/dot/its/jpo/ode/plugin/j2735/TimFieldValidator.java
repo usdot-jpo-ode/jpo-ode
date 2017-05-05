@@ -1,6 +1,4 @@
-package us.dot.its.jpo.ode.plugin;
-
-import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
+package us.dot.its.jpo.ode.plugin.j2735;
 
 public class TimFieldValidator {
    private TimFieldValidator() {

@@ -27,10 +27,11 @@ import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.http.BadRequestException;
+import us.dot.its.jpo.ode.http.InternalServerErrorException;
+import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.plugin.SNMP;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
+import us.dot.its.jpo.ode.snmp.SNMP;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.snmp.TimManagerService;
 import us.dot.its.jpo.ode.snmp.TimManagerService.TimManagerServiceException;
@@ -60,6 +61,7 @@ public class TIMController {
 
     @ResponseBody
     @RequestMapping(value = "/tim", method = RequestMethod.POST, produces = "application/json")
+    public String timMessage(@RequestBody String jsonString) throws BadRequestException {
     @CrossOrigin
     public String timMessage(@RequestBody String jsonString) {
        logger.debug("Received request: {}", jsonString);
@@ -69,27 +71,26 @@ public class TIMController {
            throw new BadRequestException(msg);
         }
 
-        J2735TravelerInputData travelerinputData = null;
+        TravelerInputData travelerinputData = null;
         try {
-           travelerinputData = (J2735TravelerInputData) JsonUtils.fromJson(
+           travelerinputData = (TravelerInputData) JsonUtils.fromJson(
                  jsonString,
-                 J2735TravelerInputData.class);
+                 TravelerInputData.class);
 
            logger.debug("J2735TravelerInputData: {}", travelerinputData.toJson(true));
            
         }
         catch (Exception e) {
-           ManagerAndControllerServices.log(false, "Error Deserializing TravelerInputData", e);
+           ManagerAndControllerServices.log(false, "Invalid Request Body", e);
            throw new BadRequestException(e);
         }
         
 
         OssTravelerMessageBuilder builder = new OssTravelerMessageBuilder();
         try {
-           builder.buildTravelerInformation(travelerinputData);
-        } catch (Exception e)
-        {
-           String msg = "Error Building TravelerInputData";
+           builder.buildTravelerInformation(travelerinputData.getTim());
+        } catch (Exception e) {
+           String msg = "Invalid Traveler Information Message data value in the request";
            ManagerAndControllerServices.log(false, msg, e);
            throw new BadRequestException(e);
         }
@@ -97,20 +98,22 @@ public class TIMController {
         // Step 2 - Encode the TIM object to a hex string
         String rsuSRMPayload = null;
         try {
-            rsuSRMPayload = builder.getHexTravelerInformation();
+            rsuSRMPayload = builder.encodeTravelerInformationToHex();
             if (rsuSRMPayload == null) {
-               String msg = "TIM Builder returned null";
+               String msg = "Internal Error: OssTravelerMessageBuilder#encodeTravelerInformationToHex returned null";
                ManagerAndControllerServices.log(false, msg, null);
-               throw new BadRequestException(msg);
+               throw new InternalServerErrorException(msg);
             }
         } catch (Exception e) {
-           String msg = "Failed to encode TIM";
+           String msg = "Failed to encode Traveler Information Message";
            ManagerAndControllerServices.log(false, msg, e);
            throw new BadRequestException(e);
         }
         logger.debug("Encoded Hex TIM: {}", rsuSRMPayload);
 
         HashMap<String, String> responseList = new HashMap<>();
+        
+        boolean internalServerError = true;
         for (RSU curRsu : travelerinputData.getRsus()) {
 
            ResponseEvent response = null;
@@ -124,10 +127,11 @@ public class TIMController {
               } else if (0 == response.getResponse().getErrorStatus()) {
                  responseList.put(curRsu.getRsuTarget(), ManagerAndControllerServices.log(true,
                        "SNMP deposit successful: " + response.getResponse(), null));
+                 internalServerError = false;
               } else {
                  responseList.put(curRsu.getRsuTarget(),
                        ManagerAndControllerServices.log(false,
-                             "Error, SNMP deposit failed, error code=" + response.getResponse().getErrorStatus() + "("
+                             "SNMP deposit failed, error code=" + response.getResponse().getErrorStatus() + "("
                                    + response.getResponse().getErrorStatusText() + ")",
                              null));
               }
@@ -138,6 +142,9 @@ public class TIMController {
            }
         }
 
+        if (internalServerError) {
+           throw new InternalServerErrorException(responseList.toString());
+        }
         
         
         try {
@@ -148,13 +155,13 @@ public class TIMController {
         } catch (Exception e) {
            String msg = "Error depositing to SDW";
            ManagerAndControllerServices.log(false, msg , e);
-           throw new BadRequestException(e);
+           throw new InternalServerErrorException(e);
         }
 
         return responseList.toString();
     }
 
-   private void depositToDDS(J2735TravelerInputData travelerinputData, String rsuSRMPayload)
+   private void depositToDDS(TravelerInputData travelerinputData, String rsuSRMPayload)
          throws ParseException, DdsRequestManagerException, DdsClientException, WebSocketException,
          EncodeFailedException, EncodeNotSupportedException {
       // Step 4 - Step Deposit TIM to SDW if sdw element exists
@@ -178,12 +185,13 @@ public class TIMController {
      *            - The SNMP properties (ip, username, password, etc)
      * @return ResponseEvent
     * @throws TimManagerServiceException 
+    * @throws IOException 
      */
     public static ResponseEvent createAndSend(
-          SNMP snmp, RSU rsu, String payload) throws TimManagerServiceException {
+          SNMP snmp, RSU rsu, String payload) throws TimManagerServiceException, IOException {
        SnmpSession session = null;
        if (snmp != null)
-          session = ManagerAndControllerServices.createSnmpSession(rsu);
+          session = new SnmpSession(rsu);
 
        if (session == null)
           return null;

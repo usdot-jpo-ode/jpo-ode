@@ -29,105 +29,97 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleStatusRequest;
 
 public class PdmManagerServiceTest {
 
-	@Injectable
-	RSU mockSnmpProperties;
-	@Mocked
-	J2735ProbeDataManagment mockPdmParameters;
+   @Injectable
+   RSU mockSnmpProperties;
+   @Mocked
+   J2735ProbeDataManagment mockPdmParameters;
+   @Mocked
+   ScopedPDU mockPdu;
 
-	@Test
-	public void createAndSendshouldReturnNullWhenGivenNullPdmParameters() {
+   @Test
+   public void createAndSendShouldThrowFailedToCreateSnmpSession(@Mocked final SnmpSession mockSnmpSession) {
 
-		J2735ProbeDataManagment testNullParams = null;
+      try {
+         new Expectations() {
+            {
+               new SnmpSession((RSU) any);
+               result = new IOException("testException123");
+            }
+         };
+      } catch (IOException e) {
+         fail("Unexpected exception in expectations block: " + e);
+      }
 
-		assertNull(PdmController.createAndSend(testNullParams, mockSnmpProperties));
-	}
+      try {
+         PdmController.createAndSend(mockPdu, mockSnmpProperties);
+         fail("Should have thrown IOException");
+      } catch (IOException e) {
+      }
+   }
 
-	@Test
-	public void createAndSendShouldReturnNullFailedToCreateSnmpSession(
-	      @Mocked final SnmpSession mockSnmpSession) {
+   @Test
+   public void createAndSendShouldReturnNullWhenSetThrowsException(@Mocked final SnmpSession mockSnmpSession)
+         throws IOException {
 
-		try {
-			new Expectations() {
-				{
-					new SnmpSession((RSU) any);
-					result = new IOException("testException123");
-				}
-			};
-		} catch (IOException e) {
-			fail("Unexpected exception in expectations block: " + e);
-		}
+      try {
+         new Expectations() {
+            {
+               new SnmpSession((RSU) any);
 
-		assertNull(PdmController.createAndSend(mockPdmParameters, mockSnmpProperties));
-	}
+               mockSnmpSession.set((PDU) any, (Snmp) any, (TransportMapping) any, (UserTarget) any);
+               result = new IOException("testException123");
+            }
+         };
+      } catch (IOException e) {
+         fail("Unexpected exception in expectations block: " + e);
+      }
 
-	@Test
-	public void createAndSendShouldReturnNullWhenSetThrowsException(@Mocked final SnmpSession mockSnmpSession) {
+      assertNull(PdmController.createAndSend(mockPdu, mockSnmpProperties));
+   }
 
-		try {
-			new Expectations() {
-				{
-					new SnmpSession((RSU) any);
+   @Test
+   public void testCreateAndSendShould(@Mocked final SnmpSession mockSnmpSession) throws IOException {
 
-					mockSnmpSession.set((PDU) any, (Snmp) any, (TransportMapping) any, (UserTarget) any);
-					result = new IOException("testException123");
-				}
-			};
-		} catch (IOException e) {
-			fail("Unexpected exception in expectations block: " + e);
-		}
+      try {
+         new Expectations() {
+            {
+               new SnmpSession((RSU) any);
 
-		assertNull(PdmController.createAndSend(mockPdmParameters, mockSnmpProperties));
-	}
+               mockSnmpSession.set((PDU) any, (Snmp) any, (TransportMapping) any, (UserTarget) any);
+            }
+         };
+      } catch (IOException e) {
+         fail("Unexpected exception in expectations block: " + e);
+      }
 
-	@Test
-	public void testCreateAndSendShould(@Mocked final SnmpSession mockSnmpSession) {
+      assertEquals(ResponseEvent.class, PdmController.createAndSend(mockPdu, mockSnmpProperties).getClass());
+   }
 
-		try {
-			new Expectations() {
-				{
-					new SnmpSession((RSU) any);
+   @Test
+   public void createPDUshouldNotReturnNUll(@Mocked J2735VehicleStatusRequest vehicleStatusRequest) {
+      J2735VehicleStatusRequest[] vehicleStatusRequestList = { vehicleStatusRequest };
+      new Expectations() {
+         {
+            mockPdmParameters.getVehicleStatusRequestList();
+            result = vehicleStatusRequestList;
+         }
+      };
+      ScopedPDU result = PdmManagerService.createPDU(mockPdmParameters);
+      assertNotNull(result);
+   }
 
-					mockSnmpSession.set((PDU) any, (Snmp) any, (TransportMapping) any, (UserTarget) any);
-				}
-			};
-		} catch (IOException e) {
-			fail("Unexpected exception in expectations block: " + e);
-		}
-
-		assertEquals(ResponseEvent.class,
-		      PdmController.createAndSend(mockPdmParameters, mockSnmpProperties).getClass());
-	}
-
-	@Test
-	public void createPDUshouldReturnNullWhenGivenNullParams() {
-
-		J2735ProbeDataManagment nullParams = null;
-		ScopedPDU result = PdmManagerService.createPDU(nullParams);
-		assertNull(result);
-	}
-	
-	@Test
-	public void createPDUshouldNotReturnNUll(@Mocked J2735VehicleStatusRequest vehicleStatusRequest) {
-		J2735VehicleStatusRequest[] vehicleStatusRequestList = {vehicleStatusRequest};
-		new Expectations(){{
-			mockPdmParameters.getVehicleStatusRequestList();
-			result = vehicleStatusRequestList;
-		}};
-		ScopedPDU result = PdmManagerService.createPDU(mockPdmParameters);
-		assertNotNull(result);
-	}
-	
-	@Test
-   public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-     Constructor<PdmManagerService> constructor = PdmManagerService.class.getDeclaredConstructor();
-     assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-     constructor.setAccessible(true);
-     try {
-       constructor.newInstance();
-       fail("Expected IllegalAccessException.class");
-     } catch (Exception e) {
-       assertEquals(InvocationTargetException.class, e.getClass());
-     }
+   @Test
+   public void testConstructorIsPrivate()
+         throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<PdmManagerService> constructor = PdmManagerService.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+         constructor.newInstance();
+         fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+         assertEquals(InvocationTargetException.class, e.getClass());
+      }
    }
 
 }

@@ -23,10 +23,10 @@ import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.http.BadRequestException;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
+import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.plugin.SNMP;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
+import us.dot.its.jpo.ode.snmp.SNMP;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
@@ -40,7 +40,7 @@ public class TIMControllerTest {
    @Injectable
    DdsDepositor<DdsStatusMessage> mockDepositor;
    @Mocked
-   J2735TravelerInputData mockTim;
+   TravelerInputData mockTim;
    @Mocked
    TravelerInformation mockInfo;
    @Mocked
@@ -99,7 +99,7 @@ public class TIMControllerTest {
 
       new Expectations() {
          {
-            JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
+            JsonUtils.fromJson(anyString, TravelerInputData.class);
             result = new BadRequestException("");
          }
       };
@@ -124,10 +124,10 @@ public class TIMControllerTest {
       try {
          new Expectations() {
             {
-               JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
+               JsonUtils.fromJson(anyString, TravelerInputData.class);
                result = mockTim;
 
-               mockBuilder.buildTravelerInformation(mockTim);
+               mockBuilder.buildTravelerInformation(mockTim.getTim());
                result = null;
             }
          };
@@ -150,13 +150,13 @@ public class TIMControllerTest {
       try {
          new Expectations() {
             {
-               JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
+               JsonUtils.fromJson(anyString, TravelerInputData.class);
                result = mockTim;
 
-               mockBuilder.buildTravelerInformation(mockTim);
+               mockBuilder.buildTravelerInformation(mockTim.getTim());
                result = mockInfo;
 
-               mockBuilder.getHexTravelerInformation();
+               mockBuilder.encodeTravelerInformationToHex();
                result = anyString;
 
                mockTim.getRsus();
@@ -186,13 +186,13 @@ public class TIMControllerTest {
       try {
          new Expectations() {
             {
-               JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
+               JsonUtils.fromJson(anyString, TravelerInputData.class);
                result = mockTim;
 
-               mockBuilder.buildTravelerInformation(mockTim);
+               mockBuilder.buildTravelerInformation(mockTim.getTim());
                result = mockInfo;
 
-               mockBuilder.getHexTravelerInformation();
+               mockBuilder.encodeTravelerInformationToHex();
                result = anyString;
 
                mockTim.getRsus();
@@ -226,13 +226,13 @@ public class TIMControllerTest {
       try {
          new Expectations() {
             {
-               JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
+               JsonUtils.fromJson(anyString, TravelerInputData.class);
                result = mockTim;
 
-               mockBuilder.buildTravelerInformation(mockTim);
+               mockBuilder.buildTravelerInformation(mockTim.getTim());
                result = mockInfo;
 
-               mockBuilder.getHexTravelerInformation();
+               mockBuilder.encodeTravelerInformationToHex();
                result = anyString;
 
                mockTim.getRsus();
@@ -271,13 +271,13 @@ public class TIMControllerTest {
       try {
          new Expectations() {
             {
-               JsonUtils.fromJson(anyString, J2735TravelerInputData.class);
+               JsonUtils.fromJson(anyString, TravelerInputData.class);
                result = mockTim;
 
-               mockBuilder.buildTravelerInformation(mockTim);
+               mockBuilder.buildTravelerInformation(mockTim.getTim());
                result = mockInfo;
 
-               mockBuilder.getHexTravelerInformation();
+               mockBuilder.encodeTravelerInformationToHex();
                result = anyString;
 
                mockTim.getRsus();

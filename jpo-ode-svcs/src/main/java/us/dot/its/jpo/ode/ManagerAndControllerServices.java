@@ -1,14 +1,11 @@
 package us.dot.its.jpo.ode;
 
-import java.io.IOException;
 import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.eventlog.EventLogger;
-import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.snmp.SnmpSession;
 
 public class ManagerAndControllerServices {
 	private static Logger logger = LoggerFactory.getLogger(ManagerAndControllerServices.class);
@@ -31,16 +28,6 @@ public class ManagerAndControllerServices {
 				logger.error(msg);
 			}
 			return "{success: false, message: \"" + msg + "\"}";
-		}
-	}
-
-	public static SnmpSession createSnmpSession(RSU rsu) {
-		// Initialize the SNMP session
-		try {
-			return new SnmpSession(rsu);
-		} catch (IOException e) {
-			log(false, "Failed to create SNMP session: {}", e);
-			return null;
 		}
 	}
 

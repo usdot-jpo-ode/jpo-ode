@@ -11,8 +11,8 @@ import java.math.BigDecimal;
 
 import org.junit.Test;
 
-import us.dot.its.jpo.ode.plugin.TimFieldValidator;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
+import us.dot.its.jpo.ode.plugin.j2735.TimFieldValidator;
 //Tests for TimValidation
 public class TimFieldValidatorTest {
    @Test

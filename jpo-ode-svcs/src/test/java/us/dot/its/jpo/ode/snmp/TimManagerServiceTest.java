@@ -24,7 +24,6 @@ import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.snmp.TimManagerService.TimManagerServiceException;
 import us.dot.its.jpo.ode.traveler.TIMController;
 
@@ -36,11 +35,12 @@ public class TimManagerServiceTest {
     * Test that if initializing an SnmpSession returns null, null is returned
     * and an exception is logged
     * @throws TimManagerServiceException 
+    * @throws IOException 
     */
    @Test
    public void createAndSendShouldReturnNullWhenSessionInitThrowsException(
-         @Mocked SNMP mockTimParameters,
-         @Mocked RSU mockSnmpProperties, @Mocked final Logger logger, 
+         @Mocked SNMP mockSNMP,
+         @Mocked RSU mockRSU, @Mocked final Logger logger, 
          @Mocked SnmpSession mockSnmpSession) throws TimManagerServiceException {
 
       IOException expectedException = new IOException("testException123");
@@ -55,13 +55,11 @@ public class TimManagerServiceTest {
          fail("Unexpected exception: " + e);
       }
 
-      assertNull(TIMController.createAndSend(mockTimParameters, mockSnmpProperties, ""));
-
-      new Verifications() {
-         {
-            logger.error("TIM SERVICE - Failed to create SNMP session: {}", expectedException);
-         }
-      };
+      try {
+         assertNull(TIMController.createAndSend(mockSNMP, mockRSU, ""));
+         fail("Should have thrown IOException");
+      } catch (IOException e) {
+      }
 
    }
 
@@ -95,7 +93,7 @@ public class TimManagerServiceTest {
    public void createAndSendShouldSendPDU(@Mocked SNMP mockTimParameters,
          @Mocked RSU mockSnmpProperties, @Mocked final Logger logger, 
          @Mocked SnmpSession mockSnmpSession,
-         @Mocked ScopedPDU mockScopedPDU, @Mocked ResponseEvent mockResponseEvent) throws TimManagerServiceException {
+         @Mocked ScopedPDU mockScopedPDU, @Mocked ResponseEvent mockResponseEvent) throws TimManagerServiceException, IOException {
 
       try {
          new Expectations() {
@@ -120,7 +118,7 @@ public class TimManagerServiceTest {
    @Test
    public void createAndSendShouldThrowPDUException(@Mocked SNMP mockTimParameters,
          @Mocked RSU mockSnmpProperties, @Mocked final Logger logger, @Mocked SnmpSession mockSnmpSession,
-         @Mocked ScopedPDU mockScopedPDU, @Mocked ResponseEvent mockResponseEvent) throws TimManagerServiceException {
+         @Mocked ScopedPDU mockScopedPDU, @Mocked ResponseEvent mockResponseEvent) throws TimManagerServiceException, IOException {
 
       IOException expectedException = new IOException("testException123");
       try {

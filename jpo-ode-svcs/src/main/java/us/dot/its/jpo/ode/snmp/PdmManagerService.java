@@ -16,11 +16,6 @@ public class PdmManagerService {
 
     public static ScopedPDU createPDU(J2735ProbeDataManagment params) {
 
-        // Filter null request
-        if (params == null) {
-            return null;
-        }
-
         ScopedPDU pdu = new ScopedPDU();
         pdu.setType(PDU.SET);
 
