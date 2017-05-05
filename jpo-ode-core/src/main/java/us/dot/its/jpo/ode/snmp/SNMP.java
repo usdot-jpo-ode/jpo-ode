@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.plugin;
+package us.dot.its.jpo.ode.snmp;
 
 import java.text.ParseException;
 import java.time.ZonedDateTime;
@@ -20,8 +20,8 @@ public class SNMP extends OdeObject {
    private int enable;
    private int status;
 
-   private SNMP() {
-      throw new UnsupportedOperationException();
+   public SNMP() {
+      super();
    }
 
    public SNMP(String rsuid, int msgid, int mode, int channel, int interval, String deliverystart, String deliverystop,

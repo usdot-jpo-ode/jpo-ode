@@ -1,28 +1,22 @@
-package us.dot.its.jpo.ode.plugin.generic;
+package us.dot.its.jpo.ode.snmp;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
+import java.text.ParseException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import mockit.Tested;
 import mockit.integration.junit4.JMockit;
-import us.dot.its.jpo.ode.plugin.SNMP;
 
 @RunWith(JMockit.class)
-public class GenericSNMPTest {
+public class SNMPTest {
    
-   @Tested
-   SNMP testSNMP;
 
    @Test
    public void testGettersAndSetters() {
+      
+      SNMP testSNMP = new SNMP();
       
       String id = "a";
       testSNMP.setRsuid(id);
@@ -62,15 +56,8 @@ public class GenericSNMPTest {
    }
    
    @Test
-   public void testConstructorIsPrivate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-     Constructor<SNMP > constructor = SNMP.class.getDeclaredConstructor();
-     assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-     constructor.setAccessible(true);
-     try {
-       constructor.newInstance();
-       fail("Expected IllegalAccessException.class");
-     } catch (Exception e) {
-       assertEquals(InvocationTargetException.class, e.getClass());
-     }
+   public void testSnmpTimestampFromIso() throws ParseException {
+      String snmpTS = SNMP.snmpTimestampFromIso("2017-05-04T21:55:00-05:00");
+      assertEquals("050414111537", snmpTS);
    }
 }

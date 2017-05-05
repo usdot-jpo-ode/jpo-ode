@@ -9,8 +9,6 @@ import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.VariableBinding;
 
-import us.dot.its.jpo.ode.plugin.SNMP;
-
 
 /**
  * This utility/service class is used to receive TIM SNMP parameters, as well as the

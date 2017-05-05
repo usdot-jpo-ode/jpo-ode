@@ -1,27 +1,26 @@
-package us.dot.its.jpo.ode.plugin.j2735;
+package us.dot.its.jpo.ode.model;
 
-import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.plugin.OperationalDataEnvironment.ODE;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
-import us.dot.its.jpo.ode.plugin.TravelerInformationMessage.TIM;
+import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
+import us.dot.its.jpo.ode.snmp.SNMP;
 
-public class J2735TravelerInputData extends OdeObject {
+public class TravelerInputData extends OdeObject {
 
    private static final long serialVersionUID = 8769107278440796699L;
 
-   private TIM tim;
+   private J2735TravelerInformationMessage tim;
    private RSU[] rsus;
    private SNMP snmp;
    private ODE ode;
    private SDW sdw;
 
-   public TIM getTim() {
+   public J2735TravelerInformationMessage getTim() {
       return tim;
    }
 
-   public void setTim(TIM tim) {
+   public void setTim(J2735TravelerInformationMessage tim) {
       this.tim = tim;
    }
 

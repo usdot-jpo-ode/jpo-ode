@@ -15,9 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import us.dot.its.jpo.ode.ManagerAndControllerServices;
 import us.dot.its.jpo.ode.http.BadRequestException;
+import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
 import us.dot.its.jpo.ode.snmp.PdmManagerService;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -38,21 +37,22 @@ public class PdmController {
 
       J2735PdmRequest pdmRequest = null;
       try {
-         pdmRequest = (J2735PdmRequest) JsonUtils.fromJson(jsonString, J2735TravelerInputData.class);
+         pdmRequest = (J2735PdmRequest) JsonUtils.fromJson(jsonString, TravelerInputData.class);
 
          logger.debug("J2735PdmRequest: {}", pdmRequest.toJson(true));
 
       } catch (Exception e) {
-         ManagerAndControllerServices.log(false, "Error Deserializing TravelerInputData", e);
+         ManagerAndControllerServices.log(false, "Invalid Request Body", e);
          throw new BadRequestException(e);
       }
 
       HashMap<String, String> responseList = new HashMap<>();
+      ScopedPDU pdu = PdmManagerService.createPDU(pdmRequest.getPdm());
       for (RSU curRsu : pdmRequest.getRsuList()) {
 
          ResponseEvent response = null;
          try {
-            response = createAndSend(pdmRequest.getPdm(), curRsu);
+            response = createAndSend(pdu, curRsu);
 
             if (null == response || null == response.getResponse()) {
                responseList.put(curRsu.getRsuTarget(),
@@ -77,22 +77,15 @@ public class PdmController {
       return responseList.toString();
    }
 
-   public static ResponseEvent createAndSend(J2735ProbeDataManagment pdm, RSU rsu) {
-      SnmpSession session = null;
-      if (pdm != null)
-         session = ManagerAndControllerServices.createSnmpSession(rsu);
-
-      if (session == null)
-         return null;
+   public static ResponseEvent createAndSend(ScopedPDU pdu, RSU rsu) throws IOException {
+      SnmpSession session = new SnmpSession(rsu);
 
       // Send the PDU
       ResponseEvent response = null;
-      ScopedPDU pdu = PdmManagerService.createPDU(pdm);
       try {
          response = session.set(pdu, session.getSnmp(), session.getTransport(), session.getTarget());
       } catch (IOException | NullPointerException e) {
          logger.error("PDM SERVICE - Error while sending PDU: {}", e);
-         return null;
       }
       return response;
    }

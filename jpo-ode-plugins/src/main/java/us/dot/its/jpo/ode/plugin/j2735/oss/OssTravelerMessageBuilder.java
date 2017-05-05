@@ -109,39 +109,41 @@ import us.dot.its.jpo.ode.j2735.dsrc.Velocity;
 import us.dot.its.jpo.ode.j2735.dsrc.WorkZone;
 import us.dot.its.jpo.ode.j2735.dsrc.Zoom;
 import us.dot.its.jpo.ode.j2735.itis.ITIScodesAndText;
-import us.dot.its.jpo.ode.plugin.TimFieldValidator;
-import us.dot.its.jpo.ode.plugin.TravelerInformationMessage;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInputData;
+import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
+import us.dot.its.jpo.ode.plugin.j2735.TimFieldValidator;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class OssTravelerMessageBuilder {
    private TravelerInformation travelerInfo;
 
-   public TravelerInformation buildTravelerInformation(J2735TravelerInputData travInputData)
-         throws ParseException, EncodeFailedException, EncodeNotSupportedException {
+   public TravelerInformation buildTravelerInformation(
+         J2735TravelerInformationMessage tim)
+         throws ParseException, EncodeFailedException, EncodeNotSupportedException, IllegalArgumentException {
 
       travelerInfo = new TravelerInformation();
-      TimFieldValidator.validateMessageCount(travInputData.getTim().getMsgCnt());
-      travelerInfo.setMsgCnt(new MsgCount(travInputData.getTim().getMsgCnt()));
+      TimFieldValidator.validateMessageCount(tim.getMsgCnt());
+      travelerInfo.setMsgCnt(new MsgCount(tim.getMsgCnt()));
       travelerInfo.setTimeStamp(
-            new MinuteOfTheYear(getMinuteOfTheYear(travInputData.getTim().getTimeStamp())));
-      ByteBuffer buf = ByteBuffer.allocate(9).put((byte) 0).putLong(travInputData.getTim().getPacketID());
+            new MinuteOfTheYear(getMinuteOfTheYear(tim.getTimeStamp())));
+      ByteBuffer buf = ByteBuffer.allocate(9).put((byte) 0).putLong(tim.getPacketID());
       travelerInfo.setPacketID(new UniqueMSGID(buf.array()));
-      TimFieldValidator.validateURL(travInputData.getTim().getUrlB());
-      travelerInfo.setUrlB(new URL_Base(travInputData.getTim().getUrlB()));
-      travelerInfo.setDataFrames(buildDataFrames(travInputData));
+      TimFieldValidator.validateURL(tim.getUrlB());
+      travelerInfo.setUrlB(new URL_Base(tim.getUrlB()));
+      travelerInfo.setDataFrames(buildDataFrames(tim));
 
       return travelerInfo;
    }
 
-   private TravelerDataFrameList buildDataFrames(J2735TravelerInputData travInputData) throws ParseException {
+   private TravelerDataFrameList buildDataFrames(
+         J2735TravelerInformationMessage tim) 
+         throws ParseException {
       TravelerDataFrameList dataFrames = new TravelerDataFrameList();
 
-      TimFieldValidator.validateFrameCount(travInputData.getTim().getDataframes().length);
-      int len = travInputData.getTim().getDataframes().length;
+      TimFieldValidator.validateFrameCount(tim.getDataframes().length);
+      int len = tim.getDataframes().length;
       for (int i = 0; i < len; i++) {
-         TravelerInformationMessage.DataFrame inputDataFrame = travInputData.getTim().getDataframes()[i];
+         J2735TravelerInformationMessage.DataFrame inputDataFrame = tim.getDataframes()[i];
          TravelerDataFrame dataFrame = new TravelerDataFrame();
 
          // Part I, header
@@ -169,7 +171,8 @@ public class OssTravelerMessageBuilder {
       return dataFrames;
    }
 
-   public String getHexTravelerInformation() throws EncodeFailedException, EncodeNotSupportedException {
+   public String encodeTravelerInformationToHex() 
+         throws EncodeFailedException, EncodeNotSupportedException {
       Coder coder = J2735.getPERUnalignedCoder();
       ByteArrayOutputStream sink = new ByteArrayOutputStream();
       coder.encode(travelerInfo, sink);
@@ -177,7 +180,7 @@ public class OssTravelerMessageBuilder {
       return CodecUtils.toHex(bytes);
    }
 
-   public Content buildContent(TravelerInformationMessage.DataFrame inputDataFrame) {
+   public Content buildContent(J2735TravelerInformationMessage.DataFrame inputDataFrame) {
       String contentType = inputDataFrame.getContent();
       String[] codes = inputDataFrame.getItems();
       Content content = new Content();
@@ -260,9 +263,9 @@ public class OssTravelerMessageBuilder {
       return gs;
    }
 
-   private Regions buildRegions(TravelerInformationMessage.DataFrame.Region[] inputRegions) {
+   private Regions buildRegions(J2735TravelerInformationMessage.DataFrame.Region[] inputRegions) {
       Regions regions = new Regions();
-      for (TravelerInformationMessage.DataFrame.Region inputRegion : inputRegions) {
+      for (J2735TravelerInformationMessage.DataFrame.Region inputRegion : inputRegions) {
          GeographicalPath geoPath = new GeographicalPath();
          Description description = new Description();
          TimFieldValidator.validateGeoName(inputRegion.getName());
@@ -354,7 +357,7 @@ public class OssTravelerMessageBuilder {
    }
 
    public RegionList buildRegionOffsets(
-         TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[] list) {
+         J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[] list) {
       RegionList myList = new RegionList();
       for (int i = 0; i < list.length; i++) {
          RegionOffsets ele = new RegionOffsets();
@@ -369,7 +372,7 @@ public class OssTravelerMessageBuilder {
       return myList;
    }
 
-   public Circle buildGeoCircle(TravelerInformationMessage.DataFrame.Region.Geometry geo) {
+   public Circle buildGeoCircle(J2735TravelerInformationMessage.DataFrame.Region.Geometry geo) {
       Circle circle = new Circle();
       circle.setCenter(OssPosition3D.position3D(geo.getCircle().getPosition()));
       TimFieldValidator.validateRadius(geo.getCircle().getRadius());
@@ -379,7 +382,7 @@ public class OssTravelerMessageBuilder {
       return circle;
    }
 
-   public Circle buildOldCircle(TravelerInformationMessage.DataFrame.Region.OldRegion reg) {
+   public Circle buildOldCircle(J2735TravelerInformationMessage.DataFrame.Region.OldRegion reg) {
       Circle circle = new Circle();
       circle.setCenter(OssPosition3D.position3D(reg.getCircle().getPosition()));
       TimFieldValidator.validateRadius(reg.getCircle().getRadius());
@@ -389,11 +392,11 @@ public class OssTravelerMessageBuilder {
       return circle;
    }
 
-   public NodeListXY buildNodeXYList(TravelerInformationMessage.NodeXY[] inputNodes) {
+   public NodeListXY buildNodeXYList(J2735TravelerInformationMessage.NodeXY[] inputNodes) {
       NodeListXY nodeList = new NodeListXY();
       NodeSetXY nodes = new NodeSetXY();
       for (int i = 0; i < inputNodes.length; i++) {
-         TravelerInformationMessage.NodeXY point = inputNodes[i];
+         J2735TravelerInformationMessage.NodeXY point = inputNodes[i];
 
          NodeXY node = new NodeXY();
          NodeOffsetPointXY nodePoint = new NodeOffsetPointXY();
@@ -452,7 +455,7 @@ public class OssTravelerMessageBuilder {
 
             if (point.getAttributes().getLocalNodes().length > 0) {
                NodeAttributeXYList localNodeList = new NodeAttributeXYList();
-               for (TravelerInformationMessage.LocalNode localNode : point.getAttributes().getLocalNodes()) {
+               for (J2735TravelerInformationMessage.LocalNode localNode : point.getAttributes().getLocalNodes()) {
                   localNodeList.add(new NodeAttributeXY(localNode.getType()));
                }
                attributes.setLocalNode(localNodeList);
@@ -460,7 +463,7 @@ public class OssTravelerMessageBuilder {
 
             if (point.getAttributes().getDisabledLists().length > 0) {
                SegmentAttributeXYList disabledNodeList = new SegmentAttributeXYList();
-               for (TravelerInformationMessage.DisabledList disabledList : point.getAttributes().getDisabledLists()) {
+               for (J2735TravelerInformationMessage.DisabledList disabledList : point.getAttributes().getDisabledLists()) {
                   disabledNodeList.add(new SegmentAttributeXY(disabledList.getType()));
                }
                attributes.setDisabled(disabledNodeList);
@@ -468,7 +471,7 @@ public class OssTravelerMessageBuilder {
 
             if (point.getAttributes().getEnabledLists().length > 0) {
                SegmentAttributeXYList enabledNodeList = new SegmentAttributeXYList();
-               for (TravelerInformationMessage.EnabledList enabledList : point.getAttributes().getEnabledLists()) {
+               for (J2735TravelerInformationMessage.EnabledList enabledList : point.getAttributes().getEnabledLists()) {
                   enabledNodeList.add(new SegmentAttributeXY(enabledList.getType()));
                }
                attributes.setEnabled(enabledNodeList);
@@ -476,7 +479,7 @@ public class OssTravelerMessageBuilder {
 
             if (point.getAttributes().getDataLists().length > 0) {
                LaneDataAttributeList dataNodeList = new LaneDataAttributeList();
-               for (TravelerInformationMessage.DataList dataList : point.getAttributes().getDataLists()) {
+               for (J2735TravelerInformationMessage.DataList dataList : point.getAttributes().getDataLists()) {
 
                   LaneDataAttribute dataAttribute = new LaneDataAttribute();
 
@@ -487,7 +490,7 @@ public class OssTravelerMessageBuilder {
                   dataAttribute.setLaneAngle(new MergeDivergeNodeAngle(dataList.getLaneAngle()));
 
                   SpeedLimitList speedDataList = new SpeedLimitList();
-                  for (TravelerInformationMessage.SpeedLimits speedLimit : dataList.getSpeedLimits()) {
+                  for (J2735TravelerInformationMessage.SpeedLimits speedLimit : dataList.getSpeedLimits()) {
                      speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.getType()),
                            new Velocity(speedLimit.getVelocity())));
                   }
@@ -512,7 +515,7 @@ public class OssTravelerMessageBuilder {
       return nodeList;
    }
 
-   private NodeListXY buildComputedLane(TravelerInformationMessage.ComputedLane inputLane) {
+   private NodeListXY buildComputedLane(J2735TravelerInformationMessage.ComputedLane inputLane) {
       NodeListXY nodeList = new NodeListXY();
 
       ComputedLane computedLane = new ComputedLane();
@@ -543,11 +546,11 @@ public class OssTravelerMessageBuilder {
       return nodeList;
    }
 
-   public NodeListLL buildNodeLLList(TravelerInformationMessage.NodeXY[] inputNodes) {
+   public NodeListLL buildNodeLLList(J2735TravelerInformationMessage.NodeXY[] inputNodes) {
       NodeListLL nodeList = new NodeListLL();
       NodeSetLL nodes = new NodeSetLL();
       for (int i = 0; i < inputNodes.length; i++) {
-         TravelerInformationMessage.NodeXY point = inputNodes[i];
+         J2735TravelerInformationMessage.NodeXY point = inputNodes[i];
 
          NodeLL node = new NodeLL();
          NodeOffsetPointLL nodePoint = new NodeOffsetPointLL();
@@ -612,7 +615,7 @@ public class OssTravelerMessageBuilder {
 
             if (point.getAttributes().getLocalNodes().length > 0) {
                NodeAttributeLLList localNodeList = new NodeAttributeLLList();
-               for (TravelerInformationMessage.LocalNode localNode : point.getAttributes().getLocalNodes()) {
+               for (J2735TravelerInformationMessage.LocalNode localNode : point.getAttributes().getLocalNodes()) {
                   localNodeList.add(new NodeAttributeLL(localNode.getType()));
                }
                attributes.setLocalNode(localNodeList);
@@ -620,7 +623,7 @@ public class OssTravelerMessageBuilder {
 
             if (point.getAttributes().getDisabledLists().length > 0) {
                SegmentAttributeLLList disabledNodeList = new SegmentAttributeLLList();
-               for (TravelerInformationMessage.DisabledList disabledList : point.getAttributes().getDisabledLists()) {
+               for (J2735TravelerInformationMessage.DisabledList disabledList : point.getAttributes().getDisabledLists()) {
                   disabledNodeList.add(new SegmentAttributeLL(disabledList.getType()));
                }
                attributes.setDisabled(disabledNodeList);
@@ -628,7 +631,7 @@ public class OssTravelerMessageBuilder {
 
             if (point.getAttributes().getEnabledLists().length > 0) {
                SegmentAttributeLLList enabledNodeList = new SegmentAttributeLLList();
-               for (TravelerInformationMessage.EnabledList enabledList : point.getAttributes().getEnabledLists()) {
+               for (J2735TravelerInformationMessage.EnabledList enabledList : point.getAttributes().getEnabledLists()) {
                   enabledNodeList.add(new SegmentAttributeLL(enabledList.getType()));
                }
                attributes.setEnabled(enabledNodeList);
@@ -636,7 +639,7 @@ public class OssTravelerMessageBuilder {
 
             if (point.getAttributes().getDataLists().length > 0) {
                LaneDataAttributeList dataNodeList = new LaneDataAttributeList();
-               for (TravelerInformationMessage.DataList dataList : point.getAttributes().getDataLists()) {
+               for (J2735TravelerInformationMessage.DataList dataList : point.getAttributes().getDataLists()) {
 
                   LaneDataAttribute dataAttribute = new LaneDataAttribute();
 
@@ -647,7 +650,7 @@ public class OssTravelerMessageBuilder {
                   dataAttribute.setLaneAngle(new MergeDivergeNodeAngle(dataList.getLaneAngle()));
 
                   SpeedLimitList speedDataList = new SpeedLimitList();
-                  for (TravelerInformationMessage.SpeedLimits speedLimit : dataList.getSpeedLimits()) {
+                  for (J2735TravelerInformationMessage.SpeedLimits speedLimit : dataList.getSpeedLimits()) {
                      speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.getType()),
                            new Velocity(speedLimit.getVelocity())));
                   }

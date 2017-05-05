@@ -4,10 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.text.ParseException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.snmp4j.ScopedPDU;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.GenericAddress;
 
@@ -21,7 +23,6 @@ import us.dot.its.jpo.ode.ManagerAndControllerServices;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.http.BadRequestException;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
 import us.dot.its.jpo.ode.util.JsonUtils;
 @RunWith(JMockit.class)
 public class PdmControllerTest {
@@ -34,6 +35,7 @@ public class PdmControllerTest {
     @Mocked ManagerAndControllerServices mockPdmManagerService;
     
     @Injectable RSU mockRsu;
+    @Injectable ScopedPDU mockPdu;
     @Mocked ResponseEvent mockResponseEvent;
 
     @Test
@@ -55,7 +57,7 @@ public class PdmControllerTest {
     }
 
     @Test
-    public void nullResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {
+    public void nullResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) throws IOException {
 
         new Expectations() {
             {
@@ -65,7 +67,7 @@ public class PdmControllerTest {
                 mockPdm.getRsuList();
                 result = new RSU[]{mockRsu};
                 
-                PdmController.createAndSend((J2735ProbeDataManagment)any, (RSU)any);
+                PdmController.createAndSend((ScopedPDU)any, (RSU)any);
                 result = null;
             }
         };
@@ -84,7 +86,7 @@ public class PdmControllerTest {
     }
     
     @Test
-    public void nullGetResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {
+    public void nullGetResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) throws IOException {
 
         new Expectations() {
             {
@@ -94,7 +96,7 @@ public class PdmControllerTest {
                 mockPdm.getRsuList();
                 result = new RSU[]{mockRsu};
                 
-                PdmController.createAndSend((J2735ProbeDataManagment)any, (RSU)any);
+                PdmController.createAndSend(mockPdu, mockRsu);
                 result = mockResponseEvent;
                 
                 mockResponseEvent.getResponse();
@@ -116,7 +118,7 @@ public class PdmControllerTest {
     }
     
     @Test
-    public void shouldLogSuccessWhenErrorStatus0(@Mocked final JsonUtils jsonUtils) {
+    public void shouldLogSuccessWhenErrorStatus0(@Mocked final JsonUtils jsonUtils) throws IOException {
 
         new Expectations() {
             {
@@ -126,7 +128,7 @@ public class PdmControllerTest {
                 mockPdm.getRsuList();
                 result = new RSU[]{mockRsu};
                 
-                PdmController.createAndSend((J2735ProbeDataManagment)any, (RSU)any);
+                PdmController.createAndSend((ScopedPDU)any, (RSU)any);
                 result = mockResponseEvent;
                 
                 mockResponseEvent.getResponse().getErrorStatus();
@@ -148,7 +150,7 @@ public class PdmControllerTest {
     }
     
     @Test
-    public void shouldLogFailureWhenErrorStatusNot0(@Mocked final JsonUtils jsonUtils) {
+    public void shouldLogFailureWhenErrorStatusNot0(@Mocked final JsonUtils jsonUtils) throws IOException {
 
         new Expectations() {
             {
@@ -158,8 +160,7 @@ public class PdmControllerTest {
                 mockPdm.getRsuList();
                 result = new RSU[]{mockRsu};
                 
-                PdmController.createAndSend(
-                      (J2735ProbeDataManagment)any, (RSU)any);
+                PdmController.createAndSend((ScopedPDU)any, (RSU)any);
                 result = mockResponseEvent;
                 
                 mockResponseEvent.getResponse().getErrorStatus();

@@ -15,8 +15,8 @@ import us.dot.its.jpo.ode.j2735.dsrc.SignPrority;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame.MsgId;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInfoType;
-import us.dot.its.jpo.ode.plugin.TimFieldValidator;
-import us.dot.its.jpo.ode.plugin.TravelerInformationMessage;
+import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
+import us.dot.its.jpo.ode.plugin.j2735.TimFieldValidator;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class OssTIMHeaderBuilder {
@@ -24,7 +24,7 @@ public class OssTIMHeaderBuilder {
       throw new UnsupportedOperationException();
    }
 
-   public static TravelerDataFrame buildTimHeader(TravelerInformationMessage.DataFrame inputDataFrame,
+   public static TravelerDataFrame buildTimHeader(J2735TravelerInformationMessage.DataFrame inputDataFrame,
          TravelerDataFrame dataFrame) throws ParseException{
       TimFieldValidator.validateHeaderIndex(inputDataFrame.getsspTimRights());
       dataFrame.setSspTimRights(new SSPindex(inputDataFrame.getsspTimRights()));
@@ -40,7 +40,7 @@ public class OssTIMHeaderBuilder {
       return dataFrame;
    }
    
-   public static MsgId getMessageId(TravelerInformationMessage.DataFrame dataFrame) {
+   public static MsgId getMessageId(J2735TravelerInformationMessage.DataFrame dataFrame) {
       MsgId msgId = new MsgId();
       TimFieldValidator.validateMessageID(dataFrame.getMsgID());
 
