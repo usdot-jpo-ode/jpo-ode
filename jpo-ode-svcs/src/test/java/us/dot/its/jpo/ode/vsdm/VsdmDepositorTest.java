@@ -58,10 +58,6 @@ import com.oss.asn1.Coder;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 
-/**
-* This is not a unit test that runs during build time. This is more of
-* a application that sends data the LCSDW for integration testing purpose.
-*/
 public class VsdmDepositorTest {
 	
 	private static Coder coder;
@@ -77,7 +73,10 @@ public class VsdmDepositorTest {
 	
 	@Test
 	public void testVsdMessageDeposit() throws Exception {
-		VsdmDepositor vsdmDepositor = new VsdmDepositor("127.0.0.1", 5555, 5556);
+		String targetHost = "127.0.0.1";
+		int targetPort = 5555;
+		int selfPort = 5556;
+		VsdmDepositor vsdmDepositor = new VsdmDepositor(targetHost, targetPort, selfPort);
 		vsdmDepositor.depositVsdm();
 	}
 	

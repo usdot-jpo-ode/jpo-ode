@@ -30,6 +30,8 @@ services:
       - "8080:8080"
       - "9090:9090"
       - "4445:4445/udp"
+      - "5556:5556/udp"
+      - "46753:46753/udp"
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ZK: ${DOCKER_HOST_IP}:2181

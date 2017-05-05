@@ -273,7 +273,7 @@ public class CVSampleMessageBuilder {
 		return new DataAcceptance(dialogID, SemiSequenceID.accept, groupID, tmpReq);
 	}
 		
-	public static VehSitDataMessage buildVehSitDataMessage() throws IOException {
+	public static VehSitDataMessage buildVehSitDataMessage(double lat, double lon) throws IOException {
 		
 		SemiDialogID dialID = (SemiDialogID.vehSitData);
 		SemiSequenceID semiID = (SemiSequenceID.data);
@@ -286,9 +286,9 @@ public class CVSampleMessageBuilder {
 		TemporaryID tempID = new TemporaryID(J2735Util.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 } ));
 		DDateTime dt1 = new DDateTime(new DYear(2013), new DMonth(12), new DDay(9), new DHour(9), new DMinute(30),
 				new DSecond(30), new DOffset(-300));
-		
-		Position3D pos = new Position3D(new Latitude(J2735Util.convertGeoCoordinateToInt(42.44783187)), new Longitude(
-				J2735Util.convertGeoCoordinateToInt(-83.4309083816587)));
+		//43°23'08.4"N 107°29'42.4"W
+		Position3D pos = new Position3D(new Latitude(J2735Util.convertGeoCoordinateToInt(lat)), new Longitude(
+				J2735Util.convertGeoCoordinateToInt(lon)));
 		pos.setElevation(new Elevation((short) 840));
 		final TransmissionAndSpeed speed = new TransmissionAndSpeed(TransmissionState.forwardGears, new Velocity(8191));
 		final Heading heading = new Heading(104);

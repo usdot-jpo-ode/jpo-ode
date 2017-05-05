@@ -79,7 +79,7 @@ public class VsdmReceiver implements Runnable {
 			if (buffer.length > 0) {
 				AbstractData request = J2735Util.decode(coder, buffer);
 				if (request instanceof ServiceRequest) {
-					logger.info("SDC: Printing VSD deposit ServiceRequest {}", request.toString());
+					logger.info("SDC: Printing VSD deposit ServiceRequest... \n{}", request.toString());
 				}
 			}
 		} catch (IOException e) {
@@ -116,11 +116,11 @@ public class VsdmReceiver implements Runnable {
 			
 			logger.info("SDC: Waiting for VSD message...");
 			socket.receive(packet);
-			logger.info("SDC: Received VSD message...");
+			logger.info("SDC: Received VSD message");
 			if (vsdBuffer.length > 0) {
 				AbstractData vsd = J2735Util.decode(coder, vsdBuffer);
 				if (vsd instanceof VehSitDataMessage) {
-					logger.info("SDC: Printing VSD message {}", vsd.toString());
+					logger.info("SDC: Printing VSD message... \n{}", vsd.toString());
 				}
 			}
 		} catch (DecodeFailedException | DecodeNotSupportedException e) {
