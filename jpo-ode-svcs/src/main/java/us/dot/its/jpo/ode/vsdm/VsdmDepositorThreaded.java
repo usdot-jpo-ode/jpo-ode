@@ -88,8 +88,11 @@ class ServiceRequestSender implements Runnable{
 	@Override
 	public void run() {
 		sendVsdServiceRequest();
-		if(socket != null)
+		if(socket != null){
+			logger.info("Closing ServiceRequestSender Socket");
 			socket.close();
+		}
+			
 	}
 	
 	   public void start () {
@@ -168,7 +171,7 @@ class VsdmSender implements Runnable{
 		sendVsdMessage();
 
 		if (socket != null){
-			logger.info("Closing VsdmDepositor Socket");
+			logger.info("Closing VsdmSender Socket");
 			socket.close();
 		}	
 	}
