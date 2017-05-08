@@ -51,8 +51,6 @@ public class VsdmDepositorThreaded implements Runnable{
 }
 
 class ServiceRequestSender implements Runnable{
-	private Thread t;
-	private String threadName = "ServiceRequestSenderThread";
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private DatagramSocket socket = null;
 	private static Coder coder = J2735.getPERUnalignedCoder();
@@ -67,8 +65,9 @@ class ServiceRequestSender implements Runnable{
 		coder = J2735.getPERUnalignedCoder();
 		try {
 			socket = new DatagramSocket(this.selfPort);
+			logger.info("ODE: Created ServiceRequestSender Socket with port " + this.selfPort);
 		} catch (SocketException e) {
-			logger.error("ODE: Error creating socket", e);
+			logger.error("ODE: Error creating socket with port " + this.selfPort, e);
 		}
 	}
 	
@@ -89,19 +88,11 @@ class ServiceRequestSender implements Runnable{
 	public void run() {
 		sendVsdServiceRequest();
 		if(socket != null){
-			logger.info("Closing ServiceRequestSender Socket");
+			logger.info("Closing ServiceRequestSender Socket with port " + this.selfPort);
 			socket.close();
 		}
 			
 	}
-	
-	   public void start () {
-		      System.out.println("Starting " +  threadName );
-		      if (t == null) {
-		         t = new Thread (this, threadName);
-		         t.start ();
-		      }
-	   }
 }
 
 class VsdmSender implements Runnable{
@@ -116,8 +107,6 @@ class VsdmSender implements Runnable{
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private Thread t;
-	private String threadName = "VsdmSenderThread";
 	private static Coder coder;
 	private String targetHost;
 	private int targetPort;
@@ -135,9 +124,10 @@ class VsdmSender implements Runnable{
 		coder = J2735.getPERUnalignedCoder();
 		try {
 			socket = new DatagramSocket(selfPort);
+			logger.info("ODE: Created VsdmSender Socket with port " + this.selfPort);
 			socket.setSoTimeout(DEFAULT_TIMEOUT);
 		} catch (SocketException e) {
-			logger.error("ODE: Error creating socket", e);
+			logger.error("ODE: Error creating socket with port " + this.selfPort, e);
 		}
 	}
 
@@ -171,7 +161,7 @@ class VsdmSender implements Runnable{
 		sendVsdMessage();
 
 		if (socket != null){
-			logger.info("Closing VsdmSender Socket");
+			logger.info("Closing VsdmSender Socket with port " + this.selfPort);
 			socket.close();
 		}	
 	}
@@ -216,12 +206,4 @@ class VsdmSender implements Runnable{
 	public void run() {
 		depositVsdm();
 	}
-	
-	   public void start () {
-		      System.out.println("Starting " +  threadName );
-		      if (t == null) {
-		         t = new Thread (this, threadName);
-		         t.start ();
-		      }
-	   }
 }

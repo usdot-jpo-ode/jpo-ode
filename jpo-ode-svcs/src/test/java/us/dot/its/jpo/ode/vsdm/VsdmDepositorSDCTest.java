@@ -72,7 +72,7 @@ public class VsdmDepositorSDCTest {
 	public void testVsdMessageDeposit() throws Exception {
 		String targetHost = "104.130.170.234";
 		int targetPort = 46753;
-		int selfPort = 5556;
+		int selfPort = 6666;
 		VsdmDepositor vsdmDepositor = new VsdmDepositor(targetHost, targetPort, selfPort);
 		vsdmDepositor.depositVsdm();
 	}
