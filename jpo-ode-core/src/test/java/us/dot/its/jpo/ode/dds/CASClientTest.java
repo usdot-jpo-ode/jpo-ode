@@ -71,7 +71,6 @@ public class CASClientTest {
 		cookies.put("JSESSIONID", "1bif45f-testSessionId");
 		new Expectations() {
 			{
-				System.out.println("Inside expectations");
 				mockResponse.getStatusCode();
 				result = Status.CREATED;
 				result = Status.OK;
@@ -104,7 +103,6 @@ public class CASClientTest {
 
 		new Verifications() {
 			{
-				System.out.println("Inside verifications");
 				HttpClient httpClient = mockHttpClientFactory.createHttpClient();
 				minTimes = 3;
 
@@ -118,7 +116,6 @@ public class CASClientTest {
 				minTimes = 3;
 
 				Pattern.compile(anyString);
-				System.out.println("Ending verifications");
 			}
 		};
 	}
@@ -132,7 +129,6 @@ public class CASClientTest {
 		cookies.put("JSESSIONID", "1bif45f-testSessionId");
 		new Expectations() {
 			{
-				System.out.println("Inside expectations");
 				mockResponse.getStatusCode();
 				result = Status.BAD_REQUEST;
 			}
@@ -153,7 +149,6 @@ public class CASClientTest {
 		cookies.put("JSESSIONID", "1bif45f-testSessionId");
 		new Expectations() {
 			{
-				System.out.println("Inside expectations");
 				mockResponse.getStatusCode();
 				result = Status.CREATED;
 
@@ -177,7 +172,6 @@ public class CASClientTest {
 		cookies.put("JSESSIONID", "1bif45f-testSessionId");
 		new Expectations() {
 			{
-				System.out.println("Inside expectations");
 				mockResponse.getStatusCode();
 				result = Status.CREATED;
 				result = Status.BAD_REQUEST;
@@ -200,34 +194,23 @@ public class CASClientTest {
 	}
 
 	@Test(expected = CASException.class)
-	public void testLoginExceptionInGetServiceCall(@Mocked HttpResponse mockResponse, @Mocked Matcher mockMatcher,
-			@Mocked HttpClientFactory mockHttpClientFactory, @Mocked Map.Entry<String, String> entry)
+	public void testLoginExceptionInGetServiceCall(
+	      @Mocked HttpResponse mockResponse,
+	      @Mocked Matcher mockMatcher,
+			@Mocked HttpClientFactory mockHttpClientFactory, 
+			@Mocked Map.Entry<String, String> entry)
 			throws HttpException, CASException {
 		String websocketURL = "wss://webapp2.connectedvcs.com/whtools23/websocket";
 		Map<String, String> cookies = new ConcurrentHashMap<String, String>();
 		cookies.put("JSESSIONID", "1bif45f-testSessionId");
 		new Expectations() {
 			{
-				System.out.println("Inside expectations");
 				mockResponse.getStatusCode();
-				result = Status.CREATED;
-				result = Status.OK;
 				result = Status.BAD_REQUEST;
-
-				mockMatcher.matches();
-				result = true;
-				mockMatcher.group(1);
-				result = "TGT-1234-11112222333334444-cas01";
-
-				mockResponse.getBody();
-				result = "TGT-1234-11112222333334444-cas01";
-				result = "ST-1234-1111222233334444-cas01";
-
 			}
 		};
 
-		CASClient casClient;
-		casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
+		CASClient casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
 		casClient.login(websocketURL);
 	}
 }
