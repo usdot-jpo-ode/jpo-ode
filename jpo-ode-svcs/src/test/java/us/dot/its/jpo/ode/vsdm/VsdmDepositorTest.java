@@ -62,7 +62,7 @@ public class VsdmDepositorTest {
 	
 	private static Coder coder;
 
-	@BeforeClass
+	@BeforeClass @Ignore
 	public static void setUpBeforeClass() throws Exception {		
 		J2735.initialize();
 		coder = J2735.getPERUnalignedCoder();
@@ -71,7 +71,7 @@ public class VsdmDepositorTest {
         vsdmReceiverExecutor.submit(new VsdmReceiver(5555));
 	}
 	
-	@Test
+	@Test @Ignore
 	public void testVsdMessageDeposit() throws Exception {
 		String targetHost = "127.0.0.1";
 		int targetPort = 5555;

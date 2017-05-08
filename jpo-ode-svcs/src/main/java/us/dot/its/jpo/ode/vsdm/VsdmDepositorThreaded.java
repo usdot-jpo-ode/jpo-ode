@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 
@@ -25,7 +24,84 @@ import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.j2735.semi.VsmType;
 
-public class VsdmDepositor {
+public class VsdmDepositorThreaded implements Runnable{
+
+	@Override
+	public void run() {
+		String targetHost = "104.130.170.234";
+		int targetPort = 46753;
+		
+		int vsdmSenderPort = 6666;
+		VsdmSender vsdmSender = new VsdmSender(targetHost, targetPort, vsdmSenderPort);
+		Thread vsdmSenderThread = new Thread(vsdmSender, "VsdmSenderThread");
+		vsdmSenderThread.start();
+		
+		int srSenderPort = 5556;
+		ServiceRequestSender serviceRequestSender = new ServiceRequestSender(targetHost, targetPort, srSenderPort);
+		Thread serviceRequestSenderThread = new Thread(serviceRequestSender, "serviceRequestSenderThread");
+		serviceRequestSenderThread.start();
+		
+		try {
+			vsdmSenderThread.join();
+			serviceRequestSenderThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}	
+	}
+}
+
+class ServiceRequestSender implements Runnable{
+	private Thread t;
+	private String threadName = "ServiceRequestSenderThread";
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private DatagramSocket socket = null;
+	private static Coder coder = J2735.getPERUnalignedCoder();
+	private String targetHost;
+	private int targetPort;
+	private int selfPort;
+	
+	public ServiceRequestSender(String targetHost, int targetPort, int selfPort){
+		this.targetHost = targetHost;
+		this.targetPort = targetPort;
+		this.selfPort = selfPort;
+		coder = J2735.getPERUnalignedCoder();
+		try {
+			socket = new DatagramSocket(this.selfPort);
+		} catch (SocketException e) {
+			logger.error("ODE: Error creating socket", e);
+		}
+	}
+	
+	private void sendVsdServiceRequest() {
+		ServiceRequest sr = CVSampleMessageBuilder.buildVehicleSituationDataServiceRequest();
+		ByteArrayOutputStream sink = new ByteArrayOutputStream();
+		try {
+			coder.encode(sr, sink);
+			byte[] payload = sink.toByteArray();
+			logger.info("ODE: Sending VSD Deposit ServiceRequest ...");
+			socket.send(new DatagramPacket(payload, payload.length, new InetSocketAddress(targetHost, targetPort)));
+		} catch (EncodeFailedException | EncodeNotSupportedException | IOException e) {
+			logger.error("ODE: Error Sending VSD Deposit ServiceRequest", e);
+		}
+	}
+
+	@Override
+	public void run() {
+		sendVsdServiceRequest();
+		if(socket != null)
+			socket.close();
+	}
+	
+	   public void start () {
+		      System.out.println("Starting " +  threadName );
+		      if (t == null) {
+		         t = new Thread (this, threadName);
+		         t.start ();
+		      }
+	   }
+}
+
+class VsdmSender implements Runnable{
 	private static final String DEFAULT_TARGET_HOST = "127.0.0.1";
 	private static final int DEFAULT_TARGET_PORT = 4446;
 	private static final int DEFAULT_SELF_PORT = 4444;
@@ -37,17 +113,19 @@ public class VsdmDepositor {
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	private Thread t;
+	private String threadName = "VsdmSenderThread";
 	private static Coder coder;
 	private String targetHost;
 	private int targetPort;
 	private int selfPort;
 	private DatagramSocket socket = null;
 
-	public VsdmDepositor() {
+	public VsdmSender() {
 		this(DEFAULT_TARGET_HOST, DEFAULT_TARGET_PORT, DEFAULT_SELF_PORT);
 	}
 
-	public VsdmDepositor(String targetHost, int targetPort, int selfPort) {
+	public VsdmSender(String targetHost, int targetPort, int selfPort) {
 		this.setTargetHost(targetHost);
 		this.setTargetPort(targetPort);
 		this.setSelfPort(selfPort);
@@ -86,7 +164,6 @@ public class VsdmDepositor {
 
 	public void depositVsdm() {
 		logger.info("ODE: Initializing VSD deposit to SDC ...");
-		sendVsdServiceRequest();
 		receiveVsdServiceResponse();
 		sendVsdMessage();
 
@@ -94,20 +171,6 @@ public class VsdmDepositor {
 			logger.info("Closing VsdmDepositor Socket");
 			socket.close();
 		}	
-	}
-
-	private void sendVsdServiceRequest() {
-		ServiceRequest sr = CVSampleMessageBuilder.buildVehicleSituationDataServiceRequest();
-		ByteArrayOutputStream sink = new ByteArrayOutputStream();
-		try {
-			coder.encode(sr, sink);
-			byte[] payload = sink.toByteArray();
-			logger.info("ODE: Sending VSD Deposit ServiceRequest ...");
-			socket.send(new DatagramPacket(payload, payload.length, new InetSocketAddress(targetHost, targetPort)));
-			//socket.send(new DatagramPacket(payload, payload.length, InetAddress.getByName(targetHost), targetPort));
-		} catch (EncodeFailedException | EncodeNotSupportedException | IOException e) {
-			logger.error("ODE: Error Sending VSD Deposit ServiceRequest", e);
-		}
 	}
 	
 	private void receiveVsdServiceResponse(){
@@ -140,9 +203,22 @@ public class VsdmDepositor {
 			logger.info("ODE: Sending VSD message to SDC...");
 			socket.send(
 					new DatagramPacket(encodedMsg, encodedMsg.length, new InetSocketAddress(targetHost, targetPort)));
-			logger.info("ODE: Sent VSD message");
+			logger.info("ODE: Sent VSD message to SDC");
 		} catch ( EncodeFailedException | EncodeNotSupportedException | IOException e) {
 			logger.error("ODE: Error Sending VSD Message", e);
 		}
 	}
+
+	@Override
+	public void run() {
+		depositVsdm();
+	}
+	
+	   public void start () {
+		      System.out.println("Starting " +  threadName );
+		      if (t == null) {
+		         t = new Thread (this, threadName);
+		         t.start ();
+		      }
+	   }
 }

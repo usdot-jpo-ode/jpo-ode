@@ -112,7 +112,13 @@ public class CVSampleMessageBuilder {
 		vsr.setDialogID(SemiDialogID.vehSitData);
 		vsr.setSeqID(SemiSequenceID.svcReq);
 		vsr.setGroupID(groupID);
-		vsr.setRequestID(new TemporaryID(ByteBuffer.allocate(4).putInt(1001).array()));
+		vsr.setRequestID(tmpReq);
+		
+		IpAddress ipAddr = new IpAddress();
+		ipAddr.setIpv4Address(new IPv4Address(J2735Util.ipToBytes("54.210.159.61")));
+		ConnectionPoint cp = new ConnectionPoint(ipAddr, new PortNumber(6666));
+		vsr.setDestination(cp);
+		
 		return vsr;
 	}
 	
@@ -122,7 +128,7 @@ public class CVSampleMessageBuilder {
 		vsr.setDialogID(SemiDialogID.vehSitData);
 		vsr.setSeqID(SemiSequenceID.svcResp);
 		vsr.setGroupID(groupID);
-		vsr.setRequestID(new TemporaryID(ByteBuffer.allocate(4).putInt(1001).array()));
+		vsr.setRequestID(tmpReq);
 		
 		vsr.setExpiration(J2735Util.expireInMin(expTime));
 		
@@ -277,7 +283,7 @@ public class CVSampleMessageBuilder {
 		
 		SemiDialogID dialID = (SemiDialogID.vehSitData);
 		SemiSequenceID semiID = (SemiSequenceID.data);
-		TemporaryID requestID = new TemporaryID(J2735Util.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 } ));
+		TemporaryID requestID = tmpReq;
 		MsgCRC crc = new MsgCRC("12".getBytes());
 		
 		VsmType type = new VsmType(CVTypeHelper.VsmType.WEATHER.arrayValue());

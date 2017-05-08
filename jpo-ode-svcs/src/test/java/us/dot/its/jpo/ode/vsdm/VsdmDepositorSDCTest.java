@@ -34,6 +34,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.VehicleSize;
 import us.dot.its.jpo.ode.j2735.semi.FundamentalSituationalStatus;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
+import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.j2735.semi.VehSitRecord;
 import us.dot.its.jpo.ode.j2735.semi.VsmType;
@@ -50,10 +51,12 @@ import java.util.GregorianCalendar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.codec.binary.Hex;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.oss.asn1.AbstractData;
 import com.oss.asn1.Coder;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
@@ -65,7 +68,7 @@ public class VsdmDepositorSDCTest {
 		J2735.initialize();
 	}
 	
-	@Test
+	@Test 
 	public void testVsdMessageDeposit() throws Exception {
 		String targetHost = "104.130.170.234";
 		int targetPort = 46753;
