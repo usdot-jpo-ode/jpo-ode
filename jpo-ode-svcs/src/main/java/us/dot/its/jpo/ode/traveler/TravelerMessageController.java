@@ -7,6 +7,7 @@ import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -56,6 +57,7 @@ public class TravelerMessageController {
 
     @ResponseBody
     @RequestMapping(value = "/tim", method = RequestMethod.POST, produces = "application/json")
+    @CrossOrigin
     public String timMessage(@RequestBody String jsonString) {
         if (jsonString == null) {
            String msg = "TIM CONTROLLER - Endpoint received null request";
