@@ -209,7 +209,7 @@ docker-compose up --build -d
 docker-compose ps
 ```
 
-For other build options, see the next section. Otherwise, move on to section V. Testing the Application
+For other build options, see the next section. Otherwise, move on to section **V. Testing the Application**
 
 ---
 ### Other Build/Deploy Options
