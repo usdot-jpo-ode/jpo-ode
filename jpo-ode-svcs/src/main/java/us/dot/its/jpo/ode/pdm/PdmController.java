@@ -81,14 +81,7 @@ public class PdmController {
    public static ResponseEvent createAndSend(ScopedPDU pdu, RSU rsu) throws IOException {
       SnmpSession session = new SnmpSession(rsu);
 
-      // Send the PDU
-      ResponseEvent response = null;
-      try {
-         response = session.set(pdu, session.getSnmp(), session.getTransport(), session.getTarget());
-      } catch (IOException | NullPointerException e) {
-         logger.error("PDM SERVICE - Error while sending PDU: {}", e);
-      }
-      return response;
+      return session.set(pdu, session.getSnmp(), session.getTransport(), session.getTarget());
    }
 
 }

@@ -173,14 +173,16 @@ public class TIMController {
     * @throws IOException 
      */
     public static ResponseEvent createAndSend(
-          SNMP snmp, RSU rsu, String payload) throws IOException, TimManagerServiceException {
+          SNMP snmp, RSU rsu, String payload) 
+                throws IOException, TimManagerServiceException {
        
        SnmpSession session = new SnmpSession(rsu);
 
        // Send the PDU
        ResponseEvent response = null;
        ScopedPDU pdu = TimManagerService.createPDU(snmp, payload);
-       response = session.set(pdu, session.getSnmp(), session.getTransport(), session.getTarget());
+       response = session.set(pdu, session.getSnmp(), session.getTransport(), 
+             session.getTarget());
        return response;
     }
 }

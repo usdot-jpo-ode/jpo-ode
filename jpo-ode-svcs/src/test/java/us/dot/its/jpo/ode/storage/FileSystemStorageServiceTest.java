@@ -254,8 +254,10 @@ public class FileSystemStorageServiceTest {
     }
 
     @Test
-    public void loadAsResourceShouldThrowExceptionWhenFileNotExists(@Mocked Path mockRootPath,
-            @Mocked Path mockResolvedPath, @Mocked UrlResource mockUrlResource) {
+    public void loadAsResourceShouldThrowExceptionWhenFileNotExists(
+          @Mocked Path mockRootPath,
+          @Mocked Path mockResolvedPath,
+          @Mocked UrlResource mockUrlResource) {
 
         try {
             new Expectations() {
@@ -265,7 +267,9 @@ public class FileSystemStorageServiceTest {
 
                     mockResolvedPath.toUri();
 
-                    new UrlResource((URI) any);
+                    new UrlResource((URI) any); 
+                    result = mockUrlResource;
+                    
                     mockUrlResource.exists();
                     result = false;
                 }
@@ -298,8 +302,11 @@ public class FileSystemStorageServiceTest {
                     mockResolvedPath.toUri();
 
                     new UrlResource((URI) any);
+                    result = mockUrlResource;
+
                     mockUrlResource.exists();
                     result = true;
+                    
                     mockUrlResource.isReadable();
                     result = false;
                 }
@@ -363,6 +370,7 @@ public class FileSystemStorageServiceTest {
                     mockResolvedPath.toUri();
 
                     new UrlResource((URI) any);
+                    result = mockUrlResource;
 
                     mockUrlResource.exists();
                     result = true;

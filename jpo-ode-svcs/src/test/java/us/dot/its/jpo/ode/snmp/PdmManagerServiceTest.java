@@ -37,44 +37,6 @@ public class PdmManagerServiceTest {
    ScopedPDU mockScopedPDU;
 
    @Test
-   public void createAndSendShouldReturnNullWhenSetThrowsException(@Mocked final SnmpSession mockSnmpSession)
-         throws IOException {
-
-      try {
-         new Expectations() {
-            {
-               new SnmpSession((RSU) any);
-
-               mockSnmpSession.set((PDU) any, (Snmp) any, (TransportMapping) any, (UserTarget) any);
-               result = new IOException("testException123");
-            }
-         };
-      } catch (IOException e) {
-         fail("Unexpected exception in expectations block: " + e);
-      }
-
-      assertNull(PdmController.createAndSend(mockScopedPDU, mockRSU));
-   }
-
-   @Test
-   public void testCreateAndSendShould(@Mocked final SnmpSession mockSnmpSession) throws IOException {
-
-      try {
-         new Expectations() {
-            {
-               new SnmpSession((RSU) any);
-
-               mockSnmpSession.set((PDU) any, (Snmp) any, (TransportMapping) any, (UserTarget) any);
-            }
-         };
-      } catch (IOException e) {
-         fail("Unexpected exception in expectations block: " + e);
-      }
-
-      assertEquals(ResponseEvent.class, PdmController.createAndSend(mockScopedPDU, mockRSU).getClass());
-   }
-
-   @Test
    public void createPDUshouldNotReturnNUll(@Mocked J2735VehicleStatusRequest vehicleStatusRequest) {
       J2735VehicleStatusRequest[] vehicleStatusRequestList = { vehicleStatusRequest };
       new Expectations() {
