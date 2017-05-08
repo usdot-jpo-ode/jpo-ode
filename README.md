@@ -177,7 +177,7 @@ git clone https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 ---
 ### Build and Deploy the Application
 
-The ODE application uses the maven to manage builds.
+The ODE application uses Maven to manage builds.
 
 **Step 1**: Build the private repository artifacts
 Navigate to the root directory of the jpo-ode-private project:
@@ -189,7 +189,7 @@ Navigate to the root directory of the jpo-ode-private project:
 ```
 It is important you run `mvn clean` first and _then_ `mvn install` because clean installs the required OSS jar file in your local maven repository.
 
-**(Optional)**:  First familiarize yourself with Docker and follow the instructions in the [docker/README.me].
+**(Optional)**: Familiarize yourself with Docker and follow the instructions in the [docker/README.me].
 
 **(Optional)**: If you wish to change the application properties, such as change the location of the upload service via ode.uploadLocation property or set the ode.kafkaBrokers to something other than the $DOCKER_HOST_IP:9092, modify ```jpo-ode-svcs\src\main\resources\application.properties``` file as desired.
 
@@ -209,7 +209,7 @@ docker-compose up --build -d
 docker-compose ps
 ```
 
-For other build options, see the next section. 
+For other build options, see the next section. Otherwise, move on to section V. Testing the Application
 
 ---
 ### Other Build/Deploy Options
