@@ -31,7 +31,7 @@ Run Command: ```docker-compose up -d``` to start the containers for the applicat
  ### Obtaining DOCKER_HOST_IP
   1. Run `ifconfig`
   2. Look for "inet addr:" under the desired network interface - generally "eth0" for Linux and "en0" for OSX
-  3. Copy that IP address and then run command `export DOCKER_HOST_IP=&lt;addr&gt;`
+  3. Copy that IP address and then run command `export DOCKER_HOST_IP=<addr>`
   
  ### Resolve Git SSL issues by disabling SSL verification
    - `export GIT_SSL_NO_VERIFY=1`
@@ -41,10 +41,10 @@ Run Command: ```docker-compose up -d``` to start the containers for the applicat
    - Lists the running containers under docker-compose
      - `docker-compose ls`
    - Start a service
-     - `docker-compose start &lt;service&gt;`
+     - `docker-compose start <service>`
    - Restart a service
-     - `docker-compose restart &lt;service&gt;`
+     - `docker-compose restart <service>`
    - Stop a service
-     - `docker-compose stop &lt;service&gt;`
+     - `docker-compose stop <service>`
    - Stop all services
      - `docker-compose stop`
