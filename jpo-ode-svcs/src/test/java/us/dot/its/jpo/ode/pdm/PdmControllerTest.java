@@ -9,6 +9,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
+import org.snmp4j.Snmp;
+import org.snmp4j.TransportMapping;
+import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 
 import mockit.Expectations;
@@ -21,6 +24,7 @@ import us.dot.its.jpo.ode.http.BadRequestException;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
 import us.dot.its.jpo.ode.snmp.PdmManagerService;
+import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 @RunWith(JMockit.class)
@@ -250,6 +254,36 @@ public class PdmControllerTest {
 
       String response = pdmController.pdmMessage("test123");
       assertEquals("{snmpExeption={success: false, message: \"Exception while sending message to RSU\"}}", response);
+
+
+      new Verifications() {
+         {
+            EventLogger.logger.info(anyString);
+         }
+      };
+   }
+
+   @Test
+   public void testCreateAndSend(@Mocked SnmpSession mockSnmpSession) throws IOException {
+
+      try {
+         new Expectations(SnmpSession.class) {
+            {
+               new SnmpSession((RSU) any); result = mockSnmpSession;
+               
+               mockSnmpSession.set((PDU) any, (Snmp) any, 
+                     (TransportMapping) any, (UserTarget) any); result = mockResponseEvent;
+               mockResponseEvent.getResponse(); result = mockPdu;
+               mockPdu.getErrorStatus(); result = 0;
+            }
+         };
+      } catch (Exception e) {
+         fail("Unexpected Exception in expectations block: " + e);
+      }
+      
+
+      ResponseEvent response = PdmController.createAndSend(mockScopedPdu, mockRsu);
+      assertEquals(0, response.getResponse().getErrorStatus());
 
 
       new Verifications() {
