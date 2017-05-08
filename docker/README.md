@@ -36,15 +36,15 @@ Run Command: ```docker-compose up -d``` to start the containers for the applicat
  ### Resolve Git SSL issues by disabling SSL verification
    - `export GIT_SSL_NO_VERIFY=1`
  ### Docker commands
-   - Deploy and start all services. 
+   - Deploy and start all containers 
      - `docker-compose up --no-recreate -d`
    - Lists the running containers under docker-compose
      - `docker-compose ls`
-   - Start a service
-     - `docker-compose start <service>`
-   - Restart a service
-     - `docker-compose restart <service>`
-   - Stop a service
-     - `docker-compose stop <service>`
-   - Stop all services
+   - Start a container
+     - `docker-compose start <container>`
+   - Restart a container
+     - `docker-compose restart <container>`
+   - Stop a container
+     - `docker-compose stop <container>`
+   - Stop all containers
      - `docker-compose stop`
