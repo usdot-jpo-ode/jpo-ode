@@ -39,8 +39,10 @@ public class FileUploadController {
     private static Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
     private final StorageService storageService;
-    private OdeProperties odeProperties;
-    
+    private ExecutorService bsmImporter;
+    private ExecutorService messageFrameImporter;
+    private ExecutorService bsmExporter;
+
     @Autowired
     public FileUploadController(StorageService storageService, OdeProperties odeProperties,
             SimpMessagingTemplate template) throws IllegalAccessException {
@@ -48,6 +50,17 @@ public class FileUploadController {
         this.odeProperties = odeProperties;
         this.storageService = storageService;
 
+        bsmImporter = Executors.newSingleThreadExecutor();
+        messageFrameImporter = Executors.newSingleThreadExecutor();
+        bsmExporter = Executors.newSingleThreadExecutor();
+        
+        Path bsmPath = Paths.get(odeProperties.getUploadLocationRoot(), odeProperties.getUploadLocationBsm());
+        logger.debug("UPLOADER - Bsm directory: {}", bsmPath);
+        
+        Path messageFramePath = Paths.get(odeProperties.getUploadLocationRoot(),
+                odeProperties.getUploadLocationMessageFrame());
+        logger.debug("UPLOADER - Message Frame directory: {}", messageFramePath);
+        
         Path backupPath = Paths.get(odeProperties.getUploadLocationRoot(), "backup");
         logger.debug("UPLOADER - Backup directory: {}", backupPath);
 

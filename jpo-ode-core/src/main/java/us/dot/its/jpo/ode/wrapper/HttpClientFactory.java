@@ -201,7 +201,7 @@ public class HttpClientFactory {
     * by a REST call.
     */
    public class HttpResponse {
-      private Response.Status statucCode;
+      private Response.Status statusCode;
       private String body;
 
       /**
@@ -212,7 +212,7 @@ public class HttpClientFactory {
        */
       private HttpResponse(Response.Status statucCode, String body) {
          super();
-         this.statucCode = statucCode;
+         this.statusCode = statucCode;
          this.body = body;
       }
 
@@ -220,7 +220,7 @@ public class HttpClientFactory {
        * @return - status code
        */
       public Response.Status getStatusCode() {
-         return statucCode;
+         return statusCode;
       }
 
       /**
@@ -228,8 +228,8 @@ public class HttpClientFactory {
        * @param statucCode - the status code
        * @return the response object.
        */
-      public HttpResponse setStatucCode(Response.Status statucCode) {
-         this.statucCode = statucCode;
+      public HttpResponse setStatusCode(Response.Status statucCode) {
+         this.statusCode = statucCode;
          return this;
       }
 
