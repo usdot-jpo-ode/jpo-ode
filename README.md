@@ -8,13 +8,19 @@ US Department of Transportation Joint Program office (JPO) Operational Data Envi
 In the context of ITS, an Operational Data Environment is a real-time data acquisition and distribution software system that processes and routes data from Connected-X devices –including connected vehicles (CV), personal mobile devices, and infrastructure components and sensors –to subscribing applications to support the operation, maintenance, and use of the transportation system, as well as related research and development efforts.
 
 ### Contents
-I. Release Notes
-II. Documentation
-III. Collaboration Tools
-IV. Getting Started
-V. Testing the Application
-VI. Development Tools
+I. Release Notes 
+
+II. Documentation 
+
+III. Collaboration Tools 
+
+IV. Getting Started 
+
+V. Testing the Application 
+
+VI. Development Tools 
  
+
 ## I. Release Notes
 ### Sprint 12
 - ODE-339 Deposit Raw VSD to SDC (Phase 1)
@@ -63,7 +69,8 @@ VI. Development Tools
 - ODE-42 Clean up the kafka adapter and make it work with Kafka broker. Integrated kafka. Kept Stomp as the high level WebSocket API protocol.
 - ODE-36 - Docker, docker-compose, Kafka and ode Integration
 
-## II - Documentation
+
+## II. Documentation
 ODE provides the following living documents to keep ODE users and stakeholders informed of the latest developments:
 
 1. [docs/JPO_ODE_Architecture.doc](docs/JPO_ODE_Architecture.doc)
@@ -71,6 +78,7 @@ ODE provides the following living documents to keep ODE users and stakeholders i
 3. [docs/ODESwagger.yaml](docs/ODESwagger.yaml)
 
 All stakeholders are invited to provide input to these documents. Stakeholders should direct all input on this document to the JPO Product Owner at DOT, FHWA, and JPO. To provide feedback, we recommend that you create an "issue" in this repository (https://github.com/usdot-jpo-ode/jpo-ode/issues). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
+
 
 ## III. Collaboration Tools
 
@@ -116,26 +124,32 @@ travis env set SONAR_SECURITY_TOKEN <key> -pr <user-account>/<repo-name>
 ### Static Code Analysis
 https://sonarqube.com/organizations/usdot-jpo-ode/projects
 
+
 ## IV. Getting Started
 
-The following instructions describe the procedure to fetch, build, and run the application. First read the following READMEs to familiarize yourself with Docker and Kafka.
-
-**Docker**
-[README.md](docker/README.md)
-
-**Kafka**
-[README.md](docker/kafka/README.md)
+The following instructions describe the procedure to fetch, build, and run the application. 
 
 ### Prerequisites
 * JDK 1.8: http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html
 * Maven: https://maven.apache.org/install.html
 * Git: https://git-scm.com/
 
-### Getting the source code
+Additionally, read the following guides to familiarize yourself with Docker and Kafka.
+
+**Docker** 
+
+[README.md](docker/README.md)
+
+**Kafka** 
+
+[README.md](docker/kafka/README.md)
+
+---
+### Obtain the Source Code
 
 **NOTE**: The ODE consists of two repositories: a public repository containing the bulk of the application code, and a private repository containing the ASN.1-compiled dependencies. Building this application requires BOTH of these repositories. If you need access to the private repository, please reach out to a member of the development team.
 
-#### Step 1 - Clone Public Repository
+#### Step 1 - Clone public repository
 
 Disable Git core.autocrlf (Only the First Time)
 **NOTE**: If running on Windows, please make sure that your global git config is set up to not convert End-of-Line characters during checkout. This is important for building docker images correctly.
@@ -150,7 +164,7 @@ Clone the source code from the GitHub repository using Git command:
 git clone https://github.com/usdot-jpo-ode/jpo-ode.git
 ```
 
-#### Step 2 - Clone Private Repository
+#### Step 2 - Clone private repository
 
 Clone the source code from the BitBucket repository:
 
@@ -158,9 +172,10 @@ Clone the source code from the BitBucket repository:
 git clone https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 ```
 
-### Building and deploying the application
+---
+### Build and Deploy the Application
 
-To build the application use maven command line.
+The ODE application uses the maven to manage builds.
 
 **Step 1**: Build the private repository artifacts
 Navigate to the root directory of the jpo-ode-private project:
@@ -194,7 +209,8 @@ docker-compose ps
 
 For other build options, see the next section. 
 
-### Other build/deploy options
+---
+### Other Build/Deploy Options
 
 #### Building ODE without Deploying
 To build the ODE docker container images but not deploy it, run the following commands:
@@ -228,6 +244,7 @@ You can run the application on your local machine while other services are deplo
  docker-compose start zookeeper kafka
  java -jar jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar
 ```
+
 
 ## V. Testing ODE Application
 Once the ODE is running, you should be able to access the jpo-ode web UI at `localhost:8080`.
