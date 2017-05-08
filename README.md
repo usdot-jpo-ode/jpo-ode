@@ -7,7 +7,8 @@ US Department of Transportation Joint Program office (JPO) Operational Data Envi
 
 In the context of ITS, an Operational Data Environment is a real-time data acquisition and distribution software system that processes and routes data from Connected-X devices –including connected vehicles (CV), personal mobile devices, and infrastructure components and sensors –to subscribing applications to support the operation, maintenance, and use of the transportation system, as well as related research and development efforts.
 
-### Contents
+---
+## Table of Contents
 I. Release Notes 
 
 II. Documentation 
@@ -19,7 +20,8 @@ IV. Getting Started
 V. Testing the Application 
 
 VI. Development Tools 
- 
+
+--- 
 
 ## I. Release Notes
 ### Sprint 12
