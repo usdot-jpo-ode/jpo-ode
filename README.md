@@ -188,7 +188,8 @@ git clone https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 
 The ODE application uses Maven to manage builds.
 
-**Step 1**: Build the private repository artifacts
+**Step 1**: Build the private repository artifacts. 
+
 Navigate to the root directory of the jpo-ode-private project:
 
 ```bash
