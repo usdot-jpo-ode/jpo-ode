@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import us.dot.its.jpo.ode.ManagerAndControllerServices;
 import us.dot.its.jpo.ode.http.BadRequestException;
-import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.snmp.PdmManagerService;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
@@ -37,7 +36,7 @@ public class PdmController {
 
       J2735PdmRequest pdmRequest = null;
       try {
-         pdmRequest = (J2735PdmRequest) JsonUtils.fromJson(jsonString, TravelerInputData.class);
+         pdmRequest = (J2735PdmRequest) JsonUtils.fromJson(jsonString, J2735PdmRequest.class);
 
          logger.debug("J2735PdmRequest: {}", pdmRequest.toJson(true));
 
@@ -53,17 +52,19 @@ public class PdmController {
          ResponseEvent response = null;
          try {
             response = createAndSend(pdu, curRsu);
-
+            
             if (null == response || null == response.getResponse()) {
                responseList.put(curRsu.getRsuTarget(),
-                     ManagerAndControllerServices.log(false, "No response from RSU IP=" + curRsu.getRsuTarget(), null));
+                     ManagerAndControllerServices.log(
+                           false, "No response from RSU IP=" + curRsu.getRsuTarget(), null));
             } else if (0 == response.getResponse().getErrorStatus()) {
-               responseList.put(curRsu.getRsuTarget(), ManagerAndControllerServices.log(true,
-                     "SNMP deposit successful: " + response.getResponse(), null));
+               responseList.put(curRsu.getRsuTarget(), 
+                     ManagerAndControllerServices.log(
+                           true, "SNMP deposit successful: " + response.getResponse(), null));
             } else {
                responseList.put(curRsu.getRsuTarget(),
-                     ManagerAndControllerServices.log(false,
-                           "Error, SNMP deposit failed, error code=" + response.getResponse().getErrorStatus() + "("
+                     ManagerAndControllerServices.log(
+                           false, "SNMP deposit failed for RSU IP " + curRsu.getRsuTarget() + ", error code=" + response.getResponse().getErrorStatus() + "("
                                  + response.getResponse().getErrorStatusText() + ")",
                            null));
             }

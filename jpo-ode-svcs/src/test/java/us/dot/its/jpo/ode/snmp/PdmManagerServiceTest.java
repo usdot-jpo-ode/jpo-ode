@@ -30,32 +30,11 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleStatusRequest;
 public class PdmManagerServiceTest {
 
    @Injectable
-   RSU mockSnmpProperties;
+   RSU mockRSU;
    @Mocked
-   J2735ProbeDataManagment mockPdmParameters;
+   J2735ProbeDataManagment mockPdm;
    @Mocked
-   ScopedPDU mockPdu;
-
-   @Test
-   public void createAndSendShouldThrowFailedToCreateSnmpSession(@Mocked final SnmpSession mockSnmpSession) {
-
-      try {
-         new Expectations() {
-            {
-               new SnmpSession((RSU) any);
-               result = new IOException("testException123");
-            }
-         };
-      } catch (IOException e) {
-         fail("Unexpected exception in expectations block: " + e);
-      }
-
-      try {
-         PdmController.createAndSend(mockPdu, mockSnmpProperties);
-         fail("Should have thrown IOException");
-      } catch (IOException e) {
-      }
-   }
+   ScopedPDU mockScopedPDU;
 
    @Test
    public void createAndSendShouldReturnNullWhenSetThrowsException(@Mocked final SnmpSession mockSnmpSession)
@@ -74,7 +53,7 @@ public class PdmManagerServiceTest {
          fail("Unexpected exception in expectations block: " + e);
       }
 
-      assertNull(PdmController.createAndSend(mockPdu, mockSnmpProperties));
+      assertNull(PdmController.createAndSend(mockScopedPDU, mockRSU));
    }
 
    @Test
@@ -92,7 +71,7 @@ public class PdmManagerServiceTest {
          fail("Unexpected exception in expectations block: " + e);
       }
 
-      assertEquals(ResponseEvent.class, PdmController.createAndSend(mockPdu, mockSnmpProperties).getClass());
+      assertEquals(ResponseEvent.class, PdmController.createAndSend(mockScopedPDU, mockRSU).getClass());
    }
 
    @Test
@@ -100,11 +79,11 @@ public class PdmManagerServiceTest {
       J2735VehicleStatusRequest[] vehicleStatusRequestList = { vehicleStatusRequest };
       new Expectations() {
          {
-            mockPdmParameters.getVehicleStatusRequestList();
+            mockPdm.getVehicleStatusRequestList();
             result = vehicleStatusRequestList;
          }
       };
-      ScopedPDU result = PdmManagerService.createPDU(mockPdmParameters);
+      ScopedPDU result = PdmManagerService.createPDU(mockPdm);
       assertNotNull(result);
    }
 
