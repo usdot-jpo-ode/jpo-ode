@@ -26,7 +26,6 @@ import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.http.BadRequestException;
-import us.dot.its.jpo.ode.http.InternalServerErrorException;
 import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
@@ -78,8 +77,7 @@ public class TIMController {
            
         }
         catch (Exception e) {
-           ManagerAndControllerServices.log(false, "Invalid Request Body", e);
-           throw new BadRequestException(e);
+           throw new BadRequestException(ManagerAndControllerServices.log(false, "Invalid Request Body", e));
         }
         
 
@@ -88,29 +86,21 @@ public class TIMController {
            builder.buildTravelerInformation(travelerinputData.getTim());
         } catch (Exception e) {
            String msg = "Invalid Traveler Information Message data value in the request";
-           ManagerAndControllerServices.log(false, msg, e);
-           throw new BadRequestException(e);
+           throw new BadRequestException(ManagerAndControllerServices.log(false, msg, e), e);
         }
         
         // Step 2 - Encode the TIM object to a hex string
         String rsuSRMPayload = null;
         try {
             rsuSRMPayload = builder.encodeTravelerInformationToHex();
-            if (rsuSRMPayload == null) {
-               String msg = "Internal Error: OssTravelerMessageBuilder#encodeTravelerInformationToHex returned null";
-               ManagerAndControllerServices.log(false, msg, null);
-               throw new InternalServerErrorException(msg);
-            }
         } catch (Exception e) {
            String msg = "Failed to encode Traveler Information Message";
-           ManagerAndControllerServices.log(false, msg, e);
-           throw new BadRequestException(e);
+           throw new BadRequestException(ManagerAndControllerServices.log(false, msg, e), e);
         }
         logger.debug("Encoded Hex TIM: {}", rsuSRMPayload);
 
         HashMap<String, String> responseList = new HashMap<>();
         
-        boolean internalServerError = true;
         for (RSU curRsu : travelerinputData.getRsus()) {
 
            ResponseEvent response = null;
@@ -123,12 +113,11 @@ public class TIMController {
                        ManagerAndControllerServices.log(false, "No response from RSU IP=" + curRsu.getRsuTarget(), null));
               } else if (0 == response.getResponse().getErrorStatus()) {
                  responseList.put(curRsu.getRsuTarget(), ManagerAndControllerServices.log(true,
-                       "SNMP deposit successful: " + response.getResponse(), null));
-                 internalServerError = false;
+                       "SNMP deposit successful. RSU IP = " + curRsu.getRsuTarget() + ", Status Code: " + response.getResponse().getErrorStatus(), null));
               } else {
                  responseList.put(curRsu.getRsuTarget(),
                        ManagerAndControllerServices.log(false,
-                             "SNMP deposit failed, error code=" + response.getResponse().getErrorStatus() + "("
+                             "SNMP deposit failed for RSU IP " + curRsu.getRsuTarget() + ", error code=" + response.getResponse().getErrorStatus() + "("
                                    + response.getResponse().getErrorStatusText() + ")",
                              null));
               }
@@ -139,10 +128,6 @@ public class TIMController {
            }
         }
 
-        if (internalServerError) {
-           throw new InternalServerErrorException(responseList.toString());
-        }
-        
         
         try {
            depositToDDS(travelerinputData, rsuSRMPayload);
@@ -151,8 +136,8 @@ public class TIMController {
                        true, "Deposit to SDW was successful", null));
         } catch (Exception e) {
            String msg = "Error depositing to SDW";
-           ManagerAndControllerServices.log(false, msg , e);
-           throw new InternalServerErrorException(e);
+           responseList.put("SDW",
+                 ManagerAndControllerServices.log(false, msg , e));
         }
 
         return responseList.toString();
@@ -185,24 +170,14 @@ public class TIMController {
     * @throws IOException 
      */
     public static ResponseEvent createAndSend(
-          SNMP snmp, RSU rsu, String payload) throws TimManagerServiceException, IOException {
-       SnmpSession session = null;
-       if (snmp != null)
-          session = new SnmpSession(rsu);
-
-       if (session == null)
-          return null;
+          SNMP snmp, RSU rsu, String payload) throws IOException, TimManagerServiceException {
+       
+       SnmpSession session = new SnmpSession(rsu);
 
        // Send the PDU
        ResponseEvent response = null;
        ScopedPDU pdu = TimManagerService.createPDU(snmp, payload);
-       try {
-          response = session.set(pdu, session.getSnmp(), session.getTransport(), session.getTarget());
-       } catch (IOException | NullPointerException e) {
-          logger.error("Error sending PDU: {}", e);
-          return null;
-       }
+       response = session.set(pdu, session.getSnmp(), session.getTransport(), session.getTarget());
        return response;
-
     }
 }
