@@ -8,16 +8,25 @@ US Department of Transportation Joint Program office (JPO) Operational Data Envi
 In the context of ITS, an Operational Data Environment is a real-time data acquisition and distribution software system that processes and routes data from Connected-X devices –including connected vehicles (CV), personal mobile devices, and infrastructure components and sensors –to subscribing applications to support the operation, maintenance, and use of the transportation system, as well as related research and development efforts.
 
 <a name="toc"/>
-## Table of Contents
-[I. Release Notes](#release-notes)
-[II. Documentation](#documentation)
-[III. Collaboration Tools](#collaboration-tools)
-[IV. Getting Started](#getting-started)
-[V. Testing the Application](#testing)
-[VI. Development Tools](#dev-tools)
+
+## Table of Contents 
+
+[I. Release Notes](#release-notes) 
+
+[II. Documentation](#documentation) 
+
+[III. Collaboration Tools](#collaboration-tools) 
+
+[IV. Getting Started](#getting-started) 
+
+[V. Testing the Application](#testing) 
+
+[VI. Development Tools](#dev-tools) 
 
 --- 
+
 <a name="release-notes"/>
+
 ## I. Release Notes
 ### Sprint 12
 - ODE-339 Deposit Raw VSD to SDC (Phase 1)
@@ -67,6 +76,7 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 - ODE-36 - Docker, docker-compose, Kafka and ode Integration
 
 <a name="documentation"/>
+
 ## II. Documentation
 ODE provides the following living documents to keep ODE users and stakeholders informed of the latest developments:
 
@@ -77,6 +87,7 @@ ODE provides the following living documents to keep ODE users and stakeholders i
 All stakeholders are invited to provide input to these documents. Stakeholders should direct all input on this document to the JPO Product Owner at DOT, FHWA, and JPO. To provide feedback, we recommend that you create an "issue" in this repository (https://github.com/usdot-jpo-ode/jpo-ode/issues). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
 
 <a name="collaboration-tools"/>
+
 ## III. Collaboration Tools
 
 ### Source Repositories - GitHub
@@ -121,7 +132,10 @@ travis env set SONAR_SECURITY_TOKEN <key> -pr <user-account>/<repo-name>
 ### Static Code Analysis
 https://sonarqube.com/organizations/usdot-jpo-ode/projects
 
+[Back to top](#toc)
+
 <a name="getting-started"/>
+
 ## IV. Getting Started
 
 The following instructions describe the procedure to fetch, build, and run the application. 
@@ -206,6 +220,8 @@ docker-compose ps
 
 For other build options, see the next section. Otherwise, move on to section [V. Testing the Application](#testing)
 
+[Back to top](#toc)
+
 ---
 ### Other Build/Deploy Options
 
@@ -242,9 +258,10 @@ You can run the application on your local machine while other services are deplo
  java -jar jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar
 ```
 
-[Table of Contents](#toc)
+[Back to top](#toc)
 
 <a name="testing"/>
+
 ## V. Testing ODE Application
 Once the ODE is running, you should be able to access the jpo-ode web UI at `localhost:8080`.
 
@@ -268,9 +285,10 @@ The result of uploading and decoding of the message will be displayed on the UI 
 
 *Notice that the empty fields in the J2735 message are represented by a ```null``` value. Also note that ODE output strips the MessageFrame header and returns a pure BSM in the J2735 BSM subscription topic.*
 
-[Table of Contents](#toc)
+[Back to top](#toc)
 
 <a name="dev-tools"/>
+
 ## VI. Development Tools
 
 ### Integrated Development Environment (IDE)
@@ -288,4 +306,5 @@ To be added.
 ### Continous Deployment
 
 To be added.
-[Table of Contents](#toc)
+
+[Back to top](#toc)
