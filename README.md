@@ -6,8 +6,19 @@ Develop: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch
 US Department of Transportation Joint Program office (JPO) Operational Data Environment (ODE)
 
 In the context of ITS, an Operational Data Environment is a real-time data acquisition and distribution software system that processes and routes data from Connected-X devices –including connected vehicles (CV), personal mobile devices, and infrastructure components and sensors –to subscribing applications to support the operation, maintenance, and use of the transportation system, as well as related research and development efforts.
+
+### Contents
+I. Release Notes
+II. Documentation
+III. Collaboration Tools
+IV. Getting Started
+V. Testing the Application
+VI. Development Tools
  
-## Release Notes
+## I. Release Notes
+### Sprint 12
+- ODE-339 Deposit Raw VSD to SDC (Phase 1)
+
 ### Sprint 11
 - (ODE-77 Subtask) ODE-274 Publish to J2735BsmRawJson
 
@@ -52,16 +63,16 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 - ODE-42 Clean up the kafka adapter and make it work with Kafka broker. Integrated kafka. Kept Stomp as the high level WebSocket API protocol.
 - ODE-36 - Docker, docker-compose, Kafka and ode Integration
 
-## Documentation
+## II - Documentation
 ODE provides the following living documents to keep ODE users and stakeholders informed of the latest developments:
 
 1. [docs/JPO_ODE_Architecture.doc](docs/JPO_ODE_Architecture.doc)
 2. [docs/JPO_ODE_User_Guide.doc](docs/JPO_ODE_User_Guide.doc)
 3. [docs/ODESwagger.yaml](docs/ODESwagger.yaml)
 
-All stakeholders are invited to provide input to these documents. Stakeholders should direct all input on this document to the JPO Product Owner at DOT, FHWA, JPO. To provide feedback, we recommend that you create an "issue" in this repository (https://github.com/usdot-jpo-ode/jpo-ode/issues). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
+All stakeholders are invited to provide input to these documents. Stakeholders should direct all input on this document to the JPO Product Owner at DOT, FHWA, and JPO. To provide feedback, we recommend that you create an "issue" in this repository (https://github.com/usdot-jpo-ode/jpo-ode/issues). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
 
-## Collaboration Tools
+## III. Collaboration Tools
 
 ### Source Repositories - GitHub
 - Main repository on GitHub (public)
@@ -105,54 +116,72 @@ travis env set SONAR_SECURITY_TOKEN <key> -pr <user-account>/<repo-name>
 ### Static Code Analysis
 https://sonarqube.com/organizations/usdot-jpo-ode/projects
 
-## Getting Started
+## IV. Getting Started
+
+The following instructions describe the procedure to fetch, build, and run the application. First read the following READMEs to familiarize yourself with Docker and Kafka.
+
+**Docker**
+[README.md](docker/README.md)
+
+**Kafka**
+[README.md](docker/kafka/README.md)
 
 ### Prerequisites
 * JDK 1.8: http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html
 * Maven: https://maven.apache.org/install.html
 * Git: https://git-scm.com/
 
-### Instructions
+### Getting the source code
 
-The following instructions describe the procedure to fetch, build and run the application.
+**NOTE**: The ODE consists of two repositories: a public repository containing the bulk of the application code, and a private repository containing the ASN.1-compiled dependencies. Building this application requires BOTH of these repositories. If you need access to the private repository, please reach out to a member of the development team.
 
-#### Getting the source Code
+#### Step 1 - Clone Public Repository
 
-**Step 1**: Disable Git core.autocrlf (Only the First Time)
+Disable Git core.autocrlf (Only the First Time)
 **NOTE**: If running on Windows, please make sure that your global git config is set up to not convert End-of-Line characters during checkout. This is important for building docker images correctly.
 
 ```bash
 git config --global core.autocrlf false
 ```
 
-**Step 2**:  Clone the source code from GitHub and BitBucket repositories using Git commands:
+Clone the source code from the GitHub repository using Git command:
 
 ```bash
 git clone https://github.com/usdot-jpo-ode/jpo-ode.git
+```
+
+#### Step 2 - Clone Private Repository
+
+Clone the source code from the BitBucket repository:
+
+```bash
 git clone https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 ```
 
-**Step 3**:  Follow the instructions in the ![docker/README.me]
-
-#### Building Private Repository
+### Building and deploying the application
 
 To build the application use maven command line.
 
-**Step 4**: Navigate to the root directory of the jpo-ode-private project:
+**Step 1**: Build the private repository artifacts
+Navigate to the root directory of the jpo-ode-private project:
 
 ```bash
  cd jpo-ode-private/
  mvn clean
  mvn install
 ```
-It is important you run mvn clean first and then mvn install because mvn clean installs the required OSS jar file in your maven local repository.
+It is important you run `mvn clean` first and _then_ `mvn install` because clean installs the required OSS jar file in your local maven repository.
 
-#### Building and deploying ODE
-**Step 5**: Navigate to the root directory of the jpo-ode project.
+**(Optional)**:  First familiarize yourself with Docker and follow the instructions in the [docker/README.me].
 
-**Step 6**: (Optional Step) If you wish to change the application properties, such as change the location of the upload service via ode.uploadLocation property or set the ode.kafkaBrokers to something other than the $DOCKER_HOST_IP:9092, modify ```jpo-ode-svcs\src\main\resources\application.properties``` file as desired.
+**(Optional)**: If you wish to change the application properties, such as change the location of the upload service via ode.uploadLocation property or set the ode.kafkaBrokers to something other than the $DOCKER_HOST_IP:9092, modify ```jpo-ode-svcs\src\main\resources\application.properties``` file as desired.
 
-**Step 7**: The easiest and cleanest way to build and run the ODE in a docker container would be to run the ```clean-build-and-deploy``` script. This script executes the following commands:
+**Step 2**: Navigate to the root directory of the jpo-ode project.
+
+**Step 3**: Build and deploy the application. 
+
+The easiest way to do this is to run the ```clean-build-and-deploy``` script. 
+This script executes the following commands:
 
 ```bash
 #!/bin/bash
@@ -162,6 +191,10 @@ mvn clean install
 docker-compose up --build -d
 docker-compose ps
 ```
+
+For other build options, see the next section. 
+
+### Other build/deploy options
 
 #### Building ODE without Deploying
 To build the ODE docker container images but not deploy it, run the following commands:
@@ -186,8 +219,8 @@ docker-compose up --no-recreate -d
 
 Alternatively, run ```deploy``` script.
 
-Check the deployment by running ```docker-compose ps```. You can start and stop service using ```docker-compose start``` and ```docker-compose stop``` commands.
-If using the multi-broker docker-compose file, you can change the scaling by running ```docker-compose scale <service>=n``` where service is the service you would like to scale and n is the number of instances. For example, ```docker-compose scale kafka=3```.
+Check the deployment by running ```docker-compose ps```. You can start and stop containers using ```docker-compose start``` and ```docker-compose stop``` commands.
+If using the multi-broker docker-compose file, you can change the scaling by running ```docker-compose scale <container>=n``` where container is the container you would like to scale and n is the number of instances. For example, ```docker-compose scale kafka=3```.
 
 #### Running ODE Application on localhost
 You can run the application on your local machine while other services are deployed on a host environment. To do so, run the following:
@@ -196,8 +229,8 @@ You can run the application on your local machine while other services are deplo
  java -jar jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar
 ```
 
-#### Testing ODE Application
-You should be able to access the jpo-ode UI at `localhost:8080`.
+## V. Testing ODE Application
+Once the ODE is running, you should be able to access the jpo-ode web UI at `localhost:8080`.
 
 1. Press the ```Connect``` button to connect to the ODE WebSocket service.
 2. Press ```Choose File``` button to select a file with J2735 BSM or MessageFrame records in ASN.1 UPER encoding
@@ -218,6 +251,9 @@ The result of uploading and decoding of the message will be displayed on the UI 
 ![ODE UI](images/ode-ui.png)
 
 *Notice that the empty fields in the J2735 message are represented by a ```null``` value. Also note that ODE output strips the MessageFrame header and returns a pure BSM in the J2735 BSM subscription topic.*
+
+## VI. Development Tools
+
 ### Integrated Development Environment (IDE)
 
 Install the IDE of your choice:
@@ -228,10 +264,8 @@ Install the IDE of your choice:
 
 ### Continuous Integration and Delivery
 
-### Deployment
+To be added.
 
-## Docker
-[README.md](docker/README.md)
+### Continous Deployment
 
-## Kafka
-[README.md](docker/kafka/README.md)
+To be added.
