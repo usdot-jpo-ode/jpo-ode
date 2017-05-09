@@ -10,12 +10,14 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.oss.asn1.AbstractData;
 import com.oss.asn1.Coder;
 import com.oss.asn1.DecodeFailedException;
 import com.oss.asn1.DecodeNotSupportedException;
 
+import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
@@ -25,33 +27,27 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
 import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class VsdmReceiver implements Runnable {
 
 	private static Logger logger = LoggerFactory.getLogger(VsdmReceiver.class);
-
-	private static final int DEFAULT_PORT = 5556;
-	private static final int DEFAULT_BUFFER_SIZE = 10000;
-	private static final Boolean VERBOSE_BSM = false;
-
-	private DatagramSocket socket;
 	private static Coder coder = J2735.getPERUnalignedCoder();
 
-	public VsdmReceiver(Integer p) {
+	private DatagramSocket socket;
+	
+	private OdeProperties odeProperties;
 
-		Integer port;
-
-		if (p != null) {
-			port = p;
-		} else {
-			port = DEFAULT_PORT;
-		}
+	@Autowired
+	public VsdmReceiver(OdeProperties odeProps) {
+		
+		this.odeProperties = odeProps;
 
 		try {
-			socket = new DatagramSocket(port);
-			logger.info("[VSDM Receiver] Created UDP socket bound to port", port);
+			socket = new DatagramSocket(odeProperties.getVsdmPort());
+			logger.info("[VSDM Receiver] Created UDP socket bound to port", odeProperties.getVsdmPort());
 		} catch (SocketException e) {
-			logger.error("[VSDM Receiver] Error creating socket with port ", port, e);
+			logger.error("[VSDM Receiver] Error creating socket with port ", odeProperties.getVsdmPort(), e);
 		}
 	}
 
@@ -60,7 +56,7 @@ public class VsdmReceiver implements Runnable {
 
 		while (true) {
 			
-			DatagramPacket packet = new DatagramPacket(new byte[DEFAULT_BUFFER_SIZE], DEFAULT_BUFFER_SIZE);
+			DatagramPacket packet = new DatagramPacket(new byte[odeProperties.getVsdmBufferSize()], odeProperties.getVsdmBufferSize());
 
 			try {
 				socket.receive(packet);
@@ -84,7 +80,11 @@ public class VsdmReceiver implements Runnable {
 				for (BasicSafetyMessage entry : bsmList) {
 					try {
 						J2735Bsm convertedBsm = OssBsm.genericBsm(entry);
-						VsdmDepositor.publish(JsonUtils.toJson(convertedBsm, VERBOSE_BSM));
+						String bsmJson = JsonUtils.toJson(convertedBsm, odeProperties.getVsdmVerboseJson());
+				        
+						publish(bsmJson);
+
+		        logger.debug("Published: {}", bsmJson);
 					} catch (OssBsmPart2Exception e) {
 						logger.error("[VSDM Receiver] Error, unable to convert BSM: ", e);
 					}
@@ -97,6 +97,13 @@ public class VsdmReceiver implements Runnable {
 
 		}
 
+	}
+	
+	private void publish(String msg) {
+		
+		MessageProducer
+        .defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
+        .send(odeProperties.getKafkaTopicBsmJSON(), null, msg);
 	}
 
 }
