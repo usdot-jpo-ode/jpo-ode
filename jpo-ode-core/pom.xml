@@ -86,11 +86,9 @@
       </exclusions>
     </dependency>
     <dependency>
-		<groupId>commons-io</groupId>
-		<artifactId>commons-io</artifactId>
-		<version>2.1</version>
-		<scope>compile</scope>
-	</dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
   </dependencies>
 
 </project>
