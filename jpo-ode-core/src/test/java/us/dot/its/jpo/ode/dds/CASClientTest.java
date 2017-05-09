@@ -194,7 +194,7 @@ public class CASClientTest {
 	}
 
 	@SuppressWarnings("unchecked")
-   @Test(expected = CASException.class)
+   @Test
 	public void testLoginExceptionInGetServiceCall(
 	      @Mocked HttpClient mockHttpClient,
          @Mocked HttpResponse mockPostResponse,
@@ -238,6 +238,11 @@ public class CASClientTest {
 		};
 
 		CASClient casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
-		casClient.login(websocketURL);
+		try {
+		   casClient.login(websocketURL);
+		   fail ("Expected CASException");
+		} catch (CASException e) {
+		   
+		}
 	}
 }
