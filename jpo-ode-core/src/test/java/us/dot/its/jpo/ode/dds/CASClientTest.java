@@ -66,7 +66,7 @@ public class CASClientTest {
 	public void testLogin(@Mocked HttpResponse mockResponse, @Mocked Matcher mockMatcher,
 			@Mocked HttpClientFactory mockHttpClientFactory, @Mocked Map.Entry<String, String> entry)
 			throws HttpException {
-		String websocketURL = "wss://webapp2.connectedvcs.com/whtools23/websocket";
+		String websocketURL = "wss://url.websocket.com";
 		Map<String, String> cookies = new ConcurrentHashMap<String, String>();
 		cookies.put("JSESSIONID", "1bif45f-testSessionId");
 		new Expectations() {
@@ -124,7 +124,7 @@ public class CASClientTest {
 	public void testLoginExceptionInGetTicket1(@Mocked HttpResponse mockResponse, @Mocked Matcher mockMatcher,
 			@Mocked HttpClientFactory mockHttpClientFactory, @Mocked Map.Entry<String, String> entry)
 			throws HttpException, CASException {
-		String websocketURL = "wss://webapp2.connectedvcs.com/whtools23/websocket";
+		String websocketURL = "wss://url.websocket.com";
 		Map<String, String> cookies = new ConcurrentHashMap<String, String>();
 		cookies.put("JSESSIONID", "1bif45f-testSessionId");
 		new Expectations() {
@@ -144,7 +144,7 @@ public class CASClientTest {
 	public void testLoginExceptionInGetTicket2(@Mocked HttpResponse mockResponse, @Mocked Matcher mockMatcher,
 			@Mocked HttpClientFactory mockHttpClientFactory, @Mocked Map.Entry<String, String> entry)
 			throws HttpException, CASException {
-		String websocketURL = "wss://webapp2.connectedvcs.com/whtools23/websocket";
+		String websocketURL = "wss://url.websocket.com";
 		Map<String, String> cookies = new ConcurrentHashMap<String, String>();
 		cookies.put("JSESSIONID", "1bif45f-testSessionId");
 		new Expectations() {
@@ -167,7 +167,7 @@ public class CASClientTest {
 	public void testLoginExceptionInGetServiceTicket(@Mocked HttpResponse mockResponse, @Mocked Matcher mockMatcher,
 			@Mocked HttpClientFactory mockHttpClientFactory, @Mocked Map.Entry<String, String> entry)
 			throws HttpException, CASException {
-		String websocketURL = "wss://webapp2.connectedvcs.com/whtools23/websocket";
+		String websocketURL = "wss://url.websocket.com";
 		Map<String, String> cookies = new ConcurrentHashMap<String, String>();
 		cookies.put("JSESSIONID", "1bif45f-testSessionId");
 		new Expectations() {
@@ -193,20 +193,39 @@ public class CASClientTest {
 		casClient.login(websocketURL);
 	}
 
-	@Test(expected = CASException.class)
+	@SuppressWarnings("unchecked")
+   @Test(expected = CASException.class)
 	public void testLoginExceptionInGetServiceCall(
+	      @Mocked HttpClient mockHttpClient,
 	      @Mocked HttpResponse mockResponse,
-	      @Mocked Matcher mockMatcher,
-			@Mocked HttpClientFactory mockHttpClientFactory, 
-			@Mocked Map.Entry<String, String> entry)
+	      @Mocked Matcher mockMatcher)
 			throws HttpException, CASException {
-		String websocketURL = "wss://webapp2.connectedvcs.com/whtools23/websocket";
+		String websocketURL = "wss://url.websocket.com";
 		Map<String, String> cookies = new ConcurrentHashMap<String, String>();
 		cookies.put("JSESSIONID", "1bif45f-testSessionId");
 		new Expectations() {
 			{
-				mockResponse.getStatusCode();
-				result = Status.BAD_REQUEST;
+			   mockHttpClient.post(anyString, (Map<String, String>)any,
+			         (ConcurrentHashMap<String, String>)any, anyString);
+			   result = mockResponse;
+			   
+            mockHttpClient.get(anyString, (Map<String, String>)any, (Map<String, String>)any);
+            result = mockResponse;
+
+            mockResponse.getStatusCode();
+            result = Status.CREATED;
+            result = Status.OK;
+            result = Status.BAD_REQUEST;
+
+            mockMatcher.matches();
+            result = true;
+            mockMatcher.group(1);
+            result = "TGT-1234-11112222333334444-cas01";
+
+            mockResponse.getBody();
+            result = "TGT-1234-11112222333334444-cas01";
+            result = "ST-1234-1111222233334444-cas01";
+
 			}
 		};
 
