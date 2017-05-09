@@ -197,7 +197,8 @@ public class CASClientTest {
    @Test(expected = CASException.class)
 	public void testLoginExceptionInGetServiceCall(
 	      @Mocked HttpClient mockHttpClient,
-	      @Mocked HttpResponse mockResponse,
+         @Mocked HttpResponse mockPostResponse,
+         @Mocked HttpResponse mockGetResponse,
 	      @Mocked Matcher mockMatcher)
 			throws HttpException, CASException {
 		String websocketURL = "wss://url.websocket.com";
@@ -205,16 +206,21 @@ public class CASClientTest {
 		cookies.put("JSESSIONID", "1bif45f-testSessionId");
 		new Expectations() {
 			{
-			   mockHttpClient.post(anyString, (Map<String, String>)any,
-			         (ConcurrentHashMap<String, String>)any, anyString);
-			   result = mockResponse;
+			   mockHttpClient.post(anyString, 
+			         (Map<String, String>)any,
+			         (Map<String, String>)any, anyString);
+			   result = mockPostResponse;
 			   
-            mockHttpClient.get(anyString, (Map<String, String>)any, (Map<String, String>)any);
-            result = mockResponse;
+            mockHttpClient.get(anyString, 
+                  (Map<String, String>)any, 
+                  (Map<String, String>)any);
+            result = mockGetResponse;
 
-            mockResponse.getStatusCode();
+            mockPostResponse.getStatusCode();
             result = Status.CREATED;
             result = Status.OK;
+            
+            mockGetResponse.getStatusCode();
             result = Status.BAD_REQUEST;
 
             mockMatcher.matches();
@@ -222,8 +228,10 @@ public class CASClientTest {
             mockMatcher.group(1);
             result = "TGT-1234-11112222333334444-cas01";
 
-            mockResponse.getBody();
+            mockPostResponse.getBody();
             result = "TGT-1234-11112222333334444-cas01";
+            
+            mockGetResponse.getBody();
             result = "ST-1234-1111222233334444-cas01";
 
 			}
