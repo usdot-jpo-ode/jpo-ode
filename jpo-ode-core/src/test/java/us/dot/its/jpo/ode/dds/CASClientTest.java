@@ -63,19 +63,26 @@ public class CASClientTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testLogin(@Mocked HttpResponse mockResponse, @Mocked Matcher mockMatcher,
-			@Mocked HttpClientFactory mockHttpClientFactory, @Mocked Map.Entry<String, String> entry)
+	public void testLogin(
+	      @Mocked HttpResponse mockResponse, 
+         @Mocked Pattern mockPattern,
+	      @Mocked Matcher mockMatcher,
+			@Mocked HttpClientFactory mockHttpClientFactory, 
+			@Mocked Map.Entry<String, String> entry)
 			throws HttpException {
 		String websocketURL = "wss://url.websocket.com";
 		Map<String, String> cookies = new ConcurrentHashMap<String, String>();
 		cookies.put("JSESSIONID", "1bif45f-testSessionId");
-		new Expectations() {
+		new Expectations(Pattern.class) {
 			{
 				mockResponse.getStatusCode();
 				result = Status.CREATED;
 				result = Status.OK;
 				result = Status.OK;
 
+            mockPattern.matcher(anyString);
+            result = mockMatcher;
+            
 				mockMatcher.matches();
 				result = true;
 				mockMatcher.group(1);
@@ -121,8 +128,8 @@ public class CASClientTest {
 	}
 
 	@Test(expected = CASException.class)
-	public void testLoginExceptionInGetTicket1(@Mocked HttpResponse mockResponse, @Mocked Matcher mockMatcher,
-			@Mocked HttpClientFactory mockHttpClientFactory, @Mocked Map.Entry<String, String> entry)
+	public void testLoginExceptionInGetTicket1(
+	      @Mocked HttpResponse mockResponse)
 			throws HttpException, CASException {
 		String websocketURL = "wss://url.websocket.com";
 		Map<String, String> cookies = new ConcurrentHashMap<String, String>();
@@ -141,17 +148,22 @@ public class CASClientTest {
 	}
 
 	@Test(expected = CASException.class)
-	public void testLoginExceptionInGetTicket2(@Mocked HttpResponse mockResponse, @Mocked Matcher mockMatcher,
-			@Mocked HttpClientFactory mockHttpClientFactory, @Mocked Map.Entry<String, String> entry)
+	public void testLoginExceptionInGetTicket2(
+	      @Mocked HttpResponse mockResponse, 
+         @Mocked Pattern mockPattern,
+	      @Mocked Matcher mockMatcher)
 			throws HttpException, CASException {
 		String websocketURL = "wss://url.websocket.com";
 		Map<String, String> cookies = new ConcurrentHashMap<String, String>();
 		cookies.put("JSESSIONID", "1bif45f-testSessionId");
-		new Expectations() {
+		new Expectations(Pattern.class) {
 			{
 				mockResponse.getStatusCode();
 				result = Status.CREATED;
 
+            mockPattern.matcher(anyString);
+            result = mockMatcher;
+            
 				mockMatcher.matches();
 				result = false;
 			}
@@ -164,18 +176,23 @@ public class CASClientTest {
 	}
 
 	@Test(expected = CASException.class)
-	public void testLoginExceptionInGetServiceTicket(@Mocked HttpResponse mockResponse, @Mocked Matcher mockMatcher,
-			@Mocked HttpClientFactory mockHttpClientFactory, @Mocked Map.Entry<String, String> entry)
+	public void testLoginExceptionInGetServiceTicket(
+	      @Mocked HttpResponse mockResponse, 
+         @Mocked Pattern mockPattern,
+	      @Mocked Matcher mockMatcher)
 			throws HttpException, CASException {
 		String websocketURL = "wss://url.websocket.com";
 		Map<String, String> cookies = new ConcurrentHashMap<String, String>();
 		cookies.put("JSESSIONID", "1bif45f-testSessionId");
-		new Expectations() {
+		new Expectations(Pattern.class) {
 			{
 				mockResponse.getStatusCode();
 				result = Status.CREATED;
 				result = Status.BAD_REQUEST;
 
+            mockPattern.matcher(anyString);
+            result = mockMatcher;
+            
 				mockMatcher.matches();
 				result = true;
 				mockMatcher.group(1);
@@ -194,55 +211,46 @@ public class CASClientTest {
 	}
 
 	@SuppressWarnings("unchecked")
-   @Test
+   @Test(expected = CASException.class)
 	public void testLoginExceptionInGetServiceCall(
 	      @Mocked HttpClient mockHttpClient,
-         @Mocked HttpResponse mockPostResponse,
-         @Mocked HttpResponse mockGetResponse,
+	      @Mocked HttpResponse mockResponse,
+	      @Mocked Pattern mockPattern,
 	      @Mocked Matcher mockMatcher)
 			throws HttpException, CASException {
 		String websocketURL = "wss://url.websocket.com";
 		Map<String, String> cookies = new ConcurrentHashMap<String, String>();
 		cookies.put("JSESSIONID", "1bif45f-testSessionId");
-		new Expectations() {
+		new Expectations(Pattern.class) {
 			{
-			   mockHttpClient.post(anyString, 
-			         (Map<String, String>)any,
-			         (Map<String, String>)any, anyString);
-			   result = mockPostResponse;
+			   mockHttpClient.post(anyString, (Map<String, String>)any,
+			         (ConcurrentHashMap<String, String>)any, anyString);
+			   result = mockResponse;
 			   
-            mockHttpClient.get(anyString, 
-                  (Map<String, String>)any, 
-                  (Map<String, String>)any);
-            result = mockGetResponse;
+            mockHttpClient.get(anyString, (Map<String, String>)any, (Map<String, String>)any);
+            result = mockResponse;
 
-            mockPostResponse.getStatusCode();
+            mockResponse.getStatusCode();
             result = Status.CREATED;
             result = Status.OK;
-            
-            mockGetResponse.getStatusCode();
             result = Status.BAD_REQUEST;
 
+            mockPattern.matcher(anyString);
+            result = mockMatcher;
+            
             mockMatcher.matches();
             result = true;
             mockMatcher.group(1);
             result = "TGT-1234-11112222333334444-cas01";
 
-            mockPostResponse.getBody();
+            mockResponse.getBody();
             result = "TGT-1234-11112222333334444-cas01";
-            
-            mockGetResponse.getBody();
             result = "ST-1234-1111222233334444-cas01";
 
 			}
 		};
 
 		CASClient casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
-		try {
-		   casClient.login(websocketURL);
-		   fail ("Expected CASException");
-		} catch (CASException e) {
-		   
-		}
+		casClient.login(websocketURL);
 	}
 }
