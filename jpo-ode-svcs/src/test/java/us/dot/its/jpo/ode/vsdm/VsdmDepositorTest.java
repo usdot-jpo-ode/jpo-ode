@@ -2,11 +2,11 @@ package us.dot.its.jpo.ode.vsdm;
 
 import org.junit.Test;
 
-public class VsdmDepositorThreadedTest {
+public class VsdmDepositorTest {
 
 	@Test
 	public void testVsdmDepositor() throws InterruptedException {
-		VsdmDepositorThreaded vsdmDepositorThreaded = new VsdmDepositorThreaded();
+		VsdmDepositor vsdmDepositorThreaded = new VsdmDepositor();
 		vsdmDepositorThreaded.run();
 	}
 }

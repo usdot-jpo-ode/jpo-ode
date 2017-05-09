@@ -3,7 +3,6 @@ package us.dot.its.jpo.ode.vsdm;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.junit.Before;
@@ -40,7 +39,6 @@ import us.dot.its.jpo.ode.j2735.dsrc.VehicleWidth;
 import us.dot.its.jpo.ode.j2735.dsrc.VerticalAcceleration;
 import us.dot.its.jpo.ode.j2735.dsrc.YawRate;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
-import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 
 public class BsmToVsdConverterTest {
 
@@ -139,8 +137,7 @@ public class BsmToVsdConverterTest {
 		ArrayList<BasicSafetyMessage> testBsmArray = new ArrayList<>();
 		testBsmArray.add(testbsm);
 
-		VehSitDataMessage resultVsdm = BsmToVsdConverter.convertBsmToVsd(testsr, testBsmArray);
-
+		BsmToVsdConverter.convertBsmToVsd(testsr, testBsmArray);
 	}
 
 	@Test
@@ -155,7 +152,7 @@ public class BsmToVsdConverterTest {
 		}
 
 		try {
-			VehSitDataMessage resultVsdm = BsmToVsdConverter.convertBsmToVsd(testsr, testBsmArray);
+			BsmToVsdConverter.convertBsmToVsd(testsr, testBsmArray);
 			fail("Expected IllegalArgumentException");
 		} catch (Exception e) {
 			assertTrue(e instanceof IllegalArgumentException);

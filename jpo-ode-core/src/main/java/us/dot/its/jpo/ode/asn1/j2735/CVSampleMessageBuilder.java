@@ -88,10 +88,19 @@ public class CVSampleMessageBuilder {
 		vsr.setSeqID(SemiSequenceID.svcReq);
 		vsr.setGroupID(groupID);
 		vsr.setRequestID(tmpReq);
+		return vsr;
+	}
+	
+	public static ServiceRequest buildVehicleSituationDataServiceRequest(String ip, int port) {
+		ServiceRequest vsr = new ServiceRequest();
+		vsr.setDialogID(SemiDialogID.vehSitData);
+		vsr.setSeqID(SemiSequenceID.svcReq);
+		vsr.setGroupID(groupID);
+		vsr.setRequestID(tmpReq);
 
 		IpAddress ipAddr = new IpAddress();
-		ipAddr.setIpv4Address(new IPv4Address(J2735Util.ipToBytes("54.210.159.61")));
-		ConnectionPoint cp = new ConnectionPoint(ipAddr, new PortNumber(6666));
+		ipAddr.setIpv4Address(new IPv4Address(J2735Util.ipToBytes(ip)));
+		ConnectionPoint cp = new ConnectionPoint(ipAddr, new PortNumber(port));
 		vsr.setDestination(cp);
 
 		return vsr;

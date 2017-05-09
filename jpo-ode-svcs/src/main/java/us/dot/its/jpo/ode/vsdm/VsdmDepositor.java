@@ -24,11 +24,15 @@ import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.j2735.semi.VsmType;
 
-public class VsdmDepositorThreaded implements Runnable {
+public class VsdmDepositor implements Runnable {
 	private static final String SDC_IP = "104.130.170.234";
 	private static final int SDC_PORT = 46753;
 	private static final int SERVICE_REQ_SENDER_PORT = 5556;
 	private static final int VSDM_SENDER_PORT = 6666;
+	
+	// The ip and port where the SDC will send the ServiceResponse back
+	private static final String RETURN_IP = "54.210.159.61";
+	private static final int RETURN_PORT = 6666;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -40,7 +44,7 @@ public class VsdmDepositorThreaded implements Runnable {
 		vsdmSenderThread.start();
 
 		logger.info("ODE: Creating ServiceRequestSender Thread");
-		ServiceRequestSender serviceRequestSender = new ServiceRequestSender(SDC_IP, SDC_PORT, SERVICE_REQ_SENDER_PORT);
+		ServiceRequestSender serviceRequestSender = new ServiceRequestSender(SDC_IP, SDC_PORT, SERVICE_REQ_SENDER_PORT, RETURN_IP, RETURN_PORT);
 		Thread serviceRequestSenderThread = new Thread(serviceRequestSender, "ServiceRequestSenderThread");
 		serviceRequestSenderThread.start();
 
@@ -61,11 +65,15 @@ class ServiceRequestSender implements Runnable {
 	private String targetHost;
 	private int targetPort;
 	private int selfPort;
+	private String returnIp;
+	private int returnPort;
 
-	public ServiceRequestSender(String targetHost, int targetPort, int selfPort) {
+	public ServiceRequestSender(String targetHost, int targetPort, int selfPort, String returnIp, int returnPort) {
 		this.targetHost = targetHost;
 		this.targetPort = targetPort;
 		this.selfPort = selfPort;
+		this.returnIp = returnIp;
+		this.returnPort = returnPort;
 		try {
 			socket = new DatagramSocket(this.selfPort);
 			logger.info("ODE: Created ServiceRequestSender Socket with port " + this.selfPort);
@@ -75,7 +83,7 @@ class ServiceRequestSender implements Runnable {
 	}
 
 	private void sendVsdServiceRequest() {
-		ServiceRequest sr = CVSampleMessageBuilder.buildVehicleSituationDataServiceRequest();
+		ServiceRequest sr = CVSampleMessageBuilder.buildVehicleSituationDataServiceRequest(returnIp, returnPort);
 		ByteArrayOutputStream sink = new ByteArrayOutputStream();
 		try {
 			coder.encode(sr, sink);
