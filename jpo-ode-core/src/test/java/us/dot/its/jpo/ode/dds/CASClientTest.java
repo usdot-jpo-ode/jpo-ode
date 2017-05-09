@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import mockit.*;
 import mockit.integration.junit4.JMockit;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -177,6 +178,7 @@ public class CASClientTest {
       casClient.login(websocketURL);
    }
 
+   @Ignore
    @Test(expected = CASException.class)
    public void testLoginExceptionInGetServiceTicket(
          @Mocked HttpResponse mockResponse,
