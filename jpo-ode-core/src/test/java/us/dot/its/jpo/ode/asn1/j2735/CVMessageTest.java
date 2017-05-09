@@ -1,10 +1,11 @@
-package gov.usdot.asn1.j2735;
+package us.dot.its.jpo.ode.asn1.j2735;
 
+import us.dot.its.jpo.ode.asn1.j2735.CVSampleMessageBuilder;
+import us.dot.its.jpo.ode.asn1.j2735.UnitTestHelper;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
-import gov.usdot.asn1.j2735.UnitTestHelper;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

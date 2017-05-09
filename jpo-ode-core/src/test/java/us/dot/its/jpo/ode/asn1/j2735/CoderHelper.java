@@ -1,4 +1,4 @@
-package gov.usdot.asn1.j2735;
+package us.dot.its.jpo.ode.asn1.j2735;
 
 import static org.junit.Assert.assertEquals;
 
@@ -16,6 +16,8 @@ import com.oss.asn1.DecodeNotSupportedException;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 import com.oss.util.HexTool;
+
+import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 
 public class CoderHelper {
 	

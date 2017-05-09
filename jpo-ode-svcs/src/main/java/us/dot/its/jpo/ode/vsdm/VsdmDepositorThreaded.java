@@ -15,9 +15,9 @@ import com.oss.asn1.Coder;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 
-import gov.usdot.asn1.j2735.CVSampleMessageBuilder;
-import gov.usdot.asn1.j2735.CVTypeHelper;
-import gov.usdot.asn1.j2735.J2735Util;
+import us.dot.its.jpo.ode.asn1.j2735.CVSampleMessageBuilder;
+import us.dot.its.jpo.ode.asn1.j2735.CVTypeHelper;
+import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;

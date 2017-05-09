@@ -1,4 +1,4 @@
-package gov.usdot.asn1.j2735.msg.ids;
+package us.dot.its.jpo.ode.asn1.j2735.msg.ids;
 
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.dsrc.MapData;

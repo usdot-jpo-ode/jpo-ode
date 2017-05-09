@@ -1,4 +1,4 @@
-package gov.usdot.asn1.j2735;
+package us.dot.its.jpo.ode.asn1.j2735;
 
 /**
  * Enums and helper methods for the various "Type" messages in the ASN.1 spec

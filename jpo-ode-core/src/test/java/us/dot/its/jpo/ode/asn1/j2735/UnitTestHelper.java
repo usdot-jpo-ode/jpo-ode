@@ -1,4 +1,4 @@
-package gov.usdot.asn1.j2735;
+package us.dot.its.jpo.ode.asn1.j2735;
 
 import java.util.Enumeration;
 

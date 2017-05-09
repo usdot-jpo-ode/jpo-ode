@@ -1,5 +1,8 @@
-package gov.usdot.asn1.j2735;
+package us.dot.its.jpo.ode.asn1.j2735;
 
+import us.dot.its.jpo.ode.asn1.j2735.msg.ids.ConnectedVehicleMessageID;
+import us.dot.its.jpo.ode.asn1.j2735.msg.ids.ConnectedVehicleMessageLookup;
+import us.dot.its.jpo.ode.asn1.j2735.msg.ids.SEMIMessageID;
 import us.dot.its.jpo.ode.j2735.dsrc.DDateTime;
 import us.dot.its.jpo.ode.j2735.dsrc.DDay;
 import us.dot.its.jpo.ode.j2735.dsrc.DFullTime;
@@ -12,9 +15,6 @@ import us.dot.its.jpo.ode.j2735.dsrc.DYear;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
-import gov.usdot.asn1.j2735.msg.ids.ConnectedVehicleMessageID;
-import gov.usdot.asn1.j2735.msg.ids.ConnectedVehicleMessageLookup;
-import gov.usdot.asn1.j2735.msg.ids.SEMIMessageID;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
