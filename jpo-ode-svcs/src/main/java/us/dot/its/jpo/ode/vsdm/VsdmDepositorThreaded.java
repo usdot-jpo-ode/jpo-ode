@@ -24,45 +24,48 @@ import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.j2735.semi.VsmType;
 
-public class VsdmDepositorThreaded implements Runnable{
+public class VsdmDepositorThreaded implements Runnable {
+	private static final String SDC_IP = "104.130.170.234";
+	private static final int SDC_PORT = 46753;
+	private static final int SERVICE_REQ_SENDER_PORT = 5556;
+	private static final int VSDM_SENDER_PORT = 6666;
+
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Override
 	public void run() {
-		String targetHost = "104.130.170.234";
-		int targetPort = 46753;
-		
-		int vsdmSenderPort = 6666;
-		VsdmSender vsdmSender = new VsdmSender(targetHost, targetPort, vsdmSenderPort);
+		logger.info("ODE: Creating VsdmSender Thread");
+		VsdmSender vsdmSender = new VsdmSender(SDC_IP, SDC_PORT, VSDM_SENDER_PORT);
 		Thread vsdmSenderThread = new Thread(vsdmSender, "VsdmSenderThread");
 		vsdmSenderThread.start();
-		
-		int srSenderPort = 5556;
-		ServiceRequestSender serviceRequestSender = new ServiceRequestSender(targetHost, targetPort, srSenderPort);
-		Thread serviceRequestSenderThread = new Thread(serviceRequestSender, "serviceRequestSenderThread");
+
+		logger.info("ODE: Creating ServiceRequestSender Thread");
+		ServiceRequestSender serviceRequestSender = new ServiceRequestSender(SDC_IP, SDC_PORT, SERVICE_REQ_SENDER_PORT);
+		Thread serviceRequestSenderThread = new Thread(serviceRequestSender, "ServiceRequestSenderThread");
 		serviceRequestSenderThread.start();
-		
+
 		try {
 			vsdmSenderThread.join();
 			serviceRequestSenderThread.join();
 		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}	
+			logger.error("ODE: Interrupted Exception", e);
+		}
 	}
 }
 
-class ServiceRequestSender implements Runnable{
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	private DatagramSocket socket = null;
+class ServiceRequestSender implements Runnable {
 	private static Coder coder = J2735.getPERUnalignedCoder();
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	private DatagramSocket socket = null;
 	private String targetHost;
 	private int targetPort;
 	private int selfPort;
-	
-	public ServiceRequestSender(String targetHost, int targetPort, int selfPort){
+
+	public ServiceRequestSender(String targetHost, int targetPort, int selfPort) {
 		this.targetHost = targetHost;
 		this.targetPort = targetPort;
 		this.selfPort = selfPort;
-		coder = J2735.getPERUnalignedCoder();
 		try {
 			socket = new DatagramSocket(this.selfPort);
 			logger.info("ODE: Created ServiceRequestSender Socket with port " + this.selfPort);
@@ -70,7 +73,7 @@ class ServiceRequestSender implements Runnable{
 			logger.error("ODE: Error creating socket with port " + this.selfPort, e);
 		}
 	}
-	
+
 	private void sendVsdServiceRequest() {
 		ServiceRequest sr = CVSampleMessageBuilder.buildVehicleSituationDataServiceRequest();
 		ByteArrayOutputStream sink = new ByteArrayOutputStream();
@@ -87,41 +90,31 @@ class ServiceRequestSender implements Runnable{
 	@Override
 	public void run() {
 		sendVsdServiceRequest();
-		if(socket != null){
+
+		if (socket != null) {
 			logger.info("Closing ServiceRequestSender Socket with port " + this.selfPort);
 			socket.close();
 		}
-			
 	}
 }
 
-class VsdmSender implements Runnable{
-	private static final String DEFAULT_TARGET_HOST = "127.0.0.1";
-	private static final int DEFAULT_TARGET_PORT = 4446;
-	private static final int DEFAULT_SELF_PORT = 4444;
+class VsdmSender implements Runnable {
 	private static final int DEFAULT_TIMEOUT = 5000;
 	private static final int DEFAULT_BUFFER_LENGTH = 10000;
-	
-	private static final double DEFAULT_LAT = 43.394444;	// Test Lat/Lon for VSD in Wyoming area
+	private static final double DEFAULT_LAT = 43.394444; //Wyoming lat/lon
 	private static final double DEFAULT_LON = -107.595;
-	
+	private static Coder coder = J2735.getPERUnalignedCoder();
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private static Coder coder;
+	private DatagramSocket socket = null;
 	private String targetHost;
 	private int targetPort;
 	private int selfPort;
-	private DatagramSocket socket = null;
-
-	public VsdmSender() {
-		this(DEFAULT_TARGET_HOST, DEFAULT_TARGET_PORT, DEFAULT_SELF_PORT);
-	}
 
 	public VsdmSender(String targetHost, int targetPort, int selfPort) {
 		this.setTargetHost(targetHost);
 		this.setTargetPort(targetPort);
 		this.setSelfPort(selfPort);
-		coder = J2735.getPERUnalignedCoder();
 		try {
 			socket = new DatagramSocket(selfPort);
 			logger.info("ODE: Created VsdmSender Socket with port " + this.selfPort);
@@ -155,18 +148,21 @@ class VsdmSender implements Runnable{
 		this.selfPort = sourcePort;
 	}
 
-	public void depositVsdm() {
+	@Override
+	public void run() {
 		logger.info("ODE: Initializing VSD deposit to SDC ...");
-		receiveVsdServiceResponse();
-		sendVsdMessage();
+		if(receiveVsdServiceResponse())
+			sendVsdMessage();
+		else
+			logger.info("ODE: Vsd message was not sent because a valid Service Response was not received.");
 
-		if (socket != null){
-			logger.info("Closing VsdmSender Socket with port " + this.selfPort);
+		if (socket != null) {
+			logger.info("ODE: Closing VsdmSender Socket with port " + this.selfPort);
 			socket.close();
-		}	
+		}
 	}
-	
-	private void receiveVsdServiceResponse(){
+
+	private boolean receiveVsdServiceResponse() {
 		try {
 			byte[] buffer = new byte[DEFAULT_BUFFER_LENGTH];
 			logger.info("ODE: Waiting for VSD deposit ServiceResponse...");
@@ -178,14 +174,16 @@ class VsdmSender implements Runnable{
 				AbstractData response = J2735Util.decode(coder, buffer);
 				if (response instanceof ServiceResponse) {
 					logger.info("ODE: Printing VSD Deposit ServiceResponse {}", response.toString());
+					return true;
 				}
 			}
 		} catch (Exception e) {
 			logger.error("ODE: Error Receiving VSD Deposit ServiceResponse", e);
 		}
+		return false;
 	}
-	
-	private void sendVsdMessage(){
+
+	private void sendVsdMessage() {
 		logger.info("ODE: Preparing VSD message deposit...");
 		VehSitDataMessage vsdm;
 		try {
@@ -197,13 +195,8 @@ class VsdmSender implements Runnable{
 			socket.send(
 					new DatagramPacket(encodedMsg, encodedMsg.length, new InetSocketAddress(targetHost, targetPort)));
 			logger.info("ODE: Sent VSD message to SDC");
-		} catch ( EncodeFailedException | EncodeNotSupportedException | IOException e) {
+		} catch (EncodeFailedException | EncodeNotSupportedException | IOException e) {
 			logger.error("ODE: Error Sending VSD Message", e);
 		}
-	}
-
-	@Override
-	public void run() {
-		depositVsdm();
 	}
 }

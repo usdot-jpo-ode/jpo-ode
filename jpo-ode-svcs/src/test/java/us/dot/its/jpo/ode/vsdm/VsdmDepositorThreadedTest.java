@@ -5,9 +5,8 @@ import org.junit.Test;
 public class VsdmDepositorThreadedTest {
 
 	@Test
-	public void test() throws InterruptedException {
+	public void testVsdmDepositor() throws InterruptedException {
 		VsdmDepositorThreaded vsdmDepositorThreaded = new VsdmDepositorThreaded();
 		vsdmDepositorThreaded.run();
-		System.out.println("Ending the test");
 	}
 }
