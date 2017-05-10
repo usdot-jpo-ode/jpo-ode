@@ -2,13 +2,17 @@ package us.dot.its.jpo.ode.vsdm;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import mockit.Expectations;
 import mockit.Injectable;
+import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 
@@ -33,7 +37,6 @@ public class VsdmDepositorTest {
 
 	// Runs end to end testing
 	@Test
-	@Ignore
 	public void testVsdmDepositor() throws InterruptedException {
 		VsdmDepositor vsdmDepositorThreaded = new VsdmDepositor(sdcIp, sdcPort, returnIp, returnPort,
 				serviceRequestSenderPort, vsdmSenderPort);
@@ -81,25 +84,28 @@ public class VsdmDepositorTest {
 	}
 
 	@Test
-	public void test2() {
+	public void testReceiveServiceResponse(@Mocked DatagramSocket mockSocket) throws IOException {
 		new Expectations() {
 			{
-				mockOdeProperties.getSdcIp();
-				result = sdcIp;
-				mockOdeProperties.getSdcPort();
-				result = sdcPort;
-				mockOdeProperties.getServiceRequestSenderPort();
-				result = serviceRequestSenderPort;
-				mockOdeProperties.getVsdmSenderPort();
-				result = vsdmSenderPort;
-				mockOdeProperties.getReturnIp();
-				result = returnIp;
-				mockOdeProperties.getReturnPort();
-				result = returnPort;
+				mockSocket.receive((DatagramPacket)any);
+				
 			}
 		};
 
-		VsdmDepositor vsdmDepositorThreaded = new VsdmDepositor(mockOdeProperties);
-		vsdmDepositorThreaded.run();
+		VsdmSender vsdmSender = new VsdmSender(sdcIp, sdcPort, vsdmSenderPort);
+		vsdmSender.receiveVsdServiceResponse();
+	}
+	
+	@Test
+	public void testSendVsdMessage(@Mocked DatagramSocket mockSocket) throws IOException {
+		new Expectations() {
+			{
+				mockSocket.send((DatagramPacket)any);
+				
+			}
+		};
+
+		VsdmSender vsdmSender = new VsdmSender(sdcIp, sdcPort, vsdmSenderPort);
+		vsdmSender.sendVsdMessage();
 	}
 }

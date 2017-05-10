@@ -40,12 +40,12 @@ public class VsdmDepositor implements Runnable {
 
 	public VsdmDepositor(String sdcIp, int sdcPort, String returnIp, int returnPort, int serviceRequestSenderPort,
 			int vsdmSenderPort) {
-		this.sdcIp = sdcIp;
-		this.sdcPort = sdcPort;
-		this.serviceRequestSenderPort = serviceRequestSenderPort;
-		this.vsdmSenderPort = vsdmSenderPort;
-		this.returnIp = returnIp;
-		this.returnPort = returnPort;
+		this.setSdcIp(sdcIp);
+		this.setSdcPort(sdcPort);
+		this.setServiceRequestSenderPort(serviceRequestSenderPort);
+		this.setVsdmSenderPort(vsdmSenderPort);
+		this.setReturnIp(returnIp);
+		this.setReturnPort(returnPort);
 	}
 
 	@Autowired
@@ -142,11 +142,11 @@ class ServiceRequestSender implements Runnable {
 	private int returnPort;
 
 	public ServiceRequestSender(String targetHost, int targetPort, int selfPort, String returnIp, int returnPort) {
-		this.setTargetHost(targetHost);
-		this.setTargetPort(targetPort);
-		this.setSelfPort(selfPort);
-		this.setReturnIp(returnIp);
-		this.setReturnPort(returnPort);
+		this.targetHost = targetHost;
+		this.targetPort = targetPort;
+		this.selfPort = selfPort;
+		this.returnIp = returnIp;
+		this.returnPort = returnPort;
 		try {
 			socket = new DatagramSocket(this.selfPort);
 			logger.info("ODE: Created ServiceRequestSender Socket with port " + this.selfPort);
@@ -176,46 +176,6 @@ class ServiceRequestSender implements Runnable {
 			logger.info("Closing ServiceRequestSender Socket with port " + this.selfPort);
 			socket.close();
 		}
-	}
-
-	public String getTargetHost() {
-		return targetHost;
-	}
-
-	public void setTargetHost(String targetHost) {
-		this.targetHost = targetHost;
-	}
-
-	public int getTargetPort() {
-		return targetPort;
-	}
-
-	public void setTargetPort(int targetPort) {
-		this.targetPort = targetPort;
-	}
-
-	public int getSelfPort() {
-		return selfPort;
-	}
-
-	public void setSelfPort(int selfPort) {
-		this.selfPort = selfPort;
-	}
-
-	public String getReturnIp() {
-		return returnIp;
-	}
-
-	public void setReturnIp(String returnIp) {
-		this.returnIp = returnIp;
-	}
-
-	public int getReturnPort() {
-		return returnPort;
-	}
-
-	public void setReturnPort(int returnPort) {
-		this.returnPort = returnPort;
 	}
 }
 
@@ -259,7 +219,7 @@ class VsdmSender implements Runnable {
 		}
 	}
 
-	private boolean receiveVsdServiceResponse() {
+	public boolean receiveVsdServiceResponse() {
 		try {
 			byte[] buffer = new byte[DEFAULT_BUFFER_LENGTH];
 			logger.info("ODE: Waiting for VSD deposit ServiceResponse...");
@@ -280,9 +240,7 @@ class VsdmSender implements Runnable {
 		return false;
 	}
 
-	ServiceRequest sr;
-
-	private void sendVsdMessage() {
+	public void sendVsdMessage() {
 		logger.info("ODE: Preparing VSD message deposit...");
 		VehSitDataMessage vsdm;
 		try {
