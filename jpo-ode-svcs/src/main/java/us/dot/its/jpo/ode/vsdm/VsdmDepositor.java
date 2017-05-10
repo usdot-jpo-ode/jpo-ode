@@ -53,6 +53,7 @@ public class VsdmDepositor implements Runnable {
 			serviceRequestSenderThread.join();
 		} catch (InterruptedException e) {
 			logger.error("ODE: Interrupted Exception", e);
+			Thread.currentThread().interrupt();
 		}
 	}
 }
