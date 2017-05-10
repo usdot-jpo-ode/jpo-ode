@@ -44,6 +44,12 @@ public class OdeProperties implements EnvironmentAware {
     private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
     private String kafkaTopicBsmSerializedPOJO = "topic.J2735Bsm";
     private String kafkaTopicBsmJSON = "topic.J2735BsmRawJSON";
+    private String sdcIp = "";
+    private int sdcPort;
+    private String returnIp = "";
+    private int returnPort;
+    private int serviceRequestSenderPort;
+    private int vsdmSenderPort;
 
     private String hostId;
 
@@ -218,5 +224,53 @@ public class OdeProperties implements EnvironmentAware {
     public void setKafkaTopicBsmJSON(String kafkaTopicBsmJSON) {
         this.kafkaTopicBsmJSON = kafkaTopicBsmJSON;
     }
+
+	public String getSdcIp() {
+		return sdcIp;
+	}
+
+	public void setSdcIp(String sdcIp) {
+		this.sdcIp = sdcIp;
+	}
+
+	public int getSdcPort() {
+		return sdcPort;
+	}
+
+	public void setSdcPort(int sdcPort) {
+		this.sdcPort = sdcPort;
+	}
+
+	public String getReturnIp() {
+		return returnIp;
+	}
+
+	public void setReturnIp(String returnIp) {
+		this.returnIp = returnIp;
+	}
+
+	public int getReturnPort() {
+		return returnPort;
+	}
+
+	public void setReturnPort(int returnPort) {
+		this.returnPort = returnPort;
+	}
+
+	public int getServiceRequestSenderPort() {
+		return serviceRequestSenderPort;
+	}
+
+	public void setServiceRequestSenderPort(int serviceRequestSenderPort) {
+		this.serviceRequestSenderPort = serviceRequestSenderPort;
+	}
+
+	public int getVsdmSenderPort() {
+		return vsdmSenderPort;
+	}
+
+	public void setVsdmSenderPort(int vsdmSenderPort) {
+		this.vsdmSenderPort = vsdmSenderPort;
+	}
 
 }
