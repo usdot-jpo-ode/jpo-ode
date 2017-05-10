@@ -49,7 +49,7 @@ public class FileUploadController {
         bsmImporter = Executors.newSingleThreadExecutor();
         messageFrameImporter = Executors.newSingleThreadExecutor();
         bsmExporter = Executors.newSingleThreadExecutor();
-
+        
         Path bsmPath = Paths.get(odeProperties.getUploadLocationRoot(), odeProperties.getUploadLocationBsm());
         logger.debug("UPLOADER - Bsm directory: {}", bsmPath);
         
