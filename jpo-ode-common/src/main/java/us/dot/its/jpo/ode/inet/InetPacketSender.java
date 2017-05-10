@@ -124,9 +124,7 @@ public class InetPacketSender {
 	    	throw new InetPacketException("Couldn't send packet due to IO exception.", ex);
 	    } finally {
 			if ( sock != null ) {
-				if ( !sock.isClosed() )
-					sock.close();
-				sock = null;
+				sock.close();
 			}
 	    }
 	}
