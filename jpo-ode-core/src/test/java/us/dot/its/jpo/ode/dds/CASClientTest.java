@@ -225,7 +225,7 @@ public class CASClientTest {
       String websocketURL = "wss://url.websocket.com";
       Map<String, String> cookies = new ConcurrentHashMap<String, String>();
       cookies.put("JSESSIONID", "1bif45f-testSessionId");
-      new Expectations(Pattern.class) {
+      new Expectations() {
          {
             mockHttpClient.post(anyString, (Map<String, String>) any, (ConcurrentHashMap<String, String>) any,
                   anyString);
