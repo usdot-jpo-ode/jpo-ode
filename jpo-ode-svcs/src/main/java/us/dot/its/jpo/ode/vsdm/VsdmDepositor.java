@@ -74,6 +74,11 @@ public class VsdmDepositor implements Runnable {
 			Thread.currentThread().interrupt();
 		}
 	}
+
+	public static void publish(String json) {
+		// TODO publishes message to kafka stream
+		
+	}
 }
 
 class ServiceRequestSender implements Runnable {
@@ -209,6 +214,8 @@ class VsdmSender implements Runnable {
 		}
 		return false;
 	}
+	
+	ServiceRequest sr;
 
 	private void sendVsdMessage() {
 		logger.info("ODE: Preparing VSD message deposit...");
