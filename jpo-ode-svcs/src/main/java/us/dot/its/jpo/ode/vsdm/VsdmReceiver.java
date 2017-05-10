@@ -61,21 +61,21 @@ public class VsdmReceiver implements Runnable {
 			try {
 				socket.receive(packet);
 			} catch (IOException e) {
-				logger.error("[VSDM Receiver] Error receiving UDP packet");
+				logger.error("[VSDM Receiver] Error receiving UDP packet", e);
 			}
 
 			InputStream ins = new ByteArrayInputStream(packet.getData());
 			AbstractData decoded = null;
 			try {
-				coder.decode(ins, decoded);
+				decoded = coder.decode(ins, decoded);
 			} catch (DecodeFailedException | DecodeNotSupportedException e) {
 				logger.error("[VSDM Receiver] Error, unable to decode UDP message", e);
 			}
 
 			if (decoded instanceof ServiceRequest || decoded instanceof ServiceResponse) {
-				// VsdmDepositor.send(decoded);
+				// send
 			} else if (decoded instanceof VehSitDataMessage) {
-				// VsdmDepositor.send(decoded);
+				// send 
 				List<BasicSafetyMessage> bsmList = VsdToBsmConverter.convert((VehSitDataMessage) decoded);
 				for (BasicSafetyMessage entry : bsmList) {
 					try {
