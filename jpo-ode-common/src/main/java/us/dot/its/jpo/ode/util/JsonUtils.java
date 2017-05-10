@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,12 +32,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class JsonUtils {
-    
-    private JsonUtils() {}
+	   private static Gson gsonCompact;
+	   private static Gson gsonVerbose;
+	   private static ObjectMapper mapper;
+	   private static Logger logger;
+    private JsonUtils() {
+    	logger = LoggerFactory.getLogger(JsonUtils.class);
+    }
    
-   private static Gson gsonCompact;
-   private static Gson gsonVerbose;
-   private static ObjectMapper mapper;
+  
    
    static {
       gsonCompact = new GsonBuilder().create();
@@ -105,7 +111,7 @@ public class JsonUtils {
          node = jsonNode.get(fieldName);
          
       } catch (IOException e) {
-         e.printStackTrace();
+    	  logger.error("IOException", e);
       }
       return node;
    }

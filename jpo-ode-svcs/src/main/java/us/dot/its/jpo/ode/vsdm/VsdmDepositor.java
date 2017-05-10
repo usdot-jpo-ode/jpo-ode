@@ -9,12 +9,14 @@ import java.net.SocketException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.oss.asn1.AbstractData;
 import com.oss.asn1.Coder;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 
+import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.CVSampleMessageBuilder;
 import us.dot.its.jpo.ode.asn1.j2735.CVTypeHelper;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
@@ -25,26 +27,42 @@ import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.j2735.semi.VsmType;
 
 public class VsdmDepositor implements Runnable {
-	private static final String SDC_IP = "104.130.170.234";
-	private static final int SDC_PORT = 46753;
-	private static final int SERVICE_REQ_SENDER_PORT = 5556;
-	private static final int VSDM_SENDER_PORT = 6666;
+	private String sdcIp;
+	private int sdcPort;
+	private int serviceRequestSenderPort;
+	private int vsdmSenderPort;
 	
 	// The ip and port where the SDC will send the ServiceResponse back
-	private static final String RETURN_IP = "54.210.159.61";
-	private static final int RETURN_PORT = 6666;
+	private String returnIp;
+	private int returnPort;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private OdeProperties odeProps;
+	
+	public VsdmDepositor(String sdcIp, int sdcPort, String returnIp, int returnPort, int serviceRequestSenderPort, int vsdmSenderPort){
+		this.sdcIp = sdcIp;
+		this.sdcPort = sdcPort;
+		this.serviceRequestSenderPort = serviceRequestSenderPort;
+		this.vsdmSenderPort = vsdmSenderPort;
+		this.returnIp = returnIp;
+		this.returnPort = returnPort;
+	}
+	
+	@Autowired
+	public VsdmDepositor(OdeProperties odeProps){
+		this(odeProps.getSdcIp(), odeProps.getSdcPort(), odeProps.getReturnIp(), odeProps.getReturnPort(), odeProps.getServiceRequestSenderPort(), odeProps.getVsdmSenderPort());
+		this.odeProps = odeProps;
+	}
 
 	@Override
 	public void run() {
 		logger.info("ODE: Creating VsdmSender Thread");
-		VsdmSender vsdmSender = new VsdmSender(SDC_IP, SDC_PORT, VSDM_SENDER_PORT);
+		VsdmSender vsdmSender = new VsdmSender(sdcIp, sdcPort, vsdmSenderPort);
 		Thread vsdmSenderThread = new Thread(vsdmSender, "VsdmSenderThread");
 		vsdmSenderThread.start();
 
 		logger.info("ODE: Creating ServiceRequestSender Thread");
-		ServiceRequestSender serviceRequestSender = new ServiceRequestSender(SDC_IP, SDC_PORT, SERVICE_REQ_SENDER_PORT, RETURN_IP, RETURN_PORT);
+		ServiceRequestSender serviceRequestSender = new ServiceRequestSender(sdcIp, sdcPort, serviceRequestSenderPort, returnIp, returnPort);
 		Thread serviceRequestSenderThread = new Thread(serviceRequestSender, "ServiceRequestSenderThread");
 		serviceRequestSenderThread.start();
 
@@ -53,6 +71,7 @@ public class VsdmDepositor implements Runnable {
 			serviceRequestSenderThread.join();
 		} catch (InterruptedException e) {
 			logger.error("ODE: Interrupted Exception", e);
+			Thread.currentThread().interrupt();
 		}
 	}
 

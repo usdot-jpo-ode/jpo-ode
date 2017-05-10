@@ -34,7 +34,7 @@ public abstract class SerializableObjectPool<T> implements Serializable {
                // object has expired
                unlocked.remove(t);
                expire(t);
-               t = null;
+               t = null;	//NOSONAR
             } else {
                if (validate(t)) {
                   unlocked.remove(t);
@@ -44,7 +44,7 @@ public abstract class SerializableObjectPool<T> implements Serializable {
                   // object failed validation
                   unlocked.remove(t);
                   expire(t);
-                  t = null;
+                  t = null;	//NOSONAR
                }
             }
          }
