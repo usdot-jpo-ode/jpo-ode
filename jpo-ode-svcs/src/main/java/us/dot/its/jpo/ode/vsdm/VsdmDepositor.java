@@ -31,15 +31,15 @@ public class VsdmDepositor implements Runnable {
 	private int sdcPort;
 	private int serviceRequestSenderPort;
 	private int vsdmSenderPort;
-	
+
 	// The ip and port where the SDC will send the ServiceResponse back
 	private String returnIp;
 	private int returnPort;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	private OdeProperties odeProps;
-	
-	public VsdmDepositor(String sdcIp, int sdcPort, String returnIp, int returnPort, int serviceRequestSenderPort, int vsdmSenderPort){
+
+	public VsdmDepositor(String sdcIp, int sdcPort, String returnIp, int returnPort, int serviceRequestSenderPort,
+			int vsdmSenderPort) {
 		this.sdcIp = sdcIp;
 		this.sdcPort = sdcPort;
 		this.serviceRequestSenderPort = serviceRequestSenderPort;
@@ -47,11 +47,11 @@ public class VsdmDepositor implements Runnable {
 		this.returnIp = returnIp;
 		this.returnPort = returnPort;
 	}
-	
+
 	@Autowired
-	public VsdmDepositor(OdeProperties odeProps){
-		this(odeProps.getSdcIp(), odeProps.getSdcPort(), odeProps.getReturnIp(), odeProps.getReturnPort(), odeProps.getServiceRequestSenderPort(), odeProps.getVsdmSenderPort());
-		this.odeProps = odeProps;
+	public VsdmDepositor(OdeProperties odeProps) {
+		this(odeProps.getSdcIp(), odeProps.getSdcPort(), odeProps.getReturnIp(), odeProps.getReturnPort(),
+				odeProps.getServiceRequestSenderPort(), odeProps.getVsdmSenderPort());
 	}
 
 	@Override
@@ -62,7 +62,8 @@ public class VsdmDepositor implements Runnable {
 		vsdmSenderThread.start();
 
 		logger.info("ODE: Creating ServiceRequestSender Thread");
-		ServiceRequestSender serviceRequestSender = new ServiceRequestSender(sdcIp, sdcPort, serviceRequestSenderPort, returnIp, returnPort);
+		ServiceRequestSender serviceRequestSender = new ServiceRequestSender(sdcIp, sdcPort, serviceRequestSenderPort,
+				returnIp, returnPort);
 		Thread serviceRequestSenderThread = new Thread(serviceRequestSender, "ServiceRequestSenderThread");
 		serviceRequestSenderThread.start();
 
@@ -77,7 +78,55 @@ public class VsdmDepositor implements Runnable {
 
 	public static void publish(String json) {
 		// TODO publishes message to kafka stream
-		
+
+	}
+
+	public String getSdcIp() {
+		return sdcIp;
+	}
+
+	public void setSdcIp(String sdcIp) {
+		this.sdcIp = sdcIp;
+	}
+
+	public int getSdcPort() {
+		return sdcPort;
+	}
+
+	public void setSdcPort(int sdcPort) {
+		this.sdcPort = sdcPort;
+	}
+
+	public int getServiceRequestSenderPort() {
+		return serviceRequestSenderPort;
+	}
+
+	public void setServiceRequestSenderPort(int serviceRequestSenderPort) {
+		this.serviceRequestSenderPort = serviceRequestSenderPort;
+	}
+
+	public int getVsdmSenderPort() {
+		return vsdmSenderPort;
+	}
+
+	public void setVsdmSenderPort(int vsdmSenderPort) {
+		this.vsdmSenderPort = vsdmSenderPort;
+	}
+
+	public String getReturnIp() {
+		return returnIp;
+	}
+
+	public void setReturnIp(String returnIp) {
+		this.returnIp = returnIp;
+	}
+
+	public int getReturnPort() {
+		return returnPort;
+	}
+
+	public void setReturnPort(int returnPort) {
+		this.returnPort = returnPort;
 	}
 }
 
@@ -93,11 +142,11 @@ class ServiceRequestSender implements Runnable {
 	private int returnPort;
 
 	public ServiceRequestSender(String targetHost, int targetPort, int selfPort, String returnIp, int returnPort) {
-		this.targetHost = targetHost;
-		this.targetPort = targetPort;
-		this.selfPort = selfPort;
-		this.returnIp = returnIp;
-		this.returnPort = returnPort;
+		this.setTargetHost(targetHost);
+		this.setTargetPort(targetPort);
+		this.setSelfPort(selfPort);
+		this.setReturnIp(returnIp);
+		this.setReturnPort(returnPort);
 		try {
 			socket = new DatagramSocket(this.selfPort);
 			logger.info("ODE: Created ServiceRequestSender Socket with port " + this.selfPort);
@@ -128,33 +177,6 @@ class ServiceRequestSender implements Runnable {
 			socket.close();
 		}
 	}
-}
-
-class VsdmSender implements Runnable {
-	private static final int DEFAULT_TIMEOUT = 5000;
-	private static final int DEFAULT_BUFFER_LENGTH = 10000;
-	private static final double DEFAULT_LAT = 43.394444; //Wyoming lat/lon
-	private static final double DEFAULT_LON = -107.595;
-	private static Coder coder = J2735.getPERUnalignedCoder();
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
-
-	private DatagramSocket socket = null;
-	private String targetHost;
-	private int targetPort;
-	private int selfPort;
-
-	public VsdmSender(String targetHost, int targetPort, int selfPort) {
-		this.setTargetHost(targetHost);
-		this.setTargetPort(targetPort);
-		this.setSelfPort(selfPort);
-		try {
-			socket = new DatagramSocket(selfPort);
-			logger.info("ODE: Created VsdmSender Socket with port " + this.selfPort);
-			socket.setSoTimeout(DEFAULT_TIMEOUT);
-		} catch (SocketException e) {
-			logger.error("ODE: Error creating socket with port " + this.selfPort, e);
-		}
-	}
 
 	public String getTargetHost() {
 		return targetHost;
@@ -172,18 +194,61 @@ class VsdmSender implements Runnable {
 		this.targetPort = targetPort;
 	}
 
-	public int getSourcePort() {
+	public int getSelfPort() {
 		return selfPort;
 	}
 
-	public void setSelfPort(int sourcePort) {
-		this.selfPort = sourcePort;
+	public void setSelfPort(int selfPort) {
+		this.selfPort = selfPort;
+	}
+
+	public String getReturnIp() {
+		return returnIp;
+	}
+
+	public void setReturnIp(String returnIp) {
+		this.returnIp = returnIp;
+	}
+
+	public int getReturnPort() {
+		return returnPort;
+	}
+
+	public void setReturnPort(int returnPort) {
+		this.returnPort = returnPort;
+	}
+}
+
+class VsdmSender implements Runnable {
+	private static final int DEFAULT_TIMEOUT = 5000;
+	private static final int DEFAULT_BUFFER_LENGTH = 10000;
+	private static final double DEFAULT_LAT = 43.394444; // Wyoming lat/lon
+	private static final double DEFAULT_LON = -107.595;
+	private static Coder coder = J2735.getPERUnalignedCoder();
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	private DatagramSocket socket = null;
+	private String targetHost;
+	private int targetPort;
+	private int selfPort;
+
+	public VsdmSender(String targetHost, int targetPort, int selfPort) {
+		this.targetHost = targetHost;
+		this.targetPort = targetPort;
+		this.selfPort = selfPort;
+		try {
+			socket = new DatagramSocket(selfPort);
+			logger.info("ODE: Created VsdmSender Socket with port " + this.selfPort);
+			socket.setSoTimeout(DEFAULT_TIMEOUT);
+		} catch (SocketException e) {
+			logger.error("ODE: Error creating socket with port " + this.selfPort, e);
+		}
 	}
 
 	@Override
 	public void run() {
 		logger.info("ODE: Initializing VSD deposit to SDC ...");
-		if(receiveVsdServiceResponse())
+		if (receiveVsdServiceResponse())
 			sendVsdMessage();
 		else
 			logger.info("ODE: Vsd message was not sent because a valid Service Response was not received.");
@@ -214,7 +279,7 @@ class VsdmSender implements Runnable {
 		}
 		return false;
 	}
-	
+
 	ServiceRequest sr;
 
 	private void sendVsdMessage() {
