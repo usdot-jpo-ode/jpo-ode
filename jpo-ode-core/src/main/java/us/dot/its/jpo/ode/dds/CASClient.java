@@ -84,7 +84,6 @@ public class CASClient {
     	 logger.error("Inside configure method", e);
          throw casClient.new CASException(e);
       }
-      assertNotNull(casClient);
       logger.info("Returning casClient");
       return casClient;
    }
