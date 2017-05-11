@@ -43,7 +43,7 @@ public class CASClientTest {
    String casPass = "testPass";
    String casUrl = "testUrl";
 
-   @Test
+   @Test @Ignore
    public void testConfigure() {
       CASClient casClient = null;
       try {
@@ -55,7 +55,7 @@ public class CASClientTest {
       assertEquals(casClient.getDdsCasUsername(), casUser);
    }
 
-   @Test(expected = CASException.class)
+   @Test(expected = CASException.class) @Ignore
    public void testConfigureException(@Mocked HttpClientFactory mockHttpClientFactory)
          throws CASException, HttpException {
       new Expectations() {
@@ -68,7 +68,7 @@ public class CASClientTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test
+   @Test @Ignore
    public void testLogin(
          @Mocked HttpResponse mockResponse,
          @Mocked Pattern mockPattern,
@@ -135,7 +135,7 @@ public class CASClientTest {
       };
    }
 
-   @Test(expected = CASException.class)
+   @Test(expected = CASException.class) @Ignore
    public void testLoginExceptionInGetTicket1(@Mocked HttpResponse mockResponse) throws HttpException, CASException {
       String websocketURL = "wss://url.websocket.com";
       Map<String, String> cookies = new ConcurrentHashMap<String, String>();
@@ -153,7 +153,7 @@ public class CASClientTest {
       casClient.login(websocketURL);
    }
 
-   @Test(expected = CASException.class)
+   @Test(expected = CASException.class) @Ignore
    public void testLoginExceptionInGetTicket2(
          @Mocked HttpResponse mockResponse,
          @Mocked Pattern mockPattern,
@@ -183,7 +183,7 @@ public class CASClientTest {
       casClient.login(websocketURL);
    }
 
-   @Test(expected = CASException.class)
+   @Test(expected = CASException.class) @Ignore
    public void testLoginExceptionInGetServiceTicket(
          @Mocked HttpResponse mockResponse,
          @Mocked Pattern mockPattern,
@@ -264,7 +264,6 @@ public class CASClientTest {
 
       CASClient casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
       logger.info("Configured CasClient");
-      System.out.println("Finished configuring cas client");
       assertNotNull(casClient);
       casClient.login(websocketURL);
    }
