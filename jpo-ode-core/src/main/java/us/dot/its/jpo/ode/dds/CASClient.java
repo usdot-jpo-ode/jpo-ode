@@ -81,7 +81,7 @@ public class CASClient {
          logger.info("After calling HttpClientFactory.build");
 
       } catch (Exception e) {
-    	 logger.error("Inside configure method", e);
+    	 logger.error("Exception inside configure method", e);
          throw casClient.new CASException(e);
       }
       logger.info("Returning casClient");
