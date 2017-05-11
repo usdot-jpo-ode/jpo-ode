@@ -16,8 +16,6 @@
  *******************************************************************************/
 package us.dot.its.jpo.ode.dds;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
