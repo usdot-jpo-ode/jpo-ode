@@ -264,6 +264,7 @@ public class CASClientTest {
 
       CASClient casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
       logger.info("Configured CasClient");
+      System.out.println("Finished configuring cas client");
       assertNotNull(casClient);
       casClient.login(websocketURL);
    }
