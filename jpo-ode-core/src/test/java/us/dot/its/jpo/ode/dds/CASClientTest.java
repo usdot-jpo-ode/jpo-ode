@@ -226,7 +226,8 @@ public class CASClientTest {
          @Mocked HttpClient mockHttpClient,
          @Mocked HttpResponse mockResponse,
          @Mocked Pattern mockPattern,
-         @Mocked Matcher mockMatcher) throws HttpException, CASException {
+         @Mocked Matcher mockMatcher,
+         @Mocked HttpClientFactory mockHttpClientFactory) throws HttpException, CASException {
       String websocketURL = "wss://url.websocket.com";
       Map<String, String> cookies = new ConcurrentHashMap<String, String>();
       cookies.put("JSESSIONID", "1bif45f-testSessionId");
@@ -263,8 +264,8 @@ public class CASClientTest {
       };
 
       CASClient casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
-      logger.info("Configured CasClient");
       assertNotNull(casClient);
+      logger.info("Configured CasClient");
       casClient.login(websocketURL);
    }
 }
