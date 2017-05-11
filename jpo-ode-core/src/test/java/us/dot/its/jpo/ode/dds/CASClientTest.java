@@ -13,6 +13,8 @@ import mockit.integration.junit4.JMockit;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.core.Response.Status;
@@ -25,6 +27,9 @@ import us.dot.its.jpo.ode.wrapper.HttpClientFactory.HttpResponse;
 
 @RunWith(JMockit.class)
 public class CASClientTest {
+	private static final Logger logger = LoggerFactory
+	         .getLogger(CASClient.class);
+	
    @Mocked(stubOutClassInitialization = true)
    final HttpClientFactory unused = null;
 
@@ -258,6 +263,8 @@ public class CASClientTest {
       };
 
       CASClient casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
+      logger.info("Configured CasClient");
+      assertNotNull(casClient);
       casClient.login(websocketURL);
    }
 }
