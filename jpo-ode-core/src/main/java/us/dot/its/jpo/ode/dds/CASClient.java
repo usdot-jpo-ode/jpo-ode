@@ -16,6 +16,8 @@
  *******************************************************************************/
 package us.dot.its.jpo.ode.dds;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
@@ -79,8 +81,11 @@ public class CASClient {
          logger.info("After calling HttpClientFactory.build");
 
       } catch (Exception e) {
+    	 logger.error("Inside configure method", e);
          throw casClient.new CASException(e);
       }
+      assertNotNull(casClient);
+      logger.info("Returning casClient");
       return casClient;
    }
 
