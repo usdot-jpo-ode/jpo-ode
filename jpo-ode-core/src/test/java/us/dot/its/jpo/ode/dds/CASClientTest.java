@@ -30,8 +30,11 @@ public class CASClientTest {
 	private static final Logger logger = LoggerFactory
 	         .getLogger(CASClient.class);
 	
-   @Mocked(stubOutClassInitialization = true)
-   final HttpClientFactory unused = null;
+//   @Mocked(stubOutClassInitialization = true)
+//   final HttpClientFactory unused = null;
+	
+	@Mocked
+	HttpClientFactory mockHttpClientFactory;
 
    @Mocked
    SSLContext sslContext;
@@ -183,7 +186,7 @@ public class CASClientTest {
       casClient.login(websocketURL);
    }
 
-   @Test(expected = CASException.class) @Ignore
+   @Test(expected = CASException.class)
    public void testLoginExceptionInGetServiceTicket(
          @Mocked HttpResponse mockResponse,
          @Mocked Pattern mockPattern,
@@ -220,7 +223,7 @@ public class CASClientTest {
       casClient.login(websocketURL);
    }
 
-   @SuppressWarnings("unchecked") @Ignore
+   @SuppressWarnings("unchecked")
    @Test(expected = CASException.class)
    public void testLoginExceptionInGetServiceCall(
          @Mocked HttpResponse mockResponse,
