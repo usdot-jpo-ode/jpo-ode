@@ -58,63 +58,65 @@ public class VsdmReceiver implements Runnable {
 
 		logger.info("Vsdm Receiver Service started.");
 
-		while (true) {
+		byte[] buffer = new byte[odeProperties.getVsdmBufferSize()];
 
-			byte[] buffer = new byte[odeProperties.getVsdmBufferSize()];
+		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
-			DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+		Boolean stopped = false;
+		while (!stopped) {
 
 			try {
+				logger.info("VSDM RECEIVER - Waiting for UDP packets.");
 				socket.receive(packet);
+				logger.info("VSDM RECEIVER - Packet received.");
+
+				if (packet.getLength() > 0) {
+					byte[] msg = null;
+					//logger.info("VSDM RECEIVER - Attempting to convert packet: " + packet.getData());
+					//msg = HexUtils.fromHexString(new String(packet.getData(), "UTF-8"));
+					//logger.info("VSDM RECEIVER - Converted message: " + msg);
+
+					logger.info("VSDM RECEIVER - Received data:" + packet.getData());
+					handleMessage(packet.getData());
+				}
 			} catch (IOException e) {
 				logger.error("[VSDM Receiver] Error receiving UDP packet", e);
 			}
-			
-			byte[] msg = null;
-			try {
-				msg = HexUtils.fromHexString(new String(buffer, "UTF-8"));
-			} catch (UnsupportedEncodingException e) {
-				logger.error("VSDM RECEIVER - Unable to parse message: " + e);
-			}
 
-			logger.info("VSDM RECEIVER - Received message:" + msg);
-			
+		}
 
-			if (buffer.length > 0) {
-				
-				AbstractData decoded = null;
+	}
+
+	private void handleMessage(byte[] msg) {
+
+		AbstractData decoded = null;
+		try {
+			decoded = J2735Util.decode(coder, msg);
+		} catch (DecodeFailedException | DecodeNotSupportedException e) {
+			logger.error("[VSDM Receiver] Error, unable to decode UDP message", e);
+		}
+
+		if (decoded instanceof ServiceRequest || decoded instanceof ServiceResponse) {
+			logger.info("VSDM RECEIVER - Received ServiceRequest or ServiceResponse");
+			// send
+		} else if (decoded instanceof VehSitDataMessage) {
+			logger.info("VSDM RECEIVER - Received VSDM");
+			// send
+			List<BasicSafetyMessage> bsmList = VsdToBsmConverter.convert((VehSitDataMessage) decoded);
+			for (BasicSafetyMessage entry : bsmList) {
 				try {
-					decoded = J2735Util.decode(coder, msg);
-				} catch (DecodeFailedException | DecodeNotSupportedException e) {
-					logger.error("[VSDM Receiver] Error, unable to decode UDP message", e);
+					J2735Bsm convertedBsm = OssBsm.genericBsm(entry);
+					String bsmJson = JsonUtils.toJson(convertedBsm, odeProperties.getVsdmVerboseJson());
+
+					publish(bsmJson);
+
+					logger.debug("Published: {}", bsmJson);
+				} catch (OssBsmPart2Exception e) {
+					logger.error("[VSDM Receiver] Error, unable to convert BSM: ", e);
 				}
-
-				if (decoded instanceof ServiceRequest || decoded instanceof ServiceResponse) {
-					logger.info("VSDM RECEIVER - Received ServiceRequest or ServiceResponse");
-					// send
-				} else if (decoded instanceof VehSitDataMessage) {
-					logger.info("VSDM RECEIVER - Received VSDM");
-					// send
-					List<BasicSafetyMessage> bsmList = VsdToBsmConverter.convert((VehSitDataMessage) decoded);
-					for (BasicSafetyMessage entry : bsmList) {
-						try {
-							J2735Bsm convertedBsm = OssBsm.genericBsm(entry);
-							String bsmJson = JsonUtils.toJson(convertedBsm, odeProperties.getVsdmVerboseJson());
-
-							publish(bsmJson);
-
-							logger.debug("Published: {}", bsmJson);
-						} catch (OssBsmPart2Exception e) {
-							logger.error("[VSDM Receiver] Error, unable to convert BSM: ", e);
-						}
-
-					}
-
-				} else {
-					logger.error("[VSDM Receiver] Error, unknown message type received: " + packet.getClass());
-				}
-
 			}
+		} else {
+			logger.error("[VSDM Receiver] Error, unknown message type received.");
 		}
 
 	}
