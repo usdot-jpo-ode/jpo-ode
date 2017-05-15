@@ -66,31 +66,25 @@ public class VsdmReceiver implements Runnable {
 
 			try {
 				socket.receive(packet);
+				logger.info("[VSDM Receiver] Received Packet");
 			} catch (IOException e) {
 				logger.error("[VSDM Receiver] Error receiving UDP packet", e);
 			}
 			
-			byte[] msg = null;
-			try {
-				msg = HexUtils.fromHexString(new String(buffer, "UTF-8"));
-			} catch (UnsupportedEncodingException e) {
-				logger.error("VSDM RECEIVER - Unable to parse message: " + e);
-			}
-
-			logger.info("VSDM RECEIVER - Received message:" + msg);
-			
 
 			if (buffer.length > 0) {
-				
+				logger.info("[VSDM Receiver] Checking the received buffer");
 				AbstractData decoded = null;
 				try {
-					decoded = J2735Util.decode(coder, msg);
+					decoded = J2735Util.decode(coder, buffer);
 				} catch (DecodeFailedException | DecodeNotSupportedException e) {
 					logger.error("[VSDM Receiver] Error, unable to decode UDP message", e);
 				}
 
 				if (decoded instanceof ServiceRequest || decoded instanceof ServiceResponse) {
 					logger.info("VSDM RECEIVER - Received ServiceRequest or ServiceResponse");
+					if(decoded instanceof ServiceRequest)
+						logger.info("ODE: Printing VSD Deposit ServiceRequest {}", decoded.toString());
 					// send
 				} else if (decoded instanceof VehSitDataMessage) {
 					logger.info("VSDM RECEIVER - Received VSDM");
