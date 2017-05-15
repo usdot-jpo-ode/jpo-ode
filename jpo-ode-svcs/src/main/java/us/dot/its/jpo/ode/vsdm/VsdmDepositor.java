@@ -6,6 +6,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.time.ZonedDateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +22,12 @@ import us.dot.its.jpo.ode.asn1.j2735.CVSampleMessageBuilder;
 import us.dot.its.jpo.ode.asn1.j2735.CVTypeHelper;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.j2735.J2735;
+import us.dot.its.jpo.ode.j2735.dsrc.DDateTime;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.j2735.semi.VsmType;
+import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class VsdmDepositor implements Runnable {
 	private String sdcIp;
@@ -186,6 +189,7 @@ class VsdmSender implements Runnable {
 	private static final double DEFAULT_LON = -107.595;
 	private static Coder coder = J2735.getPERUnalignedCoder();
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private DDateTime expireDateTime;
 
 	private DatagramSocket socket = null;
 	private String targetHost;
@@ -227,13 +231,22 @@ class VsdmSender implements Runnable {
 			socket.receive(responeDp);
 
 			logger.info("ODE: Received VSD Deposit ServiceResponse");
-			if (buffer.length > 0) {
-				AbstractData response = J2735Util.decode(coder, buffer);
-				if (response instanceof ServiceResponse) {
-					logger.info("ODE: Printing VSD Deposit ServiceResponse {}", response.toString());
-					return true;
+			
+			if (buffer.length <= 0)
+				return false;
+			
+			AbstractData response = J2735Util.decode(coder, buffer);
+			if (response instanceof ServiceResponse) {
+				ServiceResponse servResponse = (ServiceResponse) response;
+				if (J2735Util.isExpired(servResponse.getExpiration())){
+					logger.info("ODE: VSD Deposit ServiceResponse Expired");
+					return false;
 				}
+					
+				logger.info("ODE: Printing VSD Deposit ServiceResponse {}", response.toString());
+				return true;
 			}
+
 		} catch (Exception e) {
 			logger.error("ODE: Error Receiving VSD Deposit ServiceResponse", e);
 		}

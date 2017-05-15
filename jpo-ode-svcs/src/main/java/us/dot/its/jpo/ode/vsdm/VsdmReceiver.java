@@ -1,14 +1,11 @@
 package us.dot.its.jpo.ode.vsdm;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,15 +63,11 @@ public class VsdmReceiver implements Runnable {
 		while (!stopped) {
 
 			try {
-				logger.info("VSDM RECEIVER - Waiting for UDP packets.");
+				logger.info("VSDM RECEIVER - Waiting for UDP packets...");
 				socket.receive(packet);
 				logger.info("VSDM RECEIVER - Packet received.");
 
 				if (packet.getLength() > 0) {
-					byte[] msg = null;
-					//logger.info("VSDM RECEIVER - Attempting to convert packet: " + packet.getData());
-					//msg = HexUtils.fromHexString(new String(packet.getData(), "UTF-8"));
-					//logger.info("VSDM RECEIVER - Converted message: " + msg);
 
 					logger.info("VSDM RECEIVER - Received data:" + packet.getData());
 					handleMessage(packet.getData());
@@ -109,7 +102,6 @@ public class VsdmReceiver implements Runnable {
 					String bsmJson = JsonUtils.toJson(convertedBsm, odeProperties.getVsdmVerboseJson());
 
 					publish(bsmJson);
-
 					logger.debug("Published: {}", bsmJson);
 				} catch (OssBsmPart2Exception e) {
 					logger.error("[VSDM Receiver] Error, unable to convert BSM: ", e);
