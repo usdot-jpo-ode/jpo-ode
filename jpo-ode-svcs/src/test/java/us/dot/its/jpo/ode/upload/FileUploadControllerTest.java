@@ -67,8 +67,8 @@ public class FileUploadControllerTest {
             @Mocked final PluginFactory unused2, @Mocked Asn1Plugin mockAsn1Plugin,
             @Mocked MessageProducer<String, String> mockMessageProducer,
             @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
-            @Mocked final LoggerFactory unusedLoggerFactory
-            , @Mocked final ImporterWatchService mockImporterWatchService
+            @Mocked final LoggerFactory unusedLoggerFactory,
+            @Mocked final ImporterWatchService mockImporterWatchService
             ) {
 
         String testType = "unknownTestType";
@@ -83,8 +83,8 @@ public class FileUploadControllerTest {
             @Mocked final PluginFactory unused2, @Mocked Asn1Plugin mockAsn1Plugin,
             @Mocked MessageProducer<String, String> mockMessageProducer,
             @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
-            @Mocked final LoggerFactory unusedLoggerFactory
-            , @Mocked final ImporterWatchService mockImporterWatchService
+            @Mocked final LoggerFactory unusedLoggerFactory,
+            @Mocked final ImporterWatchService mockImporterWatchService
             ) {
 
         String testType = "bsm";
@@ -111,8 +111,8 @@ public class FileUploadControllerTest {
             @Mocked final PluginFactory unused2, @Mocked Asn1Plugin mockAsn1Plugin,
             @Mocked MessageProducer<String, String> mockMessageProducer,
             @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
-            @Mocked final LoggerFactory unusedLoggerFactory
-            , @Mocked final ImporterWatchService mockImporterWatchService
+            @Mocked final LoggerFactory unusedLoggerFactory,
+            @Mocked final ImporterWatchService mockImporterWatchService
             ) {
 
         String testType = "bsm";
@@ -138,8 +138,8 @@ public class FileUploadControllerTest {
             @Mocked final PluginFactory unused2, @Mocked Asn1Plugin mockAsn1Plugin,
             @Mocked MessageProducer<String, String> mockMessageProducer,
             @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
-            @Mocked final LoggerFactory unusedLoggerFactory
-            , @Mocked final ImporterWatchService mockImporterWatchService
+            @Mocked final LoggerFactory unusedLoggerFactory,
+            @Mocked final ImporterWatchService mockImporterWatchService
             ) {
 
         String testType = "messageFrame";
@@ -165,13 +165,11 @@ public class FileUploadControllerTest {
             @Mocked final PluginFactory unused2, @Mocked Asn1Plugin mockAsn1Plugin,
             @Mocked MessageProducer<String, String> mockMessageProducer,
             @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
-            @Mocked final LoggerFactory unusedLoggerFactory
-            , @Mocked final ImporterWatchService mockImporterWatchService
-            , @Mocked final ResponseEntity mockResponseEntity
-            , @Mocked BodyBuilder mockBodyBuilder
+            @Mocked final LoggerFactory unusedLoggerFactory,
+            @Mocked final ImporterWatchService mockImporterWatchService,
+            @Mocked final ResponseEntity<?> mockResponseEntity,
+            @Mocked BodyBuilder mockBodyBuilder
             ) {
-
-        String testType = "messageFrame";
 
         try {
             new Expectations() {
@@ -179,7 +177,7 @@ public class FileUploadControllerTest {
                     ResponseEntity.ok();
                     result = mockBodyBuilder;
                     
-                    mockBodyBuilder.header(anyString, null);
+                    mockBodyBuilder.header(anyString, (String[]) any);
                     result = mockBodyBuilder;
                 }
             };
@@ -198,14 +196,12 @@ public class FileUploadControllerTest {
             @Mocked final PluginFactory unused2, @Mocked Asn1Plugin mockAsn1Plugin,
             @Mocked MessageProducer<String, String> mockMessageProducer,
             @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
-            @Mocked final LoggerFactory unusedLoggerFactory
-            , @Mocked final ImporterWatchService mockImporterWatchService
-            , @Mocked final ResponseEntity<?> mockResponseEntity
-            , @Mocked BodyBuilder mockBodyBuilder
-            , @Mocked HeadersBuilder<?> mockHeadersBuilder
+            @Mocked final LoggerFactory unusedLoggerFactory,
+            @Mocked final ImporterWatchService mockImporterWatchService,
+            @Mocked final ResponseEntity<?> mockResponseEntity,
+            @Mocked BodyBuilder mockBodyBuilder,
+            @Mocked HeadersBuilder<?> mockHeadersBuilder
             ) {
-
-        String testType = "messageFrame";
 
         try {
             new Expectations() {
