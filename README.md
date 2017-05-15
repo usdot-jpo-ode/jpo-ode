@@ -286,6 +286,29 @@ The result of uploading and decoding of the message will be displayed on the UI 
 
 *Notice that the empty fields in the J2735 message are represented by a ```null``` value. Also note that ODE output strips the MessageFrame header and returns a pure BSM in the J2735 BSM subscription topic.*
 
+### PPM Module (Geofencing and Filtering)
+
+To run the ODE with additional modules requires installing and starting the service. Since all of the services communicate through published Kafka Topics, the PPM will read from the Raw BSM topic and publish the result to the FilteredBsm Topic.
+
+Please follows the instructions located here to install and build the application. [Installation Guide](https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md)
+
+During the building, please edit the Kafka configuration located here in `src/kafka_consumer.cpp` on line 216 and point it towards the host of your docker machine. You may use the command `docker-machine ls` to find the machine up where the kafka topics reside.
+
+```    
+std::string brokers = "192.168.99.100";
+```
+
+After building, use the following commands to configure and run the PPM
+
+```
+cd $BASE_PPM_DIR/jpo-cvdp/build
+$ ./bsmjson_privacy -c ../config/<testconfig>.properties
+```
+With the PPM module running, all filtered BSMs that are uploaded through the web interface will be captured and processed. You will see an output of both submitted BSM and processed data unless the entire record was filtered out.
+
+![ODE UI](images/ppm.png)
+
+
 [Back to top](#toc)
 
 <a name="dev-tools"/>
