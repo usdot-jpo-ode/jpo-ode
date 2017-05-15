@@ -1,13 +1,6 @@
 package us.dot.its.jpo.ode;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
+import groovy.lang.MissingPropertyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +8,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-
-import groovy.lang.MissingPropertyException;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @ConfigurationProperties("ode")
 @PropertySource("classpath:application.properties")
@@ -43,7 +42,8 @@ public class OdeProperties implements EnvironmentAware {
     private String ddsCasPass = "";
     private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
     private String kafkaTopicBsmSerializedPOJO = "topic.J2735Bsm";
-    private String kafkaTopicBsmJSON = "topic.J2735BsmRawJSON";
+    private String kafkaTopicBsmJSON = "j2735BsmRawJson";
+    private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
     
     private int vsdmPort = 5556;
     private int vsdmBufferSize = 10000;
@@ -213,6 +213,9 @@ public class OdeProperties implements EnvironmentAware {
         this.ddsWebsocketUrl = ddsWebsocketUrl;
     }
 
+    public String getKafkaTopicBsmFilteredJson() {
+        return kafkaTopicBsmFilteredJson;
+    }
     public String getKafkaTopicBsmSerializedPOJO() {
         return kafkaTopicBsmSerializedPOJO;
     }
