@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.vsdm;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -11,36 +12,59 @@ import org.slf4j.LoggerFactory;
 
 import com.oss.asn1.AbstractData;
 import com.oss.asn1.Coder;
+import com.oss.asn1.EncodeFailedException;
+import com.oss.asn1.EncodeNotSupportedException;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.asn1.j2735.CVSampleMessageBuilder;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.j2735.J2735;
+import us.dot.its.jpo.ode.j2735.semi.ConnectionPoint;
+import us.dot.its.jpo.ode.j2735.semi.IPv4Address;
+import us.dot.its.jpo.ode.j2735.semi.IpAddress;
+import us.dot.its.jpo.ode.j2735.semi.PortNumber;
+import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
 
-public class VsdmDepositorAgent {
-	private int port;
+public class VsdmDepositorAgent implements Runnable{
 	private OdeProperties odeProps;
 	private static Coder coder = J2735.getPERUnalignedCoder();
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private DatagramSocket socket = null;
+	private ServiceRequest request;
+	private byte[] payload;
+	private ConnectionPoint oldReturnAddr;
 	
-	public VsdmDepositorAgent(int port, OdeProperties odeProps){
-		this.port = port;
+	public VsdmDepositorAgent(OdeProperties odeProps, ServiceRequest request){
 		this.odeProps = odeProps;
+		this.request = request;
+		this.payload = createRequest(request);
 		try {
-			socket = new DatagramSocket(this.port);
-			logger.info("ODE: Created depositor Socket with port " + this.port);
+			socket = new DatagramSocket(odeProps.getServiceRequestSenderPort());
+			logger.info("ODE: Created depositor Socket with port " + odeProps.getServiceRequestSenderPort());
 		} catch (SocketException e) {
-			logger.error("ODE: Error creating socket with port " + this.port, e);
+			logger.error("ODE: Error creating socket with port " + odeProps.getServiceRequestSenderPort(), e);
 		}
 	}
 	
-	public ServiceResponse deposit(byte[] payload){
-		send(payload);
-		return receiveVsdServiceResponse();
+	public byte[] createRequest(ServiceRequest request){
+		IpAddress ipAddr = new IpAddress();
+		ipAddr.setIpv4Address(new IPv4Address(J2735Util.ipToBytes(odeProps.getReturnIp())));
+		ConnectionPoint newReturnAddr = new ConnectionPoint(ipAddr, new PortNumber(odeProps.getReturnPort()));
+		this.oldReturnAddr = request.getDestination();
+		request.setDestination(newReturnAddr);
+		
+		ByteArrayOutputStream sink = new ByteArrayOutputStream();
+		try {
+			coder.encode(request, sink);
+		} catch (EncodeFailedException | EncodeNotSupportedException e) {
+			logger.error("ODE: Error Encoding VSD Deposit ServiceRequest", e);
+		}
+		
+		return sink.toByteArray();
 	}
 	
-	public void send(byte[] payload){
+	public void send(){
 		try {
 			logger.info("ODE: Sending VSD Deposit ServiceRequest ...");
 			socket.send(new DatagramPacket(payload, payload.length, new InetSocketAddress(odeProps.getSdcIp(), odeProps.getSdcPort())));
@@ -70,6 +94,7 @@ public class VsdmDepositorAgent {
 				}
 					
 				logger.info("ODE: Printing VSD Deposit ServiceResponse {}", response.toString());
+				forwardServiceResponseToObu(buffer);
 				return servResponse;
 			}
 
@@ -79,5 +104,22 @@ public class VsdmDepositorAgent {
 		return null;
 	}
 	
+	public void forwardServiceResponseToObu(byte[] response){
+		try {
+			byte[] ipBytes = oldReturnAddr.getAddress().getIpv4Address().byteArrayValue();
+			String obuIp = J2735Util.ipToString(ipBytes);
+			int obuPort = oldReturnAddr.getPort().intValue();
+			logger.info("Obu IP: {} and ObuPort: {}", obuIp, obuPort);
+			logger.info("ODE: Sending VSD Deposit ServiceResponse to OBU ...");
+			socket.send(new DatagramPacket(response, response.length, new InetSocketAddress(obuIp, obuPort)));
+		} catch (IOException e) {
+			logger.error("ODE: Error Sending VSD Deposit ServiceRequest", e);
+		}
+	}
 
+	@Override
+	public void run() {
+		send();
+		receiveVsdServiceResponse();
+	}
 }

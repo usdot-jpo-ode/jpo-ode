@@ -91,6 +91,11 @@ public class VsdmReceiver implements Runnable {
 
 		if (decoded instanceof ServiceRequest || decoded instanceof ServiceResponse) {
 			logger.info("VSDM RECEIVER - Received ServiceRequest or ServiceResponse");
+			if(decoded instanceof ServiceRequest){
+				ServiceRequest request = (ServiceRequest) decoded;
+				VsdmDepositorAgent depositorAgent = new VsdmDepositorAgent(odeProperties, request);
+				depositorAgent.run();
+			}
 			// send
 		} else if (decoded instanceof VehSitDataMessage) {
 			logger.info("VSDM RECEIVER - Received VSDM");
