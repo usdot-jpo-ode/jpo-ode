@@ -18,7 +18,7 @@ public class J2735BsmPart2Content extends Asn1Object {
 	}
 
 	private J2735BsmPart2Id id;
-	private J2735BsmPart2Extension value;
+	private J2735BsmPart2ExtensionBase value;
 
 	public J2735BsmPart2Id getId() {
 		return id;
@@ -28,11 +28,11 @@ public class J2735BsmPart2Content extends Asn1Object {
 		this.id = id;
 	}
 
-	public J2735BsmPart2Extension getValue() {
+	public J2735BsmPart2ExtensionBase getValue() {
 		return value;
 	}
 
-	public void setValue(J2735BsmPart2Extension value) {
+	public void setValue(J2735BsmPart2ExtensionBase value) {
 		this.value = value;
 	}
 }

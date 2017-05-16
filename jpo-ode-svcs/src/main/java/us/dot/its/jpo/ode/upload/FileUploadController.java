@@ -1,5 +1,10 @@
 package us.dot.its.jpo.ode.upload;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,20 +13,23 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.BsmCoder;
+import us.dot.its.jpo.ode.coder.Coder;
 import us.dot.its.jpo.ode.coder.MessageFrameCoder;
-import us.dot.its.jpo.ode.exporter.Exporter;
+import us.dot.its.jpo.ode.exporter.FilteredBsmExporter;
+import us.dot.its.jpo.ode.exporter.RawBsmExporter;
 import us.dot.its.jpo.ode.importer.ImporterWatchService;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Controller
 public class FileUploadController {
@@ -31,51 +39,51 @@ public class FileUploadController {
     private static Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
     private final StorageService storageService;
-    private ExecutorService bsmImporter;
-    private ExecutorService messageFrameImporter;
-    private ExecutorService bsmExporter;
-    private ExecutorService bsmFilteredExported;
-
+    private OdeProperties odeProperties;
+    
     @Autowired
     public FileUploadController(StorageService storageService, OdeProperties odeProperties,
             SimpMessagingTemplate template) throws IllegalAccessException {
         super();
+        this.odeProperties = odeProperties;
         this.storageService = storageService;
 
-        bsmImporter = Executors.newSingleThreadExecutor();
-        messageFrameImporter = Executors.newSingleThreadExecutor();
-        bsmExporter = Executors.newSingleThreadExecutor();
-        bsmFilteredExported = Executors.newSingleThreadExecutor();
-        
-        Path bsmPath = Paths.get(odeProperties.getUploadLocationRoot(), odeProperties.getUploadLocationBsm());
-        logger.debug("UPLOADER - Bsm directory: {}", bsmPath);
-        
-        Path messageFramePath = Paths.get(odeProperties.getUploadLocationRoot(),
-                odeProperties.getUploadLocationMessageFrame());
-        logger.debug("UPLOADER - Message Frame directory: {}", messageFramePath);
-        
         Path backupPath = Paths.get(odeProperties.getUploadLocationRoot(), "backup");
         logger.debug("UPLOADER - Backup directory: {}", backupPath);
 
-        bsmImporter.submit(new ImporterWatchService(bsmPath, backupPath, new BsmCoder(odeProperties),
-                LoggerFactory.getLogger(ImporterWatchService.class)));
+        launchImporter(
+                Paths.get(odeProperties.getUploadLocationRoot(), odeProperties.getUploadLocationBsm()),
+                backupPath,
+                new BsmCoder(this.odeProperties));
 
-        messageFrameImporter.submit(new ImporterWatchService(messageFramePath, backupPath, new MessageFrameCoder(odeProperties),
-                LoggerFactory.getLogger(ImporterWatchService.class)));
-
+        
+        launchImporter(
+                Paths.get(odeProperties.getUploadLocationRoot(), odeProperties.getUploadLocationMessageFrame()),
+                backupPath,
+                new MessageFrameCoder(this.odeProperties));
+        
         try {
-            bsmExporter.submit(new Exporter(odeProperties, template, OUTPUT_TOPIC, "byte"));
+            Executors.newSingleThreadExecutor().submit(new RawBsmExporter(
+                    odeProperties, OUTPUT_TOPIC, template));
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             logger.error("Error launching Exporter", e);
         }
+        
         try {
-            bsmFilteredExported.submit(new Exporter(odeProperties, template, FILTERED_OUTPUT_TOPIC, "string"));
+            Executors.newSingleThreadExecutor().submit(new FilteredBsmExporter(
+                    odeProperties, FILTERED_OUTPUT_TOPIC, template));
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             logger.error("Error launching Exporter", e);
         }
+    }
 
-
-
+    private ExecutorService launchImporter(Path filePath, Path backupPath, Coder coder) {
+        ExecutorService importer = Executors.newSingleThreadExecutor();
+        logger.debug("UPLOADER - Upload directory: {}", filePath);
+        importer.submit(new ImporterWatchService(filePath, backupPath, coder,
+                LoggerFactory.getLogger(ImporterWatchService.class)));
+        
+        return importer;
     }
 
     @GetMapping("/files/{filename:.+}")
@@ -96,6 +104,8 @@ public class FileUploadController {
             logger.debug("BSM file recieved: {}", file.getOriginalFilename());
         } else if (("messageFrame").equals(type)) {
             logger.debug("Message Frame file recieved: {}", file.getOriginalFilename());
+        } else if (("json").equals(type)) {
+            logger.debug("JSON file recieved: {}", file.getOriginalFilename());
         } else {
             logger.error("File storage error: Unknown file type provided");
             return "{\"success\": false}";

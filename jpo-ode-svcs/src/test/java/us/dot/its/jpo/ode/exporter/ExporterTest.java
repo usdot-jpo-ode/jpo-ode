@@ -20,7 +20,7 @@ public class ExporterTest {
     public void shouldRun(@Mocked OdeProperties mockOdeProperties,
             @Injectable SimpMessagingTemplate mockSimpMessagingTemplate,
             @Mocked final MessageConsumer<String, byte[]> mockByteArrayConsumer,
-            @Mocked MessageConsumer<String, String> mockStringConsumer) {
+            @Mocked final MessageConsumer<String, String> mockStringConsumer) {
 
         String testTopic = "testTopic123";
 
@@ -37,9 +37,13 @@ public class ExporterTest {
         };
 
         try {
-            Exporter testExporter = new Exporter(mockOdeProperties, mockSimpMessagingTemplate, testTopic, "byte");
-            testExporter.setStringConsumer(mockStringConsumer);
-            testExporter.run();
+            Exporter rawBsmExporter = new RawBsmExporter(mockOdeProperties, testTopic, mockSimpMessagingTemplate);
+            rawBsmExporter.setConsumer(mockStringConsumer);
+            rawBsmExporter.run();
+
+            Exporter FilteredBsmExporter = new FilteredBsmExporter(mockOdeProperties, testTopic, mockSimpMessagingTemplate);
+            FilteredBsmExporter.setConsumer(mockByteArrayConsumer);
+            FilteredBsmExporter.run();
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }

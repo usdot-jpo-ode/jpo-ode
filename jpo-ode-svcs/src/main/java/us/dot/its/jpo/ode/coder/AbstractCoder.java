@@ -43,7 +43,7 @@ public abstract class AbstractCoder implements Coder {
     }
 
     @Override
-    public void decodeFromHexAndPublish(InputStream is) throws IOException {
+    public void decodeHexAndPublish(InputStream is) throws IOException {
         String line = null;
         Asn1Object decoded = null;
 
@@ -69,7 +69,7 @@ public abstract class AbstractCoder implements Coder {
     }
 
     @Override
-    public void decodeFromStreamAndPublish(InputStream is) throws IOException {
+    public void decodeBinaryAndPublish(InputStream is) throws IOException {
         Asn1Object decoded;
 
         try {
