@@ -104,7 +104,7 @@ public class VsdmReceiver implements Runnable {
 						J2735Bsm convertedBsm = OssBsm.genericBsm(entry);
 						String bsmJson = JsonUtils.toJson(convertedBsm, odeProperties.getVsdmVerboseJson());
 
-						publishBsm(bsmJson);
+						//publishBsm(bsmJson);
 						logger.debug("Published: {}", bsmJson);
 					} catch (OssBsmPart2Exception e) {
 						logger.error("[VSDM Receiver] Error, unable to convert BSM: ", e);
