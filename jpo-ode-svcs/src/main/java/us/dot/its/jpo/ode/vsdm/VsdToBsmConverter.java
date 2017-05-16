@@ -22,6 +22,7 @@ public class VsdToBsmConverter {
 		for (VehSitRecord vsr : vsdm.bundle.elements) {
 			BasicSafetyMessage bsm = new BasicSafetyMessage();
 			bsm.coreData = createCoreData(vsr);
+			bsmList.add(bsm);
 		}
 		
 		return bsmList;	
