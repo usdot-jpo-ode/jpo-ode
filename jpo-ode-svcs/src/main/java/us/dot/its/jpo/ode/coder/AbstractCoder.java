@@ -91,7 +91,7 @@ public abstract class AbstractCoder implements Coder {
     public void publish(String msg) {
         MessageProducer
                 .defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
-                .send(odeProperties.getKafkaTopicBsmJSON(), null, msg);
+                .send(odeProperties.getKafkaTopicBsmRawJSON(), null, msg);
 
         logger.debug("Published: {}", msg);
     }

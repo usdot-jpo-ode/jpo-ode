@@ -288,21 +288,24 @@ The result of uploading and decoding of the message will be displayed on the UI 
 
 ### PPM Module (Geofencing and Filtering)
 
-To run the ODE with additional modules requires installing and starting the service. Since all of the services communicate through published Kafka Topics, the PPM will read from the Raw BSM topic and publish the result to the FilteredBsm Topic.
+To run the ODE with PPM module, you must install and start the PPM service. PPM service communicates with other services through Kafka Topics. PPM will read from the specified "Raw BSM" topic and publish the result to the specified "Filtered Bsm" topic. These topic names are specified by the following ODE and PPM properties:
 
-Please follows the instructions located here to install and build the application. [Installation Guide](https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md)
+ - ODE properties for communications with PPM (set in application.properties)
+	 - ode.kafkaTopicBsmRawJSON  (default = j2735BsmRawJson)
+	 - ode.kafkaTopicBsmFilteredJson (default = j2735BsmFilteredJson)
+ - PPM properties for communications with ODE (set in ppm.properties)
+	 - privacy.topic.consumer (default = j2735BsmRawJson)
+	 - privacy.topic.producer (default = j2735BsmFilteredJson)
+ 
+Follow the instructions [here](https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md) (https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md) to install and build the PPM service. 
 
-During the building, please edit the Kafka configuration located here in `src/kafka_consumer.cpp` on line 216 and point it towards the host of your docker machine. You may use the command `docker-machine ls` to find the machine up where the kafka topics reside.
+During the build process, edit the default  config file located in `config/ppm.properties` and point the property `metadata.broker.list` towards the host of your docker machine or wherever the kafka brokers are hosted. You may use the command `docker-machine ls` to find the kafka service.
 
-```    
-std::string brokers = "192.168.99.100";
-```
-
-After building, use the following commands to configure and run the PPM
+After a successful build, use the following commands to configure and run the PPM
 
 ```
 cd $BASE_PPM_DIR/jpo-cvdp/build
-$ ./bsmjson_privacy -c ../config/<testconfig>.properties
+$ ./bsmjson_privacy -c ../config/ppm.properties
 ```
 With the PPM module running, all filtered BSMs that are uploaded through the web interface will be captured and processed. You will see an output of both submitted BSM and processed data unless the entire record was filtered out.
 
