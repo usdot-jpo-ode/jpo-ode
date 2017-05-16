@@ -16,6 +16,7 @@ import com.oss.asn1.DecodeFailedException;
 import com.oss.asn1.DecodeNotSupportedException;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.SerializableMessageProducerPool;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
@@ -36,11 +37,15 @@ public class VsdmReceiver implements Runnable {
 	private DatagramSocket socket;
 
 	private OdeProperties odeProperties;
+	
+	private SerializableMessageProducerPool<String, byte[]> messageProducerPool;
 
 	@Autowired
 	public VsdmReceiver(OdeProperties odeProps) {
 
 		this.odeProperties = odeProps;
+		
+		messageProducerPool = new SerializableMessageProducerPool<>(odeProperties);
 
 		try {
 			socket = new DatagramSocket(odeProperties.getVsdmPort());
@@ -94,14 +99,14 @@ public class VsdmReceiver implements Runnable {
 			// send
 		} else if (decoded instanceof VehSitDataMessage) {
 			logger.info("VSDM RECEIVER - Received VSDM");
-			// send
+			publishVsdm(msg);
 			List<BasicSafetyMessage> bsmList = VsdToBsmConverter.convert((VehSitDataMessage) decoded);
 			for (BasicSafetyMessage entry : bsmList) {
 				try {
 					J2735Bsm convertedBsm = OssBsm.genericBsm(entry);
 					String bsmJson = JsonUtils.toJson(convertedBsm, odeProperties.getVsdmVerboseJson());
 
-					publish(bsmJson);
+					publishBsm(bsmJson);
 					logger.debug("Published: {}", bsmJson);
 				} catch (OssBsmPart2Exception e) {
 					logger.error("[VSDM Receiver] Error, unable to convert BSM: ", e);
@@ -113,11 +118,16 @@ public class VsdmReceiver implements Runnable {
 
 	}
 
-	private void publish(String msg) {
-
+	private void publishBsm(String msg) {
 		MessageProducer
 				.defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
 				.send(odeProperties.getKafkaTopicBsmJSON(), null, msg);
+	}
+	
+	private void publishVsdm(byte[] data) {
+	        MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
+	        producer.send(odeProperties.getKafkaTopicVsdm(), null, data);
+	        messageProducerPool.checkIn(producer);
 	}
 
 }
