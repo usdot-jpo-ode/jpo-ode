@@ -97,7 +97,7 @@ public class VsdmReceiver implements Runnable {
 				// send
 			} else if (decoded instanceof VehSitDataMessage) {
 				logger.info("VSDM RECEIVER - Received VSDM");
-				publishVsdm(msg);
+				//publishVsdm(msg);
 				List<BasicSafetyMessage> bsmList = VsdToBsmConverter.convert((VehSitDataMessage) decoded);
 				for (BasicSafetyMessage entry : bsmList) {
 					try {
