@@ -46,7 +46,7 @@ public class OdeProperties implements EnvironmentAware {
     private String kafkaTopicBsmJSON = "topic.J2735BsmRawJSON";
     private String kafkaTopicVsdm = "topic.J2735Vsdm";
     
-    private int vsdmPort = 5556;
+    private int receiverPort = 46753;
     private int vsdmBufferSize = 10000;
     private Boolean vsdmVerboseJson = false;
     private String sdcIp = "";
@@ -230,12 +230,12 @@ public class OdeProperties implements EnvironmentAware {
         this.kafkaTopicBsmJSON = kafkaTopicBsmJSON;
     }
 
-	public int getVsdmPort() {
-		return vsdmPort;
+	public int getReceiverPort() {
+		return receiverPort;
 	}
 
-	public void setVsdmPort(int vsdmPort) {
-		this.vsdmPort = vsdmPort;
+	public void setReceiverPort(int vsdmPort) {
+		this.receiverPort = vsdmPort;
 	}
 
 	public int getVsdmBufferSize() {
@@ -303,8 +303,7 @@ public class OdeProperties implements EnvironmentAware {
 	}
 
 	public String getKafkaTopicVsdm() {
-		// TODO Auto-generated method stub
-		return null;
+		return kafkaTopicVsdm;
 	}
 
 }

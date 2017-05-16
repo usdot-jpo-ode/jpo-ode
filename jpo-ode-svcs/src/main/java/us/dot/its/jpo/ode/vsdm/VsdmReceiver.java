@@ -37,21 +37,21 @@ public class VsdmReceiver implements Runnable {
 	private DatagramSocket socket;
 
 	private OdeProperties odeProperties;
-	
+
 	private SerializableMessageProducerPool<String, byte[]> messageProducerPool;
 
 	@Autowired
 	public VsdmReceiver(OdeProperties odeProps) {
 
 		this.odeProperties = odeProps;
-		
+
 		messageProducerPool = new SerializableMessageProducerPool<>(odeProperties);
 
 		try {
-			socket = new DatagramSocket(odeProperties.getVsdmPort());
-			logger.info("[VSDM Receiver] Created UDP socket bound to port " + odeProperties.getVsdmPort());
+			socket = new DatagramSocket(odeProperties.getReceiverPort());
+			logger.info("[VSDM Receiver] Created UDP socket bound to port " + odeProperties.getReceiverPort());
 		} catch (SocketException e) {
-			logger.error("[VSDM Receiver] Error creating socket with port ", odeProperties.getVsdmPort(), e);
+			logger.error("[VSDM Receiver] Error creating socket with port ", odeProperties.getReceiverPort(), e);
 		}
 	}
 
@@ -82,7 +82,6 @@ public class VsdmReceiver implements Runnable {
 			}
 
 		}
-
 	}
 
 	private void handleMessage(byte[] msg) {
@@ -94,13 +93,11 @@ public class VsdmReceiver implements Runnable {
 			logger.error("[VSDM Receiver] Error, unable to decode UDP message", e);
 		}
 
-		if (decoded instanceof ServiceRequest || decoded instanceof ServiceResponse) {
-			logger.info("VSDM RECEIVER - Received ServiceRequest or ServiceResponse");
-			if(decoded instanceof ServiceRequest){
-				ServiceRequest request = (ServiceRequest) decoded;
-				VsdmDepositorAgent depositorAgent = new VsdmDepositorAgent(odeProperties, request);
-				depositorAgent.run();
-			}
+		if (decoded instanceof ServiceRequest) {
+			logger.info("VSDM RECEIVER - Received ServiceRequest");
+			ServiceRequest request = (ServiceRequest) decoded;
+			VsdmDepositorAgent depositorAgent = new VsdmDepositorAgent(odeProperties, request);
+			depositorAgent.run();
 			// send
 		} else if (decoded instanceof VehSitDataMessage) {
 			logger.info("VSDM RECEIVER - Received VSDM");
@@ -128,11 +125,11 @@ public class VsdmReceiver implements Runnable {
 				.defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
 				.send(odeProperties.getKafkaTopicBsmJSON(), null, msg);
 	}
-	
+
 	private void publishVsdm(byte[] data) {
-	        MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
-	        producer.send(odeProperties.getKafkaTopicVsdm(), null, data);
-	        messageProducerPool.checkIn(producer);
+		MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
+		producer.send(odeProperties.getKafkaTopicVsdm(), null, data);
+		messageProducerPool.checkIn(producer);
 	}
 
 }
