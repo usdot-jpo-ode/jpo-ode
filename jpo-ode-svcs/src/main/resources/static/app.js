@@ -24,6 +24,9 @@ function connect() {
         stompClient.subscribe('/topic/messages', function (greeting) {
             showMessage(JSON.parse(greeting.body).content);
         });
+        stompClient.subscribe('/topic/filtered_messages', function (greeting) {
+                showFilteredMessage(JSON.parse(greeting.body).content);
+        });
     });
 }
 
@@ -45,6 +48,10 @@ function showGreeting(message) {
 
 function showMessage(message) {
     $("#messages").append("<tr><td>" + message + "</td></tr>");
+}
+
+function showFilteredMessage(message) {
+    $("#filtered_messages").append("<tr><td>" + message + "</td></tr>");
 }
 
 function upload() {

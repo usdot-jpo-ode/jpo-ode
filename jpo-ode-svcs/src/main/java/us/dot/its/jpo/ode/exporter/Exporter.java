@@ -16,23 +16,33 @@ public class Exporter implements Runnable {
     private MessageConsumer<String, String> stringConsumer;
     private MessageConsumer<String, byte[]> byteArrayConsumer;
     private String topic;
+    private String type;
 
-    public Exporter(OdeProperties odeProps, SimpMessagingTemplate template, String topic)
+    public Exporter(OdeProperties odeProps, SimpMessagingTemplate template, String topic, String type)
             throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         this.odeProperties = odeProps;
         this.template = template;
         this.topic = topic;
+        this.type = type;
     }
 
     @Override
     public void run() {
         logger.info("Subscribing to {}", odeProperties.getKafkaTopicBsmSerializedPOJO());
+        logger.info("Subscribing to {}", odeProperties.getKafkaTopicBsmFilteredJson());
 
-        byteArrayConsumer = MessageConsumer.defaultByteArrayMessageConsumer(odeProperties.getKafkaBrokers(),
+        if (type.equals("byte")) {
+            byteArrayConsumer = MessageConsumer.defaultByteArrayMessageConsumer(odeProperties.getKafkaBrokers(),
                 odeProperties.getHostId() + this.getClass().getSimpleName(),
                 new StompByteArrayMessageDistributor(template, topic));
+            byteArrayConsumer.subscribe(odeProperties.getKafkaTopicBsmSerializedPOJO());
+        } else if (type.equals("string")){
 
-        byteArrayConsumer.subscribe(odeProperties.getKafkaTopicBsmSerializedPOJO());
+            stringConsumer = MessageConsumer.defaultStringMessageConsumer(odeProperties.getKafkaBrokers(),
+                    odeProperties.getHostId() + this.getClass().getSimpleName(), new StompStringMessageDistributor(template, topic));
+
+            stringConsumer.subscribe(odeProperties.getKafkaTopicBsmFilteredJson());
+        }
 
         shutDown();
     }
