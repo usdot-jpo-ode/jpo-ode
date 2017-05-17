@@ -21,6 +21,16 @@ public class VsdToBsmConverter {
 	}
 
 	public static List<BasicSafetyMessage> convert(VehSitDataMessage vsdm) {
+		
+		// If the bundle element is null, the data is likely corrupted
+		if (null == vsdm.bundle) {
+			throw new IllegalArgumentException("VehSitDataMessage bundle null");
+		}
+		
+		// If the bundle exists but is empty, return an empty list
+		if (vsdm.bundle.getSize() == 0) {
+			return new ArrayList<>();
+		}
 
 		List<BasicSafetyMessage> bsmList = new ArrayList<>();
 
@@ -36,7 +46,6 @@ public class VsdToBsmConverter {
 	private static BSMcoreData createCoreData(VehSitRecord vsr) {
 
 		BSMcoreData cd = new BSMcoreData();
-
 		cd.lat = vsr.pos.lat;
 		cd._long = vsr.pos._long;
 		cd.accelSet = vsr.fundamental.accelSet;
@@ -51,7 +60,6 @@ public class VsdToBsmConverter {
 		cd.secMark = vsr.time.second;
 		cd.size = vsr.fundamental.vehSize;
 		cd.speed = new Speed(vsr.fundamental.speed.speed.intValue());
-		cd.transmission = vsr.fundamental.speed.transmisson;
 
 		return cd;
 	}
