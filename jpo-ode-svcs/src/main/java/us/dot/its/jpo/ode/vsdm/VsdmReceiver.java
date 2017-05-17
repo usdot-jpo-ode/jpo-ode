@@ -97,14 +97,16 @@ public class VsdmReceiver implements Runnable {
 				// send
 			} else if (decoded instanceof VehSitDataMessage) {
 				logger.info("VSDM RECEIVER - Received VSDM");
-				//publishVsdm(msg);
+				logger.info("VSDM RECEIVER - Publishing vsd to kafka...");
+				publishVsdm(msg);
 				List<BasicSafetyMessage> bsmList = VsdToBsmConverter.convert((VehSitDataMessage) decoded);
 				for (BasicSafetyMessage entry : bsmList) {
 					try {
 						J2735Bsm convertedBsm = OssBsm.genericBsm(entry);
 						String bsmJson = JsonUtils.toJson(convertedBsm, odeProperties.getVsdmVerboseJson());
-
-						//publishBsm(bsmJson);
+						
+						logger.info("VSDM RECEIVER - Publishing vsd to kafka...");
+						publishBsm(bsmJson);
 						logger.debug("Published: {}", bsmJson);
 					} catch (OssBsmPart2Exception e) {
 						logger.error("[VSDM Receiver] Error, unable to convert BSM: ", e);
