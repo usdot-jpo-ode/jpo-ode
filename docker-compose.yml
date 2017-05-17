@@ -50,5 +50,5 @@ services:
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/host_share
+      - ${DOCKER_SHARED_VOLUME}:/ppm_data
 
