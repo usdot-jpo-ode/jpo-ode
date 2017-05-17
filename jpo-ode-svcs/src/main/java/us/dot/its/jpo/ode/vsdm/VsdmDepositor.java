@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.time.ZonedDateTime;
 
+import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,6 +165,8 @@ class ServiceRequestSender implements Runnable {
 		try {
 			coder.encode(sr, sink);
 			byte[] payload = sink.toByteArray();
+			logger.info("ODE: Printing VSD Deposit ServiceRequest {}", sr.toString());
+			logger.info("ODE: Printing VSD Deposit Encoded ServiceRequest hex {}", Hex.encodeHex(payload));
 			logger.info("ODE: Sending VSD Deposit ServiceRequest ...");
 			socket.send(new DatagramPacket(payload, payload.length, new InetSocketAddress(targetHost, targetPort)));
 		} catch (EncodeFailedException | EncodeNotSupportedException | IOException e) {
@@ -244,6 +247,7 @@ class VsdmSender implements Runnable {
 				}
 					
 				logger.info("ODE: Printing VSD Deposit ServiceResponse {}", response.toString());
+				logger.info("ODE: Printing VSD Deposit Encoded ServiceResponse hex {}", Hex.encodeHex(buffer));
 				return true;
 			}
 
