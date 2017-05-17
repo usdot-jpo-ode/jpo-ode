@@ -166,7 +166,7 @@ class ServiceRequestSender implements Runnable {
 			coder.encode(sr, sink);
 			byte[] payload = sink.toByteArray();
 			logger.info("ODE: Printing VSD Deposit ServiceRequest {}", sr.toString());
-			logger.info("ODE: Printing VSD Deposit Encoded ServiceRequest hex {}", Hex.encodeHex(payload));
+			logger.info("ODE: Printing VSD Deposit Encoded ServiceRequest hex {}", Hex.encodeHexString(payload));
 			logger.info("ODE: Sending VSD Deposit ServiceRequest ...");
 			socket.send(new DatagramPacket(payload, payload.length, new InetSocketAddress(targetHost, targetPort)));
 		} catch (EncodeFailedException | EncodeNotSupportedException | IOException e) {
@@ -215,7 +215,7 @@ class VsdmSender implements Runnable {
 	@Override
 	public void run() {
 		logger.info("ODE: Initializing VSD deposit to SDC ...");
-		if (receiveVsdServiceResponse())
+		if (receiveVsdServiceResponse() || true)
 			sendVsdMessage();
 		else
 			logger.info("ODE: Vsd message was not sent because a valid Service Response was not received.");
@@ -265,6 +265,7 @@ class VsdmSender implements Runnable {
 			VsmType vsmType = new VsmType(CVTypeHelper.VsmType.VEHSTAT.arrayValue());
 			vsdm.setType(vsmType);
 			byte[] encodedMsg = CVSampleMessageBuilder.messageToEncodedBytes(vsdm);
+			logger.info("Printing Encoded Vsd hex: {}", Hex.encodeHexString(encodedMsg));
 			logger.info("ODE: Sending VSD message to SDC...");
 			socket.send(
 					new DatagramPacket(encodedMsg, encodedMsg.length, new InetSocketAddress(targetHost, targetPort)));

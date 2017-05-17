@@ -24,7 +24,7 @@ public class VsdmDepositorTest {
 	private int vsdmSenderPort = 6666;
 
 	// The ip and port where the SDC will send the ServiceResponse back
-	private String returnIp = "54.210.159.61";
+	private String returnIp = "162.242.218.130";	//Rackspace instance ip
 	private int returnPort = 6666;
 
 	@Injectable
