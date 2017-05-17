@@ -1,49 +1,42 @@
 package us.dot.its.jpo.ode.vsdm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.SocketException;
 
-import org.junit.Ignore;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.runner.RunWith;
 
-import com.oss.asn1.Coder;
-import com.oss.asn1.EncodeFailedException;
-import com.oss.asn1.EncodeNotSupportedException;
+import mockit.Expectations;
+import mockit.Injectable;
+import mockit.Mocked;
+import mockit.Tested;
+import mockit.integration.junit4.JMockit;
+import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.SerializableMessageProducerPool;
 
-import us.dot.its.jpo.ode.asn1.j2735.CVSampleMessageBuilder;
-import us.dot.its.jpo.ode.j2735.J2735;
-import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
-
+@RunWith(JMockit.class)
 public class VsdmReceiverTest {
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	private static Coder coder = J2735.getPERUnalignedCoder();
 	
+	@Tested
+	VsdmReceiver testVsdmReceiver;
+	
+	@Injectable
+	OdeProperties mockOdeProperties;
+
 	@Test
-	public void test() throws SocketException {
-		int selfPort = 12321;
-		String targetHost = "localhost";
-		int targetPort = 5556;
-		DatagramSocket socket = new DatagramSocket(selfPort);
-		ServiceRequest sr = CVSampleMessageBuilder.buildVehicleSituationDataServiceRequest();
-		ByteArrayOutputStream sink = new ByteArrayOutputStream();
+	public void testRunError(@Mocked final DatagramSocket mockDatagramSocket, @Mocked final SerializableMessageProducerPool mockSmpp) {
 		try {
-			coder.encode(sr, sink);
-			byte[] payload = sink.toByteArray();
-			logger.info("ODE: Sending VSD Deposit ServiceRequest ...");
-			socket.send(new DatagramPacket(payload, payload.length, new InetSocketAddress(targetHost, targetPort)));
-		} catch (EncodeFailedException | EncodeNotSupportedException | IOException e) {
-			logger.error("ODE: Error Sending VSD Deposit ServiceRequest", e);
+			new Expectations() {{
+				mockDatagramSocket.receive((DatagramPacket) any);
+				result = new IOException();
+			}};
+		} catch (IOException e) {
+			fail("Unexpected exception in expectations block.");
 		}
-		if(socket != null)
-			socket.close();
+		testVsdmReceiver.run();
 	}
 
 }

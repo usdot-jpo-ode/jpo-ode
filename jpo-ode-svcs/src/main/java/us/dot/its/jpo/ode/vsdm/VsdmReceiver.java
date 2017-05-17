@@ -42,17 +42,17 @@ public class VsdmReceiver implements Runnable {
 
 	@Autowired
 	public VsdmReceiver(OdeProperties odeProps) {
-
+		
 		this.odeProperties = odeProps;
-
-		messageProducerPool = new SerializableMessageProducerPool<>(odeProperties);
 
 		try {
 			socket = new DatagramSocket(odeProperties.getReceiverPort());
-			logger.info("[VSDM Receiver] Created UDP socket bound to port " + odeProperties.getReceiverPort());
+			logger.info("[VSDM Receiver] Created UDP socket bound to port ", odeProperties.getReceiverPort());
 		} catch (SocketException e) {
 			logger.error("[VSDM Receiver] Error creating socket with port ", odeProperties.getReceiverPort(), e);
 		}
+		
+		messageProducerPool = new SerializableMessageProducerPool<>(odeProperties);
 	}
 
 	@Override
@@ -73,45 +73,31 @@ public class VsdmReceiver implements Runnable {
 				logger.info("VSDM RECEIVER - Packet received.");
 
 				if (buffer.length > 0) {
-
-					logger.info("VSDM RECEIVER - Received data:" + buffer);
-					handleMessage(buffer);
+					logger.info("VSDM RECEIVER - Received data:", buffer);
+					decodeData(buffer);
 				}
 			} catch (IOException e) {
-				logger.error("[VSDM Receiver] Error receiving UDP packet", e);
+				logger.error("VSDM RECEIVER - Error receiving UDP packet", e);
+				stopped = true;
 			}
 
 		}
 	}
 
-	private void handleMessage(byte[] msg) {
+	private void decodeData(byte[] msg) {
 		try {
 			AbstractData decoded = J2735Util.decode(coder, msg);
 			logger.info("VSDM RECEIVER - Decoded the message");
 			if (decoded instanceof ServiceRequest) {
-				logger.info("VSDM RECEIVER - Received ServiceRequest");
-				logger.info("ODE: Printing VSD Deposit ServiceResponse {}", decoded.toString());
+				logger.info("VSDM RECEIVER - Received ServiceRequest: ", decoded.toString());
 				ServiceRequest request = (ServiceRequest) decoded;
 				VsdmDepositorAgent depositorAgent = new VsdmDepositorAgent(odeProperties, request);
 				Thread depositorAgentThread = new Thread(depositorAgent, "VsdmDepositorAgentThread");
 				depositorAgentThread.start();
 			} else if (decoded instanceof VehSitDataMessage) {
-				logger.info("VSDM RECEIVER - Received VSDM");
-				logger.info("VSDM RECEIVER - Publishing vsd to kafka...");
+				logger.info("VSDM RECEIVER - Received VSDM, publishing to Kafka topic");
 				publishVsdm(msg);
-				List<BasicSafetyMessage> bsmList = VsdToBsmConverter.convert((VehSitDataMessage) decoded);
-				for (BasicSafetyMessage entry : bsmList) {
-					try {
-						J2735Bsm convertedBsm = OssBsm.genericBsm(entry);
-						String bsmJson = JsonUtils.toJson(convertedBsm, odeProperties.getVsdmVerboseJson());
-						
-						logger.info("VSDM RECEIVER - Publishing bsm to kafka...");
-						publishBsm(bsmJson);
-						logger.debug("Published: {}", bsmJson);
-					} catch (OssBsmPart2Exception e) {
-						logger.error("[VSDM Receiver] Error, unable to convert BSM: ", e);
-					}
-				}
+				extractAndPublishBsms((VehSitDataMessage) decoded);
 			} else {
 				logger.error("[VSDM Receiver] Error, unknown message type received.");
 			}
@@ -119,6 +105,28 @@ public class VsdmReceiver implements Runnable {
 			logger.error("[VSDM Receiver] Error, unable to decode UDP message", e);
 		}
 
+	}
+	
+	private void extractAndPublishBsms(VehSitDataMessage msg) {
+		
+		List<BasicSafetyMessage> bsmList = null;
+		try {
+			 bsmList = VsdToBsmConverter.convert(msg);
+		} catch (Exception e) {
+			logger.error("VSDM RECEIVER - Unable to convert VehSitDataMessage bundle to BSM list.", e);
+			return;
+		}
+		
+		for (BasicSafetyMessage entry : bsmList) {
+			try {
+				J2735Bsm convertedBsm = OssBsm.genericBsm(entry);
+				String bsmJson = JsonUtils.toJson(convertedBsm, odeProperties.getVsdmVerboseJson());
+				logger.debug("VSDM RECEIVER - Published BSM to kafka: {}", bsmJson);
+				publishBsm(bsmJson);
+			} catch (OssBsmPart2Exception e) {
+				logger.error("[VSDM Receiver] Error, unable to convert BSM: ", e);
+			}
+		}
 	}
 
 	private void publishBsm(String msg) {
