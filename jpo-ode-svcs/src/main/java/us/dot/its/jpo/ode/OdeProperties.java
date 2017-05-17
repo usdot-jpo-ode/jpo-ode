@@ -44,7 +44,7 @@ public class OdeProperties implements EnvironmentAware {
     private String kafkaTopicBsmSerializedPojo = "topic.J2735Bsm";
     private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
     private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
-    
+
     private int vsdmPort = 5556;
     private int vsdmBufferSize = 10000;
     private Boolean vsdmVerboseJson = false;
@@ -61,7 +61,7 @@ public class OdeProperties implements EnvironmentAware {
         super();
         init();
     }
-    
+
     public void init() {
 
         uploadLocations.add(Paths.get(uploadLocationRoot));
@@ -83,7 +83,7 @@ public class OdeProperties implements EnvironmentAware {
         if (kafkaBrokers == null) {
             logger.info(
                     "ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP from which will derive the Kafka bootstrap-server");
-            
+
             kafkaBrokers = System.getenv("DOCKER_HOST_IP") + ":9092";
         }
 
@@ -216,6 +216,7 @@ public class OdeProperties implements EnvironmentAware {
     public String getKafkaTopicBsmFilteredJson() {
         return kafkaTopicBsmFilteredJson;
     }
+
     public void setKafkaTopicBsmFilteredJson(String kafkaTopicBsmFilteredJson) {
         this.kafkaTopicBsmFilteredJson = kafkaTopicBsmFilteredJson;
     }
@@ -236,76 +237,76 @@ public class OdeProperties implements EnvironmentAware {
         this.kafkaTopicBsmRawJson = kafkaTopicBsmRawJSON;
     }
 
-	public int getVsdmPort() {
-		return vsdmPort;
-	}
+    public int getVsdmPort() {
+        return vsdmPort;
+    }
 
-	public void setVsdmPort(int vsdmPort) {
-		this.vsdmPort = vsdmPort;
-	}
+    public void setVsdmPort(int vsdmPort) {
+        this.vsdmPort = vsdmPort;
+    }
 
-	public int getVsdmBufferSize() {
-		return vsdmBufferSize;
-	}
+    public int getVsdmBufferSize() {
+        return vsdmBufferSize;
+    }
 
-	public void setVsdmBufferSize(int vsdmBufferSize) {
-		this.vsdmBufferSize = vsdmBufferSize;
-	}
+    public void setVsdmBufferSize(int vsdmBufferSize) {
+        this.vsdmBufferSize = vsdmBufferSize;
+    }
 
-	public Boolean getVsdmVerboseJson() {
-		return vsdmVerboseJson;
-	}
+    public Boolean getVsdmVerboseJson() {
+        return vsdmVerboseJson;
+    }
 
-	public void setVsdmVerboseJson(Boolean vsdmVerboseJson) {
-		this.vsdmVerboseJson = vsdmVerboseJson;
-	}
-  
-	public String getSdcIp() {
-		return sdcIp;
-	}
+    public void setVsdmVerboseJson(Boolean vsdmVerboseJson) {
+        this.vsdmVerboseJson = vsdmVerboseJson;
+    }
 
-	public void setSdcIp(String sdcIp) {
-		this.sdcIp = sdcIp;
-	}
+    public String getSdcIp() {
+        return sdcIp;
+    }
 
-	public int getSdcPort() {
-		return sdcPort;
-	}
+    public void setSdcIp(String sdcIp) {
+        this.sdcIp = sdcIp;
+    }
 
-	public void setSdcPort(int sdcPort) {
-		this.sdcPort = sdcPort;
-	}
+    public int getSdcPort() {
+        return sdcPort;
+    }
 
-	public String getReturnIp() {
-		return returnIp;
-	}
+    public void setSdcPort(int sdcPort) {
+        this.sdcPort = sdcPort;
+    }
 
-	public void setReturnIp(String returnIp) {
-		this.returnIp = returnIp;
-	}
+    public String getReturnIp() {
+        return returnIp;
+    }
 
-	public int getReturnPort() {
-		return returnPort;
-	}
+    public void setReturnIp(String returnIp) {
+        this.returnIp = returnIp;
+    }
 
-	public void setReturnPort(int returnPort) {
-		this.returnPort = returnPort;
-	}
+    public int getReturnPort() {
+        return returnPort;
+    }
 
-	public int getServiceRequestSenderPort() {
-		return serviceRequestSenderPort;
-	}
+    public void setReturnPort(int returnPort) {
+        this.returnPort = returnPort;
+    }
 
-	public void setServiceRequestSenderPort(int serviceRequestSenderPort) {
-		this.serviceRequestSenderPort = serviceRequestSenderPort;
-	}
+    public int getServiceRequestSenderPort() {
+        return serviceRequestSenderPort;
+    }
 
-	public int getVsdmSenderPort() {
-		return vsdmSenderPort;
-	}
+    public void setServiceRequestSenderPort(int serviceRequestSenderPort) {
+        this.serviceRequestSenderPort = serviceRequestSenderPort;
+    }
 
-	public void setVsdmSenderPort(int vsdmSenderPort) {
-		this.vsdmSenderPort = vsdmSenderPort;
-	}
+    public int getVsdmSenderPort() {
+        return vsdmSenderPort;
+    }
+
+    public void setVsdmSenderPort(int vsdmSenderPort) {
+        this.vsdmSenderPort = vsdmSenderPort;
+    }
 
 }
