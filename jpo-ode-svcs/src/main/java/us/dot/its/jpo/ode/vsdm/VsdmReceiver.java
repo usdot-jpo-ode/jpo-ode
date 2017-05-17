@@ -105,7 +105,7 @@ public class VsdmReceiver implements Runnable {
 						J2735Bsm convertedBsm = OssBsm.genericBsm(entry);
 						String bsmJson = JsonUtils.toJson(convertedBsm, odeProperties.getVsdmVerboseJson());
 						
-						logger.info("VSDM RECEIVER - Publishing vsd to kafka...");
+						logger.info("VSDM RECEIVER - Publishing bsm to kafka...");
 						publishBsm(bsmJson);
 						logger.debug("Published: {}", bsmJson);
 					} catch (OssBsmPart2Exception e) {
@@ -125,12 +125,14 @@ public class VsdmReceiver implements Runnable {
 		MessageProducer
 				.defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
 				.send(odeProperties.getKafkaTopicBsmJSON(), null, msg);
+		logger.info("VSDM RECEIVER - Published bsm to kafka...");
 	}
 
 	private void publishVsdm(byte[] data) {
 		MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
 		producer.send(odeProperties.getKafkaTopicVsdm(), null, data);
 		messageProducerPool.checkIn(producer);
+		logger.info("VSDM RECEIVER - Published vsd to kafka...");
 	}
 
 }
