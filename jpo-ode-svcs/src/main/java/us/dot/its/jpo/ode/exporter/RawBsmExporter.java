@@ -23,6 +23,6 @@ public class RawBsmExporter extends Exporter {
                 odeProperties.getHostId() + this.getClass().getSimpleName(),
                 new StompByteArrayMessageDistributor(template, getTopic())));
         
-        getConsumer().subscribe(odeProperties.getKafkaTopicBsmSerializedPOJO());
+        getConsumer().subscribe(odeProperties.getKafkaTopicBsmSerializedPojo());
     }
 }

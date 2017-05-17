@@ -33,7 +33,22 @@ services:
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ZK: ${DOCKER_HOST_IP}:2181
+      SPRING_CONFIG_LOCATION: /host_share/config/
+      ODE_DDS_CAS_USERNAME: ${ODE_DDS_CAS_USERNAME}
+      ODE_DDS_CAS_PASSWORD: ${ODE_DDS_CAS_PASSWORD}
+      ODE_DDS_CAS_RETURN_IP: ${ODE_DDS_CAS_RETURN_IP}
+      
     depends_on:
       - kafka
     links:
       - kafka
+
+    volumes:
+      - ${DOCKER_SHARED_VOLUME}:/host_share
+  ppm:
+    build: ../jpo-cvdp
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+    volumes:
+      - ${DOCKER_SHARED_VOLUME}:/host_share
+

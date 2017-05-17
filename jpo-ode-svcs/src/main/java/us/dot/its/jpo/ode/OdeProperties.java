@@ -41,8 +41,8 @@ public class OdeProperties implements EnvironmentAware {
     private String ddsCasUsername = "";
     private String ddsCasPass = "";
     private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
-    private String kafkaTopicBsmSerializedPOJO = "topic.J2735Bsm";
-    private String kafkaTopicBsmRawJSON = "j2735BsmRawJson";
+    private String kafkaTopicBsmSerializedPojo = "topic.J2735Bsm";
+    private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
     private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
     
     private int vsdmPort = 5556;
@@ -216,20 +216,24 @@ public class OdeProperties implements EnvironmentAware {
     public String getKafkaTopicBsmFilteredJson() {
         return kafkaTopicBsmFilteredJson;
     }
-    public String getKafkaTopicBsmSerializedPOJO() {
-        return kafkaTopicBsmSerializedPOJO;
+    public void setKafkaTopicBsmFilteredJson(String kafkaTopicBsmFilteredJson) {
+        this.kafkaTopicBsmFilteredJson = kafkaTopicBsmFilteredJson;
     }
 
-    public void setKafkaTopicBsmSerializedPOJO(String kafkaTopicBsmSerializedPOJO) {
-        this.kafkaTopicBsmSerializedPOJO = kafkaTopicBsmSerializedPOJO;
+    public String getKafkaTopicBsmSerializedPojo() {
+        return kafkaTopicBsmSerializedPojo;
     }
 
-    public String getKafkaTopicBsmRawJSON() {
-        return kafkaTopicBsmRawJSON;
+    public void setKafkaTopicBsmSerializedPojo(String kafkaTopicBsmSerializedPOJO) {
+        this.kafkaTopicBsmSerializedPojo = kafkaTopicBsmSerializedPOJO;
     }
 
-    public void setKafkaTopicBsmRawJSON(String kafkaTopicBsmRawJSON) {
-        this.kafkaTopicBsmRawJSON = kafkaTopicBsmRawJSON;
+    public String getKafkaTopicBsmRawJson() {
+        return kafkaTopicBsmRawJson;
+    }
+
+    public void setKafkaTopicBsmRawJson(String kafkaTopicBsmRawJSON) {
+        this.kafkaTopicBsmRawJson = kafkaTopicBsmRawJSON;
     }
 
 	public int getVsdmPort() {
