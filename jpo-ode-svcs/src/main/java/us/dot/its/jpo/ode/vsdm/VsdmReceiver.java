@@ -93,8 +93,8 @@ public class VsdmReceiver implements Runnable {
 				logger.info("ODE: Printing VSD Deposit ServiceResponse {}", decoded.toString());
 				ServiceRequest request = (ServiceRequest) decoded;
 				VsdmDepositorAgent depositorAgent = new VsdmDepositorAgent(odeProperties, request);
-				depositorAgent.run();
-				// send
+				Thread depositorAgentThread = new Thread(depositorAgent, "VsdmDepositorAgentThread");
+				depositorAgentThread.start();
 			} else if (decoded instanceof VehSitDataMessage) {
 				logger.info("VSDM RECEIVER - Received VSDM");
 				logger.info("VSDM RECEIVER - Publishing vsd to kafka...");
