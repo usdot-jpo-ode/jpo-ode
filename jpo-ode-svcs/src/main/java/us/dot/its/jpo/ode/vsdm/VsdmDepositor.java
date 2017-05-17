@@ -187,7 +187,7 @@ class ServiceRequestSender implements Runnable {
 
 class VsdmSender implements Runnable {
 	private static final int DEFAULT_TIMEOUT = 5000;
-	private static final int DEFAULT_BUFFER_LENGTH = 10000;
+	private static final int DEFAULT_BUFFER_LENGTH = 1000;
 	private static final double DEFAULT_LAT = 43.394444; // Wyoming lat/lon
 	private static final double DEFAULT_LON = -107.595;
 	private static Coder coder = J2735.getPERUnalignedCoder();
