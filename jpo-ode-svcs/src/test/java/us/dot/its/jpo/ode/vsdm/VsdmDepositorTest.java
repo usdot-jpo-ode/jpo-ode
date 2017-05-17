@@ -24,8 +24,8 @@ public class VsdmDepositorTest {
 	private int vsdmSenderPort = 6666;
 
 	// The ip and port where the SDC will send the ServiceResponse back
-	private String returnIp = "162.242.218.130";	//Rackspace instance ip
-	private int returnPort = 6666;
+	private String returnIp = "104.239.174.231";	//Rackspace test instance ip
+	private int returnPort = 12321;
 
 	@Injectable
 	OdeProperties mockOdeProperties;
