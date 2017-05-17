@@ -121,5 +121,7 @@ public class VsdmDepositorAgent implements Runnable{
 	public void run() {
 		send();
 		receiveVsdServiceResponse();
+		if(socket != null)
+			socket.close();
 	}
 }
