@@ -215,7 +215,7 @@ class VsdmSender implements Runnable {
 	@Override
 	public void run() {
 		logger.info("ODE: Initializing VSD deposit to SDC ...");
-		if (receiveVsdServiceResponse() || true)
+		if (receiveVsdServiceResponse())
 			sendVsdMessage();
 		else
 			logger.info("ODE: Vsd message was not sent because a valid Service Response was not received.");
@@ -242,6 +242,7 @@ class VsdmSender implements Runnable {
 			if (response instanceof ServiceResponse) {
 				ServiceResponse servResponse = (ServiceResponse) response;
 				
+				// Just for printing the encoded hex response
 				ByteArrayOutputStream sink = new ByteArrayOutputStream();
 				coder.encode(servResponse, sink);
 				byte[] payload = sink.toByteArray();
@@ -254,7 +255,6 @@ class VsdmSender implements Runnable {
 					
 				logger.info("ODE: Printing VSD Deposit ServiceResponse {}", response.toString());
 				logger.info("ODE: Printing VSD Deposit Encoded ServiceResponse hex {}", encodedHexResponse);
-				logger.info("ODE: Printing VSD Deposit Encoded ServiceResponse hex {}", Hex.encodeHexString(buffer));
 				return true;
 			}
 
@@ -272,7 +272,7 @@ class VsdmSender implements Runnable {
 			VsmType vsmType = new VsmType(CVTypeHelper.VsmType.VEHSTAT.arrayValue());
 			vsdm.setType(vsmType);
 			byte[] encodedMsg = CVSampleMessageBuilder.messageToEncodedBytes(vsdm);
-			logger.info("Printing Encoded Vsd hex: {}", Hex.encodeHexString(encodedMsg));
+			logger.info("ODE: Printing Encoded Vsd hex: {}", Hex.encodeHexString(encodedMsg));
 			logger.info("ODE: Sending VSD message to SDC...");
 			socket.send(
 					new DatagramPacket(encodedMsg, encodedMsg.length, new InetSocketAddress(targetHost, targetPort)));
