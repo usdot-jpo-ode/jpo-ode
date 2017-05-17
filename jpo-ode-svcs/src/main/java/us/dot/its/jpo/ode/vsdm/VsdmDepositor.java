@@ -241,13 +241,20 @@ class VsdmSender implements Runnable {
 			AbstractData response = J2735Util.decode(coder, buffer);
 			if (response instanceof ServiceResponse) {
 				ServiceResponse servResponse = (ServiceResponse) response;
+				
+				ByteArrayOutputStream sink = new ByteArrayOutputStream();
+				coder.encode(servResponse, sink);
+				byte[] payload = sink.toByteArray();
+				String encodedHexResponse = Hex.encodeHexString(payload);
+				
 				if (J2735Util.isExpired(servResponse.getExpiration())){
 					logger.info("ODE: VSD Deposit ServiceResponse Expired");
 					return false;
 				}
 					
 				logger.info("ODE: Printing VSD Deposit ServiceResponse {}", response.toString());
-				logger.info("ODE: Printing VSD Deposit Encoded ServiceResponse hex {}", Hex.encodeHex(buffer));
+				logger.info("ODE: Printing VSD Deposit Encoded ServiceResponse hex {}", encodedHexResponse);
+				logger.info("ODE: Printing VSD Deposit Encoded ServiceResponse hex {}", Hex.encodeHexString(buffer));
 				return true;
 			}
 
