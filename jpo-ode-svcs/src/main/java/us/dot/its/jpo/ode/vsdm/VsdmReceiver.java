@@ -23,10 +23,12 @@ import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
 import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.util.SerializationUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class VsdmReceiver implements Runnable {
@@ -121,21 +123,28 @@ public class VsdmReceiver implements Runnable {
 		for (BasicSafetyMessage entry : bsmList) {
 			try {
 				J2735Bsm convertedBsm = OssBsm.genericBsm(entry);
+				publishBsm(convertedBsm);
 				String bsmJson = JsonUtils.toJson(convertedBsm, odeProperties.getVsdmVerboseJson());
-				logger.debug("VSDM RECEIVER - Published BSM to kafka: {}", bsmJson);
 				publishBsm(bsmJson);
 			} catch (OssBsmPart2Exception e) {
 				logger.error("[VSDM Receiver] Error, unable to convert BSM: ", e);
 			}
 		}
 	}
+	
+    public void publishBsm(String msg) {
+        MessageProducer
+                .defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
+                .send(odeProperties.getKafkaTopicBsmJSON(), null, msg);
 
-	private void publishBsm(String msg) {
-		MessageProducer
-				.defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
-				.send(odeProperties.getKafkaTopicBsmJSON(), null, msg);
-		logger.info("VSDM RECEIVER - Published bsm to kafka...");
-	}
+        logger.debug("Published: {}", msg);
+    }
+
+    public void publishBsm(Asn1Object msg) {
+        MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
+        producer.send(odeProperties.getKafkaTopicBsmSerializedPOJO(), null, new SerializationUtils<J2735Bsm>().serialize((J2735Bsm)msg));
+        messageProducerPool.checkIn(producer);
+    }
 
 	private void publishVsdm(byte[] data) {
 		MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
