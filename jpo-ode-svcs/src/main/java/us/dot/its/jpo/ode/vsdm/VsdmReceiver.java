@@ -71,27 +71,28 @@ public class VsdmReceiver implements Runnable {
 				logger.info("VSDM RECEIVER - Waiting for UDP packets...");
 				socket.receive(packet);
 				logger.info("VSDM RECEIVER - Packet received.");
+				String obuIp = packet.getAddress().getHostAddress();
+				int obuPort = packet.getPort();
 
 				if (buffer.length > 0) {
 					logger.info("VSDM RECEIVER - Received data:", buffer);
-					decodeData(buffer);
+					decodeData(buffer, obuIp, obuPort);
 				}
 			} catch (IOException e) {
 				logger.error("VSDM RECEIVER - Error receiving UDP packet", e);
 				stopped = true;
 			}
-
 		}
 	}
 
-	private void decodeData(byte[] msg) {
+	private void decodeData(byte[] msg, String obuIp, int obuPort) {
 		try {
 			AbstractData decoded = J2735Util.decode(coder, msg);
 			logger.info("VSDM RECEIVER - Decoded the message");
 			if (decoded instanceof ServiceRequest) {
 				logger.info("VSDM RECEIVER - Received ServiceRequest: ", decoded.toString());
 				ServiceRequest request = (ServiceRequest) decoded;
-				VsdmDepositorAgent depositorAgent = new VsdmDepositorAgent(odeProperties, request);
+				VsdmDepositorAgent depositorAgent = new VsdmDepositorAgent(odeProperties, request, obuIp, obuPort);
 				Thread depositorAgentThread = new Thread(depositorAgent, "VsdmDepositorAgentThread");
 				depositorAgentThread.start();
 			} else if (decoded instanceof VehSitDataMessage) {

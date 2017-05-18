@@ -33,12 +33,15 @@ public class VsdmDepositorAgent implements Runnable{
 	private DatagramSocket socket = null;
 	private ServiceRequest request;
 	private byte[] payload;
-	private ConnectionPoint oldReturnAddr;
+	private String obuReturnAddr;
+	private int obuReturnPort;
 	
-	public VsdmDepositorAgent(OdeProperties odeProps, ServiceRequest request){
+	public VsdmDepositorAgent(OdeProperties odeProps, ServiceRequest request, String obuIp, int obuPort){
 		this.odeProps = odeProps;
 		this.request = request;
-		this.payload = createRequest(request);
+		this.payload = createRequest();
+		this.obuReturnAddr = obuIp;
+		this.obuReturnPort = obuPort;
 		try {
 			socket = new DatagramSocket(odeProps.getServiceRequestSenderPort());
 			logger.info("ODE: Created depositor Socket with port " + odeProps.getServiceRequestSenderPort());
@@ -47,11 +50,17 @@ public class VsdmDepositorAgent implements Runnable{
 		}
 	}
 	
-	public byte[] createRequest(ServiceRequest request){
+	public byte[] createRequest(){
 		IpAddress ipAddr = new IpAddress();
 		ipAddr.setIpv4Address(new IPv4Address(J2735Util.ipToBytes(odeProps.getReturnIp())));
 		ConnectionPoint newReturnAddr = new ConnectionPoint(ipAddr, new PortNumber(odeProps.getReturnPort()));
-		this.oldReturnAddr = request.getDestination();
+		
+		if(request.hasDestination()){
+			byte[] ipBytes = request.getDestination().getAddress().getIpv4Address().byteArrayValue();
+			this.obuReturnAddr = J2735Util.ipToString(ipBytes);
+			this.obuReturnPort = request.getDestination().getPort().intValue();
+		}
+		
 		request.setDestination(newReturnAddr);
 		
 		ByteArrayOutputStream sink = new ByteArrayOutputStream();
@@ -106,12 +115,9 @@ public class VsdmDepositorAgent implements Runnable{
 	
 	public void forwardServiceResponseToObu(byte[] response){
 		try {
-			byte[] ipBytes = oldReturnAddr.getAddress().getIpv4Address().byteArrayValue();
-			String obuIp = J2735Util.ipToString(ipBytes);
-			int obuPort = oldReturnAddr.getPort().intValue();
-			logger.info("Obu IP: {} and ObuPort: {}", obuIp, obuPort);
+			logger.info("Obu IP: {} and ObuPort: {}", this.obuReturnAddr, this.obuReturnPort);
 			logger.info("ODE: Sending VSD Deposit ServiceResponse to OBU ...");
-			socket.send(new DatagramPacket(response, response.length, new InetSocketAddress(obuIp, obuPort)));
+			socket.send(new DatagramPacket(response, response.length, new InetSocketAddress(this.obuReturnAddr, this.obuReturnPort)));
 		} catch (IOException e) {
 			logger.error("ODE: Error Sending VSD Deposit ServiceRequest", e);
 		}

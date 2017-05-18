@@ -36,17 +36,6 @@ public class VsdmDepositorTest {
 
 	@Injectable
 	OdeProperties mockOdeProperties;
-	
-    @BeforeClass
-    public static void runOnceBeforeClass() {
-    	System.out.println("Running this before class");
-    	System.out.println("Before: " + System.getProperty("java.net.preferIPv4Stack"));
-    	System.out.println("Before: " + System.getProperty("java.net.preferIPv6Addresses"));
-    	System.setProperty("java.net.preferIPv4Stack" , "true");
-    	System.setProperty("java.net.preferIPv6Addresses" , "true");
-    	System.out.println("After: " + System.getProperty("java.net.preferIPv4Stack"));
-    	System.out.println("After: " + System.getProperty("java.net.preferIPv6Addresses"));
-    }
 
 	@Test
 	public void tempTest() throws Exception {
@@ -67,9 +56,10 @@ public class VsdmDepositorTest {
 		// IPv4 FQDN: sdc2.connectedvcs.com  >> Worked
 		// IPv6 FQDN: sdc6-2.connectedvcs.com
 
-		//String dst = "2001:4802:7803:104:be76:4eff:fe20:bfb2";
+		String dst = "2001:4802:7803:104:be76:4eff:fe20:bfb2";	// SDC IPv6
 		//String dst = "162.242.218.130";  	// ode instance
-		String dst = "2001:4802:7801:102:be76:4eff:fe20:eb5";  	// ode instance
+		//String dst = "2001:4802:7801:102:be76:4eff:fe20:eb5";  // ode instance
+		//String dst = "2001:4802:7805:101:be76:4eff:fe20:2ba2";	// test instance
 		int dstPort = 46753;
 		System.out.println("Sending to: " + dst);
 		DatagramPacket p = new DatagramPacket(payload, payload.length, new InetSocketAddress(dst, dstPort));
