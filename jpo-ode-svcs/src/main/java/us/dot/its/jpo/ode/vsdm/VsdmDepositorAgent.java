@@ -75,7 +75,7 @@ public class VsdmDepositorAgent implements Runnable{
 	
 	public void send(){
 		try {
-			logger.info("ODE: Sending VSD Deposit ServiceRequest ...");
+			logger.info("ODE: Sending VSD Deposit ServiceRequest to IP: {} Port: {}", odeProps.getSdcIp(), odeProps.getSdcPort());
 			socket.send(new DatagramPacket(payload, payload.length, new InetSocketAddress(odeProps.getSdcIp(), odeProps.getSdcPort())));
 		} catch (IOException e) {
 			logger.error("ODE: Error Sending VSD Deposit ServiceRequest", e);
