@@ -31,17 +31,15 @@ public class VsdmDepositorAgent implements Runnable{
 	private static Coder coder = J2735.getPERUnalignedCoder();
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private DatagramSocket socket = null;
-	private ServiceRequest request;
 	private byte[] payload;
 	private String obuReturnAddr;
 	private int obuReturnPort;
 	
 	public VsdmDepositorAgent(OdeProperties odeProps, ServiceRequest request, String obuIp, int obuPort){
 		this.odeProps = odeProps;
-		this.request = request;
-		this.payload = createRequest();
 		this.obuReturnAddr = obuIp;
 		this.obuReturnPort = obuPort;
+		this.payload = createRequest(request);
 		try {
 			socket = new DatagramSocket(odeProps.getServiceRequestSenderPort());
 			logger.info("ODE: Created depositor Socket with port " + odeProps.getServiceRequestSenderPort());
@@ -50,7 +48,7 @@ public class VsdmDepositorAgent implements Runnable{
 		}
 	}
 	
-	public byte[] createRequest(){
+	public byte[] createRequest(ServiceRequest request){
 		IpAddress ipAddr = new IpAddress();
 		ipAddr.setIpv4Address(new IPv4Address(J2735Util.ipToBytes(odeProps.getReturnIp())));
 		ConnectionPoint newReturnAddr = new ConnectionPoint(ipAddr, new PortNumber(odeProps.getReturnPort()));
@@ -61,7 +59,7 @@ public class VsdmDepositorAgent implements Runnable{
 			byte[] ipBytes = request.getDestination().getAddress().getIpv4Address().byteArrayValue();
 			this.obuReturnAddr = J2735Util.ipToString(ipBytes);
 			this.obuReturnPort = request.getDestination().getPort().intValue();
-			logger.info("New destination Source IP: {} Source Port: {}", this.obuReturnAddr, this.obuReturnPort);
+			logger.info("New destination IP: {} Source Port: {}", this.obuReturnAddr, this.obuReturnPort);
 		}
 		
 		request.setDestination(newReturnAddr);

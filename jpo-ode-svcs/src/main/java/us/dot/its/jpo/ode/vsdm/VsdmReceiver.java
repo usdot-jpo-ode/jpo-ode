@@ -73,7 +73,6 @@ public class VsdmReceiver implements Runnable {
 				logger.info("VSDM RECEIVER - Packet received.");
 				String obuIp = packet.getAddress().getHostAddress();
 				int obuPort = packet.getPort();
-				logger.info("VSDM RECEIVER Packet Source IP: {} Source Port: {}", obuIp, obuPort);
 
 				if (buffer.length > 0) {
 					logger.info("VSDM RECEIVER - Received data:", buffer);
