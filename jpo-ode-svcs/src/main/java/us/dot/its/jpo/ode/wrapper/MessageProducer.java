@@ -69,8 +69,6 @@ public class MessageProducer<K, V> {
       return msgProducer;
    }
 
-   
-
    public void send(String topic, K key, V value) {
       ProducerRecord<K, V> data;
       if (key == null)

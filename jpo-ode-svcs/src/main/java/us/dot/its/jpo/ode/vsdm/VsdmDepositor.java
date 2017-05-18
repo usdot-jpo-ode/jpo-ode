@@ -6,7 +6,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.time.ZonedDateTime;
 
+import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +23,12 @@ import us.dot.its.jpo.ode.asn1.j2735.CVSampleMessageBuilder;
 import us.dot.its.jpo.ode.asn1.j2735.CVTypeHelper;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.j2735.J2735;
+import us.dot.its.jpo.ode.j2735.dsrc.DDateTime;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.j2735.semi.VsmType;
+import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class VsdmDepositor implements Runnable {
 	private String sdcIp;
@@ -161,6 +165,8 @@ class ServiceRequestSender implements Runnable {
 		try {
 			coder.encode(sr, sink);
 			byte[] payload = sink.toByteArray();
+			logger.info("ODE: Printing VSD Deposit ServiceRequest {}", sr.toString());
+			logger.info("ODE: Printing VSD Deposit Encoded ServiceRequest hex {}", Hex.encodeHexString(payload));
 			logger.info("ODE: Sending VSD Deposit ServiceRequest ...");
 			socket.send(new DatagramPacket(payload, payload.length, new InetSocketAddress(targetHost, targetPort)));
 		} catch (EncodeFailedException | EncodeNotSupportedException | IOException e) {
@@ -181,11 +187,12 @@ class ServiceRequestSender implements Runnable {
 
 class VsdmSender implements Runnable {
 	private static final int DEFAULT_TIMEOUT = 5000;
-	private static final int DEFAULT_BUFFER_LENGTH = 10000;
+	private static final int DEFAULT_BUFFER_LENGTH = 1000;
 	private static final double DEFAULT_LAT = 43.394444; // Wyoming lat/lon
 	private static final double DEFAULT_LON = -107.595;
 	private static Coder coder = J2735.getPERUnalignedCoder();
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private DDateTime expireDateTime;
 
 	private DatagramSocket socket = null;
 	private String targetHost;
@@ -227,13 +234,30 @@ class VsdmSender implements Runnable {
 			socket.receive(responeDp);
 
 			logger.info("ODE: Received VSD Deposit ServiceResponse");
-			if (buffer.length > 0) {
-				AbstractData response = J2735Util.decode(coder, buffer);
-				if (response instanceof ServiceResponse) {
-					logger.info("ODE: Printing VSD Deposit ServiceResponse {}", response.toString());
-					return true;
+			
+			if (buffer.length <= 0)
+				return false;
+			
+			AbstractData response = J2735Util.decode(coder, buffer);
+			if (response instanceof ServiceResponse) {
+				ServiceResponse servResponse = (ServiceResponse) response;
+				
+				// Just for printing the encoded hex response
+				ByteArrayOutputStream sink = new ByteArrayOutputStream();
+				coder.encode(servResponse, sink);
+				byte[] payload = sink.toByteArray();
+				String encodedHexResponse = Hex.encodeHexString(payload);
+				
+				if (J2735Util.isExpired(servResponse.getExpiration())){
+					logger.info("ODE: VSD Deposit ServiceResponse Expired");
+					return false;
 				}
+					
+				logger.info("ODE: Printing VSD Deposit ServiceResponse {}", response.toString());
+				logger.info("ODE: Printing VSD Deposit Encoded ServiceResponse hex {}", encodedHexResponse);
+				return true;
 			}
+
 		} catch (Exception e) {
 			logger.error("ODE: Error Receiving VSD Deposit ServiceResponse", e);
 		}
@@ -248,6 +272,7 @@ class VsdmSender implements Runnable {
 			VsmType vsmType = new VsmType(CVTypeHelper.VsmType.VEHSTAT.arrayValue());
 			vsdm.setType(vsmType);
 			byte[] encodedMsg = CVSampleMessageBuilder.messageToEncodedBytes(vsdm);
+			logger.info("ODE: Printing Encoded Vsd hex: {}", Hex.encodeHexString(encodedMsg));
 			logger.info("ODE: Sending VSD message to SDC...");
 			socket.send(
 					new DatagramPacket(encodedMsg, encodedMsg.length, new InetSocketAddress(targetHost, targetPort)));

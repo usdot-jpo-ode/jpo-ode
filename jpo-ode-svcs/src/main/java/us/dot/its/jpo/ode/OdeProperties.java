@@ -44,9 +44,10 @@ public class OdeProperties implements EnvironmentAware {
     private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
     private String kafkaTopicBsmSerializedPOJO = "topic.J2735Bsm";
     private String kafkaTopicBsmJSON = "topic.J2735BsmRawJSON";
+    private String kafkaTopicVsdm = "topic.J2735Vsdm";
     
-    private int vsdmPort = 5556;
-    private int vsdmBufferSize = 10000;
+    private int receiverPort = 46753;
+    private int vsdmBufferSize = 1000;
     private Boolean vsdmVerboseJson = false;
     private String sdcIp = "";
     private int sdcPort;
@@ -229,12 +230,12 @@ public class OdeProperties implements EnvironmentAware {
         this.kafkaTopicBsmJSON = kafkaTopicBsmJSON;
     }
 
-	public int getVsdmPort() {
-		return vsdmPort;
+	public int getReceiverPort() {
+		return receiverPort;
 	}
 
-	public void setVsdmPort(int vsdmPort) {
-		this.vsdmPort = vsdmPort;
+	public void setReceiverPort(int vsdmPort) {
+		this.receiverPort = vsdmPort;
 	}
 
 	public int getVsdmBufferSize() {
@@ -299,6 +300,10 @@ public class OdeProperties implements EnvironmentAware {
 
 	public void setVsdmSenderPort(int vsdmSenderPort) {
 		this.vsdmSenderPort = vsdmSenderPort;
+	}
+
+	public String getKafkaTopicVsdm() {
+		return kafkaTopicVsdm;
 	}
 
 }
