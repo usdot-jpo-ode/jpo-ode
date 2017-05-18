@@ -92,8 +92,8 @@ public class VsdmReceiver implements Runnable {
 			if (decoded instanceof ServiceRequest) {
 				logger.info("VSDM RECEIVER - Received ServiceRequest: ", decoded.toString());
 				ServiceRequest request = (ServiceRequest) decoded;
-				VsdmDepositorAgent depositorAgent = new VsdmDepositorAgent(odeProperties, request, obuIp, obuPort);
-				Thread depositorAgentThread = new Thread(depositorAgent, "VsdmDepositorAgentThread");
+				ReqResForwarder forwarder = new ReqResForwarder(odeProperties, request, obuIp, obuPort);
+				Thread depositorAgentThread = new Thread(forwarder, "VsdmDepositorAgentThread");
 				depositorAgentThread.start();
 			} else if (decoded instanceof VehSitDataMessage) {
 				logger.info("VSDM RECEIVER - Received VSDM, publishing to Kafka topic");
@@ -133,7 +133,7 @@ public class VsdmReceiver implements Runnable {
 	private void publishBsm(String msg) {
 		MessageProducer
 				.defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
-				.send(odeProperties.getKafkaTopicBsmJSON(), null, msg);
+				.send(odeProperties.getKafkaTopicBsmSerializedPOJO(), null, msg);
 		logger.info("VSDM RECEIVER - Published bsm to kafka...");
 	}
 
