@@ -133,7 +133,7 @@ public class VsdmReceiver implements Runnable {
 	private void publishBsm(String msg) {
 		MessageProducer
 				.defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
-				.send(odeProperties.getKafkaTopicBsmSerializedPOJO(), null, msg);
+				.send(odeProperties.getKafkaTopicBsmJSON(), null, msg);
 		logger.info("VSDM RECEIVER - Published bsm to kafka...");
 	}
 
