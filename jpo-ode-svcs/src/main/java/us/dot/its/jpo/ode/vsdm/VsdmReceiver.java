@@ -103,7 +103,7 @@ public class VsdmReceiver implements Runnable {
 		
 		MessageProducer
         .defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
-        .send(odeProperties.getKafkaTopicBsmJSON(), null, msg);
+        .send(odeProperties.getKafkaTopicBsmRawJson(), null, msg);
 	}
 
 }

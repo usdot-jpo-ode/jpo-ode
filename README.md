@@ -28,6 +28,9 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 <a name="release-notes"/>
 
 ## I. Release Notes
+### Sprint 13
+- ODE-290 Integrate with ORNL Privacy Protection Module (PPM)
+
 ### Sprint 12
 - ODE-339 Deposit Raw VSD to SDC (Phase 1)
 
@@ -186,6 +189,21 @@ git clone https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 ---
 ### Build and Deploy the Application
 
+#### Environment Variables
+ODE configuration can be customized for every deployment environment using the OS's environment variables. The following table list the environment variables used in Docker files and shell scripts to automate the deployment process and customize it for each deployment environment. Setting these environment variables will allow the deployment to take place without any modification to the default configuration files.
+
+|Environment Variable|Description|
+|--------------------|-----------|
+|DOCKER_HOST_IP      |The IP address of Docker host machine|
+|DOCKER_SHARED_VOLUME|The full path of a directory on the host machine to be shared with docker containers.|
+|ODE_DDS_CAS_USERNAME|The username for authenticating the USDOT Situation Data Warehouse WebSocket server |
+|ODE_DDS_CAS_PASSWORD|The password for authenticating the USDOT Situation Data Warehouse WebSocket server |
+|ODE_DDS_CAS_RETURN_IP|The IP address for Situation data Clearinghouse service responses |
+
+To be able to change the configuration of the application during runtime, you may store the configuration files in the location specified by the DOCKER_SHARED_VOLUME/config environment variable.
+
+#### Build Process
+
 The ODE application uses Maven to manage builds.
 
 **Step 1**: Build the private repository artifacts. 
@@ -285,6 +303,32 @@ The result of uploading and decoding of the message will be displayed on the UI 
 ![ODE UI](images/ode-ui.png)
 
 *Notice that the empty fields in the J2735 message are represented by a ```null``` value. Also note that ODE output strips the MessageFrame header and returns a pure BSM in the J2735 BSM subscription topic.*
+
+### PPM Module (Geofencing and Filtering)
+
+To run the ODE with PPM module, you must install and start the PPM service. PPM service communicates with other services through Kafka Topics. PPM will read from the specified "Raw BSM" topic and publish the result to the specified "Filtered Bsm" topic. These topic names are specified by the following ODE and PPM properties:
+
+ - ODE properties for communications with PPM (set in application.properties)
+	 - ode.kafkaTopicBsmRawJson  (default = j2735BsmRawJson)
+	 - ode.kafkaTopicBsmFilteredJson (default = j2735BsmFilteredJson)
+ - PPM properties for communications with ODE (set in < your config >.properties)
+	 - privacy.topic.consumer (default = j2735BsmRawJson)
+	 - privacy.topic.producer (default = j2735BsmFilteredJson)
+ 
+Follow the instructions [here](https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md) (https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md) to install and build the PPM service. 
+
+During the build process, edit the sample config file located in `config/example.properties` and point the property `metadata.broker.list` towards the host of your docker machine or wherever the kafka brokers are hosted. You may use the command `docker-machine ls` to find the kafka service.
+
+After a successful build, use the following commands to configure and run the PPM
+
+```
+cd $BASE_PPM_DIR/jpo-cvdp/build
+$ ./bsmjson_privacy -c ../config/ppm.properties
+```
+With the PPM module running, all filtered BSMs that are uploaded through the web interface will be captured and processed. You will see an output of both submitted BSM and processed data unless the entire record was filtered out.
+
+![ODE UI](images/ppm.png)
+
 
 [Back to top](#toc)
 

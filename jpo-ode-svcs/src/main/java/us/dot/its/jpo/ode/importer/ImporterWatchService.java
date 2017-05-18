@@ -16,17 +16,17 @@ import java.nio.file.WatchService;
 
 import org.slf4j.Logger;
 
-import us.dot.its.jpo.ode.coder.AbstractCoder;
+import us.dot.its.jpo.ode.coder.Coder;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 
 public class ImporterWatchService extends ImporterFileService implements Runnable {
 
     private Path inbox;
     private Path backup;
-    private AbstractCoder coder;
+    private Coder coder;
     private Logger logger;
 
-    public ImporterWatchService(Path dir, Path backupDir, AbstractCoder coder, Logger logger) {
+    public ImporterWatchService(Path dir, Path backupDir, Coder coder, Logger logger) {
 
         this.inbox = dir;
         this.backup = backupDir;
@@ -81,9 +81,11 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
             EventLogger.logger.info("Processing file {}", filePath.toFile());
 
             if (filePath.toString().endsWith(".hex") || filePath.toString().endsWith(".txt")) {
-               coder.decodeFromHexAndPublish(inputStream);
+               coder.decodeHexAndPublish(inputStream);
+            } else if (filePath.toString().endsWith(".json")) {
+                   coder.decodeJsonAndPublish(inputStream);
             } else {
-               coder.decodeFromStreamAndPublish(inputStream);
+               coder.decodeBinaryAndPublish(inputStream);
             }
         } catch (IOException e) {
             logger.error("IMPORTER - Unable to open file: {}", e);
@@ -152,7 +154,7 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
                     try {
                         processFile(filename);
                     } catch (Exception e) {
-                        logger.error("IMPORTER - Error processing file: {}", e);
+                        logger.error("IMPORTER - Error processing file: " + filename, e);
                         return;
                     }
                 } else {

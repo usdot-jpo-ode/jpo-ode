@@ -40,7 +40,7 @@ public class FirstAbstractCoderTest {
     SerializableMessageProducerPool<String, byte[]> mockSerializableMessageProducerPool;
 
     @Test
-    public void test_decodeFromHexAndPublish_shouldThrowExceptionEmpty(@Mocked final Scanner mockScanner) {
+    public void test_decodeHexAndPublish_shouldThrowExceptionEmpty(@Mocked final Scanner mockScanner) {
 
         new Expectations() {
             {
@@ -50,7 +50,7 @@ public class FirstAbstractCoderTest {
         };
 
         try {
-            testBsmCoder.decodeFromHexAndPublish(null);
+            testBsmCoder.decodeHexAndPublish(null);
             fail("Expected IOException");
         } catch (Exception e) {
             assertTrue(e instanceof IOException);
@@ -64,7 +64,7 @@ public class FirstAbstractCoderTest {
     }
 
     @Test
-    public void test_decodeFromHexAndPublish(@Mocked final PluginFactory mockPluginFactory,
+    public void test_decodeHexAndPublish(@Mocked final PluginFactory mockPluginFactory,
             @Injectable OdeProperties mockOdeProperties, @Mocked final Scanner mockScanner,
             @Mocked final SerializationUtils<Object> mockSerializationUtils,
             @Mocked final SerializableMessageProducerPool<?, ?> unusedSerializableMessageProducerPool,
@@ -89,7 +89,7 @@ public class FirstAbstractCoderTest {
         }
 
         try {
-            hexTestBsmCoder.decodeFromHexAndPublish(null);
+            hexTestBsmCoder.decodeHexAndPublish(null);
 
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
@@ -97,7 +97,7 @@ public class FirstAbstractCoderTest {
     }
 
     @Test
-    public void test_decodeFromStreamAndPublish_null() {
+    public void test_decodeBinaryAndPublish_null() {
 
         new Expectations() {
             {
@@ -108,14 +108,14 @@ public class FirstAbstractCoderTest {
 
         try {
             testBsmCoder.setAsn1Plugin(mockAsn1Plugin);
-            testBsmCoder.decodeFromStreamAndPublish(null);
+            testBsmCoder.decodeBinaryAndPublish(null);
         } catch (IOException e) {
             fail("Unexpected exception: " + e);
         }
     }
 
     @Test
-    public void test_decodeFromStreamAndPublish(@Mocked final PluginFactory mockPluginFactory,
+    public void test_decodeBinaryAndPublish(@Mocked final PluginFactory mockPluginFactory,
             @Injectable OdeProperties mockOdeProperties, @Mocked final Scanner mockScanner,
             @Mocked final SerializationUtils<Object> mockSerializationUtils,
             @Mocked final SerializableMessageProducerPool<?, ?> unusedSerializableMessageProducerPool,
@@ -131,14 +131,14 @@ public class FirstAbstractCoderTest {
         try {
             testBsmCoder.setAsn1Plugin(mockAsn1Plugin);
             testBsmCoder.setMessageProducerPool(mockSerializableMessageProducerPool);
-            testBsmCoder.decodeFromStreamAndPublish(null);
+            testBsmCoder.decodeBinaryAndPublish(null);
         } catch (IOException e) {
             fail("Unexpected exception: " + e);
         }
     }
 
     @Test
-    public void test_decodeFromStreamAndPublish_catchException() {
+    public void test_decodeBinaryAndPublish_catchException() {
 
         new Expectations() {
             {
@@ -149,7 +149,7 @@ public class FirstAbstractCoderTest {
 
         try {
             testBsmCoder.setAsn1Plugin(mockAsn1Plugin);
-            testBsmCoder.decodeFromStreamAndPublish(null);
+            testBsmCoder.decodeBinaryAndPublish(null);
         } catch (Exception e) {
             assertTrue(e instanceof IOException);
             assertTrue(e.getMessage().startsWith("Error decoding data."));

@@ -151,7 +151,6 @@ public class J2735UtilTest {
 	public void testDecodeByName() {
 		String tests[][] = {
 				{"VehicleSituationDataServiceRequest.uper", "ServiceRequest" },
-				{"VehicleSituationDataServiceResponse.uper", "ServiceResponse" },
 				{"VehSitDataMessage.uper", "VehSitDataMessage" },
 		};
 		Arrays.stream(tests).forEach( t -> 

@@ -43,7 +43,7 @@ public abstract class AbstractCoder implements Coder {
     }
 
     @Override
-    public void decodeFromHexAndPublish(InputStream is) throws IOException {
+    public void decodeHexAndPublish(InputStream is) throws IOException {
         String line = null;
         Asn1Object decoded = null;
 
@@ -69,7 +69,7 @@ public abstract class AbstractCoder implements Coder {
     }
 
     @Override
-    public void decodeFromStreamAndPublish(InputStream is) throws IOException {
+    public void decodeBinaryAndPublish(InputStream is) throws IOException {
         Asn1Object decoded;
 
         try {
@@ -91,7 +91,7 @@ public abstract class AbstractCoder implements Coder {
     public void publish(String msg) {
         MessageProducer
                 .defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
-                .send(odeProperties.getKafkaTopicBsmJSON(), null, msg);
+                .send(odeProperties.getKafkaTopicBsmRawJson(), null, msg);
 
         logger.debug("Published: {}", msg);
     }
@@ -99,7 +99,7 @@ public abstract class AbstractCoder implements Coder {
     @Override
     public void publish(byte[] msg) {
         MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
-        producer.send(odeProperties.getKafkaTopicBsmSerializedPOJO(), null, msg);
+        producer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null, msg);
         messageProducerPool.checkIn(producer);
     }
 

@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.coder;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import us.dot.its.jpo.ode.OdeProperties;
@@ -33,5 +34,11 @@ public class MessageFrameCoder extends AbstractCoder {
         J2735MessageFrame msgFrame = (J2735MessageFrame)msg;
         SerializationUtils<J2735Bsm> serializer = new SerializationUtils<>();
         publish(serializer.serialize(msgFrame.getValue()));
+    }
+
+    @Override
+    public void decodeJsonAndPublish(InputStream is) throws IOException {
+        // TODO Auto-generated method stub
+        
     }
 }
