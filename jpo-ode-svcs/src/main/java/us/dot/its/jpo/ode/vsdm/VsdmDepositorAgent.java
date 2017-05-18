@@ -56,9 +56,12 @@ public class VsdmDepositorAgent implements Runnable{
 		ConnectionPoint newReturnAddr = new ConnectionPoint(ipAddr, new PortNumber(odeProps.getReturnPort()));
 		
 		if(request.hasDestination()){
+			logger.info("Saving original destination information");
+			logger.info("Old destination IP: {} Source Port: {}", this.obuReturnAddr, this.obuReturnPort);
 			byte[] ipBytes = request.getDestination().getAddress().getIpv4Address().byteArrayValue();
 			this.obuReturnAddr = J2735Util.ipToString(ipBytes);
 			this.obuReturnPort = request.getDestination().getPort().intValue();
+			logger.info("New destination Source IP: {} Source Port: {}", this.obuReturnAddr, this.obuReturnPort);
 		}
 		
 		request.setDestination(newReturnAddr);
