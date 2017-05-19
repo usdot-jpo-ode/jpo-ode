@@ -30,7 +30,7 @@ import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.j2735.semi.VsmType;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
-public class VsdmDepositor implements Runnable {
+public class VsdmDepositorOld implements Runnable {
 	private String sdcIp;
 	private int sdcPort;
 	private int serviceRequestSenderPort;
@@ -42,7 +42,7 @@ public class VsdmDepositor implements Runnable {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	public VsdmDepositor(String sdcIp, int sdcPort, String returnIp, int returnPort, int serviceRequestSenderPort,
+	public VsdmDepositorOld(String sdcIp, int sdcPort, String returnIp, int returnPort, int serviceRequestSenderPort,
 			int vsdmSenderPort) {
 		this.setSdcIp(sdcIp);
 		this.setSdcPort(sdcPort);
@@ -53,9 +53,9 @@ public class VsdmDepositor implements Runnable {
 	}
 
 	@Autowired
-	public VsdmDepositor(OdeProperties odeProps) {
+	public VsdmDepositorOld(OdeProperties odeProps) {
 		this(odeProps.getSdcIp(), odeProps.getSdcPort(), odeProps.getReturnIp(), odeProps.getReturnPort(),
-				odeProps.getServiceRequestSenderPort(), odeProps.getVsdmSenderPort());
+				odeProps.getForwarderPort(), odeProps.getVsdmSenderPort());
 	}
 
 	@Override
@@ -78,11 +78,6 @@ public class VsdmDepositor implements Runnable {
 			logger.error("ODE: Interrupted Exception", e);
 			Thread.currentThread().interrupt();
 		}
-	}
-
-	public static void publish(String json) {
-		// TODO publishes message to kafka stream
-
 	}
 
 	public String getSdcIp() {

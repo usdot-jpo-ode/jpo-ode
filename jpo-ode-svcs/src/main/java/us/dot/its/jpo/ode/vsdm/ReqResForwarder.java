@@ -40,10 +40,10 @@ public class ReqResForwarder implements Runnable {
 		this.obuReturnPort = obuPort;
 		this.payload = createRequest(request);
 		try {
-			socket = new DatagramSocket(odeProps.getServiceRequestSenderPort());
-			logger.info("ODE: Created depositor Socket with port " + odeProps.getServiceRequestSenderPort());
+			socket = new DatagramSocket(odeProps.getForwarderPort());
+			logger.info("ODE: Created depositor Socket with port " + odeProps.getForwarderPort());
 		} catch (SocketException e) {
-			logger.error("ODE: Error creating socket with port " + odeProps.getServiceRequestSenderPort(), e);
+			logger.error("ODE: Error creating socket with port " + odeProps.getForwarderPort(), e);
 		}
 	}
 
@@ -130,7 +130,9 @@ public class ReqResForwarder implements Runnable {
 	public void run() {
 		send();
 		receiveVsdServiceResponse();
-		if (socket != null)
+		if (socket != null){
+			logger.info("ODE: Closing forwarder socket with port " + odeProps.getForwarderPort());
 			socket.close();
+		}
 	}
 }

@@ -21,7 +21,6 @@ import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
-import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
@@ -44,7 +43,7 @@ public class VsdmReceiver implements Runnable {
 
 	@Autowired
 	public VsdmReceiver(OdeProperties odeProps) {
-		
+
 		this.odeProperties = odeProps;
 
 		try {
@@ -53,7 +52,7 @@ public class VsdmReceiver implements Runnable {
 		} catch (SocketException e) {
 			logger.error("[VSDM Receiver] Error creating socket with port ", odeProperties.getReceiverPort(), e);
 		}
-		
+
 		messageProducerPool = new SerializableMessageProducerPool<>(odeProperties);
 	}
 
@@ -95,10 +94,17 @@ public class VsdmReceiver implements Runnable {
 				logger.info("VSDM RECEIVER - Received ServiceRequest: ", decoded.toString());
 				ServiceRequest request = (ServiceRequest) decoded;
 				ReqResForwarder forwarder = new ReqResForwarder(odeProperties, request, obuIp, obuPort);
-				Thread depositorAgentThread = new Thread(forwarder, "VsdmDepositorAgentThread");
-				depositorAgentThread.start();
+				Thread forwarderThread = new Thread(forwarder, "forwarderThread");
+				forwarderThread.start();
 			} else if (decoded instanceof VehSitDataMessage) {
-				logger.info("VSDM RECEIVER - Received VSDM, publishing to Kafka topic");
+				logger.info("VSDM RECEIVER - Received VSD");
+				
+				logger.info("VSDM RECEIVER - Forwarding VSD to SDC");
+				VsdDepositor depositor = new VsdDepositor(odeProperties, msg);
+				Thread depositorThread = new Thread(depositor, "depositor");
+				depositorThread.start();
+				
+				logger.info("VSDM RECEIVER - Publishing VSD to Kafka topic");
 				publishVsdm(msg);
 				extractAndPublishBsms((VehSitDataMessage) decoded);
 			} else {
@@ -109,17 +115,17 @@ public class VsdmReceiver implements Runnable {
 		}
 
 	}
-	
+
 	private void extractAndPublishBsms(VehSitDataMessage msg) {
-		
+
 		List<BasicSafetyMessage> bsmList = null;
 		try {
-			 bsmList = VsdToBsmConverter.convert(msg);
+			bsmList = VsdToBsmConverter.convert(msg);
 		} catch (Exception e) {
 			logger.error("VSDM RECEIVER - Unable to convert VehSitDataMessage bundle to BSM list.", e);
 			return;
 		}
-		
+
 		for (BasicSafetyMessage entry : bsmList) {
 			try {
 				J2735Bsm convertedBsm = OssBsm.genericBsm(entry);
@@ -131,26 +137,28 @@ public class VsdmReceiver implements Runnable {
 			}
 		}
 	}
-	
-    public void publishBsm(String msg) {
-        MessageProducer
-                .defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
-                .send(odeProperties.getKafkaTopicBsmJSON(), null, msg);
 
-        logger.debug("Published: {}", msg);
-    }
+	public void publishBsm(String msg) {
+		MessageProducer
+				.defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
+				.send(odeProperties.getKafkaTopicBsmJSON(), null, msg);
 
-    public void publishBsm(Asn1Object msg) {
-        MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
-        producer.send(odeProperties.getKafkaTopicBsmSerializedPOJO(), null, new SerializationUtils<J2735Bsm>().serialize((J2735Bsm)msg));
-        messageProducerPool.checkIn(producer);
-    }
+		logger.debug("Published bsm to the topic J2735BsmRawJSON: {}", msg);
+	}
+
+	public void publishBsm(Asn1Object msg) {
+		MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
+		producer.send(odeProperties.getKafkaTopicBsmSerializedPOJO(), null,
+				new SerializationUtils<J2735Bsm>().serialize((J2735Bsm) msg));
+		messageProducerPool.checkIn(producer);
+		logger.debug("Published bsm to the topic J2735Bsm");
+	}
 
 	private void publishVsdm(byte[] data) {
 		MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
 		producer.send(odeProperties.getKafkaTopicVsdm(), null, data);
 		messageProducerPool.checkIn(producer);
-		logger.info("VSDM RECEIVER - Published vsd to kafka...");
+		logger.info("VSDM RECEIVER - Published vsd to the topic J2735Vsdm");
 	}
 
 }

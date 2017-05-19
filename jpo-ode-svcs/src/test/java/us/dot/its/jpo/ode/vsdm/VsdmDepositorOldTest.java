@@ -24,7 +24,7 @@ import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.j2735.semi.VsmType;
 
 @RunWith(JMockit.class)
-public class VsdmDepositorTest {
+public class VsdmDepositorOldTest {
 	private String sdcIp = "104.130.170.234";
 	private int sdcPort = 46753;
 	private int serviceRequestSenderPort = 5556;
@@ -38,46 +38,37 @@ public class VsdmDepositorTest {
 	OdeProperties mockOdeProperties;
 
 	@Test
-	public void tempTest() throws Exception {
+	public void depositVsdToSdcOverIpv6() throws Exception {
 		final double DEFAULT_LAT = 43.394444; // Wyoming lat/lon
 		final double DEFAULT_LON = -107.595;
 		final int port = 12321;
-		DatagramSocket s = new DatagramSocket(port); // on a dual-stack host,
-														// this dual-binds to
-														// IPv6+IPv4
+		
+		DatagramSocket socket = new DatagramSocket(port); 
+		
 		VehSitDataMessage vsdm = CVSampleMessageBuilder.buildVehSitDataMessage(DEFAULT_LAT, DEFAULT_LON);
 		VsmType vsmType = new VsmType(CVTypeHelper.VsmType.VEHSTAT.arrayValue());
 		vsdm.setType(vsmType);
 		byte[] payload = CVSampleMessageBuilder.messageToEncodedBytes(vsdm);
 
-		// send to IPv4 and IPv6 addresses
-		// 2001:4802:7803:104:be76:4eff:fe20:bfb2 >> Didnt work
-		// 104.130.170.234	>> Worked
-		// IPv4 FQDN: sdc2.connectedvcs.com  >> Worked
-		// IPv6 FQDN: sdc6-2.connectedvcs.com
-
 		String dst = "2001:4802:7803:104:be76:4eff:fe20:bfb2";	// SDC IPv6
-		//String dst = "162.242.218.130";  	// ode instance
-		//String dst = "2001:4802:7801:102:be76:4eff:fe20:eb5";  // ode instance
-		//String dst = "2001:4802:7805:101:be76:4eff:fe20:2ba2";	// test instance
 		int dstPort = 46753;
-		System.out.println("Sending to: " + dst);
-		DatagramPacket p = new DatagramPacket(payload, payload.length, new InetSocketAddress(dst, dstPort));
-        //DatagramPacket p = new DatagramPacket(payload, payload.length, InetAddress.getByName(dst), dstPort);
-		s.send(p);
+		
+		System.out.println("Sending to SDC, IP: " + dst + " Port: " + dstPort);
+		DatagramPacket packet = new DatagramPacket(payload, payload.length, new InetSocketAddress(dst, dstPort));
+		socket.send(packet);
 	}
 
 	// Runs end to end testing
 	@Test
 	public void testVsdmDepositor() throws InterruptedException {
-		VsdmDepositor vsdmDepositorThreaded = new VsdmDepositor(sdcIp, sdcPort, returnIp, returnPort,
+		VsdmDepositorOld vsdmDepositorThreaded = new VsdmDepositorOld(sdcIp, sdcPort, returnIp, returnPort,
 				serviceRequestSenderPort, vsdmSenderPort);
 		vsdmDepositorThreaded.run();
 	}
 
 	@Test
 	public void testConstructor1() {
-		VsdmDepositor vsdmDepositor = new VsdmDepositor(sdcIp, sdcPort, returnIp, returnPort, serviceRequestSenderPort,
+		VsdmDepositorOld vsdmDepositor = new VsdmDepositorOld(sdcIp, sdcPort, returnIp, returnPort, serviceRequestSenderPort,
 				vsdmSenderPort);
 		assertEquals(vsdmDepositor.getSdcIp(), sdcIp);
 		assertEquals(vsdmDepositor.getSdcPort(), sdcPort);
@@ -95,7 +86,7 @@ public class VsdmDepositorTest {
 				result = sdcIp;
 				mockOdeProperties.getSdcPort();
 				result = sdcPort;
-				mockOdeProperties.getServiceRequestSenderPort();
+				mockOdeProperties.getForwarderPort();
 				result = serviceRequestSenderPort;
 				mockOdeProperties.getVsdmSenderPort();
 				result = vsdmSenderPort;
@@ -106,7 +97,7 @@ public class VsdmDepositorTest {
 			}
 		};
 
-		VsdmDepositor vsdmDepositor = new VsdmDepositor(mockOdeProperties);
+		VsdmDepositorOld vsdmDepositor = new VsdmDepositorOld(mockOdeProperties);
 		assertEquals(vsdmDepositor.getSdcIp(), sdcIp);
 		assertEquals(vsdmDepositor.getSdcPort(), sdcPort);
 		assertEquals(vsdmDepositor.getReturnIp(), returnIp);

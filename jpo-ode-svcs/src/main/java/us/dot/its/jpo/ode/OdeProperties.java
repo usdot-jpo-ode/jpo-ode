@@ -53,7 +53,7 @@ public class OdeProperties implements EnvironmentAware {
     private int sdcPort;
     private String returnIp = "";
     private int returnPort;
-    private int serviceRequestSenderPort;
+    private int forwarderPort;
     private int vsdmSenderPort;
 
     private String hostId;
@@ -286,12 +286,12 @@ public class OdeProperties implements EnvironmentAware {
 		this.returnPort = returnPort;
 	}
 
-	public int getServiceRequestSenderPort() {
-		return serviceRequestSenderPort;
+	public int getForwarderPort() {
+		return forwarderPort;
 	}
 
-	public void setServiceRequestSenderPort(int serviceRequestSenderPort) {
-		this.serviceRequestSenderPort = serviceRequestSenderPort;
+	public void setForwarderPort(int forwarderPort) {
+		this.forwarderPort = forwarderPort;
 	}
 
 	public int getVsdmSenderPort() {
