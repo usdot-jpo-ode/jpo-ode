@@ -27,7 +27,7 @@ import us.dot.its.jpo.ode.j2735.semi.VsmType;
 public class VsdmDepositorOldTest {
 	private String sdcIp = "104.130.170.234";
 	private int sdcPort = 46753;
-	private int serviceRequestSenderPort = 5556;
+	private int serviceRequestSenderPort = 5555;
 	private int vsdmSenderPort = 6666;
 
 	// The ip and port where the SDC will send the ServiceResponse back
