@@ -47,7 +47,7 @@ public class OdeProperties implements EnvironmentAware {
     private String kafkaTopicVsdm = "topic.J2735Vsdm";
     
     private int receiverPort = 46753;
-    private int vsdmBufferSize = 1000;
+    private int vsdmBufferSize = 500;
     private Boolean vsdmVerboseJson = false;
     private String sdcIp = "";
     private int sdcPort;

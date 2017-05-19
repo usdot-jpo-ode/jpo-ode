@@ -74,10 +74,11 @@ public class VsdmReceiver implements Runnable {
 				logger.info("VSDM RECEIVER - Packet received.");
 				String obuIp = packet.getAddress().getHostAddress();
 				int obuPort = packet.getPort();
+				logger.info("Packet length: {}, Buffer length: {}", packet.getLength(), buffer.length);
 
-				if (buffer.length > 0) {
+				if (packet.getLength() > 0) {
 					logger.info("VSDM RECEIVER - Received data:", buffer);
-					decodeData(buffer, obuIp, obuPort);
+					decodeData(packet.getData(), obuIp, obuPort);
 				}
 			} catch (IOException e) {
 				logger.error("VSDM RECEIVER - Error receiving UDP packet", e);
