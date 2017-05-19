@@ -13,6 +13,7 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -40,7 +41,7 @@ public class VsdmDepositorOldTest {
 	@Injectable
 	OdeProperties mockOdeProperties;
 
-	@Test
+	@Test @Ignore
 	public void depositVsdToSdcOverIpv6() throws Exception {
 		final double DEFAULT_LAT = 43.394444; // Wyoming lat/lon
 		final double DEFAULT_LON = -107.595;
@@ -62,14 +63,14 @@ public class VsdmDepositorOldTest {
 	}
 
 	// Runs end to end testing
-	@Test
+	@Test @Ignore
 	public void testVsdmDepositor() throws InterruptedException {
 		VsdmDepositorOld vsdmDepositorThreaded = new VsdmDepositorOld(sdcIp, sdcPort, returnIp, returnPort,
 				serviceRequestSenderPort, vsdmSenderPort);
 		vsdmDepositorThreaded.run();
 	}
 
-	@Test
+	@Test @Ignore
 	public void testConstructor1() {
 		VsdmDepositorOld vsdmDepositor = new VsdmDepositorOld(sdcIp, sdcPort, returnIp, returnPort,
 				serviceRequestSenderPort, vsdmSenderPort);
@@ -81,7 +82,7 @@ public class VsdmDepositorOldTest {
 		assertEquals(vsdmDepositor.getVsdmSenderPort(), vsdmSenderPort);
 	}
 
-	@Test
+	@Test @Ignore
 	public void testConstructor2() {
 		new Expectations() {
 			{
@@ -109,7 +110,7 @@ public class VsdmDepositorOldTest {
 		assertEquals(vsdmDepositor.getVsdmSenderPort(), vsdmSenderPort);
 	}
 
-	@Test
+	@Test @Ignore
 	public void testReceiveServiceResponse(@Mocked DatagramSocket mockSocket) throws IOException {
 		new Expectations() {
 			{
@@ -122,7 +123,7 @@ public class VsdmDepositorOldTest {
 		vsdmSender.receiveVsdServiceResponse();
 	}
 
-	@Test
+	@Test @Ignore
 	public void testSendVsdMessage(@Mocked DatagramSocket mockSocket) throws IOException {
 		new Expectations() {
 			{

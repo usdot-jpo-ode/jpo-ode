@@ -54,14 +54,15 @@ public class ReqResForwarder implements Runnable {
 
 		if (request.hasDestination()) {
 			logger.info("Received Service Request contains destination field");
-			logger.info("Old destination IP: {} Source Port: {}", this.obuReturnAddr, this.obuReturnPort);
+			logger.info("Old OBU destination IP: {} Source Port: {}", this.obuReturnAddr, this.obuReturnPort);
 			byte[] ipBytes = request.getDestination().getAddress().getIpv4Address().byteArrayValue();
 			this.obuReturnAddr = J2735Util.ipToString(ipBytes);
 			this.obuReturnPort = request.getDestination().getPort().intValue();
-			logger.info("New destination IP: {} Source Port: {}", this.obuReturnAddr, this.obuReturnPort);
+			logger.info("New OBU destination IP: {} Source Port: {}", this.obuReturnAddr, this.obuReturnPort);
 		}
 
 		request.setDestination(newReturnAddr);
+		logger.info("New ODE destination IP: {} Source Port: {}", odeProps.getReturnIp(), odeProps.getReturnPort());
 
 		ByteArrayOutputStream sink = new ByteArrayOutputStream();
 		try {
