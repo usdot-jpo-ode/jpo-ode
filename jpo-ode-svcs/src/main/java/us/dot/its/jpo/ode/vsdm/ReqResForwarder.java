@@ -6,6 +6,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,10 @@ import us.dot.its.jpo.ode.j2735.semi.PortNumber;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
 
+/*
+ * This class receives service request from the OBU and forwards it to the SDC.
+ * It also receives service response from SDC and forwards it back to the OBU.
+ */
 public class ReqResForwarder implements Runnable {
 	private OdeProperties odeProps;
 	private static Coder coder = J2735.getPERUnalignedCoder();
@@ -106,7 +111,8 @@ public class ReqResForwarder implements Runnable {
 				}
 
 				logger.info("ODE: Printing VSD Deposit ServiceResponse {}", response.toString());
-				forwardServiceResponseToObu(buffer);
+				byte[] actualPacket = Arrays.copyOf(responeDp.getData(), responeDp.getLength());
+				forwardServiceResponseToObu(actualPacket);
 				return servResponse;
 			}
 

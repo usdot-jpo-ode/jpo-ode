@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -75,10 +76,10 @@ public class VsdmReceiver implements Runnable {
 				String obuIp = packet.getAddress().getHostAddress();
 				int obuPort = packet.getPort();
 				logger.info("Packet length: {}, Buffer length: {}", packet.getLength(), buffer.length);
-
+				byte[] actualPacket = Arrays.copyOf(packet.getData(), packet.getLength());
 				if (packet.getLength() > 0) {
 					logger.info("VSDM RECEIVER - Received data:", buffer);
-					decodeData(packet.getData(), obuIp, obuPort);
+					decodeData(actualPacket, obuIp, obuPort);
 				}
 			} catch (IOException e) {
 				logger.error("VSDM RECEIVER - Error receiving UDP packet", e);

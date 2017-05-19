@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
 
+/*
+ * This class receives VSD from the OBU and forwards it to the SDC.
+ */
 public class VsdDepositor implements Runnable {
 	private OdeProperties odeProps;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
