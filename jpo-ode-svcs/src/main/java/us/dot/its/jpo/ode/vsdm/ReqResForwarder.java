@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.Arrays;
 
+import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +82,7 @@ public class ReqResForwarder implements Runnable {
 
 	public void send() {
 		try {
+			logger.info("\nODE: Printing ServiceRequest in hex: \n{}\n", Hex.encodeHexString(payload));
 			logger.info("ODE: Sending VSD Deposit ServiceRequest to IP: {} Port: {}", odeProps.getSdcIp(),
 					odeProps.getSdcPort());
 			socket.send(new DatagramPacket(payload, payload.length,
@@ -109,9 +111,9 @@ public class ReqResForwarder implements Runnable {
 					logger.info("ODE: VSD Deposit ServiceResponse Expired");
 					return null;
 				}
-
 				logger.info("ODE: Printing VSD Deposit ServiceResponse {}", response.toString());
 				byte[] actualPacket = Arrays.copyOf(responeDp.getData(), responeDp.getLength());
+				logger.info("\nODE: Printing ServiceResponse in hex: \n{}\n", Hex.encodeHexString(actualPacket));
 				forwardServiceResponseToObu(actualPacket);
 				return servResponse;
 			}
@@ -137,7 +139,7 @@ public class ReqResForwarder implements Runnable {
 	public void run() {
 		send();
 		receiveVsdServiceResponse();
-		if (socket != null){
+		if (socket != null) {
 			logger.info("ODE: Closing forwarder socket with port " + odeProps.getForwarderPort());
 			socket.close();
 		}
