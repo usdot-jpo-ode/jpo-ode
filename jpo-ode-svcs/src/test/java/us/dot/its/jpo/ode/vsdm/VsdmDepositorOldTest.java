@@ -7,7 +7,10 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -42,17 +45,17 @@ public class VsdmDepositorOldTest {
 		final double DEFAULT_LAT = 43.394444; // Wyoming lat/lon
 		final double DEFAULT_LON = -107.595;
 		final int port = 12321;
-		
-		DatagramSocket socket = new DatagramSocket(port); 
-		
+
+		DatagramSocket socket = new DatagramSocket(port);
+
 		VehSitDataMessage vsdm = CVSampleMessageBuilder.buildVehSitDataMessage(DEFAULT_LAT, DEFAULT_LON);
 		VsmType vsmType = new VsmType(CVTypeHelper.VsmType.VEHSTAT.arrayValue());
 		vsdm.setType(vsmType);
 		byte[] payload = CVSampleMessageBuilder.messageToEncodedBytes(vsdm);
 
-		String dst = "2001:4802:7803:104:be76:4eff:fe20:bfb2";	// SDC IPv6
+		String dst = "2001:4802:7803:104:be76:4eff:fe20:bfb2"; // SDC IPv6
 		int dstPort = 46753;
-		
+
 		System.out.println("Sending to SDC, IP: " + dst + " Port: " + dstPort);
 		DatagramPacket packet = new DatagramPacket(payload, payload.length, new InetSocketAddress(dst, dstPort));
 		socket.send(packet);
@@ -68,8 +71,8 @@ public class VsdmDepositorOldTest {
 
 	@Test
 	public void testConstructor1() {
-		VsdmDepositorOld vsdmDepositor = new VsdmDepositorOld(sdcIp, sdcPort, returnIp, returnPort, serviceRequestSenderPort,
-				vsdmSenderPort);
+		VsdmDepositorOld vsdmDepositor = new VsdmDepositorOld(sdcIp, sdcPort, returnIp, returnPort,
+				serviceRequestSenderPort, vsdmSenderPort);
 		assertEquals(vsdmDepositor.getSdcIp(), sdcIp);
 		assertEquals(vsdmDepositor.getSdcPort(), sdcPort);
 		assertEquals(vsdmDepositor.getReturnIp(), returnIp);
