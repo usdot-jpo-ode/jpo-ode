@@ -1,4 +1,4 @@
-1. Run the following command to compile the java file.
+1. Run the following command to compile the java file. 
 javac -classpath .:commons-codec-1.10.jar VsdDepositorToOde.java 
 
 2. Run the following command to run the app.
