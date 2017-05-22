@@ -61,12 +61,15 @@ public class ReqResForwarder implements Runnable {
 		IpAddress ipAddr = new IpAddress();
 		ipAddr.setIpv4Address(new IPv4Address(J2735Util.ipToBytes(odeProps.getReturnIp())));
 		ConnectionPoint newReturnAddr = new ConnectionPoint(ipAddr, new PortNumber(odeProps.getReturnPort()));
-
+		logger.info("ODE: Printing VSD Deposit ServiceRequest {}", request.toString());
 		if (request.hasDestination()) {
 			logger.info("Received Service Request contains destination field");
 			logger.info("Old OBU destination IP: {} Source Port: {}", this.obuReturnAddr, this.obuReturnPort);
-			byte[] ipBytes = request.getDestination().getAddress().getIpv4Address().byteArrayValue();
-			this.obuReturnAddr = J2735Util.ipToString(ipBytes);
+			if(request.getDestination().hasAddress()){
+				byte[] ipBytes = request.getDestination().getAddress().getIpv4Address().byteArrayValue();
+				this.obuReturnAddr = J2735Util.ipToString(ipBytes);
+			}
+				
 			this.obuReturnPort = request.getDestination().getPort().intValue();
 			logger.info("New OBU destination IP: {} Source Port: {}", this.obuReturnAddr, this.obuReturnPort);
 		}
