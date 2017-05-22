@@ -79,9 +79,9 @@ public class VsdmReceiver implements Runnable {
 				String obuIp = packet.getAddress().getHostAddress();
 				int obuPort = packet.getPort();
 				SocketAddress sockAddr = packet.getSocketAddress();
-				System.out.println("Socket Address: " + sockAddr.toString());
+				logger.info("Socket Address: {}", sockAddr.toString());
 				InetAddress inet6Addr = Inet6Address.getByName(obuIp);
-				System.out.println("Inet6 Address: " + inet6Addr.toString());
+				logger.info("Inet6 Address: {}", inet6Addr.toString());
 				logger.info("Packet length: {}, Buffer length: {}", packet.getLength(), buffer.length);
 				byte[] actualPacket = Arrays.copyOf(packet.getData(), packet.getLength());
 				if (packet.getLength() > 0) {
