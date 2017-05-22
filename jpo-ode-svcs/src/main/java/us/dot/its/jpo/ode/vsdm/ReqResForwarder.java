@@ -39,6 +39,10 @@ public class ReqResForwarder implements Runnable {
 	private byte[] payload;
 	private String obuReturnAddr;
 	private int obuReturnPort;
+	
+	public byte[] getPayload(){
+		return this.payload;
+	}
 
 	public ReqResForwarder(OdeProperties odeProps, ServiceRequest request, String obuIp, int obuPort) {
 		this.odeProps = odeProps;
