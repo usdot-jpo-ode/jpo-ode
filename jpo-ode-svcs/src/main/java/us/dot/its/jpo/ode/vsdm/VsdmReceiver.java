@@ -3,6 +3,9 @@ package us.dot.its.jpo.ode.vsdm;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.util.Arrays;
 import java.util.List;
@@ -75,6 +78,10 @@ public class VsdmReceiver implements Runnable {
 				logger.info("VSDM RECEIVER - Packet received.");
 				String obuIp = packet.getAddress().getHostAddress();
 				int obuPort = packet.getPort();
+				SocketAddress sockAddr = packet.getSocketAddress();
+				System.out.println("Socket Address: " + sockAddr.toString());
+				InetAddress inet6Addr = Inet6Address.getByName(obuIp);
+				System.out.println("Inet6 Address: " + inet6Addr.toString());
 				logger.info("Packet length: {}, Buffer length: {}", packet.getLength(), buffer.length);
 				byte[] actualPacket = Arrays.copyOf(packet.getData(), packet.getLength());
 				if (packet.getLength() > 0) {
