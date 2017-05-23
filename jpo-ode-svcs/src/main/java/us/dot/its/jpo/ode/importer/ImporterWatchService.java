@@ -155,12 +155,10 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
                         processFile(filename);
                     } catch (Exception e) {
                         logger.error("IMPORTER - Error processing file: " + filename, e);
-                        return;
                     }
                 } else {
                     logger.error("Unhandled watch event kind: {}", event.kind());
                 }
-                 
             }
             
             boolean valid = wk.reset();
