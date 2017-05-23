@@ -12,18 +12,19 @@ import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class VsdmReceiverConstructorTest {
 
 	@Test
 	public void testConstructorSuccess(@Injectable OdeProperties mockOdeProps,
-			@Mocked final SerializableMessageProducerPool<?, ?> mockSerializableMessageProducerPool) {
+			@Mocked final SerializableMessageProducerPool<?, ?> mockSerializableMessageProducerPool, @Mocked final MessageProducer mockMessageProducer) {
 		VsdmReceiver testrec = new VsdmReceiver(mockOdeProps);
 	}
 
 	@Test
 	public void testConstructorError(@Injectable OdeProperties mockOdeProps, @Mocked DatagramSocket mockDatagramSocket,
-			@Mocked final SerializableMessageProducerPool<?, ?> mockSerializableMessageProducerPool) {
+			@Mocked final SerializableMessageProducerPool<?, ?> mockSerializableMessageProducerPool, @Mocked final MessageProducer mockMessageProducer) {
 		try {
 			new Expectations() {
 				{

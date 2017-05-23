@@ -16,23 +16,28 @@ import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 @RunWith(JMockit.class)
 public class VsdmReceiverTest {
-	
+
 	@Tested
 	VsdmReceiver testVsdmReceiver;
-	
+
 	@Injectable
 	OdeProperties mockOdeProperties;
 
 	@Test
-	public void testRunError(@Mocked final DatagramSocket mockDatagramSocket, @Mocked final SerializableMessageProducerPool mockSmpp) {
+	public void testRunError(@Mocked final DatagramSocket mockDatagramSocket,
+			@Mocked final SerializableMessageProducerPool mockSmpp,
+			@Mocked final MessageProducer mockMessageProducer) {
 		try {
-			new Expectations() {{
-				mockDatagramSocket.receive((DatagramPacket) any);
-				result = new IOException();
-			}};
+			new Expectations() {
+				{
+					mockDatagramSocket.receive((DatagramPacket) any);
+					result = new IOException();
+				}
+			};
 		} catch (IOException e) {
 			fail("Unexpected exception in expectations block.");
 		}

@@ -46,6 +46,7 @@ public class VsdmReceiver implements Runnable {
 	private OdeProperties odeProperties;
 
 	private SerializableMessageProducerPool<String, byte[]> messageProducerPool;
+	private MessageProducer<String, String> bsmProducer;
 
 	@Autowired
 	public VsdmReceiver(OdeProperties odeProps) {
@@ -60,6 +61,11 @@ public class VsdmReceiver implements Runnable {
 		}
 
 		messageProducerPool = new SerializableMessageProducerPool<>(odeProperties);
+
+		// Create a String producer for hex BSMs
+		bsmProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
+				odeProperties.getKafkaProducerType());
+
 	}
 
 	@Override
@@ -110,12 +116,12 @@ public class VsdmReceiver implements Runnable {
 				forwarderThread.start();
 			} else if (decoded instanceof VehSitDataMessage) {
 				logger.info("VSDM RECEIVER - Received VSD");
-				
+
 				logger.info("VSDM RECEIVER - Forwarding VSD to SDC");
 				VsdDepositor depositor = new VsdDepositor(odeProperties, msg);
 				Thread depositorThread = new Thread(depositor, "depositor");
 				depositorThread.start();
-				
+
 				logger.info("VSDM RECEIVER - Publishing VSD to Kafka topic");
 				publishVsdm(msg);
 				extractAndPublishBsms((VehSitDataMessage) decoded);
@@ -150,14 +156,12 @@ public class VsdmReceiver implements Runnable {
 	}
 
 	public void publishBsm(String msg) {
-		MessageProducer
-				.defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
-				.send(odeProperties.getKafkaTopicBsmJSON(), null, msg);
-
+		bsmProducer.send(odeProperties.getKafkaTopicBsmJSON(), null, msg);
 		logger.debug("Published bsm to the topic J2735BsmRawJSON: {}", msg);
 	}
 
 	public void publishBsm(Asn1Object msg) {
+		
 		MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
 		producer.send(odeProperties.getKafkaTopicBsmSerializedPOJO(), null,
 				new SerializationUtils<J2735Bsm>().serialize((J2735Bsm) msg));
