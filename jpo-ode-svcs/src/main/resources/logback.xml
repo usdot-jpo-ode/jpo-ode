@@ -6,7 +6,8 @@
 		<file>ode.log</file>
 		<append>true</append>
 		<encoder>
-			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
+			<!-- <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern> -->
+			<pattern>%date{"yyyy-MM-ddTHH:mm:ss", UTC} [%thread] %-5level %logger{0} - %msg %n</pattern>
 		</encoder>
 	</appender>
 
@@ -14,14 +15,13 @@
 		<file>Events.log</file>
 		<append>true</append>
 		<encoder>
-			<pattern>%date{"HH:mm:ss", UTC} [%thread] %-5level %logger{35} - %msg %n</pattern>
+			<pattern>%date{"yyyy-MM-ddTHH:mm:ss", UTC} [%thread] %-5level %logger{0} - %msg %n</pattern>
 		</encoder>
 	</appender>
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>%-4relative [%thread] %-5level %logger{50} - %msg %n
-			</pattern>
+			<pattern>%date{"yyyy-MM-ddTHH:mm:ss", UTC} [%thread] %-5level %logger{0} - %msg %n</pattern>
 		</encoder>
 	</appender>
 	
@@ -29,7 +29,7 @@
 		<file>SNMP_Error.log</file>
 		<append>true</append>
 		<encoder>
-			<pattern>%date{"HH:mm:ss", UTC} [%thread] %-5level %logger{35} - %msg %n</pattern>
+			<pattern>%date{"yyyy-MM-ddTHH:mm:ss", UTC} [%thread] %-5level %logger{0} - %msg %n</pattern>
 		</encoder>
 	</appender>
 

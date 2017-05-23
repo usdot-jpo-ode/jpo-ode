@@ -19,10 +19,11 @@ public class RawBsmExporter extends Exporter {
 
     @Override
     protected void subscribe() {
-        setConsumer(MessageConsumer.defaultByteArrayMessageConsumer(odeProperties.getKafkaBrokers(),
-                odeProperties.getHostId() + this.getClass().getSimpleName(),
-                new StompByteArrayMessageDistributor(template, getTopic())));
-        
-        getConsumer().subscribe(odeProperties.getKafkaTopicBsmSerializedPojo());
+        setConsumer(MessageConsumer.defaultStringMessageConsumer(
+                odeProperties.getKafkaBrokers(),
+                odeProperties.getHostId() + this.getClass().getSimpleName(), 
+                new StompStringMessageDistributor(template, getTopic())));
+
+        getConsumer().subscribe(odeProperties.getKafkaTopicBsmRawJson());
     }
 }
