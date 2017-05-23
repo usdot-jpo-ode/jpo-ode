@@ -10,6 +10,8 @@ import java.net.SocketException;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.xml.bind.DatatypeConverter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +101,7 @@ public class VsdmReceiver implements Runnable {
 		try {
 			AbstractData decoded = J2735Util.decode(coder, msg);
 			logger.info("VSDM RECEIVER - Decoded the message");
+			logger.info("VSDM RECEIVER - Decoded message in HexBinary: {}", DatatypeConverter.printHexBinary(msg));
 			if (decoded instanceof ServiceRequest) {
 				logger.info("VSDM RECEIVER - Received ServiceRequest: ", decoded.toString());
 				ServiceRequest request = (ServiceRequest) decoded;
@@ -117,16 +120,15 @@ public class VsdmReceiver implements Runnable {
 				publishVsdm(msg);
 				extractAndPublishBsms((VehSitDataMessage) decoded);
 			} else {
-				logger.error("[VSDM Receiver] Error, unknown message type received.");
+				logger.error("[VSDM Receiver] Error, unknown message type received {}", decoded.getClass());
 			}
 		} catch (DecodeFailedException | DecodeNotSupportedException e) {
-			logger.error("[VSDM Receiver] Error, unable to decode UDP message", e);
+			logger.error("[VSDM Receiver] Error, unable to decode UDP message {}", e);
 		}
 
 	}
 
 	private void extractAndPublishBsms(VehSitDataMessage msg) {
-
 		List<BasicSafetyMessage> bsmList = null;
 		try {
 			bsmList = VsdToBsmConverter.convert(msg);
