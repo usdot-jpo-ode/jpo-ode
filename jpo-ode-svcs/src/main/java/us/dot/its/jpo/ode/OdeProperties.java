@@ -51,8 +51,7 @@ public class OdeProperties implements EnvironmentAware {
     private Boolean vsdmVerboseJson = false;
     private String sdcIp = "104.130.170.234";
     private int sdcPort = 46753;
-    private String returnIp = "";
-    private int returnPort = 5555;
+    private String returnIp = "162.242.218.130";
     private int forwarderPort = 5555;
     private int vsdmSenderPort = 6666;
 
@@ -282,10 +281,6 @@ public class OdeProperties implements EnvironmentAware {
 		this.forwarderPort = forwarderPort;
 	}
 
-    public void setReturnPort(int returnPort) {
-        this.returnPort = returnPort;
-    }
-
 	public String getKafkaTopicVsdm() {
 		return kafkaTopicVsdm;
 	}
@@ -312,10 +307,6 @@ public class OdeProperties implements EnvironmentAware {
 
     public void setKafkaTopicBsmRawJson(String kafkaTopicBsmRawJson) {
         this.kafkaTopicBsmRawJson = kafkaTopicBsmRawJson;
-    }
-
-    public int getReturnPort() {
-        return returnPort;
     }
 
     public void setKafkaTopicVsdm(String kafkaTopicVsdm) {

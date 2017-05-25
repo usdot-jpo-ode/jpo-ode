@@ -60,7 +60,7 @@ public class ReqResForwarder implements Runnable {
 	public byte[] createRequest(ServiceRequest request) {
 		IpAddress ipAddr = new IpAddress();
 		ipAddr.setIpv4Address(new IPv4Address(J2735Util.ipToBytes(odeProps.getReturnIp())));
-		ConnectionPoint newReturnAddr = new ConnectionPoint(ipAddr, new PortNumber(odeProps.getReturnPort()));
+		ConnectionPoint newReturnAddr = new ConnectionPoint(ipAddr, new PortNumber(odeProps.getForwarderPort()));
 		logger.info("ODE: Printing VSD Deposit ServiceRequest {}", request.toString());
 		if (request.hasDestination()) {
 			logger.info("Received Service Request contains destination field");
@@ -75,7 +75,7 @@ public class ReqResForwarder implements Runnable {
 		}
 
 		request.setDestination(newReturnAddr);
-		logger.info("New ODE destination IP: {} Source Port: {}", odeProps.getReturnIp(), odeProps.getReturnPort());
+		logger.info("New ODE destination IP: {} Source Port: {}", odeProps.getReturnIp(), odeProps.getForwarderPort());
 
 		ByteArrayOutputStream sink = new ByteArrayOutputStream();
 		try {

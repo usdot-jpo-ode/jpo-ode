@@ -10,7 +10,6 @@ import java.net.DatagramSocket;
 import org.apache.commons.codec.binary.Hex;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -24,11 +23,8 @@ import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.CVSampleMessageBuilder;
-import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.semi.ConnectionPoint;
-import us.dot.its.jpo.ode.j2735.semi.IPv4Address;
-import us.dot.its.jpo.ode.j2735.semi.IpAddress;
 import us.dot.its.jpo.ode.j2735.semi.PortNumber;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 
@@ -54,7 +50,7 @@ public class ReqResForwarderTest {
 				mockOdeProperties.getReturnIp();
 				result = "3.3.3.3";
 
-				mockOdeProperties.getReturnPort();
+				mockOdeProperties.getForwarderPort();
 				result = forwarderPort;
 
 				mockOdeProperties.getForwarderPort();
@@ -66,7 +62,6 @@ public class ReqResForwarderTest {
 		ConnectionPoint newReturnAddr = new ConnectionPoint();
 		newReturnAddr.setPort(new PortNumber(12321));
 		req.setDestination(newReturnAddr);
-		//ServiceRequest req = CVSampleMessageBuilder.buildVehicleSituationDataServiceRequest("4.4.4.4", 12345);
 		
 		Coder coder = J2735.getPERUnalignedCoder();
 		ByteArrayOutputStream sink = new ByteArrayOutputStream();
@@ -87,10 +82,10 @@ public class ReqResForwarderTest {
 	@After
 	public void tearDown() throws Exception {
 		forwarder = null;
-		System.out.println("Testing ended");
+		System.out.println("ReqResForwarder Test ended");
 	}
 
-	@Test @Ignore
+	@Test
 	public void testSend() throws IOException {
 		new Expectations() {
 			{	
@@ -106,7 +101,7 @@ public class ReqResForwarderTest {
 		forwarder.send();
 	}
 	
-	@Test @Ignore
+	@Test
 	public void testReceive() throws IOException {
 		new Expectations() {
 			{
@@ -115,9 +110,4 @@ public class ReqResForwarderTest {
 		};
 		forwarder.receiveVsdServiceResponse();
 	}
-	
-	@Test
-	public void testTest() throws IOException {
-	}
-
 }
