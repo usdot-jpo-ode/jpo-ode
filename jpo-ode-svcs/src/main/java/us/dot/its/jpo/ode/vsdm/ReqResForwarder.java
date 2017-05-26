@@ -39,10 +39,7 @@ public class ReqResForwarder implements Runnable {
 	private byte[] payload;
 	private String obuReturnAddr;
 	private int obuReturnPort;
-	
-	public byte[] getPayload(){
-		return this.payload;
-	}
+
 
 	public ReqResForwarder(OdeProperties odeProps, ServiceRequest request, String obuIp, int obuPort) {
 		this.odeProps = odeProps;
@@ -51,37 +48,45 @@ public class ReqResForwarder implements Runnable {
 		this.payload = createRequest(request);
 		try {
 			socket = new DatagramSocket(odeProps.getForwarderPort());
-			logger.info("ODE: Created depositor Socket with port " + odeProps.getForwarderPort());
+			logger.debug("Created depositor Socket with port " + odeProps.getForwarderPort());
 		} catch (SocketException e) {
-			logger.error("ODE: Error creating socket with port " + odeProps.getForwarderPort(), e);
+			logger.error("Error creating socket with port " + odeProps.getForwarderPort(), e);
 		}
+	}
+	
+	public byte[] getPayload(){
+		return this.payload;
 	}
 
 	public byte[] createRequest(ServiceRequest request) {
 		IpAddress ipAddr = new IpAddress();
 		ipAddr.setIpv4Address(new IPv4Address(J2735Util.ipToBytes(odeProps.getReturnIp())));
 		ConnectionPoint newReturnAddr = new ConnectionPoint(ipAddr, new PortNumber(odeProps.getForwarderPort()));
-		logger.info("ODE: Printing VSD Deposit ServiceRequest {}", request.toString());
 		if (request.hasDestination()) {
-			logger.info("Received Service Request contains destination field");
-			logger.info("Old OBU destination IP: {} Source Port: {}", this.obuReturnAddr, this.obuReturnPort);
+			logger.debug("Service Request contains destination field");
+			logger.debug("Old OBU destination IP: {} Source Port: {}", this.obuReturnAddr, this.obuReturnPort);
 			if(request.getDestination().hasAddress()){
-				byte[] ipBytes = request.getDestination().getAddress().getIpv4Address().byteArrayValue();
+				byte[] ipBytes = null;
+				if(request.getDestination().getAddress().hasIpv4Address())
+					ipBytes = request.getDestination().getAddress().getIpv4Address().byteArrayValue();
+				else if(request.getDestination().getAddress().hasIpv6Address())
+					ipBytes = request.getDestination().getAddress().getIpv6Address().byteArrayValue();
+				
 				this.obuReturnAddr = J2735Util.ipToString(ipBytes);
 			}
 				
 			this.obuReturnPort = request.getDestination().getPort().intValue();
-			logger.info("New OBU destination IP: {} Source Port: {}", this.obuReturnAddr, this.obuReturnPort);
+			logger.debug("New OBU destination IP: {} Source Port: {}", this.obuReturnAddr, this.obuReturnPort);
 		}
 
 		request.setDestination(newReturnAddr);
-		logger.info("New ODE destination IP: {} Source Port: {}", odeProps.getReturnIp(), odeProps.getForwarderPort());
+		logger.debug("New ODE destination IP: {} Source Port: {}", odeProps.getReturnIp(), odeProps.getForwarderPort());
 
 		ByteArrayOutputStream sink = new ByteArrayOutputStream();
 		try {
 			coder.encode(request, sink);
 		} catch (EncodeFailedException | EncodeNotSupportedException e) {
-			logger.error("ODE: Error Encoding VSD Deposit ServiceRequest", e);
+			logger.error("Error Encoding VSD ServiceRequest", e);
 		}
 
 		return sink.toByteArray();
@@ -89,56 +94,53 @@ public class ReqResForwarder implements Runnable {
 
 	public void send() {
 		try {
-			logger.info("\nODE: Printing ServiceRequest in hex: \n{}\n", Hex.encodeHexString(payload));
-			logger.info("ODE: Sending VSD Deposit ServiceRequest to IP: {} Port: {}", odeProps.getSdcIp(),
+			logger.debug("\nModified ServiceRequest in hex: \n{}\n", Hex.encodeHexString(payload));
+			logger.debug("Sending VSD ServiceRequest to SDC IP: {} Port: {}", odeProps.getSdcIp(),
 					odeProps.getSdcPort());
 			socket.send(new DatagramPacket(payload, payload.length,
 					new InetSocketAddress(odeProps.getSdcIp(), odeProps.getSdcPort())));
 		} catch (IOException e) {
-			logger.error("ODE: Error Sending VSD Deposit ServiceRequest", e);
+			logger.error("Error Sending VSD ServiceRequest", e);
 		}
 	}
 
 	public ServiceResponse receiveVsdServiceResponse() {
 		try {
 			byte[] buffer = new byte[odeProps.getVsdmBufferSize()];
-			logger.info("ODE: Waiting for VSD deposit ServiceResponse...");
+			logger.debug("Waiting for VSD ServiceResponse from SDC...");
 			DatagramPacket responeDp = new DatagramPacket(buffer, buffer.length);
 			socket.receive(responeDp);
-
-			logger.info("ODE: Received VSD Deposit ServiceResponse");
 
 			if (buffer.length <= 0)
 				return null;
 
 			AbstractData response = J2735Util.decode(coder, buffer);
+			logger.debug("Received VSD ServiceResponse {}", response.toString());
 			if (response instanceof ServiceResponse) {
 				ServiceResponse servResponse = (ServiceResponse) response;
 				if (J2735Util.isExpired(servResponse.getExpiration())) {
-					logger.info("ODE: VSD Deposit ServiceResponse Expired");
+					logger.info("VSD ServiceResponse Expired");
 					return null;
 				}
-				logger.info("ODE: Printing VSD Deposit ServiceResponse {}", response.toString());
 				byte[] actualPacket = Arrays.copyOf(responeDp.getData(), responeDp.getLength());
-				logger.info("\nODE: Printing ServiceResponse in hex: \n{}\n", Hex.encodeHexString(actualPacket));
+				logger.debug("\nServiceResponse in hex: \n{}\n", Hex.encodeHexString(actualPacket));
 				forwardServiceResponseToObu(actualPacket);
 				return servResponse;
 			}
 
 		} catch (Exception e) {
-			logger.error("ODE: Error Receiving VSD Deposit ServiceResponse", e);
+			logger.error("Error Receiving VSD Deposit ServiceResponse", e);
 		}
 		return null;
 	}
 
 	public void forwardServiceResponseToObu(byte[] response) {
 		try {
-			logger.info("Obu IP: {} and ObuPort: {}", this.obuReturnAddr, this.obuReturnPort);
-			logger.info("ODE: Sending VSD Deposit ServiceResponse to OBU ...");
+			logger.debug("Sending VSD ServiceResponse to OBU IP: {} and ObuPort: {}", this.obuReturnAddr, this.obuReturnPort);
 			socket.send(new DatagramPacket(response, response.length,
 					new InetSocketAddress(this.obuReturnAddr, this.obuReturnPort)));
 		} catch (IOException e) {
-			logger.error("ODE: Error Sending VSD Deposit ServiceRequest", e);
+			logger.error("Error Sending VSD ServiceResponse", e);
 		}
 	}
 
@@ -147,7 +149,7 @@ public class ReqResForwarder implements Runnable {
 		send();
 		receiveVsdServiceResponse();
 		if (socket != null) {
-			logger.info("ODE: Closing forwarder socket with port " + odeProps.getForwarderPort());
+			logger.debug("Closing forwarder socket with port " + odeProps.getForwarderPort());
 			socket.close();
 		}
 	}
