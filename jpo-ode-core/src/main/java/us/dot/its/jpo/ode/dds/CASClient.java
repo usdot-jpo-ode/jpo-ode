@@ -74,15 +74,10 @@ public class CASClient {
          casClient.ddsCasUrl = ddsCasUrl;
          casClient.ddsCasUsername = ddsCasUsername;
          casClient.ddsCasPassword = ddsCasPassword;
-         logger.info("Before calling HttpClientFactory.build");
          casClient.httpClientFactory = HttpClientFactory.build(sslContext);
-         logger.info("After calling HttpClientFactory.build");
-
       } catch (Exception e) {
-    	 logger.error("Exception inside configure method", e);
          throw casClient.new CASException(e);
       }
-      logger.info("Returning casClient");
       return casClient;
    }
 

@@ -1,23 +1,17 @@
 package us.dot.its.jpo.ode.dds;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
 import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
-import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsRequest.SystemName;
 import us.dot.its.jpo.ode.model.OdeRequest;
-import us.dot.its.jpo.ode.model.OdeRequestType;
 import us.dot.its.jpo.ode.model.OdeRequest.DataSource;
+import us.dot.its.jpo.ode.model.OdeRequestType;
 
 /**
  * Test set for DdsRequestManager static methods

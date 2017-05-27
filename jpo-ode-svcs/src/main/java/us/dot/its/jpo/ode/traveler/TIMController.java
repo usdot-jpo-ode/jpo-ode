@@ -60,7 +60,6 @@ public class TIMController {
 
     @ResponseBody
     @RequestMapping(value = "/tim", method = RequestMethod.POST, produces = "application/json")
-    public String timMessage(@RequestBody String jsonString) throws BadRequestException {
     @CrossOrigin
     public String timMessage(@RequestBody String jsonString) {
        logger.debug("Received request: {}", jsonString);

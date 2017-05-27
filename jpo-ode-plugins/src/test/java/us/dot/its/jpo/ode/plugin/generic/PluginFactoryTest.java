@@ -4,15 +4,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mockit.Mocked;
 import mockit.Verifications;
+import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.plugin.OdePlugin;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder;
 
+
+@RunWith(JMockit.class)
 public class PluginFactoryTest {
 
 	@Mocked(stubOutClassInitialization = true)
@@ -37,11 +41,12 @@ public class PluginFactoryTest {
 		};
 	}
 
-	@Test
-	public void testException(@Mocked Logger logger, @Mocked(stubOutClassInitialization = true) final Thread thread)
+
+	@Test(expected = ClassNotFoundException.class)
+	public void testException(@Mocked Logger logger)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 
-		String coderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder";
+		String coderClassName = "bogus.BogusClass";
 
 		OdePlugin result = PluginFactory.getPluginByName(coderClassName);
 		assertNotNull(result);

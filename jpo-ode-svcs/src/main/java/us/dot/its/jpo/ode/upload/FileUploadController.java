@@ -39,9 +39,7 @@ public class FileUploadController {
     private static Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
     private final StorageService storageService;
-    private ExecutorService bsmImporter;
-    private ExecutorService messageFrameImporter;
-    private ExecutorService bsmExporter;
+    private OdeProperties odeProperties;
 
     @Autowired
     public FileUploadController(StorageService storageService, OdeProperties odeProperties,
@@ -50,10 +48,6 @@ public class FileUploadController {
         this.odeProperties = odeProperties;
         this.storageService = storageService;
 
-        bsmImporter = Executors.newSingleThreadExecutor();
-        messageFrameImporter = Executors.newSingleThreadExecutor();
-        bsmExporter = Executors.newSingleThreadExecutor();
-        
         Path bsmPath = Paths.get(odeProperties.getUploadLocationRoot(), odeProperties.getUploadLocationBsm());
         logger.debug("UPLOADER - Bsm directory: {}", bsmPath);
         
