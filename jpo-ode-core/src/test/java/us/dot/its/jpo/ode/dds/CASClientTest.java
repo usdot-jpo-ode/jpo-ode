@@ -1,24 +1,23 @@
 package us.dot.its.jpo.ode.dds;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import mockit.*;
-import mockit.integration.junit4.JMockit;
-
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.core.Response.Status;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.Verifications;
+import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.dds.CASClient.CASException;
 import us.dot.its.jpo.ode.wrapper.HttpClientFactory;
 import us.dot.its.jpo.ode.wrapper.HttpClientFactory.HttpClient;
@@ -27,26 +26,17 @@ import us.dot.its.jpo.ode.wrapper.HttpClientFactory.HttpResponse;
 
 @RunWith(JMockit.class)
 public class CASClientTest {
-	private static final Logger logger = LoggerFactory
-	         .getLogger(CASClient.class);
-	
-//   @Mocked(stubOutClassInitialization = true)
-//   final HttpClientFactory unused = null;
-	
-	@Mocked
-	HttpClientFactory mockHttpClientFactory;
-
-   @Mocked
-   SSLContext sslContext;
-
-   @Mocked
-   String webSocketURL;
-
+	@Mocked HttpClientFactory mockHttpClientFactory;
+   @Mocked SSLContext sslContext;
+   @Mocked private HttpResponse mockResponse;
+   @Mocked private Pattern mockPattern;
+   @Mocked private Matcher mockMatcher;
+   
    String casUser = "testUser";
    String casPass = "testPass";
    String casUrl = "testUrl";
 
-   @Test @Ignore
+   @Test
    public void testConfigure() {
       CASClient casClient = null;
       try {
@@ -58,8 +48,8 @@ public class CASClientTest {
       assertEquals(casClient.getDdsCasUsername(), casUser);
    }
 
-   @Test(expected = CASException.class) @Ignore
-   public void testConfigureException(@Mocked HttpClientFactory mockHttpClientFactory)
+   @Test(expected = CASException.class)
+   public void testConfigureException()
          throws CASException, HttpException {
       new Expectations() {
          {
@@ -71,13 +61,8 @@ public class CASClientTest {
    }
 
    @SuppressWarnings("unchecked")
-   @Test @Ignore
-   public void testLogin(
-         @Mocked HttpResponse mockResponse,
-         @Mocked Pattern mockPattern,
-         @Mocked Matcher mockMatcher,
-         @Mocked HttpClientFactory mockHttpClientFactory,
-         @Mocked Map.Entry<String, String> entry) throws HttpException {
+   @Test
+   public void testLogin() throws HttpException {
       String websocketURL = "wss://url.websocket.com";
       Map<String, String> cookies = new ConcurrentHashMap<String, String>();
       cookies.put("JSESSIONID", "1bif45f-testSessionId");
@@ -138,8 +123,8 @@ public class CASClientTest {
       };
    }
 
-   @Test(expected = CASException.class) @Ignore
-   public void testLoginExceptionInGetTicket1(@Mocked HttpResponse mockResponse) throws HttpException, CASException {
+   @Test(expected = CASException.class)
+   public void testLoginExceptionInGetTicket1() throws HttpException, CASException {
       String websocketURL = "wss://url.websocket.com";
       Map<String, String> cookies = new ConcurrentHashMap<String, String>();
       cookies.put("JSESSIONID", "1bif45f-testSessionId");
@@ -156,11 +141,8 @@ public class CASClientTest {
       casClient.login(websocketURL);
    }
 
-   @Test(expected = CASException.class) @Ignore
-   public void testLoginExceptionInGetTicket2(
-         @Mocked HttpResponse mockResponse,
-         @Mocked Pattern mockPattern,
-         @Mocked Matcher mockMatcher) throws HttpException, CASException {
+   @Test(expected = CASException.class)
+   public void testLoginExceptionInGetTicket2() throws HttpException, CASException {
       String websocketURL = "wss://url.websocket.com";
       Map<String, String> cookies = new ConcurrentHashMap<String, String>();
       cookies.put("JSESSIONID", "1bif45f-testSessionId");
@@ -187,10 +169,8 @@ public class CASClientTest {
    }
 
    @Test(expected = CASException.class)
-   public void testLoginExceptionInGetServiceTicket(
-         @Mocked HttpResponse mockResponse,
-         @Mocked Pattern mockPattern,
-         @Mocked Matcher mockMatcher) throws HttpException, CASException {
+   public void testLoginExceptionInGetServiceTicket() 
+         throws HttpException, CASException {
       String websocketURL = "wss://url.websocket.com";
       Map<String, String> cookies = new ConcurrentHashMap<String, String>();
       cookies.put("JSESSIONID", "1bif45f-testSessionId");
@@ -223,35 +203,25 @@ public class CASClientTest {
       casClient.login(websocketURL);
    }
 
-   @SuppressWarnings("unchecked")
+
    @Test(expected = CASException.class)
-   public void testLoginExceptionInGetServiceCall(
-         @Mocked HttpResponse mockResponse,
-         @Mocked Pattern mockPattern,
-         @Mocked Matcher mockMatcher) throws HttpException, CASException {
+   public void testLoginExceptionInGetServiceCall() 
+               throws HttpException, CASException {
       String websocketURL = "wss://url.websocket.com";
       Map<String, String> cookies = new ConcurrentHashMap<String, String>();
       cookies.put("JSESSIONID", "1bif45f-testSessionId");
-     // new Expectations(Pattern.class) {
-      new Expectations() {
+      new Expectations(Pattern.class) {
          {
-//            mockHttpClient.post(anyString, (Map<String, String>) any, (ConcurrentHashMap<String, String>) any,
-//                  anyString);
-//            result = mockResponse;
-//
-//            mockHttpClient.get(anyString, (Map<String, String>) any, (Map<String, String>) any);
-//            result = mockResponse;
-
             mockResponse.getStatusCode();
             result = Status.CREATED;
             result = Status.OK;
             result = Status.BAD_REQUEST;
 
-//            Pattern.compile(anyString);
-//            result = mockPattern;
-//            
-//            mockPattern.matcher(anyString);
-//            result = mockMatcher;
+            Pattern.compile(anyString);
+            result = mockPattern;
+            
+            mockPattern.matcher(anyString);
+            result = mockMatcher;
 
             mockMatcher.matches();
             result = true;
