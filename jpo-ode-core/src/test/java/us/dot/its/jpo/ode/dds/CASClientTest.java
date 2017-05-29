@@ -313,7 +313,7 @@ Tests run: 26, Failures: 0, Errors: 17, Skipped: 0
       String websocketURL = "wss://url.websocket.com";
       Map<String, String> cookies = new ConcurrentHashMap<String, String>();
       cookies.put("JSESSIONID", "1bif45f-testSessionId");
-      new Expectations(Pattern.class) {
+      new Expectations() {
          {
             mockResponse.getStatusCode();
             result = Status.CREATED;
@@ -399,7 +399,7 @@ Tests run: 26, Failures: 0, Errors: 17, Skipped: 0
       String websocketURL = "wss://url.websocket.com";
       Map<String, String> cookies = new ConcurrentHashMap<String, String>();
       cookies.put("JSESSIONID", "1bif45f-testSessionId");
-      new Expectations(Pattern.class) {
+      new Expectations() {
          {
             mockResponse.getStatusCode();
             result = Status.CREATED;
@@ -433,7 +433,7 @@ Tests run: 26, Failures: 0, Errors: 17, Skipped: 0
       String websocketURL = "wss://url.websocket.com";
       Map<String, String> cookies = new ConcurrentHashMap<String, String>();
       cookies.put("JSESSIONID", "1bif45f-testSessionId");
-      new Expectations(Pattern.class) {
+      new Expectations() {
          {
             mockResponse.getStatusCode();
             result = Status.CREATED;
@@ -475,7 +475,7 @@ Tests run: 26, Failures: 0, Errors: 17, Skipped: 0
       String websocketURL = "wss://url.websocket.com";
       Map<String, String> cookies = new ConcurrentHashMap<String, String>();
       cookies.put("JSESSIONID", "1bif45f-testSessionId");
-      new Expectations(Pattern.class) {
+      new Expectations() {
          {
             mockResponse.getStatusCode();
             result = Status.CREATED;
