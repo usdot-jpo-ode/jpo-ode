@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.model;
 
-import us.dot.its.jpo.ode.plugin.OperationalDataEnvironment.ODE;
+import us.dot.its.jpo.ode.plugin.ODE;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
