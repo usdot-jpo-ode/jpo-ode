@@ -106,14 +106,17 @@ public class FileUploadControllerTest {
     }
     
     @Test
-    public void handleUploadShouldReturnTrueForBsm(@Mocked MultipartFile mockFile,
-            @Injectable final Executors unused, @Injectable ExecutorService mockExecutorService,
-            @Mocked final PluginFactory unused2, @Mocked Asn1Plugin mockAsn1Plugin,
-            @Mocked MessageProducer<String, String> mockMessageProducer,
-            @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
-            @Mocked final LoggerFactory unusedLoggerFactory,
-            @Mocked final ImporterWatchService mockImporterWatchService
-            ) {
+    public void handleUploadShouldReturnTrueForBsm(
+          @Mocked MultipartFile mockFile,
+          @Injectable final Executors unused, 
+          @Injectable ExecutorService mockExecutorService,
+          @Mocked final PluginFactory unused2,
+          @Mocked Asn1Plugin mockAsn1Plugin,
+          @Mocked MessageProducer<String, String> mockMessageProducer,
+          @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
+          @Mocked final LoggerFactory unusedLoggerFactory,
+          @Mocked final ImporterWatchService mockImporterWatchService
+          ) {
 
         String testType = "bsm";
 
