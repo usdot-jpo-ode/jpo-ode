@@ -50,9 +50,9 @@ public class ReqResForwarder implements Runnable {
 		this.payload = createRequest(request);
 		try {
 			socket = new DatagramSocket(odeProps.getForwarderPort());
-			logger.debug("Created depositor Socket with port {}", odeProps.getForwarderPort());
+			logger.info("Created depositor Socket with port {}", odeProps.getForwarderPort());
 		} catch (SocketException e) {
-			logger.error("Error creating socket with port {} {}", odeProps.getForwarderPort(), e);
+			logger.error("Error creating socket with port " + odeProps.getForwarderPort(), e);
 		}
 	}
 	
@@ -88,7 +88,7 @@ public class ReqResForwarder implements Runnable {
 		try {
 			coder.encode(request, sink);
 		} catch (EncodeFailedException | EncodeNotSupportedException e) {
-			logger.error("Error Encoding VSD ServiceRequest {}", e);
+			logger.error("Error Encoding VSD ServiceRequest", e);
 		}
 
 		return sink.toByteArray();
@@ -102,7 +102,7 @@ public class ReqResForwarder implements Runnable {
 			socket.send(new DatagramPacket(payload, payload.length,
 					new InetSocketAddress(odeProps.getSdcIp(), odeProps.getSdcPort())));
 		} catch (IOException e) {
-			logger.error("Error Sending VSD ServiceRequest {}", e);
+			logger.error("Error Sending VSD ServiceRequest", e);
 		}
 	}
 
@@ -131,9 +131,9 @@ public class ReqResForwarder implements Runnable {
 			}
 
 		} catch (IOException e) {
-			logger.error("Error Receiving VSD Deposit ServiceResponse {}", e);
+			logger.error("Error Receiving VSD Deposit ServiceResponse", e);
 		} catch (DecodeFailedException | DecodeNotSupportedException e) {
-			logger.error("Error Decoding VSD Deposit ServiceResponse {}", e);
+			logger.error("Error Decoding VSD Deposit ServiceResponse", e);
 		}
 		return null;
 	}
@@ -144,7 +144,7 @@ public class ReqResForwarder implements Runnable {
 			socket.send(new DatagramPacket(response, response.length,
 					new InetSocketAddress(this.obuReturnAddr, this.obuReturnPort)));
 		} catch (IOException e) {
-			logger.error("Error Sending VSD ServiceResponse {}", e);
+			logger.error("Error Sending VSD ServiceResponse", e);
 		}
 	}
 
