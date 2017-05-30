@@ -48,7 +48,7 @@ public class OdeProperties implements EnvironmentAware {
     private int vsdmPort = 5556;
     private int vsdmBufferSize = 10000;
     private Boolean vsdmVerboseJson = false;
-    private String sdcIp = "104.130.170.234";
+    private String sdcIp = "104.130.170.234";//NOSONAR
     private int sdcPort = 46753;
     private String returnIp = "";
     private int returnPort = 6666;

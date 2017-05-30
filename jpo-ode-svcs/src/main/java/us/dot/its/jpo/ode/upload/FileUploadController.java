@@ -72,14 +72,14 @@ public class FileUploadController {
         try {
             Executors.newSingleThreadExecutor().submit(new RawBsmExporter(
                     odeProperties, OUTPUT_TOPIC, template));
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+        } catch (Exception e) {
             logger.error("Error launching Exporter", e);
         }
         
         try {
             Executors.newSingleThreadExecutor().submit(new FilteredBsmExporter(
                     odeProperties, FILTERED_OUTPUT_TOPIC, template));
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+        } catch (Exception e) {
             logger.error("Error launching Exporter", e);
         }
     }
