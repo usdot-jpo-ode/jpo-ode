@@ -6,6 +6,8 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +44,7 @@ public class VsdmReceiver implements Runnable {
 
 	private SerializableMessageProducerPool<String, byte[]> messageProducerPool;
 	private MessageProducer<String, String> bsmProducer;
+	private ExecutorService execService;
 
 	@Autowired
 	public VsdmReceiver(OdeProperties odeProps) {
@@ -50,9 +53,9 @@ public class VsdmReceiver implements Runnable {
 
 		try {
 			socket = new DatagramSocket(odeProperties.getReceiverPort());
-			logger.debug("Created UDP socket bound to port {}", odeProperties.getReceiverPort());
+			logger.info("Created UDP socket bound to port {}", odeProperties.getReceiverPort());
 		} catch (SocketException e) {
-			logger.error("Error creating socket with port {} {}", odeProperties.getReceiverPort(), e);
+			logger.error("Error creating socket with port " + odeProperties.getReceiverPort(), e);
 		}
 
 		messageProducerPool = new SerializableMessageProducerPool<>(odeProperties);
@@ -61,6 +64,7 @@ public class VsdmReceiver implements Runnable {
 		bsmProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
 				odeProperties.getKafkaProducerType());
 
+		this.execService = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
 	}
 
 	@Override
@@ -88,8 +92,8 @@ public class VsdmReceiver implements Runnable {
 					decodeData(actualPacket, obuIp, obuPort);
 				}
 			} catch (IOException e) {
-				logger.error("Error receiving packet {}", e);
-				stopped = true;
+				logger.error("Error receiving packet", e);
+//				stopped = true;
 			}
 		}
 	}
@@ -101,22 +105,21 @@ public class VsdmReceiver implements Runnable {
 				logger.debug("Received ServiceRequest:\n{} \n", decoded.toString());
 				ServiceRequest request = (ServiceRequest) decoded;
 				ReqResForwarder forwarder = new ReqResForwarder(odeProperties, request, obuIp, obuPort);
-				Thread forwarderThread = new Thread(forwarder, "forwarderThread");
-				forwarderThread.start();
+				execService.submit(forwarder);
 			} else if (decoded instanceof VehSitDataMessage) {
 				logger.debug("Received VSD and forwarding it to SDC");
 				VsdDepositor depositor = new VsdDepositor(odeProperties, msg);
-				Thread depositorThread = new Thread(depositor, "depositor");
-				depositorThread.start();
+
+                execService.submit(depositor);
 
 				publishVsdm(msg);
 				
 				extractAndPublishBsms((VehSitDataMessage) decoded);
 			} else {
-				logger.error("Unknown message type received {}", decoded.getClass());
+				logger.error("Unknown message type received {}", decoded.getClass().getName());
 			}
 		} catch (DecodeFailedException | DecodeNotSupportedException e) {
-			logger.error("Unable to decode UDP message {}", e);
+			logger.error("Unable to decode UDP message", e);
 		}
 	}
 
@@ -125,7 +128,7 @@ public class VsdmReceiver implements Runnable {
 		try {
 			bsmList = VsdToBsmConverter.convert(msg);
 		} catch (IllegalArgumentException e) {
-			logger.error("Unable to convert VehSitDataMessage bundle to BSM list {}", e);
+			logger.error("Unable to convert VehSitDataMessage bundle to BSM list", e);
 			return;
 		}
 
@@ -137,9 +140,12 @@ public class VsdmReceiver implements Runnable {
 				
 				String bsmJson = JsonUtils.toJson(convertedBsm, odeProperties.getVsdmVerboseJson());
 				publishBsm(bsmJson);
-				logger.debug("Published bsm {} to the topics J2735Bsm and J2735BsmRawJSON", i++);
+				logger.debug("Published bsm {} to the topics {} and {}", 
+				        i++, 
+				        odeProperties.getKafkaTopicBsmSerializedPojo(),
+				        odeProperties.getKafkaTopicBsmRawJson());
 			} catch (OssBsmPart2Exception e) {
-				logger.error("Unable to convert BSM {}", e);
+				logger.error("Unable to convert BSM", e);
 			}
 		}
 	}
@@ -159,7 +165,7 @@ public class VsdmReceiver implements Runnable {
 		MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
 		producer.send(odeProperties.getKafkaTopicVsdm(), null, data);
 		messageProducerPool.checkIn(producer);
-		logger.debug("Published vsd to the topic J2735Vsdm");
+		logger.debug("Published vsd to the topic {}", odeProperties.getKafkaTopicVsdm());
 	}
 
 }
