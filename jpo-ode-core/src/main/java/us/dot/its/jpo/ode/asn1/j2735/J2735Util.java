@@ -317,6 +317,19 @@ public class J2735Util {
 				new DOffset(0));
 	}
 	
+	public static DDateTime expireInSec(int expirationIntervalInSec) {
+		Calendar now = GregorianCalendar.getInstance(TimeZone.getTimeZone("UTC"));
+		now.add(Calendar.SECOND, expirationIntervalInSec);
+		return new DDateTime(
+				new DYear(now.get(Calendar.YEAR)), 
+				new DMonth(now.get(Calendar.MONTH)+1), 
+				new DDay(now.get(Calendar.DAY_OF_MONTH)), 
+				new DHour(now.get(Calendar.HOUR_OF_DAY)), 
+				new DMinute(now.get(Calendar.MINUTE)), 
+				new DSecond(now.get(Calendar.SECOND)),
+				new DOffset(0));
+	}
+	
 	public static boolean isExpired(DDateTime exp) {
 		Calendar expire = J2735Util.DDateTimeToCalendar(exp);
 		Calendar now = GregorianCalendar.getInstance(TimeZone.getTimeZone("UTC"));
