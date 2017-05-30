@@ -36,9 +36,10 @@ ADD jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar /home
 
 ##Add ODE source files to be built in the container image
 #ADD . /home/jpo-ode/
-#ADD docker/start-ode.sh /usr/bin/start-ode.sh
-#ADD jpo-ode-svcs/src/main/resources/application.properties /home
-#ADD jpo-ode-svcs/src/main/resources/logback.xml /home
+
+ADD docker/start-ode.sh /usr/bin/start-ode.sh
+ADD jpo-ode-svcs/src/main/resources/application.properties /home
+ADD jpo-ode-svcs/src/main/resources/logback.xml /home
 
 # Build ODE inside the image
 #RUN cd /home/jpo-ode/jpo-ode-private && mvn clean && mvn install
