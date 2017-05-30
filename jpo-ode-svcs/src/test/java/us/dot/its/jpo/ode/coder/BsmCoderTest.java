@@ -36,6 +36,8 @@ public class BsmCoderTest {
     @Mocked
     SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool;
     @Mocked
+    MessageProducer<String, String> mockMessageProducer;
+    @Mocked
     Asn1Object mockAsn1Object;
     
     // Override the logger factory for cleaner build logs
