@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import com.oss.asn1.AbstractData;
 import com.oss.asn1.Coder;
+import com.oss.asn1.DecodeFailedException;
+import com.oss.asn1.DecodeNotSupportedException;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 
@@ -128,8 +130,10 @@ public class ReqResForwarder implements Runnable {
 				return servResponse;
 			}
 
-		} catch (Exception e) {
+		} catch (IOException e) {
 			logger.error("Error Receiving VSD Deposit ServiceResponse", e);
+		} catch (DecodeFailedException | DecodeNotSupportedException e) {
+			logger.error("Error Decoding VSD Deposit ServiceResponse", e);
 		}
 		return null;
 	}

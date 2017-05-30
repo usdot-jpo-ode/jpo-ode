@@ -3,14 +3,9 @@ package us.dot.its.jpo.ode.vsdm;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.SocketAddress;
 import java.net.SocketException;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.xml.bind.DatatypeConverter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +97,6 @@ public class VsdmReceiver implements Runnable {
 	private void decodeData(byte[] msg, String obuIp, int obuPort) {
 		try {
 			AbstractData decoded = J2735Util.decode(coder, msg);
-			logger.debug("Decoded message in hex: {}", DatatypeConverter.printHexBinary(msg));
 			if (decoded instanceof ServiceRequest) {
 				logger.debug("Received ServiceRequest:\n{} \n", decoded.toString());
 				ServiceRequest request = (ServiceRequest) decoded;
@@ -130,7 +124,7 @@ public class VsdmReceiver implements Runnable {
 		List<BasicSafetyMessage> bsmList = null;
 		try {
 			bsmList = VsdToBsmConverter.convert(msg);
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
 			logger.error("Unable to convert VehSitDataMessage bundle to BSM list.", e);
 			return;
 		}
@@ -140,13 +134,12 @@ public class VsdmReceiver implements Runnable {
 			try {
 				J2735Bsm convertedBsm = OssBsm.genericBsm(entry);
 				publishBsm(convertedBsm);
-				logger.debug("Published bsm{} to the topic J2735Bsm", i);
 				
 				String bsmJson = JsonUtils.toJson(convertedBsm, odeProperties.getVsdmVerboseJson());
 				publishBsm(bsmJson);
-				logger.debug("Published bsm{} to the topic J2735BsmRawJSON", i++);
+				logger.debug("Published bsm {} to the topics J2735Bsm and J2735BsmRawJSON", i++);
 			} catch (OssBsmPart2Exception e) {
-				logger.error("Unable to convert BSM: ", e);
+				logger.error("Unable to convert BSM", e);
 			}
 		}
 	}
