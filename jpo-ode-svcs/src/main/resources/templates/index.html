@@ -21,7 +21,7 @@
     </nav>
     <div class="container">
         <div class="row">
-            <div class="col-md-4">
+            <div class="column-left">
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -30,9 +30,18 @@
                     </thead>
                     <tbody> </tbody>
                 </table>
+                <div class="col-md-12">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label for="connect">WebSocket connection:</label>
+                            <button id="connect" class="btn btn-default">Connect</button>
+                            <button id="disconnect" class="btn btn-default" disabled="disabled">Disconnect </button>
+                        </div>
+                    </form>
+                </div>
                 <form>
                     <div class="form-group">
-                        <p class="help-block">Upload a message file encoded in hex or UPER.</p>
+                        <p class="help-block">Upload a data file encoded in binary UPER encoded, hex UPER encoded or JSON.</p>
                         <label for="exampleInputFile">Select file</label>
                         <input type="file" id="file" name="file" />
                         <label for="exampleInputFile">Message file format</label>
@@ -54,12 +63,13 @@
                         <tbody id="uploadResponse"></tbody>
                     </table>
                 </div>
-                <div> </div>
                 <div>
                     <ul>
                         <li th:each="file : ${files}"> <a th:href="${file}" th:text="${file}" /> </li>
                     </ul>
                 </div>
+            </div>
+            <div class="column-right">
                 <div class="row">
                     <div class="col-md-12">
                         <table class="table table-striped">
@@ -81,18 +91,9 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-8">
-                <div class="row">
-                    <div class="col-md-12">
-                        <form class="form-inline">
-                            <div class="form-group">
-                                <label for="connect">WebSocket connection:</label>
-                                <button id="connect" class="btn btn-default">Connect</button>
-                                <button id="disconnect" class="btn btn-default" disabled="disabled">Disconnect </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+        </div>
+        <div class="row">
+            <div class="column-left">
                 <div class="row">
                     <div class="col-md-12">
                         <table id="conversation" class="table table-striped">
@@ -102,6 +103,20 @@
                                 </tr>
                             </thead>
                             <tbody id="messages"> </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="column-right">
+                <div class="row">
+                    <div class="col-md-12">
+                        <table id="conversation_filtered" class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Filtered BSMs</th>
+                            </tr>
+                            </thead>
+                            <tbody id="filtered_messages"> </tbody>
                         </table>
                     </div>
                 </div>

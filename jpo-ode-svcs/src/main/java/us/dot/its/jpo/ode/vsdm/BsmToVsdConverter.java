@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.vsdm;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import us.dot.its.jpo.ode.j2735.dsrc.BSMcoreData;

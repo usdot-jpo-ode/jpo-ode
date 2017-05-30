@@ -11,6 +11,7 @@ import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent.Kind;
+import java.nio.file.WatchService;
 
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -20,9 +21,7 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
-import us.dot.its.jpo.ode.coder.AbstractCoder;
-
-import java.nio.file.WatchService;
+import us.dot.its.jpo.ode.coder.Coder;
 public class ImporterWatchServiceTest {
 
     @Tested // (fullyInitialized=false)
@@ -32,7 +31,7 @@ public class ImporterWatchServiceTest {
     @Injectable
     Path backupDir;
     @Injectable
-    AbstractCoder coder;
+    Coder coder;
     @Injectable
     Logger logger;
     @Injectable
@@ -195,7 +194,7 @@ public class ImporterWatchServiceTest {
         
         try {
             new Expectations() {{
-                coder.decodeFromHexAndPublish((InputStream)any);
+                coder.decodeHexAndPublish((InputStream)any);
             }};
         } catch (IOException e) {
             fail("Unexpected exception in expectations block: " + e);
@@ -219,7 +218,7 @@ public class ImporterWatchServiceTest {
         
         try {
             new Expectations() {{
-                coder.decodeFromHexAndPublish((InputStream)any);
+                coder.decodeHexAndPublish((InputStream)any);
             }};
         } catch (IOException e) {
             fail("Unexpected exception in expectations block: " + e);
@@ -243,7 +242,7 @@ public class ImporterWatchServiceTest {
         
         try {
             new Expectations() {{
-                coder.decodeFromStreamAndPublish((InputStream)any);
+                coder.decodeBinaryAndPublish((InputStream)any);
             }};
         } catch (IOException e) {
             fail("Unexpected exception in expectations block: " + e);
@@ -274,7 +273,7 @@ public class ImporterWatchServiceTest {
                 dir.getFileSystem().newWatchService();
                 result = mockWatchService;
                 
-                dir.register((WatchService) any, (Kind) any);
+                dir.register((WatchService) any, (Kind<?>) any);
                 result = null;
             }};
         } catch (IOException e) {

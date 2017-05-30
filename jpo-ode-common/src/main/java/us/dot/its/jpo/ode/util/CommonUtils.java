@@ -14,7 +14,7 @@ public class CommonUtils {
       long pid = -1;
 
       try {
-        if (p.getClass().getName().equals("java.lang.UNIXProcess")) {
+        if (p.getClass().getName().equals("java.lang.UNIXProcess")) {	//NOSONAR
           Field f = p.getClass().getDeclaredField("pid");
           f.setAccessible(true);
           pid = f.getLong(p);

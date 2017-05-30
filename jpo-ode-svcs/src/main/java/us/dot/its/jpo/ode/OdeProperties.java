@@ -1,13 +1,6 @@
 package us.dot.its.jpo.ode;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
+import groovy.lang.MissingPropertyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +8,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-
-import groovy.lang.MissingPropertyException;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @ConfigurationProperties("ode")
 @PropertySource("classpath:application.properties")
@@ -42,8 +41,19 @@ public class OdeProperties implements EnvironmentAware {
     private String ddsCasUsername = "";
     private String ddsCasPass = "";
     private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
-    private String kafkaTopicBsmSerializedPOJO = "topic.J2735Bsm";
-    private String kafkaTopicBsmJSON = "topic.J2735BsmRawJSON";
+    private String kafkaTopicBsmSerializedPojo = "topic.J2735Bsm";
+    private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
+    private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
+
+    private int vsdmPort = 5556;
+    private int vsdmBufferSize = 10000;
+    private Boolean vsdmVerboseJson = false;
+    private String sdcIp = "104.130.170.234";//NOSONAR
+    private int sdcPort = 46753;
+    private String returnIp = "";
+    private int returnPort = 6666;
+    private int serviceRequestSenderPort = 5556;
+    private int vsdmSenderPort = 6666;
 
     private String hostId;
 
@@ -51,7 +61,7 @@ public class OdeProperties implements EnvironmentAware {
         super();
         init();
     }
-    
+
     public void init() {
 
         uploadLocations.add(Paths.get(uploadLocationRoot));
@@ -73,7 +83,7 @@ public class OdeProperties implements EnvironmentAware {
         if (kafkaBrokers == null) {
             logger.info(
                     "ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP from which will derive the Kafka bootstrap-server");
-            
+
             kafkaBrokers = System.getenv("DOCKER_HOST_IP") + ":9092";
         }
 
@@ -203,20 +213,100 @@ public class OdeProperties implements EnvironmentAware {
         this.ddsWebsocketUrl = ddsWebsocketUrl;
     }
 
-    public String getKafkaTopicBsmSerializedPOJO() {
-        return kafkaTopicBsmSerializedPOJO;
+    public String getKafkaTopicBsmFilteredJson() {
+        return kafkaTopicBsmFilteredJson;
     }
 
-    public void setKafkaTopicBsmSerializedPOJO(String kafkaTopicBsmSerializedPOJO) {
-        this.kafkaTopicBsmSerializedPOJO = kafkaTopicBsmSerializedPOJO;
+    public void setKafkaTopicBsmFilteredJson(String kafkaTopicBsmFilteredJson) {
+        this.kafkaTopicBsmFilteredJson = kafkaTopicBsmFilteredJson;
     }
 
-    public String getKafkaTopicBsmJSON() {
-        return kafkaTopicBsmJSON;
+    public String getKafkaTopicBsmSerializedPojo() {
+        return kafkaTopicBsmSerializedPojo;
     }
 
-    public void setKafkaTopicBsmJSON(String kafkaTopicBsmJSON) {
-        this.kafkaTopicBsmJSON = kafkaTopicBsmJSON;
+    public void setKafkaTopicBsmSerializedPojo(String kafkaTopicBsmSerializedPOJO) {
+        this.kafkaTopicBsmSerializedPojo = kafkaTopicBsmSerializedPOJO;
+    }
+
+    public String getKafkaTopicBsmRawJson() {
+        return kafkaTopicBsmRawJson;
+    }
+
+    public void setKafkaTopicBsmRawJson(String kafkaTopicBsmRawJSON) {
+        this.kafkaTopicBsmRawJson = kafkaTopicBsmRawJSON;
+    }
+
+    public int getVsdmPort() {
+        return vsdmPort;
+    }
+
+    public void setVsdmPort(int vsdmPort) {
+        this.vsdmPort = vsdmPort;
+    }
+
+    public int getVsdmBufferSize() {
+        return vsdmBufferSize;
+    }
+
+    public void setVsdmBufferSize(int vsdmBufferSize) {
+        this.vsdmBufferSize = vsdmBufferSize;
+    }
+
+    public Boolean getVsdmVerboseJson() {
+        return vsdmVerboseJson;
+    }
+
+    public void setVsdmVerboseJson(Boolean vsdmVerboseJson) {
+        this.vsdmVerboseJson = vsdmVerboseJson;
+    }
+
+    public String getSdcIp() {
+        return sdcIp;
+    }
+
+    public void setSdcIp(String sdcIp) {
+        this.sdcIp = sdcIp;
+    }
+
+    public int getSdcPort() {
+        return sdcPort;
+    }
+
+    public void setSdcPort(int sdcPort) {
+        this.sdcPort = sdcPort;
+    }
+
+    public String getReturnIp() {
+        return returnIp;
+    }
+
+    public void setReturnIp(String returnIp) {
+        this.returnIp = returnIp;
+    }
+
+    public int getReturnPort() {
+        return returnPort;
+    }
+
+    public void setReturnPort(int returnPort) {
+        this.returnPort = returnPort;
+    }
+
+    public int getServiceRequestSenderPort() {
+        return serviceRequestSenderPort;
+    }
+
+    public void setServiceRequestSenderPort(int serviceRequestSenderPort) {
+        this.serviceRequestSenderPort = serviceRequestSenderPort;
+    }
+
+    public int getVsdmSenderPort() {
+        return vsdmSenderPort;
+    }
+
+    public void setVsdmSenderPort(int vsdmSenderPort) {
+        this.vsdmSenderPort = vsdmSenderPort;
     }
 
 }

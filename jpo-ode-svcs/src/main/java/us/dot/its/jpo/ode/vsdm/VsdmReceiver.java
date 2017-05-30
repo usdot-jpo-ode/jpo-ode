@@ -1,132 +1,109 @@
 package us.dot.its.jpo.ode.vsdm;
 
-import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.oss.asn1.AbstractData;
 import com.oss.asn1.Coder;
 import com.oss.asn1.DecodeFailedException;
 import com.oss.asn1.DecodeNotSupportedException;
-import com.oss.asn1.EncodeFailedException;
-import com.oss.asn1.EncodeNotSupportedException;
 
-import gov.usdot.asn1.j2735.CVSampleMessageBuilder;
-import gov.usdot.asn1.j2735.J2735Util;
+import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.j2735.J2735;
+import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsm;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
+import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class VsdmReceiver implements Runnable {
-	private static final int DEFAULT_SELF_PORT = 4446;
-	private static final int DEFAULT_BUFFER_LENGTH = 10000;
 
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(VsdmReceiver.class);
+	private static Coder coder = J2735.getPERUnalignedCoder();
 
-	private DatagramSocket socket = null;
-	private static Coder coder;
-	private int selfPort;
-
-	public VsdmReceiver() {
-		this(DEFAULT_SELF_PORT);
-	}
-
-	public VsdmReceiver(int port) {
-		this.setSelfPort(port);
-		coder = J2735.getPERUnalignedCoder();
-		try {
-			socket = new DatagramSocket(port);
-			logger.info("SDC: Listening on port {}...", selfPort);
-		} catch (SocketException e) {
-			logger.error("SDC: Error creating socket", e);
-		}
-	}
+	private DatagramSocket socket;
 	
-	public int getSelfPort() {
-		return selfPort;
-	}
+	private OdeProperties odeProperties;
 
-	public void setSelfPort(int selfPort) {
-		this.selfPort = selfPort;
+	@Autowired
+	public VsdmReceiver(OdeProperties odeProps) {
+		
+		this.odeProperties = odeProps;
+
+		try {
+			socket = new DatagramSocket(odeProperties.getVsdmPort());
+			logger.info("[VSDM Receiver] Created UDP socket bound to port", odeProperties.getVsdmPort());
+		} catch (SocketException e) {
+			logger.error("[VSDM Receiver] Error creating socket with port ", odeProperties.getVsdmPort(), e);
+		}
 	}
 
 	@Override
 	public void run() {
-		handleVsdServiceRequest();
-		receiveVsdMessage();
 
-		if (socket != null){
-			logger.info("Closing VsdmReceiver Socket");
-			socket.close();
-		}	
-	}
-
-	private void handleVsdServiceRequest() {
-		byte[] buffer = new byte[DEFAULT_BUFFER_LENGTH];
-		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-		try {
-			logger.info("SDC: Waiting for VSD Deposit ServiceRequest ...");
-			socket.receive(packet);
-			logger.info("SDC: Received VSD deposit ServiceRequest ...");
-			if (buffer.length > 0) {
-				AbstractData request = J2735Util.decode(coder, buffer);
-				if (request instanceof ServiceRequest) {
-					logger.info("SDC: Printing VSD deposit ServiceRequest... \n{}", request.toString());
-				}
-			}
-		} catch (IOException e) {
-			logger.error("SDC: Error receiving VSD Deposit ServiceRequest", e);
-		} catch (DecodeFailedException | DecodeNotSupportedException e) {
-			logger.error("SDC: Error decoding VSD Deposit ServiceRequest", e);
-		}
-		
-		sendVsdServiceResponse(packet.getAddress(), packet.getPort());
-	}
-	
-	private void sendVsdServiceResponse(InetAddress address, int port){
-		ServiceResponse sr = CVSampleMessageBuilder.buildVehicleSituationDataServiceResponse();
-
-		ByteArrayOutputStream sink = new ByteArrayOutputStream();
-		try {
-			coder.encode(sr, sink);
-			byte[] payload = sink.toByteArray();
-			int length = payload.length;
-
-			logger.info("SDC: Sending VSD deposit ServiceResponse ...");
-			socket.send(new DatagramPacket(payload, length, new InetSocketAddress(address, port)));
-		} catch (EncodeFailedException | EncodeNotSupportedException e) {
-			logger.error("SDC: Error encoding VSD Deposit ServiceResponse", e);
-		} catch (IOException e) {
-			logger.error("SDC: Error sending VSD Deposit ServiceResponse", e);
-		}
-	}
-	
-	private void receiveVsdMessage(){
-		try {
-			byte[] vsdBuffer = new byte[DEFAULT_BUFFER_LENGTH];
-			DatagramPacket packet = new DatagramPacket(vsdBuffer, vsdBuffer.length);
+		while (true) {
 			
-			logger.info("SDC: Waiting for VSD message...");
-			socket.receive(packet);
-			logger.info("SDC: Received VSD message");
-			if (vsdBuffer.length > 0) {
-				AbstractData vsd = J2735Util.decode(coder, vsdBuffer);
-				if (vsd instanceof VehSitDataMessage) {
-					logger.info("SDC: Printing VSD message... \n{}", vsd.toString());
-				}
+			DatagramPacket packet = new DatagramPacket(new byte[odeProperties.getVsdmBufferSize()], odeProperties.getVsdmBufferSize());
+
+			try {
+				socket.receive(packet);
+			} catch (IOException e) {
+				logger.error("[VSDM Receiver] Error receiving UDP packet", e);
 			}
-		} catch (DecodeFailedException | DecodeNotSupportedException e) {
-			logger.error("SDC: Error decoding VSD message", e);
-		} catch(IOException e){
-			logger.error("SDC: Error receiving VSD message", e);
+
+			InputStream ins = new ByteArrayInputStream(packet.getData());
+			AbstractData decoded = null;
+			try {
+				decoded = coder.decode(ins, decoded);
+			} catch (DecodeFailedException | DecodeNotSupportedException e) {
+				logger.error("[VSDM Receiver] Error, unable to decode UDP message", e);
+			}
+
+			if (decoded instanceof ServiceRequest || decoded instanceof ServiceResponse) {
+				// send
+			} else if (decoded instanceof VehSitDataMessage) {
+				// send 
+				List<BasicSafetyMessage> bsmList = VsdToBsmConverter.convert((VehSitDataMessage) decoded);
+				for (BasicSafetyMessage entry : bsmList) {
+					try {
+						J2735Bsm convertedBsm = OssBsm.genericBsm(entry);
+						String bsmJson = JsonUtils.toJson(convertedBsm, odeProperties.getVsdmVerboseJson());
+				        
+						publish(bsmJson);
+
+		        logger.debug("Published: {}", bsmJson);
+					} catch (OssBsmPart2Exception e) {
+						logger.error("[VSDM Receiver] Error, unable to convert BSM: ", e);
+					}
+
+				}
+
+			} else {
+				logger.error("[VSDM Receiver] Error, unknown message type received: ", decoded);
+			}
+
 		}
+
 	}
+	
+	private void publish(String msg) {
+		
+		MessageProducer
+        .defaultStringMessageProducer(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType())
+        .send(odeProperties.getKafkaTopicBsmRawJson(), null, msg);
+	}
+
 }

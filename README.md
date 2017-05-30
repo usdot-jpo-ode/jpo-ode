@@ -6,62 +6,46 @@ Develop: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch
 US Department of Transportation Joint Program office (JPO) Operational Data Environment (ODE)
 
 In the context of ITS, an Operational Data Environment is a real-time data acquisition and distribution software system that processes and routes data from Connected-X devices –including connected vehicles (CV), personal mobile devices, and infrastructure components and sensors –to subscribing applications to support the operation, maintenance, and use of the transportation system, as well as related research and development efforts.
+
+<a name="toc"/>
+
+## Table of Contents 
+
+[I. Release Notes](#release-notes) 
+
+[II. Documentation](#documentation) 
+
+[III. Collaboration Tools](#collaboration-tools) 
+
+[IV. Getting Started](#getting-started) 
+
+[V. Testing the Application](#testing) 
+
+[VI. Development Tools](#dev-tools) 
+
+--- 
+
+<a name="release-notes"/>
+
  
-## Release Notes
-### Sprint 11
-- (ODE-77 Subtask) ODE-274 Publish to J2735BsmRawJson
+## [I. Release Notes](ReleaseNotes.md)
 
-### Sprint 10
-- ODE-259 Interface Control Document (ICD) - Updated
-- ODE-268 Fixed Message CRC field in TIM messages causing error
 
-### Sprint 9
-- ODE-227 Probe Data Management (PDM) - Outbound
-- ODE-230 Interface Control Document (ICD) - Created
-- ODE-202 Evaluate Current 1609.2 Leidos Code
+<a name="documentation"/>
 
-### Sprint 8
-- ODE-143 Outbound TIM Message Parameters - Phase 2
-- ODE-146 Provide generic SDW Deposit Capability
-- ODE-147 Deposit TIM message to SDW.
-
-### Sprint 7
-- ODE-125 Expose empty field ODE output records when presented in JSON format
-- ODE-142 Outbound TIM Message Parameters - Phase 1
-- ODE-169 Encode TIM Message to ASN.1 - Outbound
-- ODE-171 Research 1609.2 Standard Implementation
-
-### Sprint 6
-- ODE-138 Add Capability for Raw BSM Data (bin format only) with Header Information
-- ODE-150 Encode TIM Message to ASN.1 (Inbound messages only)
-- ODE-148 Develop More Robust User Facing Documentation
-
-### Sprint 5
-- ODE-126 ADD to ODE 58 - Log ODE Data Flows On/off without restarting ODE
-- ODE-74 RESTful SNMP Wrapper Service to pass SNMP messages to an RSU
-- ODE-127 Defined future story and tasks for inbound/outbound TIM messages
-
-### Sprint 4
-- ODE-123 Developed a sample client application to interface directly with Kafka service to subscribe to ODE data
-- ODE-118 Validate BSM data decoding, inclusing Part II, with real binary data from OBU
-- ODE-54 Authored first draft of ODE User Guide
-- ODE-58 Developed ODE Event Logger
-- ODE-41 Importer improvements
-
-### Sprint 3
-- ODE-42 Clean up the kafka adapter and make it work with Kafka broker. Integrated kafka. Kept Stomp as the high level WebSocket API protocol.
-- ODE-36 - Docker, docker-compose, Kafka and ode Integration
-
-## Documentation
+## II. Documentation
 ODE provides the following living documents to keep ODE users and stakeholders informed of the latest developments:
 
-1. [docs/JPO_ODE_Architecture.doc](docs/JPO_ODE_Architecture.doc)
-2. [docs/JPO_ODE_User_Guide.doc](docs/JPO_ODE_User_Guide.doc)
-3. [docs/ODESwagger.yaml](docs/ODESwagger.yaml)
+1. [ODE Architecture](docs/JPO_ODE_Architecture.doc)
+2. [ODE User Guide](docs/JPO_ODE_User_Guide.doc)
+3. [ODE REST API Guide](docs/ODESwagger.yaml)
+4. [ODE Smoke Tests](https://github.com/usdot-jpo-ode/jpo-ode/wiki/JPO-ODE-QA-Documents)
 
-All stakeholders are invited to provide input to these documents. Stakeholders should direct all input on this document to the JPO Product Owner at DOT, FHWA, JPO. To provide feedback, we recommend that you create an "issue" in this repository (https://github.com/usdot-jpo-ode/jpo-ode/issues). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
+All stakeholders are invited to provide input to these documents. Stakeholders should direct all input on this document to the JPO Product Owner at DOT, FHWA, and JPO. To provide feedback, we recommend that you create an "issue" in this repository (https://github.com/usdot-jpo-ode/jpo-ode/issues). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
 
-## Collaboration Tools
+<a name="collaboration-tools"/>
+
+## III. Collaboration Tools
 
 ### Source Repositories - GitHub
 - Main repository on GitHub (public)
@@ -105,54 +89,98 @@ travis env set SONAR_SECURITY_TOKEN <key> -pr <user-account>/<repo-name>
 ### Static Code Analysis
 https://sonarqube.com/organizations/usdot-jpo-ode/projects
 
-## Getting Started
+[Back to top](#toc)
+
+<a name="getting-started"/>
+
+## IV. Getting Started
+
+The following instructions describe the procedure to fetch, build, and run the application. 
 
 ### Prerequisites
 * JDK 1.8: http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html
 * Maven: https://maven.apache.org/install.html
 * Git: https://git-scm.com/
 
-### Instructions
+Additionally, read the following guides to familiarize yourself with Docker and Kafka.
 
-The following instructions describe the procedure to fetch, build and run the application.
+**Docker** 
 
-#### Getting the source Code
+[README.md](docker/README.md)
 
-**Step 1**: Disable Git core.autocrlf (Only the First Time)
+**Kafka** 
+
+[README.md](docker/kafka/README.md)
+
+---
+### Obtain the Source Code
+
+**NOTE**: The ODE consists of two repositories: a public repository containing the bulk of the application code, and a private repository containing the ASN.1-compiled dependencies. Building this application requires BOTH of these repositories. If you need access to the private repository, please reach out to a member of the development team.
+
+#### Step 1 - Clone public repository
+
+Disable Git core.autocrlf (Only the First Time)
 **NOTE**: If running on Windows, please make sure that your global git config is set up to not convert End-of-Line characters during checkout. This is important for building docker images correctly.
 
 ```bash
 git config --global core.autocrlf false
 ```
 
-**Step 2**:  Clone the source code from GitHub and BitBucket repositories using Git commands:
+Clone the source code from the GitHub repository using Git command:
 
 ```bash
 git clone https://github.com/usdot-jpo-ode/jpo-ode.git
+```
+
+#### Step 2 - Clone private repository
+
+Clone the source code from the BitBucket repository:
+
+```bash
 git clone https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 ```
 
-**Step 3**:  Follow the instructions in the ![docker/README.me]
+---
+### Build and Deploy the Application
 
-#### Building Private Repository
+#### Environment Variables
+ODE configuration can be customized for every deployment environment using the OS's environment variables. The following table list the environment variables used in Docker files and shell scripts to automate the deployment process and customize it for each deployment environment. Setting these environment variables will allow the deployment to take place without any modification to the default configuration files.
 
-To build the application use maven command line.
+|Environment Variable|Description|
+|--------------------|-----------|
+|DOCKER_HOST_IP      |The IP address of Docker host machine|
+|DOCKER_SHARED_VOLUME|The full path of a directory on the host machine to be shared with docker containers.|
+|ODE_DDS_CAS_USERNAME|The username for authenticating the USDOT Situation Data Warehouse WebSocket server |
+|ODE_DDS_CAS_PASSWORD|The password for authenticating the USDOT Situation Data Warehouse WebSocket server |
+|ODE_DDS_CAS_RETURN_IP|The IP address for Situation data Clearinghouse service responses |
 
-**Step 4**: Navigate to the root directory of the jpo-ode-private project:
+To be able to change the configuration of the application during runtime, you may store the configuration files in the location specified by the DOCKER_SHARED_VOLUME/config environment variable.
+
+#### Build Process
+
+The ODE application uses Maven to manage builds.
+
+**Step 1**: Build the private repository artifacts. 
+
+Navigate to the root directory of the jpo-ode-private project:
 
 ```bash
  cd jpo-ode-private/
  mvn clean
  mvn install
 ```
-It is important you run mvn clean first and then mvn install because mvn clean installs the required OSS jar file in your maven local repository.
+It is important you run `mvn clean` first and _then_ `mvn install` because clean installs the required OSS jar file in your local maven repository.
 
-#### Building and deploying ODE
-**Step 5**: Navigate to the root directory of the jpo-ode project.
+**(Optional)**: Familiarize yourself with Docker and follow the instructions in the [docker/README.me].
 
-**Step 6**: (Optional Step) If you wish to change the application properties, such as change the location of the upload service via ode.uploadLocation property or set the ode.kafkaBrokers to something other than the $DOCKER_HOST_IP:9092, modify ```jpo-ode-svcs\src\main\resources\application.properties``` file as desired.
+**(Optional)**: If you wish to change the application properties, such as change the location of the upload service via ode.uploadLocation property or set the ode.kafkaBrokers to something other than the $DOCKER_HOST_IP:9092, modify ```jpo-ode-svcs\src\main\resources\application.properties``` file as desired.
 
-**Step 7**: The easiest and cleanest way to build and run the ODE in a docker container would be to run the ```clean-build-and-deploy``` script. This script executes the following commands:
+**Step 2**: Navigate to the root directory of the jpo-ode project.
+
+**Step 3**: Build and deploy the application. 
+
+The easiest way to do this is to run the ```clean-build-and-deploy``` script. 
+This script executes the following commands:
 
 ```bash
 #!/bin/bash
@@ -162,6 +190,13 @@ mvn clean install
 docker-compose up --build -d
 docker-compose ps
 ```
+
+For other build options, see the next section. Otherwise, move on to section [V. Testing the Application](#testing)
+
+[Back to top](#toc)
+
+---
+### Other Build/Deploy Options
 
 #### Building ODE without Deploying
 To build the ODE docker container images but not deploy it, run the following commands:
@@ -186,8 +221,8 @@ docker-compose up --no-recreate -d
 
 Alternatively, run ```deploy``` script.
 
-Check the deployment by running ```docker-compose ps```. You can start and stop service using ```docker-compose start``` and ```docker-compose stop``` commands.
-If using the multi-broker docker-compose file, you can change the scaling by running ```docker-compose scale <service>=n``` where service is the service you would like to scale and n is the number of instances. For example, ```docker-compose scale kafka=3```.
+Check the deployment by running ```docker-compose ps```. You can start and stop containers using ```docker-compose start``` and ```docker-compose stop``` commands.
+If using the multi-broker docker-compose file, you can change the scaling by running ```docker-compose scale <container>=n``` where container is the container you would like to scale and n is the number of instances. For example, ```docker-compose scale kafka=3```.
 
 #### Running ODE Application on localhost
 You can run the application on your local machine while other services are deployed on a host environment. To do so, run the following:
@@ -196,8 +231,12 @@ You can run the application on your local machine while other services are deplo
  java -jar jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar
 ```
 
-#### Testing ODE Application
-You should be able to access the jpo-ode UI at `localhost:8080`.
+[Back to top](#toc)
+
+<a name="testing"/>
+
+## V. Testing ODE Application
+Once the ODE is running, you should be able to access the jpo-ode web UI at `localhost:8080`.
 
 1. Press the ```Connect``` button to connect to the ODE WebSocket service.
 2. Press ```Choose File``` button to select a file with J2735 BSM or MessageFrame records in ASN.1 UPER encoding
@@ -218,6 +257,39 @@ The result of uploading and decoding of the message will be displayed on the UI 
 ![ODE UI](images/ode-ui.png)
 
 *Notice that the empty fields in the J2735 message are represented by a ```null``` value. Also note that ODE output strips the MessageFrame header and returns a pure BSM in the J2735 BSM subscription topic.*
+
+### PPM Module (Geofencing and Filtering)
+
+To run the ODE with PPM module, you must install and start the PPM service. PPM service communicates with other services through Kafka Topics. PPM will read from the specified "Raw BSM" topic and publish the result to the specified "Filtered Bsm" topic. These topic names are specified by the following ODE and PPM properties:
+
+ - ODE properties for communications with PPM (set in application.properties)
+	 - ode.kafkaTopicBsmRawJson  (default = j2735BsmRawJson)
+	 - ode.kafkaTopicBsmFilteredJson (default = j2735BsmFilteredJson)
+ - PPM properties for communications with ODE (set in < your config >.properties)
+	 - privacy.topic.consumer (default = j2735BsmRawJson)
+	 - privacy.topic.producer (default = j2735BsmFilteredJson)
+ 
+Follow the instructions [here](https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md) (https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md) to install and build the PPM service. 
+
+During the build process, edit the sample config file located in `config/example.properties` and point the property `metadata.broker.list` towards the host of your docker machine or wherever the kafka brokers are hosted. You may use the command `docker-machine ls` to find the kafka service.
+
+After a successful build, use the following commands to configure and run the PPM
+
+```
+cd $BASE_PPM_DIR/jpo-cvdp/build
+$ ./bsmjson_privacy -c ../config/ppm.properties
+```
+With the PPM module running, all filtered BSMs that are uploaded through the web interface will be captured and processed. You will see an output of both submitted BSM and processed data unless the entire record was filtered out.
+
+![ODE UI](images/ppm.png)
+
+
+[Back to top](#toc)
+
+<a name="dev-tools"/>
+
+## VI. Development Tools
+
 ### Integrated Development Environment (IDE)
 
 Install the IDE of your choice:
@@ -228,10 +300,10 @@ Install the IDE of your choice:
 
 ### Continuous Integration and Delivery
 
-### Deployment
+To be added.
 
-## Docker
-[README.md](docker/README.md)
+### Continous Deployment
 
-## Kafka
-[README.md](docker/kafka/README.md)
+To be added.
+
+[Back to top](#toc)

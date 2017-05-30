@@ -1,7 +1,7 @@
 package us.dot.its.jpo.ode.pdm;
 
 import us.dot.its.jpo.ode.model.OdeObject;
-import us.dot.its.jpo.ode.plugin.OperationalDataEnvironment.ODE;
+import us.dot.its.jpo.ode.plugin.ODE;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
 

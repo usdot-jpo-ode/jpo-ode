@@ -10,6 +10,7 @@ import org.snmp4j.ScopedPDU;
 import org.snmp4j.event.ResponseEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,7 +60,8 @@ public class TIMController {
 
     @ResponseBody
     @RequestMapping(value = "/tim", method = RequestMethod.POST, produces = "application/json")
-    public String timMessage(@RequestBody String jsonString) throws BadRequestException {
+    @CrossOrigin
+    public String timMessage(@RequestBody String jsonString) {
        logger.debug("Received request: {}", jsonString);
         if (StringUtils.isEmpty(jsonString)) {
            String msg = "Endpoint received null request";
