@@ -50,9 +50,9 @@ public class VsdmReceiver implements Runnable {
 
 		try {
 			socket = new DatagramSocket(odeProperties.getReceiverPort());
-			logger.debug("Created UDP socket bound to port ", odeProperties.getReceiverPort());
+			logger.debug("Created UDP socket bound to port {}", odeProperties.getReceiverPort());
 		} catch (SocketException e) {
-			logger.error("Error creating socket with port ", odeProperties.getReceiverPort(), e);
+			logger.error("Error creating socket with port {} {}", odeProperties.getReceiverPort(), e);
 		}
 
 		messageProducerPool = new SerializableMessageProducerPool<>(odeProperties);
@@ -88,7 +88,7 @@ public class VsdmReceiver implements Runnable {
 					decodeData(actualPacket, obuIp, obuPort);
 				}
 			} catch (IOException e) {
-				logger.error("Error receiving packet", e);
+				logger.error("Error receiving packet {}", e);
 				stopped = true;
 			}
 		}
@@ -125,7 +125,7 @@ public class VsdmReceiver implements Runnable {
 		try {
 			bsmList = VsdToBsmConverter.convert(msg);
 		} catch (IllegalArgumentException e) {
-			logger.error("Unable to convert VehSitDataMessage bundle to BSM list.", e);
+			logger.error("Unable to convert VehSitDataMessage bundle to BSM list {}", e);
 			return;
 		}
 
@@ -139,7 +139,7 @@ public class VsdmReceiver implements Runnable {
 				publishBsm(bsmJson);
 				logger.debug("Published bsm {} to the topics J2735Bsm and J2735BsmRawJSON", i++);
 			} catch (OssBsmPart2Exception e) {
-				logger.error("Unable to convert BSM", e);
+				logger.error("Unable to convert BSM {}", e);
 			}
 		}
 	}

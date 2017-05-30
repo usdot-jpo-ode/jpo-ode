@@ -26,7 +26,7 @@ public class VsdDepositor implements Runnable {
 		this.odeProps = odeProps;
 		try {
 			socket = new DatagramSocket(odeProps.getForwarderPort());
-			logger.debug("Created VSD depositor Socket with port " + odeProps.getVsdmSenderPort());
+			logger.debug("Created VSD depositor Socket with port {}", odeProps.getVsdmSenderPort());
 		} catch (SocketException e) {
 			logger.error("Error creating socket with port {}", odeProps.getForwarderPort(),
 					e);
@@ -42,11 +42,11 @@ public class VsdDepositor implements Runnable {
 			socket.send(new DatagramPacket(encodedVsd, encodedVsd.length,
 					new InetSocketAddress(odeProps.getSdcIp(), odeProps.getSdcPort())));
 		} catch (IOException e) {
-			logger.error("Error Sending VSD to SDC", e);
+			logger.error("Error Sending VSD to SDC {}", e);
 		}
 
 		if (this.socket != null) {
-			logger.debug("Closing vsd depositor socket with port " + odeProps.getVsdmSenderPort());
+			logger.debug("Closing vsd depositor socket with port {}", odeProps.getVsdmSenderPort());
 			socket.close();
 		}
 	}
