@@ -10,8 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class OdeSvcsApplicationTests {
 
-	@Test
-	@Ignore
+	@Test @Ignore
 	public void contextLoads() {
 	}
 

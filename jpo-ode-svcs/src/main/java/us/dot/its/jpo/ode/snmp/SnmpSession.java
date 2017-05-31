@@ -8,13 +8,19 @@ import org.snmp4j.TransportMapping;
 import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.MPv3;
+import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.security.AuthMD5;
+import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModels;
 import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
+import org.snmp4j.smi.Address;
+import org.snmp4j.smi.GenericAddress;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
+
+import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 
 /**
  * This object is used to abstract away the complexities of SNMP calls and allow
@@ -39,21 +45,17 @@ public class SnmpSession {
      *            timeout, etc)
      * @throws IOException
      */
-    public SnmpSession(SnmpProperties props) throws IOException {
-        
-        // Verify props object is not null
-        if (props == null) {
-            throw new IllegalArgumentException("SnmpProperties object is null");
-        }
+    public SnmpSession(RSU rsu) throws IOException {
+        Address addr = GenericAddress.parse(rsu.getRsuTarget() + "/161");
 
         // Create a "target" to which a request is sent
         target = new UserTarget();
-        target.setAddress(props.getTarget());
-        target.setRetries(props.getRetries());
-        target.setTimeout(props.getTimeout());
-        target.setVersion(props.getVersion());
-        target.setSecurityLevel(props.getSecurityLevel());
-        target.setSecurityName(new OctetString(props.getUsername()));
+        target.setAddress(addr);
+        target.setRetries(rsu.getRsuRetries());
+        target.setTimeout(rsu.getRsuTimeout());
+        target.setVersion(SnmpConstants.version3);
+        target.setSecurityLevel(SecurityLevel.AUTH_NOPRIV);
+        target.setSecurityName(new OctetString(rsu.getRsuUsername()));
 
         // Set up the UDP transport mapping over which requests are sent
         transport = null;
@@ -69,8 +71,8 @@ public class SnmpSession {
         // Register the security options and create an SNMP "user"
         USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
         SecurityModels.getInstance().addSecurityModel(usm);
-        snmp.getUSM().addUser(new OctetString(props.getUsername()), new UsmUser(new OctetString(props.getUsername()),
-                AuthMD5.ID, new OctetString(props.getPassword()), null, null));
+        snmp.getUSM().addUser(new OctetString(rsu.getRsuUsername()), new UsmUser(new OctetString(rsu.getRsuUsername()),
+                AuthMD5.ID, new OctetString(rsu.getRsuPassword()), null, null));
 
         // Assert the ready flag so the user can begin sending messages
         ready = true;

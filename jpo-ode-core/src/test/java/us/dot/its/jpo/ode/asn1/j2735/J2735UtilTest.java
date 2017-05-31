@@ -16,10 +16,11 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oss.asn1.AbstractData;
 import com.oss.asn1.Coder;
@@ -37,7 +38,7 @@ public class J2735UtilTest {
 	
 	static final private boolean isDebugOutput = false;
 	
-	private static final Logger log = Logger.getLogger(J2735UtilTest.class);
+	private static final Logger log = LoggerFactory.getLogger(J2735UtilTest.class);
 
 	@BeforeClass
 	public static void init() throws ControlTableNotFoundException, InitializationException {
@@ -159,7 +160,7 @@ public class J2735UtilTest {
 				testDecodeByName(t[0], t[1]);
 				log.info("Decoded file " + t[0] + " into object " + t[1]);
 			} catch (Exception e) {
-				log.error(e);
+				log.error("", e);
 				assertTrue(false);
 			}
 		});

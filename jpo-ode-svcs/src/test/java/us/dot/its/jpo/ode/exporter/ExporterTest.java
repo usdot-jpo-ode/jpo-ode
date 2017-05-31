@@ -4,13 +4,14 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
+
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
-
-import static org.junit.Assert.fail;
 
 @RunWith(JMockit.class)
 public class ExporterTest {
@@ -40,10 +41,35 @@ public class ExporterTest {
             Exporter rawBsmExporter = new RawBsmExporter(mockOdeProperties, testTopic, mockSimpMessagingTemplate);
             rawBsmExporter.setConsumer(mockStringConsumer);
             rawBsmExporter.run();
-
+            
             Exporter FilteredBsmExporter = new FilteredBsmExporter(mockOdeProperties, testTopic, mockSimpMessagingTemplate);
             FilteredBsmExporter.setConsumer(mockByteArrayConsumer);
             FilteredBsmExporter.run();
+            
+            Exporter exporter = new Exporter("testTopic") {
+               
+               @Override
+               protected void subscribe() {
+                  ;
+               }
+            };
+            exporter.run();
+            assertNull(exporter.getConsumer());
+            assertEquals("testTopic", exporter.getTopic());
+            
+            exporter = new Exporter("topic", null) {
+               
+               @Override
+               protected void subscribe() {
+                  ;
+               }
+            };
+            exporter.run();
+            
+            assertNull(exporter.getConsumer());
+            assertEquals("topic", exporter.getTopic());
+            exporter.setTopic("topic2");
+            assertEquals("topic2", exporter.getTopic());
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }

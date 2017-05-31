@@ -10,8 +10,10 @@ public class RawBsmExporter extends Exporter {
     private OdeProperties odeProperties;
     private SimpMessagingTemplate template;
 
-    public RawBsmExporter(OdeProperties odeProperties, String topic, SimpMessagingTemplate template) 
-                                  throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public RawBsmExporter(
+          OdeProperties odeProperties, 
+          String topic, 
+          SimpMessagingTemplate template) {
         super(topic);
         this.odeProperties = odeProperties;
         this.template = template;

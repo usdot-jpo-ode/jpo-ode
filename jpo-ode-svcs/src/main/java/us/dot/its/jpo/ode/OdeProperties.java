@@ -44,15 +44,15 @@ public class OdeProperties implements EnvironmentAware {
     private String kafkaTopicBsmSerializedPojo = "topic.J2735Bsm";
     private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
     private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
-
-    private int vsdmPort = 5556;
-    private int vsdmBufferSize = 10000;
+    private String kafkaTopicVsdm = "topic.J2735Vsdm";
+    
+    private int receiverPort = 46753;
+    private int vsdmBufferSize = 500;
     private Boolean vsdmVerboseJson = false;
-    private String sdcIp = "104.130.170.234";
+    private String sdcIp = "104.130.170.234";//NOSONAR
     private int sdcPort = 46753;
     private String returnIp = "";
-    private int returnPort = 6666;
-    private int serviceRequestSenderPort = 5556;
+    private int forwarderPort = 5555;
     private int vsdmSenderPort = 6666;
 
     private String hostId;
@@ -229,21 +229,13 @@ public class OdeProperties implements EnvironmentAware {
         this.kafkaTopicBsmSerializedPojo = kafkaTopicBsmSerializedPOJO;
     }
 
-    public String getKafkaTopicBsmRawJson() {
-        return kafkaTopicBsmRawJson;
-    }
+	public int getReceiverPort() {
+		return receiverPort;
+	}
 
-    public void setKafkaTopicBsmRawJson(String kafkaTopicBsmRawJSON) {
-        this.kafkaTopicBsmRawJson = kafkaTopicBsmRawJSON;
-    }
-
-    public int getVsdmPort() {
-        return vsdmPort;
-    }
-
-    public void setVsdmPort(int vsdmPort) {
-        this.vsdmPort = vsdmPort;
-    }
+	public void setReceiverPort(int vsdmPort) {
+		this.receiverPort = vsdmPort;
+	}
 
     public int getVsdmBufferSize() {
         return vsdmBufferSize;
@@ -281,25 +273,17 @@ public class OdeProperties implements EnvironmentAware {
         return returnIp;
     }
 
-    public void setReturnIp(String returnIp) {
-        this.returnIp = returnIp;
-    }
+	public int getForwarderPort() {
+		return forwarderPort;
+	}
 
-    public int getReturnPort() {
-        return returnPort;
-    }
+	public void setForwarderPort(int forwarderPort) {
+		this.forwarderPort = forwarderPort;
+	}
 
-    public void setReturnPort(int returnPort) {
-        this.returnPort = returnPort;
-    }
-
-    public int getServiceRequestSenderPort() {
-        return serviceRequestSenderPort;
-    }
-
-    public void setServiceRequestSenderPort(int serviceRequestSenderPort) {
-        this.serviceRequestSenderPort = serviceRequestSenderPort;
-    }
+	public String getKafkaTopicVsdm() {
+		return kafkaTopicVsdm;
+	}
 
     public int getVsdmSenderPort() {
         return vsdmSenderPort;
@@ -307,6 +291,30 @@ public class OdeProperties implements EnvironmentAware {
 
     public void setVsdmSenderPort(int vsdmSenderPort) {
         this.vsdmSenderPort = vsdmSenderPort;
+    }
+
+    public String getDdsCasPass() {
+        return ddsCasPass;
+    }
+
+    public void setDdsCasPass(String ddsCasPass) {
+        this.ddsCasPass = ddsCasPass;
+    }
+
+    public String getKafkaTopicBsmRawJson() {
+        return kafkaTopicBsmRawJson;
+    }
+
+    public void setKafkaTopicBsmRawJson(String kafkaTopicBsmRawJson) {
+        this.kafkaTopicBsmRawJson = kafkaTopicBsmRawJson;
+    }
+
+    public void setKafkaTopicVsdm(String kafkaTopicVsdm) {
+        this.kafkaTopicVsdm = kafkaTopicVsdm;
+    }
+
+    public void setReturnIp(String returnIp) {
+        this.returnIp = returnIp;
     }
 
 }

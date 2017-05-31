@@ -16,7 +16,16 @@ import org.snmp4j.smi.VariableBinding;
  */
 public class TimManagerService {
     
-    private TimManagerService() {
+    public static class TimManagerServiceException extends Exception {
+      private static final long serialVersionUID = 1L;
+
+      public TimManagerServiceException(String string, Exception e) {
+         super(string, e);
+      }
+
+   }
+
+   private TimManagerService() {
        throw new UnsupportedOperationException();
     }
     
@@ -24,13 +33,10 @@ public class TimManagerService {
      * Assembles the various RSU elements of a TimParameters object into a usable PDU.
      * @param params - TimParameters POJO that stores status, channel, payload, etc.
      * @return PDU
+    * @throws TimManagerServiceException 
      */
-    public static ScopedPDU createPDU(TimParameters params) {
-        
-        if (params == null) {
-            return null;
-        }
-        
+    public static ScopedPDU createPDU(SNMP snmp, String payload) throws TimManagerServiceException {
+      try {  
         //////////////////////////////
         // - OID examples         - //
         //////////////////////////////
@@ -56,16 +62,16 @@ public class TimManagerService {
         //      --> 1.4.1.10.3 = 1
         //////////////////////////////
         
-        VariableBinding rsuSRMPsid = new VariableBinding(new OID("1.0.15628.4.1.4.1.2.3"), new OctetString(DatatypeConverter.parseHexBinary(params.rsuSRMPsid)));
-        VariableBinding rsuSRMDsrcMsgId = new VariableBinding(new OID("1.0.15628.4.1.4.1.3.3"), new Integer32(params.rsuSRMDsrcMsgId));
-        VariableBinding rsuSRMTxMode = new VariableBinding(new OID("1.0.15628.4.1.4.1.4.3"), new Integer32(params.rsuSRMTxMode));
-        VariableBinding rsuSRMTxChannel = new VariableBinding(new OID("1.0.15628.4.1.4.1.5.3"), new Integer32(params.rsuSRMTxChannel));
-        VariableBinding rsuSRMTxInterval = new VariableBinding(new OID("1.0.15628.4.1.4.1.6.3"), new Integer32(params.rsuSRMTxInterval));
-        VariableBinding rsuSRMDeliveryStart = new VariableBinding(new OID("1.0.15628.4.1.4.1.7.3"), new OctetString(DatatypeConverter.parseHexBinary(params.rsuSRMDeliveryStart)));
-        VariableBinding rsuSRMDeliveryStop = new VariableBinding(new OID("1.0.15628.4.1.4.1.8.3"), new OctetString(DatatypeConverter.parseHexBinary(params.rsuSRMDeliveryStop)));
-        VariableBinding rsuSRMPayload = new VariableBinding(new OID("1.0.15628.4.1.4.1.9.3"), new OctetString(DatatypeConverter.parseHexBinary(params.rsuSRMPayload)));
-        VariableBinding rsuSRMEnable = new VariableBinding(new OID("1.0.15628.4.1.4.1.10.3"), new Integer32(params.rsuSRMEnable));
-        VariableBinding rsuSRMStatus = new VariableBinding(new OID("1.0.15628.4.1.4.1.11.3"), new Integer32(params.rsuSRMStatus));
+        VariableBinding rsuSRMPsid = new VariableBinding(new OID("1.0.15628.4.1.4.1.2.3"), new OctetString(DatatypeConverter.parseHexBinary(snmp.getRsuid())));
+        VariableBinding rsuSRMDsrcMsgId = new VariableBinding(new OID("1.0.15628.4.1.4.1.3.3"), new Integer32(snmp.getMsgid()));
+        VariableBinding rsuSRMTxMode = new VariableBinding(new OID("1.0.15628.4.1.4.1.4.3"), new Integer32(snmp.getMode()));
+        VariableBinding rsuSRMTxChannel = new VariableBinding(new OID("1.0.15628.4.1.4.1.5.3"), new Integer32(snmp.getChannel()));
+        VariableBinding rsuSRMTxInterval = new VariableBinding(new OID("1.0.15628.4.1.4.1.6.3"), new Integer32(snmp.getInterval()));
+        VariableBinding rsuSRMDeliveryStart = new VariableBinding(new OID("1.0.15628.4.1.4.1.7.3"), new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystart()))));
+        VariableBinding rsuSRMDeliveryStop = new VariableBinding(new OID("1.0.15628.4.1.4.1.8.3"), new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystop()))));
+        VariableBinding rsuSRMPayload = new VariableBinding(new OID("1.0.15628.4.1.4.1.9.3"), new OctetString(DatatypeConverter.parseHexBinary(payload)));
+        VariableBinding rsuSRMEnable = new VariableBinding(new OID("1.0.15628.4.1.4.1.10.3"), new Integer32(snmp.getEnable()));
+        VariableBinding rsuSRMStatus = new VariableBinding(new OID("1.0.15628.4.1.4.1.11.3"), new Integer32(snmp.getStatus()));
         
         ScopedPDU pdu = new ScopedPDU();
         pdu.add(rsuSRMPsid);
@@ -81,5 +87,8 @@ public class TimManagerService {
         pdu.setType(PDU.SET);
         
         return pdu;
+      } catch (Exception e) {
+         throw new TimManagerServiceException("Error creatign PDU", e);
+      }
     }
 }

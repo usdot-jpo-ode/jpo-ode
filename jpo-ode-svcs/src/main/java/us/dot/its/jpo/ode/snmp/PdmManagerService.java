@@ -6,7 +6,7 @@ import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
 
-import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
+import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
 
 public class PdmManagerService {
 
@@ -14,12 +14,7 @@ public class PdmManagerService {
        throw new UnsupportedOperationException();
     }
 
-    public static ScopedPDU createPDU(PDM params) {
-
-        // Filter null request
-        if (params == null) {
-            return null;
-        }
+    public static ScopedPDU createPDU(J2735ProbeDataManagment params) {
 
         ScopedPDU pdu = new ScopedPDU();
         pdu.setType(PDU.SET);

@@ -37,7 +37,8 @@ public abstract class Exporter implements Runnable {
             consumer.close();
     }
 
-    public MessageConsumer<?, ?> getConsumer() {
+    @SuppressWarnings("rawtypes")
+   public MessageConsumer getConsumer() {
         return consumer;
     }
 

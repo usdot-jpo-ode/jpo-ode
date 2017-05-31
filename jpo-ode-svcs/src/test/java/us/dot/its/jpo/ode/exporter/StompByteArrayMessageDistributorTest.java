@@ -32,7 +32,10 @@ public class StompByteArrayMessageDistributorTest {
         new Expectations() {
             {
                 new SerializationUtils<>();
+                result = mockSerializationUtils;
+                
                 mockSerializationUtils.deserialize((byte[]) any);
+                result = mockConsumerRecord;
 
                 mockConsumerRecord.value();
                 result = any;

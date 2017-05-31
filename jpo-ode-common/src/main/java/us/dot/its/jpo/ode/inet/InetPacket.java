@@ -12,8 +12,8 @@ import us.dot.its.jpo.ode.util.CrcCccitt;
 
 public class InetPacket {
 	
-	private static final int magicNumber = 982451653; 
-	private static final int minBundleLength = 4 + 4 + 1 + 4 + 2; // magic + port + type + ip4 + CRC
+	private static final int MAGIC_NUMBER = 982451653; 
+	private static final int MIN_BUNDLE_LENGTH = 4 + 4 + 1 + 4 + 2; // magic + port + type + ip4 + CRC
 
 	private InetPoint point;
 	private byte[] payload;
@@ -28,19 +28,19 @@ public class InetPacket {
 	
 	public InetPacket(InetPoint point, byte[] payload) {
 		this.point = point;
-		if ( parseBundle(payload) == false )
+		if ( !parseBundle(payload) )
 			this.payload = payload;
 	}
 	
 	public InetPacket(DatagramPacket packet) {
 		point = new InetPoint(packet.getAddress().getAddress(), packet.getPort());
 		byte[] data = Arrays.copyOfRange(packet.getData(), packet.getOffset(), packet.getLength());
-		if ( parseBundle(data) == false )
+		if ( !parseBundle(data) )
 			payload = data;
 	}
 	
 	public InetPacket(byte[] bundle) {
-		if ( parseBundle(bundle) == false )
+		if ( !parseBundle(bundle) )
 			payload = bundle;
 	}
 	
@@ -56,41 +56,41 @@ public class InetPacket {
 		if ( point == null )
 			return payload;
 		int payloadLength = payload != null ? payload.length : 0;
-		final int header_length = minBundleLength - 4 + point.address.length;
-		byte [] bundle = new byte[header_length + payloadLength];
-		ByteBuffer buffer = ByteBuffer.allocate(header_length).order(ByteOrder.BIG_ENDIAN);
-		buffer.putInt(magicNumber);
+		int HEADER_LENGTH = MIN_BUNDLE_LENGTH - 4 + point.address.length;
+		byte [] bundle = new byte[HEADER_LENGTH + payloadLength];
+		ByteBuffer buffer = ByteBuffer.allocate(HEADER_LENGTH).order(ByteOrder.BIG_ENDIAN);
+		buffer.putInt(MAGIC_NUMBER);
 		buffer.putInt(point.port);
 		buffer.put((byte)(point.address.length == 16 ? 1 : 0));
 		buffer.put(point.address);
 		byte[] header = buffer.array();
-		assert(header.length == header_length);
+		assert(header.length == HEADER_LENGTH);
 		CrcCccitt.setMsgCRC(header);
-		System.arraycopy(header, 0, bundle, 0, header_length);
+		System.arraycopy(header, 0, bundle, 0, HEADER_LENGTH);
 		if ( payload != null )
-			System.arraycopy(payload, 0, bundle, header_length, payloadLength);
+			System.arraycopy(payload, 0, bundle, HEADER_LENGTH, payloadLength);
 		return bundle;
 	}
 	
 	private boolean parseBundle(byte[] bundle) {
-		if ( bundle == null || bundle.length < minBundleLength )
+		if ( bundle == null || bundle.length < MIN_BUNDLE_LENGTH )
 			return false;
 		ByteBuffer buffer = ByteBuffer.wrap(bundle);
 		int magic = buffer.getInt();
-		if ( magic != magicNumber ) 
+		if ( magic != MAGIC_NUMBER ) 
 			return false;
 		int port = buffer.getInt();
 		byte type = buffer.get();
 		int addressLength = type == 1 ? 16 : 4;
 		if ( buffer.remaining() < addressLength + 2 )
 			return false;
-		if ( !CrcCccitt.isValidMsgCRC(bundle, 0, minBundleLength - 4 + addressLength) ) 
+		if ( !CrcCccitt.isValidMsgCRC(bundle, 0, MIN_BUNDLE_LENGTH - 4 + addressLength) ) 
 			return false;
 		byte[] address = new byte[addressLength];
 		buffer.get(address,0,addressLength);
 		buffer.getShort();
 		point = new InetPoint(address, port, true);
-		int payloadLength = bundle.length - minBundleLength + 4 - addressLength;
+		int payloadLength = bundle.length - MIN_BUNDLE_LENGTH + 4 - addressLength;
 		payload = new byte[payloadLength];
 		buffer.get(payload,0,payloadLength);
 		return true;

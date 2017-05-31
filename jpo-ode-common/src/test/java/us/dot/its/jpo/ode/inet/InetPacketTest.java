@@ -1,9 +1,6 @@
 package us.dot.its.jpo.ode.inet;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -17,6 +14,13 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 public class InetPacketTest {
 
 	private static boolean isVerbose = true;
+	
+	@Test
+	public void testConstrcutor() throws UnknownHostException {
+	   InetPacket pkt = new InetPacket("bah.com", 1111, null);
+	   
+	   assertNull(pkt.getPayload());
+	}
 	
 	@Test
 	public void test() throws UnknownHostException {

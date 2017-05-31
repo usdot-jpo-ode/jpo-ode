@@ -10,8 +10,10 @@ public class FilteredBsmExporter extends Exporter {
     private OdeProperties odeProperties;
     private SimpMessagingTemplate template;
 
-    public FilteredBsmExporter(OdeProperties odeProperties, String topic, SimpMessagingTemplate template) 
-                                  throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public FilteredBsmExporter(
+          OdeProperties odeProperties,
+          String topic, 
+          SimpMessagingTemplate template) {
         super(topic);
         this.odeProperties = odeProperties;
         this.template = template;
