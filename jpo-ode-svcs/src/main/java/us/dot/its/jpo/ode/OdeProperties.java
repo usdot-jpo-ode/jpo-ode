@@ -47,7 +47,9 @@ public class OdeProperties implements EnvironmentAware {
     private String kafkaTopicVsdm = "topic.J2735Vsdm";
     
     private int receiverPort = 46753;
+    private int bsmReceiverPort = 46800;
     private int vsdmBufferSize = 500;
+    private int bsmBufferSize = 500;
     private Boolean vsdmVerboseJson = false;
     private String sdcIp = "104.130.170.234";//NOSONAR
     private int sdcPort = 46753;
@@ -316,5 +318,21 @@ public class OdeProperties implements EnvironmentAware {
     public void setReturnIp(String returnIp) {
         this.returnIp = returnIp;
     }
+
+	public int getBsmReceiverPort() {
+		return bsmReceiverPort;
+	}
+
+	public void setBsmReceiverPort(int bsmReceiverPort) {
+		this.bsmReceiverPort = bsmReceiverPort;
+	}
+
+	public int getBsmBufferSize() {
+		return bsmBufferSize;
+	}
+
+	public void setBsmBufferSize(int bsmBufferSize) {
+		this.bsmBufferSize = bsmBufferSize;
+	}
 
 }
