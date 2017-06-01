@@ -12,7 +12,19 @@ import org.apache.commons.codec.binary.Hex;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import mockit.Expectations;
+import mockit.Injectable;
+import mockit.Mocked;
+import mockit.Verifications;
+import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.SerializableMessageProducerPool;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class BsmReceiverTest {
 
@@ -24,15 +36,21 @@ public class BsmReceiverTest {
 	public void tearDown() throws Exception {
 	}
 
+	/*
+	 * This test mimics end-to-end testing on a single machine by sending a uper
+	 * encoded bsm to the local machine.
+	 */
 	@Test
-	public void test() {
+	@Ignore
+	public void endToEndTest() {
 		int port = 12321;
-		//String odeIp = "2001:4802:7801:102:be76:4eff:fe20:eb5"; // ode instance
-		//String odeIp = "162.242.218.130";
+		// String odeIp = "2001:4802:7801:102:be76:4eff:fe20:eb5"; // ode
+		// instance
+		// String odeIp = "162.242.218.130";
 		String odeIp = "127.0.0.1";
 		int odePort = 46800;
 
-		String uperBsmHex ="401480CA4000000000000000000000000000000000000000000000000000000000000000F800D9EFFFB7FFF00000000000000000000000000000000000000000000000000000001FE07000000000000000000000000000000000001FF0"; 
+		String uperBsmHex = "401480CA4000000000000000000000000000000000000000000000000000000000000000F800D9EFFFB7FFF00000000000000000000000000000000000000000000000000000001FE07000000000000000000000000000000000001FF0";
 
 		DatagramSocket socket = null;
 		try {
@@ -68,8 +86,87 @@ public class BsmReceiverTest {
 		}
 	}
 
+	@Injectable
+	OdeProperties mockOdeProperties;
+
+	@Mocked
+	OssAsn1Coder mockedOssAsn1Coder;
+
+	@Mocked
+	DatagramSocket mockedDatagramSocket;
+
+	@Mocked
+	SerializableMessageProducerPool mockedSMPP;
+
+	@Mocked
+	MessageProducer mockedMessageProducer;
+
+	@Test
+	public void testConstructor() throws SocketException {
+
+		new Expectations() {
+			{
+				new OssAsn1Coder();
+
+				mockOdeProperties.getBsmReceiverPort();
+				result = 1234;
+
+				new DatagramSocket(1234);
+
+				new SerializableMessageProducerPool<>(mockOdeProperties);
+
+				MessageProducer.defaultStringMessageProducer(anyString, anyString);
+			}
+		};
+		new BsmReceiver(mockOdeProperties);
+	}
+
+	@Mocked
+	Logger mockedLogger;
+
+	@Mocked
+	LoggerFactory mockedLoggerFactory;
+
+	@Test
+	public void testConstructorException() throws SocketException {
+
+		new Expectations() {
+			{
+				new OssAsn1Coder();
+
+				mockOdeProperties.getBsmReceiverPort();
+				result = 1234;
+
+				new DatagramSocket(1234);
+				result = new SocketException();
+			}
+		};
+		new BsmReceiver(mockOdeProperties);
+		new Verifications() {
+			{
+				mockedLogger.error(anyString, anyInt, (SocketException) any);
+			}
+		};
+	}
+
+	@Test
+	@Ignore
+	public void testRun() throws SocketException {
+
+		new Expectations() {
+			{
+				new OssAsn1Coder();
+
+				mockOdeProperties.getBsmReceiverPort();
+				result = 1234;
+
+				new DatagramSocket(1234);
+
+				new SerializableMessageProducerPool<>(mockOdeProperties);
+
+				MessageProducer.defaultStringMessageProducer(anyString, anyString);
+			}
+		};
+		new BsmReceiver(mockOdeProperties);
+	}
 }
-
-
-
-

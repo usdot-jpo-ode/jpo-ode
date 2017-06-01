@@ -12,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import java.util.Comparator;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -64,17 +66,20 @@ public class BsmProcessor implements Runnable {
 
 	public void processBsm(String bsmString) {
 		// convert string json to J2735Bsm
-		J2735Bsm bsm = null;
+		J2735Bsm bsm = (J2735Bsm) JsonUtils.fromJson(bsmString, J2735Bsm.class);
 		String tempId = bsm.getCoreData().getId();
 		if (!bsmQueueMap.containsKey(tempId)) {
-			Comparator<J2735Bsm> bsmComparator = new BsmComparator();
-			Queue<J2735Bsm> bsmQueue = new PriorityQueue<>(10, bsmComparator);
+			//Comparator<J2735Bsm> bsmComparator = new BsmComparator();
+			Queue<J2735Bsm> bsmQueue = new PriorityQueue<>(10);
 			bsmQueueMap.put(tempId, bsmQueue);
 		}
 		bsmQueueMap.get(tempId).add(bsm);
 		if (bsmQueueMap.get(tempId).size() == 10) {
 			// extract the 10 bsms
 			J2735Bsm[] bsmArray = (J2735Bsm[]) bsmQueueMap.get(tempId).toArray();
+			for(J2735Bsm entry: bsmArray){
+				logger.debug("Bsm in array: {}", entry.toString());
+			}
 			
 			// convert them to VSDs
 			
@@ -82,7 +87,7 @@ public class BsmProcessor implements Runnable {
 		}
 	}
 
-	// Comparator for the priority queue
+	// Comparator for the priority queue to keep the chronological order of bsms
 	private class BsmComparator implements Comparator<J2735Bsm> {
 		@Override
 		public int compare(J2735Bsm x, J2735Bsm y) {

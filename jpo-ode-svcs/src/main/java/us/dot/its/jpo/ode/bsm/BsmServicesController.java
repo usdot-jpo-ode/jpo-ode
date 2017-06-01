@@ -26,11 +26,13 @@ public class BsmServicesController {
 		bsmReceiveExecutor = Executors.newSingleThreadExecutor();
 		bsmReceiveExecutor.submit(new BsmReceiver(odeProps));
 		
+		/* Ode-314 stuff
         try {
             Executors.newSingleThreadExecutor().submit(new BsmProcessor(odeProps));
         } catch (Exception e) {
             logger.error("Error launching Bsm Processor", e);
         }
+        */
 	}
 
 }

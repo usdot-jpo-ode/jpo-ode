@@ -53,9 +53,9 @@ public class BsmReceiver implements Runnable {
 
 		try {
 			socket = new DatagramSocket(odeProperties.getBsmReceiverPort());
-			logger.info("Created UDP socket bound to port {}", odeProperties.getBsmReceiverPort());
+			logger.debug("Created UDP socket bound to port {}", odeProperties.getBsmReceiverPort());
 		} catch (SocketException e) {
-			logger.error("Error creating socket with port " + odeProperties.getBsmReceiverPort(), e);
+			logger.error("Error creating socket with port {}", odeProperties.getBsmReceiverPort(), e);
 		}
 
 		messageProducerPool = new SerializableMessageProducerPool<>(odeProperties);
@@ -97,13 +97,13 @@ public class BsmReceiver implements Runnable {
 		Asn1Object decoded = asn1Coder.decodeUPERBsmBytes(msg);
 		if (decoded instanceof J2735Bsm) {
 			logger.debug("Received BSM");
-			publishBsms((J2735Bsm)decoded);
+			publishBsms((J2735Bsm) decoded);
 		} else {
 			logger.error("Unknown message type received {}", decoded.getClass().getName());
 		}
 	}
 
-	private void publishBsms(J2735Bsm bsm) {
+	public void publishBsms(J2735Bsm bsm) {
 		logger.debug("Publishing j2735 bsm");
 		publishBsm(bsm);
 

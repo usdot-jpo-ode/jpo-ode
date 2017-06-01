@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.vsdm;
+package us.dot.its.jpo.ode.bsm;
 
 import java.util.List;
 
@@ -104,3 +104,4 @@ public class BsmToVsdConverter {
 	}
 
 }
+
