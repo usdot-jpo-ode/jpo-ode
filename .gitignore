@@ -91,3 +91,17 @@ jpo-ode-consumer-example/target/
 *.iml
 /jpo-ode-svcs/SNMP_Error.log
 
+/jpo-ode-svcs/src/main/java/us/dot/its/jpo/ode/subscriber/.DS_Store
+/jpo-ode-svcs/src/main/java/us/dot/its/jpo/ode/.DS_Store
+/jpo-ode-svcs/src/main/java/us/dot/its/.DS_Store
+/jpo-ode-svcs/.DS_Store
+/jpo-ode-plugins/src/main/java/us/dot/its/jpo/ode/plugin/j2735/oss/.DS_Store
+/jpo-ode-plugins/.DS_Store
+/jpo-ode-core/src/test/java/.DS_Store
+/jpo-ode-core/src/test/.DS_Store
+/jpo-ode-core/src/main/.DS_Store
+/jpo-ode-core/src/.DS_Store
+/jpo-ode-core/.DS_Store
+/jpo-ode-consumer-example/.DS_Store
+/.DS_Store
+.DS_Store
