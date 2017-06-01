@@ -14,7 +14,7 @@ services:
       KAFKA_ADVERTISED_HOST_NAME: 192.168.99.100
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_CREATE_TOPICS: "j2735BsmFilteredJson:1:1,j2735BsmRawJson:1:1"
+      KAFKA_CREATE_TOPICS: "j2735BsmFilteredJson:1:1,j2735BsmRawJson:1:1,topic.EncodedIsdm:1:1"
       KAFKA_DELETE_TOPIC_ENABLED: "true"
       KAFKA_CLEANUP_POLICY: "delete" # delete old logs
       KAFKA_LOG_RETENTION_HOURS: 48
