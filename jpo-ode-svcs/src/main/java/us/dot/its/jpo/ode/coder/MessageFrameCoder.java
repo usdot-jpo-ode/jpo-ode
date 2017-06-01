@@ -24,12 +24,16 @@ public class MessageFrameCoder extends AbstractCoder {
 
     @Override
     public Asn1Object decode(String line) {
-       return asn1Coder.decodeUPERMessageFrameHex(line);
+        J2735MessageFrame msgFrame = 
+                (J2735MessageFrame)asn1Coder.decodeUPERMessageFrameHex(line);
+       return msgFrame.getValue();
     }
 
     @Override
     public Asn1Object decode(InputStream is) {
-       return asn1Coder.decodeUPERMessageFrameStream(is);
+        J2735MessageFrame msgFrame = 
+                (J2735MessageFrame)asn1Coder.decodeUPERMessageFrameStream(is);
+        return msgFrame.getValue();
     }
 
     @Override

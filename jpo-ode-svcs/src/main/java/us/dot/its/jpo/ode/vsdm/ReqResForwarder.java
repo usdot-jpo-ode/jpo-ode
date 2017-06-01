@@ -108,7 +108,7 @@ public class ReqResForwarder implements Runnable {
 
 	public ServiceResponse receiveVsdServiceResponse() {
 		try {
-			byte[] buffer = new byte[odeProps.getVsdmBufferSize()];
+			byte[] buffer = new byte[odeProps.getVsdBufferSize()];
 			logger.debug("Waiting for VSD ServiceResponse from SDC...");
 			DatagramPacket responeDp = new DatagramPacket(buffer, buffer.length);
 			socket.receive(responeDp);

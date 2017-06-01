@@ -1,10 +1,5 @@
 package us.dot.its.jpo.ode.vsdm;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,13 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.oss.asn1.AbstractData;
-import com.oss.asn1.Coder;
-import com.oss.asn1.DecodeFailedException;
-import com.oss.asn1.DecodeNotSupportedException;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
-import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
@@ -28,16 +18,14 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
+import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.SerializationUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-public class VsdmReceiver implements Runnable {
+public class VsdReceiver extends AbstractUdpReceiverPublisher {
 
-	private static Logger logger = LoggerFactory.getLogger(VsdmReceiver.class);
-	private static Coder coder = J2735.getPERUnalignedCoder();
-
-	private DatagramSocket socket;
+	private static Logger logger = LoggerFactory.getLogger(VsdReceiver.class);
 
 	private OdeProperties odeProperties;
 
@@ -46,16 +34,10 @@ public class VsdmReceiver implements Runnable {
 	private ExecutorService execService;
 
 	@Autowired
-	public VsdmReceiver(OdeProperties odeProps) {
+	public VsdReceiver(OdeProperties odeProps) {
+        super(odeProps.getBsmReceiverPort(), odeProps.getBsmBufferSize());
 
 		this.odeProperties = odeProps;
-
-		try {
-			socket = new DatagramSocket(odeProperties.getReceiverPort());
-			logger.info("Created UDP socket bound to port {}", odeProperties.getReceiverPort());
-		} catch (SocketException e) {
-			logger.error("Error creating socket with port " + odeProperties.getReceiverPort(), e);
-		}
 
 		// Create a String producer for hex BSMs
 		stringProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
@@ -68,57 +50,54 @@ public class VsdmReceiver implements Runnable {
 		this.execService = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
 	}
 
-	@Override
-	public void run() {
+    @Override
+    protected void publish(AbstractData data) {
+        try {
+            extractAndPublishBsms((VehSitDataMessage) data);
+            
+            if (data instanceof BasicSafetyMessage) {
+                logger.debug("Received BSM");
+                J2735Bsm genericBsm = OssBsm.genericBsm((BasicSafetyMessage) data);
+                
+                logger.debug("Publishing BSM to topic {}", 
+                        odeProperties.getKafkaTopicBsmSerializedPojo());
+                byteArrayProducer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null,
+                        new SerializationUtils<J2735Bsm>().serialize((J2735Bsm) genericBsm));
 
-		logger.debug("Starting {}...", this.getClass().getSimpleName());
+                String bsmJson = JsonUtils.toJson(genericBsm, odeProperties.getVerboseJson());
+                stringProducer.send(odeProperties.getKafkaTopicBsmRawJson(), null, bsmJson);
+                logger.debug("Published bsm to the topics {} and {}",
+                        odeProperties.getKafkaTopicBsmSerializedPojo(), 
+                        odeProperties.getKafkaTopicBsmRawJson());
+            } else {
+                logger.error("Unknown message type received {}", data.getClass().getName());
+            }
+        } catch (OssBsmPart2Exception e) {
+            logger.error("Unable to convert BSM", e);
+        }
+    }
 
-		byte[] buffer = new byte[odeProperties.getVsdBufferSize()];
-
-		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-
-		Boolean stopped = false;
-		while (!stopped) {
-
-			try {
-				logger.debug("Waiting for UDP packets...");
-				socket.receive(packet);
-				logger.debug("Packet received.");
-				String obuIp = packet.getAddress().getHostAddress();
-				int obuPort = packet.getPort();
-				
-				//extract the actualPacket from the buffer
-				byte[] actualPacket = Arrays.copyOf(packet.getData(), packet.getLength());
-				if (packet.getLength() > 0) {
-					decodeData(actualPacket, obuIp, obuPort);
-				}
-			} catch (IOException e) {
-				logger.error("Error receiving packet", e);
-//				stopped = true;
-			}
-		}
-	}
-
-	private void decodeData(byte[] msg, String obuIp, int obuPort) {
+    
+    @Override
+    protected AbstractData decodeData(byte[] msg, String obuIp, int obuPort) 
+            throws UdpReceiverException {
+        AbstractData decoded = super.decodeData(msg, obuIp, obuPort);
 		try {
-			AbstractData decoded = J2735Util.decode(coder, msg);
 			if (decoded instanceof ServiceRequest) {
 				logger.debug("Received ServiceRequest:\n{} \n", decoded.toString());
 				ServiceRequest request = (ServiceRequest) decoded;
 				ReqResForwarder forwarder = new ReqResForwarder(odeProperties, request, obuIp, obuPort);
 				execService.submit(forwarder);
 			} else if (decoded instanceof VehSitDataMessage) {
-				logger.debug("Received VSD and publishing it.");
-
-				publishVsd(msg);
-				
-				extractAndPublishBsms((VehSitDataMessage) decoded);
+				logger.debug("Received VSD");
+	            publishVsd(msg);
 			} else {
 				logger.error("Unknown message type received {}", decoded.getClass().getName());
 			}
-		} catch (DecodeFailedException | DecodeNotSupportedException e) {
-			logger.error("Unable to decode UDP message", e);
+		} catch (Exception e) {
+			logger.error("Error decoding message", e);
 		}
+        return decoded;
 	}
 
 	private void extractAndPublishBsms(VehSitDataMessage msg) {

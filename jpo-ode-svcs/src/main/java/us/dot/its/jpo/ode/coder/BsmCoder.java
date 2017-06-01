@@ -52,7 +52,7 @@ public class BsmCoder extends AbstractCoder {
 
                 decoded = (Asn1Object) JsonUtils.fromJson(line, J2735Bsm.class);
                 publish(decoded);
-                publish(decoded.toJson());
+                publish(decoded.toJson(odeProperties.getVerboseJson()));
             }
             if (empty) {
                 EventLogger.logger.info("Empty file received");
