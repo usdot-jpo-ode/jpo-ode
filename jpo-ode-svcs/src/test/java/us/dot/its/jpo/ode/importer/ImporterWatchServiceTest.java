@@ -21,7 +21,7 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
-import us.dot.its.jpo.ode.coder.Coder;
+import us.dot.its.jpo.ode.coder.StreamDecoderPublisher;
 public class ImporterWatchServiceTest {
 
     @Tested // (fullyInitialized=false)
@@ -31,7 +31,7 @@ public class ImporterWatchServiceTest {
     @Injectable
     Path backupDir;
     @Injectable
-    Coder coder;
+    StreamDecoderPublisher coder;
     @Injectable
     Logger logger;
     @Injectable

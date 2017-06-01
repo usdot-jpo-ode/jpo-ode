@@ -20,16 +20,9 @@ public class BsmServicesController {
 		
         logger.info("Starting {} ...", this.getClass().getSimpleName());
 
-        BsmReceiver bsmReceiver = new BsmReceiver(odeProps);
+        BsmReceiver2 bsmReceiver = new BsmReceiver2(odeProps);
         logger.info("Launching {} ...", bsmReceiver.getClass().getSimpleName());
         Executors.newSingleThreadExecutor().submit(bsmReceiver);
-		/* Ode-314 stuff
-        try {
-            Executors.newSingleThreadExecutor().submit(new BsmProcessor(odeProps));
-        } catch (Exception e) {
-            logger.error("Error launching Bsm Processor", e);
-        }
-        */
 	}
 
 }

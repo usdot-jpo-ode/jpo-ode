@@ -11,13 +11,13 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.SerializationUtils;
 
-public class BsmCoder extends AbstractCoder {
+public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
 
-    public BsmCoder() {
+    public BsmStreamDecoderPublisher() {
         super();
     }
 
-    public BsmCoder(OdeProperties properties) {
+    public BsmStreamDecoderPublisher(OdeProperties properties) {
         super(properties);
     }
 

@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.vsdm;
+package us.dot.its.jpo.ode.vsd;
 
 import static org.junit.Assert.*;
 
@@ -27,6 +27,7 @@ import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.semi.ConnectionPoint;
 import us.dot.its.jpo.ode.j2735.semi.PortNumber;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
+import us.dot.its.jpo.ode.vsd.ReqResForwarder;
 
 @RunWith(JMockit.class)
 public class ReqResForwarderTest {

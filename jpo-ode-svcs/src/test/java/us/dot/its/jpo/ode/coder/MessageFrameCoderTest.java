@@ -30,7 +30,7 @@ public class MessageFrameCoderTest {
     @Test
     public void shouldConstruct() {
         // trivial test that no exceptions are thrown
-        MessageFrameCoder testMessageFrameCoder = new MessageFrameCoder();
+        MessageFrameStreamDecoderPublisher testMessageFrameCoder = new MessageFrameStreamDecoderPublisher();
     }
 
     @Test
@@ -52,7 +52,7 @@ public class MessageFrameCoderTest {
         } catch (Exception e) {
             fail("Unexpected exception in expectations block: " + e);
         }
-        MessageFrameCoder testMessageFrameCoder = new MessageFrameCoder(mockOdeProperties);
+        MessageFrameStreamDecoderPublisher testMessageFrameCoder = new MessageFrameStreamDecoderPublisher(mockOdeProperties);
 
         assertNotNull("odeProperties null", testMessageFrameCoder.odeProperties);
         assertNotNull("asn1Coder null", testMessageFrameCoder.asn1Coder);
@@ -79,7 +79,7 @@ public class MessageFrameCoderTest {
         } catch (Exception e) {
             fail("Unexpected exception in expectations block: " + e);
         }
-        MessageFrameCoder testMessageFrameCoder = new MessageFrameCoder(mockOdeProperties);
+        MessageFrameStreamDecoderPublisher testMessageFrameCoder = new MessageFrameStreamDecoderPublisher(mockOdeProperties);
 
     }
 
@@ -107,7 +107,7 @@ public class MessageFrameCoderTest {
         }
 
         assertEquals("Incorrect object returned", mockAsn1Object,
-                new MessageFrameCoder(mockOdeProperties).decode("test"));
+                new MessageFrameStreamDecoderPublisher(mockOdeProperties).decode("test"));
     }
 
     @Test
@@ -135,7 +135,7 @@ public class MessageFrameCoderTest {
         }
 
         assertEquals("Incorrect object returned", mockAsn1Object,
-                new MessageFrameCoder(mockOdeProperties).decode(mockInputStream));
+                new MessageFrameStreamDecoderPublisher(mockOdeProperties).decode(mockInputStream));
     }
 
     @Test
@@ -165,7 +165,7 @@ public class MessageFrameCoderTest {
 
         String testTopic = "testTopic";
 
-        new MessageFrameCoder(mockOdeProperties).publish(mockJ2735MessageFrame);
+        new MessageFrameStreamDecoderPublisher(mockOdeProperties).publish(mockJ2735MessageFrame);
 
     }
 

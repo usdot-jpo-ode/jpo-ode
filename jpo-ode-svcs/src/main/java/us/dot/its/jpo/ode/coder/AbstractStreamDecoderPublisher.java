@@ -15,20 +15,20 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-public abstract class AbstractCoder implements Coder {
+public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPublisher {
 
-    protected static Logger logger = LoggerFactory.getLogger(AbstractCoder.class);
+    protected static Logger logger = LoggerFactory.getLogger(AbstractStreamDecoderPublisher.class);
 
     protected OdeProperties odeProperties;
     protected Asn1Plugin asn1Coder;
     protected MessageProducer<String, String> defaultProducer;
     protected SerializableMessageProducerPool<String, byte[]> messageProducerPool;
 
-    protected AbstractCoder() {
+    protected AbstractStreamDecoderPublisher() {
         super();
     }
 
-    protected AbstractCoder(OdeProperties properties) {
+    protected AbstractStreamDecoderPublisher(OdeProperties properties) {
         super();
         this.odeProperties = properties;
         if (this.asn1Coder == null) {

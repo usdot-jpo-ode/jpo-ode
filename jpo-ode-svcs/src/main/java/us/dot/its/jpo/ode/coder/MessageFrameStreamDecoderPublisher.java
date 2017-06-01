@@ -12,13 +12,13 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.SerializationUtils;
 
-public class MessageFrameCoder extends AbstractCoder {
+public class MessageFrameStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
     
-    public MessageFrameCoder() {
+    public MessageFrameStreamDecoderPublisher() {
         super();
     }
     
-    public MessageFrameCoder(OdeProperties properties) {
+    public MessageFrameStreamDecoderPublisher(OdeProperties properties) {
         super(properties);
     }
 

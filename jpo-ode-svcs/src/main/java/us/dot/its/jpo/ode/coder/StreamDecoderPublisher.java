@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-public interface Coder {
+public interface StreamDecoderPublisher {
 
     public void decodeHexAndPublish(InputStream is) throws IOException;
     public void decodeBinaryAndPublish(InputStream is) throws IOException;
