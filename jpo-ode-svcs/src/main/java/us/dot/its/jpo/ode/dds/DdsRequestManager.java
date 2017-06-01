@@ -24,7 +24,7 @@ public abstract class DdsRequestManager<T> {
 
     private boolean connected = false;
 
-    private OdeProperties odeProperties;
+    protected OdeProperties odeProperties;
 
     private WebSocketEndpoint<T> wsClient;
 

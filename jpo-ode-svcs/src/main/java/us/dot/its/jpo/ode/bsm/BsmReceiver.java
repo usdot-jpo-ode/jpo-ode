@@ -5,30 +5,16 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.Arrays;
-import java.util.List;
 
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.oss.asn1.AbstractData;
-import com.oss.asn1.Coder;
-import com.oss.asn1.DecodeFailedException;
-import com.oss.asn1.DecodeNotSupportedException;
-
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.SerializableMessageProducerPool;
-import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
-import us.dot.its.jpo.ode.coder.BsmCoder;
-import us.dot.its.jpo.ode.j2735.J2735;
-import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
-import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsm;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.SerializationUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
@@ -41,8 +27,8 @@ public class BsmReceiver implements Runnable {
 
 	private OdeProperties odeProperties;
 
-	private SerializableMessageProducerPool<String, byte[]> messageProducerPool;
-	private MessageProducer<String, String> bsmProducer;
+    private MessageProducer<String, byte[]> byteArrayProducer;
+    private MessageProducer<String, String> stringProducer;
 	private OssAsn1Coder asn1Coder;
 
 	@Autowired
@@ -58,11 +44,13 @@ public class BsmReceiver implements Runnable {
 			logger.error("Error creating socket with port " + odeProperties.getBsmReceiverPort(), e);
 		}
 
-		messageProducerPool = new SerializableMessageProducerPool<>(odeProperties);
+        // Create a String producer for hex BSMs
+        stringProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
+                odeProperties.getKafkaProducerType());
 
-		// Create a String producer for hex BSMs
-		bsmProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
-				odeProperties.getKafkaProducerType());
+        // Create a ByteArray producer for UPER BSMs and VSDs
+        byteArrayProducer = MessageProducer.defaultByteArrayMessageProducer(odeProperties.getKafkaBrokers(),
+                odeProperties.getKafkaProducerType());
 	}
 
 	@Override
@@ -107,20 +95,20 @@ public class BsmReceiver implements Runnable {
 		logger.debug("Publishing j2735 bsm");
 		publishBsm(bsm);
 
-		String bsmJson = JsonUtils.toJson(bsm, odeProperties.getVsdmVerboseJson());
+		String bsmJson = JsonUtils.toJson(bsm, odeProperties.getVerboseJson());
+        logger.debug("Published bsm to the topics {} and {}", 
+                odeProperties.getKafkaTopicBsmSerializedPojo(),
+                odeProperties.getKafkaTopicBsmRawJson());
 		publishBsm(bsmJson);
-		logger.debug("Published bsm to the topics {} and {}", odeProperties.getKafkaTopicBsmSerializedPojo(),
-				odeProperties.getKafkaTopicBsmRawJson());
 	}
 
 	public void publishBsm(String msg) {
-		bsmProducer.send(odeProperties.getKafkaTopicBsmRawJson(), null, msg);
+        stringProducer.send(odeProperties.getKafkaTopicBsmRawJson(), null, msg);
 	}
 
 	public void publishBsm(Asn1Object msg) {
-		MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
-		producer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null,
-				new SerializationUtils<J2735Bsm>().serialize((J2735Bsm) msg));
-		messageProducerPool.checkIn(producer);
+        logger.debug("Publishing BSM to topic {}", odeProperties.getKafkaTopicBsmSerializedPojo());
+        byteArrayProducer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null,
+                new SerializationUtils<J2735Bsm>().serialize((J2735Bsm) msg));
 	}
 }

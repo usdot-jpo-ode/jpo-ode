@@ -44,19 +44,22 @@ public class OdeProperties implements EnvironmentAware {
     private String kafkaTopicBsmSerializedPojo = "topic.J2735Bsm";
     private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
     private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
-    private String kafkaTopicVsdm = "topic.J2735Vsdm";
+    private String kafkaTopicVsd = "topic.J2735Vsd";
     
     private int receiverPort = 46753;
     private int bsmReceiverPort = 46800;
-    private int vsdmBufferSize = 500;
+    private int vsdBufferSize = 500;
     private int bsmBufferSize = 500;
-    private Boolean vsdmVerboseJson = false;
+    private Boolean verboseJson = false;
+
     private String sdcIp = "104.130.170.234";//NOSONAR
     private int sdcPort = 46753;
     private String returnIp = "";
     private int forwarderPort = 5555;
-    private int vsdmSenderPort = 6666;
+    private int vsdSenderPort = 6666;
 
+    private boolean depositSanitizedBsmToSdc = true;
+    
     private String hostId;
 
     public OdeProperties() {
@@ -231,28 +234,28 @@ public class OdeProperties implements EnvironmentAware {
         this.kafkaTopicBsmSerializedPojo = kafkaTopicBsmSerializedPOJO;
     }
 
-	public int getReceiverPort() {
-		return receiverPort;
-	}
-
-	public void setReceiverPort(int vsdmPort) {
-		this.receiverPort = vsdmPort;
-	}
-
-    public int getVsdmBufferSize() {
-        return vsdmBufferSize;
+    public int getReceiverPort() {
+        return receiverPort;
     }
 
-    public void setVsdmBufferSize(int vsdmBufferSize) {
-        this.vsdmBufferSize = vsdmBufferSize;
+    public void setReceiverPort(int vsdPort) {
+        this.receiverPort = vsdPort;
     }
 
-    public Boolean getVsdmVerboseJson() {
-        return vsdmVerboseJson;
+    public int getVsdBufferSize() {
+        return vsdBufferSize;
     }
 
-    public void setVsdmVerboseJson(Boolean vsdmVerboseJson) {
-        this.vsdmVerboseJson = vsdmVerboseJson;
+    public void setVsdBufferSize(int vsdBufferSize) {
+        this.vsdBufferSize = vsdBufferSize;
+    }
+
+    public Boolean getVerboseJson() {
+        return verboseJson;
+    }
+
+    public void setVerboseJson(Boolean verboseJson) {
+        this.verboseJson = verboseJson;
     }
 
     public String getSdcIp() {
@@ -275,24 +278,24 @@ public class OdeProperties implements EnvironmentAware {
         return returnIp;
     }
 
-	public int getForwarderPort() {
-		return forwarderPort;
-	}
-
-	public void setForwarderPort(int forwarderPort) {
-		this.forwarderPort = forwarderPort;
-	}
-
-	public String getKafkaTopicVsdm() {
-		return kafkaTopicVsdm;
-	}
-
-    public int getVsdmSenderPort() {
-        return vsdmSenderPort;
+    public int getForwarderPort() {
+        return forwarderPort;
     }
 
-    public void setVsdmSenderPort(int vsdmSenderPort) {
-        this.vsdmSenderPort = vsdmSenderPort;
+    public void setForwarderPort(int forwarderPort) {
+        this.forwarderPort = forwarderPort;
+    }
+
+    public String getKafkaTopicVsd() {
+        return kafkaTopicVsd;
+    }
+
+    public int getVsdSenderPort() {
+        return vsdSenderPort;
+    }
+
+    public void setVsdSenderPort(int vsdSenderPort) {
+        this.vsdSenderPort = vsdSenderPort;
     }
 
     public String getDdsCasPass() {
@@ -311,8 +314,8 @@ public class OdeProperties implements EnvironmentAware {
         this.kafkaTopicBsmRawJson = kafkaTopicBsmRawJson;
     }
 
-    public void setKafkaTopicVsdm(String kafkaTopicVsdm) {
-        this.kafkaTopicVsdm = kafkaTopicVsdm;
+    public void setKafkaTopicVsd(String kafkaTopicVsd) {
+        this.kafkaTopicVsd = kafkaTopicVsd;
     }
 
     public void setReturnIp(String returnIp) {
@@ -321,11 +324,11 @@ public class OdeProperties implements EnvironmentAware {
 
 	public int getBsmReceiverPort() {
 		return bsmReceiverPort;
-	}
+    }
 
 	public void setBsmReceiverPort(int bsmReceiverPort) {
 		this.bsmReceiverPort = bsmReceiverPort;
-	}
+    }
 
 	public int getBsmBufferSize() {
 		return bsmBufferSize;
@@ -334,5 +337,13 @@ public class OdeProperties implements EnvironmentAware {
 	public void setBsmBufferSize(int bsmBufferSize) {
 		this.bsmBufferSize = bsmBufferSize;
 	}
+
+    public boolean getDepositSanitizedBsmToSdc() {
+        return depositSanitizedBsmToSdc;
+    }
+
+    public void setDepositSanitizedBsmToSdc(boolean depositSanitizedBsmToSdc) {
+        this.depositSanitizedBsmToSdc = depositSanitizedBsmToSdc;
+    }
 
 }
