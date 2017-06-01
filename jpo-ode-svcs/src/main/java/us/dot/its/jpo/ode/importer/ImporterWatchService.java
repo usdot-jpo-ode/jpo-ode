@@ -16,17 +16,17 @@ import java.nio.file.WatchService;
 
 import org.slf4j.Logger;
 
-import us.dot.its.jpo.ode.coder.Coder;
+import us.dot.its.jpo.ode.coder.StreamDecoderPublisher;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 
 public class ImporterWatchService extends ImporterFileService implements Runnable {
 
     private Path inbox;
     private Path backup;
-    private Coder coder;
+    private StreamDecoderPublisher coder;
     private Logger logger;
 
-    public ImporterWatchService(Path dir, Path backupDir, Coder coder, Logger logger) {
+    public ImporterWatchService(Path dir, Path backupDir, StreamDecoderPublisher coder, Logger logger) {
 
         this.inbox = dir;
         this.backup = backupDir;

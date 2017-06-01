@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.vsdm;
+package us.dot.its.jpo.ode.vsd;
 
 import java.util.concurrent.Executors;
 
@@ -11,12 +11,12 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 @Controller
-public class VsdmServicesController {
+public class VsdServicesController {
 	
-	private static Logger logger = LoggerFactory.getLogger(VsdmServicesController.class);
+	private static Logger logger = LoggerFactory.getLogger(VsdServicesController.class);
 	
 	@Autowired
-	public VsdmServicesController(OdeProperties odeProps) {
+	public VsdServicesController(OdeProperties odeProps) {
 		super();
 		
 		logger.info("Starting {} ...", this.getClass().getSimpleName());
@@ -45,7 +45,7 @@ public class VsdmServicesController {
             }
         });
         
-		VsdmReceiver vsdReceiver = new VsdmReceiver(odeProps);
+		VsdReceiver vsdReceiver = new VsdReceiver(odeProps);
         logger.info("Launching {} ...", vsdReceiver.getClass().getSimpleName());
 		Executors.newSingleThreadExecutor().submit(vsdReceiver);
 		

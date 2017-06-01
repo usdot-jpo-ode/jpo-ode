@@ -30,7 +30,7 @@ import us.dot.its.jpo.ode.wrapper.MessageProducer;
 public class FirstAbstractCoderTest {
 
     @Tested
-    BsmCoder testBsmCoder;
+    BsmStreamDecoderPublisher testBsmCoder;
 
     @Mocked
     Asn1Plugin mockAsn1Plugin;
@@ -70,7 +70,7 @@ public class FirstAbstractCoderTest {
             @Mocked final SerializableMessageProducerPool<?, ?> unusedSerializableMessageProducerPool,
             @Mocked final MessageProducer<?, ?> unusedMessageProducer) {
 
-        BsmCoder hexTestBsmCoder = new BsmCoder(mockOdeProperties);
+        BsmStreamDecoderPublisher hexTestBsmCoder = new BsmStreamDecoderPublisher(mockOdeProperties);
 
         try {
             new Expectations() {
