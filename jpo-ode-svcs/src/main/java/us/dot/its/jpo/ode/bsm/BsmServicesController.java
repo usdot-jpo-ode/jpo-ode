@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.exporter.RawBsmExporter;
 
 @Controller
 public class BsmServicesController {
@@ -25,6 +26,11 @@ public class BsmServicesController {
 		bsmReceiveExecutor = Executors.newSingleThreadExecutor();
 		bsmReceiveExecutor.submit(new BsmReceiver(odeProps));
 		
+        try {
+            Executors.newSingleThreadExecutor().submit(new BsmProcessor(odeProps));
+        } catch (Exception e) {
+            logger.error("Error launching Bsm Processor", e);
+        }
 	}
 
 }
