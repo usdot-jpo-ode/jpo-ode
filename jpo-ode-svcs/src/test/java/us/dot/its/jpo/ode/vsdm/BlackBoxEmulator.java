@@ -15,7 +15,7 @@ import org.apache.commons.codec.binary.Hex;
  */
 public class BlackBoxEmulator {
 	final static int BUFFER_SIZE = 1000;
-	private static String odeIp = "";
+	private static String odeIp = "127.0.0.1";
 	private static int odePort = 46753;
 	private static int selfPort = 12321;
 	

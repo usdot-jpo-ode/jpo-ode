@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.bsm;
 
-import static org.junit.Assert.*;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -10,8 +9,6 @@ import java.net.SocketException;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -23,18 +20,12 @@ import mockit.Mocked;
 import mockit.Verifications;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class BsmReceiverTest {
-
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
 
 	/*
 	 * This test mimics end-to-end testing on a single machine by sending a uper
@@ -95,9 +86,11 @@ public class BsmReceiverTest {
 	@Mocked
 	DatagramSocket mockedDatagramSocket;
 
+	@SuppressWarnings("rawtypes")
 	@Mocked
 	SerializableMessageProducerPool mockedSMPP;
 
+	@SuppressWarnings("rawtypes")
 	@Mocked
 	MessageProducer mockedMessageProducer;
 
@@ -121,18 +114,14 @@ public class BsmReceiverTest {
 		new BsmReceiver(mockOdeProperties);
 	}
 
-	@Mocked
-	Logger mockedLogger;
-
-	@Mocked
-	LoggerFactory mockedLoggerFactory;
-
 	@Test
-	public void testConstructorException() throws SocketException {
+	public void testConstructorException()
+			throws SocketException {
 
 		new Expectations() {
 			{
 				new OssAsn1Coder();
+				result = mockedOssAsn1Coder;
 
 				mockOdeProperties.getBsmReceiverPort();
 				result = 1234;
@@ -142,20 +131,16 @@ public class BsmReceiverTest {
 			}
 		};
 		new BsmReceiver(mockOdeProperties);
-		new Verifications() {
-			{
-				mockedLogger.error(anyString, anyInt, (SocketException) any);
-			}
-		};
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
-	@Ignore
-	public void testRun() throws SocketException {
-
+	public void testRun(@Mocked DatagramPacket mockedDatagramPacket, @Mocked J2735Bsm mockedJ2735Bsm) throws IOException {
+		byte[] msg = { 0x00, 0x00 };
 		new Expectations() {
 			{
 				new OssAsn1Coder();
+				result = mockedOssAsn1Coder;
 
 				mockOdeProperties.getBsmReceiverPort();
 				result = 1234;
@@ -165,8 +150,78 @@ public class BsmReceiverTest {
 				new SerializableMessageProducerPool<>(mockOdeProperties);
 
 				MessageProducer.defaultStringMessageProducer(anyString, anyString);
+				new DatagramPacket((byte[])any, anyInt);
+				result = mockedDatagramPacket;
+				
+				mockedDatagramPacket.getLength();
+				result = 2;
+				
+				mockedOssAsn1Coder.decodeUPERBsmBytes(msg);
+				result = mockedJ2735Bsm;
+				mockedMessageProducer.send(anyString, null, anyString);
+				mockedMessageProducer.send(anyString, null, (Byte[]) any);
 			}
 		};
-		new BsmReceiver(mockOdeProperties);
+		BsmReceiver bsmReceiver = new BsmReceiver(mockOdeProperties);
+		bsmReceiver.setStopped(true);
+		bsmReceiver.run();
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testRunException(@Mocked DatagramPacket mockedDatagramPacket, @Mocked J2735Bsm mockedJ2735Bsm) throws IOException {
+		new Expectations() {
+			{
+				new OssAsn1Coder();
+				result = mockedOssAsn1Coder;
+
+				mockOdeProperties.getBsmReceiverPort();
+				result = 1234;
+
+				new DatagramSocket(1234);
+				result = mockedDatagramSocket;
+
+				new SerializableMessageProducerPool<>(mockOdeProperties);
+
+				MessageProducer.defaultStringMessageProducer(anyString, anyString);
+				new DatagramPacket((byte[])any, anyInt);
+				result = mockedDatagramPacket;
+				
+				mockedDatagramSocket.receive(mockedDatagramPacket);
+				result = new SocketException();
+			}
+		};
+		BsmReceiver bsmReceiver = new BsmReceiver(mockOdeProperties);
+		bsmReceiver.setStopped(true);
+		bsmReceiver.run();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testDecodeData(@Mocked J2735Bsm mockedJ2735Bsm) throws SocketException {
+		byte[] msg = { 0x01, 0x02 };
+		new Expectations() {
+			{
+				mockedOssAsn1Coder.decodeUPERBsmBytes(msg);
+				result = mockedJ2735Bsm;
+				mockedMessageProducer.send(anyString, null, anyString);
+				mockedMessageProducer.send(anyString, null, (Byte[]) any);
+			}
+		};
+		BsmReceiver bsmReceiver = new BsmReceiver(mockOdeProperties);
+		bsmReceiver.decodeData(msg);
+	}
+
+	@Test
+	public void testDecodeDataError(@Mocked J2735Bsm mockedJ2735Bsm) throws SocketException {
+		byte[] msg = { 0x01, 0x02 };
+		new Expectations() {
+			{
+				mockedOssAsn1Coder.decodeUPERBsmBytes(msg);
+				result = new Asn1Object();
+			}
+		};
+		BsmReceiver bsmReceiver = new BsmReceiver(mockOdeProperties);
+		bsmReceiver.decodeData(msg);
 	}
 }

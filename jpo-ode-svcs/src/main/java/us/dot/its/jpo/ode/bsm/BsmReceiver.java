@@ -44,6 +44,7 @@ public class BsmReceiver implements Runnable {
 	private SerializableMessageProducerPool<String, byte[]> messageProducerPool;
 	private MessageProducer<String, String> bsmProducer;
 	private OssAsn1Coder asn1Coder;
+	private boolean stopped = false;
 
 	@Autowired
 	public BsmReceiver(OdeProperties odeProps) {
@@ -64,6 +65,10 @@ public class BsmReceiver implements Runnable {
 		bsmProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
 				odeProperties.getKafkaProducerType());
 	}
+	
+	public void setStopped(boolean val){
+		this.stopped = val;
+	}
 
 	@Override
 	public void run() {
@@ -74,8 +79,7 @@ public class BsmReceiver implements Runnable {
 
 		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
-		boolean stopped = false;
-		while (!stopped) {
+		do {
 			try {
 				logger.debug("Waiting for UDP packets...");
 				socket.receive(packet);
@@ -90,10 +94,10 @@ public class BsmReceiver implements Runnable {
 			} catch (IOException e) {
 				logger.error("Error receiving packet", e);
 			}
-		}
+		}while (!stopped);
 	}
 
-	private void decodeData(byte[] msg) {
+	public void decodeData(byte[] msg) {
 		Asn1Object decoded = asn1Coder.decodeUPERBsmBytes(msg);
 		if (decoded instanceof J2735Bsm) {
 			logger.debug("Received BSM");
@@ -103,7 +107,7 @@ public class BsmReceiver implements Runnable {
 		}
 	}
 
-	public void publishBsms(J2735Bsm bsm) {
+	private void publishBsms(J2735Bsm bsm) {
 		logger.debug("Publishing j2735 bsm");
 		publishBsm(bsm);
 
@@ -113,11 +117,11 @@ public class BsmReceiver implements Runnable {
 				odeProperties.getKafkaTopicBsmRawJson());
 	}
 
-	public void publishBsm(String msg) {
+	private void publishBsm(String msg) {
 		bsmProducer.send(odeProperties.getKafkaTopicBsmRawJson(), null, msg);
 	}
 
-	public void publishBsm(Asn1Object msg) {
+	private void publishBsm(Asn1Object msg) {
 		MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
 		producer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null,
 				new SerializationUtils<J2735Bsm>().serialize((J2735Bsm) msg));
