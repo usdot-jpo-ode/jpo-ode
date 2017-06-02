@@ -1,5 +1,9 @@
 ## ODE Release Notes ##
 ----------
+### Sprint 14
+- ODE-312 Receiving Raw BSMs over UDP/IP (Phase 2)
+- ODE-310 Receiving Raw ISD (Phase 1)
+- ODE-311 Submiting ISD to SDC (Phase 1)
 
 ### Sprint 13
 - ODE-290 Integrate with ORNL Privacy Protection Module (PPM)
