@@ -51,12 +51,15 @@ public class OdeProperties implements EnvironmentAware {
     private int vsdBufferSize = 500;
     private int bsmBufferSize = 500;
     private Boolean verboseJson = false;
-
+    
     private String sdcIp = "104.130.170.234";//NOSONAR
     private int sdcPort = 46753;
-    private String returnIp = "";
-    private int forwarderPort = 5555;
-    private int vsdSenderPort = 6666;
+    private String externalIpv4 = "";
+    private String externalIpv6 = "";
+    private int requestSenderPort = 6666;
+    private int responseReceiverPort = 7777;
+    
+    private int serviceRespExpirationSeconds = 60;
 
     private boolean depositSanitizedBsmToSdc = true;
     
@@ -274,16 +277,20 @@ public class OdeProperties implements EnvironmentAware {
         this.sdcPort = sdcPort;
     }
 
-    public String getReturnIp() {
-        return returnIp;
+    public String getExternalIpv4() {
+        return externalIpv4;
     }
 
-    public int getForwarderPort() {
-        return forwarderPort;
+    public void setExternalIpv4(String externalIpv4) {
+        this.externalIpv4 = externalIpv4;
     }
 
-    public void setForwarderPort(int forwarderPort) {
-        this.forwarderPort = forwarderPort;
+    public String getExternalIpv6() {
+        return externalIpv6;
+    }
+
+    public void setExternalIpv6(String externalIpv6) {
+        this.externalIpv6 = externalIpv6;
     }
 
     public String getKafkaTopicVsd() {
@@ -291,11 +298,11 @@ public class OdeProperties implements EnvironmentAware {
     }
 
     public int getVsdSenderPort() {
-        return vsdSenderPort;
+        return requestSenderPort;
     }
 
     public void setVsdSenderPort(int vsdSenderPort) {
-        this.vsdSenderPort = vsdSenderPort;
+        this.requestSenderPort = vsdSenderPort;
     }
 
     public String getDdsCasPass() {
@@ -319,7 +326,7 @@ public class OdeProperties implements EnvironmentAware {
     }
 
     public void setReturnIp(String returnIp) {
-        this.returnIp = returnIp;
+        this.externalIpv4 = returnIp;
     }
 
 	public int getBsmReceiverPort() {
@@ -344,6 +351,30 @@ public class OdeProperties implements EnvironmentAware {
 
     public void setDepositSanitizedBsmToSdc(boolean depositSanitizedBsmToSdc) {
         this.depositSanitizedBsmToSdc = depositSanitizedBsmToSdc;
+    }
+
+    public int getServiceRespExpirationSeconds() {
+        return serviceRespExpirationSeconds;
+    }
+
+    public void setServiceRespExpirationSeconds(int serviceRespExpirationSeconds) {
+        this.serviceRespExpirationSeconds = serviceRespExpirationSeconds;
+    }
+
+    public int getRequestSenderPort() {
+        return requestSenderPort;
+    }
+
+    public void setRequestSenderPort(int requestSenderPort) {
+        this.requestSenderPort = requestSenderPort;
+    }
+
+    public int getResponseReceiverPort() {
+        return responseReceiverPort;
+    }
+
+    public void setResponseReceiverPort(int responseReceiverPort) {
+        this.responseReceiverPort = responseReceiverPort;
     }
 
 }

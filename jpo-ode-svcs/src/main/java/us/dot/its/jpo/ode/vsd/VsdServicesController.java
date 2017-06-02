@@ -24,11 +24,11 @@ public class VsdServicesController {
         VsdDepositor vsdDepositor = new VsdDepositor(odeProps);
         logger.info("Launching {} ...", vsdDepositor.getClass().getSimpleName());
         /* 
-         * TODO ODE-314
-         * Will be changed to MessageConsumer.defaultStringMessageConsumer() method 
+         * ODE-314
+         * Changed to MessageConsumer.defaultStringMessageConsumer() method 
          */
-        MessageConsumer<String, byte[]> consumer = 
-                MessageConsumer.defaultByteArrayMessageConsumer(
+        MessageConsumer<String, String> consumer = 
+                MessageConsumer.defaultStringMessageConsumer(
                         odeProps.getKafkaBrokers(), 
                         odeProps.getHostId() + vsdDepositor.getClass().getSimpleName(),
                         vsdDepositor);
@@ -37,11 +37,11 @@ public class VsdServicesController {
             @Override
             public void run() {
                 /* 
-                 * TODO ODE-314
-                 * The argument to subscribe method will be changed to 
-                 * odeProps.getKafkaTopicFilteredBsmJson()
+                 * ODE-314
+                 * The argument to subscribe method changed to 
+                 * odeProps.getKafkaTopicBsmFilteredJson()
                  */
-                consumer.subscribe(odeProps.getKafkaTopicVsd());
+                consumer.subscribe(odeProps.getKafkaTopicBsmFilteredJson());
             }
         });
         

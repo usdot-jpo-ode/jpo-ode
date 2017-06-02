@@ -6,32 +6,41 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 
-import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.oss.asn1.Coder;
+
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
+import us.dot.its.jpo.ode.j2735.J2735;
+import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
 /*
  * This class receives VSD from the OBU and forwards it to the SDC.
  */
 /* 
- * TODO ODE-314
- * The MessageProcessor value type will be String 
+ * ODE-314
+ * The MessageProcessor value type changed to String 
  */
-public class VsdDepositor extends MessageProcessor<String, byte[]> {
+public class VsdDepositor extends MessageProcessor<String, String> {
     
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-    private OdeProperties odeProps;
+    private OdeProperties odeProperties;
 	private DatagramSocket socket = null;
+	private TrustManager trustMgr;
+    private static Coder coder = J2735.getPERUnalignedCoder();
 
 	public VsdDepositor(OdeProperties odeProps) {
-		this.odeProps = odeProps;
+		this.odeProperties = odeProps;
 		
 		try {
             logger.debug("Creating VSD depositor Socket with port {}", odeProps.getVsdSenderPort());
 			socket = new DatagramSocket(odeProps.getVsdSenderPort());
+			trustMgr = new TrustManager(odeProps);
 		} catch (SocketException e) {
 			logger.error("Error creating socket with port " + odeProps.getVsdSenderPort(), e);
 		}
@@ -39,42 +48,65 @@ public class VsdDepositor extends MessageProcessor<String, byte[]> {
 
     @Override
     public Object call() throws Exception {
+        byte[] encodedMsg = null;
+        
+        if (!trustMgr.isTrustEstablished()) {
+            trustMgr.establishTrust(odeProperties.getSdcIp(), odeProperties.getSdcPort());
+        }
+
+        encodedMsg = depositVsdToSdc();
+
+        return encodedMsg;
+    }
+
+    private byte[] depositVsdToSdc() {
+        byte[] encodedVsd = null;
         /* 
-         * TODO ODE-314
+         * ODE-314
          * The record.value() will return a J2735Bsm JSON string 
          */
-        byte[] encodedVsd = record.value();
+        String j2735BsmJson = record.value();
 
         try {
             /* 
-             * TODO ODE-314
+             * ODE-314
              * The record.value() will return a J2735Bsm JSON string
-             * Adjust code accordingly 
              */
-            logger.debug("\nConsuming VSD (in hex): \n{}\n", Hex.encodeHexString(encodedVsd));
+            logger.debug("\nConsuming BSM: \n{}\n", j2735BsmJson);
 
-            if (odeProps.getDepositSanitizedBsmToSdc()) {
+            if (odeProperties.getDepositSanitizedBsmToSdc()) {
                 logger.debug(
                         "Sending VSD to SDC IP: {} Port: {}",
-                        odeProps.getSdcIp(),
-                        odeProps.getSdcPort());
+                        odeProperties.getSdcIp(),
+                        odeProperties.getSdcPort());
                 /* 
-                 * TODO ODE-314
-                 * The record.value() will return a J2735Bsm JSON string
-                 * Adjust code accordingly 
+                 * ODE-314
+                 * bundle 10 BSMs with the same tempId into a VSD 
                  */
-                socket.send(new DatagramPacket(encodedVsd, encodedVsd.length,
-                        new InetSocketAddress(odeProps.getSdcIp(), odeProps.getSdcPort())));
+                J2735Bsm j2735Bsm = (J2735Bsm) JsonUtils.fromJson(j2735BsmJson, J2735Bsm.class);
+                VehSitDataMessage vsd = addToVsdBundle(j2735Bsm);
+                
+                if (vsd != null) {
+                    encodedVsd = J2735Util.encode(coder, vsd);
+                    socket.send(new DatagramPacket(encodedVsd, encodedVsd.length,
+                            new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
+                }
             }
         } catch (IOException e) {
             logger.error("Error Sending VSD to SDC", e);
         }
-
-//        if (this.socket != null) {
-//            logger.debug("Closing vsd depositor socket with port {}", odeProps.getVsdmSenderPort());
-//            socket.close();
-//        }
         return encodedVsd;
+    }
+
+    /**
+     * Method will add a BSM to a hashmap of priority queues and returns a VSD when it is fully populated
+     * @param j2735Bsm
+     * @return a VSD when the bundle is full, null otherwise
+     */
+    private VehSitDataMessage addToVsdBundle(J2735Bsm j2735Bsm) {
+        // TODO Auto-generated method stub
+        // ODE-314
+        return null;
     }
 
 }

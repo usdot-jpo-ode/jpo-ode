@@ -48,13 +48,13 @@ public class ReqResForwarderTest {
 
 		new Expectations() {
 			{	
-				mockOdeProperties.getReturnIp();
+				mockOdeProperties.getExternalIpv4();
 				result = "3.3.3.3";
 
-				mockOdeProperties.getForwarderPort();
+				mockOdeProperties.getRequestSenderPort();
 				result = forwarderPort;
 
-				mockOdeProperties.getForwarderPort();
+				mockOdeProperties.getRequestSenderPort();
 				result = forwarderPort;
 			}
 		};
