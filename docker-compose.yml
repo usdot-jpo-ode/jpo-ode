@@ -9,9 +9,9 @@ services:
     ports:
       - "9092:9092"
     environment:
-      DOCKER_HOST_IP: 192.168.99.100
-      ZK: 192.168.99.100:2181
-      KAFKA_ADVERTISED_HOST_NAME: 192.168.99.100
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      ZK: ${DOCKER_HOST_IP}:2181
+      KAFKA_ADVERTISED_HOST_NAME: ${DOCKER_HOST_IP} 
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_CREATE_TOPICS: "j2735BsmFilteredJson:1:1,j2735BsmRawJson:1:1,topic.EncodedIsdm:1:1"
