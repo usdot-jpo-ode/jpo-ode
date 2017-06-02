@@ -46,7 +46,7 @@ public class OdeProperties implements EnvironmentAware {
     private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
     private String kafkaTopicVsd = "topic.J2735Vsd";
     
-    private int receiverPort = 46753;
+    private int vsdReceiverPort = 46753;
     private int bsmReceiverPort = 46800;
     private int vsdBufferSize = 500;
     private int bsmBufferSize = 500;
@@ -234,12 +234,12 @@ public class OdeProperties implements EnvironmentAware {
         this.kafkaTopicBsmSerializedPojo = kafkaTopicBsmSerializedPOJO;
     }
 
-    public int getReceiverPort() {
-        return receiverPort;
+    public int getVsdReceiverPort() {
+        return vsdReceiverPort;
     }
 
-    public void setReceiverPort(int vsdPort) {
-        this.receiverPort = vsdPort;
+    public void setVsdReceiverPort(int vsdReceiverPort) {
+        this.vsdReceiverPort = vsdReceiverPort;
     }
 
     public int getVsdBufferSize() {

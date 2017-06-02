@@ -7,12 +7,10 @@ import java.util.Scanner;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.util.JsonUtils;
-import us.dot.its.jpo.ode.util.SerializationUtils;
 
-public class MessageFrameStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
+public class MessageFrameStreamDecoderPublisher extends BsmStreamDecoderPublisher {
     
     public MessageFrameStreamDecoderPublisher() {
         super();
@@ -26,27 +24,20 @@ public class MessageFrameStreamDecoderPublisher extends AbstractStreamDecoderPub
     public Asn1Object decode(String line) {
         J2735MessageFrame msgFrame = 
                 (J2735MessageFrame)asn1Coder.decodeUPERMessageFrameHex(line);
-       return msgFrame.getValue();
+       return msgFrame;
     }
 
     @Override
     public Asn1Object decode(InputStream is) {
         J2735MessageFrame msgFrame = 
                 (J2735MessageFrame)asn1Coder.decodeUPERMessageFrameStream(is);
-        return msgFrame.getValue();
-    }
-
-    @Override
-    public void publish(Asn1Object msg) {
-        J2735MessageFrame msgFrame = (J2735MessageFrame)msg;
-        SerializationUtils<J2735Bsm> serializer = new SerializationUtils<>();
-        publish(serializer.serialize(msgFrame.getValue()));
+        return msgFrame;
     }
 
     @Override
     public void decodeJsonAndPublish(InputStream is) throws IOException {
        String line = null;
-       J2735MessageFrame decoded = null;
+       J2735MessageFrame msgFrame = null;
 
        try (Scanner scanner = new Scanner(is)) {
 
@@ -55,9 +46,9 @@ public class MessageFrameStreamDecoderPublisher extends AbstractStreamDecoderPub
                empty = false;
                line = scanner.nextLine();
 
-               decoded = (J2735MessageFrame) JsonUtils.fromJson(line, J2735MessageFrame.class);
-               publish(decoded.getValue());
-               publish(decoded.getValue().toJson());
+               msgFrame = (J2735MessageFrame) JsonUtils.fromJson(line, J2735MessageFrame.class);
+               publish(msgFrame.getValue());
+               publish(msgFrame.getValue().toJson());
            }
            if (empty) {
                EventLogger.logger.info("Empty file received");
@@ -68,4 +59,25 @@ public class MessageFrameStreamDecoderPublisher extends AbstractStreamDecoderPub
            throw new IOException("Error decoding data: " + line, e);
        }
     }
+
+    @Override
+    public void decodeBinaryAndPublish(InputStream is) throws IOException {
+        J2735MessageFrame msgFrame;
+
+        try {
+            do {
+                msgFrame = (J2735MessageFrame) decode(is);
+                if (msgFrame != null) {
+                    logger.debug("Decoded: {}", msgFrame);
+                    publish(msgFrame.getValue());
+                    publish(msgFrame.getValue().toJson(odeProperties.getVerboseJson()));
+                }
+            } while (msgFrame != null);
+
+        } catch (Exception e) {
+            throw new IOException("Error decoding data." + e);
+        }
+    }
+
+
 }

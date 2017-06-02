@@ -31,9 +31,9 @@ public class VsdDepositor extends MessageProcessor<String, byte[]> {
 		
 		try {
             logger.debug("Creating VSD depositor Socket with port {}", odeProps.getVsdSenderPort());
-			socket = new DatagramSocket(odeProps.getForwarderPort());
+			socket = new DatagramSocket(odeProps.getVsdSenderPort());
 		} catch (SocketException e) {
-			logger.error("Error creating socket with port " + odeProps.getForwarderPort(), e);
+			logger.error("Error creating socket with port " + odeProps.getVsdSenderPort(), e);
 		}
 	}
 

@@ -1,5 +1,8 @@
 package us.dot.its.jpo.ode.vsd;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,15 +38,15 @@ public class VsdReceiver extends AbstractUdpReceiverPublisher {
 
 	@Autowired
 	public VsdReceiver(OdeProperties odeProps) {
-        super(odeProps.getBsmReceiverPort(), odeProps.getBsmBufferSize());
+        super(odeProps.getVsdReceiverPort(), odeProps.getVsdBufferSize());
 
 		this.odeProperties = odeProps;
 
-		// Create a String producer for hex BSMs
+		// Create a String producer for hex VSDs
 		stringProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
 				odeProperties.getKafkaProducerType());
 
-        // Create a ByteArray producer for UPER BSMs and VSDs
+        // Create a ByteArray producer for UPER VSDs
         byteArrayProducer = MessageProducer.defaultByteArrayMessageProducer(odeProperties.getKafkaBrokers(),
                 odeProperties.getKafkaProducerType());
 
@@ -51,33 +54,37 @@ public class VsdReceiver extends AbstractUdpReceiverPublisher {
 	}
 
     @Override
-    protected void publish(AbstractData data) {
-        try {
-            extractAndPublishBsms((VehSitDataMessage) data);
-            
-            if (data instanceof BasicSafetyMessage) {
-                logger.debug("Received BSM");
-                J2735Bsm genericBsm = OssBsm.genericBsm((BasicSafetyMessage) data);
-                
-                logger.debug("Publishing BSM to topic {}", 
-                        odeProperties.getKafkaTopicBsmSerializedPojo());
-                byteArrayProducer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null,
-                        new SerializationUtils<J2735Bsm>().serialize((J2735Bsm) genericBsm));
+    public void run() {
 
-                String bsmJson = JsonUtils.toJson(genericBsm, odeProperties.getVerboseJson());
-                stringProducer.send(odeProperties.getKafkaTopicBsmRawJson(), null, bsmJson);
-                logger.debug("Published bsm to the topics {} and {}",
-                        odeProperties.getKafkaTopicBsmSerializedPojo(), 
-                        odeProperties.getKafkaTopicBsmRawJson());
-            } else {
-                logger.error("Unknown message type received {}", data.getClass().getName());
+        logger.debug("Starting {}...", this.getClass().getSimpleName());
+
+        byte[] buffer = new byte[odeProperties.getVsdBufferSize()];
+
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+
+        Boolean stopped = false;
+        while (!stopped) {
+
+            try {
+                logger.debug("Waiting for UDP packets...");
+                socket.receive(packet);
+                logger.debug("Packet received.");
+                String obuIp = packet.getAddress().getHostAddress();
+                int obuPort = packet.getPort();
+                
+                //extract the actualPacket from the buffer
+                byte[] actualPacket = Arrays.copyOf(packet.getData(), packet.getLength());
+                if (packet.getLength() > 0) {
+                    decodeData(actualPacket, obuIp, obuPort);
+                }
+            } catch (IOException e) {
+                logger.error("Error receiving packet", e);
+            } catch (UdpReceiverException e) {
+                logger.error("Error decoding packet", e);
             }
-        } catch (OssBsmPart2Exception e) {
-            logger.error("Unable to convert BSM", e);
         }
     }
 
-    
     @Override
     protected AbstractData decodeData(byte[] msg, String obuIp, int obuPort) 
             throws UdpReceiverException {
@@ -91,6 +98,7 @@ public class VsdReceiver extends AbstractUdpReceiverPublisher {
 			} else if (decoded instanceof VehSitDataMessage) {
 				logger.debug("Received VSD");
 	            publishVsd(msg);
+                extractAndPublishBsms((VehSitDataMessage) decoded);
 			} else {
 				logger.error("Unknown message type received {}", decoded.getClass().getName());
 			}
@@ -100,33 +108,36 @@ public class VsdReceiver extends AbstractUdpReceiverPublisher {
         return decoded;
 	}
 
-	private void extractAndPublishBsms(VehSitDataMessage msg) {
-		List<BasicSafetyMessage> bsmList = null;
-		try {
-			bsmList = VsdToBsmConverter.convert(msg);
-		} catch (IllegalArgumentException e) {
-			logger.error("Unable to convert VehSitDataMessage bundle to BSM list", e);
-			return;
-		}
 
-		int i = 1;
-		for (BasicSafetyMessage entry : bsmList) {
-			try {
-				J2735Bsm convertedBsm = OssBsm.genericBsm(entry);
-				publishBsm(convertedBsm);
-				
-				String bsmJson = JsonUtils.toJson(convertedBsm, odeProperties.getVerboseJson());
-				publishBsm(bsmJson);
-				logger.debug("Published bsm {} to the topics {} and {}", 
-				        i++, 
-				        odeProperties.getKafkaTopicBsmSerializedPojo(),
-				        odeProperties.getKafkaTopicBsmRawJson());
-			} catch (OssBsmPart2Exception e) {
-				logger.error("Unable to convert BSM", e);
-			}
-		}
-	}
+    protected void extractAndPublishBsms(AbstractData data) {
+        VehSitDataMessage msg = (VehSitDataMessage) data;
+        List<BasicSafetyMessage> bsmList = null;
+        try {
+            bsmList = VsdToBsmConverter.convert(msg);
+        } catch (IllegalArgumentException e) {
+            logger.error("Unable to convert VehSitDataMessage bundle to BSM list", e);
+            return;
+        }
 
+        int i = 1;
+        for (BasicSafetyMessage entry : bsmList) {
+            try {
+                J2735Bsm convertedBsm = OssBsm.genericBsm(entry);
+                publishBsm(convertedBsm);
+                
+                String bsmJson = JsonUtils.toJson(convertedBsm, odeProperties.getVerboseJson());
+                publishBsm(bsmJson);
+                logger.debug("Published bsm {} to the topics {} and {}", 
+                        i++, 
+                        odeProperties.getKafkaTopicBsmSerializedPojo(),
+                        odeProperties.getKafkaTopicBsmRawJson());
+            } catch (OssBsmPart2Exception e) {
+                logger.error("Unable to convert BSM", e);
+            }
+        }
+    }
+
+    
 	public void publishBsm(String msg) {
 		stringProducer.send(odeProperties.getKafkaTopicBsmRawJson(), null, msg);
 	}

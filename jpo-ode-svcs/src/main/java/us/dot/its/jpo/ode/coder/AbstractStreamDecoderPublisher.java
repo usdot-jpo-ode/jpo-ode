@@ -90,19 +90,6 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
         }
     }
 
-    @Override
-    public void publish(String msg) {
-        logger.debug("Publishing: {}", msg);
-        defaultProducer.send(odeProperties.getKafkaTopicBsmRawJson(), null, msg);
-    }
-
-    @Override
-    public void publish(byte[] msg) {
-        MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
-        producer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null, msg);
-        messageProducerPool.checkIn(producer);
-    }
-
     public void setAsn1Plugin(Asn1Plugin asn1Plugin) {
         this.asn1Coder = asn1Plugin;
     }

@@ -1,10 +1,7 @@
 package us.dot.its.jpo.ode.udp;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +29,10 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(AbstractUdpReceiverPublisher.class);
 	private static Coder coder = J2735.getPERUnalignedCoder();
 
-	private DatagramSocket socket;
+	protected DatagramSocket socket;
 
     private int port;
-    private int bufferSize;
+    protected int bufferSize;
 
 	@Autowired
 	public AbstractUdpReceiverPublisher(int port, int bufferSize) {
@@ -51,38 +48,6 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
 		}
 	}
 
-	@Override
-	public void run() {
-
-		logger.debug("UDP Receiver Service started.");
-
-		byte[] buffer = new byte[bufferSize];
-
-		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-
-		boolean stopped = false;
-		while (!stopped) {
-			try {
-				logger.debug("Waiting for UDP packets...");
-				socket.receive(packet);
-				logger.debug("Packet received.");
-				String obuIp = packet.getAddress().getHostAddress();
-				int obuPort = packet.getPort();
-
-				// extract the actualPacket from the buffer
-				byte[] actualPacket = Arrays.copyOf(packet.getData(), packet.getLength());
-				if (packet.getLength() > 0) {
-				    AbstractData decoded = decodeData(actualPacket, obuIp, obuPort);
-				    publish(decoded);
-				}
-			} catch (IOException e) {
-				logger.error("Error receiving packet", e);
-			} catch (UdpReceiverException e) {
-                logger.error("Error decoding packet", e);
-            }
-		}
-	}
-
 	protected AbstractData decodeData(byte[] msg, String obuIp, int obuPort) 
 	        throws UdpReceiverException {
         AbstractData decoded = null;
@@ -93,6 +58,4 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
 		}
         return decoded;
 	}
-
-	   protected abstract void publish(AbstractData data);
 }
