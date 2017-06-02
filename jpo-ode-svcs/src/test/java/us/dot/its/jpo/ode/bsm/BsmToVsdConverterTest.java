@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.vsdm;
+package us.dot.its.jpo.ode.bsm;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;

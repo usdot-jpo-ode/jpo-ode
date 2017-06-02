@@ -25,10 +25,10 @@ public class VsdDepositor implements Runnable {
 		this.encodedVsd = encodedVsd;
 		this.odeProps = odeProps;
 		try {
-			socket = new DatagramSocket(odeProps.getForwarderPort());
+			socket = new DatagramSocket(odeProps.getVsdmSenderPort());
 			logger.debug("Created VSD depositor Socket with port {}", odeProps.getVsdmSenderPort());
 		} catch (SocketException e) {
-			logger.error("Error creating socket with port {}", odeProps.getForwarderPort(),
+			logger.error("Error creating socket with port {}", odeProps.getVsdmSenderPort(),
 					e);
 		}
 	}

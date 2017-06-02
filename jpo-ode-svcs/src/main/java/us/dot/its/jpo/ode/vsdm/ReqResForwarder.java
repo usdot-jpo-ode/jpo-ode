@@ -52,7 +52,7 @@ public class ReqResForwarder implements Runnable {
 			socket = new DatagramSocket(odeProps.getForwarderPort());
 			logger.info("Created depositor Socket with port {}", odeProps.getForwarderPort());
 		} catch (SocketException e) {
-			logger.error("Error creating socket with port " + odeProps.getForwarderPort(), e);
+			logger.error("Error creating socket with port {} {}", odeProps.getForwarderPort(), e);
 		}
 	}
 	
