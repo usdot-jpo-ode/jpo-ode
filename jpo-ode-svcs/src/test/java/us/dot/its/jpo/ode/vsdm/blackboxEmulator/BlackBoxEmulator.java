@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.vsdm;
+package us.dot.its.jpo.ode.vsdm.blackboxEmulator;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
