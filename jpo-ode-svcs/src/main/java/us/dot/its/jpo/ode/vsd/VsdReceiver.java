@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +32,6 @@ public class VsdReceiver extends AbstractUdpReceiverPublisher {
 
     private MessageProducer<String, byte[]> byteArrayProducer;
     private MessageProducer<String, String> stringProducer;
-	private ExecutorService execService;
 
 	@Autowired
 	public VsdReceiver(OdeProperties odeProps) {
@@ -49,8 +46,6 @@ public class VsdReceiver extends AbstractUdpReceiverPublisher {
         // Create a ByteArray producer for UPER VSDs
         byteArrayProducer = MessageProducer.defaultByteArrayMessageProducer(odeProperties.getKafkaBrokers(),
                 odeProperties.getKafkaProducerType());
-
-		this.execService = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
 	}
 
     @Override
@@ -93,8 +88,8 @@ public class VsdReceiver extends AbstractUdpReceiverPublisher {
 			if (decoded instanceof ServiceRequest) {
 				logger.debug("Received ServiceRequest:\n{} \n", decoded.toString());
 				ServiceRequest request = (ServiceRequest) decoded;
-				ReqResForwarder forwarder = new ReqResForwarder(odeProperties, request, obuIp, obuPort);
-				execService.submit(forwarder);
+				TrustManager tm = new TrustManager(odeProperties);
+				tm.sendServiceResponse(tm.createServiceResponse(request), obuIp, obuPort);
 			} else if (decoded instanceof VehSitDataMessage) {
 				logger.debug("Received VSD");
 	            publishVsd(msg);
