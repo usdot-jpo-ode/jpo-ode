@@ -30,7 +30,7 @@ public class MessageFrameCoderTest {
     @Test
     public void shouldConstruct() {
         // trivial test that no exceptions are thrown
-        MessageFrameStreamDecoderPublisher testMessageFrameCoder = new MessageFrameStreamDecoderPublisher();
+        new MessageFrameStreamDecoderPublisher();
     }
 
     @Test
@@ -79,7 +79,7 @@ public class MessageFrameCoderTest {
         } catch (Exception e) {
             fail("Unexpected exception in expectations block: " + e);
         }
-        MessageFrameStreamDecoderPublisher testMessageFrameCoder = new MessageFrameStreamDecoderPublisher(mockOdeProperties);
+        new MessageFrameStreamDecoderPublisher(mockOdeProperties);
 
     }
 
@@ -162,8 +162,6 @@ public class MessageFrameCoderTest {
         } catch (Exception e) {
             fail("Unexpected exception in expectations block: " + e);
         }
-
-        String testTopic = "testTopic";
 
         new MessageFrameStreamDecoderPublisher(mockOdeProperties).publish(mockJ2735MessageFrame);
 

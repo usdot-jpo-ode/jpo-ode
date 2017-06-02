@@ -1,5 +1,9 @@
 package us.dot.its.jpo.ode.bsm;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +44,37 @@ public class BsmReceiver2 extends AbstractUdpReceiverPublisher {
 	}
 
     @Override
+    public void run() {
+
+        logger.debug("UDP Receiver Service started.");
+
+        byte[] buffer = new byte[bufferSize];
+
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+
+        boolean stopped = false;
+        while (!stopped) {
+            try {
+                logger.debug("Waiting for UDP packets...");
+                socket.receive(packet);
+                logger.debug("Packet received.");
+                String obuIp = packet.getAddress().getHostAddress();
+                int obuPort = packet.getPort();
+
+                // extract the actualPacket from the buffer
+                byte[] actualPacket = Arrays.copyOf(packet.getData(), packet.getLength());
+                if (packet.getLength() > 0) {
+                    AbstractData decoded = decodeData(actualPacket, obuIp, obuPort);
+                    publish(decoded);
+                }
+            } catch (IOException e) {
+                logger.error("Error receiving packet", e);
+            } catch (UdpReceiverException e) {
+                logger.error("Error decoding packet", e);
+            }
+        }
+    }
+
     protected void publish(AbstractData data) {
         try {
             if (data instanceof BasicSafetyMessage) {

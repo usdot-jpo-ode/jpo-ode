@@ -15,7 +15,7 @@ import org.apache.commons.codec.binary.Hex;
  */
 public class BlackBoxEmulator {
 	final static int BUFFER_SIZE = 1000;
-	private static String odeIp = "";
+	private static String odeIp = "localhost";
 	private static int odePort = 46753;
 	private static int selfPort = 12321;
 	
@@ -23,11 +23,18 @@ public class BlackBoxEmulator {
 		System.out.println("args length: " + args.length);
 		if(args.length < 3){
 			System.out.println("Usage Error. Expected: BlackBoxEmulator <OdeIP> <OdePort> <SelfPort>");
-			return;
+            System.out.println("Using defaults: <"
+                    + odeIp
+                    + "> <"
+                    + odePort
+                    + "> <"
+                    + selfPort
+                    + ">");
+		} else {
+    		odeIp = args[0];
+    		odePort = Integer.parseInt(args[1]);
+    		selfPort = Integer.parseInt(args[2]);
 		}
-		odeIp = args[0];
-		odePort = Integer.parseInt(args[1]);
-		selfPort = Integer.parseInt(args[2]);
 		depositTest();
 	}
 
