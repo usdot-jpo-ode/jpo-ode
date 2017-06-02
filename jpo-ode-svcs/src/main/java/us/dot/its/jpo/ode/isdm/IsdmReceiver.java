@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 
 public class IsdmReceiver implements Runnable {
 
-    private static Logger logger = LoggerFactory.getLogger(us.dot.its.jpo.ode.vsdm.VsdmReceiver.class);
+    private static Logger logger = LoggerFactory.getLogger(IsdmReceiver.class);
     private static Coder coder = J2735.getPERUnalignedCoder();
 
     private DatagramSocket socket;
@@ -53,7 +53,7 @@ public class IsdmReceiver implements Runnable {
     @Override
     public void run() {
 
-        logger.debug("Vsdm Receiver Service started.");
+        logger.debug("Isdm Receiver Service started.");
 
         byte[] buffer = new byte[odeProperties.getIsdmBufferSize()];
 
@@ -69,7 +69,14 @@ public class IsdmReceiver implements Runnable {
                 String obuIp = packet.getAddress().getHostAddress();
                 int obuPort = packet.getPort();
 
-                publishIsd(packet.toString());
+
+                if (packet.getLength() > 0) {
+                    IsdDepositor depositor = new IsdDepositor(odeProperties, packet.getData());
+                    execService.submit(depositor);
+                    publishIsd(packet.getData().toString());
+                }
+
+
 
             } catch (IOException e) {
                 logger.error("Error receiving packet", e);
