@@ -2,14 +2,12 @@ package us.dot.its.jpo.ode.isdm;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import us.dot.its.jpo.ode.OdeProperties;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Controller
+//@Controller
 public class IsdServicesController {
 
 
@@ -17,7 +15,7 @@ public class IsdServicesController {
 
     private ExecutorService isdmReceiver;
 
-    @Autowired
+//    @Autowired
     public IsdServicesController(OdeProperties odeProps) {
         super();
 
