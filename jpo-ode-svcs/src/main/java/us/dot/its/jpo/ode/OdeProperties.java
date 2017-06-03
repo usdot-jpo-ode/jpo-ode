@@ -1,16 +1,5 @@
 package us.dot.its.jpo.ode;
 
-import groovy.lang.MissingPropertyException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
-import us.dot.its.jpo.ode.context.AppContext;
-import us.dot.its.jpo.ode.eventlog.EventLogger;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
@@ -18,6 +7,18 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+
+import groovy.lang.MissingPropertyException;
+import us.dot.its.jpo.ode.context.AppContext;
+import us.dot.its.jpo.ode.eventlog.EventLogger;
 
 @ConfigurationProperties("ode")
 @PropertySource("classpath:application.properties")
@@ -56,8 +57,7 @@ public class OdeProperties implements EnvironmentAware {
     private int sdcPort = 46753;
     private String externalIpv4 = "";
     private String externalIpv6 = "";
-    private int requestSenderPort = 6666;
-    private int responseReceiverPort = 7777;
+    private int vsdDepositorPort = 5555;
     
     private int serviceRespExpirationSeconds = 60;
 
@@ -65,6 +65,8 @@ public class OdeProperties implements EnvironmentAware {
     
     private String hostId;
 
+    public static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
+    
     public OdeProperties() {
         super();
         init();
@@ -297,12 +299,12 @@ public class OdeProperties implements EnvironmentAware {
         return kafkaTopicVsd;
     }
 
-    public int getVsdSenderPort() {
-        return requestSenderPort;
+    public int getVsdDepositorPort() {
+        return vsdDepositorPort;
     }
 
-    public void setVsdSenderPort(int vsdSenderPort) {
-        this.requestSenderPort = vsdSenderPort;
+    public void setVsdDepositorPort(int vsdSenderPort) {
+        this.vsdDepositorPort = vsdSenderPort;
     }
 
     public String getDdsCasPass() {
@@ -359,22 +361,6 @@ public class OdeProperties implements EnvironmentAware {
 
     public void setServiceRespExpirationSeconds(int serviceRespExpirationSeconds) {
         this.serviceRespExpirationSeconds = serviceRespExpirationSeconds;
-    }
-
-    public int getRequestSenderPort() {
-        return requestSenderPort;
-    }
-
-    public void setRequestSenderPort(int requestSenderPort) {
-        this.requestSenderPort = requestSenderPort;
-    }
-
-    public int getResponseReceiverPort() {
-        return responseReceiverPort;
-    }
-
-    public void setResponseReceiverPort(int responseReceiverPort) {
-        this.responseReceiverPort = responseReceiverPort;
     }
 
 }

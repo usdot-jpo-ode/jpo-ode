@@ -49,10 +49,10 @@ public class ReqResForwarder implements Runnable {
 		this.obuReturnPort = obuPort;
 		this.payload = createRequest(request);
 		try {
-			socket = new DatagramSocket(odeProps.getRequestSenderPort());
-			logger.info("Created depositor Socket with port {}", odeProps.getRequestSenderPort());
+			socket = new DatagramSocket(odeProps.getVsdDepositorPort());
+			logger.info("Created depositor Socket with port {}", odeProps.getVsdDepositorPort());
 		} catch (SocketException e) {
-			logger.error("Error creating socket with port " + odeProps.getRequestSenderPort(), e);
+			logger.error("Error creating socket with port " + odeProps.getVsdDepositorPort(), e);
 		}
 	}
 	
@@ -63,7 +63,8 @@ public class ReqResForwarder implements Runnable {
 	public byte[] createRequest(ServiceRequest request) {
 		IpAddress ipAddr = new IpAddress();
 		ipAddr.setIpv4Address(new IPv4Address(J2735Util.ipToBytes(odeProps.getExternalIpv4())));
-		ConnectionPoint newReturnAddr = new ConnectionPoint(ipAddr, new PortNumber(odeProps.getRequestSenderPort()));
+		ConnectionPoint newReturnAddr = new ConnectionPoint(
+		        ipAddr, new PortNumber(odeProps.getVsdDepositorPort()));
 		if (request.hasDestination()) {
 			logger.debug("Service Request contains destination field");
 			logger.debug("Old OBU destination IP: {} Source Port: {}", this.obuReturnAddr, this.obuReturnPort);
@@ -82,7 +83,8 @@ public class ReqResForwarder implements Runnable {
 		}
 
 		request.setDestination(newReturnAddr);
-		logger.debug("New ODE destination IP: {} Source Port: {}", odeProps.getExternalIpv4(), odeProps.getRequestSenderPort());
+		logger.debug("New ODE destination IP: {} Source Port: {}", 
+		        odeProps.getExternalIpv4(), odeProps.getVsdDepositorPort());
 
 		ByteArrayOutputStream sink = new ByteArrayOutputStream();
 		try {
@@ -153,7 +155,7 @@ public class ReqResForwarder implements Runnable {
 		send();
 		receiveVsdServiceResponse();
 		if (socket != null) {
-			logger.debug("Closing forwarder socket with port {}", odeProps.getRequestSenderPort());
+			logger.debug("Closing forwarder socket with port {}", odeProps.getVsdDepositorPort());
 			socket.close();
 		}
 	}

@@ -31,6 +31,9 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
 
 	protected DatagramSocket socket;
 
+	protected String senderIp;
+	protected int senderPort;
+
     private int port;
     protected int bufferSize;
 
@@ -48,7 +51,7 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
 		}
 	}
 
-	protected AbstractData decodeData(byte[] msg, String obuIp, int obuPort) 
+	protected AbstractData decodeData(byte[] msg) 
 	        throws UdpReceiverException {
         AbstractData decoded = null;
 		try {
@@ -58,4 +61,6 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
 		}
         return decoded;
 	}
+	
+    protected abstract void publish(byte[] data) throws Exception;
 }

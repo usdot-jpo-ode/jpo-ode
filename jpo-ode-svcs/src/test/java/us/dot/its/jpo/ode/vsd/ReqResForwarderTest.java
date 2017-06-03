@@ -51,10 +51,7 @@ public class ReqResForwarderTest {
 				mockOdeProperties.getExternalIpv4();
 				result = "3.3.3.3";
 
-				mockOdeProperties.getRequestSenderPort();
-				result = forwarderPort;
-
-				mockOdeProperties.getRequestSenderPort();
+				mockOdeProperties.getVsdDepositorPort();
 				result = forwarderPort;
 			}
 		};

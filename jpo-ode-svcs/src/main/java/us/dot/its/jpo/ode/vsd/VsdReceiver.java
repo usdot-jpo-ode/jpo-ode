@@ -63,14 +63,14 @@ public class VsdReceiver extends AbstractUdpReceiverPublisher {
             try {
                 logger.debug("Waiting for UDP packets...");
                 socket.receive(packet);
-                logger.debug("Packet received.");
-                String obuIp = packet.getAddress().getHostAddress();
-                int obuPort = packet.getPort();
-                
-                //extract the actualPacket from the buffer
-                byte[] actualPacket = Arrays.copyOf(packet.getData(), packet.getLength());
                 if (packet.getLength() > 0) {
-                    decodeData(actualPacket, obuIp, obuPort);
+                    senderIp = packet.getAddress().getHostAddress();
+                    senderPort = packet.getPort();
+                    logger.debug("Packet received from {}:{}", senderIp, senderPort);
+                    
+                    //extract the actualPacket from the buffer
+                    byte[] payload = Arrays.copyOf(packet.getData(), packet.getLength());
+                    publish(payload);
                 }
             } catch (IOException e) {
                 logger.error("Error receiving packet", e);
@@ -81,28 +81,25 @@ public class VsdReceiver extends AbstractUdpReceiverPublisher {
     }
 
     @Override
-    protected AbstractData decodeData(byte[] msg, String obuIp, int obuPort) 
-            throws UdpReceiverException {
-        AbstractData decoded = super.decodeData(msg, obuIp, obuPort);
-		try {
-			if (decoded instanceof ServiceRequest) {
-				logger.debug("Received ServiceRequest:\n{} \n", decoded.toString());
-				ServiceRequest request = (ServiceRequest) decoded;
-				TrustManager tm = new TrustManager(odeProperties);
-				tm.sendServiceResponse(tm.createServiceResponse(request), obuIp, obuPort);
-			} else if (decoded instanceof VehSitDataMessage) {
-				logger.debug("Received VSD");
-	            publishVsd(msg);
+    protected void publish(byte[] data) throws UdpReceiverException {
+        AbstractData decoded = super.decodeData(data);
+        try {
+            if (decoded instanceof ServiceRequest) {
+                logger.debug("Received ServiceRequest:\n{} \n", decoded.toString());
+                ServiceRequest request = (ServiceRequest) decoded;
+                TrustManager tm = new TrustManager(odeProperties, socket);
+                tm.sendServiceResponse(tm.createServiceResponse(request), senderIp, senderPort);
+            } else if (decoded instanceof VehSitDataMessage) {
+                logger.debug("Received VSD");
+                publishVsd(data);
                 extractAndPublishBsms((VehSitDataMessage) decoded);
-			} else {
-				logger.error("Unknown message type received {}", decoded.getClass().getName());
-			}
-		} catch (Exception e) {
-			logger.error("Error decoding message", e);
-		}
-        return decoded;
-	}
-
+            } else {
+                logger.error("Unknown message type received {}", decoded.getClass().getName());
+            }
+        } catch (Exception e) {
+            logger.error("Error decoding message", e);
+        }
+    }
 
     protected void extractAndPublishBsms(AbstractData data) {
         VehSitDataMessage msg = (VehSitDataMessage) data;

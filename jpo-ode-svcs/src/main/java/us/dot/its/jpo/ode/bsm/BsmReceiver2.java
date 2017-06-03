@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.bsm;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.Arrays;
 
@@ -57,29 +56,29 @@ public class BsmReceiver2 extends AbstractUdpReceiverPublisher {
             try {
                 logger.debug("Waiting for UDP packets...");
                 socket.receive(packet);
-                logger.debug("Packet received.");
-                String obuIp = packet.getAddress().getHostAddress();
-                int obuPort = packet.getPort();
-
-                // extract the actualPacket from the buffer
-                byte[] actualPacket = Arrays.copyOf(packet.getData(), packet.getLength());
                 if (packet.getLength() > 0) {
-                    AbstractData decoded = decodeData(actualPacket, obuIp, obuPort);
-                    publish(decoded);
+                    senderIp = packet.getAddress().getHostAddress();
+                    senderPort = packet.getPort();
+                    logger.debug("Packet received from {}:{}", senderIp, senderPort);
+
+                    // extract the actualPacket from the buffer
+                    byte[] payload = Arrays.copyOf(packet.getData(), packet.getLength());
+                    publish(payload);
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 logger.error("Error receiving packet", e);
-            } catch (UdpReceiverException e) {
-                logger.error("Error decoding packet", e);
             }
         }
     }
 
-    protected void publish(AbstractData data) {
+    @Override
+    protected void publish(byte[] data) throws UdpReceiverException {
         try {
-            if (data instanceof BasicSafetyMessage) {
+            AbstractData decoded = super.decodeData(data);
+            
+            if (decoded instanceof BasicSafetyMessage) {
                 logger.debug("Received BSM");
-                J2735Bsm genericBsm = OssBsm.genericBsm((BasicSafetyMessage) data);
+                J2735Bsm genericBsm = OssBsm.genericBsm((BasicSafetyMessage) decoded);
                 
                 logger.debug("Publishing BSM to topic {}", 
                         odeProperties.getKafkaTopicBsmSerializedPojo());

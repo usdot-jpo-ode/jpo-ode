@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +15,11 @@ import com.oss.asn1.Coder;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.j2735.J2735;
+import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
 /*
@@ -38,20 +41,47 @@ public class VsdDepositor extends MessageProcessor<String, String> {
 		this.odeProperties = odeProps;
 		
 		try {
-            logger.debug("Creating VSD depositor Socket with port {}", odeProps.getVsdSenderPort());
-			socket = new DatagramSocket(odeProps.getVsdSenderPort());
-			trustMgr = new TrustManager(odeProps);
+            logger.debug("Creating VSD depositor Socket with port {}", odeProps.getVsdDepositorPort());
+			socket = new DatagramSocket(odeProps.getVsdDepositorPort());
+			trustMgr = new TrustManager(odeProps, socket);
 		} catch (SocketException e) {
-			logger.error("Error creating socket with port " + odeProps.getVsdSenderPort(), e);
+			logger.error("Error creating socket with port " + odeProps.getVsdDepositorPort(), e);
 		}
 	}
+
+    public void subscribe(String... topics) {
+        /* 
+         * ODE-314
+         * Changed to MessageConsumer.defaultStringMessageConsumer() method 
+         */
+        MessageConsumer<String, String> consumer = 
+                MessageConsumer.defaultStringMessageConsumer(
+                        odeProperties.getKafkaBrokers(), 
+                        odeProperties.getHostId() + this.getClass().getSimpleName(),
+                        this);
+
+        Executors.newSingleThreadExecutor().submit(new Runnable() {
+            @Override
+            public void run() {
+                /* 
+                 * ODE-314
+                 * The argument to subscribe method changed to 
+                 * odeProps.getKafkaTopicBsmFilteredJson()
+                 */
+                consumer.subscribe(topics);
+            }
+        });
+    }
 
     @Override
     public Object call() throws Exception {
         byte[] encodedMsg = null;
         
         if (!trustMgr.isTrustEstablished()) {
-            trustMgr.establishTrust(odeProperties.getSdcIp(), odeProperties.getSdcPort());
+            trustMgr.establishTrust(
+                    odeProperties.getSdcIp(), 
+                    odeProperties.getSdcPort(),
+                    SemiDialogID.vehSitData);
         }
 
         encodedMsg = depositVsdToSdc();

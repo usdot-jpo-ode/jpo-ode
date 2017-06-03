@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 @Controller
 public class VsdServicesController {
@@ -23,27 +22,7 @@ public class VsdServicesController {
 
         VsdDepositor vsdDepositor = new VsdDepositor(odeProps);
         logger.info("Launching {} ...", vsdDepositor.getClass().getSimpleName());
-        /* 
-         * ODE-314
-         * Changed to MessageConsumer.defaultStringMessageConsumer() method 
-         */
-        MessageConsumer<String, String> consumer = 
-                MessageConsumer.defaultStringMessageConsumer(
-                        odeProps.getKafkaBrokers(), 
-                        odeProps.getHostId() + vsdDepositor.getClass().getSimpleName(),
-                        vsdDepositor);
-
-		Executors.newSingleThreadExecutor().submit(new Runnable() {
-            @Override
-            public void run() {
-                /* 
-                 * ODE-314
-                 * The argument to subscribe method changed to 
-                 * odeProps.getKafkaTopicBsmFilteredJson()
-                 */
-                consumer.subscribe(odeProps.getKafkaTopicBsmFilteredJson());
-            }
-        });
+        vsdDepositor.subscribe(odeProps.getKafkaTopicBsmRawJson());
         
 		VsdReceiver vsdReceiver = new VsdReceiver(odeProps);
         logger.info("Launching {} ...", vsdReceiver.getClass().getSimpleName());
