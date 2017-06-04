@@ -11,31 +11,37 @@ import mockit.Injectable;
 import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 @RunWith(JMockit.class)
 public class BsmServicesControllerTest {
 
-	@Injectable
-	OdeProperties mockOdeProperties;
+    @Injectable
+    OdeProperties mockOdeProperties;
 
-	@Mocked
-	Executors mockedExecutors;
-
-	@Mocked
-	BsmReceiver mockedBsmReceiver;
-
-	@Mocked
+    @Mocked
 	ExecutorService mockedExecutorService;
+    @Mocked
+    MessageProducer<?, ?> mockedStringProducer;
+    
+    @Mocked
+    MessageProducer<?, ?> mockedByteArrayProducer;
 
 	@Test
 	public void testConstructor() {
-		new Expectations() {
+		new Expectations(MessageProducer.class, Executors.class) {
 			{
-				Executors.newSingleThreadExecutor();
+		        MessageProducer.defaultStringMessageProducer(anyString, anyString);
+		        result = mockedStringProducer;
+
+		        MessageProducer.defaultByteArrayMessageProducer(anyString, anyString);
+                result = mockedByteArrayProducer;
+
+		        Executors.newSingleThreadExecutor();
 				result = mockedExecutorService;
 
-				mockedExecutorService.submit((BsmReceiver) any);
-			}
+				mockedExecutorService.submit((BsmReceiver2) any);
+            }
 		};
 
 		new BsmServicesController(mockOdeProperties);

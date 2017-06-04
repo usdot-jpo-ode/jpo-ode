@@ -22,16 +22,12 @@ public class MessageFrameStreamDecoderPublisher extends BsmStreamDecoderPublishe
 
     @Override
     public Asn1Object decode(String line) {
-        J2735MessageFrame msgFrame = 
-                (J2735MessageFrame)asn1Coder.decodeUPERMessageFrameHex(line);
-       return msgFrame;
+       return asn1Coder.decodeUPERMessageFrameHex(line);
     }
 
     @Override
     public Asn1Object decode(InputStream is) {
-        J2735MessageFrame msgFrame = 
-                (J2735MessageFrame)asn1Coder.decodeUPERMessageFrameStream(is);
-        return msgFrame;
+        return asn1Coder.decodeUPERMessageFrameStream(is);
     }
 
     @Override

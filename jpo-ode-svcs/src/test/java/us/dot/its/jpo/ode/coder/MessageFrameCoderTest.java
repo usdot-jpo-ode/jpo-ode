@@ -17,6 +17,7 @@ import us.dot.its.jpo.ode.SerializableMessageProducerPool;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.util.SerializationUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
@@ -143,7 +144,7 @@ public class MessageFrameCoderTest {
             @Mocked Asn1Plugin mockAsn1Plugin, @Mocked Asn1Object mockAsn1Object,
             @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
             @Mocked SerializationUtils<J2735MessageFrame> mockSerializationUtils,
-            @Mocked J2735MessageFrame mockJ2735MessageFrame) {
+            @Mocked J2735Bsm mockJ2735Bsm) {
         try {
             new Expectations() {
                 {
@@ -163,7 +164,7 @@ public class MessageFrameCoderTest {
             fail("Unexpected exception in expectations block: " + e);
         }
 
-        new MessageFrameStreamDecoderPublisher(mockOdeProperties).publish(mockJ2735MessageFrame);
+        new MessageFrameStreamDecoderPublisher(mockOdeProperties).publish(mockJ2735Bsm);
 
     }
 

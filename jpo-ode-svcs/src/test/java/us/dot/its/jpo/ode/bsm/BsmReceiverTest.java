@@ -3,13 +3,8 @@ package us.dot.its.jpo.ode.bsm;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
 import java.net.SocketException;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-
-import org.junit.Ignore;
 import org.junit.Test;
 
 import mockit.Expectations;
@@ -51,8 +46,10 @@ public class BsmReceiverTest {
 				result = 1234;
 
 				new DatagramSocket(1234);
-				new SerializableMessageProducerPool<>(mockOdeProperties);
+
 				MessageProducer.defaultStringMessageProducer(anyString, anyString);
+
+                MessageProducer.defaultByteArrayMessageProducer(anyString, anyString);
 			}
 		};
 		new BsmReceiver(mockOdeProperties);
@@ -91,9 +88,11 @@ public class BsmReceiverTest {
 
 				new DatagramSocket(1234);
 
-				new SerializableMessageProducerPool<>(mockOdeProperties);
+                MessageProducer.defaultStringMessageProducer(anyString, anyString);
+                new DatagramPacket((byte[]) any, anyInt);
+                result = mockedDatagramPacket;
 
-				MessageProducer.defaultStringMessageProducer(anyString, anyString);
+				MessageProducer.defaultByteArrayMessageProducer(anyString, anyString);
 				new DatagramPacket((byte[]) any, anyInt);
 				result = mockedDatagramPacket;
 
@@ -125,11 +124,13 @@ public class BsmReceiverTest {
 				new DatagramSocket(1234);
 				result = mockedDatagramSocket;
 
-				new SerializableMessageProducerPool<>(mockOdeProperties);
+                MessageProducer.defaultStringMessageProducer(anyString, anyString);
+                new DatagramPacket((byte[]) any, anyInt);
+                result = mockedDatagramPacket;
 
-				MessageProducer.defaultStringMessageProducer(anyString, anyString);
-				new DatagramPacket((byte[]) any, anyInt);
-				result = mockedDatagramPacket;
+                MessageProducer.defaultByteArrayMessageProducer(anyString, anyString);
+                new DatagramPacket((byte[]) any, anyInt);
+                result = mockedDatagramPacket;
 
 				mockedDatagramSocket.receive(mockedDatagramPacket);
 				result = new SocketException();

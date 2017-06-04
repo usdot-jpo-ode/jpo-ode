@@ -33,12 +33,14 @@ public class BsmReceiver2 extends AbstractUdpReceiverPublisher {
 	    super(odeProps.getBsmReceiverPort(), odeProps.getBsmBufferSize());
 		this.odeProperties = odeProps;
 
-        // Create a String producer for hex BSMs
-        stringProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
+        // Create a String producer for JSON BSMs
+        stringProducer = MessageProducer.defaultStringMessageProducer(
+                odeProperties.getKafkaBrokers(),
                 odeProperties.getKafkaProducerType());
 
-        // Create a ByteArray producer for UPER BSMs and VSDs
-        byteArrayProducer = MessageProducer.defaultByteArrayMessageProducer(odeProperties.getKafkaBrokers(),
+        // Create a ByteArray producer for binary UPER BSMs
+        byteArrayProducer = MessageProducer.defaultByteArrayMessageProducer(
+                odeProperties.getKafkaBrokers(),
                 odeProperties.getKafkaProducerType());
 	}
 
