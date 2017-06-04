@@ -91,3 +91,4 @@ jpo-ode-consumer-example/target/
 *.iml
 /jpo-ode-svcs/SNMP_Error.log
 
+*.DS_Store

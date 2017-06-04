@@ -46,18 +46,21 @@ public class OdeProperties implements EnvironmentAware {
     private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
     private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
     private String kafkaTopicVsd = "topic.J2735Vsd";
+    private String kafkaTopicEncodedIsd= "topic.EncodedIsd";
     
     private int vsdReceiverPort = 46753;
     private int bsmReceiverPort = 46800;
+    private int isdReceiverPort = 46801;
     private int vsdBufferSize = 500;
     private int bsmBufferSize = 500;
+    private int isdBufferSize = 500;
     private Boolean verboseJson = false;
-    
     private String sdcIp = "104.130.170.234";//NOSONAR
     private int sdcPort = 46753;
     private String externalIpv4 = "";
     private String externalIpv6 = "";
     private int vsdDepositorPort = 5555;
+    private int isdDepositorPort = 6666;
     
     private int serviceRespExpirationSeconds = 60;
 
@@ -258,6 +261,14 @@ public class OdeProperties implements EnvironmentAware {
     public Boolean getVerboseJson() {
         return verboseJson;
     }
+    
+    public int getIsdBufferSize() {
+        return isdBufferSize;
+    }
+
+    public void setIsdBufferSize(int isdBufferSize) {
+        this.isdBufferSize = isdBufferSize;
+    }
 
     public void setVerboseJson(Boolean verboseJson) {
         this.verboseJson = verboseJson;
@@ -295,6 +306,14 @@ public class OdeProperties implements EnvironmentAware {
         this.externalIpv6 = externalIpv6;
     }
 
+    public String getKafkaTopicEncodedIsd() {
+        return kafkaTopicEncodedIsd;
+    }
+
+    public void setKafkaTopicEncodedIsd(String kafkaTopicEncodedIsd) {
+        this.kafkaTopicEncodedIsd = kafkaTopicEncodedIsd;
+    }
+
     public String getKafkaTopicVsd() {
         return kafkaTopicVsd;
     }
@@ -305,6 +324,22 @@ public class OdeProperties implements EnvironmentAware {
 
     public void setVsdDepositorPort(int vsdSenderPort) {
         this.vsdDepositorPort = vsdSenderPort;
+    }
+
+    public int getIsdReceiverPort() {
+        return isdReceiverPort;
+    }
+
+    public void setIsdReceiverPort(int isdReceiverPort) {
+        this.isdReceiverPort = isdReceiverPort;
+    }
+
+    public int getIsdDepositorPort() {
+        return isdDepositorPort;
+    }
+
+    public void setIsdDepositorPort(int isdDepositorPort) {
+        this.isdDepositorPort = isdDepositorPort;
     }
 
     public String getDdsCasPass() {
