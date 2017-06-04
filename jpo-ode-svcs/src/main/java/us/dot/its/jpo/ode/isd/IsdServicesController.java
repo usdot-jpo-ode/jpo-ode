@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.isdm;
+package us.dot.its.jpo.ode.isd;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ public class IsdServicesController {
 
         logger.info("Isd Services Controller starting.");
         isdmReceiver = Executors.newSingleThreadExecutor();
-        isdmReceiver.submit(new IsdmReceiver(odeProps));
+        isdmReceiver.submit(new IsdReceiver(odeProps));
 
     }
 

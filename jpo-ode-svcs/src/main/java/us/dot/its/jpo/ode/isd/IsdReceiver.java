@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.isdm;
+package us.dot.its.jpo.ode.isd;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -23,9 +23,9 @@ import us.dot.its.jpo.ode.wrapper.MessageProducer;
  */
 
 
-public class IsdmReceiver implements Runnable {
+public class IsdReceiver implements Runnable {
 
-    private static Logger logger = LoggerFactory.getLogger(IsdmReceiver.class);
+    private static Logger logger = LoggerFactory.getLogger(IsdReceiver.class);
     private static Coder coder = J2735.getPERUnalignedCoder();
 
     private DatagramSocket socket;
@@ -37,7 +37,7 @@ public class IsdmReceiver implements Runnable {
     private ExecutorService execService;
 
     @Autowired
-    public IsdmReceiver(OdeProperties odeProps) {
+    public IsdReceiver(OdeProperties odeProps) {
 
         this.odeProperties = odeProps;
 

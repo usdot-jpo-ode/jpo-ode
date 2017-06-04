@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.isdm;
+package us.dot.its.jpo.ode.isd;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
