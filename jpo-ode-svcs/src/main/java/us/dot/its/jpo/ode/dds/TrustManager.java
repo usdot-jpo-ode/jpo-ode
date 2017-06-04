@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.vsd;
+package us.dot.its.jpo.ode.dds;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

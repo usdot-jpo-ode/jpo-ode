@@ -12,8 +12,12 @@ import com.oss.asn1.Coder;
 import com.oss.asn1.DecodeFailedException;
 import com.oss.asn1.DecodeNotSupportedException;
 
+import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
+import us.dot.its.jpo.ode.dds.TrustManager;
 import us.dot.its.jpo.ode.j2735.J2735;
+import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public abstract class AbstractUdpReceiverPublisher implements Runnable {
 
@@ -34,12 +38,28 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
 	protected String senderIp;
 	protected int senderPort;
 
+    protected OdeProperties odeProperties;
     private int port;
     protected int bufferSize;
+    
+    protected MessageProducer<String, byte[]> byteArrayProducer;
 
-	@Autowired
-	public AbstractUdpReceiverPublisher(int port, int bufferSize) {
+    private boolean stopped = false;
 
+
+	public boolean isStopped() {
+        return stopped;
+    }
+
+    public void setStopped(boolean stopped) {
+        this.stopped = stopped;
+    }
+
+    @Autowired
+	public AbstractUdpReceiverPublisher(OdeProperties odeProps, 
+	                                    int port, 
+	                                    int bufferSize) {
+	    this.odeProperties = odeProps;
 		this.port = port;
 		this.bufferSize = bufferSize;
 
@@ -49,6 +69,10 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
 		} catch (SocketException e) {
 			logger.error("Error creating socket with port " + this.port, e);
 		}
+        // Create a ByteArray producer for UPER ISDs
+        byteArrayProducer = MessageProducer.defaultByteArrayMessageProducer(
+                odeProperties.getKafkaBrokers(),
+                odeProperties.getKafkaProducerType());
 	}
 
 	protected AbstractData decodeData(byte[] msg) 
@@ -62,5 +86,17 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
         return decoded;
 	}
 	
-    protected abstract void publish(byte[] data) throws Exception;
+    protected void sendResponse(AbstractData decoded) {
+        logger.debug("Received ServiceRequest:\n{} \n", decoded.toString());
+        ServiceRequest request = (ServiceRequest) decoded;
+        TrustManager tm = new TrustManager(odeProperties, socket);
+        tm.sendServiceResponse(tm.createServiceResponse(request), senderIp, senderPort);
+    }
+
+    protected void publish(byte[] data, String topic) {
+        logger.debug("Publishing data to topic {}", topic);
+        byteArrayProducer.send(topic, null, data);
+    }
+
+    public abstract void run();
 }

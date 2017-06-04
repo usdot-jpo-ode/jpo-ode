@@ -23,27 +23,26 @@ public class BsmReceiver2 extends AbstractUdpReceiverPublisher {
 
 	private static Logger logger = LoggerFactory.getLogger(BsmReceiver2.class);
 
-	private OdeProperties odeProperties;
-
-    private MessageProducer<String, byte[]> byteArrayProducer;
     private MessageProducer<String, String> stringProducer;
 
 	@Autowired
-	public BsmReceiver2(OdeProperties odeProps) {
-	    super(odeProps.getBsmReceiverPort(), odeProps.getBsmBufferSize());
+	public BsmReceiver2 (OdeProperties odeProps) {
+	    this(odeProps, odeProps.getBsmReceiverPort(), odeProps.getBsmBufferSize());
 		this.odeProperties = odeProps;
 
         // Create a String producer for JSON BSMs
         stringProducer = MessageProducer.defaultStringMessageProducer(
                 odeProperties.getKafkaBrokers(),
                 odeProperties.getKafkaProducerType());
-
-        // Create a ByteArray producer for binary UPER BSMs
-        byteArrayProducer = MessageProducer.defaultByteArrayMessageProducer(
-                odeProperties.getKafkaBrokers(),
-                odeProperties.getKafkaProducerType());
 	}
 
+    public BsmReceiver2 (OdeProperties odeProps, 
+                                        int port, 
+                                        int bufferSize) {
+        super(odeProps, port, bufferSize);
+    }
+    
+    
     @Override
     public void run() {
 
@@ -53,8 +52,7 @@ public class BsmReceiver2 extends AbstractUdpReceiverPublisher {
 
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
-        boolean stopped = false;
-        while (!stopped) {
+        while (!isStopped()) {
             try {
                 logger.debug("Waiting for UDP packets...");
                 socket.receive(packet);
@@ -65,7 +63,7 @@ public class BsmReceiver2 extends AbstractUdpReceiverPublisher {
 
                     // extract the actualPacket from the buffer
                     byte[] payload = Arrays.copyOf(packet.getData(), packet.getLength());
-                    publish(payload);
+                    publishBsm(payload);
                 }
             } catch (Exception e) {
                 logger.error("Error receiving packet", e);
@@ -73,30 +71,32 @@ public class BsmReceiver2 extends AbstractUdpReceiverPublisher {
         }
     }
 
-    @Override
-    protected void publish(byte[] data) throws UdpReceiverException {
+    protected void publishBsm(byte[] data) throws UdpReceiverException {
         try {
             AbstractData decoded = super.decodeData(data);
             
             if (decoded instanceof BasicSafetyMessage) {
                 logger.debug("Received BSM");
-                J2735Bsm genericBsm = OssBsm.genericBsm((BasicSafetyMessage) decoded);
-                
-                logger.debug("Publishing BSM to topic {}", 
-                        odeProperties.getKafkaTopicBsmSerializedPojo());
-                byteArrayProducer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null,
-                        new SerializationUtils<J2735Bsm>().serialize((J2735Bsm) genericBsm));
-
-                String bsmJson = JsonUtils.toJson(genericBsm, odeProperties.getVerboseJson());
-                stringProducer.send(odeProperties.getKafkaTopicBsmRawJson(), null, bsmJson);
-                logger.debug("Published bsm to the topics {} and {}",
-                        odeProperties.getKafkaTopicBsmSerializedPojo(), 
-                        odeProperties.getKafkaTopicBsmRawJson());
+                publishBasicSafetyMessage((BasicSafetyMessage) decoded);
             } else {
                 logger.error("Unknown message type received {}", data.getClass().getName());
             }
         } catch (OssBsmPart2Exception e) {
             logger.error("Unable to convert BSM", e);
         }
+    }
+
+    protected void publishBasicSafetyMessage(BasicSafetyMessage decoded) throws OssBsmPart2Exception {
+        J2735Bsm genericBsm = OssBsm.genericBsm(decoded);
+        
+        logger.debug("Publishing BSM to topics {} and {}",
+                odeProperties.getKafkaTopicBsmSerializedPojo(), 
+                odeProperties.getKafkaTopicBsmRawJson());
+
+        byteArrayProducer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null,
+                new SerializationUtils<J2735Bsm>().serialize((J2735Bsm) genericBsm));
+
+        String bsmJson = JsonUtils.toJson(genericBsm, odeProperties.getVerboseJson());
+        stringProducer.send(odeProperties.getKafkaTopicBsmRawJson(), null, bsmJson);
     }
 }

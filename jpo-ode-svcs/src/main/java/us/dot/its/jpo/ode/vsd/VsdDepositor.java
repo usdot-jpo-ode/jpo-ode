@@ -14,6 +14,7 @@ import com.oss.asn1.Coder;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
+import us.dot.its.jpo.ode.dds.TrustManager;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
@@ -22,9 +23,6 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
-/*
- * This class receives VSD from the OBU and forwards it to the SDC.
- */
 /* 
  * ODE-314
  * The MessageProcessor value type changed to String 

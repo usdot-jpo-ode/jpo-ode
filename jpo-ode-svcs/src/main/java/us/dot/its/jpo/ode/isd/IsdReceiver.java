@@ -2,96 +2,73 @@ package us.dot.its.jpo.ode.isd;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.oss.asn1.Coder;
+import com.oss.asn1.AbstractData;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.SerializableMessageProducerPool;
-import us.dot.its.jpo.ode.j2735.J2735;
-import us.dot.its.jpo.ode.wrapper.MessageProducer;
+import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
+import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
+import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 
-/**
- * Created by anthonychen on 6/1/17.
- */
+public class IsdReceiver extends AbstractUdpReceiverPublisher {
 
+	private static Logger logger = LoggerFactory.getLogger(IsdReceiver.class);
 
-public class IsdReceiver implements Runnable {
-
-    private static Logger logger = LoggerFactory.getLogger(IsdReceiver.class);
-    private static Coder coder = J2735.getPERUnalignedCoder();
-
-    private DatagramSocket socket;
-
-    private OdeProperties odeProperties;
-
-    private SerializableMessageProducerPool<String, byte[]> messageProducerPool;
-    private MessageProducer<String, String> isdProducer;
-    private ExecutorService execService;
-
-    @Autowired
-    public IsdReceiver(OdeProperties odeProps) {
-
-        this.odeProperties = odeProps;
-
-        try {
-            socket = new DatagramSocket(odeProperties.getIsdReceiverPort());
-            logger.info("Created UDP socket bound to port {}", odeProperties.getIsdReceiverPort());
-        } catch (SocketException e) {
-            logger.error("Error creating socket with port " + odeProperties.getIsdReceiverPort(), e);
-        }
-
-
-        this.execService = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
-    }
+	@Autowired
+	public IsdReceiver(OdeProperties odeProps) {
+        super(odeProps, odeProps.getIsdReceiverPort(), odeProps.getIsdBufferSize());
+	}
 
     @Override
     public void run() {
 
-        logger.debug("Isdm Receiver Service started.");
+        logger.debug("Starting {}...", this.getClass().getSimpleName());
 
         byte[] buffer = new byte[odeProperties.getIsdBufferSize()];
 
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
-        Boolean stopped = false;
-        while (!stopped) {
+        while (!isStopped()) {
 
             try {
                 logger.debug("Waiting for UDP packets...");
                 socket.receive(packet);
-                logger.debug("Packet received.");
-                String obuIp = packet.getAddress().getHostAddress();
-                int obuPort = packet.getPort();
-
-
                 if (packet.getLength() > 0) {
-                    IsdDepositor depositor = new IsdDepositor(odeProperties, packet.getData());
-                    execService.submit(depositor);
-                    publishIsd(packet.getData().toString());
+                    senderIp = packet.getAddress().getHostAddress();
+                    senderPort = packet.getPort();
+                    logger.debug("Packet received from {}:{}", senderIp, senderPort);
+                    
+                    //extract the actualPacket from the buffer
+                    byte[] payload = Arrays.copyOf(packet.getData(), packet.getLength());
+                    processPacket(payload);
                 }
-
-
-
             } catch (IOException e) {
                 logger.error("Error receiving packet", e);
-//				stopped = true;
+            } catch (UdpReceiverException e) {
+                logger.error("Error decoding packet", e);
             }
         }
     }
 
-
-    public void publishIsd(String msg) {
-        isdProducer.send(odeProperties.getKafkaTopicEncodedIsd(), null, msg);
+    private void processPacket(byte[] data) throws UdpReceiverException {
+        AbstractData decoded = super.decodeData(data);
+        try {
+            if (decoded instanceof ServiceRequest) {
+                sendResponse(decoded);
+            } else if (decoded instanceof IntersectionSituationData) {
+                logger.debug("Received ISD");
+                publish(data, odeProperties.getKafkaTopicEncodedIsd());
+            } else {
+                logger.error("Unknown message type received {}", decoded.getClass().getName());
+            }
+        } catch (Exception e) {
+            logger.error("Error processing message", e);
+        }
     }
-
-
 
 }
