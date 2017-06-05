@@ -11,7 +11,7 @@ import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
     
 	public IsdDepositor(OdeProperties odeProps) {
-        super(odeProps, odeProps.getVsdDepositorPort(), SemiDialogID.vehSitData);
+        super(odeProps, odeProps.getIsdDepositorPort(), SemiDialogID.intersectionSitDataDep);
 	}
 
     @Override

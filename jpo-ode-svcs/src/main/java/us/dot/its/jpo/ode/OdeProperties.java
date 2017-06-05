@@ -29,44 +29,69 @@ public class OdeProperties implements EnvironmentAware {
     @Autowired
     private Environment env;
 
-    private List<Path> uploadLocations = new ArrayList<>();
-
-    private String uploadLocationRoot = "uploads";
-    private String uploadLocationBsm = "bsm";
-    private String uploadLocationMessageFrame = "messageframe";
+    /*
+     * General Properties
+     */
     private String pluginsLocations = "plugins";
     private String asn1CoderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder";
     private String kafkaBrokers = null;
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
+    private Boolean verboseJson = false;
+    private String externalIpv4 = "";
+    private String externalIpv6 = "";
+
+    //File import properties
+    private String uploadLocationRoot = "uploads";
+    private String uploadLocationBsm = "bsm";
+    private String uploadLocationMessageFrame = "messageframe";
+
+
+    /*
+     * USDOT Situation Data Clearinghouse (SDC)/ Situation Data Warehouse (SDW), a.k.a Data Distribution System (DDS) Properties
+     */
+    //DDS WebSocket Properties
     private String ddsCasUrl = "https://cas.connectedvcs.com/accounts/v1/tickets";
     private String ddsCasUsername = "";
     private String ddsCasPass = "";
     private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
+
+    //IPv4 address and listening UDP port for SDC
+    private String sdcIp = "104.130.170.234";//NOSONAR
+    private int sdcPort = 46753;
+
+    //Enable/disable depositing sanitized BSMs to SDC
+    private boolean depositSanitizedBsmToSdc = true;
+
+    private int serviceRespExpirationSeconds = 60;
+
+    /*
+     * BSM Properties
+     */
     private String kafkaTopicBsmSerializedPojo = "topic.J2735Bsm";
     private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
     private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
-    private String kafkaTopicVsd = "topic.J2735Vsd";
-    private String kafkaTopicEncodedIsd= "topic.EncodedIsd";
-    
-    private int vsdReceiverPort = 46753;
     private int bsmReceiverPort = 46800;
-    private int isdReceiverPort = 46801;
-    private int vsdBufferSize = 500;
     private int bsmBufferSize = 500;
-    private int isdBufferSize = 500;
-    private Boolean verboseJson = false;
-    private String sdcIp = "104.130.170.234";//NOSONAR
-    private int sdcPort = 46753;
-    private String externalIpv4 = "";
-    private String externalIpv6 = "";
-    private int vsdDepositorPort = 5555;
-    private int isdDepositorPort = 6666;
     
-    private int serviceRespExpirationSeconds = 60;
+    /*
+     * Vehicle Situation Data (VSD) Properties
+     */
+    private int vsdReceiverPort = 46753;
+    private String kafkaTopicVsd = "topic.J2735Vsd";
+    private int vsdDepositorPort = 5555;
+    private int vsdBufferSize = 500;
 
-    private boolean depositSanitizedBsmToSdc = true;
+    /*
+     * Intersection Situation Data (ISD) Properties
+     */
+    private String kafkaTopicEncodedIsd= "topic.EncodedIsd";
+    private int isdReceiverPort = 46801;
+    private int isdBufferSize = 500;
+    private int isdDepositorPort = 6666;
+
     
     private String hostId;
+    private List<Path> uploadLocations = new ArrayList<>();
 
     public static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
     

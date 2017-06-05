@@ -96,6 +96,10 @@ public class BsmReceiver2 extends AbstractUdpReceiverPublisher {
         byteArrayProducer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null,
                 new SerializationUtils<J2735Bsm>().serialize((J2735Bsm) genericBsm));
 
+        /*
+         * TODO: This needs to be done in a separate thread consuming from the BSM POJO topic
+         * and publishing to BSM JSON topic
+         */
         String bsmJson = JsonUtils.toJson(genericBsm, odeProperties.getVerboseJson());
         stringProducer.send(odeProperties.getKafkaTopicBsmRawJson(), null, bsmJson);
     }

@@ -29,6 +29,8 @@ public class VsdServicesController {
                         odeProperties.getKafkaBrokers(), 
                         odeProperties.getHostId() + this.getClass().getSimpleName(),
                         vsdDepositor);
+        
+        // TODO Using raw JSON for testing. Switch to Filtered JSON. 
         vsdDepositor.subscribe(consumer, odeProps.getKafkaTopicBsmRawJson());
         
 		VsdReceiver vsdReceiver = new VsdReceiver(odeProps);

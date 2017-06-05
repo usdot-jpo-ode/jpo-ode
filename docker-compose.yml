@@ -16,9 +16,9 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_DELETE_TOPIC_ENABLED: "true"
       KAFKA_CLEANUP_POLICY: "delete" # delete old logs
-      KAFKA_LOG_RETENTION_HOURS: 48
-      KAFKA_RETENTION_MS: 172800000  # delete old logs after 2 days
-      KAFKA_SEGMENT_MS: 172800000    # roll segment logs every 2 days. 
+      KAFKA_LOG_RETENTION_HOURS: 2
+      KAFKA_RETENTION_MS: 7200000    # delete old logs after 2 days
+      KAFKA_SEGMENT_MS:   7200000    # roll segment logs every 2 days. 
                                      # This configuration controls the period of time after 
                                      # which Kafka will force the log to roll even if the segment
                                      # file isn't full to ensure that retention can delete or compact old data.
@@ -38,7 +38,8 @@ services:
       SPRING_CONFIG_LOCATION: /host_share/config/
       ODE_DDS_CAS_USERNAME: ${ODE_DDS_CAS_USERNAME}
       ODE_DDS_CAS_PASSWORD: ${ODE_DDS_CAS_PASSWORD}
-      ODE_DDS_CAS_RETURN_IP: ${ODE_DDS_CAS_RETURN_IP}
+      ODE_EXTERNAL_IPV4: ${ODE_EXTERNAL_IPV4}
+      ODE_EXTERNAL_IPV6: ${ODE_EXTERNAL_IPV6}
       
     depends_on:
       - kafka

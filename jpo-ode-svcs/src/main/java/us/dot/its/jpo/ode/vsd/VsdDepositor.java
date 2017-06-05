@@ -3,6 +3,10 @@ package us.dot.its.jpo.ode.vsd;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.oss.asn1.Coder;
 
@@ -22,6 +26,7 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
     
     private static Coder coder = J2735.getPERUnalignedCoder();
+    private ConcurrentHashMap<String, Queue<J2735Bsm>> bsmQueueMap;
 
 	public VsdDepositor(OdeProperties odeProps) {
 	    super(odeProps, odeProps.getVsdDepositorPort(), SemiDialogID.vehSitData);
@@ -73,9 +78,42 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
      * @return a VSD when the bundle is full, null otherwise
      */
     private VehSitDataMessage addToVsdBundle(J2735Bsm j2735Bsm) {
-        // TODO Auto-generated method stub
-        // ODE-314
-        return null;
+        VehSitDataMessage vsd = null;
+        String tempId = j2735Bsm.getCoreData().getId();
+        if (!bsmQueueMap.containsKey(tempId)) {
+            Queue<J2735Bsm> bsmQueue = new PriorityQueue<J2735Bsm>(10);
+            bsmQueueMap.put(tempId, bsmQueue);
+        }
+        bsmQueueMap.get(tempId).add(j2735Bsm);
+        if (bsmQueueMap.get(tempId).size() == 10) {
+            //TODO build a VSD
+            //vsd = new VehSitDataMessage(dialogID, seqID, groupID, requestID, type, bundle, crc);
+            
+            // extract the 10 bsms
+            Queue<J2735Bsm> bsmArray = bsmQueueMap.get(tempId);
+            for(J2735Bsm entry: bsmArray){
+                logger.debug("Bsm in array: {}", entry.toString());
+                // TODO Convert BSM to VSR and add VSR to VSD
+            }
+        }
+        return vsd;
     }
 
+    // Comparator for the priority queue to keep the chronological order of bsms
+    private class BsmComparator implements Comparator<J2735Bsm> {
+        @Override
+        public int compare(J2735Bsm x, J2735Bsm y) {
+            // here getTime would return the time the bsm was received by the
+            // ode
+            // if (x.getTime() < y.getTime())
+            // {
+            // return -1;
+            // }
+            // if (x.getTime() > y.getTime())
+            // {
+            // return 1;
+            // }
+            return 0;
+        }
+    }
 }
