@@ -65,11 +65,14 @@ public class VsdReceiver extends BsmReceiver2 {
                 sendResponse(decoded);
             } else if (decoded instanceof VehSitDataMessage) {
                 logger.debug("Received VSD");
-                publish(data, odeProperties.getKafkaTopicVsd());
                 
                 /*
-                 *  TODO: This needs to be done in a separate thread consuming VSDs
-                 *  from the VSD topc and publishing BSs to BSM POJP topic 
+                 *  TODO ODE-314: 
+                 *  We need to publish to a VSD topic 
+                 *  publish(data, odeProperties.getKafkaTopicVsd());
+                 *  
+                 *   and then do the unpacking in a separate thread that consumes VSDs
+                 *  from that VSD topic and publishes BSMs to BSM POJO topic 
                  */
                 extractAndPublishBsms((VehSitDataMessage) decoded);
             } else {

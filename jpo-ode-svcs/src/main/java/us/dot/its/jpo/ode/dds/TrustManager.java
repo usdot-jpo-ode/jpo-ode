@@ -117,7 +117,7 @@ public class TrustManager implements Callable<ServiceResponse> {
 	public ServiceResponse receiveServiceResponse() throws TrustManagerException {
         ServiceResponse servResponse = null;
 		try {
-			byte[] buffer = new byte[odeProperties.getVsdBufferSize()];
+			byte[] buffer = new byte[odeProperties.getServiceResponseBufferSize()];
 			logger.debug("Waiting for ServiceResponse from SDC...");
 			DatagramPacket responeDp = new DatagramPacket(buffer, buffer.length);
 			socket.receive(responeDp);
@@ -159,7 +159,7 @@ public class TrustManager implements Callable<ServiceResponse> {
         
         response.setGroupID(request.getGroupID());
         response.setRequestID(request.getRequestID());
-        response.setSeqID(request.getSeqID());
+        response.setSeqID(SemiSequenceID.svcResp);
         
         response.setHash(new Sha256Hash(ByteBuffer.allocate(32).putInt(1).array()));
         return response;
@@ -199,14 +199,13 @@ public class TrustManager implements Callable<ServiceResponse> {
     public boolean establishTrust(String ip, int port, SemiDialogID dialogId)
             throws SocketException, TrustManagerException {
         if (this.socket != null && !trustEstablished) {
-            logger.debug("Closing outbound socket with port {}", 
-                    odeProperties.getVsdDepositorPort());
+            logger.debug("Closing outbound socket with port {}", port);
             socket.close();
             socket = null;
         }
         
         if (this.socket == null) {
-            socket = new DatagramSocket(odeProperties.getVsdDepositorPort());
+            socket = new DatagramSocket(port);
         }
         
         // Launch a trust manager thread to listen for the service response

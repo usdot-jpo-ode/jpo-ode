@@ -30,7 +30,7 @@ public class VsdServicesController {
                         odeProperties.getHostId() + this.getClass().getSimpleName(),
                         vsdDepositor);
         
-        // TODO Using raw JSON for testing. Switch to Filtered JSON. 
+        // TODO ODE-314 Using raw JSON for testing. Switch to Filtered JSON. 
         vsdDepositor.subscribe(consumer, odeProps.getKafkaTopicBsmRawJson());
         
 		VsdReceiver vsdReceiver = new VsdReceiver(odeProps);

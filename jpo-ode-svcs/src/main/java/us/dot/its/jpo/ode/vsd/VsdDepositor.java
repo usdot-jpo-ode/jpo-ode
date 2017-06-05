@@ -86,14 +86,15 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
         }
         bsmQueueMap.get(tempId).add(j2735Bsm);
         if (bsmQueueMap.get(tempId).size() == 10) {
-            //TODO build a VSD
+            //TODO ODE-314
+            //build the VSD
             //vsd = new VehSitDataMessage(dialogID, seqID, groupID, requestID, type, bundle, crc);
             
             // extract the 10 bsms
             Queue<J2735Bsm> bsmArray = bsmQueueMap.get(tempId);
             for(J2735Bsm entry: bsmArray){
                 logger.debug("Bsm in array: {}", entry.toString());
-                // TODO Convert BSM to VSR and add VSR to VSD
+                // TODO ODE_314 Convert BSM to VSR and add VSR to VSD
             }
         }
         return vsd;

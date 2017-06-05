@@ -64,6 +64,9 @@ public class OdeProperties implements EnvironmentAware {
 
     private int serviceRespExpirationSeconds = 60;
 
+    private int serviceResponseBufferSize = 500;
+    
+    
     /*
      * BSM Properties
      */
@@ -77,7 +80,6 @@ public class OdeProperties implements EnvironmentAware {
      * Vehicle Situation Data (VSD) Properties
      */
     private int vsdReceiverPort = 46753;
-    private String kafkaTopicVsd = "topic.J2735Vsd";
     private int vsdDepositorPort = 5555;
     private int vsdBufferSize = 500;
 
@@ -339,10 +341,6 @@ public class OdeProperties implements EnvironmentAware {
         this.kafkaTopicEncodedIsd = kafkaTopicEncodedIsd;
     }
 
-    public String getKafkaTopicVsd() {
-        return kafkaTopicVsd;
-    }
-
     public int getVsdDepositorPort() {
         return vsdDepositorPort;
     }
@@ -383,10 +381,6 @@ public class OdeProperties implements EnvironmentAware {
         this.kafkaTopicBsmRawJson = kafkaTopicBsmRawJson;
     }
 
-    public void setKafkaTopicVsd(String kafkaTopicVsd) {
-        this.kafkaTopicVsd = kafkaTopicVsd;
-    }
-
     public void setReturnIp(String returnIp) {
         this.externalIpv4 = returnIp;
     }
@@ -421,6 +415,14 @@ public class OdeProperties implements EnvironmentAware {
 
     public void setServiceRespExpirationSeconds(int serviceRespExpirationSeconds) {
         this.serviceRespExpirationSeconds = serviceRespExpirationSeconds;
+    }
+
+    public int getServiceResponseBufferSize() {
+        return serviceResponseBufferSize;
+    }
+
+    public void setServiceResponseBufferSize(int serviceResponseBufferSize) {
+        this.serviceResponseBufferSize = serviceResponseBufferSize;
     }
 
 }

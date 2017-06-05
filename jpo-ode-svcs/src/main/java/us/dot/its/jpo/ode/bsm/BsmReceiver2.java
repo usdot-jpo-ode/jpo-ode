@@ -97,7 +97,7 @@ public class BsmReceiver2 extends AbstractUdpReceiverPublisher {
                 new SerializationUtils<J2735Bsm>().serialize((J2735Bsm) genericBsm));
 
         /*
-         * TODO: This needs to be done in a separate thread consuming from the BSM POJO topic
+         * TODO ODE-314: This needs to be done in a separate thread consuming from the BSM POJO topic
          * and publishing to BSM JSON topic
          */
         String bsmJson = JsonUtils.toJson(genericBsm, odeProperties.getVerboseJson());
