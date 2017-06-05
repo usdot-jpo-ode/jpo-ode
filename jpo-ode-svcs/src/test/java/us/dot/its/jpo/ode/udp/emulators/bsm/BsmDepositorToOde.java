@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.bsm.bsmDepositorToOde;
+package us.dot.its.jpo.ode.udp.emulators.bsm;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
