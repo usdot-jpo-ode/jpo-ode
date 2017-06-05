@@ -2,92 +2,33 @@ package us.dot.its.jpo.ode.vsd;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.net.SocketException;
-import java.util.concurrent.Executors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.oss.asn1.Coder;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
-import us.dot.its.jpo.ode.dds.TrustManager;
+import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.util.JsonUtils;
-import us.dot.its.jpo.ode.wrapper.MessageConsumer;
-import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
 /* 
  * ODE-314
- * The MessageProcessor value type changed to String 
+ * The MessageProcessor value type is String 
  */
-public class VsdDepositor extends MessageProcessor<String, String> {
+public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
     
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-    private OdeProperties odeProperties;
-	private DatagramSocket socket = null;
-	private TrustManager trustMgr;
     private static Coder coder = J2735.getPERUnalignedCoder();
 
 	public VsdDepositor(OdeProperties odeProps) {
-		this.odeProperties = odeProps;
-		
-		try {
-            logger.debug("Creating VSD depositor Socket with port {}", odeProps.getVsdDepositorPort());
-			socket = new DatagramSocket(odeProps.getVsdDepositorPort());
-			trustMgr = new TrustManager(odeProps, socket);
-		} catch (SocketException e) {
-			logger.error("Error creating socket with port " + odeProps.getVsdDepositorPort(), e);
-		}
+	    super(odeProps, odeProps.getVsdDepositorPort(), SemiDialogID.vehSitData);
 	}
 
-    public void subscribe(String... topics) {
-        /* 
-         * ODE-314
-         * Changed to MessageConsumer.defaultStringMessageConsumer() method 
-         */
-        MessageConsumer<String, String> consumer = 
-                MessageConsumer.defaultStringMessageConsumer(
-                        odeProperties.getKafkaBrokers(), 
-                        odeProperties.getHostId() + this.getClass().getSimpleName(),
-                        this);
-
-        Executors.newSingleThreadExecutor().submit(new Runnable() {
-            @Override
-            public void run() {
-                /* 
-                 * ODE-314
-                 * The argument to subscribe method changed to 
-                 * odeProps.getKafkaTopicBsmFilteredJson()
-                 */
-                consumer.subscribe(topics);
-            }
-        });
-    }
-
-    @Override
-    public Object call() throws Exception {
-        byte[] encodedMsg = null;
-        
-        if (!trustMgr.isTrustEstablished()) {
-            trustMgr.establishTrust(
-                    odeProperties.getSdcIp(), 
-                    odeProperties.getSdcPort(),
-                    SemiDialogID.vehSitData);
-        }
-
-        encodedMsg = depositVsdToSdc();
-
-        return encodedMsg;
-    }
-
-    private byte[] depositVsdToSdc() {
+   @Override
+    protected byte[] deposit() {
         byte[] encodedVsd = null;
         /* 
          * ODE-314

@@ -1,28 +1,40 @@
 package us.dot.its.jpo.ode.isd;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import us.dot.its.jpo.ode.OdeProperties;
-
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-//@Controller
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+
+import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.wrapper.MessageConsumer;
+
+@Controller
 public class IsdServicesController {
 
 
     private static Logger logger = LoggerFactory.getLogger(IsdServicesController.class);
+    protected OdeProperties odeProperties;
 
-    private ExecutorService isdmReceiver;
-
-//    @Autowired
+    @Autowired
     public IsdServicesController(OdeProperties odeProps) {
-        super();
+        this.odeProperties = odeProps;
+        
+        logger.info("Starting {} ...", this.getClass().getSimpleName());
 
-        logger.info("Isd Services Controller starting.");
-        isdmReceiver = Executors.newSingleThreadExecutor();
-        isdmReceiver.submit(new IsdReceiver(odeProps));
-
+        IsdDepositor isdDepositor = new IsdDepositor(odeProps);
+        logger.info("Launching {} ...", isdDepositor.getClass().getSimpleName());
+        MessageConsumer<String, byte[]> consumer = 
+                MessageConsumer.defaultByteArrayMessageConsumer(
+                        odeProperties.getKafkaBrokers(), 
+                        odeProperties.getHostId() + this.getClass().getSimpleName(),
+                        isdDepositor);
+        isdDepositor.subscribe(consumer, odeProps.getKafkaTopicEncodedIsd());
+        
+        IsdReceiver isdReceiver = new IsdReceiver(odeProps);
+        logger.info("Launching {} ...", isdReceiver.getClass().getSimpleName());
+        Executors.newSingleThreadExecutor().submit(isdReceiver);
     }
 
 }
