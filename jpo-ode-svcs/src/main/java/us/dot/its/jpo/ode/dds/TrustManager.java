@@ -196,16 +196,16 @@ public class TrustManager implements Callable<ServiceResponse> {
         }
     }
 
-    public boolean establishTrust(String ip, int port, SemiDialogID dialogId)
+    public boolean establishTrust(int srcPort, String destIp, int destPort, SemiDialogID dialogId)
             throws SocketException, TrustManagerException {
         if (this.socket != null && !trustEstablished) {
-            logger.debug("Closing outbound socket with port {}", port);
+            logger.debug("Closing outbound socket srcPort={}, destPort={}", srcPort, destPort);
             socket.close();
             socket = null;
         }
         
         if (this.socket == null) {
-            socket = new DatagramSocket(port);
+            socket = new DatagramSocket(srcPort);
         }
         
         // Launch a trust manager thread to listen for the service response
@@ -213,7 +213,7 @@ public class TrustManager implements Callable<ServiceResponse> {
         
         ServiceRequest request = createServiceRequest(dialogId);
         // send the service request
-        this.sendServiceRequest(request, ip, port);
+        this.sendServiceRequest(request, destIp, destPort);
         
         // Wait for service response
         try {

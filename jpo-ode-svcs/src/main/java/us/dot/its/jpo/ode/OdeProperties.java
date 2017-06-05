@@ -70,7 +70,7 @@ public class OdeProperties implements EnvironmentAware {
     /*
      * BSM Properties
      */
-    private String kafkaTopicBsmSerializedPojo = "topic.J2735Bsm";
+    private String kafkaTopicBsmSerializedPojo = "j2735Bsm";
     private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
     private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
     private int bsmReceiverPort = 46800;
@@ -86,7 +86,7 @@ public class OdeProperties implements EnvironmentAware {
     /*
      * Intersection Situation Data (ISD) Properties
      */
-    private String kafkaTopicEncodedIsd= "topic.EncodedIsd";
+    private String kafkaTopicEncodedIsd= "encodedIsd";
     private int isdReceiverPort = 46801;
     private int isdBufferSize = 500;
     private int isdDepositorPort = 6666;

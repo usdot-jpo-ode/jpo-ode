@@ -16,12 +16,14 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
     
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
     protected OdeProperties odeProperties;
+    protected int depositorPort;
 	protected DatagramSocket socket = null;
 	protected TrustManager trustMgr;
 	protected SemiDialogID dialogId;
 
 	public AbstractSubscriberDepositor(OdeProperties odeProps, int port, SemiDialogID dialogId) {
 		this.odeProperties = odeProps;
+		this.depositorPort = port;
 		this.dialogId = dialogId;
 		
 		try {
@@ -48,6 +50,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
         
         if (!trustMgr.isTrustEstablished()) {
             trustMgr.establishTrust(
+                    depositorPort,
                     odeProperties.getSdcIp(), 
                     odeProperties.getSdcPort(),
                     dialogId);
@@ -56,6 +59,31 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
         encodedMsg = deposit();
 
         return encodedMsg;
+    }
+
+    
+    public int getDepositorPort() {
+        return depositorPort;
+    }
+
+    public void setDepositorPort(int depositorPort) {
+        this.depositorPort = depositorPort;
+    }
+
+    public DatagramSocket getSocket() {
+        return socket;
+    }
+
+    public void setSocket(DatagramSocket socket) {
+        this.socket = socket;
+    }
+
+    public SemiDialogID getDialogId() {
+        return dialogId;
+    }
+
+    public void setDialogId(SemiDialogID dialogId) {
+        this.dialogId = dialogId;
     }
 
     protected abstract byte[] deposit();

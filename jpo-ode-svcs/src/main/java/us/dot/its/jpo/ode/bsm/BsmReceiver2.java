@@ -28,18 +28,17 @@ public class BsmReceiver2 extends AbstractUdpReceiverPublisher {
 	@Autowired
 	public BsmReceiver2 (OdeProperties odeProps) {
 	    this(odeProps, odeProps.getBsmReceiverPort(), odeProps.getBsmBufferSize());
-		this.odeProperties = odeProps;
-
-        // Create a String producer for JSON BSMs
-        stringProducer = MessageProducer.defaultStringMessageProducer(
-                odeProperties.getKafkaBrokers(),
-                odeProperties.getKafkaProducerType());
 	}
 
     public BsmReceiver2 (OdeProperties odeProps, 
                                         int port, 
                                         int bufferSize) {
         super(odeProps, port, bufferSize);
+
+        // Create a String producer for JSON BSMs
+        stringProducer = MessageProducer.defaultStringMessageProducer(
+                odeProperties.getKafkaBrokers(),
+                odeProperties.getKafkaProducerType());
     }
     
     
