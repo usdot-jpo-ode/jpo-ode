@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.vsd;
+package us.dot.its.jpo.ode.udp.vsd;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -12,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.oss.asn1.AbstractData;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.bsm.BsmReceiver2;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
+import us.dot.its.jpo.ode.udp.bsm.BsmReceiver2;
 
 public class VsdReceiver extends BsmReceiver2 {
 

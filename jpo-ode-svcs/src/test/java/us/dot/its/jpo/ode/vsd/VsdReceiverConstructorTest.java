@@ -12,7 +12,7 @@ import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
-import us.dot.its.jpo.ode.vsd.VsdReceiver;
+import us.dot.its.jpo.ode.udp.vsd.VsdReceiver;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class VsdReceiverConstructorTest {

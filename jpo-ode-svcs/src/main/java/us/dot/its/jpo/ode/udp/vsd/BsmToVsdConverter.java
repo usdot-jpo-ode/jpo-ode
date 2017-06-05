@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.vsd;
+package us.dot.its.jpo.ode.udp.vsd;
 
 import java.util.List;
 

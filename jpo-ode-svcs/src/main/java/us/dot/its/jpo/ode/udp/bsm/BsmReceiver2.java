@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.bsm;
+package us.dot.its.jpo.ode.udp.bsm;
 
 import java.net.DatagramPacket;
 import java.util.Arrays;

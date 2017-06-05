@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.bsm;
+package us.dot.its.jpo.ode.udp.bsm;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

@@ -29,7 +29,7 @@ import us.dot.its.jpo.ode.j2735.semi.GroupID;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage.Bundle;
-import us.dot.its.jpo.ode.vsd.VsdToBsmConverter;
+import us.dot.its.jpo.ode.udp.vsd.VsdToBsmConverter;
 import us.dot.its.jpo.ode.j2735.semi.VehSitRecord;
 
 public class VsdToBsmConverterTest {

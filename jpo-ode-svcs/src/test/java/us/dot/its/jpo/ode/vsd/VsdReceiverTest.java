@@ -17,7 +17,7 @@ import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
-import us.dot.its.jpo.ode.vsd.VsdReceiver;
+import us.dot.its.jpo.ode.udp.vsd.VsdReceiver;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 @RunWith(JMockit.class)

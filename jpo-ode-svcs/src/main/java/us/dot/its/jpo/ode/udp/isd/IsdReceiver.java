@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.isd;
+package us.dot.its.jpo.ode.udp.isd;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

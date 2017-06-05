@@ -39,7 +39,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.VehicleWidth;
 import us.dot.its.jpo.ode.j2735.dsrc.VerticalAcceleration;
 import us.dot.its.jpo.ode.j2735.dsrc.YawRate;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
-import us.dot.its.jpo.ode.vsd.BsmToVsdConverter;
+import us.dot.its.jpo.ode.udp.vsd.BsmToVsdConverter;
 
 public class BsmToVsdConverterTest {
 

@@ -15,6 +15,7 @@ import us.dot.its.jpo.ode.SerializableMessageProducerPool;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder;
+import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class BsmReceiverTest {
