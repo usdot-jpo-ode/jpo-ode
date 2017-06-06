@@ -1,28 +1,19 @@
 package us.dot.its.jpo.ode.vsdm;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.oss.asn1.AbstractData;
 import com.oss.asn1.Coder;
 import com.oss.asn1.DecodeFailedException;
 import com.oss.asn1.DecodeNotSupportedException;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
+import us.dot.its.jpo.ode.isdm.IsdDepositor;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
+import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
@@ -32,6 +23,15 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Excepti
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.SerializationUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class VsdmReceiver implements Runnable {
 
@@ -101,6 +101,7 @@ public class VsdmReceiver implements Runnable {
 	private void decodeData(byte[] msg, String obuIp, int obuPort) {
 		try {
 			AbstractData decoded = J2735Util.decode(coder, msg);
+			logger.debug("good here");
 			if (decoded instanceof ServiceRequest) {
 				logger.debug("Received ServiceRequest:\n{} \n", decoded.toString());
 				ServiceRequest request = (ServiceRequest) decoded;
@@ -110,11 +111,20 @@ public class VsdmReceiver implements Runnable {
 				logger.debug("Received VSD and forwarding it to SDC");
 				VsdDepositor depositor = new VsdDepositor(odeProperties, msg);
 
-                execService.submit(depositor);
+				execService.submit(depositor);
 
 				publishVsdm(msg);
-				
+
 				extractAndPublishBsms((VehSitDataMessage) decoded);
+			}else if (decoded instanceof IntersectionSituationData){
+				logger.debug("Received ISD and forwarding it to SDC");
+				IsdDepositor isdDepositor = new IsdDepositor(odeProperties, msg);
+
+				execService.submit(isdDepositor);
+
+//				publishVsdm(msg);
+
+//				extractAndPublishBsms((VehSitDataMessage) decoded);
 			} else {
 				logger.error("Unknown message type received {}", decoded.getClass().getName());
 			}

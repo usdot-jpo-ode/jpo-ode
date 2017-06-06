@@ -11,9 +11,10 @@ services:
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ZK: ${DOCKER_HOST_IP}:2181
-      KAFKA_ADVERTISED_HOST_NAME: ${DOCKER_HOST_IP}
+      KAFKA_ADVERTISED_HOST_NAME: ${DOCKER_HOST_IP} 
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_CREATE_TOPICS: "j2735BsmFilteredJson:1:1,j2735BsmRawJson:1:1,topic.EncodedIsdm:1:1"
       KAFKA_DELETE_TOPIC_ENABLED: "true"
       KAFKA_CLEANUP_POLICY: "delete" # delete old logs
       KAFKA_LOG_RETENTION_HOURS: 48
@@ -24,6 +25,16 @@ services:
                                      # file isn't full to ensure that retention can delete or compact old data.
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+  # ppm:
+  #     build: ./docker/ppm
+  #     ports:
+  #       - "8888:8888"
+  #       - "9000:9000"
+  #     depends_on:
+  #       - kafka
+  #     links:
+  #       - kafka
+  #     tty: true
   ode:
     build: .
     ports:
@@ -39,7 +50,6 @@ services:
       ODE_DDS_CAS_USERNAME: ${ODE_DDS_CAS_USERNAME}
       ODE_DDS_CAS_PASSWORD: ${ODE_DDS_CAS_PASSWORD}
       ODE_DDS_CAS_RETURN_IP: ${ODE_DDS_CAS_RETURN_IP}
-      
     depends_on:
       - kafka
     links:
