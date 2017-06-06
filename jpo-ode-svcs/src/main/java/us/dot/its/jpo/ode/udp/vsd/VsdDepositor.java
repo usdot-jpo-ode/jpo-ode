@@ -30,6 +30,7 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
 
 	public VsdDepositor(OdeProperties odeProps) {
 	    super(odeProps, odeProps.getVsdDepositorPort(), SemiDialogID.vehSitData);
+	    bsmQueueMap = new ConcurrentHashMap<>();
 	}
 
    @Override
