@@ -1,9 +1,6 @@
 package us.dot.its.jpo.ode.udp.bsm;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketException;
 import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Hex;
@@ -14,105 +11,108 @@ import org.springframework.beans.factory.annotation.Autowired;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
+import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.SerializationUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-public class BsmReceiver implements Runnable {
+public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
 	private static Logger logger = LoggerFactory.getLogger(BsmReceiver.class);
 
-	private DatagramSocket socket;
-
-	private OdeProperties odeProperties;
-
-    private MessageProducer<String, byte[]> byteArrayProducer;
     private MessageProducer<String, String> stringProducer;
-	private OssAsn1Coder asn1Coder;
-	private boolean stopped = false;
+    private OssAsn1Coder asn1Coder;
 
 	@Autowired
-	public BsmReceiver(OdeProperties odeProps) {
+	public BsmReceiver (OdeProperties odeProps) {
+	    this(odeProps, odeProps.getBsmReceiverPort(), odeProps.getBsmBufferSize());
+	}
 
-		this.odeProperties = odeProps;
-		asn1Coder = new OssAsn1Coder();
+    public BsmReceiver (OdeProperties odeProps, 
+                                        int port, 
+                                        int bufferSize) {
+        super(odeProps, port, bufferSize);
 
-		try {
-			socket = new DatagramSocket(odeProperties.getBsmReceiverPort());
-			logger.debug("Created UDP socket bound to port {}", odeProperties.getBsmReceiverPort());
-		} catch (SocketException e) {
-			logger.error("Error creating socket with port {}", odeProperties.getBsmReceiverPort(), e);
-		}
-
-        // Create a String producer for hex BSMs
-        stringProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
+        // Create a String producer for JSON BSMs
+        stringProducer = MessageProducer.defaultStringMessageProducer(
+                odeProperties.getKafkaBrokers(),
                 odeProperties.getKafkaProducerType());
+        
+        asn1Coder = new OssAsn1Coder();
+    }
+    
+    
+    @Override
+    public void run() {
 
-        // Create a ByteArray producer for UPER BSMs and VSDs
-        byteArrayProducer = MessageProducer.defaultByteArrayMessageProducer(odeProperties.getKafkaBrokers(),
-                odeProperties.getKafkaProducerType());
-	}
-	
-	public void setStopped(boolean val){
-		this.stopped = val;
-	}
+        logger.debug("UDP Receiver Service started.");
 
-	@Override
-	public void run() {
+        byte[] buffer = new byte[bufferSize];
 
-		logger.debug("Bsm Receiver Service started.");
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
-		byte[] buffer = new byte[odeProperties.getBsmBufferSize()];
+        do {
+            try {
+                logger.debug("Waiting for UDP packets...");
+                socket.receive(packet);
+                if (packet.getLength() > 0) {
+                    senderIp = packet.getAddress().getHostAddress();
+                    senderPort = packet.getPort();
+                    logger.debug("Packet received from {}:{}", senderIp, senderPort);
 
-		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-
-		do {
-			try {
-				logger.debug("Waiting for UDP packets...");
-				socket.receive(packet);
-				logger.debug("Packet received.");
-
-				// extract the actualPacket from the buffer
-				byte[] actualPacket = Arrays.copyOf(packet.getData(), packet.getLength());
-				if (packet.getLength() > 0) {
-					logger.debug("\nReceived packet in hex: \n{}\n", Hex.encodeHexString(actualPacket));
-					decodeData(actualPacket);
-				}
-			} catch (IOException e) {
-				logger.error("Error receiving packet", e);
-			}
-		}while (!stopped);
-	}
-
-	public void decodeData(byte[] msg) {
-		Asn1Object decoded = asn1Coder.decodeUPERBsmBytes(msg);
-		if (decoded instanceof J2735Bsm) {
-			logger.debug("Received BSM");
-			publishBsms((J2735Bsm) decoded);
-		} else {
-			logger.error("Unknown message type received {}", decoded.getClass().getName());
+                    // extract the actualPacket from the buffer
+                    byte[] payload = Arrays.copyOf(packet.getData(), packet.getLength());
+                    if(extractBsmMessageFrame(payload) != null)
+                    	publishBsm(extractBsmMessageFrame(payload));
+                }
+            } catch (Exception e) {
+                logger.error("Error receiving packet", e);
+            }
+        } while (!isStopped());
+    }
+    
+    protected static byte[] extractBsmMessageFrame(byte[] packet){
+    	String hexPacket = Hex.encodeHexString(packet);
+    	int startIndex = hexPacket.indexOf("0014");
+    	String bsmMsgFrameHex = hexPacket.substring(startIndex, hexPacket.length());
+    	try {
+			return Hex.decodeHex(bsmMsgFrameHex.toCharArray());
+		} catch (Exception e) {
+			logger.error("Failed to decode bsmMsgFrame", e);
+			return null;
 		}
-	}
+    }
 
-	private void publishBsms(J2735Bsm bsm) {
-		logger.debug("Publishing j2735 bsm");
-		publishBsm(bsm);
+    protected void publishBsm(byte[] data) throws UdpReceiverException {
+        try {
+            Asn1Object decoded = asn1Coder.decodeUPERMessageFrameBytes(data);
+            if (decoded instanceof J2735MessageFrame) {
+                logger.debug("Received BSM");
+                publishBasicSafetyMessage(((J2735MessageFrame) decoded).getValue());
+            } else {
+                logger.error("Unknown message type received {}", data.getClass().getName());
+            }
+        } catch (OssBsmPart2Exception e) {
+            logger.error("Unable to convert BSM", e);
+        }
+    }
 
-		String bsmJson = JsonUtils.toJson(bsm, odeProperties.getVerboseJson());
-        logger.debug("Published bsm to the topics {} and {}", 
-                odeProperties.getKafkaTopicBsmSerializedPojo(),
+    protected void publishBasicSafetyMessage(J2735Bsm genericBsm) throws OssBsmPart2Exception {
+        logger.debug("Publishing BSM to topics {} and {}",
+                odeProperties.getKafkaTopicBsmSerializedPojo(), 
                 odeProperties.getKafkaTopicBsmRawJson());
-		publishBsm(bsmJson);
-	}
 
-	private void publishBsm(String msg) {
-        stringProducer.send(odeProperties.getKafkaTopicBsmRawJson(), null, msg);
-	}
-
-	private void publishBsm(Asn1Object msg) {
-        logger.debug("Publishing BSM to topic {}", odeProperties.getKafkaTopicBsmSerializedPojo());
         byteArrayProducer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null,
-                new SerializationUtils<J2735Bsm>().serialize((J2735Bsm) msg));
-	}
+                new SerializationUtils<J2735Bsm>().serialize((J2735Bsm) genericBsm));
+
+        /*
+         * TODO ODE-314: This needs to be done in a separate thread consuming from the BSM POJO topic
+         * and publishing to BSM JSON topic
+         */
+        String bsmJson = JsonUtils.toJson(genericBsm, odeProperties.getVerboseJson());
+        stringProducer.send(odeProperties.getKafkaTopicBsmRawJson(), null, bsmJson);
+    }
 }
