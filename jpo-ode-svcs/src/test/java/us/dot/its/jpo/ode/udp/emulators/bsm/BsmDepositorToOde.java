@@ -16,25 +16,30 @@ public class BsmDepositorToOde {
 	final static int BUFFER_SIZE = 1000;
 	private static String odeIp = "127.0.0.1";
 	private static int odePort = 46800;
-	// String odeIp = "2001:4802:7801:102:be76:4eff:fe20:eb5"; // ode IPV6
-	// String odeIp = "162.242.218.130"; // ode instance IPv4
 	private static int selfPort = 12321;
 
 	public static void main(String[] args) {
-		System.out.println("args length: " + args.length);
-		if (args.length < 3) {
-			System.out.println("Usage Error. Expected: ObuBsmEmulator <OdeIP> <OdePort> <SelfPort>");
-			return;
+		if(args.length < 3){
+			System.out.println("Usage Error. Expected: BsmDepositorToOde <OdeIP> <OdePort> <SelfPort>");
+            System.out.println("Using defaults: <"
+                    + odeIp
+                    + "> <"
+                    + odePort
+                    + "> <"
+                    + selfPort
+                    + ">");
+		} else {
+    		odeIp = args[0];
+    		odePort = Integer.parseInt(args[1]);
+    		selfPort = Integer.parseInt(args[2]);
 		}
-		odeIp = args[0];
-		odePort = Integer.parseInt(args[1]);
-		selfPort = Integer.parseInt(args[2]);
 		sendBsm();
 	}
 
+	@SuppressWarnings("static-access")
 	public static void sendBsm() {
-		String uperBsmHex = "401480CA4000000000000000000000000000000000000000000000000000000000000000F800D9EFFFB7FFF00000000000000000000000000000000000000000000000000000001FE07000000000000000000000000000000000001FF0";
-
+		String uperBsmMsgFrameHex = "030000ac000c001700000000000000200026ad01f13c00b1001480ad44b9bf800018b5277c5ea49cc866fb8d317ffffffff000ae5afdfa1fa1007fff8000000000020214c1c0fff64000cffa20ce100004005f0188ae60fffabff75030ac6a0ffd1c003eff2f77e1001b3ff63005449a1000ebff06fef5e4e1002fbff8afff8c520ffa840094fedbfe210012c003b02e0f1a0ffbf4007701e41ce0ffe64014d03675720fff54002503c8d820ffdf3ff7d004caae0ffd140029006e6ce0ffbabff94fe33fb6fffe00000000";
+		
 		DatagramSocket socket = null;
 		try {
 			socket = new DatagramSocket(selfPort);
@@ -46,7 +51,7 @@ public class BsmDepositorToOde {
 
 		byte[] uperBsmByte = null;
 		try {
-			uperBsmByte = Hex.decodeHex(uperBsmHex.toCharArray());
+			uperBsmByte = Hex.decodeHex(uperBsmMsgFrameHex.toCharArray());
 		} catch (DecoderException e) {
 			System.out.println("OBU - Error decoding hex string into bytes");
 			e.printStackTrace();
@@ -56,7 +61,7 @@ public class BsmDepositorToOde {
 				new InetSocketAddress(odeIp, odePort));
 		boolean stopped = false;
 		while (!stopped) {
-			System.out.println("OBU - Printing uperBsm in hex: \n" + uperBsmHex);
+			System.out.println("OBU - Printing uperBsm in hex: \n" + uperBsmMsgFrameHex);
 			System.out.println("\nOBU - Sending uperBsm to ODE - Ip: " + odeIp + " Port: " + odePort);
 			try {
 				socket.send(reqPacket);

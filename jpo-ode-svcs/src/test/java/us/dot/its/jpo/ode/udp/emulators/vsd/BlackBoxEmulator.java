@@ -20,14 +20,20 @@ public class BlackBoxEmulator {
 	private static int selfPort = 12321;
 	
 	public static void main(String[] args) {
-		System.out.println("args length: " + args.length);
 		if(args.length < 3){
 			System.out.println("Usage Error. Expected: BlackBoxEmulator <OdeIP> <OdePort> <SelfPort>");
-			return;
+            System.out.println("Using defaults: <"
+                    + odeIp
+                    + "> <"
+                    + odePort
+                    + "> <"
+                    + selfPort
+                    + ">");
+		} else {
+    		odeIp = args[0];
+    		odePort = Integer.parseInt(args[1]);
+    		selfPort = Integer.parseInt(args[2]);
 		}
-		odeIp = args[0];
-		odePort = Integer.parseInt(args[1]);
-		selfPort = Integer.parseInt(args[2]);
 		depositTest();
 	}
 
