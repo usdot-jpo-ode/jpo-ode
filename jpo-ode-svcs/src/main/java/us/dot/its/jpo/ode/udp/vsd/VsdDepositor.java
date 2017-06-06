@@ -79,14 +79,18 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
      * @return a VSD when the bundle is full, null otherwise
      */
     private VehSitDataMessage addToVsdBundle(J2735Bsm j2735Bsm) {
+    	logger.info("Adding BSM to bundle {}", j2735Bsm.toJson(false));
+    	
         VehSitDataMessage vsd = null;
         String tempId = j2735Bsm.getCoreData().getId();
         if (!bsmQueueMap.containsKey(tempId)) {
+        	logger.info("Adding BSM with tempID {} to VSD package queue", tempId);
             Queue<J2735Bsm> bsmQueue = new PriorityQueue<J2735Bsm>(10);
             bsmQueueMap.put(tempId, bsmQueue);
         }
         bsmQueueMap.get(tempId).add(j2735Bsm);
         if (bsmQueueMap.get(tempId).size() == 10) {
+        	logger.info("Received 10 BSMs with identical tempID, creating VSD.");
             //TODO ODE-314
             //build the VSD
             //vsd = new VehSitDataMessage(dialogID, seqID, groupID, requestID, type, bundle, crc);
