@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.udp.bsm.BsmReceiver2;
+import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
 import us.dot.its.jpo.ode.udp.isd.IsdDepositor;
 import us.dot.its.jpo.ode.udp.isd.IsdReceiver;
 import us.dot.its.jpo.ode.udp.vsd.VsdDepositor;
@@ -25,7 +25,7 @@ public class UdpServicesController {
 		super();
 		
 		// BSM
-        BsmReceiver2 bsmReceiver = new BsmReceiver2(odeProps);
+        BsmReceiver bsmReceiver = new BsmReceiver(odeProps);
         logger.info("Launching {} ...", bsmReceiver.getClass().getSimpleName());
         Executors.newSingleThreadExecutor().submit(bsmReceiver);
         

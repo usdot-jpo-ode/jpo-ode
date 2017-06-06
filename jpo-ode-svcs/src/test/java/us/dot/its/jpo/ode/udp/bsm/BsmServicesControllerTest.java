@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.bsm;
+package us.dot.its.jpo.ode.udp.bsm;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -13,7 +13,7 @@ import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.UdpServicesController;
-import us.dot.its.jpo.ode.udp.bsm.BsmReceiver2;
+import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 @RunWith(JMockit.class)
@@ -46,7 +46,7 @@ public class BsmServicesControllerTest {
 		        Executors.newSingleThreadExecutor();
 				result = mockedExecutorService;
 
-				mockedExecutorService.submit((BsmReceiver2) any);
+				mockedExecutorService.submit((BsmReceiver) any);
             }
 		};
 
