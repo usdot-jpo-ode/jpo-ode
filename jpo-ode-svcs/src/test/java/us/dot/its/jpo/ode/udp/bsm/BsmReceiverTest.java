@@ -84,7 +84,7 @@ public class BsmReceiverTest {
 				new DatagramPacket((byte[]) any, anyInt);
 				result = mockedDatagramPacket;
 
-				String sampleBsmPacketStr = "1234560014223344";
+				String sampleBsmPacketStr = "030000ac000c001700000000000000200026ad01f13c00b1001480ad5f7bf1400014ff277c5e951cc867008d1d7ffffffff0017080fdfa1fa1007fff8000000000020214c1c0ffc7bffc2f963d160ffab401cef8261ba0ffedc0142fca96c61002dbff6efaeb3d61001ebff4afb8d6860ffe3bffc2fc4ec8e0ff7fc00e0fb50bce0ffe2bffe4fe347e20ffc5c0048fa5887e0ffb5c00dcfbdc87a0ffdb3feccfbe11ae0ffe03fe9cfde5e520ffc23ff90fd078060ffff3ff38fdea88a0ffe83ff84fb8f5a6fffe00000000";
 				byte[] sampleBsmPacketByte = Hex.decodeHex(sampleBsmPacketStr.toCharArray());
 				byte[] bsmMsgFrameByte = BsmReceiver.extractBsmMessageFrame(sampleBsmPacketByte);
 
@@ -150,7 +150,7 @@ public class BsmReceiverTest {
 
 	@Test
 	public void testPublishBsmError(@Mocked J2735Bsm mockedJ2735Bsm) throws SocketException, UdpReceiverException {
-		byte[] msg = { 0x01, 0x02 };
+		byte[] msg = new byte[80];
 		new Expectations() {
 			{
 				new OssAsn1Coder();
@@ -166,13 +166,31 @@ public class BsmReceiverTest {
 
 	@Test
 	public void testPublishBsmError2(@Mocked J2735Bsm mockedJ2735Bsm) throws SocketException, UdpReceiverException {
-		byte[] msg = { 0x01, 0x02 };
+		byte[] msg = new byte[80];
 		new Expectations() {
 			{
 				new OssAsn1Coder();
 				result = mockedOssAsn1Coder;
 				mockedOssAsn1Coder.decodeUPERMessageFrameBytes(msg);
 				result = new OssBsmPart2Exception("");
+			}
+		};
+		BsmReceiver bsmReceiver = new BsmReceiver(mockOdeProperties);
+		bsmReceiver.publishBsm(msg);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testPublishBsm(@Mocked J2735Bsm mockedJ2735Bsm) throws SocketException, UdpReceiverException {
+		byte[] msg = new byte[2];
+		new Expectations() {
+			{
+				new OssAsn1Coder();
+				result = mockedOssAsn1Coder;
+				mockedOssAsn1Coder.decodeUPERBsmBytes(msg);
+				result = mockedJ2735Bsm;
+				mockedMessageProducer.send(anyString, null, anyString);
+				mockedMessageProducer.send(anyString, null, (Byte[]) any);
 			}
 		};
 		BsmReceiver bsmReceiver = new BsmReceiver(mockOdeProperties);
