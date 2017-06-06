@@ -15,6 +15,8 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
 import us.dot.its.jpo.ode.udp.bsm.BsmReceiver2;
 
@@ -96,8 +98,8 @@ public class VsdReceiver extends BsmReceiver2 {
         int i = 1;
         for (BasicSafetyMessage entry : bsmList) {
             logger.debug("Publishing BSM {}/{}", i++, msg.getBundle().getSize());
-            
-            publishBasicSafetyMessage(entry);
+            J2735Bsm j2735Bsm = OssBsm.genericBsm(entry);
+            publishBasicSafetyMessage(j2735Bsm);
         }
     }
 }
