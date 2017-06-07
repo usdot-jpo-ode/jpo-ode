@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.udp.vsd;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.util.Arrays;
 import java.util.List;
 
@@ -64,7 +65,7 @@ public class VsdReceiver extends BsmReceiver {
         AbstractData decoded = super.decodeData(data);
         try {
             if (decoded instanceof ServiceRequest) {
-                sendResponse(decoded);
+                sendResponse(decoded, new DatagramSocket(odeProperties.getVsdTrustport()));
             } else if (decoded instanceof VehSitDataMessage) {
                 logger.debug("Received VSD");
                 

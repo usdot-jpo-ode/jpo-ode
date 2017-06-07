@@ -86,10 +86,10 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
         return decoded;
 	}
 	
-    protected void sendResponse(AbstractData decoded) {
+    protected void sendResponse(AbstractData decoded, DatagramSocket trustSock) {
         logger.debug("Received ServiceRequest:\n{} \n", decoded.toString());
         ServiceRequest request = (ServiceRequest) decoded;
-        TrustManager tm = new TrustManager(odeProperties, socket);
+        TrustManager tm = new TrustManager(odeProperties, trustSock);
         tm.sendServiceResponse(tm.createServiceResponse(request), senderIp, senderPort);
     }
 

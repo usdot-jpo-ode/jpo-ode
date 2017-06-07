@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.udp.isd;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.util.Arrays;
 
 import org.slf4j.Logger;
@@ -59,7 +60,7 @@ public class IsdReceiver extends AbstractUdpReceiverPublisher {
         AbstractData decoded = super.decodeData(data);
         try {
             if (decoded instanceof ServiceRequest) {
-                sendResponse(decoded);
+                sendResponse(decoded, new DatagramSocket(odeProperties.getIsdTrustPort()));
             } else if (decoded instanceof IntersectionSituationData) {
                 logger.debug("Received ISD");
                 publish(data, odeProperties.getKafkaTopicEncodedIsd());
