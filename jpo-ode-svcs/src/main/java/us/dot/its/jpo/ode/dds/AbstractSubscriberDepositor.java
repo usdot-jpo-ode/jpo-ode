@@ -29,7 +29,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 		try {
             logger.debug("Creating depositor Socket with port {}", port);
 			socket = new DatagramSocket(port);
-			trustMgr = new TrustManager(odeProps, socket);
+			//trustMgr = new TrustManager(odeProps, socket);
 		} catch (SocketException e) {
 			logger.error("Error creating socket with port " + port, e);
 		}
