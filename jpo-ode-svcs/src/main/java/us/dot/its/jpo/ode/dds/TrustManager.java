@@ -110,7 +110,7 @@ public class TrustManager implements Callable<ServiceResponse> {
 		                new PortNumber(socket.getLocalPort()));
 		request.setDestination(returnAddr);
 		
-		logger.debug("Response Destination {}:{}", HexUtils.fromHexString(returnAddr.getAddress().toString()), returnAddr.getPort().intValue());
+		logger.debug("Response Destination {}:{}", returnAddr.getAddress().toString(), returnAddr.getPort().intValue());
 
 		return request;
 	}
