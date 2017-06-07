@@ -203,8 +203,8 @@ public class TrustManager implements Callable<ServiceResponse> {
     	
         if (this.socket != null && !trustEstablished) {
             logger.debug("Closing outbound socket srcPort={}, destPort={}", srcPort, destPort);
-            socket.close();
-            socket = null;
+            //socket.close();
+            //socket = null;
         }
         
         if (this.socket == null) {
