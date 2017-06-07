@@ -61,8 +61,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
 					// extract the actualPacket from the buffer
 					byte[] payload = Arrays.copyOf(packet.getData(), packet.getLength());
-					if (extractBsmMessageFrame(payload) != null)
-						publishBsm(extractBsmMessageFrame(payload));
+					publishBsm(payload);
 				}
 			} catch (Exception e) {
 				logger.error("Error receiving packet", e);
@@ -70,32 +69,28 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 		} while (!isStopped());
 	}
 
-	protected static byte[] extractBsmMessageFrame(byte[] packet) {
-		String hexPacket = Hex.encodeHexString(packet);
-		int startIndex = hexPacket.indexOf("0014");
-		String bsmMsgFrameHex = hexPacket.substring(startIndex, hexPacket.length());
-		try {
-			return Hex.decodeHex(bsmMsgFrameHex.toCharArray());
-		} catch (Exception e) {
-			logger.error("Failed to decode bsmMsgFrame", e);
-			return null;
-		}
-	}
+	/*
+	 * Either extracts bsm or bsm message frame from the received packet
+	 */
+//	protected static byte[] extractBsmPayload(byte[] packet) {
+//		String hexPacket = Hex.encodeHexString(packet);
+//		logger.debug("Hex packet length {}: \n{}", hexPacket.length(), hexPacket);
+//		int startIndex = hexPacket.indexOf("0014");
+//		String bsmPayload = hexPacket.substring(startIndex, hexPacket.length());
+//		try {
+//			logger.debug("Bsm Payload length {}: \n{}", bsmPayload.length(), bsmPayload);
+//			return Hex.decodeHex(bsmPayload.toCharArray());
+//		} catch (Exception e) {
+//			logger.error("Failed to decode bsmMsgFrame", e);
+//			return null;
+//		}
+//	}
 
 	protected void publishBsm(byte[] data) throws UdpReceiverException {
 		try {
-			Asn1Object decoded;
-			// TODO: Change it to more robust check to distinguish bsm from
-			// bsmMessageFrame once the bsm format is figured out
-			if (data.length >= 60)
-				decoded = asn1Coder.decodeUPERMessageFrameBytes(data);
-			else
-				decoded = asn1Coder.decodeUPERBsmBytes(data);
-
-			if (decoded instanceof J2735MessageFrame) {
-				logger.debug("Received J2735BsmMessageFrame");
-				publishBasicSafetyMessage(((J2735MessageFrame) decoded).getValue());
-			} else if (decoded instanceof J2735Bsm) {
+			Asn1Object decoded = asn1Coder.decodeUPERBsmBytes(data);
+				
+			if (decoded instanceof J2735Bsm) {
 				logger.debug("Received J2735Bsm");
 				publishBasicSafetyMessage((J2735Bsm) decoded);
 			} else {

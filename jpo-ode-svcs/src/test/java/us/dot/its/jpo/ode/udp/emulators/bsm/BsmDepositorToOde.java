@@ -9,6 +9,11 @@ import java.net.SocketException;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder;
+
 /*
  * Simple test app that acts as an OBU for sending uper encoded bsms to ODE
  */
@@ -18,7 +23,7 @@ public class BsmDepositorToOde {
 	private static int odePort = 46800;
 	private static int selfPort = 12321;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws DecoderException {
 		if(args.length < 3){
 			System.out.println("Usage Error. Expected: BsmDepositorToOde <OdeIP> <OdePort> <SelfPort>");
             System.out.println("Using defaults: <"
@@ -34,12 +39,14 @@ public class BsmDepositorToOde {
     		selfPort = Integer.parseInt(args[2]);
 		}
 		sendBsm();
+		//testDecode();
 	}
 
 	@SuppressWarnings("static-access")
 	public static void sendBsm() {
-		String uperBsmMsgFrameHex = "030000ac000c001700000000000000200026ad01f13c00b1001480ad44b9bf800018b5277c5ea49cc866fb8d317ffffffff000ae5afdfa1fa1007fff8000000000020214c1c0fff64000cffa20ce100004005f0188ae60fffabff75030ac6a0ffd1c003eff2f77e1001b3ff63005449a1000ebff06fef5e4e1002fbff8afff8c520ffa840094fedbfe210012c003b02e0f1a0ffbf4007701e41ce0ffe64014d03675720fff54002503c8d820ffdf3ff7d004caae0ffd140029006e6ce0ffbabff94fe33fb6fffe00000000";
-		
+		//<rsu header> + <msg frame> + <bsm>
+		String bsmPayloadHex = "030000ac000c001700000000000000200026ad01f13c00b1001480ad5dbbf140001450277c5e941cc867000d1cfffffffff0007080fdfa1fa1007fff8000000000020214c1c0ffc6bffc2f963c8a0ffaa401cef82612e0ffecc0142fca963a1002cbff6efaeb34a1001dbff4afb8d5fa0ffe2bffc2fc4ec020ff7ec00e0fb50b420ffe1bffe4fe347560ffc4c0048fa587f20ffb4c00dcfbdc7ee0ffda3feccfbe11220ffdf3fe9cfde5dc60ffc13ff90fd0777a0fffe3ff38fdea7fe0ffe73ff84fb8f51afffe00000000";
+
 		DatagramSocket socket = null;
 		try {
 			socket = new DatagramSocket(selfPort);
@@ -51,7 +58,7 @@ public class BsmDepositorToOde {
 
 		byte[] uperBsmByte = null;
 		try {
-			uperBsmByte = Hex.decodeHex(uperBsmMsgFrameHex.toCharArray());
+			uperBsmByte = Hex.decodeHex(bsmPayloadHex.toCharArray());
 		} catch (DecoderException e) {
 			System.out.println("OBU - Error decoding hex string into bytes");
 			e.printStackTrace();
@@ -61,7 +68,7 @@ public class BsmDepositorToOde {
 				new InetSocketAddress(odeIp, odePort));
 		boolean stopped = false;
 		while (!stopped) {
-			System.out.println("OBU - Printing uperBsm in hex: \n" + uperBsmMsgFrameHex);
+			System.out.println("OBU - Printing uperBsm in hex: \n" + bsmPayloadHex);
 			System.out.println("\nOBU - Sending uperBsm to ODE - Ip: " + odeIp + " Port: " + odePort);
 			try {
 				socket.send(reqPacket);
@@ -84,4 +91,23 @@ public class BsmDepositorToOde {
 		}
 	}
 
+	/*
+	 * Test to see if the bsms received from OBU can be decoded.
+	 */
+	public static void testDecode() throws DecoderException{
+		//<rsu header> + <msg frame> + <bsm>
+		String bsmPayloadHex = "030000ac000c001700000000000000200026ad01f13c00b1001480ad5dbbf140001450277c5e941cc867000d1cfffffffff0007080fdfa1fa1007fff8000000000020214c1c0ffc6bffc2f963c8a0ffaa401cef82612e0ffecc0142fca963a1002cbff6efaeb34a1001dbff4afb8d5fa0ffe2bffc2fc4ec020ff7ec00e0fb50b420ffe1bffe4fe347560ffc4c0048fa587f20ffb4c00dcfbdc7ee0ffda3feccfbe11220ffdf3fe9cfde5dc60ffc13ff90fd0777a0fffe3ff38fdea7fe0ffe73ff84fb8f51afffe00000000";
+
+		byte[] payload = Hex.decodeHex(bsmPayloadHex.toCharArray());
+		OssAsn1Coder asn1Coder = new OssAsn1Coder();
+		Asn1Object decoded = asn1Coder.decodeUPERBsmBytes(payload);
+		
+		if (decoded instanceof J2735MessageFrame) {
+			System.out.println("Received J2735BsmMessageFrame");
+		} else if (decoded instanceof J2735Bsm) {
+			System.out.println("Received J2735Bsm");
+		} else {
+			System.out.println("Unknown message type received " + decoded.getClass().getName());
+		}
+	}
 }
