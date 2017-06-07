@@ -16,6 +16,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -109,7 +110,7 @@ public class TrustManager implements Callable<ServiceResponse> {
 		                new PortNumber(socket.getLocalPort()));
 		request.setDestination(returnAddr);
 		
-		logger.debug("Response Destination {}:{}", returnAddr.getAddress().toString(), returnAddr.getPort().intValue());
+		logger.debug("Response Destination {}:{}", HexUtils.fromHexString(returnAddr.getAddress().toString()), returnAddr.getPort().intValue());
 
 		return request;
 	}
@@ -123,11 +124,11 @@ public class TrustManager implements Callable<ServiceResponse> {
 			socket.receive(responeDp);
 
 			if (buffer.length <= 0)
-				throw new TrustManagerException("Received empty service response");
+				throw new TrustManagerException("Received empty service response from SDC");
 
 			AbstractData response = J2735Util.decode(coder, buffer);
 			if (response instanceof ServiceResponse) {
-				logger.debug("Received ServiceResponse {}", response.toString());
+				logger.debug("Received ServiceResponse from SDC {}", response.toString());
 				servResponse = (ServiceResponse) response;
 				if (J2735Util.isExpired(servResponse.getExpiration())) {
 	                throw new TrustManagerException("ServiceResponse Expired");
@@ -198,6 +199,8 @@ public class TrustManager implements Callable<ServiceResponse> {
 
     public boolean establishTrust(int srcPort, String destIp, int destPort, SemiDialogID dialogId)
             throws SocketException, TrustManagerException {
+    	logger.info("Establishing trust...");
+    	
         if (this.socket != null && !trustEstablished) {
             logger.debug("Closing outbound socket srcPort={}, destPort={}", srcPort, destPort);
             socket.close();
@@ -225,6 +228,7 @@ public class TrustManager implements Callable<ServiceResponse> {
             logger.info("Received ServiceResponse {}", response.toString());
             if (response.getRequestID().equals(request.getRequestID())) {
                 trustEstablished = true;
+                logger.info("Trust established, requestID : {}", request.getRequestID());
             }
                 
         } catch (Exception e) {
