@@ -98,7 +98,7 @@ public class TrustManager implements Callable<ServiceResponse> {
                     new IPv6Address(J2735Util.ipToBytes(odeProperties.getExternalIpv6())));
         } else {
 		    throw new TrustManagerException(
-		            "Invlaid ode.externalIpv4 [" + odeProperties.getExternalIpv4() + 
+		            "Invalid ode.externalIpv4 [" + odeProperties.getExternalIpv4() + 
 		            "] and ode.externalIpv6 [" + odeProperties.getExternalIpv6()
 		            + "] properties");
 		}
@@ -126,8 +126,8 @@ public class TrustManager implements Callable<ServiceResponse> {
 				throw new TrustManagerException("Received empty service response");
 
 			AbstractData response = J2735Util.decode(coder, buffer);
-			logger.debug("Received ServiceResponse {}", response.toString());
 			if (response instanceof ServiceResponse) {
+				logger.debug("Received ServiceResponse {}", response.toString());
 				servResponse = (ServiceResponse) response;
 				if (J2735Util.isExpired(servResponse.getExpiration())) {
 	                throw new TrustManagerException("ServiceResponse Expired");
@@ -206,6 +206,7 @@ public class TrustManager implements Callable<ServiceResponse> {
         
         if (this.socket == null) {
             socket = new DatagramSocket(srcPort);
+            logger.debug("Creating outbound socket srcPort={}, destPort={}", srcPort, destPort);
         }
         
         // Launch a trust manager thread to listen for the service response
