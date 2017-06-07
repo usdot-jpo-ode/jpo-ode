@@ -79,17 +79,20 @@ public class OdeProperties implements EnvironmentAware {
     /*
      * Vehicle Situation Data (VSD) Properties
      */
+    private int vsdBufferSize = 500;
     private int vsdReceiverPort = 46753;
     private int vsdDepositorPort = 5555;
-    private int vsdBufferSize = 500;
+    private int vsdTrustport = 5556;
+    
 
     /*
      * Intersection Situation Data (ISD) Properties
      */
     private String kafkaTopicEncodedIsd= "encodedIsd";
-    private int isdReceiverPort = 46801;
     private int isdBufferSize = 500;
+    private int isdReceiverPort = 46801;
     private int isdDepositorPort = 6666;
+    private int isdTrustPort = 6667;
 
     
     private String hostId;
@@ -424,5 +427,21 @@ public class OdeProperties implements EnvironmentAware {
     public void setServiceResponseBufferSize(int serviceResponseBufferSize) {
         this.serviceResponseBufferSize = serviceResponseBufferSize;
     }
+
+	public int getVsdTrustport() {
+		return vsdTrustport;
+	}
+
+	public void setVsdTrustport(int vsdTrustport) {
+		this.vsdTrustport = vsdTrustport;
+	}
+
+	public int getIsdTrustPort() {
+		return isdTrustPort;
+	}
+
+	public void setIsdTrustPort(int isdTrustPort) {
+		this.isdTrustPort = isdTrustPort;
+	}
 
 }
