@@ -60,7 +60,7 @@ public class IsdReceiver extends AbstractUdpReceiverPublisher {
         AbstractData decoded = super.decodeData(data);
         try {
             if (decoded instanceof ServiceRequest) {
-                sendResponse(decoded, new DatagramSocket(odeProperties.getIsdTrustPort()));
+                sendResponse(decoded, socket);
             } else if (decoded instanceof IntersectionSituationData) {
                 logger.debug("Received ISD");
                 publish(data, odeProperties.getKafkaTopicEncodedIsd());
