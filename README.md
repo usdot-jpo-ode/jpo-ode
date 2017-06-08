@@ -148,7 +148,7 @@ ODE configuration can be customized for every deployment environment using the O
 
 |Environment Variable|Description|
 |--------------------|-----------|
-|DOCKER_HOST_IP      |The IP address of Docker host machine|
+|[DOCKER_HOST_IP](docker/README.md#obtaining-docker_host_ip)      |The IP address of Docker host machine|
 |DOCKER_SHARED_VOLUME|The full path of a directory on the host machine to be shared with docker containers.|
 |ODE_DDS_CAS_USERNAME|The username for authenticating the USDOT Situation Data Warehouse WebSocket server |
 |ODE_DDS_CAS_PASSWORD|The password for authenticating the USDOT Situation Data Warehouse WebSocket server |
