@@ -55,6 +55,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		try { // must reuse the requestID from the ISD
 			acceptance.requestID = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
 					.decode(new ByteArrayInputStream(encodedIsd), new IntersectionSituationData())).requestID;
+			logger.info("Extracted requestID from ISD for ISD acceptance message {}", acceptance.requestID);
 		} catch (DecodeFailedException | DecodeNotSupportedException e) {
 			logger.error("Failed to extract requestID from ISD ", e);
 			return new byte[0];
