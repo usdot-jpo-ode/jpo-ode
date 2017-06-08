@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.vsdm;
+package us.dot.its.jpo.ode.udp.vsd;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -29,21 +29,22 @@ import us.dot.its.jpo.ode.j2735.semi.GroupID;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage.Bundle;
+import us.dot.its.jpo.ode.udp.vsd.VsdToBsmConverter;
 import us.dot.its.jpo.ode.j2735.semi.VehSitRecord;
 
 public class VsdToBsmConverterTest {
 
-	VehSitDataMessage validVsdm;
+	VehSitDataMessage validVsd;
 
 	@Before
-	public void createTestVsdm() {
+	public void createTestVsd() {
 
-		validVsdm = new VehSitDataMessage();
-		validVsdm.bundle = new Bundle();
-		validVsdm.bundle.elements = new ArrayList<>();
-		validVsdm.crc = new MsgCRC(new byte[] { 1 });
-		validVsdm.dialogID = new SemiDialogID(2);
-		validVsdm.groupID = new GroupID(new byte[] { 3 });
+		validVsd = new VehSitDataMessage();
+		validVsd.bundle = new Bundle();
+		validVsd.bundle.elements = new ArrayList<>();
+		validVsd.crc = new MsgCRC(new byte[] { 1 });
+		validVsd.dialogID = new SemiDialogID(2);
+		validVsd.groupID = new GroupID(new byte[] { 3 });
 
 		VehSitRecord vsr = new VehSitRecord();
 		vsr.tempID = new TemporaryID();
@@ -61,7 +62,7 @@ public class VsdToBsmConverterTest {
 		vsr.fundamental.speed = new TransmissionAndSpeed();
 		vsr.fundamental.speed.speed = new Velocity(8191);
 		
-		validVsdm.bundle.add(vsr);
+		validVsd.bundle.add(vsr);
 	}
 
 	@Test
@@ -84,7 +85,7 @@ public class VsdToBsmConverterTest {
 
 	@Test
 	public void shouldConvertCorrectly() {
-		List<BasicSafetyMessage> bsmlist = VsdToBsmConverter.convert(validVsdm);
+		List<BasicSafetyMessage> bsmlist = VsdToBsmConverter.convert(validVsd);
 		assertTrue(bsmlist.size() == 1);
 		
 		BasicSafetyMessage bsm = bsmlist.get(0);

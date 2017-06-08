@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.vsdm;
+package us.dot.its.jpo.ode.udp.vsd;
 
 import static org.junit.Assert.fail;
 
@@ -12,14 +12,15 @@ import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
+import us.dot.its.jpo.ode.udp.vsd.VsdReceiver;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-public class VsdmReceiverConstructorTest {
+public class VsdReceiverConstructorTest {
 
 	@Test
 	public void testConstructorSuccess(@Injectable OdeProperties mockOdeProps,
 			@Mocked final SerializableMessageProducerPool<?, ?> mockSerializableMessageProducerPool, @Mocked final MessageProducer mockMessageProducer) {
-		VsdmReceiver testrec = new VsdmReceiver(mockOdeProps);
+		VsdReceiver testrec = new VsdReceiver(mockOdeProps);
 	}
 
 	@Test
@@ -35,7 +36,7 @@ public class VsdmReceiverConstructorTest {
 		} catch (SocketException e) {
 			fail("Unexpected exception in expectations blow: " + e);
 		}
-		VsdmReceiver testrec = new VsdmReceiver(mockOdeProps);
+		VsdReceiver testrec = new VsdReceiver(mockOdeProps);
 	}
 
 }

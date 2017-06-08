@@ -10,14 +10,15 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.SerializationUtils;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-public class BsmCoder extends AbstractCoder {
+public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
 
-    public BsmCoder() {
+    public BsmStreamDecoderPublisher() {
         super();
     }
 
-    public BsmCoder(OdeProperties properties) {
+    public BsmStreamDecoderPublisher(OdeProperties properties) {
         super(properties);
     }
 
@@ -52,7 +53,7 @@ public class BsmCoder extends AbstractCoder {
 
                 decoded = (Asn1Object) JsonUtils.fromJson(line, J2735Bsm.class);
                 publish(decoded);
-                publish(decoded.toJson());
+                publish(decoded.toJson(odeProperties.getVerboseJson()));
             }
             if (empty) {
                 EventLogger.logger.info("Empty file received");
@@ -62,6 +63,19 @@ public class BsmCoder extends AbstractCoder {
             EventLogger.logger.info("Error occurred while decoding message: {}", line);
             throw new IOException("Error decoding data: " + line, e);
         }
+    }
+
+    @Override
+    public void publish(String msg) {
+        logger.debug("Publishing: {}", msg);
+        defaultProducer.send(odeProperties.getKafkaTopicBsmRawJson(), null, msg);
+    }
+
+    @Override
+    public void publish(byte[] msg) {
+        MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
+        producer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null, msg);
+        messageProducerPool.checkIn(producer);
     }
 
 

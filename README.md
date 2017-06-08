@@ -171,7 +171,7 @@ Navigate to the root directory of the jpo-ode-private project:
 ```
 It is important you run `mvn clean` first and _then_ `mvn install` because clean installs the required OSS jar file in your local maven repository.
 
-**(Optional)**: Familiarize yourself with Docker and follow the instructions in the [docker/README.me].
+**(Optional)**: Familiarize yourself with Docker and follow the instructions in the [README.md](docker/README.md).
 
 **(Optional)**: If you wish to change the application properties, such as change the location of the upload service via ode.uploadLocation property or set the ode.kafkaBrokers to something other than the $DOCKER_HOST_IP:9092, modify ```jpo-ode-svcs\src\main\resources\application.properties``` file as desired.
 

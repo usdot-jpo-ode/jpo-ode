@@ -62,7 +62,7 @@ public class AsdMessage extends OdeObject {
             AdvisoryBroadcastType.tim,
             new DistributionType(distroType), dStartTime, dStopTime, oAdvisoryMessage);
 
-      asd.dialogID = new SemiDialogID(156);
+      asd.dialogID = SemiDialogID.advSitDataDep;
       asd.groupID = new GroupID("jode".getBytes());
       asd.requestID = new TemporaryID(fourRandomBytes);
       asd.seqID = new SemiSequenceID(5);

@@ -350,4 +350,14 @@ public class J2735Util {
 		return calendar;
 	}
 
+    public static byte[] encode(Coder coder, AbstractData msg) {
+        ByteArrayOutputStream sink = new ByteArrayOutputStream();
+        try {
+            coder.encode(msg, sink);
+        } catch (EncodeFailedException | EncodeNotSupportedException e) {
+            logger.error("Error Encoding Message " + msg.toString(), e);
+        }
+        return sink.toByteArray();
+    }
+
 }

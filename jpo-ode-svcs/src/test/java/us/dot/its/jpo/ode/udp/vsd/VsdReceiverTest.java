@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.vsdm;
+package us.dot.its.jpo.ode.udp.vsd;
 
 import static org.junit.Assert.fail;
 
@@ -17,13 +17,14 @@ import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
+import us.dot.its.jpo.ode.udp.vsd.VsdReceiver;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 @RunWith(JMockit.class)
-public class VsdmReceiverTest {
+public class VsdReceiverTest {
 
 	@Tested
-	VsdmReceiver testVsdmReceiver;
+	VsdReceiver testVsdReceiver;
 
 	@Injectable
 	OdeProperties mockOdeProperties;
@@ -42,7 +43,7 @@ public class VsdmReceiverTest {
 		} catch (IOException e) {
 			fail("Unexpected exception in expectations block.");
 		}
-		testVsdmReceiver.run();
+		testVsdReceiver.run();
 	}
 
 }

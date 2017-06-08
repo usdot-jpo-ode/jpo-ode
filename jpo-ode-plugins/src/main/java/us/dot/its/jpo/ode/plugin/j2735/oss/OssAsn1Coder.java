@@ -47,11 +47,11 @@ public class OssAsn1Coder implements Asn1Plugin {
 
         MessageFrame mf = new MessageFrame();
 
-        J2735Bsm returnValue = null;
+        J2735MessageFrame returnValue = null;
 
         try {
             coder.decode(ins, mf);
-            returnValue = OssMessageFrame.genericMessageFrame(mf).getValue();
+            returnValue = OssMessageFrame.genericMessageFrame(mf);
         } catch (Exception e) {
             logger.error("Error decoding ", e);
         } finally {
@@ -127,20 +127,20 @@ public class OssAsn1Coder implements Asn1Plugin {
         if (DecodeFailedException.class == e.getClass()) {
             AbstractData partialDecodedMessage = ((DecodeFailedException) e).getDecodedData();
             if (partialDecodedMessage != null) {
-                logger.error("DECODER - Error, message only partially decoded: {}", partialDecodedMessage);
+                logger.error("Error, message only partially decoded: {}", partialDecodedMessage);
             } else {
-                logger.debug("DECODER - Ignoring extraneous bytes at the end of the input stream.");
+                logger.debug("Ignoring extraneous bytes at the end of the input stream.");
             }
         } else if (DecodeNotSupportedException.class == e.getClass()) {
-            logger.error("DECODER - Error decoding, data does not represent valid message", e);
+            logger.error("Error decoding, data does not represent valid message", e);
         } else if (IOException.class == e.getClass()) {
-            logger.error("DECODER - Error decoding, general error: {}", e);
+            logger.error("Error decoding", e);
         } else if (OssBsmPart2Exception.class == e.getClass()) {
-            logger.error("DECODER - Error decoding, unable to parse BSM part 2: {}", e);
+            logger.error("Error decoding, BSM part 2 exception", e);
         } else if (OssMessageFrameException.class == e.getClass()) {
-            logger.error("DECODER - Error decoding, message frame exception: {}", e);
+            logger.error("Error decoding, message frame exception", e);
         } else {
-            logger.error("DECODER - Unknown error: {}", e);
+            logger.error("Unknown error", e);
         }
     }
 

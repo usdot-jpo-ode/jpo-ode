@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.vsdm;
+package us.dot.its.jpo.ode.udp.vsd;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,7 +20,7 @@ import us.dot.its.jpo.ode.asn1.j2735.CVSampleMessageBuilder;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 
-public class VsdmReceiverFunctionalTest {
+public class VsdReceiverFunctionalTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private static Coder coder = J2735.getPERUnalignedCoder();

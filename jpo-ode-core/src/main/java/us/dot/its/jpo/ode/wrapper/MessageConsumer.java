@@ -78,33 +78,33 @@ public class MessageConsumer<K, V> {
       this(brokers, groupId, null, props);
    }
 
-   public void subscribe(String... topics) {
-      
-      List<String> listTopics = Arrays.asList(topics);
-      logger.info("Subscribing to {}", listTopics);
-      consumer.subscribe(listTopics);
+    public void subscribe(String... topics) {
 
-      isRunning = true;
-      boolean gotMessages = false;
-      while (isRunning) {
-         ConsumerRecords<K, V> records = consumer.poll(CONSUMER_POLL_TIMEOUT_MS);
-         if (records != null && !records.isEmpty()) {
-            gotMessages = true;
-            logger.debug("Consuming {} message(s)", records.count());
+        List<String> listTopics = Arrays.asList(topics);
+        logger.info("Subscribing to {}", listTopics);
+        consumer.subscribe(listTopics);
+
+        isRunning = true;
+        boolean gotMessages = false;
+        while (isRunning) {
             try {
-               processor.process(records);
+                ConsumerRecords<K, V> records = consumer.poll(CONSUMER_POLL_TIMEOUT_MS);
+                if (records != null && !records.isEmpty()) {
+                    gotMessages = true;
+                    logger.debug("Consuming {} message(s)", records.count());
+                    processor.process(records);
+                } else {
+                    if (gotMessages) {
+                        logger.debug("No messages consumed in {} seconds.", CONSUMER_POLL_TIMEOUT_MS / 1000);
+                        gotMessages = false;
+                    }
+                }
             } catch (Exception e) {
-               logger.error("Error processing consumed messages", e);
+                logger.error("Error processing consumed messages", e);
             }
-         } else {
-            if (gotMessages) {
-               logger.debug("No messages consumed in {} seconds.", CONSUMER_POLL_TIMEOUT_MS/1000);
-               gotMessages = false;
-            }
-         }
-      }
-      consumer.close();
-   }
+        }
+        consumer.close();
+    }
 
    public void close() {
       isRunning = false;

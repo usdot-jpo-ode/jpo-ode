@@ -35,8 +35,8 @@ public class DdsDepositRequestManager extends DdsRequestManager<DdsStatusMessage
                         + ". Supported encode types are: " + Arrays.asList(DdsRequest.EncodeType.values()));
             }
         } else {
-            throw new DdsRequestManagerException("Invalid Request: " + odeRequest.toJson(false));
-        }
+            throw new DdsRequestManagerException("Invalid Request: " + odeRequest.toJson(odeProperties.getVerboseJson()));
+       }
         return ddsDepReq;
     }
 }

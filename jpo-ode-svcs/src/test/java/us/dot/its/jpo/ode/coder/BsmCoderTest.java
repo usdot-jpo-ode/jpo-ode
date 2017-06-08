@@ -47,7 +47,7 @@ public class BsmCoderTest {
     @Test
     public void shouldConstruct() {
         // trivial test that no exceptions are thrown
-        BsmCoder testBsmCoder = new BsmCoder();
+        BsmStreamDecoderPublisher testBsmCoder = new BsmStreamDecoderPublisher();
     }
 
     @Test
@@ -64,7 +64,7 @@ public class BsmCoderTest {
         } catch (Exception e) {
             fail("Unexpected exception in expectations block: " + e);
         }
-        BsmCoder testBsmCoder = new BsmCoder(mockOdeProperties);
+        BsmStreamDecoderPublisher testBsmCoder = new BsmStreamDecoderPublisher(mockOdeProperties);
 
         assertNotNull("odeProperties null", testBsmCoder.odeProperties);
         assertNotNull("asn1Coder null", testBsmCoder.asn1Coder);
@@ -85,7 +85,7 @@ public class BsmCoderTest {
         } catch (Exception e) {
             fail("Unexpected exception in expectations block: " + e);
         }
-        BsmCoder testBsmCoder = new BsmCoder(mockOdeProperties);
+        BsmStreamDecoderPublisher testBsmCoder = new BsmStreamDecoderPublisher(mockOdeProperties);
 
     }
 
@@ -107,7 +107,7 @@ public class BsmCoderTest {
             fail("Unexpected exception in expectations block: " + e);
         }
 
-        assertEquals("Incorrect object returned", mockAsn1Object, new BsmCoder(mockOdeProperties).decode("test"));
+        assertEquals("Incorrect object returned", mockAsn1Object, new BsmStreamDecoderPublisher(mockOdeProperties).decode("test"));
     }
 
     @Test
@@ -130,7 +130,7 @@ public class BsmCoderTest {
         }
 
         assertEquals("Incorrect object returned", mockAsn1Object,
-                new BsmCoder(mockOdeProperties).decode(mockInputStream));
+                new BsmStreamDecoderPublisher(mockOdeProperties).decode(mockInputStream));
     }
 
     @Test
@@ -153,7 +153,7 @@ public class BsmCoderTest {
         }
 
 
-        new BsmCoder(mockOdeProperties).publish(mockJ2735Bsm);
+        new BsmStreamDecoderPublisher(mockOdeProperties).publish(mockJ2735Bsm);
 
     }
 }

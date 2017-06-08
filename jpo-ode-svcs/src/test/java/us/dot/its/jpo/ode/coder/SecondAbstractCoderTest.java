@@ -17,7 +17,7 @@ import us.dot.its.jpo.ode.wrapper.MessageProducer;
 public class SecondAbstractCoderTest {
 
     @Tested
-    AbstractCoder testAbstractCoder;
+    AbstractStreamDecoderPublisher testAbstractCoder;
     @Injectable
     OdeProperties mockOdeProperties;
 

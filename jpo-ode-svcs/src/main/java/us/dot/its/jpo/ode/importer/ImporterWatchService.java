@@ -16,17 +16,17 @@ import java.nio.file.WatchService;
 
 import org.slf4j.Logger;
 
-import us.dot.its.jpo.ode.coder.Coder;
+import us.dot.its.jpo.ode.coder.StreamDecoderPublisher;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 
 public class ImporterWatchService extends ImporterFileService implements Runnable {
 
     private Path inbox;
     private Path backup;
-    private Coder coder;
+    private StreamDecoderPublisher coder;
     private Logger logger;
 
-    public ImporterWatchService(Path dir, Path backupDir, Coder coder, Logger logger) {
+    public ImporterWatchService(Path dir, Path backupDir, StreamDecoderPublisher coder, Logger logger) {
 
         this.inbox = dir;
         this.backup = backupDir;
@@ -40,11 +40,11 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
         // Create the inbox directory
         try {
             super.createDirectoryRecursively(inbox);
-            logger.debug("IMPORTER - Created directory {}", inbox);
+            logger.debug("Created directory {}", inbox);
             super.createDirectoryRecursively(backup);
-            logger.debug("IMPORTER - Created directory {}", backup);
+            logger.debug("Created directory {}", backup);
         } catch (IOException e) {
-            logger.error("IMPORTER -  Error creating directory ({}): {}", inbox, e);
+            logger.error("Error creating directory: " + inbox, e);
         }
 
         // Process files already in the directory
@@ -54,7 +54,7 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
     public void processExistingFiles() {
         int count = 0;
         // Process files already in the directory
-        logger.debug("IMPORTER - Started processing existing files at location: {}", inbox);
+        logger.debug("Started processing existing files at location: {}", inbox);
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(inbox)) {
 
             if (stream == null) {
@@ -68,9 +68,9 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
             }
 
             stream.close();
-            logger.debug("IMPORTER - Finished processing {} existing files at location: {}", count, inbox);
+            logger.debug("Finished processing {} existing files at location: {}", count, inbox);
         } catch (Exception e) {
-            logger.error("IMPORTER -  Error processing existing files.", e);
+            logger.error("Error processing existing files.", e);
         }
     }
 
@@ -88,20 +88,20 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
                coder.decodeBinaryAndPublish(inputStream);
             }
         } catch (Exception e) {
-            logger.error("IMPORTER - Unable to open or process file: {}", e);
+            logger.error("Unable to open or process file: " + filePath, e);
         }
 
         try {
             super.backupFile(filePath, backup);
         } catch (IOException e) {
-            logger.error("IMPORTER - Unable to backup file: {}", e);
+            logger.error("Unable to backup file: " + filePath, e);
         }
     }
 
     @Override
     public void run() {
 
-        logger.info("IMPORTER - Directory watcher service run initiated.");
+        logger.info("Directory watcher service run initiated.");
 
         // Begin by processing all files already in the inbox
         processExistingFiles();
@@ -119,11 +119,11 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
                 throw new IOException("Watch key null");
             }
         } catch (IOException e) {
-            logger.error("IMPORTER - Watch service failed to create: {}", e);
+            logger.error("Watch service failed to create: {}", e);
             return;
         }
 
-        logger.info("IMPORTER - Watch service active on {}", inbox);
+        logger.info("Watch service active on {}", inbox);
 
         // Watch directory for file events
         while (true) {
@@ -134,7 +134,7 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
                 wk = watcher.take();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); 
-                logger.error("[CRITICAL] IMPORTER - Watch service interrupted: {}", e);
+                logger.error("[CRITICAL] Watch service interrupted: {}", e);
                 return;
             }
 
@@ -144,17 +144,17 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
                 if (OVERFLOW == kind) {
                     continue;
                 } else if (ENTRY_MODIFY == kind) {
-                    logger.debug("IMPORTER - Notable watch event kind: {}", event.kind());
+                    logger.debug("Notable watch event kind: {}", event.kind());
 
                     @SuppressWarnings("unchecked")
                     WatchEvent<Path> ev = (WatchEvent<Path>) event;
                     Path filename = inbox.resolve(ev.context());
-                    logger.debug("IMPORTER - File event on {}", filename);
+                    logger.debug("File event on {}", filename);
 
                     try {
                         processFile(filename);
                     } catch (Exception e) {
-                        logger.error("IMPORTER - Error processing file: " + filename, e);
+                        logger.error("Error processing file: " + filename, e);
                     }
                 } else {
                     logger.error("Unhandled watch event kind: {}", event.kind());
@@ -163,7 +163,7 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
             
             boolean valid = wk.reset();
             if (!valid) {
-                logger.error("IMPORTER - ERROR: Watch key invalid. Stopping watch service on {}", inbox);
+                logger.error("ERROR: Watch key invalid. Stopping watch service on {}", inbox);
                 break;
             }
         }

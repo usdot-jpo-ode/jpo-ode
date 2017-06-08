@@ -1,16 +1,5 @@
 package us.dot.its.jpo.ode;
 
-import groovy.lang.MissingPropertyException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
-import us.dot.its.jpo.ode.context.AppContext;
-import us.dot.its.jpo.ode.eventlog.EventLogger;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
@@ -18,6 +7,18 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+
+import groovy.lang.MissingPropertyException;
+import us.dot.its.jpo.ode.context.AppContext;
+import us.dot.its.jpo.ode.eventlog.EventLogger;
 
 @ConfigurationProperties("ode")
 @PropertySource("classpath:application.properties")
@@ -28,35 +29,77 @@ public class OdeProperties implements EnvironmentAware {
     @Autowired
     private Environment env;
 
-    private List<Path> uploadLocations = new ArrayList<>();
-
-    private String uploadLocationRoot = "uploads";
-    private String uploadLocationBsm = "bsm";
-    private String uploadLocationMessageFrame = "messageframe";
+    /*
+     * General Properties
+     */
     private String pluginsLocations = "plugins";
     private String asn1CoderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder";
     private String kafkaBrokers = null;
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
+    private Boolean verboseJson = false;
+    private String externalIpv4 = "";
+    private String externalIpv6 = "";
+
+    //File import properties
+    private String uploadLocationRoot = "uploads";
+    private String uploadLocationBsm = "bsm";
+    private String uploadLocationMessageFrame = "messageframe";
+
+
+    /*
+     * USDOT Situation Data Clearinghouse (SDC)/ Situation Data Warehouse (SDW), a.k.a Data Distribution System (DDS) Properties
+     */
+    //DDS WebSocket Properties
     private String ddsCasUrl = "https://cas.connectedvcs.com/accounts/v1/tickets";
     private String ddsCasUsername = "";
     private String ddsCasPass = "";
     private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
-    private String kafkaTopicBsmSerializedPojo = "topic.J2735Bsm";
-    private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
-    private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
-    private String kafkaTopicVsdm = "topic.J2735Vsdm";
-    
-    private int receiverPort = 46753;
-    private int vsdmBufferSize = 500;
-    private Boolean vsdmVerboseJson = false;
+
+    //IPv4 address and listening UDP port for SDC
     private String sdcIp = "104.130.170.234";//NOSONAR
     private int sdcPort = 46753;
-    private String returnIp = "";
-    private int forwarderPort = 5555;
-    private int vsdmSenderPort = 6666;
 
+    //Enable/disable depositing sanitized BSMs to SDC
+    private boolean depositSanitizedBsmToSdc = true;
+
+    private int serviceRespExpirationSeconds = 60;
+
+    private int serviceResponseBufferSize = 500;
+    
+    
+    /*
+     * BSM Properties
+     */
+    private String kafkaTopicBsmSerializedPojo = "j2735Bsm";
+    private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
+    private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
+    private int bsmReceiverPort = 46800;
+    private int bsmBufferSize = 500;
+    
+    /*
+     * Vehicle Situation Data (VSD) Properties
+     */
+    private int vsdBufferSize = 500;
+    private int vsdReceiverPort = 46753;
+    private int vsdDepositorPort = 5555;
+    private int vsdTrustport = 5556;
+    
+
+    /*
+     * Intersection Situation Data (ISD) Properties
+     */
+    private String kafkaTopicEncodedIsd= "encodedIsd";
+    private int isdBufferSize = 500;
+    private int isdReceiverPort = 46801;
+    private int isdDepositorPort = 6666;
+    private int isdTrustPort = 6667;
+
+    
     private String hostId;
+    private List<Path> uploadLocations = new ArrayList<>();
 
+    public static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
+    
     public OdeProperties() {
         super();
         init();
@@ -229,28 +272,36 @@ public class OdeProperties implements EnvironmentAware {
         this.kafkaTopicBsmSerializedPojo = kafkaTopicBsmSerializedPOJO;
     }
 
-	public int getReceiverPort() {
-		return receiverPort;
-	}
-
-	public void setReceiverPort(int vsdmPort) {
-		this.receiverPort = vsdmPort;
-	}
-
-    public int getVsdmBufferSize() {
-        return vsdmBufferSize;
+    public int getVsdReceiverPort() {
+        return vsdReceiverPort;
     }
 
-    public void setVsdmBufferSize(int vsdmBufferSize) {
-        this.vsdmBufferSize = vsdmBufferSize;
+    public void setVsdReceiverPort(int vsdReceiverPort) {
+        this.vsdReceiverPort = vsdReceiverPort;
     }
 
-    public Boolean getVsdmVerboseJson() {
-        return vsdmVerboseJson;
+    public int getVsdBufferSize() {
+        return vsdBufferSize;
     }
 
-    public void setVsdmVerboseJson(Boolean vsdmVerboseJson) {
-        this.vsdmVerboseJson = vsdmVerboseJson;
+    public void setVsdBufferSize(int vsdBufferSize) {
+        this.vsdBufferSize = vsdBufferSize;
+    }
+
+    public Boolean getVerboseJson() {
+        return verboseJson;
+    }
+    
+    public int getIsdBufferSize() {
+        return isdBufferSize;
+    }
+
+    public void setIsdBufferSize(int isdBufferSize) {
+        this.isdBufferSize = isdBufferSize;
+    }
+
+    public void setVerboseJson(Boolean verboseJson) {
+        this.verboseJson = verboseJson;
     }
 
     public String getSdcIp() {
@@ -269,28 +320,52 @@ public class OdeProperties implements EnvironmentAware {
         this.sdcPort = sdcPort;
     }
 
-    public String getReturnIp() {
-        return returnIp;
+    public String getExternalIpv4() {
+        return externalIpv4;
     }
 
-	public int getForwarderPort() {
-		return forwarderPort;
-	}
-
-	public void setForwarderPort(int forwarderPort) {
-		this.forwarderPort = forwarderPort;
-	}
-
-	public String getKafkaTopicVsdm() {
-		return kafkaTopicVsdm;
-	}
-
-    public int getVsdmSenderPort() {
-        return vsdmSenderPort;
+    public void setExternalIpv4(String externalIpv4) {
+        this.externalIpv4 = externalIpv4;
     }
 
-    public void setVsdmSenderPort(int vsdmSenderPort) {
-        this.vsdmSenderPort = vsdmSenderPort;
+    public String getExternalIpv6() {
+        return externalIpv6;
+    }
+
+    public void setExternalIpv6(String externalIpv6) {
+        this.externalIpv6 = externalIpv6;
+    }
+
+    public String getKafkaTopicEncodedIsd() {
+        return kafkaTopicEncodedIsd;
+    }
+
+    public void setKafkaTopicEncodedIsd(String kafkaTopicEncodedIsd) {
+        this.kafkaTopicEncodedIsd = kafkaTopicEncodedIsd;
+    }
+
+    public int getVsdDepositorPort() {
+        return vsdDepositorPort;
+    }
+
+    public void setVsdDepositorPort(int vsdSenderPort) {
+        this.vsdDepositorPort = vsdSenderPort;
+    }
+
+    public int getIsdReceiverPort() {
+        return isdReceiverPort;
+    }
+
+    public void setIsdReceiverPort(int isdReceiverPort) {
+        this.isdReceiverPort = isdReceiverPort;
+    }
+
+    public int getIsdDepositorPort() {
+        return isdDepositorPort;
+    }
+
+    public void setIsdDepositorPort(int isdDepositorPort) {
+        this.isdDepositorPort = isdDepositorPort;
     }
 
     public String getDdsCasPass() {
@@ -309,12 +384,64 @@ public class OdeProperties implements EnvironmentAware {
         this.kafkaTopicBsmRawJson = kafkaTopicBsmRawJson;
     }
 
-    public void setKafkaTopicVsdm(String kafkaTopicVsdm) {
-        this.kafkaTopicVsdm = kafkaTopicVsdm;
+    public void setReturnIp(String returnIp) {
+        this.externalIpv4 = returnIp;
     }
 
-    public void setReturnIp(String returnIp) {
-        this.returnIp = returnIp;
+	public int getBsmReceiverPort() {
+		return bsmReceiverPort;
     }
+
+	public void setBsmReceiverPort(int bsmReceiverPort) {
+		this.bsmReceiverPort = bsmReceiverPort;
+    }
+
+	public int getBsmBufferSize() {
+		return bsmBufferSize;
+	}
+
+	public void setBsmBufferSize(int bsmBufferSize) {
+		this.bsmBufferSize = bsmBufferSize;
+	}
+
+    public boolean getDepositSanitizedBsmToSdc() {
+        return depositSanitizedBsmToSdc;
+    }
+
+    public void setDepositSanitizedBsmToSdc(boolean depositSanitizedBsmToSdc) {
+        this.depositSanitizedBsmToSdc = depositSanitizedBsmToSdc;
+    }
+
+    public int getServiceRespExpirationSeconds() {
+        return serviceRespExpirationSeconds;
+    }
+
+    public void setServiceRespExpirationSeconds(int serviceRespExpirationSeconds) {
+        this.serviceRespExpirationSeconds = serviceRespExpirationSeconds;
+    }
+
+    public int getServiceResponseBufferSize() {
+        return serviceResponseBufferSize;
+    }
+
+    public void setServiceResponseBufferSize(int serviceResponseBufferSize) {
+        this.serviceResponseBufferSize = serviceResponseBufferSize;
+    }
+
+	public int getVsdTrustport() {
+		return vsdTrustport;
+	}
+
+	public void setVsdTrustport(int vsdTrustport) {
+		this.vsdTrustport = vsdTrustport;
+	}
+
+	public int getIsdTrustPort() {
+		return isdTrustPort;
+	}
+
+	public void setIsdTrustPort(int isdTrustPort) {
+		this.isdTrustPort = isdTrustPort;
+	}
 
 }

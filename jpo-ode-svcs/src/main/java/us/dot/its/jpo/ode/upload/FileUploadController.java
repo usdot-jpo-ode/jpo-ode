@@ -22,9 +22,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.BsmCoder;
-import us.dot.its.jpo.ode.coder.Coder;
-import us.dot.its.jpo.ode.coder.MessageFrameCoder;
+import us.dot.its.jpo.ode.coder.BsmStreamDecoderPublisher;
+import us.dot.its.jpo.ode.coder.StreamDecoderPublisher;
+import us.dot.its.jpo.ode.coder.MessageFrameStreamDecoderPublisher;
 import us.dot.its.jpo.ode.exporter.FilteredBsmExporter;
 import us.dot.its.jpo.ode.exporter.RawBsmExporter;
 import us.dot.its.jpo.ode.importer.ImporterWatchService;
@@ -61,13 +61,13 @@ public class FileUploadController {
         launchImporter(
                 Paths.get(odeProperties.getUploadLocationRoot(), odeProperties.getUploadLocationBsm()),
                 backupPath,
-                new BsmCoder(this.odeProperties));
+                new BsmStreamDecoderPublisher(this.odeProperties));
 
         
         launchImporter(
                 Paths.get(odeProperties.getUploadLocationRoot(), odeProperties.getUploadLocationMessageFrame()),
                 backupPath,
-                new MessageFrameCoder(this.odeProperties));
+                new MessageFrameStreamDecoderPublisher(this.odeProperties));
         
         try {
             Executors.newSingleThreadExecutor().submit(new RawBsmExporter(
@@ -84,7 +84,7 @@ public class FileUploadController {
         }
     }
 
-    private ExecutorService launchImporter(Path filePath, Path backupPath, Coder coder) {
+    private ExecutorService launchImporter(Path filePath, Path backupPath, StreamDecoderPublisher coder) {
         ExecutorService importer = Executors.newSingleThreadExecutor();
         logger.debug("UPLOADER - Upload directory: {}", filePath);
         importer.submit(new ImporterWatchService(filePath, backupPath, coder,
