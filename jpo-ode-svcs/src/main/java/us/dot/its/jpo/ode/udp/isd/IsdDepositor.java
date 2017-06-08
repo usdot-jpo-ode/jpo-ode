@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 
+import org.apache.tomcat.util.buf.HexUtils;
+
 import com.oss.asn1.DecodeFailedException;
 import com.oss.asn1.DecodeNotSupportedException;
 import com.oss.asn1.EncodeFailedException;
@@ -55,7 +57,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		try { // must reuse the requestID from the ISD
 			acceptance.requestID = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
 					.decode(new ByteArrayInputStream(encodedIsd), new IntersectionSituationData())).requestID;
-			logger.info("Extracted requestID from ISD for ISD acceptance message {}", acceptance.requestID.toString());
+			logger.info("Extracted requestID from ISD for ISD acceptance message {}", HexUtils.toHexString(acceptance.requestID.byteArrayValue()));
 		} catch (DecodeFailedException | DecodeNotSupportedException e) {
 			logger.error("Failed to extract requestID from ISD ", e);
 			return new byte[0];
