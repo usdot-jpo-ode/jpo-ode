@@ -84,7 +84,7 @@ public class TrustManager implements Callable<ServiceResponse> {
 	
 	public ServiceRequest createServiceRequest(TemporaryID requestID, SemiDialogID dialogID) throws TrustManagerException {
 	    GroupID groupID = new GroupID(OdeProperties.JPO_ODE_GROUP_ID);
-	    Random randgen = new Random();
+	    //Random randgen = new Random();
         //TemporaryID requestID = new TemporaryID(ByteBuffer.allocate(4).putInt(randgen.nextInt(256)).array());
 
         ServiceRequest request = new ServiceRequest(
