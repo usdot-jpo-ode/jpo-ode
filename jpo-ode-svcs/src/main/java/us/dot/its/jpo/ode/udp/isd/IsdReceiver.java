@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.udp.isd;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.Arrays;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.oss.asn1.AbstractData;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
@@ -59,6 +61,9 @@ public class IsdReceiver extends AbstractUdpReceiverPublisher {
 		AbstractData decoded = super.decodeData(data);
 		try {
 			if (decoded instanceof ServiceRequest) {
+				senderPort = ((ServiceRequest)decoded).getDestination().getPort().intValue();
+				senderIp = ((ServiceRequest)decoded).getDestination().getAddress().toString();
+				logger.error("Service request response destination {}:{}", senderPort, senderIp);
 				sendResponse(decoded, socket);
 			} else if (decoded instanceof IntersectionSituationData) {
 				logger.debug("Received ISD");
