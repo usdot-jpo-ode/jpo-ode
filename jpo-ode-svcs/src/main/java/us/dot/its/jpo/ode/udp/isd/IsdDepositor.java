@@ -49,6 +49,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		/*
 		 * Send an ISDAcceptance message to confirm deposit
 		 */
+		/*
 		IntersectionSituationDataAcceptance acceptance = new IntersectionSituationDataAcceptance();
 		acceptance.dialogID = dialogId;
 		acceptance.groupID = new GroupID(OdeProperties.JPO_ODE_GROUP_ID);
@@ -87,6 +88,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		} catch (IOException e) {
 			logger.error("Error receiving ISD Receipt message to SDC", e);
 		}
+		*/
 
 		return encodedIsd;
 	}
