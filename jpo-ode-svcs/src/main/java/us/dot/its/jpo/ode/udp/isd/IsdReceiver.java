@@ -63,9 +63,13 @@ public class IsdReceiver extends AbstractUdpReceiverPublisher {
 
 				if (null != ((ServiceRequest) decoded).getDestination()) {
 					ConnectionPoint cp = ((ServiceRequest) decoded).getDestination();
+					
+					// Change return address, if specified
 					if (null != cp.getAddress()) {
 						senderIp = ((ServiceRequest) decoded).getDestination().getAddress().toString();
 					}
+					
+					// Change return port, if specified
 					if (null != cp.getPort()) {
 						senderPort = ((ServiceRequest) decoded).getDestination().getPort().intValue();
 					}

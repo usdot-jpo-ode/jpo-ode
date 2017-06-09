@@ -14,6 +14,7 @@ import com.oss.asn1.AbstractData;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
+import us.dot.its.jpo.ode.j2735.semi.ConnectionPoint;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
@@ -65,6 +66,22 @@ public class VsdReceiver extends BsmReceiver {
         AbstractData decoded = super.decodeData(data);
         try {
             if (decoded instanceof ServiceRequest) {
+            	
+            	if (null != ((ServiceRequest) decoded).getDestination()) {
+					ConnectionPoint cp = ((ServiceRequest) decoded).getDestination();
+					
+					// Change return address, if specified
+					if (null != cp.getAddress()) {
+						senderIp = ((ServiceRequest) decoded).getDestination().getAddress().toString();
+					}
+					
+					// Change return port, if specified
+					if (null != cp.getPort()) {
+						senderPort = ((ServiceRequest) decoded).getDestination().getPort().intValue();
+					}
+					logger.error("Service request response destination specified {}:{}", senderPort, senderIp);
+				}
+            	
                 sendResponse(decoded, new DatagramSocket(odeProperties.getVsdTrustport()));
             } else if (decoded instanceof VehSitDataMessage) {
                 logger.debug("Received VSD");
