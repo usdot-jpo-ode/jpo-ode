@@ -69,6 +69,8 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 
 			logger.info("Extracted requestID from ISD for ISD acceptance message {}",
 					HexUtils.toHexString(acceptance.requestID.byteArrayValue()));
+			
+			logger.info("Sending Data Acceptance message to SDC: {} ", acceptance.toString());
 		} catch (DecodeFailedException | DecodeNotSupportedException e) {
 			logger.error("Failed to extract requestID from ISD ", e);
 			return new byte[0];
