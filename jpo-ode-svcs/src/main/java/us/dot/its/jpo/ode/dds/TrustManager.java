@@ -145,7 +145,7 @@ public class TrustManager implements Callable<ServiceResponse> {
         return servResponse;
 	}
 
-	public ServiceResponse desiResponse(ServiceRequest request) {
+	public ServiceResponse createServiceResponse(ServiceRequest request) {
         ServiceResponse response = new ServiceResponse();
         response.setDialogID(request.getDialogID());
         
