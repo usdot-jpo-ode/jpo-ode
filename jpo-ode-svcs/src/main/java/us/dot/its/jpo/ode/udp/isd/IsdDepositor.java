@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 
 import org.apache.tomcat.util.buf.HexUtils;
 
+import com.oss.asn1.AbstractData;
 import com.oss.asn1.DecodeFailedException;
 import com.oss.asn1.DecodeNotSupportedException;
 import com.oss.asn1.EncodeFailedException;
@@ -15,9 +16,10 @@ import com.oss.asn1.EncodeNotSupportedException;
 import com.oss.asn1.INTEGER;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
 import us.dot.its.jpo.ode.j2735.J2735;
-import us.dot.its.jpo.ode.j2735.semi.GroupID;
+import us.dot.its.jpo.ode.j2735.semi.DataReceipt;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationDataAcceptance;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
@@ -41,8 +43,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 					((IntersectionSituationData) J2735.getPERUnalignedCoder()
 							.decode(new ByteArrayInputStream((byte[]) record.value()), new IntersectionSituationData()))
 									.toString());
-			
-			
+
 			logger.debug("Sending Isd to SDC IP: {}:{} from port: {}", odeProperties.getSdcIp(),
 					odeProperties.getSdcPort(), socket.getLocalPort());
 			socket.send(new DatagramPacket(encodedIsd, encodedIsd.length,
@@ -61,7 +62,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		acceptance.groupID = groupId;
 		acceptance.seqID = SemiSequenceID.accept;
 		acceptance.recordsSent = new INTEGER(1);
-		
+
 		try {
 			// must reuse the requestID from the ISD
 			acceptance.requestID = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
@@ -69,7 +70,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 
 			logger.info("Extracted requestID from ISD for ISD acceptance message {}",
 					HexUtils.toHexString(acceptance.requestID.byteArrayValue()));
-			
+
 			logger.info("Sending Data Acceptance message to SDC: {} ", acceptance.toString());
 		} catch (DecodeFailedException | DecodeNotSupportedException e) {
 			logger.error("Failed to extract requestID from ISD ", e);
@@ -97,8 +98,21 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 			logger.debug("Waiting for ISD Data Receipt from SDC...");
 			DatagramPacket responseDp = new DatagramPacket(buffer, buffer.length);
 			socket.receive(responseDp);
+
+			if (buffer.length <= 0)
+				throw new IOException("Received empty data receipt response from SDC");
+
+			AbstractData receipt = null;
+			try {
+				receipt = J2735Util.decode(J2735.getPERUnalignedCoder(), buffer);
+			} catch (DecodeFailedException | DecodeNotSupportedException e) {
+				logger.error("Error decoding receipt from SDC." + e);
+			}
+			if (receipt instanceof DataReceipt) {
+				logger.debug("Received DataReceipt from SDC: {}", receipt.toString());
+			}
 		} catch (IOException e) {
-			logger.error("Error receiving ISD Receipt message to SDC", e);
+			logger.error("Error receiving ISD Receipt message from SDC", e);
 		}
 
 		return encodedIsd;
