@@ -82,8 +82,8 @@ public class TrustManager implements Callable<ServiceResponse> {
         execService = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
 	}
 	
-	public ServiceRequest createServiceRequest(TemporaryID requestID, SemiDialogID dialogID) throws TrustManagerException {
-	    GroupID groupID = new GroupID(OdeProperties.JPO_ODE_GROUP_ID);
+	public ServiceRequest createServiceRequest(TemporaryID requestID, SemiDialogID dialogID, GroupID groupID) throws TrustManagerException {
+	    //GroupID groupID = new GroupID(OdeProperties.JPO_ODE_GROUP_ID);
 	    //Random randgen = new Random();
         //TemporaryID requestID = new TemporaryID(ByteBuffer.allocate(4).putInt(randgen.nextInt(256)).array());
 
@@ -196,7 +196,7 @@ public class TrustManager implements Callable<ServiceResponse> {
         }
     }
 
-    public boolean establishTrust(int srcPort, String destIp, int destPort, TemporaryID requestId, SemiDialogID dialogId)
+    public boolean establishTrust(int srcPort, String destIp, int destPort, TemporaryID requestId, SemiDialogID dialogId, GroupID groupId)
             throws SocketException, TrustManagerException {
     	logger.info("Establishing trust...");
     	
@@ -214,7 +214,7 @@ public class TrustManager implements Callable<ServiceResponse> {
         // Launch a trust manager thread to listen for the service response
         Future<ServiceResponse> f = execService.submit(this);
         
-        ServiceRequest request = createServiceRequest(requestId, dialogId);
+        ServiceRequest request = createServiceRequest(requestId, dialogId, groupId);
         // send the service request
         this.sendServiceRequest(request, destIp, destPort);
         

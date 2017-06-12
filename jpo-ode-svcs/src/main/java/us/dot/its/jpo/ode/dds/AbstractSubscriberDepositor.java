@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
+import us.dot.its.jpo.ode.j2735.semi.GroupID;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
@@ -25,6 +26,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 	protected TrustManager trustMgr;
 	protected TemporaryID requestId;
 	protected SemiDialogID dialogId;
+	protected GroupID groupId;
 
 	public AbstractSubscriberDepositor(OdeProperties odeProps, int port, SemiDialogID dialogId) {
 		this.odeProperties = odeProps;
@@ -52,13 +54,16 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 	@Override
 	public Object call() throws Exception {
 		byte[] encodedMsg = null;
+		
+		IntersectionSituationData decodedMsg = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
+				.decode(new ByteArrayInputStream((byte[]) record.value()), new IntersectionSituationData()));
 
-		requestId = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
-				.decode(new ByteArrayInputStream((byte[]) record.value()), new IntersectionSituationData())).requestID;
+		requestId = decodedMsg.requestID;
+		groupId = decodedMsg.groupID;
 
 		if (!trustMgr.isTrustEstablished()) {
 			trustMgr.establishTrust(depositorPort, odeProperties.getSdcIp(), odeProperties.getSdcPort(), requestId,
-					dialogId);
+					dialogId, groupId);
 		}
 
 		encodedMsg = deposit();
