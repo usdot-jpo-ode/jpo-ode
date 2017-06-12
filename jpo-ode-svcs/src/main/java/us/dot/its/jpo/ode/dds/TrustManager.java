@@ -93,9 +93,11 @@ public class TrustManager implements Callable<ServiceResponse> {
 		if (!StringUtils.isEmpty(odeProperties.getExternalIpv4())) {
 	        ipAddr.setIpv4Address(
 	                new IPv4Address(J2735Util.ipToBytes(odeProperties.getExternalIpv4())));
+	        logger.debug("Return IPv4: {}", odeProperties.getExternalIpv4());
 		} else if (!StringUtils.isEmpty(odeProperties.getExternalIpv6())) {
             ipAddr.setIpv6Address(
                     new IPv6Address(J2735Util.ipToBytes(odeProperties.getExternalIpv6())));
+            logger.debug("Return IPv6: {}", odeProperties.getExternalIpv6());
         } else {
 		    throw new TrustManagerException(
 		            "Invalid ode.externalIpv4 [" + odeProperties.getExternalIpv4() + 
@@ -143,7 +145,7 @@ public class TrustManager implements Callable<ServiceResponse> {
         return servResponse;
 	}
 
-	public ServiceResponse createServiceResponse(ServiceRequest request) {
+	public ServiceResponse desiResponse(ServiceRequest request) {
         ServiceResponse response = new ServiceResponse();
         response.setDialogID(request.getDialogID());
         
