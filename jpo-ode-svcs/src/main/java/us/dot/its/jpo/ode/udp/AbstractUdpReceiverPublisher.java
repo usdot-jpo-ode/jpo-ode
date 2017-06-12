@@ -27,7 +27,6 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
         public UdpReceiverException(String string, Exception e) {
             super(string, e);
         }
-
     }
 
     private static Logger logger = LoggerFactory.getLogger(AbstractUdpReceiverPublisher.class);
