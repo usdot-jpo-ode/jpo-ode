@@ -89,8 +89,7 @@ public class TrustManager implements Callable<ServiceResponse> {
 
         ServiceRequest request = new ServiceRequest(
 	            dialogID, SemiSequenceID.svcReq, groupID, requestID);
-        logger.info("Creating ServiceRequest: Deposit dialogID {} SemiSequenceID {} RequestID {}", dialogID, SemiSequenceID.svcReq, groupID, requestID);
-		IpAddress ipAddr = new IpAddress();
+        IpAddress ipAddr = new IpAddress();
 		if (!StringUtils.isEmpty(odeProperties.getExternalIpv4())) {
 	        ipAddr.setIpv4Address(
 	                new IPv4Address(J2735Util.ipToBytes(odeProperties.getExternalIpv4())));

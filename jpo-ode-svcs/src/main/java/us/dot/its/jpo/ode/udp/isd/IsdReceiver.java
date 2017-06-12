@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.Arrays;
 
+import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,12 +64,12 @@ public class IsdReceiver extends AbstractUdpReceiverPublisher {
 
 				if (null != ((ServiceRequest) decoded).getDestination()) {
 					ConnectionPoint cp = ((ServiceRequest) decoded).getDestination();
-					
+
 					// Change return address, if specified
 					if (null != cp.getAddress()) {
 						senderIp = ((ServiceRequest) decoded).getDestination().getAddress().toString();
 					}
-					
+
 					// Change return port, if specified
 					if (null != cp.getPort()) {
 						senderPort = ((ServiceRequest) decoded).getDestination().getPort().intValue();
@@ -77,7 +78,8 @@ public class IsdReceiver extends AbstractUdpReceiverPublisher {
 				}
 				sendResponse(decoded, socket);
 			} else if (decoded instanceof IntersectionSituationData) {
-				logger.debug("Received ISD");
+				logger.debug("Received ISD with groupID: {}",
+						HexUtils.toHexString(((IntersectionSituationData) decoded).getGroupID().byteArrayValue()));
 				publish(data, odeProperties.getKafkaTopicEncodedIsd());
 			} else {
 				logger.error("Unknown message type received {}", decoded.getClass().getName());
