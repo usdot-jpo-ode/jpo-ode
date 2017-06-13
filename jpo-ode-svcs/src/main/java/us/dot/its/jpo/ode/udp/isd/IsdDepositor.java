@@ -46,21 +46,19 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		byte[] encodedIsd = record.value();
 
 		try {
-			logger.debug("Depositor received ISD: {}",
-					((IntersectionSituationData) J2735.getPERUnalignedCoder()
-							.decode(new ByteArrayInputStream((byte[]) record.value()), new IntersectionSituationData()))
-									.toString());
+			logger.debug("Depositor received ISD: {}", HexUtils.toHexString(encodedIsd));
 
 			logger.debug("Sending Isd to SDC IP: {}:{} from port: {}", odeProperties.getSdcIp(),
 					odeProperties.getSdcPort(), socket.getLocalPort());
 			socket.send(new DatagramPacket(encodedIsd, encodedIsd.length,
 					new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
 			messagesDeposited++;
-		} catch (IOException | DecodeFailedException | DecodeNotSupportedException e) {
+		} catch (IOException e) {
 			logger.error("Error Sending Isd to SDC", e);
 			return new byte[0];
 		}
-		
+
+		// TODO - determine more dynamic method of re-establishing trust
 		// If we've sent at least 5 messages, get a data receipt
 		if (messagesDeposited < 5) {
 			return encodedIsd;
@@ -82,12 +80,11 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 			acceptance.requestID = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
 					.decode(new ByteArrayInputStream(encodedIsd), new IntersectionSituationData())).requestID;
 
-			logger.info("Extracted requestID from ISD for ISD acceptance message {}",
+			logger.info("Sending non-repudiation data Aaceptance message to SDC: {}",
 					HexUtils.toHexString(acceptance.requestID.byteArrayValue()));
 
-			logger.info("Sending Data Acceptance message to SDC: {} ", acceptance.toString());
 		} catch (DecodeFailedException | DecodeNotSupportedException e) {
-			logger.error("Failed to extract requestID from ISD ", e);
+			logger.error("Failed to extract requestID from ISD " + e);
 			return new byte[0];
 		}
 
