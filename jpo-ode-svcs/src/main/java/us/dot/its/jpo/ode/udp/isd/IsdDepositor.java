@@ -56,6 +56,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		if (messagesSent >= 5) {
 			sendDataReceipt(encodedIsd);
 			trustMgr.setTrustEstablished(false);
+			messagesSent = 0;
 		}
 
 		return encodedIsd;
