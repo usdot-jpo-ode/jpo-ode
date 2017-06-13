@@ -63,9 +63,9 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		
 		// If we've sent at least 5 messages, get a data receipt
 		if (messagesDeposited < 5) {
-			trustMgr.setTrustEstablished(false);
 			return encodedIsd;
 		}
+		trustMgr.setTrustEstablished(false);
 
 		/*
 		 * Send an ISDAcceptance message to confirm deposit
