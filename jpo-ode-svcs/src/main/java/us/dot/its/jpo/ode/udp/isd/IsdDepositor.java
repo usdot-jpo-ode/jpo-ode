@@ -52,6 +52,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		// TODO - determine more dynamic method of re-establishing trust
 		// If we've sent at least 5 messages, get a data receipt and then end
 		// trust session
+		logger.info("ISDs deposited since session start: {}", messagesDeposited);
 		if (messagesDeposited >= 5) {
 			sendDataReceipt(encodedIsd);
 			trustMgr.setTrustEstablished(false);

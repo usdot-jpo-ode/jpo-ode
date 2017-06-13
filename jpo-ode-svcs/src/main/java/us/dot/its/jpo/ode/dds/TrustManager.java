@@ -204,11 +204,11 @@ public class TrustManager implements Callable<ServiceResponse> {
             throws SocketException, TrustManagerException {
     	logger.info("Establishing trust...");
     	
-        if (this.socket != null && !trustEstablished) {
-            logger.debug("Closing outbound socket srcPort={}, destPort={}", srcPort, destPort);
-            //socket.close();
-            //socket = null;
-        }
+//        if (this.socket != null && !trustEstablished) {
+//            logger.debug("Closing outbound socket srcPort={}, destPort={}", srcPort, destPort);
+//            socket.close();
+//            socket = null;
+//        }
         
         if (this.socket == null) {
             socket = new DatagramSocket(srcPort);
@@ -231,7 +231,7 @@ public class TrustManager implements Callable<ServiceResponse> {
             logger.info("Received ServiceResponse from SDC {}", response.toString());
             if (response.getRequestID().equals(request.getRequestID())) {
                 trustEstablished = true;
-                logger.info("Trust established, requestID : {}", request.getRequestID());
+                logger.info("Trust established, session request ID: {}", HexUtils.toHexString(request.getRequestID().byteArrayValue()));
             }
                 
         } catch (Exception e) {
