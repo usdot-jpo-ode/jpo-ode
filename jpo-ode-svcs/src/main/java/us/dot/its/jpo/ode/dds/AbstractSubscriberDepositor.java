@@ -8,6 +8,8 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.oss.asn1.Coder;
+
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
@@ -28,12 +30,14 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 	protected SemiDialogID dialogId;
 	protected GroupID groupId;
 	protected int messagesDeposited;
+	protected Coder coder;
 
 	public AbstractSubscriberDepositor(OdeProperties odeProps, int port, SemiDialogID dialogId) {
 		this.odeProperties = odeProps;
 		this.depositorPort = port;
 		this.dialogId = dialogId;
 		this.messagesDeposited = 0;
+		this.coder = J2735.getPERUnalignedCoder();
 
 		try {
 			logger.debug("Creating depositor Socket with port {}", port);
@@ -56,7 +60,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 	@Override
 	public Object call() throws Exception {
 		byte[] encodedMsg = null;
-		
+
 		IntersectionSituationData decodedMsg = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
 				.decode(new ByteArrayInputStream((byte[]) record.value()), new IntersectionSituationData()));
 

@@ -14,7 +14,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.tomcat.util.buf.HexUtils;
 
-import com.oss.asn1.AbstractData;
 import com.oss.asn1.DecodeFailedException;
 import com.oss.asn1.DecodeNotSupportedException;
 import com.oss.asn1.EncodeFailedException;
@@ -22,11 +21,7 @@ import com.oss.asn1.EncodeNotSupportedException;
 import com.oss.asn1.INTEGER;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
-import us.dot.its.jpo.ode.dds.TrustManager.TrustManagerException;
-import us.dot.its.jpo.ode.j2735.J2735;
-import us.dot.its.jpo.ode.j2735.semi.DataReceipt;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationDataAcceptance;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
@@ -48,7 +43,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		try {
 			logger.debug("Depositor received ISD: {}", HexUtils.toHexString(encodedIsd));
 
-			logger.debug("Sending Isd to SDC IP: {}:{} from port: {}", odeProperties.getSdcIp(),
+			logger.debug("Sending ISD to SDC IP: {}:{} from port: {}", odeProperties.getSdcIp(),
 					odeProperties.getSdcPort(), socket.getLocalPort());
 			socket.send(new DatagramPacket(encodedIsd, encodedIsd.length,
 					new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
@@ -59,11 +54,17 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		}
 
 		// TODO - determine more dynamic method of re-establishing trust
-		// If we've sent at least 5 messages, get a data receipt
-		if (messagesDeposited < 5) {
-			return encodedIsd;
+		// If we've sent at least 5 messages, get a data receipt and then end
+		// trust session
+		if (messagesDeposited >= 5) {
+			sendDataReceipt(encodedIsd);
+			trustMgr.setTrustEstablished(false);
 		}
-		trustMgr.setTrustEstablished(false);
+
+		return encodedIsd;
+	}
+
+	public void sendDataReceipt(byte[] encodedIsd) {
 
 		/*
 		 * Send an ISDAcceptance message to confirm deposit
@@ -75,32 +76,24 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		acceptance.seqID = SemiSequenceID.accept;
 		acceptance.recordsSent = new INTEGER(messagesDeposited);
 
-		try {
-			// must reuse the requestID from the ISD
-			acceptance.requestID = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
-					.decode(new ByteArrayInputStream(encodedIsd), new IntersectionSituationData())).requestID;
-
-			logger.info("Sending non-repudiation data Aaceptance message to SDC: {}",
-					HexUtils.toHexString(acceptance.requestID.byteArrayValue()));
-
-		} catch (DecodeFailedException | DecodeNotSupportedException e) {
-			logger.error("Failed to extract requestID from ISD " + e);
-			return new byte[0];
-		}
-
 		ByteArrayOutputStream sink = new ByteArrayOutputStream();
 		try {
-			J2735.getPERUnalignedCoder().encode(acceptance, sink);
-		} catch (EncodeFailedException | EncodeNotSupportedException e) {
-			logger.error("Error encoding ISD Acceptance message", e);
+			acceptance.requestID = ((IntersectionSituationData) coder.decode(new ByteArrayInputStream(encodedIsd),
+					new IntersectionSituationData())).requestID;
+			coder.encode(acceptance, sink);
+		} catch (EncodeFailedException | EncodeNotSupportedException | DecodeFailedException
+				| DecodeNotSupportedException e) {
+			logger.error("Error encoding ISD non-repudiation message", e);
 		}
+
 		byte[] encodedAccept = sink.toByteArray();
-
 		try {
-			logger.debug("Sending ISD Acceptance message to SDC.");
+			logger.debug("Sending ISD non-repudiation message to SDC {} ", HexUtils.toHexString(encodedAccept));
 
+			// Switching from socket.send to socket.receive in one thread is
+			// slower than non-repud round trip time
+			// So we must lead this by creating a socket.receive thread
 			ExecutorService executorService = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
-
 			Future<Object> f = executorService.submit(new DataReceiptReceiver(odeProperties, socket));
 
 			socket.send(new DatagramPacket(encodedAccept, encodedAccept.length,
@@ -115,6 +108,5 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 					+ +odeProperties.getServiceRespExpirationSeconds() + " seconds " + e);
 		}
 
-		return encodedIsd;
 	}
 }
