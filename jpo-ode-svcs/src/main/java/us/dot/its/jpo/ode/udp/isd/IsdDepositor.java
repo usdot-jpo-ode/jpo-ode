@@ -63,6 +63,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		
 		// If we've sent at least 5 messages, get a data receipt
 		if (messagesDeposited < 5) {
+			trustMgr.setTrustEstablished(false);
 			return encodedIsd;
 		}
 
@@ -113,7 +114,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		} catch (IOException | InterruptedException | ExecutionException e) {
 			logger.error("Error sending ISD Acceptance message to SDC", e);
 		} catch (TimeoutException e) {
-			logger.error("Did not receive Service Response within alotted "
+			logger.error("Did not receive ISD data receipt within alotted "
 					+ +odeProperties.getServiceRespExpirationSeconds() + " seconds " + e);
 		}
 
