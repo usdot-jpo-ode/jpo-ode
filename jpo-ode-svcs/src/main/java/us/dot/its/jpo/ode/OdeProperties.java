@@ -66,7 +66,6 @@ public class OdeProperties implements EnvironmentAware {
 
     private int serviceResponseBufferSize = 500;
     
-    private int dataReceiptExpirationSeconds = 2;
     
     
     /*
@@ -95,6 +94,8 @@ public class OdeProperties implements EnvironmentAware {
     private int isdReceiverPort = 46801;
     private int isdDepositorPort = 6666;
     private int isdTrustPort = 6667;
+    private int dataReceiptExpirationSeconds = 2;
+	private int messagesUntilTrustReestablished = 5;
 
     
     private String hostId;
@@ -452,6 +453,14 @@ public class OdeProperties implements EnvironmentAware {
 
 	public void setDataReceiptExpirationSeconds(int dataReceiptExpirationSeconds) {
 		this.dataReceiptExpirationSeconds = dataReceiptExpirationSeconds;
+	}
+
+	public int getMessagesUntilTrustReestablished() {
+		return messagesUntilTrustReestablished;
+	}
+
+	public void setMessagesUntilTrustReestablished(int messagesUntilTrustReestablished) {
+		this.messagesUntilTrustReestablished = messagesUntilTrustReestablished;
 	}
 
 }

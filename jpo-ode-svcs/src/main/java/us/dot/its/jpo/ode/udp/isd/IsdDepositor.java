@@ -53,8 +53,9 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		// TODO - determine more dynamic method of re-establishing trust
 		// If we've sent at least 5 messages, get a data receipt and then end
 		// trust session
-		logger.info("ISDs sent since session start: {}", messagesSent);
-		if (messagesSent >= 5) {
+		logger.info("ISDs sent since session start: {}/{}", messagesSent,
+				odeProperties.getMessagesUntilTrustReestablished());
+		if (messagesSent >= odeProperties.getMessagesUntilTrustReestablished()) {
 			sendDataReceipt(encodedIsd);
 			trustMgr.setTrustEstablished(false);
 		}
@@ -96,7 +97,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 					new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
 
 			DataReceipt receipt = f.get(odeProperties.getDataReceiptExpirationSeconds(), TimeUnit.SECONDS);
-			
+
 			if (receipt != null) {
 				logger.debug("Successfully received data receipt from SDC {}", receipt.toString());
 			} else {
