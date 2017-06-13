@@ -48,7 +48,7 @@ public class DataReceiptReceiver implements Callable<Object> {
 
 			receipt = J2735Util.decode(J2735.getPERUnalignedCoder(), buffer);
 			if (receipt instanceof DataReceipt) {
-				logger.debug("Received data receipt from SDC {}", receipt.toString());
+				logger.debug("Successfully received data receipt from SDC {}", receipt.toString());
 
 			}
 		} catch (IOException | DecodeFailedException | DecodeNotSupportedException e) {

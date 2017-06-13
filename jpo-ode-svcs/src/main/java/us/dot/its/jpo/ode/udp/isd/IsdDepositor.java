@@ -43,7 +43,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 					odeProperties.getSdcPort(), socket.getLocalPort());
 			socket.send(new DatagramPacket(encodedIsd, encodedIsd.length,
 					new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
-			messagesDeposited++;
+			messagesSent++;
 		} catch (IOException e) {
 			logger.error("Error Sending Isd to SDC", e);
 			return new byte[0];
@@ -52,8 +52,8 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		// TODO - determine more dynamic method of re-establishing trust
 		// If we've sent at least 5 messages, get a data receipt and then end
 		// trust session
-		logger.info("ISDs deposited since session start: {}", messagesDeposited);
-		if (messagesDeposited >= 5) {
+		logger.info("ISDs sent since session start: {}", messagesSent);
+		if (messagesSent >= 5) {
 			sendDataReceipt(encodedIsd);
 			trustMgr.setTrustEstablished(false);
 		}
@@ -72,7 +72,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		acceptance.groupID = groupId;
 		acceptance.requestID = requestId;
 		acceptance.seqID = SemiSequenceID.accept;
-		acceptance.recordsSent = new INTEGER(messagesDeposited);
+		acceptance.recordsSent = new INTEGER(messagesSent);
 
 		ByteArrayOutputStream sink = new ByteArrayOutputStream();
 		try {
@@ -94,13 +94,13 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 			socket.send(new DatagramPacket(encodedAccept, encodedAccept.length,
 					new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
 
-			f.get(odeProperties.getServiceRespExpirationSeconds(), TimeUnit.SECONDS);
+			f.get(odeProperties.getDataReceiptExpirationSeconds(), TimeUnit.SECONDS);
 
 		} catch (IOException | InterruptedException | ExecutionException e) {
 			logger.error("Error sending ISD Acceptance message to SDC", e);
 		} catch (TimeoutException e) {
 			logger.error("Did not receive ISD data receipt within alotted "
-					+ +odeProperties.getServiceRespExpirationSeconds() + " seconds " + e);
+					+ +odeProperties.getDataReceiptExpirationSeconds() + " seconds " + e);
 		}
 
 	}

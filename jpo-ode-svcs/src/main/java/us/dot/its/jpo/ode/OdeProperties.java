@@ -66,6 +66,8 @@ public class OdeProperties implements EnvironmentAware {
 
     private int serviceResponseBufferSize = 500;
     
+    private int dataReceiptExpirationSeconds = 2;
+    
     
     /*
      * BSM Properties
@@ -442,6 +444,14 @@ public class OdeProperties implements EnvironmentAware {
 
 	public void setIsdTrustPort(int isdTrustPort) {
 		this.isdTrustPort = isdTrustPort;
+	}
+
+	public int getDataReceiptExpirationSeconds() {
+		return dataReceiptExpirationSeconds;
+	}
+
+	public void setDataReceiptExpirationSeconds(int dataReceiptExpirationSeconds) {
+		this.dataReceiptExpirationSeconds = dataReceiptExpirationSeconds;
 	}
 
 }

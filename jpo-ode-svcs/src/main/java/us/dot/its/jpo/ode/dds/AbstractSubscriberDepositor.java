@@ -29,6 +29,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 	protected TemporaryID requestId;
 	protected SemiDialogID dialogId;
 	protected GroupID groupId;
+	protected int messagesSent;
 	protected int messagesDeposited;
 	protected Coder coder;
 
@@ -36,7 +37,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 		this.odeProperties = odeProps;
 		this.depositorPort = port;
 		this.dialogId = dialogId;
-		this.messagesDeposited = 0;
+		this.messagesSent = 0;
 		this.coder = J2735.getPERUnalignedCoder();
 
 		try {
