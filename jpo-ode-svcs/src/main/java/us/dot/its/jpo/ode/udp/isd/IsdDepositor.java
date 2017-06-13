@@ -24,6 +24,7 @@ import com.oss.asn1.INTEGER;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
+import us.dot.its.jpo.ode.dds.TrustManager.TrustManagerException;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.semi.DataReceipt;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
@@ -58,6 +59,11 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		} catch (IOException | DecodeFailedException | DecodeNotSupportedException e) {
 			logger.error("Error Sending Isd to SDC", e);
 			return new byte[0];
+		}
+		
+		// If we've sent at least 5 messages, get a data receipt
+		if (messagesDeposited < 5) {
+			return encodedIsd;
 		}
 
 		/*
@@ -104,8 +110,11 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 
 			f.get(odeProperties.getServiceRespExpirationSeconds(), TimeUnit.SECONDS);
 
-		} catch (IOException | InterruptedException | ExecutionException | TimeoutException e) {
+		} catch (IOException | InterruptedException | ExecutionException e) {
 			logger.error("Error sending ISD Acceptance message to SDC", e);
+		} catch (TimeoutException e) {
+			logger.error("Did not receive Service Response within alotted "
+					+ +odeProperties.getServiceRespExpirationSeconds() + " seconds " + e);
 		}
 
 		return encodedIsd;

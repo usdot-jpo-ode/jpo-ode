@@ -39,7 +39,7 @@ public class DataReceiptReceiver implements Callable<Object> {
 		AbstractData receipt = null;
 		try {
 			byte[] buffer = new byte[odeProperties.getServiceResponseBufferSize()];
-			logger.debug("Waiting for ServiceResponse from SDC...");
+			logger.debug("Waiting for data receipt from SDC...");
 			DatagramPacket receiptDp = new DatagramPacket(buffer, buffer.length);
 			socket.receive(receiptDp);
 
