@@ -38,21 +38,19 @@ public class IsdReceiver extends AbstractUdpReceiverPublisher {
 		while (!isStopped()) {
 
 			try {
-				logger.debug("Waiting for UDP packets...");
+				logger.debug("Listening on port: {}", port);
 				socket.receive(packet);
 				if (packet.getLength() > 0) {
 					senderIp = packet.getAddress().getHostAddress();
 					senderPort = packet.getPort();
 					logger.debug("Packet received from {}:{}", senderIp, senderPort);
 
-					// extract the actualPacket from the buffer
+					// extract the actual packet from the buffer
 					byte[] payload = Arrays.copyOf(packet.getData(), packet.getLength());
 					processPacket(payload);
 				}
-			} catch (IOException e) {
+			} catch (IOException | UdpReceiverException e) {
 				logger.error("Error receiving packet", e);
-			} catch (UdpReceiverException e) {
-				logger.error("Error decoding packet", e);
 			}
 		}
 	}
@@ -61,6 +59,8 @@ public class IsdReceiver extends AbstractUdpReceiverPublisher {
 		AbstractData decoded = super.decodeData(data);
 		try {
 			if (decoded instanceof ServiceRequest) {
+				
+				logger.debug("Received ServiceRequest: {}", HexUtils.toHexString(data));
 
 				if (null != ((ServiceRequest) decoded).getDestination()) {
 					ConnectionPoint cp = ((ServiceRequest) decoded).getDestination();
@@ -74,15 +74,14 @@ public class IsdReceiver extends AbstractUdpReceiverPublisher {
 					if (null != cp.getPort()) {
 						senderPort = ((ServiceRequest) decoded).getDestination().getPort().intValue();
 					}
-					logger.error("Service request response destination specified {}:{}", senderPort, senderIp);
+					logger.debug("ServiceResponse destination overriden: {}:{}", senderIp, senderPort);
 				}
 				sendResponse(decoded, socket);
 			} else if (decoded instanceof IntersectionSituationData) {
-				logger.debug("Received ISD with groupID: {}",
-						HexUtils.toHexString(((IntersectionSituationData) decoded).getGroupID().byteArrayValue()));
+				logger.debug("Received ISD: {}", HexUtils.toHexString(data));
 				publish(data, odeProperties.getKafkaTopicEncodedIsd());
 			} else {
-				logger.error("Unknown message type received {}", decoded.getClass().getName());
+				logger.error("Unknown message type received {}", HexUtils.toHexString(data));
 			}
 		} catch (Exception e) {
 			logger.error("Error processing message", e);

@@ -22,14 +22,14 @@ import us.dot.its.jpo.ode.wrapper.MessageProducer;
 public abstract class AbstractUdpReceiverPublisher implements Runnable {
 
 	public class UdpReceiverException extends Exception {
-        private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1L;
 
-        public UdpReceiverException(String string, Exception e) {
-            super(string, e);
-        }
-    }
+		public UdpReceiverException(String string, Exception e) {
+			super(string, e);
+		}
+	}
 
-    private static Logger logger = LoggerFactory.getLogger(AbstractUdpReceiverPublisher.class);
+	private static Logger logger = LoggerFactory.getLogger(AbstractUdpReceiverPublisher.class);
 	private static Coder coder = J2735.getPERUnalignedCoder();
 
 	protected DatagramSocket socket;
@@ -37,28 +37,25 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
 	protected String senderIp;
 	protected int senderPort;
 
-    protected OdeProperties odeProperties;
-    private int port;
-    protected int bufferSize;
-    
-    protected MessageProducer<String, byte[]> byteArrayProducer;
+	protected OdeProperties odeProperties;
+	protected int port;
+	protected int bufferSize;
 
-    private boolean stopped = false;
+	protected MessageProducer<String, byte[]> byteArrayProducer;
 
+	private boolean stopped = false;
 
 	public boolean isStopped() {
-        return stopped;
-    }
+		return stopped;
+	}
 
-    public void setStopped(boolean stopped) {
-        this.stopped = stopped;
-    }
+	public void setStopped(boolean stopped) {
+		this.stopped = stopped;
+	}
 
-    @Autowired
-	public AbstractUdpReceiverPublisher(OdeProperties odeProps, 
-	                                    int port, 
-	                                    int bufferSize) {
-	    this.odeProperties = odeProps;
+	@Autowired
+	public AbstractUdpReceiverPublisher(OdeProperties odeProps, int port, int bufferSize) {
+		this.odeProperties = odeProps;
 		this.port = port;
 		this.bufferSize = bufferSize;
 
@@ -68,34 +65,32 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
 		} catch (SocketException e) {
 			logger.error("Error creating socket with port " + this.port, e);
 		}
-        // Create a ByteArray producer for UPER ISDs
-        byteArrayProducer = MessageProducer.defaultByteArrayMessageProducer(
-                odeProperties.getKafkaBrokers(),
-                odeProperties.getKafkaProducerType());
+		// Create a ByteArray producer for UPER ISDs
+		byteArrayProducer = MessageProducer.defaultByteArrayMessageProducer(odeProperties.getKafkaBrokers(),
+				odeProperties.getKafkaProducerType());
 	}
 
-	protected AbstractData decodeData(byte[] msg) 
-	        throws UdpReceiverException {
-        AbstractData decoded = null;
+	protected AbstractData decodeData(byte[] msg) throws UdpReceiverException {
+		AbstractData decoded = null;
 		try {
 			decoded = J2735Util.decode(coder, msg);
 		} catch (DecodeFailedException | DecodeNotSupportedException e) {
-		    throw new UdpReceiverException("Unable to decode UDP message", e);
+			throw new UdpReceiverException("Unable to decode UDP message", e);
 		}
-        return decoded;
+		return decoded;
 	}
-	
-    protected void sendResponse(AbstractData decoded, DatagramSocket trustSock) {
-        logger.debug("Received ServiceRequest:\n{} \n", decoded.toString());
-        ServiceRequest request = (ServiceRequest) decoded;
-        TrustManager tm = new TrustManager(odeProperties, trustSock);
-        tm.sendServiceResponse(tm.createServiceResponse(request), senderIp, senderPort);
-    }
 
-    protected void publish(byte[] data, String topic) {
-        logger.debug("Publishing data to topic {}", topic);
-        byteArrayProducer.send(topic, null, data);
-    }
+	protected void sendResponse(AbstractData decoded, DatagramSocket trustSock) {
+		logger.debug("Received ServiceRequest:\n{} \n", decoded.toString());
+		ServiceRequest request = (ServiceRequest) decoded;
+		TrustManager tm = new TrustManager(odeProperties, trustSock);
+		tm.sendServiceResponse(tm.createServiceResponse(request), senderIp, senderPort);
+	}
 
-    public abstract void run();
+	protected void publish(byte[] data, String topic) {
+		logger.debug("Publishing data to topic {}", topic);
+		byteArrayProducer.send(topic, null, data);
+	}
+
+	public abstract void run();
 }

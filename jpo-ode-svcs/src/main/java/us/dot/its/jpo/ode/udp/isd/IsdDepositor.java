@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.udp.isd;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -14,15 +13,12 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.tomcat.util.buf.HexUtils;
 
-import com.oss.asn1.DecodeFailedException;
-import com.oss.asn1.DecodeNotSupportedException;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 import com.oss.asn1.INTEGER;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
-import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationDataAcceptance;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
@@ -73,16 +69,14 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		IntersectionSituationDataAcceptance acceptance = new IntersectionSituationDataAcceptance();
 		acceptance.dialogID = dialogId;
 		acceptance.groupID = groupId;
+		acceptance.requestID = requestId;
 		acceptance.seqID = SemiSequenceID.accept;
 		acceptance.recordsSent = new INTEGER(messagesDeposited);
 
 		ByteArrayOutputStream sink = new ByteArrayOutputStream();
 		try {
-			acceptance.requestID = ((IntersectionSituationData) coder.decode(new ByteArrayInputStream(encodedIsd),
-					new IntersectionSituationData())).requestID;
 			coder.encode(acceptance, sink);
-		} catch (EncodeFailedException | EncodeNotSupportedException | DecodeFailedException
-				| DecodeNotSupportedException e) {
+		} catch (EncodeFailedException | EncodeNotSupportedException e) {
 			logger.error("Error encoding ISD non-repudiation message", e);
 		}
 
@@ -91,8 +85,8 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 			logger.debug("Sending ISD non-repudiation message to SDC {} ", HexUtils.toHexString(encodedAccept));
 
 			// Switching from socket.send to socket.receive in one thread is
-			// slower than non-repud round trip time
-			// So we must lead this by creating a socket.receive thread
+			// slower than non-repud round trip time so we must lead this by
+			// creating a socket.receive thread
 			ExecutorService executorService = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
 			Future<Object> f = executorService.submit(new DataReceiptReceiver(odeProperties, socket));
 

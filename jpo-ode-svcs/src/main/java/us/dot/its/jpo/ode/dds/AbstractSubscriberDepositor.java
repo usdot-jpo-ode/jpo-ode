@@ -40,7 +40,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 		this.coder = J2735.getPERUnalignedCoder();
 
 		try {
-			logger.debug("Creating depositor Socket with port {}", port);
+			logger.debug("Creating depositor socket on port {}", port);
 			socket = new DatagramSocket(port);
 			trustMgr = new TrustManager(odeProps, socket);
 		} catch (SocketException e) {
