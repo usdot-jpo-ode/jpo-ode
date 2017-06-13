@@ -54,6 +54,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 					odeProperties.getSdcPort(), socket.getLocalPort());
 			socket.send(new DatagramPacket(encodedIsd, encodedIsd.length,
 					new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
+			messagesDeposited++;
 		} catch (IOException | DecodeFailedException | DecodeNotSupportedException e) {
 			logger.error("Error Sending Isd to SDC", e);
 			return new byte[0];
@@ -67,7 +68,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		acceptance.dialogID = dialogId;
 		acceptance.groupID = groupId;
 		acceptance.seqID = SemiSequenceID.accept;
-		acceptance.recordsSent = new INTEGER(1);
+		acceptance.recordsSent = new INTEGER(messagesDeposited);
 
 		try {
 			// must reuse the requestID from the ISD

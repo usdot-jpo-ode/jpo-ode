@@ -52,7 +52,7 @@ public class DataReceiptReceiver implements Callable<Object> {
 
 			}
 		} catch (IOException | DecodeFailedException | DecodeNotSupportedException e) {
-			logger.error("Error receiving data receipt from SDC." + e);
+			logger.error("Error receiving data receipt from SDC.");
 		}
 
 		return (DataReceipt) receipt;

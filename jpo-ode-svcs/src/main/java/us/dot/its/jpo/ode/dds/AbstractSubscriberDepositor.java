@@ -27,11 +27,13 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 	protected TemporaryID requestId;
 	protected SemiDialogID dialogId;
 	protected GroupID groupId;
+	protected int messagesDeposited;
 
 	public AbstractSubscriberDepositor(OdeProperties odeProps, int port, SemiDialogID dialogId) {
 		this.odeProperties = odeProps;
 		this.depositorPort = port;
 		this.dialogId = dialogId;
+		this.messagesDeposited = 0;
 
 		try {
 			logger.debug("Creating depositor Socket with port {}", port);
@@ -62,6 +64,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 		groupId = decodedMsg.groupID;
 
 		if (!trustMgr.isTrustEstablished()) {
+			messagesDeposited = 0;
 			trustMgr.establishTrust(depositorPort, odeProperties.getSdcIp(), odeProperties.getSdcPort(), requestId,
 					dialogId, groupId);
 		}
