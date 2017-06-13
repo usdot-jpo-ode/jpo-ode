@@ -17,7 +17,7 @@ import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.semi.DataReceipt;
 
-public class DataReceiptReceiver implements Callable<Object> {
+public class DataReceiptReceiver implements Callable<DataReceipt> {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private DatagramSocket socket;
@@ -30,7 +30,6 @@ public class DataReceiptReceiver implements Callable<Object> {
 
 	@Override
 	public DataReceipt call() throws Exception {
-
 		return receiveDataReceipt();
 	}
 
@@ -47,12 +46,9 @@ public class DataReceiptReceiver implements Callable<Object> {
 				throw new IOException("Received empty data receipt from SDC");
 
 			receipt = J2735Util.decode(J2735.getPERUnalignedCoder(), buffer);
-			if (receipt instanceof DataReceipt) {
-				logger.debug("Successfully received data receipt from SDC {}", receipt.toString());
 
-			}
 		} catch (IOException | DecodeFailedException | DecodeNotSupportedException e) {
-			logger.error("Error receiving data receipt from SDC.");
+			logger.error("Error receiving data receipt from SDC: ", e);
 		}
 
 		return (DataReceipt) receipt;

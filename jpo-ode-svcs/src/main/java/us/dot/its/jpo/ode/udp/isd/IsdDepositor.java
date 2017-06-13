@@ -19,6 +19,7 @@ import com.oss.asn1.INTEGER;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
+import us.dot.its.jpo.ode.j2735.semi.DataReceipt;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationDataAcceptance;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
@@ -56,7 +57,6 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		if (messagesSent >= 5) {
 			sendDataReceipt(encodedIsd);
 			trustMgr.setTrustEstablished(false);
-			messagesSent = 0;
 		}
 
 		return encodedIsd;
@@ -90,12 +90,18 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 			// slower than non-repud round trip time so we must lead this by
 			// creating a socket.receive thread
 			ExecutorService executorService = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
-			Future<Object> f = executorService.submit(new DataReceiptReceiver(odeProperties, socket));
+			Future<DataReceipt> f = executorService.submit(new DataReceiptReceiver(odeProperties, socket));
 
 			socket.send(new DatagramPacket(encodedAccept, encodedAccept.length,
 					new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
 
-			f.get(odeProperties.getDataReceiptExpirationSeconds(), TimeUnit.SECONDS);
+			DataReceipt receipt = f.get(odeProperties.getDataReceiptExpirationSeconds(), TimeUnit.SECONDS);
+			
+			if (receipt != null) {
+				logger.debug("Successfully received data receipt from SDC {}", receipt.toString());
+			} else {
+				logger.error("Received empty data receipt.");
+			}
 
 		} catch (IOException | InterruptedException | ExecutionException e) {
 			logger.error("Error sending ISD Acceptance message to SDC", e);

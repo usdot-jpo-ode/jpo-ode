@@ -30,7 +30,6 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 	protected SemiDialogID dialogId;
 	protected GroupID groupId;
 	protected int messagesSent;
-	protected int messagesDeposited;
 	protected Coder coder;
 
 	public AbstractSubscriberDepositor(OdeProperties odeProps, int port, SemiDialogID dialogId) {
@@ -69,7 +68,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 		groupId = decodedMsg.groupID;
 
 		if (!trustMgr.isTrustEstablished()) {
-			messagesDeposited = 0;
+			messagesSent = 0;
 			trustMgr.establishTrust(depositorPort, odeProperties.getSdcIp(), odeProperties.getSdcPort(), requestId,
 					dialogId, groupId);
 		}
