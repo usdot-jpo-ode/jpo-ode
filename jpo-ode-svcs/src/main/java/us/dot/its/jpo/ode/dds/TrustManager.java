@@ -237,6 +237,7 @@ public class TrustManager implements Callable<ServiceResponse> {
         } catch (Exception e) {
         	
         	if (!f.isDone() && !f.isCancelled()) {
+        		logger.error("Cancelling {}", this.getClass().getName());
         		f.cancel(true);
         	}
         	

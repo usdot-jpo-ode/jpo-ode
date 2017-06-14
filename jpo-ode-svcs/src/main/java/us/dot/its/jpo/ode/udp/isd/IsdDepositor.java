@@ -115,6 +115,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		} catch (TimeoutException e) {
 			
 			if (!f.isDone() && !f.isCancelled()) {
+				logger.error("Cancelling {}", this.getClass().getName());
         		f.cancel(true);
         	}
 			
