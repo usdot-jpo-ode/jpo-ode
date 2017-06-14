@@ -25,9 +25,13 @@ import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
 
 public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
+	
+	private ExecutorService execService;
 
 	public IsdDepositor(OdeProperties odeProps) {
 		super(odeProps, odeProps.getIsdDepositorPort(), SemiDialogID.intersectionSitDataDep);
+
+		execService = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
 	}
 
 	@Override
@@ -90,8 +94,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 			// Switching from socket.send to socket.receive in one thread is
 			// slower than non-repud round trip time so we must lead this by
 			// creating a socket.receive thread
-			ExecutorService executorService = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
-			Future<DataReceipt> f = executorService.submit(new DataReceiptReceiver(odeProperties, socket));
+			Future<DataReceipt> f = execService.submit(new DataReceiptReceiver(odeProperties, socket));
 
 			socket.send(new DatagramPacket(encodedAccept, encodedAccept.length,
 					new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
