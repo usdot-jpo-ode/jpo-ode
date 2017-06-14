@@ -92,11 +92,10 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		// Switching from socket.send to socket.receive in one thread is
 		// slower than non-repud round trip time so we must lead this by
 		// creating a socket.receive thread
-		Future<DataReceipt> f = execService.submit(new DataReceiptReceiver(odeProperties, socket));
+		Future<DataReceipt> f = execService.submit(dataReceiptReceiver);
 		
 		try {
 			logger.debug("Sending ISD non-repudiation message to SDC {} ", HexUtils.toHexString(encodedAccept));
-
 
 
 			socket.send(new DatagramPacket(encodedAccept, encodedAccept.length,

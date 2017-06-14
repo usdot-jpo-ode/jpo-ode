@@ -16,6 +16,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.semi.GroupID;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
+import us.dot.its.jpo.ode.udp.isd.DataReceiptReceiver;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
@@ -31,6 +32,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 	protected GroupID groupId;
 	protected int messagesSent;
 	protected Coder coder;
+	protected DataReceiptReceiver dataReceiptReceiver;
 
 	public AbstractSubscriberDepositor(OdeProperties odeProps, int port, SemiDialogID dialogId) {
 		this.odeProperties = odeProps;
@@ -43,6 +45,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 			logger.debug("Creating depositor socket on port {}", port);
 			socket = new DatagramSocket(port);
 			trustMgr = new TrustManager(odeProps, socket);
+			dataReceiptReceiver = new DataReceiptReceiver(odeProps, socket);
 		} catch (SocketException e) {
 			logger.error("Error creating socket with port " + port, e);
 		}
