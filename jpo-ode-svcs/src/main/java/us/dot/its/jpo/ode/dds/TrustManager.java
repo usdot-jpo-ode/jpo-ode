@@ -235,9 +235,15 @@ public class TrustManager implements Callable<ServiceResponse> {
             }
                 
         } catch (Exception e) {
+        	
+        	if (!f.isDone() && !f.isCancelled()) {
+        		f.cancel(true);
+        	}
+        	
             throw new TrustManagerException("Did not receive Service Response within alotted " + 
                     + odeProperties.getServiceRespExpirationSeconds() +
                     " seconds", e);
+            
         }
         return trustEstablished;
     }

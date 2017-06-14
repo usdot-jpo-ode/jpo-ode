@@ -88,13 +88,16 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		}
 
 		byte[] encodedAccept = sink.toByteArray();
+		
+		// Switching from socket.send to socket.receive in one thread is
+		// slower than non-repud round trip time so we must lead this by
+		// creating a socket.receive thread
+		Future<DataReceipt> f = execService.submit(new DataReceiptReceiver(odeProperties, socket));
+		
 		try {
 			logger.debug("Sending ISD non-repudiation message to SDC {} ", HexUtils.toHexString(encodedAccept));
 
-			// Switching from socket.send to socket.receive in one thread is
-			// slower than non-repud round trip time so we must lead this by
-			// creating a socket.receive thread
-			Future<DataReceipt> f = execService.submit(new DataReceiptReceiver(odeProperties, socket));
+
 
 			socket.send(new DatagramPacket(encodedAccept, encodedAccept.length,
 					new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
@@ -110,6 +113,11 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		} catch (IOException | InterruptedException | ExecutionException e) {
 			logger.error("Error sending ISD Acceptance message to SDC", e);
 		} catch (TimeoutException e) {
+			
+			if (!f.isDone() && !f.isCancelled()) {
+        		f.cancel(true);
+        	}
+			
 			logger.error("Did not receive ISD data receipt within alotted "
 					+ +odeProperties.getDataReceiptExpirationSeconds() + " seconds " + e);
 		}
