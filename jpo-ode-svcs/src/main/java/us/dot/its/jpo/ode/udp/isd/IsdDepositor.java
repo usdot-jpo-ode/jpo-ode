@@ -60,8 +60,8 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		logger.info("ISDs sent since session start: {}/{}", messagesSent,
 				odeProperties.getMessagesUntilTrustReestablished());
 		if (messagesSent >= odeProperties.getMessagesUntilTrustReestablished()) {
-			sendDataReceipt(encodedIsd);
 			trustMgr.setTrustEstablished(false);
+			sendDataReceipt(encodedIsd);
 		}
 
 		return encodedIsd;
