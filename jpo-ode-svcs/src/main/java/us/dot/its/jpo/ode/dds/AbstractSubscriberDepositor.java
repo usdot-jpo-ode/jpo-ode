@@ -77,9 +77,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 			trustMgr.setEstablishingTrust(false);			
 		}
 
-		if (!trustMgr.isEstablishingTrust()) {
 			encodedMsg = deposit();
-		}
 
 		return encodedMsg;
 	}

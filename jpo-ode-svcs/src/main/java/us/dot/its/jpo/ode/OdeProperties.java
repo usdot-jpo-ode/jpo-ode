@@ -62,7 +62,7 @@ public class OdeProperties implements EnvironmentAware {
     //Enable/disable depositing sanitized BSMs to SDC
     private boolean depositSanitizedBsmToSdc = true;
 
-    private int serviceRespExpirationSeconds = 60;
+    private int serviceRespExpirationSeconds = 10;
 
     private int serviceResponseBufferSize = 500;
     
