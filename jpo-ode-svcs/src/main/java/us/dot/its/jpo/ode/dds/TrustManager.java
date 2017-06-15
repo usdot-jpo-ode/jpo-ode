@@ -87,6 +87,7 @@ public class TrustManager implements Callable<ServiceResponse> {
 	    //GroupID groupID = new GroupID(OdeProperties.JPO_ODE_GROUP_ID);
 	    //Random randgen = new Random();
         //TemporaryID requestID = new TemporaryID(ByteBuffer.allocate(4).putInt(randgen.nextInt(256)).array());
+		// test comment
 		
 		// TODO use groupID = 0
 
