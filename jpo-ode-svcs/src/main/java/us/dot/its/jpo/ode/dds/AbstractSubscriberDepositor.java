@@ -70,7 +70,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 		requestId = decodedMsg.requestID;
 		groupId = decodedMsg.groupID;
 
-		if (!trustMgr.isTrustEstablished() && !trustMgr.isEstablishingTrust()) {
+		if ((!trustMgr.isTrustEstablished() && !trustMgr.isEstablishingTrust()) || messagesSent >= odeProperties.getMessagesUntilTrustReestablished()) {
 			messagesSent = 0;
 			trustMgr.setEstablishingTrust(true);
 			trustMgr.establishTrust(depositorPort, odeProperties.getSdcIp(), odeProperties.getSdcPort(), requestId,
