@@ -46,6 +46,7 @@
 
 /jpo-ode-core/target/
 !/jpo-ode-core/.mvn/wrapper/maven-wrapper.jar
+/jpo-ode-core/src/test/resources/CVMessages/VehicleSituationDataServiceResponse.uper
 
 ### STS ###
 /jpo-ode-core/.apt_generated
