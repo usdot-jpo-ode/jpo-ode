@@ -116,6 +116,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		} catch (TimeoutException e) {
 			logger.error("Did not receive ISD data receipt within alotted "
 					+ +odeProperties.getDataReceiptExpirationSeconds() + " seconds " + e);
+			trustMgr.setTrustEstablished(false);
 		}
 
 	}
