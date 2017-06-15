@@ -59,7 +59,7 @@ public class SecurityManager {
      * @throws EncodeFailedException
      * @throws EncodeNotSupportedException
      */
-    public IEEE1609p2Message getSignedMessage(byte[] signedMsgBytes) throws MessageException,
+    public IEEE1609p2Message decodeSignedMessage(byte[] signedMsgBytes) throws MessageException,
             CertificateException, CryptoException, EncodeFailedException, EncodeNotSupportedException {
         IEEE1609p2Message signedMsg = IEEE1609p2Message.parse(signedMsgBytes);
         return signedMsg;
@@ -79,7 +79,7 @@ public class SecurityManager {
         byte[] payload = null;
         IEEE1609p2Message signedMsg;
         try {
-            signedMsg = getSignedMessage(signedOrUnsignedMsgBytes);
+            signedMsg = decodeSignedMessage(signedOrUnsignedMsgBytes);
             if (isValid(signedMsg)) {
                 payload = signedMsg.getPayload();
             }
