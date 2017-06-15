@@ -61,8 +61,8 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 				odeProperties.getMessagesUntilTrustReestablished());
 		if (messagesSent >= odeProperties.getMessagesUntilTrustReestablished()) {
 			trustMgr.setTrustEstablished(false);
-			messagesSent = 0;
 			sendDataReceipt(encodedIsd);
+			messagesSent = 0;
 		}
 
 		return encodedIsd;
