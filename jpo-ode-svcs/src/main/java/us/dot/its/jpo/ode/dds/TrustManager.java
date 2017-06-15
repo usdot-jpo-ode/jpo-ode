@@ -112,7 +112,7 @@ public class TrustManager implements Callable<ServiceResponse> {
 		        new ConnectionPoint(
 		                ipAddr, 
 		                new PortNumber(socket.getLocalPort()));
-		request.setDestination(returnAddr);
+		//request.setDestination(returnAddr);
 		
 		logger.debug("Response Destination {}:{}", returnAddr.getAddress().toString(), returnAddr.getPort().intValue());
 
