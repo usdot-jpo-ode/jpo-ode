@@ -74,6 +74,7 @@ public class TrustManager implements Callable<ServiceResponse> {
 
     private ExecutorService execService;
     private boolean trustEstablished = false;
+    private boolean establishingTrust = false;
 
 	public TrustManager(OdeProperties odeProps, DatagramSocket socket) {
 		this.odeProperties = odeProps;
@@ -262,6 +263,14 @@ public class TrustManager implements Callable<ServiceResponse> {
     public void setTrustEstablished(boolean trustEstablished) {
         this.trustEstablished = trustEstablished;
     }
+
+	public boolean isEstablishingTrust() {
+		return establishingTrust;
+	}
+
+	public void setEstablishingTrust(boolean establishingTrust) {
+		this.establishingTrust = establishingTrust;
+	}
     
     
 }
