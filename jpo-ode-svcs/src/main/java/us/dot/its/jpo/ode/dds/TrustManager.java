@@ -235,13 +235,7 @@ public class TrustManager implements Callable<ServiceResponse> {
                 logger.info("Trust established, session request ID: {}", HexUtils.toHexString(request.getRequestID().byteArrayValue()));
             }
                 
-        } catch (Exception e) {
-        	
-        	if (!f.isDone() && !f.isCancelled()) {
-        		logger.error("Cancelling {}", this.getClass().getName());
-        		f.cancel(true);
-        	}
-        	
+        } catch (Exception e) {        	
             throw new TrustManagerException("Did not receive Service Response within alotted " + 
                     + odeProperties.getServiceRespExpirationSeconds() +
                     " seconds", e);
