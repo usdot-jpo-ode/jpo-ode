@@ -235,7 +235,9 @@ public class TrustManager implements Callable<ServiceResponse> {
                 logger.info("Trust established, session request ID: {}", HexUtils.toHexString(request.getRequestID().byteArrayValue()));
             }
                 
-        } catch (Exception e) {        	
+        } catch (Exception e) {     
+
+            trustEstablished = false;
             throw new TrustManagerException("Did not receive Service Response within alotted " + 
                     + odeProperties.getServiceRespExpirationSeconds() +
                     " seconds", e);
