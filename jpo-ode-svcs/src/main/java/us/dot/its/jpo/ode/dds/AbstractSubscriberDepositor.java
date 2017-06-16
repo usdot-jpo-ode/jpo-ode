@@ -76,12 +76,12 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 			trustMgr.establishTrust(depositorPort, odeProperties.getSdcIp(), odeProperties.getSdcPort(), requestId,
 					dialogId, groupId);
 			trustMgr.setEstablishingTrust(false);
+			
 		}
 		
-		if (trustMgr.isTrustEstablished()) {
+		if (trustMgr.isTrustEstablished() && !trustMgr.isEstablishingTrust()) {
 			encodedMsg = deposit();
 		}
-
 
 		return encodedMsg;
 	}

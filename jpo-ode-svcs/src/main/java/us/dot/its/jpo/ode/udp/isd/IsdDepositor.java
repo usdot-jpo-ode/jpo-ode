@@ -48,9 +48,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 					odeProperties.getSdcPort(), socket.getLocalPort());
 			socket.send(new DatagramPacket(encodedIsd, encodedIsd.length,
 					new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
-			if (trustMgr.isTrustEstablished()) {
 				messagesSent++;
-			}
 		} catch (IOException e) {
 			logger.error("Error Sending Isd to SDC", e);
 			return new byte[0];
@@ -64,7 +62,6 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		if (messagesSent >= odeProperties.getMessagesUntilTrustReestablished()) {
 			trustMgr.setTrustEstablished(false);
 			sendDataReceipt(encodedIsd);
-			//messagesSent = 0;
 		}
 
 		return encodedIsd;
@@ -118,8 +115,6 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		} catch (TimeoutException e) {
 			logger.error("Did not receive ISD data receipt within alotted "
 					+ +odeProperties.getDataReceiptExpirationSeconds() + " seconds " + e);
-		} finally {
-			trustMgr.setTrustEstablished(false);
 		}
 
 	}
