@@ -101,7 +101,7 @@ public class OdeProperties implements EnvironmentAware {
     private String hostId;
     private List<Path> uploadLocations = new ArrayList<>();
 
-    public static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
+    protected static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
     
     public OdeProperties() {
         super();

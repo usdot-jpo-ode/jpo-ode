@@ -59,9 +59,10 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
                  * bundle 10 BSMs with the same tempId into a VSD 
                  */
                 J2735Bsm j2735Bsm = (J2735Bsm) JsonUtils.fromJson(j2735BsmJson, J2735Bsm.class);
-                VehSitDataMessage vsd = addToVsdBundle(j2735Bsm);
+                VehSitDataMessage vsd = null;
+                vsd = addToVsdBundle(j2735Bsm);
                 
-                if (vsd != null) {
+                if (vsd != null) { // NOSONAR
                     encodedVsd = J2735Util.encode(coder, vsd);
                     socket.send(new DatagramPacket(encodedVsd, encodedVsd.length,
                             new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
@@ -85,7 +86,7 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
         String tempId = j2735Bsm.getCoreData().getId();
         if (!bsmQueueMap.containsKey(tempId)) {
         	logger.info("Adding BSM with tempID {} to VSD package queue", tempId);
-            Queue<J2735Bsm> bsmQueue = new PriorityQueue<J2735Bsm>(10);
+            Queue<J2735Bsm> bsmQueue = new PriorityQueue<>(10);
             bsmQueueMap.put(tempId, bsmQueue);
         }
         bsmQueueMap.get(tempId).add(j2735Bsm);
