@@ -103,6 +103,8 @@ public class MessageConsumer<K, V> {
                 logger.error("Error processing consumed messages", e);
             }
         }
+
+		logger.debug("Closing message consumer.");
         consumer.close();
     }
 
