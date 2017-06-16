@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,8 +75,10 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 			logger.info("Starting trust establishment...");
 			messagesSent = 0;
 			trustMgr.setEstablishingTrust(true);
+			
 			trustMgr.establishTrust(depositorPort, odeProperties.getSdcIp(), odeProperties.getSdcPort(), requestId,
 					dialogId, groupId);
+			
 			trustMgr.setEstablishingTrust(false);
 			
 		}

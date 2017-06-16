@@ -216,16 +216,17 @@ public class TrustManager implements Callable<ServiceResponse> {
             logger.debug("Creating outbound socket srcPort={}, destPort={}", srcPort, destPort);
         }
         
+        // Launch a trust manager thread to listen for the service response
+        Future<ServiceResponse> f = execService.submit(this);
+        
+        ServiceRequest request = createServiceRequest(requestId, dialogId, groupId);
+        // send the service request
+        this.sendServiceRequest(request, destIp, destPort);
 
         
         // Wait for service response
         try {
-            // Launch a trust manager thread to listen for the service response
-            Future<ServiceResponse> f = execService.submit(this);
-            
-            ServiceRequest request = createServiceRequest(requestId, dialogId, groupId);
-            // send the service request
-            this.sendServiceRequest(request, destIp, destPort);
+
             
             ServiceResponse response = f.get(
                     odeProperties.getServiceRespExpirationSeconds(), 
@@ -240,7 +241,10 @@ public class TrustManager implements Callable<ServiceResponse> {
         } catch (Exception e) {     
 
             trustEstablished = false;
-            throw new TrustManagerException("Did not receive Service Response within alotted " + 
+//            throw new TrustManagerException("Did not receive Service Response within alotted " + 
+//                    + odeProperties.getServiceRespExpirationSeconds() +
+//                    " seconds", e);
+            logger.error("Did not receive Service Response within alotted " + 
                     + odeProperties.getServiceRespExpirationSeconds() +
                     " seconds", e);
             
