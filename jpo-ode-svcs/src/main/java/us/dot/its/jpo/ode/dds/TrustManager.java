@@ -8,7 +8,6 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -47,6 +46,7 @@ import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
 import us.dot.its.jpo.ode.j2735.semi.Sha256Hash;
+import us.dot.its.jpo.ode.udp.isd.ServiceResponseReceiver;
 
 /*
  * This class receives service request from the OBU and forwards it to the SDC.
@@ -75,6 +75,7 @@ public class TrustManager implements Callable<ServiceResponse> {
     private ExecutorService execService;
     private boolean trustEstablished = false;
     private boolean establishingTrust = false;
+    private ServiceResponseReceiver serviceResponseReceiver;
 
 	public TrustManager(OdeProperties odeProps, DatagramSocket socket) {
 		this.odeProperties = odeProps;
@@ -82,6 +83,7 @@ public class TrustManager implements Callable<ServiceResponse> {
 		
         //execService = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
 		execService = Executors.newSingleThreadExecutor();
+		serviceResponseReceiver = new ServiceResponseReceiver(odeProps, socket);
 	}
 	
 	public ServiceRequest createServiceRequest(TemporaryID requestID, SemiDialogID dialogID, GroupID groupID) throws TrustManagerException {
@@ -218,7 +220,7 @@ public class TrustManager implements Callable<ServiceResponse> {
         }
         
         // Launch a trust manager thread to listen for the service response
-        Future<ServiceResponse> f = execService.submit(this);
+        Future<ServiceResponse> f = execService.submit(serviceResponseReceiver);
         
         ServiceRequest request = createServiceRequest(requestId, dialogId, groupId);
         // send the service request
