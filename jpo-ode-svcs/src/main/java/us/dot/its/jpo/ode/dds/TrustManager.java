@@ -80,7 +80,8 @@ public class TrustManager implements Callable<ServiceResponse> {
 		this.odeProperties = odeProps;
 		this.socket = socket;
 		
-        execService = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
+        //execService = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
+		execService = Executors.newSingleThreadExecutor();
 	}
 	
 	public ServiceRequest createServiceRequest(TemporaryID requestID, SemiDialogID dialogID, GroupID groupID) throws TrustManagerException {
