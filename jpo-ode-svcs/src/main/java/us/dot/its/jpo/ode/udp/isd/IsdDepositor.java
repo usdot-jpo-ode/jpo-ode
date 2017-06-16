@@ -48,7 +48,9 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 					odeProperties.getSdcPort(), socket.getLocalPort());
 			socket.send(new DatagramPacket(encodedIsd, encodedIsd.length,
 					new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
-			messagesSent++;
+			if (trustMgr.isTrustEstablished()) {
+				messagesSent++;
+			}
 		} catch (IOException e) {
 			logger.error("Error Sending Isd to SDC", e);
 			return new byte[0];
