@@ -236,6 +236,9 @@ public class TrustManager implements Callable<ServiceResponse> {
             if (response.getRequestID().equals(request.getRequestID())) {
                 trustEstablished = true;
                 logger.info("Trust established, session request ID: {}", HexUtils.toHexString(request.getRequestID().byteArrayValue()));
+            } else {
+            	logger.error("Received ServiceResponse from SDC but the requestID does not match! {} != {}", response.getRequestID(), request.getRequestID());
+            	trustEstablished = false;
             }
                 
         } catch (Exception e) {     
