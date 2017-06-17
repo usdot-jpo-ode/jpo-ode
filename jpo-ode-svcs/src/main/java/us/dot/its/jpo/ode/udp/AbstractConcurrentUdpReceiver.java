@@ -31,7 +31,7 @@ public abstract class AbstractConcurrentUdpReceiver implements Callable<Abstract
 	protected int bufferSize;
 
 	protected abstract AbstractData processPacket(byte[] p)
-	        throws DecodeFailedException, DecodeNotSupportedException, IOException;
+	      throws DecodeFailedException, DecodeNotSupportedException, IOException;
 
 	protected AbstractConcurrentUdpReceiver(DatagramSocket sock, int bufSize) {
 		this.socket = sock;

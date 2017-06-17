@@ -33,7 +33,7 @@ public class UdpServicesController {
 		IsdDepositor isdDepositor = new IsdDepositor(odeProps);
 		logger.info("Launching {} ...", isdDepositor.getClass().getSimpleName());
 		MessageConsumer<String, byte[]> isdConsumer = MessageConsumer.defaultByteArrayMessageConsumer(
-		        odeProps.getKafkaBrokers(), odeProps.getHostId() + this.getClass().getSimpleName(), isdDepositor);
+		      odeProps.getKafkaBrokers(), odeProps.getHostId() + this.getClass().getSimpleName(), isdDepositor);
 		isdDepositor.subscribe(isdConsumer, odeProps.getKafkaTopicEncodedIsd());
 
 		IsdReceiver isdReceiver = new IsdReceiver(odeProps);
@@ -45,7 +45,7 @@ public class UdpServicesController {
 		logger.info("Launching {} ...", vsdDepositor.getClass().getSimpleName());
 
 		MessageConsumer<String, String> vsdConsumer = MessageConsumer.defaultStringMessageConsumer(
-		        odeProps.getKafkaBrokers(), odeProps.getHostId() + this.getClass().getSimpleName(), vsdDepositor);
+		      odeProps.getKafkaBrokers(), odeProps.getHostId() + this.getClass().getSimpleName(), vsdDepositor);
 
 		// TODO ODE-314 Using raw JSON for testing. Switch to Filtered JSON.
 		vsdDepositor.subscribe(vsdConsumer, odeProps.getKafkaTopicBsmRawJson());
