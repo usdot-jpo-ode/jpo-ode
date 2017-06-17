@@ -23,98 +23,98 @@ import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
 public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor<K, V> {
 
-	protected Logger logger = LoggerFactory.getLogger(this.getClass());
-	protected OdeProperties odeProperties;
-	protected int depositorPort;
-	protected DatagramSocket socket = null;
-	protected TrustManager trustMgr;
-	protected TemporaryID requestId;
-	protected SemiDialogID dialogId;
-	protected GroupID groupId;
-	protected int messagesSent;
-	protected Coder coder;
-	protected DataReceiptReceiver dataReceiptReceiver;
+   protected Logger logger = LoggerFactory.getLogger(this.getClass());
+   protected OdeProperties odeProperties;
+   protected int depositorPort;
+   protected DatagramSocket socket = null;
+   protected TrustManager trustMgr;
+   protected TemporaryID requestId;
+   protected SemiDialogID dialogId;
+   protected GroupID groupId;
+   protected int messagesSent;
+   protected Coder coder;
+   protected DataReceiptReceiver dataReceiptReceiver;
 
-	public AbstractSubscriberDepositor(OdeProperties odeProps, int port, SemiDialogID dialogId) {
-		this.odeProperties = odeProps;
-		this.depositorPort = port;
-		this.dialogId = dialogId;
-		this.messagesSent = 0;
-		this.coder = J2735.getPERUnalignedCoder();
+   public AbstractSubscriberDepositor(OdeProperties odeProps, int port, SemiDialogID dialogId) {
+      this.odeProperties = odeProps;
+      this.depositorPort = port;
+      this.dialogId = dialogId;
+      this.messagesSent = 0;
+      this.coder = J2735.getPERUnalignedCoder();
 
-		try {
-			logger.debug("Creating depositor socket on port {}", port);
-			socket = new DatagramSocket(port);
-			trustMgr = new TrustManager(odeProps, socket);
-			dataReceiptReceiver = new DataReceiptReceiver(odeProps, socket);
-		} catch (SocketException e) {
-			logger.error("Error creating socket with port " + port, e);
-		}
-	}
+      try {
+         logger.debug("Creating depositor socket on port {}", port);
+         socket = new DatagramSocket(port);
+         trustMgr = new TrustManager(odeProps, socket);
+         dataReceiptReceiver = new DataReceiptReceiver(odeProps, socket);
+      } catch (SocketException e) {
+         logger.error("Error creating socket with port " + port, e);
+      }
+   }
 
-	public void subscribe(MessageConsumer<K, V> consumer, String... topics) {
-		Executors.newSingleThreadExecutor().submit(new Runnable() {
-			@Override
-			public void run() {
-				consumer.subscribe(topics);
-			}
-		});
-	}
+   public void subscribe(MessageConsumer<K, V> consumer, String... topics) {
+      Executors.newSingleThreadExecutor().submit(new Runnable() {
+         @Override
+         public void run() {
+            consumer.subscribe(topics);
+         }
+      });
+   }
 
-	@Override
-	public Object call() throws Exception {
-		byte[] encodedMsg = null;
+   @Override
+   public Object call() throws Exception {
+      byte[] encodedMsg = null;
 
-		IntersectionSituationData decodedMsg = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
-		      .decode(new ByteArrayInputStream((byte[]) record.value()), new IntersectionSituationData()));
+      IntersectionSituationData decodedMsg = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
+            .decode(new ByteArrayInputStream((byte[]) record.value()), new IntersectionSituationData()));
 
-		requestId = decodedMsg.requestID;
-		groupId = decodedMsg.groupID;
+      requestId = decodedMsg.requestID;
+      groupId = decodedMsg.groupID;
 
-		if ((!trustMgr.isTrustEstablished() && !trustMgr.isEstablishingTrust())
-		      || messagesSent >= odeProperties.getMessagesUntilTrustReestablished()) {
-			logger.info("Starting trust establishment...");
-			messagesSent = 0;
-			trustMgr.setEstablishingTrust(true);
+      if ((!trustMgr.isTrustEstablished() && !trustMgr.isEstablishingTrust())
+            || messagesSent >= odeProperties.getMessagesUntilTrustReestablished()) {
+         logger.info("Starting trust establishment...");
+         messagesSent = 0;
+         trustMgr.setEstablishingTrust(true);
 
-			trustMgr.establishTrust(depositorPort, odeProperties.getSdcIp(), odeProperties.getSdcPort(), requestId,
-			      dialogId, groupId);
+         trustMgr.establishTrust(depositorPort, odeProperties.getSdcIp(), odeProperties.getSdcPort(), requestId,
+               dialogId, groupId);
 
-			trustMgr.setEstablishingTrust(false);
+         trustMgr.setEstablishingTrust(false);
 
-		}
+      }
 
-		if (trustMgr.isTrustEstablished() && !trustMgr.isEstablishingTrust()) {
-			encodedMsg = deposit();
-		}
+      if (trustMgr.isTrustEstablished() && !trustMgr.isEstablishingTrust()) {
+         encodedMsg = deposit();
+      }
 
-		return encodedMsg;
-	}
+      return encodedMsg;
+   }
 
-	public int getDepositorPort() {
-		return depositorPort;
-	}
+   public int getDepositorPort() {
+      return depositorPort;
+   }
 
-	public void setDepositorPort(int depositorPort) {
-		this.depositorPort = depositorPort;
-	}
+   public void setDepositorPort(int depositorPort) {
+      this.depositorPort = depositorPort;
+   }
 
-	public DatagramSocket getSocket() {
-		return socket;
-	}
+   public DatagramSocket getSocket() {
+      return socket;
+   }
 
-	public void setSocket(DatagramSocket socket) {
-		this.socket = socket;
-	}
+   public void setSocket(DatagramSocket socket) {
+      this.socket = socket;
+   }
 
-	public SemiDialogID getDialogId() {
-		return dialogId;
-	}
+   public SemiDialogID getDialogId() {
+      return dialogId;
+   }
 
-	public void setDialogId(SemiDialogID dialogId) {
-		this.dialogId = dialogId;
-	}
+   public void setDialogId(SemiDialogID dialogId) {
+      this.dialogId = dialogId;
+   }
 
-	protected abstract byte[] deposit();
+   protected abstract byte[] deposit();
 
 }

@@ -19,31 +19,31 @@ import us.dot.its.jpo.ode.udp.AbstractConcurrentUdpReceiver;
 
 public class ServiceResponseReceiver extends AbstractConcurrentUdpReceiver {
 
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+   private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	public ServiceResponseReceiver(OdeProperties odeProps, DatagramSocket sock) {
-		super(sock, odeProps.getServiceResponseBufferSize());
-		logger.debug("ServiceResponseReceiver spawned.");
-	}
+   public ServiceResponseReceiver(OdeProperties odeProps, DatagramSocket sock) {
+      super(sock, odeProps.getServiceResponseBufferSize());
+      logger.debug("ServiceResponseReceiver spawned.");
+   }
 
-	@Override
-	protected AbstractData processPacket(byte[] data)
-	      throws DecodeFailedException, DecodeNotSupportedException, IOException {
-		ServiceResponse returnMsg = null;
+   @Override
+   protected AbstractData processPacket(byte[] data)
+         throws DecodeFailedException, DecodeNotSupportedException, IOException {
+      ServiceResponse returnMsg = null;
 
-		AbstractData response = J2735Util.decode(J2735.getPERUnalignedCoder(), data);
+      AbstractData response = J2735Util.decode(J2735.getPERUnalignedCoder(), data);
 
-		if (response instanceof ServiceResponse) {
-			returnMsg = (ServiceResponse) response;
-			if (J2735Util.isExpired(returnMsg.getExpiration())) {
-				throw new IOException("Received expired ServiceResponse.");
-			}
+      if (response instanceof ServiceResponse) {
+         returnMsg = (ServiceResponse) response;
+         if (J2735Util.isExpired(returnMsg.getExpiration())) {
+            throw new IOException("Received expired ServiceResponse.");
+         }
 
-			String hex = HexUtils.toHexString(data);
-			logger.debug("Received ServiceResponse (hex): {}", hex);
-			logger.debug("Received ServiceResponse (json): {}", returnMsg);
-		}
-		return returnMsg;
-	}
+         String hex = HexUtils.toHexString(data);
+         logger.debug("Received ServiceResponse (hex): {}", hex);
+         logger.debug("Received ServiceResponse (json): {}", returnMsg);
+      }
+      return returnMsg;
+   }
 
 }

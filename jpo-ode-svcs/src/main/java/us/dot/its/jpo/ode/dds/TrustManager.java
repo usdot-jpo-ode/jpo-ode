@@ -53,215 +53,215 @@ import us.dot.its.jpo.ode.udp.isd.ServiceResponseReceiver;
  * It also receives service response from SDC and forwards it back to the OBU.
  */
 public class TrustManager implements Callable<ServiceResponse> {
-	public class TrustManagerException extends Exception {
+   public class TrustManagerException extends Exception {
 
-		private static final long serialVersionUID = 1L;
+      private static final long serialVersionUID = 1L;
 
-		public TrustManagerException(String string) {
-			super(string);
-		}
+      public TrustManagerException(String string) {
+         super(string);
+      }
 
-		public TrustManagerException(String string, Exception e) {
-			super(string, e);
-		}
+      public TrustManagerException(String string, Exception e) {
+         super(string, e);
+      }
 
-	}
+   }
 
-	private OdeProperties odeProperties;
-	private static Coder coder = J2735.getPERUnalignedCoder();
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	private DatagramSocket socket = null;
+   private OdeProperties odeProperties;
+   private static Coder coder = J2735.getPERUnalignedCoder();
+   private Logger logger = LoggerFactory.getLogger(this.getClass());
+   private DatagramSocket socket = null;
 
-	private ExecutorService execService;
-	private boolean trustEstablished = false;
-	private boolean establishingTrust = false;
-	private ServiceResponseReceiver serviceResponseReceiver;
+   private ExecutorService execService;
+   private boolean trustEstablished = false;
+   private boolean establishingTrust = false;
+   private ServiceResponseReceiver serviceResponseReceiver;
 
-	public TrustManager(OdeProperties odeProps, DatagramSocket socket) {
-		this.odeProperties = odeProps;
-		this.socket = socket;
+   public TrustManager(OdeProperties odeProps, DatagramSocket socket) {
+      this.odeProperties = odeProps;
+      this.socket = socket;
 
-		// execService =
-		// Executors.newCachedThreadPool(Executors.defaultThreadFactory());
-		execService = Executors.newSingleThreadExecutor();
-		serviceResponseReceiver = new ServiceResponseReceiver(odeProps, socket);
-	}
+      // execService =
+      // Executors.newCachedThreadPool(Executors.defaultThreadFactory());
+      execService = Executors.newSingleThreadExecutor();
+      serviceResponseReceiver = new ServiceResponseReceiver(odeProps, socket);
+   }
 
-	public ServiceRequest createServiceRequest(TemporaryID requestID, SemiDialogID dialogID, GroupID groupID)
-	      throws TrustManagerException {
-		// GroupID groupID = new GroupID(OdeProperties.JPO_ODE_GROUP_ID);
-		// Random randgen = new Random();
-		// TemporaryID requestID = new
-		// TemporaryID(ByteBuffer.allocate(4).putInt(randgen.nextInt(256)).array());
+   public ServiceRequest createServiceRequest(TemporaryID requestID, SemiDialogID dialogID, GroupID groupID)
+         throws TrustManagerException {
+      // GroupID groupID = new GroupID(OdeProperties.JPO_ODE_GROUP_ID);
+      // Random randgen = new Random();
+      // TemporaryID requestID = new
+      // TemporaryID(ByteBuffer.allocate(4).putInt(randgen.nextInt(256)).array());
 
-		// TODO use groupID = 0
+      // TODO use groupID = 0
 
-		ServiceRequest request = new ServiceRequest(dialogID, SemiSequenceID.svcReq, groupID, requestID);
-		IpAddress ipAddr = new IpAddress();
-		if (!StringUtils.isEmpty(odeProperties.getExternalIpv4())) {
-			ipAddr.setIpv4Address(new IPv4Address(J2735Util.ipToBytes(odeProperties.getExternalIpv4())));
-			logger.debug("Return IPv4: {}", odeProperties.getExternalIpv4());
-		} else if (!StringUtils.isEmpty(odeProperties.getExternalIpv6())) {
-			ipAddr.setIpv6Address(new IPv6Address(J2735Util.ipToBytes(odeProperties.getExternalIpv6())));
-			logger.debug("Return IPv6: {}", odeProperties.getExternalIpv6());
-		} else {
-			throw new TrustManagerException("Invalid ode.externalIpv4 [" + odeProperties.getExternalIpv4()
-			      + "] and ode.externalIpv6 [" + odeProperties.getExternalIpv6() + "] properties");
-		}
+      ServiceRequest request = new ServiceRequest(dialogID, SemiSequenceID.svcReq, groupID, requestID);
+      IpAddress ipAddr = new IpAddress();
+      if (!StringUtils.isEmpty(odeProperties.getExternalIpv4())) {
+         ipAddr.setIpv4Address(new IPv4Address(J2735Util.ipToBytes(odeProperties.getExternalIpv4())));
+         logger.debug("Return IPv4: {}", odeProperties.getExternalIpv4());
+      } else if (!StringUtils.isEmpty(odeProperties.getExternalIpv6())) {
+         ipAddr.setIpv6Address(new IPv6Address(J2735Util.ipToBytes(odeProperties.getExternalIpv6())));
+         logger.debug("Return IPv6: {}", odeProperties.getExternalIpv6());
+      } else {
+         throw new TrustManagerException("Invalid ode.externalIpv4 [" + odeProperties.getExternalIpv4()
+               + "] and ode.externalIpv6 [" + odeProperties.getExternalIpv6() + "] properties");
+      }
 
-		ConnectionPoint returnAddr = new ConnectionPoint(ipAddr, new PortNumber(socket.getLocalPort()));
-		// request.setDestination(returnAddr);
+      ConnectionPoint returnAddr = new ConnectionPoint(ipAddr, new PortNumber(socket.getLocalPort()));
+      // request.setDestination(returnAddr);
 
-		logger.debug("Response Destination {}:{}", returnAddr.getAddress().toString(), returnAddr.getPort().intValue());
+      logger.debug("Response Destination {}:{}", returnAddr.getAddress().toString(), returnAddr.getPort().intValue());
 
-		return request;
-	}
+      return request;
+   }
 
-	public ServiceResponse receiveServiceResponse() throws TrustManagerException {
-		ServiceResponse servResponse = null;
-		try {
-			byte[] buffer = new byte[odeProperties.getServiceResponseBufferSize()];
-			logger.debug("Waiting for ServiceResponse from SDC...");
-			DatagramPacket responeDp = new DatagramPacket(buffer, buffer.length);
-			socket.receive(responeDp);
+   public ServiceResponse receiveServiceResponse() throws TrustManagerException {
+      ServiceResponse servResponse = null;
+      try {
+         byte[] buffer = new byte[odeProperties.getServiceResponseBufferSize()];
+         logger.debug("Waiting for ServiceResponse from SDC...");
+         DatagramPacket responeDp = new DatagramPacket(buffer, buffer.length);
+         socket.receive(responeDp);
 
-			if (buffer.length <= 0)
-				throw new TrustManagerException("Received empty service response from SDC");
+         if (buffer.length <= 0)
+            throw new TrustManagerException("Received empty service response from SDC");
 
-			AbstractData response = J2735Util.decode(coder, buffer);
-			if (response instanceof ServiceResponse) {
-				logger.debug("Received ServiceResponse from SDC {}", response.toString());
-				servResponse = (ServiceResponse) response;
-				if (J2735Util.isExpired(servResponse.getExpiration())) {
-					throw new TrustManagerException("ServiceResponse Expired");
-				}
+         AbstractData response = J2735Util.decode(coder, buffer);
+         if (response instanceof ServiceResponse) {
+            logger.debug("Received ServiceResponse from SDC {}", response.toString());
+            servResponse = (ServiceResponse) response;
+            if (J2735Util.isExpired(servResponse.getExpiration())) {
+               throw new TrustManagerException("ServiceResponse Expired");
+            }
 
-				byte[] actualPacket = Arrays.copyOf(responeDp.getData(), responeDp.getLength());
-				logger.debug("\nServiceResponse in hex: \n{}\n", Hex.encodeHexString(actualPacket));
-			}
-		} catch (Exception e) {
-			throw new TrustManagerException("Error Receiving Service Response", e);
-		}
+            byte[] actualPacket = Arrays.copyOf(responeDp.getData(), responeDp.getLength());
+            logger.debug("\nServiceResponse in hex: \n{}\n", Hex.encodeHexString(actualPacket));
+         }
+      } catch (Exception e) {
+         throw new TrustManagerException("Error Receiving Service Response", e);
+      }
 
-		return servResponse;
-	}
+      return servResponse;
+   }
 
-	public ServiceResponse createServiceResponse(ServiceRequest request) {
-		ServiceResponse response = new ServiceResponse();
-		response.setDialogID(request.getDialogID());
+   public ServiceResponse createServiceResponse(ServiceRequest request) {
+      ServiceResponse response = new ServiceResponse();
+      response.setDialogID(request.getDialogID());
 
-		ZonedDateTime expiresAt = ZonedDateTime.now().plusSeconds(odeProperties.getServiceRespExpirationSeconds());
-		response.setExpiration(new DDateTime(new DYear(expiresAt.getYear()), new DMonth(expiresAt.getMonthValue()),
-		      new DDay(expiresAt.getDayOfMonth()), new DHour(expiresAt.getHour()), new DMinute(expiresAt.getMinute()),
-		      new DSecond(expiresAt.getSecond()), new DOffset(0)));
+      ZonedDateTime expiresAt = ZonedDateTime.now().plusSeconds(odeProperties.getServiceRespExpirationSeconds());
+      response.setExpiration(new DDateTime(new DYear(expiresAt.getYear()), new DMonth(expiresAt.getMonthValue()),
+            new DDay(expiresAt.getDayOfMonth()), new DHour(expiresAt.getHour()), new DMinute(expiresAt.getMinute()),
+            new DSecond(expiresAt.getSecond()), new DOffset(0)));
 
-		response.setGroupID(request.getGroupID());
-		response.setRequestID(request.getRequestID());
-		response.setSeqID(SemiSequenceID.svcResp);
+      response.setGroupID(request.getGroupID());
+      response.setRequestID(request.getRequestID());
+      response.setSeqID(SemiSequenceID.svcResp);
 
-		response.setHash(new Sha256Hash(ByteBuffer.allocate(32).putInt(1).array()));
-		return response;
-	}
+      response.setHash(new Sha256Hash(ByteBuffer.allocate(32).putInt(1).array()));
+      return response;
+   }
 
-	public void sendServiceResponse(ServiceResponse response, String ip, int port) {
-		try {
-			logger.debug("Sending ServiceResponse {} to {}:{}", response.toString(), ip, port);
+   public void sendServiceResponse(ServiceResponse response, String ip, int port) {
+      try {
+         logger.debug("Sending ServiceResponse {} to {}:{}", response.toString(), ip, port);
 
-			byte[] responseBytes = J2735Util.encode(coder, response);
-			socket.send(new DatagramPacket(responseBytes, responseBytes.length, new InetSocketAddress(ip, port)));
-		} catch (IOException e) {
-			logger.error("Error Sending ServiceResponse", e);
-		}
-	}
+         byte[] responseBytes = J2735Util.encode(coder, response);
+         socket.send(new DatagramPacket(responseBytes, responseBytes.length, new InetSocketAddress(ip, port)));
+      } catch (IOException e) {
+         logger.error("Error Sending ServiceResponse", e);
+      }
+   }
 
-	public void sendServiceRequest(ServiceRequest request, String ip, int port) {
-		try {
-			trustEstablished = false;
-			logger.debug("Sending ServiceRequest {} to {}:{}", request.toString(), ip, port);
+   public void sendServiceRequest(ServiceRequest request, String ip, int port) {
+      try {
+         trustEstablished = false;
+         logger.debug("Sending ServiceRequest {} to {}:{}", request.toString(), ip, port);
 
-			byte[] requestBytes = J2735Util.encode(coder, request);
-			socket.send(new DatagramPacket(requestBytes, requestBytes.length, new InetSocketAddress(ip, port)));
-		} catch (IOException e) {
-			logger.error("Error ServiceRequest", e);
-		}
-	}
+         byte[] requestBytes = J2735Util.encode(coder, request);
+         socket.send(new DatagramPacket(requestBytes, requestBytes.length, new InetSocketAddress(ip, port)));
+      } catch (IOException e) {
+         logger.error("Error ServiceRequest", e);
+      }
+   }
 
-	public boolean establishTrust(int srcPort, String destIp, int destPort, TemporaryID requestId, SemiDialogID dialogId,
-	      GroupID groupId) throws SocketException, TrustManagerException {
-		logger.info("Establishing trust...");
+   public boolean establishTrust(int srcPort, String destIp, int destPort, TemporaryID requestId, SemiDialogID dialogId,
+         GroupID groupId) throws SocketException, TrustManagerException {
+      logger.info("Establishing trust...");
 
-		// if (this.socket != null && !trustEstablished) {
-		// logger.debug("Closing outbound socket srcPort={}, destPort={}",
-		// srcPort, destPort);
-		// socket.close();
-		// socket = null;
-		// }
-		//
-		// if (this.socket == null) {
-		// socket = new DatagramSocket(srcPort);
-		// logger.debug("Creating outbound socket srcPort={}, destPort={}",
-		// srcPort, destPort);
-		// }
+      // if (this.socket != null && !trustEstablished) {
+      // logger.debug("Closing outbound socket srcPort={}, destPort={}",
+      // srcPort, destPort);
+      // socket.close();
+      // socket = null;
+      // }
+      //
+      // if (this.socket == null) {
+      // socket = new DatagramSocket(srcPort);
+      // logger.debug("Creating outbound socket srcPort={}, destPort={}",
+      // srcPort, destPort);
+      // }
 
-		// Launch a trust manager thread to listen for the service response
+      // Launch a trust manager thread to listen for the service response
 
-		// Wait for service response
-		try {
-			Future<AbstractData> f = execService.submit(new ServiceResponseReceiver(odeProperties, socket));
+      // Wait for service response
+      try {
+         Future<AbstractData> f = execService.submit(new ServiceResponseReceiver(odeProperties, socket));
 
-			logger.debug("Submitted ServiceResponseReceiver to listen on port {}", socket.getPort());
+         logger.debug("Submitted ServiceResponseReceiver to listen on port {}", socket.getPort());
 
-			ServiceRequest request = createServiceRequest(requestId, dialogId, groupId);
-			// send the service request
-			this.sendServiceRequest(request, destIp, destPort);
+         ServiceRequest request = createServiceRequest(requestId, dialogId, groupId);
+         // send the service request
+         this.sendServiceRequest(request, destIp, destPort);
 
-			ServiceResponse response = (ServiceResponse) f.get(odeProperties.getServiceRespExpirationSeconds(),
-			      TimeUnit.SECONDS);
+         ServiceResponse response = (ServiceResponse) f.get(odeProperties.getServiceRespExpirationSeconds(),
+               TimeUnit.SECONDS);
 
-			logger.info("Received ServiceResponse from SDC {}", response.toString());
-			if (response.getRequestID().equals(request.getRequestID())) {
-				trustEstablished = true;
-				logger.info("Trust established, session request ID: {}",
-				      HexUtils.toHexString(request.getRequestID().byteArrayValue()));
-			} else {
-				logger.error("Received ServiceResponse from SDC but the requestID does not match! {} != {}",
-				      response.getRequestID(), request.getRequestID());
-				trustEstablished = false;
-			}
+         logger.info("Received ServiceResponse from SDC {}", response.toString());
+         if (response.getRequestID().equals(request.getRequestID())) {
+            trustEstablished = true;
+            logger.info("Trust established, session request ID: {}",
+                  HexUtils.toHexString(request.getRequestID().byteArrayValue()));
+         } else {
+            logger.error("Received ServiceResponse from SDC but the requestID does not match! {} != {}",
+                  response.getRequestID(), request.getRequestID());
+            trustEstablished = false;
+         }
 
-		} catch (Exception e) {
+      } catch (Exception e) {
 
-			trustEstablished = false;
-			// throw new TrustManagerException("Did not receive Service Response
-			// within alotted " +
-			// + odeProperties.getServiceRespExpirationSeconds() +
-			// " seconds", e);
-			logger.error("Did not receive Service Response within alotted "
-			      + +odeProperties.getServiceRespExpirationSeconds() + " seconds", e);
+         trustEstablished = false;
+         // throw new TrustManagerException("Did not receive Service Response
+         // within alotted " +
+         // + odeProperties.getServiceRespExpirationSeconds() +
+         // " seconds", e);
+         logger.error("Did not receive Service Response within alotted "
+               + +odeProperties.getServiceRespExpirationSeconds() + " seconds", e);
 
-		}
-		return trustEstablished;
-	}
+      }
+      return trustEstablished;
+   }
 
-	@Override
-	public ServiceResponse call() throws Exception {
-		return receiveServiceResponse();
-	}
+   @Override
+   public ServiceResponse call() throws Exception {
+      return receiveServiceResponse();
+   }
 
-	public boolean isTrustEstablished() {
-		return trustEstablished;
-	}
+   public boolean isTrustEstablished() {
+      return trustEstablished;
+   }
 
-	public void setTrustEstablished(boolean trustEstablished) {
-		this.trustEstablished = trustEstablished;
-	}
+   public void setTrustEstablished(boolean trustEstablished) {
+      this.trustEstablished = trustEstablished;
+   }
 
-	public boolean isEstablishingTrust() {
-		return establishingTrust;
-	}
+   public boolean isEstablishingTrust() {
+      return establishingTrust;
+   }
 
-	public void setEstablishingTrust(boolean establishingTrust) {
-		this.establishingTrust = establishingTrust;
-	}
+   public void setEstablishingTrust(boolean establishingTrust) {
+      this.establishingTrust = establishingTrust;
+   }
 
 }

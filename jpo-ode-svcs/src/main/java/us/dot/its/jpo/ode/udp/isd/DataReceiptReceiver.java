@@ -18,27 +18,27 @@ import us.dot.its.jpo.ode.udp.AbstractConcurrentUdpReceiver;
 
 public class DataReceiptReceiver extends AbstractConcurrentUdpReceiver {
 
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+   private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	public DataReceiptReceiver(OdeProperties odeProps, DatagramSocket sock) {
-		super(sock, odeProps.getDataReceiptBufferSize());
-		logger.debug("DataReceiptReceiver spawned.");
-	}
+   public DataReceiptReceiver(OdeProperties odeProps, DatagramSocket sock) {
+      super(sock, odeProps.getDataReceiptBufferSize());
+      logger.debug("DataReceiptReceiver spawned.");
+   }
 
-	@Override
-	protected AbstractData processPacket(byte[] data) throws DecodeFailedException, DecodeNotSupportedException {
+   @Override
+   protected AbstractData processPacket(byte[] data) throws DecodeFailedException, DecodeNotSupportedException {
 
-		DataReceipt receipt = null;
-		AbstractData response = J2735Util.decode(J2735.getPERUnalignedCoder(), data);
+      DataReceipt receipt = null;
+      AbstractData response = J2735Util.decode(J2735.getPERUnalignedCoder(), data);
 
-		if (response instanceof DataReceipt) {
-			receipt = (DataReceipt) response;
+      if (response instanceof DataReceipt) {
+         receipt = (DataReceipt) response;
 
-			String hex = HexUtils.toHexString(data);
-			logger.debug("Received DataReceipt (hex): {}", hex);
-			logger.debug("Received DataReceipt (json): {}", receipt);
-		}
-		return receipt;
-	}
+         String hex = HexUtils.toHexString(data);
+         logger.debug("Received DataReceipt (hex): {}", hex);
+         logger.debug("Received DataReceipt (json): {}", receipt);
+      }
+      return receipt;
+   }
 
 }
