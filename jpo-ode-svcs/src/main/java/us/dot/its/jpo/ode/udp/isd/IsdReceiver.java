@@ -59,7 +59,7 @@ public class IsdReceiver extends AbstractUdpReceiverPublisher {
 		AbstractData decoded = super.decodeData(data);
 		try {
 			if (decoded instanceof ServiceRequest) {
-				
+
 				logger.debug("Received ServiceRequest: {}", HexUtils.toHexString(data));
 
 				if (null != ((ServiceRequest) decoded).getDestination()) {

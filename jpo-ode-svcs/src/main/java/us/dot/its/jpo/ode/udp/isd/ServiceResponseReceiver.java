@@ -28,7 +28,7 @@ public class ServiceResponseReceiver extends AbstractConcurrentUdpReceiver {
 
 	@Override
 	protected AbstractData processPacket(byte[] data)
-			throws DecodeFailedException, DecodeNotSupportedException, IOException {
+	        throws DecodeFailedException, DecodeNotSupportedException, IOException {
 		ServiceResponse returnMsg = null;
 
 		AbstractData response = J2735Util.decode(J2735.getPERUnalignedCoder(), data);

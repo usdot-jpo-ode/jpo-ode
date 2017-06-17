@@ -67,7 +67,7 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
 		}
 		// Create a ByteArray producer for UPER ISDs
 		byteArrayProducer = MessageProducer.defaultByteArrayMessageProducer(odeProperties.getKafkaBrokers(),
-				odeProperties.getKafkaProducerType());
+		        odeProperties.getKafkaProducerType());
 	}
 
 	protected AbstractData decodeData(byte[] msg) throws UdpReceiverException {

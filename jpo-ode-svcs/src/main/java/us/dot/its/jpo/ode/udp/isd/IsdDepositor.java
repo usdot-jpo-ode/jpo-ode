@@ -27,13 +27,14 @@ import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
 
 public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
-	
+
 	private ExecutorService pool;
 
 	public IsdDepositor(OdeProperties odeProps) {
 		super(odeProps, odeProps.getIsdDepositorPort(), SemiDialogID.intersectionSitDataDep);
 
-		//execService = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
+		// execService =
+		// Executors.newCachedThreadPool(Executors.defaultThreadFactory());
 		pool = Executors.newSingleThreadExecutor();
 	}
 
@@ -48,10 +49,10 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 			logger.debug("Depositor received ISD: {}", HexUtils.toHexString(encodedIsd));
 
 			logger.debug("Sending ISD to SDC IP: {}:{} from port: {}", odeProperties.getSdcIp(),
-					odeProperties.getSdcPort(), socket.getLocalPort());
+			        odeProperties.getSdcPort(), socket.getLocalPort());
 			socket.send(new DatagramPacket(encodedIsd, encodedIsd.length,
-					new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
-				messagesSent++;
+			        new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
+			messagesSent++;
 		} catch (IOException e) {
 			logger.error("Error Sending Isd to SDC", e);
 			return new byte[0];
@@ -61,7 +62,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		// If we've sent at least 5 messages, get a data receipt and then end
 		// trust session
 		logger.info("ISDs sent since session start: {}/{}", messagesSent,
-				odeProperties.getMessagesUntilTrustReestablished());
+		        odeProperties.getMessagesUntilTrustReestablished());
 		if (messagesSent >= odeProperties.getMessagesUntilTrustReestablished()) {
 			trustMgr.setTrustEstablished(false);
 			sendDataReceipt(encodedIsd);
@@ -91,21 +92,22 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		}
 
 		byte[] encodedAccept = sink.toByteArray();
-		
+
 		// Switching from socket.send to socket.receive in one thread is
 		// slower than non-repud round trip time so we must lead this by
 		// creating a socket.receive thread
-		
+
 		try {
 			Future<AbstractData> f = pool.submit(new DataReceiptReceiver(odeProperties, socket));
 			logger.debug("Submitted DataReceiptReceiver to listen on port {}", socket.getPort());
-			
-			logger.debug("Sending ISD non-repudiation message to SDC {} ", HexUtils.toHexString(encodedAccept)); 
+
+			logger.debug("Sending ISD non-repudiation message to SDC {} ", HexUtils.toHexString(encodedAccept));
 
 			socket.send(new DatagramPacket(encodedAccept, encodedAccept.length,
-					new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
+			        new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
 
-			DataReceipt receipt = (DataReceipt) f.get(odeProperties.getDataReceiptExpirationSeconds(), TimeUnit.SECONDS);
+			DataReceipt receipt = (DataReceipt) f.get(odeProperties.getDataReceiptExpirationSeconds(),
+			        TimeUnit.SECONDS);
 
 			if (null != receipt) {
 				logger.debug("Successfully received data receipt from SDC {}", receipt);
@@ -117,7 +119,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 			logger.error("Error sending ISD Acceptance message to SDC", e);
 		} catch (TimeoutException e) {
 			logger.error("Did not receive ISD data receipt within alotted "
-					+ +odeProperties.getDataReceiptExpirationSeconds() + " seconds " + e);
+			        + +odeProperties.getDataReceiptExpirationSeconds() + " seconds " + e);
 		}
 
 	}
