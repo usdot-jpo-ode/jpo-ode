@@ -213,11 +213,11 @@ public class TrustManager implements Callable<ServiceResponse> {
 //            socket.close();
 //            socket = null;
 //        }
-        
-        if (this.socket == null) {
-            socket = new DatagramSocket(srcPort);
-            logger.debug("Creating outbound socket srcPort={}, destPort={}", srcPort, destPort);
-        }
+//        
+//        if (this.socket == null) {
+//            socket = new DatagramSocket(srcPort);
+//            logger.debug("Creating outbound socket srcPort={}, destPort={}", srcPort, destPort);
+//        }
         
         // Launch a trust manager thread to listen for the service response
 
