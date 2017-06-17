@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

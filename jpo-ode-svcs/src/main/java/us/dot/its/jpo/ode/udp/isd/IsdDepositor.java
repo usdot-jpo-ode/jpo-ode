@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.tomcat.util.buf.HexUtils;
-import java.util.concurrent.ThreadFactory;
 
 import com.oss.asn1.AbstractData;
 import com.oss.asn1.EncodeFailedException;
