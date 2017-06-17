@@ -193,7 +193,7 @@ public class TrustManager implements Callable<ServiceResponse> {
             trustEstablished = false;
             logger.debug("Sending ServiceRequest {} to {}:{}",
                     request.toString(),
-                    ip,
+                    ip, 
                     port);
             
             byte[] requestBytes = J2735Util.encode(coder, request);
@@ -220,18 +220,18 @@ public class TrustManager implements Callable<ServiceResponse> {
         }
         
         // Launch a trust manager thread to listen for the service response
-        Future<ServiceResponse> f = execService.submit(serviceResponseReceiver);
-        
-        ServiceRequest request = createServiceRequest(requestId, dialogId, groupId);
-        // send the service request
-        this.sendServiceRequest(request, destIp, destPort);
+
 
         
         // Wait for service response
         try {
-
+            Future<AbstractData> f = execService.submit(new ServiceResponseReceiver(odeProperties, socket));
             
-            ServiceResponse response = f.get(
+            ServiceRequest request = createServiceRequest(requestId, dialogId, groupId);
+            // send the service request
+            this.sendServiceRequest(request, destIp, destPort);
+
+            ServiceResponse response = (ServiceResponse) f.get(
                     odeProperties.getServiceRespExpirationSeconds(), 
                     TimeUnit.SECONDS);
             

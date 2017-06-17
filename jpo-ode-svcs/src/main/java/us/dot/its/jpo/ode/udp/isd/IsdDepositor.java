@@ -12,7 +12,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.tomcat.util.buf.HexUtils;
+import java.util.concurrent.ThreadFactory;
 
+import com.oss.asn1.AbstractData;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 import com.oss.asn1.INTEGER;
@@ -26,12 +28,13 @@ import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
 
 public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 	
-	private ExecutorService execService;
+	private ExecutorService pool;
 
 	public IsdDepositor(OdeProperties odeProps) {
 		super(odeProps, odeProps.getIsdDepositorPort(), SemiDialogID.intersectionSitDataDep);
 
-		execService = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
+		//execService = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
+		pool = Executors.newSingleThreadExecutor();
 	}
 
 	@Override
@@ -93,21 +96,21 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 		// slower than non-repud round trip time so we must lead this by
 		// creating a socket.receive thread
 		
-		
 		try {
-			Future<DataReceipt> f = execService.submit(dataReceiptReceiver);
-			logger.debug("Sending ISD non-repudiation message to SDC {} ", HexUtils.toHexString(encodedAccept));
-
+			Future<AbstractData> f = pool.submit(new DataReceiptReceiver(odeProperties, socket));
+			logger.debug("Submitted DataReceiptReceiver to listen on port {}", socket.getPort());
+			
+			logger.debug("Sending ISD non-repudiation message to SDC {} ", HexUtils.toHexString(encodedAccept)); 
 
 			socket.send(new DatagramPacket(encodedAccept, encodedAccept.length,
 					new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
 
-			DataReceipt receipt = f.get(odeProperties.getDataReceiptExpirationSeconds(), TimeUnit.SECONDS);
+			DataReceipt receipt = (DataReceipt) f.get(odeProperties.getDataReceiptExpirationSeconds(), TimeUnit.SECONDS);
 
-			if (receipt != null) {
-				logger.debug("Successfully received data receipt from SDC {}", receipt.toString());
+			if (null != receipt) {
+				logger.debug("Successfully received data receipt from SDC {}", receipt);
 			} else {
-				logger.error("Received empty data receipt.");
+				throw new IOException("Received invalid packet.");
 			}
 
 		} catch (IOException | InterruptedException | ExecutionException e) {

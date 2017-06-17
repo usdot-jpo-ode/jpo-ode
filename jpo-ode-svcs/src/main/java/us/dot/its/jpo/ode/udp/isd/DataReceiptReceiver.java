@@ -1,10 +1,8 @@
 package us.dot.its.jpo.ode.udp.isd;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.concurrent.Callable;
 
+import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,43 +14,31 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.semi.DataReceipt;
+import us.dot.its.jpo.ode.udp.AbstractConcurrentUdpReceiver;
 
-public class DataReceiptReceiver implements Callable<DataReceipt> {
+public class DataReceiptReceiver extends AbstractConcurrentUdpReceiver {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	private DatagramSocket socket;
-	private OdeProperties odeProperties;
 
 	public DataReceiptReceiver(OdeProperties odeProps, DatagramSocket sock) {
-		this.odeProperties = odeProps;
-		this.socket = sock;
+		super(sock, odeProps.getDataReceiptBufferSize());
+		logger.debug("DataReceiptReceiver spawned.");
 	}
 
 	@Override
-	public DataReceipt call() throws Exception {
-		return receiveDataReceipt();
-	}
+	protected AbstractData processPacket(byte[] data) throws DecodeFailedException, DecodeNotSupportedException {
 
-	public DataReceipt receiveDataReceipt() {
+		DataReceipt receipt = null;
+		AbstractData response = J2735Util.decode(J2735.getPERUnalignedCoder(), data);
 
-		AbstractData receipt = null;
-		try {
-			byte[] buffer = new byte[odeProperties.getServiceResponseBufferSize()];
-			logger.debug("Waiting for data receipt from SDC...");
-			DatagramPacket receiptDp = new DatagramPacket(buffer, buffer.length);
-			socket.receive(receiptDp);
+		if (response instanceof DataReceipt) {
+			receipt = (DataReceipt) response;
 
-			if (buffer.length <= 0)
-				throw new IOException("Received empty data receipt from SDC");
-
-			receipt = J2735Util.decode(J2735.getPERUnalignedCoder(), buffer);
-
-		} catch (IOException | DecodeFailedException | DecodeNotSupportedException e) {
-			logger.error("Error receiving data receipt from SDC: ", e);
+			String hex = HexUtils.toHexString(data);
+			logger.debug("Received DataReceipt (hex): {}", hex);
+			logger.debug("Received DataReceipt (json): {}", receipt);
 		}
-
-		return (DataReceipt) receipt;
-
+		return receipt;
 	}
 
 }

@@ -96,6 +96,7 @@ public class OdeProperties implements EnvironmentAware {
     private int isdTrustPort = 6667;
     private int dataReceiptExpirationSeconds = 2;
 	private int messagesUntilTrustReestablished = 5;
+	int dataReceiptBufferSize = 500;
 
     
     private String hostId;
@@ -461,6 +462,10 @@ public class OdeProperties implements EnvironmentAware {
 
 	public void setMessagesUntilTrustReestablished(int messagesUntilTrustReestablished) {
 		this.messagesUntilTrustReestablished = messagesUntilTrustReestablished;
+	}
+
+	public int getDataReceiptBufferSize() {
+		return dataReceiptBufferSize;
 	}
 
 }
