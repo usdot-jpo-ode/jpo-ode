@@ -226,6 +226,8 @@ public class TrustManager implements Callable<ServiceResponse> {
         // Wait for service response
         try {
             Future<AbstractData> f = execService.submit(new ServiceResponseReceiver(odeProperties, socket));
+
+			logger.debug("Submitted ServiceResponseReceiver to listen on port {}", socket.getPort());
             
             ServiceRequest request = createServiceRequest(requestId, dialogId, groupId);
             // send the service request

@@ -23,14 +23,16 @@ public class ServiceResponseReceiver extends AbstractConcurrentUdpReceiver {
 
 	public ServiceResponseReceiver(OdeProperties odeProps, DatagramSocket sock) {
 		super(sock, odeProps.getServiceResponseBufferSize());
-	} 
+		logger.debug("ServiceResponseReceiver spawned.");
+	}
 
 	@Override
-	protected AbstractData processPacket(byte[] data) throws DecodeFailedException, DecodeNotSupportedException, IOException {
+	protected AbstractData processPacket(byte[] data)
+			throws DecodeFailedException, DecodeNotSupportedException, IOException {
 		ServiceResponse returnMsg = null;
-		
+
 		AbstractData response = J2735Util.decode(J2735.getPERUnalignedCoder(), data);
-		
+
 		if (response instanceof ServiceResponse) {
 			returnMsg = (ServiceResponse) response;
 			if (J2735Util.isExpired(returnMsg.getExpiration())) {
