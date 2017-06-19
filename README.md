@@ -37,7 +37,7 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 ODE provides the following living documents to keep ODE users and stakeholders informed of the latest developments:
 
 1. [ODE Architecture](docs/JPO%20ODE%20Architecture.docx)
-2. [ODE User Guide](docs/JPO_ODE_User_Guide.docx)
+2. [ODE User Guide](docs/JPO_ODE_UserGuide.docx)
 3. [ODE REST API Guide](docs/ODESwagger.yaml)
 4. [ODE Smoke Tests](https://github.com/usdot-jpo-ode/jpo-ode/wiki/JPO-ODE-QA-Documents)
 
