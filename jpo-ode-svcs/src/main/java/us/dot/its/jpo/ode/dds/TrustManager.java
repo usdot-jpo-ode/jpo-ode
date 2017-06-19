@@ -179,7 +179,8 @@ public class TrustManager implements Callable<Boolean> {
          ServiceResponse response = (ServiceResponse) f.get(odeProperties.getServiceRespExpirationSeconds(),
                TimeUnit.SECONDS);
 
-         //logger.info("Received ServiceResponse from SDC {}", response.toString());
+         logger.debug("ServiceResponse: f.isDone(): {}, f.isCancelled(): {}", f.isDone(), f.isCancelled());
+
          if (response.getRequestID().equals(request.getRequestID())) {
             trustEstablished = true;
             logger.info("Trust established, session request ID: {}",
