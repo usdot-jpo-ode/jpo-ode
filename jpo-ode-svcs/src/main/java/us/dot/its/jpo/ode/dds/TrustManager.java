@@ -165,12 +165,10 @@ public class TrustManager implements Callable<Boolean> {
       // }
 
       // Launch a trust manager thread to listen for the service response
-      
-      if (isEstablishingTrust()) {
-         return false;
-      }
+     
 
       try {
+         setEstablishingTrust(true);
 
          Future<AbstractData> f = execService.submit(new ServiceResponseReceiver(odeProperties, socket));
          logger.debug("Submitted ServiceResponseReceiver to listen on port {}", socket.getPort());
@@ -202,6 +200,8 @@ public class TrustManager implements Callable<Boolean> {
          logger.error("Did not receive Service Response within alotted "
                + +odeProperties.getServiceRespExpirationSeconds() + " seconds", e.getCause());
 
+      } finally {
+         setEstablishingTrust(false);
       }
       return trustEstablished;
    }

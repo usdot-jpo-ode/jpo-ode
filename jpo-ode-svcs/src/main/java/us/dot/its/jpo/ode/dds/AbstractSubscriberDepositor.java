@@ -97,7 +97,6 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
       } else if (!trustMgr.isEstablishingTrust()) {
          logger.info("Starting trust establishment...");
          messagesSent = 0;
-         trustMgr.setEstablishingTrust(true);
 
          try {
              Boolean trustEst = trustMgr.establishTrust(depositorPort,
@@ -107,8 +106,6 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
             trustMgr.setTrustEstablished(trustEst);
          } catch (SocketException | TrustManagerException e) {
             logger.error("Error establishing trust: {}", e);
-         } finally {
-            trustMgr.setEstablishingTrust(false);
          }
       } else {
          logger.info("Not depositing message, trust establishment in progress.");
