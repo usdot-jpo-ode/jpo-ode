@@ -176,7 +176,6 @@ public class TrustManager implements Callable<ServiceResponse> {
 
          ServiceResponse response = (ServiceResponse) f.get(odeProperties.getServiceRespExpirationSeconds(),
                TimeUnit.SECONDS);
-         f.cancel(true);
 
          //logger.info("Received ServiceResponse from SDC {}", response.toString());
          if (response.getRequestID().equals(request.getRequestID())) {
@@ -197,7 +196,7 @@ public class TrustManager implements Callable<ServiceResponse> {
          // + odeProperties.getServiceRespExpirationSeconds() +
          // " seconds", e);
          logger.error("Did not receive Service Response within alotted "
-               + +odeProperties.getServiceRespExpirationSeconds() + " seconds", e);
+               + +odeProperties.getServiceRespExpirationSeconds() + " seconds", e.getCause());
 
       }
       return trustEstablished;
