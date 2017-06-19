@@ -204,7 +204,7 @@ public class TrustManager implements Callable<Boolean> {
 
    @Override
    public Boolean call() throws Exception {
-      return trustEstablished;
+      return establishTrust(0, null, 0, null, null, null);
    }
 
    public boolean isTrustEstablished() {

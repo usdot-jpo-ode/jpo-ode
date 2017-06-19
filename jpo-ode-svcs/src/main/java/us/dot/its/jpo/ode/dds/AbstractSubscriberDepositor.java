@@ -74,6 +74,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 
    @Override
    public Object call() {
+      logger.debug("Subscriber received data.");
       byte[] encodedMsg = null;
 
       IntersectionSituationData decodedMsg = null;
@@ -99,14 +100,12 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
          trustMgr.setEstablishingTrust(true);
 
          try {
-            // Boolean trustEst = trustMgr.establishTrust(depositorPort,
-            // odeProperties.getSdcIp(),
-            // odeProperties.getSdcPort(), requestId, dialogId, groupId);
-            Future<Boolean> f = pool.submit(trustMgr);
-            Boolean trustEst = f.get();
+             Boolean trustEst = trustMgr.establishTrust(depositorPort,
+             odeProperties.getSdcIp(),
+             odeProperties.getSdcPort(), requestId, dialogId, groupId);
             logger.debug("Trust established: {}", trustEst);
             trustMgr.setTrustEstablished(trustEst);
-         } catch (InterruptedException | ExecutionException e) {
+         } catch (SocketException | TrustManagerException e) {
             logger.error("Error establishing trust: {}", e);
          } finally {
             trustMgr.setEstablishingTrust(false);
