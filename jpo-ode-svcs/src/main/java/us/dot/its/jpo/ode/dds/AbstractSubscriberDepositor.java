@@ -110,6 +110,8 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
          } finally {
             trustMgr.setEstablishingTrust(false);
          }
+      } else {
+         logger.info("Not depositing message, trust establishment in progress.");
       }
 
       return encodedMsg;
