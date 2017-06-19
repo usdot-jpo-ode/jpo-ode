@@ -176,8 +176,9 @@ public class TrustManager implements Callable<ServiceResponse> {
 
          ServiceResponse response = (ServiceResponse) f.get(odeProperties.getServiceRespExpirationSeconds(),
                TimeUnit.SECONDS);
+         f.cancel(true);
 
-         logger.info("Received ServiceResponse from SDC {}", response.toString());
+         //logger.info("Received ServiceResponse from SDC {}", response.toString());
          if (response.getRequestID().equals(request.getRequestID())) {
             trustEstablished = true;
             logger.info("Trust established, session request ID: {}",

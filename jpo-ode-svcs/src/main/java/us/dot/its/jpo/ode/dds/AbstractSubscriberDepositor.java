@@ -91,14 +91,16 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
       // Verify trust before depositing, else establish trust
       if (trustMgr.isTrustEstablished() && !trustMgr.isEstablishingTrust()) {
          encodedMsg = deposit();
-      } else {
+      } else if (!trustMgr.isEstablishingTrust()) {
          logger.info("Starting trust establishment...");
          messagesSent = 0;
          trustMgr.setEstablishingTrust(true);
 
          try {
-            trustMgr.setTrustEstablished(trustMgr.establishTrust(depositorPort, odeProperties.getSdcIp(),
-                  odeProperties.getSdcPort(), requestId, dialogId, groupId));
+            Boolean trustEst = trustMgr.establishTrust(depositorPort, odeProperties.getSdcIp(),
+                  odeProperties.getSdcPort(), requestId, dialogId, groupId);
+            logger.debug("Trust established: {}", trustEst);
+            trustMgr.setTrustEstablished(trustEst);
          } catch (SocketException | TrustManagerException e) {
             logger.error("Error establishing trust: {}", e);
          } finally {
