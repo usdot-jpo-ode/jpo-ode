@@ -44,7 +44,7 @@ import us.dot.its.jpo.ode.udp.isd.ServiceResponseReceiver;
  * This class receives service request from the OBU and forwards it to the SDC.
  * It also receives service response from SDC and forwards it back to the OBU.
  */
-public class TrustManager implements Callable<ServiceResponse> {
+public class TrustManager implements Callable<Boolean> {
    public class TrustManagerException extends Exception {
 
       private static final long serialVersionUID = 1L;
@@ -203,8 +203,8 @@ public class TrustManager implements Callable<ServiceResponse> {
    }
 
    @Override
-   public ServiceResponse call() throws Exception {
-      throw new IOException("Unreachable code call");
+   public Boolean call() throws Exception {
+      return trustEstablished;
    }
 
    public boolean isTrustEstablished() {

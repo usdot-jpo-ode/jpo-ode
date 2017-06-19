@@ -4,8 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,11 +99,14 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
          trustMgr.setEstablishingTrust(true);
 
          try {
-            Boolean trustEst = trustMgr.establishTrust(depositorPort, odeProperties.getSdcIp(),
-                  odeProperties.getSdcPort(), requestId, dialogId, groupId);
+            // Boolean trustEst = trustMgr.establishTrust(depositorPort,
+            // odeProperties.getSdcIp(),
+            // odeProperties.getSdcPort(), requestId, dialogId, groupId);
+            Future<Boolean> f = pool.submit(trustMgr);
+            Boolean trustEst = f.get();
             logger.debug("Trust established: {}", trustEst);
             trustMgr.setTrustEstablished(trustEst);
-         } catch (SocketException | TrustManagerException e) {
+         } catch (InterruptedException | ExecutionException e) {
             logger.error("Error establishing trust: {}", e);
          } finally {
             trustMgr.setEstablishingTrust(false);
