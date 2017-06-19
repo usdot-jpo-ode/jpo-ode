@@ -165,6 +165,10 @@ public class TrustManager implements Callable<Boolean> {
       // }
 
       // Launch a trust manager thread to listen for the service response
+      
+      if (isEstablishingTrust()) {
+         return false;
+      }
 
       try {
 
