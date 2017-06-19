@@ -117,6 +117,7 @@ public class TrustManager implements Callable<ServiceResponse> {
       return request;
    }
 
+   // TODO - deprecated by ServiceResponseReceiver class
    public ServiceResponse receiveServiceResponse() throws TrustManagerException {
       ServiceResponse servResponse = null;
       try {
@@ -207,7 +208,7 @@ public class TrustManager implements Callable<ServiceResponse> {
 
       // Wait for service response
       try {
-         Future<AbstractData> f = execService.submit(new ServiceResponseReceiver(odeProperties, socket));
+         Future<AbstractData> f = execService.submit(serviceResponseReceiver);
 
          logger.debug("Submitted ServiceResponseReceiver to listen on port {}", socket.getPort());
 

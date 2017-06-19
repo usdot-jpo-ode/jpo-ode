@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.dds;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.concurrent.Executors;
@@ -9,8 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.oss.asn1.Coder;
+import com.oss.asn1.DecodeFailedException;
+import com.oss.asn1.DecodeNotSupportedException;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.dds.TrustManager.TrustManagerException;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.semi.GroupID;
@@ -61,11 +65,19 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
    }
 
    @Override
-   public Object call() throws Exception {
+   public Object call() {
       byte[] encodedMsg = null;
 
-      IntersectionSituationData decodedMsg = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
-            .decode(new ByteArrayInputStream((byte[]) record.value()), new IntersectionSituationData()));
+      IntersectionSituationData decodedMsg = null;
+      try {
+         decodedMsg = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
+               .decode(new ByteArrayInputStream((byte[]) record.value()), new IntersectionSituationData()));
+         if (null == decodedMsg) {
+            throw new IOException("Null decoded result");
+         }
+      } catch (DecodeFailedException | DecodeNotSupportedException | IOException e) {
+         logger.error("Depositor failed to decode ISD message: {}", e);
+      }
 
       requestId = decodedMsg.requestID;
       groupId = decodedMsg.groupID;
@@ -76,8 +88,12 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
          messagesSent = 0;
          trustMgr.setEstablishingTrust(true);
 
-         trustMgr.establishTrust(depositorPort, odeProperties.getSdcIp(), odeProperties.getSdcPort(), requestId,
-               dialogId, groupId);
+         try {
+            trustMgr.establishTrust(depositorPort, odeProperties.getSdcIp(), odeProperties.getSdcPort(), requestId,
+                  dialogId, groupId);
+         } catch (SocketException | TrustManagerException e) {
+            logger.error("Error establishing trust: {}", e);
+         }
 
          trustMgr.setEstablishingTrust(false);
 
