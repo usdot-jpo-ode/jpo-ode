@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -27,14 +25,8 @@ import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
 
 public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 
-   private ExecutorService pool;
-
    public IsdDepositor(OdeProperties odeProps) {
       super(odeProps, odeProps.getIsdDepositorPort(), SemiDialogID.intersectionSitDataDep);
-
-      // execService =
-      // Executors.newCachedThreadPool(Executors.defaultThreadFactory());
-      pool = Executors.newSingleThreadExecutor();
    }
 
    @Override

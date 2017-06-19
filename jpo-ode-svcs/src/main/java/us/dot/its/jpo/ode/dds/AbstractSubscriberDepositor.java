@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
@@ -20,7 +21,6 @@ import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.semi.GroupID;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
-import us.dot.its.jpo.ode.udp.isd.DataReceiptReceiver;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
@@ -36,7 +36,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
    protected GroupID groupId;
    protected int messagesSent;
    protected Coder coder;
-   protected DataReceiptReceiver dataReceiptReceiver;
+   protected ExecutorService pool;
 
    public AbstractSubscriberDepositor(OdeProperties odeProps, int port, SemiDialogID dialogId) {
       this.odeProperties = odeProps;
@@ -49,12 +49,18 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
          logger.debug("Creating depositor socket on port {}", port);
          socket = new DatagramSocket(port);
          trustMgr = new TrustManager(odeProps, socket);
-         dataReceiptReceiver = new DataReceiptReceiver(odeProps, socket);
+         pool = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
       } catch (SocketException e) {
          logger.error("Error creating socket with port " + port, e);
       }
    }
 
+   /**
+    * Starts a Kafka listener that runs call() every time a new msg arrives
+    * 
+    * @param consumer
+    * @param topics
+    */
    public void subscribe(MessageConsumer<K, V> consumer, String... topics) {
       Executors.newSingleThreadExecutor().submit(new Runnable() {
          @Override
@@ -82,25 +88,22 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
       requestId = decodedMsg.requestID;
       groupId = decodedMsg.groupID;
 
-      if ((!trustMgr.isTrustEstablished() && !trustMgr.isEstablishingTrust())
-            || messagesSent >= odeProperties.getMessagesUntilTrustReestablished()) {
+      // Verify trust before depositing, else establish trust
+      if (trustMgr.isTrustEstablished() && !trustMgr.isEstablishingTrust()) {
+         encodedMsg = deposit();
+      } else {
          logger.info("Starting trust establishment...");
          messagesSent = 0;
          trustMgr.setEstablishingTrust(true);
 
          try {
-            trustMgr.establishTrust(depositorPort, odeProperties.getSdcIp(), odeProperties.getSdcPort(), requestId,
-                  dialogId, groupId);
+            trustMgr.setTrustEstablished(trustMgr.establishTrust(depositorPort, odeProperties.getSdcIp(),
+                  odeProperties.getSdcPort(), requestId, dialogId, groupId));
          } catch (SocketException | TrustManagerException e) {
             logger.error("Error establishing trust: {}", e);
+         } finally {
+            trustMgr.setEstablishingTrust(false);
          }
-
-         trustMgr.setEstablishingTrust(false);
-
-      }
-
-      if (trustMgr.isTrustEstablished() && !trustMgr.isEstablishingTrust()) {
-         encodedMsg = deposit();
       }
 
       return encodedMsg;

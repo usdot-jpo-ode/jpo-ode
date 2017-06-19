@@ -7,18 +7,15 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import com.oss.asn1.AbstractData;
 import com.oss.asn1.Coder;
@@ -35,12 +32,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.DOffset;
 import us.dot.its.jpo.ode.j2735.dsrc.DSecond;
 import us.dot.its.jpo.ode.j2735.dsrc.DYear;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
-import us.dot.its.jpo.ode.j2735.semi.ConnectionPoint;
 import us.dot.its.jpo.ode.j2735.semi.GroupID;
-import us.dot.its.jpo.ode.j2735.semi.IPv4Address;
-import us.dot.its.jpo.ode.j2735.semi.IPv6Address;
-import us.dot.its.jpo.ode.j2735.semi.IpAddress;
-import us.dot.its.jpo.ode.j2735.semi.PortNumber;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
@@ -75,76 +67,44 @@ public class TrustManager implements Callable<ServiceResponse> {
    private ExecutorService execService;
    private boolean trustEstablished = false;
    private boolean establishingTrust = false;
-   private ServiceResponseReceiver serviceResponseReceiver;
 
    public TrustManager(OdeProperties odeProps, DatagramSocket socket) {
       this.odeProperties = odeProps;
       this.socket = socket;
 
-      // execService =
-      // Executors.newCachedThreadPool(Executors.defaultThreadFactory());
-      execService = Executors.newSingleThreadExecutor();
-      serviceResponseReceiver = new ServiceResponseReceiver(odeProps, socket);
+       execService =
+       Executors.newCachedThreadPool(Executors.defaultThreadFactory());
    }
 
    public ServiceRequest createServiceRequest(TemporaryID requestID, SemiDialogID dialogID, GroupID groupID)
          throws TrustManagerException {
+      // TODO use groupID = 0 or ode group id
       // GroupID groupID = new GroupID(OdeProperties.JPO_ODE_GROUP_ID);
-      // Random randgen = new Random();
-      // TemporaryID requestID = new
-      // TemporaryID(ByteBuffer.allocate(4).putInt(randgen.nextInt(256)).array());
-
-      // TODO use groupID = 0
 
       ServiceRequest request = new ServiceRequest(dialogID, SemiSequenceID.svcReq, groupID, requestID);
-      IpAddress ipAddr = new IpAddress();
-      if (!StringUtils.isEmpty(odeProperties.getExternalIpv4())) {
-         ipAddr.setIpv4Address(new IPv4Address(J2735Util.ipToBytes(odeProperties.getExternalIpv4())));
-         logger.debug("Return IPv4: {}", odeProperties.getExternalIpv4());
-      } else if (!StringUtils.isEmpty(odeProperties.getExternalIpv6())) {
-         ipAddr.setIpv6Address(new IPv6Address(J2735Util.ipToBytes(odeProperties.getExternalIpv6())));
-         logger.debug("Return IPv6: {}", odeProperties.getExternalIpv6());
-      } else {
-         throw new TrustManagerException("Invalid ode.externalIpv4 [" + odeProperties.getExternalIpv4()
-               + "] and ode.externalIpv6 [" + odeProperties.getExternalIpv6() + "] properties");
-      }
+      
+      
 
-      ConnectionPoint returnAddr = new ConnectionPoint(ipAddr, new PortNumber(socket.getLocalPort()));
-      // request.setDestination(returnAddr);
-
-      logger.debug("Response Destination {}:{}", returnAddr.getAddress().toString(), returnAddr.getPort().intValue());
+//      TODO - return address overriding (is there ever a situation where this would work?)
+//      IpAddress ipAddr = new IpAddress();
+//      if (!StringUtils.isEmpty(odeProperties.getExternalIpv4())) {
+//         ipAddr.setIpv4Address(new IPv4Address(J2735Util.ipToBytes(odeProperties.getExternalIpv4())));
+//         logger.debug("Return IPv4: {}", odeProperties.getExternalIpv4());
+//      } else if (!StringUtils.isEmpty(odeProperties.getExternalIpv6())) {
+//         ipAddr.setIpv6Address(new IPv6Address(J2735Util.ipToBytes(odeProperties.getExternalIpv6())));
+//         logger.debug("Return IPv6: {}", odeProperties.getExternalIpv6());
+//      } else {
+//         throw new TrustManagerException("Invalid ode.externalIpv4 [" + odeProperties.getExternalIpv4()
+//               + "] and ode.externalIpv6 [" + odeProperties.getExternalIpv6() + "] properties");
+//      }
+//
+//      ConnectionPoint returnAddr = new ConnectionPoint(ipAddr, new PortNumber(socket.getLocalPort()));
+//      
+//      // request.setDestination(returnAddr);
+//
+//      logger.debug("Response Destination {}:{}", returnAddr.getAddress().toString(), returnAddr.getPort().intValue());
 
       return request;
-   }
-
-   // TODO - deprecated by ServiceResponseReceiver class
-   public ServiceResponse receiveServiceResponse() throws TrustManagerException {
-      ServiceResponse servResponse = null;
-      try {
-         byte[] buffer = new byte[odeProperties.getServiceResponseBufferSize()];
-         logger.debug("Waiting for ServiceResponse from SDC...");
-         DatagramPacket responeDp = new DatagramPacket(buffer, buffer.length);
-         socket.receive(responeDp);
-
-         if (buffer.length <= 0)
-            throw new TrustManagerException("Received empty service response from SDC");
-
-         AbstractData response = J2735Util.decode(coder, buffer);
-         if (response instanceof ServiceResponse) {
-            logger.debug("Received ServiceResponse from SDC {}", response.toString());
-            servResponse = (ServiceResponse) response;
-            if (J2735Util.isExpired(servResponse.getExpiration())) {
-               throw new TrustManagerException("ServiceResponse Expired");
-            }
-
-            byte[] actualPacket = Arrays.copyOf(responeDp.getData(), responeDp.getLength());
-            logger.debug("\nServiceResponse in hex: \n{}\n", Hex.encodeHexString(actualPacket));
-         }
-      } catch (Exception e) {
-         throw new TrustManagerException("Error Receiving Service Response", e);
-      }
-
-      return servResponse;
    }
 
    public ServiceResponse createServiceResponse(ServiceRequest request) {
@@ -206,14 +166,12 @@ public class TrustManager implements Callable<ServiceResponse> {
 
       // Launch a trust manager thread to listen for the service response
 
-      // Wait for service response
       try {
-         Future<AbstractData> f = execService.submit(serviceResponseReceiver);
 
+         Future<AbstractData> f = execService.submit(new ServiceResponseReceiver(odeProperties, socket));
          logger.debug("Submitted ServiceResponseReceiver to listen on port {}", socket.getPort());
 
          ServiceRequest request = createServiceRequest(requestId, dialogId, groupId);
-         // send the service request
          this.sendServiceRequest(request, destIp, destPort);
 
          ServiceResponse response = (ServiceResponse) f.get(odeProperties.getServiceRespExpirationSeconds(),
@@ -246,7 +204,7 @@ public class TrustManager implements Callable<ServiceResponse> {
 
    @Override
    public ServiceResponse call() throws Exception {
-      return receiveServiceResponse();
+      throw new IOException("Unreachable code call");
    }
 
    public boolean isTrustEstablished() {
