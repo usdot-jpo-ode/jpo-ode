@@ -98,6 +98,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
                new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
 
          DataReceipt receipt = (DataReceipt) f.get(odeProperties.getDataReceiptExpirationSeconds(), TimeUnit.SECONDS);
+         logger.debug("f.isDone(): {}, f.isCancelled(): {}", f.isDone(), f.isCancelled());
 
          if (null != receipt) {
             logger.debug("Successfully received data receipt from SDC {}", receipt);
