@@ -24,8 +24,9 @@ import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.snmp.TimManagerService.TimManagerServiceException;
 import us.dot.its.jpo.ode.traveler.TIMController;
+import us.dot.its.jpo.ode.traveler.TimManagerService;
+import us.dot.its.jpo.ode.traveler.TimManagerService.TimManagerServiceException;
 
 public class TimManagerServiceTest {
     

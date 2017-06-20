@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.snmp;
+package us.dot.its.jpo.ode.traveler;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -8,6 +8,8 @@ import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.VariableBinding;
+
+import us.dot.its.jpo.ode.snmp.SNMP;
 
 
 /**

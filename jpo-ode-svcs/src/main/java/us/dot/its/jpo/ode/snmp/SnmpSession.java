@@ -112,6 +112,40 @@ public class SnmpSession {
 
         return responseEvent;
     }
+    
+    /**
+     * Sends a SET-type PDU to the target specified by the constructor.
+     * 
+     * @param pdu
+     *            The message content to be sent to the target
+     * @return ResponseEvent
+     * @throws IOException
+     */
+    public ResponseEvent get(PDU pdu, Snmp snmpob, TransportMapping transportob, UserTarget targetob) throws IOException {
+
+        // Ensure the object has been instantiated
+        if (!ready) {
+            throw new IOException("Tried to send PDU before SNMP sending service is ready.");
+        }
+
+        // Start listening on UDP
+        try {
+            transportob.listen();
+        } catch (IOException e) {
+            throw new IOException("Unable to start UDP listener: " + e);
+        }
+
+        // Try to send the SNMP request (synchronously)
+        ResponseEvent responseEvent = null;
+        try {
+            responseEvent = snmpob.get(pdu, targetob);
+            snmpob.close();
+        } catch (IOException e) {
+            throw new IOException("Failed to send SNMP request: " + e);
+        }
+
+        return responseEvent;
+    }
 
     public Snmp getSnmp() {
         return snmp;
