@@ -76,7 +76,7 @@ public class BsmProcessor implements Runnable {
 		bsmQueueMap.get(tempId).add(bsm);
 		if (bsmQueueMap.get(tempId).size() == 10) {
 			// extract the 10 bsms
-			J2735Bsm[] bsmArray = (J2735Bsm[]) bsmQueueMap.get(tempId).toArray();
+			J2735Bsm[] bsmArray = bsmQueueMap.get(tempId).toArray(new J2735Bsm[0]);
 			for(J2735Bsm entry: bsmArray){
 				logger.debug("Bsm in array: {}", entry.toString());
 			}
