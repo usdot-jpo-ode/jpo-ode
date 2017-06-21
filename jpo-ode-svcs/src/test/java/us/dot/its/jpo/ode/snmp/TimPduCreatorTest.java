@@ -101,7 +101,7 @@ public class TimPduCreatorTest {
             {
                TimPduCreator.createPDU((SNMP) any, anyString, anyInt);
                result = mockScopedPDU;
-               mockSnmpSession.set(mockScopedPDU, (Snmp) any, (TransportMapping) any, (UserTarget) any);
+               mockSnmpSession.set(mockScopedPDU, (Snmp) any, (UserTarget) any, false);
                result = mockResponseEvent;
 
             }
@@ -127,7 +127,7 @@ public class TimPduCreatorTest {
             {
                TimPduCreator.createPDU((SNMP) any, anyString, anyInt);
                result = mockScopedPDU;
-               mockSnmpSession.set(mockScopedPDU, (Snmp) any, (TransportMapping) any, (UserTarget) any);
+               mockSnmpSession.set(mockScopedPDU, (Snmp) any, (UserTarget) any, false);
                result = expectedException;
             }
          };

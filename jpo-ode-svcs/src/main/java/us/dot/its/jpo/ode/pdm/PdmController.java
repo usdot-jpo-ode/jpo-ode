@@ -81,7 +81,7 @@ public class PdmController {
    public static ResponseEvent createAndSend(ScopedPDU pdu, RSU rsu) throws IOException {
       SnmpSession session = new SnmpSession(rsu);
 
-      return session.set(pdu, session.getSnmp(), session.getTransport(), session.getTarget());
+      return session.set(pdu, session.getSnmp(), session.getTarget(), false);
    }
 
 }
