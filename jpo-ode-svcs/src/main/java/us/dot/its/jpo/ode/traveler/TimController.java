@@ -37,21 +37,21 @@ import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
 import us.dot.its.jpo.ode.snmp.SNMP;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
-import us.dot.its.jpo.ode.traveler.TimManagerService.TimManagerServiceException;
+import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
 
 @Controller
-public class TIMController {
+public class TimController {
 
-   private static Logger logger = LoggerFactory.getLogger(TIMController.class);
+   private static Logger logger = LoggerFactory.getLogger(TimController.class);
 
    private OdeProperties odeProperties;
 
    private DdsDepositor<DdsStatusMessage> depositor;
 
    @Autowired
-   public TIMController(OdeProperties odeProperties) {
+   public TimController(OdeProperties odeProperties) {
       super();
       this.odeProperties = odeProperties;
 
@@ -126,7 +126,7 @@ public class TIMController {
    
    @ResponseBody
    @CrossOrigin
-   @RequestMapping(value = "/tim/delete", method = RequestMethod.DELETE)
+   @RequestMapping(value = "/tim", method = RequestMethod.DELETE)
    public String deleteTim(@RequestBody String jsonString, @RequestParam("index") Integer index) {
       
       RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
@@ -173,7 +173,7 @@ public class TIMController {
     * @return list of success/failures
     */
    @ResponseBody
-   @RequestMapping(value = "/tim/deposit", method = RequestMethod.POST, produces = "application/json")
+   @RequestMapping(value = "/tim", method = RequestMethod.POST, produces = "application/json")
    @CrossOrigin
    public String timMessage(@RequestBody String jsonString) {
       logger.debug("Received request: {}", jsonString);
@@ -217,7 +217,7 @@ public class TIMController {
 
          ResponseEvent response = null;
          try {
-            response = createAndSend(travelerinputData.getSnmp(), curRsu, rsuSRMPayload);
+            response = createAndSend(travelerinputData.getSnmp(), curRsu, travelerinputData.getTim().getIndex(), rsuSRMPayload);
 
             if (null == response || null == response.getResponse()) {
                responseList.put(curRsu.getRsuTarget(),
@@ -274,17 +274,17 @@ public class TIMController {
     * @param props
     *           - The SNMP properties (ip, username, password, etc)
     * @return ResponseEvent
-    * @throws TimManagerServiceException
+    * @throws TimPduCreatorException
     * @throws IOException
     */
-   public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, String payload)
-         throws IOException, TimManagerServiceException {
+   public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, int index, String payload)
+         throws IOException, TimPduCreatorException {
 
       SnmpSession session = new SnmpSession(rsu);
 
       // Send the PDU
       ResponseEvent response = null;
-      ScopedPDU pdu = TimManagerService.createPDU(snmp, payload);
+      ScopedPDU pdu = TimPduCreator.createPDU(snmp, payload, index);
       response = session.set(pdu, session.getSnmp(), session.getTransport(), session.getTarget());
       return response;
    }

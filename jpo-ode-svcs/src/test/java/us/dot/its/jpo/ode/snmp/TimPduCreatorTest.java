@@ -24,25 +24,25 @@ import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.traveler.TIMController;
-import us.dot.its.jpo.ode.traveler.TimManagerService;
-import us.dot.its.jpo.ode.traveler.TimManagerService.TimManagerServiceException;
+import us.dot.its.jpo.ode.traveler.TimController;
+import us.dot.its.jpo.ode.traveler.TimPduCreator;
+import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 
-public class TimManagerServiceTest {
+public class TimPduCreatorTest {
     
 
    // Create and send tests
    /**
     * Test that if initializing an SnmpSession returns null, null is returned
     * and an exception is logged
-    * @throws TimManagerServiceException 
+    * @throws TimPduCreatorException 
     * @throws IOException 
     */
    @Test
    public void createAndSendShouldReturnNullWhenSessionInitThrowsException(
          @Mocked SNMP mockSNMP,
          @Mocked RSU mockRSU, @Mocked final Logger logger, 
-         @Mocked SnmpSession mockSnmpSession) throws TimManagerServiceException {
+         @Mocked SnmpSession mockSnmpSession) throws TimPduCreatorException {
 
       IOException expectedException = new IOException("testException123");
       try {
@@ -57,7 +57,7 @@ public class TimManagerServiceTest {
       }
 
       try {
-         assertNull(TIMController.createAndSend(mockSNMP, mockRSU, ""));
+         assertNull(TimController.createAndSend(mockSNMP, mockRSU, 0, ""));
          fail("Should have thrown IOException");
       } catch (IOException e) {
       }
@@ -65,7 +65,7 @@ public class TimManagerServiceTest {
    }
 
    @Test
-   public void shouldCreatePDU() throws ParseException, TimManagerServiceException {
+   public void shouldCreatePDU() throws ParseException, TimPduCreatorException {
 
       String expectedResult = "[1.0.15628.4.1.4.1.2.3 = 11, 1.0.15628.4.1.4.1.3.3 = 2, 1.0.15628.4.1.4.1.4.3 = 3, 1.0.15628.4.1.4.1.5.3 = 4, 1.0.15628.4.1.4.1.6.3 = 5, 1.0.15628.4.1.4.1.7.3 = 0c:02:14:11:11:2f, 1.0.15628.4.1.4.1.8.3 = 0c:02:14:11:11:2f, 1.0.15628.4.1.4.1.9.3 = 88, 1.0.15628.4.1.4.1.10.3 = 9, 1.0.15628.4.1.4.1.11.3 = 10]";
 
@@ -84,7 +84,7 @@ public class TimManagerServiceTest {
             rsuSRMTxInterval, "2017-12-02T17:47:11-05:00", "2017-12-02T17:47:11-05:00", 
             rsuSRMEnable, rsuSRMStatus);
 
-      ScopedPDU result = TimManagerService.createPDU(testParams, rsuSRMPayload);
+      ScopedPDU result = TimPduCreator.createPDU(testParams, rsuSRMPayload, 3);
 
       assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result.getType());
       assertEquals(expectedResult, result.getVariableBindings().toString());
@@ -94,12 +94,12 @@ public class TimManagerServiceTest {
    public void createAndSendShouldSendPDU(@Mocked SNMP mockTimParameters,
          @Mocked RSU mockSnmpProperties, @Mocked final Logger logger, 
          @Mocked SnmpSession mockSnmpSession,
-         @Mocked ScopedPDU mockScopedPDU, @Mocked ResponseEvent mockResponseEvent) throws TimManagerServiceException, IOException {
+         @Mocked ScopedPDU mockScopedPDU, @Mocked ResponseEvent mockResponseEvent) throws TimPduCreatorException, IOException {
 
       try {
          new Expectations() {
             {
-               TimManagerService.createPDU((SNMP) any, anyString);
+               TimPduCreator.createPDU((SNMP) any, anyString, anyInt);
                result = mockScopedPDU;
                mockSnmpSession.set(mockScopedPDU, (Snmp) any, (TransportMapping) any, (UserTarget) any);
                result = mockResponseEvent;
@@ -111,21 +111,21 @@ public class TimManagerServiceTest {
       }
 
       assertEquals(mockResponseEvent,
-            TIMController.createAndSend(
-                  mockTimParameters, mockSnmpProperties, ""));
+            TimController.createAndSend(
+                  mockTimParameters, mockSnmpProperties, 0, ""));
    }
 
    @Ignore
    @Test
    public void createAndSendShouldThrowPDUException(@Mocked SNMP mockTimParameters,
          @Mocked RSU mockSnmpProperties, @Mocked final Logger logger, @Mocked SnmpSession mockSnmpSession,
-         @Mocked ScopedPDU mockScopedPDU, @Mocked ResponseEvent mockResponseEvent) throws TimManagerServiceException, IOException {
+         @Mocked ScopedPDU mockScopedPDU, @Mocked ResponseEvent mockResponseEvent) throws TimPduCreatorException, IOException {
 
       IOException expectedException = new IOException("testException123");
       try {
          new Expectations() {
             {
-               TimManagerService.createPDU((SNMP) any, anyString);
+               TimPduCreator.createPDU((SNMP) any, anyString, anyInt);
                result = mockScopedPDU;
                mockSnmpSession.set(mockScopedPDU, (Snmp) any, (TransportMapping) any, (UserTarget) any);
                result = expectedException;
@@ -135,8 +135,8 @@ public class TimManagerServiceTest {
          fail("Unexpected exception: " + e);
       }
       System.out.println("test 2");
-      assertNull(TIMController.createAndSend(
-            mockTimParameters, mockSnmpProperties, ""));
+      assertNull(TimController.createAndSend(
+            mockTimParameters, mockSnmpProperties, 0, ""));
 
       new Verifications() {
          {
@@ -148,7 +148,7 @@ public class TimManagerServiceTest {
    @Test
    public void testConstructorIsPrivate()
          throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-      Constructor<TimManagerService> constructor = TimManagerService.class.getDeclaredConstructor();
+      Constructor<TimPduCreator> constructor = TimPduCreator.class.getDeclaredConstructor();
       assertTrue(Modifier.isPrivate(constructor.getModifiers()));
       constructor.setAccessible(true);
       try {

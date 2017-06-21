@@ -30,9 +30,9 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 @RunWith(JMockit.class)
-public class TIMControllerTest {
+public class TimControllerTest {
 
-   @Tested TIMController timController;
+   @Tested TimController timController;
    @Injectable OdeProperties mockOdeProperties;
    @Injectable DdsDepositor<DdsStatusMessage> mockDepositor;
 
@@ -77,7 +77,7 @@ public class TIMControllerTest {
    public void badRequestShouldThrowException() {
 
       try {
-         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TIMController.class) {
+         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
                mockTravelerInputData.toString();
                result = "something";
@@ -111,7 +111,7 @@ public class TIMControllerTest {
    public void builderErrorShouldThrowException() {
 
       try {
-         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TIMController.class) {
+         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
                mockTravelerInputData.toString();
                result = "something";
@@ -152,7 +152,7 @@ public class TIMControllerTest {
    public void encodingErrorShouldThrowException() {
 
       try {
-         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TIMController.class) {
+         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
                mockTravelerInputData.toString();
                result = "something";
@@ -196,7 +196,7 @@ public class TIMControllerTest {
    public void snmpExceptionShouldLogAndReturn() {
 
       try {
-         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TIMController.class) {
+         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
                mockTravelerInputData.toString();
                result = "something";
@@ -222,7 +222,7 @@ public class TIMControllerTest {
                mockRsu.getRsuTarget();
                result = "snmpExeption";
                
-               TIMController.createAndSend(mockSnmp, mockRsu, anyString);
+               TimController.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
                result = new Exception("SNMP Error");
 
                mockTravelerInputData.getSdw();
@@ -249,7 +249,7 @@ public class TIMControllerTest {
    public void nullResponseShouldLogAndReturn() {
 
       try {
-         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TIMController.class) {
+         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
                mockTravelerInputData.toString();
                result = "something";
@@ -275,7 +275,7 @@ public class TIMControllerTest {
                mockRsu.getRsuTarget();
                result = "nullResponse";
                
-               TIMController.createAndSend(mockSnmp, mockRsu, anyString);
+               TimController.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
                result = null;
 
                mockTravelerInputData.getSdw();
@@ -300,7 +300,7 @@ public class TIMControllerTest {
    public void badResponseShouldLogAndReturn() {
 
       try {
-         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TIMController.class) {
+         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
                mockTravelerInputData.toString();
                result = "something";
@@ -326,7 +326,7 @@ public class TIMControllerTest {
                mockRsu.getRsuTarget();
                result = "badResponse";
                
-               TIMController.createAndSend(mockSnmp, mockRsu, anyString);
+               TimController.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
                result = mockResponseEvent;
                mockResponseEvent.getResponse(); result = mockPdu;
                mockPdu.getErrorStatus(); result = -1;
@@ -354,7 +354,7 @@ public class TIMControllerTest {
    public void ddsFailureShouldLogAndReturn() {
 
       try {
-         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TIMController.class) {
+         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
                mockTravelerInputData.toString();
                result = "something";
@@ -380,7 +380,7 @@ public class TIMControllerTest {
                mockRsu.getRsuTarget();
                result = "ddsFailure";
                
-               TIMController.createAndSend(mockSnmp, mockRsu, anyString);
+               TimController.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
                result = mockResponseEvent;
                mockResponseEvent.getResponse(); result = mockPdu;
                mockPdu.getErrorStatus(); result = 0;
@@ -409,7 +409,7 @@ public class TIMControllerTest {
    public void goodResponseShouldLogAndReturn() {
 
       try {
-         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TIMController.class) {
+         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
                mockTravelerInputData.toString();
                result = "something";
@@ -435,7 +435,7 @@ public class TIMControllerTest {
                mockRsu.getRsuTarget();
                result = "goodResponse";
                
-               TIMController.createAndSend(mockSnmp, mockRsu, anyString);
+               TimController.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
                result = mockResponseEvent;
                mockResponseEvent.getResponse(); result = mockPdu;
                mockPdu.getErrorStatus(); result = 0;

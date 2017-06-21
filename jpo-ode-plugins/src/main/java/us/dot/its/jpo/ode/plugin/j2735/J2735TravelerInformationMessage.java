@@ -6,6 +6,7 @@ public class J2735TravelerInformationMessage extends OdeObject {
    private static final long serialVersionUID = -200529140190872305L;
 
    private int msgCnt;
+   private int index;
    private String timeStamp;
    private int packetID;
    private String urlB;
@@ -49,6 +50,14 @@ public class J2735TravelerInformationMessage extends OdeObject {
 
    public void setUrlB(String urlB) {
       this.urlB = urlB;
+   }
+
+   public int getIndex() {
+      return index;
+   }
+
+   public void setIndex(int index) {
+      this.index = index;
    }
 
    public static class ComputedLane extends OdeObject {
