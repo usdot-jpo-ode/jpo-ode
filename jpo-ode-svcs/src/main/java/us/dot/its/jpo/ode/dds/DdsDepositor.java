@@ -24,82 +24,82 @@ import us.dot.its.jpo.ode.traveler.AsdMessage;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
 import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
 
-public class DdsDepositor<MessageType> extends AbstractWebSocketClient {	//NOSONAR
+public class DdsDepositor<MessageType> extends AbstractWebSocketClient { // NOSONAR
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+   private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private OdeProperties odeProperties;
-    private DdsRequestManager<MessageType> requestManager;
-    private OdeDepRequest depRequest;
+   private OdeProperties odeProperties;
+   private DdsRequestManager<MessageType> requestManager;
+   private OdeDepRequest depRequest;
 
-    public DdsDepositor(OdeProperties odeProperties) {
-        super();
-        this.odeProperties = odeProperties;
+   public DdsDepositor(OdeProperties odeProperties) {
+      super();
+      this.odeProperties = odeProperties;
 
-        depRequest = new OdeDepRequest();
-        depRequest.setDataSource(DataSource.SDW);
-        depRequest.setDataType(OdeDataType.AsnHex);
-        depRequest.setEncodeType("hex");
-        depRequest.setRequestType(OdeRequestType.Deposit);
-    }
+      depRequest = new OdeDepRequest();
+      depRequest.setDataSource(DataSource.SDW);
+      depRequest.setDataType(OdeDataType.AsnHex);
+      depRequest.setEncodeType("hex");
+      depRequest.setRequestType(OdeRequestType.Deposit);
+   }
 
-    // @SuppressWarnings("unchecked")
-    public void deposit(AsdMessage asdMsg) throws DdsRequestManagerException, DdsClientException, WebSocketException,
-            ParseException, EncodeFailedException, EncodeNotSupportedException {
+   // @SuppressWarnings("unchecked")
+   public void deposit(AsdMessage asdMsg) throws DdsRequestManagerException, DdsClientException, WebSocketException,
+         ParseException, EncodeFailedException, EncodeNotSupportedException {
 
-        if (this.requestManager == null) {
+      if (this.requestManager == null) {
 
-            this.requestManager = (DdsRequestManager<MessageType>) new DdsDepositRequestManager(odeProperties);
-        }
+         this.requestManager = (DdsRequestManager<MessageType>) new DdsDepositRequestManager(odeProperties);
+      }
 
-        if (!this.requestManager.isConnected()) {
-            this.requestManager.connect((WebSocketMessageHandler<MessageType>) new StatusMessageHandler(this),
-                    DepositResponseDecoder.class);
-        }
+      if (!this.requestManager.isConnected()) {
+         this.requestManager.connect((WebSocketMessageHandler<MessageType>) new StatusMessageHandler(this),
+               DepositResponseDecoder.class);
+      }
 
-        depRequest.setData(asdMsg.encodeHex());
+      depRequest.setData(asdMsg.encodeHex());
 
-        this.requestManager.sendRequest(depRequest);
-    }
+      this.requestManager.sendRequest(depRequest);
+   }
 
-    @Override
-    public void onClose(CloseReason reason) {
-        try {
-            this.requestManager.close();
-        } catch (DdsRequestManagerException e) {
-            logger.error("Error closing DDS Request Manager", e);
-        }
-    }
+   @Override
+   public void onClose(CloseReason reason) {
+      try {
+         this.requestManager.close();
+      } catch (DdsRequestManagerException e) {
+         logger.error("Error closing DDS Request Manager", e);
+      }
+   }
 
-    @Override
-    public void onMessage(OdeMessage message) {
-        logger.info("Deposit Response: {}", message);
-    }
+   @Override
+   public void onMessage(OdeMessage message) {
+      logger.info("Deposit Response: {}", message);
+   }
 
-    @Override
-    public void onOpen(Session session) {
-        logger.info("DDS Message Handler Opened Session {} ", session.getId());
-    }
+   @Override
+   public void onOpen(Session session) {
+      logger.info("DDS Message Handler Opened Session {} ", session.getId());
+   }
 
-    @Override
-    public void onError(Throwable t) {
-        logger.error("Error reported by DDS Message Handler", t);
-    }
+   @Override
+   public void onError(Throwable t) {
+      logger.error("Error reported by DDS Message Handler", t);
+   }
 
-    public OdeDepRequest getDepRequest() {
-        return depRequest;
-    }
+   public OdeDepRequest getDepRequest() {
+      return depRequest;
+   }
 
-    public void setRequestManager(DdsRequestManager<MessageType> requestManager) {
-        this.requestManager = requestManager;
-    }
+   public void setRequestManager(DdsRequestManager<MessageType> requestManager) {
+      this.requestManager = requestManager;
+   }
 
-    public OdeProperties getOdeProperties() {
-        return odeProperties;
-    }
+   public OdeProperties getOdeProperties() {
+      return odeProperties;
+   }
 
-    public void setLogger(Logger logger) {
-        this.logger = logger;
-    }
+   public void setLogger(Logger logger) {
+      this.logger = logger;
+   }
 
 }

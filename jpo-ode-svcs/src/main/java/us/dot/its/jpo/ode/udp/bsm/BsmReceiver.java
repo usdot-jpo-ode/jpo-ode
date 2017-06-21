@@ -3,7 +3,6 @@ package us.dot.its.jpo.ode.udp.bsm;
 import java.net.DatagramPacket;
 import java.util.Arrays;
 
-import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;

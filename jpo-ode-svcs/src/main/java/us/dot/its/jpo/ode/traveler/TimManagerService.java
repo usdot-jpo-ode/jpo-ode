@@ -90,7 +90,7 @@ public class TimManagerService {
         
         return pdu;
       } catch (Exception e) {
-         throw new TimManagerServiceException("Error creatign PDU", e);
+         throw new TimManagerServiceException("Error creating PDU", e);
       }
     }
 }
