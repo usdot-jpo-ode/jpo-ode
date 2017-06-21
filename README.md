@@ -36,8 +36,8 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 ## II. Documentation
 ODE provides the following living documents to keep ODE users and stakeholders informed of the latest developments:
 
-1. [ODE Architecture](docs/JPO_ODE_Architecture.doc)
-2. [ODE User Guide](docs/JPO_ODE_User_Guide.doc)
+1. [ODE Architecture](docs/JPO%20ODE%20Architecture.docx)
+2. [ODE User Guide](docs/JPO_ODE_UserGuide.docx)
 3. [ODE REST API Guide](docs/ODESwagger.yaml)
 4. [ODE Smoke Tests](https://github.com/usdot-jpo-ode/jpo-ode/wiki/JPO-ODE-QA-Documents)
 
@@ -74,7 +74,7 @@ travis login --org
 Enter personal github account credentials and then run this:
 
 ```
-travis env set PRIVATE_REPO_URL_UN_PW 'https://<bitbucketusername>:<password>@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git' -r <travis username>/jpo-ode
+travis env set BITBUCKET_UN_APP_PW 'yourbitbucketusername:yourbitbucketpassword' -r yourtravisusername/jpo-ode
 ```
 
 The login information will be saved and this needs to be done only once.
@@ -115,7 +115,7 @@ Additionally, read the following guides to familiarize yourself with Docker and 
 ---
 ### Obtain the Source Code
 
-**NOTE**: The ODE consists of two repositories: a public repository containing the bulk of the application code, and a private repository containing the ASN.1-compiled dependencies. Building this application requires BOTH of these repositories. If you need access to the private repository, please reach out to a member of the development team.
+**NOTE**: The ODE consists of three repositories: a public repository containing the public components of the application code, and a private repository containing proprietary or security sensitive dependencies. Building this application requires all repositories. If you need access to the private repository, please reach out to a member of the development team.
 
 #### Step 1 - Clone public repository
 
@@ -137,7 +137,14 @@ git clone https://github.com/usdot-jpo-ode/jpo-ode.git
 Clone the source code from the BitBucket repository:
 
 ```bash
-git clone https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
+git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
+```
+#### Step 3 - Clone 1609.2 security library repository
+
+Clone the source code from the BitBucket repository:
+
+```bash
+git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdot-jpo-ode/fedgov-cv-security-2016.git
 ```
 
 ---
@@ -152,7 +159,8 @@ ODE configuration can be customized for every deployment environment using the O
 |DOCKER_SHARED_VOLUME|The full path of a directory on the host machine to be shared with docker containers.|
 |ODE_DDS_CAS_USERNAME|The username for authenticating the USDOT Situation Data Warehouse WebSocket server |
 |ODE_DDS_CAS_PASSWORD|The password for authenticating the USDOT Situation Data Warehouse WebSocket server |
-|ODE_DDS_CAS_RETURN_IP|The IP address for Situation data Clearinghouse service responses |
+|ODE_EXTERNAL_IPV4|The IPv4 address of the server running ODE |
+|ODE_EXTERNAL_IPV6|The IPv6 address of the server running ODE |
 
 To be able to change the configuration of the application during runtime, you may store the configuration files in the location specified by the DOCKER_SHARED_VOLUME/config environment variable.
 
@@ -160,9 +168,9 @@ To be able to change the configuration of the application during runtime, you ma
 
 The ODE application uses Maven to manage builds.
 
-**Step 1**: Build the private repository artifacts. 
+**Step 1**: Build the private repository artifacts consisting of J2735 ASN.1 Java API and IEEE1609.2 ASN.1 Java API
 
-Navigate to the root directory of the jpo-ode-private project:
+Navigate to the root directory of the `jpo-ode-private` project:
 
 ```bash
  cd jpo-ode-private/
@@ -171,18 +179,27 @@ Navigate to the root directory of the jpo-ode-private project:
 ```
 It is important you run `mvn clean` first and _then_ `mvn install` because clean installs the required OSS jar file in your local maven repository.
 
-**(Optional)**: Familiarize yourself with Docker and follow the instructions in the [README.md](docker/README.md).
+**Step 2**: Build the 1609.2 Security Library 
 
-**(Optional)**: If you wish to change the application properties, such as change the location of the upload service via ode.uploadLocation property or set the ode.kafkaBrokers to something other than the $DOCKER_HOST_IP:9092, modify ```jpo-ode-svcs\src\main\resources\application.properties``` file as desired.
+Navigate to the root directory of the `fedgov-cv-security-2016` project:
 
-**Step 2**: Navigate to the root directory of the jpo-ode project.
+```bash
+ cd fedgov-cv-security-2016/
+ mvn clean install
+```
+**Step 3** (Optional)
+Familiarize yourself with Docker and follow the instructions in the [README.md](docker/README.md).
 
-**Step 3**: Build and deploy the application. 
+If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the $DOCKER_HOST_IP:9092, or wish to set the CAS username/password, `ODE_EXTERNAL_IPVs`, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
+
+**Step 4**: Navigate to the root directory of the jpo-ode project.
+
+**Step 5**: Build and deploy the application. 
 
 The easiest way to do this is to run the ```clean-build-and-deploy``` script. 
 This script executes the following commands:
 
-```bash
+```
 #!/bin/bash
 docker-compose stop
 docker-compose rm -f -v
@@ -191,7 +208,7 @@ docker-compose up --build -d
 docker-compose ps
 ```
 
-For other build options, see the next section. Otherwise, move on to section [V. Testing the Application](#testing)
+For other build options, see the next section. Otherwise, move on to section [V. Testing ODE Application](#testing)
 
 [Back to top](#toc)
 
@@ -201,8 +218,8 @@ For other build options, see the next section. Otherwise, move on to section [V.
 #### Building ODE without Deploying
 To build the ODE docker container images but not deploy it, run the following commands:
 
-```bash
- cd jpo-ode (or cd ../jpo-ode if you are in the jpo-ode-private directory)
+```
+ cd jpo-ode (or cd ../jpo-ode if you are in any sub-directory)
  mvn clean install
  docker-compose rm -f -v
  docker-compose build
@@ -238,25 +255,25 @@ You can run the application on your local machine while other services are deplo
 ## V. Testing ODE Application
 Once the ODE is running, you should be able to access the jpo-ode web UI at `localhost:8080`.
 
-1. Press the ```Connect``` button to connect to the ODE WebSocket service.
-2. Press ```Choose File``` button to select a file with J2735 BSM or MessageFrame records in ASN.1 UPER encoding
-3. Press ```Upload``` button to upload the file to ODE.
+1. Press the `Connect` button to connect to the ODE WebSocket service.
+2. Press `Choose File` button to select a file with J2735 BSM or MessageFrame records in ASN.1 UPER encoding
+3. Press `Upload` button to upload the file to ODE.
 
 Upload a file containing BSM messages or J2735 MessageFrame in ASN.1 UPER encoded binary format. For example, try the file [data/bsm.uper](data/bsm.uper) or [data/messageFrame.uper](data/messageFrame.uper) and observe the decoded messages returned to the web UI page while connected tot he WebSocket interface.
 
-Alternatively, you may upload a file containing BSM messages in ASN.1 UPER encoded hexadecimal format. For example, a file containing the following pure BSM record and a file extension of ```.hex``` or  ```.txt``` would be processed and decoded by the ODE and results returned to the web UI page:
+Alternatively, you may upload a file containing BSM messages in ASN.1 UPER encoded hexadecimal format. For example, a file containing the following pure BSM record and a file extension of `.hex` or  `.txt` would be processed and decoded by the ODE and results returned to the web UI page:
 ```text
 401480CA4000000000000000000000000000000000000000000000000000000000000000F800D9EFFFB7FFF00000000000000000000000000000000000000000000000000000001FE07000000000000000000000000000000000001FF0
 ```
 *Note: Hexadecimal file format is for test purposes only. ODE is not expected to receive ASN.1 data records in hexadecimal format from the field devices.*
 
-Another way data can be uploaded to the ODE is through copying the file to the location specified by the ```ode.uploadLocationRoot/ode.uploadLocationBsm``` or ```ode.uploadLocationRoot/ode.uploadLocationMessageFrame``` property. If not specified,  Default locations would be ```uploads/bsm``` and ```uploads/messageframe``` sub-directories off of the location where ODE is launched.
+Another way data can be uploaded to the ODE is through copying the file to the location specified by the `ode.uploadLocationRoot/ode.uploadLocationBsm` or `ode.uploadLocationRoot/ode.uploadLocationMessageFrame` property. If not specified,  Default locations would be `uploads/bsm` and `uploads/messageframe` sub-directories off of the location where ODE is launched.
 
 The result of uploading and decoding of the message will be displayed on the UI screen.
 
 ![ODE UI](images/ode-ui.png)
 
-*Notice that the empty fields in the J2735 message are represented by a ```null``` value. Also note that ODE output strips the MessageFrame header and returns a pure BSM in the J2735 BSM subscription topic.*
+*Notice that the empty fields in the J2735 message are represented by a `null` value. Also note that ODE output strips the MessageFrame header and returns a pure BSM in the J2735 BSM subscription topic.*
 
 ### PPM Module (Geofencing and Filtering)
 
@@ -265,7 +282,7 @@ To run the ODE with PPM module, you must install and start the PPM service. PPM 
  - ODE properties for communications with PPM (set in application.properties)
 	 - ode.kafkaTopicBsmRawJson  (default = j2735BsmRawJson)
 	 - ode.kafkaTopicBsmFilteredJson (default = j2735BsmFilteredJson)
- - PPM properties for communications with ODE (set in < your config >.properties)
+ - PPM properties for communications with ODE (set in yourconfig.properties)
 	 - privacy.topic.consumer (default = j2735BsmRawJson)
 	 - privacy.topic.producer (default = j2735BsmFilteredJson)
  
@@ -281,7 +298,7 @@ $ ./bsmjson_privacy -c ../config/ppm.properties
 ```
 With the PPM module running, all filtered BSMs that are uploaded through the web interface will be captured and processed. You will see an output of both submitted BSM and processed data unless the entire record was filtered out.
 
-![ODE UI](images/ppm.png)
+![PPM](images/ppm.png)
 
 
 [Back to top](#toc)

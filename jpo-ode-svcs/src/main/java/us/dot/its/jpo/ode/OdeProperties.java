@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode;
 
 import java.net.InetAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,201 +25,297 @@ import us.dot.its.jpo.ode.eventlog.EventLogger;
 @PropertySource("classpath:application.properties")
 public class OdeProperties implements EnvironmentAware {
 
-   private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-   @Autowired
-   private Environment env;
+    @Autowired
+    private Environment env;
 
-   /*
-    * General Properties
-    */
-   private String pluginsLocations = "plugins";
-   private String asn1CoderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder";
-   private String kafkaBrokers = null;
-   private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
-   private Boolean verboseJson = false;
-   private String externalIpv4 = "";
-   private String externalIpv6 = "";
+    /*
+     * General Properties
+     */
+    private String pluginsLocations = "plugins";
+    private String asn1CoderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder";
+    private String kafkaBrokers = null;
+    private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
+    private Boolean verboseJson = false;
+    private String externalIpv4 = "";
+    private String externalIpv6 = "";
 
-   // File import properties
-   private String uploadLocationRoot = "uploads";
-   private String uploadLocationBsm = "bsm";
-   private String uploadLocationMessageFrame = "messageframe";
+    //File import properties
+    private String uploadLocationRoot = "uploads";
+    private String uploadLocationBsm = "bsm";
+    private String uploadLocationMessageFrame = "messageframe";
 
-   /*
-    * USDOT Situation Data Clearinghouse (SDC)/ Situation Data Warehouse (SDW),
-    * a.k.a Data Distribution System (DDS) Properties
-    */
-   // DDS WebSocket Properties
-   private String ddsCasUrl = "https://cas.connectedvcs.com/accounts/v1/tickets";
-   private String ddsCasUsername = "";
-   private String ddsCasPass = "";
-   private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
 
-   // IPv4 address and listening UDP port for SDC
-   private String sdcIp = "104.130.170.234";// NOSONAR
-   private int sdcPort = 46753;
+    /*
+     * USDOT Situation Data Clearinghouse (SDC)/ Situation Data Warehouse (SDW), a.k.a Data Distribution System (DDS) Properties
+     */
+    //DDS WebSocket Properties
+    private String ddsCasUrl = "https://cas.connectedvcs.com/accounts/v1/tickets";
+    private String ddsCasUsername = "";
+    private String ddsCasPass = "";
+    private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
 
-   // Enable/disable depositing sanitized BSMs to SDC
-   private boolean depositSanitizedBsmToSdc = true;
+    //IPv4 address and listening UDP port for SDC
+    private String sdcIp = "104.130.170.234";//NOSONAR
+    private int sdcPort = 46753;
 
-   private int serviceRespExpirationSeconds = 10;
+    //Enable/disable depositing sanitized BSMs to SDC
+    private boolean depositSanitizedBsmToSdc = true;
 
-   private int serviceResponseBufferSize = 500;
+    private int serviceRespExpirationSeconds = 60;
 
-   /*
-    * BSM Properties
-    */
-   private String kafkaTopicBsmSerializedPojo = "j2735Bsm";
-   private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
-   private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
-   private int bsmReceiverPort = 46800;
-   private int bsmBufferSize = 500;
+    private int serviceResponseBufferSize = 500;
+    
+    
+    /*
+     * BSM Properties
+     */
+    private String kafkaTopicBsmSerializedPojo = "j2735Bsm";
+    private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
+    private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
+    private int bsmReceiverPort = 46800;
+    private int bsmBufferSize = 500;
+    
+    /*
+     * Vehicle Situation Data (VSD) Properties
+     */
+    private int vsdBufferSize = 500;
+    private int vsdReceiverPort = 46753;
+    private int vsdDepositorPort = 5555;
+    private int vsdTrustport = 5556;
+    
 
-   /*
-    * Vehicle Situation Data (VSD) Properties
-    */
-   private int vsdBufferSize = 500;
-   private int vsdReceiverPort = 46753;
-   private int vsdDepositorPort = 5555;
-   private int vsdTrustport = 5556;
+    /*
+     * Intersection Situation Data (ISD) Properties
+     */
+    private String kafkaTopicEncodedIsd= "encodedIsd";
+    private int isdBufferSize = 500;
+    private int isdReceiverPort = 46801;
+    private int isdDepositorPort = 6666;
+    private int isdTrustPort = 6667;
 
-   /*
-    * Intersection Situation Data (ISD) Properties
-    */
-   private String kafkaTopicEncodedIsd = "encodedIsd";
-   private int isdBufferSize = 500;
-   private int isdReceiverPort = 46801;
-   private int isdDepositorPort = 6666;
-   private int isdTrustPort = 6667;
-   private int dataReceiptExpirationSeconds = 2;
-   private int messagesUntilTrustReestablished = 5;
-   int dataReceiptBufferSize = 500;
+    
+    private String hostId;
+    private List<Path> uploadLocations = new ArrayList<>();
 
-   private String hostId;
-   private List<Path> uploadLocations = new ArrayList<>();
+    /*
+     * Security Properties
+     */
+    private String caCertPath;
+    private String selfCertPath;
+    private String selfPrivateKeyReconstructionFilePath;
+    private String selfSigningPrivateKeyFilePath;
+    
+    public static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
+    
+    public OdeProperties() {
+        super();
+        init();
+    }
 
-   protected static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
+    public void init() {
 
-   public OdeProperties() {
-      super();
-      init();
-   }
+        uploadLocations.add(Paths.get(uploadLocationRoot));
+        uploadLocations.add(Paths.get(uploadLocationRoot, uploadLocationBsm));
+        uploadLocations.add(Paths.get(uploadLocationRoot, uploadLocationMessageFrame));
 
-   public void init() {
+        String hostname;
+        try {
+            hostname = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            // Let's just use a random hostname
+            hostname = UUID.randomUUID().toString();
+            logger.info("Unknown host error: {}, using random", e);
+        }
+        hostId = hostname;
+        logger.info("Host ID: {}", hostId);
+        EventLogger.logger.info("Initializing services on host {}", hostId);
 
-      uploadLocations.add(Paths.get(uploadLocationRoot));
-      uploadLocations.add(Paths.get(uploadLocationRoot, uploadLocationBsm));
-      uploadLocations.add(Paths.get(uploadLocationRoot, uploadLocationMessageFrame));
+        if (kafkaBrokers == null) {
+            logger.info(
+                    "ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP from which will derive the Kafka bootstrap-server");
 
-      String hostname;
-      try {
-         hostname = InetAddress.getLocalHost().getHostName();
-      } catch (UnknownHostException e) {
-         // Let's just use a random hostname
-         hostname = UUID.randomUUID().toString();
-         logger.info("Unknown host error: {}, using random", e);
-      }
-      hostId = hostname;
-      logger.info("Host ID: {}", hostId);
-      EventLogger.logger.info("Initializing services on host {}", hostId);
+            kafkaBrokers = System.getenv("DOCKER_HOST_IP") + ":9092";
+        }
 
-      if (kafkaBrokers == null) {
-         logger.info(
-               "ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP from which will derive the Kafka bootstrap-server");
+        if (kafkaBrokers == null)
+            throw new MissingPropertyException(
+                    "Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
+    }
 
-         kafkaBrokers = System.getenv("DOCKER_HOST_IP") + ":9092";
-      }
+    public List<Path> getUploadLocations() {
+        return this.uploadLocations;
+    }
 
-      if (kafkaBrokers == null)
-         throw new MissingPropertyException(
-               "Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
-   }
+    public String getProperty(String key) {
+        return env.getProperty(key);
+    }
 
-   public List<Path> getUploadLocations() {
-      return this.uploadLocations;
-   }
+    public String getProperty(String key, String defaultValue) {
+        return env.getProperty(key, defaultValue);
+    }
 
-   public String getProperty(String key) {
-      return env.getProperty(key);
-   }
+    public Object getProperty(String key, int i) {
+        return env.getProperty(key, Integer.class, i);
+    }
 
-   public String getProperty(String key, String defaultValue) {
-      return env.getProperty(key, defaultValue);
-   }
+    public String getHostId() {
+        return hostId;
+    }
 
-   public Object getProperty(String key, int i) {
-      return env.getProperty(key, Integer.class, i);
-   }
+    public String getUploadLocationBsm() {
+        return uploadLocationBsm;
+    }
 
-   public String getHostId() {
-      return hostId;
-   }
+    public void setUploadLocationBsm(String uploadLocation) {
+        this.uploadLocationBsm = uploadLocation;
+    }
 
-   public String getUploadLocationBsm() {
-      return uploadLocationBsm;
-   }
+    public String getPluginsLocations() {
+        return pluginsLocations;
+    }
 
-   public void setUploadLocationBsm(String uploadLocation) {
-      this.uploadLocationBsm = uploadLocation;
-   }
+    public void setPluginsLocations(String pluginsLocations) {
+        this.pluginsLocations = pluginsLocations;
+    }
 
-   public String getPluginsLocations() {
-      return pluginsLocations;
-   }
+    public String getAsn1CoderClassName() {
+        return asn1CoderClassName;
+    }
 
-   public void setPluginsLocations(String pluginsLocations) {
-      this.pluginsLocations = pluginsLocations;
-   }
+    public void setAsn1CoderClassName(String asn1CoderClassName) {
+        this.asn1CoderClassName = asn1CoderClassName;
+    }
 
-   public String getAsn1CoderClassName() {
-      return asn1CoderClassName;
-   }
+    public String getKafkaBrokers() {
+        return kafkaBrokers;
+    }
 
-   public void setAsn1CoderClassName(String asn1CoderClassName) {
-      this.asn1CoderClassName = asn1CoderClassName;
-   }
+    public void setKafkaBrokers(String kafkaBrokers) {
+        this.kafkaBrokers = kafkaBrokers;
+    }
 
-   public String getKafkaBrokers() {
-      return kafkaBrokers;
-   }
+    public String getKafkaProducerType() {
+        return kafkaProducerType;
+    }
 
-   public void setKafkaBrokers(String kafkaBrokers) {
-      this.kafkaBrokers = kafkaBrokers;
-   }
+    public void setKafkaProducerType(String kafkaProducerType) {
+        this.kafkaProducerType = kafkaProducerType;
+    }
 
-   public String getKafkaProducerType() {
-      return kafkaProducerType;
-   }
+    public Environment getEnv() {
+        return env;
+    }
 
-   public void setKafkaProducerType(String kafkaProducerType) {
-      this.kafkaProducerType = kafkaProducerType;
-   }
+    public void setEnv(Environment env) {
+        this.env = env;
+    }
 
-   public Environment getEnv() {
-      return env;
-   }
+    @Override
+    public void setEnvironment(Environment environment) {
+        env = environment;
+    }
 
-   public void setEnv(Environment env) {
-      this.env = env;
-   }
+    public String getUploadLocationMessageFrame() {
+        return uploadLocationMessageFrame;
+    }
 
-   @Override
-   public void setEnvironment(Environment environment) {
-      env = environment;
-   }
+    public void setUploadLocationMessageFrame(String uploadLocationMessageFrame) {
+        this.uploadLocationMessageFrame = uploadLocationMessageFrame;
+    }
 
-   public String getUploadLocationMessageFrame() {
-      return uploadLocationMessageFrame;
-   }
+    public String getUploadLocationRoot() {
+        return uploadLocationRoot;
+    }
 
-   public void setUploadLocationMessageFrame(String uploadLocationMessageFrame) {
-      this.uploadLocationMessageFrame = uploadLocationMessageFrame;
-   }
+    public void setUploadLocationRoot(String uploadLocationRoot) {
+        this.uploadLocationRoot = uploadLocationRoot;
+    }
 
-   public String getUploadLocationRoot() {
-      return uploadLocationRoot;
-   }
+    public String getDdsCasUrl() {
+        return ddsCasUrl;
+    }
+
+    public void setDdsCasUrl(String ddsCasUrl) {
+        this.ddsCasUrl = ddsCasUrl;
+    }
+
+    public String getDdsCasUsername() {
+        return ddsCasUsername;
+    }
+
+    public void setDdsCasUsername(String ddsCasUsername) {
+        this.ddsCasUsername = ddsCasUsername;
+    }
+
+    public String getDdsCasPassword() {
+        return ddsCasPass;
+    }
+
+    public void setDdsCasPassword(String ddsCasPassword) {
+        this.ddsCasPass = ddsCasPassword;
+    }
+
+    public String getDdsWebsocketUrl() {
+        return ddsWebsocketUrl;
+    }
+
+    public void setDdsWebsocketUrl(String ddsWebsocketUrl) {
+        this.ddsWebsocketUrl = ddsWebsocketUrl;
+    }
+
+    public String getKafkaTopicBsmFilteredJson() {
+        return kafkaTopicBsmFilteredJson;
+    }
+
+    public void setKafkaTopicBsmFilteredJson(String kafkaTopicBsmFilteredJson) {
+        this.kafkaTopicBsmFilteredJson = kafkaTopicBsmFilteredJson;
+    }
+
+    public String getKafkaTopicBsmSerializedPojo() {
+        return kafkaTopicBsmSerializedPojo;
+    }
+
+    public void setKafkaTopicBsmSerializedPojo(String kafkaTopicBsmSerializedPOJO) {
+        this.kafkaTopicBsmSerializedPojo = kafkaTopicBsmSerializedPOJO;
+    }
+
+    public int getVsdReceiverPort() {
+        return vsdReceiverPort;
+    }
+
+    public void setVsdReceiverPort(int vsdReceiverPort) {
+        this.vsdReceiverPort = vsdReceiverPort;
+    }
+
+    public int getVsdBufferSize() {
+        return vsdBufferSize;
+    }
+
+    public void setVsdBufferSize(int vsdBufferSize) {
+        this.vsdBufferSize = vsdBufferSize;
+    }
+
+    public Boolean getVerboseJson() {
+        return verboseJson;
+    }
+    
+    public int getIsdBufferSize() {
+        return isdBufferSize;
+    }
+
+    public void setIsdBufferSize(int isdBufferSize) {
+        this.isdBufferSize = isdBufferSize;
+    }
+
+    public void setVerboseJson(Boolean verboseJson) {
+        this.verboseJson = verboseJson;
+    }
+
+    public String getSdcIp() {
+        return sdcIp;
+    }
 
    public void setUploadLocationRoot(String uploadLocationRoot) {
       this.uploadLocationRoot = uploadLocationRoot;
@@ -463,5 +560,37 @@ public class OdeProperties implements EnvironmentAware {
    public int getDataReceiptBufferSize() {
       return dataReceiptBufferSize;
    }
+
+    public String getCaCertPath() {
+        return caCertPath;
+    }
+
+    public void setCaCertPath(String caCertPath) {
+        this.caCertPath = caCertPath;
+    }
+
+    public String getSelfCertPath() {
+        return selfCertPath;
+    }
+
+    public void setSelfCertPath(String selfCertPath) {
+        this.selfCertPath = selfCertPath;
+    }
+
+    public String getSelfPrivateKeyReconstructionFilePath() {
+        return selfPrivateKeyReconstructionFilePath;
+    }
+
+    public void setSelfPrivateKeyReconstructionFilePath(String selfPrivateKeyReconstructionFilePath) {
+        this.selfPrivateKeyReconstructionFilePath = selfPrivateKeyReconstructionFilePath;
+    }
+
+    public String getSelfSigningPrivateKeyFilePath() {
+        return selfSigningPrivateKeyFilePath;
+    }
+
+    public void setSelfSigningPrivateKeyFilePath(String selfSigningPrivateKeyFilePath) {
+        this.selfSigningPrivateKeyFilePath = selfSigningPrivateKeyFilePath;
+    }
 
 }
