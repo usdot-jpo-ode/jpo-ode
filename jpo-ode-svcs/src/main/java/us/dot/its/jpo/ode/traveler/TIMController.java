@@ -71,7 +71,7 @@ public class TIMController {
     */
    @ResponseBody
    @CrossOrigin
-   @RequestMapping(value = "/tim/query", method = RequestMethod.GET)
+   @RequestMapping(value = "/tim/query", method = RequestMethod.POST)
    public String queryForTims(@RequestBody String jsonString) {
       
       HashMap<Integer, Boolean> resultTable = new HashMap<>();
@@ -126,10 +126,11 @@ public class TIMController {
    
    @ResponseBody
    @CrossOrigin
-   @RequestMapping(value = "/tim/delete/{index}", method = RequestMethod.DELETE)
+   @RequestMapping(value = "/tim/delete", method = RequestMethod.DELETE)
    public String deleteTim(@RequestBody String jsonString, @RequestParam("index") Integer index) {
       
       RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
+      logger.info("TIM delete call, RSU info {}", queryTarget.toJson());
       SnmpSession ss = null;
       try {
          ss = new SnmpSession(queryTarget);
@@ -158,7 +159,7 @@ public class TIMController {
       if (rsuResponse.getResponse().getErrorStatus() != 0) {
          returnMsg = "{success:false, \"error\": \"".concat(rsuResponse.getResponse().getErrorStatusText()).concat("\"}");
       } else {
-         returnMsg = "{success:true, \"error\": \"".concat(rsuResponse.getResponse().getVariableBindings().toString()).concat("\"}");
+         returnMsg = "{success:true, \"variables\": \"".concat(rsuResponse.getResponse().getVariableBindings().toString()).concat("\"}");
       }
       
       return returnMsg;
