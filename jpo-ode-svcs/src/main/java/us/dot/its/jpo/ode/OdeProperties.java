@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode;
 
 import java.net.InetAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -98,6 +99,14 @@ public class OdeProperties implements EnvironmentAware {
     private String hostId;
     private List<Path> uploadLocations = new ArrayList<>();
 
+    /*
+     * Security Properties
+     */
+    private String caCertPath;
+    private String selfCertPath;
+    private String selfPrivateKeyReconstructionFilePath;
+    private String selfSigningPrivateKeyFilePath;
+    
     public static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
     
     public OdeProperties() {
@@ -443,5 +452,37 @@ public class OdeProperties implements EnvironmentAware {
 	public void setIsdTrustPort(int isdTrustPort) {
 		this.isdTrustPort = isdTrustPort;
 	}
+
+    public String getCaCertPath() {
+        return caCertPath;
+    }
+
+    public void setCaCertPath(String caCertPath) {
+        this.caCertPath = caCertPath;
+    }
+
+    public String getSelfCertPath() {
+        return selfCertPath;
+    }
+
+    public void setSelfCertPath(String selfCertPath) {
+        this.selfCertPath = selfCertPath;
+    }
+
+    public String getSelfPrivateKeyReconstructionFilePath() {
+        return selfPrivateKeyReconstructionFilePath;
+    }
+
+    public void setSelfPrivateKeyReconstructionFilePath(String selfPrivateKeyReconstructionFilePath) {
+        this.selfPrivateKeyReconstructionFilePath = selfPrivateKeyReconstructionFilePath;
+    }
+
+    public String getSelfSigningPrivateKeyFilePath() {
+        return selfSigningPrivateKeyFilePath;
+    }
+
+    public void setSelfSigningPrivateKeyFilePath(String selfSigningPrivateKeyFilePath) {
+        this.selfSigningPrivateKeyFilePath = selfSigningPrivateKeyFilePath;
+    }
 
 }
