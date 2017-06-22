@@ -81,15 +81,18 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
       try {
          decodedMsg = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
                .decode(new ByteArrayInputStream((byte[]) record.value()), new IntersectionSituationData()));
-         if (null == decodedMsg) {
-            throw new IOException("Null decoded result");
-         }
-      } catch (DecodeFailedException | DecodeNotSupportedException | IOException e) {
+         
+      } catch (DecodeFailedException | DecodeNotSupportedException e) {
          logger.error("Depositor failed to decode ISD message: {}", e);
       }
-
-      requestId = decodedMsg.requestID;
-      groupId = decodedMsg.groupID;
+      
+      if (null == decodedMsg) {
+         logger.error("Failed to decode message (null)");
+         return null;
+      } else {
+         requestId = decodedMsg.requestID;
+         groupId = decodedMsg.groupID;
+      }
 
       // Verify trust before depositing, else establish trust
       if (trustMgr.isTrustEstablished() && !trustMgr.isEstablishingTrust()) {
