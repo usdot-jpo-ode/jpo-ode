@@ -135,7 +135,7 @@ public class TimController {
    @ResponseBody
    @CrossOrigin
    @RequestMapping(value = "/tim", method = RequestMethod.DELETE)
-   public ResponseEntity<?> deleteTim(@RequestBody String jsonString, @RequestParam("index") Integer index) { // NOSONAR
+   public ResponseEntity<?> deleteTim(@RequestBody String jsonString, @RequestParam(value="index", required=true) Integer index) { // NOSONAR
       
       if (null == jsonString) {
          logger.error("Empty request");
