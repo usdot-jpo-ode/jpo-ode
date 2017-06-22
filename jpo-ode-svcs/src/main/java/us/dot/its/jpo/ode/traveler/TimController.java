@@ -13,6 +13,8 @@ import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -72,26 +74,29 @@ public class TimController {
    @ResponseBody
    @CrossOrigin
    @RequestMapping(value = "/tim/query", method = RequestMethod.POST)
-   public String queryForTims(@RequestBody String jsonString) {
+   public ResponseEntity<?> queryForTims(@RequestBody String jsonString) { // NOSONAR
+
+      if (null == jsonString) {
+         logger.error("Empty request");
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Empty request");
+      }
 
       HashMap<Integer, Boolean> resultTable = new HashMap<>();
-
       RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
+
       SnmpSession ss = null;
       try {
          ss = new SnmpSession(queryTarget);
       } catch (IOException e) {
          logger.error("Error creating TIM query SNMP session", e);
-         String errMsg = "{".concat(SUCCESS_FALSE).concat(e.getMessage()).concat("\"}");
-         logger.info("REST response: {}", errMsg);
-         return errMsg;
+         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+      } catch (NullPointerException e) {
+         logger.error("TIM query error, malformed JSON", e);
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Malformed JSON");
       }
 
       // Repeatedly query the RSU to establish set rows
-      // Repeatedly query the RSU "rows" to get their current status
-      // 4 = set
-      // 6 = deleted
-      for (int i = 0; i < 100; i++) {
+      for (int i = 0; i < 100; i++) { // TODO hardcoded number
          PDU pdu = new ScopedPDU();
          pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
          pdu.setType(PDU.GET);
@@ -101,51 +106,55 @@ public class TimController {
             rsuResponse = ss.get(pdu, ss.getSnmp(), ss.getTarget(), true);
          } catch (IOException e) {
             logger.error("Error sending TIM query PDU to RSU", e);
-            String errMsg = "{\"success\":\"false\", \"error\": \"".concat(e.getMessage()).concat("\"}");
-            logger.info("TIM query REST response: {}", errMsg);
-            return errMsg;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
          }
 
          if (null == rsuResponse || null == rsuResponse.getResponse()) {
-            return "{\"success\":\"false\", \"error\": \"Timeout\"}";
+            logger.error("Timeout error, no response from RSU.");
+            return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("No response from RSU.");
          }
-         
+
          Integer status = ((VariableBinding) (rsuResponse.getResponse().getVariableBindings().firstElement()))
                .getVariable().toInt();
 
-         if (1 == status) {
+         if (1 == status) { // 1 == set, 129 == unset
             resultTable.put(i, true);
-         } else {
-            //resultTable.put(i, false);
          }
       }
+      
       try {
          ss.endSession();
       } catch (IOException e) {
          logger.error("Error closing SNMP session", e);
       }
 
-      String msg = "{\"success\":\"true\", \"indicies_set\":".concat(resultTable.keySet().toString()).concat("}");
-      logger.info("SNMP query successful, REST response: {}", msg);
-
-      return msg;
+      logger.info("TIM query successful: {}", resultTable.keySet());
+      return ResponseEntity.status(HttpStatus.OK).body("{\"indicies_set\",".concat(resultTable.keySet().toString()).concat("}"));
    }
 
    @ResponseBody
    @CrossOrigin
    @RequestMapping(value = "/tim", method = RequestMethod.DELETE)
-   public String deleteTim(@RequestBody String jsonString, @RequestParam("index") Integer index) {
+   public ResponseEntity<?> deleteTim(@RequestBody String jsonString, @RequestParam("index") Integer index) { // NOSONAR
+      
+      if (null == jsonString) {
+         logger.error("Empty request");
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Empty request.");
+      }
 
       RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
-      logger.info("TIM delete call, RSU info {}", queryTarget.toJson());
+
+      logger.info("TIM delete call, RSU info {}", queryTarget);
+      
       SnmpSession ss = null;
       try {
          ss = new SnmpSession(queryTarget);
       } catch (IOException e) {
          logger.error("Error creating TIM delete SNMP session", e);
-         String errMsg = "{\"success\":\"false\", \"error\": \"".concat(e.getMessage()).concat("\"}");
-         logger.info("TIM delete REST response: {}", errMsg);
-         return errMsg;
+         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+      } catch (NullPointerException e) {
+         logger.error("TIM query error, malformed JSON", e);
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Malformed JSON");
       }
 
       PDU pdu = new ScopedPDU();
@@ -157,31 +166,37 @@ public class TimController {
          rsuResponse = ss.set(pdu, ss.getSnmp(), ss.getTarget(), false);
       } catch (IOException e) {
          logger.error("Error sending TIM query PDU to RSU", e);
-         String errMsg = "{\"success\":\"false\", \"error\": \"".concat(e.getMessage()).concat("\"}");
-         logger.info("TIM query REST response: {}", errMsg);
-         return errMsg;
+         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
       }
-
-      String returnMsg = "";
+      
+      // Try to explain common errors
+      HttpStatus returnCode = null;
+      String bodyMsg = "";
       if (null == rsuResponse || null == rsuResponse.getResponse()) {
-         returnMsg = "{\"success\":\"false\", \"error\": \"Timeout\"}";
+         // Timeout
+         returnCode = HttpStatus.REQUEST_TIMEOUT;
+         bodyMsg = "Timeout";
       } else if (rsuResponse.getResponse().getErrorStatus() == 0) {
-         // success
-         returnMsg = "{\"success\":\"true\", \"variables\": \""
-               .concat(rsuResponse.getResponse().getVariableBindings().toString()).concat("\"}");
+         // Success
+         returnCode = HttpStatus.OK;
+         bodyMsg = "{\"deleted_msg\":\"".concat(Integer.toString(index)).concat("\"}");
       } else if (rsuResponse.getResponse().getErrorStatus() == 12) {
-         // message previously deleted or doesn't exist
-         returnMsg = "{\"success\":\"false\", \"error\": \"No message at index " + index + "\"}";
+         // Message previously deleted or doesn't exist
+         returnCode = HttpStatus.BAD_REQUEST;
+         bodyMsg = "No message at index ".concat(Integer.toString(index));
       } else if (rsuResponse.getResponse().getErrorStatus() == 10) {
-         // invalid index
-         returnMsg = "{\"success\":\"false\", \"error\": \"Invalid index " + index + "\"}";
+         // Invalid index
+         returnCode = HttpStatus.BAD_REQUEST;
+         bodyMsg = "Invalid index ".concat(Integer.toString(index));
       } else {
-         returnMsg = "{\"success\":\"false\", \"error\": \"".concat(rsuResponse.getResponse().getErrorStatusText())
-               .concat("\"}");
+         // Misc error
+         returnCode = HttpStatus.BAD_REQUEST;
+         bodyMsg = rsuResponse.getResponse().getErrorStatusText();
       }
-      logger.info("RSU DELETE result: {}", returnMsg);
+      
+      logger.info("Delete call response code: {}, message: {}", returnCode, bodyMsg);
 
-      return returnMsg;
+      return ResponseEntity.status(returnCode).body(bodyMsg);
    }
 
    /**
@@ -309,5 +324,4 @@ public class TimController {
       return response;
    }
 
-   
 }

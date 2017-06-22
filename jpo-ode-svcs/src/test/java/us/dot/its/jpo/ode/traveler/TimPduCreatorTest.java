@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.snmp;
+package us.dot.its.jpo.ode.traveler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -24,6 +24,8 @@ import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.snmp.SNMP;
+import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.traveler.TimController;
 import us.dot.its.jpo.ode.traveler.TimPduCreator;
 import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
@@ -115,8 +117,7 @@ public class TimPduCreatorTest {
                   mockTimParameters, mockSnmpProperties, 0, ""));
    }
 
-   @Ignore
-   @Test
+   @Test @Ignore
    public void createAndSendShouldThrowPDUException(@Mocked SNMP mockTimParameters,
          @Mocked RSU mockSnmpProperties, @Mocked final Logger logger, @Mocked SnmpSession mockSnmpSession,
          @Mocked ScopedPDU mockScopedPDU, @Mocked ResponseEvent mockResponseEvent) throws TimPduCreatorException, IOException {
