@@ -266,11 +266,14 @@ public class OssBsmTest {
     }
 
     @Test
-    public void testConstructorIsPrivate() throws NoSuchMethodException, SecurityException, InstantiationException,
-            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public void testConstructorIsPrivate() throws NoSuchMethodException, SecurityException  {
         Constructor<OssBsm> constructor = OssBsm.class.getDeclaredConstructor();
         assertTrue(Modifier.isPrivate(constructor.getModifiers()));
         constructor.setAccessible(true);
-        constructor.newInstance();
+        try {
+           constructor.newInstance();
+        } catch (Exception e) {
+           assertTrue(e.getCause() instanceof UnsupportedOperationException);
+        }
     }
 }
