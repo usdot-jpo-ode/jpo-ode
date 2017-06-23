@@ -298,7 +298,7 @@ $ ./bsmjson_privacy -c ../config/ppm.properties
 ```
 With the PPM module running, all filtered BSMs that are uploaded through the web interface will be captured and processed. You will see an output of both submitted BSM and processed data unless the entire record was filtered out.
 
-![PPM](images/ppm.png)
+![PPM](images/PPM.png)
 
 
 [Back to top](#toc)
