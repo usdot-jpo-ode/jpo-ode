@@ -37,7 +37,6 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Excepti
 public class OssBsm {
     
     private OssBsm() {
-        //new IllegalAccessException("Static class cannot be instantiated");
         throw new UnsupportedOperationException();
     }
 
