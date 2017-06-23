@@ -34,4 +34,42 @@ public class J2735PositionalAccuracy extends Asn1Object {
 	public void setOrientation(BigDecimal orientation) {
 		this.orientation = orientation;
 	}
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((orientation == null) ? 0 : orientation.hashCode());
+        result = prime * result + ((semiMajor == null) ? 0 : semiMajor.hashCode());
+        result = prime * result + ((semiMinor == null) ? 0 : semiMinor.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        J2735PositionalAccuracy other = (J2735PositionalAccuracy) obj;
+        if (orientation == null) {
+            if (other.orientation != null)
+                return false;
+        } else if (!orientation.equals(other.orientation))
+            return false;
+        if (semiMajor == null) {
+            if (other.semiMajor != null)
+                return false;
+        } else if (!semiMajor.equals(other.semiMajor))
+            return false;
+        if (semiMinor == null) {
+            if (other.semiMinor != null)
+                return false;
+        } else if (!semiMinor.equals(other.semiMinor))
+            return false;
+        return true;
+    }
+
 }

@@ -10,7 +10,7 @@ public class DateTimeUtils {
     private DateTimeUtils() {}
 
    public static String now() {
-      return ZonedDateTime.now().format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
+      return ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
    }
    
    public static String isoDateTime(ZonedDateTime zonedDateTime) {
