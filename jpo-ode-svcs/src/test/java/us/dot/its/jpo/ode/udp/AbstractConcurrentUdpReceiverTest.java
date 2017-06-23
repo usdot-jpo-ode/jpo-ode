@@ -15,32 +15,31 @@ import mockit.Tested;
 
 public class AbstractConcurrentUdpReceiverTest {
 
-	@Tested
-	AbstractConcurrentUdpReceiver testAbstractConcurrentUdpReceiver;
-	@Injectable
-	DatagramSocket mockDatagramSocket;
-	@Injectable
-	int bufSize;
+   @Tested
+   AbstractConcurrentUdpReceiver testAbstractConcurrentUdpReceiver;
+   @Injectable
+   DatagramSocket mockDatagramSocket;
+   @Injectable
+   int bufSize;
 
-	@Test
-	public void shouldCatchSocketIOException() {
+   @Test
+   public void shouldCatchSocketIOException() {
 
-		try {
-			new Expectations() {
-				{
-					mockDatagramSocket.receive((DatagramPacket) any);
-				}
-			};
-		} catch (IOException e1) {
-			fail("Unexpected exception in expectations block.");
-		}
+      try {
+         new Expectations() {
+            {
+               mockDatagramSocket.receive((DatagramPacket) any);
+            }
+         };
+      } catch (IOException e1) {
+         fail("Unexpected exception in expectations block.");
+      }
 
-		try {
-			testAbstractConcurrentUdpReceiver.call();
-			fail("Expected exception to be thrown.");
-		} catch (Exception e) {
-			assertEquals("Empty datagram packet.", e.getCause().getMessage());
-		}
-	}
-
+      try {
+         testAbstractConcurrentUdpReceiver.receiveDatagram();
+         fail("Expected exception to be thrown.");
+      } catch (Exception e) {
+         assertEquals("Empty datagram packet.", e.getCause().getMessage());
+      }
+   }
 }

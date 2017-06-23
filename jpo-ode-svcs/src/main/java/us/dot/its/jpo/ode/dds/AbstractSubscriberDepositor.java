@@ -17,12 +17,13 @@ import com.oss.asn1.DecodeFailedException;
 import com.oss.asn1.DecodeNotSupportedException;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.dds.TrustManager.TrustManagerException;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.semi.GroupID;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
+import us.dot.its.jpo.ode.udp.TrustManager;
+import us.dot.its.jpo.ode.udp.TrustManager.TrustManagerException;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 

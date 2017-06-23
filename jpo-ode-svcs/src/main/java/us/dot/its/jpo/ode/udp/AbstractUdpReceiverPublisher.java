@@ -14,7 +14,6 @@ import com.oss.asn1.DecodeNotSupportedException;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
-import us.dot.its.jpo.ode.dds.TrustManager;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;

@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.dds;
+package us.dot.its.jpo.ode.udp;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -126,7 +126,7 @@ public class TrustManager implements Callable<Boolean> {
 
    public void sendServiceResponse(ServiceResponse response, String ip, int port) {
       try {
-         logger.debug("Sending ServiceResponse {} to {}:{}", response.toString(), ip, port);
+         logger.debug("Sending ServiceResponse {} to {}:{}", response, ip, port);
 
          byte[] responseBytes = J2735Util.encode(coder, response);
          socket.send(new DatagramPacket(responseBytes, responseBytes.length, new InetSocketAddress(ip, port)));

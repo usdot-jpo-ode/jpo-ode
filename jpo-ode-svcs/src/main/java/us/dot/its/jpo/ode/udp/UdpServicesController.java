@@ -1,7 +1,5 @@
 package us.dot.its.jpo.ode.udp;
 
-import java.net.DatagramSocket;
-import java.net.SocketException;
 import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
@@ -10,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.dds.TrustManager;
 import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
 import us.dot.its.jpo.ode.udp.isd.IsdDepositor;
 import us.dot.its.jpo.ode.udp.isd.IsdReceiver;
