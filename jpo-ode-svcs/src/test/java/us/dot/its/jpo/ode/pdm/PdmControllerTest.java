@@ -271,8 +271,7 @@ public class PdmControllerTest {
             {
                new SnmpSession((RSU) any); result = mockSnmpSession;
                
-               mockSnmpSession.set((PDU) any, (Snmp) any, 
-                     (TransportMapping) any, (UserTarget) any); result = mockResponseEvent;
+               mockSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean); result = mockResponseEvent;
                mockResponseEvent.getResponse(); result = mockPdu;
                mockPdu.getErrorStatus(); result = 0;
             }

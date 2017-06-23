@@ -12,6 +12,36 @@ basePath: /
 produces:
   - application/json
 paths:
+  /tim/query:
+    post:
+      summary: >-
+        Query an RSU for set TIMs
+      operationId: tim_query
+      description: >-
+        Query an RSU for set TIMs
+      parameters:
+        - name: RSU
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RSU'
+      responses:
+        '200':
+          description: List of messages in JSON form
+          schema:
+            $ref: '#/definitions/Status'
+        '400':
+          description: Error in body request
+          schema:
+            $ref: '#/definitions/Status'
+        '408':
+          description: Timeout
+          schema:
+            $ref: '#/definitions/Status'
+        '500':
+          description: Misc error
+          schema:
+            $ref: '#/definitions/Status'
   /tim:
     post:
       summary: >-
@@ -57,6 +87,39 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Status'
+    delete:
+      summary: >-
+        Delete a TIM message on an RSU.
+      operationId: tim_delete
+      description: >-
+        Sets the status of a designated message index on an RSU to 6.
+      parameters:
+        - name: index
+          in: query
+          description: Index of message to be deleted
+          required: true
+          type: number
+          format: integer
+      tags:
+        - TIM
+      responses:
+        '200':
+          description: Deleted index
+          schema:
+            $ref: '#/definitions/Status'
+        '400':
+          description: Error in body request
+          schema:
+            $ref: '#/definitions/Status'
+        '408':
+          description: Timeout
+          schema:
+            $ref: '#/definitions/Status'
+        '500':
+          description: Misc error
+          schema:
+            $ref: '#/definitions/Status'
+
   /RSU SNMP:
     get:
       summary: RSU SNMP Query

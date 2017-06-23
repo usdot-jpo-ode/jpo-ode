@@ -107,7 +107,7 @@ public class OdeProperties implements EnvironmentAware {
 
    private int dataReceiptExpirationSeconds;
 
-   public static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
+   protected static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
 
    public OdeProperties() {
       super();

@@ -17,12 +17,13 @@ import com.oss.asn1.DecodeFailedException;
 import com.oss.asn1.DecodeNotSupportedException;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.dds.TrustManager.TrustManagerException;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.semi.GroupID;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
+import us.dot.its.jpo.ode.udp.TrustManager;
+import us.dot.its.jpo.ode.udp.TrustManager.TrustManagerException;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
@@ -81,15 +82,18 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
       try {
          decodedMsg = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
                .decode(new ByteArrayInputStream((byte[]) record.value()), new IntersectionSituationData()));
-         if (null == decodedMsg) {
-            throw new IOException("Null decoded result");
-         }
-      } catch (DecodeFailedException | DecodeNotSupportedException | IOException e) {
+         
+      } catch (DecodeFailedException | DecodeNotSupportedException e) {
          logger.error("Depositor failed to decode ISD message: {}", e);
       }
-
-      requestId = decodedMsg.requestID;
-      groupId = decodedMsg.groupID;
+      
+      if (null == decodedMsg) {
+         logger.error("Failed to decode message (null)");
+         return null;
+      } else {
+         requestId = decodedMsg.requestID;
+         groupId = decodedMsg.groupID;
+      }
 
       // Verify trust before depositing, else establish trust
       if (trustMgr.isTrustEstablished() && !trustMgr.isEstablishingTrust()) {
