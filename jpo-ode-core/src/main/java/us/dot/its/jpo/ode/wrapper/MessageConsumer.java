@@ -28,16 +28,9 @@ public class MessageConsumer<K, V> {
 
    public static MessageConsumer<String, String> defaultStringMessageConsumer(String brokers, String groupId,
          MessageProcessor<String, String> processor) {
-      Properties props = new Properties();
-
-      props.put("enable.auto.commit", DEFAULT_CONSUMER_ENABLE_AUTO_COMMIT);
-      props.put("auto.commit.interval.ms", DEFAULT_CONSUMER_AUTO_COMMIT_INTERVAL_MS);
-      props.put("session.timeout.ms", DEFAULT_CONSUMER_SESSION_TIMEOUT_MS);
-      props.put("key.deserializer", SERIALIZATION_STRING_DESERIALIZER);
-      props.put("value.deserializer", SERIALIZATION_STRING_DESERIALIZER);
 
       MessageConsumer<String, String> msgConsumer = new MessageConsumer<String, String>(brokers, groupId, processor,
-            props);
+              SERIALIZATION_STRING_DESERIALIZER);
 
       logger.info("Default String Message Consumer Created");
 
@@ -48,35 +41,49 @@ public class MessageConsumer<K, V> {
          String brokers, 
          String groupId,
          MessageProcessor<String, byte[]> processor) {
-      Properties props = new Properties();
 
-      props.put("enable.auto.commit", DEFAULT_CONSUMER_ENABLE_AUTO_COMMIT);
-      props.put("auto.commit.interval.ms", DEFAULT_CONSUMER_AUTO_COMMIT_INTERVAL_MS);
-      props.put("session.timeout.ms", DEFAULT_CONSUMER_SESSION_TIMEOUT_MS);
-      props.put("key.deserializer", SERIALIZATION_STRING_DESERIALIZER);
-      props.put("value.deserializer", SERIALIZATION_BYTE_ARRAY_DESERIALIZER);
-
-      MessageConsumer<String, byte[]> msgConsumer = 
-            new MessageConsumer<String, byte[]>(brokers, groupId, processor, props);
+       MessageConsumer<String, byte[]> msgConsumer = 
+            new MessageConsumer<String, byte[]>(brokers, groupId, processor, SERIALIZATION_BYTE_ARRAY_DESERIALIZER);
 
       logger.info("Default Byte Array Message Consumer Created");
 
       return msgConsumer;
    }
 
-   public MessageConsumer(String brokers, String groupId, MessageProcessor<K, V> processor, Properties props) {
+   public MessageConsumer(String brokers, String groupId, MessageProcessor<K, V> processor, String valueDeserializer) {
+       Properties props = new Properties();
+
+       props.put("enable.auto.commit", DEFAULT_CONSUMER_ENABLE_AUTO_COMMIT);
+       props.put("auto.commit.interval.ms", DEFAULT_CONSUMER_AUTO_COMMIT_INTERVAL_MS);
+       props.put("session.timeout.ms", DEFAULT_CONSUMER_SESSION_TIMEOUT_MS);
+       props.put("key.deserializer", SERIALIZATION_STRING_DESERIALIZER);
+       props.put("value.deserializer", valueDeserializer);
+
+       this.processor = processor;
+       props.put("bootstrap.servers", brokers);
+       props.put("group.id", groupId);
+       this.consumer = new KafkaConsumer<K, V>(props);
+
+       logger.info("Consumer Created for groupId {}", groupId);
+   }
+
+   public MessageConsumer(String brokers, String groupId, MessageProcessor<K, V> processor) {
+       this(brokers, groupId, processor, MessagingDeserializer.class.getName());
+    }
+
+    public MessageConsumer(String brokers, String groupId, MessageProcessor<K, V> processor, Properties props) {
       this.processor = processor;
       props.put("bootstrap.servers", brokers);
       props.put("group.id", groupId);
-      consumer = new KafkaConsumer<K, V>(props);
+      this.consumer = new KafkaConsumer<K, V>(props);
 
       logger.info("Consumer Created for groupId {}", groupId);
 
-   }
+    }
 
-   public MessageConsumer(String brokers, String groupId, Properties props) {
-      this(brokers, groupId, null, props);
-   }
+    public MessageConsumer(String brokers, String groupId, Properties props) {
+        this(brokers, groupId, null, props);
+    }
 
     public void subscribe(String... topics) {
 

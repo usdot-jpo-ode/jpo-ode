@@ -209,7 +209,8 @@ public class TrustManager implements Callable<Boolean> {
 
    @Override
    public Boolean call() throws Exception {
-      return establishTrust(0, null, 0, null, null, null);
+      // TODO ODE-314 isd debug fail: This is a bogus return. The the original design of TustManager does not seem to be understood by the person who changed it to this. 
+      return establishTrust(0, "", 0, new TemporaryID(), new SemiDialogID(0), new GroupID());
    }
 
    public boolean isTrustEstablished() {

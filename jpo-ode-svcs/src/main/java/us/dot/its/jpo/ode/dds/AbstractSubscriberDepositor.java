@@ -1,26 +1,19 @@
 package us.dot.its.jpo.ode.dds;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.oss.asn1.Coder;
-import com.oss.asn1.DecodeFailedException;
-import com.oss.asn1.DecodeNotSupportedException;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.semi.GroupID;
-import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.udp.TrustManager;
 import us.dot.its.jpo.ode.udp.TrustManager.TrustManagerException;
@@ -42,6 +35,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
    protected ExecutorService pool;
 
    public AbstractSubscriberDepositor(OdeProperties odeProps, int port, SemiDialogID dialogId) {
+       //TODO ODE-314 isd debug fail: requestId and groupId are not initialized in the constructor
       this.odeProperties = odeProps;
       this.depositorPort = port;
       this.dialogId = dialogId;
@@ -77,23 +71,6 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
    public Object call() {
       logger.debug("Subscriber received data.");
       byte[] encodedMsg = null;
-
-      IntersectionSituationData decodedMsg = null;
-      try {
-         decodedMsg = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
-               .decode(new ByteArrayInputStream((byte[]) record.value()), new IntersectionSituationData()));
-         
-      } catch (DecodeFailedException | DecodeNotSupportedException e) {
-         logger.error("Depositor failed to decode ISD message: {}", e);
-      }
-      
-      if (null == decodedMsg) {
-         logger.error("Failed to decode message (null)");
-         return null;
-      } else {
-         requestId = decodedMsg.requestID;
-         groupId = decodedMsg.groupID;
-      }
 
       // Verify trust before depositing, else establish trust
       if (trustMgr.isTrustEstablished() && !trustMgr.isEstablishingTrust()) {
