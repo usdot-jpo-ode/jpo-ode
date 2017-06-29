@@ -13,7 +13,7 @@ before_install:
   - mvn install
   - cd ..
   - echo "installing 1609.2 security library repository"
-  - git clone https://${BITBUCKET_UN_APP_PW}@bitbucket.org/usdot-jpo-ode/fedgov-cv-security-2016.git fedgov-cv-security-2016 
+  - git clone https://github.com/usdot-jpo-ode/jpo-security.git fedgov-cv-security-2016 
   - cd fedgov-cv-security-2016
   - mvn clean
   - mvn -DskipTests install
