@@ -261,8 +261,12 @@ public class TimController {
                responseList
                      .put(curRsu.getRsuTarget(),
                            ManagerAndControllerServices.log(true, "SNMP deposit successful. RSU IP = "
-                                 + curRsu.getRsuTarget() + ", Status Code: " + response.getResponse().getErrorStatus(),
+                                 + curRsu.getRsuTarget() + ", Status Code: " + response.getResponse().getErrorStatus() + "(no error)",
                                  null));
+            } else if (5 == response.getResponse().getErrorStatus()) {
+               responseList
+               .put(curRsu.getRsuTarget(),
+                     ManagerAndControllerServices.log(false, "SNMP deposit failed for RSU IP " + curRsu.getRsuTarget() + ", message already exists at index " + travelerinputData.getTim().getIndex(), null));
             } else {
                responseList.put(curRsu.getRsuTarget(),
                      ManagerAndControllerServices.log(false,
