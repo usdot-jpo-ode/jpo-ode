@@ -396,7 +396,7 @@ public class TimControllerTest {
       
 
       String response = timController.timMessage("test123");
-      assertEquals("{ddsFailure={success: true, message: \"SNMP deposit successful. RSU IP = ddsFailure, Status Code: 0\"}, SDW={success: false, message: \"Error depositing to SDW\"}}", response);
+      assertEquals("{ddsFailure={success: true, message: \"SNMP deposit successful. RSU IP = ddsFailure, Status Code: 0 (no error)\"}, SDW={success: false, message: \"Error depositing to SDW\"}}", response);
 
       new Verifications() {
          {
@@ -450,7 +450,7 @@ public class TimControllerTest {
       
 
       String response = timController.timMessage("test123");
-      assertEquals("{SDW={success: true, message: \"Deposit to SDW was successful\"}, goodResponse={success: true, message: \"SNMP deposit successful. RSU IP = goodResponse, Status Code: 0\"}}", response);
+      assertEquals("{SDW={success: true, message: \"Deposit to SDW was successful\"}, goodResponse={success: true, message: \"SNMP deposit successful. RSU IP = goodResponse, Status Code: 0 (no error)\"}}", response);
 
       new Verifications() {
          {
