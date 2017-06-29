@@ -103,7 +103,7 @@ public class CertificateLoader implements Runnable {
         
         
         //load public cert
-        return FileCertificateStore.load(new CryptoProvider(), name, certFilePath, privateKeyReconFilePath, seedPrivateKeyFilePath);
+        return FileCertificateStore.load(new CryptoProvider(), name, certFilePath.toString(), privateKeyReconFilePath.toString(), seedPrivateKeyFilePath.toString());
    }
     
 
