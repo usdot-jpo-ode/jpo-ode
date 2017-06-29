@@ -194,6 +194,8 @@ definitions:
   tim:
     type: object
     properties:
+      index:
+        type: integer
       msgCnt:
         type: integer
       timestamp:
