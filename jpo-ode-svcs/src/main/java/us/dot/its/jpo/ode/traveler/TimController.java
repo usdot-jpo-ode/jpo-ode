@@ -261,7 +261,7 @@ public class TimController {
                responseList
                      .put(curRsu.getRsuTarget(),
                            ManagerAndControllerServices.log(true, "SNMP deposit successful. RSU IP = "
-                                 + curRsu.getRsuTarget() + ", Status Code: " + response.getResponse().getErrorStatus() + "(no error)",
+                                 + curRsu.getRsuTarget() + ", Status Code: " + response.getResponse().getErrorStatus() + " (no error)",
                                  null));
             } else if (5 == response.getResponse().getErrorStatus()) {
                responseList
