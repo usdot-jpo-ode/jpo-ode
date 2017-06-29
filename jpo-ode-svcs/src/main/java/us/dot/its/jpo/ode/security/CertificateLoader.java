@@ -101,7 +101,6 @@ public class CertificateLoader implements Runnable {
                                            EncodeFailedException, 
                                            EncodeNotSupportedException {
         
-        
         //load public cert
         return FileCertificateStore.load(new CryptoProvider(), name, certFilePath, privateKeyReconFilePath, seedPrivateKeyFilePath);
    }
