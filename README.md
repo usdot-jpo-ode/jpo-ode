@@ -132,7 +132,7 @@ Clone the source code from the GitHub repository using Git command:
 git clone https://github.com/usdot-jpo-ode/jpo-ode.git
 ```
 
-#### Step 2 - Clone S3 Bucket Depositor repositor
+#### Step 2 - Clone S3 Bucket Depositor repository
 
 Clone the source code from the GitHub repository:
 
