@@ -54,4 +54,13 @@ services:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
-
+  s3dep:
+    build: ../jpo-s3-deposit
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+    depends_on:
+     - kafka
+    links:
+     - kafka
