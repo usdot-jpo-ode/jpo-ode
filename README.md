@@ -157,6 +157,8 @@ ODE configuration can be customized for every deployment environment using the O
 |--------------------|-----------|
 |[DOCKER_HOST_IP](docker/README.md#obtaining-docker_host_ip)      |The IP address of Docker host machine|
 |DOCKER_SHARED_VOLUME|The full path of a directory on the host machine to be shared with docker containers.|
+|AWS_ACCESS_KEY_ID|The data deposit S3 bucket access ID|
+|AWS_SECRET_ACCESS_KEY|The data deposit S3 bucket secret key|
 |ODE_DDS_CAS_USERNAME|The username for authenticating the USDOT Situation Data Warehouse WebSocket server |
 |ODE_DDS_CAS_PASSWORD|The password for authenticating the USDOT Situation Data Warehouse WebSocket server |
 |ODE_EXTERNAL_IPV4|The IPv4 address of the server running ODE |
