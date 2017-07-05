@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.traveler;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,13 +27,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 
-import us.dot.its.jpo.ode.ManagerAndControllerServices;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsClient.DdsClientException;
 import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
-import us.dot.its.jpo.ode.http.BadRequestException;
 import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
@@ -74,10 +72,10 @@ public class TimController {
    @ResponseBody
    @CrossOrigin
    @RequestMapping(value = "/tim/query", method = RequestMethod.POST)
-   public ResponseEntity<?> queryForTims(@RequestBody String jsonString) { // NOSONAR
+   public ResponseEntity<String> queryForTims(@RequestBody String jsonString) { // NOSONAR
 
       if (null == jsonString) {
-         logger.error("Empty request");
+         logger.error("Empty request.");
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Empty request");
       }
 
@@ -96,7 +94,7 @@ public class TimController {
       }
 
       // Repeatedly query the RSU to establish set rows
-      for (int i = 0; i < 100; i++) { // TODO hardcoded number
+      for (int i = 0; i < odeProperties.getRsuSrmSlots(); i++) {
          PDU pdu = new ScopedPDU();
          pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
          pdu.setType(PDU.GET);
@@ -135,7 +133,7 @@ public class TimController {
    @ResponseBody
    @CrossOrigin
    @RequestMapping(value = "/tim", method = RequestMethod.DELETE)
-   public ResponseEntity<?> deleteTim(@RequestBody String jsonString, @RequestParam(value="index", required=true) Integer index) { // NOSONAR
+   public ResponseEntity<String> deleteTim(@RequestBody String jsonString, @RequestParam(value="index", required=true) Integer index) { // NOSONAR
       
       if (null == jsonString) {
          logger.error("Empty request");
@@ -209,88 +207,124 @@ public class TimController {
    @ResponseBody
    @RequestMapping(value = "/tim", method = RequestMethod.POST, produces = "application/json")
    @CrossOrigin
-   public String timMessage(@RequestBody String jsonString) {
-      logger.debug("Received request: {}", jsonString);
-      if (StringUtils.isEmpty(jsonString)) {
-         String msg = "Endpoint received null request";
-         msg = ManagerAndControllerServices.log(false, msg, null);
-         throw new BadRequestException(msg);
+   public ResponseEntity<String> timMessage(@RequestBody String jsonString) {
+      
+      // Check empty
+      if (null == jsonString || jsonString.isEmpty()) {
+         String errMsg = "Empty request.";
+         logger.error(errMsg);
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errMsg);
       }
 
+      // Convert JSON to POJO
       TravelerInputData travelerinputData = null;
       try {
          travelerinputData = (TravelerInputData) JsonUtils.fromJson(jsonString, TravelerInputData.class);
 
-         logger.debug("J2735TravelerInputData: {}", travelerinputData.toJson(true));
+         String jsonFqResult = travelerinputData.toJson(true);
+         logger.debug("J2735TravelerInputData: {}", jsonFqResult);
 
       } catch (Exception e) {
-         throw new BadRequestException(ManagerAndControllerServices.log(false, "Invalid Request Body", e));
+         String errMsg = "Malformed JSON.";
+         logger.error(errMsg, e);
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errMsg);
       }
 
+      // Craft ASN-encodable TIM
       OssTravelerMessageBuilder builder = new OssTravelerMessageBuilder();
       try {
          builder.buildTravelerInformation(travelerinputData.getTim());
       } catch (Exception e) {
-         String msg = "Invalid Traveler Information Message data value in the request";
-         throw new BadRequestException(ManagerAndControllerServices.log(false, msg, e), e);
+         String errMsg = "Request does not match schema.";
+         logger.error(errMsg, e);
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errMsg);
       }
 
-      // Step 2 - Encode the TIM object to a hex string
+      // Encode TIM
       String rsuSRMPayload = null;
       try {
          rsuSRMPayload = builder.encodeTravelerInformationToHex();
+         logger.debug("Encoded Hex TIM: {}", rsuSRMPayload);
       } catch (Exception e) {
-         String msg = "Failed to encode Traveler Information Message";
-         throw new BadRequestException(ManagerAndControllerServices.log(false, msg, e), e);
-      }
-      logger.debug("Encoded Hex TIM: {}", rsuSRMPayload);
-
-      HashMap<String, String> responseList = new HashMap<>();
+         String errMsg = "Failed to encode TIM.";
+         logger.error(errMsg, e);
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+      }         
+      
+      // Send TIMs and record results
+      HashMap<String, ResponseEntity<String>> responseList = new HashMap<>();
 
       for (RSU curRsu : travelerinputData.getRsus()) {
 
-         ResponseEvent response = null;
+         ResponseEvent rsuResponse = null;
+         ResponseEntity<String> httpResponseStatus = null;
+         
          try {
-            response = createAndSend(travelerinputData.getSnmp(), curRsu, travelerinputData.getTim().getIndex(),
+            rsuResponse = createAndSend(travelerinputData.getSnmp(), curRsu, travelerinputData.getTim().getIndex(),
                   rsuSRMPayload);
-
-            if (null == response || null == response.getResponse()) {
-               responseList.put(curRsu.getRsuTarget(),
-                     ManagerAndControllerServices.log(false, "No response from RSU IP=" + curRsu.getRsuTarget(), null));
-            } else if (0 == response.getResponse().getErrorStatus()) {
-               responseList
-                     .put(curRsu.getRsuTarget(),
-                           ManagerAndControllerServices.log(true, "SNMP deposit successful. RSU IP = "
-                                 + curRsu.getRsuTarget() + ", Status Code: " + response.getResponse().getErrorStatus() + " (no error)",
-                                 null));
-            } else if (5 == response.getResponse().getErrorStatus()) {
-               responseList
-               .put(curRsu.getRsuTarget(),
-                     ManagerAndControllerServices.log(false, "SNMP deposit failed for RSU IP " + curRsu.getRsuTarget() + ", message already exists at index " + travelerinputData.getTim().getIndex(), null));
+            
+            if (null == rsuResponse || null == rsuResponse.getResponse()) {
+               // Timeout
+               httpResponseStatus = ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("Timeout.");
+            } else if (rsuResponse.getResponse().getErrorStatus() == 0) {
+               // Success
+               httpResponseStatus = ResponseEntity.status(HttpStatus.OK).body("Success.");
+            } else if (rsuResponse.getResponse().getErrorStatus() == 5) {
+               // Error, message already exists
+               httpResponseStatus = ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Message already exists at ".concat(Integer.toString(travelerinputData.getTim().getIndex())));
             } else {
-               responseList.put(curRsu.getRsuTarget(),
-                     ManagerAndControllerServices.log(false,
-                           "SNMP deposit failed for RSU IP " + curRsu.getRsuTarget() + ", error code="
-                                 + response.getResponse().getErrorStatus() + "("
-                                 + response.getResponse().getErrorStatusText() + ")",
-                           null));
+               // Misc error
+               httpResponseStatus = ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error code " + rsuResponse.getResponse().getErrorStatus() + " " + rsuResponse.getResponse().getErrorStatusText());
             }
 
          } catch (Exception e) {
-            responseList.put(curRsu.getRsuTarget(),
-                  ManagerAndControllerServices.log(false, "Exception while sending message to RSU", e));
+            logger.error("Exception caught in TIM deposit loop.", e);
+            httpResponseStatus = ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getClass().getName());
          }
+         
+         responseList.put(curRsu.getRsuTarget(), httpResponseStatus);
       }
 
+      // Deposit to DDS
+      String ddsMessage = "";
       try {
          depositToDDS(travelerinputData, rsuSRMPayload);
-         responseList.put("SDW", ManagerAndControllerServices.log(true, "Deposit to SDW was successful", null));
+         ddsMessage = "\"dds_deposit\":{\"success\":\"true\"}";
+         logger.info("DDS deposit successful.");
       } catch (Exception e) {
-         String msg = "Error depositing to SDW";
-         responseList.put("SDW", ManagerAndControllerServices.log(false, msg, e));
+         ddsMessage = "\"dds_deposit\":{\"success\":\"false\"}";
+         logger.error("Error on DDS deposit.", e);
       }
-
-      return responseList.toString();
+      
+      // Craft a JSON response
+      
+      String rsuMessages = "[";
+      for (Map.Entry<String, ResponseEntity<String>> entry : responseList.entrySet()) {
+         
+            String curKey = entry.getKey();
+            ResponseEntity<String> curEnt = entry.getValue();
+         
+         if ( !("[".equals(rsuMessages)) ) {
+         // Add a comma after every subsequent message
+            rsuMessages = rsuMessages.concat(",");
+         }
+         
+         String curMsg;
+         if (curEnt.getStatusCode() == HttpStatus.OK) {
+            curMsg = "{\"target\":\"" + curKey + "\",\"success\":\"true\",\"message\":\"" + curEnt.getBody() + "\"}";
+         } else {
+            curMsg = "{\"target\":\"" + curKey + "\",\"success\":\"false\",\"error\":\"" + curEnt.getBody() + "\"}";
+         }
+         
+         rsuMessages = rsuMessages.concat(curMsg);
+      }
+      rsuMessages = rsuMessages.concat("]");
+      
+      String responseMessage = "{\"rsu_responses\":" + rsuMessages + "," + ddsMessage + "}";
+      
+      logger.info("TIM deposit response {}", responseMessage);
+      
+      return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
    }
 
    private void depositToDDS(TravelerInputData travelerinputData, String rsuSRMPayload)

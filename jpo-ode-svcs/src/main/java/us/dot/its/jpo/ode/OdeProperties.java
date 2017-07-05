@@ -39,6 +39,7 @@ public class OdeProperties implements EnvironmentAware {
    private Boolean verboseJson = false;
    private String externalIpv4 = "";
    private String externalIpv6 = "";
+   private int rsuSrmSlots = 100; // number of "store and repeat message" indicies for RSU TIMs
 
    // File import properties
    private String uploadLocationRoot = "uploads";
@@ -495,6 +496,14 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setUploadLocationRoot(String uploadLocationRoot) {
       this.uploadLocationRoot = uploadLocationRoot;
+   }
+
+   public int getRsuSrmSlots() {
+      return rsuSrmSlots;
+   }
+
+   public void setRsuSrmSlots(int rsuSrmSlots) {
+      this.rsuSrmSlots = rsuSrmSlots;
    }
 
 }

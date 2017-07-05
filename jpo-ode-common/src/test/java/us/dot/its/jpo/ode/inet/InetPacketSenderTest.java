@@ -18,10 +18,12 @@ import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.util.CodecUtils;
 
+@Ignore // TODO this test sends real messages and is slow
 public class InetPacketSenderTest {
 
    static final private boolean isDebugOutput = false;

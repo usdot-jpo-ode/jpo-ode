@@ -48,13 +48,17 @@ public class TimControllerQueryTest {
 
    @Test
    public void shouldReturnTimeout(@Mocked final LoggerFactory disabledLogger,
-         @Mocked final SnmpSession mockSnmpSession) {
+         @Mocked final SnmpSession mockSnmpSession, @Mocked ResponseEvent mockResponseEvent) {
 
       String seeminglyValidJson = "{\"rsuTarget\": \"127.0.0.1\",\"rsuUsername\": \"user\",\"rsuPassword\": \"pass\",\"rsuRetries\": \"1\",\"rsuTimeout\": \"2000\"}";
       try {
          new Expectations() {
             {
+               mockOdeProperties.getRsuSrmSlots();
+               result = 1;
                mockSnmpSession.get((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+               result = mockResponseEvent;
+               mockResponseEvent.getResponse();
                result = null;
             }
          };

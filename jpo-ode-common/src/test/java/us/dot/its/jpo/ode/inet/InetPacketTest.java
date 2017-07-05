@@ -7,10 +7,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.util.CodecUtils;
 
+@Ignore // TODO this test sends real messages and is slow
 public class InetPacketTest {
 
 	private static boolean isVerbose = true;
