@@ -19,6 +19,8 @@ paths:
       operationId: tim_query
       description: >-
         Query an RSU for set TIMs
+      tags:
+        - TIM
       parameters:
         - name: RSU
           in: body

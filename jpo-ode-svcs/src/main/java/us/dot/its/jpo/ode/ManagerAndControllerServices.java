@@ -16,7 +16,7 @@ public class ManagerAndControllerServices {
    public static String log(boolean success, String msg, Throwable t) {
       if (success) {
          EventLogger.logger.info(msg);
-         String myMsg = String.format("{success: true, message: \"%1$s\"}", msg);
+         String myMsg = String.format("{\"success\": \"true\", \"message\": \"%1$s\"}", msg);
          logger.info(myMsg);
          return myMsg;
       } else {
@@ -28,7 +28,7 @@ public class ManagerAndControllerServices {
             logger.error(msg);
          }
 
-         String myMsg = String.format("{success: false, message: \"%1$s\"}", msg);
+         String myMsg = String.format("{\"success\": \"false\", \"message\": \"%1$s\"}", msg);
          return myMsg;
       }
    }
