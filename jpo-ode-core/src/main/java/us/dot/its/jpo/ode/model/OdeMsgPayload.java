@@ -16,53 +16,57 @@
  *******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class OdeMsgPayload extends OdeMessage {
-   private static final long serialVersionUID = -7711340868799607662L;
+    private static final long serialVersionUID = -7711340868799607662L;
 
-   private static Logger logger = LoggerFactory.getLogger(OdeMsgPayload.class);
+    private String dataType;
+    private OdeObject data;
 
-   private OdeDataType  dataType;
+    public String getDataType() {
+        return dataType;
+    }
 
-   public OdeMsgPayload() {
-      super();
-      try {
-         this.dataType = OdeDataType.getByClassName(this.getClass().getName());
-      } catch (ClassNotFoundException e) {
-         logger.error("Unable to determine data type.", e);
-         this.dataType = OdeDataType.Unknown;
-      }
-   }
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+    }
 
-   public OdeDataType getDataType() {
-      return dataType;
-   }
+    public OdeObject getData() {
+        return data;
+    }
 
-   public void setDataType(OdeDataType dataType) {
-      this.dataType = dataType;
-   }
+    public void setData(OdeObject data) {
+        this.data = data;
+    }
 
-   @Override
-   public int hashCode() {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
-      return result;
-   }
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((data == null) ? 0 : data.hashCode());
+        result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
+        return result;
+    }
 
-   @Override
-   public boolean equals(Object obj) {
-      if (this == obj)
-         return true;
-      if (!super.equals(obj))
-         return false;
-      if (getClass() != obj.getClass())
-         return false;
-      OdeMsgPayload other = (OdeMsgPayload) obj;
-      if (dataType != other.dataType)
-         return false;
-      return true;
-   }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        OdeMsgPayload other = (OdeMsgPayload) obj;
+        if (data == null) {
+            if (other.data != null)
+                return false;
+        } else if (!data.equals(other.data))
+            return false;
+        if (dataType == null) {
+            if (other.dataType != null)
+                return false;
+        } else if (!dataType.equals(other.dataType))
+            return false;
+        return true;
+    }
+
 }

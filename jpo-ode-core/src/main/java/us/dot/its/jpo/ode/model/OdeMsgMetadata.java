@@ -15,7 +15,7 @@ public class OdeMsgMetadata extends OdeMessage {
 
    private String payloadType;
    private SerialId serialId;
-   private String timeStamp;
+   private String receivedAt;
    private Long latency; 
    private List<OdePayloadViolation> violations;
    
@@ -57,7 +57,7 @@ public class OdeMsgMetadata extends OdeMessage {
         super();
         this.payloadType = payloadType;
         this.serialId = serialId;
-        this.timeStamp = timeStamp;
+        this.receivedAt = timeStamp;
         this.latency = latency;
 
         if (srcViolations != null) {
@@ -66,7 +66,7 @@ public class OdeMsgMetadata extends OdeMessage {
                 @Override
                 public void accept(OdePayloadViolation arg0) {
                     if (arg0 != null) {
-                        violations.add(new OdePayloadViolation(arg0.getFieldName(), arg0.getValue(), arg0.getValidMin(),
+                        violations.add(new OdePayloadViolation(arg0.getFieldName(), arg0.getFieldValue(), arg0.getValidMin(),
                                 arg0.getValidMax()));
                     }
                 }
@@ -120,12 +120,12 @@ public class OdeMsgMetadata extends OdeMessage {
         this.serialId = serialId;
     }
 
-    public String getTimeStamp() {
-        return timeStamp;
+    public String getReceivedAt() {
+        return receivedAt;
     }
 
-    public void setTimeStamp(String timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setReceivedAt(String receivedAt) {
+        this.receivedAt = receivedAt;
     }
 
     @Override
@@ -135,7 +135,7 @@ public class OdeMsgMetadata extends OdeMessage {
         result = prime * result + ((latency == null) ? 0 : latency.hashCode());
         result = prime * result + ((payloadType == null) ? 0 : payloadType.hashCode());
         result = prime * result + ((serialId == null) ? 0 : serialId.hashCode());
-        result = prime * result + ((timeStamp == null) ? 0 : timeStamp.hashCode());
+        result = prime * result + ((receivedAt == null) ? 0 : receivedAt.hashCode());
         result = prime * result + ((violations == null) ? 0 : violations.hashCode());
         return result;
     }
@@ -164,10 +164,10 @@ public class OdeMsgMetadata extends OdeMessage {
                 return false;
         } else if (!serialId.equals(other.serialId))
             return false;
-        if (timeStamp == null) {
-            if (other.timeStamp != null)
+        if (receivedAt == null) {
+            if (other.receivedAt != null)
                 return false;
-        } else if (!timeStamp.equals(other.timeStamp))
+        } else if (!receivedAt.equals(other.receivedAt))
             return false;
         if (violations == null) {
             if (other.violations != null)

@@ -2,63 +2,63 @@ package us.dot.its.jpo.ode.model;
 
 public class OdePayloadViolation {
 
-	private String fieldName;
-    private double value;
-	private double validMin;
-	private double validMax;
+    private String fieldName;
+    private double fieldValue;
+    private double validMin;
+    private double validMax;
 
-	public OdePayloadViolation() {
-		super();
-		fieldName = null;
-		value = Double.NaN;
-		validMin = Double.NaN;
-		validMax = Double.NaN;
-	}
-	
-	public OdePayloadViolation(String fieldName, double value, double validMin, double validMax) {
+    public OdePayloadViolation() {
+        super();
+        fieldName = null;
+        fieldValue = Double.NaN;
+        validMin = Double.NaN;
+        validMax = Double.NaN;
+    }
+
+    public OdePayloadViolation(String fieldName, double value, double validMin, double validMax) {
         super();
         this.fieldName = fieldName;
-        this.value = value;
+        this.fieldValue = value;
         this.validMin = validMin;
         this.validMax = validMax;
     }
 
-    public String getFieldName(){
-		return fieldName;
-	}
-
-	public OdePayloadViolation setFieldName(String fieldName){
-		this.fieldName = fieldName;
-		return this;
-	}
-
-	public double getValue() {
-        return value;
+    public String getFieldName() {
+        return fieldName;
     }
 
-    public void setValue(double value) {
-        this.value = value;
+    public OdePayloadViolation setFieldName(String fieldName) {
+        this.fieldName = fieldName;
+        return this;
     }
 
-    public double getValidMin(){
-		return validMin;
-	}
+    public double getFieldValue() {
+        return fieldValue;
+    }
 
-	public OdePayloadViolation setValidMin(double validMin){
-		this.validMin = validMin;
-		return this;
-	}
+    public void setFieldValue(double fieldValue) {
+        this.fieldValue = fieldValue;
+    }
 
-	public double getValidMax(){
-		return validMax;
-	}
+    public double getValidMin() {
+        return validMin;
+    }
 
-	public OdePayloadViolation setValidMax(double validMax){
-		this.validMax = validMax;
-		return this;
-	}
+    public OdePayloadViolation setValidMin(double validMin) {
+        this.validMin = validMin;
+        return this;
+    }
 
-	@Override
+    public double getValidMax() {
+        return validMax;
+    }
+
+    public OdePayloadViolation setValidMax(double validMax) {
+        this.validMax = validMax;
+        return this;
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -68,12 +68,12 @@ public class OdePayloadViolation {
         result = prime * result + (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(validMin);
         result = prime * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(value);
+        temp = Double.doubleToLongBits(fieldValue);
         result = prime * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
 
-	@Override
+    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -91,7 +91,7 @@ public class OdePayloadViolation {
             return false;
         if (Double.doubleToLongBits(validMin) != Double.doubleToLongBits(other.validMin))
             return false;
-        if (Double.doubleToLongBits(value) != Double.doubleToLongBits(other.value))
+        if (Double.doubleToLongBits(fieldValue) != Double.doubleToLongBits(other.fieldValue))
             return false;
         return true;
     }

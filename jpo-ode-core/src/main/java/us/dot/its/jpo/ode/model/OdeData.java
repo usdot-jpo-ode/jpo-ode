@@ -16,7 +16,7 @@
  *******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
-public class OdeData extends OdeMsgPayload implements OdeFilterable {
+public class OdeData extends OdeMessage implements OdeFilterable {
    private static final long serialVersionUID = -7711340868799607662L;
 
    

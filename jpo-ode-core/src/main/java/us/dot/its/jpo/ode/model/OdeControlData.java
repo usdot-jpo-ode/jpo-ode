@@ -2,7 +2,7 @@ package us.dot.its.jpo.ode.model;
 
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 
-public class OdeControlData extends OdeMsgPayload {
+public class OdeControlData extends OdeMessage {
 
    private static final long serialVersionUID = 1L;
    

@@ -17,7 +17,7 @@
 package us.dot.its.jpo.ode.model;
 
 
-public class OdeStatus extends OdeMsgPayload {
+public class OdeStatus extends OdeMessage {
    private static final long serialVersionUID = -8787345244306039604L;
 
    public static enum Code {
