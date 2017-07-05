@@ -154,6 +154,12 @@ Clone the source code from the BitBucket repository:
 ```bash
 git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdot-jpo-ode/fedgov-cv-security-2016.git
 ```
+#### Step 5 - Clone the public security repository:
+
+Clone the source code from the GitHub repository:
+```bash
+git clone https://github.com/usdot-jpo-ode/jpo-security.git
+```
 
 ---
 ### Build and Deploy the Application
@@ -167,6 +173,9 @@ ODE configuration can be customized for every deployment environment using the O
 |DOCKER_SHARED_VOLUME|The full path of a directory on the host machine to be shared with docker containers.|
 |AWS_ACCESS_KEY_ID|The data deposit S3 bucket access ID|
 |AWS_SECRET_ACCESS_KEY|The data deposit S3 bucket secret key|
+|DEPOSIT_BUCKET_NAME|The name of the S3 data deposit bucket|
+|DEPOSIT_KEY_NAME|The key used for S3 file names.|
+|DEPOSIT_TOPIC|The Kafka topic to which the S3 depositor subscribes|
 |ODE_DDS_CAS_USERNAME|The username for authenticating the USDOT Situation Data Warehouse WebSocket server |
 |ODE_DDS_CAS_PASSWORD|The password for authenticating the USDOT Situation Data Warehouse WebSocket server |
 |ODE_EXTERNAL_IPV4|The IPv4 address of the server running ODE |
@@ -189,7 +198,14 @@ Navigate to the root directory of the `jpo-ode-private` project:
 ```
 It is important you run `mvn clean` first and _then_ `mvn install` because clean installs the required OSS jar file in your local maven repository.
 
-**Step 2**: Build the 1609.2 Security Library 
+**Step 2**: Build the public 1609.2 Security Library
+```bash
+cd jpo-security
+mvn clean
+mvn install
+```
+
+**Step 3**: Build the private 1609.2 Security Library 
 
 Navigate to the root directory of the `fedgov-cv-security-2016` project:
 
@@ -198,7 +214,7 @@ Navigate to the root directory of the `fedgov-cv-security-2016` project:
  mvn clean install
 ```
 
-**Step 3**: Build the S3 Bucket Depositor Service
+**Step 4**: Build the S3 Bucket Depositor Service
 
 Note - if you do not intend on using this feature, edit the docker-compose.yml file and comment out (add a `#` to) the lines including and below `s3dep:`.
 
@@ -208,14 +224,14 @@ Navigate to the root directory of the `jpo-s3-depositor` project:
 mvn clean compile assembly:single install
 ```
 
-**Step 4** (Optional)
+**Step 5** (Optional)
 Familiarize yourself with Docker and follow the instructions in the [README.md](docker/README.md).
 
 If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the $DOCKER_HOST_IP:9092, or wish to set the CAS username/password, `ODE_EXTERNAL_IPVs`, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
 
-**Step 5**: Navigate to the root directory of the jpo-ode project.
+**Step 6**: Navigate to the root directory of the jpo-ode project.
 
-**Step 6**: Build and deploy the application. 
+**Step 7**: Build and deploy the application. 
 
 The easiest way to do this is to run the ```clean-build-and-deploy``` script. 
 This script executes the following commands:
