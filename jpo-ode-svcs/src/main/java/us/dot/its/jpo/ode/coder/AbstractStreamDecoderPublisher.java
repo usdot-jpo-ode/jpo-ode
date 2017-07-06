@@ -59,8 +59,8 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
 
                 decoded = decode(line);
                 publish(decoded);
-                publish(decoded.toJson(odeProperties.getVerboseJson()));
             }
+
             if (empty) {
                 EventLogger.logger.info("Empty file received");
                 throw new IOException("Empty file received");
@@ -81,10 +81,8 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
                 if (decoded != null) {
                     logger.debug("Decoded: {}", decoded);
                     publish(decoded);
-                    publish(decoded.toJson(odeProperties.getVerboseJson()));
                 }
             } while (decoded != null);
-
         } catch (Exception e) {
             throw new IOException("Error decoding data." + e);
         }

@@ -44,7 +44,6 @@ public class MessageFrameStreamDecoderPublisher extends BsmStreamDecoderPublishe
 
                msgFrame = (J2735MessageFrame) JsonUtils.fromJson(line, J2735MessageFrame.class);
                publish(msgFrame.getValue());
-               publish(msgFrame.getValue().toJson());
            }
            if (empty) {
                EventLogger.logger.info("Empty file received");
@@ -66,7 +65,6 @@ public class MessageFrameStreamDecoderPublisher extends BsmStreamDecoderPublishe
                 if (msgFrame != null) {
                     logger.debug("Decoded: {}", msgFrame);
                     publish(msgFrame.getValue());
-                    publish(msgFrame.getValue().toJson(odeProperties.getVerboseJson()));
                 }
             } while (msgFrame != null);
 

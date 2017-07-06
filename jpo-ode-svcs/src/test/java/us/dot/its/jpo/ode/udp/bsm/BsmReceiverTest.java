@@ -51,8 +51,6 @@ public class BsmReceiverTest {
 				result = 1234;
 
 				new DatagramSocket(1234);
-
-				MessageProducer.defaultStringMessageProducer(anyString, anyString);
 			}
 		};
 		new BsmReceiver(mockOdeProperties);
@@ -74,7 +72,6 @@ public class BsmReceiverTest {
 				result = mockedDatagramSocket;
 
 				MessageProducer.defaultByteArrayMessageProducer(anyString, anyString);
-				MessageProducer.defaultStringMessageProducer(anyString, anyString);
 
 				new DatagramPacket((byte[]) any, anyInt);
 				result = mockedDatagramPacket;
@@ -93,7 +90,6 @@ public class BsmReceiverTest {
 
 				mockedOssAsn1Coder.decodeUPERBsmBytes(sampleBsmPacketByte);
 				result = mockedJ2735Bsm;
-				mockedMessageProducer.send(anyString, null, anyString);
 				mockedMessageProducer.send(anyString, null, (Byte[]) any);
 			}
 		};
@@ -116,7 +112,6 @@ public class BsmReceiverTest {
 				new DatagramSocket(1234);
 				result = mockedDatagramSocket;
 
-				MessageProducer.defaultStringMessageProducer(anyString, anyString);
 				new DatagramPacket((byte[]) any, anyInt);
 				result = mockedDatagramPacket;
 
@@ -174,7 +169,6 @@ public class BsmReceiverTest {
 				result = mockedOssAsn1Coder;
 				mockedOssAsn1Coder.decodeUPERBsmBytes(msg);
 				result = mockedJ2735Bsm;
-				mockedMessageProducer.send(anyString, null, anyString);
 				mockedMessageProducer.send(anyString, null, (Byte[]) any);
 			}
 		};

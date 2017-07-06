@@ -60,4 +60,59 @@ public class J2735BrakeSystemStatus extends Asn1Object {
         this.auxBrakes = auxBrakes;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((abs == null) ? 0 : abs.hashCode());
+        result = prime * result + ((auxBrakes == null) ? 0 : auxBrakes.hashCode());
+        result = prime * result + ((brakeBoost == null) ? 0 : brakeBoost.hashCode());
+        result = prime * result + ((scs == null) ? 0 : scs.hashCode());
+        result = prime * result + ((traction == null) ? 0 : traction.hashCode());
+        result = prime * result + ((wheelBrakes == null) ? 0 : wheelBrakes.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        J2735BrakeSystemStatus other = (J2735BrakeSystemStatus) obj;
+        if (abs == null) {
+            if (other.abs != null)
+                return false;
+        } else if (!abs.equals(other.abs))
+            return false;
+        if (auxBrakes == null) {
+            if (other.auxBrakes != null)
+                return false;
+        } else if (!auxBrakes.equals(other.auxBrakes))
+            return false;
+        if (brakeBoost == null) {
+            if (other.brakeBoost != null)
+                return false;
+        } else if (!brakeBoost.equals(other.brakeBoost))
+            return false;
+        if (scs == null) {
+            if (other.scs != null)
+                return false;
+        } else if (!scs.equals(other.scs))
+            return false;
+        if (traction == null) {
+            if (other.traction != null)
+                return false;
+        } else if (!traction.equals(other.traction))
+            return false;
+        if (wheelBrakes == null) {
+            if (other.wheelBrakes != null)
+                return false;
+        } else if (!wheelBrakes.equals(other.wheelBrakes))
+            return false;
+        return true;
+    }
+
 }

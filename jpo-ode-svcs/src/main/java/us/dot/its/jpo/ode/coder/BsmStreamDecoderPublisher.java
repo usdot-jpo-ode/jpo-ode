@@ -35,7 +35,7 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
     @Override
     public void publish(Asn1Object msg) {
         J2735Bsm bsm = (J2735Bsm) msg;
-        SerializationUtils<J2735Bsm> serializer = new SerializationUtils<>();
+        SerializationUtils<J2735Bsm> serializer = new SerializationUtils<J2735Bsm>();
         publish(serializer.serialize(bsm));
     }
 
@@ -53,7 +53,6 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
 
                 decoded = (Asn1Object) JsonUtils.fromJson(line, J2735Bsm.class);
                 publish(decoded);
-                publish(decoded.toJson(odeProperties.getVerboseJson()));
             }
             if (empty) {
                 EventLogger.logger.info("Empty file received");

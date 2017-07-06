@@ -19,7 +19,7 @@ public class StompByteArrayMessageDistributor extends MessageProcessor<String, b
 
    @Override
    public Object call() throws Exception {
-      SerializationUtils<J2735Bsm> serializer = new SerializationUtils<>();
+      SerializationUtils<J2735Bsm> serializer = new SerializationUtils<J2735Bsm>();
       Object bsm = serializer.deserialize(record.value());
       template.convertAndSend(topic, new Subscriber(bsm.toString()));
       return bsm;
