@@ -28,10 +28,10 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
     private static Coder coder = J2735.getPERUnalignedCoder();
     private ConcurrentHashMap<String, Queue<J2735Bsm>> bsmQueueMap;
 
-	public VsdDepositor(OdeProperties odeProps) {
-	    super(odeProps, odeProps.getVsdDepositorPort(), SemiDialogID.vehSitData);
-	    bsmQueueMap = new ConcurrentHashMap<>();
-	}
+    public VsdDepositor(OdeProperties odeProps) {
+        super(odeProps, odeProps.getVsdDepositorPort(), SemiDialogID.vehSitData);
+        bsmQueueMap = new ConcurrentHashMap<>();
+    }
 
    @Override
     protected byte[] deposit() {

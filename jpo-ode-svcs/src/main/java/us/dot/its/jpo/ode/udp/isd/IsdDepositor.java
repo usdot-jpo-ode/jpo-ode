@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.udp.isd;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -12,13 +13,17 @@ import java.util.concurrent.TimeoutException;
 import org.apache.tomcat.util.buf.HexUtils;
 
 import com.oss.asn1.AbstractData;
+import com.oss.asn1.DecodeFailedException;
+import com.oss.asn1.DecodeNotSupportedException;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 import com.oss.asn1.INTEGER;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
+import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.semi.DataReceipt;
+import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationDataAcceptance;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
@@ -114,4 +119,27 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
       }
 
    }
+
+    @Override
+    public Object call() {
+        IntersectionSituationData decodedMsg = null;
+        try {
+           decodedMsg = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
+                 .decode(new ByteArrayInputStream((byte[]) record.value()), new IntersectionSituationData()));
+           
+        } catch (DecodeFailedException | DecodeNotSupportedException e) {
+           logger.error("Depositor failed to decode ISD message: {}", e);
+        }
+        
+        if (null == decodedMsg) {
+           logger.error("Failed to decode message (null)");
+           return null;
+        } else {
+           requestId = decodedMsg.requestID;
+           groupId = decodedMsg.groupID;
+        }
+
+        return super.call();
+    }
+
 }
