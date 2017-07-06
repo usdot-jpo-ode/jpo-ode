@@ -8,15 +8,24 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.tomcat.util.buf.HexUtils;
+
 import com.oss.asn1.Coder;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
 import us.dot.its.jpo.ode.j2735.J2735;
+import us.dot.its.jpo.ode.j2735.dsrc.MsgCRC;
+import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
+import us.dot.its.jpo.ode.j2735.semi.GroupID;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
+import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
+import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage.Bundle;
+import us.dot.its.jpo.ode.j2735.semi.VehSitRecord;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssVehicleSituationRecord;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 /* 
@@ -79,32 +88,44 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
      * @param j2735Bsm
      * @return a VSD when the bundle is full, null otherwise
      */
-    private VehSitDataMessage addToVsdBundle(J2735Bsm j2735Bsm) {
-    	logger.info("Adding BSM to bundle {}", j2735Bsm.toJson(false));
-    	
-        VehSitDataMessage vsd = null;
-        String tempId = j2735Bsm.getCoreData().getId();
-        if (!bsmQueueMap.containsKey(tempId)) {
-        	logger.info("Adding BSM with tempID {} to VSD package queue", tempId);
-            Queue<J2735Bsm> bsmQueue = new PriorityQueue<>(10);
-            bsmQueueMap.put(tempId, bsmQueue);
-        }
-        bsmQueueMap.get(tempId).add(j2735Bsm);
-        if (bsmQueueMap.get(tempId).size() == 10) {
-        	logger.info("Received 10 BSMs with identical tempID, creating VSD.");
-            //TODO ODE-314
-            //build the VSD
-            //vsd = new VehSitDataMessage(dialogID, seqID, groupID, requestID, type, bundle, crc);
-            
-            // extract the 10 bsms
-            Queue<J2735Bsm> bsmArray = bsmQueueMap.get(tempId);
-            for(J2735Bsm entry: bsmArray){
-                logger.debug("Bsm in array: {}", entry.toString());
-                // TODO ODE_314 Convert BSM to VSR and add VSR to VSD
-            }
-        }
-        return vsd;
-    }
+   private VehSitDataMessage addToVsdBundle(J2735Bsm j2735Bsm) {
+      logger.info("Adding BSM to bundle {}", j2735Bsm.toJson(false));
+
+      VehSitDataMessage vsd = new VehSitDataMessage();
+      String tempId = j2735Bsm.getCoreData().getId();
+      if (!bsmQueueMap.containsKey(tempId)) {
+         logger.info("Adding BSM with tempID {} to VSD package queue", tempId);
+         Queue<J2735Bsm> bsmQueue = new PriorityQueue<>(10);
+         bsmQueueMap.put(tempId, bsmQueue);
+      }
+      bsmQueueMap.get(tempId).add(j2735Bsm);
+
+      // After receiving 10 messages, craft the VSD and return it
+      if (bsmQueueMap.get(tempId).size() == 10) {
+
+         Bundle vsrBundle = new Bundle();
+         logger.info("Received 10 BSMs with identical tempID, creating VSD.");
+
+         // extract the 10 bsms, convert them to vsr, and create VSD
+         Queue<J2735Bsm> bsmArray = bsmQueueMap.get(tempId);
+         for (J2735Bsm entry : bsmArray) {
+            logger.debug("Bsm in array: {}", entry);
+            VehSitRecord vsr = OssVehicleSituationRecord.convertBsmToVsr(entry);
+            vsrBundle.add(vsr);
+         }
+
+         vsd.dialogID = SemiDialogID.vehSitData;
+         vsd.seqID = SemiSequenceID.data;
+         vsd.groupID = new GroupID(new byte[] { 0 });
+         vsd.requestID = new TemporaryID(HexUtils.fromHexString(tempId));
+         vsd.bundle = vsrBundle;
+         vsd.crc = new MsgCRC(new byte[] { 0 });
+         return vsd;
+      } else {
+         // Otherwise return null to show we're not ready
+         return null;
+      }
+   }
 
     // Comparator for the priority queue to keep the chronological order of bsms
     private class BsmComparator implements Comparator<J2735Bsm> {
