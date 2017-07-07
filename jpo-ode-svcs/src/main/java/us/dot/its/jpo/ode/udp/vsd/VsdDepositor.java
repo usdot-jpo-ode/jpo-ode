@@ -1,16 +1,24 @@
 package us.dot.its.jpo.ode.udp.vsd;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.util.Comparator;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.tomcat.util.buf.HexUtils;
+import org.springframework.util.SerializationUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.oss.asn1.Coder;
+import com.oss.asn1.DecodeFailedException;
+import com.oss.asn1.DecodeNotSupportedException;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
@@ -38,12 +46,13 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
     private ConcurrentHashMap<String, Queue<J2735Bsm>> bsmQueueMap;
 
     public VsdDepositor(OdeProperties odeProps) {
-        super(odeProps, odeProps.getVsdDepositorPort(), SemiDialogID.vehSitData);
+        super(odeProps, odeProps.getVsdDepositorPort());
         bsmQueueMap = new ConcurrentHashMap<>();
     }
 
    @Override
     protected byte[] deposit() {
+      logger.debug("Message deposit initiated vsd deposit routine (json) {}", record.value());
         byte[] encodedVsd = null;
         /* 
          * ODE-314
@@ -67,6 +76,7 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
                  * ODE-314
                  * bundle 10 BSMs with the same tempId into a VSD 
                  */
+                
                 J2735Bsm j2735Bsm = (J2735Bsm) JsonUtils.fromJson(j2735BsmJson, J2735Bsm.class);
                 VehSitDataMessage vsd = null;
                 vsd = addToVsdBundle(j2735Bsm);
@@ -144,4 +154,16 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
             return 0;
         }
     }
+
+   @Override
+   protected SemiDialogID getDialogId() {
+      return SemiDialogID.vehSitData;
+   }
+   
+   @Override
+   protected TemporaryID getRequestId() {
+      
+      J2735Bsm j2735Bsm = (J2735Bsm) JsonUtils.fromJson(record.value(), J2735Bsm.class);
+      return new TemporaryID(HexUtils.fromHexString(j2735Bsm.getCoreData().getId()));
+   }
 }

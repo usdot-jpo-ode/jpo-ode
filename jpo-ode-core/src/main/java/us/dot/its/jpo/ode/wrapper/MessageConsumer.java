@@ -68,7 +68,7 @@ public class MessageConsumer<K, V> {
    }
 
    public MessageConsumer(String brokers, String groupId, MessageProcessor<K, V> processor) {
-       this(brokers, groupId, processor, "MessagingDeserializer");
+       this(brokers, groupId, processor, SERIALIZATION_BYTE_ARRAY_DESERIALIZER);
     }
 
     public MessageConsumer(String brokers, String groupId, MessageProcessor<K, V> processor, Properties props) {

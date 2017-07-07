@@ -70,7 +70,7 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * BSM Properties
     */
-   private String kafkaTopicBsmSerializedPojo = "j2735Bsm";
+   private String kafkaTopicBsmSerializedPojo = "topic.j2735Bsm";
    private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
    private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
    private int bsmReceiverPort = 46800;
@@ -108,7 +108,7 @@ public class OdeProperties implements EnvironmentAware {
 
    private int dataReceiptExpirationSeconds;
 
-   protected static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
+   public static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
 
    public OdeProperties() {
       super();

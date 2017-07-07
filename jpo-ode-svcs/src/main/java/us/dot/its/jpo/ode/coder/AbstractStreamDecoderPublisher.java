@@ -24,6 +24,8 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
     protected MessageProducer<String, String> defaultProducer;
     protected SerializableMessageProducerPool<String, byte[]> messageProducerPool;
 
+   protected MessageProducer<String, byte[]> byteArrayProducer;
+
     protected AbstractStreamDecoderPublisher() {
         super();
     }
@@ -43,6 +45,8 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
         defaultProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
                 odeProperties.getKafkaProducerType());
         messageProducerPool = new SerializableMessageProducerPool<>(odeProperties);
+        byteArrayProducer = MessageProducer.defaultByteArrayMessageProducer(odeProperties.getKafkaBrokers(),
+              odeProperties.getKafkaProducerType());
     }
 
     @Override

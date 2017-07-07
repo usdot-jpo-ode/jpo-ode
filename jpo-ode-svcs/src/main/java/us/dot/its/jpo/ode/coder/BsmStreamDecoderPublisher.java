@@ -72,9 +72,11 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
 
     @Override
     public void publish(byte[] msg) {
-        MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
-        producer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null, msg);
-        messageProducerPool.checkIn(producer);
+//        MessageProducer<String, byte[]> producer = messageProducerPool.checkOut();
+//        producer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null, msg);
+//        messageProducerPool.checkIn(producer);
+       logger.debug("Publishing byte message to {}", odeProperties.getKafkaTopicBsmSerializedPojo());
+        byteArrayProducer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null, msg);
     }
 
 

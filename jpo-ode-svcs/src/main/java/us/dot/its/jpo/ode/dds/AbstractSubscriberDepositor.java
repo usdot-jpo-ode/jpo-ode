@@ -27,18 +27,14 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
     protected int depositorPort;
     protected DatagramSocket socket = null;
     protected TrustManager trustMgr;
-    protected TemporaryID requestId;
-    protected SemiDialogID dialogId;
-    protected GroupID groupId;
     protected int messagesSent;
     protected Coder coder;
     protected ExecutorService pool;
 
-    public AbstractSubscriberDepositor(OdeProperties odeProps, int port, SemiDialogID dialogId) {
+    public AbstractSubscriberDepositor(OdeProperties odeProps, int port) {
         // initialized in the constructor
         this.odeProperties = odeProps;
         this.depositorPort = port;
-        this.dialogId = dialogId;
         this.messagesSent = 0;
         this.coder = J2735.getPERUnalignedCoder();
 
@@ -81,7 +77,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
 
             try {
                 Boolean trustEst = trustMgr.establishTrust(depositorPort, odeProperties.getSdcIp(),
-                        odeProperties.getSdcPort(), requestId, dialogId, groupId);
+                        odeProperties.getSdcPort(), getRequestId(), getDialogId(), new GroupID(OdeProperties.JPO_ODE_GROUP_ID));
                 logger.debug("Trust established: {}", trustEst);
                 trustMgr.setTrustEstablished(trustEst);
             } catch (SocketException | TrustManagerException e) {
@@ -94,7 +90,12 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
         return encodedMsg;
     }
 
-    public int getDepositorPort() {
+    
+    protected abstract TemporaryID getRequestId();
+
+   protected abstract SemiDialogID getDialogId();
+
+   public int getDepositorPort() {
         return depositorPort;
     }
 
@@ -109,15 +110,6 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
     public void setSocket(DatagramSocket socket) {
         this.socket = socket;
     }
-
-    public SemiDialogID getDialogId() {
-        return dialogId;
-    }
-
-    public void setDialogId(SemiDialogID dialogId) {
-        this.dialogId = dialogId;
-    }
-
+    
     protected abstract byte[] deposit();
-
 }
