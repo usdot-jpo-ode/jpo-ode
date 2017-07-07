@@ -1,24 +1,16 @@
 package us.dot.its.jpo.ode.udp.vsd;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.util.Comparator;
-import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.tomcat.util.buf.HexUtils;
-import org.springframework.util.SerializationUtils;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.oss.asn1.Coder;
-import com.oss.asn1.DecodeFailedException;
-import com.oss.asn1.DecodeNotSupportedException;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
@@ -126,7 +118,7 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
 
          vsd.dialogID = SemiDialogID.vehSitData;
          vsd.seqID = SemiSequenceID.data;
-         vsd.groupID = new GroupID(new byte[] { 0 });
+         vsd.groupID = new GroupID(OdeProperties.JPO_ODE_GROUP_ID);
          vsd.requestID = new TemporaryID(HexUtils.fromHexString(tempId));
          vsd.bundle = vsrBundle;
          vsd.crc = new MsgCRC(new byte[] { 0 });
@@ -162,8 +154,6 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
    
    @Override
    protected TemporaryID getRequestId() {
-   // TODO extract request id from deserialized message
-      
       J2735Bsm j2735Bsm = (J2735Bsm) JsonUtils.fromJson(record.value(), J2735Bsm.class);
       return new TemporaryID(HexUtils.fromHexString(j2735Bsm.getCoreData().getId()));
    }
