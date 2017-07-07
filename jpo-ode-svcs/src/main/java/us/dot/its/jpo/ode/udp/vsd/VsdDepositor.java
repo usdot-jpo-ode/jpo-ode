@@ -162,6 +162,7 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
    
    @Override
    protected TemporaryID getRequestId() {
+   // TODO extract request id from deserialized message
       
       J2735Bsm j2735Bsm = (J2735Bsm) JsonUtils.fromJson(record.value(), J2735Bsm.class);
       return new TemporaryID(HexUtils.fromHexString(j2735Bsm.getCoreData().getId()));
