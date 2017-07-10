@@ -98,7 +98,7 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
       String tempId = j2735Bsm.getCoreData().getId();
       if (!bsmQueueMap.containsKey(tempId)) {
          logger.info("Creating new VSD package queue for BSMs with tempID {} to VSD package queue", tempId);
-         Queue<J2735Bsm> bsmQueue = new PriorityQueue<>(VSD_PACKAGE_SIZE);
+         Queue<J2735Bsm> bsmQueue = new PriorityQueue<>(VSD_PACKAGE_SIZE, new BsmComparator());
          bsmQueueMap.put(tempId, bsmQueue);
       } else {
          logger.info("Adding BSM with tempID {} to existing VSD package queue ({}/{})", tempId, bsmQueueMap.get(tempId).size(), VSD_PACKAGE_SIZE);
