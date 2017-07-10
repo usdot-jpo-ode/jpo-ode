@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MessageConsumer<K, V> {
+   
+   private String name = "DefaultMessageConsumer";
 
    private static final int CONSUMER_POLL_TIMEOUT_MS = 60000;
    public static final String SERIALIZATION_STRING_DESERIALIZER = "org.apache.kafka.common.serialization.StringDeserializer";
@@ -98,7 +100,7 @@ public class MessageConsumer<K, V> {
                 ConsumerRecords<K, V> records = consumer.poll(CONSUMER_POLL_TIMEOUT_MS);
                 if (records != null && !records.isEmpty()) {
                     gotMessages = true;
-                    logger.debug("Consuming {} message(s)", records.count());
+                    logger.debug("{} consuming {} message(s)", name, records.count());
                     processor.process(records);
                 } else {
                     if (gotMessages) {
@@ -133,6 +135,14 @@ public class MessageConsumer<K, V> {
 
    public void setConsumer(KafkaConsumer<K, V> consumer) {
       this.consumer = consumer;
+   }
+
+   public String getName() {
+      return name;
+   }
+
+   public void setName(String name) {
+      this.name = name;
    }
 
 }

@@ -138,9 +138,11 @@ public class TrustManager implements Callable<Boolean> {
    public void sendServiceRequest(ServiceRequest request, String ip, int port) {
       try {
          trustEstablished = false;
-         logger.debug("Sending ServiceRequest {} to {}:{}", request.toString(), ip, port);
 
          byte[] requestBytes = J2735Util.encode(coder, request);
+         logger.debug("Sending ServiceRequest to {}:{}", ip, port);
+         logger.debug("ServiceRequest: (hex) {}", HexUtils.toHexString(requestBytes));
+         logger.debug("ServiceRequest: (pojo) {}", request);
          socket.send(new DatagramPacket(requestBytes, requestBytes.length, new InetSocketAddress(ip, port)));
       } catch (IOException e) {
          logger.error("Error ServiceRequest", e);
@@ -151,6 +153,7 @@ public class TrustManager implements Callable<Boolean> {
          GroupID groupId) throws SocketException, TrustManagerException {
       logger.info("Establishing trust...");
 
+      // TODO - remove this
       // if (this.socket != null && !trustEstablished) {
       // logger.debug("Closing outbound socket srcPort={}, destPort={}",
       // srcPort, destPort);
@@ -171,7 +174,7 @@ public class TrustManager implements Callable<Boolean> {
          setEstablishingTrust(true);
 
          Future<AbstractData> f = execService.submit(new ServiceResponseReceiver(odeProperties, socket));
-         logger.debug("Submitted ServiceResponseReceiver to listen on port {}", socket.getPort());
+         logger.debug("Submitted ServiceResponseReceiver to listen on port {}", socket.getLocalPort());
 
          ServiceRequest request = createServiceRequest(requestId, dialogId, groupId);
          this.sendServiceRequest(request, destIp, destPort);
@@ -179,12 +182,11 @@ public class TrustManager implements Callable<Boolean> {
          ServiceResponse response = (ServiceResponse) f.get(odeProperties.getServiceRespExpirationSeconds(),
                TimeUnit.SECONDS);
 
-         logger.debug("ServiceResponse: f.isDone(): {}, f.isCancelled(): {}", f.isDone(), f.isCancelled());
-
          if (response.getRequestID().equals(request.getRequestID())) {
             trustEstablished = true;
+            String reqid = HexUtils.toHexString(request.getRequestID().byteArrayValue());
             logger.info("Trust established, session request ID: {}",
-                  HexUtils.toHexString(request.getRequestID().byteArrayValue()));
+                  reqid);
          } else {
             logger.error("Received ServiceResponse from SDC but the requestID does not match! {} != {}",
                   response.getRequestID(), request.getRequestID());
