@@ -9,8 +9,8 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.tomcat.util.buf.HexUtils;
-
-import com.oss.asn1.Coder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
@@ -33,18 +33,19 @@ import us.dot.its.jpo.ode.util.JsonUtils;
  * The MessageProcessor value type is String 
  */
 public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
+   
+    private static final int VSD_PACKAGE_SIZE = 10;
     
-    private static Coder coder = J2735.getPERUnalignedCoder();
     private ConcurrentHashMap<String, Queue<J2735Bsm>> bsmQueueMap;
 
     public VsdDepositor(OdeProperties odeProps) {
         super(odeProps, odeProps.getVsdDepositorPort());
         bsmQueueMap = new ConcurrentHashMap<>();
+        coder = J2735.getPERUnalignedCoder();
     }
 
    @Override
     protected byte[] deposit() {
-      logger.debug("Message deposit initiated vsd deposit routine (json) {}", record.value());
         byte[] encodedVsd = null;
         /* 
          * ODE-314
@@ -60,20 +61,20 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
             logger.debug("\nConsuming BSM: \n{}\n", j2735BsmJson);
 
             if (odeProperties.getDepositSanitizedBsmToSdc()) {
-                logger.debug(
-                        "Sending VSD to SDC IP: {} Port: {}",
-                        odeProperties.getSdcIp(),
-                        odeProperties.getSdcPort());
+                
                 /* 
                  * ODE-314
                  * bundle 10 BSMs with the same tempId into a VSD 
                  */
                 
                 J2735Bsm j2735Bsm = (J2735Bsm) JsonUtils.fromJson(j2735BsmJson, J2735Bsm.class);
-                VehSitDataMessage vsd = null;
-                vsd = addToVsdBundle(j2735Bsm);
+                VehSitDataMessage vsd = addToVsdBundle(j2735Bsm);
                 
                 if (vsd != null) { // NOSONAR
+                   logger.debug(
+                         "Sending VSD to SDC IP: {} Port: {}",
+                         odeProperties.getSdcIp(),
+                         odeProperties.getSdcPort());
                     encodedVsd = J2735Util.encode(coder, vsd);
                     socket.send(new DatagramPacket(encodedVsd, encodedVsd.length,
                             new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
@@ -96,22 +97,23 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
       VehSitDataMessage vsd = new VehSitDataMessage();
       String tempId = j2735Bsm.getCoreData().getId();
       if (!bsmQueueMap.containsKey(tempId)) {
-         logger.info("Adding BSM with tempID {} to VSD package queue", tempId);
-         Queue<J2735Bsm> bsmQueue = new PriorityQueue<>(10);
+         logger.info("Creating new VSD package queue for BSMs with tempID {} to VSD package queue", tempId);
+         Queue<J2735Bsm> bsmQueue = new PriorityQueue<>(VSD_PACKAGE_SIZE);
          bsmQueueMap.put(tempId, bsmQueue);
+      } else {
+         logger.info("Adding BSM with tempID {} to existing VSD package queue ({}/{})", tempId, bsmQueueMap.get(tempId).size(), VSD_PACKAGE_SIZE);
       }
       bsmQueueMap.get(tempId).add(j2735Bsm);
 
-      // After receiving 10 messages, craft the VSD and return it
-      if (bsmQueueMap.get(tempId).size() == 10) {
+      // After receiving enough messages, craft the VSD and return it
+      if (bsmQueueMap.get(tempId).size() == VSD_PACKAGE_SIZE) {
 
+         logger.info("BSM queue ID {} full, crafting VSD");
+
+         // convert the BSMs in the priority queue to VSRs to craft VSD bundle
          Bundle vsrBundle = new Bundle();
-         logger.info("Received 10 BSMs with identical tempID, creating VSD.");
-
-         // extract the 10 bsms, convert them to vsr, and create VSD
          Queue<J2735Bsm> bsmArray = bsmQueueMap.get(tempId);
          for (J2735Bsm entry : bsmArray) {
-            logger.debug("Bsm in array: {}", entry);
             VehSitRecord vsr = OssVehicleSituationRecord.convertBsmToVsr(entry);
             vsrBundle.add(vsr);
          }
@@ -124,26 +126,23 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
          vsd.crc = new MsgCRC(new byte[] { 0 });
          return vsd;
       } else {
-         // Otherwise return null to show we're not ready
          return null;
       }
    }
 
-    // Comparator for the priority queue to keep the chronological order of bsms
-    private class BsmComparator implements Comparator<J2735Bsm> {
+    /**
+     * Comparator for the priority queue to keep the chronological order of bsms
+     */
+   private class BsmComparator implements Comparator<J2735Bsm> {
         @Override
         public int compare(J2735Bsm x, J2735Bsm y) {
-            // here getTime would return the time the bsm was received by the
-            // ode
-            // if (x.getTime() < y.getTime())
-            // {
-            // return -1;
-            // }
-            // if (x.getTime() > y.getTime())
-            // {
-            // return 1;
-            // }
-            return 0;
+            // TODO - determine message arrival time
+            // for now we are using the BSM's time offset property
+           
+           int xt = x.getCoreData().getSecMark();
+           int yt = y.getCoreData().getSecMark();
+           
+           return Integer.compare(xt, yt);
         }
     }
 
@@ -156,5 +155,10 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
    protected TemporaryID getRequestId() {
       J2735Bsm j2735Bsm = (J2735Bsm) JsonUtils.fromJson(record.value(), J2735Bsm.class);
       return new TemporaryID(HexUtils.fromHexString(j2735Bsm.getCoreData().getId()));
+   }
+
+   @Override
+   protected Logger getLogger() {
+      return LoggerFactory.getLogger(this.getClass());
    }
 }

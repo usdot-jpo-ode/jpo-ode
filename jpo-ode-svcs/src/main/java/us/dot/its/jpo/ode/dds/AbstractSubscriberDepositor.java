@@ -6,7 +6,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.oss.asn1.Coder;
 
@@ -22,7 +21,7 @@ import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
 public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor<K, V> {
 
-    protected Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected Logger logger;
     protected OdeProperties odeProperties;
     protected int depositorPort;
     protected DatagramSocket socket = null;
@@ -37,6 +36,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
         this.depositorPort = port;
         this.messagesSent = 0;
         this.coder = J2735.getPERUnalignedCoder();
+        this.logger = getLogger();
 
         try {
             logger.debug("Creating depositor socket on port {}", port);
@@ -112,4 +112,6 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
     }
     
     protected abstract byte[] deposit();
+    
+    protected abstract Logger getLogger();
 }

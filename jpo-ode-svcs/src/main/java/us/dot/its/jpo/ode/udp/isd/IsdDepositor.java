@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.tomcat.util.buf.HexUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oss.asn1.AbstractData;
 import com.oss.asn1.DecodeFailedException;
@@ -22,7 +24,6 @@ import com.oss.asn1.INTEGER;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
 import us.dot.its.jpo.ode.j2735.J2735;
-import us.dot.its.jpo.ode.j2735.dsrc.RequestID;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.semi.DataReceipt;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
@@ -161,6 +162,11 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
       }
 
       return reqID;
+   }
+
+   @Override
+   protected Logger getLogger() {
+      return LoggerFactory.getLogger(this.getClass());
    }
 
 }
