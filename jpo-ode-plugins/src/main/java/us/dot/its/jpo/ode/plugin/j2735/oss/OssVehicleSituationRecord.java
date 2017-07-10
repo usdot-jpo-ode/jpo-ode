@@ -27,6 +27,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.StabilityControlStatus;
 import us.dot.its.jpo.ode.j2735.dsrc.SteeringWheelAngle;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.dsrc.TractionControlStatus;
+import us.dot.its.jpo.ode.j2735.dsrc.TransmissionAndSpeed;
 import us.dot.its.jpo.ode.j2735.dsrc.TransmissionState;
 import us.dot.its.jpo.ode.j2735.dsrc.VehicleLength;
 import us.dot.its.jpo.ode.j2735.dsrc.VehicleSize;
@@ -120,6 +121,7 @@ public class OssVehicleSituationRecord {
    private static FundamentalSituationalStatus createFundamentalSituationalStatus(J2735BsmCoreData bsmcd) {
 
       FundamentalSituationalStatus fss = new FundamentalSituationalStatus();
+      fss.speed = new TransmissionAndSpeed();
       fss.speed.speed = convertSpeed(bsmcd.getSpeed());
       fss.speed.transmisson = convertTransmissionState(bsmcd.getTransmission());
       fss.heading = convertHeading(bsmcd.getHeading());
