@@ -1,5 +1,10 @@
 ## ODE Release Notes ##
 ----------
+### Sprint 16
+- ODE-400 Updated TIM REST Calls to enable querying and deleting messages
+- ODE-401 Created S3 deposit service to watch Kafka topic and deposit BSM files
+- ODE-381 1609.2 Security Libary is located within the ODE library
+
 ### Sprint 15
 - ODE-381 Leidos Security Library Integration implementing 1609.2
 -- As part of this new feature, the build process was updated in the [ODE README file](README.md) with additional steps for obtaining the source code and building the application. Please review the [Getting Started](https://github.com/usdot-jpo-ode/jpo-ode#getting-started) section for details. 
