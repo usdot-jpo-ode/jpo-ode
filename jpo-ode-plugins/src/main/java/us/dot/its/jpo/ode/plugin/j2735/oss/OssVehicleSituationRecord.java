@@ -446,8 +446,22 @@ public class OssVehicleSituationRecord {
 
    private static VehicleSize convertVehicleSize(J2735VehicleSize jvs) {
       VehicleSize nvs = new VehicleSize();
-      nvs.width = new VehicleWidth(jvs.getWidth());
-      nvs.length = new VehicleLength(jvs.getLength());
+      if (null == jvs) {
+         nvs.width = new VehicleWidth(0);
+         nvs.length = new VehicleLength(0);
+      } else {
+         if (null == jvs.getWidth()) {
+            nvs.width = new VehicleWidth(0);
+         } else {
+            nvs.width = new VehicleWidth(jvs.getWidth());
+         }
+         
+         if (null == jvs.getLength()) {
+            nvs.length = new VehicleLength(0);
+         } else {
+            nvs.length = new VehicleLength(jvs.getLength());
+         }
+      }
       return nvs;
    }
 }
