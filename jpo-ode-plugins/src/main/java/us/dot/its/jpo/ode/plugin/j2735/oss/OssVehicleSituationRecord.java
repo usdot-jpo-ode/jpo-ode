@@ -157,6 +157,10 @@ public class OssVehicleSituationRecord {
     * @return
     */
    private static TransmissionState convertTransmissionState(J2735TransmissionState tstate) {
+      
+      if (null == tstate) {
+         return TransmissionState.unavailable;
+      }
 
       TransmissionState rts;
 
