@@ -116,10 +116,10 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
             vsrBundle.add(vsr);
          }
 
-         vsd.dialogID = SemiDialogID.vehSitData;
+         vsd.dialogID = getDialogId();
          vsd.seqID = SemiSequenceID.data;
          vsd.groupID = new GroupID(OdeProperties.JPO_ODE_GROUP_ID);
-         vsd.requestID = new TemporaryID(HexUtils.fromHexString(tempId));
+         vsd.requestID = getRequestId();
          vsd.bundle = vsrBundle;
          vsd.crc = new MsgCRC(new byte[] { 0 });
          
