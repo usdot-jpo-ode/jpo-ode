@@ -38,7 +38,7 @@ ODE provides the following living documents to keep ODE users and stakeholders i
 
 1. [ODE Architecture](docs/JPO%20ODE%20Architecture.docx)
 2. [ODE User Guide](docs/JPO_ODE_UserGuide.docx)
-3. [ODE REST API Guide](docs/ODESwagger.yaml)
+3. [ODE REST API Guide](https://usdot-jpo-ode.github.io/)
 4. [ODE Smoke Tests](https://github.com/usdot-jpo-ode/jpo-ode/wiki/JPO-ODE-QA-Documents)
 
 All stakeholders are invited to provide input to these documents. Stakeholders should direct all input on this document to the JPO Product Owner at DOT, FHWA, and JPO. To provide feedback, we recommend that you create an "issue" in this repository (https://github.com/usdot-jpo-ode/jpo-ode/issues). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
@@ -54,6 +54,12 @@ All stakeholders are invited to provide input to these documents. Stakeholders s
 - Private repository on BitBucket
 	- https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 	- git@bitbucket.org:usdot-jpo-ode/jpo-ode-private.git
+- Data Privacy Module on Github (public)
+	- https://github.com/usdot-jpo-ode/jpo-cvdp
+	- git@github.com/usdot-jpo-ode/jpo-cvdp
+- S3 Depositor Module on Github (public)
+	- https://github.com/usdot-jpo-ode/jpo-s3-deposit
+	- gith@github.com/usdot-jpo-ode/jpo-s3-deposit
 
 ### Agile Project Management - Jira
 https://usdotjpoode.atlassian.net/secure/Dashboard.jspa
