@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
@@ -11,10 +14,6 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class MessageFrameStreamDecoderPublisher extends BsmStreamDecoderPublisher {
-    
-    public MessageFrameStreamDecoderPublisher() {
-        super();
-    }
     
     public MessageFrameStreamDecoderPublisher(OdeProperties properties) {
         super(properties);
@@ -71,6 +70,11 @@ public class MessageFrameStreamDecoderPublisher extends BsmStreamDecoderPublishe
         } catch (Exception e) {
             throw new IOException("Error decoding data." + e);
         }
+    }
+    
+    @Override
+    public Logger getLogger() {
+       return LoggerFactory.getLogger(this.getClass());
     }
 
 

@@ -17,7 +17,7 @@ import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPublisher {
 
-    protected static Logger logger = LoggerFactory.getLogger(AbstractStreamDecoderPublisher.class);
+    protected final Logger logger;
 
     protected OdeProperties odeProperties;
     protected Asn1Plugin asn1Coder;
@@ -26,13 +26,10 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
 
    protected MessageProducer<String, byte[]> byteArrayProducer;
 
-    protected AbstractStreamDecoderPublisher() {
-        super();
-    }
-
     protected AbstractStreamDecoderPublisher(OdeProperties properties) {
         super();
         this.odeProperties = properties;
+        logger = getLogger();
         if (this.asn1Coder == null) {
             logger.info("Loading ASN1 Coder: {}", this.odeProperties.getAsn1CoderClassName());
             try {
@@ -99,4 +96,6 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
     public void setMessageProducerPool(SerializableMessageProducerPool<String, byte[]> messageProducerPool) {
         this.messageProducerPool = messageProducerPool;
     }
+    
+    protected abstract Logger getLogger();
 }

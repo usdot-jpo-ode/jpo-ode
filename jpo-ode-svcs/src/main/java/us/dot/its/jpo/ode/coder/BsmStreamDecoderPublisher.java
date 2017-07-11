@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
@@ -13,10 +16,6 @@ import us.dot.its.jpo.ode.util.SerializationUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
-
-    public BsmStreamDecoderPublisher() {
-        super();
-    }
 
     public BsmStreamDecoderPublisher(OdeProperties properties) {
         super(properties);
@@ -78,6 +77,11 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
        logger.debug("Publishing byte message to {}", odeProperties.getKafkaTopicBsmSerializedPojo());
         byteArrayProducer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null, msg);
     }
+
+   @Override
+   protected Logger getLogger() {
+      return LoggerFactory.getLogger(this.getClass());
+   }
 
 
 }

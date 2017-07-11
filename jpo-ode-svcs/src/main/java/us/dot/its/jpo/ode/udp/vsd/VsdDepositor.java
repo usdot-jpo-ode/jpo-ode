@@ -58,7 +58,7 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
              * ODE-314
              * The record.value() will return a J2735Bsm JSON string
              */
-            logger.debug("\nConsuming BSM: \n{}\n", j2735BsmJson);
+           logger.debug("Consuming BSM.");
 
             if (odeProperties.getDepositSanitizedBsmToSdc()) {
                 
@@ -92,7 +92,6 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
      * @return a VSD when the bundle is full, null otherwise
      */
    private VehSitDataMessage addToVsdBundle(J2735Bsm j2735Bsm) {
-      logger.info("Adding BSM to bundle {}", j2735Bsm.toJson(false));
 
       VehSitDataMessage vsd = new VehSitDataMessage();
       String tempId = j2735Bsm.getCoreData().getId();
