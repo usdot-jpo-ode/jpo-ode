@@ -26,6 +26,11 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
 
    protected MessageProducer<String, byte[]> byteArrayProducer;
 
+    protected AbstractStreamDecoderPublisher() {
+        super();
+        logger = getLogger();
+    }
+
     protected AbstractStreamDecoderPublisher(OdeProperties properties) {
         super();
         this.odeProperties = properties;
