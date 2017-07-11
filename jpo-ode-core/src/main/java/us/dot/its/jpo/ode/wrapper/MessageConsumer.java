@@ -104,7 +104,7 @@ public class MessageConsumer<K, V> {
                     processor.process(records);
                 } else {
                     if (gotMessages) {
-                        logger.debug("No messages consumed in {} seconds.", CONSUMER_POLL_TIMEOUT_MS / 1000);
+                        logger.debug("{} no messages consumed in {} seconds.", name, CONSUMER_POLL_TIMEOUT_MS / 1000);
                         gotMessages = false;
                     }
                 }
