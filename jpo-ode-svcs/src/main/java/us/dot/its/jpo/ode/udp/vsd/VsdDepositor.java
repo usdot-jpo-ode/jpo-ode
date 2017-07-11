@@ -123,6 +123,9 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
          vsd.requestID = new TemporaryID(HexUtils.fromHexString(tempId));
          vsd.bundle = vsrBundle;
          vsd.crc = new MsgCRC(new byte[] { 0 });
+         
+         // now that the vsd is crafted, clear the queue
+         bsmQueueMap.get(tempId).clear();
          return vsd;
       } else {
          logger.info("Added BSM with tempID {} to existing VSD package queue ({}/{})", tempId, bsmQueueMap.get(tempId).size(), VSD_PACKAGE_SIZE); 
