@@ -79,6 +79,7 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * Vehicle Situation Data (VSD) Properties
     */
+   private int trustRetries = 2;
    private int vsdBufferSize = 500;
    private int vsdReceiverPort = 46753;
    private int vsdDepositorPort = 5555;
@@ -504,6 +505,14 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setRsuSrmSlots(int rsuSrmSlots) {
       this.rsuSrmSlots = rsuSrmSlots;
+   }
+
+   public int getTrustRetries() {
+      return trustRetries;
+   }
+
+   public void setTrustRetries(int trustRetries) {
+      this.trustRetries = trustRetries;
    }
 
 }
