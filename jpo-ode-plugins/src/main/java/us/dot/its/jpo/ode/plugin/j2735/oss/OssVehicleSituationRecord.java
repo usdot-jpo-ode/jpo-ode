@@ -129,7 +129,7 @@ public class OssVehicleSituationRecord {
       fss.accelSet = convertAccelerationSet4Way(bsmcd.getAccelSet());
       fss.brakes = convertBrakeSystemStatus(bsmcd.getBrakes());
       fss.vehSize = convertVehicleSize(bsmcd.getSize());
-      fss.vsmEventFlag = new VsmEventFlag(new byte[0]);
+      fss.vsmEventFlag = new VsmEventFlag(new byte[]{1});
       return fss;
    }
 
@@ -306,32 +306,48 @@ public class OssVehicleSituationRecord {
     * @return
     */
    private static BrakeAppliedStatus convertBrakeAppliedStatus(J2735BitString jBas) {
-
+      
+      // Output bit string has 5 bits:
+      // 0bABCDE
+      // A = rightRear
+      // B = rightFront
+      // C = leftRear
+      // D = leftFront
+      // E = unavailable
+      //
+      // Craft this bitstring by first setting those bits in a normal byte (8 bits)
+      // to obtain a representation like this: 0b000ABCDE
+      // then shift the bits to the left 3 to end up with the final result: 0bABCDE000
+      // since the encoder reads bits left-to-right starting with most significant
+      
       byte nb = 0b00000000;
       int bitPow = 1;
 
       for (Map.Entry<String, Boolean> entry : jBas.entrySet()) {
          switch (entry.getKey()) {
          case "leftFront":
-            bitPow = 2;
+            bitPow = 8;
             break;
          case "leftRear":
             bitPow = 4;
             break;
          case "rightFront":
-            bitPow = 8;
+            bitPow = 2;
             break;
          case "rightRear":
-            bitPow = 16;
+            bitPow = 1;
             break;
          default:
             // aka "unavailable"
-            bitPow = 1;
+            bitPow = 16;
             break;
          }
 
          nb = (byte) (nb | (entry.getValue() ? bitPow : 0));
       }
+      
+      // Shift the bits 3 to the left
+      nb = (byte) (nb << 3);
 
       return new BrakeAppliedStatus(new byte[] { nb });
    }
