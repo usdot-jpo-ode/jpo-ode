@@ -177,11 +177,16 @@ ODE configuration can be customized for every deployment environment using the O
 |--------------------|-----------|
 |[DOCKER_HOST_IP](docker/README.md#obtaining-docker_host_ip)      |The IP address of Docker host machine|
 |DOCKER_SHARED_VOLUME|The full path of a directory on the host machine to be shared with docker containers.|
-|AWS_ACCESS_KEY_ID|The data deposit S3 bucket access ID|
-|AWS_SECRET_ACCESS_KEY|The data deposit S3 bucket secret key|
-|DEPOSIT_BUCKET_NAME|The name of the S3 data deposit bucket|
-|DEPOSIT_KEY_NAME|The key used for S3 file names.|
-|DEPOSIT_TOPIC|The Kafka topic to which the S3 depositor subscribes|
+|CVPEP_AWS_ACCESS_KEY_ID|The data deposit S3 bucket access ID|
+|CVPEP_AWS_SECRET_ACCESS_KEY|The data deposit S3 bucket secret key|
+|CVPEP_DEPOSIT_BUCKET_NAME|The name of the S3 data deposit bucket|
+|CVPEP_DEPOSIT_KEY_NAME|The key used for S3 file names.|
+|CVPEP_DEPOSIT_TOPIC|The Kafka topic to which the S3 depositor subscribes|
+|RDE_AWS_ACCESS_KEY_ID|The data deposit S3 bucket access ID|
+|RDE_AWS_SECRET_ACCESS_KEY|The data deposit S3 bucket secret key|
+|RDE_DEPOSIT_BUCKET_NAME|The name of the S3 data deposit bucket|
+|RDE_DEPOSIT_KEY_NAME|The key used for S3 file names.|
+|RDE_DEPOSIT_TOPIC|The Kafka topic to which the S3 depositor subscribes|
 |ODE_DDS_CAS_USERNAME|The username for authenticating the USDOT Situation Data Warehouse WebSocket server |
 |ODE_DDS_CAS_PASSWORD|The password for authenticating the USDOT Situation Data Warehouse WebSocket server |
 |ODE_EXTERNAL_IPV4|The IPv4 address of the server running ODE |
