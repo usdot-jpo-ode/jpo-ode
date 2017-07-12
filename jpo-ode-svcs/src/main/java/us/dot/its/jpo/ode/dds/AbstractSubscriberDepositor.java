@@ -55,13 +55,16 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
     * @param consumer
     * @param topics
     */
+//   public void subscribe(MessageConsumer<K, V> consumer, String... topics) {
+//      Executors.newSingleThreadExecutor().submit(new Runnable() {
+//         @Override
+//         public void run() {
+//            consumer.subscribe(topics);
+//         }
+//      });
+//   }
    public void subscribe(MessageConsumer<K, V> consumer, String... topics) {
-      Executors.newSingleThreadExecutor().submit(new Runnable() {
-         @Override
-         public void run() {
-            consumer.subscribe(topics);
-         }
-      });
+      Executors.newSingleThreadExecutor().submit(() -> consumer.subscribe(topics));
    }
 
    protected abstract TemporaryID getRequestId();

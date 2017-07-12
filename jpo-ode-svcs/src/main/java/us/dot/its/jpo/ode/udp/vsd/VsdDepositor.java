@@ -31,9 +31,10 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssVehicleSituationRecord;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
-/* 
- * ODE-314
- * The MessageProcessor value type is String 
+/**
+ * @author matthewschwartz
+ * 
+ *
  */
 public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
 
@@ -49,31 +50,23 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
    @Override
    protected byte[] deposit() {
       byte[] encodedVsd = null;
-      /*
-       * ODE-314 The record.value() will return a J2735Bsm JSON string
-       */
       String j2735BsmJson = record.value();
-
       try {
-         /*
-          * ODE-314 The record.value() will return a J2735Bsm JSON string
-          */
          logger.debug("Consuming BSM.");
 
          if (odeProperties.getDepositSanitizedBsmToSdc()) {
 
-            /*
-             * ODE-314 bundle 10 BSMs with the same tempId into a VSD
-             */
-
             J2735Bsm j2735Bsm = (J2735Bsm) JsonUtils.fromJson(j2735BsmJson, J2735Bsm.class);
             VehSitDataMessage vsd = addToVsdBundle(j2735Bsm);
 
-            if (vsd != null) { // NOSONAR
-
-               logger.info("VSD ready to send: (pojo) {}", vsd);
+            // When the VSD bundle is full, send it to the sdc
+            if (vsd != null) {
+               
                encodedVsd = J2735.getPERUnalignedCoder().encode(vsd).array();
-               logger.info("VSD ready to send: (hex) {}", HexUtils.toHexString(encodedVsd));
+               String hexVsd = HexUtils.toHexString(encodedVsd);
+               logger.info("VSD ready to send: (hex) {}", hexVsd);
+               
+               // Check trust before attempting deposit
                if (trustMgr.establishTrust(getRequestId(), getDialogId())) {
                   logger.debug("Sending VSD to SDC IP: {} Port: {}", odeProperties.getSdcIp(),
                         odeProperties.getSdcPort());
