@@ -32,7 +32,7 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssVehicleSituationRecord;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 /**
- * @author matthewschwartz
+ * Takes in BSMs from a Kafka topic and adds them to a VSD bundle. 
  * 
  *
  */
