@@ -2,9 +2,11 @@ package us.dot.its.jpo.ode.wrapper;
 
 import java.util.Properties;
 
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +96,19 @@ public class MessageProducer<K, V> {
         else
             data = new ProducerRecord<>(topic, key, value);
 
-        producer.send(data);
+        producer.send(data, new Callback() {
+
+           @Override
+           public void onCompletion(RecordMetadata returnMetadata, Exception e) {
+              if (null != e) {
+                 logger.debug("Error sending record.", e);
+              } else {
+                 logger.debug("Completed publish to topic: {}, offset: {}, partition: {}", returnMetadata.topic(), returnMetadata.offset(), returnMetadata.partition());
+              }
+              
+           }
+             
+          });
     }
 
     public void close() {
@@ -112,7 +126,19 @@ public class MessageProducer<K, V> {
     }
 
     public void send(ProducerRecord<K, V> producerRecord) {
-        producer.send(producerRecord);
+        producer.send(producerRecord, new Callback() {
+
+         @Override
+         public void onCompletion(RecordMetadata returnMetadata, Exception e) {
+            if (null != e) {
+               logger.debug("Error sending record.", e);
+            } else {
+               logger.debug("Record metadata: {}", returnMetadata);
+            }
+            
+         }
+           
+        });
 
     }
 

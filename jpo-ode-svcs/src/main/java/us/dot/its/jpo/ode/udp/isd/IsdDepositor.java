@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.tomcat.util.buf.HexUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oss.asn1.AbstractData;
 import com.oss.asn1.DecodeFailedException;
@@ -22,6 +24,7 @@ import com.oss.asn1.INTEGER;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
 import us.dot.its.jpo.ode.j2735.J2735;
+import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.semi.DataReceipt;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationDataAcceptance;
@@ -31,7 +34,7 @@ import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
 public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 
    public IsdDepositor(OdeProperties odeProps) {
-      super(odeProps, odeProps.getIsdDepositorPort(), SemiDialogID.intersectionSitDataDep);
+      super(odeProps, odeProps.getIsdDepositorPort());
    }
 
    @Override
@@ -42,13 +45,17 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
       byte[] encodedIsd = record.value();
 
       try {
-         logger.debug("Depositor received ISD: {}", HexUtils.toHexString(encodedIsd));
+         logger.debug("Received ISD: {}", HexUtils.toHexString(encodedIsd));
 
-         logger.debug("Sending ISD to SDC IP: {}:{} from port: {}", odeProperties.getSdcIp(),
-               odeProperties.getSdcPort(), socket.getLocalPort());
-         socket.send(new DatagramPacket(encodedIsd, encodedIsd.length,
-               new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
-         messagesSent++;
+         if (trustMgr.establishTrust(getRequestId(), getDialogId())) {
+            logger.debug("Sending ISD to SDC IP: {}:{} from port: {}", odeProperties.getSdcIp(),
+                  odeProperties.getSdcPort(), socket.getLocalPort());
+            socket.send(new DatagramPacket(encodedIsd, encodedIsd.length,
+                  new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
+            messagesSent++;
+         } else {
+            logger.error("Failed to establish trust, not sending ISD to SDC");
+         }
       } catch (IOException e) {
          logger.error("Error Sending Isd to SDC", e);
          return new byte[0];
@@ -61,7 +68,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
             odeProperties.getMessagesUntilTrustReestablished());
       if (messagesSent >= odeProperties.getMessagesUntilTrustReestablished()) {
          trustMgr.setTrustEstablished(false);
-         //sendDataReceipt(encodedIsd);
+         // TODO sendDataReceipt(encodedIsd);
       }
 
       return encodedIsd;
@@ -74,9 +81,9 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
        */
 
       IntersectionSituationDataAcceptance acceptance = new IntersectionSituationDataAcceptance();
-      acceptance.dialogID = dialogId;
-      acceptance.groupID = groupId;
-      acceptance.requestID = requestId;
+      // acceptance.dialogID = dialogId;
+      // acceptance.groupID = groupId;
+      // acceptance.requestID = requestId;
       acceptance.seqID = SemiSequenceID.accept;
       acceptance.recordsSent = new INTEGER(messagesSent);
 
@@ -120,26 +127,28 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 
    }
 
-    @Override
-    public Object call() {
-        IntersectionSituationData decodedMsg = null;
-        try {
-           decodedMsg = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
-                 .decode(new ByteArrayInputStream((byte[]) record.value()), new IntersectionSituationData()));
-           
-        } catch (DecodeFailedException | DecodeNotSupportedException e) {
-           logger.error("Depositor failed to decode ISD message: {}", e);
-        }
-        
-        if (null == decodedMsg) {
-           logger.error("Failed to decode message (null)");
-           return null;
-        } else {
-           requestId = decodedMsg.requestID;
-           groupId = decodedMsg.groupID;
-        }
+   @Override
+   protected SemiDialogID getDialogId() {
+      return SemiDialogID.intersectionSitDataDep;
+   }
 
-        return super.call();
-    }
+   @Override
+   protected TemporaryID getRequestId() {
+      TemporaryID reqID = null;
+      try {
+         reqID = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
+               .decode(new ByteArrayInputStream(record.value()), new IntersectionSituationData())).requestID;
+
+      } catch (DecodeFailedException | DecodeNotSupportedException e) {
+         logger.error("Depositor failed to decode ISD message: {}", e);
+      }
+
+      return reqID;
+   }
+
+   @Override
+   protected Logger getLogger() {
+      return LoggerFactory.getLogger(this.getClass());
+   }
 
 }

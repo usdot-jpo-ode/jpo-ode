@@ -63,14 +63,14 @@ public class OdeProperties implements EnvironmentAware {
    // Enable/disable depositing sanitized BSMs to SDC
    private boolean depositSanitizedBsmToSdc = true;
 
-   private int serviceRespExpirationSeconds = 60;
+   private int serviceRespExpirationSeconds = 10;
 
    private int serviceResponseBufferSize = 500;
 
    /*
     * BSM Properties
     */
-   private String kafkaTopicBsmSerializedPojo = "j2735Bsm";
+   private String kafkaTopicBsmSerializedPojo = "topic.j2735Bsm";
    private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
    private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
    private int bsmReceiverPort = 46800;
@@ -79,6 +79,7 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * Vehicle Situation Data (VSD) Properties
     */
+   private int trustRetries = 2;
    private int vsdBufferSize = 500;
    private int vsdReceiverPort = 46753;
    private int vsdDepositorPort = 5555;
@@ -108,7 +109,7 @@ public class OdeProperties implements EnvironmentAware {
 
    private int dataReceiptExpirationSeconds;
 
-   protected static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
+   public static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
 
    public OdeProperties() {
       super();
@@ -504,6 +505,14 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setRsuSrmSlots(int rsuSrmSlots) {
       this.rsuSrmSlots = rsuSrmSlots;
+   }
+
+   public int getTrustRetries() {
+      return trustRetries;
+   }
+
+   public void setTrustRetries(int trustRetries) {
+      this.trustRetries = trustRetries;
    }
 
 }

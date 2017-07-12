@@ -33,12 +33,12 @@ public class ToJsonServiceController {
       ToJsonConverter<J2735Bsm> converter = new ToJsonConverter<J2735Bsm>(
               odeProps, false, odeProps.getKafkaTopicBsmRawJson());
       
-      converter.start(
-              new MessageConsumer<String, J2735Bsm>(
-                  odeProps.getKafkaBrokers(), 
-                  this.getClass().getSimpleName(), 
-                  converter), 
-              odeProps.getKafkaTopicBsmSerializedPojo());
+      MessageConsumer<String, J2735Bsm> consumer = new MessageConsumer<String, J2735Bsm>(
+            odeProps.getKafkaBrokers(), 
+            this.getClass().getSimpleName(), 
+            converter);
+      consumer.setName(this.getClass().getSimpleName());
+      converter.start(consumer, odeProps.getKafkaTopicBsmSerializedPojo());
       
    }
 

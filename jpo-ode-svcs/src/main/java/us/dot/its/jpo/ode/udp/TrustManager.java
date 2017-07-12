@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.time.ZonedDateTime;
-import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
@@ -41,23 +41,9 @@ import us.dot.its.jpo.ode.j2735.semi.Sha256Hash;
 import us.dot.its.jpo.ode.udp.isd.ServiceResponseReceiver;
 
 /*
- * This class receives service request from the OBU and forwards it to the SDC.
- * It also receives service response from SDC and forwards it back to the OBU.
+ * This class can be used to create a trust session or create a service response reply.
  */
-public class TrustManager implements Callable<Boolean> {
-   public class TrustManagerException extends Exception {
-
-      private static final long serialVersionUID = 1L;
-
-      public TrustManagerException(String string) {
-         super(string);
-      }
-
-      public TrustManagerException(String string, Exception e) {
-         super(string, e);
-      }
-
-   }
+public class TrustManager {
 
    private OdeProperties odeProperties;
    private static Coder coder = J2735.getPERUnalignedCoder();
@@ -66,7 +52,6 @@ public class TrustManager implements Callable<Boolean> {
 
    private ExecutorService execService;
    private boolean trustEstablished = false;
-   private boolean establishingTrust = false;
 
    public TrustManager(OdeProperties odeProps, DatagramSocket socket) {
       this.odeProperties = odeProps;
@@ -74,37 +59,6 @@ public class TrustManager implements Callable<Boolean> {
 
        execService =
        Executors.newCachedThreadPool(Executors.defaultThreadFactory());
-   }
-
-   public ServiceRequest createServiceRequest(TemporaryID requestID, SemiDialogID dialogID, GroupID groupID)
-         throws TrustManagerException {
-      // TODO use groupID = 0 or ode group id
-      // GroupID groupID = new GroupID(OdeProperties.JPO_ODE_GROUP_ID);
-
-      ServiceRequest request = new ServiceRequest(dialogID, SemiSequenceID.svcReq, groupID, requestID);
-      
-      
-
-//      TODO - return address overriding (is there ever a situation where this would work?)
-//      IpAddress ipAddr = new IpAddress();
-//      if (!StringUtils.isEmpty(odeProperties.getExternalIpv4())) {
-//         ipAddr.setIpv4Address(new IPv4Address(J2735Util.ipToBytes(odeProperties.getExternalIpv4())));
-//         logger.debug("Return IPv4: {}", odeProperties.getExternalIpv4());
-//      } else if (!StringUtils.isEmpty(odeProperties.getExternalIpv6())) {
-//         ipAddr.setIpv6Address(new IPv6Address(J2735Util.ipToBytes(odeProperties.getExternalIpv6())));
-//         logger.debug("Return IPv6: {}", odeProperties.getExternalIpv6());
-//      } else {
-//         throw new TrustManagerException("Invalid ode.externalIpv4 [" + odeProperties.getExternalIpv4()
-//               + "] and ode.externalIpv6 [" + odeProperties.getExternalIpv6() + "] properties");
-//      }
-//
-//      ConnectionPoint returnAddr = new ConnectionPoint(ipAddr, new PortNumber(socket.getLocalPort()));
-//      
-//      // request.setDestination(returnAddr);
-//
-//      logger.debug("Response Destination {}:{}", returnAddr.getAddress().toString(), returnAddr.getPort().intValue());
-
-      return request;
    }
 
    public ServiceResponse createServiceResponse(ServiceRequest request) {
@@ -138,83 +92,82 @@ public class TrustManager implements Callable<Boolean> {
    public void sendServiceRequest(ServiceRequest request, String ip, int port) {
       try {
          trustEstablished = false;
-         logger.debug("Sending ServiceRequest {} to {}:{}", request.toString(), ip, port);
 
          byte[] requestBytes = J2735Util.encode(coder, request);
+         logger.debug("Sending ServiceRequest to {}:{}", ip, port);
          socket.send(new DatagramPacket(requestBytes, requestBytes.length, new InetSocketAddress(ip, port)));
       } catch (IOException e) {
          logger.error("Error ServiceRequest", e);
       }
    }
 
-   public boolean establishTrust(int srcPort, String destIp, int destPort, TemporaryID requestId, SemiDialogID dialogId,
-         GroupID groupId) throws SocketException, TrustManagerException {
+   /**
+    * Creates and sends a service request with a threaded response listener. Returns 
+    * boolean success.
+    * @param destIp
+    * @param destPort
+    * @param requestId
+    * @param dialogId
+    * @return
+    */
+   public boolean establishTrust(TemporaryID requestId, SemiDialogID dialogId) {
+      
+      if (this.isTrustEstablished()) {
+         return true;
+      }
+      
+      logger.info("Starting trust establishment...");
+
+      int retriesLeft = odeProperties.getTrustRetries();
+
+      while (retriesLeft > 0 && !this.isTrustEstablished()) {
+         if (retriesLeft < odeProperties.getTrustRetries()) {
+            logger.debug("Failed to establish trust, retrying {} more time(s).", retriesLeft);
+         }
+         performHandshake(requestId, dialogId);
+         --retriesLeft;
+      }
+      
+      return trustEstablished;
+      
+   }
+   
+   public boolean performHandshake(TemporaryID requestId, SemiDialogID dialogId) {
       logger.info("Establishing trust...");
 
-      // if (this.socket != null && !trustEstablished) {
-      // logger.debug("Closing outbound socket srcPort={}, destPort={}",
-      // srcPort, destPort);
-      // socket.close();
-      // socket = null;
-      // }
-      //
-      // if (this.socket == null) {
-      // socket = new DatagramSocket(srcPort);
-      // logger.debug("Creating outbound socket srcPort={}, destPort={}",
-      // srcPort, destPort);
-      // }
-
       // Launch a trust manager thread to listen for the service response
-     
-
       try {
-         setEstablishingTrust(true);
 
          Future<AbstractData> f = execService.submit(new ServiceResponseReceiver(odeProperties, socket));
-         logger.debug("Submitted ServiceResponseReceiver to listen on port {}", socket.getPort());
 
-         ServiceRequest request = createServiceRequest(requestId, dialogId, groupId);
-         this.sendServiceRequest(request, destIp, destPort);
+         ServiceRequest request = new ServiceRequest(dialogId, SemiSequenceID.svcReq, new GroupID(OdeProperties.JPO_ODE_GROUP_ID), requestId);
+         this.sendServiceRequest(request, odeProperties.getSdcIp(), odeProperties.getSdcPort());
 
          ServiceResponse response = (ServiceResponse) f.get(odeProperties.getServiceRespExpirationSeconds(),
                TimeUnit.SECONDS);
 
-         logger.debug("ServiceResponse: f.isDone(): {}, f.isCancelled(): {}", f.isDone(), f.isCancelled());
-
          if (response.getRequestID().equals(request.getRequestID())) {
+            // Matching IDs indicates a successful handshake
             trustEstablished = true;
-            logger.info("Trust established, session request ID: {}",
-                  HexUtils.toHexString(request.getRequestID().byteArrayValue()));
+            String reqid = HexUtils.toHexString(request.getRequestID().byteArrayValue());
+            logger.info("Trust established, session requestID: {}",
+                  reqid);
          } else {
+            trustEstablished = false;
             logger.error("Received ServiceResponse from SDC but the requestID does not match! {} != {}",
                   response.getRequestID(), request.getRequestID());
-            trustEstablished = false;
          }
 
-      } catch (Exception e) {
-
+      } catch (TimeoutException e) {
          trustEstablished = false;
-         // throw new TrustManagerException("Did not receive Service Response
-         // within alotted " +
-         // + odeProperties.getServiceRespExpirationSeconds() +
-         // " seconds", e);
          logger.error("Did not receive Service Response within alotted "
-               + +odeProperties.getServiceRespExpirationSeconds() + " seconds", e.getCause());
+               + +odeProperties.getServiceRespExpirationSeconds() + " seconds.", e);
 
-      } finally {
-         setEstablishingTrust(false);
+      } catch (InterruptedException | ExecutionException e) {
+         trustEstablished = false;
+         logger.error("Trust establishment interrupted.", e);
       }
       return trustEstablished;
-   }
-
-   @Override
-   public Boolean call() throws Exception {
-      /*
-       *  TODO ODE-314 isd debug fail: This is a bogus return.
-       *  The the original design of TustManager does not seem 
-       *  to be understood by the person who changed it to this. 
-       */
-      return establishTrust(0, "", 0, new TemporaryID(), new SemiDialogID(0), new GroupID());
    }
 
    public boolean isTrustEstablished() {
@@ -224,13 +177,4 @@ public class TrustManager implements Callable<Boolean> {
    public void setTrustEstablished(boolean trustEstablished) {
       this.trustEstablished = trustEstablished;
    }
-
-   public boolean isEstablishingTrust() {
-      return establishingTrust;
-   }
-
-   public void setEstablishingTrust(boolean establishingTrust) {
-      this.establishingTrust = establishingTrust;
-   }
-
 }

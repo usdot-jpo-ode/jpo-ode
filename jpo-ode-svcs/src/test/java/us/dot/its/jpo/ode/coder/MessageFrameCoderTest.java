@@ -29,12 +29,6 @@ public class MessageFrameCoderTest {
     MessageProducer<String, String> mockMessageProducer;
 
     @Test
-    public void shouldConstruct() {
-        // trivial test that no exceptions are thrown
-        new MessageFrameStreamDecoderPublisher();
-    }
-
-    @Test
     public void shouldConstructWithParameter(@Mocked OdeProperties mockOdeProperties,
             @Mocked final PluginFactory unused, @Mocked Asn1Plugin mockAsn1Plugin,
             @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool) {
