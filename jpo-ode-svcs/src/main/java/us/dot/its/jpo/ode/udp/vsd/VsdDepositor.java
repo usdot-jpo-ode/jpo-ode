@@ -26,6 +26,7 @@ import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage.Bundle;
 import us.dot.its.jpo.ode.j2735.semi.VehSitRecord;
+import us.dot.its.jpo.ode.j2735.semi.VsmType;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssVehicleSituationRecord;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -127,6 +128,7 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
          vsd.requestID = getRequestId();
          vsd.bundle = vsrBundle;
          vsd.crc = new MsgCRC(new byte[] { 0 });
+         vsd.type = new VsmType(new byte[] {1}); // "00000001", VehSitRcd that only contains the fundamental data elements
 
          // now that the vsd is crafted, clear the queue
          bsmQueueMap.get(tempId).clear();
