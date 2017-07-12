@@ -12,9 +12,12 @@ import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.oss.asn1.EncodeFailedException;
+import com.oss.asn1.EncodeNotSupportedException;
+
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
+import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.MsgCRC;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.semi.GroupID;
@@ -66,11 +69,13 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
             VehSitDataMessage vsd = addToVsdBundle(j2735Bsm);
 
             if (vsd != null) { // NOSONAR
+               logger.info("VSD ready to send: {}", vsd);
                if (trustMgr.establishTrust(getRequestId(), getDialogId())) {
 
                   logger.debug("Sending VSD to SDC IP: {} Port: {}", odeProperties.getSdcIp(),
                         odeProperties.getSdcPort());
-                  encodedVsd = J2735Util.encode(coder, vsd);
+                  //encodedVsd = J2735Util.encode(coder, vsd);
+                  encodedVsd = J2735.getPERUnalignedCoder().encode(vsd).array();
                   socket.send(new DatagramPacket(encodedVsd, encodedVsd.length,
                         new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
                } else {
@@ -78,7 +83,7 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
                }
             }
          }
-      } catch (IOException e) {
+      } catch (IOException | EncodeFailedException | EncodeNotSupportedException e) {
          logger.error("Error Sending VSD to SDC", e);
       }
       return encodedVsd;
