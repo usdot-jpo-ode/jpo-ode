@@ -70,13 +70,13 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
             VehSitDataMessage vsd = addToVsdBundle(j2735Bsm);
 
             if (vsd != null) { // NOSONAR
-               logger.info("VSD ready to send: {}", vsd);
+               
+               encodedVsd = J2735.getPERUnalignedCoder().encode(vsd).array();
+               logger.info("VSD ready to send: (pojo) {}", vsd);
+               logger.info("VSD ready to send: (hex) {}", HexUtils.toHexString(encodedVsd));
                if (trustMgr.establishTrust(getRequestId(), getDialogId())) {
-
                   logger.debug("Sending VSD to SDC IP: {} Port: {}", odeProperties.getSdcIp(),
                         odeProperties.getSdcPort());
-                  //encodedVsd = J2735Util.encode(coder, vsd);
-                  encodedVsd = J2735.getPERUnalignedCoder().encode(vsd).array();
                   socket.send(new DatagramPacket(encodedVsd, encodedVsd.length,
                         new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
                } else {
