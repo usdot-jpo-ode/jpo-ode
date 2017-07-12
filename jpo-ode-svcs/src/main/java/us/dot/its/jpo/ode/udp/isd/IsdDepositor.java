@@ -45,13 +45,17 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
       byte[] encodedIsd = record.value();
 
       try {
-         logger.debug("Depositor received ISD: {}", HexUtils.toHexString(encodedIsd));
+         logger.debug("Received ISD: {}", HexUtils.toHexString(encodedIsd));
 
-         logger.debug("Sending ISD to SDC IP: {}:{} from port: {}", odeProperties.getSdcIp(),
-               odeProperties.getSdcPort(), socket.getLocalPort());
-         socket.send(new DatagramPacket(encodedIsd, encodedIsd.length,
-               new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
-         messagesSent++;
+         if (trustMgr.establishTrust(getRequestId(), getDialogId())) {
+            logger.debug("Sending ISD to SDC IP: {}:{} from port: {}", odeProperties.getSdcIp(),
+                  odeProperties.getSdcPort(), socket.getLocalPort());
+            socket.send(new DatagramPacket(encodedIsd, encodedIsd.length,
+                  new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
+            messagesSent++;
+         } else {
+            logger.error("Failed to establish trust, not sending ISD to SDC");
+         }
       } catch (IOException e) {
          logger.error("Error Sending Isd to SDC", e);
          return new byte[0];
@@ -77,9 +81,9 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
        */
 
       IntersectionSituationDataAcceptance acceptance = new IntersectionSituationDataAcceptance();
-//      acceptance.dialogID = dialogId;
-//      acceptance.groupID = groupId;
-//      acceptance.requestID = requestId;
+      // acceptance.dialogID = dialogId;
+      // acceptance.groupID = groupId;
+      // acceptance.requestID = requestId;
       acceptance.seqID = SemiSequenceID.accept;
       acceptance.recordsSent = new INTEGER(messagesSent);
 
@@ -123,39 +127,17 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 
    }
 
-//    @Override
-//    public Object call() {
-//        IntersectionSituationData decodedMsg = null;
-//        try {
-//           decodedMsg = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
-//                 .decode(new ByteArrayInputStream((byte[]) record.value()), new IntersectionSituationData()));
-//           
-//        } catch (DecodeFailedException | DecodeNotSupportedException e) {
-//           logger.error("Depositor failed to decode ISD message: {}", e);
-//        }
-//        
-//        if (null == decodedMsg) {
-//           logger.error("Failed to decode message (null)");
-//           return null;
-//        } else {
-//           requestId = decodedMsg.requestID;
-//           groupId = decodedMsg.groupID;
-//        }
-//
-//        return super.call();
-//    }
-    
-    @Override
-    protected SemiDialogID getDialogId() {
-       return SemiDialogID.intersectionSitDataDep;
-    }
+   @Override
+   protected SemiDialogID getDialogId() {
+      return SemiDialogID.intersectionSitDataDep;
+   }
 
    @Override
    protected TemporaryID getRequestId() {
       TemporaryID reqID = null;
       try {
-         reqID = ((IntersectionSituationData) J2735.getPERUnalignedCoder().decode(new ByteArrayInputStream(record.value()),
-               new IntersectionSituationData())).requestID;
+         reqID = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
+               .decode(new ByteArrayInputStream(record.value()), new IntersectionSituationData())).requestID;
 
       } catch (DecodeFailedException | DecodeNotSupportedException e) {
          logger.error("Depositor failed to decode ISD message: {}", e);

@@ -12,7 +12,6 @@ import com.oss.asn1.Coder;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
-import us.dot.its.jpo.ode.j2735.semi.GroupID;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.udp.TrustManager;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
@@ -43,6 +42,12 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
          logger.error("Error creating socket with port " + port, e);
       }
    }
+   
+   @Override
+   public byte[] call() {
+      logger.debug("Subscriber received data.");
+      return deposit();
+   }
 
    /**
     * Starts a Kafka listener that runs call() every time a new msg arrives
@@ -57,40 +62,6 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
             consumer.subscribe(topics);
          }
       });
-   }
-
-   @Override
-   public Object call() {
-      logger.debug("Subscriber received data.");
-      byte[] encodedMsg = null;
-
-      // Verify trust before depositing, else establish trust
-      if (trustMgr.isTrustEstablished()) {
-         encodedMsg = deposit();
-      } else {
-         logger.info("Starting trust establishment...");
-         messagesSent = 0;
-
-         int retriesLeft = odeProperties.getTrustRetries();
-
-         while (retriesLeft > 0 && !trustMgr.isTrustEstablished()) {
-            if (retriesLeft < odeProperties.getTrustRetries()) {
-               logger.debug("Failed to establish trust, retrying {} more time(s).", retriesLeft);
-            }
-            trustMgr.establishTrust(odeProperties.getSdcIp(), odeProperties.getSdcPort(), getRequestId(), getDialogId(),
-                  new GroupID(OdeProperties.JPO_ODE_GROUP_ID));
-            --retriesLeft;
-         }
-
-         if (trustMgr.isTrustEstablished()) {
-            encodedMsg = deposit();
-         } else {
-            logger.error("Failed to establish trust after {} attempts. Not depositing message.",
-                  odeProperties.getTrustRetries());
-         }
-      }
-
-      return encodedMsg;
    }
 
    protected abstract TemporaryID getRequestId();

@@ -103,16 +103,36 @@ public class TrustManager {
 
    /**
     * Creates and sends a service request with a threaded response listener. Returns 
-    * boolean success (true) or failure.
+    * boolean success.
     * @param destIp
     * @param destPort
     * @param requestId
     * @param dialogId
-    * @param groupId
     * @return
     */
-   public boolean establishTrust(String destIp, int destPort, TemporaryID requestId, SemiDialogID dialogId,
-         GroupID groupId) {
+   public boolean establishTrust(TemporaryID requestId, SemiDialogID dialogId) {
+      
+      if (this.isTrustEstablished()) {
+         return true;
+      }
+      
+      logger.info("Starting trust establishment...");
+
+      int retriesLeft = odeProperties.getTrustRetries();
+
+      while (retriesLeft > 0 && !this.isTrustEstablished()) {
+         if (retriesLeft < odeProperties.getTrustRetries()) {
+            logger.debug("Failed to establish trust, retrying {} more time(s).", retriesLeft);
+         }
+         performHandshake(requestId, dialogId);
+         --retriesLeft;
+      }
+      
+      return trustEstablished;
+      
+   }
+   
+   public boolean performHandshake(TemporaryID requestId, SemiDialogID dialogId) {
       logger.info("Establishing trust...");
 
       // Launch a trust manager thread to listen for the service response
@@ -120,8 +140,8 @@ public class TrustManager {
 
          Future<AbstractData> f = execService.submit(new ServiceResponseReceiver(odeProperties, socket));
 
-         ServiceRequest request = new ServiceRequest(dialogId, SemiSequenceID.svcReq, groupId, requestId);
-         this.sendServiceRequest(request, destIp, destPort);
+         ServiceRequest request = new ServiceRequest(dialogId, SemiSequenceID.svcReq, new GroupID(OdeProperties.JPO_ODE_GROUP_ID), requestId);
+         this.sendServiceRequest(request, odeProperties.getSdcIp(), odeProperties.getSdcPort());
 
          ServiceResponse response = (ServiceResponse) f.get(odeProperties.getServiceRespExpirationSeconds(),
                TimeUnit.SECONDS);
@@ -157,5 +177,4 @@ public class TrustManager {
    public void setTrustEstablished(boolean trustEstablished) {
       this.trustEstablished = trustEstablished;
    }
-
 }
