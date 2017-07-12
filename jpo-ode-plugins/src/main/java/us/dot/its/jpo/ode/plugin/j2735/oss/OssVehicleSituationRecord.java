@@ -86,26 +86,26 @@ public class OssVehicleSituationRecord {
     * @param jPos
     * @return
     */
-   private static Position3D convertPosition3D(J2735Position3D jPos) {
+   public static Position3D convertPosition3D(J2735Position3D jPos) {
 
       Position3D nPos = new Position3D();
 
       if (null == jPos.getLongitude()) {
          nPos._long = new Longitude(1800000001);
       } else {
-         nPos._long = new Longitude((short) (jPos.getLongitude().longValue() * Math.pow(10, 7)));
+         nPos._long = new Longitude(jPos.getLongitude().divide(BigDecimal.valueOf(10, 8), 10, BigDecimal.ROUND_HALF_UP).intValue());
       }
 
       if (null == jPos.getLatitude()) {
          nPos.lat = new Latitude(900000001);
       } else {
-         nPos.lat = new Latitude((short) (jPos.getLatitude().longValue() * Math.pow(10, 7)));
+         nPos.lat = new Latitude(jPos.getLatitude().divide(BigDecimal.valueOf(10, 8), 10, BigDecimal.ROUND_HALF_UP).intValue());
       }
 
       if (null == jPos.getElevation()) {
          nPos.elevation = new Elevation(-4096);
       } else {
-         nPos.elevation = new Elevation((short) (jPos.getElevation().longValue() * Math.pow(10, 1)));
+         nPos.elevation = new Elevation(jPos.getElevation().divide(BigDecimal.valueOf(10, 2), 10, BigDecimal.ROUND_HALF_UP).intValue());
       }
 
       return nPos;
