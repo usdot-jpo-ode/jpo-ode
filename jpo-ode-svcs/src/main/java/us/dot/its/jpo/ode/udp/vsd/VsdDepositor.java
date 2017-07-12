@@ -127,8 +127,8 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
          vsd.groupID = new GroupID(OdeProperties.JPO_ODE_GROUP_ID);
          vsd.requestID = getRequestId();
          vsd.bundle = vsrBundle;
-         vsd.crc = new MsgCRC(new byte[] { 0 });
-         vsd.type = new VsmType(new byte[] {1}); // "00000001", VehSitRcd that only contains the fundamental data elements
+         vsd.crc = new MsgCRC(new byte[] {0,0});
+         vsd.type = new VsmType(new byte[]{1}); // "00000001", VehSitRcd that only contains the fundamental data elements
 
          // now that the vsd is crafted, clear the queue
          bsmQueueMap.get(tempId).clear();
