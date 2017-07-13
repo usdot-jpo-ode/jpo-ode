@@ -29,7 +29,7 @@ import us.dot.its.jpo.ode.j2735.semi.VehSitRecord;
 import us.dot.its.jpo.ode.j2735.semi.VsmType;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssVehicleSituationRecord;
-import us.dot.its.jpo.ode.util.BsmComparator;
+import us.dot.its.jpo.ode.udp.bsm.BsmComparator;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 /**

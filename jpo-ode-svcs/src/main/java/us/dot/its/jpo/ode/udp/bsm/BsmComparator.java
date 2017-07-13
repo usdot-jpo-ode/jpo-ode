@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.util;
+package us.dot.its.jpo.ode.udp.bsm;
 
 import java.util.Comparator;
 

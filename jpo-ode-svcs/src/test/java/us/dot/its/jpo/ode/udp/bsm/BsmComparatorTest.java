@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.util;
+package us.dot.its.jpo.ode.udp.bsm;
 
 import static org.junit.Assert.assertEquals;
 
@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmCoreData;
+import us.dot.its.jpo.ode.udp.bsm.BsmComparator;
 
 public class BsmComparatorTest {
 
