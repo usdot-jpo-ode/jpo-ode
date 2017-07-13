@@ -29,6 +29,7 @@ import us.dot.its.jpo.ode.j2735.semi.VehSitRecord;
 import us.dot.its.jpo.ode.j2735.semi.VsmType;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssVehicleSituationRecord;
+import us.dot.its.jpo.ode.util.BsmComparator;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 /**
@@ -130,22 +131,6 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
          logger.info("Added BSM with tempID {} to existing VSD package queue ({}/{})", tempId,
                bsmQueueMap.get(tempId).size(), VSD_PACKAGE_SIZE);
          return null;
-      }
-   }
-
-   /**
-    * Comparator for the priority queue to keep the chronological order of bsms
-    */
-   private class BsmComparator implements Comparator<J2735Bsm> {
-      @Override
-      public int compare(J2735Bsm x, J2735Bsm y) {
-         // TODO - determine message arrival time
-         // for now we are using the BSM's time offset property
-
-         int xt = x.getCoreData().getSecMark();
-         int yt = y.getCoreData().getSecMark();
-
-         return Integer.compare(xt, yt);
       }
    }
 
