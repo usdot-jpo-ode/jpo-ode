@@ -11,7 +11,6 @@ By contributing to the US Department of Transportation Joint Program office (JPO
 
 [Code Standards](https://usdotjpoode.atlassian.net/wiki/display/USDOTJPODE/Code+Standards)
 
-[Effective Java Second Edition](http://www.ebooksbucket.com/uploads/itprogramming/java/Effective_Java_2nd_Edition.pdf)
 
 ## Miscellaneous Documentation
 
