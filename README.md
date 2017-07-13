@@ -373,7 +373,7 @@ To be added.
 
 ## VII. Contribution Information
 
-Please read our [contributing guide/](docs/contributing_guide.md) to learn about our development process, how to propose pull requests and improvements, and how to build and test your changes to this project. 
+Please read our [contributing guide](docs/contributing_guide.md) to learn about our development process, how to propose pull requests and improvements, and how to build and test your changes to this project. 
 
 
 [Back to top](#toc)
