@@ -352,8 +352,13 @@ With the PPM module running, all filtered BSMs that are uploaded through the web
 [Back to top](#toc)
 
 <a name="dev-tools"/>
+## VI. ODE Limitations
 
-## VI. Development Tools
+Date: 07/2017
+
+In its current state, the ODE has been developed to accomplish the goals of data transfer, security, and modularity working with the J2735 and 1609.2 security. The system has been designed to support multiple services orchestrated through the Apache Kafka streaming data pipelines, services built and supported as separate applications and described with each service's repository. As a modular system, each component has been built for functionality first, and additional performance testing is needed to understand the limits of the system with large volumes of data.
+
+## VII. Development Tools
 
 ### Integrated Development Environment (IDE)
 
