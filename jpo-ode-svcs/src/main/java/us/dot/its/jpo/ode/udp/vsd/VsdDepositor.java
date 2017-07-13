@@ -118,7 +118,7 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
          VehSitDataMessage vsd = new VehSitDataMessage();
          vsd.dialogID = getDialogId();
          vsd.seqID = SemiSequenceID.data;
-         vsd.groupID = new GroupID(OdeProperties.JPO_ODE_GROUP_ID);
+         vsd.groupID = new GroupID(OdeProperties.getJpoOdeGroupId());
          vsd.requestID = getRequestId();
          vsd.bundle = vsrBundle;
          vsd.crc = new MsgCRC(new byte[] {0,0});

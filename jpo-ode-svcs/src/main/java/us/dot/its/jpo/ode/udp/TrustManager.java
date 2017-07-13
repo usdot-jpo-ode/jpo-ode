@@ -140,7 +140,7 @@ public class TrustManager {
 
          Future<AbstractData> f = execService.submit(new ServiceResponseReceiver(odeProperties, socket));
 
-         ServiceRequest request = new ServiceRequest(dialogId, SemiSequenceID.svcReq, new GroupID(OdeProperties.JPO_ODE_GROUP_ID), requestId);
+         ServiceRequest request = new ServiceRequest(dialogId, SemiSequenceID.svcReq, new GroupID(OdeProperties.getJpoOdeGroupId()), requestId);
          this.sendServiceRequest(request, odeProperties.getSdcIp(), odeProperties.getSdcPort());
 
          ServiceResponse response = (ServiceResponse) f.get(odeProperties.getServiceRespExpirationSeconds(),
