@@ -38,13 +38,16 @@ Issue Repository: [https://github.com/usdot-jpo-ode/jpo-ode/issues](https://git
 
 [Jpo-Ode GitHub Pull Request Page](https://github.com/usdot-jpo-ode/jpo-ode/pulls)
 
-All pull requests will be reviewed by the JPO-ODE team. During the review of your pull request the team member will either merge it, request changes to it, or close it with an explanation. For major changes the reviewer may require additional support from the team, which could cause some delay. We'll do our best to provide updates and feedback throughout the process.
+All pull requests will be reviewed by the JPO-ODE team. During the review of your pull request the team member will either merge it, request changes to it, or close it with an explanation. For major changes the reviewer may require additional support from the team, which could cause some delay. We'll do our best to provide updates and feedback throughout the process. Feel free to open pull requests, and the ODE team will communicate through it with any comments.
 **Before submitting a pull request**, please make sure the following is done:
 	
 	1.	Fork the repository and create your branch from the master.
 	2.	If you've added code that should be tested, add tests!
-	3.	Ensure the tests pass.
+	3.	Ensure the tests pass. Our target is 90% coverage
 	4.	Update the documentation.
+		- User QA procedures are documented within the Github Wiki
+		- Architecture and user guide documentation should be included in the word document under the `docs/` folder
+		- Please contact the ODE with qny questions
 	5.	Format your code as outlined in the style guide
 
 ## Contributor Covenant Code of Conduct
@@ -66,7 +69,7 @@ Examples of unacceptable behavior by participants include:
 	-	Trolling, insulting/derogatory comments, and personal or political attacks
 	-	Public or private harassment
 	-	Publishing others' private information, such as a physical or electronic address, without explicit permission
-	- Other conduct which could reasonably be considered inappropriate in a professional setting
+	-	Other conduct which could reasonably be considered inappropriate in a professional setting
 
 #### Our Responsibilities
 Project maintainers are responsible for clarifying the standards of acceptable behavior and are expected to take appropriate and fair corrective action in response to any instances of unacceptable behavior.
