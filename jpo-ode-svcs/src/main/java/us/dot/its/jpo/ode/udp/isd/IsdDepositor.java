@@ -30,11 +30,15 @@ import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationDataAcceptance;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
+import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 
    public IsdDepositor(OdeProperties odeProps) {
       super(odeProps, odeProps.getIsdDepositorPort());
+      consumer = MessageConsumer.defaultByteArrayMessageConsumer(
+            odeProps.getKafkaBrokers(), odeProps.getHostId() + this.getClass().getSimpleName(), this);
+      consumer.setName(this.getClass().getSimpleName());
    }
 
    @Override

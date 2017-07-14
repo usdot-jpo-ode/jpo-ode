@@ -13,44 +13,44 @@ import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.UdpServicesController;
-import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 @RunWith(JMockit.class)
 public class BsmServicesControllerTest {
 
-    @Injectable
-    OdeProperties mockOdeProperties;
+   @Injectable
+   OdeProperties mockOdeProperties;
 
-    @Mocked
-	ExecutorService mockedExecutorService;
-    @Mocked
-    MessageProducer<?, ?> mockedStringProducer;
-    
-    @Mocked
-    MessageProducer<?, ?> mockedByteArrayProducer;
+   @Mocked
+   ExecutorService mockedExecutorService;
+   @Mocked
+   MessageProducer<?, ?> mockedStringProducer;
 
-	@Test @Ignore
-	public void testConstructor() {
-		
-		// TODO - Replace this with a UDP services controller test
-		
-		new Expectations(MessageProducer.class, Executors.class) {
-			{
-		        MessageProducer.defaultStringMessageProducer(anyString, anyString);
-		        result = mockedStringProducer;
+   @Mocked
+   MessageProducer<?, ?> mockedByteArrayProducer;
 
-		        MessageProducer.defaultByteArrayMessageProducer(anyString, anyString);
-                result = mockedByteArrayProducer;
+   @Test
+   @Ignore
+   public void testConstructor() {
 
-		        Executors.newSingleThreadExecutor();
-				result = mockedExecutorService;
+      // TODO - Replace this with a UDP services controller test
 
-				mockedExecutorService.submit((BsmReceiver) any);
-            }
-		};
+      new Expectations(MessageProducer.class, Executors.class) {
+         {
+            MessageProducer.defaultStringMessageProducer(anyString, anyString);
+            result = mockedStringProducer;
 
-		new UdpServicesController(mockOdeProperties);
-	}
+            MessageProducer.defaultByteArrayMessageProducer(anyString, anyString);
+            result = mockedByteArrayProducer;
+
+            Executors.newSingleThreadExecutor();
+            result = mockedExecutorService;
+
+            mockedExecutorService.submit((BsmReceiver) any);
+         }
+      };
+
+      new UdpServicesController(mockOdeProperties);
+   }
 
 }

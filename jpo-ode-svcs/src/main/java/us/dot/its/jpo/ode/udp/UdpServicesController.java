@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.udp;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +14,6 @@ import us.dot.its.jpo.ode.udp.isd.IsdDepositor;
 import us.dot.its.jpo.ode.udp.isd.IsdReceiver;
 import us.dot.its.jpo.ode.udp.vsd.VsdDepositor;
 import us.dot.its.jpo.ode.udp.vsd.VsdReceiver;
-import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 /**
  * Centralized UDP service dispatcher.
@@ -22,7 +22,7 @@ import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 @Controller
 public class UdpServicesController {
 
-   private static Logger logger = LoggerFactory.getLogger(UdpServicesController.class);
+   private Logger logger = LoggerFactory.getLogger(UdpServicesController.class);
 
    @Autowired
    public UdpServicesController(OdeProperties odeProps) {
@@ -30,39 +30,52 @@ public class UdpServicesController {
 
       // BSM
       BsmReceiver bsmReceiver = new BsmReceiver(odeProps);
-      logger.info("Launching {} ...", bsmReceiver.getClass().getSimpleName());
-      Executors.newSingleThreadExecutor().submit(bsmReceiver);
+      startReceiver(bsmReceiver);
 
-      
       // ISD
       IsdDepositor isdDepositor = new IsdDepositor(odeProps);
-      
-      logger.info("Launching {} ...", isdDepositor.getClass().getSimpleName());
-      MessageConsumer<String, byte[]> isdConsumer = MessageConsumer.defaultByteArrayMessageConsumer(
-            odeProps.getKafkaBrokers(), odeProps.getHostId() + this.getClass().getSimpleName(), isdDepositor);
-      isdConsumer.setName(isdDepositor.getClass().getSimpleName());
-      isdDepositor.subscribe(isdConsumer, odeProps.getKafkaTopicEncodedIsd());
-      
+
+//      MessageConsumer<String, byte[]> isdConsumer = MessageConsumer.defaultByteArrayMessageConsumer(
+//            odeProps.getKafkaBrokers(), odeProps.getHostId() + this.getClass().getSimpleName(), isdDepositor);
+//      isdConsumer.setName(isdDepositor.getClass().getSimpleName());
+      isdDepositor.subscribe(odeProps.getKafkaTopicEncodedIsd());
 
       IsdReceiver isdReceiver = new IsdReceiver(odeProps);
-      logger.info("Launching {} ...", isdReceiver.getClass().getSimpleName());
-      Executors.newSingleThreadExecutor().submit(isdReceiver);
+      startReceiver(isdReceiver);
 
-      
       // VSD
       VsdDepositor vsdDepositor = new VsdDepositor(odeProps);
-      logger.info("Launching {} ...", vsdDepositor.getClass().getSimpleName());
 
-      MessageConsumer<String, String> vsdConsumer = MessageConsumer.defaultStringMessageConsumer(
-            odeProps.getKafkaBrokers(), odeProps.getHostId() + this.getClass().getSimpleName(), vsdDepositor);
-      vsdConsumer.setName(vsdDepositor.getClass().getSimpleName());
+//      MessageConsumer<String, String> vsdConsumer = MessageConsumer.defaultStringMessageConsumer(
+//            odeProps.getKafkaBrokers(), odeProps.getHostId() + this.getClass().getSimpleName(), vsdDepositor);
+//      vsdConsumer.setName(vsdDepositor.getClass().getSimpleName());
 
       // TODO ODE-314 Using raw JSON for testing. Switch to Filtered JSON.
-      vsdDepositor.subscribe(vsdConsumer, odeProps.getKafkaTopicBsmRawJson());
+      vsdDepositor.subscribe(odeProps.getKafkaTopicBsmRawJson());
 
       VsdReceiver vsdReceiver = new VsdReceiver(odeProps);
-      logger.info("Launching {} ...", vsdReceiver.getClass().getSimpleName());
-      Executors.newSingleThreadExecutor().submit(vsdReceiver);
+      startReceiver(vsdReceiver);
+   }
+   
+   public void startReceiver(AbstractUdpReceiverPublisher recv) {
+      logger.debug("Starting UDP receiver service {}", recv.getClass().getSimpleName());
+      UdpServiceThreadFactory tf = new UdpServiceThreadFactory(recv.getClass().getSimpleName());
+      Executors.newSingleThreadExecutor(tf).submit(recv);
+   }
+
+   public class UdpServiceThreadFactory implements ThreadFactory {
+      String threadName;
+
+      public UdpServiceThreadFactory(String name) {
+         this.threadName = name;
+      }
+
+      @Override
+      public Thread newThread(Runnable r) {
+         Thread t = new Thread(r);
+         t.setName(threadName);
+         return t;
+      }
    }
 
 }

@@ -26,6 +26,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
    protected int messagesSent;
    protected Coder coder;
    protected ExecutorService pool;
+   protected MessageConsumer<K, V> consumer;
 
    public AbstractSubscriberDepositor(OdeProperties odeProps, int port) {
       this.odeProperties = odeProps;
@@ -55,7 +56,10 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
     * @param consumer
     * @param topics
     */
-   public void subscribe(MessageConsumer<K, V> consumer, String... topics) {
+   public void subscribe(String... topics) {
+      for (String topic : topics) {
+         logger.debug("Subscribing to {}", topic);
+      }
       Executors.newSingleThreadExecutor().submit(() -> consumer.subscribe(topics));
    }
 

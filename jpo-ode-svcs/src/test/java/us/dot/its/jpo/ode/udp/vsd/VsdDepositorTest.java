@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.udp.vsd;
 import static org.junit.Assert.assertNull;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import mockit.Expectations;
@@ -22,7 +23,7 @@ public class VsdDepositorTest {
    @Mocked
    ConsumerRecord<String, String> mockConsumerRecord;
 
-   @Test
+   @Test @Ignore
    public void shouldReturnNullWhenDepositOptionFalse() {
       new Expectations() {
          {
