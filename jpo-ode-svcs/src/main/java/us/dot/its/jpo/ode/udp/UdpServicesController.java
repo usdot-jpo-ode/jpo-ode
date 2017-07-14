@@ -1,5 +1,9 @@
 package us.dot.its.jpo.ode.udp;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
@@ -9,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
 import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
 import us.dot.its.jpo.ode.udp.isd.IsdDepositor;
 import us.dot.its.jpo.ode.udp.isd.IsdReceiver;
@@ -27,40 +32,32 @@ public class UdpServicesController {
    @Autowired
    public UdpServicesController(OdeProperties odeProps) {
       super();
-
-      // BSM
-      BsmReceiver bsmReceiver = new BsmReceiver(odeProps);
-      startReceiver(bsmReceiver);
-
-      // ISD
-      IsdDepositor isdDepositor = new IsdDepositor(odeProps);
-
-//      MessageConsumer<String, byte[]> isdConsumer = MessageConsumer.defaultByteArrayMessageConsumer(
-//            odeProps.getKafkaBrokers(), odeProps.getHostId() + this.getClass().getSimpleName(), isdDepositor);
-//      isdConsumer.setName(isdDepositor.getClass().getSimpleName());
-      isdDepositor.subscribe(odeProps.getKafkaTopicEncodedIsd());
-
-      IsdReceiver isdReceiver = new IsdReceiver(odeProps);
-      startReceiver(isdReceiver);
-
-      // VSD
-      VsdDepositor vsdDepositor = new VsdDepositor(odeProps);
-
-//      MessageConsumer<String, String> vsdConsumer = MessageConsumer.defaultStringMessageConsumer(
-//            odeProps.getKafkaBrokers(), odeProps.getHostId() + this.getClass().getSimpleName(), vsdDepositor);
-//      vsdConsumer.setName(vsdDepositor.getClass().getSimpleName());
-
-      // TODO ODE-314 Using raw JSON for testing. Switch to Filtered JSON.
-      vsdDepositor.subscribe(odeProps.getKafkaTopicBsmRawJson());
-
-      VsdReceiver vsdReceiver = new VsdReceiver(odeProps);
-      startReceiver(vsdReceiver);
+      
+      List<AbstractUdpReceiverPublisher> receiverList = new ArrayList<>();
+      receiverList.add(new BsmReceiver(odeProps));
+      receiverList.add(new IsdReceiver(odeProps));
+      receiverList.add(new VsdReceiver(odeProps));
+      startReceiverServices(receiverList);
+      
+      Map<AbstractSubscriberDepositor<?, ?>, String> depositorList = new HashMap<>();
+      depositorList.put(new IsdDepositor(odeProps), odeProps.getKafkaTopicEncodedIsd());
+      depositorList.put(new VsdDepositor(odeProps), odeProps.getKafkaTopicBsmRawJson());
+      startDepositorServices(depositorList);
    }
    
-   public void startReceiver(AbstractUdpReceiverPublisher recv) {
+   public void startDepositorServices(Map<AbstractSubscriberDepositor<?,?>, String> servicesMap) {
+      for (Map.Entry<AbstractSubscriberDepositor<?,?>, String> entry : servicesMap.entrySet()) {
+         AbstractSubscriberDepositor<?, ?> depper = entry.getKey();
+         depper.subscribe(entry.getValue());
+     }
+   }
+   
+   public void startReceiverServices(List<AbstractUdpReceiverPublisher> recvList) {
+      for(AbstractUdpReceiverPublisher recv : recvList ) {
       logger.debug("Starting UDP receiver service {}", recv.getClass().getSimpleName());
       UdpServiceThreadFactory tf = new UdpServiceThreadFactory(recv.getClass().getSimpleName());
       Executors.newSingleThreadExecutor(tf).submit(recv);
+      }
    }
 
    public class UdpServiceThreadFactory implements ThreadFactory {
