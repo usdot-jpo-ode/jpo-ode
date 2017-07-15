@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.udp;
+package us.dot.its.jpo.ode.udp.trust;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

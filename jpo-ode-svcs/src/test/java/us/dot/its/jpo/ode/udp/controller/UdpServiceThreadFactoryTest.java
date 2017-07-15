@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.udp;
+package us.dot.its.jpo.ode.udp.controller;
 
 import static org.junit.Assert.assertEquals;
 

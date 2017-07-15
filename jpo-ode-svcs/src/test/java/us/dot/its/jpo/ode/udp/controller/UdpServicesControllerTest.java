@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.udp;
+package us.dot.its.jpo.ode.udp.controller;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -12,6 +12,7 @@ import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
+import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.controller.ServiceManager;
 import us.dot.its.jpo.ode.udp.controller.UdpServicesController;
 
