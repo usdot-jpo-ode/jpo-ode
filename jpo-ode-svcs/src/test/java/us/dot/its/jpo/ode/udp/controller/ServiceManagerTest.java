@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.udp.manager;
+package us.dot.its.jpo.ode.udp.controller;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -13,6 +13,7 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.udp.manager.ServiceManager;
 
 public class ServiceManagerTest {
 

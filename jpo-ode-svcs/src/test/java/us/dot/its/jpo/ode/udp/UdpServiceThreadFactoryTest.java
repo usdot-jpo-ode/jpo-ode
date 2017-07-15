@@ -18,7 +18,7 @@ public class UdpServiceThreadFactoryTest {
 
    @Test
    public void constructorShouldSetName() {
-      assertEquals(expectedName, testUdpServiceThreadFactory.threadName);
+      assertEquals(expectedName, testUdpServiceThreadFactory.getThreadName());
    }
 
    @Test

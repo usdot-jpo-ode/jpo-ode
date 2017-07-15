@@ -4,7 +4,7 @@ import java.util.concurrent.ThreadFactory;
 
 public class UdpServiceThreadFactory implements ThreadFactory {
 
-   public String threadName;
+   private String threadName;
    
    public UdpServiceThreadFactory(String name) {
       this.threadName = name;
@@ -15,5 +15,13 @@ public class UdpServiceThreadFactory implements ThreadFactory {
       Thread t = new Thread(r);
       t.setName(this.threadName);
       return t;
+   }
+
+   public String getThreadName() {
+      return threadName;
+   }
+
+   public void setThreadName(String threadName) {
+      this.threadName = threadName;
    }
 }
