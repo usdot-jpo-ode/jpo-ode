@@ -16,6 +16,7 @@ import us.dot.its.jpo.ode.j2735.semi.ConnectionPoint;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.udp.trust.ServiceMessageUtil;
 
 public class IsdReceiver extends AbstractUdpReceiverPublisher {
 
@@ -76,7 +77,7 @@ public class IsdReceiver extends AbstractUdpReceiverPublisher {
                }
                logger.debug("ServiceResponse destination overriden: {}:{}", senderIp, senderPort);
             }
-            sendResponse(decoded, socket);
+            ServiceMessageUtil.encodeAndSend(socket, decoded, senderIp, senderPort);
          } else if (decoded instanceof IntersectionSituationData) {
             logger.debug("Received ISD: {}", HexUtils.toHexString(data));
             publish(data, odeProperties.getKafkaTopicEncodedIsd());

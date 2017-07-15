@@ -13,7 +13,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
-import us.dot.its.jpo.ode.udp.TrustManager;
+import us.dot.its.jpo.ode.udp.trust.TrustSession;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
@@ -22,7 +22,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
    protected Logger logger;
    protected OdeProperties odeProperties;
    protected DatagramSocket socket = null;
-   protected TrustManager trustMgr;
+   protected TrustSession trustMgr;
    protected int messagesSent;
    protected Coder coder;
    protected ExecutorService pool;
@@ -37,7 +37,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
       try {
          logger.debug("Creating depositor socket on port {}", port);
          socket = new DatagramSocket(port);
-         trustMgr = new TrustManager(odeProps, socket);
+         trustMgr = new TrustSession(odeProps, socket);
          pool = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
       } catch (SocketException e) {
          logger.error("Error creating socket with port " + port, e);
