@@ -12,7 +12,7 @@ import mockit.Injectable;
 import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.udp.UdpServicesController;
+import us.dot.its.jpo.ode.udp.manager.UdpServicesController;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 @RunWith(JMockit.class)
