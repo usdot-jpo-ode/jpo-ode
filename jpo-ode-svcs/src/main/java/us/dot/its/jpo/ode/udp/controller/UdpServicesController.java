@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.udp.manager;
+package us.dot.its.jpo.ode.udp.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

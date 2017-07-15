@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.udp.manager;
+package us.dot.its.jpo.ode.udp.controller;
 
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;

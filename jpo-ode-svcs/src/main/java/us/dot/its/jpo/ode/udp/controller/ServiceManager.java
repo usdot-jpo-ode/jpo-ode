@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.udp.manager;
+package us.dot.its.jpo.ode.udp.controller;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;

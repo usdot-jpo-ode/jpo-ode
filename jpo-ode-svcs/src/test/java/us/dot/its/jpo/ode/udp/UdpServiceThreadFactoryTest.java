@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import mockit.Injectable;
 import mockit.Tested;
-import us.dot.its.jpo.ode.udp.manager.UdpServiceThreadFactory;
+import us.dot.its.jpo.ode.udp.controller.UdpServiceThreadFactory;
 
 public class UdpServiceThreadFactoryTest {
 

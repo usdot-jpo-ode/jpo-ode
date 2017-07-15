@@ -12,8 +12,8 @@ import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
-import us.dot.its.jpo.ode.udp.manager.ServiceManager;
-import us.dot.its.jpo.ode.udp.manager.UdpServicesController;
+import us.dot.its.jpo.ode.udp.controller.ServiceManager;
+import us.dot.its.jpo.ode.udp.controller.UdpServicesController;
 
 public class UdpServicesControllerTest {
 

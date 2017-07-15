@@ -13,7 +13,7 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
-import us.dot.its.jpo.ode.udp.manager.ServiceManager;
+import us.dot.its.jpo.ode.udp.controller.ServiceManager;
 
 public class ServiceManagerTest {
 
