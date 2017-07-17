@@ -51,7 +51,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
       try {
          logger.debug("Received ISD: {}", HexUtils.toHexString(encodedIsd));
 
-         if (trustMgr.establishTrust(getRequestId(), getDialogId())) {
+         if (trustSession.establishTrust(getRequestId(), getDialogId())) {
             logger.debug("Sending ISD to SDC IP: {}:{} from port: {}", odeProperties.getSdcIp(),
                   odeProperties.getSdcPort(), socket.getLocalPort());
             socket.send(new DatagramPacket(encodedIsd, encodedIsd.length,
@@ -71,7 +71,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
       logger.info("ISDs sent since session start: {}/{}", messagesSent,
             odeProperties.getMessagesUntilTrustReestablished());
       if (messagesSent >= odeProperties.getMessagesUntilTrustReestablished()) {
-         trustMgr.setTrustEstablished(false);
+         trustSession.setTrustEstablished(false);
          // TODO sendDataReceipt(encodedIsd);
       }
 

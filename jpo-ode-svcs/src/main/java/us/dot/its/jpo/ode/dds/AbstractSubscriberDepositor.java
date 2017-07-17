@@ -22,7 +22,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
    protected Logger logger;
    protected OdeProperties odeProperties;
    protected DatagramSocket socket = null;
-   protected TrustSession trustMgr;
+   protected TrustSession trustSession;
    protected int messagesSent;
    protected Coder coder;
    protected ExecutorService pool;
@@ -37,7 +37,7 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
       try {
          logger.debug("Creating depositor socket on port {}", port);
          socket = new DatagramSocket(port);
-         trustMgr = new TrustSession(odeProps, socket);
+         trustSession = new TrustSession(odeProps, socket);
          pool = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
       } catch (SocketException e) {
          logger.error("Error creating socket with port " + port, e);

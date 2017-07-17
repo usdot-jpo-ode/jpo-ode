@@ -67,12 +67,12 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
             if (vsd != null) {
                
                logger.info("VSD ready to send: (pojo) {}", vsd);
-               encodedVsd = J2735.getPERUnalignedCoder().encode(vsd).array();
+               encodedVsd = coder.encode(vsd).array();
                String hexVsd = HexUtils.toHexString(encodedVsd);
                logger.info("VSD ready to send: (hex) {}", hexVsd);
                
                // Check trust before attempting deposit
-               if (trustMgr.establishTrust(getRequestId(), getDialogId())) {
+               if (trustSession.establishTrust(getRequestId(), getDialogId())) {
                   logger.debug("Sending VSD to SDC IP: {} Port: {}", odeProperties.getSdcIp(),
                         odeProperties.getSdcPort());
                   socket.send(new DatagramPacket(encodedVsd, encodedVsd.length,
