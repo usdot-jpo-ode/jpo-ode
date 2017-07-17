@@ -50,7 +50,7 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class OssVehicleSituationRecord {
 
-   private OssVehicleSituationRecord() {
+   public OssVehicleSituationRecord() {
    }
 
    /**
@@ -118,7 +118,7 @@ public class OssVehicleSituationRecord {
     * @param bsmcd
     * @return
     */
-   private static FundamentalSituationalStatus createFundamentalSituationalStatus(J2735BsmCoreData bsmcd) {
+   public static FundamentalSituationalStatus createFundamentalSituationalStatus(J2735BsmCoreData bsmcd) {
 
       FundamentalSituationalStatus fss = new FundamentalSituationalStatus();
       fss.speed = new TransmissionAndSpeed();
@@ -140,7 +140,7 @@ public class OssVehicleSituationRecord {
     * @param speed
     * @return
     */
-   private static Velocity convertSpeed(BigDecimal speed) {
+   public static Velocity convertSpeed(BigDecimal speed) {
       Velocity vel;
       if (null == speed) {
          vel = new Velocity(8191);
@@ -156,7 +156,7 @@ public class OssVehicleSituationRecord {
     * @param tstate
     * @return
     */
-   private static TransmissionState convertTransmissionState(J2735TransmissionState tstate) {
+   public static TransmissionState convertTransmissionState(J2735TransmissionState tstate) {
       
       if (null == tstate) {
          return TransmissionState.unavailable;
@@ -202,7 +202,7 @@ public class OssVehicleSituationRecord {
     * @param jHead
     * @return
     */
-   private static Heading convertHeading(BigDecimal jHead) {
+   public static Heading convertHeading(BigDecimal jHead) {
       Heading nHead;
       if (null == jHead) {
          nHead = new Heading(28800);
@@ -218,7 +218,7 @@ public class OssVehicleSituationRecord {
     * @param jAng
     * @return
     */
-   private static SteeringWheelAngle convertSteeringWheelAngle(BigDecimal jAng) {
+   public static SteeringWheelAngle convertSteeringWheelAngle(BigDecimal jAng) {
       SteeringWheelAngle nAng;
       if (null == jAng) {
          nAng = new SteeringWheelAngle(127);
@@ -228,7 +228,7 @@ public class OssVehicleSituationRecord {
       return nAng;
    }
 
-   private static AccelerationSet4Way convertAccelerationSet4Way(J2735AccelerationSet4Way jAccSet) {
+   public static AccelerationSet4Way convertAccelerationSet4Way(J2735AccelerationSet4Way jAccSet) {
 
       AccelerationSet4Way nAccSet = new AccelerationSet4Way();
       nAccSet._long = convertAcceleration(jAccSet.getAccelLong());
@@ -244,7 +244,7 @@ public class OssVehicleSituationRecord {
     * @param jAcc
     * @return
     */
-   private static Acceleration convertAcceleration(BigDecimal jAcc) {
+   public static Acceleration convertAcceleration(BigDecimal jAcc) {
       Acceleration nAcc;
       if (null == jAcc) {
          nAcc = new Acceleration(2001);
@@ -261,7 +261,7 @@ public class OssVehicleSituationRecord {
     * @param jVerta
     * @return
     */
-   private static VerticalAcceleration convertVerticalAcceleration(BigDecimal jVerta) {
+   public static VerticalAcceleration convertVerticalAcceleration(BigDecimal jVerta) {
       VerticalAcceleration nVerta;
       if (null == jVerta) {
          nVerta = new VerticalAcceleration(-127);
@@ -277,7 +277,7 @@ public class OssVehicleSituationRecord {
     * @param jyr
     * @return
     */
-   private static YawRate convertYawRate(BigDecimal jyr) {
+   public static YawRate convertYawRate(BigDecimal jyr) {
       return new YawRate((int) Math.floor(jyr.doubleValue() * 100));
    }
 
@@ -288,7 +288,7 @@ public class OssVehicleSituationRecord {
     * @param jBss
     * @return
     */
-   private static BrakeSystemStatus convertBrakeSystemStatus(J2735BrakeSystemStatus jBss) {
+   public static BrakeSystemStatus convertBrakeSystemStatus(J2735BrakeSystemStatus jBss) {
       BrakeSystemStatus nBss = new BrakeSystemStatus();
       nBss.wheelBrakes = convertBrakeAppliedStatus(jBss.getWheelBrakes());
       nBss.traction = convertTractionControlStatus(jBss.getTraction());
@@ -305,7 +305,7 @@ public class OssVehicleSituationRecord {
     * @param jBas
     * @return
     */
-   private static BrakeAppliedStatus convertBrakeAppliedStatus(J2735BitString jBas) {
+   public static BrakeAppliedStatus convertBrakeAppliedStatus(J2735BitString jBas) {
       
       // Output bit string has 5 bits:
       // 0bABCDE
@@ -352,9 +352,9 @@ public class OssVehicleSituationRecord {
       return new BrakeAppliedStatus(new byte[] { nb });
    }
 
-   private static TractionControlStatus convertTractionControlStatus(String jTrac) {
+   public static TractionControlStatus convertTractionControlStatus(String jTrac) {
 
-      int tval = 0;
+      long tval = 0;
 
       switch (jTrac) {
       case "off":
@@ -375,7 +375,7 @@ public class OssVehicleSituationRecord {
       return new TractionControlStatus(tval);
    }
 
-   private static AntiLockBrakeStatus convertAntiLockBrakeStatus(String jAbs) {
+   public static AntiLockBrakeStatus convertAntiLockBrakeStatus(String jAbs) {
       int tval = 0;
 
       switch (jAbs) {
@@ -397,7 +397,7 @@ public class OssVehicleSituationRecord {
       return new AntiLockBrakeStatus(tval);
    }
 
-   private static StabilityControlStatus convertStabilityControlStatus(String jScs) {
+   public static StabilityControlStatus convertStabilityControlStatus(String jScs) {
       int tval = 0;
 
       switch (jScs) {
@@ -419,7 +419,7 @@ public class OssVehicleSituationRecord {
       return new StabilityControlStatus(tval);
    }
 
-   private static BrakeBoostApplied convertBrakeBoostApplied(String jBba) {
+   public static BrakeBoostApplied convertBrakeBoostApplied(String jBba) {
       int tval = 0;
 
       switch (jBba) {
@@ -438,7 +438,7 @@ public class OssVehicleSituationRecord {
       return new BrakeBoostApplied(tval);
    }
 
-   private static AuxiliaryBrakeStatus convertAuxiliaryBrakeStatus(String jAbs) {
+   public static AuxiliaryBrakeStatus convertAuxiliaryBrakeStatus(String jAbs) {
 
       int tval = 0;
       switch (jAbs) {
@@ -460,7 +460,7 @@ public class OssVehicleSituationRecord {
       return new AuxiliaryBrakeStatus(tval);
    }
 
-   private static VehicleSize convertVehicleSize(J2735VehicleSize jvs) {
+   public static VehicleSize convertVehicleSize(J2735VehicleSize jvs) {
       VehicleSize nvs = new VehicleSize();
       if (null == jvs) {
          nvs.width = new VehicleWidth(0);
