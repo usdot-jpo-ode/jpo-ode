@@ -36,7 +36,7 @@ public class UdpServicesController {
 
       logger.debug("Starting UDP depositor services...");
       rm.submit(new IsdDepositor(odeProps), odeProps.getKafkaTopicEncodedIsd());
-      rm.submit(new VsdDepositor(odeProps), odeProps.getKafkaTopicBsmFilteredJson());
+      rm.submit(new VsdDepositor(odeProps), odeProps.getKafkaTopicBsmRawJson());
       logger.debug("UDP depositor services started.");
    }
 }
