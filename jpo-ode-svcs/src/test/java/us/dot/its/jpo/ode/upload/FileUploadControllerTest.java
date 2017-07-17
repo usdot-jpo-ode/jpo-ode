@@ -130,7 +130,6 @@ public class FileUploadControllerTest {
             fail("Unexpected exception in expectations block: " + e);
         }
 
-        
         assertEquals("{\"success\": true}", testFileUploadController.handleFileUpload(mockFile, testType));
 
     }

@@ -109,7 +109,7 @@ public class OdeProperties implements EnvironmentAware {
 
    private int dataReceiptExpirationSeconds;
 
-   public static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
+   private static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
 
    public OdeProperties() {
       super();
@@ -513,6 +513,10 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setTrustRetries(int trustRetries) {
       this.trustRetries = trustRetries;
+   }
+
+   public static byte[] getJpoOdeGroupId() {
+      return JPO_ODE_GROUP_ID;
    }
 
 }

@@ -3,7 +3,6 @@ package us.dot.its.jpo.ode.udp.vsd;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
-import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,10 +28,12 @@ import us.dot.its.jpo.ode.j2735.semi.VehSitRecord;
 import us.dot.its.jpo.ode.j2735.semi.VsmType;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssVehicleSituationRecord;
+import us.dot.its.jpo.ode.udp.bsm.BsmComparator;
 import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 /**
- * @author matthewschwartz
+ * Takes in BSMs from a Kafka topic and adds them to a VSD bundle. 
  * 
  *
  */
@@ -45,6 +46,9 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
    public VsdDepositor(OdeProperties odeProps) {
       super(odeProps, odeProps.getVsdDepositorPort());
       bsmQueueMap = new ConcurrentHashMap<>();
+      consumer = MessageConsumer.defaultStringMessageConsumer(
+            odeProps.getKafkaBrokers(), odeProps.getHostId() + this.getClass().getSimpleName(), this);
+      consumer.setName(this.getClass().getSimpleName());
    }
 
    @Override
@@ -62,6 +66,7 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
             // When the VSD bundle is full, send it to the sdc
             if (vsd != null) {
                
+               logger.info("VSD ready to send: (pojo) {}", vsd);
                encodedVsd = J2735.getPERUnalignedCoder().encode(vsd).array();
                String hexVsd = HexUtils.toHexString(encodedVsd);
                logger.info("VSD ready to send: (hex) {}", hexVsd);
@@ -117,7 +122,7 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
          VehSitDataMessage vsd = new VehSitDataMessage();
          vsd.dialogID = getDialogId();
          vsd.seqID = SemiSequenceID.data;
-         vsd.groupID = new GroupID(OdeProperties.JPO_ODE_GROUP_ID);
+         vsd.groupID = new GroupID(OdeProperties.getJpoOdeGroupId());
          vsd.requestID = getRequestId();
          vsd.bundle = vsrBundle;
          vsd.crc = new MsgCRC(new byte[] {0,0});
@@ -130,22 +135,6 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, String> {
          logger.info("Added BSM with tempID {} to existing VSD package queue ({}/{})", tempId,
                bsmQueueMap.get(tempId).size(), VSD_PACKAGE_SIZE);
          return null;
-      }
-   }
-
-   /**
-    * Comparator for the priority queue to keep the chronological order of bsms
-    */
-   private class BsmComparator implements Comparator<J2735Bsm> {
-      @Override
-      public int compare(J2735Bsm x, J2735Bsm y) {
-         // TODO - determine message arrival time
-         // for now we are using the BSM's time offset property
-
-         int xt = x.getCoreData().getSecMark();
-         int yt = y.getCoreData().getSecMark();
-
-         return Integer.compare(xt, yt);
       }
    }
 
