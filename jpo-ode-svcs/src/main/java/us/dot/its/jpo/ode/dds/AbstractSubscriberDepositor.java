@@ -11,15 +11,15 @@ import com.oss.asn1.Coder;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.j2735.J2735;
-import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
-import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
+import us.dot.its.jpo.ode.udp.UdpUtil;
+import us.dot.its.jpo.ode.udp.UdpUtil.UdpUtilException;
 import us.dot.its.jpo.ode.udp.trust.TrustSession;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
 public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor<K, V> {
 
-   protected Logger logger;
+   protected final Logger logger;
    protected OdeProperties odeProperties;
    protected DatagramSocket socket = null;
    protected TrustSession trustSession;
@@ -32,22 +32,16 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
       this.odeProperties = odeProps;
       this.messagesSent = 0;
       this.coder = J2735.getPERUnalignedCoder();
-      this.logger = getLogger();
+      
+      logger = getLogger();
 
       try {
          logger.debug("Creating depositor socket on port {}", port);
          socket = new DatagramSocket(port);
          trustSession = new TrustSession(odeProps, socket);
-         pool = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
       } catch (SocketException e) {
          logger.error("Error creating socket with port " + port, e);
       }
-   }
-   
-   @Override
-   public byte[] call() {
-      logger.debug("Subscriber received data.");
-      return deposit();
    }
 
    /**
@@ -63,9 +57,11 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
       Executors.newSingleThreadExecutor().submit(() -> consumer.subscribe(topics));
    }
 
-   protected abstract TemporaryID getRequestId();
+   public void sendToSdc(byte[] msgBytes) throws UdpUtilException {
+      UdpUtil.send(socket, msgBytes, odeProperties.getSdcIp(), odeProperties.getSdcPort());
+   }
 
-   protected abstract SemiDialogID getDialogId();
+   public abstract Logger getLogger();
 
    public DatagramSocket getSocket() {
       return socket;
@@ -74,8 +70,4 @@ public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor
    public void setSocket(DatagramSocket socket) {
       this.socket = socket;
    }
-
-   protected abstract byte[] deposit();
-
-   protected abstract Logger getLogger();
 }

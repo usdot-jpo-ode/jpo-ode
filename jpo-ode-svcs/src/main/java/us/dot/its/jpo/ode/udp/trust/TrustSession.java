@@ -20,8 +20,9 @@ import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
+import us.dot.its.jpo.ode.udp.UdpUtil;
+import us.dot.its.jpo.ode.udp.UdpUtil.UdpUtilException;
 import us.dot.its.jpo.ode.udp.isd.ServiceResponseReceiver;
-import us.dot.its.jpo.ode.udp.trust.ServiceMessageUtil.ServiceMessageUtilException;
 
 /*
  * Trust Session Manager
@@ -70,7 +71,7 @@ public class TrustSession {
 
             ServiceRequest request = new ServiceRequest(dialogId, SemiSequenceID.svcReq,
                   new GroupID(OdeProperties.getJpoOdeGroupId()), requestId);
-            ServiceMessageUtil.encodeAndSend(socket, request, odeProperties.getSdcIp(), odeProperties.getSdcPort());
+            UdpUtil.send(socket, request, odeProperties.getSdcIp(), odeProperties.getSdcPort());
 
             ServiceResponse response = (ServiceResponse) f.get(odeProperties.getServiceRespExpirationSeconds(),
                   TimeUnit.SECONDS);
@@ -91,7 +92,7 @@ public class TrustSession {
             logger.error("Did not receive Service Response within alotted "
                   + +odeProperties.getServiceRespExpirationSeconds() + " seconds.", e);
 
-         } catch (InterruptedException | ExecutionException | ServiceMessageUtilException e) {
+         } catch (InterruptedException | ExecutionException | UdpUtilException e) {
             trustEstablished = false;
             logger.error("Trust establishment interrupted.", e);
          }

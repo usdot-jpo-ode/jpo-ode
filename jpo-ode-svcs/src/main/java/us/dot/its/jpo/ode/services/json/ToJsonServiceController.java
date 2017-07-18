@@ -41,5 +41,4 @@ public class ToJsonServiceController {
       converter.start(consumer, odeProps.getKafkaTopicBsmSerializedPojo());
       
    }
-
 }

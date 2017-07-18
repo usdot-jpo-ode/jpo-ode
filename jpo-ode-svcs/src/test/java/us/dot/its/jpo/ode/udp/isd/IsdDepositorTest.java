@@ -51,7 +51,7 @@ public class IsdDepositorTest {
 
 		IsdDepositor testIsdDepositor = new IsdDepositor(mockOdeProps);
 		testIsdDepositor.setRecord(mockRec);
-		assertEquals(testIsdDepositor.deposit(), mockRec.value());
+		assertEquals(testIsdDepositor.call(), mockRec.value());
 	}
 	
 	@Test @Ignore
@@ -71,7 +71,7 @@ public class IsdDepositorTest {
 
 		IsdDepositor testIsdDepositor = new IsdDepositor(mockOdeProps);
 		testIsdDepositor.setRecord(mockRec);
-		testIsdDepositor.deposit();
+		testIsdDepositor.call();
 	}
 
 }

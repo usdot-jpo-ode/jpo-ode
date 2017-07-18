@@ -61,6 +61,7 @@ public class OdeProperties implements EnvironmentAware {
    private int sdcPort = 46753;
 
    // Enable/disable depositing sanitized BSMs to SDC
+   // note: requires enabledVsdKafkaTopic=true to work
    private boolean depositSanitizedBsmToSdc = true;
 
    private int serviceRespExpirationSeconds = 10;
@@ -80,6 +81,8 @@ public class OdeProperties implements EnvironmentAware {
     * Vehicle Situation Data (VSD) Properties
     */
    private int trustRetries = 2;
+   private boolean enabledVsdKafkaTopic = true;
+   private String kafkaTopicVsdSerializedPojo = "topic.vehSitData";
    private int vsdBufferSize = 500;
    private int vsdReceiverPort = 46753;
    private int vsdDepositorPort = 5555;
@@ -517,6 +520,22 @@ public class OdeProperties implements EnvironmentAware {
 
    public static byte[] getJpoOdeGroupId() {
       return JPO_ODE_GROUP_ID;
+   }
+
+   public String getKafkaTopicVsdSerializedPojo() {
+      return kafkaTopicVsdSerializedPojo;
+   }
+
+   public void setKafkaTopicVsdSerializedPojo(String kafkaTopicVsdSerializedPojo) {
+      this.kafkaTopicVsdSerializedPojo = kafkaTopicVsdSerializedPojo;
+   }
+
+   public boolean isEnabledVsdKafkaTopic() {
+      return enabledVsdKafkaTopic;
+   }
+
+   public void setEnabledVsdKafkaTopic(boolean enabledVsdKafkaTopic) {
+      this.enabledVsdKafkaTopic = enabledVsdKafkaTopic;
    }
 
 }

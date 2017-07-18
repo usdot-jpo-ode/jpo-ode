@@ -30,19 +30,20 @@ import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationDataAcceptance;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
+import us.dot.its.jpo.ode.udp.UdpUtil.UdpUtilException;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 
    public IsdDepositor(OdeProperties odeProps) {
       super(odeProps, odeProps.getIsdDepositorPort());
-      consumer = MessageConsumer.defaultByteArrayMessageConsumer(
-            odeProps.getKafkaBrokers(), odeProps.getHostId() + this.getClass().getSimpleName(), this);
+      consumer = MessageConsumer.defaultByteArrayMessageConsumer(odeProps.getKafkaBrokers(),
+            odeProps.getHostId() + this.getClass().getSimpleName(), this);
       consumer.setName(this.getClass().getSimpleName());
    }
 
    @Override
-   protected byte[] deposit() {
+   public byte[] call() {
       /*
        * The record.value() will return an encoded ISD
        */
@@ -51,16 +52,15 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
       try {
          logger.debug("Received ISD: {}", HexUtils.toHexString(encodedIsd));
 
-         if (trustSession.establishTrust(getRequestId(), getDialogId())) {
+         if (trustSession.establishTrust(getRequestId(), SemiDialogID.intersectionSitDataDep)) {
             logger.debug("Sending ISD to SDC IP: {}:{} from port: {}", odeProperties.getSdcIp(),
                   odeProperties.getSdcPort(), socket.getLocalPort());
-            socket.send(new DatagramPacket(encodedIsd, encodedIsd.length,
-                  new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
+            sendToSdc(encodedIsd);
             messagesSent++;
          } else {
             logger.error("Failed to establish trust, not sending ISD to SDC");
          }
-      } catch (IOException e) {
+      } catch (UdpUtilException e) {
          logger.error("Error Sending Isd to SDC", e);
          return new byte[0];
       }
@@ -78,6 +78,10 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
       return encodedIsd;
    }
 
+   /**
+    * TODO - incomplete method
+    * @param encodedIsd
+    */
    public void sendDataReceipt(byte[] encodedIsd) {
 
       /*
@@ -131,13 +135,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 
    }
 
-   @Override
-   protected SemiDialogID getDialogId() {
-      return SemiDialogID.intersectionSitDataDep;
-   }
-
-   @Override
-   protected TemporaryID getRequestId() {
+   public TemporaryID getRequestId() {
       TemporaryID reqID = null;
       try {
          reqID = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
@@ -151,7 +149,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
    }
 
    @Override
-   protected Logger getLogger() {
+   public Logger getLogger() {
       return LoggerFactory.getLogger(this.getClass());
    }
 

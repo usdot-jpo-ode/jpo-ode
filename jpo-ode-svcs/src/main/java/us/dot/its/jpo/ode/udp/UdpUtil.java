@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.udp.trust;
+package us.dot.its.jpo.ode.udp;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -25,16 +25,16 @@ import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
 import us.dot.its.jpo.ode.j2735.semi.Sha256Hash;
 
-public class ServiceMessageUtil {
+public class UdpUtil {
 
-   private ServiceMessageUtil() {
+   private UdpUtil() {
       throw new UnsupportedOperationException("Cannot instantiate static class.");
    }
 
-   public static class ServiceMessageUtilException extends Exception {
+   public static class UdpUtilException extends Exception {
       private static final long serialVersionUID = 1L;
 
-      public ServiceMessageUtilException(String errMsg, Exception e) {
+      public UdpUtilException(String errMsg, Exception e) {
          super(errMsg, e);
       }
    }
@@ -56,13 +56,22 @@ public class ServiceMessageUtil {
       return response;
    }
 
-   public static void encodeAndSend(DatagramSocket sock, AbstractData message, String ip, int port)
-         throws ServiceMessageUtilException {
+   public static void send(DatagramSocket sock, AbstractData message, String ip, int port)
+         throws UdpUtilException {
       try {
          byte[] messageBytes = J2735.getPERUnalignedCoder().encode(message).array();
-         sock.send(new DatagramPacket(messageBytes, messageBytes.length, new InetSocketAddress(ip, port)));
-      } catch (IOException | EncodeFailedException | EncodeNotSupportedException e) {
-         throw new ServiceMessageUtilException("Failed to encode and send message.", e);
+         UdpUtil.send(sock, messageBytes, ip, port);
+      } catch (EncodeFailedException | EncodeNotSupportedException e) {
+         throw new UdpUtilException("Failed to encode and send message.", e);
+      }
+   }
+
+   public static void send(DatagramSocket sock, byte[] msgBytes, String ip, int port)
+         throws UdpUtilException {
+      try {
+         sock.send(new DatagramPacket(msgBytes, msgBytes.length, new InetSocketAddress(ip, port)));
+      } catch (IOException e) {
+         throw new UdpUtilException("Failed to encode and send message.", e);
       }
    }
 }

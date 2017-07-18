@@ -20,8 +20,8 @@ import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
+import us.dot.its.jpo.ode.udp.UdpUtil;
 import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
-import us.dot.its.jpo.ode.udp.trust.ServiceMessageUtil;
 
 public class VsdReceiver extends BsmReceiver {
 
@@ -83,8 +83,7 @@ public class VsdReceiver extends BsmReceiver {
                logger.error("Service request response destination specified {}:{}", senderIp, senderPort);
             }
 
-            ServiceMessageUtil.encodeAndSend(new DatagramSocket(odeProperties.getVsdTrustport()), decoded, senderIp,
-                  senderPort);
+            UdpUtil.send(new DatagramSocket(odeProperties.getVsdTrustport()), decoded, senderIp, senderPort);
          } else if (decoded instanceof VehSitDataMessage) {
             logger.debug("Received VSD");
 
