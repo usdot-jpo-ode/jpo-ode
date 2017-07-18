@@ -76,9 +76,8 @@ public class BsmToVsdPackager<V> extends AbstractSubPubTransformer<String, V, by
       try {
          logger.debug("Consuming BSM.");
          
-         J2735Bsm j2735Bsm = (J2735Bsm) SerializationUtils.deserialize((byte[]) consumedData);
 
-         VehSitDataMessage vsd = addToVsdBundle(j2735Bsm);
+         VehSitDataMessage vsd = addToVsdBundle((J2735Bsm) consumedData);
 
          // Only full VSDs (10) will be published
          // TODO - toggleable mechanism for periodically publishing not-full
