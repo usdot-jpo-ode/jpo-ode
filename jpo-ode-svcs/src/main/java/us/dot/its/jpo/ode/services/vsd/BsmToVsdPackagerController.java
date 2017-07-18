@@ -28,13 +28,13 @@ public class BsmToVsdPackagerController {
          logger.info("Converting {} records from topic {} and publishing to topic {} ", J2735Bsm.class.getSimpleName(),
                inputTopic, outputTopic);
 
-         BsmToVsdPackager<byte[]> converter = new BsmToVsdPackager<>(MessageProducer.defaultByteArrayMessageProducer(
+         BsmToVsdPackager<String> converter = new BsmToVsdPackager<>(MessageProducer.defaultByteArrayMessageProducer(
                odeProps.getKafkaBrokers(), odeProps.getKafkaProducerType()), outputTopic);
 
-         MessageConsumer<String, byte[]> consumer = new MessageConsumer<>(odeProps.getKafkaBrokers(),
+         MessageConsumer<String, String> consumer = new MessageConsumer<>(odeProps.getKafkaBrokers(),
                this.getClass().getSimpleName(), converter);
 
-         consumer.setName(this.getClass().getSimpleName());
+         consumer.setName(BsmToVsdPackager.class.getSimpleName());
          converter.start(consumer, inputTopic);
       } else {
          logger.warn("WARNING - VSD Kafka topic disabled, BSM-to-VSD packager not started.");
