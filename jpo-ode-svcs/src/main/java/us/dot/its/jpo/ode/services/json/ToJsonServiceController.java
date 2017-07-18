@@ -17,7 +17,6 @@ import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 public class ToJsonServiceController {
 
    private static Logger logger = LoggerFactory.getLogger(ToJsonServiceController.class);
-   org.apache.kafka.common.serialization.Serdes bas;
 
    @Autowired
    public ToJsonServiceController(OdeProperties odeProps) {
@@ -30,13 +29,14 @@ public class ToJsonServiceController {
               odeProps.getKafkaTopicBsmSerializedPojo(),
               odeProps.getKafkaTopicBsmRawJson());
       
-      ToJsonConverter<J2735Bsm> converter = new ToJsonConverter<J2735Bsm>(
+      ToJsonConverter<J2735Bsm> converter = new ToJsonConverter<>(
               odeProps, false, odeProps.getKafkaTopicBsmRawJson());
       
-      MessageConsumer<String, J2735Bsm> consumer = new MessageConsumer<String, J2735Bsm>(
+      MessageConsumer<String, J2735Bsm> consumer = new MessageConsumer<>(
             odeProps.getKafkaBrokers(), 
             this.getClass().getSimpleName(), 
             converter);
+      
       consumer.setName(this.getClass().getSimpleName());
       converter.start(consumer, odeProps.getKafkaTopicBsmSerializedPojo());
       

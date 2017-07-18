@@ -21,7 +21,7 @@ public class BsmToVsdPackagerController {
 
       String inputTopic = odeProps.getKafkaTopicBsmRawJson(); // TODO - needs to
                                                               // be filtered
-      String outputTopic = odeProps.getKafkaTopicVsdSerializedPojo();
+      String outputTopic = odeProps.getKafkaTopicEncodedVsd();
 
       if (odeProps.isEnabledVsdKafkaTopic()) {
          logger.info("Converting {} records from topic {} and publishing to topic {} ", J2735Bsm.class.getSimpleName(),
@@ -39,5 +39,4 @@ public class BsmToVsdPackagerController {
          logger.warn("WARNING - VSD Kafka topic disabled, BSM-to-VSD packager not started.");
       }
    }
-
 }
