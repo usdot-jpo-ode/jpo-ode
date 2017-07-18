@@ -17,6 +17,7 @@ import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 public class ToJsonServiceController {
 
    private static Logger logger = LoggerFactory.getLogger(ToJsonServiceController.class);
+   org.apache.kafka.common.serialization.Serdes bas;
 
    @Autowired
    public ToJsonServiceController(OdeProperties odeProps) {
