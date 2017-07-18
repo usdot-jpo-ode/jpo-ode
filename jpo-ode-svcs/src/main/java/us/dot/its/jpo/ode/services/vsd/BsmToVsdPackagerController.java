@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.wrapper.J2735BsmDeseriizer;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
@@ -32,8 +31,8 @@ public class BsmToVsdPackagerController {
          BsmToVsdPackager converter = new BsmToVsdPackager(MessageProducer.defaultByteArrayMessageProducer(
                odeProps.getKafkaBrokers(), odeProps.getKafkaProducerType()), outputTopic);
 
-         MessageConsumer<String, J2735Bsm> consumer = new MessageConsumer<String, J2735Bsm>(odeProps.getKafkaBrokers(),
-               this.getClass().getSimpleName(), converter, J2735BsmDeseriizer.class.getName());
+         MessageConsumer<String, String> consumer = new MessageConsumer<String, String>(odeProps.getKafkaBrokers(),
+               this.getClass().getSimpleName(), converter, MessageConsumer.SERIALIZATION_STRING_DESERIALIZER);
 
          consumer.setName(BsmToVsdPackager.class.getSimpleName());
          converter.start(consumer, inputTopic);

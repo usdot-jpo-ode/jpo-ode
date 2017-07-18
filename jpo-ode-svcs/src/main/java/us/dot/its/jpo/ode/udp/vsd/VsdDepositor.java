@@ -44,7 +44,7 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
       
       logger.info("Received data: {}", HexUtils.toHexString(record.value()));
 
-      byte[] encodedVsd = null;
+      byte[] encodedVsd = record.value();
       try {
          if (trustSession.establishTrust(getRequestId(), SemiDialogID.vehSitData)) {
             logger.debug("Sending VSD to SDC IP: {} Port: {}", odeProperties.getSdcIp(), odeProperties.getSdcPort());

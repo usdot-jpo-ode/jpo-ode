@@ -27,6 +27,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssVehicleSituationRecord;
 import us.dot.its.jpo.ode.udp.bsm.BsmComparator;
 import us.dot.its.jpo.ode.util.CodecUtils;
+import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.AbstractSubPubTransformer;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
@@ -46,7 +47,7 @@ import us.dot.its.jpo.ode.wrapper.MessageProducer;
  * (SIZE (1..10)) OF VehSitRecord, -- sets of situation data records crc
  * DSRC.MsgCRC }
  */
-public class BsmToVsdPackager extends AbstractSubPubTransformer<String, J2735Bsm, byte[]> {
+public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, byte[]> {
 
    private static final Logger logger = LoggerFactory.getLogger(BsmToVsdPackager.class);
 
@@ -61,7 +62,7 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, J2735Bsm
    }
 
    @Override
-   protected byte[] transform(J2735Bsm consumedData) {
+   protected byte[] transform(String consumedData) {
 
       if (null == consumedData) {
          return new byte[0];
@@ -69,11 +70,13 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, J2735Bsm
       
       logger.debug("VsdDepositor received data: {}", consumedData);
 
+      J2735Bsm bsmData = (J2735Bsm) JsonUtils.fromJson(consumedData, J2735Bsm.class);
+
       byte[] encodedVsd = null;
       try {
          logger.debug("Consuming BSM.");
 
-         VehSitDataMessage vsd = addToVsdBundle(consumedData);
+         VehSitDataMessage vsd = addToVsdBundle(bsmData);
 
          // Only full VSDs (10) will be published
          // TODO - toggleable mechanism for periodically publishing not-full
@@ -84,8 +87,7 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, J2735Bsm
                                                                // this for
                                                                // mistakes
             encodedVsd = coder.encode(vsd).array();
-            String hexVsd = HexUtils.toHexString(encodedVsd);
-            logger.debug("VSD ready to send: (hex) {}", hexVsd);
+            logger.debug("VSD ready to send: {}", encodedVsd);
          }
       } catch (EncodeFailedException | EncodeNotSupportedException e) {
          logger.error("Error Sending VSD to SDC", e);
