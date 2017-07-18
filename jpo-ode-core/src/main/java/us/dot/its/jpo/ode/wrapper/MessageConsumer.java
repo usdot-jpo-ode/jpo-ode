@@ -109,7 +109,7 @@ public class MessageConsumer<K, V> {
                     }
                 }
             } catch (Exception e) {
-                logger.error("Error processing consumed messages", e);
+                logger.error(" {} error processing consumed messages", name, e);
             }
         }
 
