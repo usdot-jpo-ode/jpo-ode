@@ -34,23 +34,18 @@ import us.dot.its.jpo.ode.wrapper.MessageProducer;
 /**
  * Kafka consumer/publisher that creates VSDs from BSMs.
  * 
- * Input stream: j2735FilteredBsm (JSON)
- * Output stream: topic.asnVsd (byte)
+ * Input stream: j2735FilteredBsm (JSON) Output stream: topic.asnVsd (byte)
  * 
- * dialogID = SemiDialogID.vehSitData
- * seqID = SemiSequenceID.data
- * groupID = "jode".bytes
- * requestID from BSMs
+ * dialogID = SemiDialogID.vehSitData seqID = SemiSequenceID.data groupID =
+ * "jode".bytes requestID from BSMs
  * 
- * VehSitDataMessage ::= SEQUENCE {
- *   dialogID SemiDialogID,                    -- 0x9A Vehicle Situation Data Deposit
- *   seqID    SemiSequenceID,                  -- 0x05 Data Content
- *   groupID     GroupID,                      -- unique ID used to identify an organization
- *   requestID   DSRC.TemporaryID,             -- random 4 byte ID generated following trust establishment
- *   type     VsmType,                         -- the type of vehicle situation data included
- *   bundle      SEQUENCE (SIZE (1..10)) OF VehSitRecord,  -- sets of situation data records
- *   crc         DSRC.MsgCRC
- * }
+ * VehSitDataMessage ::= SEQUENCE { dialogID SemiDialogID, -- 0x9A Vehicle
+ * Situation Data Deposit seqID SemiSequenceID, -- 0x05 Data Content groupID
+ * GroupID, -- unique ID used to identify an organization requestID
+ * DSRC.TemporaryID, -- random 4 byte ID generated following trust establishment
+ * type VsmType, -- the type of vehicle situation data included bundle SEQUENCE
+ * (SIZE (1..10)) OF VehSitRecord, -- sets of situation data records crc
+ * DSRC.MsgCRC }
  */
 public class BsmToVsdPackager<V> extends AbstractSubPubTransformer<String, V, byte[]> {
 
@@ -61,26 +56,25 @@ public class BsmToVsdPackager<V> extends AbstractSubPubTransformer<String, V, by
    private ConcurrentHashMap<String, Queue<J2735Bsm>> bsmQueueMap;
 
    public BsmToVsdPackager(MessageProducer<String, byte[]> producer, String outputTopic) {
-      super(producer, outputTopic);
+      super(producer, (java.lang.String) outputTopic);
       this.coder = J2735.getPERUnalignedCoder();
       this.bsmQueueMap = new ConcurrentHashMap<>();
    }
 
    @Override
    protected byte[] transform(V consumedData) {
-      
+
       if (null == consumedData) {
          return new byte[0];
       }
 
       logger.debug("VsdDepositor received data: {}", consumedData);
-      
+
       J2735Bsm bsmData = (J2735Bsm) JsonUtils.fromJson((String) consumedData, J2735Bsm.class);
 
       byte[] encodedVsd = null;
       try {
          logger.debug("Consuming BSM.");
-         
 
          VehSitDataMessage vsd = addToVsdBundle(bsmData);
 
