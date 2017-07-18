@@ -69,10 +69,6 @@ public class MessageConsumer<K, V> {
        logger.info("Consumer Created for groupId {}", groupId);
    }
 
-   public MessageConsumer(String brokers, String groupId, MessageProcessor<K, V> processor) {
-       this(brokers, groupId, processor, MessagingDeserializer.class.getName());
-    }
-
     public MessageConsumer(String brokers, String groupId, MessageProcessor<K, V> processor, Properties props) {
       this.processor = processor;
       props.put("bootstrap.servers", brokers);
@@ -81,10 +77,6 @@ public class MessageConsumer<K, V> {
 
       logger.info("Consumer Created for groupId {}", groupId);
 
-    }
-
-    public MessageConsumer(String brokers, String groupId, Properties props) {
-        this(brokers, groupId, null, props);
     }
 
     public void subscribe(String... topics) {

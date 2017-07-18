@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.wrapper.J2735BsmDeseriizer;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 /**
@@ -30,13 +31,14 @@ public class ToJsonServiceController {
               odeProps.getKafkaTopicBsmSerializedPojo(),
               odeProps.getKafkaTopicBsmRawJson());
       
-      ToJsonConverter<J2735Bsm> converter = new ToJsonConverter<>(
+      ToJsonConverter<J2735Bsm> converter = new ToJsonConverter<J2735Bsm>(
               odeProps, false, odeProps.getKafkaTopicBsmRawJson());
       
-      MessageConsumer<String, J2735Bsm> consumer = new MessageConsumer<>(
+      MessageConsumer<String, J2735Bsm> consumer = new MessageConsumer<String, J2735Bsm>(
             odeProps.getKafkaBrokers(), 
             this.getClass().getSimpleName(), 
-            converter);
+            converter,
+            J2735BsmDeseriizer.class.getName());
       
       consumer.setName(this.getClass().getSimpleName());
       converter.start(consumer, odeProps.getKafkaTopicBsmSerializedPojo());
