@@ -10,10 +10,11 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-// TODO @Controller
+@Controller
 public class BsmToVsdPackagerController {
 
    private static final Logger logger = LoggerFactory.getLogger(BsmToVsdPackagerController.class);
+   org.apache.kafka.common.serialization.Serdes bas;
 
    @Autowired
    private BsmToVsdPackagerController(OdeProperties odeProps) {
