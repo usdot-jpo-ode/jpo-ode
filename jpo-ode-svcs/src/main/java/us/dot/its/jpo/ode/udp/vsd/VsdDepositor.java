@@ -1,14 +1,20 @@
 package us.dot.its.jpo.ode.udp.vsd;
 
+import java.io.ByteArrayInputStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.SerializationUtils;
 
+import com.oss.asn1.DecodeFailedException;
+import com.oss.asn1.DecodeNotSupportedException;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
+import us.dot.its.jpo.ode.j2735.J2735;
+import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.udp.UdpUtil.UdpUtilException;
@@ -21,12 +27,12 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 
    public VsdDepositor(OdeProperties odeProps) {
       super(odeProps, odeProps.getVsdDepositorPort());
-      
+
       if (!odeProps.getDepositSanitizedBsmToSdc()) {
          logger.warn("WARNING - SDC BSM/VSD deposit option disabled, not starting VSD depositor service.");
          return;
       }
-      
+
       consumer = MessageConsumer.defaultByteArrayMessageConsumer(odeProps.getKafkaBrokers(),
             odeProps.getHostId() + this.getClass().getSimpleName(), this);
       consumer.setName(this.getClass().getSimpleName());
@@ -61,6 +67,19 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
       }
 
       return encodedVsd;
+   }
+
+   public TemporaryID getRequestId() {
+      TemporaryID reqID = null;
+      try {
+         reqID = ((VehSitDataMessage) J2735.getPERUnalignedCoder().decode(new ByteArrayInputStream(record.value()),
+               new VehSitDataMessage())).requestID;
+
+      } catch (DecodeFailedException | DecodeNotSupportedException e) {
+         logger.error("Depositor failed to decode ISD message: {}", e);
+      }
+
+      return reqID;
    }
 
    @Override
