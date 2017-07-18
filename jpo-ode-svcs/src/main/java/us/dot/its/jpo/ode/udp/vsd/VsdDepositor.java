@@ -40,21 +40,19 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 
    @Override
    public byte[] call() {
-      VehSitDataMessage vsd = (VehSitDataMessage) SerializationUtils.deserialize(record.value());
-      logger.info("Received VSD.");
+      logger.info("Received data.");
 
       byte[] encodedVsd = null;
       try {
-         if (trustSession.establishTrust(vsd.requestID, SemiDialogID.vehSitData)) {
+         if (trustSession.establishTrust(getRequestId(), SemiDialogID.vehSitData)) {
             logger.debug("Sending VSD to SDC IP: {} Port: {}", odeProperties.getSdcIp(), odeProperties.getSdcPort());
 
-            encodedVsd = coder.encode(vsd).array();
             sendToSdc(encodedVsd);
             messagesSent++;
          } else {
             logger.error("Failed to establish trust, not sending VSD.");
          }
-      } catch (UdpUtilException | EncodeFailedException | EncodeNotSupportedException e) {
+      } catch (UdpUtilException e) {
          logger.error("Error Sending Isd to SDC", e);
          return new byte[0];
       }

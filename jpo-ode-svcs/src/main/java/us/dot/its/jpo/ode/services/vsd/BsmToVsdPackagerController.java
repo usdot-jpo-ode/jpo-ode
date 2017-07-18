@@ -10,7 +10,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-// TODO @Controller
+@Controller
 public class BsmToVsdPackagerController {
 
    private static final Logger logger = LoggerFactory.getLogger(BsmToVsdPackagerController.class);
@@ -27,10 +27,10 @@ public class BsmToVsdPackagerController {
          logger.info("Converting {} records from topic {} and publishing to topic {} ", J2735Bsm.class.getSimpleName(),
                inputTopic, outputTopic);
 
-         BsmToVsdPackager<String> converter = new BsmToVsdPackager<>(MessageProducer.defaultByteArrayMessageProducer(
+         BsmToVsdPackager<byte[]> converter = new BsmToVsdPackager<>(MessageProducer.defaultByteArrayMessageProducer(
                odeProps.getKafkaBrokers(), odeProps.getKafkaProducerType()), outputTopic);
 
-         MessageConsumer<String, String> consumer = new MessageConsumer<>(odeProps.getKafkaBrokers(),
+         MessageConsumer<String, byte[]> consumer = new MessageConsumer<>(odeProps.getKafkaBrokers(),
                this.getClass().getSimpleName(), converter);
 
          consumer.setName(this.getClass().getSimpleName());
