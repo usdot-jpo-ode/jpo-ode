@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.SerializationUtils;
 
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
@@ -74,9 +75,10 @@ public class BsmToVsdPackager<V> extends AbstractSubPubTransformer<String, V, by
       byte[] encodedVsd = null;
       try {
          logger.debug("Consuming BSM.");
+         
+         J2735Bsm j2735Bsm = (J2735Bsm) SerializationUtils.deserialize((byte[]) consumedData);
 
-         Asn1Object j2735Bsm = (Asn1Object) JsonUtils.fromJson((String) consumedData, J2735Bsm.class);
-         VehSitDataMessage vsd = addToVsdBundle((J2735Bsm)j2735Bsm);
+         VehSitDataMessage vsd = addToVsdBundle(j2735Bsm);
 
          // Only full VSDs (10) will be published
          // TODO - toggleable mechanism for periodically publishing not-full

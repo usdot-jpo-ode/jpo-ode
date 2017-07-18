@@ -20,7 +20,7 @@ public class BsmToVsdPackagerController {
    private BsmToVsdPackagerController(OdeProperties odeProps) {
       super();
 
-      String inputTopic = odeProps.getKafkaTopicBsmRawJson(); // TODO - needs to
+      String inputTopic = odeProps.getKafkaTopicBsmSerializedPojo(); // TODO - needs to
                                                               // be filtered
       String outputTopic = odeProps.getKafkaTopicEncodedVsd();
 
@@ -28,10 +28,10 @@ public class BsmToVsdPackagerController {
          logger.info("Converting {} records from topic {} and publishing to topic {} ", J2735Bsm.class.getSimpleName(),
                inputTopic, outputTopic);
 
-         BsmToVsdPackager<String> converter = new BsmToVsdPackager<>(MessageProducer.defaultByteArrayMessageProducer(
+         BsmToVsdPackager<byte[]> converter = new BsmToVsdPackager<>(MessageProducer.defaultByteArrayMessageProducer(
                odeProps.getKafkaBrokers(), odeProps.getKafkaProducerType()), outputTopic);
 
-         MessageConsumer<String, String> consumer = new MessageConsumer<>(odeProps.getKafkaBrokers(),
+         MessageConsumer<String, byte[]> consumer = new MessageConsumer<>(odeProps.getKafkaBrokers(),
                this.getClass().getSimpleName(), converter);
 
          consumer.setName(this.getClass().getSimpleName());
