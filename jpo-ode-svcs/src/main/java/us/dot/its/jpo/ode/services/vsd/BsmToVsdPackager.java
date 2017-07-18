@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.SerializationUtils;
 
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
@@ -24,7 +23,6 @@ import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage.Bundle;
 import us.dot.its.jpo.ode.j2735.semi.VehSitRecord;
 import us.dot.its.jpo.ode.j2735.semi.VsmType;
-import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssVehicleSituationRecord;
 import us.dot.its.jpo.ode.udp.bsm.BsmComparator;
@@ -70,14 +68,21 @@ public class BsmToVsdPackager<V> extends AbstractSubPubTransformer<String, V, by
 
    @Override
    protected byte[] transform(V consumedData) {
+      
+      if (null == consumedData) {
+         return new byte[0];
+      }
 
-      logger.debug("VsdDepositor received data.");
+      logger.debug("VsdDepositor received data: {}", consumedData);
+      
+      J2735Bsm bsmData = (J2735Bsm) JsonUtils.fromJson((String) consumedData, J2735Bsm.class);
+
       byte[] encodedVsd = null;
       try {
          logger.debug("Consuming BSM.");
          
 
-         VehSitDataMessage vsd = addToVsdBundle((J2735Bsm) consumedData);
+         VehSitDataMessage vsd = addToVsdBundle(bsmData);
 
          // Only full VSDs (10) will be published
          // TODO - toggleable mechanism for periodically publishing not-full
