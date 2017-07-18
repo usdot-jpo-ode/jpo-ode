@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.udp.vsd;
 
 import java.io.ByteArrayInputStream;
 
+import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.SerializationUtils;
@@ -17,6 +18,7 @@ import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.udp.UdpUtil.UdpUtilException;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
@@ -40,7 +42,7 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
 
    @Override
    public byte[] call() {
-      logger.info("Received data.");
+      logger.info("Received data: {}", HexUtils.toHexString(record.value()));
 
       byte[] encodedVsd = null;
       try {
