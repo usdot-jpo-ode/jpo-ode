@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.SerializationUtils;
 
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
@@ -67,10 +68,12 @@ public class BsmToVsdPackager<V> extends AbstractSubPubTransformer<String, V, by
       if (null == consumedData) {
          return new byte[0];
       }
+      
+      String jsonConsumedData = (String) SerializationUtils.deserialize((byte[]) consumedData);
 
       logger.debug("VsdDepositor received data: {}", consumedData);
 
-      J2735Bsm bsmData = (J2735Bsm) JsonUtils.fromJson((String) consumedData, J2735Bsm.class);
+      J2735Bsm bsmData = (J2735Bsm) JsonUtils.fromJson(jsonConsumedData, J2735Bsm.class);
 
       byte[] encodedVsd = null;
       try {
