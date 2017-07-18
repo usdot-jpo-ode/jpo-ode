@@ -35,18 +35,23 @@ import us.dot.its.jpo.ode.wrapper.MessageProducer;
 /**
  * Kafka consumer/publisher that creates VSDs from BSMs.
  * 
- * Input stream: j2735FilteredBsm (JSON) Output stream: topic.asnVsd (byte)
+ * Input stream: j2735FilteredBsm (JSON)
+ * Output stream: encodedVsd (byte)
  * 
- * dialogID = SemiDialogID.vehSitData seqID = SemiSequenceID.data groupID =
- * "jode".bytes requestID from BSMs
+ * dialogID = SemiDialogID.vehSitData
+ * seqID = SemiSequenceID.data
+ * groupID = "jode".bytes
+ * requestID from BSMs
  * 
- * VehSitDataMessage ::= SEQUENCE { dialogID SemiDialogID, -- 0x9A Vehicle
- * Situation Data Deposit seqID SemiSequenceID, -- 0x05 Data Content groupID
- * GroupID, -- unique ID used to identify an organization requestID
- * DSRC.TemporaryID, -- random 4 byte ID generated following trust establishment
- * type VsmType, -- the type of vehicle situation data included bundle SEQUENCE
- * (SIZE (1..10)) OF VehSitRecord, -- sets of situation data records crc
- * DSRC.MsgCRC }
+ * VehSitDataMessage ::= SEQUENCE {
+ *   dialogID SemiDialogID,                    -- 0x9A Vehicle Situation Data Deposit
+ *   seqID    SemiSequenceID,                  -- 0x05 Data Content
+ *   groupID     GroupID,                      -- unique ID used to identify an organization
+ *   requestID   DSRC.TemporaryID,             -- random 4 byte ID generated following trust establishment
+ *   type     VsmType,                         -- the type of vehicle situation data included
+ *   bundle      SEQUENCE (SIZE (1..10)) OF VehSitRecord,  -- sets of situation data records
+ *   crc         DSRC.MsgCRC
+ * }
  */
 public class BsmToVsdPackager<V> extends AbstractSubPubTransformer<String, V, byte[]> {
 
@@ -69,11 +74,12 @@ public class BsmToVsdPackager<V> extends AbstractSubPubTransformer<String, V, by
          return new byte[0];
       }
       
-      String jsonConsumedData = (String) SerializationUtils.deserialize((byte[]) consumedData);
+      //String jsonConsumedData = (String) SerializationUtils.deserialize((byte[]) consumedData);
+      String j2735BsmJson = (String) record.value();
 
       logger.debug("VsdDepositor received data: {}", consumedData);
 
-      J2735Bsm bsmData = (J2735Bsm) JsonUtils.fromJson(jsonConsumedData, J2735Bsm.class);
+      J2735Bsm bsmData = (J2735Bsm) JsonUtils.fromJson(j2735BsmJson, J2735Bsm.class);
 
       byte[] encodedVsd = null;
       try {
