@@ -44,7 +44,9 @@ public abstract class AbstractSubPubTransformer<K, V1, V2> extends MessageProces
         
         V2 toBePublished = transform(consumedData);
 
-        producer.send(outputTopic, record.key(), toBePublished);
+        if (null != toBePublished) {
+           producer.send(outputTopic, record.key(), toBePublished);
+        }
         
         return consumedData;
     }
