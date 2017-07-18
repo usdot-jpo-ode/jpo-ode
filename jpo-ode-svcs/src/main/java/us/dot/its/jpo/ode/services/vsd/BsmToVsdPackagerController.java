@@ -10,8 +10,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-// TODO fix this class 
-// @Controller
+@Controller
 public class BsmToVsdPackagerController {
 
    private static final Logger logger = LoggerFactory.getLogger(BsmToVsdPackagerController.class);
