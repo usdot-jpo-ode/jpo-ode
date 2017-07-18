@@ -68,6 +68,7 @@ public class BsmToVsdPackager<V> extends AbstractSubPubTransformer<String, V, by
 
    @Override
    protected byte[] transform(V consumedData) {
+      this.setRecord(null);
 
       logger.debug("VsdDepositor received data.");
       byte[] encodedVsd = null;
