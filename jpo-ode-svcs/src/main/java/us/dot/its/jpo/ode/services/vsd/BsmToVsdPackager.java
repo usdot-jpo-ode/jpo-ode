@@ -23,6 +23,7 @@ import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage.Bundle;
 import us.dot.its.jpo.ode.j2735.semi.VehSitRecord;
 import us.dot.its.jpo.ode.j2735.semi.VsmType;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssVehicleSituationRecord;
 import us.dot.its.jpo.ode.udp.bsm.BsmComparator;
@@ -68,15 +69,14 @@ public class BsmToVsdPackager<V> extends AbstractSubPubTransformer<String, V, by
 
    @Override
    protected byte[] transform(V consumedData) {
-      this.setRecord(null);
 
       logger.debug("VsdDepositor received data.");
       byte[] encodedVsd = null;
       try {
          logger.debug("Consuming BSM.");
 
-         J2735Bsm j2735Bsm = (J2735Bsm) JsonUtils.fromJson((String) consumedData, J2735Bsm.class);
-         VehSitDataMessage vsd = addToVsdBundle(j2735Bsm);
+         Asn1Object j2735Bsm = (Asn1Object) JsonUtils.fromJson((String) consumedData, J2735Bsm.class);
+         VehSitDataMessage vsd = addToVsdBundle((J2735Bsm)j2735Bsm);
 
          // Only full VSDs (10) will be published
          // TODO - toggleable mechanism for periodically publishing not-full
