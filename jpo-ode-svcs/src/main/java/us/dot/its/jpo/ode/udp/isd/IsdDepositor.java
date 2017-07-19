@@ -1,11 +1,11 @@
 package us.dot.its.jpo.ode.udp.isd;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -23,26 +23,23 @@ import com.oss.asn1.INTEGER;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
-import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.semi.DataReceipt;
+import us.dot.its.jpo.ode.j2735.semi.GroupID;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationDataAcceptance;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
-import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 public class IsdDepositor extends AbstractSubscriberDepositor {
 
    public IsdDepositor(OdeProperties odeProps) {
       super(odeProps, odeProps.getIsdDepositorPort());
-      consumer = MessageConsumer.defaultByteArrayMessageConsumer(odeProps.getKafkaBrokers(),
-            odeProps.getHostId() + this.getClass().getSimpleName(), this);
       consumer.setName(this.getClass().getSimpleName());
    }
 
    /**
-    * TODO - incomplete method
+    * TODO - this method never gets called
     * 
     * @param encodedIsd
     */
@@ -51,38 +48,36 @@ public class IsdDepositor extends AbstractSubscriberDepositor {
       /*
        * Send an ISDAcceptance message to confirm deposit
        */
-
       IntersectionSituationDataAcceptance acceptance = new IntersectionSituationDataAcceptance();
-      // acceptance.dialogID = dialogId;
-      // acceptance.groupID = groupId;
-      // acceptance.requestID = requestId;
+      acceptance.dialogID = SemiDialogID.intersectionSitDataQuery;
+      acceptance.groupID = new GroupID(OdeProperties.getJpoOdeGroupId());
+      acceptance.requestID = getRequestId(encodedIsd);
       acceptance.seqID = SemiSequenceID.accept;
       acceptance.recordsSent = new INTEGER(trustManager.getSessionMessageCount(getRequestId(encodedIsd)));
 
-      ByteArrayOutputStream sink = new ByteArrayOutputStream();
+      byte[] encodedAccept = null;
       try {
-         coder.encode(acceptance, sink);
+         encodedAccept = coder.encode(acceptance).array();
       } catch (EncodeFailedException | EncodeNotSupportedException e) {
          logger.error("Error encoding ISD non-repudiation message", e);
+         return;
       }
-
-      byte[] encodedAccept = sink.toByteArray();
 
       // Switching from socket.send to socket.receive in one thread is
       // slower than non-repud round trip time so we must lead this by
       // creating a socket.receive thread
 
       try {
-         Future<AbstractData> f = pool.submit(new DataReceiptReceiver(odeProperties, socket));
-         logger.debug("Submitted DataReceiptReceiver to listen on port {}", socket.getPort());
+         Future<AbstractData> f = Executors.newSingleThreadExecutor().submit(new DataReceiptReceiver(odeProperties, socket));
+         logger.debug("Submitted DataReceiptReceiver to listen on port {}", socket.getLocalPort());
 
-         logger.debug("Sending ISD non-repudiation message to SDC {} ", HexUtils.toHexString(encodedAccept));
+         String hexMsg = HexUtils.toHexString(encodedAccept);
+         logger.debug("Sending ISD non-repudiation message to SDC {} ", hexMsg);
 
          socket.send(new DatagramPacket(encodedAccept, encodedAccept.length,
                new InetSocketAddress(odeProperties.getSdcIp(), odeProperties.getSdcPort())));
 
          DataReceipt receipt = (DataReceipt) f.get(odeProperties.getDataReceiptExpirationSeconds(), TimeUnit.SECONDS);
-         logger.debug("DataReceipt: f.isDone(): {}, f.isCancelled(): {}", f.isDone(), f.isCancelled());
 
          if (null != receipt) {
             logger.debug("Successfully received data receipt from SDC {}", receipt);
@@ -110,8 +105,8 @@ public class IsdDepositor extends AbstractSubscriberDepositor {
    public TemporaryID getRequestId(byte[] encodedMsg) {
       TemporaryID reqID = null;
       try {
-         reqID = ((IntersectionSituationData) J2735.getPERUnalignedCoder().decode(new ByteArrayInputStream(encodedMsg),
-               new IntersectionSituationData())).requestID;
+         reqID = ((IntersectionSituationData) coder.decode(new ByteArrayInputStream(encodedMsg),
+               new IntersectionSituationData())).getRequestID();
 
       } catch (DecodeFailedException | DecodeNotSupportedException e) {
          logger.error("Failed to decode ISD message: {}", e);

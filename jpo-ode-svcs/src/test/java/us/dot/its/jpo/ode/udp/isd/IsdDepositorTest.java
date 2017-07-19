@@ -3,75 +3,88 @@ package us.dot.its.jpo.ode.udp.isd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
+import java.io.ByteArrayInputStream;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 
+import com.oss.asn1.DecodeFailedException;
+import com.oss.asn1.DecodeNotSupportedException;
+import com.oss.asn1.PERUnalignedCoder;
+
+import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
-import mockit.integration.junit4.JMockit;
+import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.udp.trust.TrustManager;
+import us.dot.its.jpo.ode.j2735.J2735;
+import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
+import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
+import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
+import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
-@RunWith(JMockit.class)
 public class IsdDepositorTest {
-	
-	@Mocked LoggerFactory mockLogFact;
 
-	@Injectable
-	OdeProperties mockOdeProps;
-	@Injectable
-	Environment mockEnv;
-	
+   @Tested
+   IsdDepositor testIsdDepositor;
 
-	@Test @Ignore
-	public void testDeposit(@Mocked final DatagramSocket mockSock, @Mocked ConsumerRecord<String, byte[]> mockRec, @Mocked
-			InetSocketAddress mockInetSocketAddress, @Injectable final TrustManager mockTrustManager) {
+   @Injectable
+   OdeProperties injectableOdeProperties;
 
-		try {
-			new Expectations() {
-				{
-				   new TrustManager((OdeProperties) any, (DatagramSocket) any);
-				   result = mockTrustManager;
-					mockSock.send((DatagramPacket) any);
-				}
-			};
-		} catch (IOException e) {
-			fail("Unexpected exception in expectations block.");
-		}
+   @Capturing
+   MessageConsumer<?, ?> capturingMessageConsumer;
 
-		IsdDepositor testIsdDepositor = new IsdDepositor(mockOdeProps);
-		testIsdDepositor.setRecord(mockRec);
-		assertEquals(testIsdDepositor.call(), mockRec.value());
-	}
-	
-	@Test @Ignore
-	public void testDepositWithException(@Mocked final DatagramSocket mockSock, @Mocked ConsumerRecord<String, byte[]> mockRec, @Mocked
-			InetSocketAddress mockInetSocketAddress) {
+   @Test
+   public void shouldReturnCorrectSemiDialogID() {
+      assertEquals(SemiDialogID.intersectionSitDataDep, testIsdDepositor.getDialogId());
+   }
 
-		try {
-			new Expectations() {
-				{
-					mockSock.send((DatagramPacket) any);
-					result = new IOException("testException123");
-				}
-			};
-		} catch (IOException e) {
-			fail("Unexpected exception in expectations block.");
-		}
+   @Test
+   public void shouldReturnRequestID(@Capturing J2735 capturingJ2735, @Mocked PERUnalignedCoder mockPERUnalignedCoder,
+         @Capturing MessageConsumer<?, ?> capturingMessageConsumer,
+         @Mocked IntersectionSituationData mockIntersectionSituationData) {
+      try {
+         new Expectations() {
+            {
+               J2735.getPERUnalignedCoder();
+               result = mockPERUnalignedCoder;
 
-		IsdDepositor testIsdDepositor = new IsdDepositor(mockOdeProps);
-		testIsdDepositor.setRecord(mockRec);
-		testIsdDepositor.call();
-	}
+               mockPERUnalignedCoder.decode((ByteArrayInputStream) any, (IntersectionSituationData) any);
+               result = mockIntersectionSituationData;
+
+               mockIntersectionSituationData.getRequestID();
+               result = new TemporaryID();
+            }
+         };
+      } catch (DecodeFailedException | DecodeNotSupportedException e) {
+         fail("Unexpected exception in expectations block: " + e);
+      }
+
+      IsdDepositor testRequestIsdDepositor = new IsdDepositor(injectableOdeProperties);
+      testRequestIsdDepositor.getRequestId(new byte[] { 1, 2, 3 });
+   }
+
+   @Test
+   public void testGetRequestIDThrowsException(@Capturing J2735 capturingJ2735,
+         @Mocked PERUnalignedCoder mockPERUnalignedCoder, @Capturing MessageConsumer<?, ?> capturingMessageConsumer,
+         @Mocked IntersectionSituationData mockIntersectionSituationData,
+         @Mocked DecodeFailedException mockDecodeFailedException) {
+      try {
+         new Expectations() {
+            {
+               J2735.getPERUnalignedCoder();
+               result = mockPERUnalignedCoder;
+
+               mockPERUnalignedCoder.decode((ByteArrayInputStream) any, (IntersectionSituationData) any);
+               result = mockDecodeFailedException;
+            }
+         };
+      } catch (DecodeFailedException | DecodeNotSupportedException e) {
+         fail("Unexpected exception in expectations block: " + e);
+      }
+
+      IsdDepositor testRequestIsdDepositor = new IsdDepositor(injectableOdeProperties);
+      testRequestIsdDepositor.getRequestId(new byte[] { 1, 2, 3 });
+   }
 
 }

@@ -62,7 +62,6 @@ public class VsdDepositorTest {
          fail("Unexpected exception in expectations block: " + e);
       }
 
-      // Test
       VsdDepositor testRequestVsdDepositor = new VsdDepositor(mockOdeProperties);
       testRequestVsdDepositor.getRequestId(new byte[] { 1, 2, 3 });
    }

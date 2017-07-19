@@ -2,7 +2,6 @@ package us.dot.its.jpo.ode.dds;
 
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.tomcat.util.buf.HexUtils;
@@ -24,21 +23,22 @@ public abstract class AbstractSubscriberDepositor extends MessageProcessor<Strin
 
    protected final Logger logger;
    protected OdeProperties odeProperties;
-   protected DatagramSocket socket = null;
+   protected DatagramSocket socket;;
    protected TrustManager trustManager;
    protected Coder coder;
-   protected ExecutorService pool;
    protected MessageConsumer<String, byte[]> consumer;
 
    public AbstractSubscriberDepositor(OdeProperties odeProps, int port) {
       this.odeProperties = odeProps;
       this.coder = J2735.getPERUnalignedCoder();
-      logger = getLogger();
+      this.logger = getLogger();
+      this.consumer = MessageConsumer.defaultByteArrayMessageConsumer(odeProps.getKafkaBrokers(),
+            odeProps.getHostId() + this.getClass().getSimpleName(), this);
 
       try {
          logger.debug("Creating depositor socket on port {}", port);
-         socket = new DatagramSocket(port);
-         trustManager = new TrustManager(odeProps, socket);
+         this.socket = new DatagramSocket(port);
+         this.trustManager = new TrustManager(odeProps, socket);
       } catch (SocketException e) {
          logger.error("Error creating socket with port " + port, e);
       }
