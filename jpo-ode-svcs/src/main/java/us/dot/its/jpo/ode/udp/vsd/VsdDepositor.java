@@ -42,7 +42,7 @@ public class VsdDepositor extends AbstractSubscriberDepositor {
       TemporaryID reqID = null;
       try {
          reqID = ((VehSitDataMessage) J2735.getPERUnalignedCoder().decode(new ByteArrayInputStream(encodedMsg),
-               new VehSitDataMessage())).requestID;
+               new VehSitDataMessage())).getRequestID();
 
       } catch (DecodeFailedException | DecodeNotSupportedException e) {
          logger.error("Depositor failed to decode ISD message: {}", e);
