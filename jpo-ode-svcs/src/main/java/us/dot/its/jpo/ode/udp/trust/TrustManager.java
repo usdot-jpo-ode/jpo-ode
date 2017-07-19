@@ -34,10 +34,11 @@ import us.dot.its.jpo.ode.udp.isd.ServiceResponseReceiver;
  */
 public class TrustManager {
 
-   private HashMap<TemporaryID, Integer> sessionList;
    private OdeProperties odeProperties;
+   private HashMap<TemporaryID, Integer> sessionList;
    private Logger logger = LoggerFactory.getLogger(this.getClass());
    private DatagramSocket socket = null;
+   
 
    public TrustManager(OdeProperties odeProps, DatagramSocket socket) {
       this.odeProperties = odeProps;
