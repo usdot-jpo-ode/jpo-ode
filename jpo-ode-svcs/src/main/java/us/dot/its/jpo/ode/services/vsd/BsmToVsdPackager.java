@@ -4,6 +4,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,8 @@ import us.dot.its.jpo.ode.wrapper.MessageProducer;
 /**
  * Kafka consumer/publisher that creates VSDs from BSMs.
  * 
- * Input stream: j2735FilteredBsm (JSON string) Output stream: encodedVsd (byte array)
+ * Input stream: j2735FilteredBsm (JSON string) Output stream: encodedVsd (byte
+ * array)
  */
 public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, byte[]> {
 
@@ -55,7 +57,7 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, 
       if (null == consumedData) {
          return new byte[0];
       }
-      
+
       J2735Bsm bsmData = (J2735Bsm) JsonUtils.fromJson(consumedData, J2735Bsm.class);
 
       byte[] encodedVsd = null;
@@ -68,9 +70,9 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, 
          // TODO - toggleable mechanism for periodically publishing not-full
          // VSDs
          if (vsd != null) {
-            logger.debug("VSD ready to send: (pojo) {}", vsd); // will still display if subsequent encoding step fails
             encodedVsd = coder.encode(vsd).array();
-            logger.debug("VSD ready to send: {}", encodedVsd);
+            String hexMsg = HexUtils.toHexString(encodedVsd);
+            logger.debug("VSD ready to send: {}", hexMsg);
          }
       } catch (EncodeFailedException | EncodeNotSupportedException e) {
          logger.error("Error Sending VSD to SDC", e);

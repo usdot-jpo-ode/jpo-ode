@@ -43,22 +43,22 @@ public abstract class AbstractSubscriberDepositor extends MessageProcessor<Strin
          logger.error("Error creating socket with port " + port, e);
       }
    }
-   
+
    @Override
    public byte[] call() {
       if (null == record.value()) {
          return new byte[0];
       }
-      
-      String hexMsg = HexUtils.toHexString(record.value());
-      logger.info("Received data: {}", hexMsg);
-      
+
+      logger.info("Received data message for deposit");
+
       TemporaryID requestID = getRequestId(record.value());
       SemiDialogID dialogID = getDialogId();
 
       try {
          if (trustManager.establishTrust(requestID, dialogID)) {
-            logger.debug("Sending message to SDC IP: {} Port: {}", odeProperties.getSdcIp(), odeProperties.getSdcPort());
+            logger.debug("Sending message to SDC IP: {} Port: {}", odeProperties.getSdcIp(),
+                  odeProperties.getSdcPort());
             sendToSdc((byte[]) record.value());
             trustManager.incrementSessionTracker(requestID);
          } else {
@@ -69,8 +69,9 @@ public abstract class AbstractSubscriberDepositor extends MessageProcessor<Strin
          return new byte[0];
       }
 
-      logger.info("Messages sent since sessionID {} start: {}/{}", requestID, trustManager.getSessionMessageCount(requestID),
-            odeProperties.getMessagesUntilTrustReestablished());
+      String hexRequestID = HexUtils.toHexString(requestID.byteArrayValue());
+      logger.info("Messages sent since sessionID {} start: {}/{}", hexRequestID,
+            trustManager.getSessionMessageCount(requestID), odeProperties.getMessagesUntilTrustReestablished());
 
       if (trustManager.getSessionMessageCount(requestID) >= odeProperties.getMessagesUntilTrustReestablished()) {
          trustManager.endTrustSession(requestID);
@@ -103,9 +104,9 @@ public abstract class AbstractSubscriberDepositor extends MessageProcessor<Strin
    public void setSocket(DatagramSocket socket) {
       this.socket = socket;
    }
-   
+
    public abstract Logger getLogger();
-   
+
    public abstract SemiDialogID getDialogId();
 
    public abstract TemporaryID getRequestId(byte[] encodedMsg);
