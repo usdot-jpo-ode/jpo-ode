@@ -2,7 +2,6 @@ package us.dot.its.jpo.ode.udp.vsd;
 
 import java.io.ByteArrayInputStream;
 
-import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,13 +14,12 @@ import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
-import us.dot.its.jpo.ode.udp.UdpUtil.UdpUtilException;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 /**
  * Publishes VSDs to SDC.
  */
-public class VsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
+public class VsdDepositor extends AbstractSubscriberDepositor {
 
    public VsdDepositor(OdeProperties odeProps) {
       super(odeProps, odeProps.getVsdDepositorPort());
@@ -36,43 +34,14 @@ public class VsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
       consumer.setName(this.getClass().getSimpleName());
    }
 
-   @Override
-   public byte[] call() {
-      if (null == record.value()) {
-         return new byte[0];
-      }
-      
-      logger.info("Received data: {}", HexUtils.toHexString(record.value()));
-
-      byte[] encodedVsd = record.value();
-      try {
-         if (trustSession.establishTrust(getRequestId(), SemiDialogID.vehSitData)) {
-            logger.debug("Sending VSD to SDC IP: {} Port: {}", odeProperties.getSdcIp(), odeProperties.getSdcPort());
-
-            sendToSdc(encodedVsd);
-            messagesSent++;
-         } else {
-            logger.error("Failed to establish trust, not sending VSD.");
-         }
-      } catch (UdpUtilException e) {
-         logger.error("Error Sending Isd to SDC", e);
-         return new byte[0];
-      }
-
-      logger.info("VSDs sent since session start: {}/{}", messagesSent,
-            odeProperties.getMessagesUntilTrustReestablished());
-
-      if (messagesSent >= odeProperties.getMessagesUntilTrustReestablished()) {
-         trustSession.setTrustEstablished(false);
-      }
-
-      return encodedVsd;
+   public SemiDialogID getDialogId() {
+      return SemiDialogID.vehSitData;
    }
 
-   public TemporaryID getRequestId() {
+   public TemporaryID getRequestId(byte[] encodedMsg) {
       TemporaryID reqID = null;
       try {
-         reqID = ((VehSitDataMessage) J2735.getPERUnalignedCoder().decode(new ByteArrayInputStream(record.value()),
+         reqID = ((VehSitDataMessage) J2735.getPERUnalignedCoder().decode(new ByteArrayInputStream(encodedMsg),
                new VehSitDataMessage())).requestID;
 
       } catch (DecodeFailedException | DecodeNotSupportedException e) {

@@ -9,7 +9,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 public class AbstractSubscriberDepositorTest {
 
    @Tested
-   AbstractSubscriberDepositor<?, ?> testAbstractSubscriberDepositor;
+   AbstractSubscriberDepositor testAbstractSubscriberDepositor;
 
    @Injectable
    OdeProperties mockOdeProperties;

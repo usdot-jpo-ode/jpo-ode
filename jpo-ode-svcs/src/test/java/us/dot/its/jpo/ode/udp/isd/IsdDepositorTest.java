@@ -20,7 +20,7 @@ import mockit.Injectable;
 import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.udp.trust.TrustSession;
+import us.dot.its.jpo.ode.udp.trust.TrustManager;
 
 @RunWith(JMockit.class)
 public class IsdDepositorTest {
@@ -35,12 +35,12 @@ public class IsdDepositorTest {
 
 	@Test @Ignore
 	public void testDeposit(@Mocked final DatagramSocket mockSock, @Mocked ConsumerRecord<String, byte[]> mockRec, @Mocked
-			InetSocketAddress mockInetSocketAddress, @Injectable final TrustSession mockTrustManager) {
+			InetSocketAddress mockInetSocketAddress, @Injectable final TrustManager mockTrustManager) {
 
 		try {
 			new Expectations() {
 				{
-				   new TrustSession((OdeProperties) any, (DatagramSocket) any);
+				   new TrustManager((OdeProperties) any, (DatagramSocket) any);
 				   result = mockTrustManager;
 					mockSock.send((DatagramPacket) any);
 				}

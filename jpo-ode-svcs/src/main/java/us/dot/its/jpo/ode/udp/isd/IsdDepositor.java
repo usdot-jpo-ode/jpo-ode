@@ -30,10 +30,9 @@ import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationDataAcceptance;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
-import us.dot.its.jpo.ode.udp.UdpUtil.UdpUtilException;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
-public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
+public class IsdDepositor extends AbstractSubscriberDepositor {
 
    public IsdDepositor(OdeProperties odeProps) {
       super(odeProps, odeProps.getIsdDepositorPort());
@@ -42,44 +41,9 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
       consumer.setName(this.getClass().getSimpleName());
    }
 
-   @Override
-   public byte[] call() {
-      /*
-       * The record.value() will return an encoded ISD
-       */
-      byte[] encodedIsd = record.value();
-
-      try {
-         logger.debug("Received ISD: {}", HexUtils.toHexString(encodedIsd));
-
-         if (trustSession.establishTrust(getRequestId(), SemiDialogID.intersectionSitDataDep)) {
-            logger.debug("Sending ISD to SDC IP: {}:{} from port: {}", odeProperties.getSdcIp(),
-                  odeProperties.getSdcPort(), socket.getLocalPort());
-            sendToSdc(encodedIsd);
-            messagesSent++;
-         } else {
-            logger.error("Failed to establish trust, not sending ISD to SDC");
-         }
-      } catch (UdpUtilException e) {
-         logger.error("Error Sending Isd to SDC", e);
-         return new byte[0];
-      }
-
-      // TODO - determine more dynamic method of re-establishing trust
-      // If we've sent at least 5 messages, get a data receipt and then end
-      // trust session
-      logger.info("ISDs sent since session start: {}/{}", messagesSent,
-            odeProperties.getMessagesUntilTrustReestablished());
-      if (messagesSent >= odeProperties.getMessagesUntilTrustReestablished()) {
-         trustSession.setTrustEstablished(false);
-         // TODO sendDataReceipt(encodedIsd);
-      }
-
-      return encodedIsd;
-   }
-
    /**
     * TODO - incomplete method
+    * 
     * @param encodedIsd
     */
    public void sendDataReceipt(byte[] encodedIsd) {
@@ -93,7 +57,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
       // acceptance.groupID = groupId;
       // acceptance.requestID = requestId;
       acceptance.seqID = SemiSequenceID.accept;
-      acceptance.recordsSent = new INTEGER(messagesSent);
+      acceptance.recordsSent = new INTEGER(trustManager.getSessionMessageCount(getRequestId(encodedIsd)));
 
       ByteArrayOutputStream sink = new ByteArrayOutputStream();
       try {
@@ -132,25 +96,28 @@ public class IsdDepositor extends AbstractSubscriberDepositor<String, byte[]> {
          logger.error("Did not receive ISD data receipt within alotted "
                + +odeProperties.getDataReceiptExpirationSeconds() + " seconds " + e);
       }
-
-   }
-
-   public TemporaryID getRequestId() {
-      TemporaryID reqID = null;
-      try {
-         reqID = ((IntersectionSituationData) J2735.getPERUnalignedCoder()
-               .decode(new ByteArrayInputStream(record.value()), new IntersectionSituationData())).requestID;
-
-      } catch (DecodeFailedException | DecodeNotSupportedException e) {
-         logger.error("Depositor failed to decode ISD message: {}", e);
-      }
-
-      return reqID;
    }
 
    @Override
    public Logger getLogger() {
       return LoggerFactory.getLogger(this.getClass());
+   }
+
+   public SemiDialogID getDialogId() {
+      return SemiDialogID.intersectionSitDataDep;
+   }
+
+   public TemporaryID getRequestId(byte[] encodedMsg) {
+      TemporaryID reqID = null;
+      try {
+         reqID = ((IntersectionSituationData) J2735.getPERUnalignedCoder().decode(new ByteArrayInputStream(encodedMsg),
+               new IntersectionSituationData())).requestID;
+
+      } catch (DecodeFailedException | DecodeNotSupportedException e) {
+         logger.error("Failed to decode ISD message: {}", e);
+      }
+
+      return reqID;
    }
 
 }

@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.udp.trust;
 
 import java.net.DatagramSocket;
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -26,18 +27,22 @@ import us.dot.its.jpo.ode.udp.isd.ServiceResponseReceiver;
 
 /*
  * Trust Session Manager
+ * <p>
+ * Maintains a hashmap of TemporaryID (session ID) and messages sent in session.
+ * Trust session is considered active as long as the hashmap contains TempID.
+ * </p>
  */
-public class TrustSession {
+public class TrustManager {
 
+   private HashMap<TemporaryID, Integer> sessionList;
    private OdeProperties odeProperties;
    private Logger logger = LoggerFactory.getLogger(this.getClass());
    private DatagramSocket socket = null;
 
-   private boolean trustEstablished = false;
-
-   public TrustSession(OdeProperties odeProps, DatagramSocket socket) {
+   public TrustManager(OdeProperties odeProps, DatagramSocket socket) {
       this.odeProperties = odeProps;
       this.socket = socket;
+      this.sessionList = new HashMap<>();
    }
 
    /**
@@ -52,7 +57,7 @@ public class TrustSession {
     */
    public boolean establishTrust(TemporaryID requestId, SemiDialogID dialogId) {
 
-      if (this.isTrustEstablished()) {
+      if (this.isTrustEstablished(requestId)) {
          return true;
       }
 
@@ -60,12 +65,12 @@ public class TrustSession {
 
       int retriesLeft = odeProperties.getTrustRetries();
 
-      while (retriesLeft > 0 && !this.isTrustEstablished()) {
+      while (retriesLeft > 0 && !this.isTrustEstablished(requestId)) {
          if (retriesLeft < odeProperties.getTrustRetries()) {
             logger.debug("Failed to establish trust, retrying {} more time(s).", retriesLeft);
          }
+         
          try {
-
             Future<AbstractData> f = Executors.newSingleThreadExecutor()
                   .submit(new ServiceResponseReceiver(odeProperties, socket));
 
@@ -78,36 +83,49 @@ public class TrustSession {
 
             if (response.getRequestID().equals(request.getRequestID())) {
                // Matching IDs indicates a successful handshake
-               trustEstablished = true;
+               createSession(requestId);
                String reqid = HexUtils.toHexString(request.getRequestID().byteArrayValue());
                logger.info("Trust established, session requestID: {}", reqid);
             } else {
-               trustEstablished = false;
+               endTrustSession(requestId);
                logger.error("Received ServiceResponse from SDC but the requestID does not match! {} != {}",
                      response.getRequestID(), request.getRequestID());
             }
 
          } catch (TimeoutException e) {
-            trustEstablished = false;
+            endTrustSession(requestId);
             logger.error("Did not receive Service Response within alotted "
                   + +odeProperties.getServiceRespExpirationSeconds() + " seconds.", e);
 
          } catch (InterruptedException | ExecutionException | UdpUtilException e) {
-            trustEstablished = false;
+            endTrustSession(requestId);
             logger.error("Trust establishment interrupted.", e);
          }
          --retriesLeft;
       }
 
-      return trustEstablished;
+      return isTrustEstablished(requestId);
 
    }
 
-   public boolean isTrustEstablished() {
-      return trustEstablished;
+   public boolean isTrustEstablished(TemporaryID requestId) {
+      return (sessionList.containsKey(requestId) && sessionList.get(requestId) < odeProperties.getMessagesUntilTrustReestablished());
    }
-
-   public void setTrustEstablished(boolean trustEstablished) {
-      this.trustEstablished = trustEstablished;
+   
+   public void endTrustSession(TemporaryID requestID) {
+      logger.info("Ending trust session ID {}", requestID);
+      sessionList.remove(requestID);
+   }
+   
+   public void createSession(TemporaryID requestID) {
+      sessionList.put(requestID, 0);
+   }
+   
+   public void incrementSessionTracker(TemporaryID requestID) {
+      sessionList.put(requestID, sessionList.get(requestID)+1);
+   }
+   
+   public Integer getSessionMessageCount(TemporaryID requestID) {
+      return sessionList.get(requestID);
    }
 }

@@ -22,7 +22,7 @@ public class UdpServicesControllerTest {
    public void shouldSubmitFiveThreads(@Injectable OdeProperties mockOdeProperties,
          @Capturing ServiceManager capturingServiceManager, @Mocked ServiceManager mockServiceManager,
          @Capturing AbstractUdpReceiverPublisher capturingAbstractUdpReceiverPublisher,
-         @Capturing AbstractSubscriberDepositor<?,?> capturingAbstractSubscriberDepositor) {
+         @Capturing AbstractSubscriberDepositor capturingAbstractSubscriberDepositor) {
 
       new Expectations() {
          {
@@ -32,7 +32,7 @@ public class UdpServicesControllerTest {
             mockServiceManager.submit((AbstractUdpReceiverPublisher) any);
             times = 3;
 
-            mockServiceManager.submit((AbstractSubscriberDepositor<?, ?>) any, anyString);
+            mockServiceManager.submit((AbstractSubscriberDepositor) any, anyString);
             times = 2;
          }
       };

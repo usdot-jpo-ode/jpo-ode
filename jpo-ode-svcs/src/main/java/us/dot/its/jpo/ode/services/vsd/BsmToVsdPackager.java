@@ -33,18 +33,7 @@ import us.dot.its.jpo.ode.wrapper.MessageProducer;
 /**
  * Kafka consumer/publisher that creates VSDs from BSMs.
  * 
- * Input stream: j2735FilteredBsm (JSON) Output stream: topic.asnVsd (byte)
- * 
- * dialogID = SemiDialogID.vehSitData seqID = SemiSequenceID.data groupID =
- * "jode".bytes requestID from BSMs
- * 
- * VehSitDataMessage ::= SEQUENCE { dialogID SemiDialogID, -- 0x9A Vehicle
- * Situation Data Deposit seqID SemiSequenceID, -- 0x05 Data Content groupID
- * GroupID, -- unique ID used to identify an organization requestID
- * DSRC.TemporaryID, -- random 4 byte ID generated following trust establishment
- * type VsmType, -- the type of vehicle situation data included bundle SEQUENCE
- * (SIZE (1..10)) OF VehSitRecord, -- sets of situation data records crc
- * DSRC.MsgCRC }
+ * Input stream: j2735FilteredBsm (JSON string) Output stream: encodedVsd (byte array)
  */
 public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, byte[]> {
 
@@ -67,8 +56,6 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, 
          return new byte[0];
       }
       
-      logger.debug("VsdDepositor received data: {}", consumedData);
-
       J2735Bsm bsmData = (J2735Bsm) JsonUtils.fromJson(consumedData, J2735Bsm.class);
 
       byte[] encodedVsd = null;
@@ -81,10 +68,7 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, 
          // TODO - toggleable mechanism for periodically publishing not-full
          // VSDs
          if (vsd != null) {
-            logger.debug("VSD ready to send: (pojo) {}", vsd); // if encoding
-                                                               // fails, look at
-                                                               // this for
-                                                               // mistakes
+            logger.debug("VSD ready to send: (pojo) {}", vsd); // will still display if subsequent encoding step fails
             encodedVsd = coder.encode(vsd).array();
             logger.debug("VSD ready to send: {}", encodedVsd);
          }

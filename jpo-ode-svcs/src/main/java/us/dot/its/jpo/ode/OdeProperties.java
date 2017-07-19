@@ -67,6 +67,12 @@ public class OdeProperties implements EnvironmentAware {
    private int serviceRespExpirationSeconds = 10;
 
    private int serviceResponseBufferSize = 500;
+   
+   /*
+    * UDP Properties
+    */
+   private int trustRetries = 2; // if trust handshake fails, how many times to retry
+   private int messagesUntilTrustReestablished = 10; // renew trust session every x messages
 
    /*
     * BSM Properties
@@ -80,7 +86,6 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * Vehicle Situation Data (VSD) Properties
     */
-   private int trustRetries = 2;
    private boolean enabledVsdKafkaTopic = true;
    private String kafkaTopicEncodedVsd = "encodedVsd";
    private int vsdBufferSize = 500;
@@ -96,7 +101,6 @@ public class OdeProperties implements EnvironmentAware {
    private int isdReceiverPort = 46801;
    private int isdDepositorPort = 6666;
    private int isdTrustPort = 6667;
-   private int messagesUntilTrustReestablished;
    private int dataReceiptBufferSize;
 
    private String hostId;
