@@ -8,24 +8,24 @@ import org.junit.Test;
 
 import mockit.Capturing;
 import mockit.Expectations;
-import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
-import us.dot.its.jpo.ode.udp.controller.ServiceManager;
-import us.dot.its.jpo.ode.udp.controller.UdpServicesController;
 
 public class UdpServicesControllerTest {
 
    @Test
-   public void shouldSubmitFiveThreads(@Injectable OdeProperties mockOdeProperties,
+   public void shouldSubmitFiveThreads(@Mocked OdeProperties mockOdeProperties,
          @Capturing ServiceManager capturingServiceManager, @Mocked ServiceManager mockServiceManager,
          @Capturing AbstractUdpReceiverPublisher capturingAbstractUdpReceiverPublisher,
          @Capturing AbstractSubscriberDepositor capturingAbstractSubscriberDepositor) {
 
       new Expectations() {
          {
+            mockOdeProperties.getDepositSanitizedBsmToSdc();
+            result = true;
+            
             new ServiceManager((ThreadFactory) any);
             result = mockServiceManager;
 

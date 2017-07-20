@@ -45,8 +45,6 @@ public class VsdDepositorTest {
       try {
          new Expectations() {
             {
-               mockOdeProperties.getDepositSanitizedBsmToSdc();
-               result = true;
 
                J2735.getPERUnalignedCoder();
                result = mockPERUnalignedCoder;
@@ -73,8 +71,6 @@ public class VsdDepositorTest {
       try {
          new Expectations() {
             {
-               mockOdeProperties.getDepositSanitizedBsmToSdc();
-               result = true;
 
                J2735.getPERUnalignedCoder();
                result = mockPERUnalignedCoder;

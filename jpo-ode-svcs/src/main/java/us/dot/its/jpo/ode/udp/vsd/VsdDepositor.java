@@ -21,12 +21,6 @@ public class VsdDepositor extends AbstractSubscriberDepositor {
 
    public VsdDepositor(OdeProperties odeProps) {
       super(odeProps, odeProps.getVsdDepositorPort());
-
-      if (!odeProps.getDepositSanitizedBsmToSdc()) {
-         logger.warn("WARNING - SDC BSM/VSD deposit option disabled, not starting VSD depositor service.");
-         this.consumer = null;
-         return;
-      }
       consumer.setName(this.getClass().getSimpleName());
    }
 
