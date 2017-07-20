@@ -35,7 +35,7 @@ public class VsdDepositorTest {
    OdeProperties mockOdeProperties;
 
    @Test
-   public void getDialogIdShouldReturnVSDDialog() {
+   public void getDialogIdShouldReturnVSDDialog(@Capturing MessageConsumer<?, ?> capturingMessageConsumer) {
       assertEquals(SemiDialogID.vehSitData, testVsdDepositor.getDialogId());
    }
 

@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oss.asn1.Coder;
 
@@ -97,17 +98,17 @@ public abstract class AbstractSubscriberDepositor extends MessageProcessor<Strin
       UdpUtil.send(socket, msgBytes, odeProperties.getSdcIp(), odeProperties.getSdcPort());
    }
 
-   public DatagramSocket getSocket() {
-      return socket;
-   }
-
    public void setSocket(DatagramSocket socket) {
       this.socket = socket;
    }
 
-   public abstract Logger getLogger();
+   public Logger getLogger() {
+      return LoggerFactory.getLogger(this.getClass());
+   }
 
    public abstract SemiDialogID getDialogId();
 
-   public abstract TemporaryID getRequestId(byte[] encodedMsg);
+   public TemporaryID getRequestId(byte[] encodedMsg) {
+      return new TemporaryID(encodedMsg);
+   };
 }
