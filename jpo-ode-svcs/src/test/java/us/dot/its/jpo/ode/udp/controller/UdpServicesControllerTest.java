@@ -31,7 +31,7 @@ public class UdpServicesControllerTest {
    VsdDepositor capturingVsdDepositor;
 
    @Test
-   public void vsdOnShouldSubmit5ThreadsVsdOn() {
+   public void shouldSubmit5ThreadsVsdOn() {
 
       new Expectations() {
          {
@@ -53,7 +53,7 @@ public class UdpServicesControllerTest {
    }
 
    @Test
-   public void vsdOnShouldSubmit4ThreadsVsdOff() {
+   public void shouldSubmit4ThreadsVsdOff() {
 
       new Expectations() {
          {

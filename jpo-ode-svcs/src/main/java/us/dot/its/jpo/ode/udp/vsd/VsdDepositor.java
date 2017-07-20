@@ -28,6 +28,7 @@ public class VsdDepositor extends AbstractSubscriberDepositor {
       return SemiDialogID.vehSitData;
    }
 
+   @Override
    public TemporaryID getRequestId(byte[] encodedMsg) {
       TemporaryID reqID = null;
       try {
