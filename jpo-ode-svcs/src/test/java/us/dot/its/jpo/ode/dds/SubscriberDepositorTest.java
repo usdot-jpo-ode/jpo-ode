@@ -23,7 +23,7 @@ import us.dot.its.jpo.ode.udp.UdpUtil.UdpUtilException;
 import us.dot.its.jpo.ode.udp.trust.TrustManager;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
-public class AbstractSubscriberDepositorTest {
+public class SubscriberDepositorTest {
 
    @Tested
    AbstractSubscriberDepositor testAbstractSubscriberDepositor;
