@@ -62,7 +62,7 @@ public class OdeProperties implements EnvironmentAware {
 
    // Enable/disable depositing sanitized BSMs to SDC
    // note: requires enabledVsdKafkaTopic=true to work
-   private boolean depositSanitizedBsmToSdc = true;
+   private boolean depositSanitizedBsmToSdc = false;
 
    private int serviceRespExpirationSeconds = 10;
 
