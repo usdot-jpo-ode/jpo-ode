@@ -30,7 +30,6 @@ public class VsdBundler {
    private ConcurrentHashMap<String, Queue<J2735Bsm>> bsmQueueMap;
 
    public VsdBundler() {
-
       this.bsmQueueMap = new ConcurrentHashMap<>();
    }
 
