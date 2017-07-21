@@ -21,7 +21,7 @@ import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher.UdpReceiverException;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-public class AbstractUdpReceiverPublisherTest {
+public class UdpReceiverPublisherTest {
 
    @Tested
    AbstractUdpReceiverPublisher testAbstractUdpReceiverPublisher;

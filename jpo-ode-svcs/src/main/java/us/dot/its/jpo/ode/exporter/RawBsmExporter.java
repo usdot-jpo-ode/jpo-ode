@@ -26,6 +26,7 @@ public class RawBsmExporter extends Exporter {
                 odeProperties.getHostId() + this.getClass().getSimpleName(), 
                 new StompStringMessageDistributor(template, getTopic())));
 
+        getConsumer().setName(this.getClass().getSimpleName());
         getConsumer().subscribe(odeProperties.getKafkaTopicBsmRawJson());
     }
 }

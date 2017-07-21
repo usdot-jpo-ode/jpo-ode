@@ -15,7 +15,6 @@ import com.oss.asn1.DecodeNotSupportedException;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.j2735.J2735;
-import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public abstract class AbstractUdpReceiverPublisher implements Runnable {
@@ -79,17 +78,8 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
       return decoded;
    }
 
-   protected void sendResponse(AbstractData decoded, DatagramSocket trustSock) {
-      logger.debug("Received ServiceRequest:\n{} \n", decoded.toString());
-      ServiceRequest request = (ServiceRequest) decoded;
-      TrustManager tm = new TrustManager(odeProperties, trustSock);
-      tm.sendServiceResponse(tm.createServiceResponse(request), senderIp, senderPort);
-   }
-
    protected void publish(byte[] data, String topic) {
       logger.debug("Publishing data to topic {}", topic);
       byteArrayProducer.send(topic, null, data);
    }
-
-   public abstract void run();
 }

@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MessageConsumer<K, V> {
+   
+   private String name = "DefaultMessageConsumer";
 
    private static final int CONSUMER_POLL_TIMEOUT_MS = 60000;
    public static final String SERIALIZATION_STRING_DESERIALIZER = "org.apache.kafka.common.serialization.StringDeserializer";
@@ -67,10 +69,6 @@ public class MessageConsumer<K, V> {
        logger.info("Consumer Created for groupId {}", groupId);
    }
 
-   public MessageConsumer(String brokers, String groupId, MessageProcessor<K, V> processor) {
-       this(brokers, groupId, processor, MessagingDeserializer.class.getName());
-    }
-
     public MessageConsumer(String brokers, String groupId, MessageProcessor<K, V> processor, Properties props) {
       this.processor = processor;
       props.put("bootstrap.servers", brokers);
@@ -79,10 +77,6 @@ public class MessageConsumer<K, V> {
 
       logger.info("Consumer Created for groupId {}", groupId);
 
-    }
-
-    public MessageConsumer(String brokers, String groupId, Properties props) {
-        this(brokers, groupId, null, props);
     }
 
     public void subscribe(String... topics) {
@@ -98,16 +92,16 @@ public class MessageConsumer<K, V> {
                 ConsumerRecords<K, V> records = consumer.poll(CONSUMER_POLL_TIMEOUT_MS);
                 if (records != null && !records.isEmpty()) {
                     gotMessages = true;
-                    logger.debug("Consuming {} message(s)", records.count());
+                    logger.debug("{} consuming {} message(s)", name, records.count());
                     processor.process(records);
                 } else {
                     if (gotMessages) {
-                        logger.debug("No messages consumed in {} seconds.", CONSUMER_POLL_TIMEOUT_MS / 1000);
+                        logger.debug("{} no messages consumed in {} seconds.", name, CONSUMER_POLL_TIMEOUT_MS / 1000);
                         gotMessages = false;
                     }
                 }
             } catch (Exception e) {
-                logger.error("Error processing consumed messages", e);
+                logger.error(" {} error processing consumed messages", name, e);
             }
         }
 
@@ -133,6 +127,14 @@ public class MessageConsumer<K, V> {
 
    public void setConsumer(KafkaConsumer<K, V> consumer) {
       this.consumer = consumer;
+   }
+
+   public String getName() {
+      return name;
+   }
+
+   public void setName(String name) {
+      this.name = name;
    }
 
 }

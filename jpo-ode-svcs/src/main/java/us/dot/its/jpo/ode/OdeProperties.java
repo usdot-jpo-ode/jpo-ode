@@ -61,16 +61,23 @@ public class OdeProperties implements EnvironmentAware {
    private int sdcPort = 46753;
 
    // Enable/disable depositing sanitized BSMs to SDC
-   private boolean depositSanitizedBsmToSdc = true;
+   // note: requires enabledVsdKafkaTopic=true to work
+   private boolean depositSanitizedBsmToSdc = false;
 
-   private int serviceRespExpirationSeconds = 60;
+   private int serviceRespExpirationSeconds = 10;
 
    private int serviceResponseBufferSize = 500;
+   
+   /*
+    * UDP Properties
+    */
+   private int trustRetries = 2; // if trust handshake fails, how many times to retry
+   private int messagesUntilTrustReestablished = 10; // renew trust session every x messages
 
    /*
     * BSM Properties
     */
-   private String kafkaTopicBsmSerializedPojo = "j2735Bsm";
+   private String kafkaTopicBsmSerializedPojo = "topic.j2735Bsm";
    private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
    private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
    private int bsmReceiverPort = 46800;
@@ -79,6 +86,8 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * Vehicle Situation Data (VSD) Properties
     */
+   private boolean enabledVsdKafkaTopic = true;
+   private String kafkaTopicEncodedVsd = "encodedVsd";
    private int vsdBufferSize = 500;
    private int vsdReceiverPort = 46753;
    private int vsdDepositorPort = 5555;
@@ -92,7 +101,6 @@ public class OdeProperties implements EnvironmentAware {
    private int isdReceiverPort = 46801;
    private int isdDepositorPort = 6666;
    private int isdTrustPort = 6667;
-   private int messagesUntilTrustReestablished;
    private int dataReceiptBufferSize;
 
    private String hostId;
@@ -108,7 +116,7 @@ public class OdeProperties implements EnvironmentAware {
 
    private int dataReceiptExpirationSeconds;
 
-   protected static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
+   private static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
 
    public OdeProperties() {
       super();
@@ -504,6 +512,34 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setRsuSrmSlots(int rsuSrmSlots) {
       this.rsuSrmSlots = rsuSrmSlots;
+   }
+
+   public int getTrustRetries() {
+      return trustRetries;
+   }
+
+   public void setTrustRetries(int trustRetries) {
+      this.trustRetries = trustRetries;
+   }
+
+   public static byte[] getJpoOdeGroupId() {
+      return JPO_ODE_GROUP_ID;
+   }
+
+   public boolean isEnabledVsdKafkaTopic() {
+      return enabledVsdKafkaTopic;
+   }
+
+   public void setEnabledVsdKafkaTopic(boolean enabledVsdKafkaTopic) {
+      this.enabledVsdKafkaTopic = enabledVsdKafkaTopic;
+   }
+
+   public String getKafkaTopicEncodedVsd() {
+      return kafkaTopicEncodedVsd;
+   }
+
+   public void setKafkaTopicEncodedVsd(String kafkaTopicEncodedVsd) {
+      this.kafkaTopicEncodedVsd = kafkaTopicEncodedVsd;
    }
 
 }

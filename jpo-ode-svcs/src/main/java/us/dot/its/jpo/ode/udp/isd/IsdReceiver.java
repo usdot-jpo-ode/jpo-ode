@@ -16,6 +16,7 @@ import us.dot.its.jpo.ode.j2735.semi.ConnectionPoint;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.udp.UdpUtil;
 
 public class IsdReceiver extends AbstractUdpReceiverPublisher {
 
@@ -36,31 +37,35 @@ public class IsdReceiver extends AbstractUdpReceiverPublisher {
       DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
       while (!isStopped()) {
+         getPacket(packet);
+      }
 
-         try {
-            logger.debug("Listening on port: {}", port);
-            socket.receive(packet);
-            if (packet.getLength() > 0) {
-               senderIp = packet.getAddress().getHostAddress();
-               senderPort = packet.getPort();
-               logger.debug("Packet received from {}:{}", senderIp, senderPort);
+   }
 
-               // extract the actual packet from the buffer
-               byte[] payload = Arrays.copyOf(packet.getData(), packet.getLength());
-               processPacket(payload);
-            }
-         } catch (IOException | UdpReceiverException e) {
-            logger.error("Error receiving packet", e);
+   public void getPacket(DatagramPacket packet) {
+      try {
+         logger.debug("Listening on port: {}", port);
+         socket.receive(packet);
+         if (packet.getLength() > 0) {
+            senderIp = packet.getAddress().getHostAddress();
+            senderPort = packet.getPort();
+            logger.debug("Packet received from {}:{}", senderIp, senderPort);
+
+            // extract the actual packet from the buffer
+            processPacket(Arrays.copyOf(packet.getData(), packet.getLength()));
          }
+      } catch (IOException | UdpReceiverException e) {
+         logger.error("Error receiving packet", e);
       }
    }
 
-   private void processPacket(byte[] data) throws UdpReceiverException {
+   public void processPacket(byte[] data) throws UdpReceiverException {
       AbstractData decoded = super.decodeData(data);
       try {
          if (decoded instanceof ServiceRequest) {
 
-            logger.debug("Received ServiceRequest: {}", HexUtils.toHexString(data));
+            String hexMsg = HexUtils.toHexString(data);
+            logger.debug("Received ServiceRequest: {}", hexMsg);
 
             if (null != ((ServiceRequest) decoded).getDestination()) {
                ConnectionPoint cp = ((ServiceRequest) decoded).getDestination();
@@ -76,9 +81,10 @@ public class IsdReceiver extends AbstractUdpReceiverPublisher {
                }
                logger.debug("ServiceResponse destination overriden: {}:{}", senderIp, senderPort);
             }
-            sendResponse(decoded, socket);
+            UdpUtil.send(socket, decoded, senderIp, senderPort);
          } else if (decoded instanceof IntersectionSituationData) {
-            logger.debug("Received ISD: {}", HexUtils.toHexString(data));
+            String hexMsg = HexUtils.toHexString(data);
+            logger.debug("Received ISD: {}", hexMsg);
             publish(data, odeProperties.getKafkaTopicEncodedIsd());
          } else {
             logger.error("Unknown message type received {}", HexUtils.toHexString(data));

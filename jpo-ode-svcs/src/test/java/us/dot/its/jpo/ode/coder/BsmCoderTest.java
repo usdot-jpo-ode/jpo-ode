@@ -45,12 +45,6 @@ public class BsmCoderTest {
     LoggerFactory mockLoggerFactory;
 
     @Test
-    public void shouldConstruct() {
-        // trivial test that no exceptions are thrown
-        BsmStreamDecoderPublisher testBsmCoder = new BsmStreamDecoderPublisher();
-    }
-
-    @Test
     public void shouldConstructWithParameter(@Mocked final PluginFactory unused) {
         try {
             new Expectations() {

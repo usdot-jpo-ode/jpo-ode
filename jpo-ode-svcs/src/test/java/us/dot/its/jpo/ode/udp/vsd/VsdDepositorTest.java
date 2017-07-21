@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.udp.isd;
+package us.dot.its.jpo.ode.udp.vsd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -19,40 +19,40 @@ import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
-import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
+import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
-public class IsdDepositorTest {
+public class VsdDepositorTest {
 
    @Tested
-   IsdDepositor testIsdDepositor;
+   VsdDepositor testVsdDepositor;
 
    @Injectable
    OdeProperties injectableOdeProperties;
 
-   @Capturing
-   MessageConsumer<?, ?> capturingMessageConsumer;
+   @Mocked
+   OdeProperties mockOdeProperties;
 
    @Test
-   public void shouldReturnCorrectSemiDialogID() {
-      assertEquals(SemiDialogID.intersectionSitDataDep, testIsdDepositor.getDialogId());
+   public void getDialogIdShouldReturnVSDDialog(@Capturing MessageConsumer<?, ?> capturingMessageConsumer) {
+      assertEquals(SemiDialogID.vehSitData, testVsdDepositor.getDialogId());
    }
 
    @Test
-   public void shouldReturnRequestID(@Capturing J2735 capturingJ2735, @Mocked PERUnalignedCoder mockPERUnalignedCoder,
-         @Capturing MessageConsumer<?, ?> capturingMessageConsumer,
-         @Mocked IntersectionSituationData mockIntersectionSituationData) {
+   public void testGetRequestID(@Capturing J2735 capturingJ2735, @Mocked PERUnalignedCoder mockPERUnalignedCoder,
+         @Capturing MessageConsumer<?, ?> capturingMessageConsumer, @Mocked VehSitDataMessage mockVehSitDataMessage) {
       try {
          new Expectations() {
             {
+
                J2735.getPERUnalignedCoder();
                result = mockPERUnalignedCoder;
 
-               mockPERUnalignedCoder.decode((ByteArrayInputStream) any, (IntersectionSituationData) any);
-               result = mockIntersectionSituationData;
+               mockPERUnalignedCoder.decode((ByteArrayInputStream) any, (VehSitDataMessage) any);
+               result = mockVehSitDataMessage;
 
-               mockIntersectionSituationData.getRequestID();
+               mockVehSitDataMessage.getRequestID();
                result = new TemporaryID();
             }
          };
@@ -60,22 +60,22 @@ public class IsdDepositorTest {
          fail("Unexpected exception in expectations block: " + e);
       }
 
-      IsdDepositor testRequestIsdDepositor = new IsdDepositor(injectableOdeProperties);
-      testRequestIsdDepositor.getRequestId(new byte[] { 1, 2, 3 });
+      VsdDepositor testRequestVsdDepositor = new VsdDepositor(mockOdeProperties);
+      testRequestVsdDepositor.getRequestId(new byte[] { 1, 2, 3 });
    }
 
    @Test
    public void testGetRequestIDThrowsException(@Capturing J2735 capturingJ2735,
          @Mocked PERUnalignedCoder mockPERUnalignedCoder, @Capturing MessageConsumer<?, ?> capturingMessageConsumer,
-         @Mocked IntersectionSituationData mockIntersectionSituationData,
-         @Mocked DecodeFailedException mockDecodeFailedException) {
+         @Mocked VehSitDataMessage mockVehSitDataMessage, @Mocked DecodeFailedException mockDecodeFailedException) {
       try {
          new Expectations() {
             {
+
                J2735.getPERUnalignedCoder();
                result = mockPERUnalignedCoder;
 
-               mockPERUnalignedCoder.decode((ByteArrayInputStream) any, (IntersectionSituationData) any);
+               mockPERUnalignedCoder.decode((ByteArrayInputStream) any, (VehSitDataMessage) any);
                result = mockDecodeFailedException;
             }
          };
@@ -83,8 +83,8 @@ public class IsdDepositorTest {
          fail("Unexpected exception in expectations block: " + e);
       }
 
-      IsdDepositor testRequestIsdDepositor = new IsdDepositor(injectableOdeProperties);
-      testRequestIsdDepositor.getRequestId(new byte[] { 1, 2, 3 });
+      VsdDepositor testRequestVsdDepositor = new VsdDepositor(mockOdeProperties);
+      testRequestVsdDepositor.getRequestId(new byte[] { 1, 2, 3 });
    }
 
 }

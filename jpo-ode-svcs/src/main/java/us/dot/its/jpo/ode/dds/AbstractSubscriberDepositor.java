@@ -2,9 +2,9 @@ package us.dot.its.jpo.ode.dds;
 
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,111 +13,102 @@ import com.oss.asn1.Coder;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
-import us.dot.its.jpo.ode.j2735.semi.GroupID;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
-import us.dot.its.jpo.ode.udp.TrustManager;
-import us.dot.its.jpo.ode.udp.TrustManager.TrustManagerException;
+import us.dot.its.jpo.ode.udp.UdpUtil;
+import us.dot.its.jpo.ode.udp.UdpUtil.UdpUtilException;
+import us.dot.its.jpo.ode.udp.trust.TrustManager;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
-public abstract class AbstractSubscriberDepositor<K, V> extends MessageProcessor<K, V> {
+public abstract class AbstractSubscriberDepositor extends MessageProcessor<String, byte[]> {
 
-    protected Logger logger = LoggerFactory.getLogger(this.getClass());
-    protected OdeProperties odeProperties;
-    protected int depositorPort;
-    protected DatagramSocket socket = null;
-    protected TrustManager trustMgr;
-    protected TemporaryID requestId;
-    protected SemiDialogID dialogId;
-    protected GroupID groupId;
-    protected int messagesSent;
-    protected Coder coder;
-    protected ExecutorService pool;
+   protected final Logger logger;
+   protected OdeProperties odeProperties;
+   protected DatagramSocket socket;;
+   protected TrustManager trustManager;
+   protected Coder coder;
+   protected MessageConsumer<String, byte[]> consumer;
 
-    public AbstractSubscriberDepositor(OdeProperties odeProps, int port, SemiDialogID dialogId) {
-        // initialized in the constructor
-        this.odeProperties = odeProps;
-        this.depositorPort = port;
-        this.dialogId = dialogId;
-        this.messagesSent = 0;
-        this.coder = J2735.getPERUnalignedCoder();
+   public AbstractSubscriberDepositor(OdeProperties odeProps, int port) {
+      this.odeProperties = odeProps;
+      this.coder = J2735.getPERUnalignedCoder();
+      this.logger = getLogger();
+      this.consumer = MessageConsumer.defaultByteArrayMessageConsumer(odeProps.getKafkaBrokers(),
+            odeProps.getHostId() + this.getClass().getSimpleName(), this);
 
-        try {
-            logger.debug("Creating depositor socket on port {}", port);
-            socket = new DatagramSocket(port);
-            trustMgr = new TrustManager(odeProps, socket);
-            pool = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
-        } catch (SocketException e) {
-            logger.error("Error creating socket with port " + port, e);
-        }
-    }
+      try {
+         logger.debug("Creating depositor socket on port {}", port);
+         this.socket = new DatagramSocket(port);
+         this.trustManager = new TrustManager(odeProps, socket);
+      } catch (SocketException e) {
+         logger.error("Error creating socket with port " + port, e);
+      }
+   }
 
-    /**
-     * Starts a Kafka listener that runs call() every time a new msg arrives
-     * 
-     * @param consumer
-     * @param topics
-     */
-    public void subscribe(MessageConsumer<K, V> consumer, String... topics) {
-        Executors.newSingleThreadExecutor().submit(new Runnable() {
-            @Override
-            public void run() {
-                consumer.subscribe(topics);
-            }
-        });
-    }
+   @Override
+   public byte[] call() {
+      if (null == record.value()) {
+         return new byte[0];
+      }
 
-    @Override
-    public Object call() {
-        logger.debug("Subscriber received data.");
-        byte[] encodedMsg = null;
+      logger.info("Received data message for deposit");
 
-        // Verify trust before depositing, else establish trust
-        if (trustMgr.isTrustEstablished() && !trustMgr.isEstablishingTrust()) {
-            encodedMsg = deposit();
-        } else if (!trustMgr.isEstablishingTrust()) {
-            logger.info("Starting trust establishment...");
-            messagesSent = 0;
+      TemporaryID requestID = getRequestId(record.value());
+      SemiDialogID dialogID = getDialogId();
 
-            try {
-                Boolean trustEst = trustMgr.establishTrust(depositorPort, odeProperties.getSdcIp(),
-                        odeProperties.getSdcPort(), requestId, dialogId, groupId);
-                logger.debug("Trust established: {}", trustEst);
-                trustMgr.setTrustEstablished(trustEst);
-            } catch (SocketException | TrustManagerException e) {
-                logger.error("Error establishing trust: {}", e);
-            }
-        } else {
-            logger.info("Not depositing message, trust establishment in progress.");
-        }
+      try {
+         if (trustManager.establishTrust(requestID, dialogID)) {
+            logger.debug("Sending message to SDC IP: {} Port: {}", odeProperties.getSdcIp(),
+                  odeProperties.getSdcPort());
+            sendToSdc((byte[]) record.value());
+            trustManager.incrementSessionTracker(requestID);
+         } else {
+            logger.error("Failed to establish trust, not sending message.");
+         }
+      } catch (UdpUtilException e) {
+         logger.error("Error Sending message to SDC", e);
+         return new byte[0];
+      }
 
-        return encodedMsg;
-    }
+      String hexRequestID = HexUtils.toHexString(requestID.byteArrayValue());
+      logger.info("Messages sent since sessionID {} start: {}/{}", hexRequestID,
+            trustManager.getSessionMessageCount(requestID), odeProperties.getMessagesUntilTrustReestablished());
 
-    public int getDepositorPort() {
-        return depositorPort;
-    }
+      if (trustManager.getSessionMessageCount(requestID) >= odeProperties.getMessagesUntilTrustReestablished()) {
+         trustManager.endTrustSession(requestID);
+      }
 
-    public void setDepositorPort(int depositorPort) {
-        this.depositorPort = depositorPort;
-    }
+      return record.value();
+   }
 
-    public DatagramSocket getSocket() {
-        return socket;
-    }
+   /**
+    * Starts a Kafka listener that runs call() every time a new msg arrives
+    * 
+    * @param consumer
+    * @param topics
+    */
+   public void subscribe(String... topics) {
+      for (String topic : topics) {
+         logger.debug("Subscribing to {}", topic);
+      }
+      Executors.newSingleThreadExecutor().submit(() -> consumer.subscribe(topics));
+   }
 
-    public void setSocket(DatagramSocket socket) {
-        this.socket = socket;
-    }
+   public void sendToSdc(byte[] msgBytes) throws UdpUtilException {
+      UdpUtil.send(socket, msgBytes, odeProperties.getSdcIp(), odeProperties.getSdcPort());
+   }
 
-    public SemiDialogID getDialogId() {
-        return dialogId;
-    }
+   public void setSocket(DatagramSocket socket) {
+      this.socket = socket;
+   }
 
-    public void setDialogId(SemiDialogID dialogId) {
-        this.dialogId = dialogId;
-    }
+   public Logger getLogger() {
+      return LoggerFactory.getLogger(this.getClass());
+   }
 
-    protected abstract byte[] deposit();
+   public abstract SemiDialogID getDialogId();
 
+   public TemporaryID getRequestId(byte[] encodedMsg) {
+      return new TemporaryID(encodedMsg);
+   };
 }
