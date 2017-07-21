@@ -4,7 +4,7 @@ import java.io.InputStream;
 
 import us.dot.its.jpo.ode.plugin.OdePlugin;
 
-public interface Asn1Plugin extends OdePlugin {
+public interface J2735Plugin extends OdePlugin {
 
     Asn1Object decodeUPERMessageFrameHex(String hexMsg);
     Asn1Object decodeUPERBsmHex(String hexMsg);

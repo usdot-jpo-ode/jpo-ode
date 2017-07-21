@@ -23,17 +23,20 @@ public class MessageProducer<K, V> {
 
     Producer<K, V> producer;
 
-    // public MessageProducer(String brokers, String type, Properties props) {
-    // // TODO
-    // /*
-    // * Using default partitioned for now. We should define a specific
-    // * partitioner based on the data type.
-    // */
-    // // props.put("partitioner.class", Partitioner.class.canonicalNamer());
-    // this(brokers, type, null, new StringSerializer(), new
-    // ByteArraySerializer(), props);
-    //
-    // }
+    public MessageProducer(String brokers, String type, String partitionerClass, String valueSerializerFQN) {
+        Properties props = setDefaultProperties();
+        
+        props.put("bootstrap.servers", brokers);
+        props.put("key.serializer", SERIALIZATION_STRING_SERIALIZER);
+        props.put("value.serializer", valueSerializerFQN);
+
+        if (partitionerClass != null)
+            props.put("partitioner.class", partitionerClass);
+
+        producer = new KafkaProducer<>(props);
+
+        logger.info("Producer Created");
+    }
 
     public MessageProducer(String brokers, String type, String partitionerClass, Properties props) {
         props.put("bootstrap.servers", brokers);
@@ -45,30 +48,12 @@ public class MessageProducer<K, V> {
         logger.info("Producer Created");
     }
 
-    public static MessageProducer<String, String> defaultStringMessageProducer(String brokers, String type) {
-
-        Properties props = setDefaultProperties();
-        props.put("key.serializer", SERIALIZATION_STRING_SERIALIZER);
-        props.put("value.serializer", SERIALIZATION_STRING_SERIALIZER);
-
-        MessageProducer<String, String> msgProducer = new MessageProducer<>(brokers, type, null, props);
-
-        logger.info("Default String Message Producer Created");
-
-        return msgProducer;
+    public static MessageProducer<String, byte[]> defaultByteArrayMessageProducer(String brokers, String type) {
+        return new MessageProducer<String, byte[]>(brokers, type, null, SERIALIZATION_BYTE_ARRAY_SERIALIZER);
     }
 
-    public static MessageProducer<String, byte[]> defaultByteArrayMessageProducer(String brokers, String type) {
-
-        Properties props = setDefaultProperties();
-        props.put("key.serializer", SERIALIZATION_BYTE_ARRAY_SERIALIZER);
-        props.put("value.serializer", SERIALIZATION_BYTE_ARRAY_SERIALIZER);
-
-        MessageProducer<String, byte[]> msgProducer = new MessageProducer<>(brokers, type, null, props);
-
-        logger.info("Default byte[] Message Producer Created");
-
-        return msgProducer;
+    public static MessageProducer<String, String> defaultStringMessageProducer(String brokers, String type) {
+        return new MessageProducer<String, String>(brokers, type, null, SERIALIZATION_STRING_SERIALIZER);
     }
 
     private static Properties setDefaultProperties() {

@@ -38,7 +38,7 @@ public class OssAsn1CoderTest {
     final LoggerFactory unused = null;
 
     @Tested
-    OssAsn1Coder coder;
+    OssJ2735Coder coder;
 
     @Test
     public void testUPER_DecodeBsmHex() {
@@ -87,7 +87,7 @@ public class OssAsn1CoderTest {
             fail("Unexpected exception in expectations block: " + e);
         }
 
-        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+        OssJ2735Coder testOssAsn1Coder = new OssJ2735Coder();
 
         testOssAsn1Coder.decodeUPERBsmStream(mockInputStream);
     }
@@ -120,7 +120,7 @@ public class OssAsn1CoderTest {
             fail("Unexpected exception in expectations block: " + e);
         }
 
-        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+        OssJ2735Coder testOssAsn1Coder = new OssJ2735Coder();
 
         testOssAsn1Coder.decodeUPERBsmStream(mockInputStream);
     }
@@ -150,7 +150,7 @@ public class OssAsn1CoderTest {
             fail("Unexpected exception in expectations block: " + e);
         }
 
-        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+        OssJ2735Coder testOssAsn1Coder = new OssJ2735Coder();
 
         testOssAsn1Coder.decodeUPERBsmStream(mockInputStream);
     }
@@ -178,7 +178,7 @@ public class OssAsn1CoderTest {
             fail("Unexpected exception in expectations block: " + e);
         }
 
-        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+        OssJ2735Coder testOssAsn1Coder = new OssJ2735Coder();
 
         testOssAsn1Coder.decodeUPERBsmStream(mockInputStream);
     }
@@ -211,7 +211,7 @@ public class OssAsn1CoderTest {
             fail("Unexpected exception in expectations block: " + e);
         }
 
-        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+        OssJ2735Coder testOssAsn1Coder = new OssJ2735Coder();
 
         testOssAsn1Coder.decodeUPERMessageFrameStream(mockInputStream);
     }
@@ -242,7 +242,7 @@ public class OssAsn1CoderTest {
             fail("Unexpected exception in expectations block: " + e);
         }
 
-        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+        OssJ2735Coder testOssAsn1Coder = new OssJ2735Coder();
 
         testOssAsn1Coder.decodeUPERMessageFrameStream(mockInputStream);
     }
@@ -268,7 +268,7 @@ public class OssAsn1CoderTest {
             fail("Unexpected exception in expectations block: " + e);
         }
 
-        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+        OssJ2735Coder testOssAsn1Coder = new OssJ2735Coder();
 
         testOssAsn1Coder.decodeUPERMessageFrameStream(mockInputStream);
     }
@@ -351,7 +351,7 @@ public class OssAsn1CoderTest {
         } catch (EncodeFailedException | EncodeNotSupportedException e) {
             fail("Unexpected exception in expectations block: " + e);
         }
-        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+        OssJ2735Coder testOssAsn1Coder = new OssJ2735Coder();
 
         testOssAsn1Coder.encodeUPERBytes(mockJ2735Bsm);
     }
@@ -376,7 +376,7 @@ public class OssAsn1CoderTest {
         } catch (EncodeFailedException | EncodeNotSupportedException e) {
             fail("Unexpected exception in expectations block: " + e);
         }
-        OssAsn1Coder testOssAsn1Coder = new OssAsn1Coder();
+        OssJ2735Coder testOssAsn1Coder = new OssJ2735Coder();
 
         testOssAsn1Coder.encodeUPERBytes(mockJ2735Bsm);
     }

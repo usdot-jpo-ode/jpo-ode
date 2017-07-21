@@ -21,17 +21,21 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
-import us.dot.its.jpo.ode.coder.StreamDecoderPublisher;
+import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.coder.AbstractStreamDecoderPublisher;
+import us.dot.its.jpo.ode.coder.BsmStreamDecoderPublisher;
 public class ImporterWatchServiceTest {
 
     @Tested // (fullyInitialized=false)
     ImporterWatchService testImporterWatchService;
     @Injectable
+    OdeProperties odeProperties;
+    @Injectable
     Path dir;
     @Injectable
     Path backupDir;
     @Injectable
-    StreamDecoderPublisher coder;
+    BsmStreamDecoderPublisher decoderPublisher;
     @Injectable
     Logger logger;
     @Injectable
@@ -180,7 +184,7 @@ public class ImporterWatchServiceTest {
     }
     
     @Test
-    public void processFileShouldDetectHex() {
+    public void processFileShouldDetectHex(@Mocked AbstractStreamDecoderPublisher decoderPublisher) {
         
         TemporaryFolder tmpFolder = new TemporaryFolder();
         
@@ -194,7 +198,7 @@ public class ImporterWatchServiceTest {
         
         try {
             new Expectations() {{
-                coder.decodeHexAndPublish((InputStream)any);
+                decoderPublisher.decodeHexAndPublish((InputStream)any);
             }};
         } catch (IOException e) {
             fail("Unexpected exception in expectations block: " + e);
@@ -204,7 +208,7 @@ public class ImporterWatchServiceTest {
     }
     
     @Test
-    public void processFileShouldDetectTxt() {
+    public void processFileShouldDetectTxt(@Mocked AbstractStreamDecoderPublisher decoderPublisher) {
         
         TemporaryFolder tmpFolder = new TemporaryFolder();
         
@@ -218,7 +222,7 @@ public class ImporterWatchServiceTest {
         
         try {
             new Expectations() {{
-                coder.decodeHexAndPublish((InputStream)any);
+                decoderPublisher.decodeHexAndPublish((InputStream)any);
             }};
         } catch (IOException e) {
             fail("Unexpected exception in expectations block: " + e);
@@ -228,7 +232,7 @@ public class ImporterWatchServiceTest {
     }
     
     @Test
-    public void processFileShouldDecodeMiscFilesAsBinary() {
+    public void processFileShouldDecodeMiscFilesAsBinary(@Mocked AbstractStreamDecoderPublisher decoderPublisher) {
         
         TemporaryFolder tmpFolder = new TemporaryFolder();
         
@@ -242,7 +246,7 @@ public class ImporterWatchServiceTest {
         
         try {
             new Expectations() {{
-                coder.decodeBinaryAndPublish((InputStream)any);
+                decoderPublisher.decodeBinaryAndPublish((InputStream)any);
             }};
         } catch (IOException e) {
             fail("Unexpected exception in expectations block: " + e);

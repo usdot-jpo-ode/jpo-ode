@@ -4,11 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Scanner;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.LoggerFactory;
@@ -21,7 +20,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
-import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
+import us.dot.its.jpo.ode.plugin.asn1.J2735Plugin;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.util.SerializationUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
@@ -32,7 +31,7 @@ public class BsmCoderTest {
     @Injectable
     OdeProperties mockOdeProperties;
     @Mocked
-    Asn1Plugin mockAsn1Plugin;
+    J2735Plugin mockAsn1Plugin;
     @Mocked
     SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool;
     @Mocked
@@ -43,6 +42,8 @@ public class BsmCoderTest {
     // Override the logger factory for cleaner build logs
     @Mocked 
     LoggerFactory mockLoggerFactory;
+    
+    private Path filepath = Paths.get("dirname", "filename");
 
     @Test
     public void shouldConstructWithParameter(@Mocked final PluginFactory unused) {
@@ -51,18 +52,16 @@ public class BsmCoderTest {
                 {
                     PluginFactory.getPluginByName(anyString);
                     result = mockAsn1Plugin;
-
-                    new SerializableMessageProducerPool<>(mockOdeProperties);
                 }
             };
         } catch (Exception e) {
             fail("Unexpected exception in expectations block: " + e);
         }
-        BsmStreamDecoderPublisher testBsmCoder = new BsmStreamDecoderPublisher(mockOdeProperties);
+        BsmStreamDecoderPublisher testBsmCoder = 
+                new BsmStreamDecoderPublisher(mockOdeProperties, filepath);
 
         assertNotNull("odeProperties null", testBsmCoder.odeProperties);
-        assertNotNull("asn1Coder null", testBsmCoder.asn1Coder);
-        assertNotNull("messageProducerPool null", testBsmCoder.messageProducerPool);
+        assertNotNull("asn1Coder null", testBsmCoder.j2735Coder);
     }
 
     @Test
@@ -72,15 +71,13 @@ public class BsmCoderTest {
                 {
                     PluginFactory.getPluginByName(anyString);
                     result = new ClassNotFoundException("testException123");
-
-                    new SerializableMessageProducerPool<>(mockOdeProperties);
                 }
             };
         } catch (Exception e) {
             fail("Unexpected exception in expectations block: " + e);
         }
-        BsmStreamDecoderPublisher testBsmCoder = new BsmStreamDecoderPublisher(mockOdeProperties);
-
+        
+        new BsmStreamDecoderPublisher(mockOdeProperties, filepath);
     }
 
     @Test
@@ -101,7 +98,9 @@ public class BsmCoderTest {
             fail("Unexpected exception in expectations block: " + e);
         }
 
-        assertEquals("Incorrect object returned", mockAsn1Object, new BsmStreamDecoderPublisher(mockOdeProperties).decode("test"));
+        assertEquals("Incorrect object returned", mockAsn1Object, 
+            new BsmStreamDecoderPublisher(mockOdeProperties, filepath)
+            .decode("test"));
     }
 
     @Test
@@ -115,8 +114,6 @@ public class BsmCoderTest {
 
                     mockAsn1Plugin.decodeUPERBsmStream((InputStream) any);
                     result = mockAsn1Object;
-
-                    new SerializableMessageProducerPool<>(mockOdeProperties);
                 }
             };
         } catch (Exception e) {
@@ -124,7 +121,8 @@ public class BsmCoderTest {
         }
 
         assertEquals("Incorrect object returned", mockAsn1Object,
-                new BsmStreamDecoderPublisher(mockOdeProperties).decode(mockInputStream));
+                new BsmStreamDecoderPublisher(mockOdeProperties, filepath)
+                .decode(mockInputStream));
     }
 
     @Test
@@ -135,11 +133,6 @@ public class BsmCoderTest {
                 {
                     PluginFactory.getPluginByName(anyString);
                     result = mockAsn1Plugin;
-
-                    new SerializableMessageProducerPool<>(mockOdeProperties);
-
-                    new SerializationUtils<>();
-
                 }
             };
         } catch (Exception e) {
@@ -147,7 +140,8 @@ public class BsmCoderTest {
         }
 
 
-        new BsmStreamDecoderPublisher(mockOdeProperties).publish(mockJ2735Bsm);
+        new BsmStreamDecoderPublisher(mockOdeProperties, filepath)
+        .publish(mockJ2735Bsm);
 
     }
 }

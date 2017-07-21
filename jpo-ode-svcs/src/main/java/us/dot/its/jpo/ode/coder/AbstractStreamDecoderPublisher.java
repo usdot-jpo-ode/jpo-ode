@@ -5,14 +5,13 @@ import java.io.InputStream;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.SerializableMessageProducerPool;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
-import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
-import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
+import us.dot.its.jpo.ode.plugin.asn1.J2735Plugin;
+import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPublisher {
@@ -20,41 +19,39 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
     protected final Logger logger;
 
     protected OdeProperties odeProperties;
-    protected Asn1Plugin asn1Coder;
-    protected MessageProducer<String, String> defaultProducer;
-    protected SerializableMessageProducerPool<String, byte[]> messageProducerPool;
+    protected J2735Plugin j2735Coder;
+    protected Oss1609dot2Coder ieee1609dotCoder;
+    protected MessageProducer<String, String> stringProducer;
+    protected MessageProducer<String, byte[]> byteArrayProducer;
+    protected MessageProducer<String, OdeObject> objectProducer;
 
-   protected MessageProducer<String, byte[]> byteArrayProducer;
-
-    protected AbstractStreamDecoderPublisher() {
-        super();
-        logger = getLogger();
-    }
-
-    protected AbstractStreamDecoderPublisher(OdeProperties properties) {
+    protected AbstractStreamDecoderPublisher(
+        OdeProperties properties, String valueSerializerFQN) {
         super();
         this.odeProperties = properties;
+        this.objectProducer = new MessageProducer<String, OdeObject>(
+                odeProperties.getKafkaBrokers(),
+                odeProperties.getKafkaProducerType(),
+                null,
+                valueSerializerFQN);
+        
         logger = getLogger();
-        if (this.asn1Coder == null) {
-            logger.info("Loading ASN1 Coder: {}", this.odeProperties.getAsn1CoderClassName());
+        if (this.j2735Coder == null) {
+            logger.info("Loading ASN1 Coder: {}", this.odeProperties.getJ2735CoderClassName());
             try {
-                this.asn1Coder = (Asn1Plugin) PluginFactory.getPluginByName(properties.getAsn1CoderClassName());
+                this.j2735Coder = (J2735Plugin) PluginFactory.getPluginByName(properties.getJ2735CoderClassName());
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                logger.error("Unable to load plugin: " + properties.getAsn1CoderClassName(), e);
+                logger.error("Unable to load plugin: " + properties.getJ2735CoderClassName(), e);
             }
         }
-
-        defaultProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
-                odeProperties.getKafkaProducerType());
-        messageProducerPool = new SerializableMessageProducerPool<>(odeProperties);
-        byteArrayProducer = MessageProducer.defaultByteArrayMessageProducer(odeProperties.getKafkaBrokers(),
-              odeProperties.getKafkaProducerType());
+        
+        this.ieee1609dotCoder = new Oss1609dot2Coder();
     }
 
     @Override
     public void decodeHexAndPublish(InputStream is) throws IOException {
         String line = null;
-        Asn1Object decoded = null;
+        OdeObject decoded = null;
 
         try (Scanner scanner = new Scanner(is)) {
 
@@ -79,7 +76,7 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
 
     @Override
     public void decodeBinaryAndPublish(InputStream is) throws IOException {
-        Asn1Object decoded;
+        OdeObject decoded;
 
         try {
             do {
@@ -94,13 +91,9 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
         }
     }
 
-    public void setAsn1Plugin(Asn1Plugin asn1Plugin) {
-        this.asn1Coder = asn1Plugin;
+    public void setAsn1Plugin(J2735Plugin asn1Plugin) {
+        this.j2735Coder = asn1Plugin;
     }
 
-    public void setMessageProducerPool(SerializableMessageProducerPool<String, byte[]> messageProducerPool) {
-        this.messageProducerPool = messageProducerPool;
-    }
-    
     protected abstract Logger getLogger();
 }

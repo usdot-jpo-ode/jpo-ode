@@ -25,5 +25,10 @@
       <artifactId>j2735</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>us.dot.its.jpo.ode</groupId>
+      <artifactId>ieee1609dot2</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 </project>

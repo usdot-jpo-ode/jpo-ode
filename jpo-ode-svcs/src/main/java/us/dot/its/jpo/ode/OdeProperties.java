@@ -33,7 +33,7 @@ public class OdeProperties implements EnvironmentAware {
     * General Properties
     */
    private String pluginsLocations = "plugins";
-   private String asn1CoderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder";
+   private String j2735CoderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder";
    private String kafkaBrokers = null;
    private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
    private Boolean verboseJson = false;
@@ -185,12 +185,12 @@ public class OdeProperties implements EnvironmentAware {
       this.pluginsLocations = pluginsLocations;
    }
 
-   public String getAsn1CoderClassName() {
-      return asn1CoderClassName;
+   public String getJ2735CoderClassName() {
+      return j2735CoderClassName;
    }
 
-   public void setAsn1CoderClassName(String asn1CoderClassName) {
-      this.asn1CoderClassName = asn1CoderClassName;
+   public void setJ2735CoderClassName(String j2735CoderClassName) {
+      this.j2735CoderClassName = j2735CoderClassName;
    }
 
    public String getKafkaBrokers() {

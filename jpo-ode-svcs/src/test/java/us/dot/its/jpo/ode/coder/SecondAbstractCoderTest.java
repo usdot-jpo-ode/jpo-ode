@@ -11,7 +11,7 @@ import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
-import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
+import us.dot.its.jpo.ode.plugin.asn1.J2735Plugin;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 @RunWith(JMockit.class)
@@ -23,7 +23,7 @@ public class SecondAbstractCoderTest {
     OdeProperties mockOdeProperties;
 
     @Mocked
-    Asn1Plugin mockAsn1Plugin;
+    J2735Plugin mockAsn1Plugin;
 
     @Test @Ignore // TODO having getLogger method deprecates abstract class tests
     public void testPublishJson(@Injectable final PluginFactory mockPluginFactory,

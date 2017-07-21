@@ -5,7 +5,6 @@ import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
 
 import us.dot.its.jpo.ode.model.OdeMessage;
-import us.dot.its.jpo.ode.model.WebSocketClient;
 
 public abstract class AbstractWebsocketMessageHandler<MessageType> 
 implements WebSocketMessageHandler<MessageType> {

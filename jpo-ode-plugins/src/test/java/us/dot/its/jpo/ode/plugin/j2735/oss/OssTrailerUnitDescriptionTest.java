@@ -75,7 +75,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735TrailerUnitDescription;
  * dolly type rather than a trailer type of object. It should be noted that dollies (like trailers) may or may 
  * not pivot at the front and back connection points, and that they do not carry cargo or placards. Dollies do 
  * have an outline and connection point offsets like a trailer. Dollies have some form of draw bar to connect 
- * to the power unit (the vehicle or trailer in front of it). The term “bogie” is also used for dolly in some 
+ * to the power unit (the vehicle or trailer in front of it). The term "bogie" is also used for dolly in some 
  * markets. In this standard, there is no differentiation between a dolly for a full trailer and a semi-trailer 
  * or a converter dolly. The only difference between an A-dolly (single coupling point) and a C-dolly (a dolly
  * with two coupling points arranged side by side) is the way in which the pivoting flag is set. (As a rule a 

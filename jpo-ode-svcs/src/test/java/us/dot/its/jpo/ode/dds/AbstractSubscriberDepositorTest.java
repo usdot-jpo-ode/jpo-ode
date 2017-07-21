@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.dds;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import mockit.Injectable;
@@ -17,6 +18,7 @@ public class AbstractSubscriberDepositorTest {
    @Injectable
    int mockPort;
 
+   @Ignore
    @Test
    public void testCall() {
       // TODO

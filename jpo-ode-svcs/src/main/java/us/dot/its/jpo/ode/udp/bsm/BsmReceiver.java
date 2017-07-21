@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.util.SerializationUtils;
@@ -19,7 +19,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
     private static Logger logger = LoggerFactory.getLogger(BsmReceiver.class);
 
-    private OssAsn1Coder asn1Coder;
+    private OssJ2735Coder asn1Coder;
 
     @Autowired
     public BsmReceiver(OdeProperties odeProps) {
@@ -28,7 +28,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
     public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
         super(odeProps, port, bufferSize);
-        asn1Coder = new OssAsn1Coder();
+        asn1Coder = new OssJ2735Coder();
     }
 
     @Override

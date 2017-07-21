@@ -44,7 +44,7 @@ public class OdeMsgMetadata extends OdeMessage {
                      && objNode.get("validMax") != null)
                   this.violations.add(new OdePayloadViolation(
                         objNode.get("fieldName").asText(),
-                        objNode.get("value").asDouble(),
+                        objNode.get("fieldValue").asDouble(),
                         objNode.get("validMin").asDouble(),
                         objNode.get("validMax").asDouble()));
             }
