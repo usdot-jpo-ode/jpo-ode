@@ -74,6 +74,8 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicBsmSerializedPojo = "topic.j2735Bsm";
    private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
    private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
+   private String kafkaTopicOdeBsmPojo = "OdeBsmPojo";
+   private String kafkaTopicOdeBsmJson = "OdeBsmJson";
    private int bsmReceiverPort = 46800;
    private int bsmBufferSize = 500;
 
@@ -537,5 +539,21 @@ public class OdeProperties implements EnvironmentAware {
    public void setKafkaTopicEncodedVsd(String kafkaTopicEncodedVsd) {
       this.kafkaTopicEncodedVsd = kafkaTopicEncodedVsd;
    }
+
+    public String getKafkaTopicOdeBsmPojo() {
+        return kafkaTopicOdeBsmPojo;
+    }
+
+    public void setKafkaTopicOdeBsmPojo(String kafkaTopicOdeBsmPojo) {
+        this.kafkaTopicOdeBsmPojo = kafkaTopicOdeBsmPojo;
+    }
+
+    public String getKafkaTopicOdeBsmJson() {
+        return kafkaTopicOdeBsmJson;
+    }
+
+    public void setKafkaTopicOdeBsmJson(String kafkaTopicOdeBsmJson) {
+        this.kafkaTopicOdeBsmJson = kafkaTopicOdeBsmJson;
+    }
 
 }

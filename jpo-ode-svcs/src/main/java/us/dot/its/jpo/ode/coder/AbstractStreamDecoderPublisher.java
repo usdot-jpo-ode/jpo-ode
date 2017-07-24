@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import org.slf4j.Logger;
 
+import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Ieee1609Dot2Data;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.OdeObject;
@@ -61,7 +62,7 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
                 line = scanner.nextLine();
 
                 decoded = decode(line);
-                publish(decoded);
+                publish(decoded, ieee1609dot2Data);
             }
 
             if (empty) {
@@ -83,7 +84,7 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
                 decoded = decode(is);
                 if (decoded != null) {
                     logger.debug("Decoded: {}", decoded);
-                    publish(decoded);
+                    publish(decoded, ieee1609dot2Data);
                 }
             } while (decoded != null);
         } catch (Exception e) {

@@ -106,9 +106,16 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
     }
 
     @Override
-   public void publish(OdeObject msg) {
+   public void publish(OdeObject msg, Ieee1609Dot2Data ieee1609dot2Data) {
       logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicBsmSerializedPojo(), msg.toJson());
       objectProducer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null, msg);
+      
+      OdeBsmData odeBsmData = 
+              createOdeBsmData((J2735Bsm) msg, ieee1609dot2Data);
+      
+      logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicOdeBsmPojo(), odeBsmData.toJson());
+      objectProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), null, odeBsmData);
+      
    }
 
    public OdeBsmData createOdeBsmData(
@@ -149,7 +156,7 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
             line = scanner.nextLine();
 
             decoded = (Asn1Object) JsonUtils.fromJson(line, J2735Bsm.class);
-            publish(decoded);
+            publish(decoded, ieee1609dot2Data);
          }
          if (empty) {
             EventLogger.logger.info("Empty file received");
@@ -162,14 +169,14 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
    }
 
    @Override
-   public void publish(String msg) {
+   public void publish(String msg, Ieee1609Dot2Data ieee1609dot2Data) {
       logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicBsmRawJson(), msg);
       stringProducer.send(odeProperties.getKafkaTopicBsmRawJson(), null, msg);
 
    }
 
    @Override
-   public void publish(byte[] msg) {
+   public void publish(byte[] msg, Ieee1609Dot2Data ieee1609dot2Data) {
       logger.debug("Publishing byte array to {}", odeProperties.getKafkaTopicBsmSerializedPojo());
 
       byteArrayProducer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null, msg);
