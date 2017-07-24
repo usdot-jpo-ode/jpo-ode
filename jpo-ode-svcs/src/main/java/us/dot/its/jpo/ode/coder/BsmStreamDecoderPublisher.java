@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
@@ -18,8 +17,8 @@ import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;
+import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeObject;
-import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.util.CodecUtils;
@@ -29,6 +28,9 @@ import us.dot.its.jpo.ode.wrapper.J2735BsmSerializer;
 public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
 
    private Path filePath;
+   private static final ZonedDateTime IEEE1609DOT2EPOC = 
+           ZonedDateTime.of(2004, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
+   
 
    public BsmStreamDecoderPublisher(OdeProperties properties, Path filePath) {
       super(properties, J2735BsmSerializer.class.getName());
@@ -36,12 +38,13 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
    }
 
    @Override
-   public OdeObject decode(String line) {
-       OdeObject decoded;
+   public OdeData decode(String hexEncodedData) {
+       OdeData odeBsmData = null;
        
        Ieee1609Dot2Data ieee1609dot2Data = 
-               ieee1609dotCoder.decodeIeee1609Dot2DataHex(line);
+               ieee1609dotCoder.decodeIeee1609Dot2DataHex(hexEncodedData);
         
+       OdeObject decoded;
         if (ieee1609dot2Data != null) { // message is signed
            byte[] unsecureData = ieee1609dot2Data
                    .getContent()
@@ -54,19 +57,24 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
            decoded = decodeBsm(unsecureData);
         } else {// message not signed
             logger.debug("Message not signed");
-            decoded = decodeBsm(CodecUtils.fromHex(line));
+            decoded = decodeBsm(CodecUtils.fromHex(hexEncodedData));
         }
 
-       return decoded;
+        if (decoded != null) {
+            odeBsmData = createOdeBsmData((J2735Bsm) decoded, ieee1609dot2Data);
+        }
+
+       return odeBsmData;
    }
 
    @Override
-   public OdeObject decode(InputStream is) {
-       OdeObject decoded;
+   public OdeData decode(InputStream is) {
+       OdeData odeBsmData = null;
        
        Ieee1609Dot2Data ieee1609dot2Data = 
                ieee1609dotCoder.decodeIeee1609Dot2DataStream(is);
         
+        OdeObject decoded;
         if (ieee1609dot2Data != null) { // message is signed
            byte[] unsecureData = ieee1609dot2Data
                    .getContent()
@@ -81,8 +89,12 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
             logger.debug("Message not signed");
             decoded = decodeBsm(is);
         }
+        
+        if (decoded != null) {
+            odeBsmData = createOdeBsmData((J2735Bsm) decoded, ieee1609dot2Data);
+        }
 
-       return decoded;
+        return odeBsmData;
    }
 
     private OdeObject decodeBsm(byte[] bytes) {
@@ -106,35 +118,36 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
     }
 
     @Override
-   public void publish(OdeObject msg, Ieee1609Dot2Data ieee1609dot2Data) {
-      logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicBsmSerializedPojo(), msg.toJson());
-      objectProducer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null, msg);
-      
-      OdeBsmData odeBsmData = 
-              createOdeBsmData((J2735Bsm) msg, ieee1609dot2Data);
-      
-      logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicOdeBsmPojo(), odeBsmData.toJson());
-      objectProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), null, odeBsmData);
-      
-   }
+    public void publish(OdeData msg) {
+        OdeBsmData odeBsm = (OdeBsmData) msg;
+        
+        logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicRawBsmPojo(), odeBsm.getPayload().getData());
+        objectProducer.send(odeProperties.getKafkaTopicRawBsmPojo(), null, odeBsm.getPayload().getData());
+
+        logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicOdeBsmPojo(), odeBsm.toJson());
+        objectProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), null, odeBsm);
+    }
 
    public OdeBsmData createOdeBsmData(
-       J2735Bsm msg, Ieee1609Dot2Data ieee1609dot2Data) {
-        OdeBsmPayload payload = new OdeBsmPayload(msg);
-        long generationTime = ieee1609dot2Data
-                .getContent()
-                .getSignedData()
-                .getTbsData()
-                .getHeaderInfo()
-                .getGenerationTime().longValue();
+       J2735Bsm rawBsm, Ieee1609Dot2Data ieee1609dot2Data) {
+        OdeBsmPayload payload = new OdeBsmPayload(rawBsm);
         
-        Instant ieee1609Epoc = Instant.EPOCH.plus((2004-1970), ChronoUnit.YEARS);
-        Instant generationInstant = ieee1609Epoc.plusMillis(generationTime/1000); 
-                
-        ZonedDateTime generatedAt = ZonedDateTime.ofInstant(generationInstant, ZoneId.of("UTC"));
-        OdeBsmMetadata metadata = new OdeBsmMetadata(
-            payload, 
-            generatedAt.toString());
+        OdeBsmMetadata metadata = new OdeBsmMetadata(payload);
+        
+        if (ieee1609dot2Data != null) {
+            long generationTimeMillis = ieee1609dot2Data
+                    .getContent()
+                    .getSignedData()
+                    .getTbsData()
+                    .getHeaderInfo()
+                    .getGenerationTime().longValue()/1000;
+            
+            Instant generationInstant = 
+                    IEEE1609DOT2EPOC.toInstant().plusMillis(generationTimeMillis);
+            
+            ZonedDateTime generatedAt = ZonedDateTime.ofInstant(generationInstant, ZoneId.of("UTC"));
+            metadata.setGeneratedAt(generatedAt.toString());
+        }
         
         metadata.setLogFileName(filePath.getFileName().toString());
         OdeBsmData bsmData = new OdeBsmData(metadata, payload);
@@ -146,7 +159,6 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
 @Override
    public void decodeJsonAndPublish(InputStream is) throws IOException {
       String line = null;
-      Asn1Object decoded = null;
 
       try (Scanner scanner = new Scanner(is)) {
 
@@ -155,8 +167,9 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
             empty = false;
             line = scanner.nextLine();
 
-            decoded = (Asn1Object) JsonUtils.fromJson(line, J2735Bsm.class);
-            publish(decoded, ieee1609dot2Data);
+            J2735Bsm j2735Bsm = (J2735Bsm) JsonUtils.fromJson(line, J2735Bsm.class);
+            OdeData odeBsm = createOdeBsmData(j2735Bsm, null);
+            publish(odeBsm);
          }
          if (empty) {
             EventLogger.logger.info("Empty file received");
@@ -169,17 +182,17 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
    }
 
    @Override
-   public void publish(String msg, Ieee1609Dot2Data ieee1609dot2Data) {
+   public void publish(String msg) {
       logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicBsmRawJson(), msg);
       stringProducer.send(odeProperties.getKafkaTopicBsmRawJson(), null, msg);
 
    }
 
    @Override
-   public void publish(byte[] msg, Ieee1609Dot2Data ieee1609dot2Data) {
-      logger.debug("Publishing byte array to {}", odeProperties.getKafkaTopicBsmSerializedPojo());
+   public void publish(byte[] msg) {
+      logger.debug("Publishing byte array to {}", odeProperties.getKafkaTopicRawBsmPojo());
 
-      byteArrayProducer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null, msg);
+      byteArrayProducer.send(odeProperties.getKafkaTopicRawBsmPojo(), null, msg);
    }
 
    @Override

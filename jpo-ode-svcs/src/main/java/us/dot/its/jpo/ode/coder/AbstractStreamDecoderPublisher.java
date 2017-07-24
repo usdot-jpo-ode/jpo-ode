@@ -6,9 +6,9 @@ import java.util.Scanner;
 
 import org.slf4j.Logger;
 
-import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Ieee1609Dot2Data;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.asn1.J2735Plugin;
@@ -52,7 +52,7 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
     @Override
     public void decodeHexAndPublish(InputStream is) throws IOException {
         String line = null;
-        OdeObject decoded = null;
+        OdeData decoded = null;
 
         try (Scanner scanner = new Scanner(is)) {
 
@@ -62,7 +62,7 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
                 line = scanner.nextLine();
 
                 decoded = decode(line);
-                publish(decoded, ieee1609dot2Data);
+                publish(decoded);
             }
 
             if (empty) {
@@ -77,14 +77,14 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
 
     @Override
     public void decodeBinaryAndPublish(InputStream is) throws IOException {
-        OdeObject decoded;
+        OdeData decoded;
 
         try {
             do {
                 decoded = decode(is);
                 if (decoded != null) {
                     logger.debug("Decoded: {}", decoded);
-                    publish(decoded, ieee1609dot2Data);
+                    publish(decoded);
                 }
             } while (decoded != null);
         } catch (Exception e) {

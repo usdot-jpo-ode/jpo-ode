@@ -2,7 +2,6 @@ package us.dot.its.jpo.ode;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.LoggerFactory;
 
 import mockit.Mocked;
 import mockit.Verifications;

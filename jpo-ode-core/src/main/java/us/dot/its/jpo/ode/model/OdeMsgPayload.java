@@ -22,6 +22,18 @@ public class OdeMsgPayload extends OdeMessage {
     private String dataType;
     private OdeObject data;
 
+    public OdeMsgPayload(OdeObject data) {
+        super();
+        this.dataType = data.getClass().getName();
+        this.data = data;
+    }
+
+    public OdeMsgPayload(String dataType, OdeObject data) {
+        super();
+        this.dataType = dataType;
+        this.data = data;
+    }
+
     public String getDataType() {
         return dataType;
     }

@@ -75,10 +75,10 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
     }
 
     protected void publishBasicSafetyMessage(J2735Bsm genericBsm) throws OssBsmPart2Exception {
-        logger.debug("Publishing BSM to topics {} and {}", odeProperties.getKafkaTopicBsmSerializedPojo(),
+        logger.debug("Publishing BSM to topics {} and {}", odeProperties.getKafkaTopicRawBsmPojo(),
                 odeProperties.getKafkaTopicBsmRawJson());
 
-        byteArrayProducer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null,
+        byteArrayProducer.send(odeProperties.getKafkaTopicRawBsmPojo(), null,
                 new SerializationUtils<J2735Bsm>().serialize((J2735Bsm) genericBsm));
     }
 }

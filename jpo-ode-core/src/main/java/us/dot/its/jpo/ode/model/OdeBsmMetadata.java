@@ -10,11 +10,36 @@ public class OdeBsmMetadata extends OdeMsgMetadata {
     
     private String generatedAt;
     private String logFileName;
+    
+    
 
-    public OdeBsmMetadata(OdeMsgPayload payload, SerialId serialId, String timeStamp, Long latency,
-            JsonNode violations, String generatedAt) {
-        super(payload, serialId, timeStamp, latency, violations);
+    public OdeBsmMetadata() {
+        super();
+    }
+
+    public OdeBsmMetadata(OdeMsgPayload payload, SerialId serialId, String receivedAt, Long latency,
+            JsonNode violations) {
+        super(payload, serialId, receivedAt, latency, violations);
+    }
+
+    public OdeBsmMetadata(String payloadType, SerialId serialId, String receivedAt, Long latency,
+            List<OdePayloadViolation> srcViolations) {
+        super(payloadType, serialId, receivedAt, latency, srcViolations);
+    }
+
+    public OdeBsmMetadata(
+        OdeMsgPayload payload, 
+        SerialId serialId, 
+        String receivedAt, 
+        Long latency,
+        JsonNode violations, 
+        String generatedAt) {
+        super(payload, serialId, receivedAt, latency, violations);
         this.generatedAt = generatedAt;
+    }
+
+    public OdeBsmMetadata(OdeMsgPayload payload) {
+        super(payload);
     }
 
     public OdeBsmMetadata(OdeMsgPayload payload, String generatedAt) {
@@ -22,9 +47,14 @@ public class OdeBsmMetadata extends OdeMsgMetadata {
         this.generatedAt = generatedAt;
     }
 
-    public OdeBsmMetadata(String payloadType, SerialId serialId, String timeStamp, Long latency,
-            List<OdePayloadViolation> srcViolations, String generatedAt) {
-        super(payloadType, serialId, timeStamp, latency, srcViolations);
+    public OdeBsmMetadata(
+        String payloadType, 
+        SerialId serialId, 
+        String receivedAt, 
+        Long latency,
+        List<OdePayloadViolation> srcViolations, 
+        String generatedAt) {
+        super(payloadType, serialId, receivedAt, latency, srcViolations);
         this.generatedAt = generatedAt;
     }
 

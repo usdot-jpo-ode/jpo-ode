@@ -90,11 +90,11 @@ public class OssJ2735Coder implements J2735Plugin {
 
     @Override
     public Asn1Object decodeUPERBsmStream(InputStream ins) {
-        BasicSafetyMessage bsm = new BasicSafetyMessage();
         J2735Bsm gbsm = null;
 
         try {
             if (ins.available() > 0) {
+                BasicSafetyMessage bsm = new BasicSafetyMessage();
                 coder.decode(ins, bsm);
                 gbsm = OssBsm.genericBsm(bsm);
             }

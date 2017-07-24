@@ -23,15 +23,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.exporter.FilteredBsmExporter;
-import us.dot.its.jpo.ode.exporter.RawBsmExporter;
+import us.dot.its.jpo.ode.exporter.OdeBsmExporter;
 import us.dot.its.jpo.ode.importer.ImporterWatchService;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
 
 @Controller
 public class FileUploadController {
-    private static final String OUTPUT_TOPIC = "/topic/messages";
+//    private static final String OUTPUT_TOPIC = "/topic/messages";
     private static final String FILTERED_OUTPUT_TOPIC = "/topic/filtered_messages";
+    private static final String ODE_BSM_OUTPUT_TOPIC = "/topic/ode_bsm_messages";
 
     private static Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
@@ -59,10 +60,13 @@ public class FileUploadController {
 
         
         launchImporter(messageFramePath, backupPath);
-        
+
         try {
-            Executors.newSingleThreadExecutor().submit(new RawBsmExporter(
-                    odeProperties, OUTPUT_TOPIC, template));
+            // ODE-436 Switching the UI from raw BSM to ODE BSM (including metadata)
+//            Executors.newSingleThreadExecutor().submit(new RawBsmExporter(
+//                    odeProperties, OUTPUT_TOPIC, template));
+            Executors.newSingleThreadExecutor().submit(new OdeBsmExporter(
+                odeProperties, ODE_BSM_OUTPUT_TOPIC, template));
         } catch (Exception e) {
             logger.error("Error launching Exporter", e);
         }

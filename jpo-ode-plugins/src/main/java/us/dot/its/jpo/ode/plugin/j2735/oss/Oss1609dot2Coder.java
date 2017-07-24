@@ -53,10 +53,11 @@ public class Oss1609dot2Coder {
     }
 
     public Ieee1609Dot2Data decodeIeee1609Dot2DataStream(InputStream ins) {
-        Ieee1609Dot2Data returnValue = new Ieee1609Dot2Data();
+        Ieee1609Dot2Data returnValue = null;
 
         try {
             if (ins.available() > 0) {
+                returnValue = new Ieee1609Dot2Data();
                 coder.decode(ins, returnValue);
             }
         } catch (Exception e) {

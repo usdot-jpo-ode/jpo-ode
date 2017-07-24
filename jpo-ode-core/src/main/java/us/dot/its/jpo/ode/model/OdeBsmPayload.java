@@ -11,7 +11,7 @@ public class OdeBsmPayload extends OdeMsgPayload {
     }
 
     public OdeBsmPayload(J2735Bsm bsm) {
-        super();
+        super(bsm);
         this.setData(bsm);
     }
 

@@ -19,18 +19,23 @@ public class OdeMsgMetadata extends OdeMessage {
    private Long latency; 
    private List<OdePayloadViolation> violations;
    
+   
+   public OdeMsgMetadata() {
+       this(OdeDataType.Unknown.name(), new SerialId(), DateTimeUtils.now(), null, null);
+   }
+
    public OdeMsgMetadata(OdeMsgPayload payload) {
       this(payload, new SerialId(), DateTimeUtils.now(), null, null);
    }
 
    public OdeMsgMetadata(OdeMsgPayload payload, 
                          SerialId serialId,
-                         String timeStamp,
+                         String receivedAt,
                          Long latency,
                          JsonNode violations) {
-       this(OdeDataType.getByClazz(payload.getClass()).getShortName(),
+       this(OdeDataType.getByClazz(payload.getData().getClass()).getClazz().getName(),
                serialId,
-               timeStamp,
+               receivedAt,
                latency,
                null);
 
@@ -52,12 +57,12 @@ public class OdeMsgMetadata extends OdeMessage {
       }
    }
 
-    public OdeMsgMetadata(String payloadType, SerialId serialId, String timeStamp, Long latency,
+    public OdeMsgMetadata(String payloadType, SerialId serialId, String receivedAt, Long latency,
             List<OdePayloadViolation> srcViolations) {
         super();
         this.payloadType = payloadType;
         this.serialId = serialId;
-        this.receivedAt = timeStamp;
+        this.receivedAt = receivedAt;
         this.latency = latency;
 
         if (srcViolations != null) {
@@ -106,9 +111,9 @@ public class OdeMsgMetadata extends OdeMessage {
         this.latency = latency;
     }
 
-    public void recordLatency(String timestamp) throws ParseException {
-        if (timestamp != null) {
-            setLatency(DateTimeUtils.elapsedTime(DateTimeUtils.isoDateTime(timestamp)));
+    public void recordLatency(String receivedAt) throws ParseException {
+        if (receivedAt != null) {
+            setLatency(DateTimeUtils.elapsedTime(DateTimeUtils.isoDateTime(receivedAt)));
         }
     }
 

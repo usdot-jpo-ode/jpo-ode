@@ -124,7 +124,7 @@ public class AbstractCoderBsmCoderTest {
                     mockJ2735MessageFrame.getValue();
                     result = mockJ2735Bsm;
                     
-                    odeProperties.getKafkaTopicBsmSerializedPojo(); result = anyString;
+                    odeProperties.getKafkaTopicRawBsmPojo(); result = anyString;
                     objectProducer.send(anyString, null, (OdeObject) any); 
                 }
             };
@@ -162,7 +162,7 @@ public class AbstractCoderBsmCoderTest {
                     j2735Coder.decodeUPERBsmBytes(mockUnsecuredContentData.byteArrayValue());
                     result = mockJ2735Bsm;
                     
-                    odeProperties.getKafkaTopicBsmSerializedPojo(); result = anyString;
+                    odeProperties.getKafkaTopicRawBsmPojo(); result = anyString;
                     objectProducer.send(anyString, null, (OdeObject) any); 
                 }
             };
@@ -197,7 +197,7 @@ public class AbstractCoderBsmCoderTest {
                     mockJ2735MessageFrame.getValue();
                     result = mockJ2735Bsm;
                     
-                    odeProperties.getKafkaTopicBsmSerializedPojo(); result = anyString;
+                    odeProperties.getKafkaTopicRawBsmPojo(); result = anyString;
                     objectProducer.send(anyString, null, (OdeObject) any); 
                 }
             };
@@ -232,7 +232,7 @@ public class AbstractCoderBsmCoderTest {
                     j2735Coder.decodeUPERBsmBytes((byte[]) any);
                     result = mockJ2735Bsm;
                     
-                    odeProperties.getKafkaTopicBsmSerializedPojo(); result = anyString;
+                    odeProperties.getKafkaTopicRawBsmPojo(); result = anyString;
                     objectProducer.send(anyString, null, (OdeObject) any); 
                 }
             };
@@ -330,7 +330,7 @@ public class AbstractCoderBsmCoderTest {
                 j2735Coder.decodeUPERBsmStream((InputStream) any);
                 result = null;
                 
-                odeProperties.getKafkaTopicBsmSerializedPojo(); result = anyString;
+                odeProperties.getKafkaTopicRawBsmPojo(); result = anyString;
                 objectProducer.send(anyString, null, (OdeObject) any); 
             }
         };
@@ -371,7 +371,7 @@ public class AbstractCoderBsmCoderTest {
                 j2735Coder.decodeUPERBsmStream((InputStream) any);
                 result = null;
                 
-                odeProperties.getKafkaTopicBsmSerializedPojo(); result = anyString;
+                odeProperties.getKafkaTopicRawBsmPojo(); result = anyString;
                 objectProducer.send(anyString, null, (OdeObject) any); 
             }
         };
@@ -401,7 +401,7 @@ public class AbstractCoderBsmCoderTest {
                 j2735Coder.decodeUPERBsmStream((InputStream) any);
                 result = null;
 
-                odeProperties.getKafkaTopicBsmSerializedPojo(); result = anyString;
+                odeProperties.getKafkaTopicRawBsmPojo(); result = anyString;
                 objectProducer.send(anyString, null, (OdeObject) any); 
             }
         };
@@ -428,7 +428,7 @@ public class AbstractCoderBsmCoderTest {
                 j2735Coder.decodeUPERBsmStream((InputStream) any);
                 returns(mockJ2735Bsm, null);
                 
-                odeProperties.getKafkaTopicBsmSerializedPojo(); result = anyString;
+                odeProperties.getKafkaTopicRawBsmPojo(); result = anyString;
                 objectProducer.send(anyString, null, (OdeObject) any); 
             }
         };

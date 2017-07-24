@@ -77,7 +77,7 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * BSM Properties
     */
-   private String kafkaTopicBsmSerializedPojo = "topic.j2735Bsm";
+   private String kafkaTopicRawBsmPojo = "topic.j2735Bsm";
    private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
    private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
    private String kafkaTopicOdeBsmPojo = "OdeBsmPojo";
@@ -440,12 +440,12 @@ public class OdeProperties implements EnvironmentAware {
       this.isdBufferSize = isdBufferSize;
    }
 
-   public String getKafkaTopicBsmSerializedPojo() {
-      return kafkaTopicBsmSerializedPojo;
+   public String getKafkaTopicRawBsmPojo() {
+      return kafkaTopicRawBsmPojo;
    }
 
    public void setKafkaTopicBsmSerializedPojo(String kafkaTopicBsmSerializedPojo) {
-      this.kafkaTopicBsmSerializedPojo = kafkaTopicBsmSerializedPojo;
+      this.kafkaTopicRawBsmPojo = kafkaTopicBsmSerializedPojo;
    }
 
    public String getKafkaTopicBsmFilteredJson() {
