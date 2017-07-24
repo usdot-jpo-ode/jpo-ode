@@ -42,28 +42,29 @@ public class VsdReceiver extends BsmReceiver {
       DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
       while (!isStopped()) {
-
-         try {
-            logger.debug("Waiting for UDP packets...");
-            socket.receive(packet);
-            if (packet.getLength() > 0) {
-               senderIp = packet.getAddress().getHostAddress();
-               senderPort = packet.getPort();
-               logger.debug("Packet received from {}:{}", senderIp, senderPort);
-
-               // extract the actualPacket from the buffer
-               byte[] payload = Arrays.copyOf(packet.getData(), packet.getLength());
-               processPacket(payload);
-            }
-         } catch (IOException e) {
-            logger.error("Error receiving packet", e);
-         } catch (UdpReceiverException e) {
-            logger.error("Error decoding packet", e);
-         }
+         getPacket(packet);
       }
    }
 
-   private void processPacket(byte[] data) throws UdpReceiverException {
+   public void getPacket(DatagramPacket packet) {
+      try {
+         logger.debug("Waiting for UDP packets...");
+         socket.receive(packet);
+         if (packet.getLength() > 0) {
+            senderIp = packet.getAddress().getHostAddress();
+            senderPort = packet.getPort();
+            logger.debug("Packet received from {}:{}", senderIp, senderPort);
+
+            // extract the actualPacket from the buffer
+            byte[] payload = Arrays.copyOf(packet.getData(), packet.getLength());
+            processPacket(payload);
+         }
+      } catch (IOException | UdpReceiverException e) {
+         logger.error("Error receiving packet", e);
+      }
+   }
+
+   public void processPacket(byte[] data) throws UdpReceiverException {
       AbstractData decoded = super.decodeData(data);
       try {
          if (decoded instanceof ServiceRequest) {
@@ -86,14 +87,6 @@ public class VsdReceiver extends BsmReceiver {
             UdpUtil.send(new DatagramSocket(odeProperties.getVsdTrustport()), decoded, senderIp, senderPort);
          } else if (decoded instanceof VehSitDataMessage) {
             logger.debug("Received VSD");
-
-            /*
-             * TODO ODE-314: We need to publish to a VSD topic publish(data,
-             * odeProperties.getKafkaTopicVsd());
-             * 
-             * and then do the unpacking in a separate thread that consumes VSDs
-             * from that VSD topic and publishes BSMs to BSM POJO topic
-             */
             extractAndPublishBsms((VehSitDataMessage) decoded);
          } else {
             logger.error("Unknown message type received {}", decoded.getClass().getName());

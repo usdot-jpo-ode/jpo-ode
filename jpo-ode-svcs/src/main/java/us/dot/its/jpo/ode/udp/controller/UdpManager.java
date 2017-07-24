@@ -7,6 +7,6 @@ public interface UdpManager {
 
    public void submit(AbstractUdpReceiverPublisher rec);
 
-   public void submit(AbstractSubscriberDepositor<?, ?> dep, String... topics);
+   public void submit(AbstractSubscriberDepositor dep, String... topics);
 
 }

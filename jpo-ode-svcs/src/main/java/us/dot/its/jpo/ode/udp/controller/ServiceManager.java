@@ -18,7 +18,7 @@ public class ServiceManager implements UdpManager{
       Executors.newSingleThreadExecutor(threadFactory).submit(rec);
    }
    
-   public void submit(AbstractSubscriberDepositor<?, ?> dep, String... topics) {
+   public void submit(AbstractSubscriberDepositor dep, String... topics) {
       dep.subscribe(topics);
    }
 }

@@ -61,8 +61,7 @@ public class SecurityManager {
      */
     public IEEE1609p2Message decodeSignedMessage(byte[] signedMsgBytes) throws MessageException,
             CertificateException, CryptoException, EncodeFailedException, EncodeNotSupportedException {
-        IEEE1609p2Message signedMsg = IEEE1609p2Message.parse(signedMsgBytes);
-        return signedMsg;
+       return IEEE1609p2Message.parse(signedMsgBytes);
     }
     
     /**
@@ -84,6 +83,7 @@ public class SecurityManager {
                 payload = signedMsg.getPayload();
             }
         } catch (EncodeFailedException | MessageException | EncodeNotSupportedException e1) {
+           logger.error("Error parsing 1609.2 message.", e1);
             payload = signedOrUnsignedMsgBytes;
         } catch (CertificateException | CryptoException e2) {
             throw new SecurityManagerException("Security Error", e2);

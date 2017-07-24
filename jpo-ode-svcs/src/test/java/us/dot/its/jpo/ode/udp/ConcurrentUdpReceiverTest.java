@@ -13,7 +13,7 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
 
-public class AbstractConcurrentUdpReceiverTest {
+public class ConcurrentUdpReceiverTest {
 
    @Tested
    AbstractConcurrentUdpReceiver testAbstractConcurrentUdpReceiver;
