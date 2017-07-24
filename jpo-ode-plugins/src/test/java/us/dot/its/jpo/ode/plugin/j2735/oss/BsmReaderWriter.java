@@ -61,7 +61,7 @@ public class BsmReaderWriter {
          PrintWriter bsmOut = null;
          
          int numBSMs = 0;
-         OssAsn1Coder ossCoder = new OssAsn1Coder();
+         OssJ2735Coder ossCoder = new OssJ2735Coder();
          while (scanner.hasNext()) {
             try {
                if (encoding.equalsIgnoreCase("hex")) {

@@ -17,11 +17,36 @@
 package us.dot.its.jpo.ode.model;
 
 public class OdeData extends OdeMessage implements OdeFilterable {
-   private static final long serialVersionUID = -7711340868799607662L;
+    private static final long serialVersionUID = -7711340868799607662L;
 
-   
-   public OdeData() {
-      super();
-   }
+    private OdeMsgMetadata metadata;
+    private OdeMsgPayload payload;
+
+    public OdeData() {
+        super();
+    }
+
+    public OdeData(OdeMsgMetadata metadata, OdeMsgPayload payload) {
+        super();
+        this.metadata = metadata;
+        this.payload = payload;
+    }
+
+    public OdeMsgMetadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(OdeMsgMetadata metadata) {
+        this.metadata = metadata;
+    }
+
+    public OdeMsgPayload getPayload() {
+        return payload;
+    }
+
+    public void setPayload(OdeMsgPayload payload) {
+        this.payload = payload;
+    }
+
 
 }

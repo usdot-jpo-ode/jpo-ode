@@ -2,7 +2,7 @@ package us.dot.its.jpo.ode.model;
 
 import java.math.BigDecimal;
 
-public final class OdeAggregateData extends OdeData implements HasKey {
+public final class OdeAggregatePayload extends OdeMsgPayload implements HasKey {
 
    private static final long serialVersionUID = 1595406822366147861L;
 
@@ -12,11 +12,11 @@ public final class OdeAggregateData extends OdeData implements HasKey {
    private BigDecimal avgSpeed;
    private BigDecimal maxSpeed;
 
-   public OdeAggregateData() {
+   public OdeAggregatePayload() {
       super();
    }
 
-   public OdeAggregateData(String key, Long count, BigDecimal minSpeed, BigDecimal avgSpeed, BigDecimal maxSpeed) {
+   public OdeAggregatePayload(String key, Long count, BigDecimal minSpeed, BigDecimal avgSpeed, BigDecimal maxSpeed) {
     super();
     this.key = key;
     this.count = count;
@@ -30,7 +30,7 @@ public final class OdeAggregateData extends OdeData implements HasKey {
       return key;
    }
 
-   public OdeAggregateData setKey(String key) {
+   public OdeAggregatePayload setKey(String key) {
       this.key = key;
       return this;
    }
@@ -39,7 +39,7 @@ public final class OdeAggregateData extends OdeData implements HasKey {
       return count;
    }
 
-   public OdeAggregateData setCount(Long count) {
+   public OdeAggregatePayload setCount(Long count) {
       this.count = count;
       return this;
    }
@@ -48,7 +48,7 @@ public final class OdeAggregateData extends OdeData implements HasKey {
       return minSpeed;
    }
 
-   public OdeAggregateData setMinSpeed(BigDecimal minSpeed) {
+   public OdeAggregatePayload setMinSpeed(BigDecimal minSpeed) {
       this.minSpeed = minSpeed;
       return this;
    }
@@ -57,7 +57,7 @@ public final class OdeAggregateData extends OdeData implements HasKey {
       return avgSpeed;
    }
 
-   public OdeAggregateData setAvgSpeed(BigDecimal avgSpeed) {
+   public OdeAggregatePayload setAvgSpeed(BigDecimal avgSpeed) {
       this.avgSpeed = avgSpeed;
       return this;
    }
@@ -90,7 +90,7 @@ public final class OdeAggregateData extends OdeData implements HasKey {
          return false;
       if (getClass() != obj.getClass())
          return false;
-      OdeAggregateData other = (OdeAggregateData) obj;
+      OdeAggregatePayload other = (OdeAggregatePayload) obj;
       if (avgSpeed == null) {
          if (other.avgSpeed != null)
             return false;

@@ -19,19 +19,19 @@ import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.dsrc.MessageFrame;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
-import us.dot.its.jpo.ode.plugin.asn1.Asn1Plugin;
+import us.dot.its.jpo.ode.plugin.asn1.J2735Plugin;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssMessageFrame.OssMessageFrameException;
 
-public class OssAsn1Coder implements Asn1Plugin {
+public class OssJ2735Coder implements J2735Plugin {
 
-    private static Logger logger = LoggerFactory.getLogger(OssAsn1Coder.class);
+    private static Logger logger = LoggerFactory.getLogger(OssJ2735Coder.class);
 
     private PERUnalignedCoder coder;
 
-    public OssAsn1Coder() {
+    public OssJ2735Coder() {
         coder = J2735.getPERUnalignedCoder();
     }
 

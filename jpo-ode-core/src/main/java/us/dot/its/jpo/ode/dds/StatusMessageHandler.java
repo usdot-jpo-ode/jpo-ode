@@ -29,8 +29,8 @@ import us.dot.its.jpo.ode.model.OdeMessage;
 import us.dot.its.jpo.ode.model.OdeStatus;
 import us.dot.its.jpo.ode.model.OdeStatus.Code;
 import us.dot.its.jpo.ode.model.StatusTag;
-import us.dot.its.jpo.ode.model.WebSocketClient;
 import us.dot.its.jpo.ode.wrapper.AbstractWebsocketMessageHandler;
+import us.dot.its.jpo.ode.wrapper.WebSocketClient;
 
 public class StatusMessageHandler extends AbstractWebsocketMessageHandler<DdsStatusMessage> {
 
