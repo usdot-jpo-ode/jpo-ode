@@ -53,7 +53,7 @@ public class FirstAbstractCoderTest {
 
     @Mocked MessageProducer<String, OdeObject> objectProducer;
     
-    @Mocked Ieee1609Dot2Data mockSecuredData;
+    @Mocked Ieee1609Dot2Data mockieee1609dot2Data;
     @Mocked Ieee1609Dot2Content mockSecuredContent;
     @Mocked SignedData mockSignedData;
     @Mocked ToBeSignedData mockToBeSignedData;
@@ -76,7 +76,7 @@ public class FirstAbstractCoderTest {
     }
     
     @Test
-    public void test_decodeHexAndPublish_shouldThrowExceptionEmpty(
+    public void decodeHexAndPublishShouldThrowExceptionEmpty(
         @Mocked final Scanner mockScanner) {
 
         new Expectations() {
@@ -101,7 +101,7 @@ public class FirstAbstractCoderTest {
     }
 
     @Test
-    public void test_decodeHexAndPublishSignedMessageFrame(
+    public void decodeHexAndPublishSignedMessageFrame(
         @Mocked final Scanner mockScanner) {
 
         try {
@@ -111,8 +111,8 @@ public class FirstAbstractCoderTest {
                     returns(true, false);
 
                     ieee1609dotCoder.decodeIeee1609Dot2DataHex(anyString);
-                    result = mockSecuredData;
-                    mockSecuredData.getContent(); result = mockSecuredContent;
+                    result = mockieee1609dot2Data;
+                    mockieee1609dot2Data.getContent(); result = mockSecuredContent;
                     mockSecuredContent.getSignedData(); result = mockSignedData;
                     mockSignedData.getTbsData(); result = mockToBeSignedData;
                     mockToBeSignedData.getPayload(); result = mockPayload;
@@ -140,7 +140,7 @@ public class FirstAbstractCoderTest {
     }
 
     @Test
-    public void test_decodeHexAndPublishSignedBsm(@Mocked final Scanner mockScanner) {
+    public void decodeHexAndPublishSignedBsm(@Mocked final Scanner mockScanner) {
 
         try {
             new Expectations(PluginFactory.class) {
@@ -149,8 +149,8 @@ public class FirstAbstractCoderTest {
                     returns(true, false);
 
                     ieee1609dotCoder.decodeIeee1609Dot2DataHex(anyString);
-                    result = mockSecuredData;
-                    mockSecuredData.getContent(); result = mockSecuredContent;
+                    result = mockieee1609dot2Data;
+                    mockieee1609dot2Data.getContent(); result = mockSecuredContent;
                     mockSecuredContent.getSignedData(); result = mockSignedData;
                     mockSignedData.getTbsData(); result = mockToBeSignedData;
                     mockToBeSignedData.getPayload(); result = mockPayload;
@@ -179,10 +179,10 @@ public class FirstAbstractCoderTest {
     }
 
     @Test
-    public void test_decodeHexAndPublishUnsignedMessageFrame(@Mocked final Scanner mockScanner) {
+    public void decodeHexAndPublishUnsignedMessageFrame(@Mocked final Scanner mockScanner) {
 
         try {
-            new Expectations(PluginFactory.class) {
+            new Expectations(PluginFactory.class, CodecUtils.class) {
                 {
                     mockScanner.hasNextLine();
                     returns(true, false);
@@ -214,7 +214,7 @@ public class FirstAbstractCoderTest {
     }
 
     @Test
-    public void test_decodeHexAndPublishUnsignedBsm(@Mocked final Scanner mockScanner) {
+    public void decodeHexAndPublishUnsignedBsm(@Mocked final Scanner mockScanner) {
 
         try {
             new Expectations(PluginFactory.class, CodecUtils.class) {
@@ -249,17 +249,14 @@ public class FirstAbstractCoderTest {
     }
 
     @Test
-    public void test_decodeBinaryAndPublishSignedNull(@Mocked final Scanner mockScanner) {
+    public void decodeBinaryAndPublishSignedNull() {
 
         new Expectations() {
             {
-                mockScanner.hasNextLine();
-                returns(true, false);
-
                 ieee1609dotCoder.decodeIeee1609Dot2DataStream((InputStream) any);
-                result = mockSecuredData;
+                result = mockieee1609dot2Data;
 
-                mockSecuredData.getContent(); result = mockSecuredContent;
+                mockieee1609dot2Data.getContent(); result = mockSecuredContent;
                 mockSecuredContent.getSignedData(); result = mockSignedData;
                 mockSignedData.getTbsData(); result = mockToBeSignedData;
                 mockToBeSignedData.getPayload(); result = mockPayload;
@@ -269,11 +266,8 @@ public class FirstAbstractCoderTest {
                 
                 j2735Coder.decodeUPERMessageFrameBytes(mockUnsecuredContentData.byteArrayValue());
                 result = null;
-                j2735Coder.decodeUPERBsmStream((InputStream) any);
+                j2735Coder.decodeUPERBsmBytes((byte[]) any);
                 result = null;
-                
-                odeProperties.getKafkaTopicBsmSerializedPojo(); result = anyString;
-                objectProducer.send(anyString, null, (OdeObject) any); 
             }
         };
 
@@ -286,13 +280,10 @@ public class FirstAbstractCoderTest {
     }
 
     @Test
-    public void test_decodeBinaryAndPublishUnsignedNull(@Mocked final Scanner mockScanner) {
+    public void decodeBinaryAndPublishUnsignedNull() {
 
         new Expectations() {
             {
-                mockScanner.hasNextLine();
-                returns(true, false);
-
                 ieee1609dotCoder.decodeIeee1609Dot2DataStream((InputStream) any);
                 result = null;
 
@@ -300,9 +291,6 @@ public class FirstAbstractCoderTest {
                 result = null;
                 j2735Coder.decodeUPERBsmStream((InputStream) any);
                 result = null;
-                
-                odeProperties.getKafkaTopicBsmSerializedPojo(); result = anyString;
-                objectProducer.send(anyString, null, (OdeObject) any); 
             }
         };
 
@@ -315,14 +303,14 @@ public class FirstAbstractCoderTest {
     }
 
     @Test
-    public void test_decodeBinaryAndPublishSignedMessageFrame () {
+    public void decodeBinaryAndPublishSignedMessageFrame () {
 
         new Expectations() {
             {
-                ieee1609dotCoder.decodeIeee1609Dot2DataHex(anyString);
-                returns(mockSecuredData, null);
+                ieee1609dotCoder.decodeIeee1609Dot2DataStream((InputStream) any);
+                returns(mockieee1609dot2Data, null);
                 
-                mockSecuredData.getContent(); result = mockSecuredContent;
+                mockieee1609dot2Data.getContent(); result = mockSecuredContent;
                 mockSecuredContent.getSignedData(); result = mockSignedData;
                 mockSignedData.getTbsData(); result = mockToBeSignedData;
                 mockToBeSignedData.getPayload(); result = mockPayload;
@@ -331,10 +319,16 @@ public class FirstAbstractCoderTest {
                 mockUnsecuredContent.getUnsecuredData(); result = mockUnsecuredContentData;
                 
                 j2735Coder.decodeUPERMessageFrameBytes((byte[]) any);
-                returns(mockJ2735MessageFrame, null);
+                result = mockJ2735MessageFrame;
                 
                 mockJ2735MessageFrame.getValue();
                 result = mockJ2735Bsm;
+                
+                j2735Coder.decodeUPERMessageFrameStream((InputStream) any);
+                result = null;
+                
+                j2735Coder.decodeUPERBsmStream((InputStream) any);
+                result = null;
                 
                 odeProperties.getKafkaTopicBsmSerializedPojo(); result = anyString;
                 objectProducer.send(anyString, null, (OdeObject) any); 
@@ -350,14 +344,14 @@ public class FirstAbstractCoderTest {
     }
 
     @Test
-    public void test_decodeBinaryAndPublishSignedBsm () {
+    public void decodeBinaryAndPublishSignedBsm () {
 
         new Expectations() {
             {
-                ieee1609dotCoder.decodeIeee1609Dot2DataHex(anyString);
-                returns(mockSecuredData, null);
+                ieee1609dotCoder.decodeIeee1609Dot2DataStream((InputStream) any);
+                returns(mockieee1609dot2Data, null);
                 
-                mockSecuredData.getContent(); result = mockSecuredContent;
+                mockieee1609dot2Data.getContent(); result = mockSecuredContent;
                 mockSecuredContent.getSignedData(); result = mockSignedData;
                 mockSignedData.getTbsData(); result = mockToBeSignedData;
                 mockToBeSignedData.getPayload(); result = mockPayload;
@@ -371,6 +365,12 @@ public class FirstAbstractCoderTest {
                 j2735Coder.decodeUPERBsmBytes((byte[]) any);
                 returns(mockJ2735Bsm, null);
                 
+                j2735Coder.decodeUPERMessageFrameStream((InputStream) any);
+                result = null;
+                
+                j2735Coder.decodeUPERBsmStream((InputStream) any);
+                result = null;
+                
                 odeProperties.getKafkaTopicBsmSerializedPojo(); result = anyString;
                 objectProducer.send(anyString, null, (OdeObject) any); 
             }
@@ -385,11 +385,11 @@ public class FirstAbstractCoderTest {
     }
 
     @Test
-    public void test_decodeBinaryAndPublishUnsignedMessageFrame () {
+    public void decodeBinaryAndPublishUnsignedMessageFrame () {
 
         new Expectations() {
             {
-                ieee1609dotCoder.decodeIeee1609Dot2DataHex(anyString);
+                ieee1609dotCoder.decodeIeee1609Dot2DataStream((InputStream) any);
                 returns(null, null);
                 
                 j2735Coder.decodeUPERMessageFrameStream((InputStream) any);
@@ -398,6 +398,9 @@ public class FirstAbstractCoderTest {
                 mockJ2735MessageFrame.getValue();
                 result = mockJ2735Bsm;
                 
+                j2735Coder.decodeUPERBsmStream((InputStream) any);
+                result = null;
+
                 odeProperties.getKafkaTopicBsmSerializedPojo(); result = anyString;
                 objectProducer.send(anyString, null, (OdeObject) any); 
             }
@@ -412,11 +415,11 @@ public class FirstAbstractCoderTest {
     }
 
     @Test
-    public void test_decodeBinaryAndPublishUnsignedBsm () {
+    public void decodeBinaryAndPublishUnsignedBsm () {
 
         new Expectations() {
             {
-                ieee1609dotCoder.decodeIeee1609Dot2DataHex(anyString);
+                ieee1609dotCoder.decodeIeee1609Dot2DataStream((InputStream) any);
                 returns(null, null);
                 
                 j2735Coder.decodeUPERMessageFrameStream((InputStream) any);
@@ -439,11 +442,11 @@ public class FirstAbstractCoderTest {
     }
 
     @Test
-    public void test_decodeBinaryAndPublish_catchException() {
+    public void decodeBinaryAndPublishShouldThrowException() {
 
         new Expectations() {
             {
-                j2735Coder.decodeUPERBsmStream((InputStream) any);
+                ieee1609dotCoder.decodeIeee1609Dot2DataStream((InputStream) any);
                 result = new IOException("testException123");
             }
         };
