@@ -41,7 +41,7 @@ public class ServiceManagerTest {
 
    }
 
-   public void depositorCallsSubscribe(@Mocked AbstractSubscriberDepositor<?, ?> mockAbstractSubscriberDepositor) {
+   public void depositorCallsSubscribe(@Mocked AbstractSubscriberDepositor mockAbstractSubscriberDepositor) {
 
       new Expectations() {
          {

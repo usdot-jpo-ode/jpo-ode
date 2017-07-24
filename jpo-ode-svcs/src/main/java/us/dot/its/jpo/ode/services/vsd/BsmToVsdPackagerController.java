@@ -14,14 +14,12 @@ import us.dot.its.jpo.ode.wrapper.MessageProducer;
 public class BsmToVsdPackagerController {
 
    private static final Logger logger = LoggerFactory.getLogger(BsmToVsdPackagerController.class);
-   org.apache.kafka.common.serialization.Serdes bas;
 
    @Autowired
-   private BsmToVsdPackagerController(OdeProperties odeProps) {
+   protected BsmToVsdPackagerController(OdeProperties odeProps) {
       super();
 
-      String inputTopic = odeProps.getKafkaTopicBsmRawJson(); // TODO - needs to
-                                                              // be filtered
+      String inputTopic = odeProps.getKafkaTopicBsmFilteredJson();
       String outputTopic = odeProps.getKafkaTopicEncodedVsd();
 
       if (odeProps.isEnabledVsdKafkaTopic()) {

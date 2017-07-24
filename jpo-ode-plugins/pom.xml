@@ -14,6 +14,10 @@
     <artifactId>jpo-ode</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
+  <properties>
+    <!-- SonarQube Properties -->
+    <sonar.exclusions>src/main/java/us/dot/its/jpo/ode/plugin/j2735/*.java</sonar.exclusions>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>usdot.jpo.ode</groupId>
