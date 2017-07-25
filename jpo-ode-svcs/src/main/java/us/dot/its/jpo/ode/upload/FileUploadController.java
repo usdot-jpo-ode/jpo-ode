@@ -22,19 +22,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.BsmStreamDecoderPublisher;
-import us.dot.its.jpo.ode.coder.StreamDecoderPublisher;
-import us.dot.its.jpo.ode.coder.MessageFrameStreamDecoderPublisher;
 import us.dot.its.jpo.ode.exporter.FilteredBsmExporter;
-import us.dot.its.jpo.ode.exporter.RawBsmExporter;
+import us.dot.its.jpo.ode.exporter.OdeBsmExporter;
 import us.dot.its.jpo.ode.importer.ImporterWatchService;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
 
 @Controller
 public class FileUploadController {
-    private static final String OUTPUT_TOPIC = "/topic/messages";
+//    private static final String OUTPUT_TOPIC = "/topic/messages";
     private static final String FILTERED_OUTPUT_TOPIC = "/topic/filtered_messages";
+    private static final String ODE_BSM_OUTPUT_TOPIC = "/topic/ode_bsm_messages";
 
     private static Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
@@ -58,20 +56,17 @@ public class FileUploadController {
         Path backupPath = Paths.get(odeProperties.getUploadLocationRoot(), "backup");
         logger.debug("UPLOADER - Backup directory: {}", backupPath);
 
-        launchImporter(
-                Paths.get(odeProperties.getUploadLocationRoot(), odeProperties.getUploadLocationBsm()),
-                backupPath,
-                new BsmStreamDecoderPublisher(this.odeProperties));
+        launchImporter(bsmPath, backupPath);
 
         
-        launchImporter(
-                Paths.get(odeProperties.getUploadLocationRoot(), odeProperties.getUploadLocationMessageFrame()),
-                backupPath,
-                new MessageFrameStreamDecoderPublisher(this.odeProperties));
-        
+        launchImporter(messageFramePath, backupPath);
+
         try {
-            Executors.newSingleThreadExecutor().submit(new RawBsmExporter(
-                    odeProperties, OUTPUT_TOPIC, template));
+            // ODE-436 Switching the UI from raw BSM to ODE BSM (including metadata)
+//            Executors.newSingleThreadExecutor().submit(new RawBsmExporter(
+//                    odeProperties, OUTPUT_TOPIC, template));
+            Executors.newSingleThreadExecutor().submit(new OdeBsmExporter(
+                odeProperties, ODE_BSM_OUTPUT_TOPIC, template));
         } catch (Exception e) {
             logger.error("Error launching Exporter", e);
         }
@@ -84,10 +79,10 @@ public class FileUploadController {
         }
     }
 
-    private ExecutorService launchImporter(Path filePath, Path backupPath, StreamDecoderPublisher coder) {
+    private ExecutorService launchImporter(Path dirPath, Path backupPath) {
         ExecutorService importer = Executors.newSingleThreadExecutor();
-        logger.debug("UPLOADER - Upload directory: {}", filePath);
-        importer.submit(new ImporterWatchService(filePath, backupPath, coder,
+        logger.debug("UPLOADER - Upload directory: {}", dirPath);
+        importer.submit(new ImporterWatchService(odeProperties, dirPath, backupPath,
                 LoggerFactory.getLogger(ImporterWatchService.class)));
         
         return importer;

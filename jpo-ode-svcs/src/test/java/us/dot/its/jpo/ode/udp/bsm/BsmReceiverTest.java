@@ -16,7 +16,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher.UdpReceiverException;
 import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
@@ -28,7 +28,7 @@ public class BsmReceiverTest {
 	OdeProperties mockOdeProperties;
 
 	@Mocked
-	OssAsn1Coder mockedOssAsn1Coder;
+	OssJ2735Coder mockedOssAsn1Coder;
 
 	@Mocked
 	DatagramSocket mockedDatagramSocket;
@@ -46,7 +46,7 @@ public class BsmReceiverTest {
 
 		new Expectations() {
 			{
-				new OssAsn1Coder();
+				new OssJ2735Coder();
 				mockOdeProperties.getBsmReceiverPort();
 				result = 1234;
 
@@ -62,7 +62,7 @@ public class BsmReceiverTest {
 			throws IOException, DecoderException {
 		new Expectations() {
 			{
-				new OssAsn1Coder();
+				new OssJ2735Coder();
 				result = mockedOssAsn1Coder;
 
 				mockOdeProperties.getBsmReceiverPort();
@@ -103,7 +103,7 @@ public class BsmReceiverTest {
 			throws IOException {
 		new Expectations() {
 			{
-				new OssAsn1Coder();
+				new OssJ2735Coder();
 				result = mockedOssAsn1Coder;
 
 				mockOdeProperties.getBsmReceiverPort();
@@ -133,7 +133,7 @@ public class BsmReceiverTest {
 		byte[] msg = new byte[80];
 		new Expectations() {
 			{
-				new OssAsn1Coder();
+				new OssJ2735Coder();
 				result = mockedOssAsn1Coder;
 
 				mockedOssAsn1Coder.decodeUPERBsmBytes(msg);
@@ -149,7 +149,7 @@ public class BsmReceiverTest {
 		byte[] msg = new byte[80];
 		new Expectations() {
 			{
-				new OssAsn1Coder();
+				new OssJ2735Coder();
 				result = mockedOssAsn1Coder;
 				mockedOssAsn1Coder.decodeUPERBsmBytes(msg);
 				result = new OssBsmPart2Exception("");
@@ -165,7 +165,7 @@ public class BsmReceiverTest {
 		byte[] msg = new byte[2];
 		new Expectations() {
 			{
-				new OssAsn1Coder();
+				new OssJ2735Coder();
 				result = mockedOssAsn1Coder;
 				mockedOssAsn1Coder.decodeUPERBsmBytes(msg);
 				result = mockedJ2735Bsm;

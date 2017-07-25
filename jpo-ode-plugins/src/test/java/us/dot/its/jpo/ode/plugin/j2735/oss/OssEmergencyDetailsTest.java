@@ -87,8 +87,8 @@ import us.dot.its.jpo.ode.j2735.dsrc.SirenInUse;
  * vehicle OBU, this data element indicates to other vehicles that additional response vehicles may be converging
  * to the same location and that additional caution is warranted.
  * Used to indicate that more that one vehicle is responding and traveling in a closely aligned fashion (one after 
- * the other in a loose platoon formation). This DE is intended to be used with the DSRC “public safety vehicle 
- * operating in the area” use case.
+ * the other in a loose platoon formation). This DE is intended to be used with the DSRC "public safety vehicle 
+ * operating in the area" use case.
  * ASN.1 Representation:
  *    MultiVehicleResponse ::= ENUMERATED {
  *       unavailable (0), -- Not Equipped or unavailable

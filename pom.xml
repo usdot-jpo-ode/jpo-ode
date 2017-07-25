@@ -100,6 +100,13 @@
               <buildDirectory>${project.build.directory}</buildDirectory>
             </systemPropertyVariables>
           </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.maven.surefire</groupId>
+                <artifactId>surefire-junit47</artifactId> <!-- DO NOT CHANGE THIS. If you do, your tests will misteriously fail for not apparent reason. -->
+                <version>2.19.1</version>
+              </dependency>
+            </dependencies>
         </plugin>
       </plugins>
     </pluginManagement>

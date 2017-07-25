@@ -17,7 +17,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 
 public class UnavailableNumericFieldTest {
 
-   private OssAsn1Coder coder = new OssAsn1Coder();
+   private OssJ2735Coder coder = new OssJ2735Coder();
    
    @BeforeClass
    public static void setUpBeforeClass() throws Exception {
