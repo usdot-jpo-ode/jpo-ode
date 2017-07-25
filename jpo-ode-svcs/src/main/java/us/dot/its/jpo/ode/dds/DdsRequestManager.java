@@ -37,7 +37,7 @@ public abstract class DdsRequestManager<T> {
                this.odeProperties.getDdsCasPassword(), this.odeProperties.getDdsWebsocketUrl(), null, null);
 
       } catch (Exception e) {
-         throw new DdsRequestManagerException("Error initializing DdsRequestManager" + e);
+         throw new DdsRequestManagerException("Error initializing DdsRequestManager", e);
       }
    }
 
