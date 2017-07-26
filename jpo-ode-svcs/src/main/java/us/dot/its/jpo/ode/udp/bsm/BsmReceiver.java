@@ -8,19 +8,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
+import us.dot.its.jpo.ode.coder.BsmStreamDecoderPublisher;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
-import us.dot.its.jpo.ode.util.SerializationUtils;
 
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
     private static Logger logger = LoggerFactory.getLogger(BsmReceiver.class);
 
-    private OssAsn1Coder asn1Coder;
-
+    protected BsmStreamDecoderPublisher bsmDecoderPublisher;
+    
     @Autowired
     public BsmReceiver(OdeProperties odeProps) {
         this(odeProps, odeProps.getBsmReceiverPort(), odeProps.getBsmBufferSize());
@@ -28,7 +24,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
     public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
         super(odeProps, port, bufferSize);
-        asn1Coder = new OssAsn1Coder();
+        bsmDecoderPublisher = new BsmStreamDecoderPublisher(odeProps, null);
     }
 
     @Override
@@ -51,34 +47,11 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
                     // extract the actualPacket from the buffer
                     byte[] payload = Arrays.copyOf(packet.getData(), packet.getLength());
-                    publishBsm(payload);
+                    bsmDecoderPublisher.decodeBytesAndPublish(payload);
                 }
             } catch (Exception e) {
                 logger.error("Error receiving packet", e);
             }
         } while (!isStopped());
-    }
-
-    protected void publishBsm(byte[] data) throws UdpReceiverException {
-        try {
-            Asn1Object decoded = asn1Coder.decodeUPERBsmBytes(data);
-
-            if (decoded instanceof J2735Bsm) {
-                logger.debug("Received J2735Bsm");
-                publishBasicSafetyMessage((J2735Bsm) decoded);
-            } else {
-                logger.error("Unknown message type received {}", data.getClass().getName());
-            }
-        } catch (OssBsmPart2Exception e) {
-            logger.error("Unable to convert BSM", e);
-        }
-    }
-
-    protected void publishBasicSafetyMessage(J2735Bsm genericBsm) throws OssBsmPart2Exception {
-        logger.debug("Publishing BSM to topics {} and {}", odeProperties.getKafkaTopicBsmSerializedPojo(),
-                odeProperties.getKafkaTopicBsmRawJson());
-
-        byteArrayProducer.send(odeProperties.getKafkaTopicBsmSerializedPojo(), null,
-                new SerializationUtils<J2735Bsm>().serialize((J2735Bsm) genericBsm));
     }
 }

@@ -28,26 +28,26 @@ public class MessageConsumer<K, V> {
 
    private boolean isRunning = false;
 
-   public static MessageConsumer<String, String> defaultStringMessageConsumer(String brokers, String groupId,
-         MessageProcessor<String, String> processor) {
+    public static MessageConsumer<String, byte[]> defaultByteArrayMessageConsumer(
+        String brokers, String groupId, MessageProcessor<String, byte[]> processor) {
 
-      MessageConsumer<String, String> msgConsumer = new MessageConsumer<String, String>(brokers, groupId, processor,
+        MessageConsumer<String, byte[]> msgConsumer = new MessageConsumer<String, byte[]>(
+                brokers, groupId, processor,
+                SERIALIZATION_BYTE_ARRAY_DESERIALIZER);
+
+        logger.info("Default String Message Consumer Created");
+
+        return msgConsumer;
+    }
+
+    public static MessageConsumer<String, String> defaultStringMessageConsumer(
+         String brokers, String groupId, MessageProcessor<String, String> processor) {
+
+      MessageConsumer<String, String> msgConsumer = new MessageConsumer<String, String>(
+              brokers, groupId, processor,
               SERIALIZATION_STRING_DESERIALIZER);
 
       logger.info("Default String Message Consumer Created");
-
-      return msgConsumer;
-   }
-
-   public static MessageConsumer<String, byte[]> defaultByteArrayMessageConsumer(
-         String brokers, 
-         String groupId,
-         MessageProcessor<String, byte[]> processor) {
-
-       MessageConsumer<String, byte[]> msgConsumer = 
-            new MessageConsumer<String, byte[]>(brokers, groupId, processor, SERIALIZATION_BYTE_ARRAY_DESERIALIZER);
-
-      logger.info("Default Byte Array Message Consumer Created");
 
       return msgConsumer;
    }

@@ -14,7 +14,7 @@ import mockit.Verifications;
 import us.dot.its.jpo.ode.model.OdeControlData;
 import us.dot.its.jpo.ode.model.OdeStatus;
 import us.dot.its.jpo.ode.model.StatusTag;
-import us.dot.its.jpo.ode.model.WebSocketClient;
+import us.dot.its.jpo.ode.wrapper.WebSocketClient;
 
 public class StatusMessageHandlerTest {
 
