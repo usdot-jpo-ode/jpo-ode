@@ -15,27 +15,27 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.BsmStreamDecoderPublisher;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 
 public class ImporterWatchService extends ImporterFileService implements Runnable {
+   
+   private static final Logger logger = LoggerFactory.getLogger(ImporterWatchService.class);
 
     private Path inbox;
     private Path backup;
-    private Logger logger;
     private OdeProperties odeProperties;
 
     public ImporterWatchService(
         OdeProperties odeProperties, 
         Path dir, 
-        Path backupDir, 
-        Logger logger) {
+        Path backupDir) {
 
         this.inbox = dir;
         this.backup = backupDir;
-        this.logger = logger;
         this.odeProperties = odeProperties;
         
         init();

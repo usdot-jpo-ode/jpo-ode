@@ -66,12 +66,11 @@ function upload() {
         contentType: false,
         processData: false
     }).done(function(response) {
-        console.log("File upload response received: " + response);
-        if ($.parseJSON(response).success) {
-            $( "#uploadResponse" ).append("<tr><td>Success</td><td>" + $('#file').get(0).files[0].name + "</td></tr>");
-        } else {
-            $( "#uploadResponse" ).append("<tr><td>Error</td><td>" + $('#file').get(0).files[0].name + "</td></tr>");
-        }
+        console.log("File upload success.");
+        $( "#uploadResponse" ).append("<tr><td>File Received</td><td>" + $('#file').get(0).files[0].name + "</td></tr>");
+    }).fail(function(response) {
+    	console.log("File upload error.");
+    	$( "#uploadResponse" ).append("<tr><td>Error</td><td>" + $('#file').get(0).files[0].name + "</td></tr>");
     });
 }
 function sendSnmp() {

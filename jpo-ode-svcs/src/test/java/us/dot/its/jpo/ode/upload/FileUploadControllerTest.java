@@ -1,222 +1,98 @@
 package us.dot.its.jpo.ode.upload;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.ResponseEntity.BodyBuilder;
-import org.springframework.http.ResponseEntity.HeadersBuilder;
+import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
-import mockit.Tested;
-import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.SerializableMessageProducerPool;
-import us.dot.its.jpo.ode.importer.ImporterWatchService;
-import us.dot.its.jpo.ode.plugin.PluginFactory;
-import us.dot.its.jpo.ode.plugin.asn1.J2735Plugin;
-import us.dot.its.jpo.ode.storage.StorageException;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
-import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-@RunWith(JMockit.class)
-@Ignore // TODO - this test is incorrect
 public class FileUploadControllerTest {
 
-    @Tested
-    FileUploadController testFileUploadController;
+   FileUploadController testFileUploadController;
 
-    @Injectable
-    StorageService mockStorageService;
-    @Injectable
-    OdeProperties mockOdeProperties;
-    @Injectable
-    SimpMessagingTemplate mockTemplate;
+   @Mocked
+   StorageService mockStorageService;
 
-    @Before
-    public void setUp() {
-        new Expectations() {
-            {
-                mockOdeProperties.getUploadLocationRoot();
-                result = anyString;
-                mockOdeProperties.getUploadLocationBsm();
-                result = anyString;
-                mockOdeProperties.getUploadLocationMessageFrame();
-                result = anyString;
-            }
-        };
-    }
+   @Injectable
+   OdeProperties injectableOdeProperties;
 
-    @Test
-    public void handleUploadShouldReturnFalseWithUnknownType(@Mocked MultipartFile mockFile,
-            @Injectable final Executors unused, @Injectable ExecutorService mockExecutorService,
-            @Mocked final PluginFactory unused2, @Mocked J2735Plugin mockAsn1Plugin,
-            @Mocked MessageProducer<String, String> mockMessageProducer,
-            @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
-            @Mocked final LoggerFactory unusedLoggerFactory,
-            @Mocked final ImporterWatchService mockImporterWatchService
-            ) {
+   @Injectable
+   SimpMessagingTemplate injectableSimpMessagingTemplate;
 
-        String testType = "unknownTestType";
+   @Capturing
+   Executors capturingExecutors;
+   @Mocked
+   ExecutorService mockExecutorService;
 
-        assertEquals("{\"success\": false}", testFileUploadController.handleFileUpload(mockFile, testType));
+   @Mocked
+   OdeProperties mockOdeProperties;
 
-    }
-    
-    @Test
-    public void handleUploadShouldReturnFalseWhenStoreThrowsException(@Mocked MultipartFile mockFile,
-            @Injectable final Executors unused, @Injectable ExecutorService mockExecutorService,
-            @Mocked final PluginFactory unused2, @Mocked J2735Plugin mockAsn1Plugin,
-            @Mocked MessageProducer<String, String> mockMessageProducer,
-            @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
-            @Mocked final LoggerFactory unusedLoggerFactory,
-            @Mocked final ImporterWatchService mockImporterWatchService
-            ) {
+   @Mocked
+   MultipartFile mockMultipartFile;
 
-        String testType = "bsm";
+   @Before
+   public void constructorShouldLaunchFourThreads() {
+      new Expectations() {
+         {
+            mockOdeProperties.getUploadLocationRoot();
+            result = "testRootDir";
+            mockOdeProperties.getUploadLocationBsm();
+            result = "testBsmDir";
+            mockOdeProperties.getUploadLocationMessageFrame();
+            result = "testMessageFrameDir";
 
-        try {
-            new Expectations() {
-                {
-                    mockStorageService.store(mockFile, anyString);
-                    result = new StorageException("testException123");
-                }
-            };
-        } catch (Exception e) {
-            fail("Unexpected exception in expectations block: " + e);
-        }
+            Executors.newCachedThreadPool();
+            result = mockExecutorService;
 
-        
-        assertEquals("{\"success\": false}", testFileUploadController.handleFileUpload(mockFile, testType));
+            mockExecutorService.submit((Runnable) any);
+            times = 4;
+         }
+      };
+      testFileUploadController = new FileUploadController(mockStorageService, mockOdeProperties,
+            injectableSimpMessagingTemplate);
+   }
 
-    }
-    
-    @Test
-    public void handleUploadShouldReturnTrueForBsm(
-          @Mocked MultipartFile mockFile,
-          @Injectable final Executors unused, 
-          @Injectable ExecutorService mockExecutorService,
-          @Mocked final PluginFactory unused2,
-          @Mocked J2735Plugin mockAsn1Plugin,
-          @Mocked MessageProducer<String, String> mockMessageProducer,
-          @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
-          @Mocked final LoggerFactory unusedLoggerFactory,
-          @Mocked final ImporterWatchService mockImporterWatchService
-          ) {
+   @Test
+   public void handleFileUploadReturnsErrorOnStorageException() {
+      new Expectations() {
+         {
+            mockStorageService.store((MultipartFile) any, anyString);
+            result = new StorageFileNotFoundException("testException123");
+         }
+      };
 
-        String testType = "bsm";
+      assertEquals(HttpStatus.BAD_REQUEST,
+            testFileUploadController.handleFileUpload(mockMultipartFile, "type").getStatusCode());
+   }
 
-        try {
-            new Expectations() {
-                {
-                    mockStorageService.store(mockFile, anyString);
-                }
-            };
-        } catch (Exception e) {
-            fail("Unexpected exception in expectations block: " + e);
-        }
+   @Test
+   public void successfulUploadReturnsHttpOk() {
+      new Expectations() {
+         {
+            mockStorageService.store((MultipartFile) any, anyString);
+            times = 1;
+         }
+      };
 
-        assertEquals("{\"success\": true}", testFileUploadController.handleFileUpload(mockFile, testType));
+      assertEquals(HttpStatus.OK, testFileUploadController.handleFileUpload(mockMultipartFile, "type").getStatusCode());
+   }
 
-    }
-    
-    @Test
-    public void handleUploadShouldReturnTrueForMessageFrame(@Mocked MultipartFile mockFile,
-            @Injectable final Executors unused, @Injectable ExecutorService mockExecutorService,
-            @Mocked final PluginFactory unused2, @Mocked J2735Plugin mockAsn1Plugin,
-            @Mocked MessageProducer<String, String> mockMessageProducer,
-            @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
-            @Mocked final LoggerFactory unusedLoggerFactory,
-            @Mocked final ImporterWatchService mockImporterWatchService
-            ) {
-
-        String testType = "messageFrame";
-
-        try {
-            new Expectations() {
-                {
-                    mockStorageService.store(mockFile, anyString);
-                }
-            };
-        } catch (Exception e) {
-            fail("Unexpected exception in expectations block: " + e);
-        }
-
-        
-        assertEquals("{\"success\": true}", testFileUploadController.handleFileUpload(mockFile, testType));
-
-    }
-    
-    @Test
-    public void serveFileShouldReturnSuccessfully(@Mocked MultipartFile mockFile,
-            @Injectable final Executors unused, @Injectable ExecutorService mockExecutorService,
-            @Mocked final PluginFactory unused2, @Mocked J2735Plugin mockAsn1Plugin,
-            @Mocked MessageProducer<String, String> mockMessageProducer,
-            @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
-            @Mocked final LoggerFactory unusedLoggerFactory,
-            @Mocked final ImporterWatchService mockImporterWatchService,
-            @Mocked final ResponseEntity<?> mockResponseEntity,
-            @Mocked BodyBuilder mockBodyBuilder
-            ) {
-
-        try {
-            new Expectations() {
-                {
-                    ResponseEntity.ok();
-                    result = mockBodyBuilder;
-                    
-                    mockBodyBuilder.header(anyString, (String[]) any);
-                    result = mockBodyBuilder;
-                }
-            };
-        } catch (Exception e) {
-            fail("Unexpected exception in expectations block: " + e);
-        }
-
-        
-        testFileUploadController.serveFile("someTestFile");
-
-    }
-    
-    @Test
-    public void testHandleStorageFileNotFound(@Mocked MultipartFile mockFile,
-            @Injectable final Executors unused, @Injectable ExecutorService mockExecutorService,
-            @Mocked final PluginFactory unused2, @Mocked J2735Plugin mockAsn1Plugin,
-            @Mocked MessageProducer<String, String> mockMessageProducer,
-            @Mocked SerializableMessageProducerPool<String, byte[]> mockSerializableMessagePool,
-            @Mocked final LoggerFactory unusedLoggerFactory,
-            @Mocked final ImporterWatchService mockImporterWatchService,
-            @Mocked final ResponseEntity<?> mockResponseEntity,
-            @Mocked BodyBuilder mockBodyBuilder,
-            @Mocked HeadersBuilder<?> mockHeadersBuilder
-            ) {
-
-        try {
-            new Expectations() {
-                {
-                    ResponseEntity.notFound();
-                    result = mockHeadersBuilder;
-                    
-                    mockHeadersBuilder.build();
-                }
-            };
-        } catch (Exception e) {
-            fail("Unexpected exception in expectations block: " + e);
-        }
-
-        
-        testFileUploadController.handleStorageFileNotFound(new StorageFileNotFoundException("testString123"));
-    }
+   @Test
+   public void testStorageFileNotFoundException() {
+      assertEquals(HttpStatus.NOT_FOUND, testFileUploadController
+            .handleStorageFileNotFound(new StorageFileNotFoundException("testException123")).getStatusCode());
+   }
 }
