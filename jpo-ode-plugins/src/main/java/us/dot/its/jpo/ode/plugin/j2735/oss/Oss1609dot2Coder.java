@@ -19,7 +19,7 @@ import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Ieee1609Dot2Data;
 
 public class Oss1609dot2Coder {
 
-    private static Logger logger = LoggerFactory.getLogger(Oss1609dot2Coder.class);
+    private static final Logger logger = LoggerFactory.getLogger(Oss1609dot2Coder.class);
 
     private COERCoder coder;
 
@@ -35,10 +35,10 @@ public class Oss1609dot2Coder {
 
         InputStream ins = new ByteArrayInputStream(byteArrayMsg);
 
-        Ieee1609Dot2Data returnValue = new Ieee1609Dot2Data();
+        Ieee1609Dot2Data returnValue = null;
 
         try {
-            returnValue = (Ieee1609Dot2Data) coder.decode(ins, returnValue);
+            returnValue = (Ieee1609Dot2Data) coder.decode(ins, new Ieee1609Dot2Data());
         } catch (Exception e) {
             logger.error("Error decoding ", e);
         } finally {
@@ -57,8 +57,7 @@ public class Oss1609dot2Coder {
 
         try {
             if (ins.available() > 0) {
-                returnValue = new Ieee1609Dot2Data();
-                coder.decode(ins, returnValue);
+                returnValue = (Ieee1609Dot2Data) coder.decode(ins, new Ieee1609Dot2Data());
             }
         } catch (Exception e) {
             handleDecodeException(e);
@@ -69,16 +68,16 @@ public class Oss1609dot2Coder {
     
     public void handleDecodeException(Exception e) {
         
-        if (DecodeFailedException.class == e.getClass()) {
+        if (e instanceof DecodeFailedException) {
             AbstractData partialDecodedMessage = ((DecodeFailedException) e).getDecodedData();
             if (partialDecodedMessage != null) {
                 logger.error("Error, message only partially decoded: {}", partialDecodedMessage);
             } else {
                 logger.debug("Ignoring extraneous bytes at the end of the input stream.");
             }
-        } else if (DecodeNotSupportedException.class == e.getClass()) {
+        } else if (e instanceof DecodeNotSupportedException) {
             logger.error("Error decoding, data does not represent valid message", e);
-        } else if (IOException.class == e.getClass()) {
+        } else if (e instanceof IOException) {
             logger.error("Error decoding", e);
         } else {
             logger.error("Unknown error", e);
