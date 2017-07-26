@@ -272,7 +272,6 @@ public class AbstractCoderBsmCoderTest {
         };
 
         try {
-            testBsmCoder.setAsn1Plugin(j2735Coder);
             testBsmCoder.decodeBinaryAndPublish(null);
         } catch (IOException e) {
             fail("Unexpected exception: " + e);
@@ -295,7 +294,6 @@ public class AbstractCoderBsmCoderTest {
         };
 
         try {
-            testBsmCoder.setAsn1Plugin(j2735Coder);
             testBsmCoder.decodeBinaryAndPublish(null);
         } catch (IOException e) {
             fail("Unexpected exception: " + e);
@@ -336,7 +334,6 @@ public class AbstractCoderBsmCoderTest {
         };
 
         try {
-            testBsmCoder.setAsn1Plugin(j2735Coder);
             testBsmCoder.decodeBinaryAndPublish(null);
         } catch (IOException e) {
             fail("Unexpected exception: " + e);
@@ -377,7 +374,6 @@ public class AbstractCoderBsmCoderTest {
         };
 
         try {
-            testBsmCoder.setAsn1Plugin(j2735Coder);
             testBsmCoder.decodeBinaryAndPublish(null);
         } catch (IOException e) {
             fail("Unexpected exception: " + e);
@@ -407,7 +403,6 @@ public class AbstractCoderBsmCoderTest {
         };
 
         try {
-            testBsmCoder.setAsn1Plugin(j2735Coder);
             testBsmCoder.decodeBinaryAndPublish(null);
         } catch (IOException e) {
             fail("Unexpected exception: " + e);
@@ -434,7 +429,6 @@ public class AbstractCoderBsmCoderTest {
         };
 
         try {
-            testBsmCoder.setAsn1Plugin(j2735Coder);
             testBsmCoder.decodeBinaryAndPublish(null);
         } catch (IOException e) {
             fail("Unexpected exception: " + e);
@@ -452,11 +446,130 @@ public class AbstractCoderBsmCoderTest {
         };
 
         try {
-            testBsmCoder.setAsn1Plugin(j2735Coder);
             testBsmCoder.decodeBinaryAndPublish(null);
         } catch (Exception e) {
             assertTrue(e instanceof IOException);
             assertTrue(e.getMessage().startsWith("Error decoding data."));
+        }
+    }
+
+    @Test
+    public void decodeBytesAndPublishSignedMessageFrame () {
+
+        new Expectations() {
+            {
+                ieee1609dotCoder.decodeIeee1609Dot2DataBytes((byte[]) any);
+                result = mockieee1609dot2Data;
+                
+                mockieee1609dot2Data.getContent(); result = mockSecuredContent;
+                mockSecuredContent.getSignedData(); result = mockSignedData;
+                mockSignedData.getTbsData(); result = mockToBeSignedData;
+                mockToBeSignedData.getPayload(); result = mockPayload;
+                mockPayload.getData(); result = mockUnsecuredData;
+                mockUnsecuredData.getContent(); result = mockUnsecuredContent;
+                mockUnsecuredContent.getUnsecuredData(); result = mockUnsecuredContentData;
+                
+                j2735Coder.decodeUPERMessageFrameBytes((byte[]) any);
+                result = mockJ2735MessageFrame;
+                
+                mockJ2735MessageFrame.getValue();
+                result = mockJ2735Bsm;
+                
+                odeProperties.getKafkaTopicRawBsmPojo(); result = anyString;
+                objectProducer.send(anyString, null, (OdeObject) any); 
+            }
+        };
+
+        try {
+            testBsmCoder.decodeBytesAndPublish(null);
+        } catch (IOException e) {
+            fail("Unexpected exception: " + e);
+        }
+    }
+
+    @Test
+    public void decodeBytesAndPublishSignedBsm () {
+
+        new Expectations() {
+            {
+                ieee1609dotCoder.decodeIeee1609Dot2DataBytes((byte[]) any);
+                result = mockieee1609dot2Data;
+                
+                mockieee1609dot2Data.getContent(); result = mockSecuredContent;
+                mockSecuredContent.getSignedData(); result = mockSignedData;
+                mockSignedData.getTbsData(); result = mockToBeSignedData;
+                mockToBeSignedData.getPayload(); result = mockPayload;
+                mockPayload.getData(); result = mockUnsecuredData;
+                mockUnsecuredData.getContent(); result = mockUnsecuredContent;
+                mockUnsecuredContent.getUnsecuredData(); result = mockUnsecuredContentData;
+                
+                j2735Coder.decodeUPERMessageFrameBytes((byte[]) any);
+                result = null;
+                
+                j2735Coder.decodeUPERBsmBytes((byte[]) any);
+                result = mockJ2735Bsm;
+                
+                odeProperties.getKafkaTopicRawBsmPojo(); result = anyString;
+                objectProducer.send(anyString, null, (OdeObject) any); 
+            }
+        };
+
+        try {
+            testBsmCoder.decodeBytesAndPublish(null);
+        } catch (IOException e) {
+            fail("Unexpected exception: " + e);
+        }
+    }
+
+    @Test
+    public void decodeBytesAndPublishUnsignedMessageFrame () {
+
+        new Expectations() {
+            {
+                ieee1609dotCoder.decodeIeee1609Dot2DataBytes((byte[]) any);
+                result = null;
+                
+                j2735Coder.decodeUPERMessageFrameBytes((byte[]) any);
+                result = mockJ2735MessageFrame;
+                
+                mockJ2735MessageFrame.getValue();
+                result = mockJ2735Bsm;
+                
+                odeProperties.getKafkaTopicRawBsmPojo(); result = anyString;
+                objectProducer.send(anyString, null, (OdeObject) any); 
+            }
+        };
+
+        try {
+            testBsmCoder.decodeBytesAndPublish(null);
+        } catch (IOException e) {
+            fail("Unexpected exception: " + e);
+        }
+    }
+
+    @Test
+    public void decodeBytesAndPublishUnsignedBsm () {
+
+        new Expectations() {
+            {
+                ieee1609dotCoder.decodeIeee1609Dot2DataBytes((byte[]) any);
+                result = null;
+                
+                j2735Coder.decodeUPERMessageFrameBytes((byte[]) any);
+                result = null;
+                
+                j2735Coder.decodeUPERBsmBytes((byte[]) any);
+                result = mockJ2735Bsm;
+                
+                odeProperties.getKafkaTopicRawBsmPojo(); result = anyString;
+                objectProducer.send(anyString, null, (OdeObject) any); 
+            }
+        };
+
+        try {
+            testBsmCoder.decodeBytesAndPublish(null);
+        } catch (IOException e) {
+            fail("Unexpected exception: " + e);
         }
     }
 

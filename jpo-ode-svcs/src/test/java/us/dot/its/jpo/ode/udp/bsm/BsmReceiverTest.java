@@ -14,12 +14,8 @@ import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
-import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
-import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher.UdpReceiverException;
-import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class BsmReceiverTest {
@@ -128,51 +124,4 @@ public class BsmReceiverTest {
 		bsmReceiver.run();
 	}
 
-	@Test
-	public void testPublishBsmError(@Mocked J2735Bsm mockedJ2735Bsm) throws SocketException, UdpReceiverException {
-		byte[] msg = new byte[80];
-		new Expectations() {
-			{
-				new OssJ2735Coder();
-				result = mockedOssAsn1Coder;
-
-				mockedOssAsn1Coder.decodeUPERBsmBytes(msg);
-				result = new Asn1Object();
-			}
-		};
-		BsmReceiver bsmReceiver = new BsmReceiver(mockOdeProperties);
-		bsmReceiver.publishBsm(msg);
-	}
-
-	@Test
-	public void testPublishBsmError2(@Mocked J2735Bsm mockedJ2735Bsm) throws SocketException, UdpReceiverException {
-		byte[] msg = new byte[80];
-		new Expectations() {
-			{
-				new OssJ2735Coder();
-				result = mockedOssAsn1Coder;
-				mockedOssAsn1Coder.decodeUPERBsmBytes(msg);
-				result = new OssBsmPart2Exception("");
-			}
-		};
-		BsmReceiver bsmReceiver = new BsmReceiver(mockOdeProperties);
-		bsmReceiver.publishBsm(msg);
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Test
-	public void testPublishBsm(@Mocked J2735Bsm mockedJ2735Bsm) throws SocketException, UdpReceiverException {
-		byte[] msg = new byte[2];
-		new Expectations() {
-			{
-				new OssJ2735Coder();
-				result = mockedOssAsn1Coder;
-				mockedOssAsn1Coder.decodeUPERBsmBytes(msg);
-				result = mockedJ2735Bsm;
-				mockedMessageProducer.send(anyString, null, (Byte[]) any);
-			}
-		};
-		BsmReceiver bsmReceiver = new BsmReceiver(mockOdeProperties);
-		bsmReceiver.publishBsm(msg);
-	}
 }
