@@ -36,7 +36,7 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 @RunWith(JMockit.class)
-public class AbstractCoderBsmCoderTest {
+public class BsmCoderTest {
 
     @Tested
     BsmStreamDecoderPublisher testBsmCoder;

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
@@ -37,14 +38,12 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
                 valueSerializerFQN);
         
         logger = getLogger();
-        if (this.j2735Coder == null) {
             logger.info("Loading ASN1 Coder: {}", this.odeProperties.getJ2735CoderClassName());
             try {
                 this.j2735Coder = (J2735Plugin) PluginFactory.getPluginByName(properties.getJ2735CoderClassName());
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 logger.error("Unable to load plugin: " + properties.getJ2735CoderClassName(), e);
             }
-        }
         
         this.ieee1609dotCoder = new Oss1609dot2Coder();
     }
@@ -96,5 +95,7 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
         this.j2735Coder = asn1Plugin;
     }
 
-    protected abstract Logger getLogger();
+    protected Logger getLogger() {
+       return LoggerFactory.getLogger(this.getClass());
+    }
 }

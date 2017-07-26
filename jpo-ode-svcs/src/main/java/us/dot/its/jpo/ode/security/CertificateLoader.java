@@ -28,7 +28,7 @@ public class CertificateLoader implements Runnable {
 
     private static Logger logger = LoggerFactory.getLogger(CertificateLoader.class);
 
-    private final static String SELF_CERT_NAME = "self";
+    private static final String SELF_CERT_NAME = "self";
     private static final String PCA_CERT_FILENAME = "pca";
 
     private OdeProperties odeProperties;
