@@ -207,8 +207,7 @@ It is important you run `mvn clean` first and _then_ `mvn install` because clean
 **Step 2**: Build the public 1609.2 Security Library
 ```bash
 cd jpo-security
-mvn clean
-mvn install
+mvn clean install -DskipTests
 ```
 
 **Step 3**: Build the private 1609.2 Security Library 
@@ -216,8 +215,8 @@ mvn install
 Navigate to the root directory of the `fedgov-cv-security-2016` project:
 
 ```bash
- cd fedgov-cv-security-2016/
- mvn clean install
+ cd fedgov-cv-security-2016
+ mvn clean install -DskipTests
 ```
 
 **Step 4**: Build the S3 Bucket Depositor Service
