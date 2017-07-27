@@ -26,7 +26,7 @@ import us.dot.its.jpo.ode.util.SerializationUtils;
 
 public class VsdReceiver extends BsmReceiver {
 
-   private static Logger logger = LoggerFactory.getLogger(VsdReceiver.class);
+   private static final Logger logger = LoggerFactory.getLogger(VsdReceiver.class);
 
    @Autowired
    public VsdReceiver(OdeProperties odeProps) {
