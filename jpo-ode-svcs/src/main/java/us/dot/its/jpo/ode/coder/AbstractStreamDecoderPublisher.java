@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.coder;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
@@ -50,7 +49,7 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
     }
 
     @Override
-    public void decodeHexAndPublish(InputStream is) throws IOException {
+    public void decodeHexAndPublish(InputStream is) throws Exception {
         String line = null;
         OdeData decoded = null;
 
@@ -67,16 +66,16 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
 
             if (empty) {
                 EventLogger.logger.info("Empty file received");
-                throw new IOException("Empty file received");
+                throw new Exception("Empty file received");
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             EventLogger.logger.info("Error occurred while decoding message: {}", line);
-            throw new IOException("Error decoding data: " + line, e);
+            throw new Exception("Error decoding data: " + line, e);
         }
     }
 
     @Override
-    public void decodeBinaryAndPublish(InputStream is) throws IOException {
+    public void decodeBinaryAndPublish(InputStream is) throws Exception {
         OdeData decoded;
 
         try {
@@ -88,12 +87,12 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
                 }
             } while (decoded != null);
         } catch (Exception e) {
-            throw new IOException("Error decoding data." + e);
+            throw new Exception("Error decoding data." + e);
         }
     }
 
     @Override
-    public void decodeBytesAndPublish(byte[] bytes) throws IOException {
+    public void decodeBytesAndPublish(byte[] bytes) throws Exception {
         OdeData decoded;
 
         try {
@@ -103,7 +102,7 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
                 publish(decoded);
             }
         } catch (Exception e) {
-            throw new IOException("Error decoding data." + e);
+            throw new Exception("Error decoding data." + e);
         }
     }
 

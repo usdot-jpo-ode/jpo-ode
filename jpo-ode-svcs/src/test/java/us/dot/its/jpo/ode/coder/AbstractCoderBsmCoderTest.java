@@ -3,7 +3,6 @@ package us.dot.its.jpo.ode.coder;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Scanner;
@@ -88,9 +87,8 @@ public class AbstractCoderBsmCoderTest {
 
         try {
             testBsmCoder.decodeHexAndPublish(null);
-            fail("Expected IOException");
+            fail("Expected Exception");
         } catch (Exception e) {
-            assertTrue(e instanceof IOException);
         }
 
         new Verifications() {
@@ -172,7 +170,6 @@ public class AbstractCoderBsmCoderTest {
 
         try {
             testBsmCoder.decodeHexAndPublish(null);
-
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
@@ -207,7 +204,6 @@ public class AbstractCoderBsmCoderTest {
 
         try {
             testBsmCoder.decodeHexAndPublish(null);
-
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
@@ -242,7 +238,6 @@ public class AbstractCoderBsmCoderTest {
 
         try {
             testBsmCoder.decodeHexAndPublish(null);
-
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
@@ -273,7 +268,7 @@ public class AbstractCoderBsmCoderTest {
 
         try {
             testBsmCoder.decodeBinaryAndPublish(null);
-        } catch (IOException e) {
+        } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
     }
@@ -295,7 +290,7 @@ public class AbstractCoderBsmCoderTest {
 
         try {
             testBsmCoder.decodeBinaryAndPublish(null);
-        } catch (IOException e) {
+        } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
     }
@@ -335,7 +330,7 @@ public class AbstractCoderBsmCoderTest {
 
         try {
             testBsmCoder.decodeBinaryAndPublish(null);
-        } catch (IOException e) {
+        } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
     }
@@ -375,7 +370,7 @@ public class AbstractCoderBsmCoderTest {
 
         try {
             testBsmCoder.decodeBinaryAndPublish(null);
-        } catch (IOException e) {
+        } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
     }
@@ -404,7 +399,7 @@ public class AbstractCoderBsmCoderTest {
 
         try {
             testBsmCoder.decodeBinaryAndPublish(null);
-        } catch (IOException e) {
+        } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
     }
@@ -430,7 +425,7 @@ public class AbstractCoderBsmCoderTest {
 
         try {
             testBsmCoder.decodeBinaryAndPublish(null);
-        } catch (IOException e) {
+        } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
     }
@@ -441,14 +436,14 @@ public class AbstractCoderBsmCoderTest {
         new Expectations() {
             {
                 ieee1609dotCoder.decodeIeee1609Dot2DataStream((InputStream) any);
-                result = new IOException("testException123");
+                result = new Exception("testException123");
             }
         };
 
         try {
             testBsmCoder.decodeBinaryAndPublish(null);
         } catch (Exception e) {
-            assertTrue(e instanceof IOException);
+            assertTrue(e instanceof Exception);
             assertTrue(e.getMessage().startsWith("Error decoding data."));
         }
     }
@@ -482,7 +477,7 @@ public class AbstractCoderBsmCoderTest {
 
         try {
             testBsmCoder.decodeBytesAndPublish(null);
-        } catch (IOException e) {
+        } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
     }
@@ -516,7 +511,7 @@ public class AbstractCoderBsmCoderTest {
 
         try {
             testBsmCoder.decodeBytesAndPublish(null);
-        } catch (IOException e) {
+        } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
     }
@@ -542,7 +537,7 @@ public class AbstractCoderBsmCoderTest {
 
         try {
             testBsmCoder.decodeBytesAndPublish(null);
-        } catch (IOException e) {
+        } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
     }
@@ -568,7 +563,7 @@ public class AbstractCoderBsmCoderTest {
 
         try {
             testBsmCoder.decodeBytesAndPublish(null);
-        } catch (IOException e) {
+        } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
     }

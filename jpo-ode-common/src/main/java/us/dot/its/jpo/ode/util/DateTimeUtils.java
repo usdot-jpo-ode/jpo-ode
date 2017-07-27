@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class DateTimeUtils {
     
@@ -28,6 +29,10 @@ public class DateTimeUtils {
       return ZonedDateTime.parse(s);
    }
 
+   public static ZonedDateTime isoDateTime(Date date) {
+       return ZonedDateTime.from(date.toInstant());
+    }
+    
    public static boolean isBetweenTimesInclusive(
          ZonedDateTime dateTime,
          ZonedDateTime startDateTime,

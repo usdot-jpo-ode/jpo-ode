@@ -1,17 +1,16 @@
 package us.dot.its.jpo.ode.coder;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Ieee1609Dot2Data;
+import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.OdeBsmData;
@@ -21,16 +20,15 @@ import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
+import us.dot.its.jpo.ode.security.SecurityManager;
 import us.dot.its.jpo.ode.util.CodecUtils;
+import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.J2735BsmSerializer;
 
 public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
 
    private Path filePath;
-   private static final ZonedDateTime IEEE1609DOT2EPOC = 
-           ZonedDateTime.of(2004, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
-   
 
    public BsmStreamDecoderPublisher(OdeProperties properties, Path filePath) {
       super(properties, J2735BsmSerializer.class.getName());
@@ -38,92 +36,52 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
    }
 
    @Override
-   public OdeData decode(String hexEncodedData) {
-        OdeData odeBsmData = null;
-       
-        Ieee1609Dot2Data ieee1609dot2Data = 
-               ieee1609dotCoder.decodeIeee1609Dot2DataHex(hexEncodedData);
-        
-        OdeObject decoded;
-        if (ieee1609dot2Data != null) { // message is signed
-            byte[] unsecureData = ieee1609dot2Data
-                    .getContent()
-                    .getSignedData()
-                    .getTbsData()
-                    .getPayload()
-                    .getData()
-                    .getContent()
-                    .getUnsecuredData().byteArrayValue();
-            decoded = decodeBsm(unsecureData);
-        } else {// message not signed
-            logger.debug("Message not signed");
-            decoded = decodeBsm(CodecUtils.fromHex(hexEncodedData));
-        }
-
-        if (decoded != null) {
-            odeBsmData = createOdeBsmData((J2735Bsm) decoded, ieee1609dot2Data);
-        }
-
-        return odeBsmData;
+   public OdeData decode(String hexEncodedData) throws Exception {
+       return decode(CodecUtils.fromHex(hexEncodedData));
    }
 
    @Override
-   public OdeData decode(InputStream is) {
-       OdeData odeBsmData = null;
-       
+   public OdeData decode(InputStream is) throws Exception {
        Ieee1609Dot2Data ieee1609dot2Data = 
                ieee1609dotCoder.decodeIeee1609Dot2DataStream(is);
-        
-       OdeObject decoded;
-       if (ieee1609dot2Data != null) { // message is signed
-           byte[] unsecureData = ieee1609dot2Data
-                   .getContent()
-                   .getSignedData()
-                   .getTbsData()
-                   .getPayload()
-                   .getData()
-                   .getContent()
-                   .getUnsecuredData().byteArrayValue();
-           decoded = decodeBsm(unsecureData);
-       } else {// message not signed
+
+       IEEE1609p2Message message = IEEE1609p2Message.convert(ieee1609dot2Data);
+       
+       OdeData odeBsmData = null;
+       OdeObject bsm = null;
+       if (SecurityManager.isValid(message)) {
+           bsm = decodeBsm(message.getPayload());
+       } else {// message not a valid 1609.2 package
            logger.debug("Message not signed");
-           decoded = decodeBsm(is);
+           bsm = decodeBsm(is);
        }
         
-       if (decoded != null) {
-           odeBsmData = createOdeBsmData((J2735Bsm) decoded, ieee1609dot2Data);
+       if (bsm != null) {
+           odeBsmData = createOdeBsmData((J2735Bsm) bsm, message.getGenerationTime());
        }
 
+       
        return odeBsmData;
    }
 
    @Override
-   public OdeData decode(byte[] data) {
-       OdeData odeBsmData = null;
+   public OdeData decode(byte[] data) throws Exception{
+       IEEE1609p2Message message = SecurityManager.decodeSignedMessage(data);
        
-       Ieee1609Dot2Data ieee1609dot2Data = 
-               ieee1609dotCoder.decodeIeee1609Dot2DataBytes(data);
-        
-       OdeObject decoded;
-       if (ieee1609dot2Data != null) { // message is signed
-           byte[] unsecureData = ieee1609dot2Data
-                   .getContent()
-                   .getSignedData()
-                   .getTbsData()
-                   .getPayload()
-                   .getData()
-                   .getContent()
-                   .getUnsecuredData().byteArrayValue();
-           decoded = decodeBsm(unsecureData);
-       } else {// message not signed
-           logger.debug("Message not signed");
-           decoded = decodeBsm(data);
+       OdeData odeBsmData = null;
+       OdeObject bsm = null;
+       if (SecurityManager.isValid(message)) {
+           bsm = decodeBsm(message.getPayload());
+       } else {// message not a valid 1609.2 package
+           logger.debug("Message not a valid 1609.2 package");
+           bsm = decodeBsm(data);
        }
         
-       if (decoded != null) {
-           odeBsmData = createOdeBsmData((J2735Bsm) decoded, ieee1609dot2Data);
+       if (bsm != null) {
+           odeBsmData = createOdeBsmData((J2735Bsm) bsm, message.getGenerationTime());
        }
 
+       
        return odeBsmData;
    }
 
@@ -158,24 +116,13 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
         objectProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), null, odeBsm);
     }
 
-   public OdeBsmData createOdeBsmData(
-       J2735Bsm rawBsm, Ieee1609Dot2Data ieee1609dot2Data) {
+   public OdeBsmData createOdeBsmData(J2735Bsm rawBsm, Date date) {
         OdeBsmPayload payload = new OdeBsmPayload(rawBsm);
         
         OdeBsmMetadata metadata = new OdeBsmMetadata(payload);
         
-        if (ieee1609dot2Data != null) {
-            long generationTimeMillis = ieee1609dot2Data
-                    .getContent()
-                    .getSignedData()
-                    .getTbsData()
-                    .getHeaderInfo()
-                    .getGenerationTime().longValue()/1000;
-            
-            Instant generationInstant = 
-                    IEEE1609DOT2EPOC.toInstant().plusMillis(generationTimeMillis);
-            
-            ZonedDateTime generatedAt = ZonedDateTime.ofInstant(generationInstant, ZoneId.of("UTC"));
+        if (date != null) {
+            ZonedDateTime generatedAt = DateTimeUtils.isoDateTime(date);
             metadata.setGeneratedAt(generatedAt.toString());
         }
         
@@ -187,7 +134,7 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
     }
 
 @Override
-   public void decodeJsonAndPublish(InputStream is) throws IOException {
+   public void decodeJsonAndPublish(InputStream is) throws Exception {
       String line = null;
 
       try (Scanner scanner = new Scanner(is)) {
@@ -203,11 +150,11 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
          }
          if (empty) {
             EventLogger.logger.info("Empty file received");
-            throw new IOException("Empty file received");
+            throw new Exception("Empty file received");
          }
-      } catch (IOException e) {
+      } catch (Exception e) {
          EventLogger.logger.info("Error occurred while decoding message: {}", line);
-         throw new IOException("Error decoding data: " + line, e);
+         throw new Exception("Error decoding data: " + line, e);
       }
    }
 
