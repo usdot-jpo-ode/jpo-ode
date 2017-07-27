@@ -39,22 +39,22 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
 
    @Override
    public OdeData decode(String hexEncodedData) {
-       OdeData odeBsmData = null;
+        OdeData odeBsmData = null;
        
-       Ieee1609Dot2Data ieee1609dot2Data = 
+        Ieee1609Dot2Data ieee1609dot2Data = 
                ieee1609dotCoder.decodeIeee1609Dot2DataHex(hexEncodedData);
         
-       OdeObject decoded;
+        OdeObject decoded;
         if (ieee1609dot2Data != null) { // message is signed
-           byte[] unsecureData = ieee1609dot2Data
-                   .getContent()
-                   .getSignedData()
-                   .getTbsData()
-                   .getPayload()
-                   .getData()
-                   .getContent()
-                   .getUnsecuredData().byteArrayValue();
-           decoded = decodeBsm(unsecureData);
+            byte[] unsecureData = ieee1609dot2Data
+                    .getContent()
+                    .getSignedData()
+                    .getTbsData()
+                    .getPayload()
+                    .getData()
+                    .getContent()
+                    .getUnsecuredData().byteArrayValue();
+            decoded = decodeBsm(unsecureData);
         } else {// message not signed
             logger.debug("Message not signed");
             decoded = decodeBsm(CodecUtils.fromHex(hexEncodedData));
@@ -64,7 +64,7 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
             odeBsmData = createOdeBsmData((J2735Bsm) decoded, ieee1609dot2Data);
         }
 
-       return odeBsmData;
+        return odeBsmData;
    }
 
    @Override
@@ -74,8 +74,8 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
        Ieee1609Dot2Data ieee1609dot2Data = 
                ieee1609dotCoder.decodeIeee1609Dot2DataStream(is);
         
-        OdeObject decoded;
-        if (ieee1609dot2Data != null) { // message is signed
+       OdeObject decoded;
+       if (ieee1609dot2Data != null) { // message is signed
            byte[] unsecureData = ieee1609dot2Data
                    .getContent()
                    .getSignedData()
@@ -85,16 +85,46 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
                    .getContent()
                    .getUnsecuredData().byteArrayValue();
            decoded = decodeBsm(unsecureData);
-        } else {// message not signed
-            logger.debug("Message not signed");
-            decoded = decodeBsm(is);
-        }
+       } else {// message not signed
+           logger.debug("Message not signed");
+           decoded = decodeBsm(is);
+       }
         
-        if (decoded != null) {
-            odeBsmData = createOdeBsmData((J2735Bsm) decoded, ieee1609dot2Data);
-        }
+       if (decoded != null) {
+           odeBsmData = createOdeBsmData((J2735Bsm) decoded, ieee1609dot2Data);
+       }
 
-        return odeBsmData;
+       return odeBsmData;
+   }
+
+   @Override
+   public OdeData decode(byte[] data) {
+       OdeData odeBsmData = null;
+       
+       Ieee1609Dot2Data ieee1609dot2Data = 
+               ieee1609dotCoder.decodeIeee1609Dot2DataBytes(data);
+        
+       OdeObject decoded;
+       if (ieee1609dot2Data != null) { // message is signed
+           byte[] unsecureData = ieee1609dot2Data
+                   .getContent()
+                   .getSignedData()
+                   .getTbsData()
+                   .getPayload()
+                   .getData()
+                   .getContent()
+                   .getUnsecuredData().byteArrayValue();
+           decoded = decodeBsm(unsecureData);
+       } else {// message not signed
+           logger.debug("Message not signed");
+           decoded = decodeBsm(data);
+       }
+        
+       if (decoded != null) {
+           odeBsmData = createOdeBsmData((J2735Bsm) decoded, ieee1609dot2Data);
+       }
+
+       return odeBsmData;
    }
 
     private OdeObject decodeBsm(byte[] bytes) {

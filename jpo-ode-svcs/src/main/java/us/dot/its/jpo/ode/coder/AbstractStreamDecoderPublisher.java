@@ -91,8 +91,35 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
         }
     }
 
-    public void setAsn1Plugin(J2735Plugin asn1Plugin) {
-        this.j2735Coder = asn1Plugin;
+    @Override
+    public void decodeBytesAndPublish(byte[] bytes) throws IOException {
+        OdeData decoded;
+
+        try {
+            decoded = decode(bytes);
+            if (decoded != null) {
+                logger.debug("Decoded: {}", decoded);
+                publish(decoded);
+            }
+        } catch (Exception e) {
+            throw new IOException("Error decoding data." + e);
+        }
+    }
+
+    public J2735Plugin getJ2735Coder() {
+        return j2735Coder;
+    }
+
+    public void setJ2735Coder(J2735Plugin j2735Coder) {
+        this.j2735Coder = j2735Coder;
+    }
+
+    public Oss1609dot2Coder getIeee1609dotCoder() {
+        return ieee1609dotCoder;
+    }
+
+    public void setIeee1609dotCoder(Oss1609dot2Coder ieee1609dotCoder) {
+        this.ieee1609dotCoder = ieee1609dotCoder;
     }
 
     protected Logger getLogger() {
