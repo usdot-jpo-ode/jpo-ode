@@ -63,9 +63,7 @@ public class OdeProperties implements EnvironmentAware {
    // Enable/disable depositing sanitized BSMs to SDC
    // note: requires enabledVsdKafkaTopic=true to work
    private boolean depositSanitizedBsmToSdc = false;
-
    private int serviceRespExpirationSeconds = 10;
-
    private int serviceResponseBufferSize = 500;
    
    /*
@@ -320,10 +318,6 @@ public class OdeProperties implements EnvironmentAware {
       this.kafkaTopicBsmRawJson = kafkaTopicBsmRawJson;
    }
 
-   public void setReturnIp(String returnIp) {
-      this.externalIpv4 = returnIp;
-   }
-
    public int getBsmReceiverPort() {
       return bsmReceiverPort;
    }
@@ -399,6 +393,10 @@ public class OdeProperties implements EnvironmentAware {
    public int getDataReceiptBufferSize() {
       return dataReceiptBufferSize;
    }
+   
+   public void setDataReceiptBufferSize(int dataReceiptBufferSize) {
+      this.dataReceiptBufferSize = dataReceiptBufferSize;
+   }
 
    public String getCaCertPath() {
       return caCertPath;
@@ -438,14 +436,6 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setIsdBufferSize(int isdBufferSize) {
       this.isdBufferSize = isdBufferSize;
-   }
-
-   public String getKafkaTopicRawBsmPojo() {
-      return kafkaTopicRawBsmPojo;
-   }
-
-   public void setKafkaTopicBsmSerializedPojo(String kafkaTopicBsmSerializedPojo) {
-      this.kafkaTopicRawBsmPojo = kafkaTopicBsmSerializedPojo;
    }
 
    public String getKafkaTopicBsmFilteredJson() {
@@ -559,5 +549,13 @@ public class OdeProperties implements EnvironmentAware {
     public void setKafkaTopicOdeBsmJson(String kafkaTopicOdeBsmJson) {
         this.kafkaTopicOdeBsmJson = kafkaTopicOdeBsmJson;
     }
+
+   public String getKafkaTopicRawBsmPojo() {
+      return kafkaTopicRawBsmPojo;
+   }
+
+   public void setKafkaTopicRawBsmPojo(String kafkaTopicRawBsmPojo) {
+      this.kafkaTopicRawBsmPojo = kafkaTopicRawBsmPojo;
+   }
 
 }
