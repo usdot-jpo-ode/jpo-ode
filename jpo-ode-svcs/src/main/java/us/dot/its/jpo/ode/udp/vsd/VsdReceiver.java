@@ -22,10 +22,11 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
 import us.dot.its.jpo.ode.udp.UdpUtil;
 import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
+import us.dot.its.jpo.ode.util.SerializationUtils;
 
 public class VsdReceiver extends BsmReceiver {
 
-   private static Logger logger = LoggerFactory.getLogger(VsdReceiver.class);
+   private static final Logger logger = LoggerFactory.getLogger(VsdReceiver.class);
 
    @Autowired
    public VsdReceiver(OdeProperties odeProps) {
@@ -108,9 +109,12 @@ public class VsdReceiver extends BsmReceiver {
 
       int i = 1;
       for (BasicSafetyMessage entry : bsmList) {
-         logger.debug("Publishing BSM {}/{}", i++, msg.getBundle().getSize());
+         logger.debug("Publishing BSM {}/{} to topic {}", 
+             i++, msg.getBundle().getSize(), odeProperties.getKafkaTopicRawBsmPojo());
          J2735Bsm j2735Bsm = OssBsm.genericBsm(entry);
-         publishBasicSafetyMessage(j2735Bsm);
+         byteArrayProducer.send(odeProperties.getKafkaTopicRawBsmPojo(), null,
+             new SerializationUtils<J2735Bsm>().serialize(j2735Bsm));
       }
    }
+   
 }

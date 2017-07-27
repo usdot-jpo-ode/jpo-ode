@@ -11,10 +11,10 @@ import us.dot.its.jpo.ode.OdeProperties;
 public class SecurityController {
 	
 	@Autowired
-	public SecurityController(OdeProperties odeProps) {
+	protected SecurityController(OdeProperties odeProps) {
 		super();
 		
-		Executors.newSingleThreadExecutor(Executors.defaultThreadFactory()).submit(
+		Executors.newSingleThreadExecutor().submit(
 		        new CertificateLoader(odeProps));
 	}
 

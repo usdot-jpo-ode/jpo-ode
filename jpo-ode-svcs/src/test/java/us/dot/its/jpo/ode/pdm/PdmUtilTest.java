@@ -1,33 +1,26 @@
-package us.dot.its.jpo.ode.snmp;
+package us.dot.its.jpo.ode.pdm;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
 import org.junit.Test;
-import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
-import org.snmp4j.Snmp;
-import org.snmp4j.TransportMapping;
-import org.snmp4j.UserTarget;
-import org.snmp4j.event.ResponseEvent;
 
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
-import us.dot.its.jpo.ode.pdm.PdmController;
+import us.dot.its.jpo.ode.pdm.PdmUtil;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleStatusRequest;
 
-public class PdmManagerServiceTest {
+public class PdmUtilTest {
 
    @Injectable
    RSU mockRSU;
@@ -45,14 +38,14 @@ public class PdmManagerServiceTest {
             result = vehicleStatusRequestList;
          }
       };
-      ScopedPDU result = PdmManagerService.createPDU(mockPdm);
+      ScopedPDU result = PdmUtil.createPDU(mockPdm);
       assertNotNull(result);
    }
 
    @Test
    public void testConstructorIsPrivate()
          throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-      Constructor<PdmManagerService> constructor = PdmManagerService.class.getDeclaredConstructor();
+      Constructor<PdmUtil> constructor = PdmUtil.class.getDeclaredConstructor();
       assertTrue(Modifier.isPrivate(constructor.getModifiers()));
       constructor.setAccessible(true);
       try {

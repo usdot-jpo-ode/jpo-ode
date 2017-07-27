@@ -33,7 +33,7 @@ public class OdeProperties implements EnvironmentAware {
     * General Properties
     */
    private String pluginsLocations = "plugins";
-   private String asn1CoderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder";
+   private String j2735CoderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder";
    private String kafkaBrokers = null;
    private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
    private Boolean verboseJson = false;
@@ -63,9 +63,7 @@ public class OdeProperties implements EnvironmentAware {
    // Enable/disable depositing sanitized BSMs to SDC
    // note: requires enabledVsdKafkaTopic=true to work
    private boolean depositSanitizedBsmToSdc = false;
-
    private int serviceRespExpirationSeconds = 10;
-
    private int serviceResponseBufferSize = 500;
    
    /*
@@ -77,9 +75,11 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * BSM Properties
     */
-   private String kafkaTopicBsmSerializedPojo = "topic.j2735Bsm";
+   private String kafkaTopicRawBsmPojo = "topic.j2735Bsm";
    private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
    private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
+   private String kafkaTopicOdeBsmPojo = "OdeBsmPojo";
+   private String kafkaTopicOdeBsmJson = "OdeBsmJson";
    private int bsmReceiverPort = 46800;
    private int bsmBufferSize = 500;
 
@@ -189,12 +189,12 @@ public class OdeProperties implements EnvironmentAware {
       this.pluginsLocations = pluginsLocations;
    }
 
-   public String getAsn1CoderClassName() {
-      return asn1CoderClassName;
+   public String getJ2735CoderClassName() {
+      return j2735CoderClassName;
    }
 
-   public void setAsn1CoderClassName(String asn1CoderClassName) {
-      this.asn1CoderClassName = asn1CoderClassName;
+   public void setJ2735CoderClassName(String j2735CoderClassName) {
+      this.j2735CoderClassName = j2735CoderClassName;
    }
 
    public String getKafkaBrokers() {
@@ -318,10 +318,6 @@ public class OdeProperties implements EnvironmentAware {
       this.kafkaTopicBsmRawJson = kafkaTopicBsmRawJson;
    }
 
-   public void setReturnIp(String returnIp) {
-      this.externalIpv4 = returnIp;
-   }
-
    public int getBsmReceiverPort() {
       return bsmReceiverPort;
    }
@@ -397,6 +393,10 @@ public class OdeProperties implements EnvironmentAware {
    public int getDataReceiptBufferSize() {
       return dataReceiptBufferSize;
    }
+   
+   public void setDataReceiptBufferSize(int dataReceiptBufferSize) {
+      this.dataReceiptBufferSize = dataReceiptBufferSize;
+   }
 
    public String getCaCertPath() {
       return caCertPath;
@@ -436,14 +436,6 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setIsdBufferSize(int isdBufferSize) {
       this.isdBufferSize = isdBufferSize;
-   }
-
-   public String getKafkaTopicBsmSerializedPojo() {
-      return kafkaTopicBsmSerializedPojo;
-   }
-
-   public void setKafkaTopicBsmSerializedPojo(String kafkaTopicBsmSerializedPojo) {
-      this.kafkaTopicBsmSerializedPojo = kafkaTopicBsmSerializedPojo;
    }
 
    public String getKafkaTopicBsmFilteredJson() {
@@ -540,6 +532,30 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setKafkaTopicEncodedVsd(String kafkaTopicEncodedVsd) {
       this.kafkaTopicEncodedVsd = kafkaTopicEncodedVsd;
+   }
+
+    public String getKafkaTopicOdeBsmPojo() {
+        return kafkaTopicOdeBsmPojo;
+    }
+
+    public void setKafkaTopicOdeBsmPojo(String kafkaTopicOdeBsmPojo) {
+        this.kafkaTopicOdeBsmPojo = kafkaTopicOdeBsmPojo;
+    }
+
+    public String getKafkaTopicOdeBsmJson() {
+        return kafkaTopicOdeBsmJson;
+    }
+
+    public void setKafkaTopicOdeBsmJson(String kafkaTopicOdeBsmJson) {
+        this.kafkaTopicOdeBsmJson = kafkaTopicOdeBsmJson;
+    }
+
+   public String getKafkaTopicRawBsmPojo() {
+      return kafkaTopicRawBsmPojo;
+   }
+
+   public void setKafkaTopicRawBsmPojo(String kafkaTopicRawBsmPojo) {
+      this.kafkaTopicRawBsmPojo = kafkaTopicRawBsmPojo;
    }
 
 }
