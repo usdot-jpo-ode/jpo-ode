@@ -121,7 +121,18 @@ Additionally, read the following guides to familiarize yourself with Docker and 
 ---
 ### Obtain the Source Code
 
-**NOTE**: The ODE consists of three repositories: a public repository containing the public components of the application code, and a private repository containing proprietary or security sensitive dependencies. Building this application requires all repositories. If you need access to the private repository, please reach out to a member of the development team.
+**NOTE**: The ODE consists of five repositories: 
+
+|Name|Visibility|Description|
+|----|----------|-----------|
+|[jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode)|public|Contains the public components of the application code.|
+|[jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)|public|S3 depositor service. Optional, comment out of `docker-compose.yml` file if not used.|
+|[jpo-security](https://github.com/usdot-jpo-ode/jpo-security)|public|Public security dependencies.|
+|jpo-ode-private|private|Proprietary dependencies.|
+|fedgov-cv-security-2016|private|Private security dependencies.|
+
+Building this application requires all repositories. If you need access to the private repositories, please reach out to a member of the development team. 
+
 
 #### Step 1 - Clone public repository
 
@@ -146,25 +157,26 @@ Clone the source code from the GitHub repository:
 git clone https://github.com/usdot-jpo-ode/jpo-s3-deposit.git
 ```
 
-#### Step 3 - Clone private repository
+#### Step 3 - Clone the public security repository:
+
+Clone the source code from the GitHub repository:
+```bash
+git clone https://github.com/usdot-jpo-ode/jpo-security.git
+```
+
+#### Step 4 - Clone private repository
 
 Clone the source code from the BitBucket repository:
 
 ```bash
 git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 ```
-#### Step 4 - Clone 1609.2 security library repository
+#### Step 5 - Clone 1609.2 security library repository
 
 Clone the source code from the BitBucket repository:
 
 ```bash
 git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdot-jpo-ode/fedgov-cv-security-2016.git
-```
-#### Step 5 - Clone the public security repository:
-
-Clone the source code from the GitHub repository:
-```bash
-git clone https://github.com/usdot-jpo-ode/jpo-security.git
 ```
 
 ---
