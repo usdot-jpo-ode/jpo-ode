@@ -199,10 +199,8 @@ Navigate to the root directory of the `jpo-ode-private` project:
 
 ```bash
  cd jpo-ode-private/
- mvn clean
- mvn install
+ mvn clean install
 ```
-It is important you run `mvn clean` first and _then_ `mvn install` because clean installs the required OSS jar file in your local maven repository.
 
 **Step 2**: Build the public 1609.2 Security Library
 ```bash
