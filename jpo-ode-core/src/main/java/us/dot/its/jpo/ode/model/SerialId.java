@@ -202,14 +202,24 @@ public class SerialId {
       return this;
    }
 
+   public SerialId addBundleId(long num) {
+       this.bundleId += num;
+       return this;
+    }
+
    public int getRecordId() {
       return recordId;
    }
 
    public SerialId setRecordId(int recordId) {
-      this.recordId = recordId;
-      return this;
-   }
+       this.recordId = recordId;
+       return this;
+    }
+
+   public SerialId addRecordId(int num) {
+       this.recordId += num;
+       return this;
+    }
 
    public long getSerialNumber() {
       return serialNumber;

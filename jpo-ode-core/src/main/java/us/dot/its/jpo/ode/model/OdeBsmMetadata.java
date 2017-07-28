@@ -10,6 +10,7 @@ public class OdeBsmMetadata extends OdeMsgMetadata {
     
     private String generatedAt;
     private String logFileName;
+    private boolean validSignature;
     
     
 
@@ -72,6 +73,14 @@ public class OdeBsmMetadata extends OdeMsgMetadata {
 
     public void setLogFileName(String logFileName) {
         this.logFileName = logFileName;
+    }
+
+    public boolean isValidSignature() {
+        return validSignature;
+    }
+
+    public void setValidSignature(boolean validSignature) {
+        this.validSignature = validSignature;
     }
 
     

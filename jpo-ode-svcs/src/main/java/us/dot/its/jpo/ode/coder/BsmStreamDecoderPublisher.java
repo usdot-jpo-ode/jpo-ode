@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.security.SecurityManager;
@@ -29,10 +31,14 @@ import us.dot.its.jpo.ode.wrapper.J2735BsmSerializer;
 public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
 
    private Path filePath;
+   private SerialId serialId;
+   private static AtomicInteger bundleId = new AtomicInteger(1);
 
-   public BsmStreamDecoderPublisher(OdeProperties properties, Path filePath) {
+   public BsmStreamDecoderPublisher(OdeProperties properties, SerialId serId, Path filePath) {
       super(properties, J2735BsmSerializer.class.getName());
       this.filePath = filePath;
+      this.serialId = serId;
+      this.serialId.setBundleId(bundleId.incrementAndGet());
    }
 
    @Override
@@ -155,12 +161,16 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
         OdeBsmPayload payload = new OdeBsmPayload(rawBsm);
         
         OdeBsmMetadata metadata = new OdeBsmMetadata(payload);
+        metadata.setSerialId(serialId);
         
         if (message != null) {
             ZonedDateTime generatedAt = DateTimeUtils.isoDateTime(message.getGenerationTime());
             metadata.setGeneratedAt(generatedAt.toString());
+            
+            metadata.setValidSignature(SecurityManager.isValid(message));
         }
         
+        metadata.getSerialId().addRecordId(1);
         metadata.setLogFileName(filePath.getFileName().toString());
         OdeBsmData bsmData = new OdeBsmData(metadata, payload);
         

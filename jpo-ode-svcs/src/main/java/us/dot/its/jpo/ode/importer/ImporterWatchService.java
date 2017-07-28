@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.BsmStreamDecoderPublisher;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.model.SerialId;
 
 public class ImporterWatchService extends ImporterFileService implements Runnable {
 
@@ -26,6 +27,7 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
     private Path backup;
     private Logger logger;
     private OdeProperties odeProperties;
+    private SerialId serialId;
 
     public ImporterWatchService(
         OdeProperties odeProperties, 
@@ -37,6 +39,7 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
         this.backup = backupDir;
         this.logger = logger;
         this.odeProperties = odeProperties;
+        this.serialId = new SerialId();
         
         init();
     }
@@ -87,7 +90,7 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
             EventLogger.logger.info("Processing file {}", filePath.toFile());
 
             BsmStreamDecoderPublisher coder = 
-                    new BsmStreamDecoderPublisher(this.odeProperties, filePath);
+                    new BsmStreamDecoderPublisher(this.odeProperties, serialId, filePath);
             
             if (filePath.toString().endsWith(".hex") || filePath.toString().endsWith(".txt")) {
                coder.decodeHexAndPublish(inputStream);
