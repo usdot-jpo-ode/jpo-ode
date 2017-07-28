@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.BsmStreamDecoderPublisher;
+import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
@@ -24,7 +25,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
     public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
         super(odeProps, port, bufferSize);
-        bsmDecoderPublisher = new BsmStreamDecoderPublisher(odeProps, null);
+        bsmDecoderPublisher = new BsmStreamDecoderPublisher(odeProps, new SerialId(), null);
     }
 
     @Override

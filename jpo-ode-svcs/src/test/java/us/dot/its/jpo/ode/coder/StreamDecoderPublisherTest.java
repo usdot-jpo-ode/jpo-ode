@@ -45,7 +45,7 @@ public class StreamDecoderPublisherTest {
    Scanner capturingScanner;
 
    @Test(timeout=4000)
-   public void testDecodeHexAndPublishEmptyScanner(@Mocked OssJ2735Coder mockOssJ2735Coder, @Mocked Scanner mockScanner) {
+   public void testDecodeHexAndPublishEmptyScanner(@Mocked OssJ2735Coder mockOssJ2735Coder, @Mocked Scanner mockScanner) throws Exception {
       new Expectations() {{
          new Scanner((InputStream) any);
          result = mockScanner;

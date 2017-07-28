@@ -17,7 +17,7 @@ public class SecurityManager {
     
     private static Logger logger = LoggerFactory.getLogger(SecurityManager.class);
 
-    public class SecurityManagerException extends Exception {
+    public static class SecurityManagerException extends Exception {
 
         private static final long serialVersionUID = 1L;
 
@@ -32,7 +32,7 @@ public class SecurityManager {
      * @param signedMsg
      * @return
      */
-    public boolean isValid(IEEE1609p2Message signedMsg) {
+    public static boolean isValid(IEEE1609p2Message signedMsg) {
         boolean valid = false;
         if (signedMsg != null) {
             // decode and validate message
@@ -59,7 +59,7 @@ public class SecurityManager {
      * @throws EncodeFailedException
      * @throws EncodeNotSupportedException
      */
-    public IEEE1609p2Message decodeSignedMessage(byte[] signedMsgBytes) throws MessageException,
+    public static IEEE1609p2Message decodeSignedMessage(byte[] signedMsgBytes) throws MessageException,
             CertificateException, CryptoException, EncodeFailedException, EncodeNotSupportedException {
        return IEEE1609p2Message.parse(signedMsgBytes);
     }
@@ -74,7 +74,7 @@ public class SecurityManager {
      * @return
      * @throws SecurityManagerException
      */
-    public byte[] getMessagePayload(byte[] signedOrUnsignedMsgBytes) throws SecurityManagerException  {
+    public static byte[] getMessagePayload(byte[] signedOrUnsignedMsgBytes) throws SecurityManagerException  {
         byte[] payload = null;
         IEEE1609p2Message signedMsg;
         try {

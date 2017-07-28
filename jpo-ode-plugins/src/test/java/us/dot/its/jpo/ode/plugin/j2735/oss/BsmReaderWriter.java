@@ -1,121 +1,191 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Scanner;
-import java.util.logging.FileHandler;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.oss.asn1.COERCoder;
 import com.oss.asn1.Coder;
+import com.oss.asn1.EncodeFailedException;
+import com.oss.asn1.EncodeNotSupportedException;
+import com.oss.asn1.JSONCoder;
+import com.oss.asn1.PERUnalignedCoder;
 
+import gov.usdot.asn1.generated.ieee1609dot2.Ieee1609dot2;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class BsmReaderWriter {
 
-   private static Logger logger = Logger.getLogger(BsmReaderWriter.class
-         .getName());
+    private static final String IN_ENCODING = "in_encoding";
+    private static final String OUT_ENCODING = "out_encoding";
+    private static final String HEX = "hex";
+    private static final String JSON = "json";
+    private static final String UPER = "uper";
+    private static final String IN_FILENAME = "in_filename";
+    private static String inFilename = "bsm.uper";
+    private static String inEncoding = UPER;
+    private static String outEncoding = UPER;
 
-   public static void main(String args[]) {
-      String filename = "bsm.json";
-      String encoding = "json";
-      // Process command line arguments
-      if (args.length > 0) {
-         for (int i = 0; i < args.length; i++) {
-            if (args[i].equals("-i")) {
-               filename = new String(args[++i]);
-            } else if (args[i].equals("-encoding")) {
-               encoding = new String(args[++i]);
+    private static Logger logger = LoggerFactory.getLogger(BsmReaderWriter.class);
+    private static File inputFile;
+    private static String outFilename;
+    private static PERUnalignedCoder uperCoder;
+    private static JSONCoder jsonCoder;
+    private static COERCoder coerCoder;
+    private static PrintWriter stringOut;
+    private static FileOutputStream binOut;
+    
+    public static void main(String args[]) throws FileNotFoundException {
+        // Process command line arguments
+        if (args.length > 0) {
+            for (int i = 0; i < args.length; i++) {
+                if (args[i].equals("-" + IN_FILENAME)) {
+                    inFilename = new String(args[++i]);
+                } else if (args[i].equals("-" + IN_ENCODING)) {
+                    inEncoding = new String(args[++i]);
+                } else if (args[i].equals("-" + OUT_ENCODING)) {
+                    outEncoding = new String(args[++i]);
+                } else {
+                    System.out.println("usage: BsmReaderWriter reads UPER binary, UPER HEX or JSON from " + IN_FILENAME
+                            + " and outputs Signed COER binary, Signed COER HEX or JSON to " + IN_FILENAME + ".out");
+                    System.out.println("   -" + IN_FILENAME + " <in_filename>  ");
+                    System.out.println("   -" + IN_ENCODING + " <" + UPER + "|" + HEX + "|" + JSON + ">");
+                    System.out.println("   -" + OUT_ENCODING + " <" + UPER + "|" + HEX + "|" + JSON + ">");
+                    System.exit(1);
+                }
+            }
+        }
+
+        inputFile = new File(inFilename);
+
+        uperCoder = J2735.getPERUnalignedCoder();
+        jsonCoder = J2735.getJSONCoder();
+        coerCoder = Ieee1609dot2.getCOERCoder();
+
+        stringOut  = null;
+        binOut  = null;
+        switch (outEncoding ) {
+            case HEX:
+                outFilename = inFilename + "." + HEX;
+                stringOut = new PrintWriter(new PrintStream(outFilename)); 
+                break;
+            case JSON:
+                outFilename = inFilename + "." + JSON;
+                stringOut = new PrintWriter(new PrintStream(outFilename)); 
+                break;
+            case UPER:
+                outFilename = inFilename + "." + UPER;
+                binOut = new FileOutputStream(outFilename); 
+                break;
+            default:
+                logger.error("Invalid output encoding: {}", outEncoding);
+                return;
+        }
+
+        try {
+            System.setProperty("log.name", inFilename + ".log");
+
+            logger.info("\n*** DECODING BEGIN ***\n");
+            long startTime = System.currentTimeMillis();
+
+            int numBSMs = 0;
+            if (inEncoding.equalsIgnoreCase(HEX)) {
+                numBSMs = readHexFile();
+            } else if (inFilename.endsWith(JSON)) {
+                numBSMs = readEncoding(jsonCoder);
             } else {
-               System.out.println("usage: BsmReaderWriter reads UPER encoded HEX or binary data from filename"
-                       + "and outputs JSON to filename.json."
-                       + "If the input file is already in json format as specified by -encloding json option"
-                       + "the data is encoded to J2735Bsm POJO and back to JSON before writing to the output file."
-                       + "If the input file is binary, DO NOT specify -encoding option. -encoding option is "
-                       + "for hex input file and json input file only. [");
-               System.out.println("   -i <filename>  ");
-               System.out.println("   -encoding <hex|json>  ");
-               System.exit(1);
+                numBSMs = readEncoding(uperCoder);
             }
-         }
-      }
+            
+            long duration = System.currentTimeMillis() - startTime;
 
-      Coder coder = J2735.getPERUnalignedCoder();
-      try {
-         FileHandler handler = new FileHandler(filename + ".log", true);
-         SimpleFormatter formatter = new SimpleFormatter();
-         handler.setFormatter(formatter);
-         logger.addHandler(handler);
+            logger.info("Number of BSMs: " + numBSMs);
+            logger.info("Decode Time: " + duration + " ms");
+            logger.info("Decode Rate: "
+                  + (int) (numBSMs / ((double) duration / 1000)) + " PDUs/sec");
+            
+        } catch (Exception e) {
+            logger.error("Unable to open or process file: " + inFilename, e);
+        }
+    }
 
-         logger.info("\n*** BER DECODING BEGIN ***\n");
-         long decodeTime = System.currentTimeMillis();
-         File inputFile = new File(filename);
-         Scanner scanner = new Scanner(inputFile);
-         
-         PrintWriter bsmOut = null;
-         
-         int numBSMs = 0;
-         OssJ2735Coder ossCoder = new OssJ2735Coder();
-         while (scanner.hasNext()) {
-            try {
-               if (encoding.equalsIgnoreCase("hex")) {
-                   bsmOut = new PrintWriter(new PrintStream(filename + ".json"));
-                   J2735Bsm bsm = (J2735Bsm) ossCoder.decodeUPERBsmHex(scanner.nextLine());
-                   bsmOut.println(bsm.toJson(true));
-               } else if (encoding.equalsIgnoreCase("json")) {
-                   //encode from JSON to binary UPER
-                   bsmOut = new PrintWriter(new PrintStream(filename + ".hex"));
-                   J2735Bsm gbsm = (J2735Bsm) JsonUtils.fromJson(
-                           scanner.nextLine(), J2735Bsm.class);
-                   
-                   bsmOut.println(gbsm.toJson(true));
-                   
-               } else { // assuming binary UPER
-                   bsmOut = new PrintWriter(new PrintStream(filename + ".json"));
-                   InputStream ins = new FileInputStream(inputFile);
+    private static int readEncoding(Coder coder) throws IOException {
+        int numBSMs = 0;
 
-                   if (ins.available() > 0) {
-                       BasicSafetyMessage bsm = (BasicSafetyMessage) coder.decode(
-                               ins, new BasicSafetyMessage());
-                       J2735Bsm gbsm = OssBsm.genericBsm(bsm);
-                       
-                       bsmOut.println(gbsm.toJson(true));
-                   }
+        try (InputStream ins = new FileInputStream(inputFile)) {
+            while (ins.available() > 0) {
+                try {
+                    BasicSafetyMessage bsm = new BasicSafetyMessage();
+                    coder.decode(ins, bsm);
+                    output(bsm);
+                    numBSMs++;
 
-                   ins.close();
-                   
-               }
-               numBSMs++;
-               
-            } catch (Exception e) {
-               int errRec = numBSMs + 1;
-               System.out.println("Decode Error on BSM # " + errRec + "\n" + e.getMessage());
-               e.printStackTrace();
+                } catch (Exception e) {
+                    int errRec = numBSMs + 1;
+                    System.out.println("Decode Error on BSM # " + errRec + "\n" + e.getMessage());
+                    e.printStackTrace();
+                }
             }
-         }
-         scanner.close();
-         
-         if (bsmOut != null)
-             bsmOut.close();
-         
-         decodeTime = System.currentTimeMillis() - decodeTime;
+        }
+        
+        return numBSMs;
 
-         logger.info("Number of BSMs: " + numBSMs);
-         logger.info("Decode Time: " + decodeTime + " ms");
-         logger.info("Decode Rate: "
-               + (int) (numBSMs / ((double) decodeTime / 1000)) + " PDUs/sec");
+    }
 
-      } catch (Exception e) {
-         System.out.println(e.getMessage());
-         e.printStackTrace();
-         System.exit(1);
-      } finally {
-      }
-   }
+    private static int readHexFile() throws FileNotFoundException {
+        int numBSMs = 0;
+
+        try (Scanner scanner = new Scanner(inputFile)) {
+            while (scanner.hasNext()) {
+                try {
+                    String line = scanner.nextLine();
+                    InputStream ins = new ByteArrayInputStream(CodecUtils.fromHex(line));
+
+                    BasicSafetyMessage bsm = new BasicSafetyMessage();
+                    uperCoder.decode(ins, bsm);
+                    output(bsm);
+                    numBSMs++;
+
+                } catch (Exception e) {
+                    int errRec = numBSMs + 1;
+                    System.out.println("Decode Error on BSM # " + errRec + "\n" + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return numBSMs;
+
+    }
+
+    private static void output(BasicSafetyMessage bsm) 
+            throws EncodeFailedException, EncodeNotSupportedException, IOException {
+        switch (outEncoding ) {
+            case HEX:
+                stringOut.println(CodecUtils.toHex(uperCoder.encode(bsm).array()));
+                break;
+            case JSON:
+                stringOut.println(jsonCoder.encode(bsm));
+                break;
+            case UPER:
+                binOut.write(uperCoder.encode(bsm).array());
+                break;
+            default:
+                logger.error("Invalid output encoding: {}", outEncoding);
+        }
+        
+
+    }
 }

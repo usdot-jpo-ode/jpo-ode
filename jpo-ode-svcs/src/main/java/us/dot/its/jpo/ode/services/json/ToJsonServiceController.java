@@ -28,10 +28,10 @@ public class ToJsonServiceController {
       logger.info("Starting {}", this.getClass().getSimpleName());
 
       logger.info("Converting {} records from topic {} and publishing to topic {} ", J2735Bsm.class.getSimpleName(),
-            odeProps.getKafkaTopicRawBsmPojo(), odeProps.getKafkaTopicBsmRawJson());
+            odeProps.getKafkaTopicRawBsmPojo(), odeProps.getKafkaTopicRawBsmJson());
 
       ToJsonConverter<J2735Bsm> j2735BsmConverter = new ToJsonConverter<J2735Bsm>(odeProps, false,
-            odeProps.getKafkaTopicBsmRawJson());
+            odeProps.getKafkaTopicRawBsmJson());
 
       MessageConsumer<String, J2735Bsm> j2735BsmConsumer = new MessageConsumer<String, J2735Bsm>(odeProps.getKafkaBrokers(),
             this.getClass().getSimpleName(), j2735BsmConverter, J2735BsmDeserializer.class.getName());

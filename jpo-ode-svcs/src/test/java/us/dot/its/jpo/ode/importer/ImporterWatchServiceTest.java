@@ -184,7 +184,7 @@ public class ImporterWatchServiceTest {
     }
     
     @Test
-    public void processFileShouldDetectHex(@Mocked AbstractStreamDecoderPublisher decoderPublisher) {
+    public void processFileShouldDetectHex(@Mocked AbstractStreamDecoderPublisher decoderPublisher) throws Exception {
         
         TemporaryFolder tmpFolder = new TemporaryFolder();
         
@@ -208,7 +208,7 @@ public class ImporterWatchServiceTest {
     }
     
     @Test
-    public void processFileShouldDetectTxt(@Mocked AbstractStreamDecoderPublisher decoderPublisher) {
+    public void processFileShouldDetectTxt(@Mocked AbstractStreamDecoderPublisher decoderPublisher) throws Exception {
         
         TemporaryFolder tmpFolder = new TemporaryFolder();
         
@@ -232,7 +232,7 @@ public class ImporterWatchServiceTest {
     }
     
     @Test
-    public void processFileShouldDecodeMiscFilesAsBinary(@Mocked AbstractStreamDecoderPublisher decoderPublisher) {
+    public void processFileShouldDecodeMiscFilesAsBinary(@Mocked AbstractStreamDecoderPublisher decoderPublisher) throws Exception {
         
         TemporaryFolder tmpFolder = new TemporaryFolder();
         

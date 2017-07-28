@@ -33,7 +33,7 @@ public class OdeMsgMetadata extends OdeMessage {
                          String receivedAt,
                          Long latency,
                          JsonNode violations) {
-       this(OdeDataType.getByClazz(payload.getData().getClass()).getClazz().getName(),
+       this(payload.getClass().getName(),
                serialId,
                receivedAt,
                latency,
