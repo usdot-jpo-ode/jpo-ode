@@ -57,11 +57,17 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
 
             boolean empty = true;
             while (scanner.hasNextLine()) {
-                empty = false;
-                line = scanner.nextLine();
+                try {
+                    empty = false;
+                    line = scanner.nextLine();
 
-                decoded = decode(line);
-                publish(decoded);
+                    decoded = decode(line);
+                    publish(decoded);
+                } catch (Exception e) {
+                    String msg = "Error decoding and publishing data.";
+                    EventLogger.logger.error(msg, e);
+                    logger.error(msg, e);
+                }
             }
 
             if (empty) {
@@ -69,26 +75,29 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
                 throw new Exception("Empty file received");
             }
         } catch (Exception e) {
-            EventLogger.logger.info("Error occurred while decoding message: {}", line);
-            throw new Exception("Error decoding data: " + line, e);
+            String msg = "Error decoding and publishing data: ";
+            EventLogger.logger.error(msg, e);
+            throw new Exception(msg + line, e);
         }
     }
 
     @Override
     public void decodeBinaryAndPublish(InputStream is) throws Exception {
-        OdeData decoded;
+        OdeData decoded = null;
 
-        try {
-            do {
+        do {
+            try {
                 decoded = decode(is);
                 if (decoded != null) {
                     logger.debug("Decoded: {}", decoded);
                     publish(decoded);
                 }
-            } while (decoded != null);
-        } catch (Exception e) {
-            throw new Exception("Error decoding data." + e);
-        }
+            } catch (Exception e) {
+                String msg = "Error decoding and publishing data.";
+                EventLogger.logger.error(msg, e);
+                logger.error(msg, e);
+            }
+        } while (decoded != null);
     }
 
     @Override
@@ -102,7 +111,9 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
                 publish(decoded);
             }
         } catch (Exception e) {
-            throw new Exception("Error decoding data." + e);
+            String msg = "Error decoding and publishing data.";
+            EventLogger.logger.error(msg, e);
+            throw new Exception("Error decoding and publishing data.", e);
         }
     }
 

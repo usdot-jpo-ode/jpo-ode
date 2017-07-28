@@ -2,8 +2,8 @@ package us.dot.its.jpo.ode.coder;
 
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
@@ -42,45 +42,70 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
 
    @Override
    public OdeData decode(InputStream is) throws Exception {
-       Ieee1609Dot2Data ieee1609dot2Data = 
+        Ieee1609Dot2Data ieee1609dot2Data = 
                ieee1609dotCoder.decodeIeee1609Dot2DataStream(is);
 
-       IEEE1609p2Message message = IEEE1609p2Message.convert(ieee1609dot2Data);
-       
-       OdeData odeBsmData = null;
-       OdeObject bsm = null;
-       if (SecurityManager.isValid(message)) {
-           bsm = decodeBsm(message.getPayload());
-       } else {// message not a valid 1609.2 package
-           logger.debug("Message not signed");
-           bsm = decodeBsm(is);
-       }
-        
-       if (bsm != null) {
-           odeBsmData = createOdeBsmData((J2735Bsm) bsm, message.getGenerationTime());
-       }
+        OdeObject bsm = null;
+        OdeData odeBsmData = null;
+        IEEE1609p2Message message = null;
+        if (ieee1609dot2Data != null) {
+            try {
+                message = IEEE1609p2Message.convert(ieee1609dot2Data);
 
-       
-       return odeBsmData;
+                if (message != null) {
+                    if (!SecurityManager.isValid(message)) {
+                        logger.debug("Message does not have a valid signature");
+                    }
+                    bsm = decodeBsm(message.getPayload());
+                } else {
+                    bsm = decodeBsm(is);
+                }
+            } catch (Exception e) {
+                logger.debug("Message does not have a valid signature");
+                bsm = decodeBsm(ieee1609dot2Data
+                    .getContent()
+                    .getSignedData()
+                    .getTbsData()
+                    .getPayload()
+                    .getData()
+                    .getContent()
+                    .getUnsecuredData()
+                    .byteArrayValue());
+            }
+        } else { // probably raw BSM or MessageFrame
+            bsm = decodeBsm(is);
+        }
+        
+        if (bsm != null) {
+           odeBsmData = createOdeBsmData((J2735Bsm) bsm, message);
+        }
+
+        return odeBsmData;
    }
 
    @Override
    public OdeData decode(byte[] data) throws Exception{
-       IEEE1609p2Message message = SecurityManager.decodeSignedMessage(data);
+       IEEE1609p2Message message = null;
        
        OdeData odeBsmData = null;
        OdeObject bsm = null;
-       if (SecurityManager.isValid(message)) {
-           bsm = decodeBsm(message.getPayload());
-       } else {// message not a valid 1609.2 package
-           logger.debug("Message not a valid 1609.2 package");
-           bsm = decodeBsm(data);
-       }
-        
-       if (bsm != null) {
-           odeBsmData = createOdeBsmData((J2735Bsm) bsm, message.getGenerationTime());
-       }
+        try {
+            message = SecurityManager.decodeSignedMessage(data);
+            if (message != null) {
+                if (!SecurityManager.isValid(message)) {
+                    logger.debug("Message does not have a valid signature");
+                }
+                bsm = decodeBsm(message.getPayload());
+            } else {
+                bsm = decodeBsm(data);
+            }
+        } catch (Exception e) {
+            logger.debug("Message does not have a valid signature");
+        }
 
+        if (bsm != null && message != null) {
+            odeBsmData = createOdeBsmData((J2735Bsm) bsm, message);
+        }
        
        return odeBsmData;
    }
@@ -109,6 +134,16 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
     public void publish(OdeData msg) {
         OdeBsmData odeBsm = (OdeBsmData) msg;
         
+        if (msg.getMetadata() != null && msg.getMetadata().getReceivedAt() != null)
+        try {
+            long latency = DateTimeUtils.difference(
+                DateTimeUtils.isoDateTime(msg.getMetadata().getReceivedAt()), 
+                ZonedDateTime.now());
+            odeBsm.getMetadata().setLatency(latency);
+        } catch (ParseException e) {
+            logger.error("Error converting ISO timestamp", e);
+        }
+        
         logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicRawBsmPojo(), odeBsm.getPayload().getData());
         objectProducer.send(odeProperties.getKafkaTopicRawBsmPojo(), null, odeBsm.getPayload().getData());
 
@@ -116,13 +151,13 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
         objectProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), null, odeBsm);
     }
 
-   public OdeBsmData createOdeBsmData(J2735Bsm rawBsm, Date date) {
+   public OdeBsmData createOdeBsmData(J2735Bsm rawBsm, IEEE1609p2Message message) {
         OdeBsmPayload payload = new OdeBsmPayload(rawBsm);
         
         OdeBsmMetadata metadata = new OdeBsmMetadata(payload);
         
-        if (date != null) {
-            ZonedDateTime generatedAt = DateTimeUtils.isoDateTime(date);
+        if (message != null) {
+            ZonedDateTime generatedAt = DateTimeUtils.isoDateTime(message.getGenerationTime());
             metadata.setGeneratedAt(generatedAt.toString());
         }
         
@@ -156,20 +191,6 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
          EventLogger.logger.info("Error occurred while decoding message: {}", line);
          throw new Exception("Error decoding data: " + line, e);
       }
-   }
-
-   @Override
-   public void publish(String msg) {
-      logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicBsmRawJson(), msg);
-      stringProducer.send(odeProperties.getKafkaTopicBsmRawJson(), null, msg);
-
-   }
-
-   @Override
-   public void publish(byte[] msg) {
-      logger.debug("Publishing byte array to {}", odeProperties.getKafkaTopicRawBsmPojo());
-
-      byteArrayProducer.send(odeProperties.getKafkaTopicRawBsmPojo(), null, msg);
    }
 
    @Override

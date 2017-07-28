@@ -14,7 +14,5 @@ public interface StreamDecoderPublisher {
     public OdeData decode(InputStream is) throws Exception;
     public OdeData decode(byte[] bytes) throws Exception;
     
-    public void publish(String msg);
-    public void publish(byte[] msg);
     public void publish(OdeData msg);
 }

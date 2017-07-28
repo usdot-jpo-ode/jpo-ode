@@ -78,8 +78,8 @@ public class OdeProperties implements EnvironmentAware {
     * BSM Properties
     */
    private String kafkaTopicRawBsmPojo = "topic.j2735Bsm";
-   private String kafkaTopicBsmRawJson = "j2735BsmRawJson";
-   private String kafkaTopicBsmFilteredJson = "j2735BsmFilteredJson";
+   private String kafkaTopicRawBsmJson = "j2735RawBsmJson";
+   private String kafkaTopicFilteredBsmJson = "j2735BsmFilteredJson";
    private String kafkaTopicOdeBsmPojo = "OdeBsmPojo";
    private String kafkaTopicOdeBsmJson = "OdeBsmJson";
    private int bsmReceiverPort = 46800;
@@ -312,14 +312,6 @@ public class OdeProperties implements EnvironmentAware {
       this.ddsCasPass = ddsCasPass;
    }
 
-   public String getKafkaTopicBsmRawJson() {
-      return kafkaTopicBsmRawJson;
-   }
-
-   public void setKafkaTopicBsmRawJson(String kafkaTopicBsmRawJson) {
-      this.kafkaTopicBsmRawJson = kafkaTopicBsmRawJson;
-   }
-
    public void setReturnIp(String returnIp) {
       this.externalIpv4 = returnIp;
    }
@@ -448,17 +440,29 @@ public class OdeProperties implements EnvironmentAware {
       this.kafkaTopicRawBsmPojo = kafkaTopicBsmSerializedPojo;
    }
 
-   public String getKafkaTopicBsmFilteredJson() {
-      return kafkaTopicBsmFilteredJson;
-   }
+    public String getKafkaTopicRawBsmJson() {
+        return kafkaTopicRawBsmJson;
+    }
 
-   public void setKafkaTopicBsmFilteredJson(String kafkaTopicBsmFilteredJson) {
-      this.kafkaTopicBsmFilteredJson = kafkaTopicBsmFilteredJson;
-   }
+    public void setKafkaTopicRawBsmJson(String kafkaTopicRawBsmJson) {
+        this.kafkaTopicRawBsmJson = kafkaTopicRawBsmJson;
+    }
 
-   public int getVsdBufferSize() {
-      return vsdBufferSize;
-   }
+    public String getKafkaTopicFilteredBsmJson() {
+        return kafkaTopicFilteredBsmJson;
+    }
+
+    public void setKafkaTopicFilteredBsmJson(String kafkaTopicFilteredBsmJson) {
+        this.kafkaTopicFilteredBsmJson = kafkaTopicFilteredBsmJson;
+    }
+
+    public void setKafkaTopicRawBsmPojo(String kafkaTopicRawBsmPojo) {
+        this.kafkaTopicRawBsmPojo = kafkaTopicRawBsmPojo;
+    }
+
+    public int getVsdBufferSize() {
+        return vsdBufferSize;
+    }
 
    public void setVsdBufferSize(int vsdBufferSize) {
       this.vsdBufferSize = vsdBufferSize;
