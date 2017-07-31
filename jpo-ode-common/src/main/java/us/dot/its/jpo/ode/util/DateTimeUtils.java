@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.util;
 
 import java.text.ParseException;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,7 +12,7 @@ public class DateTimeUtils {
     private DateTimeUtils() {}
 
    public static String now() {
-      return ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
+      return ZonedDateTime.now(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
    }
    
    public static String isoDateTime(ZonedDateTime zonedDateTime) {
@@ -30,7 +31,7 @@ public class DateTimeUtils {
    }
 
    public static ZonedDateTime isoDateTime(Date date) {
-       return ZonedDateTime.from(date.toInstant());
+       return ZonedDateTime.from(date.toInstant().atZone(ZoneId.of("UTC")));
     }
     
    public static boolean isBetweenTimesInclusive(
