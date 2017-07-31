@@ -95,9 +95,6 @@ public class CertificateLoaderTest {
             result = "testSelfPrivateKeyReconstructionFilePath";
             mockOdeProperties.getSelfSigningPrivateKeyFilePath();
             result = "testSelfSigningPrivateKeyFilePath";
-
-            IEEE1609p2Message.setSelfCertificateFriendlyName(anyString);
-            times = 1;
          }
       };
       CertificateLoader runTestCertificateLoader = new CertificateLoader(mockOdeProperties);
