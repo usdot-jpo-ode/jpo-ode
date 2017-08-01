@@ -430,34 +430,6 @@ public class OdeProperties implements EnvironmentAware {
       this.isdBufferSize = isdBufferSize;
    }
 
-    public String getKafkaTopicRawBsmJson() {
-        return kafkaTopicRawBsmJson;
-    }
-
-    public void setKafkaTopicRawBsmJson(String kafkaTopicRawBsmJson) {
-        this.kafkaTopicRawBsmJson = kafkaTopicRawBsmJson;
-    }
-
-    public String getKafkaTopicFilteredBsmJson() {
-        return kafkaTopicFilteredBsmJson;
-    }
-
-    public void setKafkaTopicFilteredBsmJson(String kafkaTopicFilteredBsmJson) {
-        this.kafkaTopicFilteredBsmJson = kafkaTopicFilteredBsmJson;
-    }
-
-    public String getKafkaTopicFilteredBsmJson() {
-        return kafkaTopicFilteredBsmJson;
-    }
-
-    public void setKafkaTopicFilteredBsmJson(String kafkaTopicFilteredBsmJson) {
-        this.kafkaTopicFilteredBsmJson = kafkaTopicFilteredBsmJson;
-    }
-
-    public void setKafkaTopicRawBsmPojo(String kafkaTopicRawBsmPojo) {
-        this.kafkaTopicRawBsmPojo = kafkaTopicRawBsmPojo;
-    }
-
     public int getVsdBufferSize() {
         return vsdBufferSize;
     }
@@ -546,6 +518,30 @@ public class OdeProperties implements EnvironmentAware {
       this.kafkaTopicEncodedVsd = kafkaTopicEncodedVsd;
    }
 
+    public String getKafkaTopicRawBsmPojo() {
+        return kafkaTopicRawBsmPojo;
+    }
+
+    public void setKafkaTopicRawBsmPojo(String kafkaTopicRawBsmPojo) {
+        this.kafkaTopicRawBsmPojo = kafkaTopicRawBsmPojo;
+    }
+
+    public String getKafkaTopicRawBsmJson() {
+        return kafkaTopicRawBsmJson;
+    }
+
+    public void setKafkaTopicRawBsmJson(String kafkaTopicRawBsmJson) {
+        this.kafkaTopicRawBsmJson = kafkaTopicRawBsmJson;
+    }
+
+    public String getKafkaTopicFilteredBsmJson() {
+        return kafkaTopicFilteredBsmJson;
+    }
+
+    public void setKafkaTopicFilteredBsmJson(String kafkaTopicFilteredBsmJson) {
+        this.kafkaTopicFilteredBsmJson = kafkaTopicFilteredBsmJson;
+    }
+
     public String getKafkaTopicOdeBsmPojo() {
         return kafkaTopicOdeBsmPojo;
     }
@@ -561,13 +557,5 @@ public class OdeProperties implements EnvironmentAware {
     public void setKafkaTopicOdeBsmJson(String kafkaTopicOdeBsmJson) {
         this.kafkaTopicOdeBsmJson = kafkaTopicOdeBsmJson;
     }
-
-   public String getKafkaTopicRawBsmPojo() {
-      return kafkaTopicRawBsmPojo;
-   }
-
-   public void setKafkaTopicRawBsmPojo(String kafkaTopicRawBsmPojo) {
-      this.kafkaTopicRawBsmPojo = kafkaTopicRawBsmPojo;
-   }
 
 }
