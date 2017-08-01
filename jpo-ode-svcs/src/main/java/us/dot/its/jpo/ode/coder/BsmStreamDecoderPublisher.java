@@ -171,7 +171,6 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
         }
         
         metadata.getSerialId().addRecordId(1);
-        metadata.getSerialId().getSerialNumber();
         metadata.setLogFileName(filePath.getFileName().toString());
         OdeBsmData bsmData = new OdeBsmData(metadata, payload);
         

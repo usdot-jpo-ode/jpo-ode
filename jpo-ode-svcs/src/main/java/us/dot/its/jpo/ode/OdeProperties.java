@@ -446,9 +446,21 @@ public class OdeProperties implements EnvironmentAware {
         this.kafkaTopicFilteredBsmJson = kafkaTopicFilteredBsmJson;
     }
 
-public int getVsdBufferSize() {
-      return vsdBufferSize;
-   }
+    public String getKafkaTopicFilteredBsmJson() {
+        return kafkaTopicFilteredBsmJson;
+    }
+
+    public void setKafkaTopicFilteredBsmJson(String kafkaTopicFilteredBsmJson) {
+        this.kafkaTopicFilteredBsmJson = kafkaTopicFilteredBsmJson;
+    }
+
+    public void setKafkaTopicRawBsmPojo(String kafkaTopicRawBsmPojo) {
+        this.kafkaTopicRawBsmPojo = kafkaTopicRawBsmPojo;
+    }
+
+    public int getVsdBufferSize() {
+        return vsdBufferSize;
+    }
 
    public void setVsdBufferSize(int vsdBufferSize) {
       this.vsdBufferSize = vsdBufferSize;
