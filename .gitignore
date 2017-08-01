@@ -1,8 +1,10 @@
 ####################
 ### root         ###
 .project
+
 ####################
 ### jpo-ode-svcs ###
+/jpo-ode-svcs/bin
 /jpo-ode-svcs/uploads
 /jpo-ode-svcs/src/main/java/us/dot/its/jpo/ode/plugins
 /jpo-ode-svcs/target/

@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.snmp;
+package us.dot.its.jpo.ode.pdm;
 
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
@@ -8,9 +8,9 @@ import org.snmp4j.smi.VariableBinding;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
 
-public class PdmManagerService {
+public class PdmUtil {
 
-    private PdmManagerService() {
+    private PdmUtil() {
        throw new UnsupportedOperationException();
     }
 

@@ -18,6 +18,7 @@ import com.oss.asn1.EncodeNotSupportedException;
 
 import gov.usdot.cv.security.cert.CertificateException;
 import gov.usdot.cv.security.cert.CertificateManager;
+import gov.usdot.cv.security.cert.CertificateWrapper;
 import gov.usdot.cv.security.cert.FileCertificateStore;
 import gov.usdot.cv.security.crypto.CryptoException;
 import gov.usdot.cv.security.crypto.CryptoProvider;
@@ -27,9 +28,6 @@ import us.dot.its.jpo.ode.OdeProperties;
 public class CertificateLoader implements Runnable {
 
     private static Logger logger = LoggerFactory.getLogger(CertificateLoader.class);
-
-    private final static String SELF_CERT_NAME = "self";
-    private static final String PCA_CERT_FILENAME = "pca";
 
     private OdeProperties odeProperties;
 
@@ -109,7 +107,7 @@ public class CertificateLoader implements Runnable {
     private boolean loadSelfFullCerts() throws DecodeFailedException, EncodeFailedException, CertificateException, IOException, DecoderException, CryptoException, DecodeNotSupportedException, EncodeNotSupportedException {
         return loadCert(
                 new CryptoProvider(), 
-                SELF_CERT_NAME, 
+                IEEE1609p2Message.getSelfCertificateFriendlyName(), 
                 Paths.get(odeProperties.getSelfCertPath()), 
                 Paths.get(odeProperties.getSelfPrivateKeyReconstructionFilePath()), 
                 Paths.get(odeProperties.getSelfSigningPrivateKeyFilePath()));
@@ -130,7 +128,7 @@ public class CertificateLoader implements Runnable {
             try {
                 loadCert(
                         new CryptoProvider(), 
-                        PCA_CERT_FILENAME, 
+                        CertificateWrapper.getRootPublicCertificateFriendlyName(), 
                         Paths.get(odeProperties.getCaCertPath()));
             } catch (Exception e) {
                 logger.error("Error loading CA certificate", e);
@@ -142,9 +140,6 @@ public class CertificateLoader implements Runnable {
             } catch (Exception e) {
                 logger.error("Error loading full certificate of self", e);
             }
-    
-            // finish initialization
-            IEEE1609p2Message.setSelfCertificateFriendlyName(SELF_CERT_NAME);
         }
     }
 

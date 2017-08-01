@@ -15,23 +15,32 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.coder.StreamDecoderPublisher;
+import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.coder.BsmStreamDecoderPublisher;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.model.SerialId;
 
 public class ImporterWatchService extends ImporterFileService implements Runnable {
+   
+   private static final Logger logger = LoggerFactory.getLogger(ImporterWatchService.class);
 
     private Path inbox;
     private Path backup;
-    private StreamDecoderPublisher coder;
-    private Logger logger;
+    private OdeProperties odeProperties;
+    private SerialId serialId;
 
-    public ImporterWatchService(Path dir, Path backupDir, StreamDecoderPublisher coder, Logger logger) {
+    public ImporterWatchService(
+        OdeProperties odeProperties, 
+        Path dir, 
+        Path backupDir) {
 
         this.inbox = dir;
         this.backup = backupDir;
-        this.coder = coder;
-        this.logger = logger;
+        this.odeProperties = odeProperties;
+        this.serialId = new SerialId();
+        
         init();
     }
 
@@ -80,10 +89,13 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
 
             EventLogger.logger.info("Processing file {}", filePath.toFile());
 
+            BsmStreamDecoderPublisher coder = 
+                    new BsmStreamDecoderPublisher(this.odeProperties, serialId, filePath);
+            
             if (filePath.toString().endsWith(".hex") || filePath.toString().endsWith(".txt")) {
                coder.decodeHexAndPublish(inputStream);
             } else if (filePath.toString().endsWith(".json")) {
-                   coder.decodeJsonAndPublish(inputStream);
+               coder.decodeJsonAndPublish(inputStream);
             } else {
                coder.decodeBinaryAndPublish(inputStream);
             }

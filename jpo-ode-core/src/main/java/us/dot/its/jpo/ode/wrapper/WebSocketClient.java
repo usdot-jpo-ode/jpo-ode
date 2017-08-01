@@ -1,7 +1,10 @@
-package us.dot.its.jpo.ode.model;
+package us.dot.its.jpo.ode.wrapper;
 
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
+
+import us.dot.its.jpo.ode.model.OdeMessage;
+import us.dot.its.jpo.ode.model.OdeRequest;
 
 public interface WebSocketClient {
    

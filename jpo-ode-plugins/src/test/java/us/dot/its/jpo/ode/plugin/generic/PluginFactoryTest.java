@@ -13,7 +13,7 @@ import mockit.Verifications;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.plugin.OdePlugin;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 
 
 @RunWith(JMockit.class)
@@ -26,11 +26,11 @@ public class PluginFactoryTest {
 	public void testGetPluginByName(@Mocked Logger logger)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 
-		String coderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssAsn1Coder";
+		String coderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder";
 
 		OdePlugin result = PluginFactory.getPluginByName(coderClassName);
 		assertNotNull(result);
-		assertTrue(result instanceof OssAsn1Coder);
+		assertTrue(result instanceof OssJ2735Coder);
 		new Verifications() {
 			{
 				logger.info("Getting Plugin: {}", coderClassName);
@@ -50,7 +50,7 @@ public class PluginFactoryTest {
 
 		OdePlugin result = PluginFactory.getPluginByName(coderClassName);
 		assertNotNull(result);
-		assertTrue(result instanceof OssAsn1Coder);
+		assertTrue(result instanceof OssJ2735Coder);
 		new Verifications() {
 			{
 				logger.info("Getting Plugin: {}", coderClassName);

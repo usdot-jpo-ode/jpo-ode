@@ -26,7 +26,7 @@ public class FilteredBsmExporter extends Exporter {
                 new StompStringMessageDistributor(template, getTopic())));
 
         getConsumer().setName(this.getClass().getSimpleName());
-        getConsumer().subscribe(odeProperties.getKafkaTopicBsmFilteredJson());
+        getConsumer().subscribe(odeProperties.getKafkaTopicFilteredBsmJson());
     }
 
 }
