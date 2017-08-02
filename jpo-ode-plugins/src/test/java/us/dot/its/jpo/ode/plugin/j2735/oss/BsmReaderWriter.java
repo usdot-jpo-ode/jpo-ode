@@ -48,6 +48,8 @@ public class BsmReaderWriter {
     private static final String UPER = "uper";
     private static final String IN_FILENAME = "in_filename";
     private static final String OUT_SIGNED = "out_signed";
+    private static final int PSID_BSM = 32;
+    
     private static String inFilename = "bsm.uper";
     private static String inEncoding = UPER;
     private static String outEncoding = UPER;
@@ -314,7 +316,7 @@ public class BsmReaderWriter {
     private static byte[] signMessage(BasicSafetyMessage bsm, IEEE1609p2Message signer) 
             throws EncodeFailedException, EncodeNotSupportedException, CertificateException, CryptoException {
         byte[] signedMsg;
-        signer.setPSID(20);
+        signer.setPSID(PSID_BSM);
         // send signed (with certificate) ServiceRequest in 1609.2 envelope
         signedMsg = signer.sign(uperCoder.encode(bsm).array());
         return signedMsg;
