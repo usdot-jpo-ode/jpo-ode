@@ -25,4 +25,13 @@ public enum J2735DSRCmsgID {
         return map.get(id);
     }
 
+    public int getMsgID() {
+        return msgID;
+    }
+
+    public void setMsgID(int msgID) {
+        this.msgID = msgID;
+    }
+
+    
 }
