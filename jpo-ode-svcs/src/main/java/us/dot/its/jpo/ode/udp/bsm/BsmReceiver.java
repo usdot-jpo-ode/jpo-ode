@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.udp.bsm;
 import java.net.DatagramPacket;
 import java.util.Arrays;
 
+import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,12 +48,27 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                     logger.debug("Packet received from {}:{}", senderIp, senderPort);
 
                     // extract the actualPacket from the buffer
-                    byte[] payload = Arrays.copyOf(packet.getData(), packet.getLength());
+                    byte[] payload = removeHeader(packet.getData());
                     bsmDecoderPublisher.decodeBytesAndPublish(payload);
                 }
             } catch (Exception e) {
                 logger.error("Error receiving packet", e);
             }
         } while (!isStopped());
+    }
+    
+    /**
+     * Attempts to strip WSMP header bytes
+     * 
+     * @param packet
+     */
+    public byte[] removeHeader(byte[] packet) {
+       String hexPacket = HexUtils.toHexString(packet);
+       int startIndex = hexPacket.indexOf("0014");
+       logger.debug("BSM packet length: {}, start index: {}", hexPacket.length(), startIndex);
+       if (startIndex >= 20) {
+          hexPacket = hexPacket.substring(startIndex, hexPacket.length());
+       }
+       return HexUtils.fromHexString(hexPacket);
     }
 }
