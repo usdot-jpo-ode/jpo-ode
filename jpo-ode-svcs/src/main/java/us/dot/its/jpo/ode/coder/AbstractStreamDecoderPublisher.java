@@ -61,7 +61,12 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
                     line = scanner.nextLine();
 
                     decoded = decode(line);
-                    publish(decoded);
+                    if (decoded != null) {
+                       logger.debug("Decoded: {}", decoded);
+                       publish(decoded);
+                   } else {
+                      logger.debug("Failed to decode, null.");
+                   }
                 } catch (Exception e) {
                     String msg = "Error decoding and publishing data.";
                     EventLogger.logger.error(msg, e);
@@ -90,6 +95,8 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
                 if (decoded != null) {
                     logger.debug("Decoded: {}", decoded);
                     publish(decoded);
+                } else {
+                   logger.debug("Failed to decode, null.");
                 }
             } catch (Exception e) {
                 String msg = "Error decoding and publishing data.";
@@ -108,6 +115,8 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
             if (decoded != null) {
                 logger.debug("Decoded: {}", decoded);
                 publish(decoded);
+            } else {
+               logger.debug("Failed to decode, null.");
             }
         } catch (Exception e) {
             String msg = "Error decoding and publishing data.";
