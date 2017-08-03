@@ -49,6 +49,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
                     // extract the actualPacket from the buffer
                     byte[] payload = removeHeader(packet.getData());
+                    logger.debug("Packet: {}", HexUtils.toHexString(payload));
                     bsmDecoderPublisher.decodeBytesAndPublish(payload);
                 }
             } catch (Exception e) {
