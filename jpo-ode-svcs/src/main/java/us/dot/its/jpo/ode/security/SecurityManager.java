@@ -25,27 +25,32 @@ public class SecurityManager {
             super (msg, e2);
         }
 
+        public SecurityManagerException(String string) {
+            super(string);
+        }
+
     }
 
     /**
      * Returns true if the the signed message has valid generation time.
      * @param signedMsg
      * @return
+     * @throws SecurityManagerException 
      */
-    public static boolean isValid(IEEE1609p2Message signedMsg) {
-        boolean valid = false;
-        if (signedMsg != null) {
-            // decode and validate message
-            try {
-                // check that generation time is not in the future
-                // if we change generation time to expiration time as per standard then we reverse the check
-                long generationTime = signedMsg.getGenerationTime().getTime();
-                valid = generationTime < new Date().getTime();
-            } catch (Exception e ) {
-                logger.error("Error parsing 1609.2 message.", e);
-            }
-        }        
-        return valid;
+    public static void validateGenerationTime(IEEE1609p2Message signedMsg) 
+            throws SecurityManagerException {
+        // decode and validate message
+        // check that generation time is not in the future
+        // if we change generation time to expiration time as per standard then we reverse the check
+        long generationTime = signedMsg.getGenerationTime().getTime();
+        long now = new Date().getTime();
+        if (generationTime >= now) {
+            throw new SecurityManagerException("Generation time ("
+                    + generationTime
+                    + ") is in the future (now = "
+                    + now 
+                    + ")");
+        }
     }
 
     /**
@@ -79,7 +84,7 @@ public class SecurityManager {
         IEEE1609p2Message signedMsg;
         try {
             signedMsg = decodeSignedMessage(signedOrUnsignedMsgBytes);
-            if (isValid(signedMsg)) {
+            if (signedMsg != null) {
                 payload = signedMsg.getPayload();
             }
         } catch (EncodeFailedException | MessageException | EncodeNotSupportedException e1) {

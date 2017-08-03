@@ -1,8 +1,6 @@
 package us.dot.its.jpo.ode.security;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -20,24 +18,15 @@ import gov.usdot.cv.security.msg.MessageException;
 import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mocked;
-import mockit.Tested;
 import us.dot.its.jpo.ode.security.SecurityManager.SecurityManagerException;
 
 public class SecurityManagerTest {
-
-   @Tested
-   SecurityManager testSecurityManager;
 
    @Mocked
    IEEE1609p2Message mockIEEE1609p2Message;
 
    @Capturing
    IEEE1609p2Message capturingIEEE1609p2Message;
-
-   @Test
-   public void isValidFalseBecauseNull() {
-      assertFalse(testSecurityManager.isValid(null));
-   }
 
    @Test
    public void isValidFalseBecauseOldDate() {
@@ -48,11 +37,15 @@ public class SecurityManagerTest {
          }
       };
 
-      assertFalse(testSecurityManager.isValid(mockIEEE1609p2Message));
+      try {
+          SecurityManager.validateGenerationTime(mockIEEE1609p2Message);
+          fail("expected exception");
+      } catch (SecurityManagerException e) {
+      }
    }
 
    @Test
-   public void isValidFalseExceptionOccured(@Mocked Exception mockException) {
+   public void isValidFalseExceptionOccured(@Mocked SecurityManagerException mockException) {
       new Expectations() {
          {
             mockIEEE1609p2Message.getGenerationTime().getTime();
@@ -60,7 +53,11 @@ public class SecurityManagerTest {
          }
       };
 
-      assertFalse(testSecurityManager.isValid(mockIEEE1609p2Message));
+      try {
+          SecurityManager.validateGenerationTime(mockIEEE1609p2Message);
+          fail("expected exception");
+      } catch (SecurityManagerException e) {
+      }
    }
 
    @Test
@@ -72,7 +69,11 @@ public class SecurityManagerTest {
          }
       };
 
-      assertTrue(testSecurityManager.isValid(mockIEEE1609p2Message));
+      try {
+          SecurityManager.validateGenerationTime(mockIEEE1609p2Message);
+      } catch (SecurityManagerException e) {
+          fail("unexpected exception");
+      }
    }
 
    @Test
@@ -85,7 +86,7 @@ public class SecurityManagerTest {
             }
          };
 
-         testSecurityManager.decodeSignedMessage(null);
+         SecurityManager.decodeSignedMessage(null);
       } catch (EncodeFailedException | MessageException | CertificateException | CryptoException
             | EncodeNotSupportedException e) {
          fail("Unexpected exception: " + e);
@@ -99,12 +100,10 @@ public class SecurityManagerTest {
             {
                IEEE1609p2Message.parse((byte[]) any);
                result = mockIEEE1609p2Message;
-
-               mockIEEE1609p2Message.getGenerationTime().getTime();
-               result = (new Date().getTime() + 1000);
             }
          };
-         assertNull(testSecurityManager.getMessagePayload(new byte[] { 0 }));
+         byte[] payload = SecurityManager.getMessagePayload(new byte[] { 0 });
+         assertTrue(payload.length == 0);
       } catch (SecurityManagerException | EncodeFailedException | MessageException | CertificateException
             | CryptoException | EncodeNotSupportedException e) {
          fail("Unexpected exception: " + e);
@@ -120,16 +119,13 @@ public class SecurityManagerTest {
                IEEE1609p2Message.parse((byte[]) any);
                result = mockIEEE1609p2Message;
 
-               mockIEEE1609p2Message.getGenerationTime().getTime();
-               result = (new Date().getTime() - 1000);
-
                mockIEEE1609p2Message.getPayload();
                result = mockEncodeFailedException;
             }
          };
 
          byte[] testBytes = new byte[] { 42 };
-         assertEquals(testBytes, testSecurityManager.getMessagePayload(testBytes));
+         assertEquals(testBytes, SecurityManager.getMessagePayload(testBytes));
       } catch (SecurityManagerException | EncodeFailedException | MessageException | CertificateException
             | CryptoException | EncodeNotSupportedException e) {
          fail("Unexpected exception: " + e);
@@ -147,7 +143,7 @@ public class SecurityManagerTest {
             }
          };
 
-         testSecurityManager.getMessagePayload(new byte[] { 0 });
+         SecurityManager.getMessagePayload(new byte[] { 0 });
          fail("Expected SecurityManagerException");
       } catch (EncodeFailedException | MessageException | CertificateException | CryptoException
             | EncodeNotSupportedException e) {
@@ -167,15 +163,12 @@ public class SecurityManagerTest {
                IEEE1609p2Message.parse((byte[]) any);
                result = mockIEEE1609p2Message;
 
-               mockIEEE1609p2Message.getGenerationTime().getTime();
-               result = (new Date().getTime() - 1000);
-
                mockIEEE1609p2Message.getPayload();
                result = expectedBytes;
             }
          };
 
-         assertEquals(expectedBytes, testSecurityManager.getMessagePayload(new byte[] { 42 }));
+         assertEquals(expectedBytes, SecurityManager.getMessagePayload(new byte[] { 42 }));
       } catch (SecurityManagerException | EncodeFailedException | MessageException | CertificateException
             | CryptoException | EncodeNotSupportedException e) {
          fail("Unexpected exception: " + e);

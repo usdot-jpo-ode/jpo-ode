@@ -18,6 +18,7 @@ import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.SignedData;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.SignedDataPayload;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.ToBeSignedData;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Opaque;
+import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
@@ -27,16 +28,17 @@ import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
+import us.dot.its.jpo.ode.security.SecurityManager;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 
-@Ignore
 @RunWith(JMockit.class)
 public class BsmCoderTest {
 
@@ -44,6 +46,8 @@ public class BsmCoderTest {
     BsmStreamDecoderPublisher testBsmCoder;
     @Injectable
     OdeProperties odeProperties;
+    @Injectable
+    SerialId serialId;
     @Injectable
     Path filePath;
     
@@ -56,6 +60,7 @@ public class BsmCoderTest {
     @Mocked MessageProducer<String, OdeObject> objectProducer;
     
     @Mocked Ieee1609Dot2Data mockieee1609dot2Data;
+    @Mocked IEEE1609p2Message mockIEEE1609p2Message;
     @Mocked Ieee1609Dot2Content mockSecuredContent;
     @Mocked SignedData mockSignedData;
     @Mocked ToBeSignedData mockToBeSignedData;
@@ -78,50 +83,28 @@ public class BsmCoderTest {
     }
     
     @Test
-    public void decodeHexAndPublishShouldThrowExceptionEmpty(
-        @Mocked final Scanner mockScanner) {
-
-        new Expectations() {
-            {
-                mockScanner.hasNextLine();
-                result = false;
-            }
-        };
-
-        try {
-            testBsmCoder.decodeHexAndPublish(null);
-            fail("Expected Exception");
-        } catch (Exception e) {
-        }
-
-        new Verifications() {
-            {
-                EventLogger.logger.info("Empty file received");
-            }
-        };
-    }
-
-    @Test
     public void decodeHexAndPublishSignedMessageFrame(
         @Mocked final Scanner mockScanner) {
 
         try {
-            new Expectations() {
+            new Expectations(SecurityManager.class, CodecUtils.class) {
                 {
                     mockScanner.hasNextLine();
                     returns(true, false);
 
-                    ieee1609dotCoder.decodeIeee1609Dot2DataHex(anyString);
-                    result = mockieee1609dot2Data;
-                    mockieee1609dot2Data.getContent(); result = mockSecuredContent;
-                    mockSecuredContent.getSignedData(); result = mockSignedData;
-                    mockSignedData.getTbsData(); result = mockToBeSignedData;
-                    mockToBeSignedData.getPayload(); result = mockPayload;
-                    mockPayload.getData(); result = mockUnsecuredData;
-                    mockUnsecuredData.getContent(); result = mockUnsecuredContent;
-                    mockUnsecuredContent.getUnsecuredData(); result = mockUnsecuredContentData;
-                    j2735Coder.decodeUPERMessageFrameBytes(mockUnsecuredContentData.byteArrayValue());
+                    CodecUtils.fromHex(anyString); result = new byte[0];
+
+                    SecurityManager.decodeSignedMessage((byte[]) any);
+                    result = mockIEEE1609p2Message;
+
+                    SecurityManager.validateGenerationTime(mockIEEE1609p2Message);
+                    
+                    mockIEEE1609p2Message.getPayload();
+                    result = (byte[])any;
+
+                    j2735Coder.decodeUPERMessageFrameBytes((byte[])any);
                     result = mockJ2735MessageFrame;
+
                     mockJ2735MessageFrame.getValue();
                     result = mockJ2735Bsm;
                     
@@ -134,7 +117,11 @@ public class BsmCoderTest {
         }
 
         try {
+            // Signed and valid signature
             testBsmCoder.decodeHexAndPublish(null);
+
+            // TODO Signed and invalid signature
+//            testBsmCoder.decodeHexAndPublish(null);
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
@@ -172,6 +159,10 @@ public class BsmCoderTest {
         }
 
         try {
+            // Signed and valid signature
+            testBsmCoder.decodeHexAndPublish(null);
+
+            // Signed and invalid signature
             testBsmCoder.decodeHexAndPublish(null);
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
@@ -247,55 +238,37 @@ public class BsmCoderTest {
     }
 
     @Test
-    public void decodeBinaryAndPublishSignedNull() {
+    public void decodeHexAndPublishShouldThrowExceptionEmpty(
+        @Mocked final Scanner mockScanner) {
 
         new Expectations() {
             {
-                ieee1609dotCoder.decodeIeee1609Dot2DataStream((InputStream) any);
-                result = mockieee1609dot2Data;
-
-                mockieee1609dot2Data.getContent(); result = mockSecuredContent;
-                mockSecuredContent.getSignedData(); result = mockSignedData;
-                mockSignedData.getTbsData(); result = mockToBeSignedData;
-                mockToBeSignedData.getPayload(); result = mockPayload;
-                mockPayload.getData(); result = mockUnsecuredData;
-                mockUnsecuredData.getContent(); result = mockUnsecuredContent;
-                mockUnsecuredContent.getUnsecuredData(); result = mockUnsecuredContentData;
-                
-                j2735Coder.decodeUPERMessageFrameBytes(mockUnsecuredContentData.byteArrayValue());
-                result = null;
-                j2735Coder.decodeUPERBsmBytes((byte[]) any);
-                result = null;
+                mockScanner.hasNextLine();
+                result = false;
             }
         };
 
         try {
-            testBsmCoder.decodeBinaryAndPublish(null);
+            testBsmCoder.decodeHexAndPublish(null);
+            fail("Expected Exception");
         } catch (Exception e) {
-            fail("Unexpected exception: " + e);
         }
+
+        new Verifications() {
+            {
+                EventLogger.logger.info("Empty file received");
+            }
+        };
     }
 
     @Test
-    public void decodeBinaryAndPublishUnsignedNull() {
+    public void decodeHexAndPublishSignedNull() {
+        // TODO not yet implemented
+    }
 
-        new Expectations() {
-            {
-                ieee1609dotCoder.decodeIeee1609Dot2DataStream((InputStream) any);
-                result = null;
-
-                j2735Coder.decodeUPERMessageFrameStream((InputStream) any);
-                result = null;
-                j2735Coder.decodeUPERBsmStream((InputStream) any);
-                result = null;
-            }
-        };
-
-        try {
-            testBsmCoder.decodeBinaryAndPublish(null);
-        } catch (Exception e) {
-            fail("Unexpected exception: " + e);
-        }
+    @Test
+    public void decodeHexAndPublishUnsignedNull() {
+        //TODO not yet implemented
     }
 
     @Test
@@ -332,6 +305,10 @@ public class BsmCoderTest {
         };
 
         try {
+            // Signed and valid signature
+            testBsmCoder.decodeBinaryAndPublish(null);
+
+            // Signed and invalid signature
             testBsmCoder.decodeBinaryAndPublish(null);
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
@@ -372,6 +349,10 @@ public class BsmCoderTest {
         };
 
         try {
+            // Signed and valid signature
+            testBsmCoder.decodeBinaryAndPublish(null);
+
+            // Signed and invalid signature
             testBsmCoder.decodeBinaryAndPublish(null);
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
@@ -452,6 +433,58 @@ public class BsmCoderTest {
     }
 
     @Test
+    public void decodeBinaryAndPublishSignedNull() {
+
+        new Expectations() {
+            {
+                ieee1609dotCoder.decodeIeee1609Dot2DataStream((InputStream) any);
+                result = mockieee1609dot2Data;
+
+                mockieee1609dot2Data.getContent(); result = mockSecuredContent;
+                mockSecuredContent.getSignedData(); result = mockSignedData;
+                mockSignedData.getTbsData(); result = mockToBeSignedData;
+                mockToBeSignedData.getPayload(); result = mockPayload;
+                mockPayload.getData(); result = mockUnsecuredData;
+                mockUnsecuredData.getContent(); result = mockUnsecuredContent;
+                mockUnsecuredContent.getUnsecuredData(); result = mockUnsecuredContentData;
+                
+                j2735Coder.decodeUPERMessageFrameBytes(mockUnsecuredContentData.byteArrayValue());
+                result = null;
+                j2735Coder.decodeUPERBsmBytes((byte[]) any);
+                result = null;
+            }
+        };
+
+        try {
+            testBsmCoder.decodeBinaryAndPublish(null);
+        } catch (Exception e) {
+            fail("Unexpected exception: " + e);
+        }
+    }
+
+    @Test
+    public void decodeBinaryAndPublishUnsignedNull() {
+
+        new Expectations() {
+            {
+                ieee1609dotCoder.decodeIeee1609Dot2DataStream((InputStream) any);
+                result = null;
+
+                j2735Coder.decodeUPERMessageFrameStream((InputStream) any);
+                result = null;
+                j2735Coder.decodeUPERBsmStream((InputStream) any);
+                result = null;
+            }
+        };
+
+        try {
+            testBsmCoder.decodeBinaryAndPublish(null);
+        } catch (Exception e) {
+            fail("Unexpected exception: " + e);
+        }
+    }
+
+    @Test
     public void decodeBytesAndPublishSignedMessageFrame () {
 
         new Expectations() {
@@ -479,6 +512,10 @@ public class BsmCoderTest {
         };
 
         try {
+            // Signed and valid signature
+            testBsmCoder.decodeBytesAndPublish(null);
+
+            // Signed and invalid signature
             testBsmCoder.decodeBytesAndPublish(null);
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
@@ -513,6 +550,10 @@ public class BsmCoderTest {
         };
 
         try {
+            // Signed and valid signature
+            testBsmCoder.decodeBytesAndPublish(null);
+
+            // Signed and invalid signature
             testBsmCoder.decodeBytesAndPublish(null);
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
@@ -569,6 +610,16 @@ public class BsmCoderTest {
         } catch (Exception e) {
             fail("Unexpected exception: " + e);
         }
+    }
+
+    @Test
+    public void decodeBytesAndPublishSignedNull() {
+        //TODO not yet implemented
+    }
+
+    @Test
+    public void decodeBytesAndPublishUnsignedNull() {
+        //TODO not yet implemented
     }
 
 }

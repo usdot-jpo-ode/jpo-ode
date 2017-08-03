@@ -23,6 +23,7 @@ import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.security.SecurityManager;
+import us.dot.its.jpo.ode.security.SecurityManager.SecurityManagerException;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -58,14 +59,7 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
             try {
                 message = IEEE1609p2Message.convert(ieee1609dot2Data);
 
-                if (message != null) {
-                    if (!SecurityManager.isValid(message)) {
-                        logger.debug("Message does not have a valid signature");
-                    }
-                    bsm = decodeBsm(message.getPayload());
-                } else {
-                    bsm = decodeBsm(is);
-                }
+                bsm = getBsmPayload(message);
             } catch (Exception e) {
                 logger.debug("Message does not have a valid signature");
                 bsm = decodeBsm(ieee1609dot2Data
@@ -89,6 +83,16 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
         return odeBsmData;
    }
 
+private OdeObject getBsmPayload(IEEE1609p2Message message) {
+    try {
+        SecurityManager.validateGenerationTime(message);
+    } catch (SecurityManagerException e) {
+        logger.error("Error validating message.",  e);
+    }
+
+    return decodeBsm(message.getPayload());
+}
+
    @Override
    public OdeData decode(byte[] data) throws Exception{
        IEEE1609p2Message message = null;
@@ -97,14 +101,7 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
        OdeObject bsm = null;
         try {
             message = SecurityManager.decodeSignedMessage(data);
-            if (message != null) {
-                if (!SecurityManager.isValid(message)) {
-                    logger.debug("Message does not have a valid signature");
-                }
-                bsm = decodeBsm(message.getPayload());
-            } else {
-                bsm = decodeBsm(data);
-            }
+            bsm = getBsmPayload(message);
         } catch (Exception e) {
             logger.debug("Message does not have a valid signature");
         }
@@ -167,7 +164,7 @@ public class BsmStreamDecoderPublisher extends AbstractStreamDecoderPublisher {
             ZonedDateTime generatedAt = DateTimeUtils.isoDateTime(message.getGenerationTime());
             metadata.setGeneratedAt(generatedAt.toString());
             
-            metadata.setValidSignature(SecurityManager.isValid(message));
+            metadata.setValidSignature(true);
         }
         
         metadata.getSerialId().addRecordId(1);
