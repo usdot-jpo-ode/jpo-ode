@@ -16,7 +16,6 @@ import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
-import us.dot.its.jpo.ode.coder.BsmStreamDecoderPublisher;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
@@ -26,8 +25,6 @@ public class BsmReceiverTest {
    @Injectable
    OdeProperties mockOdeProperties;
 
-   @Capturing
-   BsmStreamDecoderPublisher capturingBsmStreamDecoderPublisher;
    @Capturing
    OssJ2735Coder capturingOssJ2735Coder;
 

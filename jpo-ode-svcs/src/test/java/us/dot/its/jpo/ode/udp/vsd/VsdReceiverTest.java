@@ -24,7 +24,6 @@ import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
-import us.dot.its.jpo.ode.coder.BsmStreamDecoderPublisher;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.semi.ConnectionPoint;
 import us.dot.its.jpo.ode.j2735.semi.IpAddress;
@@ -54,8 +53,6 @@ public class VsdReceiverTest {
    DatagramSocket capturingDatagramSocket;
    @Capturing
    DatagramPacket capturingDatagramPacket;
-   @Capturing
-   BsmStreamDecoderPublisher capturingBsmStreamDecoderPublisher;
    @Capturing
    UdpUtil capturingUdpUtil;
    @Capturing

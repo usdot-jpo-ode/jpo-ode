@@ -18,9 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.BsmStreamDecoderPublisher;
-import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.SerialId;
+import us.dot.its.jpo.ode.newcoder.DecoderPublisherManager;
 
 public class ImporterWatchService extends ImporterFileService implements Runnable {
    
@@ -31,6 +30,8 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
     private OdeProperties odeProperties;
     private SerialId serialId;
 
+   private DecoderPublisherManager decoderPublisherManager;
+
     public ImporterWatchService(
         OdeProperties odeProperties, 
         Path dir, 
@@ -40,6 +41,8 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
         this.backup = backupDir;
         this.odeProperties = odeProperties;
         this.serialId = new SerialId();
+        
+        this.decoderPublisherManager = new DecoderPublisherManager(odeProperties);
         
         init();
     }
@@ -86,19 +89,7 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
     public void processFile(Path filePath) {
 
         try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
-
-            EventLogger.logger.info("Processing file {}", filePath.toFile());
-
-            BsmStreamDecoderPublisher coder = 
-                    new BsmStreamDecoderPublisher(this.odeProperties, serialId, filePath);
-            
-            if (filePath.toString().endsWith(".hex") || filePath.toString().endsWith(".txt")) {
-               coder.decodeHexAndPublish(inputStream);
-            } else if (filePath.toString().endsWith(".json")) {
-               coder.decodeJsonAndPublish(inputStream);
-            } else {
-               coder.decodeBinaryAndPublish(inputStream);
-            }
+           decoderPublisherManager.decodeAndPublishFile(filePath, inputStream);
         } catch (Exception e) {
             logger.error("Unable to open or process file: " + filePath, e);
         }
@@ -110,6 +101,7 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
         }
     }
 
+    // TODO - refactor for testability
     @Override
     public void run() {
 

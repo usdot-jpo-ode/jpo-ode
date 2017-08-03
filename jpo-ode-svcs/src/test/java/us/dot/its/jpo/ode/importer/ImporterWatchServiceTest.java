@@ -4,9 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,7 +12,6 @@ import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchService;
 
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 
 import mockit.Expectations;
@@ -22,8 +19,6 @@ import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.AbstractStreamDecoderPublisher;
-import us.dot.its.jpo.ode.coder.BsmStreamDecoderPublisher;
 public class ImporterWatchServiceTest {
 
     @Tested // (fullyInitialized=false)
@@ -34,8 +29,6 @@ public class ImporterWatchServiceTest {
     Path dir;
     @Injectable
     Path backupDir;
-    @Injectable
-    BsmStreamDecoderPublisher decoderPublisher;
     @Injectable
     Logger logger;
     @Injectable
@@ -181,79 +174,7 @@ public class ImporterWatchServiceTest {
             result = new IOException("testException123");
         }};
         testImporterWatchService.processFile(mockFile);
-    }
-    
-    @Test
-    public void processFileShouldDetectHex(@Mocked AbstractStreamDecoderPublisher decoderPublisher) throws Exception {
-        
-        TemporaryFolder tmpFolder = new TemporaryFolder();
-        
-        File tmpFile = null;
-        try {
-            tmpFolder.create();
-            tmpFile = tmpFolder.newFile("tmpHexFile.hex");
-        } catch (IOException e) {
-            fail("Failed to create temp hex file: " + e);
-        }
-        
-        try {
-            new Expectations() {{
-                decoderPublisher.decodeHexAndPublish((InputStream)any);
-            }};
-        } catch (IOException e) {
-            fail("Unexpected exception in expectations block: " + e);
-        }
-        
-        testImporterWatchService.processFile(tmpFile.toPath());
-    }
-    
-    @Test
-    public void processFileShouldDetectTxt(@Mocked AbstractStreamDecoderPublisher decoderPublisher) throws Exception {
-        
-        TemporaryFolder tmpFolder = new TemporaryFolder();
-        
-        File tmpFile = null;
-        try {
-            tmpFolder.create();
-            tmpFile = tmpFolder.newFile("tmpTxtFile.txt");
-        } catch (IOException e) {
-            fail("Failed to create temp txt file: " + e);
-        }
-        
-        try {
-            new Expectations() {{
-                decoderPublisher.decodeHexAndPublish((InputStream)any);
-            }};
-        } catch (IOException e) {
-            fail("Unexpected exception in expectations block: " + e);
-        }
-        
-        testImporterWatchService.processFile(tmpFile.toPath());
-    }
-    
-    @Test
-    public void processFileShouldDecodeMiscFilesAsBinary(@Mocked AbstractStreamDecoderPublisher decoderPublisher) throws Exception {
-        
-        TemporaryFolder tmpFolder = new TemporaryFolder();
-        
-        File tmpFile = null;
-        try {
-            tmpFolder.create();
-            tmpFile = tmpFolder.newFile("tmpBinFile.bin");
-        } catch (IOException e) {
-            fail("Failed to create temp bin file: " + e);
-        }
-        
-        try {
-            new Expectations() {{
-                decoderPublisher.decodeBinaryAndPublish((InputStream)any);
-            }};
-        } catch (IOException e) {
-            fail("Unexpected exception in expectations block: " + e);
-        }
-        
-        testImporterWatchService.processFile(tmpFile.toPath());
-    }
+    } 
     
     @Test
     public void runShouldCatchExceptionNullWatchService() {
