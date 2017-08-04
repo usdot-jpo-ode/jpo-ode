@@ -29,7 +29,6 @@ public class BinaryDecoderPublisher implements DecoderPublisher {
       this.serialId.setBundleId(bundleId.incrementAndGet());
 
       this.publisher = dataPub;
-
       this.decoder = decoderHelper;
    }
 

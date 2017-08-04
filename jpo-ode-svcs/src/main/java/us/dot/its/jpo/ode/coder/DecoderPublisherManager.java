@@ -52,13 +52,13 @@ public class DecoderPublisherManager {
       String fileName = filePath.toFile().getName();
 
       if (filePath.toString().endsWith(".hex") || filePath.toString().endsWith(".txt")) {
-         logger.info("Decoding {} as hex/binary file.", filePath);
+         logger.info("Decoding {} as hex file.", filePath);
          hexDecPub.decodeAndPublish(fileInputStream, fileName);
       } else if (filePath.toString().endsWith(".json")) {
          logger.info("Decoding {} as json file.", filePath);
          jsonDecPub.decodeAndPublish(fileInputStream, fileName);
       } else {
-         logger.info("Decoding {} as signed file.", filePath);
+         logger.info("Decoding {} as binary/signed file.", filePath);
          binDecPub.decodeAndPublish(fileInputStream, fileName);
       }
    }
