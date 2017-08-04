@@ -23,10 +23,10 @@ public class HexDecoderPublisher implements DecoderPublisher {
 
    public HexDecoderPublisher(MessagePublisher dataPub, DecoderHelper decoderHelper) {
       this.publisher = dataPub;
+      this.decoder = decoderHelper;
 
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
-      this.decoder = decoderHelper;
    }
 
    @Override
@@ -55,7 +55,6 @@ public class HexDecoderPublisher implements DecoderPublisher {
          }
       } catch (Exception e) {
          logger.error("Error decoding and publishing data: {}", line, e);
-         throw new Exception("Error decoding data: " + line, e);
       }
    }
 }

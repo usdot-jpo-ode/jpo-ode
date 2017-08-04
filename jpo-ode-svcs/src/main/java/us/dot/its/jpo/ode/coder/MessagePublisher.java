@@ -11,8 +11,8 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
-import us.dot.its.jpo.ode.wrapper.J2735BsmSerializer;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
+import us.dot.its.jpo.ode.wrapper.OdeBsmSerializer;
 
 public class MessagePublisher {
 
@@ -22,8 +22,8 @@ public class MessagePublisher {
 
    public MessagePublisher(OdeProperties odeProps) {
       this.odeProperties = odeProps;
-      this.objectProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(),
-            odeProperties.getKafkaProducerType(), null, J2735BsmSerializer.class.getName());
+      this.objectProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(),
+            null, OdeBsmSerializer.class.getName());
 
    }
 
@@ -39,12 +39,8 @@ public class MessagePublisher {
             logger.error("Error converting ISO timestamp", e);
          }
 
-      logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicRawBsmPojo(), odeBsm.getPayload().getData());
-      objectProducer.send(odeProperties.getKafkaTopicRawBsmPojo(), null, odeBsm.getPayload().getData());
-
-      logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicOdeBsmPojo(), odeBsm.toJson());
+      logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicOdeBsmPojo(), odeBsm);
       objectProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), null, odeBsm);
-
    }
 
 }
