@@ -3,15 +3,19 @@ package us.dot.its.jpo.ode.coder.stream;
 import java.io.InputStream;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import us.dot.its.jpo.ode.coder.DecoderPublisherUtils;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
-import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class JsonDecoderPublisher implements DecoderPublisher {
+
+   private static final Logger logger = LoggerFactory.getLogger(JsonDecoderPublisher.class);
 
    private MessagePublisher publisher;
    private SerialId serialId;
@@ -37,11 +41,10 @@ public class JsonDecoderPublisher implements DecoderPublisher {
             publisher.publish(odeBsm);
          }
          if (empty) {
-            EventLogger.logger.info("Empty file received");
             throw new Exception("Empty file received");
          }
       } catch (Exception e) {
-         EventLogger.logger.info("Error occurred while decoding message: {}", line);
+         logger.error("Error occurred while decoding message: {}", line);
          throw new Exception("Error decoding data: " + line, e);
       }
    }

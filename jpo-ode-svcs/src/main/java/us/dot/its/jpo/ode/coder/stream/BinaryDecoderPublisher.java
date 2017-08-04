@@ -8,11 +8,10 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.coder.DecoderHelper;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
-import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
 
-public class BinaryDecoderPublisher {
+public class BinaryDecoderPublisher implements DecoderPublisher {
 
    private static final Logger logger = LoggerFactory.getLogger(BinaryDecoderPublisher.class);
 
@@ -21,7 +20,7 @@ public class BinaryDecoderPublisher {
    private MessagePublisher publisher;
 
    private static AtomicInteger bundleId = new AtomicInteger(1);
-   
+
    private DecoderHelper decoder;
 
    public BinaryDecoderPublisher(SerialId serId, MessagePublisher dataPub, DecoderHelper decoderHelper) {
@@ -31,11 +30,12 @@ public class BinaryDecoderPublisher {
       this.serialId.setBundleId(bundleId.incrementAndGet());
 
       this.publisher = dataPub;
-      
+
       this.decoder = decoderHelper;
    }
 
-   public void decodeBinaryAndPublish(InputStream is, String fileName) throws Exception {
+   @Override
+   public void decodeAndPublish(InputStream is, String fileName) throws Exception {
       OdeData decoded = null;
 
       do {
@@ -48,13 +48,9 @@ public class BinaryDecoderPublisher {
                logger.debug("Failed to decode, null.");
             }
          } catch (Exception e) {
-            String msg = "Error decoding and publishing data.";
-            EventLogger.logger.error(msg, e);
-            logger.error(msg, e);
+            logger.error("Error decoding and publishing data.", e);
          }
       } while (decoded != null);
    }
-
-   
 
 }

@@ -55,6 +55,7 @@ public class HexDecoderPublisher implements DecoderPublisher {
          }
       } catch (Exception e) {
          logger.error("Error decoding and publishing data: {}", line, e);
+         throw new Exception("Error decoding data: " + line, e);
       }
    }
 }

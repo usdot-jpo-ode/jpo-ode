@@ -66,7 +66,7 @@ public class DecoderPublisherManager {
          jsonDecPub.decodeAndPublish(fileInputStream, fileName);
       } else {
          logger.info("Decoding {} as signed file.", filePath);
-         binDecPub.decodeBinaryAndPublish(fileInputStream, fileName);
+         binDecPub.decodeAndPublish(fileInputStream, fileName);
       }
    }
 
