@@ -45,7 +45,7 @@ public class J2735Position3D extends Asn1Object {
    }
 
    public J2735Position3D(Long lat, Long lon, Long elev) {
-      J2735Position3D gpos = OssPosition3D.geneticPosition3D(
+      J2735Position3D gpos = OssPosition3D.genericPosition3D(
             new Position3D(new Latitude(lat), new Longitude(lon), new Elevation(elev), new Regional()));
       this.latitude = gpos.latitude;
       this.longitude = gpos.longitude;

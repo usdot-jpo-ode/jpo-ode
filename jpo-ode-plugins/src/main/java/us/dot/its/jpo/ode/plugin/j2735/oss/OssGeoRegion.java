@@ -8,8 +8,8 @@ public class OssGeoRegion {
    public static J2735GeoRegion genericGeoRegion(GeoRegion geoRegion) {
       
       return new J2735GeoRegion(
-            OssPosition3D.geneticPosition3D(geoRegion.nwCorner),
-            OssPosition3D.geneticPosition3D(geoRegion.seCorner));
+            OssPosition3D.genericPosition3D(geoRegion.getNwCorner()),
+            OssPosition3D.genericPosition3D(geoRegion.getSeCorner()));
       
    }
 
