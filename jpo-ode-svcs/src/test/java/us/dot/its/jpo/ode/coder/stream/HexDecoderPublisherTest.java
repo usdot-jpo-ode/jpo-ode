@@ -13,6 +13,7 @@ import mockit.Mocked;
 import us.dot.its.jpo.ode.coder.DecoderHelper;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.model.OdeData;
+import us.dot.its.jpo.ode.model.SerialId;
 
 public class HexDecoderPublisherTest {
 
@@ -25,7 +26,7 @@ public class HexDecoderPublisherTest {
    @Capturing
    Scanner capturingScanner;
 
-   @Test (timeout = 4000)
+   @Test(timeout = 4000)
    public void shouldNotDecodeEmptyFileAndThrowException() {
 
       try {
@@ -41,14 +42,67 @@ public class HexDecoderPublisherTest {
          fail("Unexpected exception: " + e);
       }
    }
-   
-   @Test
+
+   @Test(timeout = 4000)
    public void shouldNotPublishNullDecode() {
       try {
          new Expectations() {
             {
                capturingScanner.hasNextLine();
                returns(true, false);
+
+               mockDecoderHelper.decode((byte[]) any, anyString, (SerialId) any);
+               result = null;
+               times = 1;
+
+               mockMessagePublisher.publish((OdeData) any);
+               times = 0;
+            }
+         };
+         new HexDecoderPublisher(mockMessagePublisher, mockDecoderHelper)
+               .decodeAndPublish(new ByteArrayInputStream(new byte[] { 1 }), "testFileName");
+      } catch (Exception e) {
+         fail("Unexpected exception: " + e);
+      }
+   }
+
+   @Test(timeout = 4000)
+   public void shouldNotPublishExceptionOnDecode() {
+      try {
+         new Expectations() {
+            {
+               capturingScanner.hasNextLine();
+               returns(true, false);
+
+               mockDecoderHelper.decode((byte[]) any, anyString, (SerialId) any);
+               result = new Exception("testException123");
+               times = 1;
+
+               mockMessagePublisher.publish((OdeData) any);
+               times = 0;
+            }
+         };
+         new HexDecoderPublisher(mockMessagePublisher, mockDecoderHelper)
+               .decodeAndPublish(new ByteArrayInputStream(new byte[] { 1 }), "testFileName");
+      } catch (Exception e) {
+         fail("Unexpected exception: " + e);
+      }
+   }
+
+   @Test(timeout = 4000)
+   public void shouldPublishMessage() {
+      try {
+         new Expectations() {
+            {
+               capturingScanner.hasNextLine();
+               returns(true, false);
+
+               mockDecoderHelper.decode((byte[]) any, anyString, (SerialId) any);
+               result = mockOdeData;
+               times = 1;
+
+               mockMessagePublisher.publish((OdeData) any);
+               times = 1;
             }
          };
          new HexDecoderPublisher(mockMessagePublisher, mockDecoderHelper)
