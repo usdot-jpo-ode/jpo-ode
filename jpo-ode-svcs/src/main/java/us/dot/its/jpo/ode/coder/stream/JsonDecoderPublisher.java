@@ -30,7 +30,7 @@ public class JsonDecoderPublisher implements DecoderPublisher {
    }
 
    @Override
-   public void decodeAndPublish(InputStream is, String fileName) throws Exception {
+   public void decodeAndPublish(InputStream is, String fileName) {
       String line = null;
 
       try (Scanner scanner = new Scanner(is)) {
@@ -48,8 +48,7 @@ public class JsonDecoderPublisher implements DecoderPublisher {
             throw new Exception("Empty file received");
          }
       } catch (Exception e) {
-         logger.error("Error occurred while decoding message: {}", line);
-         throw new Exception("Error decoding data: " + line, e);
+         logger.error("Error occurred while decoding message: {}", line, e);
       }
    }
 
