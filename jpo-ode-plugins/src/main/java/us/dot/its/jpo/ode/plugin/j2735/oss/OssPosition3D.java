@@ -10,7 +10,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 
 public class OssPosition3D {
    
-   public static J2735Position3D geneticPosition3D(Position3D pos) {
+   public static J2735Position3D genericPosition3D(Position3D pos) {
       J2735Position3D jpos = new J2735Position3D();
 
          if (pos._long != null) {
