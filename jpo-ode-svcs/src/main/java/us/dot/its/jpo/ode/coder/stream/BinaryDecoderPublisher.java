@@ -23,10 +23,9 @@ public class BinaryDecoderPublisher implements DecoderPublisher {
 
    private DecoderHelper decoder;
 
-   public BinaryDecoderPublisher(SerialId serId, MessagePublisher dataPub, DecoderHelper decoderHelper) {
-      this.serialId = serId;
+   public BinaryDecoderPublisher(MessagePublisher dataPub, DecoderHelper decoderHelper) {
 
-      this.serialId = serId;
+      this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
 
       this.publisher = dataPub;
@@ -40,7 +39,7 @@ public class BinaryDecoderPublisher implements DecoderPublisher {
 
       do {
          try {
-            decoded = decoder.decode(is, fileName, serialId);
+            decoded = decoder.decode(is, fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);
                publisher.publish(decoded);

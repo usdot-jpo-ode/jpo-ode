@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.coder.stream;
 
 import java.io.InputStream;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +21,12 @@ public class JsonDecoderPublisher implements DecoderPublisher {
    private MessagePublisher publisher;
    private SerialId serialId;
 
-   public JsonDecoderPublisher(MessagePublisher dataPub, SerialId serId) {
+   private static AtomicInteger bundleId = new AtomicInteger(1);
+
+   public JsonDecoderPublisher(MessagePublisher dataPub) {
       this.publisher = dataPub;
-      this.serialId = serId;
+      this.serialId = new SerialId();
+      this.serialId.setBundleId(bundleId.incrementAndGet());
    }
 
    @Override
@@ -37,7 +41,7 @@ public class JsonDecoderPublisher implements DecoderPublisher {
             line = scanner.nextLine();
 
             J2735Bsm j2735Bsm = (J2735Bsm) JsonUtils.fromJson(line, J2735Bsm.class);
-            OdeData odeBsm = DecoderPublisherUtils.createOdeBsmData(j2735Bsm, null, fileName, serialId);
+            OdeData odeBsm = DecoderPublisherUtils.createOdeBsmData(j2735Bsm, null, fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
             publisher.publish(odeBsm);
          }
          if (empty) {

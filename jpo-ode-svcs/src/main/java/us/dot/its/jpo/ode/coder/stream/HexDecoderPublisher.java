@@ -19,13 +19,13 @@ public class HexDecoderPublisher implements DecoderPublisher {
    private MessagePublisher publisher;
    private SerialId serialId;
    private DecoderHelper decoder;
+   private static AtomicInteger bundleId = new AtomicInteger(1);
 
-   public HexDecoderPublisher(MessagePublisher dataPub, SerialId serId, AtomicInteger bunId,
-         DecoderHelper decoderHelper) {
+   public HexDecoderPublisher(MessagePublisher dataPub, DecoderHelper decoderHelper) {
       this.publisher = dataPub;
 
-      this.serialId = serId;
-      this.serialId.setBundleId(bunId.incrementAndGet());
+      this.serialId = new SerialId();
+      this.serialId.setBundleId(bundleId.incrementAndGet());
       this.decoder = decoderHelper;
    }
 
@@ -41,7 +41,7 @@ public class HexDecoderPublisher implements DecoderPublisher {
             empty = false;
             line = scanner.nextLine();
 
-            decoded = decoder.decode(HexUtils.fromHexString(line), fileName, serialId);
+            decoded = decoder.decode(HexUtils.fromHexString(line), fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);
                publisher.publish(decoded);

@@ -2,7 +2,6 @@ package us.dot.its.jpo.ode.coder;
 
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,6 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.stream.BinaryDecoderPublisher;
 import us.dot.its.jpo.ode.coder.stream.HexDecoderPublisher;
 import us.dot.its.jpo.ode.coder.stream.JsonDecoderPublisher;
-import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
@@ -20,8 +18,6 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 public class DecoderPublisherManager {
 
    private static final Logger logger = LoggerFactory.getLogger(DecoderPublisherManager.class);
-
-   private static AtomicInteger bundleId = new AtomicInteger(1);
 
    private JsonDecoderPublisher jsonDecPub;
    private HexDecoderPublisher hexDecPub;
@@ -45,12 +41,9 @@ public class DecoderPublisherManager {
 
       MessagePublisher messagePub = new MessagePublisher(odeProperties);
 
-      SerialId serialId = new SerialId();
-
-
-      this.jsonDecPub = new JsonDecoderPublisher(messagePub, serialId);
-      this.hexDecPub = new HexDecoderPublisher(messagePub, serialId, bundleId, decoderHelper);
-      this.binDecPub = new BinaryDecoderPublisher(serialId, messagePub, decoderHelper);
+      this.jsonDecPub = new JsonDecoderPublisher(messagePub);
+      this.hexDecPub = new HexDecoderPublisher(messagePub, decoderHelper);
+      this.binDecPub = new BinaryDecoderPublisher(messagePub, decoderHelper);
    }
 
    public void decodeAndPublishFile(Path filePath, InputStream fileInputStream) throws Exception {
