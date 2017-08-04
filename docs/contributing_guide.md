@@ -40,7 +40,7 @@ Issue Repository: [https://github.com/usdot-jpo-ode/jpo-ode/issues](https://git
 All pull requests will be reviewed by the JPO-ODE team. During the review of your pull request the team member will either merge it, request changes to it, or close it with an explanation. For major changes the reviewer may require additional support from the team, which could cause some delay. We'll do our best to provide updates and feedback throughout the process. Feel free to open pull requests, and the ODE team will communicate through it with any comments.
 **Before submitting a pull request**, please make sure the following is done:
 	
-	1.	Fork the repository and create your branch from the master.
+	1.	Fork the repository and create your branch from the develop.
 	2.	If you've added code that should be tested, add tests!
 	3.	Ensure the tests pass. Our target is 90% coverage
 	4.	Update the documentation.
