@@ -77,15 +77,13 @@ public class InetPacket {
 			return false;
 		ByteBuffer buffer = ByteBuffer.wrap(bundle);
 		int magic = buffer.getInt();
-		if ( magic != MAGIC_NUMBER ) {
-			System.out.println("got here 1");
-			return false;}
+		if ( magic != MAGIC_NUMBER ) 
+			return false;
 		int port = buffer.getInt();
 		byte type = buffer.get();
 		int addressLength = type == 1 ? 16 : 4;
-		if ( buffer.remaining() < addressLength + 2 ) {
-			System.out.println("got here 2");
-			return false;}
+		if ( buffer.remaining() < addressLength + 2 ) 
+			return false;
 		if ( !CrcCccitt.isValidMsgCRC(bundle, 0, MIN_BUNDLE_LENGTH - 4 + addressLength) ) 
 			return false;
 		byte[] address = new byte[addressLength];
