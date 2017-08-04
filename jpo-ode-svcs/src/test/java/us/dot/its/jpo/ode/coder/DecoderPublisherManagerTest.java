@@ -55,6 +55,27 @@ public class DecoderPublisherManagerTest {
          fail("Unexpected exception: " + e);
       }
    }
+   
+   @Test
+   public void hexDecoderShouldDecodeText() {
+      try {
+         new Expectations() {
+            {
+               capturingHexDecoderPublisher.decodeAndPublish((InputStream) any, anyString);
+               times = 1;
+               capturingJsonDecoderPublisher.decodeAndPublish((InputStream) any, anyString);
+               times = 0;
+               capturingBinaryDecoderPublisher.decodeAndPublish((InputStream) any, anyString);
+               times = 0;
+            }
+         };
+
+         Path testPath = Paths.get("testFile.txt");
+         testDecoderPublisherManager.decodeAndPublishFile(testPath, new ByteArrayInputStream(new byte[] { 1 }));
+      } catch (Exception e) {
+         fail("Unexpected exception: " + e);
+      }
+   }
 
    @Test
    public void jsonDecoderShouldDecodeJson() {
