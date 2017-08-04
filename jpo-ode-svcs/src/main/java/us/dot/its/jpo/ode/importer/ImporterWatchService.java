@@ -113,9 +113,6 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
         WatchService watcher = null;
         try {
             watcher = inbox.getFileSystem().newWatchService();
-            if (watcher == null) {
-                throw new IOException("Watch service null");
-            }
             
             WatchKey keyForTrackedDir = inbox.register(watcher, ENTRY_MODIFY);
             if (keyForTrackedDir == null) {

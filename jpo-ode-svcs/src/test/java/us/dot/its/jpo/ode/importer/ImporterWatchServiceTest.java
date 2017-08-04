@@ -177,21 +177,6 @@ public class ImporterWatchServiceTest {
     } 
     
     @Test
-    public void runShouldCatchExceptionNullWatchService() {
-        
-        try {
-            new Expectations() {{
-                dir.getFileSystem().newWatchService();
-                result = null;
-            }};
-        } catch (IOException e) {
-            fail("Unexpected exception in expectations block: " + e);
-        }
-        
-        testImporterWatchService.run();
-    }
-    
-    @Test
     public void runShouldCatchExceptionNullWatchKey(@Mocked WatchService mockWatchService) {
         try {
             new Expectations() {{

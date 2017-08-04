@@ -20,6 +20,11 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
    private static Logger logger = LoggerFactory.getLogger(BsmReceiver.class);
 
+   private static final String BSM_START_FLAG = "0014"; // these bytes indicate
+                                                        // start of BSM payload
+   private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
+                                                      // least 20 bytes long
+
    private ByteDecoderPublisher byteDecoderPublisher;
 
    @Autowired
@@ -75,15 +80,17 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
    }
 
    /**
-    * Attempts to strip WSMP header bytes
+    * Attempts to strip WSMP header bytes. Looks for BSM start sequence "0014" occurring
+    * after 20 bytes. If not after 20 bytes, message probably does not contain a
+    * header.
     * 
     * @param packet
     */
    public byte[] removeHeader(byte[] packet) {
       String hexPacket = HexUtils.toHexString(packet);
-      int startIndex = hexPacket.indexOf("0014");
+      int startIndex = hexPacket.indexOf(BSM_START_FLAG);
       logger.debug("BSM packet length: {}, start index: {}", hexPacket.length(), startIndex);
-      if (startIndex >= 20) {
+      if (startIndex >= HEADER_MINIMUM_SIZE) {
          hexPacket = hexPacket.substring(startIndex, hexPacket.length());
       }
       return HexUtils.fromHexString(hexPacket);

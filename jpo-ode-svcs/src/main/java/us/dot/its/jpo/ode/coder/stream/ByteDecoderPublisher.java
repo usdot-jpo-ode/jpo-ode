@@ -30,7 +30,6 @@ public class ByteDecoderPublisher {
       OdeData decoded;
 
       try {
-         // TODO - add serial ID functionality
          decoded = decoder.decode(bytes, null, this.serialId.setBundleId(bundleId.incrementAndGet()));
          if (decoded != null) {
             logger.debug("Decoded: {}", decoded);
@@ -38,7 +37,6 @@ public class ByteDecoderPublisher {
          }
       } catch (Exception e) {
          logger.error("Error decoding and publishing data.", e);
-         throw new Exception("Error decoding data.", e);
       }
    }
 }
