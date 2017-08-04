@@ -16,7 +16,11 @@ import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.SerializableMessageProducerPool;
+import us.dot.its.jpo.ode.coder.DecoderHelper;
+import us.dot.its.jpo.ode.coder.MessagePublisher;
+import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
@@ -24,9 +28,6 @@ public class BsmReceiverTest {
 
    @Injectable
    OdeProperties mockOdeProperties;
-
-   @Capturing
-   OssJ2735Coder capturingOssJ2735Coder;
 
    @Mocked
    DatagramSocket mockedDatagramSocket;
@@ -36,6 +37,18 @@ public class BsmReceiverTest {
    @SuppressWarnings("rawtypes")
    @Mocked
    MessageProducer mockedMessageProducer;
+
+   @Capturing
+   OssJ2735Coder capturingOssJ2735Coder;
+   @Capturing
+   Oss1609dot2Coder capturingOss1609dot2Coder;
+   @Capturing
+   DecoderHelper capturingBinaryDecoderHelper;
+   @Capturing
+   MessagePublisher capturingMessagePublisher;
+
+   @Capturing
+   PluginFactory capturingPluginFactory;
 
    private BsmReceiver testBsmReceiver;
 

@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.newcoder;
+package us.dot.its.jpo.ode.coder.stream;
 
 import java.io.InputStream;
 

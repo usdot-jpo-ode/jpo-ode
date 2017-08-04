@@ -8,8 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.newcoder.ByteDecoderPublisher;
-import us.dot.its.jpo.ode.newcoder.MessagePublisher;
+import us.dot.its.jpo.ode.coder.DecoderHelper;
+import us.dot.its.jpo.ode.coder.MessagePublisher;
+import us.dot.its.jpo.ode.coder.stream.ByteDecoderPublisher;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
@@ -40,7 +41,8 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
       }
 
       Oss1609dot2Coder ieee1609dotCoder = new Oss1609dot2Coder();
-      byteDecoderPublisher = new ByteDecoderPublisher(messagePub, jDec);
+      DecoderHelper decoderHelper = new DecoderHelper(jDec, ieee1609dotCoder);
+      byteDecoderPublisher = new ByteDecoderPublisher(messagePub, decoderHelper);
    }
 
    @Override

@@ -18,8 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.model.SerialId;
-import us.dot.its.jpo.ode.newcoder.DecoderPublisherManager;
+import us.dot.its.jpo.ode.coder.DecoderPublisherManager;
 
 public class ImporterWatchService extends ImporterFileService implements Runnable {
    
@@ -27,8 +26,6 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
 
     private Path inbox;
     private Path backup;
-    private OdeProperties odeProperties;
-    private SerialId serialId;
 
    private DecoderPublisherManager decoderPublisherManager;
 
@@ -39,10 +36,12 @@ public class ImporterWatchService extends ImporterFileService implements Runnabl
 
         this.inbox = dir;
         this.backup = backupDir;
-        this.odeProperties = odeProperties;
-        this.serialId = new SerialId();
         
-        this.decoderPublisherManager = new DecoderPublisherManager(odeProperties);
+        try {
+         this.decoderPublisherManager = new DecoderPublisherManager(odeProperties);
+      } catch (Exception e) {
+         logger.error("Failed to launch decoder publisher services.", e);
+      }
         
         init();
     }

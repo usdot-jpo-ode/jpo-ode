@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.newcoder;
+package us.dot.its.jpo.ode.coder;
 
 import java.text.ParseException;
 import java.time.ZonedDateTime;
@@ -22,7 +22,7 @@ public class MessagePublisher {
 
    public MessagePublisher(OdeProperties odeProps) {
       this.odeProperties = odeProps;
-      this.objectProducer = new MessageProducer<String, OdeObject>(odeProperties.getKafkaBrokers(),
+      this.objectProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(),
             odeProperties.getKafkaProducerType(), null, J2735BsmSerializer.class.getName());
 
    }

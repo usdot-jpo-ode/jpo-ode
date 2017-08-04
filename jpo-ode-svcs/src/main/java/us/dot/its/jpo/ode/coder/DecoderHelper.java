@@ -1,14 +1,12 @@
-package us.dot.its.jpo.ode.newcoder;
+package us.dot.its.jpo.ode.coder;
 
 import java.io.InputStream;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Ieee1609Dot2Data;
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
-import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.model.SerialId;
@@ -19,52 +17,20 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 import us.dot.its.jpo.ode.security.SecurityManager;
 import us.dot.its.jpo.ode.security.SecurityManager.SecurityManagerException;
 
-public class BinaryDecoderPublisher {
-
-   private static final Logger logger = LoggerFactory.getLogger(BinaryDecoderPublisher.class);
-
+public class DecoderHelper {
+   
+   private static final Logger logger = LoggerFactory.getLogger(DecoderHelper.class);
+   
    private OssJ2735Coder j2735Coder;
 
    private Oss1609dot2Coder ieee1609dotCoder;
 
-   private SerialId serialId;
-
-   private MessagePublisher publisher;
-
-   private static AtomicInteger bundleId = new AtomicInteger(1);
-
-   public BinaryDecoderPublisher(OssJ2735Coder jDec, Oss1609dot2Coder ieeeDec, SerialId serId, MessagePublisher dataPub) {
-      this.j2735Coder = jDec;
-      this.ieee1609dotCoder = ieeeDec;
-      this.serialId = serId;
-
-      this.serialId = serId;
-      this.serialId.setBundleId(bundleId.incrementAndGet());
-
-      this.publisher = dataPub;
+   public DecoderHelper(OssJ2735Coder jCoder, Oss1609dot2Coder ieCoder) {
+      this.j2735Coder = jCoder;
+      this.ieee1609dotCoder = ieCoder;
    }
-
-   public void decodeBinaryAndPublish(InputStream is, String fileName) throws Exception {
-      OdeData decoded = null;
-
-      do {
-         try {
-            decoded = decode(is, fileName);
-            if (decoded != null) {
-               logger.debug("Decoded: {}", decoded);
-               publisher.publish(decoded);
-            } else {
-               logger.debug("Failed to decode, null.");
-            }
-         } catch (Exception e) {
-            String msg = "Error decoding and publishing data.";
-            EventLogger.logger.error(msg, e);
-            logger.error(msg, e);
-         }
-      } while (decoded != null);
-   }
-
-   public OdeData decode(InputStream is, String fileName) throws Exception {
+   
+   public OdeData decode(InputStream is, String fileName, SerialId serialId) throws Exception {
       Ieee1609Dot2Data ieee1609dot2Data = ieee1609dotCoder.decodeIeee1609Dot2DataStream(is);
 
       OdeObject bsm = null;
@@ -117,6 +83,25 @@ public class BinaryDecoderPublisher {
       } else {
          return j2735Coder.decodeUPERBsmBytes(bytes);
       }
+   }
+   
+   public OdeData decode(byte[] data, String fileName, SerialId serialId) throws Exception {
+      IEEE1609p2Message message = null;
+
+      OdeData odeBsmData = null;
+      OdeObject bsm = null;
+      try {
+         message = SecurityManager.decodeSignedMessage(data);
+         bsm = getBsmPayload(message);
+      } catch (Exception e) {
+         logger.debug("Message does not have a valid signature");
+      }
+
+      if (bsm != null && message != null) {
+         odeBsmData = DecoderPublisherUtils.createOdeBsmData((J2735Bsm) bsm, message, fileName, serialId);
+      }
+
+      return odeBsmData;
    }
 
 }

@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.newcoder;
+package us.dot.its.jpo.ode.coder;
 
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -9,49 +9,53 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.coder.stream.BinaryDecoderPublisher;
+import us.dot.its.jpo.ode.coder.stream.HexDecoderPublisher;
+import us.dot.its.jpo.ode.coder.stream.JsonDecoderPublisher;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
-import us.dot.its.jpo.ode.plugin.asn1.J2735Plugin;
 import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 
 public class DecoderPublisherManager {
 
    private static final Logger logger = LoggerFactory.getLogger(DecoderPublisherManager.class);
-   
+
    private static AtomicInteger bundleId = new AtomicInteger(1);
 
    private JsonDecoderPublisher jsonDecPub;
    private HexDecoderPublisher hexDecPub;
    private BinaryDecoderPublisher binDecPub;
-   
 
    @Autowired
-   public DecoderPublisherManager(OdeProperties odeProperties) {
-      
-      OssJ2735Coder jDec = null;
-      
+   public DecoderPublisherManager(OdeProperties odeProperties) throws Exception {
+
+      OssJ2735Coder j2735Coder = null;
+
       logger.info("Loading ASN1 Coder: {}", odeProperties.getJ2735CoderClassName());
       try {
-         jDec = (OssJ2735Coder) PluginFactory.getPluginByName(odeProperties.getJ2735CoderClassName());
+         j2735Coder = (OssJ2735Coder) PluginFactory.getPluginByName(odeProperties.getJ2735CoderClassName());
       } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-          logger.error("Unable to load plugin: " + odeProperties.getJ2735CoderClassName(), e);
+         logger.error("Unable to load plugin: " + odeProperties.getJ2735CoderClassName(), e);
+         throw new Exception("Unable to load plugin.", e);
       }
-      
+
       Oss1609dot2Coder ieee1609dotCoder = new Oss1609dot2Coder();
-      
+      DecoderHelper decoderHelper = new DecoderHelper(j2735Coder, ieee1609dotCoder);
+
       MessagePublisher messagePub = new MessagePublisher(odeProperties);
-      
+
       SerialId serialId = new SerialId();
 
+
       this.jsonDecPub = new JsonDecoderPublisher(messagePub, serialId);
-      this.hexDecPub = new HexDecoderPublisher(messagePub, jDec, serialId, bundleId);
-      this.binDecPub = new BinaryDecoderPublisher(jDec, ieee1609dotCoder, serialId, messagePub);
+      this.hexDecPub = new HexDecoderPublisher(messagePub, serialId, bundleId, decoderHelper);
+      this.binDecPub = new BinaryDecoderPublisher(serialId, messagePub, decoderHelper);
    }
 
    public void decodeAndPublishFile(Path filePath, InputStream fileInputStream) throws Exception {
       logger.info("Decoding and publishing file {}", filePath.toFile());
-      
+
       String fileName = filePath.toFile().getName();
 
       if (filePath.toString().endsWith(".hex") || filePath.toString().endsWith(".txt")) {
