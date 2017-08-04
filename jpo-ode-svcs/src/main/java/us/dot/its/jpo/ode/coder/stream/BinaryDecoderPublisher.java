@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.coder.DecoderHelper;
+import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
@@ -21,15 +21,11 @@ public class BinaryDecoderPublisher implements DecoderPublisher {
 
    private static AtomicInteger bundleId = new AtomicInteger(1);
 
-   private DecoderHelper decoder;
-
-   public BinaryDecoderPublisher(MessagePublisher dataPub, DecoderHelper decoderHelper) {
+   public BinaryDecoderPublisher(MessagePublisher dataPub) {
+      this.publisher = dataPub;
 
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
-
-      this.publisher = dataPub;
-      this.decoder = decoderHelper;
    }
 
    @Override
@@ -38,7 +34,7 @@ public class BinaryDecoderPublisher implements DecoderPublisher {
 
       do {
          try {
-            decoded = decoder.decode(is, fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
+            decoded = BsmDecoderHelper.decode(is, fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);
                publisher.publish(decoded);

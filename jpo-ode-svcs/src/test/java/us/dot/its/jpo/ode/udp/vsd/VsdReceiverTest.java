@@ -24,7 +24,7 @@ import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
-import us.dot.its.jpo.ode.coder.DecoderHelper;
+import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.semi.ConnectionPoint;
@@ -33,10 +33,8 @@ import us.dot.its.jpo.ode.j2735.semi.PortNumber;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
-import us.dot.its.jpo.ode.plugin.PluginFactory;
-import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher.UdpReceiverException;
 import us.dot.its.jpo.ode.udp.UdpUtil;
 import us.dot.its.jpo.ode.udp.UdpUtil.UdpUtilException;
@@ -63,11 +61,7 @@ public class VsdReceiverTest {
    @Capturing
    VsdToBsmConverter capturingVsdToBsmConverter;
    @Capturing
-   OssJ2735Coder capturingOssJ2735Coder;
-   @Capturing
-   Oss1609dot2Coder capturingOss1609dot2Coder;
-   @Capturing
-   DecoderHelper capturingBinaryDecoderHelper;
+   BsmDecoderHelper capturingBinaryDecoderHelper;
    @Capturing
    MessagePublisher capturingMessagePublisher;
 
@@ -85,14 +79,6 @@ public class VsdReceiverTest {
 
    @Before
    public void createTestObject() {
-      try {
-         new Expectations(PluginFactory.class) {{
-            PluginFactory.getPluginByName(anyString);
-            result = mockOssJ2735Coder;
-         }};
-      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-         fail("Unexpected exception: " + e);
-      }
 
       testVsdReceiver = new VsdReceiver(injectableOdeProperties);
       testVsdReceiver.setStopped(true);

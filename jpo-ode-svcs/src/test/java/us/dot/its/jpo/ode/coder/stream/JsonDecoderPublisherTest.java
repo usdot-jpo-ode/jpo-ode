@@ -10,7 +10,7 @@ import org.junit.Test;
 import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mocked;
-import us.dot.its.jpo.ode.coder.DecoderPublisherUtils;
+import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -26,7 +26,7 @@ public class JsonDecoderPublisherTest {
    @Capturing
    JsonUtils capturingJsonUtils;
    @Capturing
-   DecoderPublisherUtils capturingDecoderPublisherUtils;
+   BsmDecoderHelper capturingBsmDecoderHelper;
 
    @Test(timeout = 4000)
    public void shouldNotPublishEmptyFileAndThrowException() {

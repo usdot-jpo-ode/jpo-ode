@@ -11,9 +11,6 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.stream.BinaryDecoderPublisher;
 import us.dot.its.jpo.ode.coder.stream.HexDecoderPublisher;
 import us.dot.its.jpo.ode.coder.stream.JsonDecoderPublisher;
-import us.dot.its.jpo.ode.plugin.PluginFactory;
-import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 
 public class DecoderPublisherManager {
 
@@ -26,30 +23,17 @@ public class DecoderPublisherManager {
    @Autowired
    public DecoderPublisherManager(OdeProperties odeProperties) throws Exception {
 
-      OssJ2735Coder j2735Coder = null;
-
-      logger.info("Loading ASN1 Coder: {}", odeProperties.getJ2735CoderClassName());
-      try {
-         j2735Coder = (OssJ2735Coder) PluginFactory.getPluginByName(odeProperties.getJ2735CoderClassName());
-      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-         logger.error("Unable to load plugin: " + odeProperties.getJ2735CoderClassName(), e);
-         throw new Exception("Unable to load plugin.", e);
-      }
-
-      Oss1609dot2Coder ieee1609dotCoder = new Oss1609dot2Coder();
-      DecoderHelper decoderHelper = new DecoderHelper(j2735Coder, ieee1609dotCoder);
-
       MessagePublisher messagePub = new MessagePublisher(odeProperties);
 
       this.jsonDecPub = new JsonDecoderPublisher(messagePub);
-      this.hexDecPub = new HexDecoderPublisher(messagePub, decoderHelper);
-      this.binDecPub = new BinaryDecoderPublisher(messagePub, decoderHelper);
+      this.hexDecPub = new HexDecoderPublisher(messagePub);
+      this.binDecPub = new BinaryDecoderPublisher(messagePub);
    }
 
    public void decodeAndPublishFile(Path filePath, InputStream fileInputStream) throws Exception {
-      logger.info("Decoding and publishing file {}", filePath.toFile());
-
       String fileName = filePath.toFile().getName();
+      
+      logger.info("Decoding and publishing file {}", fileName);
 
       if (filePath.toString().endsWith(".hex") || filePath.toString().endsWith(".txt")) {
          logger.info("Decoding {} as hex file.", filePath);
@@ -62,5 +46,4 @@ public class DecoderPublisherManager {
          binDecPub.decodeAndPublish(fileInputStream, fileName);
       }
    }
-
 }
