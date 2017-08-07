@@ -12,16 +12,16 @@ import us.dot.its.jpo.ode.coder.stream.BinaryDecoderPublisher;
 import us.dot.its.jpo.ode.coder.stream.HexDecoderPublisher;
 import us.dot.its.jpo.ode.coder.stream.JsonDecoderPublisher;
 
-public class DecoderPublisherManager {
+public class FileDecoderPublisher {
 
-   private static final Logger logger = LoggerFactory.getLogger(DecoderPublisherManager.class);
+   private static final Logger logger = LoggerFactory.getLogger(FileDecoderPublisher.class);
 
    private JsonDecoderPublisher jsonDecPub;
    private HexDecoderPublisher hexDecPub;
    private BinaryDecoderPublisher binDecPub;
 
    @Autowired
-   public DecoderPublisherManager(OdeProperties odeProperties) throws Exception {
+   public FileDecoderPublisher(OdeProperties odeProperties) {
 
       MessagePublisher messagePub = new MessagePublisher(odeProperties);
 

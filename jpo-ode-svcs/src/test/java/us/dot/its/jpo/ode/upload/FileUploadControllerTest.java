@@ -16,6 +16,7 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
 
@@ -34,6 +35,8 @@ public class FileUploadControllerTest {
 
    @Capturing
    Executors capturingExecutors;
+   @Capturing
+   ImporterDirectoryWatcher capturingImporterDirectoryWatcher;
    @Mocked
    ExecutorService mockExecutorService;
 
