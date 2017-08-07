@@ -21,8 +21,6 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.FileDecoderPublisher;
-import us.dot.its.jpo.ode.importer.ImporterProcessor;
-import us.dot.its.jpo.ode.importer.OdeFileUtils;
 
 public class ImporterProcessorTest {
 
@@ -34,7 +32,8 @@ public class ImporterProcessorTest {
 
    @Capturing
    FileDecoderPublisher capturingFileDecoderPublisher;
-   @Capturing OdeFileUtils capturingOdeFileUtils;
+   @Capturing
+   OdeFileUtils capturingOdeFileUtils;
 
    @Mocked
    Path mockFile;
@@ -100,7 +99,7 @@ public class ImporterProcessorTest {
       }
       testImporterProcessor.processAndBackupFile(mockFile, injectableBackupDir);
    }
-   
+
    @Test
    public void processAndBackupFileShouldOdeFileUtilsException() {
 
@@ -111,7 +110,7 @@ public class ImporterProcessorTest {
                result = null;
                capturingFileDecoderPublisher.decodeAndPublishFile((Path) any, (InputStream) any);
                times = 1;
-               
+
                OdeFileUtils.backupFile((Path) any, (Path) any);
                result = new IOException("testException123");
             }

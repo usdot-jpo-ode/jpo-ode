@@ -36,7 +36,7 @@ public class ImporterProcessor {
          }
 
          logger.debug("Finished processing {} existing files at location: {}", count, dir);
-      } catch (IOException e) {
+      } catch (Exception e) {
          logger.error("Error processing existing files.", e);
       }
    }
