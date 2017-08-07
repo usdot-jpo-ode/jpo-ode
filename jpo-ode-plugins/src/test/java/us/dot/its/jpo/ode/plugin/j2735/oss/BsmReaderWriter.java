@@ -285,7 +285,7 @@ public class BsmReaderWriter {
                 stringOut.println(CodecUtils.toHex(signedBsm));
                 break;
             case JSON:
-                stringOut.println(JsonUtils.toJson(signer.getIeee1609Dot2Data(), true));
+          //      stringOut.println(JsonUtils.toJson(signer.getIeee1609Dot2Data(), true));
                 break;
             case UPER:
                 binOut.write(signedBsm);
