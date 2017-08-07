@@ -76,10 +76,10 @@ public class OdeProperties implements EnvironmentAware {
     * BSM Properties
     */
    private String kafkaTopicRawBsmPojo = "topic.j2735Bsm";
-   private String kafkaTopicRawBsmJson = "j2735RawBsmJson";
-   private String kafkaTopicFilteredBsmJson = "j2735BsmFilteredJson";
-   private String kafkaTopicOdeBsmPojo = "OdeBsmPojo";
-   private String kafkaTopicOdeBsmJson = "OdeBsmJson";
+   private String kafkaTopicRawBsmJson = "topic.j2735RawBsmJson";
+   private String kafkaTopicFilteredBsmJson = "topic.FilteredOdeBsmJson";
+   private String kafkaTopicOdeBsmPojo = "topic.OdeBsmPojo";
+   private String kafkaTopicOdeBsmJson = "topic.OdeBsmJson";
    private int bsmReceiverPort = 46800;
    private int bsmBufferSize = 500;
 
