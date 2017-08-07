@@ -8,12 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.DecoderHelper;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.coder.stream.ByteDecoderPublisher;
-import us.dot.its.jpo.ode.plugin.PluginFactory;
-import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
@@ -37,17 +33,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
       MessagePublisher messagePub = new MessagePublisher(odeProperties);
 
-      OssJ2735Coder jDec = null;
-      logger.info("Loading ASN1 Coder: {}", odeProps.getJ2735CoderClassName());
-      try {
-         jDec = (OssJ2735Coder) PluginFactory.getPluginByName(odeProperties.getJ2735CoderClassName());
-      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-         logger.error("Unable to load plugin: " + odeProperties.getJ2735CoderClassName(), e);
-      }
-
-      Oss1609dot2Coder ieee1609dotCoder = new Oss1609dot2Coder();
-      DecoderHelper decoderHelper = new DecoderHelper(jDec, ieee1609dotCoder);
-      byteDecoderPublisher = new ByteDecoderPublisher(messagePub, decoderHelper);
+      byteDecoderPublisher = new ByteDecoderPublisher(messagePub);
    }
 
    @Override
@@ -80,9 +66,9 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
    }
 
    /**
-    * Attempts to strip WSMP header bytes. Looks for BSM start sequence "0014" occurring
-    * after 20 bytes. If not after 20 bytes, message probably does not contain a
-    * header.
+    * Attempts to strip WSMP header bytes. Looks for BSM start sequence "0014"
+    * occurring after 20 bytes. If not after 20 bytes, message probably does not
+    * contain a header.
     * 
     * @param packet
     */

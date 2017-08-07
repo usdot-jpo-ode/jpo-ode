@@ -8,7 +8,7 @@ import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.coder.DecoderHelper;
+import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
@@ -18,12 +18,10 @@ public class HexDecoderPublisher implements DecoderPublisher {
    private static final Logger logger = LoggerFactory.getLogger(HexDecoderPublisher.class);
    private MessagePublisher publisher;
    private SerialId serialId;
-   private DecoderHelper decoder;
    private static AtomicInteger bundleId = new AtomicInteger(1);
 
-   public HexDecoderPublisher(MessagePublisher dataPub, DecoderHelper decoderHelper) {
+   public HexDecoderPublisher(MessagePublisher dataPub) {
       this.publisher = dataPub;
-      this.decoder = decoderHelper;
 
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
@@ -41,7 +39,7 @@ public class HexDecoderPublisher implements DecoderPublisher {
             empty = false;
             line = scanner.nextLine();
 
-            decoded = decoder.decode(HexUtils.fromHexString(line), fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
+            decoded = BsmDecoderHelper.decode(HexUtils.fromHexString(line), fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);
                publisher.publish(decoded);

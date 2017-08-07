@@ -7,9 +7,10 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
+import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mocked;
-import us.dot.its.jpo.ode.coder.DecoderHelper;
+import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
@@ -18,8 +19,8 @@ public class BinaryDecoderPublisherTest {
 
    @Mocked
    MessagePublisher mockMessagePublisher;
-   @Mocked
-   DecoderHelper mockDecoderHelper;
+   @Capturing
+   BsmDecoderHelper capturingDecoderHelper;
    @Mocked
    OdeData mockOdeData;
 
@@ -28,7 +29,7 @@ public class BinaryDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               mockDecoderHelper.decode((InputStream) any, anyString, (SerialId) any);
+               BsmDecoderHelper.decode((InputStream) any, anyString, (SerialId) any);
                result = null;
                times = 1;
 
@@ -37,8 +38,8 @@ public class BinaryDecoderPublisherTest {
             }
          };
 
-         new BinaryDecoderPublisher(mockMessagePublisher, mockDecoderHelper)
-               .decodeAndPublish(new ByteArrayInputStream(new byte[] { 1 }), "testFileName");
+         new BinaryDecoderPublisher(mockMessagePublisher).decodeAndPublish(new ByteArrayInputStream(new byte[] { 1 }),
+               "testFileName");
 
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
@@ -50,7 +51,7 @@ public class BinaryDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               mockDecoderHelper.decode((InputStream) any, anyString, (SerialId) any);
+               BsmDecoderHelper.decode((InputStream) any, anyString, (SerialId) any);
                result = new Exception("testException123");
 
                mockMessagePublisher.publish((OdeData) any);
@@ -58,8 +59,8 @@ public class BinaryDecoderPublisherTest {
             }
          };
 
-         new BinaryDecoderPublisher(mockMessagePublisher, mockDecoderHelper)
-               .decodeAndPublish(new ByteArrayInputStream(new byte[] { 1 }), "testFileName");
+         new BinaryDecoderPublisher(mockMessagePublisher).decodeAndPublish(new ByteArrayInputStream(new byte[] { 1 }),
+               "testFileName");
 
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
@@ -71,7 +72,7 @@ public class BinaryDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               mockDecoderHelper.decode((InputStream) any, anyString, (SerialId) any);
+               BsmDecoderHelper.decode((InputStream) any, anyString, (SerialId) any);
                returns(mockOdeData, null);
 
                mockMessagePublisher.publish((OdeData) any);
@@ -79,8 +80,8 @@ public class BinaryDecoderPublisherTest {
             }
          };
 
-         new BinaryDecoderPublisher(mockMessagePublisher, mockDecoderHelper)
-               .decodeAndPublish(new ByteArrayInputStream(new byte[] { 1 }), "testFileName");
+         new BinaryDecoderPublisher(mockMessagePublisher).decodeAndPublish(new ByteArrayInputStream(new byte[] { 1 }),
+               "testFileName");
 
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
