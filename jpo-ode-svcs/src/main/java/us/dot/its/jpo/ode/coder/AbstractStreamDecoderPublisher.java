@@ -13,6 +13,7 @@ import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.asn1.J2735Plugin;
 import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
+import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPublisher {
@@ -62,11 +63,11 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
 
                     decoded = decode(line);
                     if (decoded != null) {
-                       logger.debug("Decoded: {}", decoded);
-                       publish(decoded);
-                   } else {
-                      logger.debug("Failed to decode, null.");
-                   }
+                        logger.debug("Decoded: {}", decoded);
+                        publish(decoded);
+                    } else {
+                        logger.debug("Failed to decode, {}.", line);
+                    }
                 } catch (Exception e) {
                     String msg = "Error decoding and publishing data.";
                     EventLogger.logger.error(msg, e);
@@ -96,7 +97,7 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
                     logger.debug("Decoded: {}", decoded);
                     publish(decoded);
                 } else {
-                   logger.debug("Failed to decode, null.");
+                   logger.debug("Failed to decode stream data");
                 }
             } catch (Exception e) {
                 String msg = "Error decoding and publishing data.";
@@ -116,7 +117,7 @@ public abstract class AbstractStreamDecoderPublisher implements StreamDecoderPub
                 logger.debug("Decoded: {}", decoded);
                 publish(decoded);
             } else {
-               logger.debug("Failed to decode, null.");
+               logger.debug("Failed to decode {}.", CodecUtils.toHex(bytes));
             }
         } catch (Exception e) {
             String msg = "Error decoding and publishing data.";

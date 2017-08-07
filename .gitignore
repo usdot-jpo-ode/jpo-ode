@@ -82,6 +82,11 @@
 /jpo-ode-plugins/.project
 /jpo-ode-plugins/bin/
 /jpo-ode-plugins/.classpath
+/jpo-ode-plugins/ca.cert
+/jpo-ode-plugins/self.cert
+/jpo-ode-plugins/self.s
+/jpo-ode-plugins/sign.prv
+
 ode.log
 jpo-ode-consumer-example/target/
 
