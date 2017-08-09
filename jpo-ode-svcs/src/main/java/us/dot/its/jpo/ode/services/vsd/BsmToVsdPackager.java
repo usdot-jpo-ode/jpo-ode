@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.services.vsd;
 
+import java.io.IOException;
+
 import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,19 +35,25 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, 
 
    private VsdBundler bundler;
 
+   private ObjectMapper mapper;
+
    public BsmToVsdPackager(MessageProducer<String, byte[]> producer, String outputTopic) {
       super(producer, (java.lang.String) outputTopic);
       this.coder = J2735.getPERUnalignedCoder();
       this.bundler = new VsdBundler();
+      this.mapper = new ObjectMapper();
    }
 
    @Override
    protected byte[] transform(String consumedData) {
       
-      JsonNode bsmNode = JsonUtils.getJsonNode(consumedData, "data");
-      logger.info("BSM NODE: {}", bsmNode);
-      
-      J2735Bsm bsmData = (J2735Bsm) JsonUtils.fromJson(bsmNode.asText(), J2735Bsm.class);
+      J2735Bsm bsmData;
+      try {
+         bsmData = (J2735Bsm) JsonUtils.fromJson(mapper.readTree(consumedData).get("data").asText(), J2735Bsm.class);
+      } catch (IOException e) {
+         logger.error("Failed to decode JSON object.", e);
+         return new byte[0];
+      }
 
       byte[] encodedVsd = null;
       try {
