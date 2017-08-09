@@ -19,9 +19,10 @@ public class BsmToVsdPackagerController {
    protected BsmToVsdPackagerController(OdeProperties odeProps) {
       super();
 
-      String inputTopic = odeProps.getKafkaTopicFilteredOdeBsmJson();
       // TODO use filtered topic
-      // String inputTopic = odeProps.getKafkaTopicOdeBsmPojo();
+      // String inputTopic = odeProps.getKafkaTopicFilteredOdeBsmJson();
+      
+      String inputTopic = odeProps.getKafkaTopicOdeBsmPojo();
       String outputTopic = odeProps.getKafkaTopicEncodedVsd();
 
       if (odeProps.isEnabledVsdKafkaTopic()) {
