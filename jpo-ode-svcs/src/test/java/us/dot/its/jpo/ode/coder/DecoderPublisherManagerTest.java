@@ -21,7 +21,7 @@ import us.dot.its.jpo.ode.coder.stream.JsonDecoderPublisher;
 public class DecoderPublisherManagerTest {
 
    @Tested
-   DecoderPublisherManager testDecoderPublisherManager;
+   FileDecoderPublisher testDecoderPublisherManager;
 
    @Injectable
    OdeProperties injectableOdeProperties;

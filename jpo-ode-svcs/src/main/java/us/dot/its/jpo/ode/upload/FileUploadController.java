@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.exporter.FilteredBsmExporter;
 import us.dot.its.jpo.ode.exporter.OdeBsmExporter;
-import us.dot.its.jpo.ode.importer.ImporterWatchService;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
 
@@ -55,12 +55,8 @@ public class FileUploadController {
       logger.debug("UPLOADER - Backup directory: {}", backupPath);
 
       // Create the importers that watch folders for new/modified files
-      threadPool.submit(new ImporterWatchService(odeProperties, bsmPath, backupPath));
-      threadPool.submit(new ImporterWatchService(odeProperties, messageFramePath, backupPath));
-
-      // ODE-436 old bsm exporter call:
-      // Executors.newSingleThreadExecutor().submit(new RawBsmExporter(
-      // odeProperties, OUTPUT_TOPIC, template));
+      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, bsmPath, backupPath));
+      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, messageFramePath, backupPath));
 
       // Create the exporters
       threadPool.submit(new OdeBsmExporter(odeProperties, ODE_BSM_OUTPUT_TOPIC, template));

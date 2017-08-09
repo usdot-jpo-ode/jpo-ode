@@ -82,8 +82,12 @@ public class BsmDecoderHelper {
    private static OdeObject decodeBsm(byte[] bytes) {
       J2735MessageFrame mf = (J2735MessageFrame) j2735Coder.decodeUPERMessageFrameBytes(bytes);
       if (mf != null) {
+
+         logger.info("Decoding as message frame...");
          return mf.getValue();
       } else {
+
+         logger.info("Decoding as bsm without message frame...");
          return j2735Coder.decodeUPERBsmBytes(bytes);
       }
    }
