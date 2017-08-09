@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.plugin.asn1;
 
-import java.io.InputStream;
+import java.io.BufferedInputStream;
 
 import us.dot.its.jpo.ode.plugin.OdePlugin;
 
@@ -19,8 +19,8 @@ public interface J2735Plugin extends OdePlugin {
 
     Asn1Object decodeUPERMessageFrameBytes(byte[] byteArrayMsg);
 
-    Asn1Object decodeUPERMessageFrameStream(InputStream ins);
+    Asn1Object decodeUPERMessageFrameStream(BufferedInputStream ins);
 
-    Asn1Object decodeUPERBsmStream(InputStream ins);
+    Asn1Object decodeUPERBsmStream(BufferedInputStream ins);
 
 }

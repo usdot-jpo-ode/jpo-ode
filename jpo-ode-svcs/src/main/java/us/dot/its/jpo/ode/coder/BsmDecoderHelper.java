@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.coder;
 
-import java.io.InputStream;
+import java.io.BufferedInputStream;
 import java.time.ZonedDateTime;
 
 import org.slf4j.Logger;
@@ -32,8 +32,8 @@ public class BsmDecoderHelper {
    private BsmDecoderHelper() {
    }
 
-   public static OdeData decode(InputStream is, String fileName, SerialId serialId) throws Exception {
-      Ieee1609Dot2Data ieee1609dot2Data = ieee1609dotCoder.decodeIeee1609Dot2DataStream(is);
+   public static OdeData decode(BufferedInputStream bis, String fileName, SerialId serialId) throws Exception {
+      Ieee1609Dot2Data ieee1609dot2Data = ieee1609dotCoder.decodeIeee1609Dot2DataStream(bis);
 
       OdeObject bsm = null;
       OdeData odeBsmData = null;
@@ -42,15 +42,17 @@ public class BsmDecoderHelper {
          try {
             message = IEEE1609p2Message.convert(ieee1609dot2Data);
 
-            bsm = BsmDecoderHelper.getBsmPayload(message);
+            if (message != null) {
+                bsm = BsmDecoderHelper.getBsmPayload(message);
+            }
          } catch (Exception e) {
              logger.debug("Message does not have a valid signature. Assuming it is unsigned message...");
-            bsm = BsmDecoderHelper.decodeBsm(
+             bsm = BsmDecoderHelper.decodeBsm(
                 ieee1609dot2Data.getContent().getSignedData().getTbsData().getPayload()
                   .getData().getContent().getUnsecuredData().byteArrayValue());
          }
       } else { // probably raw BSM or MessageFrame
-         bsm = BsmDecoderHelper.decodeBsm(is);
+         bsm = BsmDecoderHelper.decodeBsm(bis);
       }
 
       if (bsm != null) {
@@ -60,7 +62,7 @@ public class BsmDecoderHelper {
       return odeBsmData;
    }
 
-   private static OdeObject decodeBsm(InputStream is) {
+   private static OdeObject decodeBsm(BufferedInputStream is) {
       J2735MessageFrame mf = (J2735MessageFrame) j2735Coder.decodeUPERMessageFrameStream(is);
       if (mf != null) {
          return mf.getValue();

@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.coder;
 
-import java.io.InputStream;
+import java.io.BufferedInputStream;
 import java.nio.file.Path;
 
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public class FileDecoderPublisher {
       this.binDecPub = new BinaryDecoderPublisher(messagePub);
    }
 
-   public void decodeAndPublishFile(Path filePath, InputStream fileInputStream) {
+   public void decodeAndPublishFile(Path filePath, BufferedInputStream fileInputStream) {
       String fileName = filePath.toFile().getName();
 
       logger.info("Decoding and publishing file {}", fileName);

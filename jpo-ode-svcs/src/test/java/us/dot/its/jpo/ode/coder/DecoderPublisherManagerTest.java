@@ -2,8 +2,8 @@ package us.dot.its.jpo.ode.coder;
 
 import static org.junit.Assert.fail;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -40,17 +40,18 @@ public class DecoderPublisherManagerTest {
       try {
          new Expectations() {
             {
-               capturingHexDecoderPublisher.decodeAndPublish((InputStream) any, anyString);
+               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString);
                times = 1;
-               capturingJsonDecoderPublisher.decodeAndPublish((InputStream) any, anyString);
+               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString);
                times = 0;
-               capturingBinaryDecoderPublisher.decodeAndPublish((InputStream) any, anyString);
+               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString);
                times = 0;
             }
          };
 
          Path testPath = Paths.get("testFile.hex");
-         testDecoderPublisherManager.decodeAndPublishFile(testPath, new ByteArrayInputStream(new byte[] { 1 }));
+         BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
+         testDecoderPublisherManager.decodeAndPublishFile(testPath, bis );
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -61,17 +62,18 @@ public class DecoderPublisherManagerTest {
       try {
          new Expectations() {
             {
-               capturingHexDecoderPublisher.decodeAndPublish((InputStream) any, anyString);
+               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString);
                times = 1;
-               capturingJsonDecoderPublisher.decodeAndPublish((InputStream) any, anyString);
+               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString);
                times = 0;
-               capturingBinaryDecoderPublisher.decodeAndPublish((InputStream) any, anyString);
+               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString);
                times = 0;
             }
          };
 
          Path testPath = Paths.get("testFile.txt");
-         testDecoderPublisherManager.decodeAndPublishFile(testPath, new ByteArrayInputStream(new byte[] { 1 }));
+         BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
+         testDecoderPublisherManager.decodeAndPublishFile(testPath, bis );
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -82,17 +84,18 @@ public class DecoderPublisherManagerTest {
       try {
          new Expectations() {
             {
-               capturingHexDecoderPublisher.decodeAndPublish((InputStream) any, anyString);
+               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString);
                times = 0;
-               capturingJsonDecoderPublisher.decodeAndPublish((InputStream) any, anyString);
+               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString);
                times = 1;
-               capturingBinaryDecoderPublisher.decodeAndPublish((InputStream) any, anyString);
+               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString);
                times = 0;
             }
          };
 
          Path testPath = Paths.get("testFile.json");
-         testDecoderPublisherManager.decodeAndPublishFile(testPath, new ByteArrayInputStream(new byte[] { 1 }));
+         BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
+         testDecoderPublisherManager.decodeAndPublishFile(testPath, bis );
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -103,17 +106,18 @@ public class DecoderPublisherManagerTest {
       try {
          new Expectations() {
             {
-               capturingHexDecoderPublisher.decodeAndPublish((InputStream) any, anyString);
+               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString);
                times = 0;
-               capturingJsonDecoderPublisher.decodeAndPublish((InputStream) any, anyString);
+               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString);
                times = 0;
-               capturingBinaryDecoderPublisher.decodeAndPublish((InputStream) any, anyString);
+               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString);
                times = 1;
             }
          };
 
          Path testPath = Paths.get("testFile.uper");
-         testDecoderPublisherManager.decodeAndPublishFile(testPath, new ByteArrayInputStream(new byte[] { 1 }));
+         BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
+         testDecoderPublisherManager.decodeAndPublishFile(testPath, bis );
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }

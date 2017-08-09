@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.importer;
 
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,10 +18,11 @@ public class ImporterProcessor {
 
    private static final Logger logger = LoggerFactory.getLogger(ImporterProcessor.class);
    private FileDecoderPublisher decoderPublisherManager;
-
+   private OdeProperties odeProperties;
+   
    public ImporterProcessor(OdeProperties odeProperties) {
       this.decoderPublisherManager = new FileDecoderPublisher(odeProperties);
-
+      this.odeProperties = odeProperties;
    }
 
    public void processDirectory(Path dir, Path backupDir) {
@@ -44,7 +46,9 @@ public class ImporterProcessor {
    public void processAndBackupFile(Path filePath, Path backupDir) {
 
       try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
-         decoderPublisherManager.decodeAndPublishFile(filePath, inputStream);
+          BufferedInputStream bis = new BufferedInputStream(inputStream, 
+              odeProperties.getImportProcessorBufferSize());
+          decoderPublisherManager.decodeAndPublishFile(filePath, bis);
       } catch (Exception e) {
          logger.error("Unable to open or process file: " + filePath, e);
       }

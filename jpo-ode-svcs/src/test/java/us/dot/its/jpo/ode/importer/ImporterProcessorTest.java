@@ -2,11 +2,11 @@ package us.dot.its.jpo.ode.importer;
 
 import static org.junit.Assert.fail;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -108,7 +108,7 @@ public class ImporterProcessorTest {
             {
                new FileInputStream((File) any);
                result = null;
-               capturingFileDecoderPublisher.decodeAndPublishFile((Path) any, (InputStream) any);
+               capturingFileDecoderPublisher.decodeAndPublishFile((Path) any, (BufferedInputStream) any);
                times = 1;
 
                OdeFileUtils.backupFile((Path) any, (Path) any);

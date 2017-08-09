@@ -19,6 +19,7 @@ import org.springframework.core.env.Environment;
 import groovy.lang.MissingPropertyException;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.plugin.OdePlugin;
 
 @ConfigurationProperties("ode")
 @PropertySource("classpath:application.properties")
@@ -104,6 +105,9 @@ public class OdeProperties implements EnvironmentAware {
    private int isdDepositorPort = 6666;
    private int isdTrustPort = 6667;
    private int dataReceiptBufferSize;
+
+   private int importProcessorBufferSize = OdePlugin.INPUT_STREAM_BUFFER_SIZE;
+
 
    private String hostId;
    private List<Path> uploadLocations = new ArrayList<>();
@@ -582,6 +586,14 @@ public class OdeProperties implements EnvironmentAware {
 
     public void setKafkaTopicDecodedJson(String kafkaTopicDecodedJson) {
         this.kafkaTopicDecodedJson = kafkaTopicDecodedJson;
+    }
+
+    public int getImportProcessorBufferSize() {
+        return importProcessorBufferSize;
+    }
+
+    public void setImportProcessorBufferSize(int importProcessorBufferSize) {
+        this.importProcessorBufferSize = importProcessorBufferSize;
     }
 
 }

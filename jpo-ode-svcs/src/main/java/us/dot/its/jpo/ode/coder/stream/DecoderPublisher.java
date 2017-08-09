@@ -1,8 +1,8 @@
 package us.dot.its.jpo.ode.coder.stream;
 
-import java.io.InputStream;
+import java.io.BufferedInputStream;
 
 public interface DecoderPublisher {
    
-   public void decodeAndPublish(InputStream is, String fileName) throws Exception;
+   public void decodeAndPublish(BufferedInputStream is, String fileName) throws Exception;
 }

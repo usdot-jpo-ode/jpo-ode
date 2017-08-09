@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.coder.stream;
 
 import static org.junit.Assert.fail;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.util.Scanner;
 
@@ -36,8 +37,8 @@ public class HexDecoderPublisherTest {
                result = false;
             }
          };
-         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(new ByteArrayInputStream(new byte[] { 1 }),
-               "testFileName");
+         BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
+         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName");
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -59,8 +60,8 @@ public class HexDecoderPublisherTest {
                times = 0;
             }
          };
-         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(new ByteArrayInputStream(new byte[] { 1 }),
-               "testFileName");
+         BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
+         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName");
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -82,8 +83,8 @@ public class HexDecoderPublisherTest {
                times = 0;
             }
          };
-         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(new ByteArrayInputStream(new byte[] { 1 }),
-               "testFileName");
+         BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
+         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName");
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -105,8 +106,8 @@ public class HexDecoderPublisherTest {
                times = 1;
             }
          };
-         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(new ByteArrayInputStream(new byte[] { 1 }),
-               "testFileName");
+         BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
+         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName");
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
