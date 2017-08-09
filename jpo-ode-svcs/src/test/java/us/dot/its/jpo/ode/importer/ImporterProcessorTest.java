@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -104,8 +105,10 @@ public class ImporterProcessorTest {
    public void processAndBackupFileShouldOdeFileUtilsException() {
 
       try {
-         new Expectations(FileInputStream.class) {
+         new Expectations(FileInputStream.class, BufferedInputStream.class) {
             {
+               new BufferedInputStream((InputStream) any, anyInt);
+               result = null;
                new FileInputStream((File) any);
                result = null;
                capturingFileDecoderPublisher.decodeAndPublishFile((Path) any, (BufferedInputStream) any);

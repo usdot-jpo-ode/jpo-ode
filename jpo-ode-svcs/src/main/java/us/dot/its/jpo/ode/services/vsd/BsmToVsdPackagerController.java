@@ -9,7 +9,6 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
-import us.dot.its.jpo.ode.wrapper.OdeBsmDeserializer;
 
 @Controller
 public class BsmToVsdPackagerController {
@@ -20,9 +19,8 @@ public class BsmToVsdPackagerController {
    protected BsmToVsdPackagerController(OdeProperties odeProps) {
       super();
 
-      // TODO use filtered topic
-      // String inputTopic = odeProps.getKafkaTopicFilteredOdeBsmJson();
-      String inputTopic = odeProps.getKafkaTopicOdeBsmJson();
+      String inputTopic = odeProps.getKafkaTopicFilteredOdeBsmJson();
+      // String inputTopic = odeProps.getKafkaTopicOdeBsmJson();
 
       String outputTopic = odeProps.getKafkaTopicEncodedVsd();
 

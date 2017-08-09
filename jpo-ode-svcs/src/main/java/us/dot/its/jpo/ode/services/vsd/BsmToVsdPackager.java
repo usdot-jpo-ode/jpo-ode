@@ -6,7 +6,6 @@ import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,7 +15,6 @@ import com.oss.asn1.PERUnalignedCoder;
 
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
-import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.AbstractSubPubTransformer;
@@ -48,11 +46,8 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, 
 
    @Override
    protected byte[] transform(String consumedData) {
-      logger.info("Packager received: {}", consumedData);
       
       JsonNode bsmNode = JsonUtils.getJsonNode(consumedData, "payload").get("data");
-      
-      logger.info("BSM node: {}", bsmNode);
       
       J2735Bsm bsmData;
       try {
@@ -62,7 +57,7 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, 
          return new byte[0];
       }
 
-      byte[] encodedVsd = null;
+      byte[] encodedVsd = new byte[0];
       try {
          logger.debug("Consuming BSM.");
 
