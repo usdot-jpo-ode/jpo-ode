@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oss.asn1.EncodeFailedException;
@@ -42,6 +43,7 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, 
       this.coder = J2735.getPERUnalignedCoder();
       this.bundler = new VsdBundler();
       this.mapper = new ObjectMapper();
+      this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
    }
 
    @Override
