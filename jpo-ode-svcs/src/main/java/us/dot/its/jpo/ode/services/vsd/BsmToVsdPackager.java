@@ -40,7 +40,6 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, 
    protected byte[] transform(String consumedData) {
       
       OdeBsmData odeBsmData = (OdeBsmData) JsonUtils.fromJson(consumedData, OdeBsmData.class);
-      
       J2735Bsm bsmData = (J2735Bsm) odeBsmData.getPayload().getData();
 
       byte[] encodedVsd = null;

@@ -6,9 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
+import us.dot.its.jpo.ode.wrapper.OdeBsmDeserializer;
 
 @Controller
 public class BsmToVsdPackagerController {
@@ -21,19 +22,19 @@ public class BsmToVsdPackagerController {
 
       // TODO use filtered topic
       // String inputTopic = odeProps.getKafkaTopicFilteredOdeBsmJson();
-      
       String inputTopic = odeProps.getKafkaTopicOdeBsmPojo();
+
       String outputTopic = odeProps.getKafkaTopicEncodedVsd();
 
       if (odeProps.isEnabledVsdKafkaTopic()) {
-         logger.info("Converting {} records from topic {} and publishing to topic {} ", J2735Bsm.class.getSimpleName(),
-               inputTopic, outputTopic);
+         logger.info("Converting {} records from topic {} and publishing to topic {} ",
+               OdeBsmData.class.getSimpleName(), inputTopic, outputTopic);
 
          BsmToVsdPackager converter = new BsmToVsdPackager(MessageProducer.defaultByteArrayMessageProducer(
                odeProps.getKafkaBrokers(), odeProps.getKafkaProducerType()), outputTopic);
 
          MessageConsumer<String, String> consumer = new MessageConsumer<String, String>(odeProps.getKafkaBrokers(),
-               this.getClass().getSimpleName(), converter, MessageConsumer.SERIALIZATION_STRING_DESERIALIZER);
+               this.getClass().getSimpleName(), converter, OdeBsmDeserializer.class.getName());
 
          consumer.setName(BsmToVsdPackager.class.getSimpleName());
          converter.start(consumer, inputTopic);
