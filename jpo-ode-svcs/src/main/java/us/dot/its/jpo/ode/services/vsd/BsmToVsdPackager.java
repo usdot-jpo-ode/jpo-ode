@@ -4,6 +4,9 @@ import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 import com.oss.asn1.PERUnalignedCoder;
@@ -39,9 +42,13 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, 
    @Override
    protected byte[] transform(String consumedData) {
       
-      OdeBsmData odeBsmData = (OdeBsmData) JsonUtils.fromJson(consumedData, OdeBsmData.class);
-      logger.info("Transforming {} to {}", odeBsmData.getPayload().getDataType(), J2735Bsm.class);
-      J2735Bsm bsmData = (J2735Bsm) odeBsmData.getPayload().getData();
+      J2735Bsm bsmData;
+      try {
+         bsmData = new ObjectMapper().treeToValue(JsonUtils.getJsonNode(consumedData, "data"), J2735Bsm.class);
+      } catch (JsonProcessingException e) {
+         logger.error("Failed to decode JSON object.", e);
+         return new byte[0];
+      }
 
       byte[] encodedVsd = null;
       try {
