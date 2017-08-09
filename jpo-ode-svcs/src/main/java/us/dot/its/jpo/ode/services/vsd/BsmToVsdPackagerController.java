@@ -34,7 +34,7 @@ public class BsmToVsdPackagerController {
                odeProps.getKafkaBrokers(), odeProps.getKafkaProducerType()), outputTopic);
 
          MessageConsumer<String, String> consumer = new MessageConsumer<String, String>(odeProps.getKafkaBrokers(),
-               this.getClass().getSimpleName(), converter, OdeBsmDeserializer.class.getName());
+               this.getClass().getSimpleName(), converter, MessageConsumer.SERIALIZATION_STRING_DESERIALIZER);
 
          consumer.setName(BsmToVsdPackager.class.getSimpleName());
          converter.start(consumer, inputTopic);
