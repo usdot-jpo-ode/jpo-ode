@@ -48,7 +48,7 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, 
    protected byte[] transform(String consumedData) {
       logger.info("Packager received: {}", consumedData);
       
-      JsonNode bsmNode = JsonUtils.getJsonNode(consumedData, "data");
+      JsonNode bsmNode = JsonUtils.getJsonNode(consumedData, "payload").get("data");
       
       logger.info("BSM node: {}", bsmNode);
       
