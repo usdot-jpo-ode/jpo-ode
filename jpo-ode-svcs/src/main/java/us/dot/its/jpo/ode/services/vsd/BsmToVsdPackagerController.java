@@ -20,6 +20,8 @@ public class BsmToVsdPackagerController {
       super();
 
       String inputTopic = odeProps.getKafkaTopicFilteredOdeBsmJson();
+      // TODO use filtered topic
+      // String inputTopic = odeProps.getKafkaTopicOdeBsmPojo();
       String outputTopic = odeProps.getKafkaTopicEncodedVsd();
 
       if (odeProps.isEnabledVsdKafkaTopic()) {

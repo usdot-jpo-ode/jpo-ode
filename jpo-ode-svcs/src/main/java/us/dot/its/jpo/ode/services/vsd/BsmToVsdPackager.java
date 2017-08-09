@@ -10,6 +10,7 @@ import com.oss.asn1.PERUnalignedCoder;
 
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
+import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.AbstractSubPubTransformer;
@@ -37,8 +38,10 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, 
 
    @Override
    protected byte[] transform(String consumedData) {
-
-      J2735Bsm bsmData = (J2735Bsm) JsonUtils.fromJson(consumedData, J2735Bsm.class);
+      
+      OdeBsmData odeBsmData = (OdeBsmData) JsonUtils.fromJson(consumedData, OdeBsmData.class);
+      
+      J2735Bsm bsmData = (J2735Bsm) odeBsmData.getPayload().getData();
 
       byte[] encodedVsd = null;
       try {
