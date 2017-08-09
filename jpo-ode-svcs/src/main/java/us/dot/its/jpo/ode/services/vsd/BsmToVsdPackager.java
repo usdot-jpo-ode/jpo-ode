@@ -46,10 +46,15 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, 
 
    @Override
    protected byte[] transform(String consumedData) {
+      logger.info("Packager received: {}", consumedData);
+      
+      JsonNode bsmNode = JsonUtils.getJsonNode(consumedData, "data");
+      
+      logger.info("BSM node: {}", bsmNode);
       
       J2735Bsm bsmData;
       try {
-         bsmData = (J2735Bsm) JsonUtils.fromJson(mapper.readTree(consumedData).get("data").asText(), J2735Bsm.class);
+         bsmData = mapper.treeToValue(bsmNode, J2735Bsm.class);
       } catch (IOException e) {
          logger.error("Failed to decode JSON object.", e);
          return new byte[0];
