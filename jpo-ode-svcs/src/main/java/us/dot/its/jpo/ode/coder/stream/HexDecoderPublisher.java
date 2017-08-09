@@ -44,7 +44,7 @@ public class HexDecoderPublisher implements DecoderPublisher {
                logger.debug("Decoded: {}", decoded);
                publisher.publish(decoded);
             } else {
-               logger.debug("Failed to decode, null.");
+               logger.debug("Failed to decode {}.", line);
             }
          }
 

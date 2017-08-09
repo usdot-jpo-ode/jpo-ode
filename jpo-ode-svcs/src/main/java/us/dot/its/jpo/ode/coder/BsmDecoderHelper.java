@@ -44,8 +44,9 @@ public class BsmDecoderHelper {
 
             bsm = BsmDecoderHelper.getBsmPayload(message);
          } catch (Exception e) {
-            logger.debug("Message does not have a valid signature.");
-            bsm = BsmDecoderHelper.decodeBsm(ieee1609dot2Data.getContent().getSignedData().getTbsData().getPayload()
+             logger.debug("Message does not have a valid signature. Assuming it is unsigned message...");
+            bsm = BsmDecoderHelper.decodeBsm(
+                ieee1609dot2Data.getContent().getSignedData().getTbsData().getPayload()
                   .getData().getContent().getUnsecuredData().byteArrayValue());
          }
       } else { // probably raw BSM or MessageFrame
@@ -96,18 +97,22 @@ public class BsmDecoderHelper {
          message = SecurityManager.decodeSignedMessage(data);
          bsm = getBsmPayload(message);
       } catch (Exception e) {
-         logger.debug("Message does not have a valid signature");
+         logger.debug("Message does not have a valid signature. Assuming it is unsigned message...");
+         bsm = BsmDecoderHelper.decodeBsm(data);
       }
 
-      if (bsm != null && message != null) {
+      if (bsm != null) {
          odeBsmData = BsmDecoderHelper.createOdeBsmData((J2735Bsm) bsm, message, fileName, serialId);
       }
 
       return odeBsmData;
    }
 
-   public static OdeBsmData createOdeBsmData(J2735Bsm rawBsm, IEEE1609p2Message message, String fileName,
-         SerialId serialId) {
+   public static OdeBsmData createOdeBsmData(
+       J2735Bsm rawBsm, 
+       IEEE1609p2Message message, 
+       String fileName,
+       SerialId serialId) {
       OdeBsmPayload payload = new OdeBsmPayload(rawBsm);
 
       OdeBsmMetadata metadata = new OdeBsmMetadata(payload);

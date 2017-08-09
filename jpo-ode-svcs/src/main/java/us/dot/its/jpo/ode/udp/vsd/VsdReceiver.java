@@ -12,25 +12,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.oss.asn1.AbstractData;
 
+import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.semi.ConnectionPoint;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
+import us.dot.its.jpo.ode.model.OdeBsmData;
+import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsm;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
 import us.dot.its.jpo.ode.udp.UdpUtil;
 import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
-import us.dot.its.jpo.ode.util.SerializationUtils;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
+import us.dot.its.jpo.ode.wrapper.OdeBsmSerializer;
 
 public class VsdReceiver extends BsmReceiver {
 
    private static final Logger logger = LoggerFactory.getLogger(VsdReceiver.class);
+   protected MessageProducer<String, OdeBsmData> odeBsmDataProducer;
+   private SerialId serialId = new SerialId();
 
    @Autowired
    public VsdReceiver(OdeProperties odeProps) {
       super(odeProps, odeProps.getVsdReceiverPort(), odeProps.getVsdBufferSize());
+      odeBsmDataProducer = new MessageProducer<String, OdeBsmData>(
+              odeProperties.getKafkaBrokers(),
+              odeProperties.getKafkaProducerType(), 
+              null, 
+              OdeBsmSerializer.class.getName());
    }
 
    @Override
@@ -110,10 +122,14 @@ public class VsdReceiver extends BsmReceiver {
       int i = 1;
       for (BasicSafetyMessage entry : bsmList) {
          logger.debug("Publishing BSM {}/{} to topic {}", 
-             i++, msg.getBundle().getSize(), odeProperties.getKafkaTopicRawBsmPojo());
+             i++, msg.getBundle().getSize(), odeProperties.getKafkaTopicOdeBsmPojo());
+         
          J2735Bsm j2735Bsm = OssBsm.genericBsm(entry);
-         byteArrayProducer.send(odeProperties.getKafkaTopicRawBsmPojo(), null,
-             new SerializationUtils<J2735Bsm>().serialize(j2735Bsm));
+         serialId.addBundleId(1);
+         OdeBsmData odeBsmData = BsmDecoderHelper.createOdeBsmData(
+             (J2735Bsm) j2735Bsm, new IEEE1609p2Message(), null, serialId);
+         
+         odeBsmDataProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), null, odeBsmData);
       }
    }
    

@@ -7,8 +7,12 @@ import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.model.OdeBsmData;
+// TODO Deprecate per ODE-436
+// vvvvvvvvvvvvvvvvvvvvvvvvvv
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.wrapper.J2735BsmDeserializer;
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^
+// TODO Deprecate per ODE-436
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.OdeBsmDeserializer;
 
@@ -27,6 +31,8 @@ public class ToJsonServiceController {
 
       logger.info("Starting {}", this.getClass().getSimpleName());
 
+      // TODO Deprecate per ODE-436
+      // vvvvvvvvvvvvvvvvvvvvvvvvvv
       logger.info("Converting {} records from topic {} and publishing to topic {} ", J2735Bsm.class.getSimpleName(),
             odeProps.getKafkaTopicRawBsmPojo(), odeProps.getKafkaTopicRawBsmJson());
 
@@ -38,6 +44,8 @@ public class ToJsonServiceController {
 
       j2735BsmConsumer.setName("j2735BsmConsumer");
       j2735BsmConverter.start(j2735BsmConsumer, odeProps.getKafkaTopicRawBsmPojo());
+      // ^^^^^^^^^^^^^^^^^^^^^^^^^^
+      // TODO Deprecate per ODE-436
 
       logger.info("Converting {} records from topic {} and publishing to topic {} ", 
           OdeBsmData.class.getSimpleName(),
