@@ -248,11 +248,17 @@ public class OssVehicleSituationRecord {
     * @return
     */
    public static Acceleration convertAcceleration(BigDecimal jAcc) {
-      Acceleration nAcc;
+      Acceleration nAcc = new Acceleration(2001);
       if (null == jAcc) {
-         nAcc = new Acceleration(2001);
+         nAcc.setValue(2001);
       } else {
-         nAcc = new Acceleration(jAcc.multiply(BigDecimal.valueOf(100)).intValue());
+         if (jAcc.compareTo(BigDecimal.valueOf(20)) > 0) {
+            nAcc.setValue(2000);
+         } else if (jAcc.compareTo(BigDecimal.valueOf(-20)) < 0) {
+            nAcc.setValue(-2000);
+         } else {
+            nAcc.setValue(jAcc.multiply(BigDecimal.valueOf(100)).intValue());
+         }
       }
       return nAcc;
    }
@@ -269,9 +275,9 @@ public class OssVehicleSituationRecord {
       if (null == jVerta) {
          nVerta.setValue(-127);
       } else {
-         if (jVerta.compareTo(BigDecimal.valueOf(2.54)) > 0) {
+         if (jVerta.compareTo(BigDecimal.valueOf(2.54)) >= 0) {
             nVerta.setValue(127);
-         } else if (jVerta.compareTo(BigDecimal.valueOf(-2.52)) < 0) {
+         } else if (jVerta.compareTo(BigDecimal.valueOf(-2.52)) <= 0) {
             nVerta.setValue(-126);
          } else {
             nVerta.setValue(jVerta.multiply(BigDecimal.valueOf(50)).intValue());
