@@ -160,13 +160,49 @@ public class OssVehicleSituationRecordTest {
    public void VerticalAccelerationShouldReturnElse() {
 	   VerticalAcceleration expectedValue;
 
-	   BigDecimal testInput = BigDecimal.valueOf(888.77);;
-	   expectedValue = new VerticalAcceleration(44438);
+	   BigDecimal testInput = BigDecimal.valueOf(1.54);;
+	   expectedValue = new VerticalAcceleration(77);
 
 	   VerticalAcceleration actualValue = OssVehicleSituationRecord.convertVerticalAcceleration(testInput);
 	   assertEquals(expectedValue, actualValue);
 
    }
+   @Test 
+   public void VerticalAccelerationShouldReturnUpperBound() {
+      VerticalAcceleration expectedValue;
+
+      BigDecimal testInput = BigDecimal.valueOf(2.99);;
+      expectedValue = new VerticalAcceleration(127);
+
+      VerticalAcceleration actualValue = OssVehicleSituationRecord.convertVerticalAcceleration(testInput);
+      assertEquals(expectedValue, actualValue);
+
+   }
+   
+   @Test 
+   public void VerticalAccelerationShouldReturnLowerBound() {
+      VerticalAcceleration expectedValue;
+
+      BigDecimal testInput = BigDecimal.valueOf(-2.99);;
+      expectedValue = new VerticalAcceleration(-126);
+
+      VerticalAcceleration actualValue = OssVehicleSituationRecord.convertVerticalAcceleration(testInput);
+      assertEquals(expectedValue, actualValue);
+
+   }
+   @Test 
+   public void VerticalAccelerationShouldReturnLowerBoundTwo() {
+      VerticalAcceleration expectedValue;
+
+      BigDecimal testInput = BigDecimal.valueOf(-2.54);;
+      expectedValue = new VerticalAcceleration(-126);
+
+      VerticalAcceleration actualValue = OssVehicleSituationRecord.convertVerticalAcceleration(testInput);
+      assertEquals(expectedValue, actualValue);
+
+   }
+   
+   
    /*
    @Test
    public void convertYawRateNullEntry() {

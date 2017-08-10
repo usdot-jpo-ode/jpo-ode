@@ -95,26 +95,6 @@ public class BsmDecoderHelper {
       }
    }
 
-   public static OdeData decode(byte[] data, String fileName, SerialId serialId) throws Exception {
-      IEEE1609p2Message message = null;
-
-      OdeData odeBsmData = null;
-      OdeObject bsm = null;
-      try {
-         message = SecurityManager.decodeSignedMessage(data);
-         bsm = getBsmPayload(message);
-      } catch (Exception e) {
-         logger.debug("Message does not have a valid signature. Assuming it is unsigned message...");
-         bsm = BsmDecoderHelper.decodeBsm(data);
-      }
-
-      if (bsm != null) {
-         odeBsmData = BsmDecoderHelper.createOdeBsmData((J2735Bsm) bsm, message, fileName, serialId);
-      }
-
-      return odeBsmData;
-   }
-
    public static OdeBsmData createOdeBsmData(
        J2735Bsm rawBsm, 
        IEEE1609p2Message message, 
