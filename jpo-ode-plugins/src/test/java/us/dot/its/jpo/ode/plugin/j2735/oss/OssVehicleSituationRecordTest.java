@@ -137,8 +137,8 @@ public class OssVehicleSituationRecordTest {
    public void convertAccelerationShouldReturnElse() {
 	   Acceleration expectedValue;
 
-	   BigDecimal testInput = BigDecimal.valueOf(888.77);
-	   expectedValue = new Acceleration(8);
+	   BigDecimal testInput = BigDecimal.valueOf(-8.77);
+	   expectedValue = new Acceleration(-877);
 
 	   Acceleration actualValue = OssVehicleSituationRecord.convertAcceleration(testInput);
 	   assertEquals(expectedValue, actualValue);
