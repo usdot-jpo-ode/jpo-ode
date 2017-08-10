@@ -232,7 +232,7 @@ public class OssVehicleSituationRecord {
 
       AccelerationSet4Way nAccSet = new AccelerationSet4Way();
       nAccSet._long = convertAcceleration(jAccSet.getAccelLong());
-      nAccSet.lat = convertAcceleration(jAccSet.getAccelLong());
+      nAccSet.lat = convertAcceleration(jAccSet.getAccelLat());
       nAccSet.vert = convertVerticalAcceleration(jAccSet.getAccelLong());
       nAccSet.yaw = convertYawRate(jAccSet.getAccelYaw());
       return nAccSet;
@@ -249,7 +249,7 @@ public class OssVehicleSituationRecord {
       if (null == jAcc) {
          nAcc = new Acceleration(2001);
       } else {
-         nAcc = new Acceleration((int) Math.floor(jAcc.doubleValue() / 100));
+         nAcc = new Acceleration(jAcc.multiply(BigDecimal.valueOf(100)).intValue());
       }
       return nAcc;
    }
@@ -266,7 +266,7 @@ public class OssVehicleSituationRecord {
       if (null == jVerta) {
          nVerta = new VerticalAcceleration(-127);
       } else {
-         nVerta = new VerticalAcceleration((int) Math.floor(jVerta.doubleValue() / 0.02));
+         nVerta = new VerticalAcceleration(jVerta.multiply(BigDecimal.valueOf(50)).intValue());
       }
       return nVerta;
    }
