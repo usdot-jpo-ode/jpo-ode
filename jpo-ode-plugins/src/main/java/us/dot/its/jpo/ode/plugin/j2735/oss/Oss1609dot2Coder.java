@@ -64,12 +64,12 @@ public class Oss1609dot2Coder {
                 }
                 returnValue = (Ieee1609Dot2Data) coder.decode(bis, new Ieee1609Dot2Data());
                 if (!returnValue.getContent().isValid()) {
-                   returnValue = null;
                    throw new IOException("Object decoding invalid.");
                 }
                 logger.debug("Decoded as {}: {}", Ieee1609Dot2Data.class.getSimpleName(), returnValue);
             }
         } catch (Exception e) {
+           returnValue = null;
            logger.debug("Exception occured while decoding as {}", Ieee1609Dot2Data.class.getSimpleName());
             if (bis.markSupported()) {
                 try {
