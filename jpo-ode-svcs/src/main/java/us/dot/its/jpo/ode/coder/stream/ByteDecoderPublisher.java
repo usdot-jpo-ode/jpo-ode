@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.coder.stream;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
@@ -28,7 +30,7 @@ public class ByteDecoderPublisher {
       OdeData decoded;
 
       try {
-         decoded = BsmDecoderHelper.decode(bytes, null, this.serialId.setBundleId(bundleId.incrementAndGet()));
+         decoded = BsmDecoderHelper.decode(new BufferedInputStream(new ByteArrayInputStream(bytes)), null, this.serialId.setBundleId(bundleId.incrementAndGet()));
          if (decoded != null) {
             logger.debug("Decoded: {}", decoded);
             publisher.publish(decoded);

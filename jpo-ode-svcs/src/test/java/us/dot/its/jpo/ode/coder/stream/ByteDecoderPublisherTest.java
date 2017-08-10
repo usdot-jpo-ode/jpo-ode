@@ -2,6 +2,9 @@ package us.dot.its.jpo.ode.coder.stream;
 
 import static org.junit.Assert.fail;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+
 import org.junit.Test;
 
 import mockit.Capturing;
@@ -27,7 +30,7 @@ public class ByteDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               BsmDecoderHelper.decode((byte[]) any, anyString, (SerialId) any);
+               BsmDecoderHelper.decode(new BufferedInputStream(new ByteArrayInputStream((byte[]) any)), anyString, (SerialId) any);
                result = null;
                times = 1;
 
@@ -46,7 +49,7 @@ public class ByteDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               BsmDecoderHelper.decode((byte[]) any, anyString, (SerialId) any);
+               BsmDecoderHelper.decode(new BufferedInputStream(new ByteArrayInputStream((byte[]) any)), anyString, (SerialId) any);
                result = new Exception("testException123");
                times = 1;
 
@@ -65,7 +68,7 @@ public class ByteDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               BsmDecoderHelper.decode((byte[]) any, anyString, (SerialId) any);
+               BsmDecoderHelper.decode(new BufferedInputStream(new ByteArrayInputStream((byte[]) any)), anyString, (SerialId) any);
                result = mockOdeData;
                times = 1;
 

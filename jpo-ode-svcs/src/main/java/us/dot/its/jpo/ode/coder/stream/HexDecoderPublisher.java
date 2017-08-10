@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.coder.stream;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -39,7 +40,7 @@ public class HexDecoderPublisher implements DecoderPublisher {
             empty = false;
             line = scanner.nextLine();
 
-            decoded = BsmDecoderHelper.decode(HexUtils.fromHexString(line), fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
+            decoded = BsmDecoderHelper.decode(new BufferedInputStream(new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);
                publisher.publish(decoded);
