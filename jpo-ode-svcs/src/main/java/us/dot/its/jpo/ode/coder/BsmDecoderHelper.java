@@ -39,6 +39,7 @@ public class BsmDecoderHelper {
       OdeData odeBsmData = null;
       IEEE1609p2Message message = null;
       if (ieee1609dot2Data != null) {
+         logger.debug("Attempting to decode as Ieee1609Dot2Data.");
          try {
             message = IEEE1609p2Message.convert(ieee1609dot2Data);
 
@@ -60,11 +61,15 @@ public class BsmDecoderHelper {
              }
          }
       } else { // probably raw BSM or MessageFrame
+         logger.debug("Attempting to decode as raw BSM or Message Frame.");
          bsm = BsmDecoderHelper.decodeBsm(bis);
       }
 
       if (bsm != null) {
+         logger.debug("Decoded BSM successfully, creating OdeBsmData object.");
          odeBsmData = BsmDecoderHelper.createOdeBsmData((J2735Bsm) bsm, message, fileName, serialId);
+      } else {
+         logger.debug("Failed to decode BSM.");
       }
 
       return odeBsmData;
