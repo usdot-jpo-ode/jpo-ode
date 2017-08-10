@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
@@ -19,12 +19,14 @@ public class BsmToVsdPackagerController {
    protected BsmToVsdPackagerController(OdeProperties odeProps) {
       super();
 
-      String inputTopic = odeProps.getKafkaTopicFilteredBsmJson();
+      String inputTopic = odeProps.getKafkaTopicFilteredOdeBsmJson();
+      // String inputTopic = odeProps.getKafkaTopicOdeBsmJson();
+
       String outputTopic = odeProps.getKafkaTopicEncodedVsd();
 
       if (odeProps.isEnabledVsdKafkaTopic()) {
-         logger.info("Converting {} records from topic {} and publishing to topic {} ", J2735Bsm.class.getSimpleName(),
-               inputTopic, outputTopic);
+         logger.info("Converting {} records from topic {} and publishing to topic {} ",
+               OdeBsmData.class.getSimpleName(), inputTopic, outputTopic);
 
          BsmToVsdPackager converter = new BsmToVsdPackager(MessageProducer.defaultByteArrayMessageProducer(
                odeProps.getKafkaBrokers(), odeProps.getKafkaProducerType()), outputTopic);

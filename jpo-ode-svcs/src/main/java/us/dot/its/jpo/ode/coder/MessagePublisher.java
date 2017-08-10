@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeData;
-import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 import us.dot.its.jpo.ode.wrapper.OdeBsmSerializer;
@@ -18,7 +17,7 @@ public class MessagePublisher {
 
    private static final Logger logger = LoggerFactory.getLogger(MessagePublisher.class);
    private OdeProperties odeProperties;
-   protected MessageProducer<String, OdeObject> objectProducer;
+   protected MessageProducer<String, OdeData> objectProducer;
 
    public MessagePublisher(OdeProperties odeProps) {
       this.odeProperties = odeProps;

@@ -1,5 +1,13 @@
 ## ODE Release Notes ##
 ----------
+### Sprint 18
+ODE-201	Validate/authenticate Basic Safety Message (BSM) and MessageFrames received from the OBU using the 1609.2 Implementation
+ODE-436	Provide header information in JSON stream of processed BSM	Story	Medium
+
+### Sprint 17
+ODE-314 Build VSDs from received BSMs and deposit them to SDC (Phase 2)
+ODE-413 Generalize S3 Depositor with configuration features
+
 ### Sprint 16
 - ODE-400 Updated TIM REST Calls to enable querying and deleting messages
 - ODE-401 Created S3 deposit service to watch Kafka topic and deposit BSM files

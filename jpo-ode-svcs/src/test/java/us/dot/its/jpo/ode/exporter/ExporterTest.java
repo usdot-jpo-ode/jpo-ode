@@ -38,9 +38,10 @@ public class ExporterTest {
         };
 
         try {
-            Exporter rawBsmExporter = new RawBsmExporter(mockOdeProperties, testTopic, mockSimpMessagingTemplate);
-            rawBsmExporter.setConsumer(mockStringConsumer);
-            rawBsmExporter.run();
+            Exporter odeBsmExporter = new OdeBsmExporter(
+                mockOdeProperties, testTopic, mockSimpMessagingTemplate);
+            odeBsmExporter.setConsumer(mockStringConsumer);
+            odeBsmExporter.run();
             
             Exporter FilteredBsmExporter = new FilteredBsmExporter(mockOdeProperties, testTopic, mockSimpMessagingTemplate);
             FilteredBsmExporter.setConsumer(mockByteArrayConsumer);

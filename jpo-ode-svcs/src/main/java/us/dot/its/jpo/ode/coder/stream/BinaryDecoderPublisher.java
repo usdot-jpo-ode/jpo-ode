@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.coder.stream;
 
-import java.io.InputStream;
+import java.io.BufferedInputStream;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class BinaryDecoderPublisher implements DecoderPublisher {
    }
 
    @Override
-   public void decodeAndPublish(InputStream is, String fileName) throws Exception {
+   public void decodeAndPublish(BufferedInputStream is, String fileName) throws Exception {
       OdeData decoded = null;
 
       do {
@@ -39,7 +39,7 @@ public class BinaryDecoderPublisher implements DecoderPublisher {
                logger.debug("Decoded: {}", decoded);
                publisher.publish(decoded);
             } else {
-               logger.debug("Failed to decode, null.");
+               logger.debug("Failed to decode data");
             }
          } catch (Exception e) {
             logger.error("Error decoding and publishing data.", e);

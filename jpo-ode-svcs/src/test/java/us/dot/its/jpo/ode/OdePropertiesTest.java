@@ -75,7 +75,6 @@ public class OdePropertiesTest {
       int testVsdDepositorPort = 321;
       int testIsdDepositorPort = 322;
       int testIsdReceiverPort = 323;
-      String testKafkaTopicBsmRawJson = "testKafkaTopicBsmRawJson";
       int testBsmReceiverPort = 324;
       int testBsmBufferSize = 10;
       boolean testDepositSanitizedBsmToSdc = true;
@@ -91,7 +90,6 @@ public class OdePropertiesTest {
       String testSelfPrivateKeyReconstructionFilePath = "testSelfPrivateKeyReconstructionFilePath";
       String testSelfSigningPrivateKeyFilePath = "testSelfSigningPrivateKeyFilePath";
       int testIsdBufferSize = 19;
-      String testKafkaTopicRawBsmPojo = "testKafkaTopicRawBsmPojo";
       String testKafkaTopicBsmFilteredJson = "testKafkaTopicBsmFilteredJson";
       int testVsdBufferSize = 20;
       int testVsdReceiverPort = 21;
@@ -124,7 +122,6 @@ public class OdePropertiesTest {
       testOdeProperties.setVsdDepositorPort(testVsdDepositorPort);
       testOdeProperties.setIsdDepositorPort(testIsdDepositorPort);
       testOdeProperties.setIsdReceiverPort(testIsdReceiverPort);
-      testOdeProperties.setKafkaTopicRawBsmJson(testKafkaTopicBsmRawJson);
       testOdeProperties.setBsmReceiverPort(testBsmReceiverPort);
       testOdeProperties.setBsmBufferSize(testBsmBufferSize);
       testOdeProperties.setDepositSanitizedBsmToSdc(testDepositSanitizedBsmToSdc);
@@ -140,8 +137,7 @@ public class OdePropertiesTest {
       testOdeProperties.setSelfPrivateKeyReconstructionFilePath(testSelfPrivateKeyReconstructionFilePath);
       testOdeProperties.setSelfSigningPrivateKeyFilePath(testSelfSigningPrivateKeyFilePath);
       testOdeProperties.setIsdBufferSize(testIsdBufferSize);
-      testOdeProperties.setKafkaTopicRawBsmPojo(testKafkaTopicRawBsmPojo);
-      testOdeProperties.setKafkaTopicFilteredBsmJson(testKafkaTopicBsmFilteredJson);
+      testOdeProperties.setKafkaTopicFilteredOdeBsmJson(testKafkaTopicBsmFilteredJson);
       testOdeProperties.setVsdBufferSize(testVsdBufferSize);
       testOdeProperties.setVsdReceiverPort(testVsdReceiverPort);
       testOdeProperties.setVerboseJson(testVerboseJson);
@@ -176,8 +172,6 @@ public class OdePropertiesTest {
       assertEquals("Incorrect testVsdDepositorPort", testVsdDepositorPort, testOdeProperties.getVsdDepositorPort());
       assertEquals("Incorrect testIsdDepositorPort", testIsdDepositorPort, testOdeProperties.getIsdDepositorPort());
       assertEquals("Incorrect testIsdReceiverPort", testIsdReceiverPort, testOdeProperties.getIsdReceiverPort());
-      assertEquals("Incorrect testKafkaTopicBsmRawJson", testKafkaTopicBsmRawJson,
-            testOdeProperties.getKafkaTopicRawBsmJson());
       assertEquals("Incorrect testBsmReceiverPort", testBsmReceiverPort, testOdeProperties.getBsmReceiverPort());
       assertEquals("Incorrect testBsmBufferSize", testBsmBufferSize, testOdeProperties.getBsmBufferSize());
       assertEquals("Incorrect testDepositSanitizedBsmToSdc", testDepositSanitizedBsmToSdc,
@@ -201,10 +195,8 @@ public class OdePropertiesTest {
       assertEquals("Incorrect testSelfSigningPrivateKeyFilePath", testSelfSigningPrivateKeyFilePath,
             testOdeProperties.getSelfSigningPrivateKeyFilePath());
       assertEquals("Incorrect testIsdBufferSize", testIsdBufferSize, testOdeProperties.getIsdBufferSize());
-      assertEquals("Incorrect testKafkaTopicRawBsmPojo", testKafkaTopicRawBsmPojo,
-            testOdeProperties.getKafkaTopicRawBsmPojo());
       assertEquals("Incorrect testKafkaTopicBsmFilteredJson", testKafkaTopicBsmFilteredJson,
-            testOdeProperties.getKafkaTopicFilteredBsmJson());
+            testOdeProperties.getKafkaTopicFilteredOdeBsmJson());
       assertEquals("Incorrect testVsdBufferSize", testVsdBufferSize, testOdeProperties.getVsdBufferSize());
       assertEquals("Incorrect testVsdReceiverPort", testVsdReceiverPort, testOdeProperties.getVsdReceiverPort());
       assertEquals("Incorrect testVerboseJson", testVerboseJson, testOdeProperties.getVerboseJson());

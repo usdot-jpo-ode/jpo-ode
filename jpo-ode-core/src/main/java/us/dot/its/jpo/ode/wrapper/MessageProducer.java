@@ -23,7 +23,11 @@ public class MessageProducer<K, V> {
 
     Producer<K, V> producer;
 
-    public MessageProducer(String brokers, String type, String partitionerClass, String valueSerializerFQN) {
+    public MessageProducer(
+        String brokers, 
+        String type, 
+        String partitionerClass, 
+        String valueSerializerFQN) {
         Properties props = setDefaultProperties();
         
         props.put("bootstrap.servers", brokers);

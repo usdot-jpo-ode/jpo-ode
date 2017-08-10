@@ -3,8 +3,8 @@ package us.dot.its.jpo.ode.plugin.j2735.oss;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -62,7 +62,7 @@ public class OssAsn1CoderTest {
     @Test
     public void test_decodeUPERBsmStream_throwsDecodeFailedException_someBytes(
             @Mocked final PERUnalignedCoder mockPERUnalignedCoder, @Mocked final J2735 mockJ2735,
-            @Injectable InputStream mockInputStream, @Mocked final OssBsm mockOssBsm,
+            @Injectable BufferedInputStream mockInputStream, @Mocked final OssBsm mockOssBsm,
             @Mocked DecodeFailedException mockDecodeFailedException) {
 
         try {
@@ -96,7 +96,7 @@ public class OssAsn1CoderTest {
     @Test
     public void test_decodeUPERBsmStream_throwsDecodeFailedException_nullBytes(
             @Mocked final PERUnalignedCoder mockPERUnalignedCoder, @Mocked final J2735 mockJ2735,
-            @Injectable InputStream mockInputStream, @Mocked final OssBsm mockOssBsm,
+            @Injectable BufferedInputStream mockInputStream, @Mocked final OssBsm mockOssBsm,
             @Mocked DecodeFailedException mockDecodeFailedException) {
 
         try {
@@ -127,7 +127,7 @@ public class OssAsn1CoderTest {
 
     @Test
     public void test_decodeUPERBsmStream_noException(@Mocked final PERUnalignedCoder mockPERUnalignedCoder,
-            @Mocked final J2735 mockJ2735, @Injectable InputStream mockInputStream, @Mocked final OssBsm mockOssBsm,
+            @Mocked final J2735 mockJ2735, @Injectable BufferedInputStream mockInputStream, @Mocked final OssBsm mockOssBsm,
             @Mocked DecodeNotSupportedException mockDecodeNotSupportedException) {
 
         try {
@@ -157,7 +157,7 @@ public class OssAsn1CoderTest {
 
     @Test
     public void test_decodeUPERBsmStream_noAvailableBytes(@Mocked final PERUnalignedCoder mockPERUnalignedCoder,
-            @Mocked final J2735 mockJ2735, @Injectable InputStream mockInputStream, @Mocked final OssBsm mockOssBsm,
+            @Mocked final J2735 mockJ2735, @Injectable BufferedInputStream mockInputStream, @Mocked final OssBsm mockOssBsm,
             @Mocked DecodeNotSupportedException mockDecodeNotSupportedException) {
 
         try {
@@ -187,7 +187,7 @@ public class OssAsn1CoderTest {
     @Test
     public void test_decodeUPERMessageFrameStream_throwsDecodeFailedException_nullBytes(
             @Mocked final PERUnalignedCoder mockPERUnalignedCoder, @Mocked final J2735 mockJ2735,
-            @Injectable InputStream mockInputStream, @Mocked final OssMessageFrame mockOssMessageFrame,
+            @Injectable BufferedInputStream mockInputStream, @Mocked final OssMessageFrame mockOssMessageFrame,
             @Mocked DecodeFailedException mockDecodeFailedException) {
 
         try {
@@ -218,7 +218,7 @@ public class OssAsn1CoderTest {
 
     @Test
     public void test_decodeUPERMessageFrameStream_noException(@Mocked final PERUnalignedCoder mockPERUnalignedCoder,
-            @Mocked final J2735 mockJ2735, @Injectable InputStream mockInputStream,
+            @Mocked final J2735 mockJ2735, @Injectable BufferedInputStream mockInputStream,
             @Mocked final OssMessageFrame mockOssMessageFrame,
             @Mocked DecodeNotSupportedException mockDecodeNotSupportedException) {
 
@@ -250,7 +250,7 @@ public class OssAsn1CoderTest {
     @Test
     public void test_decodeUPERMessageFrameStream_noAvailableBytes(
             @Mocked final PERUnalignedCoder mockPERUnalignedCoder, @Mocked final J2735 mockJ2735,
-            @Injectable InputStream mockInputStream, @Mocked final OssMessageFrame mockOssMessageFrame,
+            @Injectable BufferedInputStream mockInputStream, @Mocked final OssMessageFrame mockOssMessageFrame,
             @Mocked DecodeNotSupportedException mockDecodeNotSupportedException) {
 
         try {

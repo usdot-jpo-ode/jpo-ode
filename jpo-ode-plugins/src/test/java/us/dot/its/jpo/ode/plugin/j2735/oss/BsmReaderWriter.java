@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,6 +35,7 @@ import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.dsrc.MessageFrame;
+import us.dot.its.jpo.ode.plugin.OdePlugin;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssMessageFrame.OssMessageFrameException;
 import us.dot.its.jpo.ode.util.CodecUtils;
@@ -198,14 +200,24 @@ public class BsmReaderWriter {
     private static int readEncoding(Coder coder) throws IOException {
         int numBSMs = 0;
 
-        try (InputStream ins = new FileInputStream(inputFile)) {
-            while (ins.available() > 0) {
+        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(inputFile))) {
+            while (bis.available() > 0) {
                 try {
-                    BasicSafetyMessage bsm = getBasicSafetyMessage(coder, ins);
+                    if (bis.markSupported()) {
+                        bis.mark(OdePlugin.INPUT_STREAM_BUFFER_SIZE);
+                    }
+                    BasicSafetyMessage bsm = getBasicSafetyMessage(coder, bis);
                     output(bsm);
                     numBSMs++;
 
                 } catch (Exception e) {
+                    if (bis.markSupported()) {
+                        try {
+                            bis.reset();
+                        } catch (IOException ioe) {
+                            logger.error("Error reseting Input Stream to marked position", ioe);
+                        }
+                    }
                     int errRec = numBSMs + 1;
                     System.out.println("Decode Error on BSM # " + errRec + "\n" + e.getMessage());
                     e.printStackTrace();

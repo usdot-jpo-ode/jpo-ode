@@ -3,11 +3,14 @@ package us.dot.its.jpo.ode.traveler;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.event.ResponseEvent;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import mockit.Expectations;
@@ -26,40 +29,53 @@ import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
 import us.dot.its.jpo.ode.snmp.SNMP;
+import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 @RunWith(JMockit.class)
 public class TimControllerTest {
 
-   @Tested TimController timController;
-   @Injectable OdeProperties mockOdeProperties;
-   @Injectable DdsDepositor<DdsStatusMessage> mockDepositor;
+   @Tested
+   TimController testTimController;
+   @Injectable
+   OdeProperties mockOdeProperties;
+   @Injectable
+   DdsDepositor<DdsStatusMessage> mockDepositor;
 
-   @Mocked TravelerInputData mockTravelerInputData;
-   @Mocked TravelerInformation mockTravelerInfo;
-   @Mocked OssTravelerMessageBuilder mockBuilder;
-   @Mocked RSU mockRsu;
-   @Mocked SNMP mockSnmp;
-   @Mocked ResponseEvent mockResponseEvent;
-   @Mocked PDU mockPdu;
-   @Mocked ScopedPDU mockScopedPdu;
-   @Mocked AsdMessage mockAsdMsg;
-   
+   @Mocked
+   TravelerInputData mockTravelerInputData;
+   @Mocked
+   TravelerInformation mockTravelerInfo;
+   @Mocked
+   OssTravelerMessageBuilder mockBuilder;
+   @Mocked
+   RSU mockRsu;
+   @Mocked
+   SNMP mockSnmp;
+   @Mocked
+   ResponseEvent mockResponseEvent;
+   @Mocked
+   PDU mockPdu;
+   @Mocked
+   ScopedPDU mockScopedPdu;
+   @Mocked
+   AsdMessage mockAsdMsg;
+
    @Test
    public void emptyRequestShouldReturnError() {
 
       try {
-         ResponseEntity<String> response = timController.timMessage(null);
+         ResponseEntity<String> response = testTimController.timMessage(null);
          assertEquals("Empty request.", response.getBody());
-         } catch (Exception e) {
+      } catch (Exception e) {
          fail("Unexpected exception " + e);
       }
 
       try {
-         ResponseEntity<String> response = timController.timMessage("");
+         ResponseEntity<String> response = testTimController.timMessage("");
          assertEquals("Empty request.", response.getBody());
-         } catch (Exception e) {
+      } catch (Exception e) {
          fail("Unexpected exception " + e);
       }
    }
@@ -81,9 +97,9 @@ public class TimControllerTest {
       } catch (Exception e) {
          fail("Unexpected Exception in expectations block: " + e);
       }
-      
+
       try {
-         ResponseEntity<String> response = timController.timMessage("test123");
+         ResponseEntity<String> response = testTimController.timMessage("test123");
          assertEquals("Malformed JSON.", response.getBody());
       } catch (Exception e) {
          fail("Unexpected exception " + e);
@@ -118,15 +134,13 @@ public class TimControllerTest {
       } catch (Exception e) {
          fail("Unexpected Exception in expectations block: " + e);
       }
-      
 
       try {
-         ResponseEntity<String> response = timController.timMessage("test123");
+         ResponseEntity<String> response = testTimController.timMessage("test123");
          assertEquals("Request does not match schema.", response.getBody());
       } catch (Exception e) {
          fail("Unexpected exception " + e);
       }
-
 
       new Verifications() {
          {
@@ -152,7 +166,7 @@ public class TimControllerTest {
 
                mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
                result = mockTravelerInfo;
-               
+
                mockBuilder.encodeTravelerInformationToHex();
                result = new Exception("Encoding error.");
             }
@@ -160,14 +174,13 @@ public class TimControllerTest {
       } catch (Exception e) {
          fail("Unexpected Exception in expectations block: " + e);
       }
-      
+
       try {
-         ResponseEntity<String> response = timController.timMessage("test123");
-         assertEquals("Encoding error.", response.getBody());      
+         ResponseEntity<String> response = testTimController.timMessage("test123");
+         assertEquals("Encoding error.", response.getBody());
       } catch (Exception e) {
          fail("Unexpected exception " + e);
       }
-
 
       new Verifications() {
          {
@@ -193,7 +206,7 @@ public class TimControllerTest {
 
                mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
                result = mockTravelerInfo;
-               
+
                mockBuilder.encodeTravelerInformationToHex();
                result = anyString;
 
@@ -205,7 +218,7 @@ public class TimControllerTest {
 
                mockRsu.getRsuTarget();
                result = "snmpException";
-               
+
                TimController.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
                result = new Exception("SNMP Error");
 
@@ -216,11 +229,11 @@ public class TimControllerTest {
       } catch (Exception e) {
          fail("Unexpected Exception in expectations block: " + e);
       }
-      
 
-      ResponseEntity<String> response = timController.timMessage("test123");
-      assertEquals("{\"rsu_responses\":[{\"target\":\"snmpException\",\"success\":\"false\",\"error\":\"java.lang.Exception\"}],\"dds_deposit\":{\"success\":\"true\"}}", response.getBody());
-      
+      ResponseEntity<String> response = testTimController.timMessage("test123");
+      assertEquals(
+            "{\"rsu_responses\":[{\"target\":\"snmpException\",\"success\":\"false\",\"error\":\"java.lang.Exception\"}],\"dds_deposit\":{\"success\":\"true\"}}",
+            response.getBody());
 
       new Verifications() {
          {
@@ -258,7 +271,7 @@ public class TimControllerTest {
 
                mockRsu.getRsuTarget();
                result = "nullResponse";
-               
+
                TimController.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
                result = null;
 
@@ -269,9 +282,11 @@ public class TimControllerTest {
       } catch (Exception e) {
          fail("Unexpected Exception in expectations block: " + e);
       }
-      
-      ResponseEntity<String> response = timController.timMessage("test123");
-      assertEquals("{\"rsu_responses\":[{\"target\":\"nullResponse\",\"success\":\"false\",\"error\":\"Timeout.\"}],\"dds_deposit\":{\"success\":\"true\"}}", response.getBody());
+
+      ResponseEntity<String> response = testTimController.timMessage("test123");
+      assertEquals(
+            "{\"rsu_responses\":[{\"target\":\"nullResponse\",\"success\":\"false\",\"error\":\"Timeout.\"}],\"dds_deposit\":{\"success\":\"true\"}}",
+            response.getBody());
    }
 
    @Test
@@ -303,11 +318,13 @@ public class TimControllerTest {
 
                mockRsu.getRsuTarget();
                result = "badResponse";
-               
+
                TimController.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
                result = mockResponseEvent;
-               mockResponseEvent.getResponse(); result = mockPdu;
-               mockPdu.getErrorStatus(); result = -1;
+               mockResponseEvent.getResponse();
+               result = mockPdu;
+               mockPdu.getErrorStatus();
+               result = -1;
 
                mockTravelerInputData.getSdw();
                result = null;
@@ -316,11 +333,12 @@ public class TimControllerTest {
       } catch (Exception e) {
          fail("Unexpected Exception in expectations block: " + e);
       }
-      
 
-      ResponseEntity<String> response = timController.timMessage("test123");
-      assertEquals("{\"rsu_responses\":[{\"target\":\"badResponse\",\"success\":\"false\",\"error\":\"Error code -1 null\"}],\"dds_deposit\":{\"success\":\"true\"}}", response.getBody());
-      
+      ResponseEntity<String> response = testTimController.timMessage("test123");
+      assertEquals(
+            "{\"rsu_responses\":[{\"target\":\"badResponse\",\"success\":\"false\",\"error\":\"Error code -1 null\"}],\"dds_deposit\":{\"success\":\"true\"}}",
+            response.getBody());
+
       new Verifications() {
          {
             EventLogger.logger.info(anyString);
@@ -357,24 +375,27 @@ public class TimControllerTest {
 
                mockRsu.getRsuTarget();
                result = "nonexistentialRsu";
-               
+
                TimController.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
                result = mockResponseEvent;
-               mockResponseEvent.getResponse(); result = mockPdu;
-               mockPdu.getErrorStatus(); result = 0;
+               mockResponseEvent.getResponse();
+               result = mockPdu;
+               mockPdu.getErrorStatus();
+               result = 0;
 
                mockTravelerInputData.getSdw();
                result = new InternalServerErrorException("Deposit to SDW Failed");
-               
+
             }
          };
       } catch (Exception e) {
          fail("Unexpected Exception in expectations block: " + e);
       }
-      
 
-      ResponseEntity<String> response = timController.timMessage("test123");
-      assertEquals("{\"rsu_responses\":[{\"target\":\"nonexistentialRsu\",\"success\":\"true\",\"message\":\"Success.\"}],\"dds_deposit\":{\"success\":\"false\"}}", response.getBody());
+      ResponseEntity<String> response = testTimController.timMessage("test123");
+      assertEquals(
+            "{\"rsu_responses\":[{\"target\":\"nonexistentialRsu\",\"success\":\"true\",\"message\":\"Success.\"}],\"dds_deposit\":{\"success\":\"false\"}}",
+            response.getBody());
 
       new Verifications() {
          {
@@ -412,11 +433,13 @@ public class TimControllerTest {
 
                mockRsu.getRsuTarget();
                result = "goodResponse";
-               
+
                TimController.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
                result = mockResponseEvent;
-               mockResponseEvent.getResponse(); result = mockPdu;
-               mockPdu.getErrorStatus(); result = 0;
+               mockResponseEvent.getResponse();
+               result = mockPdu;
+               mockPdu.getErrorStatus();
+               result = 0;
 
                mockTravelerInputData.getSdw();
                result = null;
@@ -425,10 +448,52 @@ public class TimControllerTest {
       } catch (Exception e) {
          fail("Unexpected Exception in expectations block: " + e);
       }
-      
-      
-      ResponseEntity<String> response = timController.timMessage("test123");
-      assertEquals("{\"rsu_responses\":[{\"target\":\"goodResponse\",\"success\":\"true\",\"message\":\"Success.\"}],\"dds_deposit\":{\"success\":\"true\"}}", response.getBody());
+
+      ResponseEntity<String> response = testTimController.timMessage("test123");
+      assertEquals(
+            "{\"rsu_responses\":[{\"target\":\"goodResponse\",\"success\":\"true\",\"message\":\"Success.\"}],\"dds_deposit\":{\"success\":\"true\"}}",
+            response.getBody());
+   }
+
+   @Test
+   public void deleteShouldReturnBadRequestWhenNull() {
+      assertEquals(HttpStatus.BAD_REQUEST, testTimController.deleteTim(null, 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteShouldCatchSessionIOException() {
+      try {
+         new Expectations(SnmpSession.class, JsonUtils.class) {
+            {
+               new SnmpSession((RSU) any);
+               result = new IOException("testException123");
+               
+               JsonUtils.fromJson(anyString, (Class) any);
+               result = null;
+            }
+         };
+      } catch (IOException e) {
+         fail("Unexpected Exception in expectations block: " + e);
+      }
+      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, testTimController.deleteTim("testJsonString", 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteShouldCatchSessionNullPointerException() {
+      try {
+         new Expectations(SnmpSession.class, JsonUtils.class) {
+            {
+               new SnmpSession((RSU) any);
+               result = new NullPointerException("testException123");
+               
+               JsonUtils.fromJson(anyString, (Class) any);
+               result = null;
+            }
+         };
+      } catch (IOException e) {
+         fail("Unexpected Exception in expectations block: " + e);
+      }
+      assertEquals(HttpStatus.BAD_REQUEST, testTimController.deleteTim("testJsonString", 42).getStatusCode());
    }
 
 }

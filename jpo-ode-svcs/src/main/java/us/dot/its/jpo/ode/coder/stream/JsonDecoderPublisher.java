@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.coder.stream;
 
-import java.io.InputStream;
+import java.io.BufferedInputStream;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -30,7 +30,7 @@ public class JsonDecoderPublisher implements DecoderPublisher {
    }
 
    @Override
-   public void decodeAndPublish(InputStream is, String fileName) {
+   public void decodeAndPublish(BufferedInputStream is, String fileName) {
       String line = null;
 
       try (Scanner scanner = new Scanner(is)) {

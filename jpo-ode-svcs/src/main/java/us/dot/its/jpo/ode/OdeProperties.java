@@ -19,6 +19,7 @@ import org.springframework.core.env.Environment;
 import groovy.lang.MissingPropertyException;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.plugin.OdePlugin;
 
 @ConfigurationProperties("ode")
 @PropertySource("classpath:application.properties")
@@ -75,11 +76,13 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * BSM Properties
     */
-   private String kafkaTopicRawBsmPojo = "topic.j2735Bsm";
-   private String kafkaTopicRawBsmJson = "topic.j2735RawBsmJson";
-   private String kafkaTopicFilteredBsmJson = "topic.FilteredOdeBsmJson";
+   private String kafkaTopicRawBsmPojo = "topic.j2735Bsm"; // TODO Deprecate per ODE-436
+   private String kafkaTopicRawBsmJson = "topic.j2735RawBsmJson"; // TODO Deprecate per ODE-436
+   private String kafkaTopicFilteredOdeBsmJson = "topic.FilteredOdeBsmJson";
    private String kafkaTopicOdeBsmPojo = "topic.OdeBsmPojo";
    private String kafkaTopicOdeBsmJson = "topic.OdeBsmJson";
+   private String kafkaTopicEncodedBytes = "topic.EncodedBytes";
+   private String kafkaTopicDecodedJson = "topic.DecodedJson";
    private int bsmReceiverPort = 46800;
    private int bsmBufferSize = 500;
 
@@ -102,6 +105,9 @@ public class OdeProperties implements EnvironmentAware {
    private int isdDepositorPort = 6666;
    private int isdTrustPort = 6667;
    private int dataReceiptBufferSize;
+
+   private int importProcessorBufferSize = OdePlugin.INPUT_STREAM_BUFFER_SIZE;
+
 
    private String hostId;
    private List<Path> uploadLocations = new ArrayList<>();
@@ -518,44 +524,76 @@ public class OdeProperties implements EnvironmentAware {
       this.kafkaTopicEncodedVsd = kafkaTopicEncodedVsd;
    }
 
+   // TODO Deprecate per ODE-436
+   @Deprecated
     public String getKafkaTopicRawBsmPojo() {
         return kafkaTopicRawBsmPojo;
     }
 
+   // TODO Deprecate per ODE-436
+   @Deprecated
     public void setKafkaTopicRawBsmPojo(String kafkaTopicRawBsmPojo) {
         this.kafkaTopicRawBsmPojo = kafkaTopicRawBsmPojo;
     }
 
+   // TODO Deprecate per ODE-436
+   @Deprecated
     public String getKafkaTopicRawBsmJson() {
         return kafkaTopicRawBsmJson;
     }
 
+   // TODO Deprecate per ODE-436
+   @Deprecated
     public void setKafkaTopicRawBsmJson(String kafkaTopicRawBsmJson) {
         this.kafkaTopicRawBsmJson = kafkaTopicRawBsmJson;
     }
 
-    public String getKafkaTopicFilteredBsmJson() {
-        return kafkaTopicFilteredBsmJson;
+    public String getKafkaTopicFilteredOdeBsmJson() {
+       return kafkaTopicFilteredOdeBsmJson;
     }
 
-    public void setKafkaTopicFilteredBsmJson(String kafkaTopicFilteredBsmJson) {
-        this.kafkaTopicFilteredBsmJson = kafkaTopicFilteredBsmJson;
+    public void setKafkaTopicFilteredOdeBsmJson(String kafkaTopicFilteredOdeBsmJson) {
+       this.kafkaTopicFilteredOdeBsmJson = kafkaTopicFilteredOdeBsmJson;
     }
 
     public String getKafkaTopicOdeBsmPojo() {
-        return kafkaTopicOdeBsmPojo;
+       return kafkaTopicOdeBsmPojo;
     }
 
     public void setKafkaTopicOdeBsmPojo(String kafkaTopicOdeBsmPojo) {
-        this.kafkaTopicOdeBsmPojo = kafkaTopicOdeBsmPojo;
+       this.kafkaTopicOdeBsmPojo = kafkaTopicOdeBsmPojo;
     }
 
     public String getKafkaTopicOdeBsmJson() {
-        return kafkaTopicOdeBsmJson;
+       return kafkaTopicOdeBsmJson;
     }
 
     public void setKafkaTopicOdeBsmJson(String kafkaTopicOdeBsmJson) {
-        this.kafkaTopicOdeBsmJson = kafkaTopicOdeBsmJson;
+       this.kafkaTopicOdeBsmJson = kafkaTopicOdeBsmJson;
+    }
+
+    public String getKafkaTopicEncodedBytes() {
+        return kafkaTopicEncodedBytes;
+    }
+
+    public void setKafkaTopicEncodedBytes(String kafkaTopicEncodedBytes) {
+        this.kafkaTopicEncodedBytes = kafkaTopicEncodedBytes;
+    }
+
+    public String getKafkaTopicDecodedJson() {
+        return kafkaTopicDecodedJson;
+    }
+
+    public void setKafkaTopicDecodedJson(String kafkaTopicDecodedJson) {
+        this.kafkaTopicDecodedJson = kafkaTopicDecodedJson;
+    }
+
+    public int getImportProcessorBufferSize() {
+        return importProcessorBufferSize;
+    }
+
+    public void setImportProcessorBufferSize(int importProcessorBufferSize) {
+        this.importProcessorBufferSize = importProcessorBufferSize;
     }
 
 }
