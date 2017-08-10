@@ -65,6 +65,7 @@ public class Oss1609dot2Coder {
                 returnValue = (Ieee1609Dot2Data) coder.decode(bis, new Ieee1609Dot2Data());
             }
         } catch (Exception e) {
+           logger.debug("Exception occured while decoding as {}", Ieee1609Dot2Data.class.getSimpleName());
             if (bis.markSupported()) {
                 try {
                     bis.reset();
