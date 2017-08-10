@@ -20,6 +20,8 @@ import com.oss.asn1.COERCoder;
 import com.oss.asn1.DecodeFailedException;
 import com.oss.asn1.DecodeNotSupportedException;
 import com.oss.asn1.EncodeFailedException;
+import com.oss.asn1.ValidateFailedException;
+import com.oss.asn1.ValidateNotSupportedException;
 
 import gov.usdot.asn1.generated.ieee1609dot2.Ieee1609dot2;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Ieee1609Dot2Data;
@@ -161,9 +163,12 @@ public class Oss1609dot2CoderTest {
             {
                capturingCOERCoder.decode((InputStream) any, (Ieee1609Dot2Data) any);
                result = mockIeee1609Dot2Data;
+               
+               mockIeee1609Dot2Data.getContent().isValid();
+               result = true;
             }
          };
-      } catch (DecodeFailedException | DecodeNotSupportedException e) {
+      } catch (DecodeFailedException | DecodeNotSupportedException | ValidateFailedException | ValidateNotSupportedException e) {
          fail("Unexpected errror: " + e);
       }
 
