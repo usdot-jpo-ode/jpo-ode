@@ -37,6 +37,9 @@ public class MessagePublisher {
          } catch (ParseException e) {
             logger.error("Error converting ISO timestamp", e);
          }
+      
+      logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicRawBsmPojo(), odeBsm.getPayload().getData());
+      objectProducer.send(odeProperties.getKafkaTopicRawBsmPojo(), null, (OdeData) odeBsm.getPayload().getData());
 
       logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicOdeBsmPojo(), odeBsm);
       objectProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), null, odeBsm);
