@@ -232,7 +232,7 @@ public class OssVehicleSituationRecord {
 
       AccelerationSet4Way nAccSet = new AccelerationSet4Way();
       nAccSet._long = convertAcceleration(jAccSet.getAccelLong());
-      nAccSet.lat = convertAcceleration(jAccSet.getAccelLong());
+      nAccSet.lat = convertAcceleration(jAccSet.getAccelLat());
       nAccSet.vert = convertVerticalAcceleration(jAccSet.getAccelLong());
       nAccSet.yaw = convertYawRate(jAccSet.getAccelYaw());
       return nAccSet;
