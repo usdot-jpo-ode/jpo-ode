@@ -47,9 +47,17 @@ public class BsmDecoderHelper {
             }
          } catch (Exception e) {
              logger.debug("Message does not have a valid signature. Assuming it is unsigned message...");
-             bsm = BsmDecoderHelper.decodeBsm(
-                ieee1609dot2Data.getContent().getSignedData().getTbsData().getPayload()
-                  .getData().getContent().getUnsecuredData().byteArrayValue());
+             if (ieee1609dot2Data.getContent() != null &&
+                     ieee1609dot2Data.getContent().getSignedData() != null &&
+                     ieee1609dot2Data.getContent().getSignedData().getTbsData() != null &&
+                     ieee1609dot2Data.getContent().getSignedData().getTbsData().getPayload() != null &&
+                     ieee1609dot2Data.getContent().getSignedData().getTbsData().getPayload().getData() != null &&
+                     ieee1609dot2Data.getContent().getSignedData().getTbsData().getPayload().getData().getContent() != null &&
+                     ieee1609dot2Data.getContent().getSignedData().getTbsData().getPayload().getData().getContent().getUnsecuredData() != null) {
+                 bsm = BsmDecoderHelper.decodeBsm(
+                    ieee1609dot2Data.getContent().getSignedData().getTbsData().getPayload()
+                      .getData().getContent().getUnsecuredData().byteArrayValue());
+             }
          }
       } else { // probably raw BSM or MessageFrame
          bsm = BsmDecoderHelper.decodeBsm(bis);
@@ -129,6 +137,12 @@ public class BsmDecoderHelper {
          metadata.setGeneratedAt(generatedAt.toString());
 
          metadata.setValidSignature(true);
+      } else {
+          /*
+           * TODO Temporarily put in place for testing CV PEP. 
+           * Should be removed after testing is complete. 
+           */
+          metadata.setGeneratedAt(metadata.getReceivedAt());
       }
 
       metadata.getSerialId().addRecordId(1);
