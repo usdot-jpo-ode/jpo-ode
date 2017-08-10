@@ -63,6 +63,10 @@ public class Oss1609dot2Coder {
                     bis.mark(OdePlugin.INPUT_STREAM_BUFFER_SIZE);
                 }
                 returnValue = (Ieee1609Dot2Data) coder.decode(bis, new Ieee1609Dot2Data());
+                if (!returnValue.isValid()) {
+                   returnValue = null;
+                   throw new IOException("Object decoding invalid.");
+                }
                 logger.debug("Decoded as {}: {}", Ieee1609Dot2Data.class.getSimpleName(), returnValue);
             }
         } catch (Exception e) {
