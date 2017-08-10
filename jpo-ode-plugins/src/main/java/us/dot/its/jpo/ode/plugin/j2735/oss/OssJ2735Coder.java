@@ -134,6 +134,8 @@ public class OssJ2735Coder implements J2735Plugin {
                 }
                 coder.decode(bis, mf);
                 gmf = OssMessageFrame.genericMessageFrame(mf);
+            } else {
+               logger.debug("No bytes available.");
             }
         } catch (Exception e) {
             if (bis.markSupported()) {
