@@ -59,7 +59,7 @@ public class BsmDecoderHelper {
       return odeBsmData;
    }
 
-   private static OdeObject decodeBsm(InputStream is) {
+   public static OdeObject decodeBsm(InputStream is) {
       J2735MessageFrame mf = (J2735MessageFrame) j2735Coder.decodeUPERMessageFrameStream(is);
       if (mf != null) {
          return mf.getValue();
@@ -68,7 +68,7 @@ public class BsmDecoderHelper {
       }
    }
 
-   private static OdeObject getBsmPayload(IEEE1609p2Message message) {
+   public static OdeObject getBsmPayload(IEEE1609p2Message message) {
       try {
          SecurityManager.validateGenerationTime(message);
       } catch (SecurityManagerException e) {
@@ -78,7 +78,7 @@ public class BsmDecoderHelper {
       return BsmDecoderHelper.decodeBsm(message.getPayload());
    }
 
-   private static OdeObject decodeBsm(byte[] bytes) {
+   public static OdeObject decodeBsm(byte[] bytes) {
       J2735MessageFrame mf = (J2735MessageFrame) j2735Coder.decodeUPERMessageFrameBytes(bytes);
       if (mf != null) {
          return mf.getValue();

@@ -62,29 +62,30 @@ public class MessagePublisherTest {
             result = testOdeMsgMetadata;
             testOdeBsmData.getMetadata().getReceivedAt();
             result = testString;
-            testOdeBsmData.getMetadata().setLatency(anyLong); times = 1;
-            
+            testOdeBsmData.getMetadata().setLatency(anyLong);
+            times = 1;
+
          }
       };
 
       testMessagePublisher.publish(testOdeBsmData);
 
    }
-   
+
    @Test
    public void publishParseException() {
- String testString = "test";
+      String testString = "test";
       new Expectations() {
          {
-           
+
             testOdeBsmData.getMetadata();
             result = testOdeMsgMetadata;
             testOdeBsmData.getMetadata().getReceivedAt();
             result = testString;
-            DateTimeUtils.difference((ZonedDateTime)any, (ZonedDateTime)any);
+            DateTimeUtils.difference((ZonedDateTime) any, (ZonedDateTime) any);
             result = new ParseException(anyString, anyInt);
-            
-           // testOdeBsmData.getMetadata().setLatency(anyLong); times = 2;
+
+            // testOdeBsmData.getMetadata().setLatency(anyLong); times = 2;
          }
       };
 
@@ -110,10 +111,9 @@ public class MessagePublisherTest {
       testMessagePublisher.publish(testOdeBsmData);
 
    }
-   
+
    @Test
    public void publishNotNullAndStringNull() {
-
 
       new Expectations() {
          {
