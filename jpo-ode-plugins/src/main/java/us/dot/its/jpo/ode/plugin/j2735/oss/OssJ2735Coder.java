@@ -129,6 +129,8 @@ public class OssJ2735Coder implements J2735Plugin {
             if (bis.available() > 0) {
                 if (bis.markSupported()) {
                     bis.mark(OdePlugin.INPUT_STREAM_BUFFER_SIZE);
+                } else {
+                   logger.debug("Mark not supported.");
                 }
                 coder.decode(bis, mf);
                 gmf = OssMessageFrame.genericMessageFrame(mf);

@@ -79,8 +79,10 @@ public class BsmDecoderHelper {
    private static OdeObject decodeBsm(BufferedInputStream is) {
       J2735MessageFrame mf = (J2735MessageFrame) j2735Coder.decodeUPERMessageFrameStream(is);
       if (mf != null) {
+         logger.debug("Decoding as a message frame.");
          return mf.getValue();
       } else {
+         logger.debug("Decoding as raw BSM.");
          return j2735Coder.decodeUPERBsmStream(is);
       }
    }
