@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeData;
+import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 import us.dot.its.jpo.ode.wrapper.OdeBsmSerializer;
@@ -17,7 +18,7 @@ public class MessagePublisher {
 
    private static final Logger logger = LoggerFactory.getLogger(MessagePublisher.class);
    private OdeProperties odeProperties;
-   protected MessageProducer<String, OdeData> objectProducer;
+   protected MessageProducer<String, OdeObject> objectProducer;
 
    public MessagePublisher(OdeProperties odeProps) {
       this.odeProperties = odeProps;
@@ -39,7 +40,7 @@ public class MessagePublisher {
          }
       
       logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicRawBsmPojo(), odeBsm.getPayload().getData());
-      objectProducer.send(odeProperties.getKafkaTopicRawBsmPojo(), null, (OdeData) odeBsm.getPayload().getData());
+      objectProducer.send(odeProperties.getKafkaTopicRawBsmPojo(), null, odeBsm.getPayload().getData());
 
       logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicOdeBsmPojo(), odeBsm);
       objectProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), null, odeBsm);
