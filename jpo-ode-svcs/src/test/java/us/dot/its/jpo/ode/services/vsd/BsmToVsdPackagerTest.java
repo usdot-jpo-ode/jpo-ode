@@ -1,7 +1,7 @@
 package us.dot.its.jpo.ode.services.vsd;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -68,7 +68,7 @@ public class BsmToVsdPackagerTest {
          fail("Unexpected exception in expectations block: " + e);
       }
       BsmToVsdPackager testBsmToVsdPackager = new BsmToVsdPackager(injectableMessageProducer, injectableOutputTopic);
-      assertEquals(0, testBsmToVsdPackager.transform("this is a string").length);
+      assertNull(testBsmToVsdPackager.transform("this is a string"));
    }
 
    @Test
@@ -101,7 +101,7 @@ public class BsmToVsdPackagerTest {
    }
 
    @Test
-   public void testBundlerReturnsEmptyArrayOnEncodingException(
+   public void testBundlerReturnsNullOnEncodingException(
          @Mocked EncodeNotSupportedException mockEncodeNotSupportedException) {
       try {
          new Expectations() {
@@ -127,7 +127,7 @@ public class BsmToVsdPackagerTest {
          fail("Unexpected exception in expectations block: " + e);
       }
       BsmToVsdPackager testBsmToVsdPackager = new BsmToVsdPackager(injectableMessageProducer, injectableOutputTopic);
-      assertEquals(0, testBsmToVsdPackager.transform("this also, is a string").length);
+      assertNull(testBsmToVsdPackager.transform("this also, is a string"));
    }
 
 }
