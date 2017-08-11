@@ -1,213 +1,207 @@
 package us.dot.its.jpo.ode.pdm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+
+import java.io.IOException;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.snmp4j.PDU;
+import org.snmp4j.Snmp;
+import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
-import org.snmp4j.smi.GenericAddress;
+import org.springframework.http.HttpStatus;
 
+import mockit.Capturing;
 import mockit.Expectations;
-import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
-import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
-import us.dot.its.jpo.ode.ManagerAndControllerServices;
-import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.plugin.j2735.pdm.J2735ProbeDataManagement;
-import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
-import us.dot.its.jpo.ode.snmp.SnmpProperties;
+import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
-import java.text.ParseException;
-@RunWith(JMockit.class)
+
 public class PdmControllerTest {
 
-    @Tested
-    PdmController testPdmController;
-    
-    @Mocked J2735ProbeDataManagement mockPdm;
-    
-    @Mocked ManagerAndControllerServices mockPdmManagerService;
-    
-    @Injectable RSU mockRsu;
-    @Mocked ResponseEvent mockResponseEvent;
+   @Tested
+   PdmController testPdmController;
 
-    @Test
-    public void nullRequestShouldLogAndThrowException(@Mocked final EventLogger eventLogger) {
+   @Capturing
+   JsonUtils capturingJsonUtils;
 
-        try {
-            testPdmController.pdmMessage(null);
-            fail("Expected PdmException");
-        } catch (Exception e) {
-            assertEquals(PdmException.class, e.getClass());
-            assertEquals("PDM CONTROLLER - Endpoint received null request", e.getMessage());
-        }
+   @Capturing
+   PdmUtil capturingPdmUtil;
+   
+   @Capturing
+   SnmpSession capturingSnmpSession;
 
-        new Verifications() {
+   @Mocked
+   J2735PdmRequest mockJ2735PdmRequest;
+
+   @Mocked
+   RSU mockRSU;
+   
+   @Mocked
+   ResponseEvent mockResponseEvent;
+
+   @Test
+   public void nullRequestShouldReturnBadRequest() {
+      assertEquals(HttpStatus.BAD_REQUEST, testPdmController.pdmMessage(null).getStatusCode());
+   }
+
+   @Test
+   public void checkJsonResponse1RSUTimeout() {
+      try {
+         new Expectations() {
             {
-                EventLogger.logger.info(anyString);
+               JsonUtils.fromJson(anyString, J2735PdmRequest.class);
+               result = mockJ2735PdmRequest;
+
+               mockJ2735PdmRequest.getRsuList();
+               result = new RSU[]{mockRSU};
+               
+               mockRSU.getRsuTarget();
+               result = "127.0.0.1";
+               
+               capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+               result = null;
             }
-        };
-    }
-
-    @Test
-    public void nullResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {
-
-        new Expectations() {
+         };
+      } catch (IOException e) {
+         fail("Unexpected exception: " + e);
+      }
+      assertEquals("{\"rsu_responses\":[{\"127.0.0.1\":\"Timeout\"}]}", testPdmController.pdmMessage("not a null string").getBody());
+   }
+   
+   @Test
+   public void checkJsonResponse1RSUTimeoutResponse() {
+      try {
+         new Expectations() {
             {
-                JsonUtils.fromJson(anyString, J2735ProbeDataManagement.class);
-                result = mockPdm;
-                
-                mockPdm.getRsuList();
-                result = new RSU[]{mockRsu};
-                
-                ManagerAndControllerServices.createAndSend((PDM)any, (SnmpProperties)any);
-                result = null;
+               JsonUtils.fromJson(anyString, J2735PdmRequest.class);
+               result = mockJ2735PdmRequest;
+
+               mockJ2735PdmRequest.getRsuList();
+               result = new RSU[]{mockRSU};
+               
+               mockRSU.getRsuTarget();
+               result = "127.0.0.1";
+               
+               capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+               result = mockResponseEvent;
+               mockResponseEvent.getResponse();
+               result = null;
             }
-        };
-
-        try {
-            assertNotNull(testPdmController.pdmMessage("testMessage123"));
-        } catch (Exception e) {
-            fail("Unexpected exception: " + e);
-        }
-
-        new Verifications() {
+         };
+      } catch (IOException e) {
+         fail("Unexpected exception: " + e);
+      }
+      assertEquals("{\"rsu_responses\":[{\"127.0.0.1\":\"Timeout\"}]}", testPdmController.pdmMessage("not a null string").getBody());
+   }
+   
+   @Test
+   public void checkJsonResponse1RSUSuccess() {
+      try {
+         new Expectations() {
             {
-                EventLogger.logger.info(anyString);
-            }
-        };
-    }
-    
-    @Test
-    public void nullGetResponseShouldLogAndReturn(@Mocked final JsonUtils jsonUtils) {
+               JsonUtils.fromJson(anyString, J2735PdmRequest.class);
+               result = mockJ2735PdmRequest;
 
-        new Expectations() {
+               mockJ2735PdmRequest.getRsuList();
+               result = new RSU[]{mockRSU};
+               
+               mockRSU.getRsuTarget();
+               result = "127.0.0.1";
+               
+               capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+               result = mockResponseEvent;
+               
+               mockResponseEvent.getResponse().getErrorStatus();
+               result = 0;
+            }
+         };
+      } catch (IOException e) {
+         fail("Unexpected exception: " + e);
+      }
+      assertEquals("{\"rsu_responses\":[{\"127.0.0.1\":\"Deposit successful\"}]}", testPdmController.pdmMessage("not a null string").getBody());
+   }
+   
+   @Test
+   public void checkJsonResponse1RSUMiscError() {
+      try {
+         new Expectations() {
             {
-                JsonUtils.fromJson(anyString, J2735ProbeDataManagement.class);
-                result = mockPdm;
-                
-                mockPdm.getRsuList();
-                result = new RSU[]{mockRsu};
-                
-                ManagerAndControllerServices.createAndSend((PDM)any, (SnmpProperties)any);
-                result = mockResponseEvent;
-                
-                mockResponseEvent.getResponse();
-                result = null;
+               JsonUtils.fromJson(anyString, J2735PdmRequest.class);
+               result = mockJ2735PdmRequest;
+
+               mockJ2735PdmRequest.getRsuList();
+               result = new RSU[]{mockRSU};
+               
+               mockRSU.getRsuTarget();
+               result = "127.0.0.1";
+               
+               capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+               result = mockResponseEvent;
+               
+               mockResponseEvent.getResponse().getErrorStatus();
+               result = 5;
+               
+               mockResponseEvent.getResponse().getErrorStatusText();
+               result = "testError123";
             }
-        };
-
-        try {
-            assertNotNull(testPdmController.pdmMessage("testMessage123"));
-        } catch (Exception e) {
-            fail("Unexpected exception: " + e);
-        }
-
-        new Verifications() {
+         };
+      } catch (IOException e) {
+         fail("Unexpected exception: " + e);
+      }
+      assertEquals("{\"rsu_responses\":[{\"127.0.0.1\":\"Deposit failed: testError123\"}]}", testPdmController.pdmMessage("not a null string").getBody());
+   }
+   
+   @Test
+   public void checkJsonResponseSendException() {
+      try {
+         new Expectations() {
             {
-                EventLogger.logger.info(anyString);
-            }
-        };
-    }
-    
-    @Test
-    public void shouldLogSuccessWhenErrorStatus0(@Mocked final JsonUtils jsonUtils) {
+               JsonUtils.fromJson(anyString, J2735PdmRequest.class);
+               result = mockJ2735PdmRequest;
 
-        new Expectations() {
+               mockJ2735PdmRequest.getRsuList();
+               result = new RSU[]{mockRSU};
+               
+               mockRSU.getRsuTarget();
+               result = "127.0.0.1";
+               
+               capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+               result = new IOException("iyoooException");
+            }
+         };
+      } catch (IOException e) {
+         fail("Unexpected exception: " + e);
+      }
+      assertEquals("{\"rsu_responses\":[{\"127.0.0.1\":\"Exception occurred\"}]}", testPdmController.pdmMessage("not a null string").getBody());
+   }
+   
+   @Test
+   public void checkJsonResponse2RSUSuccess() {
+      try {
+         new Expectations() {
             {
-                JsonUtils.fromJson(anyString, J2735ProbeDataManagement.class);
-                result = mockPdm;
-                
-                mockPdm.getRsuList();
-                result = new RSU[]{mockRsu};
-                
-                ManagerAndControllerServices.createAndSend((PDM)any, (SnmpProperties)any);
-                result = mockResponseEvent;
-                
-                mockResponseEvent.getResponse().getErrorStatus();
-                result = 0;
+               JsonUtils.fromJson(anyString, J2735PdmRequest.class);
+               result = mockJ2735PdmRequest;
+
+               mockJ2735PdmRequest.getRsuList();
+               result = new RSU[]{mockRSU, mockRSU};
+               
+               mockRSU.getRsuTarget();
+               result = "127.0.0.1";
+               
+               capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+               result = mockResponseEvent;
+               
+               mockResponseEvent.getResponse().getErrorStatus();
+               result = 0;
             }
-        };
-
-        try {
-            assertNotNull(testPdmController.pdmMessage("testMessage123"));
-        } catch (Exception e) {
-            fail("Unexpected exception: " + e);
-        }
-
-        new Verifications() {
-            {
-                EventLogger.logger.info(anyString);
-            }
-        };
-    }
-    
-    @Test
-    public void shouldLogFailureWhenErrorStatusNot0(@Mocked final JsonUtils jsonUtils) {
-
-        new Expectations() {
-            {
-                JsonUtils.fromJson(anyString, J2735ProbeDataManagement.class);
-                result = mockPdm;
-                
-                mockPdm.getRsuList();
-                result = new RSU[]{mockRsu};
-                
-                ManagerAndControllerServices.createAndSend((PDM)any, (SnmpProperties)any);
-                result = mockResponseEvent;
-                
-                mockResponseEvent.getResponse().getErrorStatus();
-                result = 17;
-            }
-        };
-
-        try {
-            assertNotNull(testPdmController.pdmMessage("testMessage123"));
-        } catch (Exception e) {
-            fail("Unexpected exception: " + e);
-        }
-
-        new Verifications() {
-            {
-                EventLogger.logger.info(anyString);
-                mockResponseEvent.getResponse().getErrorStatusText();
-                times = 1;
-            }
-        };
-    }
-    
-    @Test
-    public void shouldCatchParseExceptionAndLog(@Mocked final JsonUtils jsonUtils, @Mocked final GenericAddress genericAddress) {
-
-        new Expectations() {
-            {
-                JsonUtils.fromJson(anyString, J2735ProbeDataManagement.class);
-                result = mockPdm;
-                
-                mockPdm.getRsuList();
-                result = new RSU[]{mockRsu};
-                
-                GenericAddress.parse(anyString);
-                result = new ParseException("testException123", anyInt);
-            }
-        };
-
-        try {
-            assertNotNull(testPdmController.pdmMessage("testMessage123"));
-        } catch (Exception e) {
-            fail("Unexpected exception: " + e);
-        }
-
-        new Verifications() {
-            {
-                EventLogger.logger.info(anyString);
-            }
-        };
-    }
-
+         };
+      } catch (IOException e) {
+         fail("Unexpected exception: " + e);
+      }
+      assertEquals("{\"rsu_responses\":[{\"127.0.0.1\":\"Deposit successful\"},{\"127.0.0.1\":\"Deposit successful\"}]}", testPdmController.pdmMessage("not a null string").getBody());
+   }
 }

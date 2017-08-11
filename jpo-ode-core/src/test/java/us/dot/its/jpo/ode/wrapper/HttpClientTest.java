@@ -29,11 +29,6 @@ import java.util.Map;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.core.Response;
 
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
-
 import org.apache.http.Header;
 import org.apache.http.HeaderIterator;
 import org.apache.http.HttpEntity;
@@ -50,6 +45,9 @@ import org.apache.http.params.HttpParams;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.wrapper.HttpClientFactory.HttpClient;
 import us.dot.its.jpo.ode.wrapper.HttpClientFactory.HttpException;
 import us.dot.its.jpo.ode.wrapper.HttpClientFactory.HttpResponse;

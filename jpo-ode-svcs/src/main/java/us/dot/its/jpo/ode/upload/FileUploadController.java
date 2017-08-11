@@ -8,13 +8,11 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,95 +20,68 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.BsmCoder;
-import us.dot.its.jpo.ode.coder.MessageFrameCoder;
-import us.dot.its.jpo.ode.exporter.Exporter;
-import us.dot.its.jpo.ode.importer.ImporterWatchService;
+import us.dot.its.jpo.ode.exporter.FilteredBsmExporter;
+import us.dot.its.jpo.ode.exporter.OdeBsmExporter;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
 
 @Controller
 public class FileUploadController {
-    private static final String OUTPUT_TOPIC = "/topic/messages";
+   // private static final String OUTPUT_TOPIC = "/topic/messages";
+   private static final String FILTERED_OUTPUT_TOPIC = "/topic/filtered_messages";
+   private static final String ODE_BSM_OUTPUT_TOPIC = "/topic/ode_bsm_messages";
 
-    private static Logger logger = LoggerFactory.getLogger(FileUploadController.class);
+   private static Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
-    private final StorageService storageService;
-    private ExecutorService bsmImporter;
-    private ExecutorService messageFrameImporter;
-    private ExecutorService bsmExporter;
+   private final StorageService storageService;
 
-    @Autowired
-    public FileUploadController(StorageService storageService, OdeProperties odeProperties,
-            SimpMessagingTemplate template) throws IllegalAccessException {
-        super();
-        this.storageService = storageService;
+   @Autowired
+   public FileUploadController(StorageService storageService, OdeProperties odeProperties,
+         SimpMessagingTemplate template) {
+      super();
+      this.storageService = storageService;
 
-        bsmImporter = Executors.newSingleThreadExecutor();
-        messageFrameImporter = Executors.newSingleThreadExecutor();
-        bsmExporter = Executors.newSingleThreadExecutor();
+      ExecutorService threadPool = Executors.newCachedThreadPool();
 
-        Path bsmPath = Paths.get(odeProperties.getUploadLocationRoot(), odeProperties.getUploadLocationBsm());
-        logger.debug("UPLOADER - Bsm directory: {}", bsmPath);
-        
-        Path messageFramePath = Paths.get(odeProperties.getUploadLocationRoot(),
-                odeProperties.getUploadLocationMessageFrame());
-        logger.debug("UPLOADER - Message Frame directory: {}", messageFramePath);
-        
-        Path backupPath = Paths.get(odeProperties.getUploadLocationRoot(), "backup");
-        logger.debug("UPLOADER - Backup directory: {}", backupPath);
+      Path bsmPath = Paths.get(odeProperties.getUploadLocationRoot(), odeProperties.getUploadLocationBsm());
+      logger.debug("UPLOADER - Bsm directory: {}", bsmPath);
 
-        bsmImporter.submit(new ImporterWatchService(bsmPath, backupPath, new BsmCoder(odeProperties),
-                LoggerFactory.getLogger(ImporterWatchService.class), OdeProperties.KAFKA_TOPIC_J2735_BSM));
+      Path messageFramePath = Paths.get(odeProperties.getUploadLocationRoot(),
+            odeProperties.getUploadLocationMessageFrame());
+      logger.debug("UPLOADER - Message Frame directory: {}", messageFramePath);
 
-        messageFrameImporter.submit(new ImporterWatchService(messageFramePath, backupPath, new MessageFrameCoder(odeProperties),
-                LoggerFactory.getLogger(ImporterWatchService.class), OdeProperties.KAFKA_TOPIC_J2735_BSM));
+      Path backupPath = Paths.get(odeProperties.getUploadLocationRoot(), "backup");
+      logger.debug("UPLOADER - Backup directory: {}", backupPath);
 
-        try {
-            bsmExporter.submit(new Exporter(odeProperties, template, OUTPUT_TOPIC));
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            logger.error("Error launching Exporter", e);
-        }
+      // Create the importers that watch folders for new/modified files
+      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, bsmPath, backupPath));
+      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, messageFramePath, backupPath));
 
-    }
+      // Create the exporters
+      threadPool.submit(new OdeBsmExporter(odeProperties, ODE_BSM_OUTPUT_TOPIC, template));
+      threadPool.submit(new FilteredBsmExporter(odeProperties, FILTERED_OUTPUT_TOPIC, template));
+   }
 
-    @GetMapping("/files/{filename:.+}")
-    @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+   @PostMapping("/upload/{type}")
+   @ResponseBody
+   public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable("type") String type) {
 
-        Resource file = storageService.loadAsResource(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
-                .body(file);
-    }
+      logger.debug("File received at endpoint: /upload/{}, name={}", type, file.getOriginalFilename());
+      try {
+         storageService.store(file, type);
+      } catch (Exception e) {
+         logger.error("File storage error: " + e);
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"Error\": \"File storage error.\"}");
+         // do not return exception, XSS vulnerable
+      }
 
-    @PostMapping("/upload/{type}")
-    @ResponseBody
-    public String handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable("type") String type) {
+      return ResponseEntity.status(HttpStatus.OK).body("{\"Success\": \"True\"}");
+   }
 
-        if (("bsm").equals(type)) {
-            logger.debug("BSM file recieved: {}", file.getOriginalFilename());
-        } else if (("messageFrame").equals(type)) {
-            logger.debug("Message Frame file recieved: {}", file.getOriginalFilename());
-        } else {
-            logger.error("File storage error: Unknown file type provided");
-            return "{\"success\": false}";
-        }
-
-        logger.debug("File received at endpoint: /upload/{}, name={}", type, file.getOriginalFilename());
-        try {
-            storageService.store(file, type);
-        } catch (Exception e) {
-            logger.error("File storage error: " + e);
-            return "{\"success\": false}";
-        }
-
-        return "{\"success\": true}";
-    }
-
-    @ExceptionHandler(StorageFileNotFoundException.class)
-    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
-        return ResponseEntity.notFound().build();
-    }
+   @ExceptionHandler(StorageFileNotFoundException.class)
+   public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
+      return ResponseEntity.notFound().build();
+   }
 
 }

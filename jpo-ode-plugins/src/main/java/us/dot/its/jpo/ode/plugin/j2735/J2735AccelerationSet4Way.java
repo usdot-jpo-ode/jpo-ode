@@ -35,5 +35,46 @@ public class J2735AccelerationSet4Way extends Asn1Object {
 	public void setAccelYaw(BigDecimal accelYaw) {
 		this.accelYaw = accelYaw;
 	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((accelLat == null) ? 0 : accelLat.hashCode());
+        result = prime * result + ((accelLong == null) ? 0 : accelLong.hashCode());
+        result = prime * result + ((accelVert == null) ? 0 : accelVert.hashCode());
+        result = prime * result + ((accelYaw == null) ? 0 : accelYaw.hashCode());
+        return result;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        J2735AccelerationSet4Way other = (J2735AccelerationSet4Way) obj;
+        if (accelLat == null) {
+            if (other.accelLat != null)
+                return false;
+        } else if (!accelLat.equals(other.accelLat))
+            return false;
+        if (accelLong == null) {
+            if (other.accelLong != null)
+                return false;
+        } else if (!accelLong.equals(other.accelLong))
+            return false;
+        if (accelVert == null) {
+            if (other.accelVert != null)
+                return false;
+        } else if (!accelVert.equals(other.accelVert))
+            return false;
+        if (accelYaw == null) {
+            if (other.accelYaw != null)
+                return false;
+        } else if (!accelYaw.equals(other.accelYaw))
+            return false;
+        return true;
+    }
 
 }

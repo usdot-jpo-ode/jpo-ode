@@ -16,15 +16,16 @@ public final class OdeAggregateData extends OdeData implements HasKey {
       super();
    }
 
-   public OdeAggregateData(String serialId) {
-      super(serialId);
-   }
+   public OdeAggregateData(String key, Long count, BigDecimal minSpeed, BigDecimal avgSpeed, BigDecimal maxSpeed) {
+    super();
+    this.key = key;
+    this.count = count;
+    this.minSpeed = minSpeed;
+    this.avgSpeed = avgSpeed;
+    this.maxSpeed = maxSpeed;
+}
 
-   public OdeAggregateData(String streamId, long bundleId, long recordId) {
-      super(streamId, bundleId, recordId);
-   }
-
-   @Override
+@Override
    public String getKey() {
       return key;
    }

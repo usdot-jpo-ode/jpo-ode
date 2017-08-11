@@ -118,4 +118,92 @@ public class J2735BsmCoreData extends Asn1Object {
 		this.size = size;
 	}
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((accelSet == null) ? 0 : accelSet.hashCode());
+        result = prime * result + ((accuracy == null) ? 0 : accuracy.hashCode());
+        result = prime * result + ((angle == null) ? 0 : angle.hashCode());
+        result = prime * result + ((brakes == null) ? 0 : brakes.hashCode());
+        result = prime * result + ((heading == null) ? 0 : heading.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((msgCnt == null) ? 0 : msgCnt.hashCode());
+        result = prime * result + ((position == null) ? 0 : position.hashCode());
+        result = prime * result + ((secMark == null) ? 0 : secMark.hashCode());
+        result = prime * result + ((size == null) ? 0 : size.hashCode());
+        result = prime * result + ((speed == null) ? 0 : speed.hashCode());
+        result = prime * result + ((transmission == null) ? 0 : transmission.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        J2735BsmCoreData other = (J2735BsmCoreData) obj;
+        if (accelSet == null) {
+            if (other.accelSet != null)
+                return false;
+        } else if (!accelSet.equals(other.accelSet))
+            return false;
+        if (accuracy == null) {
+            if (other.accuracy != null)
+                return false;
+        } else if (!accuracy.equals(other.accuracy))
+            return false;
+        if (angle == null) {
+            if (other.angle != null)
+                return false;
+        } else if (!angle.equals(other.angle))
+            return false;
+        if (brakes == null) {
+            if (other.brakes != null)
+                return false;
+        } else if (!brakes.equals(other.brakes))
+            return false;
+        if (heading == null) {
+            if (other.heading != null)
+                return false;
+        } else if (!heading.equals(other.heading))
+            return false;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (msgCnt == null) {
+            if (other.msgCnt != null)
+                return false;
+        } else if (!msgCnt.equals(other.msgCnt))
+            return false;
+        if (position == null) {
+            if (other.position != null)
+                return false;
+        } else if (!position.equals(other.position))
+            return false;
+        if (secMark == null) {
+            if (other.secMark != null)
+                return false;
+        } else if (!secMark.equals(other.secMark))
+            return false;
+        if (size == null) {
+            if (other.size != null)
+                return false;
+        } else if (!size.equals(other.size))
+            return false;
+        if (speed == null) {
+            if (other.speed != null)
+                return false;
+        } else if (!speed.equals(other.speed))
+            return false;
+        if (transmission != other.transmission)
+            return false;
+        return true;
+    }
+
 }

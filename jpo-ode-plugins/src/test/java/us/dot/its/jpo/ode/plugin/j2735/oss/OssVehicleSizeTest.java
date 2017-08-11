@@ -1,10 +1,7 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
-import static org.junit.Assert.*;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 

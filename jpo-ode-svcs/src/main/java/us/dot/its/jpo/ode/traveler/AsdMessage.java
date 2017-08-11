@@ -47,21 +47,9 @@ public class AsdMessage extends OdeObject {
          SituationDataWarehouse.SDW.TimeToLive ttl) throws ParseException {
       super();
       
-      ZonedDateTime zdtStart = DateTimeUtils.isoDateTime(startTime);
-      DFullTime dStartTime = new DFullTime(
-            new DYear(zdtStart.getYear()),
-            new DMonth(zdtStart.getMonthValue()),
-            new DDay(zdtStart.getDayOfMonth()),
-            new DHour(zdtStart.getHour()),
-            new DMinute(zdtStart.getMinute()));
+      DFullTime dStartTime = dFullTimeFromIsoTimeString(startTime);
       
-      ZonedDateTime zdtStop = DateTimeUtils.isoDateTime(stopTime);
-      DFullTime dStopTime = new DFullTime(
-            new DYear(zdtStop.getYear()),
-            new DMonth(zdtStop.getMonthValue()),
-            new DDay(zdtStop.getDayOfMonth()),
-            new DHour(zdtStop.getHour()),
-            new DMinute(zdtStop.getMinute()));
+      DFullTime dStopTime = dFullTimeFromIsoTimeString(stopTime);
 
       byte[] fourRandomBytes = new byte[4];
       new Random(System.currentTimeMillis()).nextBytes(fourRandomBytes);
@@ -74,7 +62,7 @@ public class AsdMessage extends OdeObject {
             AdvisoryBroadcastType.tim,
             new DistributionType(distroType), dStartTime, dStopTime, oAdvisoryMessage);
 
-      asd.dialogID = new SemiDialogID(156);
+      asd.dialogID = SemiDialogID.advSitDataDep;
       asd.groupID = new GroupID("jode".getBytes());
       asd.requestID = new TemporaryID(fourRandomBytes);
       asd.seqID = new SemiSequenceID(5);
@@ -83,6 +71,17 @@ public class AsdMessage extends OdeObject {
          asd.timeToLive = new TimeToLive(ttl.ordinal());
       else
          asd.timeToLive = new TimeToLive(SituationDataWarehouse.SDW.TimeToLive.THIRTYMINUTES.ordinal());
+   }
+
+   private DFullTime dFullTimeFromIsoTimeString(String startTime) throws ParseException {
+      ZonedDateTime zdtStart = DateTimeUtils.isoDateTime(startTime);
+      DFullTime dStartTime = new DFullTime(
+            new DYear(zdtStart.getYear()),
+            new DMonth(zdtStart.getMonthValue()),
+            new DDay(zdtStart.getDayOfMonth()),
+            new DHour(zdtStart.getHour()),
+            new DMinute(zdtStart.getMinute()));
+      return dStartTime;
    }
 
    public String encodeHex() throws EncodeFailedException, EncodeNotSupportedException {

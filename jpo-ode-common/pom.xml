@@ -17,7 +17,9 @@
   
   <properties>
     <!-- SonarQube Properties -->
-    <sonar.exclusions>src/main/**</sonar.exclusions>
+    <sonar.exclusions>src/main/java/us/dot/its/jpo/ode/util/GeoUtils.java</sonar.exclusions>
+    <sonar.exclusions>src/main/java/us/dot/its/jpo/ode/util/WebSocketUtils.java</sonar.exclusions>
+    <sonar.inclusions>src/main/java/us/dot/its/jpo/ode/inet/*</sonar.inclusions>
   </properties>
 
   

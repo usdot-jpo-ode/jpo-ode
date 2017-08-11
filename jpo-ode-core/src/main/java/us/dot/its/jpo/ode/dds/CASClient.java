@@ -74,9 +74,7 @@ public class CASClient {
          casClient.ddsCasUrl = ddsCasUrl;
          casClient.ddsCasUsername = ddsCasUsername;
          casClient.ddsCasPassword = ddsCasPassword;
-
          casClient.httpClientFactory = HttpClientFactory.build(sslContext);
-
       } catch (Exception e) {
          throw casClient.new CASException(e);
       }

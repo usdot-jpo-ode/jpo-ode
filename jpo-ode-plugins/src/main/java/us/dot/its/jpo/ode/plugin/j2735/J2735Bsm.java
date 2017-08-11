@@ -26,4 +26,37 @@ public class J2735Bsm extends Asn1Object {
 	public void setPartII(List<J2735BsmPart2Content> partII) {
 		this.partII = partII;
 	}
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((coreData == null) ? 0 : coreData.hashCode());
+        result = prime * result + ((partII == null) ? 0 : partII.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        J2735Bsm other = (J2735Bsm) obj;
+        if (coreData == null) {
+            if (other.coreData != null)
+                return false;
+        } else if (!coreData.equals(other.coreData))
+            return false;
+        if (partII == null) {
+            if (other.partII != null)
+                return false;
+        } else if (!partII.equals(other.partII))
+            return false;
+        return true;
+    }
+	
+	
 }

@@ -1,8 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
-
-public class J2735VehicleSafetyExtensions extends Asn1Object implements J2735BsmPart2Extension {
+public class J2735VehicleSafetyExtensions extends J2735BsmPart2ExtensionBase {
 	private static final long serialVersionUID = 1L;
 
 	private J2735VehicleEventFlags events;
