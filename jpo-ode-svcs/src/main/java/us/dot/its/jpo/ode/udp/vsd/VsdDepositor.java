@@ -42,9 +42,8 @@ public class VsdDepositor extends AbstractSubscriberDepositor {
                 logger.error("Error, message only partially decoded.");
                 reqID = ((VehSitDataMessage)partialDecodedMessage).getRequestID();
             } else {
-                logger.debug("Ignoring extraneous bytes at the end of the input stream.");
+                logger.debug("Failed to partially decode message.");
             }
-         logger.error("Depositor failed to decode VSD message: {}", e);
       } catch (DecodeNotSupportedException e) {
          logger.error("Depositor failed to decode VSD message: {}", e);
       }
