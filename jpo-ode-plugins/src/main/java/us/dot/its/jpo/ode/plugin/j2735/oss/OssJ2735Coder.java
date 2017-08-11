@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +19,7 @@ import com.oss.asn1.PERUnalignedCoder;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.dsrc.MessageFrame;
+import us.dot.its.jpo.ode.plugin.OdePlugin;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.asn1.J2735Plugin;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
@@ -89,16 +91,29 @@ public class OssJ2735Coder implements J2735Plugin {
     }
 
     @Override
-    public Asn1Object decodeUPERBsmStream(InputStream ins) {
+    public Asn1Object decodeUPERBsmStream(BufferedInputStream bis) {
         J2735Bsm gbsm = null;
 
         try {
-            if (ins.available() > 0) {
+            if (bis.available() > 0) {
+// This is the end of the line. No more resetting the input stream
+//                if (bis.markSupported()) {
+//                    bis.mark(OdePlugin.INPUT_STREAM_BUFFER_SIZE);
+//                }
                 BasicSafetyMessage bsm = new BasicSafetyMessage();
-                coder.decode(ins, bsm);
+                coder.decode(bis, bsm);
                 gbsm = OssBsm.genericBsm(bsm);
             }
         } catch (Exception e) {
+// This is the end of the line. No more resetting the input stream
+//            if (bis.markSupported()) {
+//                try {
+//                    bis.reset();
+//                } catch (IOException ioe) {
+//                    logger.error("Error reseting Input Stream to marked position", ioe);
+//                    handleDecodeException(ioe);
+//                }
+//            }
             handleDecodeException(e);
         }
         
@@ -106,16 +121,31 @@ public class OssJ2735Coder implements J2735Plugin {
     }
 
     @Override
-    public Asn1Object decodeUPERMessageFrameStream(InputStream ins) {
+    public Asn1Object decodeUPERMessageFrameStream(BufferedInputStream bis) {
         MessageFrame mf = new MessageFrame();
         J2735MessageFrame gmf = null;
 
         try {
-            if (ins.available() > 0) {
-                coder.decode(ins, mf);
+            if (bis.available() > 0) {
+                if (bis.markSupported()) {
+                    bis.mark(OdePlugin.INPUT_STREAM_BUFFER_SIZE);
+                } else {
+                   logger.debug("Mark not supported.");
+                }
+                coder.decode(bis, mf);
                 gmf = OssMessageFrame.genericMessageFrame(mf);
+            } else {
+               logger.debug("No bytes available.");
             }
         } catch (Exception e) {
+            if (bis.markSupported()) {
+                try {
+                    bis.reset();
+                } catch (IOException ioe) {
+                    logger.error("Error reseting Input Stream to marked position", ioe);
+                    handleDecodeException(ioe);
+                }
+            }
             handleDecodeException(e);
         }
 

@@ -72,7 +72,7 @@ public class InetPacket {
 		return bundle;
 	}
 	
-	private boolean parseBundle(byte[] bundle) {
+	public boolean parseBundle(byte[] bundle) {
 		if ( bundle == null || bundle.length < MIN_BUNDLE_LENGTH )
 			return false;
 		ByteBuffer buffer = ByteBuffer.wrap(bundle);
@@ -82,7 +82,7 @@ public class InetPacket {
 		int port = buffer.getInt();
 		byte type = buffer.get();
 		int addressLength = type == 1 ? 16 : 4;
-		if ( buffer.remaining() < addressLength + 2 )
+		if ( buffer.remaining() < addressLength + 2 ) 
 			return false;
 		if ( !CrcCccitt.isValidMsgCRC(bundle, 0, MIN_BUNDLE_LENGTH - 4 + addressLength) ) 
 			return false;

@@ -24,7 +24,8 @@ import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
-import us.dot.its.jpo.ode.coder.BsmStreamDecoderPublisher;
+import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
+import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.semi.ConnectionPoint;
 import us.dot.its.jpo.ode.j2735.semi.IpAddress;
@@ -33,6 +34,7 @@ import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.j2735.semi.ServiceResponse;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher.UdpReceiverException;
 import us.dot.its.jpo.ode.udp.UdpUtil;
 import us.dot.its.jpo.ode.udp.UdpUtil.UdpUtilException;
@@ -55,11 +57,16 @@ public class VsdReceiverTest {
    @Capturing
    DatagramPacket capturingDatagramPacket;
    @Capturing
-   BsmStreamDecoderPublisher capturingBsmStreamDecoderPublisher;
-   @Capturing
    UdpUtil capturingUdpUtil;
    @Capturing
    VsdToBsmConverter capturingVsdToBsmConverter;
+   @Capturing
+   BsmDecoderHelper capturingBinaryDecoderHelper;
+   @Capturing
+   MessagePublisher capturingMessagePublisher;
+
+   @Mocked
+   OssJ2735Coder mockOssJ2735Coder;
 
    @Mocked
    DatagramPacket mockDatagramPacket;

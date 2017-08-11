@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.oss.asn1.AbstractData;
 import com.oss.asn1.DecodeFailedException;
 import com.oss.asn1.DecodeNotSupportedException;
 
@@ -35,8 +36,16 @@ public class VsdDepositor extends AbstractSubscriberDepositor {
          reqID = ((VehSitDataMessage) coder.decode(new ByteArrayInputStream(encodedMsg), new VehSitDataMessage()))
                .getRequestID();
 
-      } catch (DecodeFailedException | DecodeNotSupportedException e) {
-         logger.error("Depositor failed to decode ISD message: {}", e);
+      } catch (DecodeFailedException e) {
+            AbstractData partialDecodedMessage = e.getDecodedData();
+            if (partialDecodedMessage != null) {
+                logger.error("Error, message only partially decoded.");
+                reqID = ((VehSitDataMessage)partialDecodedMessage).getRequestID();
+            } else {
+                logger.debug("Failed to partially decode message.");
+            }
+      } catch (DecodeNotSupportedException e) {
+         logger.error("Depositor failed to decode VSD message: {}", e);
       }
 
       return reqID;

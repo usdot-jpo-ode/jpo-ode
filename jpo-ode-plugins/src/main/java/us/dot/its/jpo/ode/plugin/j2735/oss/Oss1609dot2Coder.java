@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +17,7 @@ import com.oss.asn1.DecodeNotSupportedException;
 
 import gov.usdot.asn1.generated.ieee1609dot2.Ieee1609dot2;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Ieee1609Dot2Data;
+import us.dot.its.jpo.ode.plugin.OdePlugin;
 
 public class Oss1609dot2Coder {
 
@@ -52,14 +54,31 @@ public class Oss1609dot2Coder {
         return returnValue;
     }
 
-    public Ieee1609Dot2Data decodeIeee1609Dot2DataStream(InputStream ins) {
+    public Ieee1609Dot2Data decodeIeee1609Dot2DataStream(BufferedInputStream bis) {
         Ieee1609Dot2Data returnValue = null;
 
         try {
-            if (ins.available() > 0) {
-                returnValue = (Ieee1609Dot2Data) coder.decode(ins, new Ieee1609Dot2Data());
+            if (bis.available() > 0) {
+                if (bis.markSupported()) {
+                    bis.mark(OdePlugin.INPUT_STREAM_BUFFER_SIZE);
+                }
+                returnValue = (Ieee1609Dot2Data) coder.decode(bis, new Ieee1609Dot2Data());
+                if (!returnValue.getContent().isValid()) {
+                   throw new IOException("Object decoding invalid.");
+                }
+                logger.debug("Decoded as {}: {}", Ieee1609Dot2Data.class.getSimpleName(), returnValue);
             }
         } catch (Exception e) {
+           returnValue = null;
+           logger.debug("Exception occured while decoding as {}", Ieee1609Dot2Data.class.getSimpleName());
+            if (bis.markSupported()) {
+                try {
+                    bis.reset();
+                } catch (IOException ioe) {
+                    logger.error("Error reseting Input Stream to marked position", ioe);
+                    handleDecodeException(ioe);
+                }
+            }
             handleDecodeException(e);
         }
 

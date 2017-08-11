@@ -1,9 +1,14 @@
 package us.dot.its.jpo.ode.services.vsd;
 
+import java.io.IOException;
+
 import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 import com.oss.asn1.PERUnalignedCoder;
@@ -29,18 +34,30 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, 
 
    private VsdBundler bundler;
 
+   private ObjectMapper mapper;
+
    public BsmToVsdPackager(MessageProducer<String, byte[]> producer, String outputTopic) {
       super(producer, (java.lang.String) outputTopic);
       this.coder = J2735.getPERUnalignedCoder();
       this.bundler = new VsdBundler();
+      this.mapper = new ObjectMapper();
+      this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
    }
 
    @Override
    protected byte[] transform(String consumedData) {
+      
+      JsonNode bsmNode = JsonUtils.getJsonNode(consumedData, "payload").get("data");
+      
+      J2735Bsm bsmData;
+      try {
+         bsmData = mapper.treeToValue(bsmNode, J2735Bsm.class);
+      } catch (IOException e) {
+         logger.error("Failed to decode JSON object.", e);
+         return new byte[0];
+      }
 
-      J2735Bsm bsmData = (J2735Bsm) JsonUtils.fromJson(consumedData, J2735Bsm.class);
-
-      byte[] encodedVsd = null;
+      byte[] encodedVsd = new byte[0];
       try {
          logger.debug("Consuming BSM.");
 

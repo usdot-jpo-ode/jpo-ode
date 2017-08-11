@@ -10,7 +10,8 @@ public class OdeBsmMetadata extends OdeMsgMetadata {
     
     private String generatedAt;
     private String logFileName;
-    private boolean validSignature;
+    private boolean validSignature = false;
+    private boolean sanitized = false;
     
     
 
@@ -81,6 +82,14 @@ public class OdeBsmMetadata extends OdeMsgMetadata {
 
     public void setValidSignature(boolean validSignature) {
         this.validSignature = validSignature;
+    }
+
+    public boolean isSanitized() {
+        return sanitized;
+    }
+
+    public void setSanitized(boolean sanitized) {
+        this.sanitized = sanitized;
     }
 
     

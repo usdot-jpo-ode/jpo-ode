@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +20,8 @@ import com.oss.asn1.COERCoder;
 import com.oss.asn1.DecodeFailedException;
 import com.oss.asn1.DecodeNotSupportedException;
 import com.oss.asn1.EncodeFailedException;
+import com.oss.asn1.ValidateFailedException;
+import com.oss.asn1.ValidateNotSupportedException;
 
 import gov.usdot.asn1.generated.ieee1609dot2.Ieee1609dot2;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Ieee1609Dot2Data;
@@ -143,12 +146,14 @@ public class Oss1609dot2CoderTest {
          fail("Unexpected errror: " + e);
       }
 
-      assertNull(testOss1609dot2Coder.decodeIeee1609Dot2DataStream(new ByteArrayInputStream(new byte[] { 1, 2, 3 })));
+      BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1, 2, 3 }));
+      assertNull(testOss1609dot2Coder.decodeIeee1609Dot2DataStream(bis));
    }
 
    @Test
    public void emptyInputStreamReturnsNull() {
-      assertNull(testOss1609dot2Coder.decodeIeee1609Dot2DataStream(new ByteArrayInputStream(new byte[0])));
+       BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
+      assertNull(testOss1609dot2Coder.decodeIeee1609Dot2DataStream(bis));
    }
 
    @Test
@@ -158,14 +163,17 @@ public class Oss1609dot2CoderTest {
             {
                capturingCOERCoder.decode((InputStream) any, (Ieee1609Dot2Data) any);
                result = mockIeee1609Dot2Data;
+               
+               mockIeee1609Dot2Data.getContent().isValid();
+               result = true;
             }
          };
-      } catch (DecodeFailedException | DecodeNotSupportedException e) {
+      } catch (DecodeFailedException | DecodeNotSupportedException | ValidateFailedException | ValidateNotSupportedException e) {
          fail("Unexpected errror: " + e);
       }
 
-      assertEquals(mockIeee1609Dot2Data,
-            testOss1609dot2Coder.decodeIeee1609Dot2DataStream(new ByteArrayInputStream(new byte[] { 1, 2, 3 })));
+      BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1, 2, 3 }));
+      assertEquals(mockIeee1609Dot2Data, testOss1609dot2Coder.decodeIeee1609Dot2DataStream(bis));
    }
 
    @Test

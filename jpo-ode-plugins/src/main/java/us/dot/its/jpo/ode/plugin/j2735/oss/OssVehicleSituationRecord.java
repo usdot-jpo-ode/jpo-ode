@@ -93,19 +93,22 @@ public class OssVehicleSituationRecord {
       if (null == jPos.getLongitude()) {
          nPos._long = new Longitude(1800000001);
       } else {
-         nPos._long = new Longitude(jPos.getLongitude().divide(BigDecimal.valueOf(10, 8), 10, BigDecimal.ROUND_HALF_UP).intValue());
+         nPos._long = new Longitude(
+               jPos.getLongitude().divide(BigDecimal.valueOf(10, 8), 10, BigDecimal.ROUND_HALF_UP).intValue());
       }
 
       if (null == jPos.getLatitude()) {
          nPos.lat = new Latitude(900000001);
       } else {
-         nPos.lat = new Latitude(jPos.getLatitude().divide(BigDecimal.valueOf(10, 8), 10, BigDecimal.ROUND_HALF_UP).intValue());
+         nPos.lat = new Latitude(
+               jPos.getLatitude().divide(BigDecimal.valueOf(10, 8), 10, BigDecimal.ROUND_HALF_UP).intValue());
       }
 
       if (null == jPos.getElevation()) {
          nPos.elevation = new Elevation(-4096);
       } else {
-         nPos.elevation = new Elevation(jPos.getElevation().divide(BigDecimal.valueOf(10, 2), 10, BigDecimal.ROUND_HALF_UP).intValue());
+         nPos.elevation = new Elevation(
+               jPos.getElevation().divide(BigDecimal.valueOf(10, 2), 10, BigDecimal.ROUND_HALF_UP).intValue());
       }
 
       return nPos;
@@ -129,7 +132,7 @@ public class OssVehicleSituationRecord {
       fss.accelSet = convertAccelerationSet4Way(bsmcd.getAccelSet());
       fss.brakes = convertBrakeSystemStatus(bsmcd.getBrakes());
       fss.vehSize = convertVehicleSize(bsmcd.getSize());
-      fss.vsmEventFlag = new VsmEventFlag(new byte[]{1});
+      fss.vsmEventFlag = new VsmEventFlag(new byte[] { 1 });
       return fss;
    }
 
@@ -157,7 +160,7 @@ public class OssVehicleSituationRecord {
     * @return
     */
    public static TransmissionState convertTransmissionState(J2735TransmissionState tstate) {
-      
+
       if (null == tstate) {
          return TransmissionState.unavailable;
       }
@@ -232,7 +235,7 @@ public class OssVehicleSituationRecord {
 
       AccelerationSet4Way nAccSet = new AccelerationSet4Way();
       nAccSet._long = convertAcceleration(jAccSet.getAccelLong());
-      nAccSet.lat = convertAcceleration(jAccSet.getAccelLong());
+      nAccSet.lat = convertAcceleration(jAccSet.getAccelLat());
       nAccSet.vert = convertVerticalAcceleration(jAccSet.getAccelLong());
       nAccSet.yaw = convertYawRate(jAccSet.getAccelYaw());
       return nAccSet;
@@ -245,11 +248,17 @@ public class OssVehicleSituationRecord {
     * @return
     */
    public static Acceleration convertAcceleration(BigDecimal jAcc) {
-      Acceleration nAcc;
+      Acceleration nAcc = new Acceleration(2001);
       if (null == jAcc) {
-         nAcc = new Acceleration(2001);
+         nAcc.setValue(2001);
       } else {
-         nAcc = new Acceleration((int) Math.floor(jAcc.doubleValue() / 100));
+         if (jAcc.compareTo(BigDecimal.valueOf(20)) > 0) {
+            nAcc.setValue(2000);
+         } else if (jAcc.compareTo(BigDecimal.valueOf(-20)) < 0) {
+            nAcc.setValue(-2000);
+         } else {
+            nAcc.setValue(jAcc.multiply(BigDecimal.valueOf(100)).intValue());
+         }
       }
       return nAcc;
    }
@@ -262,11 +271,17 @@ public class OssVehicleSituationRecord {
     * @return
     */
    public static VerticalAcceleration convertVerticalAcceleration(BigDecimal jVerta) {
-      VerticalAcceleration nVerta;
+      VerticalAcceleration nVerta = new VerticalAcceleration(-127);
       if (null == jVerta) {
-         nVerta = new VerticalAcceleration(-127);
+         nVerta.setValue(-127);
       } else {
-         nVerta = new VerticalAcceleration((int) Math.floor(jVerta.doubleValue() / 0.02));
+         if (jVerta.compareTo(BigDecimal.valueOf(2.54)) >= 0) {
+            nVerta.setValue(127);
+         } else if (jVerta.compareTo(BigDecimal.valueOf(-2.52)) <= 0) {
+            nVerta.setValue(-126);
+         } else {
+            nVerta.setValue(jVerta.multiply(BigDecimal.valueOf(50)).intValue());
+         }
       }
       return nVerta;
    }
@@ -306,7 +321,7 @@ public class OssVehicleSituationRecord {
     * @return
     */
    public static BrakeAppliedStatus convertBrakeAppliedStatus(J2735BitString jBas) {
-      
+
       // Output bit string has 5 bits:
       // 0bABCDE
       // A = rightRear
@@ -319,7 +334,7 @@ public class OssVehicleSituationRecord {
       // to obtain a representation like this: 0b000ABCDE
       // then shift the bits to the left 3 to end up with the final result: 0bABCDE000
       // since the encoder reads bits left-to-right starting with most significant
-      
+
       byte nb = 0b00000000;
       int bitPow = 1;
 
@@ -345,7 +360,7 @@ public class OssVehicleSituationRecord {
 
          nb = (byte) (nb | (entry.getValue() ? bitPow : 0));
       }
-      
+
       // Shift the bits 3 to the left
       nb = (byte) (nb << 3);
 
@@ -471,7 +486,7 @@ public class OssVehicleSituationRecord {
          } else {
             nvs.width = new VehicleWidth(jvs.getWidth());
          }
-         
+
          if (null == jvs.getLength()) {
             nvs.length = new VehicleLength(0);
          } else {

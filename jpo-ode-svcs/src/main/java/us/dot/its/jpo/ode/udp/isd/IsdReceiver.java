@@ -17,14 +17,19 @@ import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.UdpUtil;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class IsdReceiver extends AbstractUdpReceiverPublisher {
 
    private static Logger logger = LoggerFactory.getLogger(IsdReceiver.class);
+   protected MessageProducer<String, byte[]> byteArrayProducer;
 
    @Autowired
    public IsdReceiver(OdeProperties odeProps) {
       super(odeProps, odeProps.getIsdReceiverPort(), odeProps.getIsdBufferSize());
+      byteArrayProducer = MessageProducer.defaultByteArrayMessageProducer(
+          odeProperties.getKafkaBrokers(), 
+          odeProperties.getKafkaProducerType());
    }
 
    @Override
@@ -93,5 +98,10 @@ public class IsdReceiver extends AbstractUdpReceiverPublisher {
          logger.error("Error processing message", e);
       }
    }
+
+   protected void publish(byte[] data, String topic) {
+       logger.debug("Publishing data to topic {}", topic);
+       byteArrayProducer.send(topic, null, data);
+    }
 
 }
