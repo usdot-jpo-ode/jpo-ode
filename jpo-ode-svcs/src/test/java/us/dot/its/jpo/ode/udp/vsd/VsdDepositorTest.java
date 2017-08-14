@@ -1,16 +1,16 @@
 package us.dot.its.jpo.ode.udp.vsd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
-
-import org.junit.Ignore;
 import org.junit.Test;
 
-import com.oss.asn1.DecodeFailedException;
-import com.oss.asn1.DecodeNotSupportedException;
-import com.oss.asn1.PERUnalignedCoder;
+import com.oss.asn1.AbstractData;
+import com.oss.asn1.Coder;
+import com.oss.asn1.EncodeFailedException;
+import com.oss.asn1.EncodeNotSupportedException;
 
 import mockit.Capturing;
 import mockit.Expectations;
@@ -18,13 +18,12 @@ import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
+import us.dot.its.jpo.ode.wrapper.VehSitDataMessageDeserializer;
 
-@Ignore
 public class VsdDepositorTest {
 
    @Tested
@@ -33,60 +32,72 @@ public class VsdDepositorTest {
    @Injectable
    OdeProperties injectableOdeProperties;
 
+   @Capturing
+   MessageConsumer<?,?> capturingMessageConsumer;
+   @Capturing
+   VehSitDataMessageDeserializer capturingVehSitDataMessageDeserializer;
+   @Capturing
+   Coder capturingCoder;
+
    @Mocked
-   OdeProperties mockOdeProperties;
+   EncodeFailedException mockEncodeFailedException;
+   @Mocked
+   VehSitDataMessage mockVehSitDataMessage;
 
    @Test
-   public void getDialogIdShouldReturnVSDDialog(@Capturing MessageConsumer<?, ?> capturingMessageConsumer) {
+   public void getDialogIdShouldReturnVSDDialog() {
       assertEquals(SemiDialogID.vehSitData, testVsdDepositor.getDialogId());
    }
 
    @Test
-   public void testGetRequestID(@Capturing J2735 capturingJ2735, @Mocked PERUnalignedCoder mockPERUnalignedCoder,
-         @Capturing MessageConsumer<?, ?> capturingMessageConsumer, @Mocked VehSitDataMessage mockVehSitDataMessage) {
-      try {
-         new Expectations() {
-            {
+   public void getRequestIDUsesDeserializer() {
+      TemporaryID expectedID = new TemporaryID();
+      new Expectations() {
+         {
+            capturingVehSitDataMessageDeserializer.deserialize(null, (byte[]) any);
+            result = mockVehSitDataMessage;
 
-               J2735.getPERUnalignedCoder();
-               result = mockPERUnalignedCoder;
+            mockVehSitDataMessage.getRequestID();
+            result = expectedID;
+         }
+      };
 
-               mockPERUnalignedCoder.decode((ByteArrayInputStream) any, (VehSitDataMessage) any);
-               result = mockVehSitDataMessage;
-
-               mockVehSitDataMessage.getRequestID();
-               result = new TemporaryID();
-            }
-         };
-      } catch (DecodeFailedException | DecodeNotSupportedException e) {
-         fail("Unexpected exception in expectations block: " + e);
-      }
-
-      VsdDepositor testRequestVsdDepositor = new VsdDepositor(mockOdeProperties);
-      testRequestVsdDepositor.getRequestId(new byte[] { 1, 2, 3 });
+      assertEquals(expectedID, testVsdDepositor.getRequestId(new byte[0]));
    }
 
    @Test
-   public void testGetRequestIDThrowsException(@Capturing J2735 capturingJ2735,
-         @Mocked PERUnalignedCoder mockPERUnalignedCoder, @Capturing MessageConsumer<?, ?> capturingMessageConsumer,
-         @Mocked VehSitDataMessage mockVehSitDataMessage, @Mocked DecodeFailedException mockDecodeFailedException) {
+   public void testEncodeMessageException() {
       try {
          new Expectations() {
             {
+               capturingVehSitDataMessageDeserializer.deserialize(null, (byte[]) any);
 
-               J2735.getPERUnalignedCoder();
-               result = mockPERUnalignedCoder;
-
-               mockPERUnalignedCoder.decode((ByteArrayInputStream) any, (VehSitDataMessage) any);
-               result = mockDecodeFailedException;
+               capturingCoder.encode((AbstractData) any);
+               result = mockEncodeFailedException;
             }
          };
-      } catch (DecodeFailedException | DecodeNotSupportedException e) {
-         fail("Unexpected exception in expectations block: " + e);
+      } catch (EncodeFailedException | EncodeNotSupportedException e) {
+         fail("Unexpected exception: " + e);
       }
 
-      VsdDepositor testRequestVsdDepositor = new VsdDepositor(mockOdeProperties);
-      testRequestVsdDepositor.getRequestId(new byte[] { 1, 2, 3 });
+      assertNull(testVsdDepositor.encodeMessage(new byte[0]));
    }
 
+   @Test
+   public void testEncodeMessageSuccess() {
+      try {
+         new Expectations() {
+            {
+               capturingVehSitDataMessageDeserializer.deserialize(null, (byte[]) any);
+
+               capturingCoder.encode((AbstractData) any).array();
+               result = new byte[0];
+            }
+         };
+      } catch (EncodeFailedException | EncodeNotSupportedException e) {
+         fail("Unexpected exception: " + e);
+      }
+
+      assertNotNull(testVsdDepositor.encodeMessage(new byte[0]));
+   }
 }

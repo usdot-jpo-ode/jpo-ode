@@ -45,6 +45,7 @@ public class VsdDepositor extends AbstractSubscriberDepositor {
    @Override
    public byte[] encodeMessage(byte[] serializedMsg) {
       VehSitDataMessage msg = deserializer.deserialize(null, serializedMsg);
+      logger.info("VSD ready to send: {}", msg);
       
       byte[] encodedMsg = null;
       try {
