@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.oss.asn1.DecodeFailedException;
@@ -23,6 +24,7 @@ import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
+@Ignore
 public class VsdDepositorTest {
 
    @Tested

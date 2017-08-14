@@ -17,19 +17,22 @@ import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.UdpUtil;
+import us.dot.its.jpo.ode.wrapper.IntersectionSituationDataSerializer;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class IsdReceiver extends AbstractUdpReceiverPublisher {
 
    private static Logger logger = LoggerFactory.getLogger(IsdReceiver.class);
    protected MessageProducer<String, byte[]> byteArrayProducer;
+   private IntersectionSituationDataSerializer serializer;
 
    @Autowired
    public IsdReceiver(OdeProperties odeProps) {
       super(odeProps, odeProps.getIsdReceiverPort(), odeProps.getIsdBufferSize());
-      byteArrayProducer = MessageProducer.defaultByteArrayMessageProducer(
+      this.byteArrayProducer = MessageProducer.defaultByteArrayMessageProducer(
           odeProperties.getKafkaBrokers(), 
           odeProperties.getKafkaProducerType());
+      this.serializer = new IntersectionSituationDataSerializer();
    }
 
    @Override
@@ -90,9 +93,10 @@ public class IsdReceiver extends AbstractUdpReceiverPublisher {
          } else if (decoded instanceof IntersectionSituationData) {
             String hexMsg = HexUtils.toHexString(data);
             logger.debug("Received ISD: {}", hexMsg);
-            publish(data, odeProperties.getKafkaTopicEncodedIsd());
+            publish(serializer.serialize(null, (IntersectionSituationData) decoded), odeProperties.getKafkaTopicIsdPojo());
          } else {
-            logger.error("Unknown message type received {}", HexUtils.toHexString(data));
+            String hexMsg = HexUtils.toHexString(data);
+            logger.error("Unknown message type received {}", hexMsg);
          }
       } catch (Exception e) {
          logger.error("Error processing message", e);

@@ -14,6 +14,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.oss.asn1.AbstractData;
@@ -37,6 +38,7 @@ import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.udp.trust.TrustManager;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
+@Ignore
 public class IsdDepositorTest {
 
    @Tested
