@@ -27,7 +27,7 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Excepti
 import us.dot.its.jpo.ode.udp.UdpUtil;
 import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
-import us.dot.its.jpo.ode.wrapper.OdeBsmSerializer;
+import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmSerializer;
 
 public class VsdReceiver extends BsmReceiver {
 

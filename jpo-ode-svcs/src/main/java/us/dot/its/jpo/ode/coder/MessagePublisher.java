@@ -12,7 +12,7 @@ import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
-import us.dot.its.jpo.ode.wrapper.OdeBsmSerializer;
+import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmSerializer;
 
 public class MessagePublisher {
 

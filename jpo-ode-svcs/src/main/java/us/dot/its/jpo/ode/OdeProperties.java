@@ -72,6 +72,11 @@ public class OdeProperties implements EnvironmentAware {
     */
    private int trustRetries = 2; // if trust handshake fails, how many times to retry
    private int messagesUntilTrustReestablished = 10; // renew trust session every x messages
+   
+   /*
+    * TIM properties
+    */
+   private String kafkaTopicRawTimPojo = "topic.j2735Tim";
 
    /*
     * BSM Properties
@@ -595,5 +600,13 @@ public class OdeProperties implements EnvironmentAware {
     public void setImportProcessorBufferSize(int importProcessorBufferSize) {
         this.importProcessorBufferSize = importProcessorBufferSize;
     }
+
+   public String getKafkaTopicRawTimPojo() {
+      return kafkaTopicRawTimPojo;
+   }
+
+   public void setKafkaTopicRawTimPojo(String kafkaTopicRawTimPojo) {
+      this.kafkaTopicRawTimPojo = kafkaTopicRawTimPojo;
+   }
 
 }

@@ -14,12 +14,14 @@ import org.snmp4j.event.ResponseEvent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class TimControllerQueryTest {
 
@@ -30,6 +32,9 @@ public class TimControllerQueryTest {
 
    @Mocked
    ResponseEvent mockResponse;
+   
+   @Capturing
+   MessageProducer<?,?> capturingMessageProducer;
 
    @Test
    public void shouldReturnFalseNullRequest(@Mocked final LoggerFactory disabledLogger) {

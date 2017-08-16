@@ -13,6 +13,7 @@ import org.snmp4j.event.ResponseEvent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
@@ -32,6 +33,7 @@ import us.dot.its.jpo.ode.snmp.SNMP;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 @RunWith(JMockit.class)
 public class TimControllerTest {
@@ -61,6 +63,9 @@ public class TimControllerTest {
    ScopedPDU mockScopedPdu;
    @Mocked
    AsdMessage mockAsdMsg;
+   
+   @Capturing
+   MessageProducer<?,?> capturingMessageProducer;
 
    @Test
    public void emptyRequestShouldReturnError() {

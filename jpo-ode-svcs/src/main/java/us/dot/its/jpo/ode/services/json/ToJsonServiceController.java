@@ -10,11 +10,11 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 // TODO Deprecate per ODE-436
 // vvvvvvvvvvvvvvvvvvvvvvvvvv
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.wrapper.J2735BsmDeserializer;
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^
 // TODO Deprecate per ODE-436
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
-import us.dot.its.jpo.ode.wrapper.OdeBsmDeserializer;
+import us.dot.its.jpo.ode.wrapper.serdes.J2735BsmDeserializer;
+import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmDeserializer;
 
 /**
  * Launches ToJsonConverter service
