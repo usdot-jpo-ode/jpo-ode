@@ -76,7 +76,7 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * TIM properties
     */
-   private String kafkaTopicRawTimPojo = "topic.j2735Tim";
+   private String kafkaTopicRawTimPojo = "topic.OdeTimPojo";
 
    /*
     * BSM Properties
