@@ -10,7 +10,6 @@ import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 
 import us.dot.its.jpo.ode.j2735.J2735;
-import us.dot.its.jpo.ode.j2735.dsrc.Angle;
 import us.dot.its.jpo.ode.j2735.dsrc.Circle;
 import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane;
 import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane.OffsetXaxis;
@@ -29,9 +28,6 @@ import us.dot.its.jpo.ode.j2735.dsrc.HeadingSlice;
 import us.dot.its.jpo.ode.j2735.dsrc.LaneDataAttribute;
 import us.dot.its.jpo.ode.j2735.dsrc.LaneDataAttributeList;
 import us.dot.its.jpo.ode.j2735.dsrc.LaneID;
-import us.dot.its.jpo.ode.j2735.dsrc.LaneWidth;
-import us.dot.its.jpo.ode.j2735.dsrc.Latitude;
-import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
 import us.dot.its.jpo.ode.j2735.dsrc.MergeDivergeNodeAngle;
 import us.dot.its.jpo.ode.j2735.dsrc.MinuteOfTheYear;
 import us.dot.its.jpo.ode.j2735.dsrc.MsgCRC;
@@ -63,19 +59,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_24b;
 import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_26b;
 import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_28b;
 import us.dot.its.jpo.ode.j2735.dsrc.Node_XY_32b;
-import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B12;
-import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B14;
-import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B16;
-import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B18;
-import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B22;
-import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B24;
 import us.dot.its.jpo.ode.j2735.dsrc.OffsetSystem;
-import us.dot.its.jpo.ode.j2735.dsrc.Offset_B10;
-import us.dot.its.jpo.ode.j2735.dsrc.Offset_B11;
-import us.dot.its.jpo.ode.j2735.dsrc.Offset_B12;
-import us.dot.its.jpo.ode.j2735.dsrc.Offset_B13;
-import us.dot.its.jpo.ode.j2735.dsrc.Offset_B14;
-import us.dot.its.jpo.ode.j2735.dsrc.Offset_B16;
 import us.dot.its.jpo.ode.j2735.dsrc.Radius_B12;
 import us.dot.its.jpo.ode.j2735.dsrc.RegionList;
 import us.dot.its.jpo.ode.j2735.dsrc.RegionOffsets;
@@ -86,7 +70,6 @@ import us.dot.its.jpo.ode.j2735.dsrc.RoadSegmentID;
 import us.dot.its.jpo.ode.j2735.dsrc.RoadSegmentReferenceID;
 import us.dot.its.jpo.ode.j2735.dsrc.RoadwayCrownAngle;
 import us.dot.its.jpo.ode.j2735.dsrc.SSPindex;
-import us.dot.its.jpo.ode.j2735.dsrc.Scale_B12;
 import us.dot.its.jpo.ode.j2735.dsrc.SegmentAttributeLL;
 import us.dot.its.jpo.ode.j2735.dsrc.SegmentAttributeLLList;
 import us.dot.its.jpo.ode.j2735.dsrc.SegmentAttributeXY;
@@ -276,7 +259,7 @@ public class OssTravelerMessageBuilder {
                new RoadSegmentID(inputRegion.getSegmentID())));
          geoPath.setAnchor(OssPosition3D.position3D(inputRegion.getAnchorPosition()));
          TimFieldValidator.validateLaneWidth(inputRegion.getLaneWidth());
-         geoPath.setLaneWidth(new LaneWidth(inputRegion.getLaneWidth()));
+         geoPath.setLaneWidth(OssLaneWidth.laneWidth(inputRegion.getLaneWidth()));
          TimFieldValidator.validateDirectionality(inputRegion.getDirectionality());
          geoPath.setDirectionality(new DirectionOfUse(inputRegion.getDirectionality()));
          geoPath.setClosedPath(inputRegion.isClosedPath());
@@ -308,7 +291,7 @@ public class OssTravelerMessageBuilder {
             TimFieldValidator.validateExtent(inputRegion.getGeometry().getExtent());
             geo.setExtent(new Extent(inputRegion.getGeometry().getExtent()));
             TimFieldValidator.validateLaneWidth(inputRegion.getGeometry().getLaneWidth());
-            geo.setLaneWidth(new LaneWidth(inputRegion.getGeometry().getLaneWidth()));
+            geo.setLaneWidth(OssLaneWidth.laneWidth(inputRegion.getGeometry().getLaneWidth()));
             geo.setCircle(buildGeoCircle(inputRegion.getGeometry()));
             description.setGeometry(geo);
             geoPath.setDescription(description);
@@ -324,7 +307,7 @@ public class OssTravelerMessageBuilder {
                ShapePointSet sps = new ShapePointSet();
                sps.setAnchor(OssPosition3D.position3D(inputRegion.getOldRegion().getShapepoint().getPosition()));
                TimFieldValidator.validateLaneWidth(inputRegion.getOldRegion().getShapepoint().getLaneWidth());
-               sps.setLaneWidth(new LaneWidth(inputRegion.getOldRegion().getShapepoint().getLaneWidth()));
+               sps.setLaneWidth(OssLaneWidth.laneWidth(inputRegion.getOldRegion().getShapepoint().getLaneWidth()));
                TimFieldValidator.validateDirectionality(inputRegion.getOldRegion().getShapepoint().getDirectionality());
                sps.setDirectionality(
                      new DirectionOfUse(inputRegion.getOldRegion().getShapepoint().getDirectionality()));
@@ -362,11 +345,11 @@ public class OssTravelerMessageBuilder {
       for (int i = 0; i < list.length; i++) {
          RegionOffsets ele = new RegionOffsets();
          TimFieldValidator.validatex16Offset(list[i].getxOffset());
-         ele.setXOffset(new OffsetLL_B16(list[i].getxOffset()));
+         ele.setXOffset(OssOffsetLLB16.offsetLLB16(list[i].getxOffset()));
          TimFieldValidator.validatey16Offset(list[i].getyOffset());
-         ele.setYOffset(new OffsetLL_B16(list[i].getyOffset()));
+         ele.setYOffset(OssOffsetLLB16.offsetLLB16(list[i].getyOffset()));
          TimFieldValidator.validatez16Offset(list[i].getzOffset());
-         ele.setZOffset(new OffsetLL_B16(list[i].getzOffset()));
+         ele.setZOffset(OssOffsetLLB16.offsetLLB16(list[i].getzOffset()));
          myList.add(ele);
       }
       return myList;
@@ -405,44 +388,44 @@ public class OssTravelerMessageBuilder {
          case "node-XY1":
             TimFieldValidator.validateB10Offset(point.getX());
             TimFieldValidator.validateB10Offset(point.getY());
-            Node_XY_20b xy = new Node_XY_20b(new Offset_B10(point.getX()), new Offset_B10(point.getY()));
+            Node_XY_20b xy = new Node_XY_20b(OssOffsetB10.offsetB10(point.getX()), OssOffsetB10.offsetB10(point.getY()));
             nodePoint.setNode_XY1(xy);
             break;
          case "node-XY2":
             TimFieldValidator.validateB11Offset(point.getX());
             TimFieldValidator.validateB11Offset(point.getY());
-            Node_XY_22b xy2 = new Node_XY_22b(new Offset_B11(point.getX()), new Offset_B11(point.getY()));
+            Node_XY_22b xy2 = new Node_XY_22b(OssOffsetB11.offsetB11(point.getX()), OssOffsetB11.offsetB11(point.getY()));
             nodePoint.setNode_XY2(xy2);
             break;
          case "node-XY3":
             TimFieldValidator.validateB12Offset(point.getX());
             TimFieldValidator.validateB12Offset(point.getY());
-            Node_XY_24b xy3 = new Node_XY_24b(new Offset_B12(point.getX()), new Offset_B12(point.getY()));
+            Node_XY_24b xy3 = new Node_XY_24b(OssOffsetB12.offsetB12(point.getX()), OssOffsetB12.offsetB12(point.getY()));
             nodePoint.setNode_XY3(xy3);
             break;
          case "node-XY4":
             TimFieldValidator.validateB13Offset(point.getX());
             TimFieldValidator.validateB13Offset(point.getY());
-            Node_XY_26b xy4 = new Node_XY_26b(new Offset_B13(point.getX()), new Offset_B13(point.getY()));
+            Node_XY_26b xy4 = new Node_XY_26b(OssOffsetB13.offsetB13(point.getX()), OssOffsetB13.offsetB13(point.getY()));
             nodePoint.setNode_XY4(xy4);
             break;
          case "node-XY5":
             TimFieldValidator.validateB14Offset(point.getX());
             TimFieldValidator.validateB14Offset(point.getY());
-            Node_XY_28b xy5 = new Node_XY_28b(new Offset_B14(point.getX()), new Offset_B14(point.getY()));
+            Node_XY_28b xy5 = new Node_XY_28b(OssOffsetB14.offsetB14(point.getX()), OssOffsetB14.offsetB14(point.getY()));
             nodePoint.setNode_XY5(xy5);
             break;
          case "node-XY6":
             TimFieldValidator.validateB16Offset(point.getX());
             TimFieldValidator.validateB16Offset(point.getY());
-            Node_XY_32b xy6 = new Node_XY_32b(new Offset_B16(point.getX()), new Offset_B16(point.getY()));
+            Node_XY_32b xy6 = new Node_XY_32b(OssOffsetB16.offsetB16(point.getX()), OssOffsetB16.offsetB16(point.getY()));
             nodePoint.setNode_XY6(xy6);
             break;
          case "node-LatLon":
             TimFieldValidator.validateLatitude(point.getNodeLat());
             TimFieldValidator.validateLongitude(point.getNodeLong());
-            Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.getNodeLong()),
-                  new Latitude(point.getNodeLat()));
+            Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(OssLongitude.longitude(point.getNodeLong()),
+                  OssLatitude.latitude(point.getNodeLat()));
             nodePoint.setNode_LatLon(nodeLatLong);
             break;
          default:
@@ -492,7 +475,7 @@ public class OssTravelerMessageBuilder {
                   SpeedLimitList speedDataList = new SpeedLimitList();
                   for (J2735TravelerInformationMessage.SpeedLimits speedLimit : dataList.getSpeedLimits()) {
                      speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.getType()),
-                           new Velocity(speedLimit.getVelocity())));
+                           OssVelocity.velocity(speedLimit.getVelocity())));
                   }
 
                   dataAttribute.setSpeedLimits(speedDataList);
@@ -502,8 +485,8 @@ public class OssTravelerMessageBuilder {
                attributes.setData(dataNodeList);
             }
 
-            attributes.setDWidth(new Offset_B10(point.getAttributes().getdWidth()));
-            attributes.setDElevation(new Offset_B10(point.getAttributes().getdElevation()));
+            attributes.setDWidth(OssOffsetB10.offsetB10(point.getAttributes().getdWidth()));
+            attributes.setDElevation(OssOffsetB10.offsetB10(point.getAttributes().getdElevation()));
 
             node.setAttributes(attributes);
 
@@ -538,9 +521,9 @@ public class OssTravelerMessageBuilder {
          oy.setSmall(inputLane.getOffsetSmallY());
          computedLane.offsetYaxis = oy;
       }
-      computedLane.setRotateXY(new Angle(inputLane.getAngle()));
-      computedLane.setScaleXaxis(new Scale_B12(inputLane.getxScale()));
-      computedLane.setScaleYaxis(new Scale_B12(inputLane.getyScale()));
+      computedLane.setRotateXY(OssAngle.angle(inputLane.getAngle()));
+      computedLane.setScaleXaxis(OssScaleB12.scaleB12(inputLane.getxScale()));
+      computedLane.setScaleYaxis(OssScaleB12.scaleB12(inputLane.getyScale()));
 
       nodeList.setComputed(computedLane);
       return nodeList;
@@ -559,50 +542,50 @@ public class OssTravelerMessageBuilder {
          case "node-LL1":
             TimFieldValidator.validateLL12Offset(point.getNodeLat());
             TimFieldValidator.validateLL12Offset(point.getNodeLong());
-            Node_LL_24B xy1 = new Node_LL_24B(new OffsetLL_B12(point.getNodeLat()),
-                  new OffsetLL_B12(point.getNodeLong()));
+            Node_LL_24B xy1 = new Node_LL_24B(OssOffsetLLB12.offsetLLB12(point.getNodeLat()),
+                  OssOffsetLLB12.offsetLLB12(point.getNodeLong()));
             nodePoint.setNode_LL1(xy1);
             break;
          case "node-LL2":
             TimFieldValidator.validateLL14Offset(point.getNodeLat());
             TimFieldValidator.validateLL14Offset(point.getNodeLong());
-            Node_LL_28B xy2 = new Node_LL_28B(new OffsetLL_B14(point.getNodeLat()),
-                  new OffsetLL_B14(point.getNodeLong()));
+            Node_LL_28B xy2 = new Node_LL_28B(OssOffsetLLB14.offsetLLB14(point.getNodeLat()),
+                  OssOffsetLLB14.offsetLLB14(point.getNodeLong()));
             nodePoint.setNode_LL2(xy2);
             break;
          case "node-LL3":
             TimFieldValidator.validateLL16Offset(point.getNodeLat());
             TimFieldValidator.validateLL16Offset(point.getNodeLong());
-            Node_LL_32B xy3 = new Node_LL_32B(new OffsetLL_B16(point.getNodeLat()),
-                  new OffsetLL_B16(point.getNodeLong()));
+            Node_LL_32B xy3 = new Node_LL_32B(OssOffsetLLB16.offsetLLB16(point.getNodeLat()),
+                  OssOffsetLLB16.offsetLLB16(point.getNodeLong()));
             nodePoint.setNode_LL3(xy3);
             break;
          case "node-LL4":
             TimFieldValidator.validateLL18Offset(point.getNodeLat());
             TimFieldValidator.validateLL18Offset(point.getNodeLong());
-            Node_LL_36B xy4 = new Node_LL_36B(new OffsetLL_B18(point.getNodeLat()),
-                  new OffsetLL_B18(point.getNodeLong()));
+            Node_LL_36B xy4 = new Node_LL_36B(OssOffsetLLB18.offsetLLB18(point.getNodeLat()),
+                  OssOffsetLLB18.offsetLLB18(point.getNodeLong()));
             nodePoint.setNode_LL4(xy4);
             break;
          case "node-LL5":
             TimFieldValidator.validateLL22Offset(point.getNodeLat());
             TimFieldValidator.validateLL22Offset(point.getNodeLong());
-            Node_LL_44B xy5 = new Node_LL_44B(new OffsetLL_B22(point.getNodeLat()),
-                  new OffsetLL_B22(point.getNodeLong()));
+            Node_LL_44B xy5 = new Node_LL_44B(OssOffsetLLB22.offsetLLB22(point.getNodeLat()),
+                  OssOffsetLLB22.offsetLLB22(point.getNodeLong()));
             nodePoint.setNode_LL5(xy5);
             break;
          case "node-LL6":
             TimFieldValidator.validateLL24Offset(point.getNodeLat());
             TimFieldValidator.validateLL24Offset(point.getNodeLong());
-            Node_LL_48B xy6 = new Node_LL_48B(new OffsetLL_B24(point.getNodeLat()),
-                  new OffsetLL_B24(point.getNodeLong()));
+            Node_LL_48B xy6 = new Node_LL_48B(OssOffsetLLB24.offsetLLB24(point.getNodeLat()),
+                  OssOffsetLLB24.offsetLLB24(point.getNodeLong()));
             nodePoint.setNode_LL6(xy6);
             break;
          case "node-LatLon":
             TimFieldValidator.validateLatitude(point.getNodeLat());
             TimFieldValidator.validateLongitude(point.getNodeLong());
-            Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(new Longitude(point.getNodeLong()),
-                  new Latitude(point.getNodeLat()));
+            Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(OssLongitude.longitude(point.getNodeLong()),
+                  OssLatitude.latitude(point.getNodeLat()));
             nodePoint.setNode_LatLon(nodeLatLong);
             break;
          default:
@@ -662,8 +645,8 @@ public class OssTravelerMessageBuilder {
                attributes.setData(dataNodeList);
             }
 
-            attributes.setDWidth(new Offset_B10(point.getAttributes().getdWidth()));
-            attributes.setDElevation(new Offset_B10(point.getAttributes().getdElevation()));
+            attributes.setDWidth(OssOffsetB10.offsetB10(point.getAttributes().getdWidth()));
+            attributes.setDElevation(OssOffsetB10.offsetB10(point.getAttributes().getdElevation()));
 
             node.setAttributes(attributes);
          }

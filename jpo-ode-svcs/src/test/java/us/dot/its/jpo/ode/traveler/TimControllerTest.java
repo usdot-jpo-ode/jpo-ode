@@ -1,12 +1,12 @@
 package us.dot.its.jpo.ode.traveler;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.event.ResponseEvent;
@@ -19,7 +19,6 @@ import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
@@ -35,7 +34,6 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-@RunWith(JMockit.class)
 public class TimControllerTest {
 
    @Tested
@@ -133,7 +131,7 @@ public class TimControllerTest {
                result = "mockTim";
 
                mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
-               result = new Exception("Builder Error");
+               result = new Exception(new IOException("ExceptionInception"));
             }
          };
       } catch (Exception e) {
@@ -142,7 +140,7 @@ public class TimControllerTest {
 
       try {
          ResponseEntity<String> response = testTimController.timMessage("test123");
-         assertEquals("Request does not match schema.", response.getBody());
+         assertTrue(response.getBody().startsWith("Request does not match schema:"));
       } catch (Exception e) {
          fail("Unexpected exception " + e);
       }

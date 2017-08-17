@@ -252,7 +252,7 @@ public class TimController {
       try {
          builder.buildTravelerInformation(travelerinputData.getTim());
       } catch (Exception e) {
-         String errMsg = "Request does not match schema.";
+         String errMsg = "Request does not match schema: " + e.getMessage();
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errMsg);
       }
