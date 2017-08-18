@@ -245,7 +245,7 @@ public class TimController {
       OdeMsgPayload timDataPayload = new OdeMsgPayload(travelerinputData.getTim());
       OdeMsgMetadata timMetadata = new OdeMsgMetadata(timDataPayload);
       OdeTravelerInformationData odeTimData = new OdeTravelerInformationData(timMetadata, timDataPayload);
-      messageProducer.send(odeProperties.getKafkaTopicRawTimPojo(), null, odeTimData);
+      messageProducer.send(odeProperties.getKafkaTopicOdeTimPojo(), null, odeTimData);
 
       // Craft ASN-encodable TIM
       OssTravelerMessageBuilder builder = new OssTravelerMessageBuilder();

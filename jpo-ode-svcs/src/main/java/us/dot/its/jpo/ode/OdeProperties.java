@@ -76,7 +76,8 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * TIM properties
     */
-   private String kafkaTopicRawTimPojo = "topic.OdeTimPojo";
+   private String kafkaTopicOdeTimPojo = "topic.OdeTimPojo";
+   private String kafkaTopicOdeTimJson = "topic.OdeTimJson";
 
    /*
     * BSM Properties
@@ -601,12 +602,20 @@ public class OdeProperties implements EnvironmentAware {
         this.importProcessorBufferSize = importProcessorBufferSize;
     }
 
-   public String getKafkaTopicRawTimPojo() {
-      return kafkaTopicRawTimPojo;
+   public String getKafkaTopicOdeTimPojo() {
+      return kafkaTopicOdeTimPojo;
    }
 
-   public void setKafkaTopicRawTimPojo(String kafkaTopicRawTimPojo) {
-      this.kafkaTopicRawTimPojo = kafkaTopicRawTimPojo;
+   public void setKafkaTopicOdeTimPojo(String kafkaTopicOdeTimPojo) {
+      this.kafkaTopicOdeTimPojo = kafkaTopicOdeTimPojo;
+   }
+
+   public String getKafkaTopicOdeTimJson() {
+      return kafkaTopicOdeTimJson;
+   }
+
+   public void setKafkaTopicOdeTimJson(String kafkaTopicOdeTimJson) {
+      this.kafkaTopicOdeTimJson = kafkaTopicOdeTimJson;
    }
 
 }

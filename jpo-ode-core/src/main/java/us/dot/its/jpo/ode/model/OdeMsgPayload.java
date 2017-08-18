@@ -21,6 +21,10 @@ public class OdeMsgPayload extends OdeMessage {
 
     private String dataType;
     private OdeObject data;
+    
+    public OdeMsgPayload() {
+       super();
+    }
 
     public OdeMsgPayload(OdeObject data) {
         super();
