@@ -68,11 +68,14 @@ public class ToJsonServiceController {
       logger.info("Converting {} records from topic {} and publishing to topic {} ",
             OdeTravelerInformationData.class.getSimpleName(), odeProps.getKafkaTopicOdeTimPojo(),
             odeProps.getKafkaTopicOdeTimJson());
+      
       ToJsonConverter<OdeTravelerInformationData> odeTimConverter = new ToJsonConverter<>(odeProps, false,
             odeProps.getKafkaTopicOdeTimJson());
+      
       MessageConsumer<String, OdeTravelerInformationData> odeTimConsumer = new MessageConsumer<>(
             odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), odeTimConverter,
             OdeTravelerInformationMessageDeserializer.class.getName());
+      
       odeTimConsumer.setName("odeTimConsumer");
       odeTimConverter.start(odeTimConsumer, odeProps.getKafkaTopicOdeTimPojo());
 
