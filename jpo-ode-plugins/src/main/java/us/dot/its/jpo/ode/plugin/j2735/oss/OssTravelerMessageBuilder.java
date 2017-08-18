@@ -635,7 +635,7 @@ public class OssTravelerMessageBuilder {
                   SpeedLimitList speedDataList = new SpeedLimitList();
                   for (J2735TravelerInformationMessage.SpeedLimits speedLimit : dataList.getSpeedLimits()) {
                      speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.getType()),
-                           new Velocity(speedLimit.getVelocity())));
+                           OssVelocity.velocity(speedLimit.getVelocity())));
                   }
 
                   dataAttribute.setSpeedLimits(speedDataList);

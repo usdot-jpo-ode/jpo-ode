@@ -7,6 +7,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.OffsetLL_B16;
 public class OssOffsetLLB16 {
 
    private OssOffsetLLB16() {
+      throw new UnsupportedOperationException();
    }
 
    public static OffsetLL_B16 offsetLLB16(BigDecimal offset) {

@@ -71,8 +71,8 @@ public class J2735TravelerInformationMessage extends OdeObject {
       private int offsetSmallY;
       private int offsetLargeY;
       private int angle;
-      private int xScale;
-      private int yScale;
+      private BigDecimal xScale;
+      private BigDecimal yScale;
 
       public int getLaneID() {
          return laneID;
@@ -122,19 +122,19 @@ public class J2735TravelerInformationMessage extends OdeObject {
          this.angle = angle;
       }
 
-      public int getxScale() {
+      public BigDecimal getxScale() {
          return xScale;
       }
 
-      public void setxScale(int xScale) {
+      public void setxScale(BigDecimal xScale) {
          this.xScale = xScale;
       }
 
-      public int getyScale() {
+      public BigDecimal getyScale() {
          return yScale;
       }
 
-      public void setyScale(int yScale) {
+      public void setyScale(BigDecimal yScale) {
          this.yScale = yScale;
       }
    }
@@ -245,7 +245,7 @@ public class J2735TravelerInformationMessage extends OdeObject {
 
       private static final long serialVersionUID = -8729406522600137038L;
       private long type;
-      private long velocity;
+      private BigDecimal velocity;
 
       public long getType() {
          return type;
@@ -255,11 +255,11 @@ public class J2735TravelerInformationMessage extends OdeObject {
          this.type = type;
       }
 
-      public long getVelocity() {
+      public BigDecimal getVelocity() {
          return velocity;
       }
 
-      public void setVelocity(long velocity) {
+      public void setVelocity(BigDecimal velocity) {
          this.velocity = velocity;
       }
    }

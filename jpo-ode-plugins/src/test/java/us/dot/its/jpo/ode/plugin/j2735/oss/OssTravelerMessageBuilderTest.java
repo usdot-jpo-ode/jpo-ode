@@ -413,7 +413,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -476,7 +476,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -536,7 +536,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -598,7 +598,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -659,7 +659,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -721,7 +721,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -782,7 +782,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -844,7 +844,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -905,7 +905,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -967,7 +967,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -1028,7 +1028,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -1090,7 +1090,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -1151,7 +1151,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -1213,7 +1213,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -1275,7 +1275,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -1337,7 +1337,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -1399,7 +1399,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -1460,7 +1460,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -1522,7 +1522,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -1582,7 +1582,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -1644,7 +1644,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -1705,7 +1705,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -1767,7 +1767,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -1828,7 +1828,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -1890,7 +1890,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -1951,7 +1951,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -2013,7 +2013,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -2074,7 +2074,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -2136,7 +2136,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -2197,7 +2197,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -2571,7 +2571,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -2663,7 +2663,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -2749,8 +2749,8 @@ public class OssTravelerMessageBuilderTest {
       cl.setOffsetSmallX(3);
       cl.setOffsetLargeY(5);
       cl.setOffsetSmallY(3);
-      cl.setxScale(2);
-      cl.setyScale(2);
+      cl.setxScale(BigDecimal.valueOf(2));
+      cl.setyScale(BigDecimal.valueOf(2));
       p.setComputedLane(cl);
       p.setNodes(node);
       r.setPath(p);
@@ -2811,8 +2811,8 @@ public class OssTravelerMessageBuilderTest {
       cl.setOffsetSmallX(3);
       cl.setOffsetLargeY(0);
       cl.setOffsetSmallY(3);
-      cl.setxScale(2);
-      cl.setyScale(2);
+      cl.setxScale(BigDecimal.valueOf(2));
+      cl.setyScale(BigDecimal.valueOf(2));
       p.setComputedLane(cl);
       p.setNodes(node);
       r.setPath(p);
@@ -2947,7 +2947,7 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
       sl.setType(1);
-      sl.setVelocity(1);
+      sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(1);
       dataL.setLaneCrownCenter(1);
       dataL.setLaneCrownLeft(1);
@@ -3040,8 +3040,8 @@ public class OssTravelerMessageBuilderTest {
       cl.setOffsetSmallX(3);
       cl.setOffsetLargeY(5);
       cl.setOffsetSmallY(3);
-      cl.setxScale(2);
-      cl.setyScale(2);
+      cl.setxScale(BigDecimal.valueOf(2));
+      cl.setyScale(BigDecimal.valueOf(2));
       sp.setComputedLane(cl);
       sp.setNodexy(node);
       or.setShapepoint(sp);

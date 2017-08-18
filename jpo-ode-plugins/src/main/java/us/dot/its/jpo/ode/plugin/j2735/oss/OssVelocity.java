@@ -7,10 +7,10 @@ import us.dot.its.jpo.ode.j2735.dsrc.Velocity;
 public class OssVelocity {
 
    private OssVelocity() {
+      throw new UnsupportedOperationException();
    }
 
-   public static Velocity velocity(long vel) {
-      return new Velocity(BigDecimal.valueOf(vel, -1).intValue());
+   public static Velocity velocity(BigDecimal vel) {
+      return new Velocity(vel.multiply(BigDecimal.valueOf(50)).intValue());
    }
-
 }

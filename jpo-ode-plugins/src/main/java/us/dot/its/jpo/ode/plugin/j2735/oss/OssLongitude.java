@@ -7,6 +7,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
 public class OssLongitude {
 
    private OssLongitude() {
+      throw new UnsupportedOperationException();
    }
 
    public static Longitude longitude(BigDecimal lon) {

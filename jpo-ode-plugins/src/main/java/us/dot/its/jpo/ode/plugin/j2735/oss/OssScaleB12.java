@@ -7,9 +7,10 @@ import us.dot.its.jpo.ode.j2735.dsrc.Scale_B12;
 public class OssScaleB12 {
 
    private OssScaleB12() {
+      throw new UnsupportedOperationException();
    }
 
-   public static Scale_B12 scaleB12(long scale) {
-      return new Scale_B12(BigDecimal.valueOf(scale - 100).multiply(BigDecimal.valueOf(20)).intValue());
+   public static Scale_B12 scaleB12(BigDecimal scale) {
+      return new Scale_B12(scale.subtract(BigDecimal.valueOf(100)).multiply(BigDecimal.valueOf(20)).intValue());
    }
 }

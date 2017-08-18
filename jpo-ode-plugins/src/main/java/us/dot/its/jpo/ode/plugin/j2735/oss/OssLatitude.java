@@ -7,7 +7,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.Latitude;
 public class OssLatitude {
 
    private OssLatitude() {
-
+      throw new UnsupportedOperationException();
    }
 
    public static Latitude latitude(BigDecimal lat) {
