@@ -14,11 +14,9 @@ produces:
 paths:
   /tim/query:
     post:
-      summary: >-
-        Query an RSU for set TIMs
+      summary: Query an RSU for set TIMs
       operationId: tim_query
-      description: >-
-        Query an RSU for set TIMs
+      description: Query an RSU for set TIMs
       tags:
         - TIM
       parameters:
@@ -90,11 +88,9 @@ paths:
             items:
               $ref: '#/definitions/Status'
     delete:
-      summary: >-
-        Delete a TIM message on an RSU.
+      summary: Delete a TIM message on an RSU.
       operationId: tim_delete
-      description: >-
-        Sets the status of a designated message index on an RSU to 6.
+      description: Sets the status of a designated message index on an RSU to 6.
       parameters:
         - name: index
           in: query
@@ -121,7 +117,6 @@ paths:
           description: Misc error
           schema:
             $ref: '#/definitions/Status'
-
   /RSU SNMP:
     get:
       summary: RSU SNMP Query
@@ -198,10 +193,12 @@ definitions:
     properties:
       index:
         type: integer
+        description: Index of message storage on RSU.
       msgCnt:
         type: integer
       timestamp:
-        type: integer
+        type: string
+        description: ISO time of message creation.
       packetId:
         type: integer
       urlB:
@@ -305,7 +302,7 @@ definitions:
       anchor_eleveation:
         type: integer
       laneWidth:
-        type: integer
+        type: number
       directionality:
         type: integer
       closedPath:
@@ -331,20 +328,28 @@ definitions:
     properties:
       laneID:
         type: integer
+        description: 'LaneID [0..255]'
       offsetSmallX:
         type: integer
+        description: 'Offset measured in centimeters [-2047..2047].'
       offsetLargeX:
         type: integer
+        description: 'Offset measured in centimeters [-32767..32767].'
       offsetSmallY:
         type: integer
+        description: 'Offset measured in centimeters [-2047..2047].'
       offsetLargeY:
         type: integer
+        description: 'Offset measured in centimeters [-32767..32767].'
       angle:
-        type: integer
+        type: number
+        description: 'Lane rotation measured in degrees [0..359.9875].'
       xScale:
-        type: integer
+        type: number
+        description: 'Scale factor in percent [0..202.35%] in steps of 0.05.'
       yScale:
-        type: integer
+        type: number
+        description: 'Scale factor in percent [0..202.35%] in steps of 0.05.'
   Path:
     type: object
     properties:
@@ -458,8 +463,9 @@ definitions:
     properties:
       position:
         $ref: '#/definitions/J2735Position3D'
-      scale:
+      zoom:
         type: integer
+        description: (OPTIONAL) A zoom scale applied in units of 2^N.
       regionList:
         type: array
         items:
@@ -468,33 +474,46 @@ definitions:
     type: object
     properties:
       xOffset:
-        type: integer
+        type: number
+        description: 'OffsetLL-B16 measured in degrees [-0.0032767..0.0032767]'
       yOffset:
-        type: integer
+        type: number
+        description: 'OffsetLL-B16 measured in degrees [-0.0032767..0.0032767]'
       zOffset:
-        type: integer
+        type: number
+        description: '(OPTIONAL) OffsetLL-B16 measured in degrees [-0.0032767..0.0032767]'
   J2735Position3D:
     type: object
     properties:
       latitude:
         type: number
+        description: 'Latitude in degrees [-90.0..90.0]'
       longitude:
         type: number
+        description: 'Longitude in degrees [-90.0..90.0]'
       elevation:
-        type: integer
+        type: number
+        description: 'Elevation in meters [-409.5..6143.9]'
   NodeXY:
     type: object
     properties:
       delta:
         type: string
+        description: >-
+          One of Node-XY-20b, Node-XY-22b, Node-XY-24b, Node-XY-26b,
+          Node-XY-28b, Node-XY-32b, Node-LLmD-64b,
       nodeLat:
-        type: integer
+        type: number
+        description: 'Latitude, used for Node-LLmD-64b'
       nodeLong:
-        type: integer
+        type: number
+        description: 'Longitude, used for Node-LLmD-64b'
       x:
-        type: integer
+        type: number
+        description: 'Offset-B10 in meters [-5.11..5.11m]'
       'y':
-        type: integer
+        type: number
+        description: 'Offset-B10 in meters [-5.11..5.11m]'
       attributes:
         $ref: '#/definitions/Attribute'
   ITISObj:
@@ -519,8 +538,10 @@ definitions:
         type: string
       deliverystart:
         type: string
+        description: ISO string for message delivery start time
       deliverystop:
         type: string
+        description: ISO string for message delivery stop time
       enable:
         type: string
       status:
@@ -530,14 +551,19 @@ definitions:
     properties:
       rsuTarget:
         type: string
+        description: IPv4 address of RSU
       rsuUsername:
         type: string
+        description: SNMP username
       rsuPassword:
         type: string
+        description: SNMP password
       rsuRetries:
-        type: string
+        type: integer
+        description: Number of retries upon message send failure
       rsuTimeout:
-        type: string
+        type: integer
+        description: Timeout measured in milliseconds
   SDW:
     type: object
     properties:
