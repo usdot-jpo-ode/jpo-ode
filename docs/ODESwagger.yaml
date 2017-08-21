@@ -330,20 +330,20 @@ definitions:
         type: integer
         description: 'LaneID [0..255]'
       offsetSmallX:
-        type: integer
-        description: 'Offset measured in centimeters [-2047..2047].'
+        type: number
+        description: 'Reference lane offset measured in meters [-20.47..20.47m].'
       offsetLargeX:
-        type: integer
-        description: 'Offset measured in centimeters [-32767..32767].'
+        type: number
+        description: 'Reference lane offset measured in meters [-327.67..327.67m].'
       offsetSmallY:
-        type: integer
-        description: 'Offset measured in centimeters [-2047..2047].'
+        type: number
+        description: 'Reference lane offset measured in meters [-20.47..20.47m].'
       offsetLargeY:
-        type: integer
-        description: 'Offset measured in centimeters [-32767..32767].'
+        type: number
+        description: 'Reference lane offset measured in meters [-32767..327.67m].'
       angle:
         type: number
-        description: 'Lane rotation measured in degrees [0..359.9875].'
+        description: 'Lane rotation measured in degrees [0..359.9875] in steps of 0.0125.'
       xScale:
         type: number
         description: 'Scale factor in percent [0..202.35%] in steps of 0.05.'

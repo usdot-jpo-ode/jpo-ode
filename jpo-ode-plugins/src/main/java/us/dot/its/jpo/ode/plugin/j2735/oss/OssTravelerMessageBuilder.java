@@ -506,19 +506,19 @@ public class OssTravelerMessageBuilder {
       OffsetYaxis oy = new OffsetYaxis();
 
       computedLane.setReferenceLaneId(new LaneID(inputLane.getLaneID()));
-      if (inputLane.getOffsetLargeX() > 0) {
-         ox.setLarge(inputLane.getOffsetLargeX());
+      if (inputLane.getOffsetLargeX().doubleValue() > 0) {
+         ox.setLarge(OssDrivenLineOffsetLg.drivenLineOffsetLg(inputLane.getOffsetLargeX()));
          computedLane.offsetXaxis = ox;
       } else {
-         ox.setSmall(inputLane.getOffsetSmallX());
+         ox.setSmall(OssDrivenLineOffsetSm.drivenLaneOffsetSm(inputLane.getOffsetSmallX()));
          computedLane.offsetXaxis = ox;
       }
 
-      if (inputLane.getOffsetLargeY() > 0) {
-         oy.setLarge(inputLane.getOffsetLargeY());
+      if (inputLane.getOffsetLargeY().doubleValue() > 0) {
+         oy.setLarge(OssDrivenLineOffsetLg.drivenLineOffsetLg(inputLane.getOffsetLargeY()));
          computedLane.offsetYaxis = oy;
       } else {
-         oy.setSmall(inputLane.getOffsetSmallY());
+         oy.setSmall(OssDrivenLineOffsetSm.drivenLaneOffsetSm(inputLane.getOffsetSmallY()));
          computedLane.offsetYaxis = oy;
       }
       computedLane.setRotateXY(OssAngle.angle(inputLane.getAngle()));

@@ -66,10 +66,10 @@ public class J2735TravelerInformationMessage extends OdeObject {
 
       private static final long serialVersionUID = 7337344402648755924L;
       private int laneID;
-      private int offsetSmallX;
-      private int offsetLargeX;
-      private int offsetSmallY;
-      private int offsetLargeY;
+      private BigDecimal offsetSmallX;
+      private BigDecimal offsetLargeX;
+      private BigDecimal offsetSmallY;
+      private BigDecimal offsetLargeY;
       private int angle;
       private BigDecimal xScale;
       private BigDecimal yScale;
@@ -82,35 +82,35 @@ public class J2735TravelerInformationMessage extends OdeObject {
          this.laneID = laneID;
       }
 
-      public int getOffsetSmallX() {
+      public BigDecimal getOffsetSmallX() {
          return offsetSmallX;
       }
 
-      public void setOffsetSmallX(int offsetSmallX) {
+      public void setOffsetSmallX(BigDecimal offsetSmallX) {
          this.offsetSmallX = offsetSmallX;
       }
 
-      public int getOffsetLargeX() {
+      public BigDecimal getOffsetLargeX() {
          return offsetLargeX;
       }
 
-      public void setOffsetLargeX(int offsetLargeX) {
+      public void setOffsetLargeX(BigDecimal offsetLargeX) {
          this.offsetLargeX = offsetLargeX;
       }
 
-      public int getOffsetSmallY() {
+      public BigDecimal getOffsetSmallY() {
          return offsetSmallY;
       }
 
-      public void setOffsetSmallY(int offsetSmallY) {
+      public void setOffsetSmallY(BigDecimal offsetSmallY) {
          this.offsetSmallY = offsetSmallY;
       }
 
-      public int getOffsetLargeY() {
+      public BigDecimal getOffsetLargeY() {
          return offsetLargeY;
       }
 
-      public void setOffsetLargeY(int offsetLargeY) {
+      public void setOffsetLargeY(BigDecimal offsetLargeY) {
          this.offsetLargeY = offsetLargeY;
       }
 
