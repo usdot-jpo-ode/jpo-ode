@@ -303,6 +303,7 @@ definitions:
         type: integer
       laneWidth:
         type: number
+        description: Lane width measured in meters [0.00..327.67m] in increments of 0.01m.
       directionality:
         type: integer
       closedPath:
@@ -391,14 +392,19 @@ definitions:
     properties:
       pathEndpointAngle:
         type: integer
+        description: Final angle in last point of lane path in integer degrees [-150..150].
       laneCrownCenter:
-        type: integer
+        type: number
+        description: RoadwayCrownAngle in degrees [-38.1..38.1] in increments of 0.3.
       laneCrownRight:
-        type: integer
+        type: number
+        description: RoadwayCrownAngle in degrees [-38.1..38.1] in increments of 0.3.
       laneCrownLeft:
-        type: integer
+        type: number
+        description: RoadwayCrownAngle in degrees [-38.1..38.1] in increments of 0.3.
       laneAngle:
-        type: integer
+        type: number
+        description: MergeDivergeNodeAngle in degrees [-240..240] in increments of 1.5.
       speedLimits:
         $ref: '#/definitions/SpeedLimit'
   SpeedLimit:
@@ -406,17 +412,23 @@ definitions:
     properties:
       type:
         type: integer
+        description: SpeedLimitType enumeration integer value [0=unknown,1=maxSpeedInSchoolZone,..,12=vehiclesWithTrailersNightMaxSpeed]
       velocity:
-        type: integer
+        type: number
+        description: Velocity in meters per second [0.00..163.82] in increments of 0.02 m/s.
   Geometry:
     type: object
+    description: GeometricProjection data frame is used to describe various geometric spatial areas
     properties:
       direction:
         type: string
+        description: HeadingSlice bitstring representing field of view over which this projection applies
       extent:
         type: integer
+        description: Extent enumeration integer value [0=useInstantlyOnly,...,15=forever]
       laneWidth:
-        type: integer
+        type: number
+        description: Lane width measured in meters [0.00..327.67m] in increments of 0.01m.
       circle:
         $ref: '#/definitions/Circle'
   OldRegion:

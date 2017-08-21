@@ -268,10 +268,10 @@ public class J2735TravelerInformationMessage extends OdeObject {
 
       private static final long serialVersionUID = -1391200532738540024L;
       private int pathEndpointAngle;
-      private int laneCrownCenter;
-      private int laneCrownLeft;
-      private int laneCrownRight;
-      private int laneAngle;
+      private BigDecimal laneCrownCenter;
+      private BigDecimal laneCrownLeft;
+      private BigDecimal laneCrownRight;
+      private BigDecimal laneAngle;
       private SpeedLimits[] speedLimits;
 
       public int getPathEndpointAngle() {
@@ -282,35 +282,35 @@ public class J2735TravelerInformationMessage extends OdeObject {
          this.pathEndpointAngle = pathEndpointAngle;
       }
 
-      public int getLaneCrownCenter() {
+      public BigDecimal getLaneCrownCenter() {
          return laneCrownCenter;
       }
 
-      public void setLaneCrownCenter(int laneCrownCenter) {
+      public void setLaneCrownCenter(BigDecimal laneCrownCenter) {
          this.laneCrownCenter = laneCrownCenter;
       }
 
-      public int getLaneCrownLeft() {
+      public BigDecimal getLaneCrownLeft() {
          return laneCrownLeft;
       }
 
-      public void setLaneCrownLeft(int laneCrownLeft) {
+      public void setLaneCrownLeft(BigDecimal laneCrownLeft) {
          this.laneCrownLeft = laneCrownLeft;
       }
 
-      public int getLaneCrownRight() {
+      public BigDecimal getLaneCrownRight() {
          return laneCrownRight;
       }
 
-      public void setLaneCrownRight(int laneCrownRight) {
+      public void setLaneCrownRight(BigDecimal laneCrownRight) {
          this.laneCrownRight = laneCrownRight;
       }
 
-      public int getLaneAngle() {
+      public BigDecimal getLaneAngle() {
          return laneAngle;
       }
 
-      public void setLaneAngle(int laneAngle) {
+      public void setLaneAngle(BigDecimal laneAngle) {
          this.laneAngle = laneAngle;
       }
 

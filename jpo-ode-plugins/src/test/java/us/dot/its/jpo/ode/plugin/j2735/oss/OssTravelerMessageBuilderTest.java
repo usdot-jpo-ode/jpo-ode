@@ -414,10 +414,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       dataL.setPathEndpointAngle(1);
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
@@ -477,10 +477,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -537,10 +537,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -599,10 +599,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -660,10 +660,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -722,10 +722,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -783,10 +783,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -845,10 +845,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -906,10 +906,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -968,10 +968,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -1029,10 +1029,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -1091,10 +1091,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -1152,10 +1152,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -1214,10 +1214,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -1276,10 +1276,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -1338,10 +1338,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -1400,10 +1400,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -1461,10 +1461,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -1523,10 +1523,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -1583,10 +1583,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -1645,10 +1645,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -1706,10 +1706,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -1768,10 +1768,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -1829,10 +1829,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -1891,10 +1891,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -1952,10 +1952,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -2014,10 +2014,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -2075,10 +2075,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -2137,10 +2137,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -2198,10 +2198,10 @@ public class OssTravelerMessageBuilderTest {
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
 
@@ -2572,10 +2572,10 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
       ln.setType(1);
@@ -2664,10 +2664,10 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
       ln.setType(1);
@@ -2948,10 +2948,10 @@ public class OssTravelerMessageBuilderTest {
       J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
-      dataL.setLaneAngle(1);
-      dataL.setLaneCrownCenter(1);
-      dataL.setLaneCrownLeft(1);
-      dataL.setLaneCrownRight(1);
+      dataL.setLaneAngle(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownCenter(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownLeft(BigDecimal.valueOf(1.5));
+      dataL.setLaneCrownRight(BigDecimal.valueOf(1.5));
       slimits[0] = sl;
       dataL.setSpeedLimits(slimits);
       ln.setType(1);

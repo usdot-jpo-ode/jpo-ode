@@ -467,10 +467,10 @@ public class OssTravelerMessageBuilder {
                   LaneDataAttribute dataAttribute = new LaneDataAttribute();
 
                   dataAttribute.setPathEndPointAngle(new DeltaAngle(dataList.getPathEndpointAngle()));
-                  dataAttribute.setLaneCrownPointCenter(new RoadwayCrownAngle(dataList.getLaneCrownCenter()));
-                  dataAttribute.setLaneCrownPointLeft(new RoadwayCrownAngle(dataList.getLaneCrownLeft()));
-                  dataAttribute.setLaneCrownPointRight(new RoadwayCrownAngle(dataList.getLaneCrownRight()));
-                  dataAttribute.setLaneAngle(new MergeDivergeNodeAngle(dataList.getLaneAngle()));
+                  dataAttribute.setLaneCrownPointCenter(OssRoadwayCrownAngle.roadwayCrownAngle(dataList.getLaneCrownCenter()));
+                  dataAttribute.setLaneCrownPointLeft(OssRoadwayCrownAngle.roadwayCrownAngle(dataList.getLaneCrownLeft()));
+                  dataAttribute.setLaneCrownPointRight(OssRoadwayCrownAngle.roadwayCrownAngle(dataList.getLaneCrownRight()));
+                  dataAttribute.setLaneAngle(OssMergeDivergeNodeAngle.mergeDivergeNodeAngle(dataList.getLaneAngle()));
 
                   SpeedLimitList speedDataList = new SpeedLimitList();
                   for (J2735TravelerInformationMessage.SpeedLimits speedLimit : dataList.getSpeedLimits()) {
@@ -627,10 +627,10 @@ public class OssTravelerMessageBuilder {
                   LaneDataAttribute dataAttribute = new LaneDataAttribute();
 
                   dataAttribute.setPathEndPointAngle(new DeltaAngle(dataList.getPathEndpointAngle()));
-                  dataAttribute.setLaneCrownPointCenter(new RoadwayCrownAngle(dataList.getLaneCrownCenter()));
-                  dataAttribute.setLaneCrownPointLeft(new RoadwayCrownAngle(dataList.getLaneCrownLeft()));
-                  dataAttribute.setLaneCrownPointRight(new RoadwayCrownAngle(dataList.getLaneCrownRight()));
-                  dataAttribute.setLaneAngle(new MergeDivergeNodeAngle(dataList.getLaneAngle()));
+                  dataAttribute.setLaneCrownPointCenter(OssRoadwayCrownAngle.roadwayCrownAngle(dataList.getLaneCrownCenter()));
+                  dataAttribute.setLaneCrownPointLeft(OssRoadwayCrownAngle.roadwayCrownAngle(dataList.getLaneCrownLeft()));
+                  dataAttribute.setLaneCrownPointRight(OssRoadwayCrownAngle.roadwayCrownAngle(dataList.getLaneCrownRight()));
+                  dataAttribute.setLaneAngle(OssMergeDivergeNodeAngle.mergeDivergeNodeAngle(dataList.getLaneAngle()));
 
                   SpeedLimitList speedDataList = new SpeedLimitList();
                   for (J2735TravelerInformationMessage.SpeedLimits speedLimit : dataList.getSpeedLimits()) {
