@@ -2,17 +2,39 @@ package us.dot.its.jpo.ode.traveler;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
+import org.snmp4j.Snmp;
+import org.snmp4j.TransportMapping;
+import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
+import org.snmp4j.mp.MPv3;
+import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.security.AuthMD5;
+import org.snmp4j.security.SecurityLevel;
+import org.snmp4j.security.SecurityModels;
+import org.snmp4j.security.SecurityProtocols;
+import org.snmp4j.security.USM;
+import org.snmp4j.security.UsmUser;
+import org.snmp4j.smi.Address;
+import org.snmp4j.smi.GenericAddress;
 import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
+import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.VariableBinding;
+import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -137,6 +159,88 @@ public class TimController {
          logger.error("Error closing SNMP session", e);
       }
 
+      logger.info("TIM query successful: {}", resultTable.keySet());
+      return ResponseEntity.status(HttpStatus.OK).body("{\"indicies_set\",".concat(resultTable.keySet().toString()).concat("}"));
+   }
+   
+   /**
+    * Checks given RSU for all TIMs set
+    * 
+    * @param jsonString
+    *           Request body containing RSU info
+    * @return list of occupied TIM slots on RSU
+    */
+   @ResponseBody
+   @CrossOrigin
+   @RequestMapping(value = "/tim/asyncQuery", method = RequestMethod.POST)
+   public ResponseEntity<String> asyncQueryForTims(@RequestBody String jsonString) { // NOSONAR
+
+      if (null == jsonString) {
+         logger.error("Empty request.");
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Empty request");
+      }
+
+      ConcurrentHashMap<Integer, Boolean> resultTable = new ConcurrentHashMap<>();
+      RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
+
+      Address addr = GenericAddress.parse(queryTarget.getRsuTarget() + "/161");
+      
+      // Create a "target" to which a request is sent
+      UserTarget target = new UserTarget();
+      target.setAddress(addr);
+      target.setRetries(queryTarget.getRsuRetries());
+      target.setTimeout(queryTarget.getRsuTimeout());
+      target.setVersion(SnmpConstants.version3);
+      target.setSecurityLevel(SecurityLevel.AUTH_NOPRIV);
+      target.setSecurityName(new OctetString(queryTarget.getRsuUsername()));
+
+      // Set up the UDP transport mapping over which requests are sent
+      TransportMapping transport = null;
+      try {
+         transport = new DefaultUdpTransportMapping();
+         transport.listen();
+      } catch (IOException e) {
+         // TODO handle this error
+         logger.error("Failed to create UDP transport mapping: {}", e);
+      }
+
+      // Instantiate the SNMP instance
+      Snmp snmp = new Snmp(transport);
+
+      // Register the security options and create an SNMP "user"
+      USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+      SecurityModels.getInstance().addSecurityModel(usm);
+      snmp.getUSM().addUser(new OctetString(queryTarget.getRsuUsername()), new UsmUser(new OctetString(queryTarget.getRsuUsername()),
+            AuthMD5.ID, new OctetString(queryTarget.getRsuPassword()), null, null));
+      
+
+      // Repeatedly query the RSU to establish set rows
+      ExecutorService es = Executors.newFixedThreadPool(odeProperties.getRsuSrmSlots());
+      List<Callable<Object>> queryThreadList = new ArrayList<Callable<Object>>();
+      
+      for (int i = 0; i < odeProperties.getRsuSrmSlots(); i++) {
+         PDU pdu = new ScopedPDU();
+         pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
+         pdu.setType(PDU.GET);
+         
+         logger.info("Querying index {}", i);
+         
+         queryThreadList.add(Executors.callable(new QueryThread(snmp, pdu, target, resultTable, i)));
+      }
+         
+      try {
+         es.invokeAll(queryThreadList);
+      } catch (InterruptedException e) { //NOSONAR
+         logger.error("Error submitting query threads for execution.", e);
+         es.shutdownNow();
+      }
+      
+      try {
+         snmp.close();
+      } catch (IOException e) {
+         logger.error("Error closing SNMP session.", e);
+      }
+      
       logger.info("TIM query successful: {}", resultTable.keySet());
       return ResponseEntity.status(HttpStatus.OK).body("{\"indicies_set\",".concat(resultTable.keySet().toString()).concat("}"));
    }
