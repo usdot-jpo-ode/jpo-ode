@@ -1,10 +1,10 @@
 package us.dot.its.jpo.ode.udp.isd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutionException;
@@ -17,8 +17,8 @@ import java.util.concurrent.TimeoutException;
 import org.junit.Test;
 
 import com.oss.asn1.AbstractData;
+import com.oss.asn1.Coder;
 import com.oss.asn1.DecodeFailedException;
-import com.oss.asn1.DecodeNotSupportedException;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 import com.oss.asn1.PERUnalignedCoder;
@@ -35,6 +35,7 @@ import us.dot.its.jpo.ode.j2735.semi.DataReceipt;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.udp.trust.TrustManager;
+import us.dot.its.jpo.ode.wrapper.IntersectionSituationDataDeserializer;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 public class IsdDepositorTest {
@@ -47,6 +48,9 @@ public class IsdDepositorTest {
 
    @Capturing
    MessageConsumer<?, ?> capturingMessageConsumer;
+
+   @Capturing
+   IntersectionSituationDataDeserializer capturingIntersectionSituationDataDeserializer;
 
    @Capturing
    J2735 capturingJ2735;
@@ -81,6 +85,9 @@ public class IsdDepositorTest {
    EncodeFailedException mockEncodeFailedException;
    @Mocked
    DecodeFailedException mockDecodeFailedException;
+   
+   @Capturing
+   Coder capturingCoder;
 
    @Test
    public void shouldReturnCorrectSemiDialogID() {
@@ -88,45 +95,20 @@ public class IsdDepositorTest {
    }
 
    @Test
-   public void shouldReturnRequestID() {
+   public void testGetRequestID() {
 
-      try {
-         new Expectations() {
-            {
+      TemporaryID expectedID = new TemporaryID();
+      new Expectations() {
+         {
+            capturingIntersectionSituationDataDeserializer.deserialize(null, (byte[]) any);
+            result = mockIntersectionSituationData;
 
-               capturingPERUnalignedCoder.decode((ByteArrayInputStream) any, (IntersectionSituationData) any);
-               result = mockIntersectionSituationData;
+            mockIntersectionSituationData.getRequestID();
+            result = expectedID;
+         }
+      };
 
-               mockIntersectionSituationData.getRequestID();
-               result = mockTemporaryID;
-            }
-         };
-      } catch (DecodeFailedException | DecodeNotSupportedException e) {
-         fail("Unexpected exception: " + e);
-      }
-
-      IsdDepositor testRequestIsdDepositor = new IsdDepositor(injectableOdeProperties);
-      testRequestIsdDepositor.getRequestId(new byte[] { 1, 2, 3 });
-   }
-
-   @Test
-   public void testGetRequestIDThrowsException() {
-      try {
-         new Expectations() {
-            {
-               J2735.getPERUnalignedCoder();
-               result = mockPERUnalignedCoder;
-
-               mockPERUnalignedCoder.decode((ByteArrayInputStream) any, (IntersectionSituationData) any);
-               result = mockDecodeFailedException;
-            }
-         };
-      } catch (DecodeFailedException | DecodeNotSupportedException e) {
-         fail("Unexpected exception in expectations block: " + e);
-      }
-
-      IsdDepositor testRequestIsdDepositor = new IsdDepositor(injectableOdeProperties);
-      testRequestIsdDepositor.getRequestId(new byte[] { 1, 2, 3 });
+      assertEquals(expectedID, testIsdDepositor.getRequestId(new byte[0]));
    }
 
    @Test
@@ -134,8 +116,9 @@ public class IsdDepositorTest {
       try {
          new Expectations() {
             {
-               capturingPERUnalignedCoder.decode((InputStream) any, (AbstractData) any);
+               capturingIntersectionSituationDataDeserializer.deserialize(null, (byte[]) any);
                result = mockIntersectionSituationData;
+
                mockIntersectionSituationData.getRequestID();
                result = mockTemporaryID;
 
@@ -147,8 +130,7 @@ public class IsdDepositorTest {
                result = mockDataReceipt;
             }
          };
-      } catch (DecodeFailedException | DecodeNotSupportedException | InterruptedException | ExecutionException
-            | TimeoutException e) {
+      } catch (InterruptedException | ExecutionException | TimeoutException e) {
          fail("Unexpected exception: " + e);
       }
       testIsdDepositor.sendDataReceipt(new byte[] { 1, 2, 3 });
@@ -159,8 +141,9 @@ public class IsdDepositorTest {
       try {
          new Expectations() {
             {
-               capturingPERUnalignedCoder.decode((InputStream) any, (AbstractData) any);
+               capturingIntersectionSituationDataDeserializer.deserialize(null, (byte[]) any);
                result = mockIntersectionSituationData;
+
                mockIntersectionSituationData.getRequestID();
                result = mockTemporaryID;
 
@@ -172,8 +155,7 @@ public class IsdDepositorTest {
                result = null;
             }
          };
-      } catch (DecodeFailedException | DecodeNotSupportedException | InterruptedException | ExecutionException
-            | TimeoutException e) {
+      } catch (InterruptedException | ExecutionException | TimeoutException e) {
          fail("Unexpected exception: " + e);
       }
       testIsdDepositor.sendDataReceipt(new byte[] { 1, 2, 3 });
@@ -184,8 +166,9 @@ public class IsdDepositorTest {
       try {
          new Expectations() {
             {
-               capturingPERUnalignedCoder.decode((InputStream) any, (AbstractData) any);
+               capturingIntersectionSituationDataDeserializer.deserialize(null, (byte[]) any);
                result = mockIntersectionSituationData;
+
                mockIntersectionSituationData.getRequestID();
                result = mockTemporaryID;
 
@@ -197,8 +180,7 @@ public class IsdDepositorTest {
                result = new TimeoutException();
             }
          };
-      } catch (DecodeFailedException | DecodeNotSupportedException | InterruptedException | ExecutionException
-            | TimeoutException e) {
+      } catch (InterruptedException | ExecutionException | TimeoutException e) {
          fail("Unexpected exception: " + e);
       }
       testIsdDepositor.sendDataReceipt(new byte[] { 1, 2, 3 });
@@ -209,19 +191,57 @@ public class IsdDepositorTest {
       try {
          new Expectations() {
             {
-               capturingPERUnalignedCoder.decode((InputStream) any, (AbstractData) any);
+               capturingIntersectionSituationDataDeserializer.deserialize(null, (byte[]) any);
                result = mockIntersectionSituationData;
+
                mockIntersectionSituationData.getRequestID();
                result = mockTemporaryID;
-               
+
                capturingPERUnalignedCoder.encode((AbstractData) any).array();
                result = mockEncodeFailedException;
             }
          };
-      } catch (EncodeFailedException | EncodeNotSupportedException | DecodeFailedException | DecodeNotSupportedException e) {
+      } catch (EncodeFailedException | EncodeNotSupportedException e) {
          fail("Unexpected exception: " + e);
       }
       testIsdDepositor.sendDataReceipt(new byte[] { 1, 2, 3 });
    }
+   
+   @Test
+   public void testEncodeMessageException() {
+      try {
+         new Expectations() {
+            {
+               capturingIntersectionSituationDataDeserializer.deserialize(null, (byte[]) any);
+
+               capturingCoder.encode((AbstractData) any);
+               result = mockEncodeFailedException;
+            }
+         };
+      } catch (EncodeFailedException | EncodeNotSupportedException e) {
+         fail("Unexpected exception: " + e);
+      }
+
+      assertNull(testIsdDepositor.encodeMessage(new byte[0]));
+   }
+
+   @Test
+   public void testEncodeMessageSuccess() {
+      try {
+         new Expectations() {
+            {
+               capturingIntersectionSituationDataDeserializer.deserialize(null, (byte[]) any);
+
+               capturingCoder.encode((AbstractData) any).array();
+               result = new byte[0];
+            }
+         };
+      } catch (EncodeFailedException | EncodeNotSupportedException e) {
+         fail("Unexpected exception: " + e);
+      }
+
+      assertNotNull(testIsdDepositor.encodeMessage(new byte[0]));
+   }
+
 
 }

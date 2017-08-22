@@ -6,6 +6,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.util.Scanner;
 
+import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.Test;
 
 import mockit.Capturing;
@@ -22,6 +23,8 @@ public class HexDecoderPublisherTest {
    MessagePublisher mockMessagePublisher;
    @Capturing
    BsmDecoderHelper capturingDecoderHelper;
+   @Capturing
+   HexUtils capturingHexUtils;
    @Mocked
    OdeData mockOdeData;
    @Capturing
@@ -52,7 +55,14 @@ public class HexDecoderPublisherTest {
                capturingScanner.hasNextLine();
                returns(true, false);
 
+<<<<<<< HEAD
                capturingDecoderHelper.decode(new BufferedInputStream(new ByteArrayInputStream((byte[]) any)), anyString, (SerialId) any);
+=======
+               capturingScanner.nextLine();
+               result = "fakeLine";
+
+               BsmDecoderHelper.decode((BufferedInputStream) any, anyString, (SerialId) any);
+>>>>>>> b20b72fa66df16859ba87c1042e311cc3c59db5f
                result = null;
                times = 1;
 
@@ -75,7 +85,11 @@ public class HexDecoderPublisherTest {
                capturingScanner.hasNextLine();
                returns(true, false);
 
+<<<<<<< HEAD
                capturingDecoderHelper.decode(new BufferedInputStream(new ByteArrayInputStream((byte[]) any)), anyString, (SerialId) any);
+=======
+               BsmDecoderHelper.decode((BufferedInputStream) any, anyString, (SerialId) any);
+>>>>>>> b20b72fa66df16859ba87c1042e311cc3c59db5f
                result = new Exception("testException123");
                times = 1;
 
@@ -98,7 +112,11 @@ public class HexDecoderPublisherTest {
                capturingScanner.hasNextLine();
                returns(true, false);
 
+<<<<<<< HEAD
                capturingDecoderHelper.decode(new BufferedInputStream(new ByteArrayInputStream((byte[]) any)), anyString, (SerialId) any);
+=======
+               BsmDecoderHelper.decode((BufferedInputStream) any, anyString, (SerialId) any);
+>>>>>>> b20b72fa66df16859ba87c1042e311cc3c59db5f
                result = mockOdeData;
                times = 1;
 
