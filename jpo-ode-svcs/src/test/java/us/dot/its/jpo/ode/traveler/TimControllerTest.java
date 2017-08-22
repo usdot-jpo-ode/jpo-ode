@@ -70,14 +70,14 @@ public class TimControllerTest {
 
       try {
          ResponseEntity<String> response = testTimController.timMessage(null);
-         assertEquals("Empty request.", response.getBody());
+         assertEquals("{\"error\":\"Empty request.\"}", response.getBody());
       } catch (Exception e) {
          fail("Unexpected exception " + e);
       }
 
       try {
          ResponseEntity<String> response = testTimController.timMessage("");
-         assertEquals("Empty request.", response.getBody());
+         assertEquals("{\"error\":\"Empty request.\"}", response.getBody());
       } catch (Exception e) {
          fail("Unexpected exception " + e);
       }
@@ -103,7 +103,7 @@ public class TimControllerTest {
 
       try {
          ResponseEntity<String> response = testTimController.timMessage("test123");
-         assertEquals("Malformed JSON.", response.getBody());
+         assertEquals("{\"error\":\"Malformed JSON.\"}", response.getBody());
       } catch (Exception e) {
          fail("Unexpected exception " + e);
       }
@@ -140,7 +140,7 @@ public class TimControllerTest {
 
       try {
          ResponseEntity<String> response = testTimController.timMessage("test123");
-         assertTrue(response.getBody().startsWith("Request does not match schema:"));
+         assertTrue(response.getBody().contains("Request does not match schema:"));
       } catch (Exception e) {
          fail("Unexpected exception " + e);
       }
@@ -180,7 +180,7 @@ public class TimControllerTest {
 
       try {
          ResponseEntity<String> response = testTimController.timMessage("test123");
-         assertEquals("Encoding error.", response.getBody());
+         assertEquals("{\"error\":\"Encoding error.\"}", response.getBody());
       } catch (Exception e) {
          fail("Unexpected exception " + e);
       }

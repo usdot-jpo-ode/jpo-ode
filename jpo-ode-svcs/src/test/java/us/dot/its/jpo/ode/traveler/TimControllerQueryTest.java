@@ -31,6 +31,6 @@ public class TimControllerQueryTest {
    public void shouldReturnFalseNullRequest() {
       ResponseEntity<?> result = testTimController.asyncQueryForTims(null);
       assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-      assertEquals("Empty request", result.getBody());
+      assertEquals("{\"error\":\"Empty request\"}", result.getBody());
    }
 }
