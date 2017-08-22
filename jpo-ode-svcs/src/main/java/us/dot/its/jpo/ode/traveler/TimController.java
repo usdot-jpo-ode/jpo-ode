@@ -10,7 +10,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,74 +93,6 @@ public class TimController {
          logger.error("Error starting SDW depositor", e);
       }
    }
-
-   /**
-    * Checks given RSU for all TIMs set
-    * 
-    * @param jsonString
-    *           Request body containing RSU info
-    * @return list of occupied TIM slots on RSU
-    */
-   @ResponseBody
-   @CrossOrigin
-   @RequestMapping(value = "/tim/query", method = RequestMethod.POST)
-   public ResponseEntity<String> queryForTims(@RequestBody String jsonString) { // NOSONAR
-
-      if (null == jsonString) {
-         logger.error("Empty request.");
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Empty request");
-      }
-
-      HashMap<Integer, Boolean> resultTable = new HashMap<>();
-      RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
-
-      SnmpSession ss = null;
-      try {
-         ss = new SnmpSession(queryTarget);
-      } catch (IOException e) {
-         logger.error("Error creating TIM query SNMP session", e);
-         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-      } catch (NullPointerException e) {
-         logger.error("TIM query error, malformed JSON", e);
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Malformed JSON");
-      }
-
-      // Repeatedly query the RSU to establish set rows
-      for (int i = 0; i < odeProperties.getRsuSrmSlots(); i++) {
-         PDU pdu = new ScopedPDU();
-         pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
-         pdu.setType(PDU.GET);
-
-         ResponseEvent rsuResponse = null;
-         try {
-            rsuResponse = ss.get(pdu, ss.getSnmp(), ss.getTarget(), true);
-         } catch (IOException e) {
-            logger.error("Error sending TIM query PDU to RSU", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-         }
-
-         if (null == rsuResponse || null == rsuResponse.getResponse()) {
-            logger.error("Timeout error, no response from RSU.");
-            return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("No response from RSU.");
-         }
-
-         Integer status = ((VariableBinding) (rsuResponse.getResponse().getVariableBindings().firstElement()))
-               .getVariable().toInt();
-
-         if (1 == status) { // 1 == set, 129 == unset
-            resultTable.put(i, true);
-         }
-      }
-      
-      try {
-         ss.endSession();
-      } catch (IOException e) {
-         logger.error("Error closing SNMP session", e);
-      }
-
-      logger.info("TIM query successful: {}", resultTable.keySet());
-      return ResponseEntity.status(HttpStatus.OK).body("{\"indicies_set\",".concat(resultTable.keySet().toString()).concat("}"));
-   }
    
    /**
     * Checks given RSU for all TIMs set
@@ -172,7 +103,7 @@ public class TimController {
     */
    @ResponseBody
    @CrossOrigin
-   @RequestMapping(value = "/tim/asyncQuery", method = RequestMethod.POST)
+   @RequestMapping(value = "/tim/query", method = RequestMethod.POST)
    public ResponseEntity<String> asyncQueryForTims(@RequestBody String jsonString) { // NOSONAR
 
       if (null == jsonString) {
@@ -200,8 +131,8 @@ public class TimController {
          transport = new DefaultUdpTransportMapping();
          transport.listen();
       } catch (IOException e) {
-         // TODO handle this error
          logger.error("Failed to create UDP transport mapping: {}", e);
+         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"" + e + "\"}");
       }
 
       // Instantiate the SNMP instance
