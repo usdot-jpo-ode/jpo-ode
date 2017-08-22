@@ -17,7 +17,7 @@ public class ByteDecoderPublisher {
    private static final Logger logger = LoggerFactory.getLogger(ByteDecoderPublisher.class);
    private MessagePublisher publisher;
    private SerialId serialId;
-
+   private BsmDecoderHelper bsmDecoder;
    private static AtomicInteger bundleId = new AtomicInteger(1);
 
    public ByteDecoderPublisher(MessagePublisher dataPub) {
@@ -30,7 +30,7 @@ public class ByteDecoderPublisher {
       OdeData decoded;
 
       try {
-         decoded = BsmDecoderHelper.decode(new BufferedInputStream(new ByteArrayInputStream(bytes)), null, this.serialId.setBundleId(bundleId.incrementAndGet()));
+         decoded = bsmDecoder.decode(new BufferedInputStream(new ByteArrayInputStream(bytes)), null, this.serialId.setBundleId(bundleId.incrementAndGet()));
          if (decoded != null) {
             logger.debug("Decoded: {}", decoded);
             publisher.publish(decoded);
