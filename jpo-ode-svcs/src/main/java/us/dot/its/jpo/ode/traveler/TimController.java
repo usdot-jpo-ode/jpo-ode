@@ -91,12 +91,12 @@ public class TimController {
    @RequestMapping(value = "/tim/query", method = RequestMethod.POST)
    public ResponseEntity<String> asyncQueryForTims(@RequestBody String jsonString) { // NOSONAR
 
-      if (null == jsonString) {
+      if (null == jsonString || jsonString.isEmpty()) {
          logger.error("Empty request.");
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, "Empty request"));
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, "Empty request."));
       }
 
-      ConcurrentHashMap<Integer, Boolean> resultTable = new ConcurrentHashMap<>();
+      ConcurrentHashMap<Integer, Integer> resultTable = new ConcurrentHashMap<>();
       RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
 
       SnmpSession snmpSession = null;
@@ -121,7 +121,7 @@ public class TimController {
          logger.info("Querying index {}", i);
 
          queryThreadList.add(Executors
-               .callable(new QueryThread(snmpSession.getSnmp(), pdu, snmpSession.getTarget(), resultTable, i)));
+               .callable(new TimQueryThread(snmpSession.getSnmp(), pdu, snmpSession.getTarget(), resultTable, i)));
       }
 
       try {
@@ -130,15 +130,20 @@ public class TimController {
          logger.error("Error submitting query threads for execution.", e);
          es.shutdownNow();
       }
-
+      
       try {
          snmpSession.endSession();
       } catch (IOException e) {
          logger.error("Error closing SNMP session.", e);
       }
-
-      logger.info("TIM query successful: {}", resultTable.keySet());
-      return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("indicies_set", resultTable.keySet().toString()));
+      
+      if (resultTable.containsValue(TimQueryThread.TIMEOUT_FLAG)) {
+         logger.error("TIM query timed out.");
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, "Query timeout, increase timeout value."));
+      } else {
+         logger.info("TIM query successful: {}", resultTable.keySet());
+         return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("indicies_set", resultTable.keySet().toString()));
+      }
    }
 
    @ResponseBody
