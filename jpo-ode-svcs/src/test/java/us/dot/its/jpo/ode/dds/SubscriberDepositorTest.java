@@ -1,9 +1,9 @@
 package us.dot.its.jpo.ode.dds;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.net.DatagramSocket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -47,11 +47,6 @@ public class SubscriberDepositorTest {
    }
 
    @Test
-   public void testSetSocket(@Mocked DatagramSocket mockDatagramSocket) {
-      testAbstractSubscriberDepositor.setSocket(mockDatagramSocket);
-   }
-
-   @Test
    public void testSubscribe(@Capturing Executors capturingExecutors, @Mocked ExecutorService mockExecutorService) {
 
       new Expectations() {
@@ -75,7 +70,7 @@ public class SubscriberDepositorTest {
          }
       };
       testAbstractSubscriberDepositor.setRecord(mockConsumerRecord);
-      assertTrue(testAbstractSubscriberDepositor.call() instanceof byte[]);
+      assertNull(testAbstractSubscriberDepositor.call());
    }
 
    @Test
