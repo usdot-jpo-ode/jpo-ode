@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.udp.isd;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
@@ -15,8 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.oss.asn1.AbstractData;
-import com.oss.asn1.DecodeFailedException;
-import com.oss.asn1.DecodeNotSupportedException;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 import com.oss.asn1.INTEGER;
@@ -30,16 +27,20 @@ import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationDataAcceptance;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
+import us.dot.its.jpo.ode.wrapper.IntersectionSituationDataDeserializer;
 
 public class IsdDepositor extends AbstractSubscriberDepositor {
+
+   private IntersectionSituationDataDeserializer deserializer;
 
    public IsdDepositor(OdeProperties odeProps) {
       super(odeProps, odeProps.getIsdDepositorPort());
       consumer.setName(this.getClass().getSimpleName());
+      this.deserializer = new IntersectionSituationDataDeserializer();
    }
 
    /**
-    * TODO - this method never gets called
+    * TODO - utilize this method
     * 
     * @param encodedIsd
     */
@@ -98,21 +99,29 @@ public class IsdDepositor extends AbstractSubscriberDepositor {
       return LoggerFactory.getLogger(this.getClass());
    }
 
+   @Override
    public SemiDialogID getDialogId() {
       return SemiDialogID.intersectionSitDataDep;
    }
 
-   public TemporaryID getRequestId(byte[] encodedMsg) {
-      TemporaryID reqID = null;
+   @Override
+   public TemporaryID getRequestId(byte[] serializedMsg) {
+      IntersectionSituationData msg = deserializer.deserialize(null, serializedMsg);
+      return msg.getRequestID();
+   }
+   
+   @Override
+   public byte[] encodeMessage(byte[] serializedMsg) {
+      IntersectionSituationData msg = deserializer.deserialize(null, serializedMsg);
+      
+      byte[] encodedMsg = null;
       try {
-         reqID = ((IntersectionSituationData) coder.decode(new ByteArrayInputStream(encodedMsg),
-               new IntersectionSituationData())).getRequestID();
-
-      } catch (DecodeFailedException | DecodeNotSupportedException e) {
-         logger.error("Failed to decode ISD message: {}", e);
+         encodedMsg = coder.encode(msg).array();
+      } catch (EncodeFailedException | EncodeNotSupportedException e) {
+         logger.error("Failed to encode serialized ISD for sending.", e);
       }
-
-      return reqID;
+      
+      return encodedMsg;
    }
 
 }
