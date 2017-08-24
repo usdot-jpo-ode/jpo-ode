@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
 
 import org.junit.Test;
 import org.snmp4j.PDU;
@@ -64,6 +65,9 @@ public class TimControllerTest {
    
    @Capturing
    MessageProducer<?,?> capturingMessageProducer;
+   
+   @Capturing
+   Executors capturingExecutors;
 
    @Test
    public void emptyRequestShouldReturnError() {

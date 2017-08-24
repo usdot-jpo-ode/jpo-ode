@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -55,14 +55,18 @@ import us.dot.its.jpo.ode.wrapper.serdes.OdeTravelerInformationMessageSerializer
 
 @Controller
 public class TimController {
-   
-   private static final String ERRSTR = "error";
 
-   private static Logger logger = LoggerFactory.getLogger(TimController.class);
+   private static final Logger logger = LoggerFactory.getLogger(TimController.class);
+
+   private static final String ERRSTR = "error";
+   private static final int THREADPOOL_MULTIPLIER = 3; // multiplier of threads
+                                                       // needed
 
    private OdeProperties odeProperties;
    private DdsDepositor<DdsStatusMessage> depositor;
    private MessageProducer<String, OdeObject> messageProducer;
+
+   private final ExecutorService threadPool;
 
    @Autowired
    public TimController(OdeProperties odeProperties) {
@@ -77,6 +81,8 @@ public class TimController {
       } catch (Exception e) {
          logger.error("Error starting SDW depositor", e);
       }
+
+      this.threadPool = Executors.newFixedThreadPool(odeProperties.getRsuSrmSlots() * THREADPOOL_MULTIPLIER);
    }
 
    /**
@@ -89,14 +95,14 @@ public class TimController {
    @ResponseBody
    @CrossOrigin
    @RequestMapping(value = "/tim/query", method = RequestMethod.POST)
-   public ResponseEntity<String> asyncQueryForTims(@RequestBody String jsonString) { // NOSONAR
+   public synchronized ResponseEntity<String> asyncQueryForTims(@RequestBody String jsonString) { // NOSONAR
 
       if (null == jsonString || jsonString.isEmpty()) {
          logger.error("Empty request.");
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, "Empty request."));
       }
 
-      ConcurrentHashMap<Integer, Integer> resultTable = new ConcurrentHashMap<>();
+      ConcurrentSkipListMap<Integer, Integer> resultTable = new ConcurrentSkipListMap<>();
       RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
 
       SnmpSession snmpSession = null;
@@ -110,39 +116,36 @@ public class TimController {
       }
 
       // Repeatedly query the RSU to establish set rows
-      ExecutorService es = Executors.newFixedThreadPool(odeProperties.getRsuSrmSlots());
       List<Callable<Object>> queryThreadList = new ArrayList<>();
 
       for (int i = 0; i < odeProperties.getRsuSrmSlots(); i++) {
          ScopedPDU pdu = new ScopedPDU();
          pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
          pdu.setType(PDU.GET);
-
-         logger.info("Querying index {}", i);
-
          queryThreadList.add(Executors
                .callable(new TimQueryThread(snmpSession.getSnmp(), pdu, snmpSession.getTarget(), resultTable, i)));
       }
 
       try {
-         es.invokeAll(queryThreadList);
+         threadPool.invokeAll(queryThreadList);
       } catch (InterruptedException e) { // NOSONAR
          logger.error("Error submitting query threads for execution.", e);
-         es.shutdownNow();
+         threadPool.shutdownNow();
       }
-      
+
       try {
          snmpSession.endSession();
       } catch (IOException e) {
          logger.error("Error closing SNMP session.", e);
       }
-      
+
       if (resultTable.containsValue(TimQueryThread.TIMEOUT_FLAG)) {
          logger.error("TIM query timed out.");
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, "Query timeout, increase timeout value."));
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+               .body(jsonKeyValue(ERRSTR, "Query timeout, increase retries."));
       } else {
          logger.info("TIM query successful: {}", resultTable.keySet());
-         return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("indicies_set", resultTable.keySet().toString()));
+         return ResponseEntity.status(HttpStatus.OK).body("{\"indicies_set\":" + resultTable.keySet() + "}");
       }
    }
 
@@ -154,7 +157,7 @@ public class TimController {
 
       if (null == jsonString) {
          logger.error("Empty request");
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR,"Empty request"));
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, "Empty request"));
       }
 
       RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
@@ -230,7 +233,7 @@ public class TimController {
       if (null == jsonString || jsonString.isEmpty()) {
          String errMsg = "Empty request.";
          logger.error(errMsg);
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR,errMsg));
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
       // Convert JSON to POJO
@@ -387,9 +390,11 @@ public class TimController {
       response = session.set(pdu, session.getSnmp(), session.getTarget(), false);
       return response;
    }
-   
+
    /**
-    * Takes in a key, value pair and returns a valid json string such as {"error":"message"}
+    * Takes in a key, value pair and returns a valid json string such as
+    * {"error":"message"}
+    * 
     * @param key
     * @param value
     * @return

@@ -44,6 +44,10 @@ public class TimControllerQueryTest {
    
    @Before
    public void createTestTimController() {
+      new Expectations() {{
+         Executors.newFixedThreadPool(anyInt);
+         result = mockExecutorService;
+      }};
       testTimController = new TimController(mockOdeProperties);
    }
 
@@ -98,9 +102,6 @@ public class TimControllerQueryTest {
       new Expectations() {{
          mockOdeProperties.getRsuSrmSlots();
          result = 1;
-         
-         Executors.newFixedThreadPool(anyInt);
-         result = mockExecutorService;
       }};
       
       assertEquals(HttpStatus.OK, testTimController.asyncQueryForTims("testString").getStatusCode());
@@ -112,9 +113,6 @@ public class TimControllerQueryTest {
          new Expectations() {{
             mockOdeProperties.getRsuSrmSlots();
             result = 1;
-            
-            Executors.newFixedThreadPool(anyInt);
-            result = mockExecutorService;
             
             mockExecutorService.invokeAll((Collection) any);
             result = mockInterruptedException;
@@ -135,9 +133,6 @@ public class TimControllerQueryTest {
          new Expectations() {{
             mockOdeProperties.getRsuSrmSlots();
             result = 1;
-            
-            Executors.newFixedThreadPool(anyInt);
-            result = mockExecutorService;
             
             capturingSnmpSession.endSession();
             result = new IOException("testException123");

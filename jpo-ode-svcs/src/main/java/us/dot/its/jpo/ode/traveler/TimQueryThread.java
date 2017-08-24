@@ -1,7 +1,7 @@
 package us.dot.its.jpo.ode.traveler;
 
 import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +20,10 @@ public class TimQueryThread implements Runnable {
    private Snmp snmp;
    private PDU pdu;
    private UserTarget target;
-   private ConcurrentHashMap<Integer, Integer> concHashMap;
+   private ConcurrentSkipListMap<Integer, Integer> concHashMap;
    private int i;
 
-   public TimQueryThread(Snmp snmp, PDU pdu, UserTarget target, ConcurrentHashMap<Integer, Integer> concHashMap, int i) {
+   public TimQueryThread(Snmp snmp, PDU pdu, UserTarget target, ConcurrentSkipListMap<Integer, Integer> concHashMap, int i) {
       this.snmp = snmp;
       this.pdu = pdu;
       this.target = target;
@@ -46,15 +46,13 @@ public class TimQueryThread implements Runnable {
       if (null == response || null == response.getResponse()) {
          // timeout, put -1 flag
          concHashMap.put(i, TIMEOUT_FLAG);
-         logger.error("Timeout querying index {}", i);
+         logger.error("Request index {} timed out!", i);
       } else {
-         // else put 1 only if message exists
          Integer status = ((VariableBinding) (response.getResponse().getVariableBindings().firstElement())).getVariable()
                .toInt();
          if (1 == status) { // 1 == set, 129 == unset
             concHashMap.put(i, status);
          }
-         logger.error("Query index {} complete, status={}", status);
       }
    }
 }

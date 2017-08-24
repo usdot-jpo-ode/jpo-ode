@@ -7,7 +7,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +23,7 @@ import mockit.Mocked;
 
 public class TimQueryThreadTest {
 
-   ConcurrentHashMap<Integer, Integer> testHashMap;
+   ConcurrentSkipListMap<Integer, Integer> testHashMap;
 
    @Mocked
    Snmp mockSnmp;
@@ -41,7 +41,7 @@ public class TimQueryThreadTest {
 
    @Before
    public void createTestTimQueryThread() {
-      testHashMap = new ConcurrentHashMap<Integer, Integer>();
+      testHashMap = new ConcurrentSkipListMap<Integer, Integer>();
 
    }
 
