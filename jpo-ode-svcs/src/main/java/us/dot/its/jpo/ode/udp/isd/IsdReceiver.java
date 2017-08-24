@@ -17,8 +17,8 @@ import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.UdpUtil;
-import us.dot.its.jpo.ode.wrapper.IntersectionSituationDataSerializer;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
+import us.dot.its.jpo.ode.wrapper.serdes.IntersectionSituationDataSerializer;
 
 public class IsdReceiver extends AbstractUdpReceiverPublisher {
 

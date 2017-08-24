@@ -21,7 +21,7 @@ import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
-import us.dot.its.jpo.ode.wrapper.VehSitDataMessageSerializer;
+import us.dot.its.jpo.ode.wrapper.serdes.VehSitDataMessageSerializer;
 
 public class BsmToVsdPackagerTest {
 

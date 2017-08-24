@@ -27,7 +27,7 @@ import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationDataAcceptance;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
-import us.dot.its.jpo.ode.wrapper.IntersectionSituationDataDeserializer;
+import us.dot.its.jpo.ode.wrapper.serdes.IntersectionSituationDataDeserializer;
 
 public class IsdDepositor extends AbstractSubscriberDepositor {
 

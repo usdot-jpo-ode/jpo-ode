@@ -12,7 +12,7 @@ import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
 import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
-import us.dot.its.jpo.ode.wrapper.VehSitDataMessageDeserializer;
+import us.dot.its.jpo.ode.wrapper.serdes.VehSitDataMessageDeserializer;
 
 /**
  * Publishes VSDs to SDC.

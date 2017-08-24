@@ -35,8 +35,8 @@ import us.dot.its.jpo.ode.j2735.semi.DataReceipt;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
 import us.dot.its.jpo.ode.udp.trust.TrustManager;
-import us.dot.its.jpo.ode.wrapper.IntersectionSituationDataDeserializer;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
+import us.dot.its.jpo.ode.wrapper.serdes.IntersectionSituationDataDeserializer;
 
 public class IsdDepositorTest {
 
