@@ -48,7 +48,7 @@ public abstract class AbstractSubscriberDepositor extends MessageProcessor<Strin
    @Override
    public byte[] call() {
       if (null == record.value()) {
-         return new byte[0];
+         return null;
       }
 
       logger.info("Received data message for deposit");
@@ -60,14 +60,14 @@ public abstract class AbstractSubscriberDepositor extends MessageProcessor<Strin
          if (trustManager.establishTrust(requestID, dialogID)) {
             logger.debug("Sending message to SDC IP: {} Port: {}", odeProperties.getSdcIp(),
                   odeProperties.getSdcPort());
-            sendToSdc((byte[]) record.value());
+            sendToSdc(encodeMessage((byte[]) record.value()));
             trustManager.incrementSessionTracker(requestID);
          } else {
             logger.error("Failed to establish trust, not sending message.");
          }
       } catch (UdpUtilException e) {
          logger.error("Error Sending message to SDC", e);
-         return new byte[0];
+         return null;
       }
 
       String hexRequestID = HexUtils.toHexString(requestID.byteArrayValue());
@@ -98,17 +98,14 @@ public abstract class AbstractSubscriberDepositor extends MessageProcessor<Strin
       UdpUtil.send(socket, msgBytes, odeProperties.getSdcIp(), odeProperties.getSdcPort());
    }
 
-   public void setSocket(DatagramSocket socket) {
-      this.socket = socket;
-   }
-
    public Logger getLogger() {
       return LoggerFactory.getLogger(this.getClass());
    }
-
-   public abstract SemiDialogID getDialogId();
-
+   
    public TemporaryID getRequestId(byte[] encodedMsg) {
       return new TemporaryID(encodedMsg);
    };
+
+   public abstract SemiDialogID getDialogId();
+   public abstract byte[] encodeMessage(byte[] serializedMsg);
 }

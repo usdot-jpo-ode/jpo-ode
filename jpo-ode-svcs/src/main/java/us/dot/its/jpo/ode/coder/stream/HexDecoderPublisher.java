@@ -19,9 +19,8 @@ public class HexDecoderPublisher implements DecoderPublisher {
    private static final Logger logger = LoggerFactory.getLogger(HexDecoderPublisher.class);
    private MessagePublisher publisher;
    private SerialId serialId;
-   private static AtomicInteger bundleId = new AtomicInteger(1);
-   
    private BsmDecoderHelper bsmDecoder;
+   private static AtomicInteger bundleId = new AtomicInteger(1);
 
    public HexDecoderPublisher(MessagePublisher dataPub) {
       this.publisher = dataPub;

@@ -36,6 +36,7 @@ public class ByteDecoderPublisher {
       try {
          decoded = bsmDecoder.decode(new BufferedInputStream(new ByteArrayInputStream(bytes)), null,
                this.serialId.setBundleId(bundleId.incrementAndGet()));
+
          if (decoded != null) {
             logger.debug("Decoded: {}", decoded);
             publisher.publish(decoded);

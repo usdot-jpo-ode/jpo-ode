@@ -55,6 +55,9 @@ All stakeholders are invited to provide input to these documents. Stakeholders s
 - Main repository on GitHub (public)
 	- https://github.com/usdot-jpo-ode/jpo-ode
 	- git@github.com:usdot-jpo-ode/jpo-ode.git
+- Security repository on GitHub (public)
+        - https://github.com/usdot-jpo-ode/jpo-security.git
+	- git@github.com:usdot-jpo-ode/jpo-security.git
 - Private repository on BitBucket
 	- https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 	- git@bitbucket.org:usdot-jpo-ode/jpo-ode-private.git
@@ -125,15 +128,14 @@ Additionally, read the following guides to familiarize yourself with Docker and 
 ---
 ### Obtain the Source Code
 
-**NOTE**: The ODE consists of five repositories: 
+**NOTE**: The ODE consists of four repositories: 
 
 |Name|Visibility|Description|
 |----|----------|-----------|
 |[jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode)|public|Contains the public components of the application code.|
 |[jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)|public|S3 depositor service. Optional, comment out of `docker-compose.yml` file if not used.|
-|[jpo-security](https://github.com/usdot-jpo-ode/jpo-security)|public|Public security dependencies.|
+|[jpo-security](https://github.com/usdot-jpo-ode/jpo-security)|public|Security dependencies.|
 |jpo-ode-private|private|Proprietary dependencies.|
-|fedgov-cv-security-2016|private|Private security dependencies.|
 
 Building this application requires all repositories. If you need access to the private repositories, please reach out to a member of the development team. 
 
@@ -161,7 +163,7 @@ Clone the source code from the GitHub repository:
 git clone https://github.com/usdot-jpo-ode/jpo-s3-deposit.git
 ```
 
-#### Step 3 - Clone the public security repository:
+#### Step 3 - Clone the security repository:
 
 Clone the source code from the GitHub repository:
 ```bash
@@ -174,13 +176,6 @@ Clone the source code from the BitBucket repository:
 
 ```bash
 git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
-```
-#### Step 5 - Clone 1609.2 security library repository
-
-Clone the source code from the BitBucket repository:
-
-```bash
-git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdot-jpo-ode/fedgov-cv-security-2016.git
 ```
 
 ---
@@ -229,16 +224,7 @@ cd jpo-security
 mvn clean install -DskipTests
 ```
 
-**Step 3**: Build the private 1609.2 Security Library 
-
-Navigate to the root directory of the `fedgov-cv-security-2016` project:
-
-```bash
- cd fedgov-cv-security-2016
- mvn clean install -DskipTests
-```
-
-**Step 4**: Build the S3 Bucket Depositor Service
+**Step 3**: Build the S3 Bucket Depositor Service
 
 Note - if you do not intend on using this feature, edit the docker-compose.yml file and comment out (add a `#` to) the lines including and below `s3dep:`.
 
@@ -248,14 +234,14 @@ Navigate to the root directory of the `jpo-s3-depositor` project:
 mvn clean compile assembly:single install
 ```
 
-**Step 5** (Optional)
+**Step 4** (Optional)
 Familiarize yourself with Docker and follow the instructions in the [README.md](docker/README.md).
 
 If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the $DOCKER_HOST_IP:9092, or wish to set the CAS username/password, `ODE_EXTERNAL_IPVs`, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
 
-**Step 6**: Navigate to the root directory of the jpo-ode project.
+**Step 5**: Navigate to the root directory of the jpo-ode project.
 
-**Step 7**: Build and deploy the application. 
+**Step 6**: Build and deploy the application. 
 
 The easiest way to do this is to run the ```clean-build-and-deploy``` script. 
 This script executes the following commands:
