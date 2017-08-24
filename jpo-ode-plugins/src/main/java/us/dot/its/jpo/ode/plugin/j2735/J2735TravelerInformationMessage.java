@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
+import java.math.BigDecimal;
+
 import us.dot.its.jpo.ode.model.OdeObject;
 
 public class J2735TravelerInformationMessage extends OdeObject {
@@ -64,13 +66,13 @@ public class J2735TravelerInformationMessage extends OdeObject {
 
       private static final long serialVersionUID = 7337344402648755924L;
       private int laneID;
-      private int offsetSmallX;
-      private int offsetLargeX;
-      private int offsetSmallY;
-      private int offsetLargeY;
+      private BigDecimal offsetSmallX;
+      private BigDecimal offsetLargeX;
+      private BigDecimal offsetSmallY;
+      private BigDecimal offsetLargeY;
       private int angle;
-      private int xScale;
-      private int yScale;
+      private BigDecimal xScale;
+      private BigDecimal yScale;
 
       public int getLaneID() {
          return laneID;
@@ -80,35 +82,35 @@ public class J2735TravelerInformationMessage extends OdeObject {
          this.laneID = laneID;
       }
 
-      public int getOffsetSmallX() {
+      public BigDecimal getOffsetSmallX() {
          return offsetSmallX;
       }
 
-      public void setOffsetSmallX(int offsetSmallX) {
+      public void setOffsetSmallX(BigDecimal offsetSmallX) {
          this.offsetSmallX = offsetSmallX;
       }
 
-      public int getOffsetLargeX() {
+      public BigDecimal getOffsetLargeX() {
          return offsetLargeX;
       }
 
-      public void setOffsetLargeX(int offsetLargeX) {
+      public void setOffsetLargeX(BigDecimal offsetLargeX) {
          this.offsetLargeX = offsetLargeX;
       }
 
-      public int getOffsetSmallY() {
+      public BigDecimal getOffsetSmallY() {
          return offsetSmallY;
       }
 
-      public void setOffsetSmallY(int offsetSmallY) {
+      public void setOffsetSmallY(BigDecimal offsetSmallY) {
          this.offsetSmallY = offsetSmallY;
       }
 
-      public int getOffsetLargeY() {
+      public BigDecimal getOffsetLargeY() {
          return offsetLargeY;
       }
 
-      public void setOffsetLargeY(int offsetLargeY) {
+      public void setOffsetLargeY(BigDecimal offsetLargeY) {
          this.offsetLargeY = offsetLargeY;
       }
 
@@ -120,19 +122,19 @@ public class J2735TravelerInformationMessage extends OdeObject {
          this.angle = angle;
       }
 
-      public int getxScale() {
+      public BigDecimal getxScale() {
          return xScale;
       }
 
-      public void setxScale(int xScale) {
+      public void setxScale(BigDecimal xScale) {
          this.xScale = xScale;
       }
 
-      public int getyScale() {
+      public BigDecimal getyScale() {
          return yScale;
       }
 
-      public void setyScale(int yScale) {
+      public void setyScale(BigDecimal yScale) {
          this.yScale = yScale;
       }
    }
@@ -141,10 +143,10 @@ public class J2735TravelerInformationMessage extends OdeObject {
 
       private static final long serialVersionUID = -3250256624514759524L;
       private String delta;
-      private long nodeLat;
-      private long nodeLong;
-      private int x;
-      private int y;
+      private BigDecimal nodeLat;
+      private BigDecimal nodeLong;
+      private BigDecimal x;
+      private BigDecimal y;
       private Attributes attributes;
 
       public String getDelta() {
@@ -155,35 +157,35 @@ public class J2735TravelerInformationMessage extends OdeObject {
          this.delta = delta;
       }
 
-      public long getNodeLat() {
+      public BigDecimal getNodeLat() {
          return nodeLat;
       }
 
-      public void setNodeLat(long nodeLat) {
+      public void setNodeLat(BigDecimal nodeLat) {
          this.nodeLat = nodeLat;
       }
 
-      public long getNodeLong() {
+      public BigDecimal getNodeLong() {
          return nodeLong;
       }
 
-      public void setNodeLong(long nodeLong) {
+      public void setNodeLong(BigDecimal nodeLong) {
          this.nodeLong = nodeLong;
       }
 
-      public int getX() {
+      public BigDecimal getX() {
          return x;
       }
 
-      public void setX(int x) {
+      public void setX(BigDecimal x) {
          this.x = x;
       }
 
-      public int getY() {
+      public BigDecimal getY() {
          return y;
       }
 
-      public void setY(int y) {
+      public void setY(BigDecimal y) {
          this.y = y;
       }
 
@@ -243,7 +245,7 @@ public class J2735TravelerInformationMessage extends OdeObject {
 
       private static final long serialVersionUID = -8729406522600137038L;
       private long type;
-      private int velocity;
+      private BigDecimal velocity;
 
       public long getType() {
          return type;
@@ -253,11 +255,11 @@ public class J2735TravelerInformationMessage extends OdeObject {
          this.type = type;
       }
 
-      public int getVelocity() {
+      public BigDecimal getVelocity() {
          return velocity;
       }
 
-      public void setVelocity(int velocity) {
+      public void setVelocity(BigDecimal velocity) {
          this.velocity = velocity;
       }
    }
@@ -266,10 +268,10 @@ public class J2735TravelerInformationMessage extends OdeObject {
 
       private static final long serialVersionUID = -1391200532738540024L;
       private int pathEndpointAngle;
-      private int laneCrownCenter;
-      private int laneCrownLeft;
-      private int laneCrownRight;
-      private int laneAngle;
+      private BigDecimal laneCrownCenter;
+      private BigDecimal laneCrownLeft;
+      private BigDecimal laneCrownRight;
+      private BigDecimal laneAngle;
       private SpeedLimits[] speedLimits;
 
       public int getPathEndpointAngle() {
@@ -280,35 +282,35 @@ public class J2735TravelerInformationMessage extends OdeObject {
          this.pathEndpointAngle = pathEndpointAngle;
       }
 
-      public int getLaneCrownCenter() {
+      public BigDecimal getLaneCrownCenter() {
          return laneCrownCenter;
       }
 
-      public void setLaneCrownCenter(int laneCrownCenter) {
+      public void setLaneCrownCenter(BigDecimal laneCrownCenter) {
          this.laneCrownCenter = laneCrownCenter;
       }
 
-      public int getLaneCrownLeft() {
+      public BigDecimal getLaneCrownLeft() {
          return laneCrownLeft;
       }
 
-      public void setLaneCrownLeft(int laneCrownLeft) {
+      public void setLaneCrownLeft(BigDecimal laneCrownLeft) {
          this.laneCrownLeft = laneCrownLeft;
       }
 
-      public int getLaneCrownRight() {
+      public BigDecimal getLaneCrownRight() {
          return laneCrownRight;
       }
 
-      public void setLaneCrownRight(int laneCrownRight) {
+      public void setLaneCrownRight(BigDecimal laneCrownRight) {
          this.laneCrownRight = laneCrownRight;
       }
 
-      public int getLaneAngle() {
+      public BigDecimal getLaneAngle() {
          return laneAngle;
       }
 
-      public void setLaneAngle(int laneAngle) {
+      public void setLaneAngle(BigDecimal laneAngle) {
          this.laneAngle = laneAngle;
       }
 
@@ -328,8 +330,8 @@ public class J2735TravelerInformationMessage extends OdeObject {
       private DisabledList[] disabledLists;
       private EnabledList[] enabledLists;
       private DataList[] dataLists;
-      private int dWidth;
-      private int dElevation;
+      private BigDecimal dWidth;
+      private BigDecimal dElevation;
 
       public LocalNode[] getLocalNodes() {
          return localNodes;
@@ -363,19 +365,19 @@ public class J2735TravelerInformationMessage extends OdeObject {
          this.dataLists = dataLists;
       }
 
-      public int getdWidth() {
+      public BigDecimal getdWidth() {
          return dWidth;
       }
 
-      public void setdWidth(int dWidth) {
+      public void setdWidth(BigDecimal dWidth) {
          this.dWidth = dWidth;
       }
 
-      public int getdElevation() {
+      public BigDecimal getdElevation() {
          return dElevation;
       }
 
-      public void setdElevation(int dElevation) {
+      public void setdElevation(BigDecimal dElevation) {
          this.dElevation = dElevation;
       }
    }
@@ -409,7 +411,7 @@ public class J2735TravelerInformationMessage extends OdeObject {
          private int regulatorID;
          private int segmentID;
          private J2735Position3D anchorPosition;
-         private int laneWidth;
+         private BigDecimal laneWidth;
          private long directionality;
          private boolean closedPath;
          private String direction;
@@ -433,7 +435,7 @@ public class J2735TravelerInformationMessage extends OdeObject {
 
                private static final long serialVersionUID = -209874574767391032L;
                private J2735Position3D position;
-               private int laneWidth;
+               private BigDecimal laneWidth;
                private int directionality;
                private String nodeType;
                private ComputedLane computedLane;
@@ -471,11 +473,11 @@ public class J2735TravelerInformationMessage extends OdeObject {
                   this.directionality = directionality;
                }
 
-               public int getLaneWidth() {
+               public BigDecimal getLaneWidth() {
                   return laneWidth;
                }
 
-               public void setLaneWidth(int laneWidth) {
+               public void setLaneWidth(BigDecimal laneWidth) {
                   this.laneWidth = laneWidth;
                }
 
@@ -498,31 +500,31 @@ public class J2735TravelerInformationMessage extends OdeObject {
                public static class RegionList extends OdeObject {
 
                   private static final long serialVersionUID = -5307620155601900634L;
-                  private int xOffset;
-                  private int yOffset;
-                  private int zOffset;
+                  private BigDecimal xOffset;
+                  private BigDecimal yOffset;
+                  private BigDecimal zOffset;
 
-                  public int getzOffset() {
+                  public BigDecimal getzOffset() {
                      return zOffset;
                   }
 
-                  public void setzOffset(int zOffset) {
+                  public void setzOffset(BigDecimal zOffset) {
                      this.zOffset = zOffset;
                   }
 
-                  public int getyOffset() {
+                  public BigDecimal getyOffset() {
                      return yOffset;
                   }
 
-                  public void setyOffset(int yOffset) {
+                  public void setyOffset(BigDecimal yOffset) {
                      this.yOffset = yOffset;
                   }
 
-                  public int getxOffset() {
+                  public BigDecimal getxOffset() {
                      return xOffset;
                   }
 
-                  public void setxOffset(int xOffset) {
+                  public void setxOffset(BigDecimal xOffset) {
                      this.xOffset = xOffset;
                   }
                }
@@ -606,7 +608,7 @@ public class J2735TravelerInformationMessage extends OdeObject {
             private static final long serialVersionUID = -7664796173893464468L;
             private String direction;
             private int extent;
-            private int laneWidth;
+            private BigDecimal laneWidth;
             private Circle circle;
 
             public Circle getCircle() {
@@ -617,11 +619,11 @@ public class J2735TravelerInformationMessage extends OdeObject {
                this.circle = circle;
             }
 
-            public int getLaneWidth() {
+            public BigDecimal getLaneWidth() {
                return laneWidth;
             }
 
-            public void setLaneWidth(int laneWidth) {
+            public void setLaneWidth(BigDecimal laneWidth) {
                this.laneWidth = laneWidth;
             }
 
@@ -780,11 +782,11 @@ public class J2735TravelerInformationMessage extends OdeObject {
             this.directionality = directionality;
          }
 
-         public int getLaneWidth() {
+         public BigDecimal getLaneWidth() {
             return laneWidth;
          }
 
-         public void setLaneWidth(int laneWidth) {
+         public void setLaneWidth(BigDecimal laneWidth) {
             this.laneWidth = laneWidth;
          }
 

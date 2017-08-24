@@ -1,24 +1,25 @@
 package us.dot.its.jpo.ode.traveler;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.event.ResponseEvent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
@@ -32,8 +33,8 @@ import us.dot.its.jpo.ode.snmp.SNMP;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-@RunWith(JMockit.class)
 public class TimControllerTest {
 
    @Tested
@@ -61,20 +62,26 @@ public class TimControllerTest {
    ScopedPDU mockScopedPdu;
    @Mocked
    AsdMessage mockAsdMsg;
+   
+   @Capturing
+   MessageProducer<?,?> capturingMessageProducer;
+   
+   @Capturing
+   Executors capturingExecutors;
 
    @Test
    public void emptyRequestShouldReturnError() {
 
       try {
          ResponseEntity<String> response = testTimController.timMessage(null);
-         assertEquals("Empty request.", response.getBody());
+         assertEquals("{\"error\":\"Empty request.\"}", response.getBody());
       } catch (Exception e) {
          fail("Unexpected exception " + e);
       }
 
       try {
          ResponseEntity<String> response = testTimController.timMessage("");
-         assertEquals("Empty request.", response.getBody());
+         assertEquals("{\"error\":\"Empty request.\"}", response.getBody());
       } catch (Exception e) {
          fail("Unexpected exception " + e);
       }
@@ -100,7 +107,7 @@ public class TimControllerTest {
 
       try {
          ResponseEntity<String> response = testTimController.timMessage("test123");
-         assertEquals("Malformed JSON.", response.getBody());
+         assertEquals("{\"error\":\"Malformed JSON.\"}", response.getBody());
       } catch (Exception e) {
          fail("Unexpected exception " + e);
       }
@@ -128,7 +135,7 @@ public class TimControllerTest {
                result = "mockTim";
 
                mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
-               result = new Exception("Builder Error");
+               result = new Exception(new IOException("ExceptionInception"));
             }
          };
       } catch (Exception e) {
@@ -137,7 +144,7 @@ public class TimControllerTest {
 
       try {
          ResponseEntity<String> response = testTimController.timMessage("test123");
-         assertEquals("Request does not match schema.", response.getBody());
+         assertTrue(response.getBody().contains("Request does not match schema:"));
       } catch (Exception e) {
          fail("Unexpected exception " + e);
       }
@@ -177,7 +184,7 @@ public class TimControllerTest {
 
       try {
          ResponseEntity<String> response = testTimController.timMessage("test123");
-         assertEquals("Encoding error.", response.getBody());
+         assertEquals("{\"error\":\"Encoding error.\"}", response.getBody());
       } catch (Exception e) {
          fail("Unexpected exception " + e);
       }

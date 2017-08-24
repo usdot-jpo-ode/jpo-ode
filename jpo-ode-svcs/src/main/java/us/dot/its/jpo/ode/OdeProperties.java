@@ -72,6 +72,12 @@ public class OdeProperties implements EnvironmentAware {
     */
    private int trustRetries = 2; // if trust handshake fails, how many times to retry
    private int messagesUntilTrustReestablished = 10; // renew trust session every x messages
+   
+   /*
+    * TIM properties
+    */
+   private String kafkaTopicOdeTimPojo = "topic.OdeTimPojo";
+   private String kafkaTopicOdeTimJson = "topic.OdeTimJson";
 
    /*
     * BSM Properties
@@ -90,7 +96,7 @@ public class OdeProperties implements EnvironmentAware {
     * Vehicle Situation Data (VSD) Properties
     */
    private boolean enabledVsdKafkaTopic = true;
-   private String kafkaTopicEncodedVsd = "encodedVsd";
+   private String kafkaTopicVsdPojo = "AsnVsdPojo";
    private int vsdBufferSize = 500;
    private int vsdReceiverPort = 46753;
    private int vsdDepositorPort = 5555;
@@ -99,7 +105,7 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * Intersection Situation Data (ISD) Properties
     */
-   private String kafkaTopicEncodedIsd = "encodedIsd";
+   private String kafkaTopicIsdPojo = "AsnIsdPojo";
    private int isdBufferSize = 500;
    private int isdReceiverPort = 46801;
    private int isdDepositorPort = 6666;
@@ -276,12 +282,12 @@ public class OdeProperties implements EnvironmentAware {
       this.externalIpv6 = externalIpv6;
    }
 
-   public String getKafkaTopicEncodedIsd() {
-      return kafkaTopicEncodedIsd;
+   public String getKafkaTopicIsdPojo() {
+      return kafkaTopicIsdPojo;
    }
 
-   public void setKafkaTopicEncodedIsd(String kafkaTopicEncodedIsd) {
-      this.kafkaTopicEncodedIsd = kafkaTopicEncodedIsd;
+   public void setKafkaTopicIsdPojo(String kafkaTopicIsdPojo) {
+      this.kafkaTopicIsdPojo = kafkaTopicIsdPojo;
    }
 
    public int getVsdDepositorPort() {
@@ -516,12 +522,12 @@ public class OdeProperties implements EnvironmentAware {
       this.enabledVsdKafkaTopic = enabledVsdKafkaTopic;
    }
 
-   public String getKafkaTopicEncodedVsd() {
-      return kafkaTopicEncodedVsd;
+   public String getKafkaTopicVsdPojo() {
+      return kafkaTopicVsdPojo;
    }
 
-   public void setKafkaTopicEncodedVsd(String kafkaTopicEncodedVsd) {
-      this.kafkaTopicEncodedVsd = kafkaTopicEncodedVsd;
+   public void setKafkaTopicVsdPojo(String kafkaTopicVsdPojo) {
+      this.kafkaTopicVsdPojo = kafkaTopicVsdPojo;
    }
 
    // TODO Deprecate per ODE-436
@@ -595,5 +601,21 @@ public class OdeProperties implements EnvironmentAware {
     public void setImportProcessorBufferSize(int importProcessorBufferSize) {
         this.importProcessorBufferSize = importProcessorBufferSize;
     }
+
+   public String getKafkaTopicOdeTimPojo() {
+      return kafkaTopicOdeTimPojo;
+   }
+
+   public void setKafkaTopicOdeTimPojo(String kafkaTopicOdeTimPojo) {
+      this.kafkaTopicOdeTimPojo = kafkaTopicOdeTimPojo;
+   }
+
+   public String getKafkaTopicOdeTimJson() {
+      return kafkaTopicOdeTimJson;
+   }
+
+   public void setKafkaTopicOdeTimJson(String kafkaTopicOdeTimJson) {
+      this.kafkaTopicOdeTimJson = kafkaTopicOdeTimJson;
+   }
 
 }

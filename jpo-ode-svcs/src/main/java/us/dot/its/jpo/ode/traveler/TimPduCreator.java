@@ -2,6 +2,8 @@ package us.dot.its.jpo.ode.traveler;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.smi.Integer32;
@@ -17,6 +19,8 @@ import us.dot.its.jpo.ode.snmp.SNMP;
  * encoded TIM payload, and then send a request to the RSU.
  */
 public class TimPduCreator {
+   
+   private static final Logger logger = LoggerFactory.getLogger(TimPduCreator.class);
     
     public static class TimPduCreatorException extends Exception {
       private static final long serialVersionUID = 1L;
@@ -80,6 +84,8 @@ public class TimPduCreator {
         VariableBinding rsuSRMEnable = new VariableBinding(new OID("1.0.15628.4.1.4.1.10.".concat(Integer.toString(index))), new Integer32(snmp.getEnable()));
         VariableBinding rsuSRMStatus = new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(index))), new Integer32(snmp.getStatus()));
         
+        logger.info("PAYLOAD LENGTH: {}", new OctetString(DatatypeConverter.parseHexBinary(payload)).getBERPayloadLength());
+        
         ScopedPDU pdu = new ScopedPDU();
         pdu.add(rsuSRMPsid);
         pdu.add(rsuSRMDsrcMsgId);
@@ -95,6 +101,7 @@ public class TimPduCreator {
         
         return pdu;
       } catch (Exception e) {
+         logger.error("Exception creating PDU.", e);
          throw new TimPduCreatorException("Error creating PDU", e);
       }
     }

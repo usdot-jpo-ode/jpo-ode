@@ -20,7 +20,6 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                                                         // start of BSM payload
    private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
                                                       // least 20 bytes long
-
    private ByteDecoderPublisher byteDecoderPublisher;
 
    @Autowired
@@ -66,19 +65,31 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
    }
 
    /**
-    * Attempts to strip WSMP header bytes. Looks for BSM start sequence "0014"
-    * occurring after 20 bytes. If not after 20 bytes, message probably does not
-    * contain a header.
+    * Attempts to strip WSMP header bytes. If message starts with "0014",
+    * message is raw BSM. Otherwise, headers are >= 20 bytes, so look past that
+    * for start of payload BSM.
     * 
     * @param packet
     */
    public byte[] removeHeader(byte[] packet) {
       String hexPacket = HexUtils.toHexString(packet);
+
+      // logger.debug("BSM packet length: {}, start index: {}",
+      // hexPacket.length(), startIndex);
+
       int startIndex = hexPacket.indexOf(BSM_START_FLAG);
-      logger.debug("BSM packet length: {}, start index: {}", hexPacket.length(), startIndex);
-      if (startIndex >= HEADER_MINIMUM_SIZE) {
-         hexPacket = hexPacket.substring(startIndex, hexPacket.length());
+      if (startIndex == 0) {
+         logger.info("Message is raw BSM with no headers.");
+      } else if (startIndex == -1) {
+         logger.error("Message contains no BSM start flag.");
+      } else {
+         // We likely found a message with a header, look past the first 20
+         // bytes for the start of the BSM
+         int trueStartIndex = HEADER_MINIMUM_SIZE
+               + hexPacket.substring(HEADER_MINIMUM_SIZE, hexPacket.length()).indexOf(BSM_START_FLAG);
+         hexPacket = hexPacket.substring(trueStartIndex, hexPacket.length());
       }
+
       return HexUtils.fromHexString(hexPacket);
    }
 }

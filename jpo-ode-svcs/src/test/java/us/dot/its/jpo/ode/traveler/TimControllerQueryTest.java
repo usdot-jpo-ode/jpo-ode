@@ -1,75 +1,149 @@
 package us.dot.its.jpo.ode.traveler;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.LoggerFactory;
-import org.snmp4j.PDU;
-import org.snmp4j.Snmp;
-import org.snmp4j.UserTarget;
-import org.snmp4j.event.ResponseEvent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import mockit.Capturing;
 import mockit.Expectations;
-import mockit.Injectable;
 import mockit.Mocked;
-import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
+import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class TimControllerQueryTest {
 
-   @Tested
    TimController testTimController;
-   @Injectable
-   OdeProperties mockOdeProperties;
-
+   
    @Mocked
-   ResponseEvent mockResponse;
-
-   @Test
-   public void shouldReturnFalseNullRequest(@Mocked final LoggerFactory disabledLogger) {
-      ResponseEntity<?> result = testTimController.queryForTims(null);
-      assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-      assertEquals("Empty request", result.getBody());
+   OdeProperties mockOdeProperties;
+   @Mocked
+   ExecutorService mockExecutorService;
+   
+   @Capturing
+   MessageProducer<String, OdeObject> capturingMessageProducer;
+   @Capturing
+   JsonUtils capturingJsonUtils;
+   @Capturing
+   SnmpSession capturingSnmpSession;
+   @Capturing
+   Executors capturingExecutors;
+   
+   @Before
+   public void createTestTimController() {
+      new Expectations() {{
+         Executors.newFixedThreadPool(anyInt);
+         result = mockExecutorService;
+      }};
+      testTimController = new TimController(mockOdeProperties);
    }
 
    @Test
-   public void shouldReturnFalseInvalidRequest(@Mocked final LoggerFactory disabledLogger) {
-      String incorrectJson = "{\"rsuTarget\":\"invalidTarget\", \"rsuUsername\": \"invalidUsername\"}";
-      ResponseEntity<?> result = testTimController.queryForTims(incorrectJson);
+   public void nullRequestShouldReturnError() {
+      ResponseEntity<?> result = testTimController.asyncQueryForTims(null);
       assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-      assertEquals("Malformed JSON", result.getBody());
+      assertEquals("{\"error\":\"Empty request.\"}", result.getBody());
    }
-
+   
    @Test
-   public void shouldReturnTimeout(@Mocked final LoggerFactory disabledLogger,
-         @Mocked final SnmpSession mockSnmpSession, @Mocked ResponseEvent mockResponseEvent) {
-
-      String seeminglyValidJson = "{\"rsuTarget\": \"127.0.0.1\",\"rsuUsername\": \"user\",\"rsuPassword\": \"pass\",\"rsuRetries\": \"1\",\"rsuTimeout\": \"2000\"}";
+   public void emptyRequestShouldReturnError() {
+      ResponseEntity<?> result = testTimController.asyncQueryForTims("");
+      assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+      assertEquals("{\"error\":\"Empty request.\"}", result.getBody());
+   }
+   
+   @Test
+   public void snmpSessionExceptionShouldReturnError() {
       try {
-         new Expectations() {
-            {
-               mockOdeProperties.getRsuSrmSlots();
-               result = 1;
-               mockSnmpSession.get((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
-               result = mockResponseEvent;
-               mockResponseEvent.getResponse();
-               result = null;
-            }
-         };
+         new Expectations() {{
+            new SnmpSession((RSU) any);
+            result = new IOException("testException123");
+         }};
       } catch (IOException e) {
          fail("Unexpected exception in expectations block: " + e);
       }
-
-      ResponseEntity<?> result = testTimController.queryForTims(seeminglyValidJson);
-
-      assertEquals(HttpStatus.REQUEST_TIMEOUT, result.getStatusCode());
-      assertEquals("No response from RSU.", result.getBody());
+      
+      ResponseEntity<String> actualResponse = testTimController.asyncQueryForTims("testString");
+      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actualResponse.getStatusCode());
+      assertTrue(actualResponse.getBody().contains("Failed to create SNMP session."));
    }
-
+   
+   @Test
+   public void snmpSessionListenExceptionShouldReturnError() {
+      try {
+         new Expectations() {{
+            capturingSnmpSession.startListen();
+            result = new IOException("testException123");
+         }};
+      } catch (IOException e) {
+         fail("Unexpected exception in expectations block: " + e);
+      }
+      
+      ResponseEntity<String> actualResponse = testTimController.asyncQueryForTims("testString");
+      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actualResponse.getStatusCode());
+      assertTrue(actualResponse.getBody().contains("Failed to create SNMP session."));
+   }
+   
+   @Test
+   public void testOneSuccessfulQuery() {
+      new Expectations() {{
+         mockOdeProperties.getRsuSrmSlots();
+         result = 1;
+      }};
+      
+      assertEquals(HttpStatus.OK, testTimController.asyncQueryForTims("testString").getStatusCode());
+   }
+   
+   @Test
+   public void shouldStopThreadsOnInterruptException(@Mocked InterruptedException mockInterruptedException) {
+      try {
+         new Expectations() {{
+            mockOdeProperties.getRsuSrmSlots();
+            result = 1;
+            
+            mockExecutorService.invokeAll((Collection) any);
+            result = mockInterruptedException;
+            
+            mockExecutorService.shutdownNow();
+            times = 1;
+         }};
+      } catch (InterruptedException e) {
+         fail("Unexpected exception in expectations block: " + e);
+      }
+      
+      assertEquals(HttpStatus.OK, testTimController.asyncQueryForTims("testString").getStatusCode());
+   }
+   
+   @Test
+   public void shouldCatchExceptionOnSnmpSessionClose(@Mocked InterruptedException mockInterruptedException) {
+      try {
+         new Expectations() {{
+            mockOdeProperties.getRsuSrmSlots();
+            result = 1;
+            
+            capturingSnmpSession.endSession();
+            result = new IOException("testException123");
+         }};
+      } catch (IOException e) {
+         fail("Unexpected exception in expectations block: " + e);
+      }
+      
+      assertEquals(HttpStatus.OK, testTimController.asyncQueryForTims("testString").getStatusCode());
+   }
+   
+   
+   
 }

@@ -7,8 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
+import us.dot.its.jpo.ode.coder.OdeBsmDataCreaterHelper;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
@@ -21,12 +21,17 @@ public class JsonDecoderPublisher implements DecoderPublisher {
    private MessagePublisher publisher;
    private SerialId serialId;
 
+   private OdeBsmDataCreaterHelper bsmDecoder;
+
    private static AtomicInteger bundleId = new AtomicInteger(1);
 
    public JsonDecoderPublisher(MessagePublisher dataPub) {
       this.publisher = dataPub;
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
+      
+      this.bsmDecoder = new OdeBsmDataCreaterHelper();
+      
    }
 
    @Override
@@ -41,7 +46,8 @@ public class JsonDecoderPublisher implements DecoderPublisher {
             line = scanner.nextLine();
 
             J2735Bsm j2735Bsm = (J2735Bsm) JsonUtils.fromJson(line, J2735Bsm.class);
-            OdeData odeBsm = BsmDecoderHelper.createOdeBsmData(j2735Bsm, null, fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
+            OdeData odeBsm = bsmDecoder.createOdeBsmData(j2735Bsm, null, fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
+            
             publisher.publish(odeBsm);
          }
          if (empty) {
