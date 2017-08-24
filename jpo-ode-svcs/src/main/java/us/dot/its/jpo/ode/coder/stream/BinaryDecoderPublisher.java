@@ -19,7 +19,7 @@ public class BinaryDecoderPublisher implements DecoderPublisher {
 
    private MessagePublisher publisher;
 
-   private BsmDecoderHelper bsmDecoder;
+
 
    private static AtomicInteger bundleId = new AtomicInteger(1);
    
