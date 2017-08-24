@@ -19,6 +19,7 @@ public class HexDecoderPublisher implements DecoderPublisher {
    private static final Logger logger = LoggerFactory.getLogger(HexDecoderPublisher.class);
    private MessagePublisher publisher;
    private SerialId serialId;
+   private BsmDecoderHelper bsmDecoder;
    private static AtomicInteger bundleId = new AtomicInteger(1);
 
    public HexDecoderPublisher(MessagePublisher dataPub) {
@@ -26,6 +27,7 @@ public class HexDecoderPublisher implements DecoderPublisher {
 
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
+      this.bsmDecoder = new BsmDecoderHelper();
    }
 
    @Override
@@ -40,7 +42,7 @@ public class HexDecoderPublisher implements DecoderPublisher {
             empty = false;
             line = scanner.nextLine();
 
-            decoded = BsmDecoderHelper.decode(new BufferedInputStream(new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
+            decoded = bsmDecoder.decode(new BufferedInputStream(new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);
                publisher.publish(decoded);

@@ -35,9 +35,9 @@ public class UdpServicesController {
       logger.debug("UDP receiver services started.");
 
       logger.debug("Starting UDP depositor services...");
-      rm.submit(new IsdDepositor(odeProps), odeProps.getKafkaTopicEncodedIsd());
+      rm.submit(new IsdDepositor(odeProps), odeProps.getKafkaTopicIsdPojo());
       if (odeProps.getDepositSanitizedBsmToSdc()) {
-         rm.submit(new VsdDepositor(odeProps), odeProps.getKafkaTopicEncodedVsd());
+         rm.submit(new VsdDepositor(odeProps), odeProps.getKafkaTopicVsdPojo());
       } else {
          logger.warn("WARNING - SDC BSM/VSD deposit option disabled, not starting VSD depositor service.");
       }

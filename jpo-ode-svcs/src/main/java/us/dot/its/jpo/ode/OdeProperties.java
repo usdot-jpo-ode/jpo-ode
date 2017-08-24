@@ -96,7 +96,7 @@ public class OdeProperties implements EnvironmentAware {
     * Vehicle Situation Data (VSD) Properties
     */
    private boolean enabledVsdKafkaTopic = true;
-   private String kafkaTopicEncodedVsd = "encodedVsd";
+   private String kafkaTopicVsdPojo = "AsnVsdPojo";
    private int vsdBufferSize = 500;
    private int vsdReceiverPort = 46753;
    private int vsdDepositorPort = 5555;
@@ -105,7 +105,7 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * Intersection Situation Data (ISD) Properties
     */
-   private String kafkaTopicEncodedIsd = "encodedIsd";
+   private String kafkaTopicIsdPojo = "AsnIsdPojo";
    private int isdBufferSize = 500;
    private int isdReceiverPort = 46801;
    private int isdDepositorPort = 6666;
@@ -282,12 +282,12 @@ public class OdeProperties implements EnvironmentAware {
       this.externalIpv6 = externalIpv6;
    }
 
-   public String getKafkaTopicEncodedIsd() {
-      return kafkaTopicEncodedIsd;
+   public String getKafkaTopicIsdPojo() {
+      return kafkaTopicIsdPojo;
    }
 
-   public void setKafkaTopicEncodedIsd(String kafkaTopicEncodedIsd) {
-      this.kafkaTopicEncodedIsd = kafkaTopicEncodedIsd;
+   public void setKafkaTopicIsdPojo(String kafkaTopicIsdPojo) {
+      this.kafkaTopicIsdPojo = kafkaTopicIsdPojo;
    }
 
    public int getVsdDepositorPort() {
@@ -522,12 +522,12 @@ public class OdeProperties implements EnvironmentAware {
       this.enabledVsdKafkaTopic = enabledVsdKafkaTopic;
    }
 
-   public String getKafkaTopicEncodedVsd() {
-      return kafkaTopicEncodedVsd;
+   public String getKafkaTopicVsdPojo() {
+      return kafkaTopicVsdPojo;
    }
 
-   public void setKafkaTopicEncodedVsd(String kafkaTopicEncodedVsd) {
-      this.kafkaTopicEncodedVsd = kafkaTopicEncodedVsd;
+   public void setKafkaTopicVsdPojo(String kafkaTopicVsdPojo) {
+      this.kafkaTopicVsdPojo = kafkaTopicVsdPojo;
    }
 
    // TODO Deprecate per ODE-436
