@@ -29,7 +29,7 @@ public class ByteDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               BsmDecoderHelper.decode((BufferedInputStream) any, anyString, (SerialId) any);
+               capturingDecoderHelper.decode((BufferedInputStream) any, anyString, (SerialId) any);
                result = null;
                times = 1;
 
@@ -48,7 +48,7 @@ public class ByteDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               BsmDecoderHelper.decode((BufferedInputStream) any, anyString, (SerialId) any);
+               capturingDecoderHelper.decode((BufferedInputStream) any, anyString, (SerialId) any);
                result = new Exception("testException123");
                times = 1;
 
@@ -67,7 +67,7 @@ public class ByteDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               BsmDecoderHelper.decode((BufferedInputStream) any, anyString, (SerialId) any);
+               capturingDecoderHelper.decode((BufferedInputStream) any, anyString, (SerialId) any);
                result = mockOdeData;
                times = 1;
 

@@ -58,7 +58,7 @@ public class HexDecoderPublisherTest {
                capturingScanner.nextLine();
                result = "fakeLine";
 
-               BsmDecoderHelper.decode((BufferedInputStream) any, anyString, (SerialId) any);
+               capturingDecoderHelper.decode((BufferedInputStream) any, anyString, (SerialId) any);
                result = null;
                times = 1;
 
@@ -81,7 +81,7 @@ public class HexDecoderPublisherTest {
                capturingScanner.hasNextLine();
                returns(true, false);
 
-               BsmDecoderHelper.decode((BufferedInputStream) any, anyString, (SerialId) any);
+               capturingDecoderHelper.decode((BufferedInputStream) any, anyString, (SerialId) any);
                result = new Exception("testException123");
                times = 1;
 
@@ -104,7 +104,7 @@ public class HexDecoderPublisherTest {
                capturingScanner.hasNextLine();
                returns(true, false);
 
-               BsmDecoderHelper.decode((BufferedInputStream) any, anyString, (SerialId) any);
+               capturingDecoderHelper.decode((BufferedInputStream) any, anyString, (SerialId) any);
                result = mockOdeData;
                times = 1;
 

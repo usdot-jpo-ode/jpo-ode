@@ -20,12 +20,15 @@ public class HexDecoderPublisher implements DecoderPublisher {
    private MessagePublisher publisher;
    private SerialId serialId;
    private static AtomicInteger bundleId = new AtomicInteger(1);
+   
+   private BsmDecoderHelper bsmDecoder;
 
    public HexDecoderPublisher(MessagePublisher dataPub) {
       this.publisher = dataPub;
 
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
+      this.bsmDecoder = new BsmDecoderHelper();
    }
 
    @Override
@@ -40,7 +43,7 @@ public class HexDecoderPublisher implements DecoderPublisher {
             empty = false;
             line = scanner.nextLine();
 
-            decoded = BsmDecoderHelper.decode(new BufferedInputStream(new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
+            decoded = bsmDecoder.decode(new BufferedInputStream(new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);
                publisher.publish(decoded);
