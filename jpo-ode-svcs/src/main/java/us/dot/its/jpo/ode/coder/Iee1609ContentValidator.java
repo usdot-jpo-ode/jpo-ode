@@ -9,7 +9,7 @@ public class Iee1609ContentValidator {
 
    public boolean contentHadUnsecureData(Ieee1609Dot2Content ieee1609dot2ContentIn) {
 
-      if (     ieee1609dot2ContentIn != null
+      if (ieee1609dot2ContentIn != null 
             && ieee1609dot2ContentIn.getSignedData() != null
             && ieee1609dot2ContentIn.getSignedData().getTbsData() != null
             && ieee1609dot2ContentIn.getSignedData().getTbsData().getPayload() != null
@@ -20,12 +20,5 @@ public class Iee1609ContentValidator {
       } else {
          return false;
       }
-      
-//      try {
-//         
-//      }catch(NullPointerException e) {
-//         
-//      }
-      
    }
 }
