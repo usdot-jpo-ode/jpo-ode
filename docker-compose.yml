@@ -48,35 +48,35 @@ services:
 
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/host_share
-#  ppm:
-#    build: ../jpo-cvdp
-#    environment:
-#      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-#    volumes:
-#      - ${DOCKER_SHARED_VOLUME}:/ppm_data
-#  s3dep:
-#    build: ../jpo-s3-deposit
-#    environment:
-#      AWS_ACCESS_KEY_ID: ${CVPEP_AWS_ACCESS_KEY_ID}
-#      AWS_SECRET_ACCESS_KEY: ${CVPEP_AWS_SECRET_ACCESS_KEY_ID}
-#      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-#      DEPOSIT_BUCKET_NAME: ${CVPEP_DEPOSIT_BUCKET_NAME}
-#      DEPOSIT_KEY_NAME: ${CVPEP_DEPOSIT_KEY_NAME}
-#      DEPOSIT_TOPIC: ${CVPEP_DEPOSIT_TOPIC}
-#    depends_on:
-#     - kafka
-#    links:
-#     - kafka
-#  ppms3dep:
-#    build: ../jpo-s3-deposit
-#    environment:
-#      AWS_ACCESS_KEY_ID: ${PPM_AWS_ACCESS_KEY_ID}
-#      AWS_SECRET_ACCESS_KEY: ${PPM_AWS_SECRET_ACCESS_KEY_ID}
-#      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-#      DEPOSIT_BUCKET_NAME: ${PPM_DEPOSIT_BUCKET_NAME}
-#      DEPOSIT_KEY_NAME: ${PPM_DEPOSIT_KEY_NAME}
-#      DEPOSIT_TOPIC: ${PPM_DEPOSIT_TOPIC}
-#    depends_on:
-#     - kafka
-#    links:
-#     - kafka
+  ppm:
+    build: ../jpo-cvdp
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+    volumes:
+      - ${DOCKER_SHARED_VOLUME}:/ppm_data
+  s3dep:
+    build: ../jpo-s3-deposit
+    environment:
+      AWS_ACCESS_KEY_ID: ${CVPEP_AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${CVPEP_AWS_SECRET_ACCESS_KEY_ID}
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      DEPOSIT_BUCKET_NAME: ${CVPEP_DEPOSIT_BUCKET_NAME}
+      DEPOSIT_KEY_NAME: ${CVPEP_DEPOSIT_KEY_NAME}
+      DEPOSIT_TOPIC: ${CVPEP_DEPOSIT_TOPIC}
+    depends_on:
+     - kafka
+    links:
+     - kafka
+  ppms3dep:
+    build: ../jpo-s3-deposit
+    environment:
+      AWS_ACCESS_KEY_ID: ${PPM_AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${PPM_AWS_SECRET_ACCESS_KEY_ID}
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      DEPOSIT_BUCKET_NAME: ${PPM_DEPOSIT_BUCKET_NAME}
+      DEPOSIT_KEY_NAME: ${PPM_DEPOSIT_KEY_NAME}
+      DEPOSIT_TOPIC: ${PPM_DEPOSIT_TOPIC}
+    depends_on:
+     - kafka
+    links:
+     - kafka
