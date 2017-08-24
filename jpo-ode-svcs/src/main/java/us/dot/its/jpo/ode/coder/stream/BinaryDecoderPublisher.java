@@ -22,14 +22,16 @@ public class BinaryDecoderPublisher implements DecoderPublisher {
    private BsmDecoderHelper bsmDecoder;
 
    private static AtomicInteger bundleId = new AtomicInteger(1);
+   
+   private BsmDecoderHelper bsmDecoder;
 
    public BinaryDecoderPublisher(MessagePublisher dataPub) {
       this.publisher = dataPub;
 
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
-      this.bsmDecoder = new BsmDecoderHelper();
       
+      this.bsmDecoder = new BsmDecoderHelper();
    }
 
    @Override
@@ -38,8 +40,6 @@ public class BinaryDecoderPublisher implements DecoderPublisher {
 
       do {
          try {
-            
-            
             decoded = bsmDecoder.decode(is, fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);

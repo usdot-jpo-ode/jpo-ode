@@ -21,14 +21,13 @@ public class HexDecoderPublisher implements DecoderPublisher {
    private SerialId serialId;
    private BsmDecoderHelper bsmDecoder;
    private static AtomicInteger bundleId = new AtomicInteger(1);
-   
+
    public HexDecoderPublisher(MessagePublisher dataPub) {
       this.publisher = dataPub;
 
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
       this.bsmDecoder = new BsmDecoderHelper();
-      
    }
 
    @Override

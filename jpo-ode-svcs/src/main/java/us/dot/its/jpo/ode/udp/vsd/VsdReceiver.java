@@ -129,8 +129,7 @@ public class VsdReceiver extends BsmReceiver {
          J2735Bsm j2735Bsm = OssBsm.genericBsm(entry);
          serialId.addBundleId(1);
          OdeBsmData odeBsmData = odeBsmDataCreaterHelperIn.createOdeBsmData((J2735Bsm) j2735Bsm, new IEEE1609p2Message(), null, serialId);
-         
-         
+        
          odeBsmDataProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), null, odeBsmData);
       }
    }
