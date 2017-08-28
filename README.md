@@ -7,31 +7,33 @@ US Department of Transportation Joint Program office (JPO) Operational Data Envi
 
 In the context of ITS, an Operational Data Environment is a real-time data acquisition and distribution software system that processes and routes data from Connected-X devices –including connected vehicles (CV), personal mobile devices, and infrastructure components and sensors –to subscribing applications to support the operation, maintenance, and use of the transportation system, as well as related research and development efforts.
 
+![ODE Dataflows](images/data_flow_v1.png)
+
 <a name="toc"/>
 
-## Table of Contents 
+## Table of Contents
 
-[I. Release Notes](#release-notes) 
+[I. Release Notes](#release-notes)
 
-[II. Documentation](#documentation) 
+[II. Documentation](#documentation)
 
-[III. Collaboration Tools](#collaboration-tools) 
+[III. Collaboration Tools](#collaboration-tools)
 
-[IV. Getting Started](#getting-started) 
+[IV. Getting Started](#getting-started)
 
-[V. Testing the Application](#testing) 
+[V. Testing the Application](#testing)
 
-[VI. ODE Limitation](#dev-tools) 
+[VI. ODE Limitation](#dev-tools)
 
-[VII. Development Tools](#dev-tools) 
+[VII. Development Tools](#dev-tools)
 
-[VIII.  Contribution Information](#contribution-info) 
+[VIII.  Contribution Information](#contribution-info)
 
---- 
+---
 
 <a name="release-notes"/>
 
- 
+
 ## [I. Release Notes](ReleaseNotes.md)
 
 
@@ -108,7 +110,7 @@ https://sonarqube.com/organizations/usdot-jpo-ode/projects
 
 ## IV. Getting Started
 
-The following instructions describe the procedure to fetch, build, and run the application. 
+The following instructions describe the procedure to fetch, build, and run the application.
 
 ### Prerequisites
 * JDK 1.8: http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html
@@ -117,18 +119,18 @@ The following instructions describe the procedure to fetch, build, and run the a
 
 Additionally, read the following guides to familiarize yourself with Docker and Kafka.
 
-**Docker** 
+**Docker**
 
 [README.md](docker/README.md)
 
-**Kafka** 
+**Kafka**
 
 [README.md](docker/kafka/README.md)
 
 ---
 ### Obtain the Source Code
 
-**NOTE**: The ODE consists of four repositories: 
+**NOTE**: The ODE consists of four repositories:
 
 |Name|Visibility|Description|
 |----|----------|-----------|
@@ -137,7 +139,7 @@ Additionally, read the following guides to familiarize yourself with Docker and 
 |[jpo-security](https://github.com/usdot-jpo-ode/jpo-security)|public|Security dependencies.|
 |jpo-ode-private|private|Proprietary dependencies.|
 
-Building this application requires all repositories. If you need access to the private repositories, please reach out to a member of the development team. 
+Building this application requires all repositories. If you need access to the private repositories, please reach out to a member of the development team.
 
 
 #### Step 1 - Clone public repository
@@ -191,13 +193,18 @@ ODE configuration can be customized for every deployment environment using the O
 |CVPEP_AWS_ACCESS_KEY_ID|The data deposit S3 bucket access ID|
 |CVPEP_AWS_SECRET_ACCESS_KEY|The data deposit S3 bucket secret key|
 |CVPEP_DEPOSIT_BUCKET_NAME|The name of the S3 data deposit bucket|
-|CVPEP_DEPOSIT_KEY_NAME|The key used for S3 file names.|
+|CVPEP_DEPOSIT_KEY_NAME|The key used for S3 file names|
 |CVPEP_DEPOSIT_TOPIC|The Kafka topic to which the S3 depositor subscribes|
 |RDE_AWS_ACCESS_KEY_ID|The data deposit S3 bucket access ID|
 |RDE_AWS_SECRET_ACCESS_KEY|The data deposit S3 bucket secret key|
 |RDE_DEPOSIT_BUCKET_NAME|The name of the S3 data deposit bucket|
-|RDE_DEPOSIT_KEY_NAME|The key used for S3 file names.|
+|RDE_DEPOSIT_KEY_NAME|The key used for S3 file names|
 |RDE_DEPOSIT_TOPIC|The Kafka topic to which the S3 depositor subscribes|
+|TIM_AWS_ACCESS_KEY_ID|The data deposit S3 bucket access ID|
+|TIM_AWS_SECRET_ACCESS_KEY_ID|The data deposit S3 bucket secret key|
+|TIM_DEPOSIT_BUCKET_NAME|The name of the S3 data deposit bucket|
+|TIM_DEPOSIT_KEY_NAME|The key used for S3 file names|
+|TIM_DEPOSIT_TOPIC|The Kafka topic to which the S3 depositor subscribes|
 |ODE_DDS_CAS_USERNAME|The username for authenticating the USDOT Situation Data Warehouse WebSocket server |
 |ODE_DDS_CAS_PASSWORD|The password for authenticating the USDOT Situation Data Warehouse WebSocket server |
 |ODE_EXTERNAL_IPV4|The IPv4 address of the server running ODE |
@@ -241,9 +248,9 @@ If you wish to change the application properties, such as change the location of
 
 **Step 5**: Navigate to the root directory of the jpo-ode project.
 
-**Step 6**: Build and deploy the application. 
+**Step 6**: Build and deploy the application.
 
-The easiest way to do this is to run the ```clean-build-and-deploy``` script. 
+The easiest way to do this is to run the ```clean-build-and-deploy``` script.
 This script executes the following commands:
 
 ```
@@ -332,8 +339,8 @@ To run the ODE with PPM module, you must install and start the PPM service. PPM 
  - PPM properties for communications with ODE (set in yourconfig.properties)
 	 - privacy.topic.consumer (default = j2735BsmRawJson)
 	 - privacy.topic.producer (default = j2735BsmFilteredJson)
- 
-Follow the instructions [here](https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md) (https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md) to install and build the PPM service. 
+
+Follow the instructions [here](https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md) (https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md) to install and build the PPM service.
 
 During the build process, edit the sample config file located in `config/example.properties` and point the property `metadata.broker.list` towards the host of your docker machine or wherever the kafka brokers are hosted. You may use the command `docker-machine ls` to find the kafka service.
 
@@ -382,7 +389,7 @@ To be added.
 
 ## VII. Contribution Information
 
-Please read our [contributing guide](docs/contributing_guide.md) to learn about our development process, how to propose pull requests and improvements, and how to build and test your changes to this project. 
+Please read our [contributing guide](docs/contributing_guide.md) to learn about our development process, how to propose pull requests and improvements, and how to build and test your changes to this project.
 
 
 [Back to top](#toc)

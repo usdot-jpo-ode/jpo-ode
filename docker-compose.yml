@@ -67,7 +67,7 @@ services:
      - kafka
     links:
      - kafka
-
+     
   ppms3dep:
     build: ../jpo-s3-deposit
     environment:
@@ -81,16 +81,17 @@ services:
      - kafka
     links:
      - kafka
-timdep:
-       build: ../jpo-s3-deposit
-       environment:
-         AWS_ACCESS_KEY_ID: ${TIM_AWS_ACCESS_KEY_ID}
-         AWS_SECRET_ACCESS_KEY: ${TIM_AWS_SECRET_ACCESS_KEY_ID}
-         DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-         DEPOSIT_BUCKET_NAME: ${TIM_DEPOSIT_BUCKET_NAME}
-         DEPOSIT_KEY_NAME: ${TIM_DEPOSIT_KEY_NAME}
-         DEPOSIT_TOPIC: ${TIM_DEPOSIT_TOPIC}
-       depends_on:
-        - kafka
-       links:
-        - kafka
+     
+  timdep:
+    build: ../jpo-s3-deposit
+    environment:
+      AWS_ACCESS_KEY_ID: ${TIM_AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${TIM_AWS_SECRET_ACCESS_KEY_ID}
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      DEPOSIT_BUCKET_NAME: ${TIM_DEPOSIT_BUCKET_NAME}
+      DEPOSIT_KEY_NAME: ${TIM_DEPOSIT_KEY_NAME}
+      DEPOSIT_TOPIC: ${TIM_DEPOSIT_TOPIC}
+    depends_on:
+     - kafka
+    links:
+     - kafka
