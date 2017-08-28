@@ -22,7 +22,17 @@
   </modules>
 
   <repositories>
-    <!-- <repository> <id>cnsi-ode-repo</id> <url>http://dropbox.cnsi.com/nexus/content/repositories/ODE/</url> 
+    <repository>
+      <id>schwartz_matthew2-jpo-security</id>
+      <url>https://packagecloud.io/schwartz_matthew2/jpo-security/maven2</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <!-- <repository> <id>cnsi-ode-repo</id> <url>http://dropbox.cnsi.com/nexus/content/repositories/ODE/</url>
       </repository> -->
   </repositories>
 
