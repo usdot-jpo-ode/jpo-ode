@@ -19,7 +19,7 @@ public class FileDecoderPublisher {
    private JsonDecoderPublisher jsonDecPub;
    private HexDecoderPublisher hexDecPub;
    private BinaryDecoderPublisher binDecPub;
-
+   
    @Autowired
    public FileDecoderPublisher(OdeProperties odeProperties) {
 

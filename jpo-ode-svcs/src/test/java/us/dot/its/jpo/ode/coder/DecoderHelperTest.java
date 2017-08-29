@@ -1,53 +1,95 @@
 package us.dot.its.jpo.ode.coder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.text.ParseException;
-import java.time.ZonedDateTime;
+import java.io.ByteArrayInputStream;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
+import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Ieee1609Dot2Data;
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
-import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mocked;
-import us.dot.its.jpo.ode.j2735.dsrc.AntiLockBrakeStatus;
-import us.dot.its.jpo.ode.model.OdeBsmData;
-import us.dot.its.jpo.ode.model.OdeObject;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssVehicleSituationRecord;
-import us.dot.its.jpo.ode.util.DateTimeUtils;
-import us.dot.its.jpo.ode.wrapper.MessageProducer;
-import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
+import us.dot.its.jpo.ode.model.SerialId;
+import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
 
 public class DecoderHelperTest {
+   @Mocked
+   String mockString;
+   @Mocked
+   private SerialId mockSerialId;
+//   @Mocked
+//   Ieee1609Dot2Data mockIeee1609Dot2Data; 
+   @Mocked
+   Oss1609dot2Coder mockOss1609dot2Coder;
+ //  @Mocked
+//   IEEE1609p2Message mockIEEE1609p2Message;
+//   @Mocked
+//   BsmDecoderPayloadHelper mockBsmDecoderPayloadHelper;
+   
 
+
+ 
+   
    @Test
-   @Ignore
-   public void test() {
-      fail("Not yet implemented");
-   }
+   public void decodeBsmTestOne() {
 
-   @Ignore
+      BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
+      
+      BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
+      try {
+         testingBsmDecoderHelper.decode(bis, mockString, mockSerialId);
+      } catch (Exception e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+      
+   }
+   
    @Test
-   public void decodeBsmTest() {
-
-      InputStream testInput = null;
-
-      J2735MessageFrame expectedValue = new J2735MessageFrame();
-      expectedValue = null;
+   public void decodeBsmTestTwo() {
+      new Expectations() {
+         {
+            mockOss1609dot2Coder.decodeIeee1609Dot2DataStream((BufferedInputStream) any);
+            result = null;
+         }
+      };
+      BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
       
+      BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
+      try {
+         testingBsmDecoderHelper.decode(bis, mockString, mockSerialId);
+      } catch (Exception e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
       
-      // OdeObject actualValue = BsmDecoderHelper.decodeBsm(testInput);
-
-      // assertEquals(expectedValue, actualValue);
    }
+   @Test
+   public void decodeBsmTestThree() {
+      try { 
+      new Expectations() {
+         {
+            mockOss1609dot2Coder.decodeIeee1609Dot2DataStream((BufferedInputStream) any);
+            result = null;
+//            
+//            IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
+//            result = null;
+         }
+      };
+      BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
+      
+      BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
+      
+         testingBsmDecoderHelper.decode(bis, mockString, mockSerialId);
+      } catch (Exception e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+      
+   }
+   
+   
+   
 //
 //   @Test
 //   public void decodeBsmByteTest() {
