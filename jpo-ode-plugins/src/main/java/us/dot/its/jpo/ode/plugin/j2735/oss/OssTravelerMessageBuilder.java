@@ -4,6 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
+import java.util.BitSet;
+
+import javax.xml.bind.DatatypeConverter;
 
 import com.oss.asn1.Coder;
 import com.oss.asn1.EncodeFailedException;
@@ -676,19 +679,42 @@ public class OssTravelerMessageBuilder {
       }
    }
    
-   public static MsgCRC getMsgCrc(String sum) {
-      if (sum == null || sum.length() == 0) {
-         return new MsgCRC(new byte[] { 0X00, 0X00 });
-      } else {
-         short result = 0;
+
+   public static MsgCRC getMsgCrc(String msgString) {
+      
+      byte[] byteArrayValue = new byte[2]; // NOSONAR
+      
+      if (msgString == null || msgString.length() == 0) {
+         byteArrayValue = new byte[2];
+      } else if (msgString.length() == 16) {
+         
+         // TODO - change to one of these oneliners?
+         //byteArrayValue = Arrays.copyOf(new BigInteger(msgString, 2).toByteArray(), 2);
+         //byteArrayValue = ByteBuffer.allocate(2).putInt(Integer.parseUnsignedInt(msgString, 2)).array();
+         //byteArrayValue = ByteBuffer.allocate(2).putInt(Short.toUnsignedInt(Short.parseShort(msgString, 2))).array();
+         //byteArrayValue = ByteBuffer.allocate(2).putLong(Long.parseUnsignedLong(msgString, 2)).array();
+         //byteArrayValue = ByteBuffer.allocate(2).putLong(Long.decode(msgString)).array();
+         //byteArrayValue = ByteBuffer.allocate(2).putInt(Integer.decode(msgString)).array();
+         //byteArrayValue = new byte[] {Byte.parseByte(msgString.substring(0, 8), 2), Byte.parseByte(msgString.substring(8, 16))};
+         
+         BitSet bs = new BitSet(16);
          for (int i = 0; i < 16; i++) {
-            if (sum.charAt(i) == '1') {
-               result |= 1;
+            if (msgString.charAt(i) == '1') {
+               bs.set(15-i);
             }
-            result <<= 1;
          }
-         return new MsgCRC(ByteBuffer.allocate(2).putShort(result).array());
+         
+         byte[] reversedByteArrayValue = bs.toByteArray();
+         byteArrayValue[0] = reversedByteArrayValue[1];
+         byteArrayValue[1] = reversedByteArrayValue[0];
+         
+      } else if (msgString.length() == 4) {
+         byteArrayValue = DatatypeConverter.parseHexBinary(msgString);
+      } else {
+         throw new IllegalArgumentException("MsgCRC length invalid: " + msgString.length());
       }
+      
+      return new MsgCRC(byteArrayValue);
    }
 
 }
