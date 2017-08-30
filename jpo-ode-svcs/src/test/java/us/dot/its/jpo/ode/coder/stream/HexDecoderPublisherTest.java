@@ -42,7 +42,7 @@ public class HexDecoderPublisherTest {
             }
          };
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName");
+         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", false);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -59,7 +59,7 @@ public class HexDecoderPublisherTest {
                capturingScanner.nextLine();
                result = "fakeLine";
 
-               capturingDecoderHelper.decode((BsmFileParser) any, anyString, (SerialId) any);
+               capturingDecoderHelper.decode((BsmFileParser) any, (SerialId) any);
                result = null;
                times = 1;
 
@@ -68,7 +68,7 @@ public class HexDecoderPublisherTest {
             }
          };
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName");
+         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", false);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -82,7 +82,7 @@ public class HexDecoderPublisherTest {
                capturingScanner.hasNextLine();
                returns(true, false);
 
-               capturingDecoderHelper.decode((BsmFileParser) any, anyString, (SerialId) any);
+               capturingDecoderHelper.decode((BsmFileParser) any, (SerialId) any);
 
                result = new Exception("testException123");
                times = 1;
@@ -92,7 +92,7 @@ public class HexDecoderPublisherTest {
             }
          };
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName");
+         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", false);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -106,7 +106,7 @@ public class HexDecoderPublisherTest {
                capturingScanner.hasNextLine();
                returns(true, false);
 
-               capturingDecoderHelper.decode((BsmFileParser) any, anyString, (SerialId) any);
+               capturingDecoderHelper.decode((BsmFileParser) any, (SerialId) any);
 
                result = mockOdeData;
                times = 1;
@@ -116,7 +116,7 @@ public class HexDecoderPublisherTest {
             }
          };
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName");
+         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", false);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }

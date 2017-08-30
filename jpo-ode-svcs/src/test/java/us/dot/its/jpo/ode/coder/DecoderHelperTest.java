@@ -51,7 +51,7 @@ public class DecoderHelperTest {
 
       BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
       try {
-         testingBsmDecoderHelper.decode(mockBsmFileParser, mockString, mockSerialId);
+         testingBsmDecoderHelper.decode(mockBsmFileParser, mockSerialId);
       } catch (Exception e) {
 
          fail("Unexpected error" + e);
@@ -65,7 +65,7 @@ public class DecoderHelperTest {
 
          BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
 
-         testingBsmDecoderHelper.decode(mockBsmFileParser, mockString, mockSerialId);
+         testingBsmDecoderHelper.decode(mockBsmFileParser, mockSerialId);
       } catch (Exception e) {
 
          fail("Unexpected error" + e);
@@ -89,7 +89,7 @@ public class DecoderHelperTest {
 
          BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
 
-         testingBsmDecoderHelper.decode(mockBsmFileParser, mockString, mockSerialId);
+         testingBsmDecoderHelper.decode(mockBsmFileParser, mockSerialId);
       } catch (Exception e) {
          fail("Unexpected error" + e);
       }
@@ -112,7 +112,7 @@ public class DecoderHelperTest {
 
          BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
 
-         testingBsmDecoderHelper.decode(mockBsmFileParser, mockString, mockSerialId);
+         testingBsmDecoderHelper.decode(mockBsmFileParser, mockSerialId);
       } catch (Exception e) {
          fail("Unexpected error" + e);
       }
@@ -140,7 +140,7 @@ public class DecoderHelperTest {
 
          BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
 
-         assertNull(testingBsmDecoderHelper.decode(mockBsmFileParser, mockString, mockSerialId));
+         assertNull(testingBsmDecoderHelper.decode(mockBsmFileParser, mockSerialId));
       } catch (Exception e) {
          fail("Unexpected error" + e);
       }

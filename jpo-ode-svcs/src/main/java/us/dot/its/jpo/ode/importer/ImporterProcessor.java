@@ -13,18 +13,19 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.FileDecoderPublisher;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterDirType;
 
 public class ImporterProcessor {
 
    private static final Logger logger = LoggerFactory.getLogger(ImporterProcessor.class);
    private FileDecoderPublisher decoderPublisherManager;
    private OdeProperties odeProperties;
-   private boolean hasMetadataHeader;
+   private ImporterDirType dirType;
    
-   public ImporterProcessor(OdeProperties odeProperties, boolean hasMetadataHeader) {
+   public ImporterProcessor(OdeProperties odeProperties, ImporterDirType dirType) {
       this.decoderPublisherManager = new FileDecoderPublisher(odeProperties);
       this.odeProperties = odeProperties;
-      this.hasMetadataHeader = hasMetadataHeader;
+      this.dirType = dirType;
    }
 
    public void processDirectory(Path dir, Path backupDir) {
@@ -50,7 +51,7 @@ public class ImporterProcessor {
       try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
           BufferedInputStream bis = new BufferedInputStream(inputStream, 
               odeProperties.getImportProcessorBufferSize());
-          decoderPublisherManager.decodeAndPublishFile(filePath, bis, hasMetadataHeader);
+          decoderPublisherManager.decodeAndPublishFile(filePath, bis, dirType);
       } catch (Exception e) {
          logger.error("Unable to open or process file: " + filePath, e);
       }

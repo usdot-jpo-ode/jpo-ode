@@ -16,6 +16,10 @@ import org.slf4j.LoggerFactory;
 import us.dot.its.jpo.ode.OdeProperties;
 
 public class ImporterDirectoryWatcher implements Runnable {
+   
+   public enum ImporterDirType {
+      BSM, MESSAGE_FRAME, LOG_FILE
+   }
 
    private static final Logger logger = LoggerFactory.getLogger(ImporterDirectoryWatcher.class);
 
@@ -26,12 +30,8 @@ public class ImporterDirectoryWatcher implements Runnable {
    private Path inbox;
 
    private Path backup;
-   
-   public ImporterDirectoryWatcher(
-       OdeProperties odeProperties, 
-       Path dir, 
-       Path backupDir,
-       boolean hasMetadataHeader) {
+
+   public ImporterDirectoryWatcher(OdeProperties odeProperties, Path dir, Path backupDir, ImporterDirType importerDirType) {
       this.inbox = dir;
       this.backup = backupDir;
       this.watching = true;
@@ -45,7 +45,7 @@ public class ImporterDirectoryWatcher implements Runnable {
          logger.error("Error creating directory: " + inbox, e);
       }
 
-      this.importerProcessor = new ImporterProcessor(odeProperties, hasMetadataHeader);
+      this.importerProcessor = new ImporterProcessor(odeProperties, importerDirType);
    }
 
    @Override
