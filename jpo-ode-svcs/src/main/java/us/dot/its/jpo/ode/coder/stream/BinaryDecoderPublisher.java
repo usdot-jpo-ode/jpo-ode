@@ -27,9 +27,8 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
                 decoded = bsmDecoder.decode(bsmFileParser, 
                     this.serialId.setBundleId(bundleId.incrementAndGet()));
             } else {
-                //TODO ODE-512
-//                decoded = bsmDecoder.decode(bis, 
-//                    this.serialId.setBundleId(bundleId.incrementAndGet()));
+                decoded = bsmDecoder.decode(bis, fileName, 
+                    this.serialId.setBundleId(bundleId.incrementAndGet()));
             }
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);

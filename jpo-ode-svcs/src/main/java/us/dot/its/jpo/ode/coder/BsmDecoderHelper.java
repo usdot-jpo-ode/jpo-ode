@@ -37,7 +37,7 @@ public class BsmDecoderHelper {
    public OdeData decode(BsmFileParser bsmFileParser, SerialId serialId) throws Exception {
 
       Ieee1609Dot2Data ieee1609dot2Data = 
-              ieee1609dotCoder.decodeIeee1609Dot2DataStream(bsmFileParser.getPayload());
+              ieee1609dotCoder.decodeIeee1609Dot2DataBytes(bsmFileParser.getPayload());
       OdeObject bsm = null;
       OdeData odeBsmData = null;
       IEEE1609p2Message message = null;
@@ -62,11 +62,47 @@ public class BsmDecoderHelper {
       }
       if (bsm != null) {
          logger.debug("Decoded BSM successfully, creating OdeBsmData object.");
-         odeBsmData = odeBsmDataCreaterHelperIn.createOdeBsmData((J2735Bsm) bsm, message, bsmFileParser.getFilename(), serialId);
+         odeBsmData = odeBsmDataCreaterHelperIn.createOdeBsmData((J2735Bsm) bsm, message, 
+             bsmFileParser.getFilename(), serialId);
       } else {
          logger.debug("Failed to decode BSM.");
       }
       return odeBsmData;
    }
+
+public OdeData decode(BufferedInputStream bis, String filename, SerialId serialId) {
+    Ieee1609Dot2Data ieee1609dot2Data = 
+            ieee1609dotCoder.decodeIeee1609Dot2DataStream(bis);
+    OdeObject bsm = null;
+    OdeData odeBsmData = null;
+    IEEE1609p2Message message = null;
+
+    if (ieee1609dot2Data != null) {
+       logger.debug("Attempting to decode as Ieee1609Dot2Data.");
+       try {
+          message = IEEE1609p2Message.convert(ieee1609dot2Data);
+          if (message != null) {
+             bsm = bsmDecoderPayloadHelperIn.getBsmPayload(message);
+          }
+       } catch (Exception e) {
+          logger.debug("Message does not have a valid signature. Assuming it is unsigned message...");
+          if (iee1609ContentValidatorIn.contentHadUnsecureData(ieee1609dot2Data.getContent())) {
+             bsm = rawBsmMFSorterIn.decodeBsm(ieee1609dot2Data.getContent().getSignedData().getTbsData().getPayload()
+                   .getData().getContent().getUnsecuredData().byteArrayValue());
+          }
+       }
+    } else {
+       // probably raw BSM or MessageFrame
+       bsm = rawBsmMFSorterIn.decodeBsm(bis);
+    }
+    if (bsm != null) {
+       logger.debug("Decoded BSM successfully, creating OdeBsmData object.");
+       odeBsmData = odeBsmDataCreaterHelperIn.createOdeBsmData((J2735Bsm) bsm, 
+           message, filename, serialId);
+    } else {
+       logger.debug("Failed to decode BSM.");
+    }
+    return odeBsmData;
+}
 
 }
