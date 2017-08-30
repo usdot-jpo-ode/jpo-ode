@@ -30,7 +30,10 @@ public class FileDecoderPublisher {
       this.binDecPub = new BinaryDecoderPublisher(messagePub);
    }
 
-   public void decodeAndPublishFile(Path filePath, BufferedInputStream fileInputStream) {
+   public void decodeAndPublishFile(
+       Path filePath, 
+       BufferedInputStream fileInputStream,
+       boolean hasMetadataHeader) {
       String fileName = filePath.toFile().getName();
 
       logger.info("Decoding and publishing file {}", fileName);
@@ -38,13 +41,13 @@ public class FileDecoderPublisher {
       try {
          if (filePath.toString().endsWith(".hex") || filePath.toString().endsWith(".txt")) {
             logger.info("Decoding {} as hex file.", filePath);
-            hexDecPub.decodeAndPublish(fileInputStream, fileName);
+            hexDecPub.decodeAndPublish(fileInputStream, fileName, hasMetadataHeader);
          } else if (filePath.toString().endsWith(".json")) {
             logger.info("Decoding {} as json file.", filePath);
-            jsonDecPub.decodeAndPublish(fileInputStream, fileName);
+            jsonDecPub.decodeAndPublish(fileInputStream, fileName, hasMetadataHeader);
          } else {
             logger.info("Decoding {} as binary/signed file.", filePath);
-            binDecPub.decodeAndPublish(fileInputStream, fileName);
+            binDecPub.decodeAndPublish(fileInputStream, fileName, hasMetadataHeader);
          }
       } catch (Exception e) {
          logger.error("Failed to decode and publish file.", e);

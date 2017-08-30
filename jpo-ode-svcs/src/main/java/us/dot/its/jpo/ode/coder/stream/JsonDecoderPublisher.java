@@ -35,7 +35,7 @@ public class JsonDecoderPublisher implements DecoderPublisher {
    }
 
    @Override
-   public void decodeAndPublish(BufferedInputStream is, String fileName) {
+   public void decodeAndPublish(BufferedInputStream is, String fileName, boolean hasMetadataHeader) {
       String line = null;
 
       try (Scanner scanner = new Scanner(is)) {

@@ -55,8 +55,10 @@ public class FileUploadController {
       logger.debug("UPLOADER - Backup directory: {}", backupPath);
 
       // Create the importers that watch folders for new/modified files
-      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, bsmPath, backupPath));
-      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, messageFramePath, backupPath));
+      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, bsmPath, backupPath, false));
+      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, messageFramePath, backupPath, false));
+      // TODO for ODE-512
+      //threadPool.submit(new ImporterDirectoryWatcher(odeProperties, bsmMetadataHeaderLogPath, backupPath, false));
 
       // Create the exporters
       threadPool.submit(new OdeBsmExporter(odeProperties, ODE_BSM_OUTPUT_TOPIC, template));

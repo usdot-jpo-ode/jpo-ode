@@ -20,7 +20,7 @@ public class HexDecoderPublisher extends AbstractDecoderPublisher  {
    }
 
    @Override
-   public void decodeAndPublish(BufferedInputStream is, String fileName) throws Exception {
+   public void decodeAndPublish(BufferedInputStream is, String fileName, boolean hasMetadataHeader) throws Exception {
       String line = null;
       OdeData decoded = null;
 
@@ -31,8 +31,15 @@ public class HexDecoderPublisher extends AbstractDecoderPublisher  {
             empty = false;
             line = scanner.nextLine();
 
-            bsmFileParser.parse(new BufferedInputStream(new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName);
-            decoded = bsmDecoder.decode(bsmFileParser, fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
+            if (hasMetadataHeader) {
+                bsmFileParser.parse(new BufferedInputStream(
+                    new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName);
+            } else {
+                bsmFileParser.setPayload(HexUtils.fromHexString(line));
+            }
+            
+            decoded = bsmDecoder.decode(bsmFileParser, 
+                this.serialId.setBundleId(bundleId.incrementAndGet()));
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);
                publisher.publish(decoded);

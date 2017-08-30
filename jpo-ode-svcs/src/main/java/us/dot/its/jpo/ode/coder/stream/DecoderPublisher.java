@@ -4,5 +4,5 @@ import java.io.BufferedInputStream;
 
 public interface DecoderPublisher {
    
-   public void decodeAndPublish(BufferedInputStream is, String fileName) throws Exception;
+   public void decodeAndPublish(BufferedInputStream is, String fileName, boolean hasMetadataHeader) throws Exception;
 }

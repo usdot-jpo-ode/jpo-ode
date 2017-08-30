@@ -26,8 +26,12 @@ public class ImporterDirectoryWatcher implements Runnable {
    private Path inbox;
 
    private Path backup;
-
-   public ImporterDirectoryWatcher(OdeProperties odeProperties, Path dir, Path backupDir) {
+   
+   public ImporterDirectoryWatcher(
+       OdeProperties odeProperties, 
+       Path dir, 
+       Path backupDir,
+       boolean hasMetadataHeader) {
       this.inbox = dir;
       this.backup = backupDir;
       this.watching = true;
@@ -41,7 +45,7 @@ public class ImporterDirectoryWatcher implements Runnable {
          logger.error("Error creating directory: " + inbox, e);
       }
 
-      this.importerProcessor = new ImporterProcessor(odeProperties);
+      this.importerProcessor = new ImporterProcessor(odeProperties, hasMetadataHeader);
    }
 
    @Override

@@ -35,4 +35,4 @@ public abstract class AbstractDecoderPublisher implements DecoderPublisher {
    }
 
    @Override
-   public abstract void decodeAndPublish(BufferedInputStream is, String fileName) throws Exception;}
+   public abstract void decodeAndPublish(BufferedInputStream is, String fileName, boolean hasMetadataHeader) throws Exception;}

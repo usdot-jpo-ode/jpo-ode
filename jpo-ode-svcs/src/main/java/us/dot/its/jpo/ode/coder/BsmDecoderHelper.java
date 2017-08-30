@@ -33,7 +33,7 @@ public class BsmDecoderHelper {
       this.bsmDecoderPayloadHelperIn = new BsmDecoderPayloadHelper(rawBsmMFSorterIn);
    }
 
-   public OdeData decode(BsmFileParser bsmFileParser, String fileName, SerialId serialId) throws Exception {
+   public OdeData decode(BsmFileParser bsmFileParser, SerialId serialId) throws Exception {
 
       Ieee1609Dot2Data ieee1609dot2Data = 
               ieee1609dotCoder.decodeIeee1609Dot2DataStream(bsmFileParser.getPayload());
@@ -61,7 +61,7 @@ public class BsmDecoderHelper {
       }
       if (bsm != null) {
          logger.debug("Decoded BSM successfully, creating OdeBsmData object.");
-         odeBsmData = odeBsmDataCreaterHelperIn.createOdeBsmData((J2735Bsm) bsm, message, fileName, serialId);
+         odeBsmData = odeBsmDataCreaterHelperIn.createOdeBsmData((J2735Bsm) bsm, message, bsmFileParser.getFilename(), serialId);
       } else {
          logger.debug("Failed to decode BSM.");
       }

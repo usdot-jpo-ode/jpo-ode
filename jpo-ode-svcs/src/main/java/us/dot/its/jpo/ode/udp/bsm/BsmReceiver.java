@@ -59,7 +59,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                byte[] payload = removeHeader(packet.getData());
                logger.debug("Packet: {}", HexUtils.toHexString(payload));
                byteDecoderPublisher.decodeAndPublish(
-                   new BufferedInputStream(new ByteArrayInputStream(payload)), null);
+                   new BufferedInputStream(new ByteArrayInputStream(payload)), null, false);
             }
          } catch (Exception e) {
             logger.error("Error receiving packet", e);
