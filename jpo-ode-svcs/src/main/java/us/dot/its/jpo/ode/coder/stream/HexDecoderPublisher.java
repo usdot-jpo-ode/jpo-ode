@@ -31,7 +31,8 @@ public class HexDecoderPublisher extends AbstractDecoderPublisher  {
             empty = false;
             line = scanner.nextLine();
 
-            decoded = bsmDecoder.decode(new BufferedInputStream(new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
+            bsmFileParser.parse(new BufferedInputStream(new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName);
+            decoded = bsmDecoder.decode(bsmFileParser, fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);
                publisher.publish(decoded);

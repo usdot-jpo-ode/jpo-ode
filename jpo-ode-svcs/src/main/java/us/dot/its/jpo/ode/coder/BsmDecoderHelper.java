@@ -1,12 +1,12 @@
 package us.dot.its.jpo.ode.coder;
 
 import java.io.BufferedInputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Ieee1609Dot2Data;
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
+import us.dot.its.jpo.ode.importer.BsmFileParser;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.model.SerialId;
@@ -34,9 +34,10 @@ public class BsmDecoderHelper {
       this.bsmDecoderPayloadHelperIn = new BsmDecoderPayloadHelper(rawBsmMFSorterIn);
    }
 
-   public OdeData decode(BufferedInputStream bis, String fileName, SerialId serialId) throws Exception {
+   public OdeData decode(BsmFileParser bsmFileParser, String fileName, SerialId serialId) throws Exception {
 
-      Ieee1609Dot2Data ieee1609dot2Data = ieee1609dotCoder.decodeIeee1609Dot2DataStream(bis);
+      Ieee1609Dot2Data ieee1609dot2Data = 
+              ieee1609dotCoder.decodeIeee1609Dot2DataStream(bsmFileParser.getPayload());
       OdeObject bsm = null;
       OdeData odeBsmData = null;
       IEEE1609p2Message message = null;
@@ -57,7 +58,7 @@ public class BsmDecoderHelper {
          }
       } else {
          // probably raw BSM or MessageFrame
-         bsm = rawBsmMFSorterIn.decodeBsm(bis);
+         bsm = rawBsmMFSorterIn.decodeBsm(bsmFileParser.getPayload());
       }
       if (bsm != null) {
          logger.debug("Decoded BSM successfully, creating OdeBsmData object.");
