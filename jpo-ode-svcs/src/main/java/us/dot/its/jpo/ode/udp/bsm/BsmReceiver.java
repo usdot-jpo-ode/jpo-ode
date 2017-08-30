@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.udp.bsm;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.net.DatagramPacket;
 
 import org.apache.tomcat.util.buf.HexUtils;
@@ -9,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
-import us.dot.its.jpo.ode.coder.stream.ByteDecoderPublisher;
+import us.dot.its.jpo.ode.coder.stream.BinaryDecoderPublisher;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
@@ -20,7 +22,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                                                         // start of BSM payload
    private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
                                                       // least 20 bytes long
-   private ByteDecoderPublisher byteDecoderPublisher;
+   private BinaryDecoderPublisher byteDecoderPublisher;
 
    @Autowired
    public BsmReceiver(OdeProperties odeProps) {
@@ -32,7 +34,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
       MessagePublisher messagePub = new MessagePublisher(odeProperties);
 
-      byteDecoderPublisher = new ByteDecoderPublisher(messagePub);
+      byteDecoderPublisher = new BinaryDecoderPublisher(messagePub);
    }
 
    @Override
@@ -56,7 +58,8 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                // extract the actualPacket from the buffer
                byte[] payload = removeHeader(packet.getData());
                logger.debug("Packet: {}", HexUtils.toHexString(payload));
-               byteDecoderPublisher.decodeAndPublish(payload);
+               byteDecoderPublisher.decodeAndPublish(
+                   new BufferedInputStream(new ByteArrayInputStream(payload)), null);
             }
          } catch (Exception e) {
             logger.error("Error receiving packet", e);

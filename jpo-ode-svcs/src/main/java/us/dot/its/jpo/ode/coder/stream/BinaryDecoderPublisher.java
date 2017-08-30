@@ -17,12 +17,14 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
     }
 
    @Override
-   public void decodeAndPublish(BufferedInputStream is, String fileName) throws Exception {
+   public void decodeAndPublish(BufferedInputStream bis, String fileName) throws Exception {
       OdeData decoded = null;
 
       do {
          try {
-            decoded = bsmDecoder.decode(is, fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
+            bsmFileParser.parse(bis, fileName);
+            decoded = bsmDecoder.decode(bsmFileParser, fileName, 
+                this.serialId.setBundleId(bundleId.incrementAndGet()));
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);
                publisher.publish(decoded);
