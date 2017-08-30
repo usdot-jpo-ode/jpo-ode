@@ -22,6 +22,7 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.FileDecoderPublisher;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterDirType;
 
 public class ImporterProcessorTest {
 
@@ -111,7 +112,7 @@ public class ImporterProcessorTest {
                result = null;
                new FileInputStream((File) any);
                result = null;
-               capturingFileDecoderPublisher.decodeAndPublishFile((Path) any, (BufferedInputStream) any);
+               capturingFileDecoderPublisher.decodeAndPublishFile((Path) any, (BufferedInputStream) any, ImporterDirType.LOG_FILE);
                times = 1;
 
                OdeFileUtils.backupFile((Path) any, (Path) any);

@@ -31,13 +31,10 @@ public class ImporterDirectoryWatcher implements Runnable {
 
    private Path backup;
 
-   private ImporterDirType dirType;
-
    public ImporterDirectoryWatcher(OdeProperties odeProperties, Path dir, Path backupDir, ImporterDirType importerDirType) {
       this.inbox = dir;
       this.backup = backupDir;
       this.watching = true;
-      this.dirType = importerDirType;
 
       try {
          OdeFileUtils.createDirectoryRecursively(inbox);
@@ -48,7 +45,7 @@ public class ImporterDirectoryWatcher implements Runnable {
          logger.error("Error creating directory: " + inbox, e);
       }
 
-      this.importerProcessor = new ImporterProcessor(odeProperties);
+      this.importerProcessor = new ImporterProcessor(odeProperties, importerDirType);
    }
 
    @Override
@@ -102,7 +99,7 @@ public class ImporterDirectoryWatcher implements Runnable {
             Path filename = inbox.resolve(ev.context());
             logger.debug("File event on {}", filename);
 
-            importerProcessor.processAndBackupFile(filename, backup, dirType);
+            importerProcessor.processAndBackupFile(filename, backup);
          } else if (OVERFLOW == kind) {
             continue;
          } else {

@@ -30,7 +30,7 @@ public class BinaryDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingDecoderHelper.decode( (BsmFileParser) any, anyString, (SerialId) any);
+               capturingDecoderHelper.decode( (BsmFileParser) any, (SerialId) any);
                result = null;
                times = 1;
 
@@ -40,7 +40,7 @@ public class BinaryDecoderPublisherTest {
          };
 
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new BinaryDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName");
+         new BinaryDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", true);
 
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
@@ -52,7 +52,7 @@ public class BinaryDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingDecoderHelper.decode( (BsmFileParser) any, anyString, (SerialId) any);
+               capturingDecoderHelper.decode( (BsmFileParser) any, (SerialId) any);
                result = new Exception("testException123");
 
                mockMessagePublisher.publish((OdeData) any);
@@ -61,7 +61,7 @@ public class BinaryDecoderPublisherTest {
          };
 
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new BinaryDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName");
+         new BinaryDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", true);
 
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
@@ -73,7 +73,7 @@ public class BinaryDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingDecoderHelper.decode((BsmFileParser) any, anyString, (SerialId) any);
+               capturingDecoderHelper.decode((BsmFileParser) any, (SerialId) any);
                returns(mockOdeData, null);
 
                mockMessagePublisher.publish((OdeData) any);
@@ -82,7 +82,7 @@ public class BinaryDecoderPublisherTest {
          };
 
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new BinaryDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName");
+         new BinaryDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", true);
 
       } catch (Exception e) {
          fail("Unexpected exception: " + e);

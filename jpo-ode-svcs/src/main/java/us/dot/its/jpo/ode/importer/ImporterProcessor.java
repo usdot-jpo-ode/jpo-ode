@@ -20,10 +20,12 @@ public class ImporterProcessor {
    private static final Logger logger = LoggerFactory.getLogger(ImporterProcessor.class);
    private FileDecoderPublisher decoderPublisherManager;
    private OdeProperties odeProperties;
+   private ImporterDirType dirType;
    
-   public ImporterProcessor(OdeProperties odeProperties) {
+   public ImporterProcessor(OdeProperties odeProperties, ImporterDirType dirType) {
       this.decoderPublisherManager = new FileDecoderPublisher(odeProperties);
       this.odeProperties = odeProperties;
+      this.dirType = dirType;
    }
 
    public void processDirectory(Path dir, Path backupDir) {
@@ -44,7 +46,7 @@ public class ImporterProcessor {
       }
    }
 
-   public void processAndBackupFile(Path filePath, Path backupDir, ImporterDirType dirType) {
+   public void processAndBackupFile(Path filePath, Path backupDir) {
 
       try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
           BufferedInputStream bis = new BufferedInputStream(inputStream, 

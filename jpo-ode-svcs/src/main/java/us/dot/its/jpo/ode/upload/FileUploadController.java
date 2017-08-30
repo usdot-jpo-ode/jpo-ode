@@ -23,6 +23,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.exporter.FilteredBsmExporter;
 import us.dot.its.jpo.ode.exporter.OdeBsmExporter;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterDirType;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
 
@@ -55,8 +56,9 @@ public class FileUploadController {
       logger.debug("UPLOADER - Backup directory: {}", backupPath);
 
       // Create the importers that watch folders for new/modified files
-      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, bsmPath, backupPath));
-      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, messageFramePath, backupPath));
+      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, bsmPath, backupPath, ImporterDirType.BSM));
+      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, messageFramePath, backupPath, ImporterDirType.MESSAGE_FRAME));
+      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, messageFramePath, backupPath, ImporterDirType.LOG_FILE));
 
       // Create the exporters
       threadPool.submit(new OdeBsmExporter(odeProperties, ODE_BSM_OUTPUT_TOPIC, template));
