@@ -188,27 +188,32 @@ ODE configuration can be customized for every deployment environment using the O
 
 |Environment Variable|Description|
 |--------------------|-----------|
-|[DOCKER_HOST_IP](docker/README.md#obtaining-docker_host_ip)      |The IP address of Docker host machine|
-|DOCKER_SHARED_VOLUME|The full path of a directory on the host machine to be shared with docker containers.|
-|CVPEP_AWS_ACCESS_KEY_ID|The data deposit S3 bucket access ID|
-|CVPEP_AWS_SECRET_ACCESS_KEY|The data deposit S3 bucket secret key|
-|CVPEP_DEPOSIT_BUCKET_NAME|The name of the S3 data deposit bucket|
-|CVPEP_DEPOSIT_KEY_NAME|The key used for S3 file names|
-|CVPEP_DEPOSIT_TOPIC|The Kafka topic to which the S3 depositor subscribes|
-|RDE_AWS_ACCESS_KEY_ID|The data deposit S3 bucket access ID|
-|RDE_AWS_SECRET_ACCESS_KEY|The data deposit S3 bucket secret key|
-|RDE_DEPOSIT_BUCKET_NAME|The name of the S3 data deposit bucket|
-|RDE_DEPOSIT_KEY_NAME|The key used for S3 file names|
-|RDE_DEPOSIT_TOPIC|The Kafka topic to which the S3 depositor subscribes|
-|TIM_AWS_ACCESS_KEY_ID|The data deposit S3 bucket access ID|
-|TIM_AWS_SECRET_ACCESS_KEY_ID|The data deposit S3 bucket secret key|
-|TIM_DEPOSIT_BUCKET_NAME|The name of the S3 data deposit bucket|
-|TIM_DEPOSIT_KEY_NAME|The key used for S3 file names|
-|TIM_DEPOSIT_TOPIC|The Kafka topic to which the S3 depositor subscribes|
+|[DOCKER_HOST_IP](docker/README.md#obtaining-docker_host_ip)      |(Required) The IP address of Docker host machine|
+|DOCKER_SHARED_VOLUME|(Required) The full path of a directory on the host machine to be shared with docker containers.|
 |ODE_DDS_CAS_USERNAME|The username for authenticating the USDOT Situation Data Warehouse WebSocket server |
 |ODE_DDS_CAS_PASSWORD|The password for authenticating the USDOT Situation Data Warehouse WebSocket server |
 |ODE_EXTERNAL_IPV4|The IPv4 address of the server running ODE |
 |ODE_EXTERNAL_IPV6|The IPv6 address of the server running ODE |
+|CVPEP_BSM_S3_ACCESS_KEY_ID|CVPEP BSM S3 depositor access key id|
+|CVPEP_BSM_S3_SECRET_ACCESS_KEY|CVPEP BSM S3 depositor secret access key|
+|CVPEP_BSM_S3_BUCKET_NAME|CVPEP BSM S3 depositor bucket name|
+|CVPEP_BSM_S3_DEPOSIT_KEY|CVPEP BSM S3 filepath prefix|
+|CVPEP_BSM_S3_TOPIC|CVPEP BSM S3 kafka subscription topic|
+|RDE_BSM_S3_ACCESS_KEY_ID|RDE BSM S3 depositor access key id|
+|RDE_BSM_S3_SECRET_ACCESS_KEY|RDE BSM S3 depositor secret access key|
+|RDE_BSM_S3_BUCKET_NAME|RDE BSM S3 depositor bucket name|
+|RDE_BSM_S3_DEPOSIT_KEY|RDE BSM S3 filepath prefix|
+|RDE_BSM_S3_TOPIC|RDE BSM S3 kafka subscription topic|
+|CVPEP_TIM_S3_ACCESS_KEY_ID|CVPEP TIM S3 depositor access key id|
+|CVPEP_TIM_S3_SECRET_ACCESS_KEY|CVPEP TIM S3 depositor secret access key|
+|CVPEP_TIM_S3_BUCKET_NAME|CVPEP TIM S3 depositor bucket name|
+|CVPEP_TIM_S3_DEPOSIT_KEY|CVPEP TIM S3 filepath prefix|
+|CVPEP_TIM_S3_TOPIC|CVPEP TIM S3 kafka subscription topic|
+|RDE_TIM_S3_ACCESS_KEY_ID|RDE TIM S3 depositor access key id|
+|RDE_TIM_S3_SECRET_ACCESS_KEY|RDE TIM S3 depositor secret access key|
+|RDE_TIM_S3_BUCKET_NAME|RDE TIM S3 depositor bucket name|
+|RDE_TIM_S3_DEPOSIT_KEY|RDE TIM S3 filepath prefix|
+|RDE_TIM_S3_TOPIC|RDE TIM S3 kafka subscription topic|
 
 To be able to change the configuration of the application during runtime, you may store the configuration files in the location specified by the DOCKER_SHARED_VOLUME/config environment variable.
 

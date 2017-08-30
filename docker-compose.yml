@@ -18,12 +18,13 @@ services:
       KAFKA_CLEANUP_POLICY: "delete" # delete old logs
       KAFKA_LOG_RETENTION_HOURS: 2
       KAFKA_RETENTION_MS: 7200000    # delete old logs after 2 hours
-      KAFKA_SEGMENT_MS:   7200000    # roll segment logs every 2 hours. 
-                                     # This configuration controls the period of time after 
+      KAFKA_SEGMENT_MS:   7200000    # roll segment logs every 2 hours.
+                                     # This configuration controls the period of time after
                                      # which Kafka will force the log to roll even if the segment
                                      # file isn't full to ensure that retention can delete or compact old data.
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+
   ode:
     build: .
     ports:
@@ -40,56 +41,71 @@ services:
       ODE_DDS_CAS_PASSWORD: ${ODE_DDS_CAS_PASSWORD}
       ODE_EXTERNAL_IPV4: ${ODE_EXTERNAL_IPV4}
       ODE_EXTERNAL_IPV6: ${ODE_EXTERNAL_IPV6}
-      
     depends_on:
       - kafka
     links:
       - kafka
-
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/host_share
+
   ppm:
     build: ../jpo-cvdp
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
-  s3dep:
+
+  cvpep_bsm_s3dep:
     build: ../jpo-s3-deposit
     environment:
-      AWS_ACCESS_KEY_ID: ${CVPEP_AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${CVPEP_AWS_SECRET_ACCESS_KEY_ID}
+      AWS_ACCESS_KEY_ID: ${CVPEP_BSM_S3_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${CVPEP_BSM_S3_SECRET_ACCESS_KEY}
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      DEPOSIT_BUCKET_NAME: ${CVPEP_DEPOSIT_BUCKET_NAME}
-      DEPOSIT_KEY_NAME: ${CVPEP_DEPOSIT_KEY_NAME}
-      DEPOSIT_TOPIC: ${CVPEP_DEPOSIT_TOPIC}
+      DEPOSIT_BUCKET_NAME: ${CVPEP_BSM_S3_BUCKET_NAME}
+      DEPOSIT_KEY_NAME: ${CVPEP_BSM_S3_DEPOSIT_KEY}
+      DEPOSIT_TOPIC: ${CVPEP_BSM_S3_TOPIC}
     depends_on:
      - kafka
     links:
      - kafka
-     
-  ppms3dep:
+
+  rde_bsm_s3dep:
     build: ../jpo-s3-deposit
     environment:
-      AWS_ACCESS_KEY_ID: ${PPM_AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${PPM_AWS_SECRET_ACCESS_KEY_ID}
+      AWS_ACCESS_KEY_ID: ${RDE_BSM_S3_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${RDE_BSM_S3_SECRET_ACCESS_KEY}
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      DEPOSIT_BUCKET_NAME: ${PPM_DEPOSIT_BUCKET_NAME}
-      DEPOSIT_KEY_NAME: ${PPM_DEPOSIT_KEY_NAME}
-      DEPOSIT_TOPIC: ${PPM_DEPOSIT_TOPIC}
+      DEPOSIT_BUCKET_NAME: ${RDE_BSM_S3_BUCKET_NAME}
+      DEPOSIT_KEY_NAME: ${RDE_BSM_S3_DEPOSIT_KEY}
+      DEPOSIT_TOPIC: ${RDE_BSM_S3_TOPIC}
     depends_on:
      - kafka
     links:
      - kafka
-  timdep:
+
+  cvpep_tim_s3dep:
     build: ../jpo-s3-deposit
     environment:
-      AWS_ACCESS_KEY_ID: ${TIM_AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${TIM_AWS_SECRET_ACCESS_KEY_ID}
+      AWS_ACCESS_KEY_ID: ${CVPEP_TIM_S3_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${CVPEP_TIM_S3_SECRET_ACCESS_KEY}
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      DEPOSIT_BUCKET_NAME: ${TIM_DEPOSIT_BUCKET_NAME}
-      DEPOSIT_KEY_NAME: ${TIM_DEPOSIT_KEY_NAME}
-      DEPOSIT_TOPIC: ${TIM_DEPOSIT_TOPIC}
+      DEPOSIT_BUCKET_NAME: ${CVPEP_TIM_S3_BUCKET_NAME}
+      DEPOSIT_KEY_NAME: ${CVPEP_TIM_S3_DEPOSIT_KEY}
+      DEPOSIT_TOPIC: ${CVPEP_TIM_S3_TOPIC}
+    depends_on:
+     - kafka
+    links:
+     - kafka
+
+  rde_tim_s3dep:
+    build: ../jpo-s3-deposit
+    environment:
+      AWS_ACCESS_KEY_ID: ${RDE_TIM_S3_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${RDE_TIM_S3_SECRET_ACCESS_KEY}
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      DEPOSIT_BUCKET_NAME: ${RDE_TIM_S3_BUCKET_NAME}
+      DEPOSIT_KEY_NAME: ${RDE_TIM_S3_DEPOSIT_KEY}
+      DEPOSIT_TOPIC: ${RDE_TIM_S3_TOPIC}
     depends_on:
      - kafka
     links:

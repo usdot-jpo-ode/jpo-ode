@@ -1,11 +1,8 @@
 package us.dot.its.jpo.ode.coder;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import mockit.Capturing;
@@ -19,35 +16,60 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 
 public class RawBsmMfSorterTest {
    @Mocked
-   RawBsmMfSorter mockRawBsmMfSorter;
-   @Mocked
    OdeObject mockOdeObject;
    @Mocked
    J2735MessageFrame mockJ2735MessageFrame;
-   
-   @Capturing
-   OssJ2735Coder j2735Coder;
+   @Mocked
+   byte[] mockbyteArray;
    @Mocked
    OssJ2735Coder mockOssJ2735Coder;
-   @Tested
-   RawBsmMfSorter testRawBsmMfSorter;
    @Injectable
    OssJ2735Coder injectedOssJ2735Coder;
-   @Ignore
-   @Test
-   public void decodeBufferedInputStreamBsm() {
 
+   @Test
+   public void decodeBufferedInputStreamBsmNotNull() {
+      BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
+      RawBsmMfSorter rBSMFS = new RawBsmMfSorter(mockOssJ2735Coder);
+      OdeObject OdeOj = rBSMFS.decodeBsm(bis);
+
+   }
+
+   @Test
+   public void decodeBufferedInputStreamBsmNull() {
       new Expectations() {
          {
-            j2735Coder.decodeUPERMessageFrameStream((BufferedInputStream) any);
-            result = mockJ2735MessageFrame;
-
-            
+            mockOssJ2735Coder.decodeUPERMessageFrameStream((BufferedInputStream) any);
+            result = null;
          }
       };
-    //  assertEquals( ,new RawBsmMfSorter(mockOssJ2735Coder).decodeBsm(new BufferedInputStream(new ByteArrayInputStream(new byte[0]))));
+      BufferedInputStream bis = new BufferedInputStream(null);
+      RawBsmMfSorter rBSMFS = new RawBsmMfSorter(mockOssJ2735Coder);
+      OdeObject OdeOj = rBSMFS.decodeBsm(bis);
+
+   }
+
+   @Test
+   public void decodeByteArrayBsmNull() {
+     
       
-   //   assertEquals(mockOdeObject, new BufferedInputStream(new ByteArrayInputStream(new byte[0])));
+      byte[] bytes = null;
+      RawBsmMfSorter rBSMFS = new RawBsmMfSorter(mockOssJ2735Coder);
+      OdeObject OdeOj = rBSMFS.decodeBsm(bytes);
+
+   }
+
+   @Test
+   public void decodeByteArrayBsmNotNull() {
+      
+      new Expectations() {
+         {
+            mockOssJ2735Coder.decodeUPERMessageFrameBytes(mockbyteArray);
+            result = null;
+         }
+      };
+      RawBsmMfSorter rBSMFS = new RawBsmMfSorter(mockOssJ2735Coder);
+      OdeObject OdeOj = rBSMFS.decodeBsm(mockbyteArray);
+
    }
 
 }
