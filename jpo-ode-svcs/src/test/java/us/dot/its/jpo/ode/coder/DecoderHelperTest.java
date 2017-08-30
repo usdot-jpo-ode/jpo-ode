@@ -7,7 +7,6 @@ import static org.junit.Assert.fail;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.oss.asn1.EncodeFailedException;
@@ -40,22 +39,6 @@ public class DecoderHelperTest {
    Iee1609ContentValidator capturingIee1609ContentValidator;
    @Mocked
    Ieee1609Dot2Content mockIeee1609Dot2Content;
-
-   @Ignore
-   @Test
-   public void decodeBsmTestOne() {
-
-      BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-
-      BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
-      try {
-         testingBsmDecoderHelper.decode(bis, mockString, mockSerialId);
-      } catch (Exception e) {
-
-         fail("Unexpected error" + e);
-      }
-
-   }
 
    @Test
    public void decodeBsmTestTwo() {
@@ -103,7 +86,7 @@ public class DecoderHelperTest {
 
                IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
                result = mockEncodeFailedException;
-            
+
             }
          };
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
@@ -126,7 +109,7 @@ public class DecoderHelperTest {
                result = mockIeee1609Dot2Data;
 
                IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
-               
+
                result = null;
             }
          };
@@ -151,7 +134,6 @@ public class DecoderHelperTest {
 
                IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
                result = mockEncodeFailedException;
-              
 
                mockIeee1609Dot2Data.getContent();
                result = mockIeee1609Dot2Content;
