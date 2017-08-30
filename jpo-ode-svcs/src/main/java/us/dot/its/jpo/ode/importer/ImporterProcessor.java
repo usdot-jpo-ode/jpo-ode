@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.FileDecoderPublisher;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterDirType;
 
 public class ImporterProcessor {
 
@@ -43,12 +44,12 @@ public class ImporterProcessor {
       }
    }
 
-   public void processAndBackupFile(Path filePath, Path backupDir) {
+   public void processAndBackupFile(Path filePath, Path backupDir, ImporterDirType dirType) {
 
       try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
           BufferedInputStream bis = new BufferedInputStream(inputStream, 
               odeProperties.getImportProcessorBufferSize());
-          decoderPublisherManager.decodeAndPublishFile(filePath, bis);
+          decoderPublisherManager.decodeAndPublishFile(filePath, bis, dirType);
       } catch (Exception e) {
          logger.error("Unable to open or process file: " + filePath, e);
       }

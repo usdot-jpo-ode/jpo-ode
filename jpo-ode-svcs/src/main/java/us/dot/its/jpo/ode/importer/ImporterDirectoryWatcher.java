@@ -16,6 +16,10 @@ import org.slf4j.LoggerFactory;
 import us.dot.its.jpo.ode.OdeProperties;
 
 public class ImporterDirectoryWatcher implements Runnable {
+   
+   public enum ImporterDirType {
+      BSM, MESSAGE_FRAME, LOG_FILE
+   }
 
    private static final Logger logger = LoggerFactory.getLogger(ImporterDirectoryWatcher.class);
 
@@ -27,10 +31,13 @@ public class ImporterDirectoryWatcher implements Runnable {
 
    private Path backup;
 
-   public ImporterDirectoryWatcher(OdeProperties odeProperties, Path dir, Path backupDir) {
+   private ImporterDirType dirType;
+
+   public ImporterDirectoryWatcher(OdeProperties odeProperties, Path dir, Path backupDir, ImporterDirType importerDirType) {
       this.inbox = dir;
       this.backup = backupDir;
       this.watching = true;
+      this.dirType = importerDirType;
 
       try {
          OdeFileUtils.createDirectoryRecursively(inbox);
@@ -95,7 +102,7 @@ public class ImporterDirectoryWatcher implements Runnable {
             Path filename = inbox.resolve(ev.context());
             logger.debug("File event on {}", filename);
 
-            importerProcessor.processAndBackupFile(filename, backup);
+            importerProcessor.processAndBackupFile(filename, backup, dirType);
          } else if (OVERFLOW == kind) {
             continue;
          } else {
