@@ -6,7 +6,6 @@ import java.io.ByteArrayInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.model.OdeData;
 
@@ -22,7 +21,8 @@ public class ByteDecoderPublisher extends AbstractDecoderPublisher {
       OdeData decoded;
 
       try {
-         decoded = bsmDecoder.decode(new BufferedInputStream(new ByteArrayInputStream(bytes)), null,
+         bsmFileParser.parse(new BufferedInputStream(new ByteArrayInputStream(bytes)));
+         decoded = bsmDecoder.decode(bsmFileParser, null,
              this.serialId.setBundleId(bundleId.incrementAndGet()));
 
          if (decoded != null) {

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
+import us.dot.its.jpo.ode.importer.BsmFileParser;
 import us.dot.its.jpo.ode.model.SerialId;
 
 public abstract class AbstractDecoderPublisher implements DecoderPublisher {
@@ -19,6 +20,7 @@ public abstract class AbstractDecoderPublisher implements DecoderPublisher {
    protected MessagePublisher publisher;
 
    protected BsmDecoderHelper bsmDecoder;
+   protected BsmFileParser bsmFileParser;
 
    protected static AtomicInteger bundleId = new AtomicInteger(1);
 
@@ -29,6 +31,7 @@ public abstract class AbstractDecoderPublisher implements DecoderPublisher {
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
       this.bsmDecoder = new BsmDecoderHelper();
+      this.bsmFileParser = new BsmFileParser();
    }
 
    @Override

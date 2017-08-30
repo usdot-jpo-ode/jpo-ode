@@ -22,7 +22,9 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
 
       do {
          try {
-            decoded = bsmDecoder.decode(is, fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
+            bsmFileParser.parse(is);
+            decoded = bsmDecoder.decode(bsmFileParser, fileName, 
+                this.serialId.setBundleId(bundleId.incrementAndGet()));
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);
                publisher.publish(decoded);
