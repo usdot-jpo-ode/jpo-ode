@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.coder;
 
+import java.io.BufferedInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

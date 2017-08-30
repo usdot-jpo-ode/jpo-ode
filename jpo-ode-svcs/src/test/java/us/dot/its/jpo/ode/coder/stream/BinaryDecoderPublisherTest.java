@@ -12,6 +12,7 @@ import mockit.Expectations;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
+import us.dot.its.jpo.ode.importer.BsmFileParser;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
 
@@ -29,7 +30,7 @@ public class BinaryDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingDecoderHelper.decode( (BufferedInputStream) any, anyString, (SerialId) any);
+               capturingDecoderHelper.decode( (BsmFileParser) any, anyString, (SerialId) any);
                result = null;
                times = 1;
 
@@ -51,7 +52,7 @@ public class BinaryDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingDecoderHelper.decode( (BufferedInputStream) any, anyString, (SerialId) any);
+               capturingDecoderHelper.decode( (BsmFileParser) any, anyString, (SerialId) any);
                result = new Exception("testException123");
 
                mockMessagePublisher.publish((OdeData) any);
@@ -72,7 +73,7 @@ public class BinaryDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingDecoderHelper.decode((BufferedInputStream) any, anyString, (SerialId) any);
+               capturingDecoderHelper.decode((BsmFileParser) any, anyString, (SerialId) any);
                returns(mockOdeData, null);
 
                mockMessagePublisher.publish((OdeData) any);

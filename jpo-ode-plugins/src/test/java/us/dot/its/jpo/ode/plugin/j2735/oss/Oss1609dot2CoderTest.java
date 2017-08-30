@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -146,14 +144,12 @@ public class Oss1609dot2CoderTest {
          fail("Unexpected errror: " + e);
       }
 
-      BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1, 2, 3 }));
-      assertNull(testOss1609dot2Coder.decodeIeee1609Dot2DataStream(bis));
+      assertNull(testOss1609dot2Coder.decodeIeee1609Dot2DataStream(new byte[] { 1, 2, 3 }));
    }
 
    @Test
    public void emptyInputStreamReturnsNull() {
-       BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
-      assertNull(testOss1609dot2Coder.decodeIeee1609Dot2DataStream(bis));
+      assertNull(testOss1609dot2Coder.decodeIeee1609Dot2DataStream(new byte[0]));
    }
 
    @Test
@@ -172,8 +168,7 @@ public class Oss1609dot2CoderTest {
          fail("Unexpected errror: " + e);
       }
 
-      BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1, 2, 3 }));
-      assertEquals(mockIeee1609Dot2Data, testOss1609dot2Coder.decodeIeee1609Dot2DataStream(bis));
+      assertEquals(mockIeee1609Dot2Data, testOss1609dot2Coder.decodeIeee1609Dot2DataStream(new byte[] { 1, 2, 3 }));
    }
 
    @Test
