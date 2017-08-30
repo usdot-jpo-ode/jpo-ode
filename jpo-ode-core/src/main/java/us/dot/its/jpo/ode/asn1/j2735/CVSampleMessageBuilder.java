@@ -50,6 +50,7 @@ import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage.Bundle;
 import us.dot.its.jpo.ode.j2735.semi.VehSitRecord;
 import us.dot.its.jpo.ode.j2735.semi.VsmType;
+import us.dot.its.jpo.ode.util.CodecUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -159,7 +160,7 @@ public class CVSampleMessageBuilder {
 		VsmType type = new VsmType(CVTypeHelper.VsmType.WEATHER.arrayValue());
 
 		// 1/////////////////////////////////////////////////////////////////////////////
-		TemporaryID tempID = new TemporaryID(J2735Util.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
+		TemporaryID tempID = new TemporaryID(CodecUtils.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
 		DDateTime dt1 = new DDateTime(new DYear(2013), new DMonth(12), new DDay(9), new DHour(9), new DMinute(30),
 				new DSecond(30), new DOffset(-300));
 		// 43°23'08.4"N 107°29'42.4"W
@@ -188,7 +189,7 @@ public class CVSampleMessageBuilder {
 		VehSitRecord VehSitRecord1 = new VehSitRecord(tempID, dt1, pos, fundamental);
 
 		// 2/////////////////////////////////////////////////////////////////////////////
-		tempID = new TemporaryID(J2735Util.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
+		tempID = new TemporaryID(CodecUtils.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
 		dt1 = new DDateTime(new DYear(2013), new DMonth(12), new DDay(9), new DHour(9), new DMinute(30),
 				new DSecond(30), new DOffset(-300));
 		pos = new Position3D(new Latitude(J2735Util.convertGeoCoordinateToInt(42.4478019351393)),
@@ -197,7 +198,7 @@ public class CVSampleMessageBuilder {
 		VehSitRecord VehSitRecord2 = new VehSitRecord(tempID, dt1, pos, fundamental);
 
 		// 3/////////////////////////////////////////////////////////////////////////////
-		tempID = new TemporaryID(J2735Util.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
+		tempID = new TemporaryID(CodecUtils.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
 		dt1 = new DDateTime(new DYear(2013), new DMonth(12), new DDay(9), new DHour(9), new DMinute(30),
 				new DSecond(30), new DOffset(-300));
 		pos = new Position3D(new Latitude(J2735Util.convertGeoCoordinateToInt(42.44783187)),
@@ -206,7 +207,7 @@ public class CVSampleMessageBuilder {
 		VehSitRecord VehSitRecord3 = new VehSitRecord(tempID, dt1, pos, fundamental);
 
 		// 4/////////////////////////////////////////////////////////////////////////////
-		tempID = new TemporaryID(J2735Util.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
+		tempID = new TemporaryID(CodecUtils.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
 		dt1 = new DDateTime(new DYear(2013), new DMonth(12), new DDay(9), new DHour(9), new DMinute(30),
 				new DSecond(30), new DOffset(-300));
 		pos = new Position3D(new Latitude(J2735Util.convertGeoCoordinateToInt(42.4477416099675)),
@@ -215,7 +216,7 @@ public class CVSampleMessageBuilder {
 		VehSitRecord VehSitRecord4 = new VehSitRecord(tempID, dt1, pos, fundamental);
 
 		// 5/////////////////////////////////////////////////////////////////////////////
-		tempID = new TemporaryID(J2735Util.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
+		tempID = new TemporaryID(CodecUtils.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
 		dt1 = new DDateTime(new DYear(2013), new DMonth(12), new DDay(9), new DHour(9), new DMinute(30),
 				new DSecond(30), new DOffset(-300));
 		pos = new Position3D(new Latitude(J2735Util.convertGeoCoordinateToInt(42.4477115433093)),
@@ -224,7 +225,7 @@ public class CVSampleMessageBuilder {
 		VehSitRecord VehSitRecord5 = new VehSitRecord(tempID, dt1, pos, fundamental);
 
 		// 6/////////////////////////////////////////////////////////////////////////////
-		tempID = new TemporaryID(J2735Util.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
+		tempID = new TemporaryID(CodecUtils.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
 		dt1 = new DDateTime(new DYear(2013), new DMonth(12), new DDay(9), new DHour(9), new DMinute(30),
 				new DSecond(30), new DOffset(-300));
 		pos = new Position3D(new Latitude(J2735Util.convertGeoCoordinateToInt(42.4476805277902)),
@@ -233,7 +234,7 @@ public class CVSampleMessageBuilder {
 		VehSitRecord VehSitRecord6 = new VehSitRecord(tempID, dt1, pos, fundamental);
 
 		// 7/////////////////////////////////////////////////////////////////////////////
-		tempID = new TemporaryID(J2735Util.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
+		tempID = new TemporaryID(CodecUtils.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
 		dt1 = new DDateTime(new DYear(2013), new DMonth(12), new DDay(9), new DHour(9), new DMinute(30),
 				new DSecond(29), new DOffset(-300));
 		pos = new Position3D(new Latitude(J2735Util.convertGeoCoordinateToInt(42.4476503815348)),
@@ -242,7 +243,7 @@ public class CVSampleMessageBuilder {
 		VehSitRecord VehSitRecord7 = new VehSitRecord(tempID, dt1, pos, fundamental);
 
 		// 8/////////////////////////////////////////////////////////////////////////////
-		tempID = new TemporaryID(J2735Util.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
+		tempID = new TemporaryID(CodecUtils.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
 		dt1 = new DDateTime(new DYear(2013), new DMonth(12), new DDay(9), new DHour(9), new DMinute(30),
 				new DSecond(29), new DOffset(-300));
 		pos = new Position3D(new Latitude(J2735Util.convertGeoCoordinateToInt(42.4476182535585)),
@@ -251,7 +252,7 @@ public class CVSampleMessageBuilder {
 		VehSitRecord VehSitRecord8 = new VehSitRecord(tempID, dt1, pos, fundamental);
 
 		// 9/////////////////////////////////////////////////////////////////////////////
-		tempID = new TemporaryID(J2735Util.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
+		tempID = new TemporaryID(CodecUtils.mergeBytes(new byte[] { 0x20, 0x01, 0x3E, 0x16 }));
 		dt1 = new DDateTime(new DYear(2013), new DMonth(12), new DDay(9), new DHour(9), new DMinute(30),
 				new DSecond(29), new DOffset(-300));
 		pos = new Position3D(new Latitude(J2735Util.convertGeoCoordinateToInt(42.4475892080338)),

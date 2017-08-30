@@ -52,43 +52,6 @@ public class J2735Util {
 	private final static int LAT_LONG_CONVERSION_FACTOR = 10000000;
 	private final static int LAT_LONG_DECIMAL_PRECISION = 7;
 	
-	public static byte[] shortsToBytes(short[] shorts) {
-		ByteBuffer buffer = ByteBuffer.allocate(shorts.length*2).order(ByteOrder.BIG_ENDIAN);
-		for (short num: shorts) {
-			buffer.putShort(num);
-		}
-		return buffer.array();
-	}
-	
-	public static byte[] shortToBytes(short number) {
-		short[] shorts = new short[] { number };
-		return shortsToBytes(shorts);
-	}
-	
-	public static short bytesToShort(byte[] bytes) {
-		return bytesToShorts(bytes)[0];
-	}
-	
-	public static short[] bytesToShorts(byte[] bytes) {
-		ByteBuffer buffer = ByteBuffer.allocate(bytes.length).order(ByteOrder.BIG_ENDIAN);
-		buffer.put(bytes);
-		buffer.flip();
-		int numberOfShorts = bytes.length / 2;
-		short[] shorts = new short[numberOfShorts];
-		for (int i = 0; i < numberOfShorts; i++) {
-			shorts[i] = buffer.getShort();
-		}
-		return shorts;
-	}
-	
-	public static byte[] mergeBytes(byte[]... bytes) throws IOException {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		for (byte[] bArray: bytes) {
-			outputStream.write(bArray);
-		}
-		return outputStream.toByteArray();
-	}
-	
 	public static AbstractData decode(Coder coder, byte[] message) throws DecodeFailedException, DecodeNotSupportedException {
 		AbstractData abstractData = null;
 		for( int preambleSize = 0; abstractData == null && preambleSize <= 2; preambleSize++ ) {
