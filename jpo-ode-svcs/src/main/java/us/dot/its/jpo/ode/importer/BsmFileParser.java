@@ -29,7 +29,7 @@ public class BsmFileParser implements LogFileParser {
     private BsmSource   direction; //0 for EV(Tx), 1 for RV(Rx)
     private long  utctimeInSec;
     private short  mSec;
-    private boolean verificationStatus;
+    private boolean validSignature;
     private short  length;
     private byte[] payload;
     
@@ -82,7 +82,7 @@ public class BsmFileParser implements LogFileParser {
         //Step 4
         if (step == 4) {
             if (getDirection() == BsmSource.EV_TX) {
-                setVerificationStatus(true);
+                setValidSignature(true);
                 step++;
             } else {
                 numBytes = bis.read(readBuffer, 0, VERIFICATION_STATUS_LENGTH);
@@ -91,7 +91,7 @@ public class BsmFileParser implements LogFileParser {
                 } else if (numBytes < VERIFICATION_STATUS_LENGTH) {
                     return ParserStatus.PARTIAL;
                 } else {
-                    setVerificationStatus(readBuffer[0] == 0 ? false : true);
+                   setValidSignature(readBuffer[0] == 0 ? false : true);
                     step++;
                 }
             }
@@ -161,11 +161,11 @@ public class BsmFileParser implements LogFileParser {
         this.mSec = mSec;
         return this;
     }
-    public boolean isVerificationStatus() {
-        return verificationStatus;
+    public boolean isValidSignature() {
+        return validSignature;
     }
-    public BsmFileParser setVerificationStatus(boolean verificationStatus) {
-        this.verificationStatus = verificationStatus;
+    public BsmFileParser setValidSignature(boolean validSignature) {
+        this.validSignature = validSignature;
         return this;
     }
     public short getLength() {
