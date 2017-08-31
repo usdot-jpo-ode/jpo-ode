@@ -31,8 +31,17 @@ public abstract class AbstractDecoderPublisher implements DecoderPublisher {
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
       this.bsmDecoder = new BsmDecoderHelper();
-      this.bsmFileParser = new BsmFileParser();
    }
 
    @Override
-   public abstract void decodeAndPublish(BufferedInputStream is, String fileName, boolean hasMetadataHeader) throws Exception;}
+   public void decodeAndPublish(BufferedInputStream is, String fileName, boolean hasMetadataHeader) throws Exception {
+       /* 
+        * CAUTION: bsmFileParser needs to be created here and should not be moved to the
+        * constructor because only one DecoderPublisher exists per filetype/upload directory
+        * and we need to have a new BsmFileParser per uploaded file. If we put this instantiation
+        * in the constructor, all uploaded files will be using the same parser which may throw 
+        * off the parsing.
+        */
+       this.bsmFileParser = new BsmFileParser();
+   }
+}

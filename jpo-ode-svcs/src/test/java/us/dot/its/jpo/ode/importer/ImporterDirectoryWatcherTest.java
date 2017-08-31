@@ -20,7 +20,7 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterDirType;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 
 public class ImporterDirectoryWatcherTest {
 
@@ -57,7 +57,7 @@ public class ImporterDirectoryWatcherTest {
       } catch (IOException e) {
          fail("Unexpected exception in expectations block: " + e);
       }
-      testImporterDirectoryWatcher = new ImporterDirectoryWatcher(injectableOdeProperties, mockDir, backupDir, ImporterDirType.LOG_FILE);
+      testImporterDirectoryWatcher = new ImporterDirectoryWatcher(injectableOdeProperties, mockDir, backupDir, ImporterFileType.BSM_LOG_FILE);
       testImporterDirectoryWatcher.setWatching(false);
    }
    
@@ -73,7 +73,7 @@ public class ImporterDirectoryWatcherTest {
       } catch (IOException e) {
          fail("Unexpected exception in expectations block: " + e);
       }
-      new ImporterDirectoryWatcher(injectableOdeProperties, mockDir, backupDir, ImporterDirType.LOG_FILE);
+      new ImporterDirectoryWatcher(injectableOdeProperties, mockDir, backupDir, ImporterFileType.BSM_LOG_FILE);
    }
 
    @Test(timeout = 4000)

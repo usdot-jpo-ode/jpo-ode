@@ -11,7 +11,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.stream.BinaryDecoderPublisher;
 import us.dot.its.jpo.ode.coder.stream.HexDecoderPublisher;
 import us.dot.its.jpo.ode.coder.stream.JsonDecoderPublisher;
-import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterDirType;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 
 public class FileDecoderPublisher {
 
@@ -34,13 +34,13 @@ public class FileDecoderPublisher {
    public void decodeAndPublishFile(
        Path filePath, 
        BufferedInputStream fileInputStream,
-       ImporterDirType dirType) {
+       ImporterFileType fileType) {
       String fileName = filePath.toFile().getName();
 
       logger.info("Decoding and publishing file {}", fileName);
       
       boolean hasMetadataHeader = false;
-      if (dirType.equals(ImporterDirType.LOG_FILE)) {
+      if (fileType.equals(ImporterFileType.BSM_LOG_FILE)) {
          hasMetadataHeader = true;
       }
 

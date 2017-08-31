@@ -17,7 +17,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.stream.BinaryDecoderPublisher;
 import us.dot.its.jpo.ode.coder.stream.HexDecoderPublisher;
 import us.dot.its.jpo.ode.coder.stream.JsonDecoderPublisher;
-import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterDirType;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 
 public class DecoderPublisherManagerTest {
 
@@ -52,7 +52,7 @@ public class DecoderPublisherManagerTest {
 
          Path testPath = Paths.get("testFile.hex");
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         testDecoderPublisherManager.decodeAndPublishFile(testPath, bis, ImporterDirType.LOG_FILE);
+         testDecoderPublisherManager.decodeAndPublishFile(testPath, bis, ImporterFileType.BSM_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -74,7 +74,7 @@ public class DecoderPublisherManagerTest {
 
          Path testPath = Paths.get("testFile.txt");
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         testDecoderPublisherManager.decodeAndPublishFile(testPath, bis, ImporterDirType.LOG_FILE);
+         testDecoderPublisherManager.decodeAndPublishFile(testPath, bis, ImporterFileType.BSM_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -96,7 +96,7 @@ public class DecoderPublisherManagerTest {
 
          Path testPath = Paths.get("testFile.json");
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         testDecoderPublisherManager.decodeAndPublishFile(testPath, bis, ImporterDirType.LOG_FILE);
+         testDecoderPublisherManager.decodeAndPublishFile(testPath, bis, ImporterFileType.BSM_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -118,7 +118,7 @@ public class DecoderPublisherManagerTest {
 
          Path testPath = Paths.get("testFile.uper");
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         testDecoderPublisherManager.decodeAndPublishFile(testPath, bis, ImporterDirType.LOG_FILE);
+         testDecoderPublisherManager.decodeAndPublishFile(testPath, bis, ImporterFileType.BSM_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }

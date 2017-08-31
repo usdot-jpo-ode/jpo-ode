@@ -677,18 +677,7 @@ public class OssTravelerMessageBuilder {
    }
    
    public static MsgCRC getMsgCrc(String sum) {
-      if (sum == null || sum.length() == 0) {
-         return new MsgCRC(new byte[] { 0X00, 0X00 });
-      } else {
-         short result = 0;
-         for (int i = 0; i < 16; i++) {
-            if (sum.charAt(i) == '1') {
-               result |= 1;
-            }
-            result <<= 1;
-         }
-         return new MsgCRC(ByteBuffer.allocate(2).putShort(result).array());
-      }
+      return new MsgCRC(CodecUtils.shortStringToByteArray(sum));
    }
 
 }
