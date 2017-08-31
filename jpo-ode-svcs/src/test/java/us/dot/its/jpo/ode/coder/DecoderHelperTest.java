@@ -33,8 +33,6 @@ public class DecoderHelperTest {
    IEEE1609p2Message capturingIEEE1609p2Message;
    @Mocked
    EncodeFailedException mockEncodeFailedException;
-   @Capturing
-   Iee1609ContentValidator capturingIee1609ContentValidator;
    @Mocked
    Ieee1609Dot2Content mockIeee1609Dot2Content;
    @Mocked
@@ -44,7 +42,7 @@ public class DecoderHelperTest {
    public void decodeBsmTestTwo() {
       new Expectations() {
          {
-            capturingOss1609dot2Coder.decodeIeee1609Dot2DataStream((byte[]) any);
+            capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
             result = null;
          }
       };
@@ -78,7 +76,7 @@ public class DecoderHelperTest {
       try {
          new Expectations() {
             {
-               capturingOss1609dot2Coder.decodeIeee1609Dot2DataStream((byte[]) any);
+               capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
                result = mockIeee1609Dot2Data;
 
                IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
@@ -101,7 +99,7 @@ public class DecoderHelperTest {
       try {
          new Expectations() {
             {
-               capturingOss1609dot2Coder.decodeIeee1609Dot2DataStream((byte[]) any);
+               capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
                result = mockIeee1609Dot2Data;
 
                IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
@@ -124,7 +122,7 @@ public class DecoderHelperTest {
       try {
          new Expectations() {
             {
-               capturingOss1609dot2Coder.decodeIeee1609Dot2DataStream((byte[]) any);
+               capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
                result = mockIeee1609Dot2Data;
 
                IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
@@ -133,7 +131,7 @@ public class DecoderHelperTest {
                mockIeee1609Dot2Data.getContent();
                result = mockIeee1609Dot2Content;
 
-               capturingIee1609ContentValidator.contentHadUnsecureData((Ieee1609Dot2Content) any);
+               Ieee1609ContentValidator.getUnsecuredData((Ieee1609Dot2Content) any);
                result = true;
             }
          };

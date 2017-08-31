@@ -22,7 +22,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                                                         // start of BSM payload
    private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
                                                       // least 20 bytes long
-   private BinaryDecoderPublisher byteDecoderPublisher;
+   private BinaryDecoderPublisher binaryDecoderPublisher;
 
    @Autowired
    public BsmReceiver(OdeProperties odeProps) {
@@ -31,10 +31,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
    public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
       super(odeProps, port, bufferSize);
-
-      MessagePublisher messagePub = new MessagePublisher(odeProperties);
-
-      byteDecoderPublisher = new BinaryDecoderPublisher(messagePub);
+      this.binaryDecoderPublisher = new BinaryDecoderPublisher(new MessagePublisher(odeProperties));
    }
 
    @Override
@@ -57,8 +54,9 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
                // extract the actualPacket from the buffer
                byte[] payload = removeHeader(packet.getData());
-               logger.debug("Packet: {}", HexUtils.toHexString(payload));
-               byteDecoderPublisher.decodeAndPublish(
+               String payloadHexString = HexUtils.toHexString(payload);
+               logger.debug("Packet: {}", payloadHexString);
+               binaryDecoderPublisher.decodeAndPublish(
                    new BufferedInputStream(new ByteArrayInputStream(payload)), null, false);
             }
          } catch (Exception e) {

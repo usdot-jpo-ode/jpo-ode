@@ -50,12 +50,12 @@ public class FileUploadController {
 
       Path messageFramePath = Paths.get(odeProperties.getUploadLocationRoot(),
             odeProperties.getUploadLocationMessageFrame());
-      logger.debug("UPLOADER - Message Frame directory: {}", messageFramePath);
+      logger.debug("UPLOADER - Message frame directory: {}", messageFramePath);
+      
 
       Path bsmLogPath = Paths.get(odeProperties.getUploadLocationRoot(),
           odeProperties.getUploadLocationBsmLog());
-      logger.debug("UPLOADER - Message Frame directory: {}", messageFramePath);
-
+      logger.debug("UPLOADER - BSM log file upload directory: {}", bsmLogPath);
       Path backupPath = Paths.get(odeProperties.getUploadLocationRoot(), "backup");
       logger.debug("UPLOADER - Backup directory: {}", backupPath);
 

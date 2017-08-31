@@ -662,22 +662,11 @@ public class OssTravelerMessageBuilder {
    }
    
    public static HeadingSlice getHeadingSlice(String heading) {
-      if (heading == null || heading.length() == 0) {
-         return new HeadingSlice(new byte[] { 0x00, 0x00 });
-      } else {
-         short result = 0;
-         for (int i = 0; i < 16; i++) {
-            if (heading.charAt(i) == '1') {
-               result |= 1;
-            }
-            result <<= 1;
-         }
-         return new HeadingSlice(ByteBuffer.allocate(2).putShort(result).array());
-      }
+      return new HeadingSlice(CodecUtils.shortStringToByteArray(heading));
    }
    
-   public static MsgCRC getMsgCrc(String sum) {
-      return new MsgCRC(CodecUtils.shortStringToByteArray(sum));
+   public static MsgCRC getMsgCrc(String crc) {
+      return new MsgCRC(CodecUtils.shortStringToByteArray(crc));
    }
 
 }

@@ -31,6 +31,8 @@ public class ImporterProcessorTest {
 
    @Injectable
    OdeProperties injectableOdeProperties;
+   @Injectable
+   ImporterFileType injectableImporterDirType = ImporterFileType.BSM_LOG_FILE;
 
    @Capturing
    FileDecoderPublisher capturingFileDecoderPublisher;
@@ -44,6 +46,7 @@ public class ImporterProcessorTest {
    Path injectableDir;
    @Injectable
    Path injectableBackupDir;
+   
 
    @Test
    public void processExistingFilesShouldCatchExceptionFailedToCreateStream() {
