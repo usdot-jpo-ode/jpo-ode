@@ -265,7 +265,8 @@ definitions:
       mutcd:
         type: integer
       crc:
-        type: integer
+        type: string
+        description: Message cyclic-redundancy-check code in 4-digit hex string or 16-digit binary string.
       startDateTime:
         type: string
       durationTime:

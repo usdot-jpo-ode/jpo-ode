@@ -1,15 +1,19 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.format.DateTimeParseException;
 
+import javax.xml.bind.DatatypeConverter;
+
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.GeometricProjection;
+import us.dot.its.jpo.ode.j2735.dsrc.MsgCRC;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame;
 import us.dot.its.jpo.ode.j2735.dsrc.ValidRegion.Area;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
@@ -59,32 +63,68 @@ public class OssTravelerMessageBuilderTest {
    }
 
    @Test
-   public void checknullMessageCRC() {
-      String str = null;
+   public void checkNullMessageCRC() {
+      String testInput = null;
+      MsgCRC expectedValue = new MsgCRC(new byte[2]);
       try {
-         OssTravelerMessageBuilder.getMsgCrc(str);
+         assertEquals(expectedValue, OssTravelerMessageBuilder.getMsgCrc(testInput));
       } catch (RuntimeException e) {
-         fail("Unexpected Exception");
+         fail("Unexpected exception " + e);
       }
    }
 
    @Test
    public void checkEmptyMessageCRC() {
-      String str = "";
+      String testInput = "";
+      MsgCRC expectedValue = new MsgCRC(new byte[2]);
       try {
-         OssTravelerMessageBuilder.getMsgCrc(str);
+         assertEquals(expectedValue, OssTravelerMessageBuilder.getMsgCrc(testInput));
       } catch (RuntimeException e) {
-         fail("Unexpected Exception");
+         fail("Unexpected exception " + e);
       }
    }
 
    @Test
-   public void checkMessageCRC() {
-      String str = "1010101010101010";
+   public void checkMessageCRCBinary() {
+      String testInput = "0001001000110100"; // 0x1234 in binary
+      String expectedValue = "1234";
       try {
-         OssTravelerMessageBuilder.getMsgCrc(str);
+         assertEquals(expectedValue, DatatypeConverter.printHexBinary(OssTravelerMessageBuilder.getMsgCrc(testInput).byteArrayValue()));
       } catch (RuntimeException e) {
-         fail("Unexpected Exception");
+         fail("Unexpected exception " + e);
+      }
+   }
+   
+   @Test
+   public void checkMessageCRCBinaryUpperBound() {
+      String testInput = "1111111111111111"; // 0x1234 in binary
+      String expectedValue = "FFFF";
+      try {
+         assertEquals(expectedValue, DatatypeConverter.printHexBinary(OssTravelerMessageBuilder.getMsgCrc(testInput).byteArrayValue()));
+      } catch (RuntimeException e) {
+         fail("Unexpected exception " + e);
+      }
+   }
+   
+   @Test
+   public void checkMessageCRCHex() {
+      String testInput = "15AF";
+      MsgCRC expectedValue = new MsgCRC(DatatypeConverter.parseHexBinary(testInput));
+      try {
+         assertEquals(expectedValue, OssTravelerMessageBuilder.getMsgCrc(testInput));
+      } catch (RuntimeException e) {
+         fail("Unexpected exception " + e);
+      }
+   }
+   
+   @Test
+   public void checkMessageCRCInvalidLength() {
+      String testInput = "15AFA";
+      try {
+         OssTravelerMessageBuilder.getMsgCrc(testInput);
+         fail("Expected IllegalArgumentException");
+      } catch (Exception e) {
+         assertTrue(e instanceof IllegalArgumentException);
       }
    }
    
@@ -2627,7 +2667,7 @@ public class OssTravelerMessageBuilderTest {
       df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
-      df.setCrc("1111111111111111");
+      df.setCrc("1111111111111110");
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -2719,7 +2759,7 @@ public class OssTravelerMessageBuilderTest {
       df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
-      df.setCrc("1111111111111111");
+      df.setCrc("1111111111111110");
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -2781,7 +2821,7 @@ public class OssTravelerMessageBuilderTest {
       df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
-      df.setCrc("1111111111111111");
+      df.setCrc("1111111111111110");
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
