@@ -4,8 +4,6 @@ package us.dot.its.jpo.ode.coder;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-import java.io.BufferedInputStream;
-
 import org.junit.Test;
 
 import com.oss.asn1.EncodeFailedException;
@@ -46,7 +44,7 @@ public class DecoderHelperTest {
    public void decodeBsmTestTwo() {
       new Expectations() {
          {
-            capturingOss1609dot2Coder.decodeIeee1609Dot2DataStream((BufferedInputStream) any);
+            capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
             result = null;
          }
       };
@@ -80,7 +78,7 @@ public class DecoderHelperTest {
       try {
          new Expectations() {
             {
-               capturingOss1609dot2Coder.decodeIeee1609Dot2DataStream((BufferedInputStream) any);
+               capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
                result = mockIeee1609Dot2Data;
 
                IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
@@ -103,7 +101,7 @@ public class DecoderHelperTest {
       try {
          new Expectations() {
             {
-               capturingOss1609dot2Coder.decodeIeee1609Dot2DataStream((BufferedInputStream) any);
+               capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
                result = mockIeee1609Dot2Data;
 
                IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
@@ -126,7 +124,7 @@ public class DecoderHelperTest {
       try {
          new Expectations() {
             {
-               capturingOss1609dot2Coder.decodeIeee1609Dot2DataStream((BufferedInputStream) any);
+               capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
                result = mockIeee1609Dot2Data;
 
                IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
