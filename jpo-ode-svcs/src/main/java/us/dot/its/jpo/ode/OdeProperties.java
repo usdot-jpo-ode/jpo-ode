@@ -46,7 +46,7 @@ public class OdeProperties implements EnvironmentAware {
    private String uploadLocationRoot = "uploads";
    private String uploadLocationBsm = "bsm";
    private String uploadLocationMessageFrame = "messageframe";
-   private String uploadLocationLogFile = "logfiles";
+   private String uploadLocationBsmLog = "bsmlog";
 
    /*
     * USDOT Situation Data Clearinghouse (SDC)/ Situation Data Warehouse (SDW),
@@ -619,12 +619,12 @@ public class OdeProperties implements EnvironmentAware {
       this.kafkaTopicOdeTimJson = kafkaTopicOdeTimJson;
    }
 
-   public String getUploadLocationLogFile() {
-      return uploadLocationLogFile;
-   }
-
-   public void setUploadLocationLogFile(String uploadLocationLogFile) {
-      this.uploadLocationLogFile = uploadLocationLogFile;
-   }
+    public String getUploadLocationBsmLog() {
+        return uploadLocationBsmLog;
+    }
+    
+    public void setUploadLocationBsmLog(String uploadLocationBsmLog) {
+        this.uploadLocationBsmLog = uploadLocationBsmLog;
+    }
 
 }

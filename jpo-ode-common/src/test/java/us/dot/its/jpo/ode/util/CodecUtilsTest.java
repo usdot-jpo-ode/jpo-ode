@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -33,7 +34,7 @@ public class CodecUtilsTest {
    public void testBytesToShorts() {
       short[] expectedValue = new short[] { (short) 513 };
 
-      short[] actualValue = CodecUtils.bytesToShorts(new byte[] { 2, 1 });
+      short[] actualValue = CodecUtils.bytesToShorts(new byte[] { 2, 1 }, 0, 2, ByteOrder.BIG_ENDIAN);
 
       assertEquals(Arrays.toString(expectedValue), Arrays.toString(actualValue));
    }
@@ -42,7 +43,7 @@ public class CodecUtilsTest {
    public void testBytesToShort() {
       short expectedValue = (short) 258;
 
-      short actualValue = CodecUtils.bytesToShort(new byte[] { 1, 2, 5, 2 });
+      short actualValue = CodecUtils.bytesToShort(new byte[] { 1, 2, 5, 2 }, 0, 4, ByteOrder.BIG_ENDIAN);
 
       assertEquals(expectedValue, actualValue);
    }
@@ -65,9 +66,10 @@ public class CodecUtilsTest {
       // 598273498 decimal == 23A8EDDA hex == 0, 0, 0, 0, 35, 168, 237, 218
       // 54 decimal = 0, 0, 0, 0, 0, 0, 0, 54
       long[] expectedValue = new long[] { (long) 598273498, (long) 54 };
-      long[] actualValue = CodecUtils
-            .bytesToLongs(new byte[] { (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 35, (byte) 168, (byte) 237,
-                  (byte) 218, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 54 });
+      long[] actualValue = CodecUtils.bytesToLongs(
+            new byte[] { (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 35, (byte) 168, (byte) 237, (byte) 218,
+                  (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 54 },
+            0, 16, ByteOrder.BIG_ENDIAN);
       assertEquals(Arrays.toString(expectedValue), Arrays.toString(actualValue));
    }
 

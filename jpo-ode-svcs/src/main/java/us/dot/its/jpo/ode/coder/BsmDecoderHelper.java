@@ -20,7 +20,6 @@ public class BsmDecoderHelper {
 
    private final OssJ2735Coder j2735Coder;
    private final Oss1609dot2Coder ieee1609dotCoder;
-   private final Iee1609ContentValidator iee1609ContentValidatorIn;
    private final RawBsmMfSorter rawBsmMFSorterIn;
    private final OdeBsmDataCreaterHelper odeBsmDataCreaterHelperIn;
    private final BsmDecoderPayloadHelper bsmDecoderPayloadHelperIn;
@@ -28,7 +27,6 @@ public class BsmDecoderHelper {
    public BsmDecoderHelper() {
       this.j2735Coder = new OssJ2735Coder();
       this.ieee1609dotCoder = new Oss1609dot2Coder();
-      this.iee1609ContentValidatorIn = new Iee1609ContentValidator();
       this.rawBsmMFSorterIn = new RawBsmMfSorter(j2735Coder);
       this.odeBsmDataCreaterHelperIn = new OdeBsmDataCreaterHelper();
       this.bsmDecoderPayloadHelperIn = new BsmDecoderPayloadHelper(rawBsmMFSorterIn);
@@ -51,9 +49,9 @@ public class BsmDecoderHelper {
             }
          } catch (Exception e) {
             logger.debug("Message does not have a valid signature. Assuming it is unsigned message...");
-            if (iee1609ContentValidatorIn.contentHadUnsecureData(ieee1609dot2Data.getContent())) {
-               bsm = rawBsmMFSorterIn.decodeBsm(ieee1609dot2Data.getContent().getSignedData().getTbsData().getPayload()
-                     .getData().getContent().getUnsecuredData().byteArrayValue());
+            byte[] unsecuredDataContent = Ieee1609ContentValidator.getUnsecuredData(ieee1609dot2Data.getContent());
+            if (unsecuredDataContent != null) {
+               bsm = rawBsmMFSorterIn.decodeBsm(unsecuredDataContent);
             }
          }
       } else {
@@ -86,9 +84,9 @@ public OdeData decode(BufferedInputStream bis, String filename, SerialId serialI
           }
        } catch (Exception e) {
           logger.debug("Message does not have a valid signature. Assuming it is unsigned message...");
-          if (iee1609ContentValidatorIn.contentHadUnsecureData(ieee1609dot2Data.getContent())) {
-             bsm = rawBsmMFSorterIn.decodeBsm(ieee1609dot2Data.getContent().getSignedData().getTbsData().getPayload()
-                   .getData().getContent().getUnsecuredData().byteArrayValue());
+          byte[] unsecuredDataContent = Ieee1609ContentValidator.getUnsecuredData(ieee1609dot2Data.getContent());
+          if (unsecuredDataContent != null) {
+             bsm = rawBsmMFSorterIn.decodeBsm(unsecuredDataContent);
           }
        }
     } else {

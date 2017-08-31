@@ -56,7 +56,7 @@ public class FileUploadControllerTest {
             result = "testBsmDir";
             mockOdeProperties.getUploadLocationMessageFrame();
             result = "testMessageFrameDir";
-            mockOdeProperties.getUploadLocationLogFile();
+            mockOdeProperties.getUploadLocationBsmLog();
             result = "testLogFileDir";
 
             Executors.newCachedThreadPool();

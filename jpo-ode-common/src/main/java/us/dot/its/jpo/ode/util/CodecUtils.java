@@ -69,8 +69,8 @@ public class CodecUtils {
     * @param bytes
     * @return array of shorts
     */
-   public static short bytesToShort(byte[] bytes) {
-      return bytesToShorts(bytes)[0];
+   public static short bytesToShort(byte[] bytes, int offset, int length, ByteOrder bo) {
+      return bytesToShorts(bytes, offset, length, bo)[0];
    }
 
    /**
@@ -83,11 +83,11 @@ public class CodecUtils {
     * @param bytes
     * @return array of shorts
     */
-   public static short[] bytesToShorts(byte[] bytes) {
-      ByteBuffer buffer = ByteBuffer.allocate(bytes.length).order(ByteOrder.BIG_ENDIAN);
-      buffer.put(bytes);
+   public static short[] bytesToShorts(byte[] bytes, int offset, int length, ByteOrder bo) {
+      ByteBuffer buffer = ByteBuffer.allocate(length).order(bo);
+      buffer.put(bytes, offset, length);
       buffer.flip();
-      int numberOfShorts = bytes.length / 2;
+      int numberOfShorts = length / 2;
       short[] shorts = new short[numberOfShorts];
       for (int i = 0; i < numberOfShorts; i++) {
          shorts[i] = buffer.getShort();
@@ -97,10 +97,12 @@ public class CodecUtils {
 
    /**
     * Combines byte arrays.
+    * 
     * @param bytes
     * @return combined array
     * @throws IOException
     */
+
    public static byte[] mergeBytes(byte[]... bytes) throws IOException {
       ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
       for (byte[] bArray : bytes) {
@@ -109,15 +111,31 @@ public class CodecUtils {
       return outputStream.toByteArray();
    }
 
-   public static long bytesToLong(byte[] bytes) {
-      return bytesToLongs(bytes)[0];
+   public static int bytesToInt(byte[] bytes, int offset, int length, ByteOrder bo) {
+      return bytesToInts(bytes, offset, length, bo)[0];
    }
 
-   public static long[] bytesToLongs(byte[] bytes) {
-      ByteBuffer buffer = ByteBuffer.allocate(bytes.length).order(ByteOrder.BIG_ENDIAN);
-      buffer.put(bytes);
+   public static int[] bytesToInts(byte[] bytes, int offset, int length, ByteOrder bo) {
+      ByteBuffer buffer = ByteBuffer.allocate(length).order(bo);
+      buffer.put(bytes, offset, length);
       buffer.flip();
-      int numberOfLongs = bytes.length / 8;
+      int numberOfInts = length / 4;
+      int[] ints = new int[numberOfInts];
+      for (int i = 0; i < numberOfInts; i++) {
+         ints[i] = buffer.getInt();
+      }
+      return ints;
+   }
+
+   public static long bytesToLong(byte[] bytes, int offset, int length, ByteOrder bo) {
+      return bytesToLongs(bytes, offset, length, bo)[0];
+   }
+
+   public static long[] bytesToLongs(byte[] bytes, int offset, int length, ByteOrder bo) {
+      ByteBuffer buffer = ByteBuffer.allocate(length).order(bo);
+      buffer.put(bytes, offset, length);
+      buffer.flip();
+      int numberOfLongs = length / 8;
       long[] longs = new long[numberOfLongs];
       for (int i = 0; i < numberOfLongs; i++) {
          longs[i] = buffer.getLong();

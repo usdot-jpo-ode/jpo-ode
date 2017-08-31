@@ -33,8 +33,6 @@ public class DecoderHelperTest {
    IEEE1609p2Message capturingIEEE1609p2Message;
    @Mocked
    EncodeFailedException mockEncodeFailedException;
-   @Capturing
-   Iee1609ContentValidator capturingIee1609ContentValidator;
    @Mocked
    Ieee1609Dot2Content mockIeee1609Dot2Content;
    @Mocked
@@ -133,7 +131,7 @@ public class DecoderHelperTest {
                mockIeee1609Dot2Data.getContent();
                result = mockIeee1609Dot2Content;
 
-               capturingIee1609ContentValidator.contentHadUnsecureData((Ieee1609Dot2Content) any);
+               Ieee1609ContentValidator.getUnsecuredData((Ieee1609Dot2Content) any);
                result = true;
             }
          };

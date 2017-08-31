@@ -665,9 +665,8 @@ public class OssTravelerMessageBuilder {
       return new HeadingSlice(CodecUtils.shortStringToByteArray(heading));
    }
    
-
-   public static MsgCRC getMsgCrc(String msgString) {
-      return new MsgCRC(CodecUtils.shortStringToByteArray(msgString));
+   public static MsgCRC getMsgCrc(String crc) {
+      return new MsgCRC(CodecUtils.shortStringToByteArray(crc));
    }
 
 }

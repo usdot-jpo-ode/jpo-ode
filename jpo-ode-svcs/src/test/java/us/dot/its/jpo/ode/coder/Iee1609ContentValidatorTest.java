@@ -1,7 +1,8 @@
 package us.dot.its.jpo.ode.coder;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -20,6 +21,8 @@ public class Iee1609ContentValidatorTest {
    @Mocked
    Ieee1609Dot2Content mockIeee1609Dot2Content;
    @Mocked
+   Ieee1609Dot2Content mockIeee1609Dot2Content2;
+   @Mocked
    SignedData mockSignData;
    @Mocked
    ToBeSignedData mockToBeSignedData;
@@ -30,175 +33,292 @@ public class Iee1609ContentValidatorTest {
    @Mocked
    Opaque mockOpaque;
 
-   @Test
-   public void contentHadUnsecureDataReturnFalse() {
+   private byte[] expectedResult = new byte[] {1, 2, 3, 4};
 
-      assertFalse(new Iee1609ContentValidator().contentHadUnsecureData(null));
-
-   }
-
-   @Test
-   public void contentHadUnsecureDataTest() {
-
-      new Expectations() {
-         {
-            mockIeee1609Dot2Content.getSignedData();
-            result = null;
-
-         }
-      };
-
-      assertFalse(new Iee1609ContentValidator().contentHadUnsecureData(mockIeee1609Dot2Content));
-
-   }
-
-   @Test
-   public void contentHadUnsecureDataTestTBs() {
-
-      new Expectations() {
-         {
-            mockIeee1609Dot2Content.getSignedData();
-            result = mockSignData;
-
-            mockSignData.getTbsData();
-            result = null;
-         }
-      };
-
-      assertFalse(new Iee1609ContentValidator().contentHadUnsecureData(mockIeee1609Dot2Content));
-
-   }
-
-   @Test
-   public void contentHadUnsecureDataTestPayload() {
-
-      new Expectations() {
-         {
-            mockIeee1609Dot2Content.getSignedData();
-            result = mockSignData;
-
-            mockSignData.getTbsData();
-            result = mockToBeSignedData;
-
-            mockToBeSignedData.getPayload();
-            result = null;
-         }
-      };
-      assertFalse(new Iee1609ContentValidator().contentHadUnsecureData(mockIeee1609Dot2Content));
-   }
-
-   @Test
-   public void contentHadUnsecureDataTestGetData() {
-
-      new Expectations() {
-         {
-            mockIeee1609Dot2Content.getSignedData();
-            result = mockSignData;
-
-            mockSignData.getTbsData();
-            result = mockToBeSignedData;
-
-            mockToBeSignedData.getPayload();
-            result = mockSignedDataPayload;
-
-            mockSignedDataPayload.getData();
-            result = null;
-         }
-      };
-
-      assertFalse(new Iee1609ContentValidator().contentHadUnsecureData(mockIeee1609Dot2Content));
-
-   }
    
    @Test
-   public void contentHadUnsecureDataTestGetContent() {
+   public void getUnsecuredDataTestNull() {
 
-      new Expectations() {
-         {
-            mockIeee1609Dot2Content.getSignedData();
-            result = mockSignData;
-
-            mockSignData.getTbsData();
-            result = mockToBeSignedData;
-
-            mockToBeSignedData.getPayload();
-            result = mockSignedDataPayload;
-
-            mockSignedDataPayload.getData();
-            result = mockIeee1609Dot2Data;
-            
-            mockIeee1609Dot2Data.getContent();
-            result = null;
-            
-         }
-      };
-
-      assertFalse(new Iee1609ContentValidator().contentHadUnsecureData(mockIeee1609Dot2Content));
+      assertNull(Ieee1609ContentValidator.getUnsecuredData(null));
 
    }
-   
+
    @Test
-   public void contentHadUnsecureDataTestGetUnsecuredDatat() {
+   public void getUnsecuredDataTestUnsecuredDataOpaqueByteArrayValueNull() {
 
-      new Expectations() {
-         {
-            mockIeee1609Dot2Content.getSignedData();
-            result = mockSignData;
-
-            mockSignData.getTbsData();
-            result = mockToBeSignedData;
-
-            mockToBeSignedData.getPayload();
-            result = mockSignedDataPayload;
-
-            mockSignedDataPayload.getData();
-            result = mockIeee1609Dot2Data;
-            
-            mockIeee1609Dot2Data.getContent();
-            result = mockIeee1609Dot2Content;
-            
-            mockIeee1609Dot2Content.getUnsecuredData();
-            result = null;
-            
-         }
-      };
-
-      assertFalse(new Iee1609ContentValidator().contentHadUnsecureData(mockIeee1609Dot2Content));
+      assertNull(Ieee1609ContentValidator.getUnsecuredData(null));
 
    }
-   
-   
+
    @Test
-   public void contentHadUnsecureDataTrue() {
+   public void getUnsecuredDataTestUnsecuredDataOpaqueByteArrayValueNotNull() {
 
       new Expectations() {
          {
-            mockIeee1609Dot2Content.getSignedData();
-            result = mockSignData;
-
-            mockSignData.getTbsData();
-            result = mockToBeSignedData;
-
-            mockToBeSignedData.getPayload();
-            result = mockSignedDataPayload;
-
-            mockSignedDataPayload.getData();
-            result = mockIeee1609Dot2Data;
-            
-            mockIeee1609Dot2Data.getContent();
-            result = mockIeee1609Dot2Content;
-            
             mockIeee1609Dot2Content.getUnsecuredData();
             result = mockOpaque;
+
+            mockOpaque.byteArrayValue();
+            result = expectedResult;
+         }
+      };
+
+      assertEquals(
+         Arrays.toString(expectedResult),
+         Arrays.toString(Ieee1609ContentValidator.getUnsecuredData(mockIeee1609Dot2Content)));
+
+   }
+
+   @Test
+   public void getUnsecuredDataTestSignedDataNull() {
+
+      new Expectations() {
+         {
+            mockIeee1609Dot2Content.getUnsecuredData();
+            result = null;
+
+            mockIeee1609Dot2Content.getSignedData();
+            result = null;
+
+         }
+      };
+
+      assertNull(Ieee1609ContentValidator.getUnsecuredData(mockIeee1609Dot2Content));
+
+   }
+
+   @Test
+   public void getUnsecuredDataTestTbsDataNull() {
+
+      new Expectations() {
+         {
+            mockIeee1609Dot2Content.getUnsecuredData();
+            result = null;
+
+            mockIeee1609Dot2Content.getSignedData();
+            result = mockSignData;
+
+            mockSignData.getTbsData();
+            result = null;
+         }
+      };
+
+      assertNull(Ieee1609ContentValidator.getUnsecuredData(mockIeee1609Dot2Content));
+
+   }
+
+   @Test
+   public void getUnsecuredDataTestPayloadNull() {
+
+      new Expectations() {
+         {
+            mockIeee1609Dot2Content.getUnsecuredData();
+            result = null;
+
+            mockIeee1609Dot2Content.getSignedData();
+            result = mockSignData;
+
+            mockSignData.getTbsData();
+            result = mockToBeSignedData;
+
+            mockToBeSignedData.getPayload();
+            result = null;
+         }
+      };
+      assertNull(Ieee1609ContentValidator.getUnsecuredData(mockIeee1609Dot2Content));
+   }
+
+   @Test
+   public void getUnsecuredDataTestDataNull() {
+
+      new Expectations() {
+         {
+            mockIeee1609Dot2Content.getUnsecuredData();
+            result = null;
+
+            mockIeee1609Dot2Content.getSignedData();
+            result = mockSignData;
+
+            mockSignData.getTbsData();
+            result = mockToBeSignedData;
+
+            mockToBeSignedData.getPayload();
+            result = mockSignedDataPayload;
+
+            mockSignedDataPayload.getData();
+            result = null;
+         }
+      };
+
+      assertNull(Ieee1609ContentValidator.getUnsecuredData(mockIeee1609Dot2Content));
+
+   }
+   
+   @Test
+   public void getUnsecuredDataTestContent() {
+
+      new Expectations() {
+         {
+            mockIeee1609Dot2Content.getUnsecuredData();
+            result = null;
+
+            mockIeee1609Dot2Content.getSignedData();
+            result = mockSignData;
+
+            mockSignData.getTbsData();
+            result = mockToBeSignedData;
+
+            mockToBeSignedData.getPayload();
+            result = mockSignedDataPayload;
+
+            mockSignedDataPayload.getData();
+            result = mockIeee1609Dot2Data;
+            
+            mockIeee1609Dot2Data.getContent();
+            result = null;
             
          }
       };
 
-      assertTrue(new Iee1609ContentValidator().contentHadUnsecureData(mockIeee1609Dot2Content));
+      assertNull(Ieee1609ContentValidator.getUnsecuredData(mockIeee1609Dot2Content));
+
+   }
+   
+   @Test
+   public void getUnsecuredDataTestUnsecuredDataNull2() {
+
+      new Expectations() {
+         {
+            mockIeee1609Dot2Content.getUnsecuredData();
+            result = null;
+
+            mockIeee1609Dot2Content.getSignedData();
+            result = mockSignData;
+
+            mockSignData.getTbsData();
+            result = mockToBeSignedData;
+
+            mockToBeSignedData.getPayload();
+            result = mockSignedDataPayload;
+
+            mockSignedDataPayload.getData();
+            result = mockIeee1609Dot2Data;
+            
+            mockIeee1609Dot2Data.getContent();
+            result = mockIeee1609Dot2Content2;
+            
+            mockIeee1609Dot2Content2.getUnsecuredData();
+            result = null;
+            
+         }
+      };
+
+      assertNull(Ieee1609ContentValidator.getUnsecuredData(mockIeee1609Dot2Content));
+
+   }
+   
+   
+   @Test
+   public void getUnsecuredDataTestOpaqueNull() {
+
+      new Expectations() {
+         {
+            mockIeee1609Dot2Content.getUnsecuredData();
+            result = null;
+
+            mockIeee1609Dot2Content.getSignedData();
+            result = mockSignData;
+
+            mockSignData.getTbsData();
+            result = mockToBeSignedData;
+
+            mockToBeSignedData.getPayload();
+            result = mockSignedDataPayload;
+
+            mockSignedDataPayload.getData();
+            result = mockIeee1609Dot2Data;
+            
+            mockIeee1609Dot2Data.getContent();
+            result = mockIeee1609Dot2Content2;
+            
+            mockIeee1609Dot2Content2.getUnsecuredData();
+            result = null;
+         }
+      };
+
+      assertNull(Ieee1609ContentValidator.getUnsecuredData(mockIeee1609Dot2Content));
 
    }
 
+   public void getUnsecuredDataTestOpagueByteArrayValueNull() {
 
+       new Expectations() {
+          {
+             mockIeee1609Dot2Content.getUnsecuredData();
+             result = null;
+
+             mockIeee1609Dot2Content.getSignedData();
+             result = mockSignData;
+
+             mockSignData.getTbsData();
+             result = mockToBeSignedData;
+
+             mockToBeSignedData.getPayload();
+             result = mockSignedDataPayload;
+
+             mockSignedDataPayload.getData();
+             result = mockIeee1609Dot2Data;
+             
+             mockIeee1609Dot2Data.getContent();
+             result = mockIeee1609Dot2Content2;
+             
+             mockIeee1609Dot2Content2.getUnsecuredData();
+             result = mockOpaque;
+             
+             mockOpaque.byteArrayValue();
+             result = null;
+          }
+       };
+
+       assertNull(Ieee1609ContentValidator.getUnsecuredData(mockIeee1609Dot2Content));
+
+    }
+
+   @Test
+   public void getUnsecuredDataTestOpaqueValueNotNull() {
+
+      new Expectations() {
+         {
+            mockIeee1609Dot2Content.getUnsecuredData();
+            result = null;
+
+            mockIeee1609Dot2Content.getSignedData();
+            result = mockSignData;
+
+            mockSignData.getTbsData();
+            result = mockToBeSignedData;
+
+            mockToBeSignedData.getPayload();
+            result = mockSignedDataPayload;
+
+            mockSignedDataPayload.getData();
+            result = mockIeee1609Dot2Data;
+            
+            mockIeee1609Dot2Data.getContent();
+            result = mockIeee1609Dot2Content2;
+            
+            mockIeee1609Dot2Content2.getUnsecuredData();
+            result = mockOpaque;
+            
+            mockOpaque.byteArrayValue();
+            result = expectedResult;
+         }
+      };
+
+      assertEquals(
+          Arrays.toString(expectedResult),
+          Arrays.toString(Ieee1609ContentValidator.getUnsecuredData(mockIeee1609Dot2Content)));
+   }
 
 
 
