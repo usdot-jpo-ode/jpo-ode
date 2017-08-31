@@ -8,14 +8,12 @@ import java.util.Scanner;
 
 import org.junit.Test;
 
-import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.coder.OdeBsmDataCreaterHelper;
-import us.dot.its.jpo.ode.importer.BsmFileParser;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
@@ -70,7 +68,7 @@ public class JsonDecoderPublisherTest {
             capturingScanner.hasNextLine();
             returns(true, false);
 
-            capturingOdeBsmDataCreaterHelper.createOdeBsmData((J2735Bsm) any, (IEEE1609p2Message) any, (BsmFileParser) any, (SerialId) any);
+            capturingOdeBsmDataCreaterHelper.createOdeBsmData((J2735Bsm) any, anyString, (SerialId) any);
             result = mockOdeBsmData;
             
             mockMessagePublisher.publish((OdeData) any);

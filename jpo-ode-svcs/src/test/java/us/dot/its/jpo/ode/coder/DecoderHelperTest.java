@@ -132,7 +132,7 @@ public class DecoderHelperTest {
                result = mockIeee1609Dot2Content;
 
                Ieee1609ContentValidator.getUnsecuredData((Ieee1609Dot2Content) any);
-               result = true;
+               result = new byte[0];
             }
          };
 
