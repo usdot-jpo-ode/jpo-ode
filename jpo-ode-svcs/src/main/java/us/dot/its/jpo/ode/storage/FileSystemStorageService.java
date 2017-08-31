@@ -26,6 +26,7 @@ public class FileSystemStorageService implements StorageService {
     private Path rootLocation;
     private Path bsmLocation;
     private Path messageFrameLocation;
+    private Path logFileLocation;
 
     @Autowired
     public FileSystemStorageService(OdeProperties properties) {
@@ -34,6 +35,7 @@ public class FileSystemStorageService implements StorageService {
         this.bsmLocation = Paths.get(properties.getUploadLocationRoot(), properties.getUploadLocationBsm());
         this.messageFrameLocation = Paths.get(properties.getUploadLocationRoot(),
                 properties.getUploadLocationMessageFrame());
+        this.logFileLocation = Paths.get(properties.getUploadLocationRoot(), properties.getUploadLocationBsmLog());
 
         logger.info("Upload location (root): {}", this.rootLocation);
         logger.info("Upload location (bsm): {}", this.bsmLocation);
@@ -47,8 +49,10 @@ public class FileSystemStorageService implements StorageService {
         Path path;
         if (("bsm").equals(type)) {
             path = this.bsmLocation.resolve(file.getOriginalFilename());
-        } else if (("messageFrame").equals(type)) {
+        } else if (("mf").equals(type)) {
             path = this.messageFrameLocation.resolve(file.getOriginalFilename());
+        } else if (("log").equals(type)) {
+           path = this.logFileLocation.resolve(file.getOriginalFilename());
         } else {
             EventLogger.logger.info("File type unknown: {} {}", type, file.getName());
             throw new StorageException("File type unknown: " + type + " " + file.getName());

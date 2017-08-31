@@ -59,7 +59,7 @@ function upload() {
     formData.append('file', $('#file').get(0).files[0]);
     console.log("Ajax call submitted");
     $.ajax({
-        url: '/upload/bsm',
+        url: '/upload/'+$('input[name=fileType]:checked').val(),
         type: 'POST',
         data: formData,
         cache: false,
