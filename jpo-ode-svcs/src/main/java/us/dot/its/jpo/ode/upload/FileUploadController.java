@@ -50,7 +50,11 @@ public class FileUploadController {
 
       Path messageFramePath = Paths.get(odeProperties.getUploadLocationRoot(),
             odeProperties.getUploadLocationMessageFrame());
-      logger.debug("UPLOADER - Message Frame directory: {}", messageFramePath);
+      logger.debug("UPLOADER - Message frame directory: {}", messageFramePath);
+      
+      Path logFilePath = Paths.get(odeProperties.getUploadLocationRoot(),
+            odeProperties.getUploadLocationLogFile());
+      logger.debug("UPLOADER - BSM log file upload directory: {}", logFilePath);
 
       Path backupPath = Paths.get(odeProperties.getUploadLocationRoot(), "backup");
       logger.debug("UPLOADER - Backup directory: {}", backupPath);
@@ -58,7 +62,7 @@ public class FileUploadController {
       // Create the importers that watch folders for new/modified files
       threadPool.submit(new ImporterDirectoryWatcher(odeProperties, bsmPath, backupPath, ImporterDirType.BSM));
       threadPool.submit(new ImporterDirectoryWatcher(odeProperties, messageFramePath, backupPath, ImporterDirType.MESSAGE_FRAME));
-      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, messageFramePath, backupPath, ImporterDirType.LOG_FILE));
+      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, logFilePath, backupPath, ImporterDirType.LOG_FILE));
 
       // Create the exporters
       threadPool.submit(new OdeBsmExporter(odeProperties, ODE_BSM_OUTPUT_TOPIC, template));
