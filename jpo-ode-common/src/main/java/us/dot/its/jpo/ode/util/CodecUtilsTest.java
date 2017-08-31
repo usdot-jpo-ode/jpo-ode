@@ -1,0 +1,74 @@
+package us.dot.its.jpo.ode.util;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.util.Arrays;
+
+import org.junit.Test;
+
+public class CodecUtilsTest {
+
+   @Test
+   public void testShortsToBytes() {
+
+      byte[] expectedValue = new byte[] { 0, 5, 0, -2, 1, 1 };
+
+      byte[] actualValue = CodecUtils.shortsToBytes(new short[] { (short) 5, (short) 254, (short) 257 });
+
+      assertEquals(Arrays.toString(expectedValue), Arrays.toString(actualValue));
+   }
+
+   @Test
+   public void testShortToBytes() {
+      byte[] expectedValue = new byte[] { 1, 37 };
+
+      byte[] actualValue = CodecUtils.shortToBytes((short) 293);
+
+      assertEquals(Arrays.toString(expectedValue), Arrays.toString(actualValue));
+   }
+
+   @Test
+   public void testBytesToShorts() {
+      short[] expectedValue = new short[] { (short) 513 };
+
+      short[] actualValue = CodecUtils.bytesToShorts(new byte[] { 2, 1 });
+
+      assertEquals(Arrays.toString(expectedValue), Arrays.toString(actualValue));
+   }
+
+   @Test
+   public void testBytesToShort() {
+      short expectedValue = (short) 258;
+
+      short actualValue = CodecUtils.bytesToShort(new byte[] { 1, 2, 5, 2 });
+
+      assertEquals(expectedValue, actualValue);
+   }
+
+   @Test
+   public void testMergeBytes() {
+
+      byte[] expectedValue = new byte[] { 1, 1, 2, 3, 5, 8 };
+
+      try {
+         byte[] actualValue = CodecUtils.mergeBytes(new byte[] { 1 }, new byte[] { 1, 2 }, new byte[] { 3, 5, 8 });
+         assertEquals(Arrays.toString(expectedValue), Arrays.toString(actualValue));
+      } catch (IOException e) {
+         fail("Unexpected exception: " + e);
+      }
+   }
+
+   @Test
+   public void bytesToLongs() {
+      // 598273498 decimal == 23A8EDDA hex == 0, 0, 0, 0, 35, 168, 237, 218
+      // 54 decimal = 0, 0, 0, 0, 0, 0, 0, 54
+      long[] expectedValue = new long[] { (long) 598273498, (long) 54 };
+      long[] actualValue = CodecUtils
+            .bytesToLongs(new byte[] { (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 35, (byte) 168, (byte) 237,
+                  (byte) 218, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 54 });
+      assertEquals(Arrays.toString(expectedValue), Arrays.toString(actualValue));
+   }
+
+}
