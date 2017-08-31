@@ -1,7 +1,5 @@
 package us.dot.its.jpo.ode.coder;
 
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
@@ -28,18 +26,20 @@ public class OdeBsmDataCreaterHelper {
       OdeBsmMetadata metadata = new OdeBsmMetadata(payload);
       metadata.setSerialId(serialId);
 
+      ZonedDateTime generatedAt;
       if (message != null) {
          Date ieeeGenTime = message.getGenerationTime();
          
-         ZonedDateTime generatedAt;
          if (ieeeGenTime != null) {
             generatedAt = DateTimeUtils.isoDateTime(ieeeGenTime);
          } else {
-            generatedAt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(
-               bsmFileParser.getUtctimeInSec() * 1000), ZoneId.of("UTC"));
+            generatedAt = getGeneratedAt(bsmFileParser);
          }
          metadata.setGeneratedAt(generatedAt.toString());
 
+         metadata.setValidSignature(true);
+      } else if (bsmFileParser != null) {
+         metadata.setGeneratedAt(getGeneratedAt(bsmFileParser).toString());
          metadata.setValidSignature(bsmFileParser.isValidSignature());
       } else {
          /*
@@ -52,6 +52,10 @@ public class OdeBsmDataCreaterHelper {
       metadata.getSerialId().addRecordId(1);
       metadata.setLogFileName(bsmFileParser.getFilename());
       return new OdeBsmData(metadata, payload);
+   }
+
+   private ZonedDateTime getGeneratedAt(BsmFileParser bsmFileParser) {
+      return DateTimeUtils.isoDateTime(bsmFileParser.getUtctimeInSec() * 1000);
    }
    
    public OdeBsmData createOdeBsmData(
