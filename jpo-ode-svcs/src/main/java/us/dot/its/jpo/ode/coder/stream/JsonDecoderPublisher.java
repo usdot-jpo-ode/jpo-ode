@@ -46,7 +46,7 @@ public class JsonDecoderPublisher implements DecoderPublisher {
             line = scanner.nextLine();
 
             J2735Bsm j2735Bsm = (J2735Bsm) JsonUtils.fromJson(line, J2735Bsm.class);
-            OdeData odeBsm = bsmDecoder.createOdeBsmData(j2735Bsm, null, fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
+            OdeData odeBsm = bsmDecoder.createOdeBsmData(j2735Bsm, fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
             
             publisher.publish(odeBsm);
          }

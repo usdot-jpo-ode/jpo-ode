@@ -61,7 +61,7 @@ public class BsmDecoderHelper {
       if (bsm != null) {
          logger.debug("Decoded BSM successfully, creating OdeBsmData object.");
          odeBsmData = odeBsmDataCreaterHelperIn.createOdeBsmData((J2735Bsm) bsm, message, 
-             bsmFileParser.getFilename(), serialId);
+             bsmFileParser, serialId);
       } else {
          logger.debug("Failed to decode BSM.");
       }
@@ -95,8 +95,7 @@ public OdeData decode(BufferedInputStream bis, String filename, SerialId serialI
     }
     if (bsm != null) {
        logger.debug("Decoded BSM successfully, creating OdeBsmData object.");
-       odeBsmData = odeBsmDataCreaterHelperIn.createOdeBsmData((J2735Bsm) bsm, 
-           message, filename, serialId);
+       odeBsmData = odeBsmDataCreaterHelperIn.createOdeBsmData((J2735Bsm) bsm, filename, serialId);
     } else {
        logger.debug("Failed to decode BSM.");
     }
