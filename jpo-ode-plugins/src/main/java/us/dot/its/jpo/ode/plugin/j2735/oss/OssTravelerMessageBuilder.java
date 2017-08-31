@@ -4,6 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
+
+import javax.xml.bind.DatatypeConverter;
 
 import com.oss.asn1.Coder;
 import com.oss.asn1.EncodeFailedException;
@@ -676,19 +679,22 @@ public class OssTravelerMessageBuilder {
       }
    }
    
-   public static MsgCRC getMsgCrc(String sum) {
-      if (sum == null || sum.length() == 0) {
-         return new MsgCRC(new byte[] { 0X00, 0X00 });
+
+   public static MsgCRC getMsgCrc(String msgString) {
+      
+      byte[] byteArrayValue = new byte[2]; // NOSONAR
+      
+      if (msgString == null || msgString.length() == 0) {
+         byteArrayValue = new byte[2];
+      } else if (msgString.length() == 16) {
+         byteArrayValue = Arrays.copyOfRange(ByteBuffer.allocate(4).putInt(Integer.parseUnsignedInt(msgString, 2)).array(), 2, 4);
+      } else if (msgString.length() == 4) {
+         byteArrayValue = DatatypeConverter.parseHexBinary(msgString);
       } else {
-         short result = 0;
-         for (int i = 0; i < 16; i++) {
-            if (sum.charAt(i) == '1') {
-               result |= 1;
-            }
-            result <<= 1;
-         }
-         return new MsgCRC(ByteBuffer.allocate(2).putShort(result).array());
+         throw new IllegalArgumentException("MsgCRC length invalid: " + msgString.length());
       }
+      
+      return new MsgCRC(byteArrayValue);
    }
 
 }
