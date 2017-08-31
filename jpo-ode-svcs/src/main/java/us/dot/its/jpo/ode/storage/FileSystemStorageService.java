@@ -40,6 +40,7 @@ public class FileSystemStorageService implements StorageService {
         logger.info("Upload location (root): {}", this.rootLocation);
         logger.info("Upload location (bsm): {}", this.bsmLocation);
         logger.info("Upload location (message frame): {}", this.messageFrameLocation);
+        logger.info("Upload location (log file): {}", this.logFileLocation);
     }
 
     @Override

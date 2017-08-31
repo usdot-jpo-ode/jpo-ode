@@ -38,13 +38,12 @@ public class FileSystemStorageServiceTest {
             {
                 mockOdeProperties.getUploadLocationRoot();
                 result = anyString;
-                minTimes = 0;
                 mockOdeProperties.getUploadLocationBsm();
                 result = anyString;
-                minTimes = 0;
                 mockOdeProperties.getUploadLocationMessageFrame();
                 result = anyString;
-                minTimes = 0;
+                mockOdeProperties.getUploadLocationBsmLog();
+                result = anyString;
             }
         };
     }
@@ -111,9 +110,9 @@ public class FileSystemStorageServiceTest {
     }
 
     @Test
-    public void storeShouldTryToResolveMessageFrameFilename(@Mocked MultipartFile mockMultipartFile) {
+    public void storeShouldThrowAnErrorEmptyFile(@Mocked MultipartFile mockMultipartFile) {
 
-        String testType = "messageFrame";
+        String testType = "mf";
 
         new Expectations() {
             {
