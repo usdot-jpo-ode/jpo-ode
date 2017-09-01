@@ -26,7 +26,7 @@ public class FileSystemStorageService implements StorageService {
     private Path rootLocation;
     private Path bsmLocation;
     private Path messageFrameLocation;
-    private Path logFileLocation;
+    private Path bsmLogLocation;
 
     @Autowired
     public FileSystemStorageService(OdeProperties properties) {
@@ -35,12 +35,12 @@ public class FileSystemStorageService implements StorageService {
         this.bsmLocation = Paths.get(properties.getUploadLocationRoot(), properties.getUploadLocationBsm());
         this.messageFrameLocation = Paths.get(properties.getUploadLocationRoot(),
                 properties.getUploadLocationMessageFrame());
-        this.logFileLocation = Paths.get(properties.getUploadLocationRoot(), properties.getUploadLocationBsmLog());
+        this.bsmLogLocation = Paths.get(properties.getUploadLocationRoot(), properties.getUploadLocationBsmLog());
 
         logger.info("Upload location (root): {}", this.rootLocation);
         logger.info("Upload location (bsm): {}", this.bsmLocation);
         logger.info("Upload location (message frame): {}", this.messageFrameLocation);
-        logger.info("Upload location (log file): {}", this.logFileLocation);
+        logger.info("Upload location (bsm log): {}", this.bsmLogLocation);
     }
 
     @Override
@@ -52,8 +52,8 @@ public class FileSystemStorageService implements StorageService {
             path = this.bsmLocation.resolve(file.getOriginalFilename());
         } else if (("mf").equals(type)) {
             path = this.messageFrameLocation.resolve(file.getOriginalFilename());
-        } else if (("log").equals(type)) {
-           path = this.logFileLocation.resolve(file.getOriginalFilename());
+        } else if (("bsmlog").equals(type)) {
+           path = this.bsmLogLocation.resolve(file.getOriginalFilename());
         } else {
             EventLogger.logger.info("File type unknown: {} {}", type, file.getName());
             throw new StorageException("File type unknown: " + type + " " + file.getName());

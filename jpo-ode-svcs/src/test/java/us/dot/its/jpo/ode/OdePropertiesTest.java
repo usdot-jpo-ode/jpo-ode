@@ -96,7 +96,6 @@ public class OdePropertiesTest {
       boolean testVerboseJson = true;
       int testRsuSrmSlots = 22;
       int testTrustRetries = 23;
-      boolean testEnabledVsdKafkaTopic = false;
       String testKafkaTopicEncodedVsd = "testKafkaTopicEncodedVsd";
       String testKafkaTopicOdeBsmPojo = "testKafkaTopicOdeBsmPojo";
       String testKafkaTopicOdeBsmJson = "testKafkaTopicOdeBsmJson";
@@ -143,7 +142,6 @@ public class OdePropertiesTest {
       testOdeProperties.setVerboseJson(testVerboseJson);
       testOdeProperties.setRsuSrmSlots(testRsuSrmSlots);
       testOdeProperties.setTrustRetries(testTrustRetries);
-      testOdeProperties.setEnabledVsdKafkaTopic(testEnabledVsdKafkaTopic);
       testOdeProperties.setKafkaTopicVsdPojo(testKafkaTopicEncodedVsd);
       testOdeProperties.setKafkaTopicOdeBsmPojo(testKafkaTopicOdeBsmPojo);
       testOdeProperties.setKafkaTopicOdeBsmJson(testKafkaTopicOdeBsmJson);
@@ -202,8 +200,6 @@ public class OdePropertiesTest {
       assertEquals("Incorrect testVerboseJson", testVerboseJson, testOdeProperties.getVerboseJson());
       assertEquals("Incorrect testRsuSrmSlots", testRsuSrmSlots, testOdeProperties.getRsuSrmSlots());
       assertEquals("Incorrect testTrustRetries", testTrustRetries, testOdeProperties.getTrustRetries());
-      assertEquals("Incorrect testEnabledVsdKafkaTopic", testEnabledVsdKafkaTopic,
-            testOdeProperties.isEnabledVsdKafkaTopic());
       assertEquals("Incorrect testKafkaTopicEncodedVsd", testKafkaTopicEncodedVsd,
             testOdeProperties.getKafkaTopicVsdPojo());
       assertEquals("Incorrect testKafkaTopicOdeBsmPojo", testKafkaTopicOdeBsmPojo,
