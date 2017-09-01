@@ -5,11 +5,11 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 
 import org.junit.Test;
 
 import mockit.Tested;
+import us.dot.its.jpo.ode.importer.LogFileParser.LogFileParserException;
 import us.dot.its.jpo.ode.importer.LogFileParser.ParserStatus;
 
 public class BsmFileParserTest {
@@ -22,7 +22,7 @@ public class BsmFileParserTest {
       try {
          assertEquals(ParserStatus.EOF, testBsmFileParser
                .parse(new BufferedInputStream(new ByteArrayInputStream(new byte[0])), "testLogFile.bin"));
-      } catch (IOException e) {
+      } catch (LogFileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -32,7 +32,7 @@ public class BsmFileParserTest {
       try {
          assertEquals(ParserStatus.PARTIAL, testBsmFileParser
                .parse(new BufferedInputStream(new ByteArrayInputStream(new byte[2])), "testLogFile.bin"));
-      } catch (IOException e) {
+      } catch (LogFileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }

@@ -56,7 +56,7 @@ public class OdeBsmDataCreaterHelper {
    }
 
    private ZonedDateTime getGeneratedAt(BsmFileParser bsmFileParser) {
-      return DateTimeUtils.isoDateTime(bsmFileParser.getUtctimeInSec() * 1000);
+      return DateTimeUtils.isoDateTime(bsmFileParser.getUtctimeInSec() * 1000 + bsmFileParser.getmSec());
    }
    
    public OdeBsmData createOdeBsmData(
