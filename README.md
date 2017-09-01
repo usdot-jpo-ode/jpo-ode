@@ -110,7 +110,7 @@ https://sonarqube.com/organizations/usdot-jpo-ode/projects
 
 ## IV. Getting Started
 
-The following instructions describe the procedure to fetch, build, and run the application.
+The following instructions describe the procedure to fetch, build, and run the application. If you are installing the ODE in an Ubuntu environment, see this [quick start guide](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Prepare-a-fresh-Ubuntu-instance-for-ODE-installation).
 
 ### Prerequisites
 * JDK 1.8: http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html
