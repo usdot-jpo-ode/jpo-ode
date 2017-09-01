@@ -41,6 +41,7 @@ public class OdeBsmDataCreaterHelper {
       } else if (bsmFileParser != null) {
          metadata.setGeneratedAt(getGeneratedAt(bsmFileParser).toString());
          metadata.setValidSignature(bsmFileParser.isValidSignature());
+         metadata.setLogFileName(bsmFileParser.getFilename());
       } else {
          /*
           * TODO Temporarily put in place for testing CV PEP. Should be removed after
@@ -50,7 +51,6 @@ public class OdeBsmDataCreaterHelper {
       }
 
       metadata.getSerialId().addRecordId(1);
-      metadata.setLogFileName(bsmFileParser.getFilename());
       return new OdeBsmData(metadata, payload);
    }
 
