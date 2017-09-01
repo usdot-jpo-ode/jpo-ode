@@ -27,21 +27,22 @@ public class OdeBsmDataCreaterHelper {
       metadata.setSerialId(serialId);
 
       ZonedDateTime generatedAt;
-      if (message != null) {
-         Date ieeeGenTime = message.getGenerationTime();
-         
-         if (ieeeGenTime != null) {
-            generatedAt = DateTimeUtils.isoDateTime(ieeeGenTime);
-         } else {
-            generatedAt = getGeneratedAt(bsmFileParser);
-         }
-         metadata.setGeneratedAt(generatedAt.toString());
-
-         metadata.setValidSignature(true);
-      } else if (bsmFileParser != null) {
-         metadata.setGeneratedAt(getGeneratedAt(bsmFileParser).toString());
-         metadata.setValidSignature(bsmFileParser.isValidSignature());
+      if (bsmFileParser != null) {
          metadata.setLogFileName(bsmFileParser.getFilename());
+         if (message != null) {
+            Date ieeeGenTime = message.getGenerationTime();
+            
+            if (ieeeGenTime != null) {
+               generatedAt = DateTimeUtils.isoDateTime(ieeeGenTime);
+            } else {
+               generatedAt = getGeneratedAt(bsmFileParser);
+            }
+            metadata.setGeneratedAt(generatedAt.toString());
+            metadata.setValidSignature(true);
+         } else {
+            metadata.setGeneratedAt(getGeneratedAt(bsmFileParser).toString());
+            metadata.setValidSignature(bsmFileParser.isValidSignature());
+         }
       } else {
          /*
           * TODO Temporarily put in place for testing CV PEP. Should be removed after
