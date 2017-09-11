@@ -27,7 +27,9 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 
 [VII. Development Tools](#dev-tools)
 
-[VIII.  Contribution Information](#contribution-info)
+[VIII. Contribution Information](#contribution-info)
+
+[IX. Troubleshooting](#troubleshooting)
 
 ---
 
@@ -392,11 +394,13 @@ To be added.
 
 <a name="contribution-info"/>
 
-## VII. Contribution Information
+## VIII. Contribution Information
 
 Please read our [contributing guide](docs/contributing_guide.md) to learn about our development process, how to propose pull requests and improvements, and how to build and test your changes to this project.
 
-## VIII. Troubleshooting
+<a name="troubleshooting"/>
+
+## IX. Troubleshooting
 
 Please read our [Wiki](https://github.com/usdot-jpo-ode/jpo-ode/wiki) for more information, or check the [ODE User Guide](https://github.com/usdot-jpo-ode/jpo-ode/raw/develop/docs/JPO_ODE_UserGuide.docx).
 
