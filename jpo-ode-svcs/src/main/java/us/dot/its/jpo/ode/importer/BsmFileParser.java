@@ -193,38 +193,4 @@ public class BsmFileParser implements LogFileParser {
       this.payload = payload;
       return this;
    }
-
-   // public ParserStatus parse (BufferedInputStream bis, String fileName)
-   // throws IOException {
-   // ParserStatus status = ParserStatus.UNKNOWN;
-   //
-   // setFilename(fileName);
-   // byte[] readBuffer = new byte[MAX_INPUT_BUFFER_SIZE];
-   // int numBytes = bis.read(readBuffer, 0, MAX_INPUT_BUFFER_SIZE);
-   // if (numBytes < 0) {
-   // return ParserStatus.EOF;
-   // }
-   //
-   // ByteBuffer bb = ByteBuffer.wrap(readBuffer).order(ByteOrder.BIG_ENDIAN);
-   //
-   // try {
-   // setDirection(BsmSource.values()[bb.get()]);
-   // setUtctimeInSec(bb.getInt());
-   // setmSec(bb.getShort());
-   // setLength(bb.getShort());
-   // bb.get(payload, 0, getLength());
-   // if (getDirection() == BsmSource.EV_TX) {
-   // setVerificationStatus(true);
-   // } else {
-   // setVerificationStatus(bb.get() == 0 ? false : true);
-   // }
-   // } catch (BufferUnderflowException e) {
-   // return ParserStatus.PARTIAL;
-   // }
-   //
-   // status = ParserStatus.COMPLETE;
-   //
-   // return status;
-   // }
-
 }
