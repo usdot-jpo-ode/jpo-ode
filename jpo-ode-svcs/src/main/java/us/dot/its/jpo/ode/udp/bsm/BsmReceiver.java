@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.udp.bsm;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.net.DatagramPacket;
 
 import org.apache.tomcat.util.buf.HexUtils;
@@ -9,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
-import us.dot.its.jpo.ode.coder.stream.ByteDecoderPublisher;
+import us.dot.its.jpo.ode.coder.stream.BinaryDecoderPublisher;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
@@ -20,7 +22,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                                                         // start of BSM payload
    private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
                                                       // least 20 bytes long
-   private ByteDecoderPublisher byteDecoderPublisher;
+   private BinaryDecoderPublisher binaryDecoderPublisher;
 
    @Autowired
    public BsmReceiver(OdeProperties odeProps) {
@@ -29,10 +31,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
    public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
       super(odeProps, port, bufferSize);
-
-      MessagePublisher messagePub = new MessagePublisher(odeProperties);
-
-      byteDecoderPublisher = new ByteDecoderPublisher(messagePub);
+      this.binaryDecoderPublisher = new BinaryDecoderPublisher(new MessagePublisher(odeProperties));
    }
 
    @Override
@@ -55,8 +54,10 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
                // extract the actualPacket from the buffer
                byte[] payload = removeHeader(packet.getData());
-               logger.debug("Packet: {}", HexUtils.toHexString(payload));
-               byteDecoderPublisher.decodeAndPublish(payload);
+               String payloadHexString = HexUtils.toHexString(payload);
+               logger.debug("Packet: {}", payloadHexString);
+               binaryDecoderPublisher.decodeAndPublish(
+                   new BufferedInputStream(new ByteArrayInputStream(payload)), null, false);
             }
          } catch (Exception e) {
             logger.error("Error receiving packet", e);

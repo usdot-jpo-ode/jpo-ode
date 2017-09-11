@@ -56,12 +56,14 @@ public class FileUploadControllerTest {
             result = "testBsmDir";
             mockOdeProperties.getUploadLocationMessageFrame();
             result = "testMessageFrameDir";
+            mockOdeProperties.getUploadLocationBsmLog();
+            result = "testLogFileDir";
 
             Executors.newCachedThreadPool();
             result = mockExecutorService;
 
             mockExecutorService.submit((Runnable) any);
-            times = 4;
+            times = 5;
          }
       };
       testFileUploadController = new FileUploadController(mockStorageService, mockOdeProperties,

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.coder.MessagePublisher;
+import us.dot.its.jpo.ode.importer.LogFileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeData;
 
 public class HexDecoderPublisher extends AbstractDecoderPublisher  {
@@ -20,23 +21,44 @@ public class HexDecoderPublisher extends AbstractDecoderPublisher  {
    }
 
    @Override
-   public void decodeAndPublish(BufferedInputStream is, String fileName) throws Exception {
+   public void decodeAndPublish(BufferedInputStream bis, String fileName, boolean hasMetadataHeader) throws Exception {
+      super.decodeAndPublish(bis, fileName, hasMetadataHeader);
       String line = null;
       OdeData decoded = null;
 
-      try (Scanner scanner = new Scanner(is)) {
+      try (Scanner scanner = new Scanner(bis)) {
 
          boolean empty = true;
          while (scanner.hasNextLine()) {
             empty = false;
             line = scanner.nextLine();
 
-            decoded = bsmDecoder.decode(new BufferedInputStream(new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
+            ParserStatus status = ParserStatus.UNKNOWN;
+            if (hasMetadataHeader) {
+                status = bsmFileParser.parse(new BufferedInputStream(
+                    new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName);
+            } else {
+                bsmFileParser.setPayload(HexUtils.fromHexString(line));
+                status = ParserStatus.NA;
+            }
+            
+            if (status == ParserStatus.COMPLETE) {
+                decoded = bsmDecoder.decode(bsmFileParser, 
+                    this.serialId.setBundleId(bundleId.incrementAndGet()));
+            } else if (status == ParserStatus.EOF) {
+                return;
+            }
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);
                publisher.publish(decoded);
             } else {
-               logger.debug("Failed to decode {}.", line);
+                // if parser returns PARTIAL record, we will go back and continue parsing
+                // but if it's UNKNOWN, it means that we could not parse the header bytes
+                if (status == ParserStatus.INIT) {
+                    logger.error("Failed to parse the header bytes: {}", line);
+                } else {
+                    logger.error("Failed to decode ASN.1 data: {}", line);
+                }
             }
          }
 

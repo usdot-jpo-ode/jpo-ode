@@ -1,8 +1,10 @@
 package us.dot.its.jpo.ode.coder;
 
 import java.time.ZonedDateTime;
+import java.util.Date;
 
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
+import us.dot.its.jpo.ode.importer.BsmFileParser;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;
@@ -15,17 +17,32 @@ public class OdeBsmDataCreaterHelper {
    public OdeBsmDataCreaterHelper() {
    }
 
-   public OdeBsmData createOdeBsmData(J2735Bsm rawBsm, IEEE1609p2Message message, String fileName, SerialId serialId) {
+   public OdeBsmData createOdeBsmData(
+      J2735Bsm rawBsm, IEEE1609p2Message message, 
+      BsmFileParser bsmFileParser, SerialId serialId) {
+      
       OdeBsmPayload payload = new OdeBsmPayload(rawBsm);
 
       OdeBsmMetadata metadata = new OdeBsmMetadata(payload);
       metadata.setSerialId(serialId);
 
-      if (message != null) {
-         ZonedDateTime generatedAt = DateTimeUtils.isoDateTime(message.getGenerationTime());
-         metadata.setGeneratedAt(generatedAt.toString());
-
-         metadata.setValidSignature(true);
+      ZonedDateTime generatedAt;
+      if (bsmFileParser != null) {
+         metadata.setLogFileName(bsmFileParser.getFilename());
+         if (message != null) {
+            Date ieeeGenTime = message.getGenerationTime();
+            
+            if (ieeeGenTime != null) {
+               generatedAt = DateTimeUtils.isoDateTime(ieeeGenTime);
+            } else {
+               generatedAt = getGeneratedAt(bsmFileParser);
+            }
+            metadata.setGeneratedAt(generatedAt.toString());
+            metadata.setValidSignature(true);
+         } else {
+            metadata.setGeneratedAt(getGeneratedAt(bsmFileParser).toString());
+            metadata.setValidSignature(bsmFileParser.isValidSignature());
+         }
       } else {
          /*
           * TODO Temporarily put in place for testing CV PEP. Should be removed after
@@ -35,7 +52,19 @@ public class OdeBsmDataCreaterHelper {
       }
 
       metadata.getSerialId().addRecordId(1);
-      metadata.setLogFileName(fileName);
       return new OdeBsmData(metadata, payload);
+   }
+
+   private ZonedDateTime getGeneratedAt(BsmFileParser bsmFileParser) {
+      return DateTimeUtils.isoDateTime(bsmFileParser.getUtctimeInSec() * 1000 + bsmFileParser.getmSec());
+   }
+   
+   public OdeBsmData createOdeBsmData(
+      J2735Bsm rawBsm, String filename, SerialId serialId) {
+      BsmFileParser bsmFileParser = new BsmFileParser()
+            .setFilename(filename)
+            .setUtctimeInSec(0)
+            .setValidSignature(false);
+      return createOdeBsmData(rawBsm, null, bsmFileParser, serialId);
    }
 }

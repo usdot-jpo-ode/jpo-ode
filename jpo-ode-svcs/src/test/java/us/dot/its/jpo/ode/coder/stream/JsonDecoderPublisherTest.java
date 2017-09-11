@@ -8,7 +8,6 @@ import java.util.Scanner;
 
 import org.junit.Test;
 
-import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mocked;
@@ -55,7 +54,7 @@ public class JsonDecoderPublisherTest {
       try {
 
           BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-          new JsonDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName");
+          new JsonDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", true);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -69,9 +68,8 @@ public class JsonDecoderPublisherTest {
             capturingScanner.hasNextLine();
             returns(true, false);
 
-            capturingOdeBsmDataCreaterHelper.createOdeBsmData((J2735Bsm) any, (IEEE1609p2Message) any, anyString, (SerialId) any);
+            capturingOdeBsmDataCreaterHelper.createOdeBsmData((J2735Bsm) any, anyString, (SerialId) any);
             result = mockOdeBsmData;
-            
             
             mockMessagePublisher.publish((OdeData) any);
             times = 1;
@@ -81,7 +79,7 @@ public class JsonDecoderPublisherTest {
       try {
 
           BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-          new JsonDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName");
+          new JsonDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", true);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }

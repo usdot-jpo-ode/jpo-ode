@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import mockit.Capturing;
+import us.dot.its.jpo.ode.importer.BsmFileParser;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
@@ -14,7 +15,7 @@ public class OdeBsmDataCreaterHelperTest {
    @Capturing
    IEEE1609p2Message capturingIEEE1609p2Message;
    @Capturing
-   String capturingString;
+   BsmFileParser capturingBsmFileParser;
    @Capturing
    SerialId capturingSerialId;
    
@@ -25,7 +26,7 @@ public class OdeBsmDataCreaterHelperTest {
       OdeBsmData testingOde = new OdeBsmData();
       OdeBsmDataCreaterHelper testOdbBsmDataCreaterHelper = new OdeBsmDataCreaterHelper();
 
-      testingOde = testOdbBsmDataCreaterHelper.createOdeBsmData(capturingJ2735Bsm, capturingIEEE1609p2Message, capturingString, capturingSerialId);
+      testingOde = testOdbBsmDataCreaterHelper.createOdeBsmData(capturingJ2735Bsm, capturingIEEE1609p2Message, capturingBsmFileParser, capturingSerialId);
 
       
    }
@@ -35,7 +36,7 @@ public class OdeBsmDataCreaterHelperTest {
       OdeBsmData testingOde = new OdeBsmData();
       OdeBsmDataCreaterHelper testOdbBsmDataCreaterHelper = new OdeBsmDataCreaterHelper();
 
-      testingOde = testOdbBsmDataCreaterHelper.createOdeBsmData(capturingJ2735Bsm, capturingIEEE1609p2Message, capturingString, capturingSerialId);
+      testingOde = testOdbBsmDataCreaterHelper.createOdeBsmData(capturingJ2735Bsm, capturingIEEE1609p2Message, capturingBsmFileParser, capturingSerialId);
 
    }
 

@@ -23,6 +23,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.exporter.FilteredBsmExporter;
 import us.dot.its.jpo.ode.exporter.OdeBsmExporter;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
 
@@ -49,14 +50,19 @@ public class FileUploadController {
 
       Path messageFramePath = Paths.get(odeProperties.getUploadLocationRoot(),
             odeProperties.getUploadLocationMessageFrame());
-      logger.debug("UPLOADER - Message Frame directory: {}", messageFramePath);
+      logger.debug("UPLOADER - Message frame directory: {}", messageFramePath);
+      
 
+      Path bsmLogPath = Paths.get(odeProperties.getUploadLocationRoot(),
+          odeProperties.getUploadLocationBsmLog());
+      logger.debug("UPLOADER - BSM log file upload directory: {}", bsmLogPath);
       Path backupPath = Paths.get(odeProperties.getUploadLocationRoot(), "backup");
       logger.debug("UPLOADER - Backup directory: {}", backupPath);
 
       // Create the importers that watch folders for new/modified files
-      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, bsmPath, backupPath));
-      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, messageFramePath, backupPath));
+      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, bsmPath, backupPath, ImporterFileType.BSM));
+      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, messageFramePath, backupPath, ImporterFileType.MESSAGE_FRAME));
+      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, bsmLogPath, backupPath, ImporterFileType.BSM_LOG_FILE));
 
       // Create the exporters
       threadPool.submit(new OdeBsmExporter(odeProperties, ODE_BSM_OUTPUT_TOPIC, template));

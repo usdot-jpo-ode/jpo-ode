@@ -24,7 +24,7 @@ public class BsmToVsdPackagerController {
 
       String outputTopic = odeProps.getKafkaTopicVsdPojo();
 
-      if (odeProps.isEnabledVsdKafkaTopic()) {
+      if (odeProps.getDepositSanitizedBsmToSdc()) {
          logger.info("Converting {} records from topic {} and publishing to topic {} ",
                OdeBsmData.class.getSimpleName(), inputTopic, outputTopic);
 

@@ -4,9 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-
-import javax.xml.bind.DatatypeConverter;
 
 import com.oss.asn1.Coder;
 import com.oss.asn1.EncodeFailedException;
@@ -665,36 +662,11 @@ public class OssTravelerMessageBuilder {
    }
    
    public static HeadingSlice getHeadingSlice(String heading) {
-      if (heading == null || heading.length() == 0) {
-         return new HeadingSlice(new byte[] { 0x00, 0x00 });
-      } else {
-         short result = 0;
-         for (int i = 0; i < 16; i++) {
-            if (heading.charAt(i) == '1') {
-               result |= 1;
-            }
-            result <<= 1;
-         }
-         return new HeadingSlice(ByteBuffer.allocate(2).putShort(result).array());
-      }
+      return new HeadingSlice(CodecUtils.shortStringToByteArray(heading));
    }
    
-
-   public static MsgCRC getMsgCrc(String msgString) {
-      
-      byte[] byteArrayValue = new byte[2]; // NOSONAR
-      
-      if (msgString == null || msgString.length() == 0) {
-         byteArrayValue = new byte[2];
-      } else if (msgString.length() == 16) {
-         byteArrayValue = Arrays.copyOfRange(ByteBuffer.allocate(4).putInt(Integer.parseUnsignedInt(msgString, 2)).array(), 2, 4);
-      } else if (msgString.length() == 4) {
-         byteArrayValue = DatatypeConverter.parseHexBinary(msgString);
-      } else {
-         throw new IllegalArgumentException("MsgCRC length invalid: " + msgString.length());
-      }
-      
-      return new MsgCRC(byteArrayValue);
+   public static MsgCRC getMsgCrc(String crc) {
+      return new MsgCRC(CodecUtils.shortStringToByteArray(crc));
    }
 
 }

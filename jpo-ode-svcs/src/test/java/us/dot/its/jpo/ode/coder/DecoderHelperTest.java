@@ -4,9 +4,6 @@ package us.dot.its.jpo.ode.coder;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-
 import org.junit.Test;
 
 import com.oss.asn1.EncodeFailedException;
@@ -17,6 +14,7 @@ import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mocked;
+import us.dot.its.jpo.ode.importer.BsmFileParser;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
 
@@ -35,24 +33,23 @@ public class DecoderHelperTest {
    IEEE1609p2Message capturingIEEE1609p2Message;
    @Mocked
    EncodeFailedException mockEncodeFailedException;
-   @Capturing
-   Iee1609ContentValidator capturingIee1609ContentValidator;
    @Mocked
    Ieee1609Dot2Content mockIeee1609Dot2Content;
+   @Mocked
+   BsmFileParser mockBsmFileParser;
 
    @Test
    public void decodeBsmTestTwo() {
       new Expectations() {
          {
-            capturingOss1609dot2Coder.decodeIeee1609Dot2DataStream((BufferedInputStream) any);
+            capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
             result = null;
          }
       };
-      BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
 
       BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
       try {
-         testingBsmDecoderHelper.decode(bis, mockString, mockSerialId);
+         testingBsmDecoderHelper.decode(mockBsmFileParser, mockSerialId);
       } catch (Exception e) {
 
          fail("Unexpected error" + e);
@@ -64,11 +61,9 @@ public class DecoderHelperTest {
    public void decodeBsmTestThree() {
       try {
 
-         BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-
          BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
 
-         testingBsmDecoderHelper.decode(bis, mockString, mockSerialId);
+         testingBsmDecoderHelper.decode(mockBsmFileParser, mockSerialId);
       } catch (Exception e) {
 
          fail("Unexpected error" + e);
@@ -81,7 +76,7 @@ public class DecoderHelperTest {
       try {
          new Expectations() {
             {
-               capturingOss1609dot2Coder.decodeIeee1609Dot2DataStream((BufferedInputStream) any);
+               capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
                result = mockIeee1609Dot2Data;
 
                IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
@@ -89,11 +84,10 @@ public class DecoderHelperTest {
 
             }
          };
-         BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
 
          BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
 
-         testingBsmDecoderHelper.decode(bis, mockString, mockSerialId);
+         testingBsmDecoderHelper.decode(mockBsmFileParser, mockSerialId);
       } catch (Exception e) {
          fail("Unexpected error" + e);
       }
@@ -105,7 +99,7 @@ public class DecoderHelperTest {
       try {
          new Expectations() {
             {
-               capturingOss1609dot2Coder.decodeIeee1609Dot2DataStream((BufferedInputStream) any);
+               capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
                result = mockIeee1609Dot2Data;
 
                IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
@@ -113,11 +107,10 @@ public class DecoderHelperTest {
                result = null;
             }
          };
-         BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
 
          BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
 
-         testingBsmDecoderHelper.decode(bis, mockString, mockSerialId);
+         testingBsmDecoderHelper.decode(mockBsmFileParser, mockSerialId);
       } catch (Exception e) {
          fail("Unexpected error" + e);
       }
@@ -129,7 +122,7 @@ public class DecoderHelperTest {
       try {
          new Expectations() {
             {
-               capturingOss1609dot2Coder.decodeIeee1609Dot2DataStream((BufferedInputStream) any);
+               capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
                result = mockIeee1609Dot2Data;
 
                IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
@@ -138,15 +131,14 @@ public class DecoderHelperTest {
                mockIeee1609Dot2Data.getContent();
                result = mockIeee1609Dot2Content;
 
-               capturingIee1609ContentValidator.contentHadUnsecureData((Ieee1609Dot2Content) any);
-               result = true;
+               Ieee1609ContentValidator.getUnsecuredData((Ieee1609Dot2Content) any);
+               result = new byte[0];
             }
          };
-         BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
 
          BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
 
-         assertNull(testingBsmDecoderHelper.decode(bis, mockString, mockSerialId));
+         assertNull(testingBsmDecoderHelper.decode(mockBsmFileParser, mockSerialId));
       } catch (Exception e) {
          fail("Unexpected error" + e);
       }
