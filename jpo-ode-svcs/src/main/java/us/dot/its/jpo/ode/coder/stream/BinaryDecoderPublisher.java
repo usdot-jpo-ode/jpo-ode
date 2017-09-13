@@ -2,10 +2,12 @@ package us.dot.its.jpo.ode.coder.stream;
 
 import java.io.BufferedInputStream;
 
+import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.coder.MessagePublisher;
+import us.dot.its.jpo.ode.importer.LogFileParser.MessageType;
 import us.dot.its.jpo.ode.importer.LogFileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeData;
 
@@ -28,8 +30,12 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
             if (hasMetadataHeader) {
                 status = bsmFileParser.parse(bis, fileName);
                 if (status == ParserStatus.COMPLETE) {
+                   if (MessageType.TIM != bsmFileParser.getMessageType()) {
                     decoded = bsmDecoder.decode(bsmFileParser, 
                         this.serialId.setBundleId(bundleId.incrementAndGet()));
+                   } else {
+                      logger.info("Decoded a TIM from the log file: {}", HexUtils.toHexString(bsmFileParser.getTfp().getAlert()));
+                   }
                 } else if (status == ParserStatus.EOF) {
                     return;
                 }
