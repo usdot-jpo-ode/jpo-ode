@@ -16,7 +16,7 @@ public interface LogFileParser {
    }
 
    public enum ParserStatus {
-        UNKNOWN, INIT, NA, PARTIAL, COMPLETE, EOF
+        UNKNOWN, INIT, NA, PARTIAL, COMPLETE, EOF, ERROR
     }
    
    public enum MessageType {

@@ -44,7 +44,9 @@ public class TimFileParser {
    private short length;
    private byte[] alert;
    
-   public ParserStatus parse(BufferedInputStream bis, String fileName) throws LogFileParserException {
+   private int bytesReadSoFar = 0;
+   
+   public ParserStatus parse(BufferedInputStream bis, String fileName) {
 
       ParserStatus status = ParserStatus.INIT;
 
@@ -60,6 +62,7 @@ public class TimFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             setLatitude(CodecUtils.bytesToInt(readBuffer, 0, TIM_LOCATION_LAT_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            setBytesReadSoFar(getBytesReadSoFar() + TIM_LOCATION_LAT_LENGTH);
          }
          
          // Step 2 - parse location.longitude
@@ -68,6 +71,7 @@ public class TimFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             setLongitude(CodecUtils.bytesToInt(readBuffer, 0, TIM_LOCATION_LON_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            setBytesReadSoFar(getBytesReadSoFar() + TIM_LOCATION_LON_LENGTH);
          }
          
          // Step 3 - parse location.elevation
@@ -76,6 +80,7 @@ public class TimFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             setElevation(CodecUtils.bytesToInt(readBuffer, 0, TIM_LOCATION_ELEV_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            setBytesReadSoFar(getBytesReadSoFar() + TIM_LOCATION_ELEV_LENGTH);
          }
          
          // Step 4 - parse location.speed
@@ -84,6 +89,7 @@ public class TimFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             setSpeed(CodecUtils.bytesToShort(readBuffer, 0, TIM_LOCATION_SPEED_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            setBytesReadSoFar(getBytesReadSoFar() + TIM_LOCATION_SPEED_LENGTH);
          }
          
          // Step 5 - parse location.heading
@@ -92,6 +98,7 @@ public class TimFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             setHeading(CodecUtils.bytesToShort(readBuffer, 0, TIM_LOCATION_HEADING_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            setBytesReadSoFar(getBytesReadSoFar() + TIM_LOCATION_HEADING_LENGTH);
          }
          
          // Step 6 - parse utcTimeInSec
@@ -100,6 +107,7 @@ public class TimFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             setUtcTimeInSec(CodecUtils.bytesToInt(readBuffer, 0, TIM_UTC_TIME_IN_SEC_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            setBytesReadSoFar(getBytesReadSoFar() + TIM_UTC_TIME_IN_SEC_LENGTH);
          }
          
          // Step 7 - parse mSec
@@ -108,6 +116,7 @@ public class TimFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             setmSec(CodecUtils.bytesToShort(readBuffer, 0, TIM_MSEC_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            setBytesReadSoFar(getBytesReadSoFar() + TIM_MSEC_LENGTH);
          }
          
          // Step 8 - parse alert length
@@ -116,6 +125,7 @@ public class TimFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             setLength(CodecUtils.bytesToShort(readBuffer, 0, TIM_ALERT_LENGTH_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            setBytesReadSoFar(getBytesReadSoFar() + TIM_ALERT_LENGTH_LENGTH);
          }
          
          // Step 9 - copy alert
@@ -124,11 +134,13 @@ public class TimFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             setAlert(Arrays.copyOf(readBuffer, getLength()));
+            setBytesReadSoFar(getBytesReadSoFar() + getLength());
          }
          
          return status;
       } catch (Exception e) {
-         throw new LogFileParserException(String.format("Error parsing %s on step %d", filename, getStep()) , e);
+         return ParserStatus.ERROR;
+         //throw new LogFileParserException(String.format("Error parsing %s on step %d", filename, getStep()) , e);
       }
    }
    
@@ -245,5 +257,13 @@ public class TimFileParser {
 
    public void setStep(int step) {
       this.step = step;
+   }
+
+   public int getBytesReadSoFar() {
+      return bytesReadSoFar;
+   }
+
+   public void setBytesReadSoFar(int bytesReadSoFar) {
+      this.bytesReadSoFar = bytesReadSoFar;
    }
 }
