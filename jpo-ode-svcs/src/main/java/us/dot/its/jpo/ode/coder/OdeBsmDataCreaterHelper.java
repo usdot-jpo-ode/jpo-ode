@@ -4,7 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
-import us.dot.its.jpo.ode.importer.BsmFileParser;
+import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;

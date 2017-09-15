@@ -9,7 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.coder.MessagePublisher;
-import us.dot.its.jpo.ode.importer.LogFileParser.ParserStatus;
+import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
+import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeData;
 
 public class HexDecoderPublisher extends AbstractDecoderPublisher  {
@@ -22,9 +23,10 @@ public class HexDecoderPublisher extends AbstractDecoderPublisher  {
 
    @Override
    public void decodeAndPublish(BufferedInputStream bis, String fileName, boolean hasMetadataHeader) throws Exception {
-      super.decodeAndPublish(bis, fileName, hasMetadataHeader);
       String line = null;
       OdeData decoded = null;
+      
+      BsmFileParser bsmFileParser = new BsmFileParser();
 
       try (Scanner scanner = new Scanner(bis)) {
 

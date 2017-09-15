@@ -12,8 +12,9 @@ import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.Test;
 
 import mockit.Tested;
-import us.dot.its.jpo.ode.importer.LogFileParser.LogFileParserException;
-import us.dot.its.jpo.ode.importer.LogFileParser.ParserStatus;
+import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
+import us.dot.its.jpo.ode.importer.parser.LogFileParser.LogFileParserException;
+import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
 
 public class BsmFileParserTest {
 

@@ -1,10 +1,11 @@
-package us.dot.its.jpo.ode.importer;
+package us.dot.its.jpo.ode.importer.parser;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
+import us.dot.its.jpo.ode.importer.BsmSource;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class BsmFileParser implements LogFileParser {
@@ -29,9 +30,8 @@ public class BsmFileParser implements LogFileParser {
    private boolean validSignature;
    private short length;
    private byte[] payload;
-   
-   private int bytesReadSoFar = 0;
 
+   @Override
    public ParserStatus parse(BufferedInputStream bis, String fileName) throws LogFileParserException {
       ParserStatus status = ParserStatus.INIT;
 
@@ -47,7 +47,6 @@ public class BsmFileParser implements LogFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             setDirection(BsmSource.values()[readBuffer[0]]);
-            setBytesReadSoFar(getBytesReadSoFar() + DIRECTION_LENGTH);
          }
          // Step 2
          if (step == 2) {
@@ -55,7 +54,6 @@ public class BsmFileParser implements LogFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             setUtctimeInSec(CodecUtils.bytesToInt(readBuffer, 0, UTC_TIME_IN_SEC_LENGTH, ByteOrder.LITTLE_ENDIAN));
-            setBytesReadSoFar(getBytesReadSoFar() + UTC_TIME_IN_SEC_LENGTH);
          }
          // Step 3
          if (step == 3) {
@@ -63,7 +61,6 @@ public class BsmFileParser implements LogFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             setmSec(CodecUtils.bytesToShort(readBuffer, 0, MSEC_LENGTH, ByteOrder.LITTLE_ENDIAN));
-            setBytesReadSoFar(getBytesReadSoFar() + MSEC_LENGTH);
          }
          // Step 4
          if (step == 4) {
@@ -75,7 +72,6 @@ public class BsmFileParser implements LogFileParser {
                if (status != ParserStatus.COMPLETE)
                   return status;
                setValidSignature(readBuffer[0] == 0 ? false : true);
-               setBytesReadSoFar(getBytesReadSoFar() + VERIFICATION_STATUS_LENGTH);
             }
          }
          // Step 5
@@ -84,7 +80,6 @@ public class BsmFileParser implements LogFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             setLength(CodecUtils.bytesToShort(readBuffer, 0, LENGTH_LENGTH, ByteOrder.LITTLE_ENDIAN));
-            setBytesReadSoFar(getBytesReadSoFar() + LENGTH_LENGTH);
          }
          // Step 6
          if (step == 6) {
@@ -92,7 +87,6 @@ public class BsmFileParser implements LogFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             setPayload(Arrays.copyOf(readBuffer, getLength()));
-            setBytesReadSoFar(getBytesReadSoFar() + getLength());
          }
       } catch (Exception e) {
          throw new LogFileParserException("Error parsing " + fileName, e);
@@ -200,13 +194,5 @@ public class BsmFileParser implements LogFileParser {
    public BsmFileParser setPayload(byte[] payload) {
       this.payload = payload;
       return this;
-   }
-
-   public int getBytesReadSoFar() {
-      return bytesReadSoFar;
-   }
-
-   public void setBytesReadSoFar(int bytesReadSoFar) {
-      this.bytesReadSoFar = bytesReadSoFar;
    }
 }

@@ -1,4 +1,6 @@
-package us.dot.its.jpo.ode.importer;
+package us.dot.its.jpo.ode.importer.parser;
+
+import java.io.BufferedInputStream;
 
 public interface LogFileParser {
 
@@ -18,10 +20,6 @@ public interface LogFileParser {
    public enum ParserStatus {
         UNKNOWN, INIT, NA, PARTIAL, COMPLETE, EOF, ERROR
     }
-   
-   public enum MessageType {
-      RX, TX, TIM
-   }
-    
 
+   public ParserStatus parse(BufferedInputStream bis, String fileName) throws LogFileParserException;
 }

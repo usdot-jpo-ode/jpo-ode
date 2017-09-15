@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import mockit.Mocked;
+import us.dot.its.jpo.ode.importer.parser.LogFileParser;
 
 public class LogFileParserTest {
 

@@ -1,12 +1,13 @@
 package us.dot.its.jpo.ode.coder;
 
 import java.io.BufferedInputStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Ieee1609Dot2Data;
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
-import us.dot.its.jpo.ode.importer.BsmFileParser;
+import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.model.SerialId;
