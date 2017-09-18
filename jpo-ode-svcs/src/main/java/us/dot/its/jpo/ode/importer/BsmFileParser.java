@@ -29,9 +29,16 @@ public class BsmFileParser implements LogFileParser {
    private boolean validSignature;
    private short length;
    private byte[] payload;
+   
+   private MessageType messageType;
+
+   private TimFileParser tfp;
 
    public ParserStatus parse(BufferedInputStream bis, String fileName) throws LogFileParserException {
       ParserStatus status = ParserStatus.INIT;
+      messageType = MessageType.RX;
+      
+      this.setTfp(new TimFileParser());
 
       try {
          if (step == 0) {
@@ -44,7 +51,23 @@ public class BsmFileParser implements LogFileParser {
             status = parseStep(bis, DIRECTION_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
+            try {
             setDirection(BsmSource.values()[readBuffer[0]]);
+            setMessageType(MessageType.values()[readBuffer[0]]);
+            } catch (Exception e) {
+               
+               // TODO handle exception
+               
+               TimFileParser tfp = null;
+               try {
+                  bis.reset();
+                  tfp = new TimFileParser();
+                  tfp.parse(bis, this.filename);
+                  setMessageType(MessageType.TIM);
+               } catch (Exception e2) {
+                  throw new LogFileParserException("Failed to parse TIM message, Error parsing step " + tfp.getStep(), e2);
+               }
+            }
          }
          // Step 2
          if (step == 2) {
@@ -87,7 +110,13 @@ public class BsmFileParser implements LogFileParser {
             setPayload(Arrays.copyOf(readBuffer, getLength()));
          }
       } catch (Exception e) {
-         throw new LogFileParserException("Error parsing " + fileName, e);
+         try {
+            bis.reset();
+            this.tfp.parse(bis, this.filename);
+         } catch (Exception e2) {
+            throw new LogFileParserException("Failed to parse TIM message, Error parsing step " + this.tfp.getStep(), e2);
+         }
+         //throw new LogFileParserException("Error parsing " + fileName, e);
       }
 
       step = 0;
@@ -96,7 +125,7 @@ public class BsmFileParser implements LogFileParser {
       return status;
    }
 
-   private ParserStatus parseStep(BufferedInputStream bis, int length) throws LogFileParserException {
+   public ParserStatus parseStep(BufferedInputStream bis, int length) throws LogFileParserException {
       try {
          int numBytes;
          if (bis.markSupported()) {
@@ -118,7 +147,7 @@ public class BsmFileParser implements LogFileParser {
             step++;
             return ParserStatus.COMPLETE;
          }
-      } catch (Exception e) {
+      } catch (Exception e)  {
          throw new LogFileParserException("Error parsing step " + step, e);
       }
    }
@@ -192,5 +221,21 @@ public class BsmFileParser implements LogFileParser {
    public BsmFileParser setPayload(byte[] payload) {
       this.payload = payload;
       return this;
+   }
+
+   public MessageType getMessageType() {
+      return messageType;
+   }
+
+   public void setMessageType(MessageType messageType) {
+      this.messageType = messageType;
+   }
+
+   public TimFileParser getTfp() {
+      return tfp;
+   }
+
+   public void setTfp(TimFileParser tfp) {
+      this.tfp = tfp;
    }
 }
