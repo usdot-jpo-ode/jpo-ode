@@ -58,7 +58,7 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
     "schemaVersion": 2,
     "sanitized": true,
     "validSignature" : true
-  }
+  },
   "payload": {                                                
     "dataType": "us.dot.its.jpo.ode.plugin.j2735.J2735Bsm",
     "schemaVersion": 1,
