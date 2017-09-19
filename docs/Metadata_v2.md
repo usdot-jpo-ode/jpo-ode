@@ -13,8 +13,9 @@ All files are in a JSON format and are broken into three core fields:
 - schemaVersion - Version number of the full file schema
 
 #### Metadata 
+
 Field Name | Definition 
---- | --- | ---
+--- | --- 
 generatedAt | Closest time to which the message was created, either signed or received by On Board Unit (OBU) in UTC format. This information is taken from the communication header.
 logFileName | Name of the original file that deposited the message into the ODE
 payloadType | ODE specific Java class identifying the type of payload included with the message
@@ -32,8 +33,7 @@ validSignature | Boolean of signed vs unsigned data based on the SCMS System
 
 #### Payload 
 
-Field Name | Definition
---- | ---
+
 datatype | ODE classpath for the information represented in the data field of the payload
 schemaVersion | Version number of the payload schema
 data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard](http://standards.sae.org/j2735_201603/)
@@ -47,7 +47,7 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
     "generatedAt": "2017-0714T15:46:47.707Z[UTC]",            
     "logFileName": "signed_bsm.coer",                         
     "payloadType": "us.dot.its.jpo.ode.model.OdeVehicleData", 
-    "serialId": 
+    "serialId": {
       "streamId": "8375ca99-8e7d-4847-908e-0df12d03dd6d",     
       "bundleSize": 1,                                        
       "bundleId": 0,                                          
@@ -55,9 +55,9 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
       "serialNumber": 0
     },
     "receivedAt": "2017-07-27T12:03:35.509Z[UTC]",                 
-    "schemaVersion": 2
-	"sanitized": true,
-	"validSignature" : true
+    "schemaVersion": 2,
+    "sanitized": true,
+    "validSignature" : true
   }
   "payload": {                                                
     "dataType": "us.dot.its.jpo.ode.plugin.j2735.J2735Bsm",
