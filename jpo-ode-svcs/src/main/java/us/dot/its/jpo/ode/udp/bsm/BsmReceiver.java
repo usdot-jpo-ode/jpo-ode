@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.MessagePublisher;
+import us.dot.its.jpo.ode.coder.BsmMessagePublisher;
 import us.dot.its.jpo.ode.coder.stream.BinaryDecoderPublisher;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 
@@ -31,7 +31,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
    public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
       super(odeProps, port, bufferSize);
-      this.binaryDecoderPublisher = new BinaryDecoderPublisher(new MessagePublisher(odeProperties));
+      this.binaryDecoderPublisher = new BinaryDecoderPublisher(new BsmMessagePublisher(odeProperties), null);
    }
 
    @Override

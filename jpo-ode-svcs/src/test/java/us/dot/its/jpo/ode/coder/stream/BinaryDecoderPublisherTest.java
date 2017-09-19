@@ -12,7 +12,7 @@ import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
-import us.dot.its.jpo.ode.coder.MessagePublisher;
+import us.dot.its.jpo.ode.coder.BsmMessagePublisher;
 import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeData;
@@ -22,7 +22,7 @@ import us.dot.its.jpo.ode.model.SerialId;
 public class BinaryDecoderPublisherTest {
 
    @Mocked
-   MessagePublisher mockMessagePublisher;
+   BsmMessagePublisher mockMessagePublisher;
    @Capturing
    BsmDecoderHelper capturingDecoderHelper;
    @Mocked
@@ -48,7 +48,7 @@ public class BinaryDecoderPublisherTest {
          };
 
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new BinaryDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", true);
+         new BinaryDecoderPublisher(mockMessagePublisher, null).decodeAndPublish(bis, "testFileName", true);
 
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
@@ -72,7 +72,7 @@ public class BinaryDecoderPublisherTest {
          };
 
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new BinaryDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", true);
+         new BinaryDecoderPublisher(mockMessagePublisher, null).decodeAndPublish(bis, "testFileName", true);
 
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
@@ -96,7 +96,7 @@ public class BinaryDecoderPublisherTest {
          };
 
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new BinaryDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", true);
+         new BinaryDecoderPublisher(mockMessagePublisher, null).decodeAndPublish(bis, "testFileName", true);
 
       } catch (Exception e) {
          fail("Unexpected exception: " + e);

@@ -14,13 +14,13 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmSerializer;
 
-public class MessagePublisher {
+public class BsmMessagePublisher {
 
-   private static final Logger logger = LoggerFactory.getLogger(MessagePublisher.class);
+   private static final Logger logger = LoggerFactory.getLogger(BsmMessagePublisher.class);
    private OdeProperties odeProperties;
    protected MessageProducer<String, OdeObject> objectProducer;
 
-   public MessagePublisher(OdeProperties odeProps) {
+   public BsmMessagePublisher(OdeProperties odeProps) {
       this.odeProperties = odeProps;
       this.objectProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(),
             null, OdeBsmSerializer.class.getName());

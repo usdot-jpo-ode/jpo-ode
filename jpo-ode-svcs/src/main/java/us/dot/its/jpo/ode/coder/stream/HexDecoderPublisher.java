@@ -8,7 +8,7 @@ import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.coder.MessagePublisher;
+import us.dot.its.jpo.ode.coder.BsmMessagePublisher;
 import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeData;
@@ -17,7 +17,7 @@ public class HexDecoderPublisher extends AbstractDecoderPublisher  {
 
    private static final Logger logger = LoggerFactory.getLogger(HexDecoderPublisher.class);
 
-   public HexDecoderPublisher(MessagePublisher dataPub) {
+   public HexDecoderPublisher(BsmMessagePublisher dataPub) {
         super(dataPub);
    }
 

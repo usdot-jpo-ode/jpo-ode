@@ -13,7 +13,7 @@ import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
-import us.dot.its.jpo.ode.coder.MessagePublisher;
+import us.dot.its.jpo.ode.coder.BsmMessagePublisher;
 import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeData;
@@ -22,7 +22,7 @@ import us.dot.its.jpo.ode.model.SerialId;
 public class HexDecoderPublisherTest {
 
    @Mocked
-   MessagePublisher mockMessagePublisher;
+   BsmMessagePublisher mockMessagePublisher;
    @Capturing
    BsmDecoderHelper capturingDecoderHelper;
    @Capturing

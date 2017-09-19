@@ -37,6 +37,8 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssMessageFrame.OssMessageFrameException;
 import us.dot.its.jpo.ode.security.SecurityManager;
 import us.dot.its.jpo.ode.security.SecurityManager.SecurityManagerException;
+import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class TimDecoderHelper {
 
@@ -53,7 +55,7 @@ public class TimDecoderHelper {
       this.rawBsmMfSorter = new RawBsmMfSorter(new OssJ2735Coder());
    }
 
-   public OdeData decode(RxMsgFileParser fileParser, SerialId serialId) throws Exception {
+   public OdeData decode(RxMsgFileParser fileParser, SerialId serialId, MessageProducer<String, String> timProd) throws Exception {
 
       Ieee1609Dot2Data ieee1609dot2Data = ieee1609dotCoder.decodeIeee1609Dot2DataBytes(fileParser.getPayload());
       OdeObject odeTim = null;
@@ -120,7 +122,8 @@ public class TimDecoderHelper {
                 throw new OssMessageFrameException("No OpenType value");
             }
 
-            logger.debug("Extracted a TIM: " + tim);
+            logger.debug("Extracted a TIM: " + JsonUtils.toJson(tim, true));
+            timProd.send("topic.AsnStringTim", null, JsonUtils.toJson(tim, true));
             decodedMessage = tim;
             
             
@@ -150,23 +153,23 @@ public class TimDecoderHelper {
       }
 
       // TODO - convert the tim message
-      odeTim = new J2735TravelerInformationMessage();
-
-      if (odeTim != null) {
-         logger.debug("Decoded TIM successfully, creating OdeTimData object.");
-
-         OdeMsgPayload timDataPayload = new OdeMsgPayload(odeTim);
-         OdeMsgMetadata timMetadata = new OdeMsgMetadata(timDataPayload); // TODO
-                                                                          // create
-                                                                          // and
-                                                                          // populate
-                                                                          // tim
-                                                                          // metdata
-         odeTimData = new OdeTravelerInformationData(timMetadata, timDataPayload);
-
-      } else {
-         logger.debug("Failed to decode TIM.");
-      }
-      return odeTimData;
+//      odeTim = new J2735TravelerInformationMessage();
+//
+//      if (odeTim != null) {
+//         logger.debug("Decoded TIM successfully, creating OdeTimData object.");
+//
+//         OdeMsgPayload timDataPayload = new OdeMsgPayload(odeTim);
+//         OdeMsgMetadata timMetadata = new OdeMsgMetadata(timDataPayload); // TODO
+//                                                                          // create
+//                                                                          // and
+//                                                                          // populate
+//                                                                          // tim
+//                                                                          // metdata
+//         odeTimData = new OdeTravelerInformationData(timMetadata, timDataPayload);
+//
+//      } else {
+//         logger.debug("Failed to decode TIM.");
+//      }
+      return new OdeTravelerInformationData(null, null);
    }
 }

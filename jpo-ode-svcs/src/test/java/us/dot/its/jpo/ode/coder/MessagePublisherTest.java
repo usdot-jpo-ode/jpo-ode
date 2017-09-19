@@ -21,7 +21,7 @@ import us.dot.its.jpo.ode.wrapper.MessageProducer;
 public class MessagePublisherTest {
 
    @Tested
-   MessagePublisher testMessagePublisher;
+   BsmMessagePublisher testMessagePublisher;
    @Injectable
    OdeProperties testOdeProperties;
    @Mocked

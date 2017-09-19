@@ -16,7 +16,7 @@ import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
-import us.dot.its.jpo.ode.coder.MessagePublisher;
+import us.dot.its.jpo.ode.coder.BsmMessagePublisher;
 import us.dot.its.jpo.ode.coder.stream.BinaryDecoderPublisher;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
@@ -38,7 +38,7 @@ public class BsmReceiverTest {
    @Capturing
    BsmDecoderHelper capturingBinaryDecoderHelper;
    @Capturing
-   MessagePublisher capturingMessagePublisher;
+   BsmMessagePublisher capturingMessagePublisher;
    @Capturing DatagramSocket capturingDatagramSocket;
    @Capturing BinaryDecoderPublisher capturingBinaryDecoderPublisher;
 
