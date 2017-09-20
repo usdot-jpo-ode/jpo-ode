@@ -186,11 +186,10 @@ git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdo
 ### Build and Deploy the Application
 
 #### Environment Variables
-ODE configuration can be customized for every deployment environment using the OS's environment variables. The following table list the environment variables used in Docker files and shell scripts to automate the deployment process and customize it for each deployment environment. Setting these environment variables will allow the deployment to take place without any modification to the default configuration files.
+ODE configuration can be customized for every deployment environment using the OS's environment variables. Using the *.env* file you and fill in the default fields that are used when docker starts. Information about Docker Environment Variables and the *.env* file can be found in the page linked below.
 
-[Docker Environment Variables](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-Environment-variables)
+[Using Dockers .env file to set Environment Variables](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-Environment-variables)
 
-To be able to change the configuration of the application during runtime, you may store the configuration files in the location specified by the DOCKER_SHARED_VOLUME/config environment variable.
 
 #### Build Process
 
