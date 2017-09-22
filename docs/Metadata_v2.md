@@ -107,7 +107,7 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
                   "latOffset": 0.0000035,
                   "lonOffset": 0.0131071,
                   "timeOffset": 33.2
-                },             
+                }           
               ]
             },
             "pathPrediction": {
