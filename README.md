@@ -186,9 +186,9 @@ git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdo
 ### Build and Deploy the Application
 
 #### Environment Variables
-ODE configuration can be customized for every deployment environment using the OS's environment variables. Using the *.env* file you and fill in the default fields that are used when docker starts. Information about Docker Environment Variables and the *.env* file can be found in the page linked below.
+ODE configuration can be customized for every deployment environment using environment variables. These variables can either bet set locally or using the *.env* file found in the root of the jpo-ode repository.
 
-[Using Dockers .env file to set Environment Variables](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-Environment-variables)
+Instructions for how to use the *.env* file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
 
 
 #### Build Process
