@@ -87,6 +87,7 @@
     "status": "4"
   },
   "sdw": {
+    "ttl": "oneday",
     "serviceRegion": {
       "nwCorner": {
         "latitude": "44.998459",
