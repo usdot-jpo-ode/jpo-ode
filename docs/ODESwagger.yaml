@@ -582,7 +582,8 @@ definitions:
     properties:
       ttl:
         type: string
-        description: Time to live, one of: oneminute, thirtyminutes, oneday, oneweek, onemonth, oneyear.
+        description: Message time to live.
+        enum: [oneminute,thirtyminutes,oneday,oneweek,onemonth,oneyear]
       serviceRegion:
         properties:
           nwCorner:
