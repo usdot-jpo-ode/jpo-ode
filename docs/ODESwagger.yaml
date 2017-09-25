@@ -580,20 +580,26 @@ definitions:
   SDW:
     type: object
     properties:
-      nwCorner:
-        type: object
+      ttl:
+        type: string
+        description: Message time to live.
+        enum: [oneminute,thirtyminutes,oneday,oneweek,onemonth,oneyear]
+      serviceRegion:
         properties:
-          latitude:
-            type: string
-          longitude:
-            type: string
-      seCorner:
-        type: object
-        properties:
-          latitude:
-            type: string
-          longitude:
-            type: string
+          nwCorner:
+            type: object
+            properties:
+              latitude:
+                type: string
+              longitude:
+                type: string
+          seCorner:
+            type: object
+            properties:
+              latitude:
+                type: string
+              longitude:
+                type: string
   PDM:
     type: object
     properties:

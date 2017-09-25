@@ -99,6 +99,7 @@
     "status": "4"
   },
   "sdw": {
+    "ttl": "oneminute",
     "serviceRegion": {
       "nwCorner": {
         "latitude": "44.998459",
