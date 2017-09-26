@@ -12,9 +12,9 @@ import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
-public class OdeBsmDataCreaterHelper {
+public class OdeBsmDataCreatorHelper {
 
-   public OdeBsmDataCreaterHelper() {
+   public OdeBsmDataCreatorHelper() {
    }
 
    public OdeBsmData createOdeBsmData(

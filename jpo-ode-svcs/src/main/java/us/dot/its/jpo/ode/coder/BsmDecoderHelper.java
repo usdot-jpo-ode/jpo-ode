@@ -21,14 +21,14 @@ public class BsmDecoderHelper {
    private final OssJ2735Coder j2735Coder;
    private final Oss1609dot2Coder ieee1609dotCoder;
    private final RawBsmMfSorter rawBsmMFSorterIn;
-   private final OdeBsmDataCreaterHelper odeBsmDataCreaterHelperIn;
+   private final OdeBsmDataCreatorHelper odeBsmDataCreaterHelperIn;
    private final BsmDecoderPayloadHelper bsmDecoderPayloadHelperIn;
 
    public BsmDecoderHelper() {
       this.j2735Coder = new OssJ2735Coder();
       this.ieee1609dotCoder = new Oss1609dot2Coder();
       this.rawBsmMFSorterIn = new RawBsmMfSorter(j2735Coder);
-      this.odeBsmDataCreaterHelperIn = new OdeBsmDataCreaterHelper();
+      this.odeBsmDataCreaterHelperIn = new OdeBsmDataCreatorHelper();
       this.bsmDecoderPayloadHelperIn = new BsmDecoderPayloadHelper(rawBsmMFSorterIn);
    }
 
