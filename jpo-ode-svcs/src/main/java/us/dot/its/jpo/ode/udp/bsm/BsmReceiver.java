@@ -1,8 +1,8 @@
 package us.dot.its.jpo.ode.udp.bsm;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.DatagramPacket;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
@@ -11,7 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
-import us.dot.its.jpo.ode.coder.stream.BinaryDecoderPublisher;
+import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
+import us.dot.its.jpo.ode.model.OdeData;
+import us.dot.its.jpo.ode.model.SerialId;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
@@ -22,7 +27,16 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                                                         // start of BSM payload
    private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
                                                       // least 20 bytes long
-   private BinaryDecoderPublisher binaryDecoderPublisher;
+
+   private OssJ2735Coder j2735coder;
+
+   private OdeBsmDataCreatorHelper metadataHelper;
+
+   private SerialId serialId;
+
+   private MessagePublisher messagePub;
+   
+   protected static AtomicInteger bundleId = new AtomicInteger(1);
 
    @Autowired
    public BsmReceiver(OdeProperties odeProps) {
@@ -31,7 +45,13 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
    public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
       super(odeProps, port, bufferSize);
-      this.binaryDecoderPublisher = new BinaryDecoderPublisher(new MessagePublisher(odeProperties));
+      this.j2735coder = new OssJ2735Coder();
+      this.metadataHelper = new OdeBsmDataCreatorHelper();
+      
+      this.serialId = new SerialId();
+      this.serialId.setBundleId(bundleId.incrementAndGet());
+      
+      this.messagePub = new MessagePublisher(odeProperties);
    }
 
    @Override
@@ -56,8 +76,24 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                byte[] payload = removeHeader(packet.getData());
                String payloadHexString = HexUtils.toHexString(payload);
                logger.debug("Packet: {}", payloadHexString);
-               binaryDecoderPublisher.decodeAndPublish(
-                   new BufferedInputStream(new ByteArrayInputStream(payload)), null, false);
+               
+               // try decoding as a message frame
+               J2735Bsm decodedBsm = null;
+               J2735MessageFrame decodedMf = (J2735MessageFrame) j2735coder.decodeUPERMessageFrameBytes(payload);
+               if (decodedMf != null) {
+                  decodedBsm = decodedMf.getValue();
+               } else {
+               // if that failed, try decoding as a bsm
+                  decodedBsm = (J2735Bsm) j2735coder.decodeUPERBsmBytes(payload);
+               }
+               
+               // if that failed, throw an io exception
+               if (decodedBsm == null) {
+                  throw new IOException("Failed to decode message received via UDP.");
+               }
+
+               OdeData msgWithMetadata = metadataHelper.createOdeBsmData(decodedBsm, null, this.serialId.setBundleId(bundleId.incrementAndGet()));
+               messagePub.publish(msgWithMetadata);
             }
          } catch (Exception e) {
             logger.error("Error receiving packet", e);

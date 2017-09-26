@@ -13,7 +13,7 @@ import mockit.Expectations;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
-import us.dot.its.jpo.ode.coder.OdeBsmDataCreaterHelper;
+import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
@@ -35,7 +35,7 @@ public class JsonDecoderPublisherTest {
    @Capturing
    BsmDecoderHelper capturingBsmDecoderHelper;
    @Capturing
-   OdeBsmDataCreaterHelper capturingOdeBsmDataCreaterHelper;
+   OdeBsmDataCreatorHelper capturingOdeBsmDataCreaterHelper;
    
 
    @Test(timeout = 4000)

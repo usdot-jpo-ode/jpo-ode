@@ -24,7 +24,7 @@ public class OdeBsmDataCreaterHelperTest {
    public void notNullTest() {
       
       OdeBsmData testingOde = new OdeBsmData();
-      OdeBsmDataCreaterHelper testOdbBsmDataCreaterHelper = new OdeBsmDataCreaterHelper();
+      OdeBsmDataCreatorHelper testOdbBsmDataCreaterHelper = new OdeBsmDataCreatorHelper();
 
       testingOde = testOdbBsmDataCreaterHelper.createOdeBsmData(capturingJ2735Bsm, capturingIEEE1609p2Message, capturingBsmFileParser, capturingSerialId);
 
@@ -34,7 +34,7 @@ public class OdeBsmDataCreaterHelperTest {
    public void nullTest() {
       capturingIEEE1609p2Message = null;
       OdeBsmData testingOde = new OdeBsmData();
-      OdeBsmDataCreaterHelper testOdbBsmDataCreaterHelper = new OdeBsmDataCreaterHelper();
+      OdeBsmDataCreatorHelper testOdbBsmDataCreaterHelper = new OdeBsmDataCreatorHelper();
 
       testingOde = testOdbBsmDataCreaterHelper.createOdeBsmData(capturingJ2735Bsm, capturingIEEE1609p2Message, capturingBsmFileParser, capturingSerialId);
 
