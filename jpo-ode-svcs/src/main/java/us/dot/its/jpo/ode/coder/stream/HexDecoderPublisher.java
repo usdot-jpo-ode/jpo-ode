@@ -16,9 +16,10 @@ import us.dot.its.jpo.ode.model.OdeData;
 public class HexDecoderPublisher extends AbstractDecoderPublisher  {
 
    private static final Logger logger = LoggerFactory.getLogger(HexDecoderPublisher.class);
+   private BsmMessagePublisher dataPub;
 
    public HexDecoderPublisher(BsmMessagePublisher dataPub) {
-        super(dataPub);
+        this.dataPub = dataPub;
    }
 
    @Override
@@ -52,7 +53,7 @@ public class HexDecoderPublisher extends AbstractDecoderPublisher  {
             }
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);
-               publisher.publish(decoded);
+               dataPub.publish(decoded);
             } else {
                 // if parser returns PARTIAL record, we will go back and continue parsing
                 // but if it's UNKNOWN, it means that we could not parse the header bytes

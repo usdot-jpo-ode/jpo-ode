@@ -29,12 +29,14 @@ import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
 import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.model.OdeTimData;
 import us.dot.its.jpo.ode.model.OdeTravelerInformationData;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
 import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssMessageFrame.OssMessageFrameException;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerInformation;
 import us.dot.its.jpo.ode.security.SecurityManager;
 import us.dot.its.jpo.ode.security.SecurityManager.SecurityManagerException;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -61,8 +63,6 @@ public class TimDecoderHelper {
       OdeObject odeTim = null;
       OdeData odeTimData = null;
       IEEE1609p2Message message = null;
-      
-      
 
       AbstractData decodedMessage = null;
       MessageFrame mf = new MessageFrame();
@@ -123,9 +123,12 @@ public class TimDecoderHelper {
             }
 
             logger.debug("Extracted a TIM: " + JsonUtils.toJson(tim, true));
-            timProd.send("topic.AsnStringTim", null, JsonUtils.toJson(tim, true));
-            decodedMessage = tim;
+            //timProd.send("topic.AsnStringTim", null, JsonUtils.toJson(tim, true));
+            //decodedMessage = tim;
             
+            OdeMsgPayload timPayload = new OdeMsgPayload(OssTravelerInformation.genericTim(tim));
+            OdeMsgMetadata timMetadata = new OdeMsgMetadata(timPayload);
+            odeTimData = new OdeTravelerInformationData(timMetadata, timPayload);
             
             
          } else if (mf.getMessageId().intValue() == DSRC_MSG_ID_BSM) {
@@ -170,6 +173,6 @@ public class TimDecoderHelper {
 //      } else {
 //         logger.debug("Failed to decode TIM.");
 //      }
-      return new OdeTravelerInformationData(null, null);
+      return odeTimData;
    }
 }

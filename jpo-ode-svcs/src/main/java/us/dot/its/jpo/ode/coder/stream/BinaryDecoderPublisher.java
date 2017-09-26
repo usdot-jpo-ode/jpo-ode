@@ -6,13 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.coder.BsmMessagePublisher;
-import us.dot.its.jpo.ode.importer.TimFileParser;
+import us.dot.its.jpo.ode.coder.TimMessagePublisher;
 import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
 import us.dot.its.jpo.ode.importer.parser.RxMsgFileParser;
 import us.dot.its.jpo.ode.model.OdeData;
-import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
@@ -22,10 +21,12 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
 
    private static final Logger logger = LoggerFactory.getLogger(BinaryDecoderPublisher.class);
    private MessageProducer<String, String> timProducer;
+   private BsmMessagePublisher bsmMessagePublisher;
+   private TimMessagePublisher timMessagePublisher;
 
-   public BinaryDecoderPublisher(BsmMessagePublisher dataPub, MessageProducer<String, String> timProd) {
-      super(dataPub);
-      this.timProducer = timProd;
+   public BinaryDecoderPublisher(BsmMessagePublisher bsmMessagePublisher, TimMessagePublisher timMessagePublisher) {
+      this.bsmMessagePublisher = bsmMessagePublisher;
+      this.timMessagePublisher = timMessagePublisher;
    }
 
    @Override
@@ -61,7 +62,7 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
                               this.serialId.setBundleId(bundleId.incrementAndGet()));
                      } else if (fileParser instanceof RxMsgFileParser) {
                         decoded = timDecoder.decode((RxMsgFileParser) fileParser,
-                              this.serialId.setBundleId(bundleId.incrementAndGet()), timProducer);
+                              this.serialId.setBundleId(bundleId.incrementAndGet()), null);
                      }
                   } catch (Exception e) {
                      logger.debug("Failed to decode log file message.", e);
@@ -80,12 +81,11 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
             if (decoded != null) {
                if (hasMetadataHeader && fileParser instanceof BsmFileParser) {
                   logger.debug("Decoded a bsm: {}", decoded);
-                  publisher.publish(decoded);
+                  bsmMessagePublisher.publish(decoded);
                } else if (hasMetadataHeader && fileParser instanceof RxMsgFileParser) {
-                  logger.debug("Decoded a tim.");
-                  //timProducer.send("topic.AsnStringTim", null, JsonUtils.toJson(decoded, true));
+                  logger.debug("Decoded a tim: {}", decoded);
+                  timMessagePublisher.publish(decoded);
                }
-               
             } else {
                // if parser returns PARTIAL record, we will go back and continue
                // parsing

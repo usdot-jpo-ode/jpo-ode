@@ -17,16 +17,12 @@ public abstract class AbstractDecoderPublisher implements DecoderPublisher {
 
    protected SerialId serialId;
 
-   protected BsmMessagePublisher publisher;
-
    protected BsmDecoderHelper bsmDecoder;
    protected TimDecoderHelper timDecoder;
 
    protected static AtomicInteger bundleId = new AtomicInteger(1);
 
-   public AbstractDecoderPublisher(
-       BsmMessagePublisher dataPub) {
-      this.publisher = dataPub;
+   public AbstractDecoderPublisher() {
 
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());

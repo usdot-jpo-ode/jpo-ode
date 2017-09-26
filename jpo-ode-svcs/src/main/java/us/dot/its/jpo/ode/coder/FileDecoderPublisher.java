@@ -12,7 +12,6 @@ import us.dot.its.jpo.ode.coder.stream.BinaryDecoderPublisher;
 import us.dot.its.jpo.ode.coder.stream.HexDecoderPublisher;
 import us.dot.its.jpo.ode.coder.stream.JsonDecoderPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
-import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class FileDecoderPublisher {
 
@@ -25,14 +24,12 @@ public class FileDecoderPublisher {
    @Autowired
    public FileDecoderPublisher(OdeProperties odeProperties) {
 
-      BsmMessagePublisher messagePub = new BsmMessagePublisher(odeProperties);
-      
-     MessageProducer<String, String> timPublisher = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
-           odeProperties.getKafkaProducerType());
+      BsmMessagePublisher bsmMessagePub = new BsmMessagePublisher(odeProperties);
+      TimMessagePublisher timMessagePub = new TimMessagePublisher(odeProperties);
 
-      this.jsonDecPub = new JsonDecoderPublisher(messagePub);
-      this.hexDecPub = new HexDecoderPublisher(messagePub);
-      this.binDecPub = new BinaryDecoderPublisher(messagePub, timPublisher);
+      this.jsonDecPub = new JsonDecoderPublisher(bsmMessagePub);
+      this.hexDecPub = new HexDecoderPublisher(bsmMessagePub);
+      this.binDecPub = new BinaryDecoderPublisher(bsmMessagePub, timMessagePub);
    }
 
    public void decodeAndPublishFile(
