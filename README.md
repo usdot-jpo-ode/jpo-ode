@@ -186,38 +186,10 @@ git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdo
 ### Build and Deploy the Application
 
 #### Environment Variables
-ODE configuration can be customized for every deployment environment using the OS's environment variables. The following table list the environment variables used in Docker files and shell scripts to automate the deployment process and customize it for each deployment environment. Setting these environment variables will allow the deployment to take place without any modification to the default configuration files.
+ODE configuration can be customized for every deployment environment using environment variables. These variables can either bet set locally or using the *.env* file found in the root of the jpo-ode repository.
 
-|Environment Variable|Description|
-|--------------------|-----------|
-|[DOCKER_HOST_IP](docker/README.md#obtaining-docker_host_ip)      |(Required) The IP address of Docker host machine|
-|DOCKER_SHARED_VOLUME|(Required) The full path of a directory on the host machine to be shared with docker containers.|
-|ODE_DDS_CAS_USERNAME|The username for authenticating the USDOT Situation Data Warehouse WebSocket server |
-|ODE_DDS_CAS_PASSWORD|The password for authenticating the USDOT Situation Data Warehouse WebSocket server |
-|ODE_EXTERNAL_IPV4|The IPv4 address of the server running ODE |
-|ODE_EXTERNAL_IPV6|The IPv6 address of the server running ODE |
-|CVPEP_BSM_S3_ACCESS_KEY_ID|CVPEP BSM S3 depositor access key id|
-|CVPEP_BSM_S3_SECRET_ACCESS_KEY|CVPEP BSM S3 depositor secret access key|
-|CVPEP_BSM_S3_BUCKET_NAME|CVPEP BSM S3 depositor bucket name|
-|CVPEP_BSM_S3_DEPOSIT_KEY|CVPEP BSM S3 filepath prefix|
-|CVPEP_BSM_S3_TOPIC|CVPEP BSM S3 kafka subscription topic|
-|RDE_BSM_S3_ACCESS_KEY_ID|RDE BSM S3 depositor access key id|
-|RDE_BSM_S3_SECRET_ACCESS_KEY|RDE BSM S3 depositor secret access key|
-|RDE_BSM_S3_BUCKET_NAME|RDE BSM S3 depositor bucket name|
-|RDE_BSM_S3_DEPOSIT_KEY|RDE BSM S3 filepath prefix|
-|RDE_BSM_S3_TOPIC|RDE BSM S3 kafka subscription topic|
-|CVPEP_TIM_S3_ACCESS_KEY_ID|CVPEP TIM S3 depositor access key id|
-|CVPEP_TIM_S3_SECRET_ACCESS_KEY|CVPEP TIM S3 depositor secret access key|
-|CVPEP_TIM_S3_BUCKET_NAME|CVPEP TIM S3 depositor bucket name|
-|CVPEP_TIM_S3_DEPOSIT_KEY|CVPEP TIM S3 filepath prefix|
-|CVPEP_TIM_S3_TOPIC|CVPEP TIM S3 kafka subscription topic|
-|RDE_TIM_S3_ACCESS_KEY_ID|RDE TIM S3 depositor access key id|
-|RDE_TIM_S3_SECRET_ACCESS_KEY|RDE TIM S3 depositor secret access key|
-|RDE_TIM_S3_BUCKET_NAME|RDE TIM S3 depositor bucket name|
-|RDE_TIM_S3_DEPOSIT_KEY|RDE TIM S3 filepath prefix|
-|RDE_TIM_S3_TOPIC|RDE TIM S3 kafka subscription topic|
+Instructions for how to use the *.env* file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
 
-To be able to change the configuration of the application during runtime, you may store the configuration files in the location specified by the DOCKER_SHARED_VOLUME/config environment variable.
 
 #### Build Process
 

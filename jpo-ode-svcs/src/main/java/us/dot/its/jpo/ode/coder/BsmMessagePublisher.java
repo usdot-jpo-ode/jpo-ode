@@ -30,14 +30,14 @@ public class BsmMessagePublisher {
    public void publish(OdeData msg) {
       OdeBsmData odeBsm = (OdeBsmData) msg;
 
-      if (msg.getMetadata() != null && msg.getMetadata().getReceivedAt() != null)
-         try {
-            long latency = DateTimeUtils.difference(DateTimeUtils.isoDateTime(msg.getMetadata().getReceivedAt()),
-                  ZonedDateTime.now());
-            odeBsm.getMetadata().setLatency(latency);
-         } catch (ParseException e) {
-            logger.error("Error converting ISO timestamp", e);
-         }
+//      if (msg.getMetadata() != null && msg.getMetadata().getReceivedAt() != null)
+//         try {
+//            long latency = DateTimeUtils.difference(DateTimeUtils.isoDateTime(msg.getMetadata().getReceivedAt()),
+//                  ZonedDateTime.now());
+//            odeBsm.getMetadata().setLatency(latency);
+//         } catch (ParseException e) {
+//            logger.error("Error converting ISO timestamp", e);
+//         }
       
       logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicRawBsmPojo(), odeBsm.getPayload().getData());
       objectProducer.send(odeProperties.getKafkaTopicRawBsmPojo(), null, odeBsm.getPayload().getData());
