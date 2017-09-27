@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.model;
 
-import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
 

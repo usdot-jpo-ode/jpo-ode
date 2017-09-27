@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.model.OdeBsmData;
-import us.dot.its.jpo.ode.model.OdeTravelerInformationData;
+import us.dot.its.jpo.ode.model.OdeTimData;
 // TODO Deprecate per ODE-436
 // vvvvvvvvvvvvvvvvvvvvvvvvvv
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
@@ -66,13 +66,13 @@ public class ToJsonServiceController {
 
       // TIM POJO --> JSON converter
       logger.info("Converting {} records from topic {} and publishing to topic {} ",
-            OdeTravelerInformationData.class.getSimpleName(), odeProps.getKafkaTopicOdeTimPojo(),
+            OdeTimData.class.getSimpleName(), odeProps.getKafkaTopicOdeTimPojo(),
             odeProps.getKafkaTopicOdeTimJson());
       
-      ToJsonConverter<OdeTravelerInformationData> odeTimConverter = new ToJsonConverter<>(odeProps, false,
+      ToJsonConverter<OdeTimData> odeTimConverter = new ToJsonConverter<>(odeProps, false,
             odeProps.getKafkaTopicOdeTimJson());
       
-      MessageConsumer<String, OdeTravelerInformationData> odeTimConsumer = new MessageConsumer<>(
+      MessageConsumer<String, OdeTimData> odeTimConsumer = new MessageConsumer<>(
             odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), odeTimConverter,
             OdeTravelerInformationMessageDeserializer.class.getName());
       

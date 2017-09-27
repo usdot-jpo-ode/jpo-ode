@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.coder;
 
 import java.io.BufferedInputStream;
 
+import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

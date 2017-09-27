@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeObject;
-import us.dot.its.jpo.ode.model.OdeTravelerInformationData;
+import us.dot.its.jpo.ode.model.OdeTimData;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 import us.dot.its.jpo.ode.wrapper.serdes.OdeTravelerInformationMessageSerializer;
 
@@ -24,7 +24,7 @@ public class TimMessagePublisher {
    }
 
    public void publish(OdeData msg) {
-      OdeTravelerInformationData odeTim = (OdeTravelerInformationData) msg;
+      OdeTimData odeTim = (OdeTimData) msg;
       
       logger.debug("Publishing to {}: {}", odeProperties.getKafkaTopicOdeTimPojo(), odeTim);
       objectProducer.send(odeProperties.getKafkaTopicOdeTimPojo(), null, odeTim);
