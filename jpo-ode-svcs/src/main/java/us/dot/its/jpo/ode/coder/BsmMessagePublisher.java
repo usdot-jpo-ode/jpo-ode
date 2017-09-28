@@ -1,32 +1,23 @@
 package us.dot.its.jpo.ode.coder;
 
-import java.text.ParseException;
-import java.time.ZonedDateTime;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeData;
-import us.dot.its.jpo.ode.model.OdeObject;
-import us.dot.its.jpo.ode.util.DateTimeUtils;
-import us.dot.its.jpo.ode.wrapper.MessageProducer;
-import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmSerializer;
 
-public class BsmMessagePublisher {
+public class BsmMessagePublisher extends MessagePublisher {
 
    private static final Logger logger = LoggerFactory.getLogger(BsmMessagePublisher.class);
    private OdeProperties odeProperties;
-   protected MessageProducer<String, OdeObject> objectProducer;
 
-   public BsmMessagePublisher(OdeProperties odeProps) {
+   public BsmMessagePublisher(OdeProperties odeProps, String kafkaTopic, Class<?> msgSerializerClass) {
+      super(odeProps, kafkaTopic, msgSerializerClass);
       this.odeProperties = odeProps;
-      this.objectProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(),
-            null, OdeBsmSerializer.class.getName());
-
    }
 
+   @Override
    public void publish(OdeData msg) {
       OdeBsmData odeBsm = (OdeBsmData) msg;
 

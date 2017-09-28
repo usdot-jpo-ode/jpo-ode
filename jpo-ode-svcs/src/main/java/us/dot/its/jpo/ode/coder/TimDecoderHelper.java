@@ -35,7 +35,6 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerInformation;
 import us.dot.its.jpo.ode.security.SecurityManager;
 import us.dot.its.jpo.ode.security.SecurityManager.SecurityManagerException;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
-import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class TimDecoderHelper {
 
@@ -52,7 +51,7 @@ public class TimDecoderHelper {
       this.rawBsmMfSorter = new RawBsmMfSorter(new OssJ2735Coder());
    }
 
-   public OdeData decode(RxMsgFileParser fileParser, SerialId serialId, MessageProducer<String, String> timProd)
+   public OdeData decode(RxMsgFileParser fileParser, SerialId serialId)
          throws Exception {
 
       Ieee1609Dot2Data ieee1609dot2Data = ieee1609dotCoder.decodeIeee1609Dot2DataBytes(fileParser.getPayload());
@@ -91,7 +90,9 @@ public class TimDecoderHelper {
             }
          } catch (DecodeNotSupportedException | DecodeFailedException e) {
             logger.debug("Failed to decode message as TIM, trying BSM.", e);
-            asnDecoder.decode(ByteBuffer.wrap(message.getPayload()), mf);
+            if (message != null) {
+               asnDecoder.decode(ByteBuffer.wrap(message.getPayload()), mf);
+            }
          }
       } else {
          asnDecoder.decode(ByteBuffer.wrap(fileParser.getPayload()), mf);
@@ -116,13 +117,14 @@ public class TimDecoderHelper {
 
             OdeTimPayload timPayload = new OdeTimPayload(OssTravelerInformation.genericTim(tim));
 
-            OdeTimMetadata timMetadata = new OdeTimMetadata(timPayload, serialId, DateTimeUtils.now(),
-                  DateTimeUtils.isoDateTime(fileParser.getUtcTimeInSec() * 1000 + fileParser.getmSec()).toString());
+            OdeTimMetadata timMetadata = new OdeTimMetadata(timPayload, serialId, DateTimeUtils.now(), DateTimeUtils
+                  .isoDateTime(fileParser.getUtcTimeInSec() * 1000 + (long) fileParser.getmSec()).toString());
             odeTimData = new OdeTimData(timMetadata, timPayload);
 
          } else if (mf.getMessageId().intValue() == DSRC_MSG_ID_BSM) {
 
-            // TODO this may not be needed, rxMsg files seem to only contain TIMs
+            // TODO this may not be needed, rxMsg files seem to only contain
+            // TIMs
 
             BasicSafetyMessage bsm;
             if (mf.value.getDecodedValue() != null) {

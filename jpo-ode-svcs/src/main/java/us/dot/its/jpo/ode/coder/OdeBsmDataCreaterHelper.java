@@ -14,9 +14,6 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class OdeBsmDataCreaterHelper {
 
-   public OdeBsmDataCreaterHelper() {
-   }
-
    public OdeBsmData createOdeBsmData(
       J2735Bsm rawBsm, IEEE1609p2Message message, 
       BsmFileParser bsmFileParser, SerialId serialId) {

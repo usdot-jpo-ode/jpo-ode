@@ -13,6 +13,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.BsmMessagePublisher;
 import us.dot.its.jpo.ode.coder.stream.BinaryDecoderPublisher;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmSerializer;
 
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
@@ -31,7 +32,8 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
    public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
       super(odeProps, port, bufferSize);
-      this.binaryDecoderPublisher = new BinaryDecoderPublisher(new BsmMessagePublisher(odeProperties), null);
+      this.binaryDecoderPublisher = new BinaryDecoderPublisher(
+            new BsmMessagePublisher(odeProps, odeProps.getKafkaTopicOdeBsmPojo(), OdeBsmSerializer.class), null);
    }
 
    @Override
@@ -56,8 +58,8 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                byte[] payload = removeHeader(packet.getData());
                String payloadHexString = HexUtils.toHexString(payload);
                logger.debug("Packet: {}", payloadHexString);
-               binaryDecoderPublisher.decodeAndPublish(
-                   new BufferedInputStream(new ByteArrayInputStream(payload)), null, false);
+               binaryDecoderPublisher.decodeAndPublish(new BufferedInputStream(new ByteArrayInputStream(payload)), null,
+                     false);
             }
          } catch (Exception e) {
             logger.error("Error receiving packet", e);
