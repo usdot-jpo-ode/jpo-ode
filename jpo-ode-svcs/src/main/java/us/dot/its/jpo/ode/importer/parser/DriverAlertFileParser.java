@@ -5,11 +5,9 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
-import us.dot.its.jpo.ode.importer.parser.LogFileParser.LogFileParserException;
-import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
-public class DriverAlertFileParser {
+public class DriverAlertFileParser implements LogFileParser {
 
    private static final int TIM_LOCATION_TOTAL_LENGTH = 16;
    private static final int TIM_LOCATION_LAT_LENGTH = 4;

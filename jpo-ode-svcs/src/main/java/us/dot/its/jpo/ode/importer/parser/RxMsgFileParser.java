@@ -5,25 +5,21 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
-import org.apache.tomcat.util.buf.HexUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import us.dot.its.jpo.ode.util.CodecUtils;
 
+/*
+typedef struct _receivedMsgRecord {
+ location curLocation;
+ uint32_t utctimeInSec;
+ uint16_t mSec;
+ rxSource rxFrom;
+ int8_t verificationStatus;
+ uint16_t length;
+ uint8_t payload[MAX_PAYLOAD_SIZE]; //LEAR: RAW 1609.2 format of TIM
+ } __attribute__((__packed__)) receivedMsgRecord;
+ */
 public class RxMsgFileParser implements LogFileParser {
-   
-   private static final Logger logger = LoggerFactory.getLogger(RxMsgFileParser.class);
 
-   // typedef struct _receivedMsgRecord {
-   // location curLocation;
-   // uint32_t utctimeInSec;
-   // uint16_t mSec;
-   // rxSource rxFrom;
-   // int8_t verificationStatus;
-   // uint16_t length;
-   // uint8_t payload[MAX_PAYLOAD_SIZE]; //LEAR: RAW 1609.2 format of TIM
-   // } __attribute__((__packed__)) receivedMsgRecord;
 
    private static final int MAX_PAYLOAD_SIZE = 2302;
 
@@ -68,13 +64,13 @@ public class RxMsgFileParser implements LogFileParser {
       ParserStatus status = ParserStatus.INIT;
 
       try {
-         if (step == 0) {
+         if (getStep() == 0) {
             setFilename(fileName);
-            ++step;
+            setStep(getStep() + 1);
          }
 
          // Step 1 - parse location.latitude
-         if (step == 1) {
+         if (getStep() == 1) {
             status = parseStep(bis, LOCATION_LAT_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
@@ -82,7 +78,7 @@ public class RxMsgFileParser implements LogFileParser {
          }
 
          // Step 2 - parse location.longitude
-         if (step == 2) {
+         if (getStep() == 2) {
             status = parseStep(bis, LOCATION_LON_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
@@ -90,7 +86,7 @@ public class RxMsgFileParser implements LogFileParser {
          }
 
          // Step 3 - parse location.elevation
-         if (step == 3) {
+         if (getStep() == 3) {
             status = parseStep(bis, LOCATION_ELEV_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
@@ -98,7 +94,7 @@ public class RxMsgFileParser implements LogFileParser {
          }
 
          // Step 4 - parse location.speed
-         if (step == 4) {
+         if (getStep() == 4) {
             status = parseStep(bis, LOCATION_SPEED_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
@@ -106,7 +102,7 @@ public class RxMsgFileParser implements LogFileParser {
          }
 
          // Step 5 - parse location.heading
-         if (step == 5) {
+         if (getStep() == 5) {
             status = parseStep(bis, LOCATION_HEADING_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
@@ -114,7 +110,7 @@ public class RxMsgFileParser implements LogFileParser {
          }
 
          // Step 6 - parse utcTimeInSec
-         if (step == 6) {
+         if (getStep() == 6) {
             status = parseStep(bis, UTC_TIME_IN_SEC_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
@@ -122,7 +118,7 @@ public class RxMsgFileParser implements LogFileParser {
          }
 
          // Step 7 - parse mSec
-         if (step == 7) {
+         if (getStep() == 7) {
             status = parseStep(bis, MSEC_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
@@ -130,7 +126,7 @@ public class RxMsgFileParser implements LogFileParser {
          }
 
          // Step 8 - parse rxSource
-         if (step == 8) {
+         if (getStep() == 8) {
             status = parseStep(bis, RX_SOURCE_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
@@ -138,7 +134,7 @@ public class RxMsgFileParser implements LogFileParser {
          }
 
          // Step 9 - parse verification status
-         if (step == 9) {
+         if (getStep() == 9) {
             status = parseStep(bis, VERIFICATION_STATUS_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
@@ -146,25 +142,24 @@ public class RxMsgFileParser implements LogFileParser {
          }
 
          // Step 10 - parse payload length
-         if (step == 10) {
+         if (getStep() == 10) {
             status = parseStep(bis, LENGTH_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
             setLength(CodecUtils.bytesToShort(readBuffer, 0, LENGTH_LENGTH, ByteOrder.LITTLE_ENDIAN));
          }
          // Step 11 - copy payload bytes
-         if (step == 11) {
+         if (getStep() == 11) {
             status = parseStep(bis, getLength());
             if (status != ParserStatus.COMPLETE)
                return status;
-            logger.debug("RX MSG FILE PARSER - EXTRACTED IEEE MESSAGE: {}", HexUtils.toHexString(Arrays.copyOf(readBuffer, getLength())));
             setPayload(Arrays.copyOf(readBuffer, getLength()));
          }
       } catch (Exception e) {
-         throw new LogFileParserException(String.format("Error parsing %s on step %d", fileName, step), e);
+         throw new LogFileParserException(String.format("Error parsing %s on step %d", fileName, getStep()), e);
       }
 
-      step = 0;
+      setStep(0);
       status = ParserStatus.COMPLETE;
 
       return status;
@@ -190,20 +185,12 @@ public class RxMsgFileParser implements LogFileParser {
             }
             return ParserStatus.PARTIAL;
          } else {
-            step++;
+            setStep(getStep() + 1);
             return ParserStatus.COMPLETE;
          }
       } catch (Exception e) {
-         throw new LogFileParserException("Error parsing step " + step, e);
+         throw new LogFileParserException("Error parsing step " + getStep(), e);
       }
-   }
-
-   public byte[] getReadBuffer() {
-      return readBuffer;
-   }
-
-   public void setReadBuffer(byte[] readBuffer) {
-      this.readBuffer = readBuffer;
    }
 
    public String getFilename() {
@@ -300,6 +287,14 @@ public class RxMsgFileParser implements LogFileParser {
 
    public void setPayload(byte[] payload) {
       this.payload = payload;
+   }
+
+   public int getStep() {
+      return step;
+   }
+
+   public void setStep(int step) {
+      this.step = step;
    }
 
 }
