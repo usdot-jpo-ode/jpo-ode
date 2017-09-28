@@ -132,7 +132,6 @@ public class TimDecoderHelper {
             timMetadata.setReceivedAt(DateTimeUtils.now());
             timMetadata.setSerialId(serialId);
             timMetadata.setLogFileName(fileParser.getFilename());
-            timMetadata.setRxSource(fileParser.getRxSource());
             timMetadata.setReceivedMessageDetails(new OdeTimSpecificMetadata(
                   new OdeTimSpecificMetadataLocation(
                         OssLatitude.genericLatitude(new Latitude(fileParser.getLatitude())).toString(),

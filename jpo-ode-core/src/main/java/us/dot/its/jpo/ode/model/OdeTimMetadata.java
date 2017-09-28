@@ -25,5 +25,4 @@ public class OdeTimMetadata extends OdeBsmMetadata {
    public void setReceivedMessageDetails(OdeTimSpecificMetadata receivedMessageDetails) {
       this.receivedMessageDetails = receivedMessageDetails;
    }
-
 }
