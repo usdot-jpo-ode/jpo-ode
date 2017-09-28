@@ -4,14 +4,7 @@ public class OdeTimMetadata extends OdeBsmMetadata {
    
    private static final long serialVersionUID = 1851475623026081007L;
    
-   private RxSource rxSource;
-   
-   public class OdeTimMetadataLocation {
-      String latitude;
-      String longitude;
-      String elevation;
-      String speed;
-   }
+   private OdeTimSpecificMetadata receivedMessageDetails;
    
    public OdeTimMetadata() {
       super();
@@ -25,12 +18,12 @@ public class OdeTimMetadata extends OdeBsmMetadata {
       super(timPayload, serialId, receivedAt, generatedAt);
    }
 
-   public RxSource getRxSource() {
-      return rxSource;
+   public OdeTimSpecificMetadata getReceivedMessageDetails() {
+      return receivedMessageDetails;
    }
 
-   public void setRxSource(RxSource rxSource) {
-      this.rxSource = rxSource;
+   public void setReceivedMessageDetails(OdeTimSpecificMetadata receivedMessageDetails) {
+      this.receivedMessageDetails = receivedMessageDetails;
    }
 
 }

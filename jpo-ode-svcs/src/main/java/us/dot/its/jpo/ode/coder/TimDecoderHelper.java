@@ -22,16 +22,26 @@ import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import gov.usdot.cv.security.msg.MessageException;
 import us.dot.its.jpo.ode.importer.parser.RxMsgFileParser;
 import us.dot.its.jpo.ode.j2735.J2735;
+import us.dot.its.jpo.ode.j2735.dsrc.Elevation;
+import us.dot.its.jpo.ode.j2735.dsrc.Latitude;
+import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
 import us.dot.its.jpo.ode.j2735.dsrc.MessageFrame;
+import us.dot.its.jpo.ode.j2735.dsrc.Speed;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeTimData;
 import us.dot.its.jpo.ode.model.OdeTimMetadata;
 import us.dot.its.jpo.ode.model.OdeTimPayload;
+import us.dot.its.jpo.ode.model.OdeTimSpecificMetadata;
+import us.dot.its.jpo.ode.model.OdeTimSpecificMetadataLocation;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssElevation;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssLatitude;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssLongitude;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssMessageFrame.OssMessageFrameException;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssSpeedOrVelocity;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerInformation;
 import us.dot.its.jpo.ode.security.SecurityManager;
 import us.dot.its.jpo.ode.security.SecurityManager.SecurityManagerException;
@@ -123,11 +133,18 @@ public class TimDecoderHelper {
             timMetadata.setSerialId(serialId);
             timMetadata.setLogFileName(fileParser.getFilename());
             timMetadata.setRxSource(fileParser.getRxSource());
+            timMetadata.setReceivedMessageDetails(new OdeTimSpecificMetadata(
+                  new OdeTimSpecificMetadataLocation(
+                        OssLatitude.genericLatitude(new Latitude(fileParser.getLatitude())).toString(),
+                        OssLongitude.genericLongitude(new Longitude(fileParser.getLongitude())).toString(),
+                        OssElevation.genericElevation(new Elevation(fileParser.getElevation())).toString(),
+                        OssSpeedOrVelocity.genericSpeed(new Speed(fileParser.getSpeed())).toString()),
+                  fileParser.getRxSource()));
 
             ZonedDateTime generatedAt;
             if (message != null) {
                Date ieeeGenTime = message.getGenerationTime();
-               
+
                logger.debug("Generated time: {}", ieeeGenTime);
 
                if (ieeeGenTime != null) {
