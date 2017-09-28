@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
@@ -35,7 +36,7 @@ public class JsonDecoderPublisher implements DecoderPublisher {
    }
 
    @Override
-   public void decodeAndPublish(BufferedInputStream is, String fileName, boolean hasMetadataHeader) {
+   public void decodeAndPublish(BufferedInputStream is, String fileName, ImporterFileType fileType) {
       String line = null;
 
       try (Scanner scanner = new Scanner(is)) {

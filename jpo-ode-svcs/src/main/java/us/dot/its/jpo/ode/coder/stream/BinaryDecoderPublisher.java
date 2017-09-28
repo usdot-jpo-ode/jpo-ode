@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.coder.MessagePublisher;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.importer.LogFileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeData;
 
@@ -18,14 +19,14 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
     }
 
    @Override
-   public void decodeAndPublish(BufferedInputStream bis, String fileName, boolean hasMetadataHeader) throws Exception {
-      super.decodeAndPublish(bis, fileName, hasMetadataHeader);
+   public void decodeAndPublish(BufferedInputStream bis, String fileName, ImporterFileType fileType) throws Exception {
+      super.decodeAndPublish(bis, fileName, fileType);
       OdeData decoded = null;
 
       do {
          try {
             ParserStatus status = ParserStatus.UNKNOWN;
-            if (hasMetadataHeader) {
+            if (fileType == ImporterFileType.BSM_LOG_FILE) {
                 status = bsmFileParser.parse(bis, fileName);
                 if (status == ParserStatus.COMPLETE) {
                     decoded = bsmDecoder.decode(bsmFileParser, 

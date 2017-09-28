@@ -39,21 +39,16 @@ public class FileDecoderPublisher {
 
       logger.info("Decoding and publishing file {}", fileName);
       
-      boolean hasMetadataHeader = false;
-      if (fileType.equals(ImporterFileType.BSM_LOG_FILE)) {
-         hasMetadataHeader = true;
-      }
-
       try {
          if (filePath.toString().endsWith(".hex") || filePath.toString().endsWith(".txt")) {
             logger.info("Decoding {} as hex file.", filePath);
-            hexDecPub.decodeAndPublish(fileInputStream, fileName, hasMetadataHeader);
+            hexDecPub.decodeAndPublish(fileInputStream, fileName, fileType);
          } else if (filePath.toString().endsWith(".json")) {
             logger.info("Decoding {} as json file.", filePath);
-            jsonDecPub.decodeAndPublish(fileInputStream, fileName, hasMetadataHeader);
+            jsonDecPub.decodeAndPublish(fileInputStream, fileName, fileType);
          } else {
             logger.info("Decoding {} as binary/signed file.", filePath);
-            binDecPub.decodeAndPublish(fileInputStream, fileName, hasMetadataHeader);
+            binDecPub.decodeAndPublish(fileInputStream, fileName, fileType);
          }
       } catch (Exception e) {
          logger.error("Failed to decode and publish file.", e);

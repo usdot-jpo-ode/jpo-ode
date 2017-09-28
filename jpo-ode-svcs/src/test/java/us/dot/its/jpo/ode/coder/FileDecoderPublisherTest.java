@@ -40,11 +40,11 @@ public class FileDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, true);
+               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
                times = 1;
-               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, true);
+               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
                times = 0;
-               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, true);
+               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
                times = 0;
             }
          };
@@ -62,11 +62,11 @@ public class FileDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, true);
+               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
                times = 1;
-               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, true);
+               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
                times = 0;
-               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, true);
+               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
                times = 0;
             }
          };
@@ -84,11 +84,11 @@ public class FileDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, true);
+               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
                times = 0;
-               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, true);
+               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
                times = 1;
-               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, true);
+               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
                times = 0;
             }
          };
@@ -106,11 +106,11 @@ public class FileDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, true);
+               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
                times = 0;
-               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, true);
+               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
                times = 0;
-               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, true);
+               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
                times = 1;
             }
          };

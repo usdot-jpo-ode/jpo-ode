@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.importer.BsmFileParser;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.model.SerialId;
 
 public abstract class AbstractDecoderPublisher implements DecoderPublisher {
@@ -34,7 +35,7 @@ public abstract class AbstractDecoderPublisher implements DecoderPublisher {
    }
 
    @Override
-   public void decodeAndPublish(BufferedInputStream is, String fileName, boolean hasMetadataHeader) throws Exception {
+   public void decodeAndPublish(BufferedInputStream is, String fileName, ImporterFileType fileType) throws Exception {
        /* 
         * CAUTION: bsmFileParser needs to be created here and should not be moved to the
         * constructor because only one DecoderPublisher exists per filetype/upload directory

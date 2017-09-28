@@ -14,6 +14,7 @@ import mockit.Mocked;
 import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
@@ -54,7 +55,7 @@ public class JsonDecoderPublisherTest {
       try {
 
           BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-          new JsonDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", true);
+          new JsonDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -79,7 +80,7 @@ public class JsonDecoderPublisherTest {
       try {
 
           BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-          new JsonDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", true);
+          new JsonDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
