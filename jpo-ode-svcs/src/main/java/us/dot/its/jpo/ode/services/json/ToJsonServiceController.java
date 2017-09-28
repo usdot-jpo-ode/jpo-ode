@@ -16,7 +16,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.serdes.J2735BsmDeserializer;
 import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmDeserializer;
-import us.dot.its.jpo.ode.wrapper.serdes.OdeTravelerInformationMessageDeserializer;
+import us.dot.its.jpo.ode.wrapper.serdes.OdeTimDeserializer;
 
 /**
  * Launches ToJsonConverter service
@@ -74,7 +74,7 @@ public class ToJsonServiceController {
       
       MessageConsumer<String, OdeTimData> odeTimConsumer = new MessageConsumer<>(
             odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), odeTimConverter,
-            OdeTravelerInformationMessageDeserializer.class.getName());
+            OdeTimDeserializer.class.getName());
       
       odeTimConsumer.setName("odeTimConsumer");
       odeTimConverter.start(odeTimConsumer, odeProps.getKafkaTopicOdeTimPojo());

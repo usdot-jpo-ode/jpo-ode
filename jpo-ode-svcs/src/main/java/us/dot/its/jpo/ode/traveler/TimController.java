@@ -51,7 +51,7 @@ import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
-import us.dot.its.jpo.ode.wrapper.serdes.OdeTravelerInformationMessageSerializer;
+import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 
 @Controller
 public class TimController {
@@ -74,7 +74,7 @@ public class TimController {
       this.odeProperties = odeProperties;
 
       this.messageProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(),
-            odeProperties.getKafkaProducerType(), null, OdeTravelerInformationMessageSerializer.class.getName());
+            odeProperties.getKafkaProducerType(), null, OdeTimSerializer.class.getName());
 
       try {
          depositor = new DdsDepositor<>(this.odeProperties);

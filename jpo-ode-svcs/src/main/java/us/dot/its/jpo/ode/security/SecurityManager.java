@@ -43,6 +43,7 @@ public class SecurityManager {
         // check that generation time is not in the future
         // if we change generation time to expiration time as per standard then we reverse the check
         long generationTime = signedMsg.getGenerationTime().getTime();
+        logger.debug("Message generation time: {}", signedMsg.getGenerationTime());
         long now = new Date().getTime();
         if (generationTime >= now) {
             throw new SecurityManagerException("Generation time ("

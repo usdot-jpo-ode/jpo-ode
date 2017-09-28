@@ -12,6 +12,7 @@ import org.junit.Test;
 import mockit.Tested;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser.LogFileParserException;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
+import us.dot.its.jpo.ode.model.RxSource;
 
 public class RxMsgFileParserTest {
 

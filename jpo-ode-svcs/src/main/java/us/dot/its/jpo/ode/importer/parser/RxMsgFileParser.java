@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
 /*
@@ -19,6 +23,8 @@ typedef struct _receivedMsgRecord {
  } __attribute__((__packed__)) receivedMsgRecord;
  */
 public class RxMsgFileParser implements LogFileParser {
+   
+   private static final Logger logger = LoggerFactory.getLogger(RxMsgFileParser.class);
 
 
    private static final int MAX_PAYLOAD_SIZE = 2302;
@@ -52,7 +58,7 @@ public class RxMsgFileParser implements LogFileParser {
    private short speed;
    private short heading;
 
-   private int utcTimeInSec;
+   private long utcTimeInSec;
    private short mSec;
    private RxSource rxSource;
    private boolean validSignature;
@@ -241,7 +247,7 @@ public class RxMsgFileParser implements LogFileParser {
       this.heading = heading;
    }
 
-   public int getUtcTimeInSec() {
+   public long getUtcTimeInSec() {
       return utcTimeInSec;
    }
 

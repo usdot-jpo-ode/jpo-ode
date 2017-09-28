@@ -2,6 +2,8 @@ package us.dot.its.jpo.ode.coder;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.time.ZonedDateTime;
+import java.util.Date;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
@@ -20,7 +22,6 @@ import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import gov.usdot.cv.security.msg.MessageException;
 import us.dot.its.jpo.ode.importer.parser.RxMsgFileParser;
 import us.dot.its.jpo.ode.j2735.J2735;
-import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.dsrc.MessageFrame;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.model.OdeData;
@@ -51,8 +52,7 @@ public class TimDecoderHelper {
       this.rawBsmMfSorter = new RawBsmMfSorter(new OssJ2735Coder());
    }
 
-   public OdeData decode(RxMsgFileParser fileParser, SerialId serialId)
-         throws Exception {
+   public OdeData decode(RxMsgFileParser fileParser, SerialId serialId) throws Exception {
 
       Ieee1609Dot2Data ieee1609dot2Data = ieee1609dotCoder.decodeIeee1609Dot2DataBytes(fileParser.getPayload());
       OdeData odeTimData = null;
@@ -117,35 +117,44 @@ public class TimDecoderHelper {
 
             OdeTimPayload timPayload = new OdeTimPayload(OssTravelerInformation.genericTim(tim));
 
-            OdeTimMetadata timMetadata = new OdeTimMetadata(timPayload, serialId, DateTimeUtils.now(), DateTimeUtils
-                  .isoDateTime(fileParser.getUtcTimeInSec() * 1000 + (long) fileParser.getmSec()).toString());
+            OdeTimMetadata timMetadata = new OdeTimMetadata(timPayload);
+
+            timMetadata.setReceivedAt(DateTimeUtils.now());
+            timMetadata.setSerialId(serialId);
+            timMetadata.setLogFileName(fileParser.getFilename());
+            timMetadata.setRxSource(fileParser.getRxSource());
+
+            ZonedDateTime generatedAt;
+            if (message != null) {
+               Date ieeeGenTime = message.getGenerationTime();
+               
+               logger.debug("Generated time: {}", ieeeGenTime);
+
+               if (ieeeGenTime != null) {
+                  generatedAt = DateTimeUtils.isoDateTime(ieeeGenTime);
+               } else {
+                  generatedAt = getGeneratedAt(fileParser);
+               }
+               timMetadata.setGeneratedAt(generatedAt.toString());
+               timMetadata.setValidSignature(true);
+            } else {
+               logger.debug("Message does not contain time");
+               timMetadata.setGeneratedAt(getGeneratedAt(fileParser).toString());
+               timMetadata.setValidSignature(fileParser.isValidSignature());
+            }
+
             odeTimData = new OdeTimData(timMetadata, timPayload);
 
          } else if (mf.getMessageId().intValue() == DSRC_MSG_ID_BSM) {
-
-            // TODO this may not be needed, rxMsg files seem to only contain
-            // TIMs
-
-            BasicSafetyMessage bsm;
-            if (mf.value.getDecodedValue() != null) {
-               bsm = (BasicSafetyMessage) mf.value.getDecodedValue();
-            } else if (mf.value.getEncodedValueAsStream() != null) {
-               bsm = new BasicSafetyMessage();
-               try {
-                  asnDecoder.decode(mf.value.getEncodedValueAsStream(), bsm);
-               } catch (DecodeFailedException | DecodeNotSupportedException e) {
-                  throw new OssMessageFrameException("Error decoding OpenType value", e);
-               }
-            } else {
-               throw new OssMessageFrameException("No OpenType value");
-            }
-
-            logger.debug("Extracted a BSM: " + bsm);
-
+            throw new IOException("Unexpected BSM in TIM log file.");
          } else {
             throw new IOException("Unknown message ID extracted: " + mf.messageId);
          }
       }
       return odeTimData;
+   }
+
+   private ZonedDateTime getGeneratedAt(RxMsgFileParser fileParser) {
+      return DateTimeUtils.isoDateTime(fileParser.getUtcTimeInSec() * 1000 + fileParser.getmSec());
    }
 }

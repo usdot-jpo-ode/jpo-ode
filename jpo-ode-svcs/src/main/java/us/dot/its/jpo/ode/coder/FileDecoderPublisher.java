@@ -13,7 +13,7 @@ import us.dot.its.jpo.ode.coder.stream.HexDecoderPublisher;
 import us.dot.its.jpo.ode.coder.stream.JsonDecoderPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmSerializer;
-import us.dot.its.jpo.ode.wrapper.serdes.OdeTravelerInformationMessageSerializer;
+import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 
 public class FileDecoderPublisher {
 
@@ -27,7 +27,7 @@ public class FileDecoderPublisher {
    public FileDecoderPublisher(OdeProperties odeProperties) {
 
       BsmMessagePublisher bsmMessagePub = new BsmMessagePublisher(odeProperties, odeProperties.getKafkaTopicOdeBsmPojo(), OdeBsmSerializer.class);
-      MessagePublisher timMessagePub = new MessagePublisher(odeProperties, odeProperties.getKafkaTopicOdeTimPojo(), OdeTravelerInformationMessageSerializer.class);
+      MessagePublisher timMessagePub = new MessagePublisher(odeProperties, odeProperties.getKafkaTopicOdeTimPojo(), OdeTimSerializer.class);
 
       this.jsonDecPub = new JsonDecoderPublisher(bsmMessagePub);
       this.hexDecPub = new HexDecoderPublisher(bsmMessagePub);
