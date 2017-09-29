@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import mockit.Capturing;
-import us.dot.its.jpo.ode.importer.BsmFileParser;
+import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;

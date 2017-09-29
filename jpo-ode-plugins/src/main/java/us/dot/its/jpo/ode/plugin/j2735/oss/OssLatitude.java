@@ -13,4 +13,14 @@ public class OssLatitude {
    public static Latitude latitude(BigDecimal lat) {
       return new Latitude(lat.scaleByPowerOfTen(7).intValue());
    }
+
+   public static BigDecimal genericLatitude(Latitude lat) {
+      BigDecimal returnValue = null;
+
+      if ((lat != null) && (lat.longValue() != 900000001)) {
+         returnValue = BigDecimal.valueOf(lat.longValue(), 7);
+
+      }
+      return returnValue;
+   }
 }

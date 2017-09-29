@@ -26,5 +26,4 @@ public class BsmDecoderPayloadHelper {
 
       return rawBsmMFSorterIn.decodeBsm(message.getPayload());
    }
-
 }

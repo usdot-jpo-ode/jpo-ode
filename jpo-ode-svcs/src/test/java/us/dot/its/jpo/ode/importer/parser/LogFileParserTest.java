@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.importer;
+package us.dot.its.jpo.ode.importer.parser;
 
 import static org.junit.Assert.fail;
 

@@ -10,7 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
-import us.dot.its.jpo.ode.importer.LogFileParser.ParserStatus;
+import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
+import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeData;
 
 public class HexDecoderPublisher extends AbstractDecoderPublisher  {
@@ -23,9 +24,10 @@ public class HexDecoderPublisher extends AbstractDecoderPublisher  {
 
    @Override
    public void decodeAndPublish(BufferedInputStream bis, String fileName, ImporterFileType fileType ) throws Exception {
-      super.decodeAndPublish(bis, fileName, fileType );
       String line = null;
       OdeData decoded = null;
+      
+      BsmFileParser bsmFileParser = new BsmFileParser(bundleId.incrementAndGet());
 
       try (Scanner scanner = new Scanner(bis)) {
 
@@ -37,8 +39,7 @@ public class HexDecoderPublisher extends AbstractDecoderPublisher  {
             ParserStatus status = ParserStatus.UNKNOWN;
             if (fileType == ImporterFileType.BSM_LOG_FILE) {
                 status = bsmFileParser.parse(new BufferedInputStream(
-                   new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName,
-                   bundleId.get());
+                   new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName);
             } else {
                 bsmFileParser.setPayload(HexUtils.fromHexString(line));
                 status = ParserStatus.NA;
@@ -52,7 +53,7 @@ public class HexDecoderPublisher extends AbstractDecoderPublisher  {
             }
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);
-               publisher.publish(decoded, publisher.getOdeProperties().getKafkaTopicOdeBsmPojo());
+               bsmMessagePublisher.publish(decoded, bsmMessagePublisher.getOdeProperties().getKafkaTopicOdeBsmPojo());
             } else {
                 // if parser returns PARTIAL record, we will go back and continue parsing
                 // but if it's UNKNOWN, it means that we could not parse the header bytes

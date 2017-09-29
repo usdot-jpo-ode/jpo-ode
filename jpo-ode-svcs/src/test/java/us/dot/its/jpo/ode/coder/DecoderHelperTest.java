@@ -14,7 +14,7 @@ import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mocked;
-import us.dot.its.jpo.ode.importer.BsmFileParser;
+import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
 

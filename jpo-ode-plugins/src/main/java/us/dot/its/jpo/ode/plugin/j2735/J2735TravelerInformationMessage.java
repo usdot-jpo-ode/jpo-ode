@@ -2,17 +2,28 @@ package us.dot.its.jpo.ode.plugin.j2735;
 
 import java.math.BigDecimal;
 
+import com.google.gson.annotations.Expose;
+
+import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrameList;
 import us.dot.its.jpo.ode.model.OdeObject;
 
 public class J2735TravelerInformationMessage extends OdeObject {
    private static final long serialVersionUID = -200529140190872305L;
 
+   @Expose
    private int msgCnt;
+   @Expose
    private int index;
+   @Expose
    private String timeStamp;
+   @Expose
    private int packetID;
+   @Expose
    private String urlB;
+   @Expose
    private DataFrame[] dataframes;
+   @Expose(serialize = false, deserialize = true)
+   private TravelerDataFrameList asnDataFrames;
 
    public int getMsgCnt() {
       return msgCnt;
@@ -60,6 +71,14 @@ public class J2735TravelerInformationMessage extends OdeObject {
 
    public void setIndex(int index) {
       this.index = index;
+   }
+
+   public TravelerDataFrameList  getAsnDataFrames() {
+      return asnDataFrames;
+   }
+
+   public void setAsnDataFrames(TravelerDataFrameList stringDataFrames) {
+      this.asnDataFrames = stringDataFrames;
    }
 
    public static class ComputedLane extends OdeObject {

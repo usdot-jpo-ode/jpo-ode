@@ -13,6 +13,7 @@ import us.dot.its.jpo.ode.coder.stream.HexDecoderPublisher;
 import us.dot.its.jpo.ode.coder.stream.JsonDecoderPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmSerializer;
+import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 
 public class FileDecoderPublisher {
 
@@ -25,11 +26,12 @@ public class FileDecoderPublisher {
    @Autowired
    public FileDecoderPublisher(OdeProperties odeProperties) {
 
-      OdeDataPublisher messagePub = new OdeDataPublisher(odeProperties, OdeBsmSerializer.class.getName());
+      OdeDataPublisher bsmMessagePub = new OdeDataPublisher(odeProperties, OdeBsmSerializer.class.getName());
+      OdeDataPublisher timMessagePub = new OdeDataPublisher(odeProperties, OdeTimSerializer.class.getName());
 
-      this.jsonDecPub = new JsonDecoderPublisher(messagePub);
-      this.hexDecPub = new HexDecoderPublisher(messagePub);
-      this.binDecPub = new BinaryDecoderPublisher(messagePub);
+      this.jsonDecPub = new JsonDecoderPublisher(bsmMessagePub);
+      this.hexDecPub = new HexDecoderPublisher(bsmMessagePub);
+      this.binDecPub = new BinaryDecoderPublisher(bsmMessagePub, timMessagePub);
    }
 
    public void decodeAndPublishFile(

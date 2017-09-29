@@ -7,10 +7,10 @@ import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.model.OdeBsmData;
-import us.dot.its.jpo.ode.model.OdeTravelerInformationData;
+import us.dot.its.jpo.ode.model.OdeTimData;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmDeserializer;
-import us.dot.its.jpo.ode.wrapper.serdes.OdeTravelerInformationMessageDeserializer;
+import us.dot.its.jpo.ode.wrapper.serdes.OdeTimDeserializer;
 
 /**
  * Launches ToJsonConverter service
@@ -43,15 +43,15 @@ public class ToJsonServiceController {
 
       // TIM POJO --> JSON converter
       logger.info("Converting {} records from topic {} and publishing to topic {} ",
-            OdeTravelerInformationData.class.getSimpleName(), odeProps.getKafkaTopicOdeTimPojo(),
+            OdeTimData.class.getSimpleName(), odeProps.getKafkaTopicOdeTimPojo(),
             odeProps.getKafkaTopicOdeTimJson());
       
-      ToJsonConverter<OdeTravelerInformationData> odeTimConverter = new ToJsonConverter<>(odeProps, false,
+      ToJsonConverter<OdeTimData> odeTimConverter = new ToJsonConverter<>(odeProps, false,
             odeProps.getKafkaTopicOdeTimJson());
       
-      MessageConsumer<String, OdeTravelerInformationData> odeTimConsumer = new MessageConsumer<>(
+      MessageConsumer<String, OdeTimData> odeTimConsumer = new MessageConsumer<>(
             odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), odeTimConverter,
-            OdeTravelerInformationMessageDeserializer.class.getName());
+            OdeTimDeserializer.class.getName());
       
       odeTimConsumer.setName("odeTimConsumer");
       odeTimConverter.start(odeTimConsumer, odeProps.getKafkaTopicOdeTimPojo());

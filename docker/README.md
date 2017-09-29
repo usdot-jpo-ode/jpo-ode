@@ -39,7 +39,7 @@ Run Command: ```docker-compose up -d``` to start the containers for the applicat
    - Deploy and start all containers 
      - `docker-compose up --no-recreate -d`
    - Lists the running containers under docker-compose
-     - `docker-compose ls`
+     - `docker-compose ps`
    - Start a container
      - `docker-compose start <container>`
    - Restart a container
@@ -48,3 +48,9 @@ Run Command: ```docker-compose up -d``` to start the containers for the applicat
      - `docker-compose stop <container>`
    - Stop all containers
      - `docker-compose stop`
+
+## Troubleshooting
+
+- Docker builds fail with a `wget: bad address` error
+   - [Docker fix for SSL issues due to corporate network](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network)
+
