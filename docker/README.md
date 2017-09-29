@@ -39,7 +39,7 @@ Run Command: ```docker-compose up -d``` to start the containers for the applicat
    - Deploy and start all containers 
      - `docker-compose up --no-recreate -d`
    - Lists the running containers under docker-compose
-     - `docker-compose ls`
+     - `docker-compose ps`
    - Start a container
      - `docker-compose start <container>`
    - Restart a container
