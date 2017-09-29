@@ -225,6 +225,9 @@ Familiarize yourself with Docker and follow the instructions in the [README.md](
 
 If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the $DOCKER_HOST_IP:9092, or wish to set the CAS username/password, `ODE_EXTERNAL_IPVs`, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
 
+Note that Docker builds may fail if you on a corporate network due to DNS resolution errors. 
+See [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
+
 **Step 5**: Navigate to the root directory of the jpo-ode project.
 
 **Step 6**: Build and deploy the application.
