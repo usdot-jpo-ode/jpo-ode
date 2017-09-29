@@ -12,12 +12,14 @@ import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
-public class OdeBsmDataCreaterHelper {
+public class OdeBsmDataCreatorHelper {
 
-   public OdeBsmData createOdeBsmData(
-      J2735Bsm rawBsm, IEEE1609p2Message message, 
-      BsmFileParser bsmFileParser, SerialId serialId) {
-      
+   public OdeBsmDataCreatorHelper() {
+   }
+
+   public OdeBsmData createOdeBsmData(J2735Bsm rawBsm, IEEE1609p2Message message, BsmFileParser bsmFileParser,
+         SerialId serialId) {
+
       OdeBsmPayload payload = new OdeBsmPayload(rawBsm);
 
       OdeBsmMetadata metadata = new OdeBsmMetadata(payload);
@@ -28,7 +30,7 @@ public class OdeBsmDataCreaterHelper {
          metadata.setLogFileName(bsmFileParser.getFilename());
          if (message != null) {
             Date ieeeGenTime = message.getGenerationTime();
-            
+
             if (ieeeGenTime != null) {
                generatedAt = DateTimeUtils.isoDateTime(ieeeGenTime);
             } else {
@@ -42,8 +44,8 @@ public class OdeBsmDataCreaterHelper {
          }
       } else {
          /*
-          * TODO Temporarily put in place for testing CV PEP. Should be removed after
-          * testing is complete.
+          * TODO Temporarily put in place for testing CV PEP. Should be removed
+          * after testing is complete.
           */
          metadata.setGeneratedAt(metadata.getReceivedAt());
       }
@@ -55,12 +57,9 @@ public class OdeBsmDataCreaterHelper {
    private ZonedDateTime getGeneratedAt(BsmFileParser bsmFileParser) {
       return DateTimeUtils.isoDateTime(bsmFileParser.getUtctimeInSec() * 1000 + bsmFileParser.getmSec());
    }
-   
-   public OdeBsmData createOdeBsmData(
-      J2735Bsm rawBsm, String filename, SerialId serialId) {
-      BsmFileParser bsmFileParser = new BsmFileParser()
-            .setFilename(filename)
-            .setUtctimeInSec(0)
+
+   public OdeBsmData createOdeBsmData(J2735Bsm rawBsm, String filename, SerialId serialId) {
+      BsmFileParser bsmFileParser = new BsmFileParser().setFilename(filename).setUtctimeInSec(0)
             .setValidSignature(false);
       return createOdeBsmData(rawBsm, null, bsmFileParser, serialId);
    }

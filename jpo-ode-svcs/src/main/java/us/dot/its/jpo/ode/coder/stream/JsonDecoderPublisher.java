@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.coder.BsmMessagePublisher;
-import us.dot.its.jpo.ode.coder.OdeBsmDataCreaterHelper;
+import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
@@ -21,7 +21,7 @@ public class JsonDecoderPublisher implements DecoderPublisher {
    private BsmMessagePublisher publisher;
    private SerialId serialId;
 
-   private OdeBsmDataCreaterHelper bsmDecoder;
+   private OdeBsmDataCreatorHelper bsmDecoder;
 
    private static AtomicInteger bundleId = new AtomicInteger(1);
 
@@ -30,7 +30,7 @@ public class JsonDecoderPublisher implements DecoderPublisher {
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
       
-      this.bsmDecoder = new OdeBsmDataCreaterHelper();
+      this.bsmDecoder = new OdeBsmDataCreatorHelper();
       
    }
 

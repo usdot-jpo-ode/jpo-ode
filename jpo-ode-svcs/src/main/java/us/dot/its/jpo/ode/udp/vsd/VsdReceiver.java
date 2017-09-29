@@ -14,7 +14,7 @@ import com.oss.asn1.AbstractData;
 
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.OdeBsmDataCreaterHelper;
+import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.semi.ConnectionPoint;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
@@ -34,7 +34,7 @@ public class VsdReceiver extends BsmReceiver {
    private static final Logger logger = LoggerFactory.getLogger(VsdReceiver.class);
    protected MessageProducer<String, OdeBsmData> odeBsmDataProducer;
    private SerialId serialId = new SerialId();
-   private final OdeBsmDataCreaterHelper odeBsmDataCreaterHelperIn;
+   private final OdeBsmDataCreatorHelper odeBsmDataCreaterHelperIn;
    
    @Autowired
    public VsdReceiver(OdeProperties odeProps) {
@@ -44,7 +44,7 @@ public class VsdReceiver extends BsmReceiver {
               odeProperties.getKafkaProducerType(), 
               null, 
               OdeBsmSerializer.class.getName());
-      odeBsmDataCreaterHelperIn = new OdeBsmDataCreaterHelper();
+      odeBsmDataCreaterHelperIn = new OdeBsmDataCreatorHelper();
    }
 
    @Override
