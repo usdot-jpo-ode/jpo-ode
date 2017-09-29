@@ -7,8 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
+import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
@@ -19,14 +19,14 @@ public class JsonDecoderPublisher implements DecoderPublisher {
 
    private static final Logger logger = LoggerFactory.getLogger(JsonDecoderPublisher.class);
 
-   private MessagePublisher publisher;
+   private OdeDataPublisher publisher;
    private SerialId serialId;
 
    private OdeBsmDataCreatorHelper bsmDecoder;
 
    private static AtomicInteger bundleId = new AtomicInteger(1);
 
-   public JsonDecoderPublisher(MessagePublisher dataPub) {
+   public JsonDecoderPublisher(OdeDataPublisher dataPub) {
       this.publisher = dataPub;
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
@@ -49,7 +49,7 @@ public class JsonDecoderPublisher implements DecoderPublisher {
             J2735Bsm j2735Bsm = (J2735Bsm) JsonUtils.fromJson(line, J2735Bsm.class);
             OdeData odeBsm = bsmDecoder.createOdeBsmData(j2735Bsm, fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
             
-            publisher.publish(odeBsm);
+            publisher.publish(odeBsm, publisher.getOdeProperties().getKafkaTopicOdeBsmJson());
          }
          if (empty) {
             throw new Exception("Empty file received");

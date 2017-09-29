@@ -8,7 +8,7 @@ import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.coder.MessagePublisher;
+import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.importer.LogFileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeData;
@@ -17,7 +17,7 @@ public class HexDecoderPublisher extends AbstractDecoderPublisher  {
 
    private static final Logger logger = LoggerFactory.getLogger(HexDecoderPublisher.class);
 
-   public HexDecoderPublisher(MessagePublisher dataPub) {
+   public HexDecoderPublisher(OdeDataPublisher dataPub) {
         super(dataPub);
    }
 
@@ -37,7 +37,8 @@ public class HexDecoderPublisher extends AbstractDecoderPublisher  {
             ParserStatus status = ParserStatus.UNKNOWN;
             if (fileType == ImporterFileType.BSM_LOG_FILE) {
                 status = bsmFileParser.parse(new BufferedInputStream(
-                    new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName);
+                   new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName,
+                   bundleId.get());
             } else {
                 bsmFileParser.setPayload(HexUtils.fromHexString(line));
                 status = ParserStatus.NA;
@@ -45,13 +46,13 @@ public class HexDecoderPublisher extends AbstractDecoderPublisher  {
             
             if (status == ParserStatus.COMPLETE) {
                 decoded = bsmDecoder.decode(bsmFileParser, 
-                    this.serialId.setBundleId(bundleId.incrementAndGet()));
+                    this.serialId.setBundleId(bundleId.get()));
             } else if (status == ParserStatus.EOF) {
                 return;
             }
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);
-               publisher.publish(decoded);
+               publisher.publish(decoded, publisher.getOdeProperties().getKafkaTopicOdeBsmPojo());
             } else {
                 // if parser returns PARTIAL record, we will go back and continue parsing
                 // but if it's UNKNOWN, it means that we could not parse the header bytes

@@ -8,13 +8,7 @@ import org.springframework.stereotype.Controller;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeTravelerInformationData;
-// TODO Deprecate per ODE-436
-// vvvvvvvvvvvvvvvvvvvvvvvvvv
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-// ^^^^^^^^^^^^^^^^^^^^^^^^^^
-// TODO Deprecate per ODE-436
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
-import us.dot.its.jpo.ode.wrapper.serdes.J2735BsmDeserializer;
 import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmDeserializer;
 import us.dot.its.jpo.ode.wrapper.serdes.OdeTravelerInformationMessageDeserializer;
 
@@ -32,23 +26,6 @@ public class ToJsonServiceController {
       super();
 
       logger.info("Starting {}", this.getClass().getSimpleName());
-
-      // TODO Deprecate per ODE-436
-      // vvvvvvvvvvvvvvvvvvvvvvvvvv
-      logger.info("Converting {} records from topic {} and publishing to topic {} ", J2735Bsm.class.getSimpleName(),
-            odeProps.getKafkaTopicRawBsmPojo(), odeProps.getKafkaTopicRawBsmJson());
-
-      ToJsonConverter<J2735Bsm> j2735BsmConverter = new ToJsonConverter<>(odeProps, false,
-            odeProps.getKafkaTopicRawBsmJson());
-
-      MessageConsumer<String, J2735Bsm> j2735BsmConsumer = new MessageConsumer<>(
-            odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), j2735BsmConverter,
-            J2735BsmDeserializer.class.getName());
-
-      j2735BsmConsumer.setName("j2735BsmConsumer");
-      j2735BsmConverter.start(j2735BsmConsumer, odeProps.getKafkaTopicRawBsmPojo());
-      // ^^^^^^^^^^^^^^^^^^^^^^^^^^
-      // TODO Deprecate per ODE-436
 
       // BSM POJO --> JSON converter
       logger.info("Converting {} records from topic {} and publishing to topic {} ", OdeBsmData.class.getSimpleName(),

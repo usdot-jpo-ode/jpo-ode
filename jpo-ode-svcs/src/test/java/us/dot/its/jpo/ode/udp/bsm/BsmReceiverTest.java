@@ -17,8 +17,8 @@ import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
-import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
+import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
@@ -47,7 +47,7 @@ public class BsmReceiverTest {
    @Capturing
    BsmDecoderHelper capturingBinaryDecoderHelper;
    @Capturing
-   MessagePublisher capturingMessagePublisher;
+   OdeDataPublisher capturingMessagePublisher;
    @Capturing DatagramSocket capturingDatagramSocket;
    
    @Capturing OdeBsmDataCreatorHelper capturingOdeBsmDataCreatorHelper;
@@ -95,7 +95,7 @@ public class BsmReceiverTest {
                capturingOdeBsmDataCreatorHelper.createOdeBsmData((J2735Bsm) any, null, (SerialId) any);
                result = mockOdeBsmData;
                
-               capturingMessagePublisher.publish(mockOdeBsmData);
+               capturingMessagePublisher.publish(mockOdeBsmData, anyString);
                times = 1;
             }
          };
@@ -138,7 +138,7 @@ public class BsmReceiverTest {
                capturingOdeBsmDataCreatorHelper.createOdeBsmData((J2735Bsm) any, null, (SerialId) any);
                result = mockOdeBsmData;
                
-               capturingMessagePublisher.publish(mockOdeBsmData);
+               capturingMessagePublisher.publish(mockOdeBsmData, anyString);
                times = 1;
             }
          };

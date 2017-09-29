@@ -21,6 +21,7 @@ import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.coder.FileAsn1CodecPublisher;
 import us.dot.its.jpo.ode.coder.FileDecoderPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 
@@ -36,6 +37,8 @@ public class ImporterProcessorTest {
 
    @Capturing
    FileDecoderPublisher capturingFileDecoderPublisher;
+   @Capturing
+   FileAsn1CodecPublisher capturingFileAsn1CodecPublisher;
    @Capturing
    OdeFileUtils capturingOdeFileUtils;
 

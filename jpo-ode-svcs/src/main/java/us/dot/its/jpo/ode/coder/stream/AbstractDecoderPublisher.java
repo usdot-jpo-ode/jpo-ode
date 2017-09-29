@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
-import us.dot.its.jpo.ode.coder.MessagePublisher;
+import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.importer.BsmFileParser;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.model.SerialId;
@@ -18,15 +18,14 @@ public abstract class AbstractDecoderPublisher implements DecoderPublisher {
 
    protected SerialId serialId;
 
-   protected MessagePublisher publisher;
+   protected OdeDataPublisher publisher;
 
    protected BsmDecoderHelper bsmDecoder;
    protected BsmFileParser bsmFileParser;
 
    protected static AtomicInteger bundleId = new AtomicInteger(1);
 
-   public AbstractDecoderPublisher(
-       MessagePublisher dataPub) {
+   public AbstractDecoderPublisher(OdeDataPublisher dataPub) {
       this.publisher = dataPub;
 
       this.serialId = new SerialId();

@@ -12,8 +12,8 @@ import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
-import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
+import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeData;
@@ -24,7 +24,7 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 public class JsonDecoderPublisherTest {
 
    @Mocked
-   MessagePublisher mockMessagePublisher;
+   OdeDataPublisher mockOdeDataPublisher;
    @Mocked
    OdeData mockOdeData;
    @Mocked
@@ -47,7 +47,7 @@ public class JsonDecoderPublisherTest {
             capturingScanner.hasNextLine();
             result = false;
 
-            mockMessagePublisher.publish((OdeData) any);
+            mockOdeDataPublisher.publish((OdeData) any, anyString);
             times = 0;
          }
       };
@@ -55,7 +55,7 @@ public class JsonDecoderPublisherTest {
       try {
 
           BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-          new JsonDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
+          new JsonDecoderPublisher(mockOdeDataPublisher).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -72,7 +72,7 @@ public class JsonDecoderPublisherTest {
             capturingOdeBsmDataCreaterHelper.createOdeBsmData((J2735Bsm) any, anyString, (SerialId) any);
             result = mockOdeBsmData;
             
-            mockMessagePublisher.publish((OdeData) any);
+            mockOdeDataPublisher.publish((OdeData) any, anyString);
             times = 1;
          }
       };
@@ -80,7 +80,7 @@ public class JsonDecoderPublisherTest {
       try {
 
           BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-          new JsonDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
+          new JsonDecoderPublisher(mockOdeDataPublisher).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }

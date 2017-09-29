@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.coder.FileAsn1CodecPublisher;
 import us.dot.its.jpo.ode.coder.FileDecoderPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 
@@ -19,11 +20,13 @@ public class ImporterProcessor {
 
    private static final Logger logger = LoggerFactory.getLogger(ImporterProcessor.class);
    private FileDecoderPublisher decoderPublisherManager;
+   private FileAsn1CodecPublisher codecPublisher;
    private OdeProperties odeProperties;
    private ImporterFileType fileType;
    
    public ImporterProcessor(OdeProperties odeProperties, ImporterFileType fileType) {
       this.decoderPublisherManager = new FileDecoderPublisher(odeProperties);
+      this.codecPublisher = new FileAsn1CodecPublisher(odeProperties);
       this.odeProperties = odeProperties;
       this.fileType = fileType;
    }
@@ -51,7 +54,10 @@ public class ImporterProcessor {
       try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
           BufferedInputStream bis = new BufferedInputStream(inputStream, 
               odeProperties.getImportProcessorBufferSize());
+          //TODO ODE-559 remove line below when asn1_codec is integrated
           decoderPublisherManager.decodeAndPublishFile(filePath, bis, fileType);
+          
+          codecPublisher.publishFile(filePath, bis);
       } catch (Exception e) {
          logger.error("Unable to open or process file: " + filePath, e);
       }

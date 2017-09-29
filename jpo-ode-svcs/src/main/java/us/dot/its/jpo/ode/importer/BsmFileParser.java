@@ -22,6 +22,7 @@ public class BsmFileParser implements LogFileParser {
    private byte[] readBuffer = new byte[MAX_INPUT_BUFFER_SIZE];
    private int step = 0;
 
+   private int bundleId;
    private String filename;
    private BsmSource direction; // 0 for EV(Tx), 1 for RV(Rx)
    private long utctimeInSec;
@@ -30,12 +31,13 @@ public class BsmFileParser implements LogFileParser {
    private short length;
    private byte[] payload;
 
-   public ParserStatus parse(BufferedInputStream bis, String fileName) throws LogFileParserException {
+   public ParserStatus parse(BufferedInputStream bis, String fileName, int bundleId) throws LogFileParserException {
       ParserStatus status = ParserStatus.INIT;
-
+      
       try {
          if (step == 0) {
             setFilename(fileName);
+            setBundleId(bundleId);
             step++;
          }
 
@@ -96,7 +98,7 @@ public class BsmFileParser implements LogFileParser {
       return status;
    }
 
-   private ParserStatus parseStep(BufferedInputStream bis, int length) throws LogFileParserException {
+   public ParserStatus parseStep(BufferedInputStream bis, int length) throws LogFileParserException {
       try {
          int numBytes;
          if (bis.markSupported()) {
@@ -121,6 +123,14 @@ public class BsmFileParser implements LogFileParser {
       } catch (Exception e) {
          throw new LogFileParserException("Error parsing step " + step, e);
       }
+   }
+
+   public int getBundleId() {
+      return bundleId;
+   }
+
+   public void setBundleId(int bundleId) {
+      this.bundleId = bundleId;
    }
 
    public int getStep() {

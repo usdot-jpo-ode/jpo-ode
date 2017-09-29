@@ -10,14 +10,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
+import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmSerializer;
 
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
@@ -34,7 +35,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
    private SerialId serialId;
 
-   private MessagePublisher messagePub;
+   private OdeDataPublisher publisher;
    
    protected static AtomicInteger bundleId = new AtomicInteger(1);
 
@@ -51,7 +52,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
       
-      this.messagePub = new MessagePublisher(odeProperties);
+      this.publisher = new OdeDataPublisher(odeProperties, OdeBsmSerializer.class.getName());
    }
 
    @Override
@@ -93,7 +94,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                }
 
                OdeData msgWithMetadata = metadataHelper.createOdeBsmData(decodedBsm, null, this.serialId.setBundleId(bundleId.incrementAndGet()));
-               messagePub.publish(msgWithMetadata);
+               publisher.publish(msgWithMetadata, odeProperties.getKafkaTopicOdeBsmPojo());
             }
          } catch (Exception e) {
             logger.error("Error receiving packet", e);
