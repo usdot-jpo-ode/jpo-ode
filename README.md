@@ -190,6 +190,9 @@ ODE configuration can be customized for every deployment environment using envir
 
 Instructions for how to use the *.env* file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
 
+**Note** Docker builds may fail if you on a corporate network due to DNS resolution errors. 
+[See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
+
 
 #### Build Process
 
@@ -224,9 +227,6 @@ mvn clean compile assembly:single install
 Familiarize yourself with Docker and follow the instructions in the [README.md](docker/README.md).
 
 If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the $DOCKER_HOST_IP:9092, or wish to set the CAS username/password, `ODE_EXTERNAL_IPVs`, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
-
-Note that Docker builds may fail if you on a corporate network due to DNS resolution errors. 
-See [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
 
 **Step 5**: Navigate to the root directory of the jpo-ode project.
 
