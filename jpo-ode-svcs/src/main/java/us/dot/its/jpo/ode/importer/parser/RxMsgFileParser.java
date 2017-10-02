@@ -7,29 +7,11 @@ import java.util.Arrays;
 import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
-/*
-typedef struct _receivedMsgRecord {
- location curLocation;
- uint32_t utctimeInSec;
- uint16_t mSec;
- rxSource rxFrom;
- int8_t verificationStatus;
- uint16_t length;
- uint8_t payload[MAX_PAYLOAD_SIZE]; //LEAR: RAW 1609.2 format of TIM
- } __attribute__((__packed__)) receivedMsgRecord;
- */
-
 public class RxMsgFileParser extends LogFileParser {
-   
-   private static final int LOCATION_LAT_LENGTH = 4;
-   private static final int LOCATION_LON_LENGTH = 4;
-   private static final int LOCATION_ELEV_LENGTH = 4;
-   private static final int LOCATION_SPEED_LENGTH = 2;
-   private static final int LOCATION_HEADING_LENGTH = 2;
+
    private static final int RX_SOURCE_LENGTH = 4; // TODO - this is a C
                                                   // enumeration, size is
                                                   // compiler-dependent
-
    private int latitude;
    private int longitude;
    private int elevation;

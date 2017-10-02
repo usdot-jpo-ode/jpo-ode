@@ -9,6 +9,12 @@ public abstract class LogFileParser {
    public static final int MSEC_LENGTH = 2;
    public static final int VERIFICATION_STATUS_LENGTH = 1;
    public static final int LENGTH_LENGTH = 2;
+   
+   public static final int LOCATION_LAT_LENGTH = 4;
+   public static final int LOCATION_LON_LENGTH = 4;
+   public static final int LOCATION_ELEV_LENGTH = 4;
+   public static final int LOCATION_SPEED_LENGTH = 2;
+   public static final int LOCATION_HEADING_LENGTH = 2;
 
    protected long bundleId;
    protected byte[] readBuffer = new byte[BUFFER_SIZE];
