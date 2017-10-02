@@ -27,7 +27,7 @@ public class FileAsn1CodecPublisher {
    public void publishFile(Path filePath, BufferedInputStream fileInputStream) {
       String fileName = filePath.toFile().getName();
 
-      logger.info("Decoding and publishing file {}", fileName);
+      logger.info("Publishing file {}", fileName);
       
       try {
          logger.info("Publishing data from {} to asn1_codec.", filePath);

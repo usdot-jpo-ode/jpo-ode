@@ -23,7 +23,7 @@ public class ImporterProcessor {
    private FileAsn1CodecPublisher codecPublisher;
    private OdeProperties odeProperties;
    private ImporterFileType fileType;
-   
+
    public ImporterProcessor(OdeProperties odeProperties, ImporterFileType fileType) {
       this.decoderPublisherManager = new FileDecoderPublisher(odeProperties);
       this.codecPublisher = new FileAsn1CodecPublisher(odeProperties);
@@ -51,17 +51,27 @@ public class ImporterProcessor {
 
    public void processAndBackupFile(Path filePath, Path backupDir) {
 
+      /*
+       * TODO ODE-559 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+       * remove line below when asn1_codec is integrated
+       */
       try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
-          BufferedInputStream bis = new BufferedInputStream(inputStream, 
-              odeProperties.getImportProcessorBufferSize());
-          //TODO ODE-559 remove line below when asn1_codec is integrated
-          decoderPublisherManager.decodeAndPublishFile(filePath, bis, fileType);
-          
-          codecPublisher.publishFile(filePath, bis);
+         BufferedInputStream bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
+         decoderPublisherManager.decodeAndPublishFile(filePath, bis, fileType);
+         bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
       } catch (Exception e) {
          logger.error("Unable to open or process file: " + filePath, e);
       }
+      // TODO ODE-559 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+      // ODE-559
+      try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
+         BufferedInputStream bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
+         codecPublisher.publishFile(filePath, bis);
+      } catch (Exception e) {
+         logger.error("Unable to open or process file: " + filePath, e);
+      }
+      
       try {
          OdeFileUtils.backupFile(filePath, backupDir);
       } catch (IOException e) {
