@@ -35,12 +35,12 @@ public class DriverAlertFileParser implements LogFileParser {
    private short speed;
    private short heading;
 
-   private int utcTimeInSec;
+   private long utcTimeInSec;
    private short mSec;
    private short length;
    private byte[] alert;
 
-   public ParserStatus parse(BufferedInputStream bis, String fileName) {
+   public ParserStatus parse(BufferedInputStream bis, String fileName) throws LogFileParserException {
 
       ParserStatus status = ParserStatus.INIT;
 
@@ -122,15 +122,17 @@ public class DriverAlertFileParser implements LogFileParser {
             setAlert(Arrays.copyOf(readBuffer, getLength()));
          }
 
-         return status;
       } catch (Exception e) {
-         return ParserStatus.ERROR;
-         // throw new LogFileParserException(String.format("Error parsing %s on
-         // step %d", filename, getStep()) , e);
+         throw new LogFileParserException(String.format("Error parsing %s on step %d", fileName, getStep()), e);
       }
+      
+      setStep(0);
+      status = ParserStatus.COMPLETE;
+      
+      return status;
    }
 
-   public ParserStatus parseStep(BufferedInputStream bis, int length) throws LogFileParserException {
+   private ParserStatus parseStep(BufferedInputStream bis, int length) throws LogFileParserException {
       try {
          int numBytes;
          if (bis.markSupported()) {
@@ -205,7 +207,7 @@ public class DriverAlertFileParser implements LogFileParser {
       this.heading = heading;
    }
 
-   public int getUtcTimeInSec() {
+   public long getUtcTimeInSec() {
       return utcTimeInSec;
    }
 

@@ -23,9 +23,6 @@ typedef struct _receivedMsgRecord {
  } __attribute__((__packed__)) receivedMsgRecord;
  */
 public class RxMsgFileParser implements LogFileParser {
-   
-   private static final Logger logger = LoggerFactory.getLogger(RxMsgFileParser.class);
-
 
    private static final int MAX_PAYLOAD_SIZE = 2302;
 
