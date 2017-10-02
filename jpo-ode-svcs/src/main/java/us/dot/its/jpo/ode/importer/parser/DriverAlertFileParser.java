@@ -27,7 +27,7 @@ public class DriverAlertFileParser extends LogFileParser {
       super(bundleId);
    }
 
-   public ParserStatus parse(BufferedInputStream bis, String fileName) {
+   public ParserStatus parse(BufferedInputStream bis, String fileName) throws LogFileParserException {
 
       ParserStatus status = ParserStatus.INIT;
 
