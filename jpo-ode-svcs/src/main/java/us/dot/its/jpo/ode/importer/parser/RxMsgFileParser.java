@@ -1,12 +1,8 @@
 package us.dot.its.jpo.ode.importer.parser;
 
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.Arrays;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.util.CodecUtils;
@@ -22,45 +18,28 @@ typedef struct _receivedMsgRecord {
  uint8_t payload[MAX_PAYLOAD_SIZE]; //LEAR: RAW 1609.2 format of TIM
  } __attribute__((__packed__)) receivedMsgRecord;
  */
-public class RxMsgFileParser implements LogFileParser {
 
-   private static final int MAX_PAYLOAD_SIZE = 2302;
-
-   private static final int LOCATION_TOTAL_LENGTH = 16;
+public class RxMsgFileParser extends LogFileParser {
+   
    private static final int LOCATION_LAT_LENGTH = 4;
    private static final int LOCATION_LON_LENGTH = 4;
    private static final int LOCATION_ELEV_LENGTH = 4;
    private static final int LOCATION_SPEED_LENGTH = 2;
    private static final int LOCATION_HEADING_LENGTH = 2;
-
-   private static final int UTC_TIME_IN_SEC_LENGTH = 4;
-   private static final int MSEC_LENGTH = 2;
    private static final int RX_SOURCE_LENGTH = 4; // TODO - this is a C
                                                   // enumeration, size is
                                                   // compiler-dependent
 
-   private static final int VERIFICATION_STATUS_LENGTH = 1;
-   private static final int LENGTH_LENGTH = 2;
-   public static final int MAX_INPUT_BUFFER_SIZE = LOCATION_TOTAL_LENGTH + LOCATION_LAT_LENGTH + LOCATION_LON_LENGTH
-         + LOCATION_ELEV_LENGTH + LOCATION_SPEED_LENGTH + LOCATION_HEADING_LENGTH + UTC_TIME_IN_SEC_LENGTH + MSEC_LENGTH
-         + RX_SOURCE_LENGTH + LENGTH_LENGTH + MAX_PAYLOAD_SIZE;
-
-   private byte[] readBuffer = new byte[MAX_INPUT_BUFFER_SIZE];
-   private int step = 0;
-
-   private String filename;
    private int latitude;
    private int longitude;
    private int elevation;
    private short speed;
    private short heading;
-
-   private long utcTimeInSec;
-   private short mSec;
    private RxSource rxSource;
-   private boolean validSignature;
-   private short length;
-   private byte[] payload;
+
+   public RxMsgFileParser(long bundleId) {
+      super(bundleId);
+   }
 
    public ParserStatus parse(BufferedInputStream bis, String fileName) throws LogFileParserException {
 
@@ -169,41 +148,6 @@ public class RxMsgFileParser implements LogFileParser {
 
    }
 
-   private ParserStatus parseStep(BufferedInputStream bis, int length) throws LogFileParserException {
-      try {
-         int numBytes;
-         if (bis.markSupported()) {
-            bis.mark(length);
-         }
-         numBytes = bis.read(readBuffer, 0, length);
-         if (numBytes < 0) {
-            return ParserStatus.EOF;
-         } else if (numBytes < length) {
-            if (bis.markSupported()) {
-               try {
-                  bis.reset();
-               } catch (IOException ioe) {
-                  throw new LogFileParserException("Error reseting Input Stream to marked position", ioe);
-               }
-            }
-            return ParserStatus.PARTIAL;
-         } else {
-            setStep(getStep() + 1);
-            return ParserStatus.COMPLETE;
-         }
-      } catch (Exception e) {
-         throw new LogFileParserException("Error parsing step " + getStep(), e);
-      }
-   }
-
-   public String getFilename() {
-      return filename;
-   }
-
-   public void setFilename(String filename) {
-      this.filename = filename;
-   }
-
    public int getLatitude() {
       return latitude;
    }
@@ -244,60 +188,12 @@ public class RxMsgFileParser implements LogFileParser {
       this.heading = heading;
    }
 
-   public long getUtcTimeInSec() {
-      return utcTimeInSec;
-   }
-
-   public void setUtcTimeInSec(int utcTimeInSec) {
-      this.utcTimeInSec = utcTimeInSec;
-   }
-
-   public short getmSec() {
-      return mSec;
-   }
-
-   public void setmSec(short mSec) {
-      this.mSec = mSec;
-   }
-
    public RxSource getRxSource() {
       return rxSource;
    }
 
    public void setRxSource(RxSource rxSource) {
       this.rxSource = rxSource;
-   }
-
-   public boolean isValidSignature() {
-      return validSignature;
-   }
-
-   public void setValidSignature(boolean validSignature) {
-      this.validSignature = validSignature;
-   }
-
-   public short getLength() {
-      return length;
-   }
-
-   public void setLength(short length) {
-      this.length = length;
-   }
-
-   public byte[] getPayload() {
-      return payload;
-   }
-
-   public void setPayload(byte[] payload) {
-      this.payload = payload;
-   }
-
-   public int getStep() {
-      return step;
-   }
-
-   public void setStep(int step) {
-      this.step = step;
    }
 
 }

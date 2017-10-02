@@ -13,7 +13,8 @@ import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
-import us.dot.its.jpo.ode.coder.BsmMessagePublisher;
+import us.dot.its.jpo.ode.coder.OdeDataPublisher;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeData;
@@ -22,7 +23,7 @@ import us.dot.its.jpo.ode.model.SerialId;
 public class HexDecoderPublisherTest {
 
    @Mocked
-   BsmMessagePublisher mockMessagePublisher;
+   OdeDataPublisher mockOdeDataPublisher;
    @Capturing
    BsmDecoderHelper capturingDecoderHelper;
    @Capturing
@@ -45,7 +46,7 @@ public class HexDecoderPublisherTest {
             }
          };
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", false);
+         new HexDecoderPublisher(mockOdeDataPublisher).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -69,12 +70,12 @@ public class HexDecoderPublisherTest {
                result = null;
                times = 1;
 
-               mockMessagePublisher.publish((OdeData) any);
+               mockOdeDataPublisher.publish((OdeData) any, anyString);
                times = 0;
             }
          };
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", true);
+         new HexDecoderPublisher(mockOdeDataPublisher).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -95,12 +96,12 @@ public class HexDecoderPublisherTest {
                result = new Exception("testException123");
                times = 1;
 
-               mockMessagePublisher.publish((OdeData) any);
+               mockOdeDataPublisher.publish((OdeData) any, anyString);
                times = 0;
             }
          };
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", true);
+         new HexDecoderPublisher(mockOdeDataPublisher).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -121,12 +122,12 @@ public class HexDecoderPublisherTest {
                result = mockOdeData;
                times = 1;
 
-               mockMessagePublisher.publish((OdeData) any);
+               mockOdeDataPublisher.publish((OdeData) any, anyString);
                times = 1;
             }
          };
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new HexDecoderPublisher(mockMessagePublisher).decodeAndPublish(bis, "testFileName", true);
+         new HexDecoderPublisher(mockOdeDataPublisher).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }

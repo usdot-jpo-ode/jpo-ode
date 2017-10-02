@@ -12,7 +12,8 @@ import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
-import us.dot.its.jpo.ode.coder.BsmMessagePublisher;
+import us.dot.its.jpo.ode.coder.OdeDataPublisher;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeData;
@@ -22,7 +23,7 @@ import us.dot.its.jpo.ode.model.SerialId;
 public class BinaryDecoderPublisherTest {
 
    @Mocked
-   BsmMessagePublisher mockMessagePublisher;
+   OdeDataPublisher mockOdeDataPublisher;
    @Capturing
    BsmDecoderHelper capturingDecoderHelper;
    @Mocked
@@ -42,13 +43,13 @@ public class BinaryDecoderPublisherTest {
                result = null;
                times = 1;
 
-               mockMessagePublisher.publish((OdeData) any);
+               mockOdeDataPublisher.publish((OdeData) any, anyString);
                times = 0;
             }
          };
 
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new BinaryDecoderPublisher(mockMessagePublisher, null).decodeAndPublish(bis, "testFileName", true);
+         new BinaryDecoderPublisher(mockOdeDataPublisher, null).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
 
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
@@ -66,13 +67,13 @@ public class BinaryDecoderPublisherTest {
                capturingDecoderHelper.decode( (BsmFileParser) any, (SerialId) any);
                result = new Exception("testException123");
 
-               mockMessagePublisher.publish((OdeData) any);
+               mockOdeDataPublisher.publish((OdeData) any, anyString);
                times = 0;
             }
          };
 
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new BinaryDecoderPublisher(mockMessagePublisher, null).decodeAndPublish(bis, "testFileName", true);
+         new BinaryDecoderPublisher(mockOdeDataPublisher, null).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
 
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
@@ -90,13 +91,13 @@ public class BinaryDecoderPublisherTest {
                capturingDecoderHelper.decode((BsmFileParser) any, (SerialId) any);
                returns(mockOdeData, null);
 
-               mockMessagePublisher.publish((OdeData) any);
+               mockOdeDataPublisher.publish((OdeData) any, anyString);
                times = 1;
             }
          };
 
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new BinaryDecoderPublisher(mockMessagePublisher, null).decodeAndPublish(bis, "testFileName", true);
+         new BinaryDecoderPublisher(mockOdeDataPublisher, null).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
 
       } catch (Exception e) {
          fail("Unexpected exception: " + e);

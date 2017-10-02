@@ -55,11 +55,11 @@ public class OdeBsmDataCreatorHelper {
    }
 
    private ZonedDateTime getGeneratedAt(BsmFileParser bsmFileParser) {
-      return DateTimeUtils.isoDateTime(bsmFileParser.getUtctimeInSec() * 1000 + bsmFileParser.getmSec());
+      return DateTimeUtils.isoDateTime(bsmFileParser.getUtcTimeInSec() * 1000 + bsmFileParser.getmSec());
    }
 
    public OdeBsmData createOdeBsmData(J2735Bsm rawBsm, String filename, SerialId serialId) {
-      BsmFileParser bsmFileParser = new BsmFileParser().setFilename(filename).setUtctimeInSec(0)
+      BsmFileParser bsmFileParser = (BsmFileParser) new BsmFileParser(serialId.getBundleId()).setFilename(filename).setUtcTimeInSec(0)
             .setValidSignature(false);
       return createOdeBsmData(rawBsm, null, bsmFileParser, serialId);
    }

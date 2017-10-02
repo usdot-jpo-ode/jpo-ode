@@ -7,40 +7,27 @@ import java.util.Arrays;
 
 import us.dot.its.jpo.ode.util.CodecUtils;
 
-public class DriverAlertFileParser implements LogFileParser {
+public class DriverAlertFileParser extends LogFileParser {
 
-   private static final int TIM_LOCATION_TOTAL_LENGTH = 16;
    private static final int TIM_LOCATION_LAT_LENGTH = 4;
    private static final int TIM_LOCATION_LON_LENGTH = 4;
    private static final int TIM_LOCATION_ELEV_LENGTH = 4;
    private static final int TIM_LOCATION_SPEED_LENGTH = 2;
    private static final int TIM_LOCATION_HEADING_LENGTH = 2;
 
-   private static final int TIM_UTC_TIME_IN_SEC_LENGTH = 4;
-   private static final int TIM_MSEC_LENGTH = 2;
-   private static final int TIM_ALERT_LENGTH_LENGTH = 2;
-   private static final int TIM_MAX_TIM_PAYLOAD_LENGTH = 255;
-
-   private static final int TIM_MAX_INPUT_BUFFER_SIZE = TIM_LOCATION_TOTAL_LENGTH + TIM_LOCATION_LAT_LENGTH
-         + TIM_LOCATION_LON_LENGTH + TIM_LOCATION_ELEV_LENGTH + TIM_LOCATION_SPEED_LENGTH + TIM_LOCATION_HEADING_LENGTH
-         + TIM_UTC_TIME_IN_SEC_LENGTH + TIM_MSEC_LENGTH + TIM_ALERT_LENGTH_LENGTH + TIM_MAX_TIM_PAYLOAD_LENGTH;
-
-   private byte[] readBuffer = new byte[TIM_MAX_INPUT_BUFFER_SIZE];
-   private int step = 0;
-
-   private String filename;
    private int latitude;
    private int longitude;
    private int elevation;
    private short speed;
    private short heading;
 
-   private long utcTimeInSec;
-   private short mSec;
-   private short length;
    private byte[] alert;
 
-   public ParserStatus parse(BufferedInputStream bis, String fileName) throws LogFileParserException {
+   public DriverAlertFileParser(long bundleId) {
+      super(bundleId);
+   }
+
+   public ParserStatus parse(BufferedInputStream bis, String fileName) {
 
       ParserStatus status = ParserStatus.INIT;
 
@@ -92,26 +79,26 @@ public class DriverAlertFileParser implements LogFileParser {
 
          // Step 6 - parse utcTimeInSec
          if (getStep() == 6) {
-            status = parseStep(bis, TIM_UTC_TIME_IN_SEC_LENGTH);
+            status = parseStep(bis, UTC_TIME_IN_SEC_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setUtcTimeInSec(CodecUtils.bytesToInt(readBuffer, 0, TIM_UTC_TIME_IN_SEC_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            setUtcTimeInSec(CodecUtils.bytesToInt(readBuffer, 0, UTC_TIME_IN_SEC_LENGTH, ByteOrder.LITTLE_ENDIAN));
          }
 
          // Step 7 - parse mSec
          if (getStep() == 7) {
-            status = parseStep(bis, TIM_MSEC_LENGTH);
+            status = parseStep(bis, MSEC_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setmSec(CodecUtils.bytesToShort(readBuffer, 0, TIM_MSEC_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            setmSec(CodecUtils.bytesToShort(readBuffer, 0, MSEC_LENGTH, ByteOrder.LITTLE_ENDIAN));
          }
 
          // Step 8 - parse alert length
          if (getStep() == 8) {
-            status = parseStep(bis, TIM_ALERT_LENGTH_LENGTH);
+            status = parseStep(bis, LENGTH_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setLength(CodecUtils.bytesToShort(readBuffer, 0, TIM_ALERT_LENGTH_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            setLength(CodecUtils.bytesToShort(readBuffer, 0, LENGTH_LENGTH, ByteOrder.LITTLE_ENDIAN));
          }
 
          // Step 9 - copy alert
@@ -159,14 +146,6 @@ public class DriverAlertFileParser implements LogFileParser {
       }
    }
 
-   public String getFilename() {
-      return filename;
-   }
-
-   public void setFilename(String filename) {
-      this.filename = filename;
-   }
-
    public int getLatitude() {
       return latitude;
    }
@@ -207,30 +186,6 @@ public class DriverAlertFileParser implements LogFileParser {
       this.heading = heading;
    }
 
-   public long getUtcTimeInSec() {
-      return utcTimeInSec;
-   }
-
-   public void setUtcTimeInSec(int utcTimeInSec) {
-      this.utcTimeInSec = utcTimeInSec;
-   }
-
-   public int getmSec() {
-      return mSec;
-   }
-
-   public void setmSec(short mSec) {
-      this.mSec = mSec;
-   }
-
-   public int getLength() {
-      return length;
-   }
-
-   public void setLength(short length) {
-      this.length = length;
-   }
-
    public byte[] getAlert() {
       return alert;
    }
@@ -239,11 +194,4 @@ public class DriverAlertFileParser implements LogFileParser {
       this.alert = alert;
    }
 
-   public int getStep() {
-      return step;
-   }
-
-   public void setStep(int step) {
-      this.step = step;
-   }
 }
