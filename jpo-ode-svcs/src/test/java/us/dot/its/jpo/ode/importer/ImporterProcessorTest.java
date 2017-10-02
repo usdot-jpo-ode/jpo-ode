@@ -118,7 +118,6 @@ public class ImporterProcessorTest {
       try {
          new Expectations(FileInputStream.class) {
             {
-               
                new FileInputStream((File) any);
                result = null; 
 
