@@ -119,7 +119,7 @@ public class DriverAlertFileParser extends LogFileParser {
       return status;
    }
 
-   private ParserStatus parseStep(BufferedInputStream bis, int length) throws LogFileParserException {
+   public ParserStatus parseStep(BufferedInputStream bis, int length) throws LogFileParserException {
       try {
          int numBytes;
          if (bis.markSupported()) {
