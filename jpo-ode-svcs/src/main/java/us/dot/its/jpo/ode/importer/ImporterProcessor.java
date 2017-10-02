@@ -49,8 +49,7 @@ public class ImporterProcessor {
    public void processAndBackupFile(Path filePath, Path backupDir) {
 
       try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
-          BufferedInputStream bis = new BufferedInputStream(inputStream, 
-              odeProperties.getImportProcessorBufferSize());
+          BufferedInputStream bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
           decoderPublisherManager.decodeAndPublishFile(filePath, bis, fileType);
       } catch (Exception e) {
          logger.error("Unable to open or process file: " + filePath, e);
