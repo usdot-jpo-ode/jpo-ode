@@ -109,12 +109,14 @@ public class DriverAlertFileParser extends LogFileParser {
             setAlert(Arrays.copyOf(readBuffer, getLength()));
          }
 
-         return status;
       } catch (Exception e) {
-         return ParserStatus.ERROR;
-         // throw new LogFileParserException(String.format("Error parsing %s on
-         // step %d", filename, getStep()) , e);
+         throw new LogFileParserException(String.format("Error parsing %s on step %d", fileName, getStep()), e);
       }
+      
+      setStep(0);
+      status = ParserStatus.COMPLETE;
+      
+      return status;
    }
 
    public ParserStatus parseStep(BufferedInputStream bis, int length) throws LogFileParserException {

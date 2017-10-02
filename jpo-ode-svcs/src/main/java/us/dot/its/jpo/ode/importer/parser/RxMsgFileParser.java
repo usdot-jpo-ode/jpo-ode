@@ -18,6 +18,7 @@ typedef struct _receivedMsgRecord {
  uint8_t payload[MAX_PAYLOAD_SIZE]; //LEAR: RAW 1609.2 format of TIM
  } __attribute__((__packed__)) receivedMsgRecord;
  */
+
 public class RxMsgFileParser extends LogFileParser {
    
    private static final int LOCATION_LAT_LENGTH = 4;
