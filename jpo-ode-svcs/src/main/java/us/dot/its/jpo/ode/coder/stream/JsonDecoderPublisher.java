@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
-import us.dot.its.jpo.ode.coder.OdeDataPublisher;
+import us.dot.its.jpo.ode.coder.OdeStringPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
@@ -19,15 +19,15 @@ public class JsonDecoderPublisher implements DecoderPublisher {
 
    private static final Logger logger = LoggerFactory.getLogger(JsonDecoderPublisher.class);
 
-   private OdeDataPublisher publisher;
+   private OdeStringPublisher publisher;
    private SerialId serialId;
 
    private OdeBsmDataCreatorHelper bsmDecoder;
 
    private static AtomicInteger bundleId = new AtomicInteger(1);
 
-   public JsonDecoderPublisher(OdeDataPublisher dataPub) {
-      this.publisher = dataPub;
+   public JsonDecoderPublisher(OdeStringPublisher stringPub) {
+      this.publisher = stringPub;
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
       

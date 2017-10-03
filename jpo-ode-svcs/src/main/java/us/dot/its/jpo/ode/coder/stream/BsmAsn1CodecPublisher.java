@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.coder.ByteArrayPublisher;
 import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
-import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
+import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 
 public class BsmAsn1CodecPublisher extends AbstractAsn1CodecPublisher {
 
@@ -25,7 +25,7 @@ public class BsmAsn1CodecPublisher extends AbstractAsn1CodecPublisher {
       this.bsmFileParser = new BsmFileParser(bundleId.incrementAndGet());
       do {
          try {
-            status = bsmFileParser.parse(bis, fileName);
+            status = bsmFileParser.parseFile(bis, fileName);
 
             if (status == ParserStatus.COMPLETE) {
                publisher.publish(bsmFileParser.getPayload(), publisher.getOdeProperties().getKafkaTopicEncodedBsmBytes());

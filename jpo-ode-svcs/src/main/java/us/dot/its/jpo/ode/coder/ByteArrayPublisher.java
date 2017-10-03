@@ -26,6 +26,4 @@ public class ByteArrayPublisher extends MessagePublisher {
    public OdeProperties getOdeProperties() {
       return odeProperties;
    }
-
-   
 }
