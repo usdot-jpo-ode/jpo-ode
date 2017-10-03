@@ -78,17 +78,17 @@ public class OdeProperties implements EnvironmentAware {
     */
    private String kafkaTopicOdeTimPojo = "topic.OdeTimPojo";
    private String kafkaTopicOdeTimJson = "topic.OdeTimJson";
+   private String kafkaTopicEncodedTimBytes = "topic.EncodedTimBytes";
+   private String kafkaTopicDecodedTimXml = "topic.DecodedTimXml";
 
    /*
     * BSM Properties
     */
-   private String kafkaTopicRawBsmPojo = "topic.j2735Bsm"; // TODO Deprecate per ODE-436
-   private String kafkaTopicRawBsmJson = "topic.j2735RawBsmJson"; // TODO Deprecate per ODE-436
    private String kafkaTopicFilteredOdeBsmJson = "topic.FilteredOdeBsmJson";
    private String kafkaTopicOdeBsmPojo = "topic.OdeBsmPojo";
    private String kafkaTopicOdeBsmJson = "topic.OdeBsmJson";
-   private String kafkaTopicEncodedBytes = "topic.EncodedBytes";
-   private String kafkaTopicDecodedJson = "topic.DecodedJson";
+   private String kafkaTopicEncodedBsmBytes = "topic.EncodedBsmBytes";
+   private String kafkaTopicDecodedBsmXml = "topic.DecodedBsmXml";
    private int bsmReceiverPort = 46800;
    private int bsmBufferSize = 500;
 
@@ -521,30 +521,6 @@ public class OdeProperties implements EnvironmentAware {
       this.kafkaTopicVsdPojo = kafkaTopicVsdPojo;
    }
 
-   // TODO Deprecate per ODE-436
-   @Deprecated
-    public String getKafkaTopicRawBsmPojo() {
-        return kafkaTopicRawBsmPojo;
-    }
-
-   // TODO Deprecate per ODE-436
-   @Deprecated
-    public void setKafkaTopicRawBsmPojo(String kafkaTopicRawBsmPojo) {
-        this.kafkaTopicRawBsmPojo = kafkaTopicRawBsmPojo;
-    }
-
-   // TODO Deprecate per ODE-436
-   @Deprecated
-    public String getKafkaTopicRawBsmJson() {
-        return kafkaTopicRawBsmJson;
-    }
-
-   // TODO Deprecate per ODE-436
-   @Deprecated
-    public void setKafkaTopicRawBsmJson(String kafkaTopicRawBsmJson) {
-        this.kafkaTopicRawBsmJson = kafkaTopicRawBsmJson;
-    }
-
     public String getKafkaTopicFilteredOdeBsmJson() {
        return kafkaTopicFilteredOdeBsmJson;
     }
@@ -569,23 +545,39 @@ public class OdeProperties implements EnvironmentAware {
        this.kafkaTopicOdeBsmJson = kafkaTopicOdeBsmJson;
     }
 
-    public String getKafkaTopicEncodedBytes() {
-        return kafkaTopicEncodedBytes;
-    }
+    public String getKafkaTopicEncodedTimBytes() {
+      return kafkaTopicEncodedTimBytes;
+   }
 
-    public void setKafkaTopicEncodedBytes(String kafkaTopicEncodedBytes) {
-        this.kafkaTopicEncodedBytes = kafkaTopicEncodedBytes;
-    }
+   public void setKafkaTopicEncodedTimBytes(String kafkaTopicEncodedTimBytes) {
+      this.kafkaTopicEncodedTimBytes = kafkaTopicEncodedTimBytes;
+   }
 
-    public String getKafkaTopicDecodedJson() {
-        return kafkaTopicDecodedJson;
-    }
+   public String getKafkaTopicDecodedTimXml() {
+      return kafkaTopicDecodedTimXml;
+   }
 
-    public void setKafkaTopicDecodedJson(String kafkaTopicDecodedJson) {
-        this.kafkaTopicDecodedJson = kafkaTopicDecodedJson;
-    }
+   public void setKafkaTopicDecodedTimXml(String kafkaTopicDecodedTimXml) {
+      this.kafkaTopicDecodedTimXml = kafkaTopicDecodedTimXml;
+   }
 
-    public int getImportProcessorBufferSize() {
+   public String getKafkaTopicEncodedBsmBytes() {
+      return kafkaTopicEncodedBsmBytes;
+   }
+
+   public void setKafkaTopicEncodedBsmBytes(String kafkaTopicEncodedBsmBytes) {
+      this.kafkaTopicEncodedBsmBytes = kafkaTopicEncodedBsmBytes;
+   }
+
+   public String getKafkaTopicDecodedBsmXml() {
+      return kafkaTopicDecodedBsmXml;
+   }
+
+   public void setKafkaTopicDecodedBsmXml(String kafkaTopicDecodedBsmXml) {
+      this.kafkaTopicDecodedBsmXml = kafkaTopicDecodedBsmXml;
+   }
+
+   public int getImportProcessorBufferSize() {
         return importProcessorBufferSize;
     }
 

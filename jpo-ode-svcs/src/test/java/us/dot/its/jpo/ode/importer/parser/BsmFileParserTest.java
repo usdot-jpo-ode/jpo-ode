@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.importer;
+package us.dot.its.jpo.ode.importer.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -11,14 +11,19 @@ import java.io.ByteArrayInputStream;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.Test;
 
+import mockit.Injectable;
 import mockit.Tested;
-import us.dot.its.jpo.ode.importer.LogFileParser.LogFileParserException;
-import us.dot.its.jpo.ode.importer.LogFileParser.ParserStatus;
+import us.dot.its.jpo.ode.importer.BsmSource;
+import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
+import us.dot.its.jpo.ode.importer.parser.LogFileParser.LogFileParserException;
+import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
 
 public class BsmFileParserTest {
 
    @Tested
    BsmFileParser testBsmFileParser;
+   @Injectable long bundleId;
+   
 
    /**
     * Silly test for coverage
@@ -99,7 +104,7 @@ public class BsmFileParserTest {
 
       try {
          assertEquals(expectedStatus, testBsmFileParser.parse(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedUtcTime, testBsmFileParser.getUtctimeInSec());
+         assertEquals(expectedUtcTime, testBsmFileParser.getUtcTimeInSec());
          assertEquals(expectedStep, testBsmFileParser.getStep());
       } catch (LogFileParserException e) {
          fail("Unexpected exception: " + e);

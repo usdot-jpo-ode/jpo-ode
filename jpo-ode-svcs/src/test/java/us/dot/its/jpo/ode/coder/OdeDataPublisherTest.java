@@ -12,12 +12,14 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-public class MessagePublisherTest {
+public class OdeDataPublisherTest {
 
    @Tested
-   MessagePublisher testMessagePublisher;
+   OdeDataPublisher testMessagePublisher;
    @Injectable
    OdeProperties testOdeProperties;
+   @Injectable
+   String testSerializer;
    @Mocked
    OdeBsmData mockOdeBsmData;
 
@@ -30,10 +32,10 @@ public class MessagePublisherTest {
       new Expectations() {
          {
             capturingMessageProducer.send(anyString, null, (OdeData) any);
-            times = 2;
+            times = 1;
          }
       };
 
-      testMessagePublisher.publish(mockOdeBsmData);
+      testMessagePublisher.publish(mockOdeBsmData, "topic");
    }
 }
