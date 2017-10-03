@@ -1,19 +1,12 @@
 package us.dot.its.jpo.ode.importer.parser;
 
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
 import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class DriverAlertFileParser extends LogFileParser {
-
-   private static final int TIM_LOCATION_LAT_LENGTH = 4;
-   private static final int TIM_LOCATION_LON_LENGTH = 4;
-   private static final int TIM_LOCATION_ELEV_LENGTH = 4;
-   private static final int TIM_LOCATION_SPEED_LENGTH = 2;
-   private static final int TIM_LOCATION_HEADING_LENGTH = 2;
 
    private int latitude;
    private int longitude;
@@ -39,42 +32,42 @@ public class DriverAlertFileParser extends LogFileParser {
 
          // Step 1 - parse location.latitude
          if (getStep() == 1) {
-            status = parseStep(bis, TIM_LOCATION_LAT_LENGTH);
+            status = parseStep(bis, LOCATION_LAT_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setLatitude(CodecUtils.bytesToInt(readBuffer, 0, TIM_LOCATION_LAT_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            setLatitude(CodecUtils.bytesToInt(readBuffer, 0, LOCATION_LAT_LENGTH, ByteOrder.LITTLE_ENDIAN));
          }
 
          // Step 2 - parse location.longitude
          if (getStep() == 2) {
-            status = parseStep(bis, TIM_LOCATION_LON_LENGTH);
+            status = parseStep(bis, LOCATION_LON_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setLongitude(CodecUtils.bytesToInt(readBuffer, 0, TIM_LOCATION_LON_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            setLongitude(CodecUtils.bytesToInt(readBuffer, 0, LOCATION_LON_LENGTH, ByteOrder.LITTLE_ENDIAN));
          }
 
          // Step 3 - parse location.elevation
          if (getStep() == 3) {
-            status = parseStep(bis, TIM_LOCATION_ELEV_LENGTH);
+            status = parseStep(bis, LOCATION_ELEV_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setElevation(CodecUtils.bytesToInt(readBuffer, 0, TIM_LOCATION_ELEV_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            setElevation(CodecUtils.bytesToInt(readBuffer, 0, LOCATION_ELEV_LENGTH, ByteOrder.LITTLE_ENDIAN));
          }
 
          // Step 4 - parse location.speed
          if (getStep() == 4) {
-            status = parseStep(bis, TIM_LOCATION_SPEED_LENGTH);
+            status = parseStep(bis, LOCATION_SPEED_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setSpeed(CodecUtils.bytesToShort(readBuffer, 0, TIM_LOCATION_SPEED_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            setSpeed(CodecUtils.bytesToShort(readBuffer, 0, LOCATION_SPEED_LENGTH, ByteOrder.LITTLE_ENDIAN));
          }
 
          // Step 5 - parse location.heading
          if (getStep() == 5) {
-            status = parseStep(bis, TIM_LOCATION_HEADING_LENGTH);
+            status = parseStep(bis, LOCATION_HEADING_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setHeading(CodecUtils.bytesToShort(readBuffer, 0, TIM_LOCATION_HEADING_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            setHeading(CodecUtils.bytesToShort(readBuffer, 0, LOCATION_HEADING_LENGTH, ByteOrder.LITTLE_ENDIAN));
          }
 
          // Step 6 - parse utcTimeInSec
@@ -117,33 +110,6 @@ public class DriverAlertFileParser extends LogFileParser {
       status = ParserStatus.COMPLETE;
       
       return status;
-   }
-
-   public ParserStatus parseStep(BufferedInputStream bis, int length) throws LogFileParserException {
-      try {
-         int numBytes;
-         if (bis.markSupported()) {
-            bis.mark(length);
-         }
-         numBytes = bis.read(readBuffer, 0, length);
-         if (numBytes < 0) {
-            return ParserStatus.EOF;
-         } else if (numBytes < length) {
-            if (bis.markSupported()) {
-               try {
-                  bis.reset();
-               } catch (IOException ioe) {
-                  throw new LogFileParserException("Error reseting Input Stream to marked position", ioe);
-               }
-            }
-            return ParserStatus.PARTIAL;
-         } else {
-            setStep(getStep() + 1);
-            return ParserStatus.COMPLETE;
-         }
-      } catch (Exception e) {
-         throw new LogFileParserException("Error parsing step " + getStep(), e);
-      }
    }
 
    public int getLatitude() {
