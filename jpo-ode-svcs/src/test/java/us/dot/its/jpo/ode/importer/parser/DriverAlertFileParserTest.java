@@ -11,8 +11,8 @@ import org.junit.Test;
 
 import mockit.Injectable;
 import mockit.Tested;
-import us.dot.its.jpo.ode.importer.parser.LogFileParser.LogFileParserException;
-import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
+import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
+import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 
 public class DriverAlertFileParserTest {
 
@@ -31,8 +31,8 @@ public class DriverAlertFileParserTest {
 
       try {
          testDriverAlertFileParser.setStep(10);
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
-      } catch (LogFileParserException e) {
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
 
@@ -52,10 +52,10 @@ public class DriverAlertFileParserTest {
       BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(testFileName, testDriverAlertFileParser.getFilename());
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -75,10 +75,10 @@ public class DriverAlertFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2 }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedLatitude, testDriverAlertFileParser.getLatitude());
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedLatitude, testDriverAlertFileParser.getLocation().getLatitude());
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -95,9 +95,9 @@ public class DriverAlertFileParserTest {
       BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 5, 4, 3 }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -117,10 +117,10 @@ public class DriverAlertFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4, 5 }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedLongitude, testDriverAlertFileParser.getLongitude());
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedLongitude, testDriverAlertFileParser.getLocation().getLongitude());
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -138,9 +138,9 @@ public class DriverAlertFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4 }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -160,10 +160,10 @@ public class DriverAlertFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9 }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedElevation, testDriverAlertFileParser.getElevation());
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedElevation, testDriverAlertFileParser.getLocation().getElevation());
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -181,9 +181,9 @@ public class DriverAlertFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8 }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -203,10 +203,10 @@ public class DriverAlertFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedSpeed, testDriverAlertFileParser.getSpeed());
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedSpeed, testDriverAlertFileParser.getLocation().getSpeed());
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -224,9 +224,9 @@ public class DriverAlertFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -246,10 +246,10 @@ public class DriverAlertFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedHeading, testDriverAlertFileParser.getHeading());
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedHeading, testDriverAlertFileParser.getLocation().getHeading());
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -267,9 +267,9 @@ public class DriverAlertFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -289,10 +289,10 @@ public class DriverAlertFileParserTest {
             new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4 }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedUtcTime, testDriverAlertFileParser.getUtcTimeInSec());
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -310,9 +310,9 @@ public class DriverAlertFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2 }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -332,10 +332,10 @@ public class DriverAlertFileParserTest {
             new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1 }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedMsec, testDriverAlertFileParser.getmSec());
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -353,9 +353,9 @@ public class DriverAlertFileParserTest {
             new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -375,10 +375,10 @@ public class DriverAlertFileParserTest {
             new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 0xD, 1 }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedLength, testDriverAlertFileParser.getLength());
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -396,9 +396,9 @@ public class DriverAlertFileParserTest {
             new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 0xD }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -419,12 +419,12 @@ public class DriverAlertFileParserTest {
             3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 5, 0, 1, 0xD, 5, 0xA, 0xC }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedLength, testDriverAlertFileParser.getLength());
          assertEquals(HexUtils.toHexString(expectedPayload),
                HexUtils.toHexString(testDriverAlertFileParser.getAlert()));
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -443,9 +443,9 @@ public class DriverAlertFileParserTest {
                   3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 5, 0, 1, 0xD, 5, 0xA }));
 
       try {
-         assertEquals(expectedStatus, testDriverAlertFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }

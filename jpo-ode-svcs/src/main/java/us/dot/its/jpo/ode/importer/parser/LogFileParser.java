@@ -6,18 +6,14 @@ import java.time.ZonedDateTime;
 
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
-public abstract class LogFileParser {
+public abstract class LogFileParser implements FileParser {
    public static final int BUFFER_SIZE = 4096;
    public static final int UTC_TIME_IN_SEC_LENGTH = 4;
    public static final int MSEC_LENGTH = 2;
    public static final int VERIFICATION_STATUS_LENGTH = 1;
    public static final int LENGTH_LENGTH = 2;
-   
-   public static final int LOCATION_LAT_LENGTH = 4;
-   public static final int LOCATION_LON_LENGTH = 4;
-   public static final int LOCATION_ELEV_LENGTH = 4;
-   public static final int LOCATION_SPEED_LENGTH = 2;
-   public static final int LOCATION_HEADING_LENGTH = 2;
+
+   protected ParserStatus status;
 
    protected long bundleId;
    protected byte[] readBuffer = new byte[BUFFER_SIZE];
@@ -30,30 +26,26 @@ public abstract class LogFileParser {
    protected short length;
    protected byte[] payload;
 
-   
-   public static class LogFileParserException extends Exception {
-      public LogFileParserException(String msg) {
-         super(msg);
-      }
-
-      public LogFileParserException(String msg, Exception e) {
-         super(msg, e);
-      }
-
-      private static final long serialVersionUID = 1L;
-
-   }
-
-   public enum ParserStatus {
-      UNKNOWN, INIT, NA, PARTIAL, COMPLETE, EOF, ERROR
-   }
-
    public LogFileParser(long bundleId) {
       super();
       this.bundleId = bundleId;
    }
 
-   public ParserStatus parseStep(BufferedInputStream bis, int length) throws LogFileParserException {
+   public ParserStatus parseFile(BufferedInputStream bis, String fileName) throws FileParserException {
+
+      ParserStatus status = ParserStatus.INIT;
+
+      if (getStep() == 0) {
+         setFilename(fileName);
+         setStep(getStep() + 1);
+      }
+      
+      status = ParserStatus.COMPLETE;
+
+      return status;
+   }
+
+   public ParserStatus parseStep(BufferedInputStream bis, int length) throws FileParserException {
       try {
          int numBytes;
          if (bis.markSupported()) {
@@ -67,7 +59,7 @@ public abstract class LogFileParser {
                try {
                   bis.reset();
                } catch (IOException ioe) {
-                  throw new LogFileParserException("Error reseting Input Stream to marked position", ioe);
+                  throw new FileParserException("Error reseting Input Stream to marked position", ioe);
                }
             }
             return ParserStatus.PARTIAL;
@@ -76,10 +68,9 @@ public abstract class LogFileParser {
             return ParserStatus.COMPLETE;
          }
       } catch (Exception e) {
-         throw new LogFileParserException("Error parsing step " + step, e);
+         throw new FileParserException("Error parsing step " + step, e);
       }
    }
-
 
    public int getStep() {
       return step;
@@ -151,8 +142,6 @@ public abstract class LogFileParser {
       this.payload = payload;
       return this;
    }
-
-   public abstract ParserStatus parse(BufferedInputStream bis, String fileName) throws LogFileParserException;
    
    public ZonedDateTime getGeneratedAt() {
       return DateTimeUtils.isoDateTime(getUtcTimeInSec() * 1000 + getmSec());

@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
+import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
-import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
 import us.dot.its.jpo.ode.importer.parser.RxMsgFileParser;
 import us.dot.its.jpo.ode.model.OdeData;
 
@@ -50,7 +50,7 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
                   throw new IllegalArgumentException("Unknown log file prefix: " + fileName);
                }
 
-               status = fileParser.parse(bis, fileName);
+               status = fileParser.parseFile(bis, fileName);
                if (status == ParserStatus.COMPLETE) {
                   try {
                      if (fileParser instanceof BsmFileParser) {

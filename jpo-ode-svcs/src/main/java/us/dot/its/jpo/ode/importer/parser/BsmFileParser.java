@@ -17,15 +17,10 @@ public class BsmFileParser extends LogFileParser {
    }
 
    @Override
-   public ParserStatus parse(BufferedInputStream bis, String fileName) throws LogFileParserException {
-      ParserStatus status = ParserStatus.INIT;
-      
+   public ParserStatus parseFile(BufferedInputStream bis, String fileName) throws FileParserException {
+
       try {
-         if (step == 0) {
-            setFilename(fileName);
-            setBundleId(bundleId);
-            step++;
-         }
+         super.parseFile(bis, fileName);
 
          // Step 1
          if (step == 1) {
@@ -75,7 +70,7 @@ public class BsmFileParser extends LogFileParser {
             setPayload(Arrays.copyOf(readBuffer, getLength()));
          }
       } catch (Exception e) {
-         throw new LogFileParserException("Error parsing " + fileName, e);
+         throw new FileParserException("Error parsing " + fileName, e);
       }
 
       step = 0;

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import us.dot.its.jpo.ode.coder.OdeLogMetadataCreatorHelper;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
-import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
+import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
@@ -32,7 +32,7 @@ public class BsmAsn1CodecPublisher extends AbstractAsn1CodecPublisher {
       this.bsmFileParser = new BsmFileParser(bundleId.incrementAndGet());
       do {
          try {
-            status = bsmFileParser.parse(bis, fileName);
+            status = bsmFileParser.parseFile(bis, fileName);
 
             if (status == ParserStatus.COMPLETE) {
                OdeAsn1Payload payload = new OdeAsn1Payload(bsmFileParser.getPayload());

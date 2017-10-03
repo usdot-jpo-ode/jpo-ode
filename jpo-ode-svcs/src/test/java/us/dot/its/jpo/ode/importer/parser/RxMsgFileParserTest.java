@@ -11,8 +11,8 @@ import org.junit.Test;
 
 import mockit.Injectable;
 import mockit.Tested;
-import us.dot.its.jpo.ode.importer.parser.LogFileParser.LogFileParserException;
-import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
+import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
+import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.RxSource;
 
 public class RxMsgFileParserTest {
@@ -28,13 +28,15 @@ public class RxMsgFileParserTest {
    public void testStepsAlreadyDone() {
 
       ParserStatus expectedStatus = ParserStatus.COMPLETE;
+      int expectedStep = 0;
 
       BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
 
       try {
          testRxMsgFileParser.setStep(12);
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
-      } catch (LogFileParserException e) {
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStep, testRxMsgFileParser.getStep());
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
 
@@ -54,10 +56,10 @@ public class RxMsgFileParserTest {
       BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(testFileName, testRxMsgFileParser.getFilename());
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -77,10 +79,10 @@ public class RxMsgFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2 }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedLatitude, testRxMsgFileParser.getLatitude());
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedLatitude, testRxMsgFileParser.getLocation().getLatitude());
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -97,9 +99,9 @@ public class RxMsgFileParserTest {
       BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 5, 4, 3 }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -119,10 +121,10 @@ public class RxMsgFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4, 5 }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedLongitude, testRxMsgFileParser.getLongitude());
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedLongitude, testRxMsgFileParser.getLocation().getLongitude());
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -140,9 +142,9 @@ public class RxMsgFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4 }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -162,10 +164,10 @@ public class RxMsgFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9 }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedElevation, testRxMsgFileParser.getElevation());
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedElevation, testRxMsgFileParser.getLocation().getElevation());
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -183,9 +185,9 @@ public class RxMsgFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8 }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -205,10 +207,10 @@ public class RxMsgFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedSpeed, testRxMsgFileParser.getSpeed());
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedSpeed, testRxMsgFileParser.getLocation().getSpeed());
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -226,9 +228,9 @@ public class RxMsgFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -248,10 +250,10 @@ public class RxMsgFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedHeading, testRxMsgFileParser.getHeading());
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedHeading, testRxMsgFileParser.getLocation().getHeading());
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -269,9 +271,9 @@ public class RxMsgFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -291,10 +293,10 @@ public class RxMsgFileParserTest {
             new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4 }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedUtcTime, testRxMsgFileParser.getUtcTimeInSec());
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -312,9 +314,9 @@ public class RxMsgFileParserTest {
             new ByteArrayInputStream(new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2 }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -334,10 +336,10 @@ public class RxMsgFileParserTest {
             new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1 }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedMsec, testRxMsgFileParser.getmSec());
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -355,9 +357,9 @@ public class RxMsgFileParserTest {
             new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -378,10 +380,10 @@ public class RxMsgFileParserTest {
             new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 2, 0, 0, 0 }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedRxSource, testRxMsgFileParser.getRxSource());
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -399,9 +401,9 @@ public class RxMsgFileParserTest {
             new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 2, 0, 0 }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -421,10 +423,10 @@ public class RxMsgFileParserTest {
             new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 1, 2, 0, 0, 1 }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedVerificationStatus, testRxMsgFileParser.isValidSignature());
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -445,10 +447,10 @@ public class RxMsgFileParserTest {
             new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 1, 2, 0, 0, 0 }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedVerificationStatus, testRxMsgFileParser.isValidSignature());
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -468,10 +470,10 @@ public class RxMsgFileParserTest {
             3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 1, 2, 0, 0, 0, 0xD, 9 }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedLength, testRxMsgFileParser.getLength());
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -489,9 +491,9 @@ public class RxMsgFileParserTest {
             3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 1, 2, 0, 0, 0, 0xD }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -512,11 +514,11 @@ public class RxMsgFileParserTest {
             3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 1, 2, 0, 0, 0, 5, 0, 1, 0xD, 5, 0xA, 0xC }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedLength, testRxMsgFileParser.getLength());
          assertEquals(HexUtils.toHexString(expectedPayload), HexUtils.toHexString(testRxMsgFileParser.getPayload()));
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
@@ -534,9 +536,9 @@ public class RxMsgFileParserTest {
             3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 1, 2, 0, 0, 0, 5, 0, 1, 0xD, 5, 0xA }));
 
       try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parse(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (LogFileParserException e) {
+      } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }

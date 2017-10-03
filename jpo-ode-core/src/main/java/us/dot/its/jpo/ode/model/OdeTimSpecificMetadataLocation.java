@@ -8,17 +8,19 @@ public class OdeTimSpecificMetadataLocation extends OdeObject {
    String longitude;
    String elevation;
    String speed;
+   String heading;
 
    public OdeTimSpecificMetadataLocation() {
       super();
    }
 
-   public OdeTimSpecificMetadataLocation(String latitude, String longitude, String elevation, String speed) {
+   public OdeTimSpecificMetadataLocation(String latitude, String longitude, String elevation, String speed, String heading) {
       super();
       this.latitude = latitude;
       this.longitude = longitude;
       this.elevation = elevation;
       this.speed = speed;
+      this.heading = heading;
    }
 
 }
