@@ -16,7 +16,7 @@ import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
-import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
+import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
 
@@ -63,7 +63,7 @@ public class HexDecoderPublisherTest {
                capturingScanner.nextLine();
                result = "fakeLine";
                
-               capturingBsmFileParser.parse((BufferedInputStream) any, anyString);
+               capturingBsmFileParser.parseFile((BufferedInputStream) any, anyString);
                result = ParserStatus.COMPLETE;
 
                capturingDecoderHelper.decode((BsmFileParser) any, (SerialId) any);
@@ -89,7 +89,7 @@ public class HexDecoderPublisherTest {
                capturingScanner.hasNextLine();
                returns(true, false);
                
-               capturingBsmFileParser.parse((BufferedInputStream) any, anyString);
+               capturingBsmFileParser.parseFile((BufferedInputStream) any, anyString);
                result = ParserStatus.COMPLETE;
 
                capturingDecoderHelper.decode((BsmFileParser) any, (SerialId) any);
@@ -115,7 +115,7 @@ public class HexDecoderPublisherTest {
                capturingScanner.hasNextLine();
                returns(true, false);
 
-               capturingBsmFileParser.parse((BufferedInputStream) any, anyString);
+               capturingBsmFileParser.parseFile((BufferedInputStream) any, anyString);
                result = ParserStatus.COMPLETE;
                
                capturingDecoderHelper.decode((BsmFileParser) any, (SerialId) any);

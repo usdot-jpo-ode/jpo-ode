@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
-import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
+import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeData;
 
 public class HexDecoderPublisher extends AbstractDecoderPublisher  {
@@ -38,7 +38,7 @@ public class HexDecoderPublisher extends AbstractDecoderPublisher  {
 
             ParserStatus status = ParserStatus.UNKNOWN;
             if (fileType == ImporterFileType.BSM_LOG_FILE) {
-                status = bsmFileParser.parse(new BufferedInputStream(
+                status = bsmFileParser.parseFile(new BufferedInputStream(
                    new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName);
             } else {
                 bsmFileParser.setPayload(HexUtils.fromHexString(line));
