@@ -16,40 +16,43 @@
  *******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import us.dot.its.jpo.ode.util.CodecUtils;
+
 @XmlRootElement
-public class OdeData extends OdeObject implements OdeFilterable {
-    private static final long serialVersionUID = -7711340868799607662L;
+public class OdeHexByteArray extends OdeObject {
 
-    private OdeMsgMetadata metadata;
-    private OdeMsgPayload payload;
+   private static final long serialVersionUID = 6106562581659367345L;
+   
+   @XmlElement
+   private String bytes;
 
-    public OdeData() {
-        super();
-    }
+   public OdeHexByteArray() {
+      super();
+   }
 
-    public OdeData(OdeMsgMetadata metadata, OdeMsgPayload payload) {
-        super();
-        this.metadata = metadata;
-        this.payload = payload;
-    }
+   public OdeHexByteArray(String bytes) {
+      super();
+      this.bytes = bytes;
+   }
 
-    public OdeMsgMetadata getMetadata() {
-        return metadata;
-    }
+   public OdeHexByteArray(byte[] bytes) {
+      setBytes(bytes);
+   }
 
-    public void setMetadata(OdeMsgMetadata metadata) {
-        this.metadata = metadata;
-    }
+   public String getBytes() {
+      return bytes;
+   }
 
-    public OdeMsgPayload getPayload() {
-        return payload;
-    }
+   public void setBytes(String bytes) {
+      this.bytes = bytes;
+   }
 
-    public void setPayload(OdeMsgPayload payload) {
-        this.payload = payload;
-    }
+   public void setBytes(byte[] bytes) {
+      this.bytes = CodecUtils.toHex(bytes);
+   }
 
-
+   
 }

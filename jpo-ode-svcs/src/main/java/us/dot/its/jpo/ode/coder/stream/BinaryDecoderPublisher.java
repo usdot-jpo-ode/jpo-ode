@@ -71,7 +71,7 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
 
             } else {
                 decoded = bsmDecoder.decode(bis, fileName, 
-                    this.serialId.setBundleId(bundleId.get()));
+                    this.serialId.setBundleId(bundleId.get()).addRecordId(1));
                 status = ParserStatus.NA;
             }
 

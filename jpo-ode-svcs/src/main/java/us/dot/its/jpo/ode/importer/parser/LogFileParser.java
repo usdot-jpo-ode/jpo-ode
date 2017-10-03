@@ -2,6 +2,9 @@ package us.dot.its.jpo.ode.importer.parser;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.time.ZonedDateTime;
+
+import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public abstract class LogFileParser {
    public static final int BUFFER_SIZE = 4096;
@@ -144,4 +147,10 @@ public abstract class LogFileParser {
    }
 
    public abstract ParserStatus parse(BufferedInputStream bis, String fileName) throws LogFileParserException;
+   
+   public ZonedDateTime getGeneratedAt() {
+      return DateTimeUtils.isoDateTime(getUtcTimeInSec() * 1000 + getmSec());
+   }
+
+
 }

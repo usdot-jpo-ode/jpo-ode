@@ -31,8 +31,6 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
    private OssJ2735Coder j2735coder;
 
-   private OdeBsmDataCreatorHelper metadataHelper;
-
    private SerialId serialId;
 
    private OdeDataPublisher publisher;
@@ -47,7 +45,6 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
    public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
       super(odeProps, port, bufferSize);
       this.j2735coder = new OssJ2735Coder();
-      this.metadataHelper = new OdeBsmDataCreatorHelper();
 
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
@@ -93,8 +90,9 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                   throw new IOException("Failed to decode message received via UDP.");
                }
 
-               OdeData msgWithMetadata = metadataHelper.createOdeBsmData(decodedBsm, null,
-                     this.serialId.setBundleId(bundleId.incrementAndGet()));
+               OdeData msgWithMetadata = OdeBsmDataCreatorHelper.createOdeBsmData(
+                  decodedBsm, null, 
+                  this.serialId.setBundleId(bundleId.incrementAndGet()).addRecordId(1));
                publisher.publish(msgWithMetadata, odeProperties.getKafkaTopicOdeBsmPojo());
             }
          } catch (Exception e) {

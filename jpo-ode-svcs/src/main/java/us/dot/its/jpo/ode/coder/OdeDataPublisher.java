@@ -33,9 +33,4 @@ public class OdeDataPublisher extends MessagePublisher {
       objectProducer.send(topic, null, msg);
    }
 
-   public OdeProperties getOdeProperties() {
-      return odeProperties;
-   }
-
-   
 }

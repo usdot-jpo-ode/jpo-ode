@@ -19,37 +19,15 @@ package us.dot.its.jpo.ode.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class OdeData extends OdeObject implements OdeFilterable {
-    private static final long serialVersionUID = -7711340868799607662L;
+public class OdeAsn1Data extends OdeData {
+   private static final long serialVersionUID = 8844322473807845737L;
 
-    private OdeMsgMetadata metadata;
-    private OdeMsgPayload payload;
+   public OdeAsn1Data() {
+      super();
+   }
 
-    public OdeData() {
-        super();
-    }
-
-    public OdeData(OdeMsgMetadata metadata, OdeMsgPayload payload) {
-        super();
-        this.metadata = metadata;
-        this.payload = payload;
-    }
-
-    public OdeMsgMetadata getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(OdeMsgMetadata metadata) {
-        this.metadata = metadata;
-    }
-
-    public OdeMsgPayload getPayload() {
-        return payload;
-    }
-
-    public void setPayload(OdeMsgPayload payload) {
-        this.payload = payload;
-    }
-
+   public OdeAsn1Data(OdeMsgMetadata metadata, OdeMsgPayload payload) {
+      super(metadata, payload);
+   }
 
 }

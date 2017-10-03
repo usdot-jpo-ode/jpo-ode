@@ -5,9 +5,16 @@ import java.io.BufferedInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.coder.ByteArrayPublisher;
+import us.dot.its.jpo.ode.coder.OdeLogMetadataCreatorHelper;
+import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser.ParserStatus;
+import us.dot.its.jpo.ode.model.Asn1Encoding;
+import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
+import us.dot.its.jpo.ode.model.OdeAsn1Data;
+import us.dot.its.jpo.ode.model.OdeAsn1Metadata;
+import us.dot.its.jpo.ode.model.OdeAsn1Payload;
+import us.dot.its.jpo.ode.util.XmlUtils;
 
 public class BsmAsn1CodecPublisher extends AbstractAsn1CodecPublisher {
 
@@ -15,7 +22,7 @@ public class BsmAsn1CodecPublisher extends AbstractAsn1CodecPublisher {
 
     protected BsmFileParser bsmFileParser;
 
-    public BsmAsn1CodecPublisher(ByteArrayPublisher dataPub) {
+    public BsmAsn1CodecPublisher(StringPublisher dataPub) {
         super(dataPub);
     }
 
@@ -28,7 +35,19 @@ public class BsmAsn1CodecPublisher extends AbstractAsn1CodecPublisher {
             status = bsmFileParser.parse(bis, fileName);
 
             if (status == ParserStatus.COMPLETE) {
-               publisher.publish(bsmFileParser.getPayload(), publisher.getOdeProperties().getKafkaTopicEncodedBsmBytes());
+               OdeAsn1Payload payload = new OdeAsn1Payload(bsmFileParser.getPayload());
+               OdeAsn1Metadata metadata = new OdeAsn1Metadata(payload);
+               metadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
+               OdeLogMetadataCreatorHelper.updateLogMetadata(metadata, bsmFileParser);
+               
+               Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
+               Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame", EncodingRule.UPER);
+               metadata.addEncoding(msgEncoding).addEncoding(unsecuredDataEncoding);
+               OdeAsn1Data asn1Data = new OdeAsn1Data(metadata , payload);
+
+//               XmlUtils<OdeAsn1Data> xmlUtil = new XmlUtils<OdeAsn1Data>(OdeAsn1Data.class);
+//               publisher.publish(xmlUtil.toXml(asn1Data), publisher.getOdeProperties().getKafkaTopicEncodedBsmBytes());
+               publisher.publish(asn1Data.toJson(false), publisher.getOdeProperties().getKafkaTopicEncodedBsmBytes());
             } else {
                // if parser returns PARTIAL record, we will go back and continue parsing
                // but if it's UNKNOWN, it means that we could not parse the header bytes

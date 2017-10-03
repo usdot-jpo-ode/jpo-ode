@@ -19,7 +19,7 @@ public class FileAsn1CodecPublisher {
    @Autowired
    public FileAsn1CodecPublisher(OdeProperties odeProperties) {
 
-      ByteArrayPublisher messagePub = new ByteArrayPublisher(odeProperties);
+      StringPublisher messagePub = new StringPublisher(odeProperties);
 
       this.codecPublisher = new BsmAsn1CodecPublisher(messagePub);
    }

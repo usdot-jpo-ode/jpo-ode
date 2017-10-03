@@ -16,6 +16,9 @@
  *******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class OdeMsgPayload extends OdeObject {
     private static final long serialVersionUID = -7711340868799607662L;
 

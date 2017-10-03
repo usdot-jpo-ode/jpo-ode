@@ -18,8 +18,11 @@ package us.dot.its.jpo.ode.model;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import us.dot.its.jpo.ode.util.JsonUtils;
 
+@XmlRootElement
 public class OdeObject implements Serializable {
    private static final long serialVersionUID = 7514526408925039533L;
 

@@ -6,17 +6,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.coder.ByteArrayPublisher;
+import us.dot.its.jpo.ode.coder.StringPublisher;
 
 public abstract class AbstractAsn1CodecPublisher implements Asn1CodecPublisher {
 
    protected static final Logger logger = LoggerFactory.getLogger(AbstractAsn1CodecPublisher.class);
 
-   protected ByteArrayPublisher publisher;
+   protected StringPublisher publisher;
 
    protected static AtomicInteger bundleId = new AtomicInteger(1);
 
-   public AbstractAsn1CodecPublisher(ByteArrayPublisher dataPub) {
+   public AbstractAsn1CodecPublisher(StringPublisher dataPub) {
       this.publisher = dataPub;
    }
 

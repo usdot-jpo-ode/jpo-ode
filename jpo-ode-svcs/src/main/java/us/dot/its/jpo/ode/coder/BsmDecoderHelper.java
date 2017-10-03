@@ -22,14 +22,12 @@ public class BsmDecoderHelper {
    private final OssJ2735Coder j2735Coder;
    private final Oss1609dot2Coder ieee1609dotCoder;
    private final RawBsmMfSorter rawBsmMFSorterIn;
-   private final OdeBsmDataCreatorHelper odeBsmDataCreaterHelperIn;
    private final BsmDecoderPayloadHelper bsmDecoderPayloadHelperIn;
 
    public BsmDecoderHelper() {
       this.j2735Coder = new OssJ2735Coder();
       this.ieee1609dotCoder = new Oss1609dot2Coder();
       this.rawBsmMFSorterIn = new RawBsmMfSorter(j2735Coder);
-      this.odeBsmDataCreaterHelperIn = new OdeBsmDataCreatorHelper();
       this.bsmDecoderPayloadHelperIn = new BsmDecoderPayloadHelper(rawBsmMFSorterIn);
    }
 
@@ -61,8 +59,8 @@ public class BsmDecoderHelper {
       }
       if (bsm != null) {
          logger.debug("Decoded BSM successfully, creating OdeBsmData object.");
-         odeBsmData = odeBsmDataCreaterHelperIn.createOdeBsmData((J2735Bsm) bsm, message, 
-             bsmFileParser, serialId);
+         odeBsmData = OdeBsmDataCreatorHelper.createOdeBsmData(
+            (J2735Bsm) bsm, message, bsmFileParser);
       } else {
          logger.debug("Failed to decode BSM.");
       }
@@ -96,7 +94,8 @@ public OdeData decode(BufferedInputStream bis, String filename, SerialId serialI
     }
     if (bsm != null) {
        logger.debug("Decoded BSM successfully, creating OdeBsmData object.");
-       odeBsmData = odeBsmDataCreaterHelperIn.createOdeBsmData((J2735Bsm) bsm, filename, serialId);
+       odeBsmData = OdeBsmDataCreatorHelper.createOdeBsmData(
+          (J2735Bsm) bsm, filename, serialId);
     } else {
        logger.debug("Failed to decode BSM.");
     }
