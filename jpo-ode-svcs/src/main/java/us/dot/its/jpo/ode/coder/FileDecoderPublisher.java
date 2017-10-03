@@ -26,12 +26,13 @@ public class FileDecoderPublisher {
    @Autowired
    public FileDecoderPublisher(OdeProperties odeProperties) {
 
-      OdeDataPublisher bsmMessagePub = new OdeDataPublisher(odeProperties, OdeBsmSerializer.class.getName());
-      OdeDataPublisher timMessagePub = new OdeDataPublisher(odeProperties, OdeTimSerializer.class.getName());
+      OdeStringPublisher bsmStringMsgPub = new OdeStringPublisher(odeProperties);
+      OdeDataPublisher bsmByteMsgPub = new OdeDataPublisher(odeProperties, OdeBsmSerializer.class.getName());
+      OdeDataPublisher timByteMsgPub = new OdeDataPublisher(odeProperties, OdeTimSerializer.class.getName());
 
-      this.jsonDecPub = new JsonDecoderPublisher(bsmMessagePub);
-      this.hexDecPub = new HexDecoderPublisher(bsmMessagePub);
-      this.binDecPub = new BinaryDecoderPublisher(bsmMessagePub, timMessagePub);
+      this.jsonDecPub = new JsonDecoderPublisher(bsmStringMsgPub);
+      this.hexDecPub = new HexDecoderPublisher(bsmByteMsgPub);
+      this.binDecPub = new BinaryDecoderPublisher(bsmByteMsgPub, timByteMsgPub);
    }
 
    public void decodeAndPublishFile(

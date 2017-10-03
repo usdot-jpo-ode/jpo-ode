@@ -12,7 +12,5 @@ public abstract class MessagePublisher {
 
    public OdeProperties getOdeProperties() {
       return odeProperties;
-   }
-
-   
+   }   
 }
