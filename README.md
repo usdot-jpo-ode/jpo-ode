@@ -57,9 +57,6 @@ All stakeholders are invited to provide input to these documents. Stakeholders s
 
 ### Source Repositories - GitHub
 
-<details>
-<summary>Source repositories</summary>
-
 - Main repository on GitHub (public)
 	- https://github.com/usdot-jpo-ode/jpo-ode
 	- git@github.com:usdot-jpo-ode/jpo-ode.git
@@ -75,8 +72,6 @@ All stakeholders are invited to provide input to these documents. Stakeholders s
 - S3 Depositor Module on Github (public)
 	- https://github.com/usdot-jpo-ode/jpo-s3-deposit
 	- gith@github.com/usdot-jpo-ode/jpo-s3-deposit
-	
-</details>
 
 ### Agile Project Management - Jira
 https://usdotjpoode.atlassian.net/secure/Dashboard.jspa
@@ -84,8 +79,13 @@ https://usdotjpoode.atlassian.net/secure/Dashboard.jspa
 ### Wiki - Confluence
 https://usdotjpoode.atlassian.net/wiki/
 
+### Static Code Analysis
+https://sonarqube.com/organizations/usdot-jpo-ode/projects
+
 ### Continuous Integration and Delivery
 https://travis-ci.org/usdot-jpo-ode/jpo-ode
+
+<details><summary>Using Travis for your build</summary>
 
 To allow Travis run your build when you push your changes to your public fork of the jpo-ode repository, you must define the following secure environment variable using Travis CLI (https://github.com/travis-ci/travis.rb).
 
@@ -108,9 +108,7 @@ In order to allow Sonar to run, personal key must be added with this command:
 ```
 travis env set SONAR_SECURITY_TOKEN <key> -pr <user-account>/<repo-name>
 ```
-
-### Static Code Analysis
-https://sonarqube.com/organizations/usdot-jpo-ode/projects
+</details>
 
 [Back to top](#toc)
 
@@ -118,7 +116,12 @@ https://sonarqube.com/organizations/usdot-jpo-ode/projects
 
 ## IV. Getting Started
 
-The following instructions describe the procedure to fetch, build, and run the application. If you are installing the ODE in an Ubuntu environment, see this [quick start guide](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Prepare-a-fresh-Ubuntu-instance-for-ODE-installation).
+The following instructions describe the procedure to fetch, build, and run the application. 
+
+Some notes before you begin:
+* If you are installing the ODE in an Ubuntu environment, see this [preparation guide](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Prepare-a-fresh-Ubuntu-instance-for-ODE-installation).
+* Docker builds may fail if you are on a corporate network due to DNS resolution errors. 
+[See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
 
 ### Prerequisites
 * JDK 1.8: http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html
@@ -195,9 +198,6 @@ git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdo
 ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the *.env* file found in the root of the jpo-ode repository.
 
 Instructions for how to use the *.env* file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
-
-**Note** Docker builds may fail if you are on a corporate network due to DNS resolution errors. 
-[See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
 
 
 #### Build Process
