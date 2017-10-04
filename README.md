@@ -86,7 +86,7 @@ https://sonarqube.com/organizations/usdot-jpo-ode/projects
 https://travis-ci.org/usdot-jpo-ode/jpo-ode
 
 <details><summary>Using Travis for your build</summary>
-
+<br>
 To allow Travis run your build when you push your changes to your public fork of the jpo-ode repository, you must define the following secure environment variable using Travis CLI (https://github.com/travis-ci/travis.rb).
 
 Run:
@@ -109,6 +109,7 @@ In order to allow Sonar to run, personal key must be added with this command:
 travis env set SONAR_SECURITY_TOKEN <key> -pr <user-account>/<repo-name>
 ```
 </details>
+<br>
 
 [Back to top](#toc)
 
@@ -122,82 +123,63 @@ Some notes before you begin:
 * If you are installing the ODE in an Ubuntu environment, see this [preparation guide](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Prepare-a-fresh-Ubuntu-instance-for-ODE-installation).
 * Docker builds may fail if you are on a corporate network due to DNS resolution errors. 
 [See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
+* Windows users may find more information on installing and using Docker [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management)
+* Users interested in Kafka may find more guidance and configuration options [here](docker/kafka/README.md)
 
 ### Prerequisites
 * JDK 1.8: http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html
 * Maven: https://maven.apache.org/install.html
 * Git: https://git-scm.com/
-
-Additionally, read the following guides to familiarize yourself with Docker and Kafka.
-
-**Docker**
-
-[README.md](docker/README.md)
-
-**Kafka**
-
-[README.md](docker/kafka/README.md)
+* Docker: https://docs.docker.com/engine/installation/
+* Docker-Compose: https://docs.docker.com/compose/install/
 
 ---
 ### Obtain the Source Code
 
-**NOTE**: The ODE consists of four repositories:
-
-|Name|Visibility|Description|
-|----|----------|-----------|
-|[jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode)|public|Contains the public components of the application code.|
-|[jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)|public|S3 depositor service. Optional, comment out of `docker-compose.yml` file if not used.|
-|[jpo-security](https://github.com/usdot-jpo-ode/jpo-security)|public|Security dependencies.|
-|jpo-ode-private|private|Proprietary dependencies.|
-
-Building this application requires all repositories. If you need access to the private repositories, please reach out to a member of the development team.
-
-
-#### Step 1 - Clone public repository
-
-Disable Git core.autocrlf (Only the First Time)
-**NOTE**: If running on Windows, please make sure that your global git config is set up to not convert End-of-Line characters during checkout. This is important for building docker images correctly.
+**Windows Users:** You must disable git's auto-conversion of end-of-line characters in order to build Docker images correctly.
 
 ```bash
 git config --global core.autocrlf false
 ```
 
-Clone the source code from the GitHub repository using Git command:
+Now, proceed to clone all of the repos into the same directory:
 
+Main ODE:
 ```bash
 git clone https://github.com/usdot-jpo-ode/jpo-ode.git
 ```
 
-#### Step 2 - Clone S3 Bucket Depositor repository
-
-Clone the source code from the GitHub repository:
-
+S3 Depositor:
 ```bash
 git clone https://github.com/usdot-jpo-ode/jpo-s3-deposit.git
 ```
 
-#### Step 3 - Clone the security repository:
-
-Clone the source code from the GitHub repository:
+Security repository:
 ```bash
 git clone https://github.com/usdot-jpo-ode/jpo-security.git
 ```
 
-#### Step 4 - Clone private repository
-
-Clone the source code from the BitBucket repository:
-
+Private repository:
 ```bash
 git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 ```
 
+Privacy-protection module:
+```bash
+git clone https://github.com/usdot-jpo-ode/jpo-cvdp.git
+```
+
+Once you have these obtained repositories, you are now ready to build and deploy the application.
+
 ---
 ### Build and Deploy the Application
 
-#### Environment Variables
+#### Configuration
 ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the *.env* file found in the root of the jpo-ode repository.
 
 Instructions for how to use the *.env* file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
+
+For the basic build purposes, you only need to set DOCKER_HOST_IP and DOCKER_SHARED_VOLUME.
 
 
 #### Build Process
