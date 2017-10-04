@@ -56,6 +56,10 @@ All stakeholders are invited to provide input to these documents. Stakeholders s
 ## III. Collaboration Tools
 
 ### Source Repositories - GitHub
+
+<details>
+<summary>Source repositories</summary>
+
 - Main repository on GitHub (public)
 	- https://github.com/usdot-jpo-ode/jpo-ode
 	- git@github.com:usdot-jpo-ode/jpo-ode.git
@@ -71,6 +75,8 @@ All stakeholders are invited to provide input to these documents. Stakeholders s
 - S3 Depositor Module on Github (public)
 	- https://github.com/usdot-jpo-ode/jpo-s3-deposit
 	- gith@github.com/usdot-jpo-ode/jpo-s3-deposit
+	
+</details>
 
 ### Agile Project Management - Jira
 https://usdotjpoode.atlassian.net/secure/Dashboard.jspa
