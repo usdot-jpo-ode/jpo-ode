@@ -30,6 +30,7 @@ public class BsmAsn1CodecPublisher extends AbstractAsn1CodecPublisher {
    public void publish(BufferedInputStream bis, String fileName) throws Exception {
       ParserStatus status = ParserStatus.UNKNOWN;
       this.bsmFileParser = new BsmFileParser(bundleId.incrementAndGet());
+      XmlUtils xmlUtils = new XmlUtils();
       do {
          try {
             status = bsmFileParser.parseFile(bis, fileName);
@@ -45,9 +46,8 @@ public class BsmAsn1CodecPublisher extends AbstractAsn1CodecPublisher {
                metadata.addEncoding(msgEncoding).addEncoding(unsecuredDataEncoding);
                OdeAsn1Data asn1Data = new OdeAsn1Data(metadata , payload);
 
-//               XmlUtils<OdeAsn1Data> xmlUtil = new XmlUtils<OdeAsn1Data>(OdeAsn1Data.class);
-//               publisher.publish(xmlUtil.toXml(asn1Data), publisher.getOdeProperties().getKafkaTopicEncodedBsmBytes());
-               publisher.publish(asn1Data.toJson(false), publisher.getOdeProperties().getKafkaTopicEncodedBsmBytes());
+//               publisher.publish(asn1Data.toJson(false), publisher.getOdeProperties().getKafkaTopicEncodedBsmBytes());
+               publisher.publish(xmlUtils.toXml(asn1Data), publisher.getOdeProperties().getKafkaTopicEncodedBsmBytes());
             } else {
                // if parser returns PARTIAL record, we will go back and continue parsing
                // but if it's UNKNOWN, it means that we could not parse the header bytes

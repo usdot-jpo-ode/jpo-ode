@@ -1,36 +1,32 @@
 package us.dot.its.jpo.ode.util;
 
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.IOException;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
-public class XmlUtils<T> {
-   private JAXBContext jc;
-   private Marshaller marshaller;
-   private Unmarshaller unmarshaller;
+public class XmlUtils {
+   private        XmlMapper xmlMapper = new XmlMapper();
+   private static XmlMapper staticXmlMapper = new XmlMapper();
    
-   public XmlUtils(Class<T> clazz) throws JAXBException {
-      jc = JAXBContext.newInstance(clazz);
-      marshaller = jc.createMarshaller();
-      unmarshaller = jc.createUnmarshaller();
-   }
-   
-   public String toXml(T o) throws JAXBException {
-      StringWriter writer = new StringWriter();
-      
-      marshaller.marshal(o, writer);
-      
-      return writer.toString();
+   public String toXml(Object o) throws JsonProcessingException {
+      String xml = xmlMapper.writeValueAsString(o);
+      return xml;
    }
 
-   @SuppressWarnings("unchecked")
-   public T fromXml(String xml) throws JAXBException {
-      StringReader reader = new StringReader(xml);
-      
-      return (T)unmarshaller.unmarshal(reader);
+   public Object fromXml(String xml, Class<?> clazz) throws JsonParseException, JsonMappingException, IOException {
+      return xmlMapper.readValue(xml, clazz);
+   }
+
+   public static String toXmlS(Object o) throws JsonProcessingException {
+      String xml = staticXmlMapper.writeValueAsString(o);
+      return xml;
+   }
+
+   public Object fromXmlS(String xml, Class<?> clazz) throws JsonParseException, JsonMappingException, IOException {
+      return staticXmlMapper.readValue(xml, clazz);
    }
 }
+

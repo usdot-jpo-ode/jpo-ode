@@ -1,10 +1,7 @@
 package us.dot.its.jpo.ode.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
-@XmlRootElement
 public class OdeMsgMetadata extends OdeObject {
 
    private static final long serialVersionUID = 3979762143291085955L;

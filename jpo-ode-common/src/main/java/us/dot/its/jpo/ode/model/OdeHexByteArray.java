@@ -16,17 +16,12 @@
  *******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import us.dot.its.jpo.ode.util.CodecUtils;
 
-@XmlRootElement
 public class OdeHexByteArray extends OdeObject {
 
    private static final long serialVersionUID = 6106562581659367345L;
    
-   @XmlElement
    private String bytes;
 
    public OdeHexByteArray() {

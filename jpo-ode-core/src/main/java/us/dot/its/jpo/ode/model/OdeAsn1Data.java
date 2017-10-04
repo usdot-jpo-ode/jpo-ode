@@ -16,9 +16,6 @@
  *******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement
 public class OdeAsn1Data extends OdeData {
    private static final long serialVersionUID = 8844322473807845737L;
 
