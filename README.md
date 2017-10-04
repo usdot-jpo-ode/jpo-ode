@@ -123,8 +123,9 @@ Some notes before you begin:
 * If you are installing the ODE in an Ubuntu environment, see this [preparation guide](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Prepare-a-fresh-Ubuntu-instance-for-ODE-installation).
 * Docker builds may fail if you are on a corporate network due to DNS resolution errors. 
 [See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
-* Windows users may find more information on installing and using Docker [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management)
-* Users interested in Kafka may find more guidance and configuration options [here](docker/kafka/README.md)
+* Additionally *git* may fail for similar reasons, you can fix this by running `export GIT_SSL_NO_VERIFY=1`.
+* Windows users may find more information on installing and using Docker [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management).
+* Users interested in Kafka may find more guidance and configuration options [here](docker/kafka/README.md).
 
 ### Prerequisites
 * JDK 1.8: http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html
@@ -134,7 +135,7 @@ Some notes before you begin:
 * Docker-Compose: https://docs.docker.com/compose/install/
 
 ---
-### Obtain the Source Code
+### Step 1. Obtain the Source Code
 
 **Windows Users:** You must disable git's auto-conversion of end-of-line characters in order to build Docker images correctly.
 
@@ -142,29 +143,29 @@ Some notes before you begin:
 git config --global core.autocrlf false
 ```
 
-Now, proceed to clone all of the repos into the same directory:
+Now clone the repositories by running these commands:
 
-Main ODE:
+#### Main ODE:
 ```bash
 git clone https://github.com/usdot-jpo-ode/jpo-ode.git
 ```
 
-S3 Depositor:
+#### S3 Depositor:
 ```bash
 git clone https://github.com/usdot-jpo-ode/jpo-s3-deposit.git
 ```
 
-Security repository:
+#### Security repository:
 ```bash
 git clone https://github.com/usdot-jpo-ode/jpo-security.git
 ```
 
-Private repository:
+#### Private repository:
 ```bash
 git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 ```
 
-Privacy-protection module:
+#### Privacy-protection module:
 ```bash
 git clone https://github.com/usdot-jpo-ode/jpo-cvdp.git
 ```
@@ -172,19 +173,20 @@ git clone https://github.com/usdot-jpo-ode/jpo-cvdp.git
 Once you have these obtained repositories, you are now ready to build and deploy the application.
 
 ---
-### Build and Deploy the Application
+### Step 2. Build and Deploy the Application
 
-#### Configuration
 ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the *.env* file found in the root of the jpo-ode repository.
 
 Instructions for how to use the *.env* file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
 
-For the basic build purposes, you only need to set DOCKER_HOST_IP and DOCKER_SHARED_VOLUME.
-
+If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the $DOCKER_HOST_IP:9092, or wish to set the CAS username/password, `ODE_EXTERNAL_IPVs`, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
 
 #### Build Process
 
-The ODE application uses Maven to manage builds.
+**Required**: You must set at least the [DOCKER_HOST_IP](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management#obtaining-docker_host_ip) and [DOCKER_SHARED_VOLUME](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management#creating-a-docker_shared_volume) variables either in the environment file described above or as a local environment variable.
+
+
+Now we will build the ODE application using Maven. The basic process consists of running a maven install command inside each one of the repositories you just downloaded. Note that you will need to `cd ..` in between each of these steps to return to the parent directory.
 
 **Step 1**: Build the private repository artifacts consisting of J2735 ASN.1 Java API and IEEE1609.2 ASN.1 Java API
 
@@ -210,13 +212,6 @@ Navigate to the root directory of the `jpo-s3-depositor` project:
 ```bash
 mvn clean compile assembly:single install
 ```
-
-**Step 4** (Optional)
-Familiarize yourself with Docker and follow the instructions in the [README.md](docker/README.md).
-
-If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the $DOCKER_HOST_IP:9092, or wish to set the CAS username/password, `ODE_EXTERNAL_IPVs`, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
-
-**Step 5**: Navigate to the root directory of the jpo-ode project.
 
 **Step 6**: Build and deploy the application.
 
