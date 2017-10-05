@@ -20,7 +20,8 @@ public class BsmBuilder {
 
         JsonNode partII = basicSafetyMessage.get("partII");
         if (partII != null) {
-           BsmPart2ContentBuilder.buildGenericPart2(partII, genericBsm.getPartII());
+           //TODO
+           //BsmPart2ContentBuilder.buildGenericPart2(partII, genericBsm.getPartII());
         }
 
         return genericBsm;
