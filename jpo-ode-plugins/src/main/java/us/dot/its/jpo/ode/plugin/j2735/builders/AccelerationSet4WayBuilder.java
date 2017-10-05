@@ -20,24 +20,24 @@ public class AccelerationSet4WayBuilder {
       // -- the value 2000 shall be used for values greater than 2000
       // -- the value -2000 shall be used for values less than -2000
       // -- a value of 2001 shall be used for Unavailable
-      if (accelSet.get("accelLong").intValue() == 2001) {
+      if (accelSet.get("long").intValue() == 2001) {
          genericAccelerationSet4Way.setAccelLong(null);
-      } else if (accelSet.get("accelLong").intValue() < -2000) {
+      } else if (accelSet.get("long").intValue() < -2000) {
          genericAccelerationSet4Way.setAccelLong(BigDecimal.valueOf(-20.00));
-      } else if (accelSet.get("accelLong").intValue() > 2001) {
+      } else if (accelSet.get("long").intValue() > 2001) {
          genericAccelerationSet4Way.setAccelLong(BigDecimal.valueOf(20.00));
       } else {
-         genericAccelerationSet4Way.setAccelLong(BigDecimal.valueOf(accelSet.get("accelLong").longValue(), 2));
+         genericAccelerationSet4Way.setAccelLong(BigDecimal.valueOf(accelSet.get("long").longValue(), 2));
       }
 
-      if (accelSet.get("accelLat").intValue() == 2001) {
+      if (accelSet.get("lat").intValue() == 2001) {
          genericAccelerationSet4Way.setAccelLat(null);
-      } else if (accelSet.get("accelLat").intValue() < -2000) {
+      } else if (accelSet.get("lat").intValue() < -2000) {
          genericAccelerationSet4Way.setAccelLat(BigDecimal.valueOf(-20.00));
-      } else if (accelSet.get("accelLat").intValue() > 2001) {
+      } else if (accelSet.get("lat").intValue() > 2001) {
          genericAccelerationSet4Way.setAccelLat(BigDecimal.valueOf(20.00));
       } else {
-         genericAccelerationSet4Way.setAccelLat(BigDecimal.valueOf(accelSet.get("accelLat").intValue(), 2));
+         genericAccelerationSet4Way.setAccelLat(BigDecimal.valueOf(accelSet.get("lat").intValue(), 2));
       }
 
       // VerticalAcceleration ::= INTEGER (-127..127)
@@ -45,21 +45,21 @@ public class AccelerationSet4WayBuilder {
       // -- The value +127 shall be used for ranges >= 2.54 G
       // -- The value -126 shall be used for ranges <= -2.52 G
       // -- The value -127 shall be used for unavailable
-      if (accelSet.get("accelVert").intValue() == -127) {
+      if (accelSet.get("vert").intValue() == -127) {
          genericAccelerationSet4Way.setAccelVert(null);
-      } else if (accelSet.get("accelVert").intValue() < -127) {
+      } else if (accelSet.get("vert").intValue() < -127) {
          genericAccelerationSet4Way.setAccelVert(BigDecimal.valueOf(-2.52));
-      } else if (accelSet.get("accelVert").intValue() > 127) {
+      } else if (accelSet.get("vert").intValue() > 127) {
          genericAccelerationSet4Way.setAccelVert(BigDecimal.valueOf(2.54));
       } else {
-         genericAccelerationSet4Way.setAccelVert(BigDecimal.valueOf(accelSet.get("accelVert").intValue() * (long) 2, 2));
+         genericAccelerationSet4Way.setAccelVert(BigDecimal.valueOf(accelSet.get("vert").intValue() * (long) 2, 2));
 
       }
 
       // YawRate ::= INTEGER (-32767..32767)
       // -- LSB units of 0.01 degrees per second (signed)
-      if (accelSet.get("accelYaw").intValue() <= 32767 && accelSet.get("accelYaw").intValue() >= -32767) {
-         genericAccelerationSet4Way.setAccelYaw(BigDecimal.valueOf(accelSet.get("accelYaw").intValue(), 2));
+      if (accelSet.get("yaw").intValue() <= 32767 && accelSet.get("yaw").intValue() >= -32767) {
+         genericAccelerationSet4Way.setAccelYaw(BigDecimal.valueOf(accelSet.get("yaw").intValue(), 2));
       } else {
          throw new IllegalArgumentException("Yaw rate out of bounds");
       }

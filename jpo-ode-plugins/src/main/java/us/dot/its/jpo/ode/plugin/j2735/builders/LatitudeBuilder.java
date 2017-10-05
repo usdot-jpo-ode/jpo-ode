@@ -4,16 +4,10 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import us.dot.its.jpo.ode.j2735.dsrc.Latitude;
-
 public class LatitudeBuilder {
 
    private LatitudeBuilder() {
       throw new UnsupportedOperationException();
-   }
-
-   public static Latitude latitude(BigDecimal lat) {
-      return new Latitude(lat.scaleByPowerOfTen(7).intValue());
    }
 
    public static BigDecimal genericLatitude(JsonNode latitude) {
