@@ -11,9 +11,9 @@ import us.dot.its.jpo.ode.model.OdeAsn1Metadata;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;
-import us.dot.its.jpo.ode.model.OdeMsgPayload;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugin.j2735.builders.BsmBuilder;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
@@ -75,7 +75,7 @@ public class OdeBsmDataCreatorHelper {
    private static OdeBsmData createOdeBsmData(OdeAsn1Metadata metadata, JsonNode bsmNode) {
       OdeBsmPayload payload = new OdeBsmPayload();
       
-      bsmNode.get("coreData");
+      BsmBuilder.genericBsm(bsmNode);
       OdeBsmData odeBsmData = new OdeBsmData(metadata, payload );
       return odeBsmData;
    }
