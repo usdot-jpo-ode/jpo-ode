@@ -16,21 +16,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class LatitudeBuilderTest {
+public class LongitudeBuilderTest {
 
    @Test
    public void testConversion() throws JsonProcessingException, IOException {
       ObjectMapper mapper = new ObjectMapper();
-      JsonNode testInput = mapper.readTree("451234567");
-      BigDecimal expectedValue = BigDecimal.valueOf(45.1234567);
+      JsonNode testInput = mapper.readTree("251234567");
+      BigDecimal expectedValue = BigDecimal.valueOf(25.1234567);
 
-      assertEquals(expectedValue, LatitudeBuilder.genericLatitude(testInput));
+      assertEquals(expectedValue, LongitudeBuilder.genericLongitude(testInput));
    }
 
    @Test
    public void testConstructorIsPrivate()
          throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-      Constructor<LatitudeBuilder> constructor = LatitudeBuilder.class.getDeclaredConstructor();
+      Constructor<LongitudeBuilder> constructor = LongitudeBuilder.class.getDeclaredConstructor();
       assertTrue(Modifier.isPrivate(constructor.getModifiers()));
       constructor.setAccessible(true);
       try {
@@ -40,4 +40,5 @@ public class LatitudeBuilderTest {
          assertEquals(InvocationTargetException.class, e.getClass());
       }
    }
+
 }

@@ -1,8 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -16,21 +14,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class LatitudeBuilderTest {
+public class ElevationBuilderTest {
 
    @Test
    public void testConversion() throws JsonProcessingException, IOException {
       ObjectMapper mapper = new ObjectMapper();
-      JsonNode testInput = mapper.readTree("451234567");
-      BigDecimal expectedValue = BigDecimal.valueOf(45.1234567);
+      JsonNode testInput = mapper.readTree("32834");
+      BigDecimal expectedValue = BigDecimal.valueOf(3283.4);
 
-      assertEquals(expectedValue, LatitudeBuilder.genericLatitude(testInput));
+      assertEquals(expectedValue, ElevationBuilder.genericElevation(testInput));
    }
 
    @Test
    public void testConstructorIsPrivate()
          throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-      Constructor<LatitudeBuilder> constructor = LatitudeBuilder.class.getDeclaredConstructor();
+      Constructor<ElevationBuilder> constructor = ElevationBuilder.class.getDeclaredConstructor();
       assertTrue(Modifier.isPrivate(constructor.getModifiers()));
       constructor.setAccessible(true);
       try {
@@ -40,4 +38,5 @@ public class LatitudeBuilderTest {
          assertEquals(InvocationTargetException.class, e.getClass());
       }
    }
+
 }
