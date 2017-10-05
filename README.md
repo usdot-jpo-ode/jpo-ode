@@ -19,7 +19,9 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 
 [III. Collaboration Tools](#collaboration-tools)
 
-[IV. Getting Started](#getting-started)
+[IV. Quickstart Guide](#quickstart-guide)
+
+[V. Extended Features](#extended-features)
 
 [V. Testing the Application](#testing)
 
@@ -113,17 +115,17 @@ travis env set SONAR_SECURITY_TOKEN <key> -pr <user-account>/<repo-name>
 
 [Back to top](#toc)
 
-<a name="getting-started"/>
+<a name="quickstart-guide"/>
 
-## IV. Getting Started
+## IV. Quickstart Guide
 
-The following instructions describe the procedure to fetch, build, and run the application. 
+The following instructions describe the minimal procedure to fetch, build, and run the main ODE application. If you want to use the privacy protection module and/or S3 depositors, see the [extended features](#extended-features) section. Additionally, different build processes are covered in the extended features section.
 
 Some notes before you begin:
-* If you are installing the ODE in an Ubuntu environment, see this [preparation guide](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Prepare-a-fresh-Ubuntu-instance-for-ODE-installation).
+* If you are installing the ODE in an Ubuntu environment, see this [preparation guide](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Prepare-a-fresh-Ubuntu-instance-for-ODE-installation) that covers installing all of the prerequisites.
 * Docker builds may fail if you are on a corporate network due to DNS resolution errors. 
 [See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
-* Additionally *git* may fail for similar reasons, you can fix this by running `export GIT_SSL_NO_VERIFY=1`.
+* Additionally *git* commands may fail for similar reasons, you can fix this by running `export GIT_SSL_NO_VERIFY=1`.
 * Windows users may find more information on installing and using Docker [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management).
 * Users interested in Kafka may find more guidance and configuration options [here](docker/kafka/README.md).
 
@@ -183,7 +185,7 @@ If you wish to change the application properties, such as change the location of
 
 #### Build Process
 
-**Required**: You must set at least the [DOCKER_HOST_IP](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management#obtaining-docker_host_ip) and [DOCKER_SHARED_VOLUME](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management#creating-a-docker_shared_volume) variables either in the environment file described above or as a local environment variable.
+**Required**: For the purposes of this quickstart guide, you must set at least the [DOCKER_HOST_IP](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management#obtaining-docker_host_ip) and [DOCKER_SHARED_VOLUME](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management#creating-a-docker_shared_volume) variables either in the environment file described above or as a local environment variable.
 
 
 Now we will build the ODE application using Maven. The basic process consists of running a maven install command inside each one of the repositories you just downloaded. Note that you will need to `cd ..` in between each of these steps to return to the parent directory.
@@ -230,6 +232,12 @@ docker-compose ps
 For other build options, see the next section. Otherwise, move on to section [V. Testing ODE Application](#testing)
 
 [Back to top](#toc)
+
+<a name="extended-features"/>
+
+## V. Extended Features
+
+TODO - S3 depositor and PPM module install/usage.
 
 ---
 ### Other Build/Deploy Options
