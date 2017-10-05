@@ -2,6 +2,8 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import us.dot.its.jpo.ode.j2735.dsrc.Latitude;
 
 public class LatitudeBuilder {
@@ -14,11 +16,11 @@ public class LatitudeBuilder {
       return new Latitude(lat.scaleByPowerOfTen(7).intValue());
    }
 
-   public static BigDecimal genericLatitude(Latitude lat) {
+   public static BigDecimal genericLatitude(JsonNode latitude) {
       BigDecimal returnValue = null;
 
-      if ((lat != null) && (lat.longValue() != 900000001)) {
-         returnValue = BigDecimal.valueOf(lat.longValue(), 7);
+      if ((latitude != null) && (latitude.longValue() != 900000001)) {
+         returnValue = BigDecimal.valueOf(latitude.longValue(), 7);
 
       }
       return returnValue;

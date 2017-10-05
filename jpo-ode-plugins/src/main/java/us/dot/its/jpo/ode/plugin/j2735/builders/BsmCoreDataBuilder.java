@@ -5,9 +5,7 @@ import java.math.BigDecimal;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmCoreData;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TransmissionState;
-import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class BsmCoreDataBuilder {
     

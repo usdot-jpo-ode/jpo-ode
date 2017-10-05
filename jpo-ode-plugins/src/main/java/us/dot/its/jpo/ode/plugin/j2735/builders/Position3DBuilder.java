@@ -1,7 +1,5 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import java.math.BigDecimal;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.j2735.dsrc.Elevation;
@@ -14,34 +12,38 @@ public class Position3DBuilder {
    
    public static J2735Position3D genericPosition3D(JsonNode position3D) {
       J2735Position3D jpos = new J2735Position3D();
+      
+      jpos.setLongitude(LongitudeBuilder.genericLongitude(position3D.get("longitude")));
+      jpos.setLatitude(LatitudeBuilder.genericLatitude(position3D.get("latitude")));
+      jpos.setElevation(ElevationBuilder.genericElevation(position3D.get("elevation")));
 
-         if (position3D._long != null) {
-             if (position3D._long.longValue() == 1800000001) {
-                 jpos.setLongitude(null);
-             } else {
-                jpos.setLongitude(BigDecimal.valueOf(position3D._long.longValue(), 7));
-             }
-         }
-
-         if (position3D.lat != null) {
-             if (position3D.lat.longValue() == 900000001) {
-                jpos.setLatitude(null);
-             } else {
-                jpos.setLatitude(BigDecimal.valueOf(position3D.lat.longValue(), 7));
-             }
-         } else {
-            jpos.setLatitude(null);
-         }
-
-         if (position3D.elevation != null) {
-             if (position3D.elevation.longValue() == -4096) {
-                jpos.setElevation(null);
-             } else {
-                jpos.setElevation(BigDecimal.valueOf(position3D.elevation.longValue(), 1));
-             }
-         } else {
-            jpos.setElevation(null);
-         }
+//         if (position3D._long != null) {
+//             if (position3D._long.longValue() == 1800000001) {
+//                 jpos.setLongitude(null);
+//             } else {
+//                jpos.setLongitude(BigDecimal.valueOf(position3D._long.longValue(), 7));
+//             }
+//         }
+//
+//         if (position3D.lat != null) {
+//             if (position3D.lat.longValue() == 900000001) {
+//                jpos.setLatitude(null);
+//             } else {
+//                jpos.setLatitude(BigDecimal.valueOf(position3D.lat.longValue(), 7));
+//             }
+//         } else {
+//            jpos.setLatitude(null);
+//         }
+//
+//         if (position3D.elevation != null) {
+//             if (position3D.elevation.longValue() == -4096) {
+//                jpos.setElevation(null);
+//             } else {
+//                jpos.setElevation(BigDecimal.valueOf(position3D.elevation.longValue(), 1));
+//             }
+//         } else {
+//            jpos.setElevation(null);
+//         }
 
       return jpos;
       

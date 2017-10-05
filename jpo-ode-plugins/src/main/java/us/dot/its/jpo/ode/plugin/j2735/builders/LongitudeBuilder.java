@@ -2,6 +2,8 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
 
 public class LongitudeBuilder {
@@ -14,11 +16,11 @@ public class LongitudeBuilder {
       return new Longitude(lon.scaleByPowerOfTen(7).intValue());
    }
 
-   public static BigDecimal genericLongitude(Longitude _long) {
+   public static BigDecimal genericLongitude(JsonNode longitude) {
       BigDecimal returnValue = null;
 
-      if ((_long != null) && (_long.longValue() != 1800000001)) {
-         returnValue = BigDecimal.valueOf(_long.longValue(), 7);
+      if ((longitude != null) && (longitude.longValue() != 1800000001)) {
+         returnValue = BigDecimal.valueOf(longitude.longValue(), 7);
 
       }
       return returnValue;

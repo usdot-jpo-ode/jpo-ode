@@ -1,7 +1,7 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import us.dot.its.jpo.ode.j2735.dsrc.BrakeSystemStatus;
-import us.dot.its.jpo.ode.plugin.j2735.J2735BrakeAppliedStatus;
+import us.dot.its.jpo.ode.plugin.j2735.J2735WheelBrakes;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BrakeSystemStatus;
 
 public class OssBrakeSystemStatus {
@@ -13,7 +13,7 @@ public class OssBrakeSystemStatus {
     public static J2735BrakeSystemStatus genericBrakeSystemStatus(BrakeSystemStatus brakesStatus) {
         J2735BrakeSystemStatus genericBrakesStatus = new J2735BrakeSystemStatus();
 
-        J2735BrakeAppliedStatus appliedWheelBrakes = new J2735BrakeAppliedStatus();
+        J2735WheelBrakes appliedWheelBrakes = new J2735WheelBrakes();
 
         for (int i = 0; i < brakesStatus.wheelBrakes.getSize(); i++) {
 

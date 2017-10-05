@@ -2,7 +2,7 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
 
-import us.dot.its.jpo.ode.j2735.dsrc.Elevation;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class ElevationBuilder {
 
@@ -10,11 +10,11 @@ public class ElevationBuilder {
       throw new UnsupportedOperationException();
    }
 
-   public static BigDecimal genericElevation(Elevation elev) {
+   public static BigDecimal genericElevation(JsonNode elevation) {
       BigDecimal returnValue = null;
 
-      if ((elev != null) && (elev.longValue() != -4096)) {
-         returnValue = BigDecimal.valueOf(elev.longValue(), 1);
+      if ((elevation != null) && (elevation.longValue() != -4096)) {
+         returnValue = BigDecimal.valueOf(elevation.longValue(), 1);
 
       }
       return returnValue;
