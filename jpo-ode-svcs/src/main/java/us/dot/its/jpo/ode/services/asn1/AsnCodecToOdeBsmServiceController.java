@@ -39,7 +39,7 @@ public class AsnCodecToOdeBsmServiceController {
          odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), asn1codecBsmConverter);
 
       asn1codecBsmConsumer.setName("asn1codecBsmConsumer");
-      asn1codecBsmConverter.start(asn1codecBsmConsumer, odeProps.getKafkaTopicOdeBsmPojo());
+      asn1codecBsmConverter.start(asn1codecBsmConsumer, odeProps.getKafkaTopicDecodedBsmXml());
 
    }
 }

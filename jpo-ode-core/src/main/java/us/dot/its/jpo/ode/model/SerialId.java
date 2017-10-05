@@ -2,6 +2,8 @@ package us.dot.its.jpo.ode.model;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 public class SerialId {
    private static final char UUID_DELIMITER = '_';
    private static final char BUNDLE_RECORD_DELIMITER = '.';
@@ -73,6 +75,14 @@ public class SerialId {
       this.bundleId = bundleId;
       this.recordId = recordId;
       this.serialNumber = serialNumber;
+   }
+
+   public SerialId(JsonNode jsonNode) {
+      this(jsonNode.get("streamId").asText(), 
+           jsonNode.get("bundleSize").asInt(), 
+           jsonNode.get("bundleId").asLong(), 
+           jsonNode.get("recordId").asInt(), 
+           jsonNode.get("serialNumber").asLong());
    }
 
    private long calculateSerialNumber() {

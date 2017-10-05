@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.model;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 public class Asn1Encoding extends OdeObject {
 
    public enum EncodingRule {UPER, COER}
@@ -23,6 +25,9 @@ public class Asn1Encoding extends OdeObject {
       this.encodingRule = encodingRule;
    }
 
+   public Asn1Encoding (JsonNode encoding) {
+      this(encoding.get("elementName").asText(), encoding.get("elementType").asText(), EncodingRule.valueOf(encoding.get("encodingRule").asText()));
+   }
 
    public String getElementName() {
       return elementName;

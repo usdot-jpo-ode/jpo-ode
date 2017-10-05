@@ -20,14 +20,14 @@ public class AccelerationSet4WayBuilder {
       // -- the value 2000 shall be used for values greater than 2000
       // -- the value -2000 shall be used for values less than -2000
       // -- a value of 2001 shall be used for Unavailable
-      if (accelSet.get("_long").intValue() == 2001) {
+      if (accelSet.get("long").intValue() == 2001) {
          genericAccelerationSet4Way.setAccelLong(null);
-      } else if (accelSet.get("_long").intValue() < -2000) {
+      } else if (accelSet.get("long").intValue() < -2000) {
          genericAccelerationSet4Way.setAccelLong(BigDecimal.valueOf(-20.00));
-      } else if (accelSet.get("_long").intValue() > 2001) {
+      } else if (accelSet.get("long").intValue() > 2001) {
          genericAccelerationSet4Way.setAccelLong(BigDecimal.valueOf(20.00));
       } else {
-         genericAccelerationSet4Way.setAccelLong(BigDecimal.valueOf(accelSet.get("_long").longValue(), 2));
+         genericAccelerationSet4Way.setAccelLong(BigDecimal.valueOf(accelSet.get("long").longValue(), 2));
       }
 
       if (accelSet.get("lat").intValue() == 2001) {
