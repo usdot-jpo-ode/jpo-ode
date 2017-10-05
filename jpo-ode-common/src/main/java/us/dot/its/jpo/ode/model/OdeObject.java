@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
+import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 public class OdeObject implements Serializable {
    private static final long serialVersionUID = 7514526408925039533L;
@@ -34,7 +35,7 @@ public class OdeObject implements Serializable {
       return JsonUtils.toJson(this, verbose);
    }
 
-   public String toXml() throws JsonProcessingException {
+   public String toXml() throws XmlUtilsException {
       return XmlUtils.toXmlS(this);
    }
 

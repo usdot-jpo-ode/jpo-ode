@@ -10,6 +10,13 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author 572682
+ * This class encapsulates a message produce function. 
+ * 
+ * @param <K> Message Key type
+ * @param <V> Message Value type
+ */
 public class MessageProducer<K, V> {
     public static final String SERIALIZATION_STRING_SERIALIZER = "org.apache.kafka.common.serialization.StringSerializer";
     public static final String SERIALIZATION_BYTE_ARRAY_SERIALIZER = "org.apache.kafka.common.serialization.ByteArraySerializer";

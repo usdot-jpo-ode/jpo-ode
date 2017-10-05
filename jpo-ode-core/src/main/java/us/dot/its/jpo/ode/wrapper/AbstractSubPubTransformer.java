@@ -6,6 +6,17 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author 572682
+ *
+ * This abstract class provides a basic pipeline functionality through the messaging
+ * framework. The objects of this class subscribe to a topic, process received messages
+ * and publish the results to another topic.
+ *   
+ * @param <K> Message Key type
+ * @param <V1> Received Message Value Type
+ * @param <V2> Published Message Value Type
+ */
 public abstract class AbstractSubPubTransformer<K, V1, V2> extends MessageProcessor<K, V1> {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

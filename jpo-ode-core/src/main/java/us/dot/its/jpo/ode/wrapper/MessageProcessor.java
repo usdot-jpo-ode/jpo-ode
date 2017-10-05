@@ -8,6 +8,14 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.TopicPartition;
 
+/**
+ * @author 572682
+ * This abstract class provides the common and basic functionality for processinf messages
+ * received from a Kafka topic subscription.
+ *  
+ * @param <K> Message Key type
+ * @param <V> Message Value type
+ */
 public abstract class MessageProcessor<K, V> implements Callable<Object> {
 
    protected ConsumerRecord<K, V> record;
