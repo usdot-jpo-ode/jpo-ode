@@ -17,10 +17,11 @@ public class BsmBuilder {
             genericBsm.setCoreData(BsmCoreDataBuilder.genericBsmCoreData(coreData));
         }
 
-//        JsonNode partII = basicSafetyMessage.get("partII");
-//        if (partII != null) {
-//           BsmPart2ContentBuilder.buildGenericPart2(partII, genericBsm.getPartII());
-//        }
+        JsonNode partII = basicSafetyMessage.get("partII");
+        if (partII != null) {
+           //TODO
+           //BsmPart2ContentBuilder.buildGenericPart2(partII, genericBsm.getPartII());
+        }
 
         return genericBsm;
     }

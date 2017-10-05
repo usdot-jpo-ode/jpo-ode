@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmCoreData;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TransmissionState;
-import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class BsmCoreDataBuilder {
     
@@ -20,7 +19,7 @@ public class BsmCoreDataBuilder {
 
         genericBsmCoreData.setMsgCnt(coreData.get("msgCnt").intValue());
 
-        genericBsmCoreData.setId(CodecUtils.toHex(coreData.get("id").asText().getBytes()));
+        genericBsmCoreData.setId(coreData.get("id").asText());
 
         if (coreData.get("secMark").intValue() != 65535) {
             genericBsmCoreData.setSecMark(coreData.get("secMark").intValue());
@@ -28,20 +27,20 @@ public class BsmCoreDataBuilder {
             genericBsmCoreData.setSecMark(null);
         }
 
-        genericBsmCoreData.setPosition(new J2735Position3D(
-              coreData.get("lat").longValue(), 
-              coreData.get("long").longValue(),
-              coreData.get("elev").longValue()));
+         genericBsmCoreData.setPosition(new J2735Position3D(LatitudeBuilder.genericLatitude(coreData.get("lat")),
+               LongitudeBuilder.genericLongitude(coreData.get("long")),
+               ElevationBuilder.genericElevation(coreData.get("elev"))));
 
-        genericBsmCoreData.setAccelSet(AccelerationSet4WayBuilder.genericAccelerationSet4Way(
-           coreData.get("accelSet")));
+        genericBsmCoreData.setAccelSet(AccelerationSet4WayBuilder.genericAccelerationSet4Way(coreData.get("accelSet")));
 
-        genericBsmCoreData.setAccuracy(PositionalAccuracyBuilder.genericPositionalAccuracy(
-           coreData.get("accuracy")));
+        genericBsmCoreData.setAccuracy(PositionalAccuracyBuilder.genericPositionalAccuracy(coreData.get("accuracy")));
 
-        String transmission = coreData.get("transmission").asText();
-        if (transmission != null && !transmission.equals("UNAVAILABLE")) {
-                genericBsmCoreData.setTransmission(J2735TransmissionState.valueOf(transmission));
+        JsonNode transmission = coreData.get("transmission");
+        if (transmission != null) {
+           int trans = transmission.intValue();
+           if (trans != J2735TransmissionState.UNAVAILABLE.ordinal()) {
+              genericBsmCoreData.setTransmission(J2735TransmissionState.values()[trans]);
+           }
         }
 
         // speed is received in units of 0.02 m/s
@@ -57,12 +56,12 @@ public class BsmCoreDataBuilder {
 
         genericBsmCoreData.setAngle(steeringAngle(coreData.get("angle")));
         genericBsmCoreData.setBrakes(BrakeSystemStatusBuilder.genericBrakeSystemStatus(coreData.get("brakes")));
-        genericBsmCoreData.setSize(VehicleSizeBuilder.genericVehicleSizeBuilder(coreData.get("size")));
+        genericBsmCoreData.setSize(VehicleSizeBuilder.genericVehicleSize(coreData.get("size")));
 
         return genericBsmCoreData;
     }
 
-    private static BigDecimal steeringAngle(JsonNode steeringWhealAngle) {
+    private static BigDecimal steeringAngle(JsonNode steeringWheelAngle) {
         // SteeringWheelAngle ::= OCTET STRING (SIZE(1))
         // -- LSB units of 1.5 degrees.
         // -- a range of -189 to +189 degrees
@@ -71,8 +70,8 @@ public class BsmCoreDataBuilder {
         // -- 0x7E = +126 = +189 deg and beyond
         // -- 0x7F = +127 to be used for unavailable
         BigDecimal angle = null;
-        if (steeringWhealAngle != null && steeringWhealAngle.intValue() != 0x7F) {
-            angle = BigDecimal.valueOf(steeringWhealAngle.intValue() * (long)15, 1);
+        if (steeringWheelAngle != null && steeringWheelAngle.intValue() != 0x7F) {
+            angle = BigDecimal.valueOf(steeringWheelAngle.intValue() * (long)15, 1);
         }
         return angle;
     }

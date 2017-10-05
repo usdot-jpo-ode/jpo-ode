@@ -67,15 +67,8 @@ public class OdeBsmDataCreatorHelper {
       OdeAsn1Metadata metadata = (OdeAsn1Metadata) JsonUtils.fromJson(
          consumed.get("metadata").toString(), OdeAsn1Metadata.class);
       
-      return OdeBsmDataCreatorHelper.createOdeBsmData(metadata,
-         consumed.findValue("BasicSafetyMessage"));
-   }
-
-   private static OdeBsmData createOdeBsmData(OdeAsn1Metadata metadata, JsonNode bsmNode) {
-      OdeBsmPayload payload = new OdeBsmPayload();
-      
-      BsmBuilder.genericBsm(bsmNode);
-      OdeBsmData odeBsmData = new OdeBsmData(metadata, payload );
-      return odeBsmData;
+      OdeBsmPayload payload = new OdeBsmPayload(
+         BsmBuilder.genericBsm(consumed.findValue("BasicSafetyMessage")));
+      return new OdeBsmData(metadata, payload );
    }
 }
