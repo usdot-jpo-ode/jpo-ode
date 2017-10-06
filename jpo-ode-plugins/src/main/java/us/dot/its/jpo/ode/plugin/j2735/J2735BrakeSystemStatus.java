@@ -5,18 +5,18 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 public class J2735BrakeSystemStatus extends Asn1Object {
     private static final long serialVersionUID = 1L;
 
-    private J2735WheelBrakes wheelBrakes;
+    private J2735BrakeAppliedStatus wheelBrakes;
     private String traction;
     private String abs;
     private String scs;
     private String brakeBoost;
     private String auxBrakes;
 
-    public J2735WheelBrakes getWheelBrakes() {
+    public J2735BrakeAppliedStatus getWheelBrakes() {
         return wheelBrakes;
     }
 
-    public void setWheelBrakes(J2735WheelBrakes wheelBrakes) {
+    public void setWheelBrakes(J2735BrakeAppliedStatus wheelBrakes) {
         this.wheelBrakes = wheelBrakes;
     }
 

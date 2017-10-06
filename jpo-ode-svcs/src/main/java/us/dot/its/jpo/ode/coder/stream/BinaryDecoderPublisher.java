@@ -80,10 +80,12 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
                if (fileType == ImporterFileType.BSM_LOG_FILE) {
                   if (fileParser instanceof BsmFileParser) {
                      logger.debug("Decoded a bsm: {}", decoded);
-                     bsmMessagePublisher.publish(decoded, bsmMessagePublisher.getOdeProperties().getKafkaTopicOdeBsmPojo());
+                     bsmMessagePublisher.publish(decoded, 
+                        bsmMessagePublisher.getOdeProperties().getKafkaTopicOdeBsmPojo());
                   } else if (fileType == ImporterFileType.BSM_LOG_FILE && fileParser instanceof RxMsgFileParser) {
                      logger.debug("Decoded a tim: {}", decoded);
-                     timMessagePublisher.publish(decoded, bsmMessagePublisher.getOdeProperties().getKafkaTopicOdeTimPojo());
+                     timMessagePublisher.publish(decoded, 
+                        bsmMessagePublisher.getOdeProperties().getKafkaTopicOdeTimPojo());
                   }
                }
             } else {

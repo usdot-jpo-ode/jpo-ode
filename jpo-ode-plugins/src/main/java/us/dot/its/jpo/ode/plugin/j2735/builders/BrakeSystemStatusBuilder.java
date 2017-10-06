@@ -14,7 +14,7 @@ public class BrakeSystemStatusBuilder {
       J2735BrakeSystemStatus genericBrakesStatus = new J2735BrakeSystemStatus();
 
       genericBrakesStatus
-            .setWheelBrakes(WheelBrakesBuilder.genericWheelBrakes(brakesStatus.get("wheelBrakes")));
+            .setWheelBrakes(BrakesAppliedStatusBuilder.genericBrakeAppliedStatus(brakesStatus.get("wheelBrakes")));
       genericBrakesStatus.setTraction(brakesStatus.get("traction").fieldNames().next());
       genericBrakesStatus.setAbs(brakesStatus.get("abs").fieldNames().next());
       genericBrakesStatus.setScs(brakesStatus.get("scs").fieldNames().next());

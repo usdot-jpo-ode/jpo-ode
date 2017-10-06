@@ -20,7 +20,6 @@ import gov.usdot.cv.security.cert.CertificateException;
 import gov.usdot.cv.security.crypto.CryptoException;
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import gov.usdot.cv.security.msg.MessageException;
-import us.dot.its.jpo.ode.importer.TimFileParser;
 import us.dot.its.jpo.ode.importer.parser.RxMsgFileParser;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.Elevation;

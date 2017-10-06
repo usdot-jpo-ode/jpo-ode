@@ -4,10 +4,13 @@ import java.io.BufferedInputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
-import us.dot.its.jpo.ode.importer.BsmSource;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class BsmFileParser extends LogFileParser {
+   public enum BsmSource {
+      EV_TX, RV_RX
+   }
+
    private static final int DIRECTION_LENGTH = 1;
 
    private BsmSource direction; // 0 for EV(Tx), 1 for RV(Rx)
