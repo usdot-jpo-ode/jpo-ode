@@ -28,37 +28,37 @@ public class DDateTimeBuilder {
     public static J2735DDateTime genericDDateTime(JsonNode dDateTime) {
 
         // Bounds checks
-       int year = dDateTime.get("year").intValue();
+       int year = dDateTime.get("year").asInt();
         if (year < YEAR_LOWER_BOUND || year > YEAR_UPPER_BOUND) {
             throw new IllegalArgumentException("Year value out of bounds [0..4095]");
         }
         
-        int month = dDateTime.get("month").intValue();
+        int month = dDateTime.get("month").asInt();
         if (month < MONTH_LOWER_BOUND || month > MONTH_UPPER_BOUND) {
             throw new IllegalArgumentException("Month value out of bounds [0..12]");
         }
         
-        int day = dDateTime.get("day").intValue();
+        int day = dDateTime.get("day").asInt();
         if (day < DAY_LOWER_BOUND || day > DAY_UPPER_BOUND) {
             throw new IllegalArgumentException("Day value out of bounds [0..31]");
         }
         
-        int hour = dDateTime.get("hour").intValue();
+        int hour = dDateTime.get("hour").asInt();
         if (hour < HOUR_LOWER_BOUND || hour > HOUR_UPPER_BOUND) {
             throw new IllegalArgumentException("Hour value out of bounds [0..31]");
         }
         
-        int minute = dDateTime.get("minute").intValue();
+        int minute = dDateTime.get("minute").asInt();
         if (minute < MINUTE_LOWER_BOUND || minute > MINUTE_UPPER_BOUND) {
             throw new IllegalArgumentException("Minute value out of bounds [0..60]");
         }
         
-        int second = dDateTime.get("second").intValue();
+        int second = dDateTime.get("second").asInt();
         if (second < SECOND_LOWER_BOUND || second > SECOND_UPPER_BOUND) {
             throw new IllegalArgumentException("Second value out of bounds [0..65535]");
         }
         
-        int offset = dDateTime.get("offset").intValue();
+        int offset = dDateTime.get("offset").asInt();
         if (offset < OFFSET_LOWER_BOUND || offset > OFFSET_UPPER_BOUND) {
             throw new IllegalArgumentException("Offset value out of bounds [-840..840]");
         }

@@ -11,11 +11,11 @@ public class SpeedOrVelocityBuilder {
     }
 
     public static BigDecimal genericSpeed(JsonNode speed) {
-        return genericSpeedOrVelocity(speed.intValue());
+        return genericSpeedOrVelocity(speed.asInt());
     }
 
     public static BigDecimal genericVelocity(JsonNode velocity) {
-        return genericSpeedOrVelocity(velocity.intValue());
+        return genericSpeedOrVelocity(velocity.asInt());
     }
 
     private static BigDecimal genericSpeedOrVelocity(int speedOrVelocity) {

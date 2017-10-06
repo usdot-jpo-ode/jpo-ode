@@ -12,13 +12,13 @@ public class VehicleSizeBuilder {
    private static final Integer LENGTH_UPPER_BOUND = 4095;
 
    public static J2735VehicleSize genericVehicleSize(JsonNode vehicleSize) {
-       int size = vehicleSize.get("width").intValue();
+       int size = vehicleSize.get("width").asInt();
        
         if (size < WIDTH_LOWER_BOUND || size > WIDTH_UPPER_BOUND) {
             throw new IllegalArgumentException("Vehicle width out of bounds [0..1023]");
         }
 
-        int length = vehicleSize.get("length").intValue();
+        int length = vehicleSize.get("length").asInt();
         if (length < LENGTH_LOWER_BOUND || length > LENGTH_UPPER_BOUND) {
             throw new IllegalArgumentException("Vehicle length out of bounds [0..4095]");
         }
@@ -31,7 +31,7 @@ public class VehicleSizeBuilder {
             genericVehicleSize.setLength(null);
         }
         
-        int width = vehicleSize.get("width").intValue();
+        int width = vehicleSize.get("width").asInt();
         if (width != 0) {
             genericVehicleSize.setWidth(width);
         } else {

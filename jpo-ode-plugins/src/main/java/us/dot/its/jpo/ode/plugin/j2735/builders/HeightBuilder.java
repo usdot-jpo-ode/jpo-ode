@@ -12,11 +12,11 @@ public class HeightBuilder {
 
     public static BigDecimal genericHeight(VehicleHeight height) {
 
-        if (height.intValue() < 0 || height.intValue() > 127) {
+        if (height.asInt() < 0 || height.asInt() > 127) {
             throw new IllegalArgumentException("Vehicle height out of bounds");
         }
 
-        return BigDecimal.valueOf(height.intValue() * (long) 5, 2);
+        return BigDecimal.valueOf(height.asInt() * (long) 5, 2);
     }
 
 }

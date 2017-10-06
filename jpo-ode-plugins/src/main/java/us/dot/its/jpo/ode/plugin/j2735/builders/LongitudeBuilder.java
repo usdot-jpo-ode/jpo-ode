@@ -19,8 +19,8 @@ public class LongitudeBuilder {
    public static BigDecimal genericLongitude(JsonNode longitude) {
       BigDecimal returnValue = null;
 
-      if ((longitude != null) && (longitude.longValue() != 1800000001)) {
-         returnValue = BigDecimal.valueOf(longitude.longValue(), 7);
+      if ((longitude != null) && (longitude.asLong() != 1800000001)) {
+         returnValue = BigDecimal.valueOf(longitude.asLong(), 7);
 
       }
       return returnValue;

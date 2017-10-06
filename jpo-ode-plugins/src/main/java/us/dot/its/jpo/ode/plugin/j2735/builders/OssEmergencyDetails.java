@@ -17,7 +17,7 @@ public class OssEmergencyDetails {
 		J2735EmergencyDetails va = new J2735EmergencyDetails();
 		
 		// Required elements
-		va.setSspRights(vehicleAlerts.sspRights.intValue());
+		va.setSspRights(vehicleAlerts.sspRights.asInt());
       va.setSirenUse(J2735SirenInUse.values()[vehicleAlerts.sirenUse.indexOf()]);
       va.setLightsUse(J2735LightbarInUse.values()[vehicleAlerts.lightsUse.indexOf()]);
       va.setMulti(J2735MultiVehicleResponse.values()[vehicleAlerts.multi.indexOf()]);

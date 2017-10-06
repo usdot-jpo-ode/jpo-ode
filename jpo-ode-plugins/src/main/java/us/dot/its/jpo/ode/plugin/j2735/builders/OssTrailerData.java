@@ -16,7 +16,7 @@ public class OssTrailerData {
         J2735TrailerData td = new J2735TrailerData();
 
         td.setConnection(OssPivotPointDescription.genericPivotPointDescription(trailers.connection));
-        td.setSspRights(trailers.sspRights.intValue());
+        td.setSspRights(trailers.sspRights.asInt());
 
         Iterator<TrailerUnitDescription> iter = trailers.units.elements.iterator();
 

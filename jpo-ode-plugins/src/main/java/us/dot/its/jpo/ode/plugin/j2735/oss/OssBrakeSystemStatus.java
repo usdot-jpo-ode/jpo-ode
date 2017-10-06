@@ -15,15 +15,15 @@ public class OssBrakeSystemStatus {
 
         J2735WheelBrakes appliedWheelBrakes = new J2735WheelBrakes();
 
-//        for (int i = 0; i < brakesStatus.wheelBrakes.getSize(); i++) {
-//
-//            String eventName = brakesStatus.wheelBrakes.getNamedBits().getMemberName(i);
-//            Boolean eventStatus = brakesStatus.wheelBrakes.getBit(i);
-//
-//            if (eventName != null) {
-//                appliedWheelBrakes.put(eventName, eventStatus);
-//            }
-//        }
+        for (int i = 0; i < brakesStatus.wheelBrakes.getSize(); i++) {
+
+            String eventName = brakesStatus.wheelBrakes.getNamedBits().getMemberName(i);
+            Boolean eventStatus = brakesStatus.wheelBrakes.getBit(i);
+
+            if (eventName != null) {
+                appliedWheelBrakes.put(eventName, eventStatus);
+            }
+        }
 
         genericBrakesStatus.setWheelBrakes(appliedWheelBrakes);
         genericBrakesStatus.setTraction(brakesStatus.traction.name());

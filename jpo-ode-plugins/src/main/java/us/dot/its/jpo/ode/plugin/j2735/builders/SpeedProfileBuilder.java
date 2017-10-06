@@ -18,7 +18,7 @@ public class SpeedProfileBuilder {
         Iterator<JsonNode> iter = speedProfile.speedReports.elements.iterator();
 
         while (iter.hasNext()) {
-            sp.getSpeedReports().add(iter.next().intValue());
+            sp.getSpeedReports().add(iter.next().asInt());
         }
 
         return sp;

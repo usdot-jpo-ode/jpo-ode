@@ -17,19 +17,19 @@ public class ObstacleDetectionBuilder {
     public static J2735ObstacleDetection genericObstacleDetection(JsonNode obstacleDetection) {
 
         // Bounds check
-        if (obstacleDetection.obDist.intValue() < DIST_LOWER_BOUND || obstacleDetection.obDist.intValue() > DIST_UPPER_BOUND) {
+        if (obstacleDetection.obDist.asInt() < DIST_LOWER_BOUND || obstacleDetection.obDist.asInt() > DIST_UPPER_BOUND) {
             throw new IllegalArgumentException("Distance out of bounds [0..32767]");
         }
 
         // Required elements
         J2735ObstacleDetection ob = new J2735ObstacleDetection();
-        ob.setObDist(obstacleDetection.obDist.intValue());
+        ob.setObDist(obstacleDetection.obDist.asInt());
         ob.setObDirect(AngleBuilder.genericAngle(obstacleDetection.obDirect));
         ob.setDateTime(DDateTimeBuilder.genericDDateTime(obstacleDetection.dateTime));
 
         // Optional elements
         if (obstacleDetection.description != null) {
-            ob.setDescription(obstacleDetection.description.intValue());
+            ob.setDescription(obstacleDetection.description.asInt());
         }
         if (obstacleDetection.locationDetails != null) {
             ob.setLocationDetails(NamedNumberBuilder.genericGenericLocations(obstacleDetection.locationDetails));

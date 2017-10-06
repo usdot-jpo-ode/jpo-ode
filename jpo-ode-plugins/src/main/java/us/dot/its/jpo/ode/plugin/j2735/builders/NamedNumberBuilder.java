@@ -14,7 +14,7 @@ public class NamedNumberBuilder {
         J2735NamedNumber gnn = new J2735NamedNumber();
 
         gnn.setName(genericLocations.name());
-        gnn.setValue(genericLocations.longValue());
+        gnn.setValue(genericLocations.asLong());
         return gnn;
     }
 
@@ -22,7 +22,7 @@ public class NamedNumberBuilder {
         J2735NamedNumber gnn = new J2735NamedNumber();
 
         gnn.setName(incidentResponseEquipment.name());
-        gnn.setValue(incidentResponseEquipment.longValue());
+        gnn.setValue(incidentResponseEquipment.asLong());
         return gnn;
     }
 
@@ -30,7 +30,7 @@ public class NamedNumberBuilder {
         J2735NamedNumber gnn = new J2735NamedNumber();
 
         gnn.setName(vehicleGroupAffected.name());
-        gnn.setValue(vehicleGroupAffected.longValue());
+        gnn.setValue(vehicleGroupAffected.asLong());
         return gnn;
     }
 

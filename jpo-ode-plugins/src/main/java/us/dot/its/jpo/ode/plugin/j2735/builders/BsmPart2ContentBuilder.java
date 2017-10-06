@@ -76,7 +76,11 @@ public class BsmPart2ContentBuilder {
 	   
 	   JsonNode part2Node = bsmPart2Seq.get("partII-Id").get("partII-Value").get(partII_valuestr);
 
+<<<<<<< HEAD
 		return buildContent(J2735BsmPart2Content.J2735BsmPart2Id.values()[partII_Id], part2Node);
+=======
+		return buildContent(J2735BsmPart2Content.J2735BsmPart2Id.values()[bsmPart2Seq.partII_Id.asInt()], bsmPart2Seq.partII_Value);
+>>>>>>> 6ccd666a85548f9c5bec2d2c33c7652b294cdc30
 	}
 
 	private static J2735BsmPart2Content buildContent(
@@ -134,7 +138,7 @@ public class BsmPart2ContentBuilder {
 //	      }
 //	   }
 		
-		if (vse.get("events") != null) {
+		if (openType.get("events") != null) {
 		   
 //	     private void setEncodings(JsonNode encodings) {
 //       if (encodings.isArray()) {
@@ -147,18 +151,35 @@ public class BsmPart2ContentBuilder {
 //          }
 //       }
 //    }
+
 		   
+		   char[] eventBits = openType.get("events").asText().toCharArray();
 		   
 		   
 			J2735VehicleEventFlags eventFlags = new J2735VehicleEventFlags();
-			for (int i = 0; i < vse.getEvents().getSize(); i++) {
-				String flagName = vse.getEvents().getNamedBits().getMemberName(i);
-				Boolean flagStatus = vse.getEvents().getBit(vse.getEvents().getSize() - i - 1);
-
-				if (flagName != null) {
-					eventFlags.put(flagName, flagStatus);
-				}
-			}
+			
+         
+         eventFlags.put("eventHazardLights", (eventBits[12] == '1') ? true: false );
+         eventFlags.put("eventStopLineViolation", (eventBits[11] == '1') ? true: false );
+         eventFlags.put("eventABSactivated", (eventBits[10] == '1') ? true: false );
+         eventFlags.put("eventTractionControlLoss", (eventBits[9] == '1') ? true: false );
+         eventFlags.put("eventStabilityControlactivated", (eventBits[8] == '1') ? true: false );
+         eventFlags.put("eventHazardousMaterials", (eventBits[7] == '1') ? true: false );
+         eventFlags.put("eventReserved1", (eventBits[6] == '1') ? true: false );
+         eventFlags.put("eventHardBraking", (eventBits[5] == '1') ? true: false );
+         eventFlags.put("eventLightsChanged", (eventBits[4] == '1') ? true: false );
+         eventFlags.put("eventWipersChanged", (eventBits[3] == '1') ? true: false );
+         eventFlags.put("eventFlatTire", (eventBits[2] == '1') ? true: false );
+         eventFlags.put("eventDisabledVehicle", (eventBits[1] == '1') ? true: false );
+         eventFlags.put("eventWipersCeventAirBagDeploymenthanged", (eventBits[0] == '1') ? true: false );
+//			for (int i = 0; i < vse.getEvents().getSize(); i++) {
+//				String flagName = vse.getEvents().getNamedBits().getMemberName(i);
+//				Boolean flagStatus = vse.getEvents().getBit(vse.getEvents().getSize() - i - 1);
+//
+//				if (flagName != null) {
+//					eventFlags.put(flagName, flagStatus);
+//				}
+//			}
 			vehSafety.setEvents(eventFlags);
 		}
 		if (vse.hasLights()) {

@@ -14,17 +14,17 @@ public class OssPathPrediction {
     public static J2735PathPrediction genericPathPrediction(PathPrediction pathPrediction) {
         J2735PathPrediction pp = new J2735PathPrediction();
 
-        if (pathPrediction.radiusOfCurve.longValue() >= 32767 
-                || pathPrediction.radiusOfCurve.longValue() < -32767) {
+        if (pathPrediction.radiusOfCurve.asLong() >= 32767 
+                || pathPrediction.radiusOfCurve.asLong() < -32767) {
             pp.setRadiusOfCurve(BigDecimal.ZERO.setScale(1));
         } else {
-            pp.setRadiusOfCurve(BigDecimal.valueOf(pathPrediction.radiusOfCurve.longValue(), 1));
+            pp.setRadiusOfCurve(BigDecimal.valueOf(pathPrediction.radiusOfCurve.asLong(), 1));
         }
         
-        if (pathPrediction.confidence.longValue() < 0 || pathPrediction.confidence.longValue() > 200) {
+        if (pathPrediction.confidence.asLong() < 0 || pathPrediction.confidence.asLong() > 200) {
             throw new IllegalArgumentException("Confidence value out of bounds [0..200]");
         } else {
-            pp.setConfidence(BigDecimal.valueOf(pathPrediction.confidence.longValue() * 5, 1));
+            pp.setConfidence(BigDecimal.valueOf(pathPrediction.confidence.asLong() * 5, 1));
         }
 
         return pp;
