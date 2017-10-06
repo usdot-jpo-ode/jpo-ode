@@ -20,25 +20,25 @@ public class VehicleClassificationBuilder {
         // All elements of this class are optional
         if (vc.hasFuelType()) {
 
-            if (vc.fuelType.intValue() < 0 || vc.fuelType.intValue() > 9) {
+            if (vc.fuelType.asInt() < 0 || vc.fuelType.asInt() > 9) {
                 throw new IllegalArgumentException("Fuel type value out of bounds [0..9]");
             }
 
-            gvc.setFuelType(J2735FuelType.values()[vc.fuelType.intValue()]);
+            gvc.setFuelType(J2735FuelType.values()[vc.fuelType.asInt()]);
         }
         if (vc.hasHpmsType()) {
             gvc.setHpmsType(J2735VehicleType.values()[vc.hpmsType.indexOf()]);
         }
         if (vc.hasIso3883()) {
-            gvc.setIso3883(vc.iso3883.intValue());
+            gvc.setIso3883(vc.iso3883.asInt());
         }
         if (vc.hasKeyType()) {
 
-            if (vc.keyType.intValue() < 0 || vc.keyType.intValue() > 255) {
+            if (vc.keyType.asInt() < 0 || vc.keyType.asInt() > 255) {
                 throw new IllegalArgumentException("Basic vehicle classification out of bounds [0..255]");
             }
 
-            gvc.setKeyType(vc.keyType.intValue());
+            gvc.setKeyType(vc.keyType.asInt());
         }
         if (vc.hasResponderType()) {
             gvc.setResponderType(J2735ResponderGroupAffected.values()[vc.responderType.indexOf()]);
@@ -56,7 +56,7 @@ public class VehicleClassificationBuilder {
             while (vc.regional.elements().hasMoreElements()) {
                 us.dot.its.jpo.ode.j2735.dsrc.VehicleClassification.Regional.Sequence_ element = (us.dot.its.jpo.ode.j2735.dsrc.VehicleClassification.Regional.Sequence_) vc.regional
                         .elements().nextElement();
-                gvc.getRegional().add(new J2735RegionalContent().setId(element.regionId.intValue())
+                gvc.getRegional().add(new J2735RegionalContent().setId(element.regionId.asInt())
                         .setValue(element.regExtValue.getEncodedValue()));
             }
         }

@@ -17,27 +17,27 @@ public class WeatherProbeBuilder {
 
     public static J2735WeatherProbe genericWeatherProbe(JsonNode weatherProbe) {
 
-        if (weatherProbe.hasAirTemp() && (weatherProbe.airTemp.intValue() < TEMP_LOWER_BOUND
-                || weatherProbe.airTemp.intValue() > TEMP_UPPER_BOUND)) {
+        if (weatherProbe.hasAirTemp() && (weatherProbe.airTemp.asInt() < TEMP_LOWER_BOUND
+                || weatherProbe.airTemp.asInt() > TEMP_UPPER_BOUND)) {
             throw new IllegalArgumentException("Ambient air temperature out of bounds [0..191]");
         }
 
-        if (weatherProbe.hasAirPressure() && (weatherProbe.airPressure.intValue() < PRESSURE_LOWER_BOUND
-                || weatherProbe.airPressure.intValue() > PRESSURE_UPPER_BOUND)) {
+        if (weatherProbe.hasAirPressure() && (weatherProbe.airPressure.asInt() < PRESSURE_LOWER_BOUND
+                || weatherProbe.airPressure.asInt() > PRESSURE_UPPER_BOUND)) {
             throw new IllegalArgumentException("Ambient air pressure out of bounds [0..255]");
         }
 
         // Perform conversion
         J2735WeatherProbe gwp = new J2735WeatherProbe();
 
-        if (weatherProbe.hasAirTemp() && weatherProbe.airTemp.intValue() != 191) {
-            gwp.setAirTemp(weatherProbe.airTemp.intValue() - 40);
+        if (weatherProbe.hasAirTemp() && weatherProbe.airTemp.asInt() != 191) {
+            gwp.setAirTemp(weatherProbe.airTemp.asInt() - 40);
         } else {
             gwp.setAirTemp(null);
         }
 
-        if (weatherProbe.hasAirPressure() && weatherProbe.airPressure.intValue() != 0) {
-            gwp.setAirPressure(((weatherProbe.airPressure.intValue() - 1) * 2) + 580);
+        if (weatherProbe.hasAirPressure() && weatherProbe.airPressure.asInt() != 0) {
+            gwp.setAirPressure(((weatherProbe.airPressure.asInt() - 1) * 2) + 580);
         } else {
             gwp.setAirPressure(null);
         }

@@ -14,14 +14,14 @@ public class AngleBuilder {
 
     public static BigDecimal genericAngle(JsonNode angle) {
 
-        if (angle.intValue() < 0 || angle.intValue() > 28800) {
+        if (angle.asInt() < 0 || angle.asInt() > 28800) {
             throw new IllegalArgumentException("Angle value out of bounds");
         }
 
         BigDecimal result = null;
 
-        if (angle.longValue() != 28800) {
-            result = longToDecimal(angle.longValue());
+        if (angle.asLong() != 28800) {
+            result = longToDecimal(angle.asLong());
         }
 
         return result;

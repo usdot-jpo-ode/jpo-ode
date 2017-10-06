@@ -37,7 +37,7 @@ public class BsmPart2ContentBuilder {
 
 	public static J2735BsmPart2Content genericPart2Content(JsonNode bsmPart2Seq) {
 
-		return buildContent(J2735BsmPart2Content.J2735BsmPart2Id.values()[bsmPart2Seq.partII_Id.intValue()], bsmPart2Seq.partII_Value);
+		return buildContent(J2735BsmPart2Content.J2735BsmPart2Id.values()[bsmPart2Seq.partII_Id.asInt()], bsmPart2Seq.partII_Value);
 	}
 
 	private static J2735BsmPart2Content buildContent(

@@ -17,7 +17,7 @@ public class SupplementalVehicleExtensionsBuilder {
 
         // All elements of this class are optional
         if (sve.hasClassification()) {
-            suppVeh.setClassification(sve.classification.intValue());
+            suppVeh.setClassification(sve.classification.asInt());
         }
         if (sve.hasClassDetails()) {
             suppVeh.setClassDetails(VehicleClassificationBuilder.genericVehicleClassification(sve.classDetails));
@@ -47,7 +47,7 @@ public class SupplementalVehicleExtensionsBuilder {
             while (sve.regional.elements().hasMoreElements()) {
                 us.dot.its.jpo.ode.j2735.dsrc.SupplementalVehicleExtensions.Regional.Sequence_ element = (us.dot.its.jpo.ode.j2735.dsrc.SupplementalVehicleExtensions.Regional.Sequence_) sve.regional
                         .elements().nextElement();
-                suppVeh.getRegional().add(new J2735RegionalContent().setId(element.regionId.intValue())
+                suppVeh.getRegional().add(new J2735RegionalContent().setId(element.regionId.asInt())
                         .setValue(element.regExtValue.getEncodedValue()));
             }
         }

@@ -12,14 +12,14 @@ public class MassOrWeightBuilder {
 
     public static Integer genericMass(TrailerMass mass) {
 
-        if (mass.intValue() < 0 || mass.intValue() > 255) {
+        if (mass.asInt() < 0 || mass.asInt() > 255) {
             throw new IllegalArgumentException("Trailer mass out of bounds");
         }
 
         Integer result = null;
 
-        if (mass.intValue() != 0) {
-            result = mass.intValue() * 500;
+        if (mass.asInt() != 0) {
+            result = mass.asInt() * 500;
         }
 
         return result;
@@ -30,11 +30,11 @@ public class MassOrWeightBuilder {
     // 65258
     public static Integer genericWeight(TrailerWeight weight) {
 
-        if (weight.intValue() < 0 || weight.intValue() > 64255) {
+        if (weight.asInt() < 0 || weight.asInt() > 64255) {
             throw new IllegalArgumentException("Trailer weight out of bounds");
         }
 
-        return weight.intValue() * 2;
+        return weight.asInt() * 2;
     }
 
     /**
@@ -50,12 +50,12 @@ public class MassOrWeightBuilder {
      */
     public static Integer genericMass(VehicleMass mass) {
 
-        if (mass.intValue() < 0 || mass.intValue() > 255) {
+        if (mass.asInt() < 0 || mass.asInt() > 255) {
             throw new IllegalArgumentException("Vehicle mass out of bounds");
         }
 
         Integer gmass = null;
-        int imass = mass.intValue();
+        int imass = mass.asInt();
 
         if (0 <= imass && imass <= 80) {
             gmass = imass * 50;

@@ -14,7 +14,7 @@ public class DisabledVehicleBuilder {
         J2735DisabledVehicle gstatus = new J2735DisabledVehicle();
 
         // Required element
-        gstatus.setStatusDetails(disabledVehicle.statusDetails.intValue());
+        gstatus.setStatusDetails(disabledVehicle.statusDetails.asInt());
 
         // Optional element
         if (disabledVehicle.hasLocationDetails()) {

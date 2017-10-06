@@ -17,12 +17,12 @@ public class BsmCoreDataBuilder {
     public static J2735BsmCoreData genericBsmCoreData(JsonNode coreData) {
         J2735BsmCoreData genericBsmCoreData = new J2735BsmCoreData();
 
-        genericBsmCoreData.setMsgCnt(coreData.get("msgCnt").intValue());
+        genericBsmCoreData.setMsgCnt(coreData.get("msgCnt").asInt());
 
         genericBsmCoreData.setId(coreData.get("id").asText());
 
-        if (coreData.get("secMark").intValue() != 65535) {
-            genericBsmCoreData.setSecMark(coreData.get("secMark").intValue());
+        if (coreData.get("secMark").asInt() != 65535) {
+            genericBsmCoreData.setSecMark(coreData.get("secMark").asInt());
         } else {
             genericBsmCoreData.setSecMark(null);
         }
@@ -37,7 +37,7 @@ public class BsmCoreDataBuilder {
 
         JsonNode transmission = coreData.get("transmission");
         if (transmission != null) {
-           int trans = transmission.intValue();
+           int trans = transmission.asInt();
            if (trans != J2735TransmissionState.UNAVAILABLE.ordinal()) {
               genericBsmCoreData.setTransmission(J2735TransmissionState.values()[trans]);
            }
@@ -70,8 +70,8 @@ public class BsmCoreDataBuilder {
         // -- 0x7E = +126 = +189 deg and beyond
         // -- 0x7F = +127 to be used for unavailable
         BigDecimal angle = null;
-        if (steeringWheelAngle != null && steeringWheelAngle.intValue() != 0x7F) {
-            angle = BigDecimal.valueOf(steeringWheelAngle.intValue() * (long)15, 1);
+        if (steeringWheelAngle != null && steeringWheelAngle.asInt() != 0x7F) {
+            angle = BigDecimal.valueOf(steeringWheelAngle.asInt() * (long)15, 1);
         }
         return angle;
     }

@@ -7,19 +7,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class HeadingBuilder {
     
     public static BigDecimal genericHeading(JsonNode heading) {
-        return AngleBuilder.longToDecimal(heading.longValue());
+        return AngleBuilder.longToDecimal(heading.asLong());
     }
 
     public static BigDecimal genericCoarseHeading(JsonNode coarseHeading) {
 
-        if (coarseHeading.intValue() < 0 || coarseHeading.intValue() > 240) {
+        if (coarseHeading.asInt() < 0 || coarseHeading.asInt() > 240) {
             throw new IllegalArgumentException("Coarse heading value out of bounds");
         }
 
         BigDecimal result = null;
 
-        if (coarseHeading.intValue() != 240) {
-            result = BigDecimal.valueOf(coarseHeading.longValue() * 15, 1);
+        if (coarseHeading.asInt() != 240) {
+            result = BigDecimal.valueOf(coarseHeading.asLong() * 15, 1);
         }
 
         return result;

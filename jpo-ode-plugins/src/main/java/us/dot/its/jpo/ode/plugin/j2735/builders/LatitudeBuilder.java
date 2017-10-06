@@ -13,8 +13,8 @@ public class LatitudeBuilder {
    public static BigDecimal genericLatitude(JsonNode latitude) {
       BigDecimal returnValue = null;
 
-      if ((latitude != null) && (latitude.longValue() != 900000001)) {
-         returnValue = BigDecimal.valueOf(latitude.longValue(), 7);
+      if ((latitude != null) && (latitude.asLong() != 900000001)) {
+         returnValue = BigDecimal.valueOf(latitude.asLong(), 7);
 
       }
       return returnValue;

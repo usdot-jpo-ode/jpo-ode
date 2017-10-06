@@ -24,7 +24,7 @@ public class OssEventDescription {
         J2735EventDescription desc = new J2735EventDescription();
 
         // Required element
-        desc.setTypeEvent(description.typeEvent.intValue());
+        desc.setTypeEvent(description.typeEvent.asInt());
 
         // Optional elements
         if (description.hasDescription()) {
@@ -58,7 +58,7 @@ public class OssEventDescription {
                 us.dot.its.jpo.ode.j2735.dsrc.EventDescription.Regional.Sequence_ element = 
                         (us.dot.its.jpo.ode.j2735.dsrc.EventDescription.Regional.Sequence_) description.regional
                         .elements().nextElement();
-                desc.getRegional().add(new J2735RegionalContent().setId(element.regionId.intValue())
+                desc.getRegional().add(new J2735RegionalContent().setId(element.regionId.asInt())
                         .setValue(element.regExtValue.getEncodedValue()));
             }
         }
@@ -72,7 +72,7 @@ public class OssEventDescription {
         Iterator<ITIScodes> iter = description.elements.iterator();
 
         while (iter.hasNext()) {
-            desc.add(iter.next().intValue());
+            desc.add(iter.next().asInt());
         }
 
         return desc;

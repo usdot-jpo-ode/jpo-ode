@@ -13,8 +13,8 @@ public class ElevationBuilder {
    public static BigDecimal genericElevation(JsonNode elevation) {
       BigDecimal returnValue = null;
 
-      if ((elevation != null) && (elevation.longValue() != -4096)) {
-         returnValue = BigDecimal.valueOf(elevation.longValue(), 1);
+      if ((elevation != null) && (elevation.asLong() != -4096)) {
+         returnValue = BigDecimal.valueOf(elevation.asLong(), 1);
 
       }
       return returnValue;
