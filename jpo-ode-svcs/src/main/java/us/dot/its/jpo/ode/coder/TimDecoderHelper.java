@@ -21,7 +21,9 @@ import gov.usdot.cv.security.crypto.CryptoException;
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import gov.usdot.cv.security.msg.MessageException;
 import us.dot.its.jpo.ode.importer.TimFileParser;
+import us.dot.its.jpo.ode.importer.parser.DistressMsgFileParser;
 import us.dot.its.jpo.ode.importer.parser.RxMsgFileParser;
+import us.dot.its.jpo.ode.importer.parser.TimLogFileParser;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.Elevation;
 import us.dot.its.jpo.ode.j2735.dsrc.Heading;
@@ -65,7 +67,7 @@ public class TimDecoderHelper {
       this.rawBsmMfSorter = new RawBsmMfSorter(new OssJ2735Coder());
    }
 
-   public OdeData decode(RxMsgFileParser fileParser, SerialId serialId) throws Exception {
+   public OdeData decode(TimLogFileParser fileParser, SerialId serialId) throws Exception {
 
       Ieee1609Dot2Data ieee1609dot2Data = ieee1609dotCoder.decodeIeee1609Dot2DataBytes(fileParser.getPayload());
       OdeData odeTimData = null;
@@ -135,14 +137,30 @@ public class TimDecoderHelper {
             timMetadata.setReceivedAt(DateTimeUtils.now());
             timMetadata.setSerialId(serialId);
             timMetadata.setLogFileName(fileParser.getFilename());
+            
+            if (fileParser instanceof RxMsgFileParser) {
+               RxMsgFileParser rxFileParser = (RxMsgFileParser) fileParser;
             timMetadata.setReceivedMessageDetails(new OdeTimSpecificMetadata(
                   new OdeTimSpecificMetadataLocation(
-                        OssLatitude.genericLatitude(new Latitude(fileParser.getLocation().getLatitude())).toString(),
-                        OssLongitude.genericLongitude(new Longitude(fileParser.getLocation().getLongitude())).toString(),
-                        OssElevation.genericElevation(new Elevation(fileParser.getLocation().getElevation())).toString(),
-                        OssSpeedOrVelocity.genericSpeed(new Speed(fileParser.getLocation().getSpeed())).toString(),
-                        OssHeading.genericHeading(new Heading(fileParser.getLocation().getHeading())).toString()),
-                  fileParser.getRxSource()));
+                        OssLatitude.genericLatitude(new Latitude(rxFileParser.getLocation().getLatitude())).toString(),
+                        OssLongitude.genericLongitude(new Longitude(rxFileParser.getLocation().getLongitude())).toString(),
+                        OssElevation.genericElevation(new Elevation(rxFileParser.getLocation().getElevation())).toString(),
+                        OssSpeedOrVelocity.genericSpeed(new Speed(rxFileParser.getLocation().getSpeed())).toString(),
+                        OssHeading.genericHeading(new Heading(rxFileParser.getLocation().getHeading())).toString()),
+                  rxFileParser.getRxSource()));
+            }
+            
+            if (fileParser instanceof DistressMsgFileParser) {
+               DistressMsgFileParser distressFileParser = (DistressMsgFileParser) fileParser;
+            timMetadata.setReceivedMessageDetails(new OdeTimSpecificMetadata(
+                  new OdeTimSpecificMetadataLocation(
+                        OssLatitude.genericLatitude(new Latitude(distressFileParser.getLocation().getLatitude())).toString(),
+                        OssLongitude.genericLongitude(new Longitude(distressFileParser.getLocation().getLongitude())).toString(),
+                        OssElevation.genericElevation(new Elevation(distressFileParser.getLocation().getElevation())).toString(),
+                        OssSpeedOrVelocity.genericSpeed(new Speed(distressFileParser.getLocation().getSpeed())).toString(),
+                        OssHeading.genericHeading(new Heading(distressFileParser.getLocation().getHeading())).toString()),
+                  null));
+            }
 
             ZonedDateTime generatedAt;
             if (message != null) {
@@ -174,7 +192,7 @@ public class TimDecoderHelper {
       return odeTimData;
    }
 
-   private ZonedDateTime getGeneratedAt(RxMsgFileParser fileParser) {
+   private ZonedDateTime getGeneratedAt(TimLogFileParser fileParser) {
       return DateTimeUtils.isoDateTime(fileParser.getUtcTimeInSec() * 1000 + fileParser.getmSec());
    }
 }
