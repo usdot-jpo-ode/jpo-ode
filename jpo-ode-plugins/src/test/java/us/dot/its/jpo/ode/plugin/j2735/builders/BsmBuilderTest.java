@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -27,6 +26,7 @@ public class BsmBuilderTest {
 
       J2735Bsm actualBsm = BsmBuilder.genericBsm(jsonBsm);
 
+      //assertEquals("string", actualBsm.toJson());
       assertNotNull(actualBsm);
    }
 

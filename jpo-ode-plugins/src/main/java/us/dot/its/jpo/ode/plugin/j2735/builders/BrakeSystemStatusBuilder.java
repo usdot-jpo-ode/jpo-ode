@@ -15,11 +15,11 @@ public class BrakeSystemStatusBuilder {
 
       genericBrakesStatus
             .setWheelBrakes(WheelBrakesBuilder.genericWheelBrakes(brakesStatus.get("wheelBrakes")));
-      genericBrakesStatus.setTraction(brakesStatus.get("traction").asText());
-      genericBrakesStatus.setAbs(brakesStatus.get("abs").asText());
-      genericBrakesStatus.setScs(brakesStatus.get("scs").asText());
-      genericBrakesStatus.setBrakeBoost(brakesStatus.get("brakeBoost").asText());
-      genericBrakesStatus.setAuxBrakes(brakesStatus.get("auxBrakes").asText());
+      genericBrakesStatus.setTraction(brakesStatus.get("traction").fieldNames().next());
+      genericBrakesStatus.setAbs(brakesStatus.get("abs").fieldNames().next());
+      genericBrakesStatus.setScs(brakesStatus.get("scs").fieldNames().next());
+      genericBrakesStatus.setBrakeBoost(brakesStatus.get("brakeBoost").fieldNames().next());
+      genericBrakesStatus.setAuxBrakes(brakesStatus.get("auxBrakes").fieldNames().next());
 
       return genericBrakesStatus;
    }
