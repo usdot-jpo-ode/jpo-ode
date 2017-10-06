@@ -107,58 +107,13 @@ public class BsmPart2ContentBuilder {
 	private static void evaluateVehicleSafetyExt(J2735BsmPart2Content part2Content, JsonNode openType) throws BsmPart2ContentBuilderException {
 		J2735VehicleSafetyExtensions vehSafety = new J2735VehicleSafetyExtensions();
 		part2Content.setValue(vehSafety);
-
-//		VehicleSafetyExtensions vse;
-//		if (openType.getDecodedValue() != null) {
-//			vse = (VehicleSafetyExtensions) openType.getDecodedValue();
-//		} else if (openType.getEncodedValueAsStream() != null) {
-//			vse = new VehicleSafetyExtensions();
-//			try {
-//				coder.decode(openType.getEncodedValueAsStream(), vse);
-//			} catch (DecodeFailedException | DecodeNotSupportedException e) {
-//				throw new BsmPart2ContentBuilderException(DECODING_ERROR, e);
-//			}
-//		} else {
-//			throw new BsmPart2ContentBuilderException(NO_OPEN_TYPE);
-//		}
-
-		
-		
-		// TODO use xml --> json array code here
-		
-//		private void setEncodings(JsonNode encodings) {
-//	      if (encodings.isArray()) {
-//	         Iterator<JsonNode> elements = encodings.elements();
-//
-//	         while (elements.hasNext()) {
-//	            JsonNode element = elements.next();
-//	            this.encodings.add(new Asn1Encoding(element.get("elementName").asText(),
-//	                  element.get("elementType").asText(), EncodingRule.valueOf(element.get("encodingRule").asText())));
-//	         }
-//	      }
-//	   }
 		
 		if (openType.get("events") != null) {
-		   
-//	     private void setEncodings(JsonNode encodings) {
-//       if (encodings.isArray()) {
-//          Iterator<JsonNode> elements = encodings.elements();
-//
-//          while (elements.hasNext()) {
-//             JsonNode element = elements.next();
-//             this.encodings.add(new Asn1Encoding(element.get("elementName").asText(),
-//                   element.get("elementType").asText(), EncodingRule.valueOf(element.get("encodingRule").asText())));
-//          }
-//       }
-//    }
 
-		   
 		   char[] eventBits = openType.get("events").asText().toCharArray();
-		   
 		   
 			J2735VehicleEventFlags eventFlags = new J2735VehicleEventFlags();
 			
-         
          eventFlags.put("eventHazardLights", (eventBits[12] == '1') ? true: false );
          eventFlags.put("eventStopLineViolation", (eventBits[11] == '1') ? true: false );
          eventFlags.put("eventABSactivated", (eventBits[10] == '1') ? true: false );
@@ -172,14 +127,7 @@ public class BsmPart2ContentBuilder {
          eventFlags.put("eventFlatTire", (eventBits[2] == '1') ? true: false );
          eventFlags.put("eventDisabledVehicle", (eventBits[1] == '1') ? true: false );
          eventFlags.put("eventWipersCeventAirBagDeploymenthanged", (eventBits[0] == '1') ? true: false );
-//			for (int i = 0; i < vse.getEvents().getSize(); i++) {
-//				String flagName = vse.getEvents().getNamedBits().getMemberName(i);
-//				Boolean flagStatus = vse.getEvents().getBit(vse.getEvents().getSize() - i - 1);
-//
-//				if (flagName != null) {
-//					eventFlags.put(flagName, flagStatus);
-//				}
-//			}
+         
 			vehSafety.setEvents(eventFlags);
 		}
 		if (vse.hasLights()) {

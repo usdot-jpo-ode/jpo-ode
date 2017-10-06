@@ -15,11 +15,11 @@ public class WheelBrakesBuilder {
       // wheelbrakes is a backwards bitstring
       char[] wb = wheelBrakes.asText().toCharArray();
 
-      returnValue.setUnvailable(wb[0] == '1' ? true : false);
-      returnValue.setRightRear(wb[1] == '1' ? true : false);
-      returnValue.setRightFront(wb[2] == '1' ? true : false);
-      returnValue.setLeftRear(wb[3] == '1' ? true : false);
-      returnValue.setLeftFront(wb[4] == '1' ? true : false);
+      returnValue.put("unavailable", (wb[0] == '1' ? true : false));
+      returnValue.put("rightRear", (wb[1] == '1' ? true : false));
+      returnValue.put("rightFront", (wb[2] == '1' ? true : false));
+      returnValue.put("leftRear", (wb[3] == '1' ? true : false));
+      returnValue.put("leftFront", (wb[4] == '1' ? true : false));
 
       return returnValue;
    }
