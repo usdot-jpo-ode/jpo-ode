@@ -16,73 +16,36 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleSafetyExtensions;
 
 public class BsmPart2ContentBuilder {
    
-   public static final int eventHazardLights = 0;
-   public static final int eventStopLineViolation = 1;
-   public static final int eventABSactivated = 2;
-   public static final int eventTractionControlLoss = 3;
-   public static final int eventStabilityControlactivated = 4;
-   public static final int eventHazardousMaterials = 5;
-   public static final int eventReserved1 = 6;
-   public static final int eventHardBraking = 7;
-   public static final int eventLightsChanged = 8;
-   public static final int eventWipersChanged = 9;
-   public static final int eventFlatTire = 10;
-   public static final int eventDisabledVehicle = 11;
-   public static final int eventAirBagDeployment = 12;
+//   public static final int eventHazardLights = 0;
+//   public static final int eventStopLineViolation = 1;
+//   public static final int eventABSactivated = 2;
+//   public static final int eventTractionControlLoss = 3;
+//   public static final int eventStabilityControlactivated = 4;
+//   public static final int eventHazardousMaterials = 5;
+//   public static final int eventReserved1 = 6;
+//   public static final int eventHardBraking = 7;
+//   public static final int eventLightsChanged = 8;
+//   public static final int eventWipersChanged = 9;
+//   public static final int eventFlatTire = 10;
+//   public static final int eventDisabledVehicle = 11;
+//   public static final int eventAirBagDeployment = 12;
+//   
+//   public enum VehicleEventFlags {
+//      eventHazardLights(0),
+//      eventStopLineViolation(1),
+//      eventABSactivated(2),
+//      eventTractionControlLoss(3),
+//      eventStabilityControlactivated(4),
+//      eventHazardousMaterials(5),
+//      eventReserved1(6),
+//      eventHardBraking(7),
+//      eventLightsChanged(8),
+//      eventWipersChanged(9)
+//      eventFlatTire(10),
+//      eventDisabledVehicle(11),
+//      eventAirBagDeployment(12)
+//   }
    
-   
-   new MemberListElement[] {
-         new MemberListElement (
-             "eventHazardLights",
-             0
-         ),
-         new MemberListElement (
-             "eventStopLineViolation",
-             1
-         ),
-         new MemberListElement (
-             "eventABSactivated",
-             2
-         ),
-         new MemberListElement (
-             "eventTractionControlLoss",
-             3
-         ),
-         new MemberListElement (
-             "eventStabilityControlactivated",
-             4
-         ),
-         new MemberListElement (
-             "eventHazardousMaterials",
-             5
-         ),
-         new MemberListElement (
-             "eventReserved1",
-             6
-         ),
-         new MemberListElement (
-             "eventHardBraking",
-             7
-         ),
-         new MemberListElement (
-             "eventLightsChanged",
-             8
-         ),
-         new MemberListElement (
-             "eventWipersChanged",
-             9
-         ),
-         new MemberListElement (
-             "eventFlatTire",
-             10
-         ),
-         new MemberListElement (
-             "eventDisabledVehicle",
-             11
-         ),
-         new MemberListElement (
-             "eventAirBagDeployment",
-             12
 
 	private static final String DECODING_ERROR = "Error decoding OpenType value";
 	private static final String NO_OPEN_TYPE = "No OpenType value";
@@ -172,6 +135,21 @@ public class BsmPart2ContentBuilder {
 //	   }
 		
 		if (vse.get("events") != null) {
+		   
+//	     private void setEncodings(JsonNode encodings) {
+//       if (encodings.isArray()) {
+//          Iterator<JsonNode> elements = encodings.elements();
+//
+//          while (elements.hasNext()) {
+//             JsonNode element = elements.next();
+//             this.encodings.add(new Asn1Encoding(element.get("elementName").asText(),
+//                   element.get("elementType").asText(), EncodingRule.valueOf(element.get("encodingRule").asText())));
+//          }
+//       }
+//    }
+		   
+		   
+		   
 			J2735VehicleEventFlags eventFlags = new J2735VehicleEventFlags();
 			for (int i = 0; i < vse.getEvents().getSize(); i++) {
 				String flagName = vse.getEvents().getNamedBits().getMemberName(i);
