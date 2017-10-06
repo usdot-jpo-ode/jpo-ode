@@ -28,7 +28,6 @@ serialid/serialNumber | Combined identifier within open stream
 receivedAt | Time ODE received the data in UTC format
 schemaVersion | Version of the metadata schema
 sanitized | Boolean value indicating whether the data has been sanitized by the [Privacy Module](https://github.com/usdot-jpo-ode/jpo-cvdp)
-proccessedBy | Array of identifier tracking the santizations that have occurred
 validSignature | Boolean of signed vs unsigned data based on the SCMS System defined per message
 
 * Midnight will be represented as 0:00 for all time fields
