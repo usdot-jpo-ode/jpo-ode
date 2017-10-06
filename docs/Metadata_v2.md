@@ -49,7 +49,7 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
     "schemaVersion": 2,
     "generatedAt": "2017-0714T15:46:47.707Z[UTC]",            
     "logFileName": "signed_bsm.coer",                         
-    "payloadType": "us.dot.its.jpo.ode.model.OdeVehicleData", 
+    "payloadType": "us.dot.its.jpo.ode.model.OdeBsmPayload", 
     "serialId": {
       "streamId": "8375ca99-8e7d-4847-908e-0df12d03dd6d",     
       "bundleSize": 1,                                        
