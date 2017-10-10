@@ -54,7 +54,7 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
   "metadata": {
       "schemaVersion": 3,
         "payloadType": "us.dot.its.jpo.ode.model.OdeTIMPayload",
-        "generatedBy": "OBU"
+        "generatedBy": "OBU",
         "generatedAt": "2017-0714T15:46:47.707Z[UTC]",            
         "serialId": {
             "streamId": "90b148a2-4b30-46a1-9947-4084506847e8",
@@ -63,7 +63,7 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
             "recordId": 0,
             "serialNumber": 0
         },
-        "recordType": "receivedMsgRecord"
+        "recordType": "receivedMsgRecord",
         "odeReceivedAt": "2017-09-26T20:00:08.48Z[UTC]",
         "receivedDetails": {
             "location": 
