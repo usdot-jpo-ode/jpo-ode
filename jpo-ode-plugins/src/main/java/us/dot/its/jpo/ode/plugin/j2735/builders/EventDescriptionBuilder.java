@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import us.dot.its.jpo.ode.j2735.dsrc.EventDescription;
 import us.dot.its.jpo.ode.j2735.dsrc.EventDescription.Description;
 import us.dot.its.jpo.ode.j2735.itis.ITIScodes;
@@ -13,13 +15,13 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735HeadingSlice;
 import us.dot.its.jpo.ode.plugin.j2735.J2735RegionalContent;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
-public class OssEventDescription {
+public class EventDescriptionBuilder {
     
-    private OssEventDescription() {
+    private EventDescriptionBuilder() {
        throw new UnsupportedOperationException();
     }
 
-    public static J2735EventDescription genericEventDescription(EventDescription description) {
+    public static J2735EventDescription genericEventDescription(JsonNode description) {
 
         J2735EventDescription desc = new J2735EventDescription();
 

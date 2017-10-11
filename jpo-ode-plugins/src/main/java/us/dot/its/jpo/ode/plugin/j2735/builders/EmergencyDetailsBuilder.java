@@ -1,33 +1,34 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import us.dot.its.jpo.ode.j2735.dsrc.EmergencyDetails;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import us.dot.its.jpo.ode.plugin.j2735.J2735EmergencyDetails;
 import us.dot.its.jpo.ode.plugin.j2735.J2735LightbarInUse;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MultiVehicleResponse;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ResponseType;
 import us.dot.its.jpo.ode.plugin.j2735.J2735SirenInUse;
 
-public class OssEmergencyDetails {
+public class EmergencyDetailsBuilder {
     
-    private OssEmergencyDetails() {
+    private EmergencyDetailsBuilder() {
        throw new UnsupportedOperationException();
     }
 
-	public static J2735EmergencyDetails genericEmergencyDetails(EmergencyDetails vehicleAlerts) {
+	public static J2735EmergencyDetails genericEmergencyDetails(JsonNode vehicleAlerts) {
 		J2735EmergencyDetails va = new J2735EmergencyDetails();
 		
 		// Required elements
-		va.setSspRights(vehicleAlerts.sspRights.asInt());
-      va.setSirenUse(J2735SirenInUse.values()[vehicleAlerts.sirenUse.indexOf()]);
-      va.setLightsUse(J2735LightbarInUse.values()[vehicleAlerts.lightsUse.indexOf()]);
-      va.setMulti(J2735MultiVehicleResponse.values()[vehicleAlerts.multi.indexOf()]);
+		va.setSspRights(vehicleAlerts.get("sspRights").asInt());
+      va.setSirenUse(J2735SirenInUse.valueOf(vehicleAlerts.get("sirenUse").asText().replaceAll("-", "_").toUpperCase()));
+      va.setLightsUse(J2735LightbarInUse.valueOf(vehicleAlerts.get("lightsUse").asText().replaceAll("-", "_").toUpperCase()));
+      va.setMulti(J2735MultiVehicleResponse.valueOf(vehicleAlerts.get("multi").asText().replaceAll("-", "_").toUpperCase()));
 
 		// Optional elements
-      if (vehicleAlerts.hasEvents()) {
-          va.setEvents(OssPrivilegedEvents.genericPrivilegedEvents(vehicleAlerts.events));
+      if (vehicleAlerts.get("events") != null) {
+          va.setEvents(PrivilegedEventsBuilder.genericPrivilegedEvents(vehicleAlerts.get("events")));
       }
-      if (vehicleAlerts.hasResponseType()) {
-          va.setResponseType(J2735ResponseType.values()[vehicleAlerts.responseType.indexOf()]);
+      if (vehicleAlerts.get("responseType") != null) {
+          va.setResponseType(J2735ResponseType.valueOf(vehicleAlerts.get("responseType").asText().replaceAll("-", "_").toUpperCase()));
       }
 		
 		return va;

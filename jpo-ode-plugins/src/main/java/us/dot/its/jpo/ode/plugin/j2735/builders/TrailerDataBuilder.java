@@ -2,17 +2,19 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.util.Iterator;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import us.dot.its.jpo.ode.j2735.dsrc.TrailerData;
 import us.dot.its.jpo.ode.j2735.dsrc.TrailerUnitDescription;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TrailerData;
 
-public class OssTrailerData {
+public class TrailerDataBuilder {
 
-    private OssTrailerData() {
+    private TrailerDataBuilder() {
        throw new UnsupportedOperationException();
     }
 
-    public static J2735TrailerData genericTrailerData(TrailerData trailers) {
+    public static J2735TrailerData genericTrailerData(JsonNode trailers) {
         J2735TrailerData td = new J2735TrailerData();
 
         td.setConnection(OssPivotPointDescription.genericPivotPointDescription(trailers.connection));

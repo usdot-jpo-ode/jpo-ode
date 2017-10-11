@@ -14,11 +14,11 @@ public class DisabledVehicleBuilder {
         J2735DisabledVehicle gstatus = new J2735DisabledVehicle();
 
         // Required element
-        gstatus.setStatusDetails(disabledVehicle.statusDetails.asInt());
+        gstatus.setStatusDetails(disabledVehicle.get("statusDetails").asInt());
 
         // Optional element
-        if (disabledVehicle.hasLocationDetails()) {
-            gstatus.setLocationDetails(NamedNumberBuilder.genericGenericLocations(disabledVehicle.locationDetails));
+        if (disabledVehicle.get("locationDetails") != null) {
+            gstatus.setLocationDetails(NamedNumberBuilder.genericGenericLocations(disabledVehicle.get("locationDetails")));
         }
 
         return gstatus;

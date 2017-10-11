@@ -2,16 +2,18 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import us.dot.its.jpo.ode.j2735.dsrc.PathPrediction;
 import us.dot.its.jpo.ode.plugin.j2735.J2735PathPrediction;
 
-public class OssPathPrediction {
+public class PathPredictionBuilder {
     
-    private OssPathPrediction() {
+    private PathPredictionBuilder() {
        throw new UnsupportedOperationException();
     }
 
-    public static J2735PathPrediction genericPathPrediction(PathPrediction pathPrediction) {
+    public static J2735PathPrediction genericPathPrediction(JsonNode pathPrediction) {
         J2735PathPrediction pp = new J2735PathPrediction();
 
         if (pathPrediction.radiusOfCurve.asLong() >= 32767 
