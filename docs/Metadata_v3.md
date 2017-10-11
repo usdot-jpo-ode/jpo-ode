@@ -54,7 +54,7 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
   "metadata": {
       "schemaVersion": 3,
       "generatedBy": "OBU",
-      "generatedAt": "2017-0714T15:46:47.707Z[UTC]", 
+      "generatedAt": "2017-07-14T15:46:47.707Z[UTC]", 
       "logFileName": "tim.uper",
       "payloadType": "us.dot.its.jpo.ode.model.OdeTIMPayload",
       "recordType": "receivedMsgRecord",
