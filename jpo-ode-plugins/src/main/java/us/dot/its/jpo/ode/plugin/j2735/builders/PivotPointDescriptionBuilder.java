@@ -1,33 +1,34 @@
-package us.dot.its.jpo.ode.plugin.j2735.oss;
+package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
 
-import us.dot.its.jpo.ode.j2735.dsrc.PivotPointDescription;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import us.dot.its.jpo.ode.plugin.j2735.J2735PivotPointDescription;
 
-public class OssPivotPointDescription {
+public class PivotPointDescriptionBuilder {
 
     private static final Integer PIVOT_OFFSET_LOWER_BOUND = -1024;
     private static final Integer PIVOT_OFFSET_UPPER_BOUND = 1023;
     
-    private OssPivotPointDescription() {
+    private PivotPointDescriptionBuilder() {
        throw new UnsupportedOperationException();
     }
 
-    public static J2735PivotPointDescription genericPivotPointDescription(PivotPointDescription ppd) {
+    public static J2735PivotPointDescription genericPivotPointDescription(JsonNode ppd) {
         J2735PivotPointDescription gppd = new J2735PivotPointDescription();
 
-        if (ppd.pivotOffset.intValue() < PIVOT_OFFSET_LOWER_BOUND
-                || ppd.pivotOffset.intValue() > PIVOT_OFFSET_UPPER_BOUND) {
-            throw new IllegalArgumentException("Pivot offset value out of bounds [-1024..1023]");
-        } else if (ppd.pivotOffset.intValue() == -1024) {
-            ppd.pivotOffset = null;
+        if (ppd.get("pivotOffset").intValue() < PIVOT_OFFSET_LOWER_BOUND
+                || ppd.get("pivotOffset").intValue() > PIVOT_OFFSET_UPPER_BOUND) {
+            throw new IllegalArgumentException("Pivot offset value out of bounds [-1024.1023]");
+        } else if (ppd.get("pivotOffset").intValue() == -1024) {
+            gppd.setPivotOffset(null);
         } else {
-            gppd.setPivotOffset(BigDecimal.valueOf(ppd.pivotOffset.intValue(), 2));
+            gppd.setPivotOffset(BigDecimal.valueOf(ppd.get("pivotOffset").intValue(), 2));
         }
 
-        gppd.setPivotAngle(OssAngle.genericAngle(ppd.pivotAngle));
-        gppd.setPivots(ppd.pivots.booleanValue());
+        gppd.setPivotAngle(AngleBuilder.genericAngle(ppd.get("pivotAngle")));
+        gppd.setPivots(ppd.get("pivots").asBoolean());
 
         return gppd;
     }

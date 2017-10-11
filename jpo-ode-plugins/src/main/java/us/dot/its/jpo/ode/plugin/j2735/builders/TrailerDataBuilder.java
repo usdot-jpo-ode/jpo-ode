@@ -4,8 +4,6 @@ import java.util.Iterator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import us.dot.its.jpo.ode.j2735.dsrc.TrailerData;
-import us.dot.its.jpo.ode.j2735.dsrc.TrailerUnitDescription;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TrailerData;
 
 public class TrailerDataBuilder {
@@ -17,13 +15,13 @@ public class TrailerDataBuilder {
     public static J2735TrailerData genericTrailerData(JsonNode trailers) {
         J2735TrailerData td = new J2735TrailerData();
 
-        td.setConnection(OssPivotPointDescription.genericPivotPointDescription(trailers.connection));
-        td.setSspRights(trailers.sspRights.asInt());
+        td.setConnection(PivotPointDescriptionBuilder.genericPivotPointDescription(trailers.get("connection")));
+        td.setSspRights(trailers.get("sspRights").asInt());
 
-        Iterator<TrailerUnitDescription> iter = trailers.units.elements.iterator();
+        Iterator<JsonNode> iter = trailers.get("units").elements();
 
         while (iter.hasNext()) {
-            td.getUnits().add(OssTrailerUnitDescription.genericTrailerUnitDescription(iter.next()));
+            td.getUnits().add(TrailerUnitDescriptionBuilder.genericTrailerUnitDescription(iter.next()));
         }
 
         return td;

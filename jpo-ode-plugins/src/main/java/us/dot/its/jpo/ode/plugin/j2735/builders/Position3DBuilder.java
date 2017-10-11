@@ -1,6 +1,8 @@
-package us.dot.its.jpo.ode.plugin.j2735.oss;
+package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.j2735.dsrc.Elevation;
 import us.dot.its.jpo.ode.j2735.dsrc.Latitude;
@@ -8,37 +10,37 @@ import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
 import us.dot.its.jpo.ode.j2735.dsrc.Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 
-public class OssPosition3D {
+public class Position3DBuilder {
    
-   public static J2735Position3D genericPosition3D(Position3D pos) {
+   public static J2735Position3D genericPosition3D(JsonNode pos) {
       J2735Position3D jpos = new J2735Position3D();
+      
+      Long longitude = pos.get("long").asLong();
+      Long latitude = pos.get("lat").asLong();
+      Long elevation = pos.get("elevation").asLong();
 
-         if (pos._long != null) {
-             if (pos._long.longValue() == 1800000001) {
+         if (longitude != null) {
+             if (longitude.longValue() == 1800000001) {
                  jpos.setLongitude(null);
              } else {
-                jpos.setLongitude(BigDecimal.valueOf(pos._long.longValue(), 7));
+                jpos.setLongitude(BigDecimal.valueOf(longitude.longValue(), 7));
              }
          }
 
-         if (pos.lat != null) {
-             if (pos.lat.longValue() == 900000001) {
+         if (latitude != null) {
+             if (latitude.longValue() == 900000001) {
                 jpos.setLatitude(null);
              } else {
-                jpos.setLatitude(BigDecimal.valueOf(pos.lat.longValue(), 7));
+                jpos.setLatitude(BigDecimal.valueOf(latitude.longValue(), 7));
              }
-         } else {
-            jpos.setLatitude(null);
          }
 
-         if (pos.elevation != null) {
-             if (pos.elevation.longValue() == -4096) {
+         if (elevation != null) {
+             if (elevation.longValue() == -4096) {
                 jpos.setElevation(null);
              } else {
-                jpos.setElevation(BigDecimal.valueOf(pos.elevation.longValue(), 1));
+                jpos.setElevation(BigDecimal.valueOf(elevation.longValue(), 1));
              }
-         } else {
-            jpos.setElevation(null);
          }
 
       return jpos;

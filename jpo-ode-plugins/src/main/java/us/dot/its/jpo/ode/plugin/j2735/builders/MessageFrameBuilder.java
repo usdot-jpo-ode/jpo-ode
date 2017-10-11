@@ -1,68 +1,62 @@
-package us.dot.its.jpo.ode.plugin.j2735.oss;
+package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import com.oss.asn1.DecodeFailedException;
-import com.oss.asn1.DecodeNotSupportedException;
-import com.oss.asn1.PERUnalignedCoder;
+import com.fasterxml.jackson.databind.JsonNode;
 
-import us.dot.its.jpo.ode.j2735.J2735;
-import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
-import us.dot.its.jpo.ode.j2735.dsrc.MessageFrame;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
+import us.dot.its.jpo.ode.plugin.j2735.builders.BsmPart2ContentBuilder.BsmPart2ContentBuilderException;
 
-public class OssMessageFrame {
+public class MessageFrameBuilder {
 
-    private OssMessageFrame() {
+    private MessageFrameBuilder() {
        throw new UnsupportedOperationException();
     }
 
     // Custom exception
-    public static class OssMessageFrameException extends Exception {
+    public static class MessageFrameBuilderException extends Exception {
 
         private static final long serialVersionUID = -952945144250120705L;
 
-        public OssMessageFrameException(String msg) {
+        public MessageFrameBuilderException(String msg) {
             super(msg);
         }
 
-        public OssMessageFrameException(String msg, Exception e) {
+        public MessageFrameBuilderException(String msg, Exception e) {
             super(msg, e);
         }
 
     }
 
     // Convert a message frame
-    public static J2735MessageFrame genericMessageFrame(MessageFrame mf)
-            throws OssMessageFrameException, OssBsmPart2Exception {
+    public static J2735MessageFrame genericMessageFrame(JsonNode mf) throws BsmPart2ContentBuilderException, MessageFrameBuilderException {
 
         J2735MessageFrame genericMessageFrame = new J2735MessageFrame();
         
-        genericMessageFrame.setMessageId( J2735DSRCmsgID.valueOf( mf.messageId.intValue() ));
+        genericMessageFrame.setMessageId( J2735DSRCmsgID.valueOf( mf.get("messageId").asInt() ));
 
-        PERUnalignedCoder coder = J2735.getPERUnalignedCoder();
+//        PERUnalignedCoder coder = J2735.getPERUnalignedCoder();
 
         if (genericMessageFrame.getMessageId() == J2735DSRCmsgID.BASICSAFETYMESSAGE) {
 
             // If basicSafetyMessage
-            BasicSafetyMessage bsm;
-            if (mf.value.getDecodedValue() != null) {
-                bsm = (BasicSafetyMessage) mf.value.getDecodedValue();
-            } else if (mf.value.getEncodedValueAsStream() != null) {
-                bsm = new BasicSafetyMessage();
-                try {
-                    coder.decode(mf.value.getEncodedValueAsStream(), bsm);
-                } catch (DecodeFailedException | DecodeNotSupportedException e) {
-                    throw new OssMessageFrameException("Error decoding OpenType value", e);
-                }
-            } else {
-                throw new OssMessageFrameException("No OpenType value");
-            }
+//            BasicSafetyMessage bsm;
+//            if (mf.value.getDecodedValue() != null) {
+//                bsm = (BasicSafetyMessage) mf.value.getDecodedValue();
+//            } else if (mf.value.getEncodedValueAsStream() != null) {
+//                bsm = new BasicSafetyMessage();
+//                try {
+//                    coder.decode(mf.value.getEncodedValueAsStream(), bsm);
+//                } catch (DecodeFailedException | DecodeNotSupportedException e) {
+//                    throw new OssMessageFrameException("Error decoding OpenType value", e);
+//                }
+//            } else {
+//                throw new OssMessageFrameException("No OpenType value");
+//            }
 
-            genericMessageFrame.setValue(OssBsm.genericBsm(bsm));
+            genericMessageFrame.setValue(BsmBuilder.genericBsm(mf.get("value")));
 
         } else {
-            throw new OssMessageFrameException("Unknown message type: " + genericMessageFrame.getMessageId());
+            throw new MessageFrameBuilderException("Unknown message type: " + genericMessageFrame.getMessageId());
         }
 
         return genericMessageFrame;

@@ -1,12 +1,12 @@
-package us.dot.its.jpo.ode.plugin.j2735.oss;
+package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
 
 import us.dot.its.jpo.ode.j2735.dsrc.MergeDivergeNodeAngle;
 
-public class OssMergeDivergeNodeAngle {
+public class MergeDivergeNodeAngleBuilder {
 
-   private OssMergeDivergeNodeAngle() {
+   private MergeDivergeNodeAngleBuilder() {
       throw new UnsupportedOperationException();
    }
 

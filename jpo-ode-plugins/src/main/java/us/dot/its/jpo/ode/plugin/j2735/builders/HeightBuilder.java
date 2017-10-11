@@ -2,7 +2,7 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
 
-import us.dot.its.jpo.ode.j2735.dsrc.VehicleHeight;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class HeightBuilder {
 
@@ -10,7 +10,7 @@ public class HeightBuilder {
        throw new UnsupportedOperationException();
     }
 
-    public static BigDecimal genericHeight(VehicleHeight height) {
+    public static BigDecimal genericHeight(JsonNode height) {
 
         if (height.asInt() < 0 || height.asInt() > 127) {
             throw new IllegalArgumentException("Vehicle height out of bounds");

@@ -6,78 +6,81 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import us.dot.its.jpo.ode.j2735.dsrc.EventDescription;
-import us.dot.its.jpo.ode.j2735.dsrc.EventDescription.Description;
-import us.dot.its.jpo.ode.j2735.itis.ITIScodes;
 import us.dot.its.jpo.ode.plugin.j2735.J2735EventDescription;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Extent;
 import us.dot.its.jpo.ode.plugin.j2735.J2735HeadingSlice;
 import us.dot.its.jpo.ode.plugin.j2735.J2735RegionalContent;
-import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class EventDescriptionBuilder {
-    
-    private EventDescriptionBuilder() {
-       throw new UnsupportedOperationException();
-    }
 
-    public static J2735EventDescription genericEventDescription(JsonNode description) {
+   public enum J2735HeadingSliceNames {
+      FROM000_0TO022_5DEGREES, FROM022_5TO045_0DEGREES, FROM045_0TO067_5DEGREES, FROM067_5TO090_0DEGREES, FROM090_0TO112_5DEGREES, FROM112_5TO135_0DEGREES, FROM135_0TO157_5DEGREES, FROM157_5TO180_0DEGREES, FROM180_0TO202_5DEGREES, FROM202_5TO225_0DEGREES, FROM225_0TO247_5DEGREES, FROM247_5TO270_0DEGREES, FROM270_0TO292_5DEGREES, FROM292_5TO315_0DEGREES, FROM315_0TO337_5DEGREES, FROM337_5TO360_0DEGREES
+   }
 
-        J2735EventDescription desc = new J2735EventDescription();
+   private EventDescriptionBuilder() {
+      throw new UnsupportedOperationException();
+   }
 
-        // Required element
-        desc.setTypeEvent(description.typeEvent.asInt());
+   public static J2735EventDescription genericEventDescription(JsonNode description) {
 
-        // Optional elements
-        if (description.hasDescription()) {
-            desc.setDescription(buildDescription(description.description));
-        }
-        if (description.hasPriority()) {
-            desc.setPriority(CodecUtils.toHex(description.priority.byteArrayValue()));
-        }
-        if (description.hasHeading()) {
-            
-            J2735HeadingSlice headingSlice = new J2735HeadingSlice();
-            
-            for (int i = 0; i < description.heading.getSize(); i++) {
+      J2735EventDescription desc = new J2735EventDescription();
 
-                String headingBitName = description.heading.getNamedBits().getMemberName(i);
-                Boolean headingBitStatus = description.heading.getBit(i);
+      // Required element
+      desc.setTypeEvent(description.get("typeEvent").asInt());
 
-                if (headingBitName != null) {
-                    headingSlice.put(headingBitName, headingBitStatus);
-                }
-            }
-            
-            desc.setHeading(headingSlice);
-            
-        }
-        if (description.hasExtent()) {
-            desc.setExtent(J2735Extent.values()[description.extent.indexOf()]);
-        }
-        if (description.hasRegional()) {
-            while (description.regional.elements().hasMoreElements()) {
-                us.dot.its.jpo.ode.j2735.dsrc.EventDescription.Regional.Sequence_ element = 
-                        (us.dot.its.jpo.ode.j2735.dsrc.EventDescription.Regional.Sequence_) description.regional
-                        .elements().nextElement();
-                desc.getRegional().add(new J2735RegionalContent().setId(element.regionId.asInt())
-                        .setValue(element.regExtValue.getEncodedValue()));
-            }
-        }
+      // Optional elements
+      if (description.get("description") != null) {
+         desc.setDescription(buildDescription(description.get("description")));
+      }
+      if (description.get("priority") != null) {
+         desc.setPriority(description.get("priority").asText());
+      }
+      if (description.get("heading") != null) {
 
-        return desc;
-    }
+         J2735HeadingSlice headingSlice = new J2735HeadingSlice();
 
-    private static List<Integer> buildDescription(Description description) {
-        List<Integer> desc = new ArrayList<>();
+         char[] headingSliceBits = description.get("heading").asText().toCharArray();
 
-        Iterator<ITIScodes> iter = description.elements.iterator();
+         for (int i = 0; i < headingSliceBits.length; i++) {
 
-        while (iter.hasNext()) {
+            String eventName = J2735HeadingSliceNames.values()[i].name();
+            Boolean eventStatus = (headingSliceBits[i] == '1' ? true : false);
+            headingSlice.put(eventName, eventStatus);
+
+         }
+
+         desc.setHeading(headingSlice);
+
+      }
+      if (description.get("extent") != null) {
+         desc.setExtent(J2735Extent.valueOf(description.get("extent").asText().replaceAll("-", "_").toUpperCase()));
+      }
+      if (description.hasRegional()) {
+         while (description.regional.elements().hasMoreElements()) {
+            us.dot.its.jpo.ode.j2735.dsrc.EventDescription.Regional.Sequence_ element = (us.dot.its.jpo.ode.j2735.dsrc.EventDescription.Regional.Sequence_) description.regional
+                  .elements().nextElement();
+            desc.getRegional().add(new J2735RegionalContent().setId(element.regionId.asInt())
+                  .setValue(element.regExtValue.getEncodedValue()));
+         }
+      }
+
+      return desc;
+   }
+
+   private static List<Integer> buildDescription(JsonNode description) {
+
+      List<Integer> desc = new ArrayList<>();
+
+      if (description.isArray()) {
+
+         Iterator<JsonNode> iter = description.elements();
+
+         while (iter.hasNext()) {
             desc.add(iter.next().asInt());
-        }
+         }
+      }
 
-        return desc;
-    }
+      return desc;
+   }
 
 }

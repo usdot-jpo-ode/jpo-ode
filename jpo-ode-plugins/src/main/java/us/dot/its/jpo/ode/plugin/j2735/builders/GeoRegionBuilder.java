@@ -1,25 +1,27 @@
-package us.dot.its.jpo.ode.plugin.j2735.oss;
+package us.dot.its.jpo.ode.plugin.j2735.builders;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.j2735.semi.GeoRegion;
 import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion;
 
-public class OssGeoRegion {
+public class GeoRegionBuilder {
 
-   private OssGeoRegion() {
+   private GeoRegionBuilder() {
       throw new UnsupportedOperationException();
    }
 
-   public static J2735GeoRegion genericGeoRegion(GeoRegion geoRegion) {
+   public static J2735GeoRegion genericGeoRegion(JsonNode geoRegion) {
 
-      return new J2735GeoRegion(OssPosition3D.genericPosition3D(geoRegion.getNwCorner()),
-            OssPosition3D.genericPosition3D(geoRegion.getSeCorner()));
+      return new J2735GeoRegion(Position3DBuilder.genericPosition3D(geoRegion.getNwCorner()),
+            Position3DBuilder.genericPosition3D(geoRegion.getSeCorner()));
 
    }
 
    public static GeoRegion geoRegion(J2735GeoRegion geoRegion) {
 
-      return new GeoRegion(OssPosition3D.position3D(geoRegion.getNwCorner()),
-            OssPosition3D.position3D(geoRegion.getSeCorner()));
+      return new GeoRegion(Position3DBuilder.position3D(geoRegion.getNwCorner()),
+            Position3DBuilder.position3D(geoRegion.getSeCorner()));
 
    }
 }

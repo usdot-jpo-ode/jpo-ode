@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.plugin.j2735.oss;
+package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.nio.ByteBuffer;
 import java.text.ParseException;
@@ -19,8 +19,8 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
 import us.dot.its.jpo.ode.plugin.j2735.TimFieldValidator;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
-public class OssTIMHeaderBuilder {
-   private OssTIMHeaderBuilder() {
+public class TIMHeaderBuilder {
+   private TIMHeaderBuilder() {
       throw new UnsupportedOperationException();
    }
 
@@ -48,7 +48,7 @@ public class OssTIMHeaderBuilder {
          msgId.setChosenFlag(MsgId.roadSignID_chosen);
          RoadSignID roadSignID = new RoadSignID();
          TimFieldValidator.validatePosition(dataFrame.getPosition());
-         roadSignID.setPosition(OssPosition3D.position3D(dataFrame.getPosition()));
+         roadSignID.setPosition(Position3DBuilder.position3D(dataFrame.getPosition()));
          TimFieldValidator.validateHeading(dataFrame.getViewAngle());
          roadSignID.setViewAngle(OssTravelerMessageBuilder.getHeadingSlice(dataFrame.getViewAngle()));
          TimFieldValidator.validateMUTCDCode(dataFrame.getMutcd());

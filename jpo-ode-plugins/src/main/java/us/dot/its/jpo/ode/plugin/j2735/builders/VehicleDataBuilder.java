@@ -20,10 +20,10 @@ public class VehicleDataBuilder {
             vd.setHeight(HeightBuilder.genericHeight(vehicleData.height));
         }
         if (vehicleData.mass != null) {
-            vd.setMass(MassOrWeightBuilder.genericMass(vehicleData.mass));
+            vd.setMass(MassOrWeightBuilder.genericVehicleMass(vehicleData.mass));
         }
         if (vehicleData.trailerWeight != null) {
-            vd.setTrailerWeight(MassOrWeightBuilder.genericWeight(vehicleData.trailerWeight));
+            vd.setTrailerWeight(MassOrWeightBuilder.genericTrailerWeight(vehicleData.trailerWeight));
         }
 
         return vd;

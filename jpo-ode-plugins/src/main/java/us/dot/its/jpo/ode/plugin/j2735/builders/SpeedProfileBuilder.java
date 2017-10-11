@@ -15,7 +15,7 @@ public class SpeedProfileBuilder {
     public static J2735SpeedProfile genericSpeedProfile(JsonNode speedProfile) {
         J2735SpeedProfile sp = new J2735SpeedProfile();
 
-        Iterator<JsonNode> iter = speedProfile.speedReports.elements.iterator();
+        Iterator<JsonNode> iter = speedProfile.get("speedReports").elements();
 
         while (iter.hasNext()) {
             sp.getSpeedReports().add(iter.next().asInt());

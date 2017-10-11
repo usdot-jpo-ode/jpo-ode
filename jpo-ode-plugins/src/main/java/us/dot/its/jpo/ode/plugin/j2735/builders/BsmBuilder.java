@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugin.j2735.builders.BsmPart2ContentBuilder.BsmPart2ContentBuilderException;
 
 public class BsmBuilder {
     
@@ -10,7 +11,7 @@ public class BsmBuilder {
         throw new UnsupportedOperationException();
     }
 
-    public static J2735Bsm genericBsm(JsonNode basicSafetyMessage) {
+    public static J2735Bsm genericBsm(JsonNode basicSafetyMessage) throws BsmPart2ContentBuilderException {
         J2735Bsm genericBsm = new J2735Bsm();
         JsonNode coreData = basicSafetyMessage.get("coreData");
         if (coreData != null) {
@@ -19,8 +20,7 @@ public class BsmBuilder {
 
         JsonNode partII = basicSafetyMessage.get("partII");
         if (partII != null) {
-           //TODO
-           //BsmPart2ContentBuilder.buildGenericPart2(partII, genericBsm.getPartII());
+           BsmPart2ContentBuilder.genericPart2Content(partII);
         }
 
         return genericBsm;
