@@ -53,10 +53,11 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
   "schemaVersion": 3,
   "metadata": {
       "schemaVersion": 3,
-      "payloadType": "us.dot.its.jpo.ode.model.OdeTIMPayload",
       "generatedBy": "OBU",
       "generatedAt": "2017-0714T15:46:47.707Z[UTC]", 
       "logFileName": "tim.uper",
+      "payloadType": "us.dot.its.jpo.ode.model.OdeTIMPayload",
+      "recordType": "receivedMsgRecord",
       "serialId": {
           "streamId": "90b148a2-4b30-46a1-9947-4084506847e8",
             "bundleSize": 1,
@@ -64,7 +65,6 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
             "recordId": 0,
             "serialNumber": 0
        },
-      "recordType": "receivedMsgRecord",
       "odeReceivedAt": "2017-09-26T20:00:08.48Z[UTC]",
       "receivedDetails": {
           "location": 
@@ -77,7 +77,8 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
             },
           "rxFrom": 0,
           },
-       "validSignature": "true"
+      "sanitized": false,
+      "validSignature": "true"
       }
   },
   "payload": {
@@ -174,11 +175,11 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
   "schemaVersion": 3,
   "metadata": {
     "schemaVersion":3,
-    "payloadType": "us.dot.its.jpo.ode.model.OdeBsmPayload",
     "generatedBy": "OBU",
     "generatedAt": "2016-08-10T16:35:45.138Z[UTC]", 
     "logFileName": "bsm.uper",
-    "sanitized": false,
+    "payloadType": "us.dot.its.jpo.ode.model.OdeBsmPayload",
+    "recordType": "bsmRxRecord",
     "serialId": {
         "streamId": "f9c7635a-7763-4e21-bece-cb1104f143b9",
         "bundleSize": 1,
@@ -186,8 +187,8 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
         "recordId": 5,
         "serialNumber": 0
      },
-    "recordType": "bsmRxRecord",
     "odeReceivedAt": "2017-09-26T20:00:08.48Z[UTC]",
+    "sanitized": false,
     "validSignature": "true"
     }
   },
