@@ -267,10 +267,13 @@ public class TimController {
       }
 
       // Encode TIM
-      String rsuSRMPayload = null;
+      String timHexString = null;
+      String messageFrameHexString = null;
       try {
-         rsuSRMPayload = builder.encodeTravelerInformationToHex();
-         logger.debug("Encoded Hex TIM: {}", rsuSRMPayload);
+         timHexString = builder.encodeTravelerInformationToHex();
+         logger.debug("Encoded Hex TIM: {}", timHexString);
+         messageFrameHexString = builder.encodeTravelerInformationToMessageFrameHex();
+         logger.debug("Encoded Hex TIM in message frame: {}", messageFrameHexString);
       } catch (Exception e) {
          String errMsg = "Failed to encode TIM.";
          logger.error(errMsg, e);
@@ -287,7 +290,7 @@ public class TimController {
 
          try {
             rsuResponse = createAndSend(travelerinputData.getSnmp(), curRsu, travelerinputData.getTim().getIndex(),
-                  rsuSRMPayload);
+                  messageFrameHexString);
 
             if (null == rsuResponse || null == rsuResponse.getResponse()) {
                // Timeout
@@ -317,7 +320,7 @@ public class TimController {
       // Deposit to DDS
       String ddsMessage = "";
       try {
-         depositToDDS(travelerinputData, rsuSRMPayload);
+         depositToDDS(travelerinputData, timHexString);
          ddsMessage = "\"dds_deposit\":{\"success\":\"true\"}";
          logger.info("DDS deposit successful.");
       } catch (Exception e) {
