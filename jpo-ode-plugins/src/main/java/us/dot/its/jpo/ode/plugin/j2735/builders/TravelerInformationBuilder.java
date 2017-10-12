@@ -2,35 +2,38 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.nio.ByteOrder;
 
-import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class TravelerInformationBuilder {
-   
+
    private TravelerInformationBuilder() {
       throw new UnsupportedOperationException();
-  }
-   
-   public static J2735TravelerInformationMessage genericTim(TravelerInformation asnTim) {
+   }
+
+   public static J2735TravelerInformationMessage genericTim(JsonNode asnTim) {
       J2735TravelerInformationMessage genericTim = new J2735TravelerInformationMessage();
-      
-      genericTim.setMsgCnt(asnTim.getMsgCnt().intValue());
-      
+
+      genericTim.setMsgCnt(asnTim.get("msgCnt").asInt());
+
       // TODO - Pure J2735 TIMs only contain time offset from an unknown year
       // Instead, time must be extracted from log file metadata
-      genericTim.setTimeStamp(DateTimeUtils.now()); 
-      
-      genericTim.setPacketID(CodecUtils.bytesToInt(asnTim.getPacketID().byteArrayValue(), 0, asnTim.getPacketID().byteArrayValue().length, ByteOrder.BIG_ENDIAN));
-      
-      if (asnTim.getUrlB() != null) {
-         genericTim.setUrlB(asnTim.getUrlB().stringValue());
+      genericTim.setTimeStamp(DateTimeUtils.now());
+
+      byte[] packetIDbytes = CodecUtils.fromHex(asnTim.get("packetID").asText());
+
+      genericTim.setPacketID(CodecUtils.bytesToInt(packetIDbytes, 0, packetIDbytes.length, ByteOrder.BIG_ENDIAN));
+
+      if (asnTim.get("urlB") != null) {
+         genericTim.setUrlB(asnTim.get("urlB").asText());
       }
-      
+
       // TODO - the rest of the message translation
-      genericTim.setAsnDataFrames(asnTim.getDataFrames());
-      
+      genericTim.setAsnDataFrames(asnTim.get("dataFrames"));
+
       return genericTim;
    }
 
