@@ -16,6 +16,7 @@ import us.dot.its.jpo.ode.model.OdeBsmPayload;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.builders.BsmBuilder;
+import us.dot.its.jpo.ode.plugin.j2735.builders.BsmPart2ContentBuilder.BsmPart2ContentBuilderException;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
@@ -60,12 +61,13 @@ public class OdeBsmDataCreatorHelper {
       return createOdeBsmData(rawBsm, null, bsmFileParser);
    }
 
-   public static OdeBsmData createOdeBsmData(String consumedData) throws JsonProcessingException, IOException, XmlUtilsException  {
-//      JsonNode consumed = XmlUtils.toObjectNode(consumedData);
-      JsonNode consumed = JsonUtils.toObjectNode(consumedData);
+   public static OdeBsmData createOdeBsmData(String consumedData) 
+         throws JsonProcessingException, IOException, XmlUtilsException, BsmPart2ContentBuilderException  {
+//    JsonNode consumed = JsonUtils.toObjectNode(consumedData);
+      JsonNode consumed = XmlUtils.toObjectNode(consumedData);
 
       OdeAsn1Metadata metadata = (OdeAsn1Metadata) JsonUtils.fromJson(
-         consumed.get("metadata").toString(), OdeAsn1Metadata.class);
+         consumed.findValue("metadata").toString(), OdeAsn1Metadata.class);
       
       OdeBsmPayload payload = new OdeBsmPayload(
          BsmBuilder.genericBsm(consumed.findValue("BasicSafetyMessage")));

@@ -18,12 +18,16 @@ public class PathHistoryPointListBuilder {
 
       List<J2735PathHistoryPoint> phpl = new ArrayList<>();
 
-      Iterator<JsonNode> iter = crumbData.elements();
-
-      while (iter.hasNext() && phpl.size() < 23) {
-         phpl.add(PathHistoryPointBuilder.genericPathHistoryPoint(iter.next()));
+      JsonNode php = crumbData.get("PathHistoryPoint");
+      if (php.isArray()) {
+         Iterator<JsonNode> iter = php.elements();
+   
+         while (iter.hasNext() && phpl.size() < 23) {
+            phpl.add(PathHistoryPointBuilder.genericPathHistoryPoint(iter.next()));
+         }
+      } else {
+         phpl.add(PathHistoryPointBuilder.genericPathHistoryPoint(php));
       }
-
       return phpl;
    }
 }

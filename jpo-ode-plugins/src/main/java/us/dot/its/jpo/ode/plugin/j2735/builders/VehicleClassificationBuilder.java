@@ -27,9 +27,10 @@ public class VehicleClassificationBuilder {
       J2735VehicleClassification gvc = new J2735VehicleClassification();
 
       // All elements of this class are optional
-      if (vc.get("fuelType") != null) {
+      JsonNode ft = vc.get("fuelType");
+      if (ft != null) {
 
-         int fuelType = vc.get("fueltype").asInt();
+         int fuelType = ft.asInt();
 
          if (fuelType < FUEL_TYPE_LOWER_BOUND || FUEL_TYPE_UPPER_BOUND < fuelType) {
             throw new IllegalArgumentException(String.format("Fuel type value out of bounds [%d..%d]",
@@ -38,15 +39,18 @@ public class VehicleClassificationBuilder {
 
          gvc.setFuelType(J2735FuelType.values()[fuelType]);
       }
-      if (vc.get("hpmsType") != null) {
-         gvc.setHpmsType(J2735VehicleType.values()[vc.get("hpmsType").asInt()]);
+      JsonNode hpmsType = vc.get("hpmsType");
+      if (hpmsType != null) {
+         gvc.setHpmsType(J2735VehicleType.valueOf(hpmsType.fieldNames().next()));
       }
-      if (vc.get("iso3883") != null) {
-         gvc.setIso3883(vc.get("iso3883").asInt());
+      JsonNode iso3883 = vc.get("iso3883");
+      if (iso3883 != null) {
+         gvc.setIso3883(iso3883.asInt());
       }
-      if (vc.get("keyType") != null) {
+      JsonNode kt = vc.get("keyType");
+      if (kt != null) {
 
-         int keyType = vc.get("keyType").asInt();
+         int keyType = kt.asInt();
 
          if (keyType < VEH_CLASS_LOWER_BOUND || VEH_CLASS_UPPER_BOUND < keyType) {
             throw new IllegalArgumentException(String.format("Basic vehicle classification out of bounds [%d..%d]",
@@ -55,19 +59,24 @@ public class VehicleClassificationBuilder {
 
          gvc.setKeyType(keyType);
       }
-      if (vc.get("responderType") != null) {
-         gvc.setResponderType(J2735ResponderGroupAffected.values()[vc.get("responderType").asInt()]);
+      JsonNode responderType = vc.get("responderType");
+      if (responderType != null) {
+         gvc.setResponderType(J2735ResponderGroupAffected.valueOf(responderType.fieldNames().next()));
       }
-      if (vc.get("responseEquip") != null) {
-         gvc.setResponseEquip(NamedNumberBuilder.genericIncidentResponseEquipment(vc.get("responseEquip")));
+      JsonNode responseEquip = vc.get("responseEquip");
+      if (responseEquip != null) {
+         gvc.setResponseEquip(NamedNumberBuilder.genericIncidentResponseEquipment(responseEquip));
       }
-      if (vc.get("role") != null) {
-         gvc.setRole(J2735BasicVehicleRole.values()[vc.get("role").asInt()]);
+      JsonNode role = vc.get("role");
+      if (role != null) {
+         gvc.setRole(J2735BasicVehicleRole.valueOf(role.fieldNames().next()));
       }
-      if (vc.get("vehicleType") != null) {
-         gvc.setVehicleType(NamedNumberBuilder.genericVehicleGroupAffected(vc.get("vehicleType")));
+      JsonNode vehicleType = vc.get("vehicleType");
+      if (vehicleType != null) {
+         gvc.setVehicleType(NamedNumberBuilder.genericVehicleGroupAffected(vehicleType));
       }
-      if (vc.get("regional") != null) {
+      JsonNode regional = vc.get("regional");
+      if (regional != null) {
          // while (vc.regional.elements().hasMoreElements()) {
          // us.dot.its.jpo.ode.j2735.dsrc.VehicleClassification.Regional.Sequence_
          // element =
@@ -79,8 +88,8 @@ public class VehicleClassificationBuilder {
          // .setValue(element.regExtValue.getEncodedValue()));
          // }
 
-         if (vc.get("regional").isArray()) {
-            Iterator<JsonNode> elements = vc.get("regional").elements();
+         if (regional.isArray()) {
+            Iterator<JsonNode> elements = regional.elements();
 
             while (elements.hasNext()) {
                JsonNode element = elements.next();
