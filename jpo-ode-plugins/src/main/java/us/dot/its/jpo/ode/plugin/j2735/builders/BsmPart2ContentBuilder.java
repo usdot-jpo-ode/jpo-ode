@@ -65,31 +65,36 @@ public class BsmPart2ContentBuilder {
 
    }
 
-   public static J2735BsmPart2Content genericPart2Content(JsonNode bsmPart2Seq) throws BsmPart2ContentBuilderException {
+   public static J2735BsmPart2Content genericPart2Content(JsonNode part2Content) throws BsmPart2ContentBuilderException {
 
-      int partII_Id = bsmPart2Seq.get("partII-Id").asInt();
+      JsonNode partII_Id = part2Content.get("partII-Id");
 
-      String partII_valuestr = bsmPart2Seq.get("partII-Id").get("partII-Value").asText();
-
-      JsonNode part2Node = bsmPart2Seq.get("partII-Id").get("partII-Value").get(partII_valuestr);
-
-      return buildContent(J2735BsmPart2Content.J2735BsmPart2Id.values()[partII_Id], part2Node);
+      JsonNode part2value = part2Content.get("partII-Value");
+      
+      if (null != partII_Id && null != part2value) {
+         return buildContent(
+            J2735BsmPart2Content.J2735BsmPart2Id.values()[partII_Id.asInt()], 
+            part2value);
+      } else {
+         return null;
+      }
    }
 
-   private static J2735BsmPart2Content buildContent(J2735BsmPart2Content.J2735BsmPart2Id id, JsonNode openType)
+   private static J2735BsmPart2Content buildContent(
+      J2735BsmPart2Content.J2735BsmPart2Id id, JsonNode openType)
          throws BsmPart2ContentBuilderException {
 
       J2735BsmPart2Content part2Content = new J2735BsmPart2Content();
       part2Content.setId(id);
 
       switch (id) {
-      case VEHICLESAFETYEXT:
+      case VehicleSafetyExtensions:
          evaluateVehicleSafetyExt(part2Content, openType);
          break;
-      case SPECIALVEHICLEEXT:
+      case SpecialVehicleExtensions:
          evaluateSpecialVehicleExt(part2Content, openType);
          break;
-      case SUPPLEMENTALVEHICLEEXT:
+      case SupplementalVehicleExtensions:
          evaluateSupplementalVehicleExt(part2Content, openType);
          break;
       }
@@ -109,9 +114,10 @@ public class BsmPart2ContentBuilder {
       J2735VehicleSafetyExtensions vehSafety = new J2735VehicleSafetyExtensions();
       part2Content.setValue(vehSafety);
 
-      if (openType.get("events") != null) {
+      JsonNode events = openType.get("events");
+      if (events != null) {
 
-         char[] eventBits = openType.get("events").asText().toCharArray();
+         char[] eventBits = events.asText().toCharArray();
 
          J2735VehicleEventFlags eventFlags = new J2735VehicleEventFlags();
 
@@ -124,9 +130,10 @@ public class BsmPart2ContentBuilder {
          vehSafety.setEvents(eventFlags);
       }
 
-      if (openType.get("lights") != null) {
+      JsonNode lights = openType.get("lights");
+      if (lights != null) {
 
-         char[] lightsBits = openType.get("lights").asText().toCharArray();
+         char[] lightsBits = lights.asText().toCharArray();
 
          J2735ExteriorLights exteriorLights = new J2735ExteriorLights();
 
@@ -139,11 +146,13 @@ public class BsmPart2ContentBuilder {
          vehSafety.setLights(exteriorLights);
       }
 
-      if (openType.get("pathHistory") != null) {
-         vehSafety.setPathHistory(PathHistoryBuilder.genericPathHistory(openType.get("pathHistory")));
+      JsonNode pathHistory = openType.get("pathHistory");
+      if (pathHistory != null) {
+         vehSafety.setPathHistory(PathHistoryBuilder.genericPathHistory(pathHistory));
       }
-      if (openType.get("pathPrediction") != null) {
-         vehSafety.setPathPrediction(PathPredictionBuilder.genericPathPrediction(openType.get("pathPrediction")));
+      JsonNode pathPrediction = openType.get("pathPrediction");
+      if (pathPrediction != null) {
+         vehSafety.setPathPrediction(PathPredictionBuilder.genericPathPrediction(pathPrediction));
       }
 
    }
@@ -167,14 +176,17 @@ public class BsmPart2ContentBuilder {
       // throw new BsmPart2ContentBuilderException(NO_OPEN_TYPE);
       // }
 
-      if (openType.get("vehicleAlerts") != null) {
-         specVeh.setVehicleAlerts(EmergencyDetailsBuilder.genericEmergencyDetails(openType.get("vehicleAlerts")));
+      JsonNode va = openType.get("vehicleAlerts");
+      if (va != null) {
+         specVeh.setVehicleAlerts(EmergencyDetailsBuilder.genericEmergencyDetails(va));
       }
-      if (openType.get("description") != null) {
-         specVeh.setDescription(EventDescriptionBuilder.genericEventDescription(openType.get("description")));
+      JsonNode desc = openType.get("description");
+      if (desc != null) {
+         specVeh.setDescription(EventDescriptionBuilder.genericEventDescription(desc));
       }
-      if (openType.get("trailers") != null) {
-         specVeh.setTrailers(TrailerDataBuilder.genericTrailerData(openType.get("trailers")));
+      JsonNode tr = openType.get("trailers");
+      if (tr != null) {
+         specVeh.setTrailers(TrailerDataBuilder.genericTrailerData(tr));
       }
    }
 
@@ -196,9 +208,10 @@ public class BsmPart2ContentBuilder {
       // } else {
       // throw new BsmPart2ContentBuilderException(NO_OPEN_TYPE);
       // }
-      if (openType.get("supplementalVehicleExt") != null)
+      JsonNode sve = openType.get("SupplementalVehicleExtensions");
+      if (null != sve)
          part2Content.setValue(SupplementalVehicleExtensionsBuilder
-               .genericSupplementalVehicleExtensions(openType.get("supplementalVehicleExt")));
+               .genericSupplementalVehicleExtensions(sve));
 
    }
 

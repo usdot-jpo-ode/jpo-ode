@@ -7,13 +7,14 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugin.j2735.builders.BsmPart2ContentBuilder.BsmPart2ContentBuilderException;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 public class BsmBuilderTest {
 
    @Test
-   public void shouldTranslateBsm() {
+   public void shouldTranslateBsm() throws BsmPart2ContentBuilderException {
 
       JsonNode jsonBsm = null;
       try {

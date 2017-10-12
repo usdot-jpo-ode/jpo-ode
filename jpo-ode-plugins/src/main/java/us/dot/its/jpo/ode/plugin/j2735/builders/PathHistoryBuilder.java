@@ -17,11 +17,13 @@ public class PathHistoryBuilder {
       ph.setCrumbData(PathHistoryPointListBuilder.genericPathHistoryPointList(pathHistory.get("crumbData")));
 
       // Optional elements
-      if (pathHistory.get("currGNSSstatus") != null) {
-         ph.setCurrGNSSstatus(GNSSstatusBuilder.genericGNSSstatus(pathHistory.get("currGNSSstatus")));
+      JsonNode currGNSSstatus = pathHistory.get("currGNSSstatus");
+      if (currGNSSstatus != null) {
+         ph.setCurrGNSSstatus(GNSSstatusBuilder.genericGNSSstatus(currGNSSstatus));
       }
-      if (pathHistory.get("initialPosition") != null) {
-         ph.setInitialPosition(FullPositionVectorBuilder.genericFullPositionVector(pathHistory.get("initialPosition")));
+      JsonNode initialPosition = pathHistory.get("initialPosition");
+      if (initialPosition != null) {
+         ph.setInitialPosition(FullPositionVectorBuilder.genericFullPositionVector(initialPosition));
       }
 
       return ph;

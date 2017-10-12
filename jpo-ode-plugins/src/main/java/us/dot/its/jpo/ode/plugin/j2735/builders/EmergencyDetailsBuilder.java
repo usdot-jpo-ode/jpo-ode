@@ -24,11 +24,13 @@ public class EmergencyDetailsBuilder {
       va.setMulti(J2735MultiVehicleResponse.valueOf(vehicleAlerts.get("multi").asText().replaceAll("-", "_").toUpperCase()));
 
 		// Optional elements
-      if (vehicleAlerts.get("events") != null) {
-          va.setEvents(PrivilegedEventsBuilder.genericPrivilegedEvents(vehicleAlerts.get("events")));
+      JsonNode events = vehicleAlerts.get("events");
+      if (events != null) {
+          va.setEvents(PrivilegedEventsBuilder.genericPrivilegedEvents(events));
       }
-      if (vehicleAlerts.get("responseType") != null) {
-          va.setResponseType(J2735ResponseType.valueOf(vehicleAlerts.get("responseType").asText().replaceAll("-", "_").toUpperCase()));
+      JsonNode responseType = vehicleAlerts.get("responseType");
+      if (responseType != null) {
+          va.setResponseType(J2735ResponseType.valueOf(responseType.asText().replaceAll("-", "_").toUpperCase()));
       }
 		
 		return va;

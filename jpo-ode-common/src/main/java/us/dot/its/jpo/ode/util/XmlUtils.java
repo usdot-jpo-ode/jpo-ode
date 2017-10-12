@@ -92,5 +92,13 @@ public class XmlUtils {
       return jsonNode.get(fieldName);
    }
 
+   public XmlMapper getXmlMapper() {
+      return xmlMapper;
+   }
+
+   public static XmlMapper getStaticXmlMapper() {
+      return staticXmlMapper;
+   }
+
 }
 

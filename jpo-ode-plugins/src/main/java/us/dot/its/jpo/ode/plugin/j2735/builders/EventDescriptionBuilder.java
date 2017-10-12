@@ -30,17 +30,20 @@ public class EventDescriptionBuilder {
       desc.setTypeEvent(description.get("typeEvent").asInt());
 
       // Optional elements
-      if (description.get("description") != null) {
-         desc.setDescription(buildDescription(description.get("description")));
+      JsonNode d = description.get("description");
+      if (d != null) {
+         desc.setDescription(buildDescription(d));
       }
-      if (description.get("priority") != null) {
-         desc.setPriority(description.get("priority").asText());
+      JsonNode p = description.get("priority");
+      if (p != null) {
+         desc.setPriority(p.asText());
       }
-      if (description.get("heading") != null) {
+      JsonNode h = description.get("heading");
+      if (h != null) {
 
          J2735HeadingSlice headingSlice = new J2735HeadingSlice();
 
-         char[] headingSliceBits = description.get("heading").asText().toCharArray();
+         char[] headingSliceBits = h.asText().toCharArray();
 
          for (int i = 0; i < headingSliceBits.length; i++) {
 
@@ -53,8 +56,9 @@ public class EventDescriptionBuilder {
          desc.setHeading(headingSlice);
 
       }
-      if (description.get("extent") != null) {
-         desc.setExtent(J2735Extent.valueOf(description.get("extent").asText().replaceAll("-", "_").toUpperCase()));
+      JsonNode e = description.get("extent");
+      if (e != null) {
+         desc.setExtent(J2735Extent.valueOf(e.asText().replaceAll("-", "_").toUpperCase()));
       }
 
       JsonNode regional = description.get("regional");
