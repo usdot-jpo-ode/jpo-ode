@@ -29,7 +29,7 @@ public class OssTravelerInformation {
       }
       
       // TODO - the rest of the message translation
-      genericTim.setAsnDataFrames(asnTim.getDataFrames());
+//      genericTim.setAsnDataFrames(asnTim.getDataFrames());
       
       return genericTim;
    }
