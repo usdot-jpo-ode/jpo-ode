@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.plugin.j2735.oss;
+package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
@@ -94,7 +94,7 @@ import us.dot.its.jpo.ode.plugin.j2735.TimFieldValidator;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
-public class OssTravelerMessageBuilder {
+public class TravelerMessageBuilder {
    private TravelerInformation travelerInfo;
 
    public TravelerInformation buildTravelerInformation(
@@ -127,7 +127,7 @@ public class OssTravelerMessageBuilder {
          TravelerDataFrame dataFrame = new TravelerDataFrame();
 
          // Part I, header
-         OssTIMHeaderBuilder.buildTimHeader(inputDataFrame, dataFrame);
+         TIMHeaderBuilder.buildTimHeader(inputDataFrame, dataFrame);
 
          // -- Part II, Applicable Regions of Use
          TimFieldValidator.validateHeaderIndex(inputDataFrame.getsspLocationRights());

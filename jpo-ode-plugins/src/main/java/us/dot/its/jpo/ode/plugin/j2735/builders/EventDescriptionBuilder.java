@@ -10,6 +10,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735EventDescription;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Extent;
 import us.dot.its.jpo.ode.plugin.j2735.J2735HeadingSlice;
 import us.dot.its.jpo.ode.plugin.j2735.J2735RegionalContent;
+import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class EventDescriptionBuilder {
 
@@ -55,12 +56,19 @@ public class EventDescriptionBuilder {
       if (description.get("extent") != null) {
          desc.setExtent(J2735Extent.valueOf(description.get("extent").asText().replaceAll("-", "_").toUpperCase()));
       }
-      if (description.hasRegional()) {
-         while (description.regional.elements().hasMoreElements()) {
-            us.dot.its.jpo.ode.j2735.dsrc.EventDescription.Regional.Sequence_ element = (us.dot.its.jpo.ode.j2735.dsrc.EventDescription.Regional.Sequence_) description.regional
-                  .elements().nextElement();
-            desc.getRegional().add(new J2735RegionalContent().setId(element.regionId.asInt())
-                  .setValue(element.regExtValue.getEncodedValue()));
+
+      JsonNode regional = description.get("regional");
+      if (regional != null) {
+
+         if (regional.isArray()) {
+            Iterator<JsonNode> elements = regional.elements();
+
+            while (elements.hasNext()) {
+               JsonNode element = elements.next();
+
+               desc.getRegional().add(new J2735RegionalContent().setId(element.get("regionId").asInt())
+                     .setValue(CodecUtils.fromHex(element.get("regExtValue").asText())));
+            }
          }
       }
 

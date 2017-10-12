@@ -13,24 +13,24 @@ public class NamedNumberBuilder {
     public static J2735NamedNumber genericGenericLocations(JsonNode genericLocations) {
         J2735NamedNumber gnn = new J2735NamedNumber();
 
-        gnn.setName(genericLocations.name());
-        gnn.setValue(genericLocations.asLong());
+        gnn.setName(genericLocations.fieldNames().next());
+        gnn.setValue(null);
         return gnn;
     }
 
     public static J2735NamedNumber genericIncidentResponseEquipment(JsonNode incidentResponseEquipment) {
         J2735NamedNumber gnn = new J2735NamedNumber();
 
-        gnn.setName(incidentResponseEquipment.name());
-        gnn.setValue(incidentResponseEquipment.asLong());
+        gnn.setName(incidentResponseEquipment.fieldNames().next());
+        gnn.setValue(null);
         return gnn;
     }
 
     public static J2735NamedNumber genericVehicleGroupAffected(JsonNode vehicleGroupAffected) {
         J2735NamedNumber gnn = new J2735NamedNumber();
 
-        gnn.setName(vehicleGroupAffected.name());
-        gnn.setValue(vehicleGroupAffected.asLong());
+        gnn.setName(vehicleGroupAffected.fieldNames().next());
+        gnn.setValue(null);
         return gnn;
     }
 

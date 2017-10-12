@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.plugin.j2735.oss;
+package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -48,9 +48,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735TransmissionState;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleSize;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
-public class OssVehicleSituationRecord {
+public class VehicleSituationRecordBuilder {
 
-   public OssVehicleSituationRecord() {
+   public VehicleSituationRecordBuilder() {
    }
 
    /**
