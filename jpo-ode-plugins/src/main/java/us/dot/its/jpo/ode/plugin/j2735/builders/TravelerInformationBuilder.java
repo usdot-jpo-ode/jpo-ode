@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.plugin.j2735.oss;
+package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.nio.ByteOrder;
 
@@ -7,9 +7,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
-public class OssTravelerInformation {
+public class TravelerInformationBuilder {
    
-   private OssTravelerInformation() {
+   private TravelerInformationBuilder() {
       throw new UnsupportedOperationException();
   }
    

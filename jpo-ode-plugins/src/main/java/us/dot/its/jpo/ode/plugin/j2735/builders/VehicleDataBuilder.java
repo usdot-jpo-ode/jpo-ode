@@ -13,17 +13,17 @@ public class VehicleDataBuilder {
     public static J2735VehicleData genericVehicleData(JsonNode vehicleData) {
         J2735VehicleData vd = new J2735VehicleData();
 
-        if (vehicleData.bumpers != null) {
-            vd.setBumpers(BumperHeightsBuilder.genericBumperHeights(vehicleData.bumpers));
+        if (vehicleData.get("bumpers") != null) {
+            vd.setBumpers(BumperHeightsBuilder.genericBumperHeights(vehicleData.get("bumpers")));
         }
-        if (vehicleData.height != null) {
-            vd.setHeight(HeightBuilder.genericHeight(vehicleData.height));
+        if (vehicleData.get("height") != null) {
+            vd.setHeight(HeightBuilder.genericHeight(vehicleData.get("height")));
         }
-        if (vehicleData.mass != null) {
-            vd.setMass(MassOrWeightBuilder.genericVehicleMass(vehicleData.mass));
+        if (vehicleData.get("mass") != null) {
+            vd.setMass(MassOrWeightBuilder.genericVehicleMass(vehicleData.get("mass")));
         }
-        if (vehicleData.trailerWeight != null) {
-            vd.setTrailerWeight(MassOrWeightBuilder.genericTrailerWeight(vehicleData.trailerWeight));
+        if (vehicleData.get("trailerWeight") != null) {
+            vd.setTrailerWeight(MassOrWeightBuilder.genericTrailerWeight(vehicleData.get("trailerWeight")));
         }
 
         return vd;

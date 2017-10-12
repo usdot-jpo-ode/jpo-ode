@@ -14,37 +14,37 @@ public class Position3DBuilder {
    
    public static J2735Position3D genericPosition3D(JsonNode pos) {
       J2735Position3D jpos = new J2735Position3D();
-      
+
       Long longitude = pos.get("long").asLong();
       Long latitude = pos.get("lat").asLong();
       Long elevation = pos.get("elevation").asLong();
 
-         if (longitude != null) {
-             if (longitude.longValue() == 1800000001) {
-                 jpos.setLongitude(null);
-             } else {
-                jpos.setLongitude(BigDecimal.valueOf(longitude.longValue(), 7));
-             }
+      if (longitude != null) {
+         if (longitude == 1800000001) {
+            jpos.setLongitude(null);
+         } else {
+            jpos.setLongitude(BigDecimal.valueOf(longitude, 7));
          }
+      }
 
-         if (latitude != null) {
-             if (latitude.longValue() == 900000001) {
-                jpos.setLatitude(null);
-             } else {
-                jpos.setLatitude(BigDecimal.valueOf(latitude.longValue(), 7));
-             }
+      if (latitude != null) {
+         if (latitude == 900000001) {
+            jpos.setLatitude(null);
+         } else {
+            jpos.setLatitude(BigDecimal.valueOf(latitude, 7));
          }
+      }
 
-         if (elevation != null) {
-             if (elevation.longValue() == -4096) {
-                jpos.setElevation(null);
-             } else {
-                jpos.setElevation(BigDecimal.valueOf(elevation.longValue(), 1));
-             }
+      if (elevation != null) {
+         if (elevation == -4096) {
+            jpos.setElevation(null);
+         } else {
+            jpos.setElevation(BigDecimal.valueOf(elevation, 1));
          }
+      }
 
       return jpos;
-      
+
    }
 
    public static Position3D position3D(J2735Position3D jpos) {

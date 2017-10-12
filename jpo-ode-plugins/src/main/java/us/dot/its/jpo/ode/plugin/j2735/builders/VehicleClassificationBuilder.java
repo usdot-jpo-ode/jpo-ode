@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import us.dot.its.jpo.ode.j2735.dsrc.VehicleClassification;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import us.dot.its.jpo.ode.plugin.j2735.J2735BasicVehicleRole;
 import us.dot.its.jpo.ode.plugin.j2735.J2735FuelType;
 import us.dot.its.jpo.ode.plugin.j2735.J2735RegionalContent;
@@ -10,58 +11,68 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleType;
 
 public class VehicleClassificationBuilder {
 
-    private VehicleClassificationBuilder() {
-       throw new UnsupportedOperationException();
-    }
+   private static final int FUEL_TYPE_LOWER_BOUND = 0;
+   private static final int FUEL_TYPE_UPPER_BOUND = 9;
+   private static final int VEH_CLASS_LOWER_BOUND = 0;
+   private static final int VEH_CLASS_UPPER_BOUND = 255;
 
-    public static J2735VehicleClassification genericVehicleClassification(VehicleClassification vc) {
-        J2735VehicleClassification gvc = new J2735VehicleClassification();
+   private VehicleClassificationBuilder() {
+      throw new UnsupportedOperationException();
+   }
 
-        // All elements of this class are optional
-        if (vc.hasFuelType()) {
+   public static J2735VehicleClassification genericVehicleClassification(JsonNode vc) {
+      J2735VehicleClassification gvc = new J2735VehicleClassification();
 
-            if (vc.fuelType.asInt() < 0 || vc.fuelType.asInt() > 9) {
-                throw new IllegalArgumentException("Fuel type value out of bounds [0..9]");
-            }
+      // All elements of this class are optional
+      if (vc.get("fuelType") != null) {
 
-            gvc.setFuelType(J2735FuelType.values()[vc.fuelType.asInt()]);
-        }
-        if (vc.hasHpmsType()) {
-            gvc.setHpmsType(J2735VehicleType.values()[vc.hpmsType.indexOf()]);
-        }
-        if (vc.hasIso3883()) {
-            gvc.setIso3883(vc.iso3883.asInt());
-        }
-        if (vc.hasKeyType()) {
+         int fuelType = vc.get("fueltype").asInt();
 
-            if (vc.keyType.asInt() < 0 || vc.keyType.asInt() > 255) {
-                throw new IllegalArgumentException("Basic vehicle classification out of bounds [0..255]");
-            }
+         if (fuelType < FUEL_TYPE_LOWER_BOUND || FUEL_TYPE_UPPER_BOUND < fuelType) {
+            throw new IllegalArgumentException(String.format("Fuel type value out of bounds [%d..%d]",
+                  FUEL_TYPE_LOWER_BOUND, FUEL_TYPE_UPPER_BOUND));
+         }
 
-            gvc.setKeyType(vc.keyType.asInt());
-        }
-        if (vc.hasResponderType()) {
-            gvc.setResponderType(J2735ResponderGroupAffected.values()[vc.responderType.indexOf()]);
-        }
-        if (vc.hasResponseEquip()) {
-            gvc.setResponseEquip(NamedNumberBuilder.genericIncidentResponseEquipment(vc.responseEquip));
-        }
-        if (vc.hasRole()) {
-            gvc.setRole(J2735BasicVehicleRole.values()[vc.role.indexOf()]);
-        }
-        if (vc.hasVehicleType()) {
-            gvc.setVehicleType(NamedNumberBuilder.genericVehicleGroupAffected(vc.vehicleType));
-        }
-        if (vc.hasRegional()) {
-            while (vc.regional.elements().hasMoreElements()) {
-                us.dot.its.jpo.ode.j2735.dsrc.VehicleClassification.Regional.Sequence_ element = (us.dot.its.jpo.ode.j2735.dsrc.VehicleClassification.Regional.Sequence_) vc.regional
-                        .elements().nextElement();
-                gvc.getRegional().add(new J2735RegionalContent().setId(element.regionId.asInt())
-                        .setValue(element.regExtValue.getEncodedValue()));
-            }
-        }
+         gvc.setFuelType(J2735FuelType.values()[fuelType]);
+      }
+      if (vc.get("hpmsType") != null) {
+         gvc.setHpmsType(J2735VehicleType.values()[vc.get("hpmsType").asInt()]);
+      }
+      if (vc.get("iso3883")!= null) {
+         gvc.setIso3883(vc.get("iso3883").asInt());
+      }
+      if (vc.get("keyType") != null) {
+         
+         int keyType = vc.get("keyType").asInt();
 
-        return gvc;
-    }
+         if (keyType < VEH_CLASS_LOWER_BOUND || VEH_CLASS_UPPER_BOUND < keyType) {
+            throw new IllegalArgumentException(String.format("Basic vehicle classification out of bounds [%d..%d]",VEH_CLASS_LOWER_BOUND, VEH_CLASS_UPPER_BOUND );
+         }
+
+         gvc.setKeyType(keyType);
+      }
+      if (vc.get("responderType") != null) {
+         gvc.setResponderType(J2735ResponderGroupAffected.values()[vc.get("responderType").asInt()]);
+      }
+      if (vc.get("responseEquip") != null) {
+         gvc.setResponseEquip(NamedNumberBuilder.genericIncidentResponseEquipment(vc.get("responseEquip")));
+      }
+      if (vc.get("role") != null ) {
+         gvc.setRole(J2735BasicVehicleRole.values()[vc.get("role").asInt()]);
+      }
+      if (vc.get("vehicleType") != null ) {
+         gvc.setVehicleType(NamedNumberBuilder.genericVehicleGroupAffected(vc.get("vehicleType")));
+      }
+      if (vc.get("regional") != null ) {
+         while (vc.regional.elements().hasMoreElements()) {
+            us.dot.its.jpo.ode.j2735.dsrc.VehicleClassification.Regional.Sequence_ element = (us.dot.its.jpo.ode.j2735.dsrc.VehicleClassification.Regional.Sequence_) vc.regional
+                  .elements().nextElement();
+            gvc.getRegional().add(new J2735RegionalContent().setId(element.regionId.asInt())
+                  .setValue(element.regExtValue.getEncodedValue()));
+         }
+      }
+
+      return gvc;
+   }
 
 }
