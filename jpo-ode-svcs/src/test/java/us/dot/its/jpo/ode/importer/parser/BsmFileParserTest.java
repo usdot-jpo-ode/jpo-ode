@@ -13,14 +13,14 @@ import org.junit.Test;
 
 import mockit.Injectable;
 import mockit.Tested;
-import us.dot.its.jpo.ode.importer.parser.BsmFileParser.BsmSource;
+import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser.BsmSource;
 import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 
 public class BsmFileParserTest {
 
    @Tested
-   BsmFileParser testBsmFileParser;
+   BsmLogFileParser testBsmFileParser;
    @Injectable long bundleId;
    
 

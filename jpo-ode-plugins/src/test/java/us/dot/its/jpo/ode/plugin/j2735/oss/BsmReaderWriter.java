@@ -235,7 +235,7 @@ public class BsmReaderWriter {
         try {
             MessageFrame mf = new MessageFrame();
             coder.decode(ins, mf);
-            if (J2735DSRCmsgID.BASICSAFETYMESSAGE.getMsgID() == mf.getMessageId().intValue()) {
+            if (J2735DSRCmsgID.BasicSafetyMessage.getMsgID() == mf.getMessageId().intValue()) {
 
                 // If basicSafetyMessage
                 if (mf.value.getDecodedValue() != null) {

@@ -1,22 +1,23 @@
-package us.dot.its.jpo.ode.plugin.j2735.oss;
+package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import us.dot.its.jpo.ode.j2735.dsrc.TrailerHistoryPoint;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import us.dot.its.jpo.ode.plugin.j2735.J2735TrailerHistoryPoint;
 
-public class OssTrailerHistoryPoint {
+public class TrailerHistoryPointBuilder {
 
-    private OssTrailerHistoryPoint() {
+    private TrailerHistoryPointBuilder() {
        throw new UnsupportedOperationException();
     }
 
-    public static J2735TrailerHistoryPoint genericTrailerHistoryPoint(TrailerHistoryPoint thp) {
+    public static J2735TrailerHistoryPoint genericTrailerHistoryPoint(JsonNode thp) {
         J2735TrailerHistoryPoint gthp = new J2735TrailerHistoryPoint();
 
-        gthp.setElevationOffset(OssOffset.genericOffset(thp.elevationOffset));
-        gthp.setHeading(OssHeading.genericHeading(thp.heading));
-        gthp.setPivotAngle(OssAngle.genericAngle(thp.pivotAngle));
-        gthp.setPositionOffset(OssNode_XY.genericNode_XY(thp.positionOffset));
-        gthp.setTimeOffset(OssTimeOffset.genericTimeOffset(thp.timeOffset));
+        gthp.setElevationOffset(OffsetBuilder.genericOffset_B12(thp.get("elevationOffset")));
+        gthp.setHeading(HeadingBuilder.genericHeading(thp.get("heading")));
+        gthp.setPivotAngle(AngleBuilder.genericAngle(thp.get("pivotAngle")));
+        gthp.setPositionOffset(Node_XYBuilder.genericNode_XY(thp.get("positionOffset")));
+        gthp.setTimeOffset(TimeOffsetBuilder.genericTimeOffset(thp.get("timeOffset")));
 
         return gthp;
     }

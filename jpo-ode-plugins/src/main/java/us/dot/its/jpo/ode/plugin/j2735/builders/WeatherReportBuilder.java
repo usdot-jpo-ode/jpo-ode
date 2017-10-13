@@ -10,75 +10,88 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735WeatherReport;
 
 public class WeatherReportBuilder {
 
-    private static final Integer RAIN_RATE_LOWER_BOUND = 0;
-    private static final Integer RAIN_RATE_UPPER_BOUND = 65535;
-    private static final Integer SOLAR_RAD_LOWER_BOUND = 0;
-    private static final Integer SOLAR_RAD_UPPER_BOUND = 65535;
-    private static final Integer FRICTION_LOWER_BOUND = 0;
-    private static final Integer FRICTION_UPPER_BOUND = 101;
-    private static final Integer ROAD_FRICTION_LOWER_BOUND = 0;
-    private static final Integer ROAD_FRICTION_UPPER_BOUND = 50;
-    
-    private WeatherReportBuilder() {
-       throw new UnsupportedOperationException();
-    }
+   private static final int RAIN_RATE_LOWER_BOUND = 0;
+   private static final int RAIN_RATE_UPPER_BOUND = 65535;
+   private static final int RAIN_RATE_UNDEFINED_VALUE = 65535;
+   private static final int SOLAR_RAD_LOWER_BOUND = 0;
+   private static final int SOLAR_RAD_UPPER_BOUND = 65535;
+   private static final int SOLAR_RAD_UNDEFINED_VALUE = 65535;
+   private static final int FRICTION_LOWER_BOUND = 0;
+   private static final int FRICTION_UPPER_BOUND = 101;
+   private static final int FRICTION_UNDEFINED_VALUE = 101;
+   private static final int ROAD_FRICTION_LOWER_BOUND = 0;
+   private static final int ROAD_FRICTION_UPPER_BOUND = 50;
 
-    public static J2735WeatherReport genericWeatherReport(JsonNode weatherReport) {
-        J2735WeatherReport gwr = new J2735WeatherReport();
+   private WeatherReportBuilder() {
+      throw new UnsupportedOperationException();
+   }
 
-        // Required element
-        gwr.setIsRaining(J2735EssPrecipYesNo.values()[weatherReport.isRaining.indexOf()]);
+   public static J2735WeatherReport genericWeatherReport(JsonNode weatherReport) {
+      J2735WeatherReport gwr = new J2735WeatherReport();
 
-        // Optional elements
-        if (weatherReport.friction != null) {
-            
-            if (weatherReport.friction.asInt() < FRICTION_LOWER_BOUND
-                    || weatherReport.friction.asInt() > FRICTION_UPPER_BOUND) {
-                throw new IllegalArgumentException("Friction value out of bounds [0..101]");
-            }
-            gwr.setFriction(weatherReport.friction != null && weatherReport.friction.asInt() >= 0
-                    && weatherReport.friction.asInt() <= 100 ? weatherReport.friction.asInt() : null);
-        }
-        if (weatherReport.precipSituation != null) {
-            gwr.setPrecipSituation(J2735EssPrecipSituation.values()[weatherReport.precipSituation.indexOf()]);
-        }
-        if (weatherReport.rainRate != null) {
+      // Required element
+      gwr.setIsRaining(J2735EssPrecipYesNo.values()[weatherReport.get("isRaining").asInt()]);
 
-            if (weatherReport.rainRate.asInt() < RAIN_RATE_LOWER_BOUND
-                    || weatherReport.rainRate.asInt() > RAIN_RATE_UPPER_BOUND) {
-                throw new IllegalArgumentException("Rain rate out of bounds [0..65535]");
-            }
+      // Optional elements
+      if (weatherReport.get("friction") != null) {
 
-            gwr.setRainRate(weatherReport.rainRate.asLong() != 65535
-                    ? BigDecimal.valueOf(weatherReport.rainRate.asLong(), 1) : null);
-        }
-        /*
-         * CoefficientOfFriction ::= INTEGER (0..50) -- where 0 = 0.00 micro
-         * (frictionless), also used when data is unavailable -- and 50 = 1.00
-         * micro, in steps of 0.02
-         */
-        if (weatherReport.roadFriction != null) {
-            
-            if (weatherReport.roadFriction.asInt() < ROAD_FRICTION_LOWER_BOUND
-                    || weatherReport.roadFriction.asInt() > ROAD_FRICTION_UPPER_BOUND) {
-                throw new IllegalArgumentException("Road friction value out of bounds [0..50]");
-            }
-            
-            gwr.setRoadFriction(weatherReport.roadFriction != null && weatherReport.roadFriction.asInt() != 0
-                    ? BigDecimal.valueOf(weatherReport.roadFriction.asLong() * 2, 2) : null);
-        }
-        if (weatherReport.solarRadiation != null) {
-            
-            if (weatherReport.solarRadiation.asInt() < SOLAR_RAD_LOWER_BOUND
-                    || weatherReport.solarRadiation.asInt() > SOLAR_RAD_UPPER_BOUND) {
-                throw new IllegalArgumentException("Solar radiation value out of bounds [0..65535]");
-            }
-            
-            gwr.setSolarRadiation(weatherReport.solarRadiation.asLong() != 65535
-                    ? weatherReport.solarRadiation.asInt() : null);
-        }
+         int friction = weatherReport.get("friction").asInt();
 
-        return gwr;
-    }
+         if (friction < FRICTION_LOWER_BOUND || FRICTION_UPPER_BOUND < friction) {
+            throw new IllegalArgumentException(
+                  String.format("Friction value out of bounds [%d..%d]", FRICTION_LOWER_BOUND, FRICTION_UPPER_BOUND));
+         }
+
+         if (friction != FRICTION_UNDEFINED_VALUE) {
+            gwr.setFriction(friction);
+         }
+      }
+
+      if (weatherReport.get("precipSituation") != null) {
+         gwr.setPrecipSituation(J2735EssPrecipSituation.values()[weatherReport.get("precipSituation").asInt()]);
+      }
+
+      if (weatherReport.get("rainRate") != null) {
+
+         int rainRate = weatherReport.get("rainRate").asInt();
+
+         if (rainRate < RAIN_RATE_LOWER_BOUND || RAIN_RATE_UPPER_BOUND < rainRate) {
+            throw new IllegalArgumentException(
+                  String.format("Rain rate out of bounds [%d..%d]", RAIN_RATE_LOWER_BOUND, RAIN_RATE_UPPER_BOUND));
+         }
+
+         if (rainRate != RAIN_RATE_UNDEFINED_VALUE) {
+            gwr.setRainRate(BigDecimal.valueOf(rainRate, 1));
+         }
+      }
+
+      // coefficient of friction has minimum and undefined value 0
+      if (weatherReport.get("roadFriction") != null) {
+
+         int roadFriction = weatherReport.get("roadFriction").asInt();
+
+         if (roadFriction < ROAD_FRICTION_LOWER_BOUND || ROAD_FRICTION_UPPER_BOUND < roadFriction) {
+            throw new IllegalArgumentException("Road friction value out of bounds [0..50]");
+         }
+
+         gwr.setRoadFriction(BigDecimal.valueOf(roadFriction * 2L, 2));
+      }
+
+      if (weatherReport.get("solarRadiation") != null) {
+
+         int solarRadiation = weatherReport.get("solarRadiation").asInt();
+
+         if (solarRadiation < SOLAR_RAD_LOWER_BOUND || SOLAR_RAD_UPPER_BOUND < solarRadiation) {
+            throw new IllegalArgumentException(String.format("Solar radiation value out of bounds [%d..%d]",
+                  SOLAR_RAD_LOWER_BOUND, SOLAR_RAD_UPPER_BOUND));
+         }
+
+         if (solarRadiation != SOLAR_RAD_UNDEFINED_VALUE) {
+            gwr.setSolarRadiation(solarRadiation);
+         }
+      }
+
+      return gwr;
+   }
 
 }

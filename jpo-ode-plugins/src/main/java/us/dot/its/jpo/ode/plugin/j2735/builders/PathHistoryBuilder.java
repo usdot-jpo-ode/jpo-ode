@@ -1,29 +1,32 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import us.dot.its.jpo.ode.j2735.dsrc.PathHistory;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistory;
 
-public class OssPathHistory {
+public class PathHistoryBuilder {
 
-    private OssPathHistory() {
-       throw new UnsupportedOperationException();
-    }
+   private PathHistoryBuilder() {
+      throw new UnsupportedOperationException();
+   }
 
-    public static J2735PathHistory genericPathHistory(PathHistory pathHistory) {
-        J2735PathHistory ph = new J2735PathHistory();
+   public static J2735PathHistory genericPathHistory(JsonNode pathHistory) {
+      J2735PathHistory ph = new J2735PathHistory();
 
-        // Required element
-        ph.setCrumbData(OssPathHistoryPointList.genericPathHistoryPointList(pathHistory.crumbData));
+      // Required element
+      ph.setCrumbData(PathHistoryPointListBuilder.genericPathHistoryPointList(pathHistory.get("crumbData")));
 
-        // Optional elements
-        if (pathHistory.currGNSSstatus != null) {
-            ph.setCurrGNSSstatus(OssGNSSstatus.genericGNSSstatus(pathHistory.currGNSSstatus));
-        }
-        if (pathHistory.initialPosition != null) {
-            ph.setInitialPosition(OssFullPositionVector.genericFullPositionVector(pathHistory.initialPosition));
-        }
+      // Optional elements
+      JsonNode currGNSSstatus = pathHistory.get("currGNSSstatus");
+      if (currGNSSstatus != null) {
+         ph.setCurrGNSSstatus(GNSSstatusBuilder.genericGNSSstatus(currGNSSstatus));
+      }
+      JsonNode initialPosition = pathHistory.get("initialPosition");
+      if (initialPosition != null) {
+         ph.setInitialPosition(FullPositionVectorBuilder.genericFullPositionVector(initialPosition));
+      }
 
-        return ph;
-    }
+      return ph;
+   }
 
 }

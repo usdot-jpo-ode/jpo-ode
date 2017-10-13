@@ -14,7 +14,7 @@ import mockit.Mocked;
 import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
-import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
+import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
@@ -29,7 +29,7 @@ public class BinaryDecoderPublisherTest {
    @Mocked
    OdeData mockOdeData;
    @Capturing
-   BsmFileParser capturingBsmFileParser;
+   BsmLogFileParser capturingBsmFileParser;
 
    @Test(timeout = 4000)
    public void decodeAndPublishShouldNotPublishNull() {
@@ -39,7 +39,7 @@ public class BinaryDecoderPublisherTest {
                capturingBsmFileParser.parseFile((BufferedInputStream) any, anyString);
                result = ParserStatus.COMPLETE;
                
-               capturingDecoderHelper.decode( (BsmFileParser) any, (SerialId) any);
+               capturingDecoderHelper.decode( (BsmLogFileParser) any, (SerialId) any);
                result = null;
                times = 1;
 
@@ -64,7 +64,7 @@ public class BinaryDecoderPublisherTest {
                capturingBsmFileParser.parseFile((BufferedInputStream) any, anyString);
                result = ParserStatus.COMPLETE;
                
-               capturingDecoderHelper.decode( (BsmFileParser) any, (SerialId) any);
+               capturingDecoderHelper.decode( (BsmLogFileParser) any, (SerialId) any);
                result = new Exception("testException123");
 
                mockOdeDataPublisher.publish((OdeData) any, anyString);
@@ -88,7 +88,7 @@ public class BinaryDecoderPublisherTest {
                capturingBsmFileParser.parseFile((BufferedInputStream) any, anyString);
                result = ParserStatus.COMPLETE;
                
-               capturingDecoderHelper.decode((BsmFileParser) any, (SerialId) any);
+               capturingDecoderHelper.decode((BsmLogFileParser) any, (SerialId) any);
                returns(mockOdeData, null);
 
                mockOdeDataPublisher.publish((OdeData) any, anyString);

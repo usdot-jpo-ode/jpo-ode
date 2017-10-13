@@ -1,30 +1,33 @@
-package us.dot.its.jpo.ode.plugin.j2735.oss;
+package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import us.dot.its.jpo.ode.j2735.dsrc.PathHistoryPoint;
-import us.dot.its.jpo.ode.j2735.dsrc.PathHistoryPointList;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistoryPoint;
 
-public class OssPathHistoryPointList {
-    
-    private OssPathHistoryPointList() {
-       throw new UnsupportedOperationException();
-    }
+public class PathHistoryPointListBuilder {
 
-    public static List<J2735PathHistoryPoint> genericPathHistoryPointList(PathHistoryPointList crumbData) {
+   private PathHistoryPointListBuilder() {
+      throw new UnsupportedOperationException();
+   }
 
-        List<J2735PathHistoryPoint> phpl = new ArrayList<>();
+   public static List<J2735PathHistoryPoint> genericPathHistoryPointList(JsonNode crumbData) {
 
-        Iterator<PathHistoryPoint> iter = crumbData.elements.iterator();
+      List<J2735PathHistoryPoint> phpl = new ArrayList<>();
 
-        while (iter.hasNext() && phpl.size() < 23) {
-            phpl.add(OssPathHistoryPoint.genericPathHistoryPoint(iter.next()));
-        }
-
-        return phpl;
-    }
-
+      JsonNode php = crumbData.get("PathHistoryPoint");
+      if (php.isArray()) {
+         Iterator<JsonNode> iter = php.elements();
+   
+         while (iter.hasNext() && phpl.size() < 23) {
+            phpl.add(PathHistoryPointBuilder.genericPathHistoryPoint(iter.next()));
+         }
+      } else {
+         phpl.add(PathHistoryPointBuilder.genericPathHistoryPoint(php));
+      }
+      return phpl;
+   }
 }

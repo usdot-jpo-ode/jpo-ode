@@ -1,27 +1,30 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
 public enum J2735BasicVehicleRole {
-	BASICVEHICLE,
-	PUBLICTRANSPORT,
-	SPECIALTRANSPORT,
-	DANGEROUSGOODS,
-	ROADWORK,
-	ROADRESCUE,
-	EMERGENCY,
-	SAFETYCAR,
-	NONE_UNKOWN,
-	TRUCK,
-	MOTORCYCLE,
-	ROADSIDESOURCE,
-	POLICE,
-	FIRE,
-	AMBULANCE,
-	DOT,
-	TRANSIT,
-	SLOWMOVING,
-	STOPNGO,
-	CYCLIST,
-	PEDESTRIAN,
-	NONMOTORIZED,
-	MILITARY
+   basicVehicle, //, // (0), -- Light duty passenger vehicle type
+   publicTransport, //, // (1), -- Used in EU for Transit us
+   specialTransport, //, // (2), -- Used in EU, // (e.g. heavy load)
+   dangerousGoods, //, // (3), -- Used in EU for any HAZMAT
+   roadWork, //, // (4), -- Used in EU for State and Local DOT uses
+   roadRescue, //, // (5), -- Used in EU and in the US to include tow trucks.
+   emergency, // (6), -- Used in EU for Police, Fire and Ambulance units
+   safetyCar, // (7), -- Used in EU for Escort vehicles
+   //-- Begin US unique numbering
+   none_unknown, // (8), -- added to follow current SAE style guidelines
+   truck, // (9), -- Heavy trucks with additional BSM rights and obligations
+   motorcycle, // (10), --
+   roadSideSource, // (11), -- For infrastructure generated calls such as
+   //-- fire house, rail infrastructure, roadwork site, etc.
+   police, // (12), --
+   fire, // (13), --
+   ambulance, // (14), --, // (does not include private para-transit etc.)
+   dot, // (15), -- all roadwork vehicles
+   transit, // (16), -- all transit vehicles
+   slowMoving, // (17), -- to also include oversize etc.
+   stopNgo, // (18), -- to include trash trucks, school buses and others
+   //-- that routinely disturb the free flow of traffic
+   cyclist, // (19), --
+   pedestrian, // (20), -- also includes those with mobility limitations
+   nonMotorized, // (21), -- other, horse drawn, etc.
+   military // (22),
 }

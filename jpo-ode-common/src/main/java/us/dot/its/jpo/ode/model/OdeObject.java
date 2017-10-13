@@ -35,7 +35,7 @@ public class OdeObject implements Serializable {
       return JsonUtils.toJson(this, verbose);
    }
 
-   public String toXml() throws XmlUtilsException {
+   public String toXml() throws XmlUtilsException, JsonProcessingException {
       return XmlUtils.toXmlS(this);
    }
 

@@ -1,12 +1,12 @@
-package us.dot.its.jpo.ode.plugin.j2735.oss;
+package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
 
 import us.dot.its.jpo.ode.j2735.dsrc.DrivenLineOffsetLg;
 
-public class OssDrivenLineOffsetLg {
+public class DrivenLineOffsetLgBuilder {
 
-   private OssDrivenLineOffsetLg() {
+   private DrivenLineOffsetLgBuilder() {
       throw new UnsupportedOperationException();
    }
 

@@ -38,5 +38,51 @@ public class ElevationBuilderTest {
          assertEquals(InvocationTargetException.class, e.getClass());
       }
    }
+   @Test
+   public void testConversionReturnNull() throws JsonProcessingException, IOException {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode testInput = mapper.readTree("-4096");
+      BigDecimal expectedValue = null;
 
+      assertEquals(expectedValue, ElevationBuilder.genericElevation(testInput));
+   }
+   
+   @Test
+   public void testConversionWithinBounds() throws JsonProcessingException, IOException {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode testInput = mapper.readTree("-4095");
+      BigDecimal expectedValue = BigDecimal.valueOf(-409.5);
+
+      assertEquals(expectedValue, ElevationBuilder.genericElevation(testInput));
+   }
+   @Test
+   public void testConversionOutOfBoundsLower() throws JsonProcessingException, IOException {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode testInput = mapper.readTree("-4097");
+      BigDecimal expectedValue = BigDecimal.valueOf(-409.5);
+
+      assertEquals(expectedValue, ElevationBuilder.genericElevation(testInput));
+   }
+   @Test
+   public void testConversionOutOfBoundsLowerTwo() throws JsonProcessingException, IOException {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode testInput = mapper.readTree("-5097");
+      BigDecimal expectedValue = BigDecimal.valueOf(-409.5);
+
+      assertEquals(expectedValue, ElevationBuilder.genericElevation(testInput));
+   }
+   
+   
+   @Test
+   public void testConversionOutOfBoundsUpper() throws JsonProcessingException, IOException {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode testInput = mapper.readTree("61440");
+      BigDecimal expectedValue = BigDecimal.valueOf(6143.9);
+
+      assertEquals(expectedValue, ElevationBuilder.genericElevation(testInput));
+   }
+   
+   
+   
+   
 }

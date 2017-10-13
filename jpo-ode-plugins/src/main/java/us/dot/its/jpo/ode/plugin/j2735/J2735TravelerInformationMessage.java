@@ -2,9 +2,9 @@ package us.dot.its.jpo.ode.plugin.j2735;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.annotations.Expose;
 
-import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrameList;
 import us.dot.its.jpo.ode.model.OdeObject;
 
 public class J2735TravelerInformationMessage extends OdeObject {
@@ -23,7 +23,7 @@ public class J2735TravelerInformationMessage extends OdeObject {
    @Expose
    private DataFrame[] dataframes;
    @Expose(serialize = false, deserialize = true)
-   private TravelerDataFrameList asnDataFrames;
+   private JsonNode asnDataFrames;
 
    public int getMsgCnt() {
       return msgCnt;
@@ -73,11 +73,11 @@ public class J2735TravelerInformationMessage extends OdeObject {
       this.index = index;
    }
 
-   public TravelerDataFrameList  getAsnDataFrames() {
+   public JsonNode  getAsnDataFrames() {
       return asnDataFrames;
    }
 
-   public void setAsnDataFrames(TravelerDataFrameList stringDataFrames) {
+   public void setAsnDataFrames(JsonNode stringDataFrames) {
       this.asnDataFrames = stringDataFrames;
    }
 

@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.udp.bsm;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -10,15 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
-import us.dot.its.jpo.ode.coder.OdeDataPublisher;
-import us.dot.its.jpo.ode.model.OdeData;
+import us.dot.its.jpo.ode.coder.StringPublisher;
+import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher;
 import us.dot.its.jpo.ode.model.SerialId;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
-import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmSerializer;
 
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
@@ -29,11 +23,12 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
    private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
                                                       // least 20 bytes long
 
-   private OssJ2735Coder j2735coder;
+//ODE-581   private OssJ2735Coder j2735coder;
 
    private SerialId serialId;
 
-   private OdeDataPublisher publisher;
+//ODE-581   private OdeDataPublisher publisher;
+   private LogFileToAsn1CodecPublisher codecPublisher;
 
    protected static AtomicInteger bundleId = new AtomicInteger(1);
 
@@ -44,12 +39,13 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
    public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
       super(odeProps, port, bufferSize);
-      this.j2735coder = new OssJ2735Coder();
+//ODE-581      this.j2735coder = new OssJ2735Coder();
 
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
       
-      this.publisher = new OdeDataPublisher(odeProperties, OdeBsmSerializer.class.getName());
+//ODE-581      this.publisher = new OdeDataPublisher(odeProperties, OdeBsmSerializer.class.getName());
+      this.codecPublisher = new LogFileToAsn1CodecPublisher(new StringPublisher(odeProperties));
    }
 
    @Override
@@ -75,25 +71,23 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                String payloadHexString = HexUtils.toHexString(payload);
                logger.debug("Packet: {}", payloadHexString);
 
-               // try decoding as a message frame
-               J2735Bsm decodedBsm = null;
-               J2735MessageFrame decodedMf = (J2735MessageFrame) j2735coder.decodeUPERMessageFrameBytes(payload);
-               if (decodedMf != null) {
-                  decodedBsm = decodedMf.getValue();
-               } else {
-                  // if that failed, try decoding as a bsm
-                  decodedBsm = (J2735Bsm) j2735coder.decodeUPERBsmBytes(payload);
-               }
+               //ODE-581 removed decoding and replaced with sending the ASN encoding to asn1_codec
+//               // try decoding as a message frame
+//               J2735Bsm decodedBsm = null;
+//               J2735MessageFrame decodedMf = (J2735MessageFrame) j2735coder.decodeUPERMessageFrameBytes(payload);
+//               if (decodedMf != null) {
+//                  decodedBsm = decodedMf.getValue();
+//               } else {
+//                  // if that failed, try decoding as a bsm
+//                  decodedBsm = (J2735Bsm) j2735coder.decodeUPERBsmBytes(payload);
+//               }
+//
+//               // if that failed, throw an io exception
+//               if (decodedBsm == null) {
+//                  throw new IOException("Failed to decode message received via UDP.");
+//               }
 
-               // if that failed, throw an io exception
-               if (decodedBsm == null) {
-                  throw new IOException("Failed to decode message received via UDP.");
-               }
-
-               OdeData msgWithMetadata = OdeBsmDataCreatorHelper.createOdeBsmData(
-                  decodedBsm, null, 
-                  this.serialId.setBundleId(bundleId.incrementAndGet()).addRecordId(1));
-               publisher.publish(msgWithMetadata, odeProperties.getKafkaTopicOdeBsmPojo());
+               codecPublisher.publish(payload);
             }
          } catch (Exception e) {
             logger.error("Error receiving packet", e);

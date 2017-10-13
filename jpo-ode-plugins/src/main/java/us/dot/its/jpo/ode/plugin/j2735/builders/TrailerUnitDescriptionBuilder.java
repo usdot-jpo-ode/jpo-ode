@@ -1,68 +1,68 @@
-package us.dot.its.jpo.ode.plugin.j2735.oss;
+package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.util.Iterator;
 
-import us.dot.its.jpo.ode.j2735.dsrc.TrailerHistoryPoint;
-import us.dot.its.jpo.ode.j2735.dsrc.TrailerUnitDescription;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import us.dot.its.jpo.ode.plugin.j2735.J2735TrailerUnitDescription;
 
-public class OssTrailerUnitDescription {
+public class TrailerUnitDescriptionBuilder {
 
-    private OssTrailerUnitDescription() {
+    private TrailerUnitDescriptionBuilder() {
        throw new UnsupportedOperationException();
     }
 
-    public static J2735TrailerUnitDescription genericTrailerUnitDescription(TrailerUnitDescription tud) {
+    public static J2735TrailerUnitDescription genericTrailerUnitDescription(JsonNode tud) {
         J2735TrailerUnitDescription gtud = new J2735TrailerUnitDescription();
 
         // Required elements
-        gtud.setIsDolly(tud.isDolly.booleanValue());
+        gtud.setIsDolly(tud.get("isDolly").asBoolean());
 
-        if (tud.width.intValue() < 0 || tud.width.intValue() > 1023) {
+        if (tud.get("width").asInt() < 0 || tud.get("width").asInt() > 1023) {
             throw new IllegalArgumentException("Trailer width value out of bounds [0..1023]");
-        } else if (tud.width.intValue() == 0) {
+        } else if (tud.get("width").asInt() == 0) {
             gtud.setWidth(null);
         } else {
-            gtud.setWidth(tud.width.intValue());
+            gtud.setWidth(tud.get("width").asInt());
         }
 
-        if (tud.length.intValue() < 0 || tud.length.intValue() > 4095) {
+        if (tud.get("length").asInt() < 0 || tud.get("length").asInt() > 4095) {
             throw new IllegalArgumentException("Trailer length value out of bounds [0..4095]");
-        } else if (tud.length.intValue() == 0) {
+        } else if (tud.get("length").asInt() == 0) {
             gtud.setLength(null);
         } else {
-            gtud.setLength(tud.length.intValue());
+            gtud.setLength(tud.get("length").asInt());
         }
 
-        gtud.setFrontPivot(OssPivotPointDescription.genericPivotPointDescription(tud.frontPivot));
-        gtud.setPositionOffset(OssNode_XY.genericNode_XY(tud.positionOffset));
+        gtud.setFrontPivot(PivotPointDescriptionBuilder.genericPivotPointDescription(tud.get("frontPivot")));
+        gtud.setPositionOffset(Node_XYBuilder.genericNode_XY(tud.get("positionOffset")));
 
         // Optional elements
-        if (tud.hasHeight()) {
-            gtud.setHeight(OssHeight.genericHeight(tud.height));
+        if (tud.get("height") != null) {
+            gtud.setHeight(HeightBuilder.genericHeight(tud.get("height")));
         }
-        if (tud.hasMass()) {
-            gtud.setMass(OssMassOrWeight.genericMass(tud.mass));
+        if (tud.get("mass") != null) {
+            gtud.setMass(MassOrWeightBuilder.genericVehicleMass(tud.get("mass")));
         }
-        if (tud.hasBumperHeights()) {
-            gtud.setBumperHeights(OssBumperHeights.genericBumperHeights(tud.bumperHeights));
+        if (tud.get("bumperHeights") != null) {
+            gtud.setBumperHeights(BumperHeightsBuilder.genericBumperHeights(tud.get("bumperHeights")));
         }
-        if (tud.hasCenterOfGravity()) {
-            gtud.setCenterOfGravity(OssHeight.genericHeight(tud.centerOfGravity));
+        if (tud.get("centerOfGravity") != null) {
+            gtud.setCenterOfGravity(HeightBuilder.genericHeight(tud.get("centerOfGravity")));
         }
-        if (tud.hasRearPivot()) {
-            gtud.setRearPivot(OssPivotPointDescription.genericPivotPointDescription(tud.rearPivot));
+        if (tud.get("rearPivot") != null) {
+            gtud.setRearPivot(PivotPointDescriptionBuilder.genericPivotPointDescription(tud.get("rearPivot")));
         }
-        if (tud.hasRearWheelOffset()) {
-            gtud.setRearWheelOffset(OssOffset.genericOffset(tud.rearWheelOffset));
+        if (tud.get("rearWheelOffset") != null) {
+            gtud.setRearWheelOffset(OffsetBuilder.genericOffset_B12(tud.get("rearWheelOffset")));
         }
-        if (tud.hasElevationOffset()) {
-            gtud.setElevationOffset(OssOffset.genericOffset(tud.elevationOffset));
+        if (tud.get("elevationOffset") != null) {
+            gtud.setElevationOffset(OffsetBuilder.genericVertOffset_B07(tud.get("elevationOffset")));
         }
-        if (tud.hasCrumbData()) {
-            Iterator<TrailerHistoryPoint> iter = tud.crumbData.elements.iterator();
+        if (tud.get("crumbData") != null ) {
+            Iterator<JsonNode> iter = tud.get("crumbData").elements();
             while (iter.hasNext()) {
-                gtud.getCrumbData().add(OssTrailerHistoryPoint.genericTrailerHistoryPoint(iter.next()));
+                gtud.getCrumbData().add(TrailerHistoryPointBuilder.genericTrailerHistoryPoint(iter.next()));
             }
         }
 

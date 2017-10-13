@@ -14,7 +14,7 @@ import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mocked;
-import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
+import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
 
@@ -36,7 +36,7 @@ public class DecoderHelperTest {
    @Mocked
    Ieee1609Dot2Content mockIeee1609Dot2Content;
    @Mocked
-   BsmFileParser mockBsmFileParser;
+   BsmLogFileParser mockBsmFileParser;
 
    @Test
    public void decodeBsmTestTwo() {

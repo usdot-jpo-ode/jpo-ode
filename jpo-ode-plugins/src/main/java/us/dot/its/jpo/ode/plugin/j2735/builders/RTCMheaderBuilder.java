@@ -13,8 +13,8 @@ public class RTCMheaderBuilder {
     public static J2735RTCMheader genericRTCMheader(JsonNode rtcmHeader) {
         J2735RTCMheader header = new J2735RTCMheader();
 
-        header.setOffsetSet(AntennaOffsetSetBuilder.genericAntennaOffsetSet(rtcmHeader.offsetSet));
-        header.setStatus(GNSSstatusBuilder.genericGNSSstatus(rtcmHeader.status));
+        header.setOffsetSet(AntennaOffsetSetBuilder.genericAntennaOffsetSet(rtcmHeader.get("offsetSet")));
+        header.setStatus(GNSSstatusBuilder.genericGNSSstatus(rtcmHeader.get("status")));
 
         return header;
     }

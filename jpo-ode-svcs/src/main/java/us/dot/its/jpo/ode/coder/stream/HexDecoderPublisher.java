@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
-import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
+import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeData;
 
@@ -27,7 +27,7 @@ public class HexDecoderPublisher extends AbstractDecoderPublisher  {
       String line = null;
       OdeData decoded = null;
       
-      BsmFileParser bsmFileParser = new BsmFileParser(bundleId.incrementAndGet());
+      BsmLogFileParser bsmFileParser = new BsmLogFileParser(bundleId.incrementAndGet());
 
       try (Scanner scanner = new Scanner(bis)) {
 

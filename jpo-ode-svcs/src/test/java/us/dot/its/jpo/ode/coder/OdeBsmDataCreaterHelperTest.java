@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import mockit.Capturing;
-import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
+import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 
 public class OdeBsmDataCreaterHelperTest {
@@ -15,7 +15,7 @@ public class OdeBsmDataCreaterHelperTest {
    @Capturing
    IEEE1609p2Message capturingIEEE1609p2Message;
    @Capturing
-   BsmFileParser capturingBsmFileParser;
+   BsmLogFileParser capturingBsmFileParser;
    
    
    @Test

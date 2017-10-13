@@ -10,7 +10,7 @@ public class OdeTimSpecificMetadata extends OdeObject {
    public OdeTimSpecificMetadata() {
       super();
    }
-
+   
    public OdeTimSpecificMetadata(OdeTimSpecificMetadataLocation locationData, RxSource rxSource) {
       super();
       this.setLocationData(locationData);

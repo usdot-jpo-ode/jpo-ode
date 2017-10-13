@@ -1,8 +1,8 @@
 package us.dot.its.jpo.ode.model;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -10,7 +10,7 @@ public class OdeAsn1Metadata extends OdeLogMetadata {
 
    private static final long serialVersionUID = -8601265839394150140L;
 
-   private Set<Asn1Encoding> encodings = new HashSet<Asn1Encoding>();
+   private List<Asn1Encoding> encodings = new ArrayList<Asn1Encoding>();
 
    public OdeAsn1Metadata() {
       super();
@@ -60,11 +60,11 @@ public class OdeAsn1Metadata extends OdeLogMetadata {
       }
    }
 
-   public Set<Asn1Encoding> getEncodings() {
+   public List<Asn1Encoding> getEncodings() {
       return encodings;
    }
 
-   public void setEncodings(Set<Asn1Encoding> encodings) {
+   public void setEncodings(List<Asn1Encoding> encodings) {
       this.encodings = encodings;
    }
 

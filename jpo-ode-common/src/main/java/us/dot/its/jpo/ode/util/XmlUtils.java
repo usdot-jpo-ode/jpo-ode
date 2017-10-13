@@ -1,5 +1,8 @@
 package us.dot.its.jpo.ode.util;
 
+import org.json.JSONObject;
+import org.json.XML;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -41,6 +44,17 @@ public class XmlUtils {
       return xml;
    }
 
+//   public static String toXml(Object o) throws XmlUtilsException {
+//      try {
+//         JSONObject root = new JSONObject();
+//         JSONObject object = new JSONObject(o);
+//         root.put(o.getClass().getSimpleName(), object);
+//         return XML.toString(root);
+//      } catch (JSONException e) {
+//         throw new XmlUtilsException("Error encoding object to XML", e);
+//      }
+//   }
+
    public Object fromXml(String xml, Class<?> clazz) throws XmlUtilsException {
       try {
          return xmlMapper.readValue(xml, clazz);
@@ -73,12 +87,31 @@ public class XmlUtils {
 
    public static ObjectNode toObjectNode(String xml) throws XmlUtilsException {
       try {
-         return (ObjectNode) staticXmlMapper.readTree(xml);
+         JSONObject jsonObject = XML.toJSONObject(xml);
+         String jsonString = jsonObject.toString();
+         return JsonUtils.toObjectNode(jsonString);
+         
+         /*
+          * Due to issues with XmlMapper converting "xml arrays" to a valid DOM collection
+          * we could not use it in this context. Hence the above workaround was adopted.
+          * See: https://github.com/FasterXML/jackson-dataformat-xml/issues/187
+          *      https://github.com/FasterXML/jackson-dataformat-xml/issues/205
+          */
+         //return (ObjectNode) staticXmlMapper.readTree(xml);
       } catch (Exception e) {
-         throw new XmlUtilsException("Error decoding "
-               + xml + "to ObjectNode", e);
+         throw new XmlUtilsException("Error decoding " + xml + "to ObjectNode", e);
       }
    }
+
+
+   public static JSONObject toJSONObject(String xml) throws XmlUtilsException {
+      try {
+         return XML.toJSONObject(xml);
+      } catch (Exception e) {
+         throw new XmlUtilsException("Error decoding " + xml + "to JSONObject", e);
+      }
+   }
+
 
    public static JsonNode getJsonNode(String tree, String fieldName) throws XmlUtilsException {
       JsonNode jsonNode;
@@ -90,6 +123,14 @@ public class XmlUtils {
                + tree, e);
       }
       return jsonNode.get(fieldName);
+   }
+
+   public XmlMapper getXmlMapper() {
+      return xmlMapper;
+   }
+
+   public static XmlMapper getStaticXmlMapper() {
+      return staticXmlMapper;
    }
 
 }

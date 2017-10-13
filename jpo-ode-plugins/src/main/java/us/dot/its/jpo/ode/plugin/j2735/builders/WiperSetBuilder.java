@@ -7,41 +7,61 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735WiperStatus;
 
 public class WiperSetBuilder {
 
-    private static final long STATUS_LOWER_BOUND = 0L;
-    private static final long STATUS_UPPER_BOUND = 6L;
-    private static final Integer RATE_LOWER_BOUND = 0;
-    private static final Integer RATE_UPPER_BOUND = 127;
-    
-    private WiperSetBuilder() {
-       throw new UnsupportedOperationException();
-    }
+   private static final int STATUS_LOWER_BOUND = 0;
+   private static final int STATUS_UPPER_BOUND = 6;
+   private static final int RATE_LOWER_BOUND = 0;
+   private static final int RATE_UPPER_BOUND = 127;
 
-    public static J2735WiperSet genericWiperSet(JsonNode wiperSet) {
+   private WiperSetBuilder() {
+      throw new UnsupportedOperationException();
+   }
 
-        if (wiperSet.statusFront.asLong() < STATUS_LOWER_BOUND || wiperSet.statusFront.asLong() > STATUS_UPPER_BOUND) {
-            throw new IllegalArgumentException("Front wiper status out of bounds [0..127]");
-        }
+   public static J2735WiperSet genericWiperSet(JsonNode wiperSet) {
 
-        if (wiperSet.rateFront.asInt() < RATE_LOWER_BOUND || wiperSet.rateFront.asInt() > RATE_UPPER_BOUND) {
-            throw new IllegalArgumentException("Front wiper rate out of bounds [0..6]");
-        }
+      J2735WiperSet gws = new J2735WiperSet();
 
-        if (wiperSet.statusRear.asLong() < STATUS_LOWER_BOUND || wiperSet.statusRear.asLong() > STATUS_UPPER_BOUND) {
-            throw new IllegalArgumentException("Rear wiper status value out of bounds [0..127]");
-        }
+      // statusFront and rateFront are required elements
+      int statusFront = wiperSet.get("statusFront").asInt();
+      int rateFront = wiperSet.get("rateFront").asInt();
 
-        if (wiperSet.rateRear.asInt() < RATE_LOWER_BOUND || wiperSet.rateRear.asInt() > RATE_UPPER_BOUND) {
-            throw new IllegalArgumentException("Rear wiper rate out of bounds [0..6]");
-        }
+      if (statusFront < STATUS_LOWER_BOUND || STATUS_UPPER_BOUND < statusFront) {
+         throw new IllegalArgumentException(
+               String.format("Front wiper status out of bounds [%d..%d]", STATUS_LOWER_BOUND, STATUS_UPPER_BOUND));
+      }
 
-        J2735WiperSet gws = new J2735WiperSet();
+      gws.setStatusFront(J2735WiperStatus.values()[statusFront]);
 
-        gws.setRateFront(wiperSet.rateFront.asInt());
-        gws.setRateRear(wiperSet.rateRear.asInt());
-        gws.setStatusFront(J2735WiperStatus.values()[wiperSet.statusFront.indexOf()]);
-        gws.setStatusRear(J2735WiperStatus.values()[wiperSet.statusRear.indexOf()]);
+      if (rateFront < RATE_LOWER_BOUND || RATE_UPPER_BOUND < rateFront) {
+         throw new IllegalArgumentException(
+               String.format("Front wiper rate out of bounds [%d..%d]", RATE_LOWER_BOUND, RATE_UPPER_BOUND));
+      }
 
-        return gws;
-    }
+      gws.setRateFront(rateFront);
+
+      // statusRear and rateRear are optional elements
+      if (wiperSet.get("statusRear") != null) {
+         int statusRear = wiperSet.get("statusRear").asInt();
+
+         if (statusRear < STATUS_LOWER_BOUND || STATUS_UPPER_BOUND < statusRear) {
+            throw new IllegalArgumentException(String.format("Rear wiper status value out of bounds [%d..%d]",
+                  STATUS_LOWER_BOUND, STATUS_UPPER_BOUND));
+         }
+
+         gws.setStatusRear(J2735WiperStatus.values()[statusRear]);
+      }
+
+      if (wiperSet.get("rateRear") != null) {
+         int rateRear = wiperSet.get("rateRear").asInt();
+
+         if (rateRear < RATE_LOWER_BOUND || RATE_UPPER_BOUND < rateRear) {
+            throw new IllegalArgumentException(
+                  String.format("Rear wiper rate out of bounds [%d..%d]", RATE_LOWER_BOUND, RATE_UPPER_BOUND));
+         }
+
+         gws.setRateRear(rateRear);
+      }
+
+      return gws;
+   }
 
 }

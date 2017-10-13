@@ -1,9 +1,12 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
+import java.util.Iterator;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735RegionalContent;
 import us.dot.its.jpo.ode.plugin.j2735.J2735SupplementalVehicleExtensions;
+import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class SupplementalVehicleExtensionsBuilder {
     
@@ -13,45 +16,47 @@ public class SupplementalVehicleExtensionsBuilder {
 
     public static J2735SupplementalVehicleExtensions genericSupplementalVehicleExtensions(
             JsonNode sve) {
-        J2735SupplementalVehicleExtensions suppVeh = new J2735SupplementalVehicleExtensions();
+        J2735SupplementalVehicleExtensions genericSVE = new J2735SupplementalVehicleExtensions();
 
         // All elements of this class are optional
-        if (sve.hasClassification()) {
-            suppVeh.setClassification(sve.classification.asInt());
+        if (sve.has("classification")) {
+            genericSVE.setClassification(sve.get("classification").asInt());
         }
-        if (sve.hasClassDetails()) {
-            suppVeh.setClassDetails(VehicleClassificationBuilder.genericVehicleClassification(sve.classDetails));
+        if (sve.has("classDetails")) {
+            genericSVE.setClassDetails(VehicleClassificationBuilder.genericVehicleClassification(sve.get("classDetails")));
         }
-        if (sve.hasVehicleData()) {
-            suppVeh.setVehicleData(VehicleDataBuilder.genericVehicleData(sve.vehicleData));
+        if (sve.has("vehicleData")) {
+            genericSVE.setVehicleData(VehicleDataBuilder.genericVehicleData(sve.get("vehicleData")));
         }
-        if (sve.hasWeatherReport()) {
-            suppVeh.setWeatherReport(WeatherReportBuilder.genericWeatherReport(sve.weatherReport));
+        if (sve.has("weatherReport")) {
+            genericSVE.setWeatherReport(WeatherReportBuilder.genericWeatherReport(sve.get("weatherReport")));
         }
-        if (sve.hasWeatherProbe()) {
-            suppVeh.setWeatherProbe(WeatherProbeBuilder.genericWeatherProbe(sve.weatherProbe));
+        if (sve.has("weatherProbe")) {
+            genericSVE.setWeatherProbe(WeatherProbeBuilder.genericWeatherProbe(sve.get("weatherProbe")));
         }
-        if (sve.hasObstacle()) {
-            suppVeh.setObstacle(ObstacleDetectionBuilder.genericObstacleDetection(sve.obstacle));
+        if (sve.has("obstacle")) {
+            genericSVE.setObstacle(ObstacleDetectionBuilder.genericObstacleDetection(sve.get("obstacle")));
         }
-        if (sve.hasStatus()) {
-            suppVeh.setStatus(DisabledVehicleBuilder.genericDisabledVehicle(sve.status));
+        if (sve.has("status")) {
+            genericSVE.setStatus(DisabledVehicleBuilder.genericDisabledVehicle(sve.get("status")));
         }
-        if (sve.hasSpeedProfile()) {
-            suppVeh.setSpeedProfile(SpeedProfileBuilder.genericSpeedProfile(sve.speedProfile));
+        if (sve.has("speedProfile")) {
+            genericSVE.setSpeedProfile(SpeedProfileBuilder.genericSpeedProfile(sve.get("speedProfile")));
         }
-        if (sve.hasTheRTCM()) {
-            suppVeh.setTheRTCM(RTCMPackageBuilder.genericRTCMPackage(sve.theRTCM));
+        if (sve.has("theRTCM")) {
+            genericSVE.setTheRTCM(RTCMPackageBuilder.genericRTCMPackage(sve.get("theRTCM")));
         }
-        if (sve.hasRegional()) {
-            while (sve.regional.elements().hasMoreElements()) {
-                us.dot.its.jpo.ode.j2735.dsrc.SupplementalVehicleExtensions.Regional.Sequence_ element = (us.dot.its.jpo.ode.j2735.dsrc.SupplementalVehicleExtensions.Regional.Sequence_) sve.regional
-                        .elements().nextElement();
-                suppVeh.getRegional().add(new J2735RegionalContent().setId(element.regionId.asInt())
-                        .setValue(element.regExtValue.getEncodedValue()));
+        if (sve.has("regional")) {
+            JsonNode regional = sve.get("regional");
+            Iterator<JsonNode> elements = regional.elements();
+            while (elements.hasNext()) {
+               JsonNode element = elements.next();
+               genericSVE.getRegional().add(new J2735RegionalContent().setId(
+                  element.get("regionId").asInt())
+                        .setValue(CodecUtils.fromHex(element.get("regExtValue").asText().trim().replaceAll("\\w", ""))));
             }
         }
-        return suppVeh;
+        return genericSVE;
     }
 
 }

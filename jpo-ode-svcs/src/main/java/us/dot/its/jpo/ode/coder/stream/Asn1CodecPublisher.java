@@ -1,8 +1,6 @@
 package us.dot.its.jpo.ode.coder.stream;
 
-import java.io.BufferedInputStream;
-
 public interface Asn1CodecPublisher {
    
-   public void publish(BufferedInputStream is, String fileName) throws Exception;
+   void publish(byte[] asn1Encoding) throws Exception;
 }

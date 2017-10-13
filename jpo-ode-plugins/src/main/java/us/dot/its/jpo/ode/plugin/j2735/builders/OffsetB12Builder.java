@@ -1,12 +1,12 @@
-package us.dot.its.jpo.ode.plugin.j2735.oss;
+package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
 
 import us.dot.its.jpo.ode.j2735.dsrc.Offset_B12;
 
-public class OssOffsetB12 {
+public class OffsetB12Builder {
 
-   private OssOffsetB12() {
+   private OffsetB12Builder() {
       throw new UnsupportedOperationException();
    }
 

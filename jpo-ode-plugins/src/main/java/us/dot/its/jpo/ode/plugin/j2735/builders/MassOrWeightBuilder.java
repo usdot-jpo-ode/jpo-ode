@@ -1,8 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import us.dot.its.jpo.ode.j2735.dsrc.TrailerMass;
-import us.dot.its.jpo.ode.j2735.dsrc.TrailerWeight;
-import us.dot.its.jpo.ode.j2735.dsrc.VehicleMass;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class MassOrWeightBuilder {
 
@@ -10,7 +8,7 @@ public class MassOrWeightBuilder {
        throw new UnsupportedOperationException();
     }
 
-    public static Integer genericMass(TrailerMass mass) {
+    public static Integer genericTrailerMass(JsonNode mass) {
 
         if (mass.asInt() < 0 || mass.asInt() > 255) {
             throw new IllegalArgumentException("Trailer mass out of bounds");
@@ -28,7 +26,7 @@ public class MassOrWeightBuilder {
     // A data element re-used from the SAE J1939 standard and encoded as:
     // 2kg/bit, 0 deg offset, Range: 0 to +128,510kg. See SPN 180, PGN reference
     // 65258
-    public static Integer genericWeight(TrailerWeight weight) {
+    public static Integer genericTrailerWeight(JsonNode weight) {
 
         if (weight.asInt() < 0 || weight.asInt() > 64255) {
             throw new IllegalArgumentException("Trailer weight out of bounds");
@@ -48,7 +46,7 @@ public class MassOrWeightBuilder {
      * @param mass
      * @return
      */
-    public static Integer genericMass(VehicleMass mass) {
+    public static Integer genericVehicleMass(JsonNode mass) {
 
         if (mass.asInt() < 0 || mass.asInt() > 255) {
             throw new IllegalArgumentException("Vehicle mass out of bounds");
