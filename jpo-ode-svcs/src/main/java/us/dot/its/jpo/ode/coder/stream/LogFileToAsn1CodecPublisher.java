@@ -26,6 +26,8 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
    private static final String BSMS_FOR_EVENT_PREFIX = "bsmLogDuringEvent";
    private static final String RECEIVED_MESSAGES_PREFIX = "rxMsg";
+   private static final String DN_MESSAGE_PREFIX = "dmTx";
+   private static final String BSM_TX_MESSAGE_PREFIX = "bsmTx";
 
    protected StringPublisher publisher;
    protected LogFileParser fileParser;
@@ -50,6 +52,12 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
                } else if (fileName.startsWith(RECEIVED_MESSAGES_PREFIX)) {
                   logger.debug("Parsing as \"Received Messages\" log file type.");
                   fileParser = new RxMsgFileParser(bundleId.incrementAndGet());
+               } else if (fileName.startsWith(DN_MESSAGE_PREFIX)) {
+                  logger.debug("Parsing as \"Distress Notification Messages\" log file type.");
+                  fileParser = new RxMsgFileParser(bundleId.incrementAndGet());
+               } else if (fileName.startsWith(BSM_TX_MESSAGE_PREFIX)) {
+                  logger.debug("Parsing as \"BSM Transmit Messages\" log file type.");
+                  fileParser = new BsmFileParser(bundleId.incrementAndGet());
                } else {
                   throw new IllegalArgumentException("Unknown log file prefix: " + fileName);
                }
