@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import us.dot.its.jpo.ode.util.CodecUtils;
 
-public class BsmFileParser extends LogFileParser {
+public class BsmLogFileParser extends LogFileParser {
    public enum BsmSource {
       EV_TX, RV_RX
    }
@@ -15,7 +15,7 @@ public class BsmFileParser extends LogFileParser {
 
    private BsmSource direction; // 0 for EV(Tx), 1 for RV(Rx)
 
-   public BsmFileParser(long bundleId) {
+   public BsmLogFileParser(long bundleId) {
       super(bundleId);
    }
 
@@ -87,7 +87,7 @@ public class BsmFileParser extends LogFileParser {
       return direction;
    }
 
-   public BsmFileParser setDirection(BsmSource direction) {
+   public BsmLogFileParser setDirection(BsmSource direction) {
       this.direction = direction;
       return this;
    }

@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Ieee1609Dot2Data;
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
-import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
+import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.model.SerialId;
@@ -31,7 +31,7 @@ public class BsmDecoderHelper {
       this.bsmDecoderPayloadHelperIn = new BsmDecoderPayloadHelper(rawBsmMFSorterIn);
    }
 
-   public OdeData decode(BsmFileParser bsmFileParser, SerialId serialId) throws Exception {
+   public OdeData decode(BsmLogFileParser bsmFileParser, SerialId serialId) throws Exception {
 
       Ieee1609Dot2Data ieee1609dot2Data = 
               ieee1609dotCoder.decodeIeee1609Dot2DataBytes(bsmFileParser.getPayload());

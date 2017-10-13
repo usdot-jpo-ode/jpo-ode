@@ -6,10 +6,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import us.dot.its.jpo.ode.coder.OdeLogMetadataCreatorHelper;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
-import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
+import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
+import us.dot.its.jpo.ode.importer.parser.DistressMsgFileParser;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
 import us.dot.its.jpo.ode.importer.parser.RxMsgFileParser;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
@@ -48,37 +51,23 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
             if (fileType == ImporterFileType.BSM_LOG_FILE) {
                if (fileName.startsWith(BSMS_FOR_EVENT_PREFIX)) {
                   logger.debug("Parsing as \"BSM For Event\" log file type.");
-                  fileParser = new BsmFileParser(bundleId.incrementAndGet());
+                  fileParser = new BsmLogFileParser(bundleId.incrementAndGet());
                } else if (fileName.startsWith(RECEIVED_MESSAGES_PREFIX)) {
                   logger.debug("Parsing as \"Received Messages\" log file type.");
                   fileParser = new RxMsgFileParser(bundleId.incrementAndGet());
                } else if (fileName.startsWith(DN_MESSAGE_PREFIX)) {
                   logger.debug("Parsing as \"Distress Notification Messages\" log file type.");
-                  fileParser = new RxMsgFileParser(bundleId.incrementAndGet());
+                  fileParser = new DistressMsgFileParser(bundleId.incrementAndGet());
                } else if (fileName.startsWith(BSM_TX_MESSAGE_PREFIX)) {
                   logger.debug("Parsing as \"BSM Transmit Messages\" log file type.");
-                  fileParser = new BsmFileParser(bundleId.incrementAndGet());
+                  fileParser = new BsmLogFileParser(bundleId.incrementAndGet());
                } else {
                   throw new IllegalArgumentException("Unknown log file prefix: " + fileName);
                }
 
                status = fileParser.parseFile(bis, fileName);
                if (status == ParserStatus.COMPLETE) {
-                  OdeAsn1Payload payload = new OdeAsn1Payload(fileParser.getPayload());
-                  OdeAsn1Metadata metadata = new OdeAsn1Metadata(payload);
-                  metadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
-                  OdeLogMetadataCreatorHelper.updateLogMetadata(metadata, fileParser);
-
-                  Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
-                  Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",
-                        EncodingRule.UPER);
-                  metadata.addEncoding(msgEncoding).addEncoding(unsecuredDataEncoding);
-                  OdeAsn1Data asn1Data = new OdeAsn1Data(metadata, payload);
-
-                  // publisher.publish(asn1Data.toJson(false),
-                  // publisher.getOdeProperties().getKafkaTopicAsn1EncodedBsm());
-                  publisher.publish(xmlUtils.toXml(asn1Data),
-                     publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
+                  publish(xmlUtils);
                } else if (status == ParserStatus.EOF) {
                   // if parser returns PARTIAL record, we will go back and continue
                   // parsing
@@ -97,6 +86,24 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
             logger.error("Error decoding and publishing data.", e);
          }
       } while (status == ParserStatus.COMPLETE);
+   }
+
+   private void publish(XmlUtils xmlUtils) throws JsonProcessingException {
+      OdeAsn1Payload payload = new OdeAsn1Payload(fileParser.getPayload());
+      OdeAsn1Metadata metadata = new OdeAsn1Metadata(payload);
+      metadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
+      OdeLogMetadataCreatorHelper.updateLogMetadata(metadata, fileParser);
+
+      Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
+      Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",
+            EncodingRule.UPER);
+      metadata.addEncoding(msgEncoding).addEncoding(unsecuredDataEncoding);
+      OdeAsn1Data asn1Data = new OdeAsn1Data(metadata, payload);
+
+      // publisher.publish(asn1Data.toJson(false),
+      // publisher.getOdeProperties().getKafkaTopicAsn1EncodedBsm());
+      publisher.publish(xmlUtils.toXml(asn1Data),
+         publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
    }
 
    @Override

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import us.dot.its.jpo.ode.context.AppContext;
-import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
+import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;
@@ -30,7 +30,7 @@ public class OdeBsmDataCreatorHelper {
    public static OdeBsmData createOdeBsmData(
       J2735Bsm rawBsm, 
       IEEE1609p2Message message, 
-      BsmFileParser bsmFileParser) {
+      BsmLogFileParser bsmFileParser) {
 
       OdeBsmPayload payload = new OdeBsmPayload(rawBsm);
 
@@ -56,7 +56,7 @@ public class OdeBsmDataCreatorHelper {
 
    public static OdeBsmData createOdeBsmData(
       J2735Bsm rawBsm, String filename, SerialId serialId) {
-      BsmFileParser bsmFileParser = new BsmFileParser(serialId.getBundleId());
+      BsmLogFileParser bsmFileParser = new BsmLogFileParser(serialId.getBundleId());
       bsmFileParser.setFilename(filename).setUtcTimeInSec(0).setValidSignature(false);
       return createOdeBsmData(rawBsm, null, bsmFileParser);
    }
