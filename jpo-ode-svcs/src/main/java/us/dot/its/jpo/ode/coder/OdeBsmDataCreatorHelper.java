@@ -8,8 +8,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
+import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
-import us.dot.its.jpo.ode.model.OdeAsn1Metadata;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;
@@ -66,9 +66,15 @@ public class OdeBsmDataCreatorHelper {
 //    JsonNode consumed = JsonUtils.toObjectNode(consumedData);
       JsonNode consumed = XmlUtils.toObjectNode(consumedData);
 
-      OdeAsn1Metadata metadata = (OdeAsn1Metadata) JsonUtils.fromJson(
-         consumed.findValue("metadata").toString(), OdeAsn1Metadata.class);
+      JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
       
+      OdeBsmMetadata metadata = (OdeBsmMetadata) JsonUtils.fromJson(
+         metadataNode.toString(), OdeBsmMetadata.class);
+      
+//      JSONObject metadata = bsmJSONData.getJSONObject(AppContext.METADATA_STRING);
+//      metadata.put("payloadType", OdeBsmPayload.class.getSimpleName());
+//      metadata.remove("encodings");
+
       OdeBsmPayload payload = new OdeBsmPayload(
          BsmBuilder.genericBsm(consumed.findValue("BasicSafetyMessage")));
       return new OdeBsmData(metadata, payload );

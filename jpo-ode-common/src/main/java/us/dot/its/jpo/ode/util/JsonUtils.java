@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 public class JsonUtils {
 	   private static Gson gsonCompact;
@@ -126,6 +129,15 @@ public class JsonUtils {
       return jsonNode;
    }
    
+   public static JSONObject toJSONObject(String json) throws XmlUtilsException {
+      try {
+         return new JSONObject(json);
+      } catch (Exception e) {
+         throw new XmlUtilsException("Error decoding " + json + "to JSONObject", e);
+      }
+   }
+
+
    public static boolean isValid(String tree) throws IOException {
       try {
          ObjectNode jsonNode = (ObjectNode) mapper.readTree(tree);

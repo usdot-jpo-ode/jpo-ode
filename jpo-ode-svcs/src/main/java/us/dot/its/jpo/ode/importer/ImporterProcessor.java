@@ -24,16 +24,14 @@ public class ImporterProcessor {
 //   private FileDecoderPublisher decoderPublisherManager;
    private FileAsn1CodecPublisher codecPublisher;
    private OdeProperties odeProperties;
-// Removed for ODE-559
-//   private ImporterFileType fileType;
+   private ImporterFileType fileType;
 
    public ImporterProcessor(OdeProperties odeProperties, ImporterFileType fileType) {
    // Removed for ODE-559
 //      this.decoderPublisherManager = new FileDecoderPublisher(odeProperties);
       this.codecPublisher = new FileAsn1CodecPublisher(odeProperties);
       this.odeProperties = odeProperties;
-   // Removed for ODE-559
-//      this.fileType = fileType;
+      this.fileType = fileType;
    }
 
    public void processDirectory(Path dir, Path backupDir) {
@@ -72,7 +70,7 @@ public class ImporterProcessor {
       // ODE-559
       try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
          BufferedInputStream bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
-         codecPublisher.publishFile(filePath, bis);
+         codecPublisher.publishFile(filePath, bis, fileType);
       } catch (Exception e) {
          logger.error("Unable to open or process file: " + filePath, e);
       }

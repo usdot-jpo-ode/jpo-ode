@@ -78,8 +78,6 @@ public class OdeProperties implements EnvironmentAware {
     */
    private String kafkaTopicOdeTimPojo = "topic.OdeTimPojo";
    private String kafkaTopicOdeTimJson = "topic.OdeTimJson";
-   private String kafkaTopicAsn1EncodedTim = "topic.Asn1EncodedTim";
-   private String kafkaTopicAsn1DecodedTim = "topic.Asn1DecodedTim";
 
    /*
     * BSM Properties
@@ -87,8 +85,6 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicFilteredOdeBsmJson = "topic.FilteredOdeBsmJson";
    private String kafkaTopicOdeBsmPojo = "topic.OdeBsmPojo";
    private String kafkaTopicOdeBsmJson = "topic.OdeBsmJson";
-   private String kafkaTopicAsn1EncodedBsm = "topic.Asn1EncodedBsm";
-   private String kafkaTopicAsn1DecodedBsm = "topic.Asn1DecodedBsm";
    private int bsmReceiverPort = 46800;
    private int bsmBufferSize = 500;
 
@@ -110,6 +106,14 @@ public class OdeProperties implements EnvironmentAware {
    private int isdDepositorPort = 6666;
    private int isdTrustPort = 6667;
    private int dataReceiptBufferSize;
+
+   /*
+    * ASN.1 CODEC topics
+    */
+   private String kafkaTopicAsn1DecoderInput = "topic.Asn1DecoderInput";
+   private String kafkaTopicAsn1DecoderOutput = "topic.Asn1DecoderOutput";
+   private String kafkaTopicAsn1EncoderInput = "topic.Asn1EncoderInput";
+   private String kafkaTopicAsn1EncoderOutput = "topic.Asn1EncoderOutput";
 
    private int importProcessorBufferSize = OdePlugin.INPUT_STREAM_BUFFER_SIZE;
 
@@ -545,36 +549,36 @@ public class OdeProperties implements EnvironmentAware {
        this.kafkaTopicOdeBsmJson = kafkaTopicOdeBsmJson;
     }
 
-    public String getKafkaTopicAsn1EncodedTim() {
-      return kafkaTopicAsn1EncodedTim;
+   public String getKafkaTopicAsn1DecoderInput() {
+      return kafkaTopicAsn1DecoderInput;
+   }
+
+   public void setKafkaTopicAsn1DecoderInput(String kafkaTopicAsn1DecoderInput) {
+      this.kafkaTopicAsn1DecoderInput = kafkaTopicAsn1DecoderInput;
+   }
+
+   public String getKafkaTopicAsn1DecoderOutput() {
+      return kafkaTopicAsn1DecoderOutput;
+   }
+
+   public void setKafkaTopicAsn1DecoderOutput(String kafkaTopicAsn1DecoderOutput) {
+      this.kafkaTopicAsn1DecoderOutput = kafkaTopicAsn1DecoderOutput;
+   }
+
+   public String getKafkaTopicAsn1EncodedTim() {
+      return kafkaTopicAsn1EncoderInput;
    }
 
    public void setKafkaTopicAsn1EncodedTim(String kafkaTopicAsn1EncodedTim) {
-      this.kafkaTopicAsn1EncodedTim = kafkaTopicAsn1EncodedTim;
+      this.kafkaTopicAsn1EncoderInput = kafkaTopicAsn1EncodedTim;
    }
 
    public String getKafkaTopicAsn1DecodedTim() {
-      return kafkaTopicAsn1DecodedTim;
+      return kafkaTopicAsn1EncoderOutput;
    }
 
    public void setKafkaTopicAsn1DecodedTim(String kafkaTopicAsn1DecodedTim) {
-      this.kafkaTopicAsn1DecodedTim = kafkaTopicAsn1DecodedTim;
-   }
-
-   public String getKafkaTopicAsn1EncodedBsm() {
-      return kafkaTopicAsn1EncodedBsm;
-   }
-
-   public void setKafkaTopicAsn1EncodedBsm(String kafkaTopicAsn1EncodedBsm) {
-      this.kafkaTopicAsn1EncodedBsm = kafkaTopicAsn1EncodedBsm;
-   }
-
-   public String getKafkaTopicAsn1DecodedBsm() {
-      return kafkaTopicAsn1DecodedBsm;
-   }
-
-   public void setKafkaTopicAsn1DecodedBsm(String kafkaTopicAsn1DecodedBsm) {
-      this.kafkaTopicAsn1DecodedBsm = kafkaTopicAsn1DecodedBsm;
+      this.kafkaTopicAsn1EncoderOutput = kafkaTopicAsn1DecodedTim;
    }
 
    public int getImportProcessorBufferSize() {

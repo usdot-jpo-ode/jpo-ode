@@ -6,7 +6,7 @@ import java.time.ZonedDateTime;
 
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
-public abstract class LogFileParser implements FileParser {
+public class LogFileParser implements FileParser {
    public static final int BUFFER_SIZE = 4096;
    public static final int UTC_TIME_IN_SEC_LENGTH = 4;
    public static final int MSEC_LENGTH = 2;
@@ -33,7 +33,7 @@ public abstract class LogFileParser implements FileParser {
 
    public ParserStatus parseFile(BufferedInputStream bis, String fileName) throws FileParserException {
 
-      ParserStatus status = ParserStatus.INIT;
+      status = ParserStatus.INIT;
 
       if (getStep() == 0) {
          setFilename(fileName);

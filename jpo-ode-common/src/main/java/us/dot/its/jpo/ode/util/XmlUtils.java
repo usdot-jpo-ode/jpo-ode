@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.util;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 
@@ -88,9 +87,9 @@ public class XmlUtils {
 
    public static ObjectNode toObjectNode(String xml) throws XmlUtilsException {
       try {
-         JSONObject xmlJsonObj = XML.toJSONObject(xml);
-         String jsonPrettyPrintString = xmlJsonObj.toString();
-         return JsonUtils.toObjectNode(jsonPrettyPrintString);
+         JSONObject jsonObject = XML.toJSONObject(xml);
+         String jsonString = jsonObject.toString();
+         return JsonUtils.toObjectNode(jsonString);
          
          /*
           * Due to issues with XmlMapper converting "xml arrays" to a valid DOM collection
@@ -101,6 +100,15 @@ public class XmlUtils {
          //return (ObjectNode) staticXmlMapper.readTree(xml);
       } catch (Exception e) {
          throw new XmlUtilsException("Error decoding " + xml + "to ObjectNode", e);
+      }
+   }
+
+
+   public static JSONObject toJSONObject(String xml) throws XmlUtilsException {
+      try {
+         return XML.toJSONObject(xml);
+      } catch (Exception e) {
+         throw new XmlUtilsException("Error decoding " + xml + "to JSONObject", e);
       }
    }
 

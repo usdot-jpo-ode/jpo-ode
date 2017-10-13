@@ -24,6 +24,7 @@ public class BsmFileParser extends LogFileParser {
 
       try {
          super.parseFile(bis, fileName);
+         status = ParserStatus.INIT;
 
          // Step 1
          if (step == 1) {
