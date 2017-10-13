@@ -19,29 +19,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
-import com.oss.asn1.AbstractData;
-import com.oss.asn1.Coder;
-import com.oss.asn1.DecodeFailedException;
-import com.oss.asn1.DecodeNotSupportedException;
-import com.oss.asn1.EncodeFailedException;
-import com.oss.asn1.EncodeNotSupportedException;
-import com.oss.coders.DecoderException;
-
 import us.dot.its.jpo.ode.asn1.j2735.msg.ids.ConnectedVehicleMessageID;
 import us.dot.its.jpo.ode.asn1.j2735.msg.ids.ConnectedVehicleMessageLookup;
 import us.dot.its.jpo.ode.asn1.j2735.msg.ids.SEMIMessageID;
-import us.dot.its.jpo.ode.j2735.dsrc.DDateTime;
-import us.dot.its.jpo.ode.j2735.dsrc.DDay;
-import us.dot.its.jpo.ode.j2735.dsrc.DFullTime;
-import us.dot.its.jpo.ode.j2735.dsrc.DHour;
-import us.dot.its.jpo.ode.j2735.dsrc.DMinute;
-import us.dot.its.jpo.ode.j2735.dsrc.DMonth;
-import us.dot.its.jpo.ode.j2735.dsrc.DOffset;
-import us.dot.its.jpo.ode.j2735.dsrc.DSecond;
-import us.dot.its.jpo.ode.j2735.dsrc.DYear;
-import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
-import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
-import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
 
 public class J2735Util {
 	
@@ -49,18 +29,6 @@ public class J2735Util {
 	
 	private final static int LAT_LONG_CONVERSION_FACTOR = 10000000;
 	private final static int LAT_LONG_DECIMAL_PRECISION = 7;
-	
-	public static AbstractData decode(Coder coder, byte[] message) throws DecodeFailedException, DecodeNotSupportedException {
-		AbstractData abstractData = null;
-		for( int preambleSize = 0; abstractData == null && preambleSize <= 2; preambleSize++ ) {
-			ConnectedVehicleMessageID msgID = getMessageID(message, preambleSize);
-			try {
-				abstractData = decode(coder, message, msgID);
-			} catch( DecoderException ex ) {
-			}
-		}
-		return abstractData;
-	}
 	
 	private static final SemiDialogID[] semiDialogIDs = (SemiDialogID[])SemiDialogID.vehSitData.getNamedNumbers();
 	private static final SemiSequenceID[] semiSvcIDs = (SemiSequenceID[])SemiSequenceID.svcReq.getNamedNumbers();
