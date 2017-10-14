@@ -14,6 +14,7 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;
 import us.dot.its.jpo.ode.model.SerialId;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.builders.BsmBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.BsmPart2ContentBuilder.BsmPart2ContentBuilderException;
@@ -48,6 +49,7 @@ public class OdeBsmDataCreatorHelper {
             generatedAt = bsmFileParser.getGeneratedAt();
          }
          metadata.setGeneratedAt(generatedAt.toString());
+         metadata.setGeneratedBy(GeneratedBy.OBU);
          metadata.setValidSignature(true);
       }
 

@@ -14,10 +14,6 @@ public class OdeTimMetadata extends OdeLogMetadata {
       super(timPayload);
    }
 
-   public OdeTimMetadata(OdeTimPayload timPayload, SerialId serialId, String receivedAt, String generatedAt) {
-      super(timPayload, serialId, receivedAt, generatedAt);
-   }
-
    public OdeTimSpecificMetadata getReceivedMessageDetails() {
       return receivedMessageDetails;
    }
