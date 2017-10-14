@@ -17,10 +17,6 @@ import us.dot.its.jpo.ode.model.OdeData;
 
 public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
 
-   private static final String BSMS_FOR_EVENT_PREFIX = "bsmLogDuringEvent";
-   private static final String RECEIVED_MESSAGES_PREFIX = "rxMsg";
-   private static final String DISTRESS_MESSAGES_PREFIX = "dnMsg";
-
    private static final Logger logger = LoggerFactory.getLogger(BinaryDecoderPublisher.class);
    private OdeDataPublisher timMessagePublisher;
 
@@ -43,18 +39,7 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
             ParserStatus status = ParserStatus.UNKNOWN;
 
             if (fileType == ImporterFileType.BSM_LOG_FILE) {
-               if (fileName.startsWith(BSMS_FOR_EVENT_PREFIX)) {
-                  logger.debug("Parsing as \"BSM For Event\" log file type.");
-                  fileParser = new BsmLogFileParser(bundleId.incrementAndGet());
-               } else if (fileName.startsWith(RECEIVED_MESSAGES_PREFIX)) {
-                  logger.debug("Parsing as \"Received Messages\" log file type.");
-                  fileParser = new RxMsgFileParser(bundleId.incrementAndGet());
-               } else if (fileName.startsWith(DISTRESS_MESSAGES_PREFIX)) {
-                  logger.debug("Parsing as \"Distress Notifications\" log file type.");
-                  fileParser = new DistressMsgFileParser(bundleId.incrementAndGet());
-               } else {
-                  throw new IllegalArgumentException("Unknown log file prefix: " + fileName);
-               }
+               fileParser = LogFileParser.factory(fileName, bundleId.incrementAndGet());
 
                status = fileParser.parseFile(bis, fileName);
                if (status == ParserStatus.COMPLETE) {

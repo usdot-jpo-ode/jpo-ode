@@ -13,6 +13,7 @@ public class OdeLogMetadataCreatorHelper {
 
       if (logFileParser != null) {
          metadata.setLogFileName(logFileParser.getFilename());
+         metadata.setRecordType(logFileParser.getRecordType().name());
          metadata.setGeneratedAt(logFileParser.getGeneratedAt().toString());
          metadata.setValidSignature(logFileParser.isValidSignature());
       } else {

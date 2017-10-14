@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.model;
 
-import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class OdeMsgMetadata extends OdeObject {

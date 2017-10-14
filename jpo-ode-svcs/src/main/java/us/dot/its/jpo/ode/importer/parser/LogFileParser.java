@@ -4,9 +4,22 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class LogFileParser implements FileParser {
+   private static final Logger logger = LoggerFactory.getLogger(LogFileParser.class);
+
+   public enum RecordType {
+	   bsmLogDuringEvent,
+	   rxMsg,
+	   dnMsg,
+	   bsmTx,
+	   unsupported
+	}
+
    public static final int BUFFER_SIZE = 4096;
    public static final int UTC_TIME_IN_SEC_LENGTH = 4;
    public static final int MSEC_LENGTH = 2;
@@ -20,6 +33,7 @@ public class LogFileParser implements FileParser {
    protected int step = 0;
 
    protected String filename;
+   protected RecordType recordType;
    protected long utcTimeInSec;
    protected short mSec;
    protected boolean validSignature;
@@ -31,12 +45,35 @@ public class LogFileParser implements FileParser {
       this.bundleId = bundleId;
    }
 
+	public static LogFileParser factory(String fileName, long bundleId) {
+		LogFileParser fileParser;
+		if (fileName.startsWith(RecordType.bsmLogDuringEvent.name()) ||
+		    fileName.startsWith(RecordType.bsmTx.name())) {
+		   logger.debug("Parsing as \"BSM For Event\" log file type.");
+		   fileParser = new BsmLogFileParser(bundleId);
+		} else if (fileName.startsWith(RecordType.rxMsg.name())) {
+		   logger.debug("Parsing as \"Received Messages\" log file type.");
+		   fileParser = new RxMsgFileParser(bundleId);
+		} else if (fileName.startsWith(RecordType.dnMsg.name())) {
+		   logger.debug("Parsing as \"Distress Notifications\" log file type.");
+		   fileParser = new DistressMsgFileParser(bundleId);
+		} else {
+		   throw new IllegalArgumentException("Unknown log file prefix: " + fileName);
+		}
+		return fileParser;
+	}
+
    public ParserStatus parseFile(BufferedInputStream bis, String fileName) throws FileParserException {
 
       status = ParserStatus.INIT;
 
       if (getStep() == 0) {
          setFilename(fileName);
+         try {
+				setRecordType(RecordType.valueOf(filename.split("_")[0]));
+			} catch (Exception e) {
+				setRecordType(RecordType.unsupported);
+			}
          setStep(getStep() + 1);
       }
       
@@ -89,7 +126,15 @@ public class LogFileParser implements FileParser {
       return this;
    }
 
-   public long getBundleId() {
+   public RecordType getRecordType() {
+		return recordType;
+	}
+
+	public void setRecordType(RecordType recordType) {
+		this.recordType = recordType;
+	}
+
+	public long getBundleId() {
       return bundleId;
    }
 

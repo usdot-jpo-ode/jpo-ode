@@ -23,8 +23,9 @@ public class OdeAsn1Metadata extends OdeLogMetadata {
    public OdeAsn1Metadata(JsonNode metadata) {
       setEncodings(metadata.get("encodings").get("encodings"));
       setGeneratedAt(metadata.get("generatedAt").asText());
-      setGeneratedBy(getGeneratedBy());
+      setGeneratedBy(GeneratedBy.valueOf(metadata.get("generatedABy").asText()));
       setLogFileName(metadata.get("logFileName").asText());
+      setRecordType(metadata.get("recordType").asText());
       setPayloadType(metadata.get("payloadType").asText());
       setReceivedAt(metadata.get("receivedAt").asText());
       setSanitized(metadata.get("sanitized").asBoolean());

@@ -11,26 +11,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import us.dot.its.jpo.ode.coder.OdeLogMetadataCreatorHelper;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
-import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
-import us.dot.its.jpo.ode.importer.parser.DistressMsgFileParser;
-import us.dot.its.jpo.ode.importer.parser.LogFileParser;
-import us.dot.its.jpo.ode.importer.parser.RxMsgFileParser;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
+import us.dot.its.jpo.ode.importer.parser.LogFileParser;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
+import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Metadata;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
-import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.util.XmlUtils;
 
 public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
    protected static final Logger logger = LoggerFactory.getLogger(LogFileToAsn1CodecPublisher.class);
-
-   private static final String BSMS_FOR_EVENT_PREFIX = "bsmLogDuringEvent";
-   private static final String RECEIVED_MESSAGES_PREFIX = "rxMsg";
-   private static final String DN_MESSAGE_PREFIX = "dmTx";
-   private static final String BSM_TX_MESSAGE_PREFIX = "bsmTx";
 
    protected StringPublisher publisher;
    protected LogFileParser fileParser;
@@ -49,21 +41,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
          try {
 
             if (fileType == ImporterFileType.BSM_LOG_FILE) {
-               if (fileName.startsWith(BSMS_FOR_EVENT_PREFIX)) {
-                  logger.debug("Parsing as \"BSM For Event\" log file type.");
-                  fileParser = new BsmLogFileParser(bundleId.incrementAndGet());
-               } else if (fileName.startsWith(RECEIVED_MESSAGES_PREFIX)) {
-                  logger.debug("Parsing as \"Received Messages\" log file type.");
-                  fileParser = new RxMsgFileParser(bundleId.incrementAndGet());
-               } else if (fileName.startsWith(DN_MESSAGE_PREFIX)) {
-                  logger.debug("Parsing as \"Distress Notification Messages\" log file type.");
-                  fileParser = new DistressMsgFileParser(bundleId.incrementAndGet());
-               } else if (fileName.startsWith(BSM_TX_MESSAGE_PREFIX)) {
-                  logger.debug("Parsing as \"BSM Transmit Messages\" log file type.");
-                  fileParser = new BsmLogFileParser(bundleId.incrementAndGet());
-               } else {
-                  throw new IllegalArgumentException("Unknown log file prefix: " + fileName);
-               }
+            	fileParser = LogFileParser.factory(fileName, bundleId.incrementAndGet());
 
                status = fileParser.parseFile(bis, fileName);
                if (status == ParserStatus.COMPLETE) {
@@ -107,8 +85,8 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
    }
 
    @Override
-   public void publish(byte[] asn1Encoding) throws Exception {
-      OdeAsn1Payload payload = new OdeAsn1Payload(asn1Encoding);
+   public void publish(byte[] payloadBytes) throws Exception {
+      OdeAsn1Payload payload = new OdeAsn1Payload(payloadBytes);
       OdeAsn1Metadata metadata = new OdeAsn1Metadata(payload);
       metadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
       // OdeLogMetadataCreatorHelper.updateLogMetadata(metadata, bsmFileParser);

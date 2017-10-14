@@ -136,6 +136,7 @@ public class TimDecoderHelper {
             timMetadata.setReceivedAt(DateTimeUtils.now());
             timMetadata.setSerialId(serialId);
             timMetadata.setLogFileName(fileParser.getFilename());
+            timMetadata.setRecordType(fileParser.getRecordType().name());
             
             OdeTimSpecificMetadata timSpecificMetadata = new OdeTimSpecificMetadata(
                   new OdeTimSpecificMetadataLocation(
