@@ -30,6 +30,7 @@ public class OdeData extends OdeObject implements OdeFilterable {
         super();
         this.metadata = metadata;
         this.payload = payload;
+        this.metadata.setPayloadType(payload.getClass().getName());
     }
 
     public OdeMsgMetadata getMetadata() {
