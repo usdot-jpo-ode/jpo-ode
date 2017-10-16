@@ -102,3 +102,4 @@ jpo-ode-consumer-example/target/
 *.DS_Store
 /SNMP_Error.log
 /Events.log
+/uploads
