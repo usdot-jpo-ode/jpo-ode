@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.coder;
 
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
 import us.dot.its.jpo.ode.model.OdeLogMetadata;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 
 public class OdeLogMetadataCreatorHelper {
 
@@ -12,6 +13,7 @@ public class OdeLogMetadataCreatorHelper {
 
       if (logFileParser != null) {
          metadata.setLogFileName(logFileParser.getFilename());
+         metadata.setRecordType(logFileParser.getRecordType().name());
          metadata.setGeneratedAt(logFileParser.getGeneratedAt().toString());
          metadata.setValidSignature(logFileParser.isValidSignature());
       } else {
@@ -22,6 +24,7 @@ public class OdeLogMetadataCreatorHelper {
          metadata.setGeneratedAt(metadata.getReceivedAt());
       }
 
+      metadata.setGeneratedBy(GeneratedBy.OBU);
       metadata.getSerialId().addRecordId(1);
    }
 

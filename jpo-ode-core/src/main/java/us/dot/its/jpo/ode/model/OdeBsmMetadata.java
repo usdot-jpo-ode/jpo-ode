@@ -8,27 +8,8 @@ public class OdeBsmMetadata extends OdeLogMetadata {
         super();
     }
 
-    public OdeBsmMetadata(String payloadType, SerialId serialId, String receivedAt) {
-        super(payloadType, serialId, receivedAt);
-    }
-
-    public OdeBsmMetadata(OdeMsgPayload payload, SerialId serialId, String receivedAt, String generatedAt) {
-        super(payload, serialId, receivedAt);
-        this.generatedAt = generatedAt;
-    }
-
-    public OdeBsmMetadata(OdeMsgPayload payload) {
+   public OdeBsmMetadata(OdeMsgPayload payload) {
         super(payload);
-    }
-
-    public OdeBsmMetadata(OdeMsgPayload payload, String generatedAt) {
-        super(payload);
-        this.generatedAt = generatedAt;
-    }
-
-    public OdeBsmMetadata(String payloadType, SerialId serialId, String receivedAt, String generatedAt) {
-        super(payloadType, serialId, receivedAt);
-        this.generatedAt = generatedAt;
     }
 
     public OdeBsmMetadata(OdeMsgPayload payload, SerialId serialId, String receivedAt) {

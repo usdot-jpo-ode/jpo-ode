@@ -16,32 +16,16 @@ public class OdeAsn1Metadata extends OdeLogMetadata {
       super();
    }
 
-   public OdeAsn1Metadata(String payloadType, SerialId serialId, String receivedAt) {
-      super(payloadType, serialId, receivedAt);
-   }
-
-   public OdeAsn1Metadata(OdeMsgPayload payload, SerialId serialId, String receivedAt, String generatedAt) {
-      super(payload, serialId, receivedAt, generatedAt);
-   }
-
    public OdeAsn1Metadata(OdeMsgPayload payload) {
       super(payload);
-   }
-
-   public OdeAsn1Metadata(OdeMsgPayload payload, String generatedAt) {
-      super(payload);
-      this.generatedAt = generatedAt;
-   }
-
-   public OdeAsn1Metadata(String payloadType, SerialId serialId, String receivedAt, String generatedAt) {
-      super(payloadType, serialId, receivedAt);
-      this.generatedAt = generatedAt;
    }
 
    public OdeAsn1Metadata(JsonNode metadata) {
       setEncodings(metadata.get("encodings").get("encodings"));
       setGeneratedAt(metadata.get("generatedAt").asText());
+      setGeneratedBy(GeneratedBy.valueOf(metadata.get("generatedABy").asText()));
       setLogFileName(metadata.get("logFileName").asText());
+      setRecordType(metadata.get("recordType").asText());
       setPayloadType(metadata.get("payloadType").asText());
       setReceivedAt(metadata.get("receivedAt").asText());
       setSanitized(metadata.get("sanitized").asBoolean());

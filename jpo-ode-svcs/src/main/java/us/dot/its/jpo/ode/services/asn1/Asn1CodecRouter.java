@@ -71,6 +71,7 @@ public class Asn1CodecRouter extends MessageProcessor<String, String> {
                  .getInt("messageId");
            
            if (messageId == J2735DSRCmsgID.BasicSafetyMessage.getMsgID()) {
+         	  //ODE-518/ODE-604 Demultiplex the messages to appropriate topics based on the "recordType"
               bsmProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), record.key(),
                  OdeBsmDataCreatorHelper.createOdeBsmData(consumedData));
            } else if (messageId == J2735DSRCmsgID.TravelerInformation.getMsgID()) {

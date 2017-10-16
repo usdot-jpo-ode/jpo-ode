@@ -4,23 +4,31 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class OdeMsgMetadata extends OdeObject {
 
-   private static final long serialVersionUID = 3979762143291085955L;
+   public enum GeneratedBy {
+   	TMC, OBU, RSU
+	}
+
+	private static final long serialVersionUID = 3979762143291085955L;
 
    private String payloadType;
    private SerialId serialId;
    private String odeReceivedAt;
-   private Integer schemaVersion = 3;
+   private Integer schemaVersion = 2;
+   private String generatedAt;
+   private GeneratedBy generatedBy;
+   private boolean validSignature = false;
+   private boolean sanitized = false;
    
    
    public OdeMsgMetadata() {
-       this(OdeDataType.Unknown.name(), new SerialId(), DateTimeUtils.now());
+       this(OdeMsgPayload.class.getName(), new SerialId(), DateTimeUtils.now());
    }
 
    public OdeMsgMetadata(OdeMsgPayload payload) {
       this(payload, new SerialId(), DateTimeUtils.now());
    }
 
-   public OdeMsgMetadata(OdeMsgPayload payload, 
+   private OdeMsgMetadata(OdeMsgPayload payload, 
                          SerialId serialId,
                          String receivedAt) {
        this(payload.getClass().getName(),
@@ -28,7 +36,7 @@ public class OdeMsgMetadata extends OdeObject {
                receivedAt);
    }
 
-    public OdeMsgMetadata(String payloadType, SerialId serialId, String receivedAt) {
+    private OdeMsgMetadata(String payloadType, SerialId serialId, String receivedAt) {
         super();
         this.payloadType = payloadType;
         this.serialId = serialId;
@@ -73,47 +81,97 @@ public class OdeMsgMetadata extends OdeObject {
        this.schemaVersion = schemaVersion;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((payloadType == null) ? 0 : payloadType.hashCode());
-        result = prime * result + ((serialId == null) ? 0 : serialId.hashCode());
-        result = prime * result + ((odeReceivedAt == null) ? 0 : odeReceivedAt.hashCode());
-        result = prime * result + ((schemaVersion == null) ? 0: schemaVersion.hashCode());
-        return result;
-    }
+    public String getGeneratedAt() {
+		return generatedAt;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        OdeMsgMetadata other = (OdeMsgMetadata) obj;
-        if (payloadType == null) {
-            if (other.payloadType != null)
-                return false;
-        } else if (!payloadType.equals(other.payloadType))
-            return false;
-        if (serialId == null) {
-            if (other.serialId != null)
-                return false;
-        } else if (!serialId.equals(other.serialId))
-            return false;
-        if (odeReceivedAt == null) {
-            if (other.odeReceivedAt != null)
-                return false;
-        } else if (!odeReceivedAt.equals(other.odeReceivedAt))
-            return false;
-        if (schemaVersion == null) {
-           if (other.schemaVersion != null) 
-              return false;
-        } else if (!schemaVersion.equals(other.schemaVersion))
-           return false;
-        return true;
-    }
+	public void setGeneratedAt(String generatedAt) {
+		this.generatedAt = generatedAt;
+	}
+
+	public GeneratedBy getGeneratedBy() {
+		return generatedBy;
+	}
+
+	public void setGeneratedBy(GeneratedBy generatedBy) {
+		this.generatedBy = generatedBy;
+	}
+
+	public boolean isValidSignature() {
+		return validSignature;
+	}
+
+	public void setValidSignature(boolean validSignature) {
+		this.validSignature = validSignature;
+	}
+
+	public boolean isSanitized() {
+		return sanitized;
+	}
+
+	public void setSanitized(boolean sanitized) {
+		this.sanitized = sanitized;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((generatedAt == null) ? 0 : generatedAt.hashCode());
+		result = prime * result + ((generatedBy == null) ? 0 : generatedBy.hashCode());
+		result = prime * result + ((payloadType == null) ? 0 : payloadType.hashCode());
+		result = prime * result + ((odeReceivedAt == null) ? 0 : odeReceivedAt.hashCode());
+		result = prime * result + (sanitized ? 1231 : 1237);
+		result = prime * result + ((schemaVersion == null) ? 0 : schemaVersion.hashCode());
+		result = prime * result + ((serialId == null) ? 0 : serialId.hashCode());
+		result = prime * result + (validSignature ? 1231 : 1237);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		OdeMsgMetadata other = (OdeMsgMetadata) obj;
+		if (generatedAt == null) {
+			if (other.generatedAt != null)
+				return false;
+		} else if (!generatedAt.equals(other.generatedAt))
+			return false;
+		if (generatedBy == null) {
+			if (other.generatedBy != null)
+				return false;
+		} else if (!generatedBy.equals(other.generatedBy))
+			return false;
+		if (payloadType == null) {
+			if (other.payloadType != null)
+				return false;
+		} else if (!payloadType.equals(other.payloadType))
+			return false;
+		if (odeReceivedAt == null) {
+			if (other.odeReceivedAt != null)
+				return false;
+		} else if (!odeReceivedAt.equals(other.odeReceivedAt))
+			return false;
+		if (sanitized != other.sanitized)
+			return false;
+		if (schemaVersion == null) {
+			if (other.schemaVersion != null)
+				return false;
+		} else if (!schemaVersion.equals(other.schemaVersion))
+			return false;
+		if (serialId == null) {
+			if (other.serialId != null)
+				return false;
+		} else if (!serialId.equals(other.serialId))
+			return false;
+		if (validSignature != other.validSignature)
+			return false;
+		return true;
+	}
 
 }

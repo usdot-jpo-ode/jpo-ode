@@ -29,7 +29,8 @@ public class OdeTimDataCreatorHelper {
       JSONObject tim = TravelerMessageBuilder.makeTravelerInformationUserFriendly(
          payload.getJSONObject(AppContext.DATA_STRING)
             .getJSONObject("MessageFrame")
-            .getJSONObject("value"));
+            .getJSONObject("value")
+            .getJSONObject("TravelerInformation"));
       payload.put(AppContext.DATA_STRING, tim);
       
       return timData;
