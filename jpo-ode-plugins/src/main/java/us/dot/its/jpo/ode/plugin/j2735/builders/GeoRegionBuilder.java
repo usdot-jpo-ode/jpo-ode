@@ -13,8 +13,8 @@ public class GeoRegionBuilder {
 
    public static J2735GeoRegion genericGeoRegion(JsonNode geoRegion) {
 
-      return new J2735GeoRegion(Position3DBuilder.genericPosition3D(geoRegion.getNwCorner()),
-            Position3DBuilder.genericPosition3D(geoRegion.getSeCorner()));
+      return new J2735GeoRegion(Position3DBuilder.genericPosition3D(geoRegion.get("nwCorner")),
+            Position3DBuilder.genericPosition3D(geoRegion.get("seCorner")));
 
    }
 

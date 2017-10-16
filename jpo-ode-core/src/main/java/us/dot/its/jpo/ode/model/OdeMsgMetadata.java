@@ -13,9 +13,9 @@ public class OdeMsgMetadata extends OdeObject {
    private String payloadType;
    private SerialId serialId;
    private String odeReceivedAt;
-   private Integer schemaVersion = 2;
-   private String generatedAt;
-   private GeneratedBy generatedBy;
+   private Integer schemaVersion = 3;
+   private String recordGeneratedAt;
+   private GeneratedBy recordGeneratedBy;
    private boolean validSignature = false;
    private boolean sanitized = false;
    
@@ -81,20 +81,20 @@ public class OdeMsgMetadata extends OdeObject {
        this.schemaVersion = schemaVersion;
     }
 
-    public String getGeneratedAt() {
-		return generatedAt;
+    public String getRecordGeneratedAt() {
+		return recordGeneratedAt;
 	}
 
-	public void setGeneratedAt(String generatedAt) {
-		this.generatedAt = generatedAt;
+	public void setRecordGeneratedAt(String recordGeneratedAt) {
+		this.recordGeneratedAt = recordGeneratedAt;
 	}
 
-	public GeneratedBy getGeneratedBy() {
-		return generatedBy;
+	public GeneratedBy getRecordGeneratedBy() {
+		return recordGeneratedBy;
 	}
 
-	public void setGeneratedBy(GeneratedBy generatedBy) {
-		this.generatedBy = generatedBy;
+	public void setRecordGeneratedBy(GeneratedBy recordGeneratedBy) {
+		this.recordGeneratedBy = recordGeneratedBy;
 	}
 
 	public boolean isValidSignature() {
@@ -117,8 +117,8 @@ public class OdeMsgMetadata extends OdeObject {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((generatedAt == null) ? 0 : generatedAt.hashCode());
-		result = prime * result + ((generatedBy == null) ? 0 : generatedBy.hashCode());
+		result = prime * result + ((recordGeneratedAt == null) ? 0 : recordGeneratedAt.hashCode());
+		result = prime * result + ((recordGeneratedBy == null) ? 0 : recordGeneratedBy.hashCode());
 		result = prime * result + ((payloadType == null) ? 0 : payloadType.hashCode());
 		result = prime * result + ((odeReceivedAt == null) ? 0 : odeReceivedAt.hashCode());
 		result = prime * result + (sanitized ? 1231 : 1237);
@@ -137,15 +137,15 @@ public class OdeMsgMetadata extends OdeObject {
 		if (getClass() != obj.getClass())
 			return false;
 		OdeMsgMetadata other = (OdeMsgMetadata) obj;
-		if (generatedAt == null) {
-			if (other.generatedAt != null)
+		if (recordGeneratedAt == null) {
+			if (other.recordGeneratedAt != null)
 				return false;
-		} else if (!generatedAt.equals(other.generatedAt))
+		} else if (!recordGeneratedAt.equals(other.recordGeneratedAt))
 			return false;
-		if (generatedBy == null) {
-			if (other.generatedBy != null)
+		if (recordGeneratedBy == null) {
+			if (other.recordGeneratedBy != null)
 				return false;
-		} else if (!generatedBy.equals(other.generatedBy))
+		} else if (!recordGeneratedBy.equals(other.recordGeneratedBy))
 			return false;
 		if (payloadType == null) {
 			if (other.payloadType != null)
