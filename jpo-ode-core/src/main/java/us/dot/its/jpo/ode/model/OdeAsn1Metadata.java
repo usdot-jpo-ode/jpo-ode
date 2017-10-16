@@ -1,10 +1,10 @@
 package us.dot.its.jpo.ode.model;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 public class OdeAsn1Metadata extends OdeLogMetadata {
 
@@ -22,8 +22,8 @@ public class OdeAsn1Metadata extends OdeLogMetadata {
 
    public OdeAsn1Metadata(JsonNode metadata) {
       setEncodings(metadata.get("encodings").get("encodings"));
-      setGeneratedAt(metadata.get("generatedAt").asText());
-      setGeneratedBy(GeneratedBy.valueOf(metadata.get("generatedABy").asText()));
+      setRecordGeneratedAt(metadata.get("generatedAt").asText());
+      setRecordGeneratedBy(GeneratedBy.valueOf(metadata.get("generatedBy").asText()));
       setLogFileName(metadata.get("logFileName").asText());
       setRecordType(metadata.get("recordType").asText());
       setPayloadType(metadata.get("payloadType").asText());
