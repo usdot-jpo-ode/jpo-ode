@@ -1,10 +1,5 @@
 package us.dot.its.jpo.ode.upload;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.exporter.DNMsgExporter;
 import us.dot.its.jpo.ode.exporter.FilteredBsmExporter;
 import us.dot.its.jpo.ode.exporter.OdeBsmExporter;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher;
@@ -27,11 +18,17 @@ import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @Controller
 public class FileUploadController {
    // private static final String OUTPUT_TOPIC = "/topic/messages";
    private static final String FILTERED_OUTPUT_TOPIC = "/topic/filtered_messages";
    private static final String ODE_BSM_OUTPUT_TOPIC = "/topic/ode_bsm_messages";
+   private static final String ODE_DN_OUTPUT_TOPIC = "/topic/ode_dn_messages";
 
    private static Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
@@ -67,6 +64,7 @@ public class FileUploadController {
       // Create the exporters
       threadPool.submit(new OdeBsmExporter(odeProperties, ODE_BSM_OUTPUT_TOPIC, template));
       threadPool.submit(new FilteredBsmExporter(odeProperties, FILTERED_OUTPUT_TOPIC, template));
+      threadPool.submit(new DNMsgExporter(odeProperties, ODE_DN_OUTPUT_TOPIC, template));
    }
 
    @PostMapping("/upload/{type}")

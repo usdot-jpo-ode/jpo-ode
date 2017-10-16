@@ -64,14 +64,14 @@ public class ImporterProcessor {
       }
       // TODO ODE-559 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-      // ODE-559
-      try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
-         BufferedInputStream bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
-         codecPublisher.publishFile(filePath, bis);
-      } catch (Exception e) {
-         logger.error("Unable to open or process file: " + filePath, e);
-      }
-      
+//      // ODE-559
+//      try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
+//         BufferedInputStream bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
+//         codecPublisher.publishFile(filePath, bis);
+//      } catch (Exception e) {
+//         logger.error("Unable to open or process file: " + filePath, e);
+//      }
+//      
       try {
          OdeFileUtils.backupFile(filePath, backupDir);
       } catch (IOException e) {
