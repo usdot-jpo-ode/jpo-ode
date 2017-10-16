@@ -23,6 +23,7 @@ public abstract class TimLogFileParser extends LogFileParser {
    public ParserStatus parseFile(BufferedInputStream bis, String fileName) throws FileParserException {
 
       status = super.parseFile(bis, fileName);
+      status = ParserStatus.INIT;
 
       this.location = new TimLogLocation();
 

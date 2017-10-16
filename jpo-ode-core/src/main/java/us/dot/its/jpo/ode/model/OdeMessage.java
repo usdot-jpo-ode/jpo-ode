@@ -8,7 +8,7 @@ public class OdeMessage extends OdeObject {
 
     public OdeMessage() {
         super();
-        this.schemaVersion = 1;
+        this.schemaVersion = 3;
     }
 
     public Integer getSchemaVersion() {

@@ -4,15 +4,18 @@ import java.io.BufferedInputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
-import us.dot.its.jpo.ode.importer.BsmSource;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
-public class BsmFileParser extends LogFileParser {
+public class BsmLogFileParser extends LogFileParser {
+   public enum BsmSource {
+      EV_TX, RV_RX
+   }
+
    private static final int DIRECTION_LENGTH = 1;
 
    private BsmSource direction; // 0 for EV(Tx), 1 for RV(Rx)
 
-   public BsmFileParser(long bundleId) {
+   public BsmLogFileParser(long bundleId) {
       super(bundleId);
    }
 
@@ -21,6 +24,7 @@ public class BsmFileParser extends LogFileParser {
 
       try {
          super.parseFile(bis, fileName);
+         status = ParserStatus.INIT;
 
          // Step 1
          if (step == 1) {
@@ -83,7 +87,7 @@ public class BsmFileParser extends LogFileParser {
       return direction;
    }
 
-   public BsmFileParser setDirection(BsmSource direction) {
+   public BsmLogFileParser setDirection(BsmSource direction) {
       this.direction = direction;
       return this;
    }

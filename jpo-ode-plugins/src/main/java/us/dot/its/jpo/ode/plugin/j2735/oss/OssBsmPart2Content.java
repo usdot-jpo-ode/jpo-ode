@@ -58,13 +58,13 @@ public class OssBsmPart2Content {
 		PERUnalignedCoder coder = J2735.getPERUnalignedCoder();
 
 		switch (part2Content.getId()) {
-		case SPECIALVEHICLEEXT:
+		case SpecialVehicleExtensions:
 			evaluateSpecialVehicleExt(part2Content, value, coder);
 			break;
-		case SUPPLEMENTALVEHICLEEXT:
+		case SupplementalVehicleExtensions:
 			evaluateSupplementalVehicleExt(part2Content, value, coder);
 			break;
-		case VEHICLESAFETYEXT:
+		case VehicleSafetyExtensions:
 			evaluateVehicleSafetyExt(part2Content, value, coder);
 			break;
 		}

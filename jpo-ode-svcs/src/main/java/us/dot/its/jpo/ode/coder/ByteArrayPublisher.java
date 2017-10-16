@@ -23,7 +23,4 @@ public class ByteArrayPublisher extends MessagePublisher {
     bytesProducer.send(topic, null, msg);
    }
 
-   public OdeProperties getOdeProperties() {
-      return odeProperties;
-   }
 }

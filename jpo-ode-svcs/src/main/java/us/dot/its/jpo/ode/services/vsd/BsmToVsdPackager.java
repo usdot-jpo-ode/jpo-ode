@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.j2735.semi.VehSitDataMessage;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -41,7 +42,7 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, 
    @Override
    protected byte[] transform(String consumedData) {
 
-      JsonNode bsmNode = JsonUtils.getJsonNode(consumedData, "payload").get("data");
+      JsonNode bsmNode = JsonUtils.getJsonNode(consumedData, AppContext.PAYLOAD_STRING).get(AppContext.DATA_STRING);
 
       J2735Bsm bsmData;
       try {

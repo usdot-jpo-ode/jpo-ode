@@ -22,17 +22,12 @@ public class JsonDecoderPublisher implements DecoderPublisher {
    private OdeStringPublisher publisher;
    private SerialId serialId;
 
-   private OdeBsmDataCreatorHelper bsmDecoder;
-
    private static AtomicInteger bundleId = new AtomicInteger(1);
 
    public JsonDecoderPublisher(OdeStringPublisher stringPub) {
       this.publisher = stringPub;
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
-      
-      this.bsmDecoder = new OdeBsmDataCreatorHelper();
-      
    }
 
    @Override
@@ -47,7 +42,9 @@ public class JsonDecoderPublisher implements DecoderPublisher {
             line = scanner.nextLine();
 
             J2735Bsm j2735Bsm = (J2735Bsm) JsonUtils.fromJson(line, J2735Bsm.class);
-            OdeData odeBsm = bsmDecoder.createOdeBsmData(j2735Bsm, fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
+            OdeData odeBsm = OdeBsmDataCreatorHelper.createOdeBsmData(
+               j2735Bsm, fileName, 
+               this.serialId.setBundleId(bundleId.incrementAndGet()).addRecordId(1));
             
             publisher.publish(odeBsm, publisher.getOdeProperties().getKafkaTopicOdeBsmJson());
          }

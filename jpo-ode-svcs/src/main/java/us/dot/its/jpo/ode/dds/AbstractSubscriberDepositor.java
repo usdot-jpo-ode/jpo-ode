@@ -20,6 +20,13 @@ import us.dot.its.jpo.ode.udp.trust.TrustManager;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
+/**
+ * @author 572682
+ * This abstract class provides common and basic functionality for subscribing to
+ * a messaging topic, processing the messages as implemented by a given MessageProcessor
+ * and depositing the resultant data to SDC/SDW.  
+ *
+ */
 public abstract class AbstractSubscriberDepositor extends MessageProcessor<String, byte[]> {
 
    protected final Logger logger;
