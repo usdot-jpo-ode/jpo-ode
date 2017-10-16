@@ -30,7 +30,7 @@ public abstract class Exporter implements Runnable {
     }
 
     protected abstract void subscribe();
-    
+
     public void shutDown() {
         logger.info("Shutting down Exporter to topic {}", topic);
         if (consumer != null)

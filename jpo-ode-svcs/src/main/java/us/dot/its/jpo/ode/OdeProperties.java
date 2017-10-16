@@ -1,13 +1,6 @@
 package us.dot.its.jpo.ode;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
+import groovy.lang.MissingPropertyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +8,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-
-import groovy.lang.MissingPropertyException;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.OdePlugin;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @ConfigurationProperties("ode")
 @PropertySource("classpath:application.properties")
@@ -80,6 +79,9 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeTimJson = "topic.OdeTimJson";
    private String kafkaTopicEncodedTimBytes = "topic.EncodedTimBytes";
    private String kafkaTopicDecodedTimXml = "topic.DecodedTimXml";
+   private String kafkaTopicOdeDNMsgJson= "topic.OdeDNMsgJson";
+   private String kafkaTopicOdeDNMsgPojo= "topic.OdeDNMsgPojo";
+
 
    /*
     * BSM Properties
@@ -592,6 +594,16 @@ public class OdeProperties implements EnvironmentAware {
    public void setKafkaTopicOdeTimPojo(String kafkaTopicOdeTimPojo) {
       this.kafkaTopicOdeTimPojo = kafkaTopicOdeTimPojo;
    }
+   public String getKafkaTopicOdeDNMsgPojo() {return kafkaTopicOdeDNMsgPojo; }
+
+   public void setKafkaTopicOdeDNMsgPojo(String kafkaTopicOdeDNMsgPojo) {
+      this.kafkaTopicOdeDNMsgPojo = kafkaTopicOdeDNMsgPojo;
+   }
+   public String getKafkaTopicOdeDNMsgJson() {return kafkaTopicOdeDNMsgJson; }
+
+   public void setKafkaTopicOdeDNMsgJson(String kafkaTopicOdeDNMsgJson) {
+      this.kafkaTopicOdeDNMsgJson = kafkaTopicOdeDNMsgJson;
+   }
 
    public String getKafkaTopicOdeTimJson() {
       return kafkaTopicOdeTimJson;
@@ -601,12 +613,12 @@ public class OdeProperties implements EnvironmentAware {
       this.kafkaTopicOdeTimJson = kafkaTopicOdeTimJson;
    }
 
-    public String getUploadLocationBsmLog() {
+   public String getUploadLocationBsmLog() {
         return uploadLocationBsmLog;
     }
     
-    public void setUploadLocationBsmLog(String uploadLocationBsmLog) {
-        this.uploadLocationBsmLog = uploadLocationBsmLog;
-    }
+   public void setUploadLocationBsmLog(String uploadLocationBsmLog) {
+      this.uploadLocationBsmLog = uploadLocationBsmLog;
+   }
 
 }

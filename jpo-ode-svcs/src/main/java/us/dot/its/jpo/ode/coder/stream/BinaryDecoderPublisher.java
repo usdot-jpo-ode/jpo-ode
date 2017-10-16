@@ -1,19 +1,14 @@
 package us.dot.its.jpo.ode.coder.stream;
 
-import java.io.BufferedInputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
-import us.dot.its.jpo.ode.importer.parser.BsmFileParser;
-import us.dot.its.jpo.ode.importer.parser.DistressMsgFileParser;
+import us.dot.its.jpo.ode.importer.parser.*;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
-import us.dot.its.jpo.ode.importer.parser.LogFileParser;
-import us.dot.its.jpo.ode.importer.parser.RxMsgFileParser;
-import us.dot.its.jpo.ode.importer.parser.TimLogFileParser;
 import us.dot.its.jpo.ode.model.OdeData;
+
+import java.io.BufferedInputStream;
 
 public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
 
@@ -94,8 +89,13 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
                      logger.debug("Decoded a bsm: {}", decoded);
                      bsmMessagePublisher.publish(decoded, bsmMessagePublisher.getOdeProperties().getKafkaTopicOdeBsmPojo());
                   } else if (fileType == ImporterFileType.BSM_LOG_FILE && fileParser instanceof TimLogFileParser) {
-                     logger.debug("Decoded a tim: {}", decoded);
-                     timMessagePublisher.publish(decoded, bsmMessagePublisher.getOdeProperties().getKafkaTopicOdeTimPojo());
+                     if (fileParser instanceof DistressMsgFileParser) {
+                        logger.debug("Decoded a distressMsg: {}", decoded);
+                        timMessagePublisher.publish(decoded, bsmMessagePublisher.getOdeProperties().getKafkaTopicOdeDNMsgPojo());
+                     } else {
+                        logger.debug("Decoded a tim: {}", decoded);
+                        timMessagePublisher.publish(decoded, bsmMessagePublisher.getOdeProperties().getKafkaTopicOdeTimPojo());
+                     }
                   }
                }
             } else {
