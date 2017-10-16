@@ -50,10 +50,12 @@ public class TIMHeaderBuilder {
          TimFieldValidator.validatePosition(dataFrame.getPosition());
          roadSignID.setPosition(Position3DBuilder.position3D(dataFrame.getPosition()));
          TimFieldValidator.validateHeading(dataFrame.getViewAngle());
-         roadSignID.setViewAngle(OssTravelerMessageBuilder.getHeadingSlice(dataFrame.getViewAngle()));
+         // TODO
+         //roadSignID.setViewAngle(TravelerMessageBuilder.getHeadingSlice(dataFrame.getViewAngle()));
          TimFieldValidator.validateMUTCDCode(dataFrame.getMutcd());
          roadSignID.setMutcdCode(MUTCDCode.valueOf(dataFrame.getMutcd()));
-         roadSignID.setCrc(OssTravelerMessageBuilder.getMsgCrc(dataFrame.getCrc()));
+         // TODO
+         //roadSignID.setCrc(TravelerMessageBuilder.getMsgCrc(dataFrame.getCrc()));
          msgId.setRoadSignID(roadSignID);
       } else if ("FurtherInfoID".equals(dataFrame.getMsgID())) {
          msgId.setChosenFlag(MsgId.furtherInfoID_chosen);
