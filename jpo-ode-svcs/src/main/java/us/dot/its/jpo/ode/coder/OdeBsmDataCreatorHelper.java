@@ -48,8 +48,8 @@ public class OdeBsmDataCreatorHelper {
          } else {
             generatedAt = bsmFileParser.getGeneratedAt();
          }
-         metadata.setGeneratedAt(generatedAt.toString());
-         metadata.setGeneratedBy(GeneratedBy.OBU);
+         metadata.setRecordGeneratedAt(generatedAt.toString());
+         metadata.setRecordGeneratedBy(GeneratedBy.OBU);
          metadata.setValidSignature(true);
       }
 

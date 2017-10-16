@@ -163,14 +163,14 @@ public class TimDecoderHelper {
                } else {
                   generatedAt = getGeneratedAt(fileParser);
                }
-               timMetadata.setGeneratedAt(generatedAt.toString());
+               timMetadata.setRecordGeneratedAt(generatedAt.toString());
                timMetadata.setValidSignature(true);
             } else {
                logger.debug("Message does not contain time");
-               timMetadata.setGeneratedAt(getGeneratedAt(fileParser).toString());
+               timMetadata.setRecordGeneratedAt(getGeneratedAt(fileParser).toString());
                timMetadata.setValidSignature(fileParser.isValidSignature());
             }
-            timMetadata.setGeneratedBy(GeneratedBy.OBU);
+            timMetadata.setRecordGeneratedBy(GeneratedBy.OBU);
 
             odeTimData = new OdeTimData(timMetadata, timPayload);
 
