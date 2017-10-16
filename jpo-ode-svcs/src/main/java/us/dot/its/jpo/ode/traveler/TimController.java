@@ -1,16 +1,14 @@
 package us.dot.its.jpo.ode.traveler;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
@@ -30,31 +28,37 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.oss.asn1.EncodeFailedException;
-import com.oss.asn1.EncodeNotSupportedException;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.dds.DdsClient.DdsClientException;
-import us.dot.its.jpo.ode.dds.DdsDepositor;
-import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
-import us.dot.its.jpo.ode.dds.DdsStatusMessage;
+import us.dot.its.jpo.ode.context.AppContext;
+import us.dot.its.jpo.ode.model.Asn1Encoding;
+import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
-import us.dot.its.jpo.ode.model.OdeObject;
-import us.dot.its.jpo.ode.model.OdeTimData;
 import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
+import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
+import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageBuilder;
 import us.dot.its.jpo.ode.snmp.SNMP;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
-import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
-import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 
 @Controller
 public class TimController {
+
+   public static class TimControllerException extends Exception {
+
+      private static final long serialVersionUID = 1L;
+
+      public TimControllerException(String errMsg, Exception e) {
+         super(errMsg, e);
+      }
+
+   }
 
    private static final Logger logger = LoggerFactory.getLogger(TimController.class);
 
@@ -63,8 +67,7 @@ public class TimController {
                                                        // needed
 
    private OdeProperties odeProperties;
-   private DdsDepositor<DdsStatusMessage> depositor;
-   private MessageProducer<String, OdeObject> messageProducer;
+   private MessageProducer<String, String> messageProducer;
 
    private final ExecutorService threadPool;
 
@@ -73,14 +76,8 @@ public class TimController {
       super();
       this.odeProperties = odeProperties;
 
-      this.messageProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(),
-            odeProperties.getKafkaProducerType(), null, OdeTimSerializer.class.getName());
-
-      try {
-         depositor = new DdsDepositor<>(this.odeProperties);
-      } catch (Exception e) {
-         logger.error("Error starting SDW depositor", e);
-      }
+      this.messageProducer = MessageProducer.defaultStringMessageProducer(
+         odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType());
 
       this.threadPool = Executors.newFixedThreadPool(odeProperties.getRsuSrmSlots() * THREADPOOL_MULTIPLIER);
    }
@@ -227,7 +224,7 @@ public class TimController {
    @ResponseBody
    @RequestMapping(value = "/tim", method = RequestMethod.POST, produces = "application/json")
    @CrossOrigin
-   public ResponseEntity<String> timMessage(@RequestBody String jsonString) {
+   public ResponseEntity<String> postTim(@RequestBody String jsonString) {
 
       // Check empty
       if (null == jsonString || jsonString.isEmpty()) {
@@ -241,8 +238,7 @@ public class TimController {
       try {
          travelerinputData = (TravelerInputData) JsonUtils.fromJson(jsonString, TravelerInputData.class);
 
-         String jsonFqResult = travelerinputData.toJson(true);
-         logger.debug("J2735TravelerInputData: {}", jsonFqResult);
+         logger.debug("J2735TravelerInputData: {}", jsonString);
 
       } catch (Exception e) {
          String errMsg = "Malformed JSON.";
@@ -250,122 +246,18 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
-      // Add metadata to message and publish to kafka
-      OdeMsgPayload timDataPayload = new OdeMsgPayload(travelerinputData.getTim());
-      OdeMsgMetadata timMetadata = new OdeMsgMetadata(timDataPayload);
-      OdeTimData odeTimData = new OdeTimData(timMetadata, timDataPayload);
-      messageProducer.send(odeProperties.getKafkaTopicOdeTimPojo(), null, odeTimData);
-
       // Craft ASN-encodable TIM
-      OssTravelerMessageBuilder builder = new OssTravelerMessageBuilder();
+      JsonNode encodableTim = TravelerMessageBuilder.buildEncodableTim(travelerinputData.getTim());
+
       try {
-         builder.buildTravelerInformation(travelerinputData.getTim());
-      } catch (Exception e) {
-         String errMsg = "Request does not match schema: " + e.getMessage();
+         publish(encodableTim.toString());
+      } catch (JsonUtilsException e) {
+         String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
-      // Encode TIM
-      String rsuSRMPayload = null;
-      try {
-         rsuSRMPayload = builder.encodeTravelerInformationToHex();
-         logger.debug("Encoded Hex TIM: {}", rsuSRMPayload);
-      } catch (Exception e) {
-         String errMsg = "Failed to encode TIM.";
-         logger.error(errMsg, e);
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, e.getMessage()));
-      }
-
-      // Send TIMs and record results
-      HashMap<String, ResponseEntity<String>> responseList = new HashMap<>();
-
-      for (RSU curRsu : travelerinputData.getRsus()) {
-
-         ResponseEvent rsuResponse = null;
-         ResponseEntity<String> httpResponseStatus = null;
-
-         try {
-            rsuResponse = createAndSend(travelerinputData.getSnmp(), curRsu, travelerinputData.getTim().getIndex(),
-                  rsuSRMPayload);
-
-            if (null == rsuResponse || null == rsuResponse.getResponse()) {
-               // Timeout
-               httpResponseStatus = ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("Timeout.");
-            } else if (rsuResponse.getResponse().getErrorStatus() == 0) {
-               // Success
-               httpResponseStatus = ResponseEntity.status(HttpStatus.OK).body("Success.");
-            } else if (rsuResponse.getResponse().getErrorStatus() == 5) {
-               // Error, message already exists
-               httpResponseStatus = ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                     "Message already exists at ".concat(Integer.toString(travelerinputData.getTim().getIndex())));
-            } else {
-               // Misc error
-               httpResponseStatus = ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                     .body("Error code " + rsuResponse.getResponse().getErrorStatus() + " "
-                           + rsuResponse.getResponse().getErrorStatusText());
-            }
-
-         } catch (Exception e) {
-            logger.error("Exception caught in TIM deposit loop.", e);
-            httpResponseStatus = ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getClass().getName());
-         }
-
-         responseList.put(curRsu.getRsuTarget(), httpResponseStatus);
-      }
-
-      // Deposit to DDS
-      String ddsMessage = "";
-      try {
-         depositToDDS(travelerinputData, rsuSRMPayload);
-         ddsMessage = "\"dds_deposit\":{\"success\":\"true\"}";
-         logger.info("DDS deposit successful.");
-      } catch (Exception e) {
-         ddsMessage = "\"dds_deposit\":{\"success\":\"false\"}";
-         logger.error("Error on DDS deposit.", e);
-      }
-
-      // Craft a JSON response
-
-      String rsuMessages = "[";
-      for (Map.Entry<String, ResponseEntity<String>> entry : responseList.entrySet()) {
-
-         String curKey = entry.getKey();
-         ResponseEntity<String> curEnt = entry.getValue();
-
-         if (!("[".equals(rsuMessages))) {
-            // Add a comma after every subsequent message
-            rsuMessages = rsuMessages.concat(",");
-         }
-
-         String curMsg;
-         if (curEnt.getStatusCode() == HttpStatus.OK) {
-            curMsg = "{\"target\":\"" + curKey + "\",\"success\":\"true\",\"message\":\"" + curEnt.getBody() + "\"}";
-         } else {
-            curMsg = "{\"target\":\"" + curKey + "\",\"success\":\"false\",\"error\":\"" + curEnt.getBody() + "\"}";
-         }
-
-         rsuMessages = rsuMessages.concat(curMsg);
-      }
-      rsuMessages = rsuMessages.concat("]");
-
-      String responseMessage = "{\"rsu_responses\":" + rsuMessages + "," + ddsMessage + "}";
-
-      logger.info("TIM deposit response {}", responseMessage);
-
-      return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
-   }
-
-   private void depositToDDS(TravelerInputData travelerinputData, String rsuSRMPayload)
-         throws ParseException, DdsRequestManagerException, DdsClientException, WebSocketException,
-         EncodeFailedException, EncodeNotSupportedException {
-      // Step 4 - Step Deposit TIM to SDW if sdw element exists
-      if (travelerinputData.getSdw() != null) {
-         AsdMessage message = new AsdMessage(travelerinputData.getSnmp().getDeliverystart(),
-               travelerinputData.getSnmp().getDeliverystop(), rsuSRMPayload,
-               travelerinputData.getSdw().getServiceRegion(), travelerinputData.getSdw().getTtl());
-         depositor.deposit(message);
-      }
+      return ResponseEntity.status(HttpStatus.OK).body("Success");
    }
 
    /**
@@ -402,5 +294,36 @@ public class TimController {
    public String jsonKeyValue(String key, String value) {
       return "{\"" + key + "\":\"" + value + "\"}";
    }
+
+   private void publish(String request) throws JsonUtilsException {
+      JSONObject requestObj = JsonUtils.toJSONObject(request);
+      
+      //Create valid payload from scratch
+      OdeMsgPayload payload = new OdeMsgPayload();
+      payload.setDataType("MessageFrame");
+      JSONObject payloadObj = JsonUtils.toJSONObject(payload.toJson());
+      
+      //Create a MessageFrame
+      JSONObject mfObject = new JSONObject();
+      mfObject.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
+      mfObject.put("value", requestObj.remove("tim")); //with "tim" removed, the remaining requestObject must go in as "request" element of metadata
+      
+      payloadObj.put(AppContext.DATA_STRING, mfObject);
+      
+      //Create a valid metadata from scratch
+      OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
+      JSONObject metaObject = JsonUtils.toJSONObject(metadata.toJson());
+      metaObject.put("request", requestObj);
+      
+      Asn1Encoding enc = new Asn1Encoding("MessageFrame", "MessageFrame", EncodingRule.UPER);
+      metaObject.put("encodings", JsonUtils.toJSONObject(enc.toJson()));
+      
+      JSONObject message = new JSONObject();
+      message.put(AppContext.METADATA_STRING, metaObject);
+      message.put(AppContext.PAYLOAD_STRING, payloadObj);
+      
+      messageProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, message.toString());
+   }
+
 
 }

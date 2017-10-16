@@ -64,7 +64,7 @@ public class BsmToVsdPackagerTest {
       } catch (JsonProcessingException e) {
          fail("Unexpected exception in expectations block: " + e);
       }
-      assertNull(testBsmToVsdPackager.transform("testString123"));
+      assertNull(testBsmToVsdPackager.process("testString123"));
    }
 
    @Test
@@ -85,7 +85,7 @@ public class BsmToVsdPackagerTest {
       } catch (JsonProcessingException e) {
          fail("Unexpected exception in expectations block: " + e);
       }
-      assertNull(testBsmToVsdPackager.transform("testString123"));
+      assertNull(testBsmToVsdPackager.process("testString123"));
    }
 
    @Test
@@ -111,7 +111,7 @@ public class BsmToVsdPackagerTest {
       } catch (JsonProcessingException e) {
          fail("Unexpected exception in expectations block: " + e);
       }
-      assertEquals(expectedByteArray, testBsmToVsdPackager.transform("testString123"));
+      assertEquals(expectedByteArray, testBsmToVsdPackager.process("testString123"));
    }
 
 }

@@ -89,7 +89,6 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       OdeAsn1Payload payload = new OdeAsn1Payload(payloadBytes);
       OdeAsn1Metadata metadata = new OdeAsn1Metadata(payload);
       metadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
-      // OdeLogMetadataCreatorHelper.updateLogMetadata(metadata, bsmFileParser);
 
       Asn1Encoding msgEncoding = new Asn1Encoding("root", "MessageFrame", EncodingRule.UPER);
       metadata.addEncoding(msgEncoding);

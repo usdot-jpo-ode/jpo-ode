@@ -58,7 +58,7 @@ public class SubscriberDepositorTest {
          }
       };
 
-      testAbstractSubscriberDepositor.subscribe("this is a test topic");
+      testAbstractSubscriberDepositor.start("this is a test topic");
    }
 
    @Test

@@ -565,20 +565,20 @@ public class OdeProperties implements EnvironmentAware {
       this.kafkaTopicAsn1DecoderOutput = kafkaTopicAsn1DecoderOutput;
    }
 
-   public String getKafkaTopicAsn1EncodedTim() {
+   public String getKafkaTopicAsn1EncoderInput() {
       return kafkaTopicAsn1EncoderInput;
    }
 
-   public void setKafkaTopicAsn1EncodedTim(String kafkaTopicAsn1EncodedTim) {
-      this.kafkaTopicAsn1EncoderInput = kafkaTopicAsn1EncodedTim;
+   public void setKafkaTopicAsn1EncoderInput(String kafkaTopicAsn1EncoderInput) {
+      this.kafkaTopicAsn1EncoderInput = kafkaTopicAsn1EncoderInput;
    }
 
-   public String getKafkaTopicAsn1DecodedTim() {
+   public String getKafkaTopicAsn1EncoderOutput() {
       return kafkaTopicAsn1EncoderOutput;
    }
 
-   public void setKafkaTopicAsn1DecodedTim(String kafkaTopicAsn1DecodedTim) {
-      this.kafkaTopicAsn1EncoderOutput = kafkaTopicAsn1DecodedTim;
+   public void setKafkaTopicAsn1EncoderOutput(String kafkaTopicAsn1EncoderOutput) {
+      this.kafkaTopicAsn1EncoderOutput = kafkaTopicAsn1EncoderOutput;
    }
 
    public int getImportProcessorBufferSize() {

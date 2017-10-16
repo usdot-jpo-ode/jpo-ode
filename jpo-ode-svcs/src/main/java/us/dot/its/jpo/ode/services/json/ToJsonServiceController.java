@@ -38,7 +38,7 @@ public class ToJsonServiceController {
             odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), odeBsmConverter,
             OdeBsmDeserializer.class.getName());
 
-      odeBsmConsumer.setName("odeBsmConsumer");
+      odeBsmConsumer.setName(this.getClass().getName() + "#odeBsmConsumer");
       odeBsmConverter.start(odeBsmConsumer, odeProps.getKafkaTopicOdeBsmPojo());
 
       // TIM POJO --> JSON converter

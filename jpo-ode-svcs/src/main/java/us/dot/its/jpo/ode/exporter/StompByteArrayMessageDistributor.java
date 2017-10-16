@@ -5,9 +5,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.subscriber.Subscriber;
 import us.dot.its.jpo.ode.util.SerializationUtils;
-import us.dot.its.jpo.ode.wrapper.MessageProcessor;
+import us.dot.its.jpo.ode.wrapper.AbstractSubscriberProcessor;
 
-public class StompByteArrayMessageDistributor extends MessageProcessor<String, byte[]> {
+public class StompByteArrayMessageDistributor extends AbstractSubscriberProcessor<String, byte[]> {
 
    private SimpMessagingTemplate template;
    private String topic;
@@ -18,9 +18,9 @@ public class StompByteArrayMessageDistributor extends MessageProcessor<String, b
    }
 
    @Override
-   public Object call() throws Exception {
+   protected Object process(byte[] consumedData) {
       SerializationUtils<OdeBsmData> serializer = new SerializationUtils<OdeBsmData>();
-      Object bsm = serializer.deserialize(record.value());
+      Object bsm = serializer.deserialize(consumedData);
       template.convertAndSend(topic, new Subscriber(bsm.toString()));
       return bsm;
    }

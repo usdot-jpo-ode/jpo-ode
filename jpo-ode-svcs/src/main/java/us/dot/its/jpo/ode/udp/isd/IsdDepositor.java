@@ -35,7 +35,6 @@ public class IsdDepositor extends AbstractSubscriberDepositor {
 
    public IsdDepositor(OdeProperties odeProps) {
       super(odeProps, odeProps.getIsdDepositorPort());
-      consumer.setName(this.getClass().getSimpleName());
       this.deserializer = new IntersectionSituationDataDeserializer();
    }
 

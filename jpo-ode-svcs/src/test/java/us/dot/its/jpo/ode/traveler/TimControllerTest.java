@@ -73,14 +73,14 @@ public class TimControllerTest {
    public void emptyRequestShouldReturnError() {
 
       try {
-         ResponseEntity<String> response = testTimController.timMessage(null);
+         ResponseEntity<String> response = testTimController.postTim(null);
          assertEquals("{\"error\":\"Empty request.\"}", response.getBody());
       } catch (Exception e) {
          fail("Unexpected exception " + e);
       }
 
       try {
-         ResponseEntity<String> response = testTimController.timMessage("");
+         ResponseEntity<String> response = testTimController.postTim("");
          assertEquals("{\"error\":\"Empty request.\"}", response.getBody());
       } catch (Exception e) {
          fail("Unexpected exception " + e);
@@ -106,7 +106,7 @@ public class TimControllerTest {
       }
 
       try {
-         ResponseEntity<String> response = testTimController.timMessage("test123");
+         ResponseEntity<String> response = testTimController.postTim("test123");
          assertEquals("{\"error\":\"Malformed JSON.\"}", response.getBody());
       } catch (Exception e) {
          fail("Unexpected exception " + e);
@@ -143,7 +143,7 @@ public class TimControllerTest {
       }
 
       try {
-         ResponseEntity<String> response = testTimController.timMessage("test123");
+         ResponseEntity<String> response = testTimController.postTim("test123");
          assertTrue(response.getBody().contains("Request does not match schema:"));
       } catch (Exception e) {
          fail("Unexpected exception " + e);
@@ -183,7 +183,7 @@ public class TimControllerTest {
       }
 
       try {
-         ResponseEntity<String> response = testTimController.timMessage("test123");
+         ResponseEntity<String> response = testTimController.postTim("test123");
          assertEquals("{\"error\":\"Encoding error.\"}", response.getBody());
       } catch (Exception e) {
          fail("Unexpected exception " + e);
@@ -237,7 +237,7 @@ public class TimControllerTest {
          fail("Unexpected Exception in expectations block: " + e);
       }
 
-      ResponseEntity<String> response = testTimController.timMessage("test123");
+      ResponseEntity<String> response = testTimController.postTim("test123");
       assertEquals(
             "{\"rsu_responses\":[{\"target\":\"snmpException\",\"success\":\"false\",\"error\":\"java.lang.Exception\"}],\"dds_deposit\":{\"success\":\"true\"}}",
             response.getBody());
@@ -290,7 +290,7 @@ public class TimControllerTest {
          fail("Unexpected Exception in expectations block: " + e);
       }
 
-      ResponseEntity<String> response = testTimController.timMessage("test123");
+      ResponseEntity<String> response = testTimController.postTim("test123");
       assertEquals(
             "{\"rsu_responses\":[{\"target\":\"nullResponse\",\"success\":\"false\",\"error\":\"Timeout.\"}],\"dds_deposit\":{\"success\":\"true\"}}",
             response.getBody());
@@ -341,7 +341,7 @@ public class TimControllerTest {
          fail("Unexpected Exception in expectations block: " + e);
       }
 
-      ResponseEntity<String> response = testTimController.timMessage("test123");
+      ResponseEntity<String> response = testTimController.postTim("test123");
       assertEquals(
             "{\"rsu_responses\":[{\"target\":\"badResponse\",\"success\":\"false\",\"error\":\"Error code -1 null\"}],\"dds_deposit\":{\"success\":\"true\"}}",
             response.getBody());
@@ -399,7 +399,7 @@ public class TimControllerTest {
          fail("Unexpected Exception in expectations block: " + e);
       }
 
-      ResponseEntity<String> response = testTimController.timMessage("test123");
+      ResponseEntity<String> response = testTimController.postTim("test123");
       assertEquals(
             "{\"rsu_responses\":[{\"target\":\"nonexistentialRsu\",\"success\":\"true\",\"message\":\"Success.\"}],\"dds_deposit\":{\"success\":\"false\"}}",
             response.getBody());
@@ -456,7 +456,7 @@ public class TimControllerTest {
          fail("Unexpected Exception in expectations block: " + e);
       }
 
-      ResponseEntity<String> response = testTimController.timMessage("test123");
+      ResponseEntity<String> response = testTimController.postTim("test123");
       assertEquals(
             "{\"rsu_responses\":[{\"target\":\"goodResponse\",\"success\":\"true\",\"message\":\"Success.\"}],\"dds_deposit\":{\"success\":\"true\"}}",
             response.getBody());

@@ -18,7 +18,7 @@ import org.apache.kafka.common.TopicPartition;
  */
 public abstract class MessageProcessor<K, V> implements Callable<Object> {
 
-   protected ConsumerRecord<K, V> record;
+   private ConsumerRecord<K, V> record;
 
    public Map<TopicPartition, Long> process(ConsumerRecords<K, V> consumerRecords) throws Exception {
 
@@ -37,8 +37,13 @@ public abstract class MessageProcessor<K, V> implements Callable<Object> {
       return processedOffsets;
    }
    
-   public void setRecord(ConsumerRecord<K, V> newRecord) {
+   public ConsumerRecord<K, V> getRecord() {
+      return record;
+   }
+
+   public MessageProcessor<K, V> setRecord(ConsumerRecord<K, V> newRecord) {
        this.record = newRecord;
+       return this;
    }
 
 }

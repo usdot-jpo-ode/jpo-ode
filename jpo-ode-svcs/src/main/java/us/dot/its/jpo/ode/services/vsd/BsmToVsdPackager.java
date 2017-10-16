@@ -40,7 +40,7 @@ public class BsmToVsdPackager extends AbstractSubPubTransformer<String, String, 
    }
 
    @Override
-   protected byte[] transform(String consumedData) {
+   protected byte[] process(String consumedData) {
 
       JsonNode bsmNode = JsonUtils.getJsonNode(consumedData, AppContext.PAYLOAD_STRING).get(AppContext.DATA_STRING);
 
