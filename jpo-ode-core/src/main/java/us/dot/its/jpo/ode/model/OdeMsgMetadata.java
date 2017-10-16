@@ -8,8 +8,8 @@ public class OdeMsgMetadata extends OdeObject {
 
    private String payloadType;
    private SerialId serialId;
-   private String receivedAt;
-   private Integer schemaVersion = 2;
+   private String odeReceivedAt;
+   private Integer schemaVersion = 3;
    
    
    public OdeMsgMetadata() {
@@ -32,7 +32,7 @@ public class OdeMsgMetadata extends OdeObject {
         super();
         this.payloadType = payloadType;
         this.serialId = serialId;
-        this.receivedAt = receivedAt;
+        this.odeReceivedAt = receivedAt;
     }
 
     public String getPayloadType() {
@@ -58,11 +58,11 @@ public class OdeMsgMetadata extends OdeObject {
     }
 
     public String getReceivedAt() {
-        return receivedAt;
+        return odeReceivedAt;
     }
 
     public void setReceivedAt(String receivedAt) {
-        this.receivedAt = receivedAt;
+        this.odeReceivedAt = receivedAt;
     }
     
     public Integer getSchemaVersion() {
@@ -79,7 +79,7 @@ public class OdeMsgMetadata extends OdeObject {
         int result = super.hashCode();
         result = prime * result + ((payloadType == null) ? 0 : payloadType.hashCode());
         result = prime * result + ((serialId == null) ? 0 : serialId.hashCode());
-        result = prime * result + ((receivedAt == null) ? 0 : receivedAt.hashCode());
+        result = prime * result + ((odeReceivedAt == null) ? 0 : odeReceivedAt.hashCode());
         result = prime * result + ((schemaVersion == null) ? 0: schemaVersion.hashCode());
         return result;
     }
@@ -103,10 +103,10 @@ public class OdeMsgMetadata extends OdeObject {
                 return false;
         } else if (!serialId.equals(other.serialId))
             return false;
-        if (receivedAt == null) {
-            if (other.receivedAt != null)
+        if (odeReceivedAt == null) {
+            if (other.odeReceivedAt != null)
                 return false;
-        } else if (!receivedAt.equals(other.receivedAt))
+        } else if (!odeReceivedAt.equals(other.odeReceivedAt))
             return false;
         if (schemaVersion == null) {
            if (other.schemaVersion != null) 
