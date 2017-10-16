@@ -100,3 +100,5 @@ jpo-ode-consumer-example/target/
 /jpo-ode-svcs/SNMP_Error.log
 
 *.DS_Store
+/SNMP_Error.log
+/Events.log
