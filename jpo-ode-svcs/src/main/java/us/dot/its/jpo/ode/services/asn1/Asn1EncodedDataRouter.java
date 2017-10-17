@@ -19,6 +19,7 @@ import us.dot.its.jpo.ode.dds.DdsClient.DdsClientException;
 import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
+import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.snmp.SNMP;
@@ -55,7 +56,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
     public Object process(String consumedData) {
         try {
            JSONObject consumedObj = XmlUtils.toJSONObject(consumedData)
-                 .getJSONObject("OdeAsn1Data");
+                 .getJSONObject(OdeAsn1Data.class.getSimpleName());
 
            // Convert JSON to POJO
            TravelerInputData travelerinputData = buildTravelerInputData(consumedObj);

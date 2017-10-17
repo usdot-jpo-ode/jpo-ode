@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
@@ -38,6 +40,7 @@ import us.dot.its.jpo.ode.model.OdeMsgPayload;
 import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
+import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -245,10 +248,14 @@ public class TimController {
 
       // Craft ASN-encodable TIM
       
-      JSONObject encodableTim;
+      ObjectNode encodableTim;
       try {
-         encodableTim = JsonUtils.toJSONObject(travelerinputData.toJson());
-         encodableTim.getJSONObject("ode").put("index", encodableTim.getJSONObject("tim").getInt("index"));
+         encodableTim = (ObjectNode) TravelerMessageFromHumanToAsnConverter.changeTravelerInformationToAsnValues(
+            JsonUtils.toObjectNode(travelerinputData.toJson()));
+         
+         ((ObjectNode) encodableTim.get("ode"))
+            .put("index", encodableTim.get("tim").get("index").asInt());
+         
          //TODO build encodable TIM
          
       } catch (Exception e) {

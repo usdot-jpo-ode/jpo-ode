@@ -55,10 +55,10 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
            } else if (messageId == J2735DSRCmsgID.TravelerInformation.getMsgID()) {
               if (recordType == RecordType.dnMsg) {
                  timProducer.send(odeProperties.getKafkaTopicOdeDNMsgJson(), getRecord().key(), 
-                    OdeTimDataCreatorHelper.createOdeTimData(consumedData).toString());
+                    OdeTimDataCreatorHelper.createOdeTimData(consumed).toString());
               } else {
                  timProducer.send(odeProperties.getKafkaTopicOdeTimJson(), getRecord().key(), 
-                    OdeTimDataCreatorHelper.createOdeTimData(consumedData).toString());
+                    OdeTimDataCreatorHelper.createOdeTimData(consumed).toString());
               }
            }
         } catch (Exception e) {

@@ -3,9 +3,7 @@ package us.dot.its.jpo.ode.coder;
 import org.json.JSONObject;
 
 import us.dot.its.jpo.ode.context.AppContext;
-import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeTimPayload;
-import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 public class OdeTimDataCreatorHelper {
@@ -13,10 +11,7 @@ public class OdeTimDataCreatorHelper {
    private OdeTimDataCreatorHelper() {
    }
 
-   public static JSONObject createOdeTimData(String consumedData) throws XmlUtilsException { 
-
-      JSONObject timData = XmlUtils.toJSONObject(consumedData)
-            .getJSONObject(OdeAsn1Data.class.getSimpleName());
+   public static JSONObject createOdeTimData(JSONObject timData) throws XmlUtilsException { 
 
       JSONObject metadata = timData.getJSONObject(AppContext.METADATA_STRING);
       metadata.put("payloadType", OdeTimPayload.class.getName());
