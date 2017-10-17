@@ -2,22 +2,13 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.util.Iterator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import us.dot.its.jpo.ode.util.JsonUtils;
 
-//import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
-//import us.dot.its.jpo.ode.plugin.j2735.TimFieldValidator;
-//import us.dot.its.jpo.ode.util.CodecUtils;
-//import us.dot.its.jpo.ode.util.DateTimeUtils;
-
 public class TravelerMessageFromHumanToAsnConverter {
-   private static final Logger logger = LoggerFactory.getLogger(TravelerMessageFromHumanToAsnConverter.class);
 
    public static JsonNode changeTravelerInformationToAsnValues(JsonNode timData) {
 
@@ -71,31 +62,50 @@ public class TravelerMessageFromHumanToAsnConverter {
       
       ObjectNode updatedNode = (ObjectNode) dataFrame;
       
-//    <msgId>
-//      <roadSignID>
-//         <position>
-//            <lat>416784730</lat>
-//            <long>-1087827750</long>
-//            <elevation>9171</elevation>
-//         </position>
-//         <viewAngle>0101010101010100</viewAngle>
-//         <mutcdCode>
-//            <guide />
-//         </mutcdCode>
-//         <crc>0000</crc>
-//      </roadSignID>
-//   </msgId>
+      // replace the msgID and relevant fields
+      replaceMsgId(updatedNode);
+
       
-      // replace the messageID
-      // TODO WRONG SCHEMA STRUCTURE - postion3d here should be inside the RoadSignID element
-      if (updatedNode.get("msgID") != null) {
-         if (updatedNode.get("msgID").asText().equals("RoadSignID")) {
+      
+      // replace the geographical path regions
+      replaceGeographicalPathRegions(dataFrame.get("regions"));
+      
+      return updatedNode;
+   }
+   
+   public static ObjectNode replaceMsgId(JsonNode msgIDNode) {
+      
+//    <msgId>
+//    <roadSignID>
+//       <position>
+//          <lat>416784730</lat>
+//          <long>-1087827750</long>
+//          <elevation>9171</elevation>
+//       </position>
+//       <viewAngle>0101010101010100</viewAngle>
+//       <mutcdCode>
+//          <guide />
+//       </mutcdCode>
+//       <crc>0000</crc>
+//    </roadSignID>
+// </msgId>
+    
+    // replace the messageID
+    // TODO WRONG SCHEMA STRUCTURE - postion3d here should be inside the RoadSignID element
+      
+      ObjectNode updatedNode = (ObjectNode) msgIDNode;
+      
+      JsonNode msgID = updatedNode.get("msgID");
+      if (msgID != null) {
+         if (msgID.asText().equals("RoadSignID")) {
 
             ObjectNode roadSignID = JsonUtils.newNode();
-            JsonUtils.addNode(roadSignID, "position", translateAnchor(dataFrame.get("position")));
-            JsonUtils.addNode(roadSignID, "viewAngle", dataFrame.get("viewAngle").asText());
-            JsonUtils.addNode(roadSignID, "mutcdCode", dataFrame.get("mutcd").asText());
-            JsonUtils.addNode(roadSignID, "crc", dataFrame.get("crc").asText());
+            JsonUtils.addNode(roadSignID, "position", translateAnchor(updatedNode.get("position")));
+            JsonUtils.addNode(roadSignID, "viewAngle", updatedNode.get("viewAngle").asText());
+            JsonUtils.addNode(roadSignID, "mutcdCode", updatedNode.get("mutcd").asText());
+            roadSignID.put("crc", updatedNode.get("crc").asText());
+            // TODO - we can't do the following because .addNode calls as POJO
+            //JsonUtils.addNode(roadSignID, "crc", dataFrame.get("crc").asText());
 
             updatedNode.remove("msgID");
             updatedNode.remove("position");
@@ -108,17 +118,24 @@ public class TravelerMessageFromHumanToAsnConverter {
 
             updatedNode.set("msgID", msgId);
 
+         } else if (msgID.asText().equals("FurtherInfoID")) {
+            
+            // TODO - this may not be correct since msgID schema is inconsistent
+            
+            updatedNode.remove("msgID");
+            updatedNode.remove("position");
+            updatedNode.remove("viewAngle");
+            updatedNode.remove("mutcd");
+            updatedNode.remove("crc");
+            
+            ObjectNode msgId = JsonUtils.newNode();
+            msgId.put("furtherInfoID", msgID.get("FurtherInfoID").asText());
+            
+            updatedNode.set("msgID", msgId);
          }
       }
       
-      // replace the geographical path regions
-      replaceGeographicalPathRegions(dataFrame.get("regions"));
-      
       return updatedNode;
-   }
-   
-   public static void replaceMsgId() {
-      
    }
 
    public static JsonNode replaceGeographicalPathRegions(JsonNode regions) {
