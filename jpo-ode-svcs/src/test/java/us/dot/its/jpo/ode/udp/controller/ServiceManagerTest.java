@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.udp.controller;
 
+//import static org.junit.Assert.assertEquals;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -20,8 +22,12 @@ public class ServiceManagerTest {
    @Tested
    ServiceManager testServiceManager;
 
+   @Mocked
+   Executors mockExecutors;
+   
    @Injectable
    ThreadFactory mockThreadFactory;
+   
 
    @Test
    public void receiverSubmitCallsExecutorService(@Capturing Executors mockExecutors,
@@ -40,16 +46,17 @@ public class ServiceManagerTest {
       testServiceManager.submit(mockAbstractUdpReceiverPublisher);
 
    }
-
-   public void depositorCallsSubscribe(@Mocked AbstractSubscriberDepositor mockAbstractSubscriberDepositor) {
+@Test
+   public void depositorCallsSubscribe(@Mocked AbstractSubscriberDepositor mockAbstractSubscriberDepositor, @Mocked String mockString) {
 
       new Expectations() {
          {
             mockAbstractSubscriberDepositor.subscribe(anyString);
+            times = 1;
          }
       };
 
-      testServiceManager.submit(mockAbstractSubscriberDepositor);
+      testServiceManager.submit(mockAbstractSubscriberDepositor, mockString);
    }
 
 }
