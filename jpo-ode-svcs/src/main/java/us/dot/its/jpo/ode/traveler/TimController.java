@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.json.JSONObject;
+import org.json.XML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
@@ -39,12 +40,12 @@ import us.dot.its.jpo.ode.model.OdeMsgPayload;
 import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
-import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageBuilder;
 import us.dot.its.jpo.ode.snmp.SNMP;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
+import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 @Controller
@@ -247,11 +248,21 @@ public class TimController {
       }
 
       // Craft ASN-encodable TIM
-      JsonNode encodableTim = TravelerMessageBuilder.buildEncodableTim(travelerinputData.getTim());
+      JsonNode encodableTim;
+      try {
+         encodableTim = JsonUtils.toObjectNode(travelerinputData.toJson());
+         
+         //TODO build encodable TIM
+         
+      } catch (Exception e) {
+         String errMsg = "Error converting to encodable TIM.";
+         logger.error(errMsg, e);
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
+      }
 
       try {
          publish(encodableTim.toString());
-      } catch (JsonUtilsException e) {
+      } catch (Exception e) {
          String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
@@ -295,34 +306,45 @@ public class TimController {
       return "{\"" + key + "\":\"" + value + "\"}";
    }
 
-   private void publish(String request) throws JsonUtilsException {
+   private void publish(String request) throws JsonUtilsException, XmlUtilsException {
       JSONObject requestObj = JsonUtils.toJSONObject(request);
       
       //Create valid payload from scratch
       OdeMsgPayload payload = new OdeMsgPayload();
       payload.setDataType("MessageFrame");
       JSONObject payloadObj = JsonUtils.toJSONObject(payload.toJson());
+
+      //Create TravelerInformation
+      JSONObject timObject = new JSONObject();
+      timObject.put("TravelerInformation", requestObj.remove("tim")); //with "tim" removed, the remaining requestObject must go in as "request" element of metadata
       
       //Create a MessageFrame
       JSONObject mfObject = new JSONObject();
+      mfObject.put("value", timObject);
       mfObject.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
-      mfObject.put("value", requestObj.remove("tim")); //with "tim" removed, the remaining requestObject must go in as "request" element of metadata
       
-      payloadObj.put(AppContext.DATA_STRING, mfObject);
+      JSONObject dataObj = new JSONObject();
+      dataObj.put("MessageFrame", mfObject);
+      
+      payloadObj.put(AppContext.DATA_STRING, dataObj);
       
       //Create a valid metadata from scratch
       OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
       JSONObject metaObject = JsonUtils.toJSONObject(metadata.toJson());
       metaObject.put("request", requestObj);
       
-      Asn1Encoding enc = new Asn1Encoding("MessageFrame", "MessageFrame", EncodingRule.UPER);
+      //Create an encoding element
+      Asn1Encoding enc = new Asn1Encoding("/payload/data/MessageFrame", "MessageFrame", EncodingRule.UPER);
       metaObject.put("encodings", JsonUtils.toJSONObject(enc.toJson()));
       
       JSONObject message = new JSONObject();
       message.put(AppContext.METADATA_STRING, metaObject);
       message.put(AppContext.PAYLOAD_STRING, payloadObj);
       
-      messageProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, message.toString());
+      JSONObject root = new JSONObject();
+      root.put("OdeAsn1Data", message);
+      
+      messageProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, XML.toString(root));
    }
 
 

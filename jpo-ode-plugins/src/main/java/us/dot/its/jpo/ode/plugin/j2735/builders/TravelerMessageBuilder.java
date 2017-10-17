@@ -2,10 +2,6 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import org.json.JSONObject;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
-
 //import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
 //import us.dot.its.jpo.ode.plugin.j2735.TimFieldValidator;
 //import us.dot.its.jpo.ode.util.CodecUtils;
@@ -17,12 +13,6 @@ public class TravelerMessageBuilder {
 
       //TODO Make any necessary modifications to jsonNode before returning
       return timData;
-   }
-
-   public static JsonNode buildEncodableTim(J2735TravelerInformationMessage tim) {
-      // TODO Auto-generated method stub
-      
-      return null;
    }
 
 //   public TravelerInformation buildTravelerInformation(JsonNode jsonNode)

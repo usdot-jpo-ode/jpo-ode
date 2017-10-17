@@ -49,12 +49,16 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
     @Override
     public Object process(String consumedData) {
         try {
-           JSONObject consumedObj = XmlUtils.toJSONObject(consumedData);
+           JSONObject consumedObj = XmlUtils.toJSONObject(consumedData)
+                 .getJSONObject("OdeAsn1Data");
 
            // Convert JSON to POJO
            TravelerInputData travelerinputData = buildTravelerInputData(consumedObj);
            
-           String hexBytes = consumedObj.getJSONObject("data").getString("bytes");
+           String hexBytes = consumedObj
+                 .getJSONObject(AppContext.PAYLOAD_STRING)
+                 .getJSONObject(AppContext.DATA_STRING)
+                 .getString("bytes");
            
            processEncodedTim(travelerinputData, hexBytes);
            
