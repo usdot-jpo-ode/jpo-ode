@@ -30,7 +30,12 @@ public class TravelerMessageFromHumanToAsnConverter {
       //   {"TravelerDataFrame" : {}}
       //  ]
       
-      return replaceDataFrames(timData.get("tim").get("dataframes"));
+      // First thing to do is cast to ObjectNode so we can edit values in place
+      ObjectNode timDataObjectNode = (ObjectNode) timData;
+      
+      replaceDataFrames(timDataObjectNode.get("tim").get("dataframes"));
+      
+      return timDataObjectNode;
 
    }
 
@@ -62,8 +67,58 @@ public class TravelerMessageFromHumanToAsnConverter {
     * 
     * @param dataFrame
     */
-   public static JsonNode replaceDataFrame(JsonNode dataFrame) {
-      return replaceGeographicalPathRegions(dataFrame.get("regions"));
+   public static ObjectNode replaceDataFrame(JsonNode dataFrame) {
+      
+      ObjectNode updatedNode = (ObjectNode) dataFrame;
+      
+//    <msgId>
+//      <roadSignID>
+//         <position>
+//            <lat>416784730</lat>
+//            <long>-1087827750</long>
+//            <elevation>9171</elevation>
+//         </position>
+//         <viewAngle>0101010101010100</viewAngle>
+//         <mutcdCode>
+//            <guide />
+//         </mutcdCode>
+//         <crc>0000</crc>
+//      </roadSignID>
+//   </msgId>
+      
+      // replace the messageID
+      // TODO WRONG SCHEMA STRUCTURE - postion3d here should be inside the RoadSignID element
+      if (updatedNode.get("msgID") != null) {
+         if (updatedNode.get("msgID").asText().equals("RoadSignID")) {
+
+            ObjectNode roadSignID = JsonUtils.newNode();
+            JsonUtils.addNode(roadSignID, "position", translateAnchor(dataFrame.get("position")));
+            JsonUtils.addNode(roadSignID, "viewAngle", dataFrame.get("viewAngle").asText());
+            JsonUtils.addNode(roadSignID, "mutcdCode", dataFrame.get("mutcd").asText());
+            JsonUtils.addNode(roadSignID, "crc", dataFrame.get("crc").asText());
+
+            updatedNode.remove("msgID");
+            updatedNode.remove("position");
+            updatedNode.remove("viewAngle");
+            updatedNode.remove("mutcd");
+            updatedNode.remove("crc");
+
+            ObjectNode msgId = JsonUtils.newNode();
+            msgId.set("roadSignID", roadSignID);
+
+            updatedNode.set("msgID", msgId);
+
+         }
+      }
+      
+      // replace the geographical path regions
+      replaceGeographicalPathRegions(dataFrame.get("regions"));
+      
+      return updatedNode;
+   }
+   
+   public static void replaceMsgId() {
+      
    }
 
    public static JsonNode replaceGeographicalPathRegions(JsonNode regions) {
@@ -92,14 +147,58 @@ public class TravelerMessageFromHumanToAsnConverter {
       // Step 2 - Translate LaneWidth
       updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").asLong()));
       
+      // Step 3 - translate regions
+      if (updatedNode.get("description").get("geometry") != null) {
+         updatedNode = replaceGeometry(updatedNode);
+      }
+      
+      if (updatedNode.get("description").get("oldRegion") != null) {
+         updatedNode = replaceOldRegion(updatedNode);
+      }
+      
+      
+      
       return updatedNode;
       
    }
 
-   public static JsonNode translateAnchor(JsonNode region) {
+   public static ObjectNode translateAnchor(JsonNode region) {
       // takes anchor (position3d) and replaces lat/long/elev
       return Position3DBuilder.position3D(region);
 
+   }
+   
+   public static ObjectNode replaceGeometry(JsonNode geometry) {
+      
+      ObjectNode updatedNode = (ObjectNode) geometry;
+      
+      // replace lane width
+      updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").asLong()));
+      
+      return updatedNode;
+   }
+   
+   public static ObjectNode replaceOldRegion(JsonNode oldRegion) {
+      
+      ObjectNode updatedNode = (ObjectNode) oldRegion;
+      
+      
+      
+      JsonNode areaNode = updatedNode.get("area");
+      if (areaNode.get("shapePointSet") != null) {
+         
+         
+         
+      } else if (areaNode.get("circle") != null) {
+         
+      } else if (areaNode.get("regionPointSet") != null) {
+         
+      }
+      
+      
+      
+      
+      return updatedNode;
    }
 
 //   public TravelerInformation buildTravelerInformation(JsonNode jsonNode)

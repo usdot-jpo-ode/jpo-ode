@@ -49,7 +49,7 @@ public class Position3DBuilder {
 
    }
 
-   public static JsonNode position3D(JsonNode jpos) {
+   public static ObjectNode position3D(JsonNode jpos) {
 
       ObjectNode posNode = JsonUtils.newNode();
 
