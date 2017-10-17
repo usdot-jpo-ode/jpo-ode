@@ -1,11 +1,13 @@
 package us.dot.its.jpo.ode.services.asn1;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.snmp4j.ScopedPDU;
 import org.snmp4j.event.ResponseEvent;
 
 import com.oss.asn1.EncodeFailedException;
@@ -19,9 +21,12 @@ import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.snmp.SNMP;
+import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.traveler.AsdMessage;
-import us.dot.its.jpo.ode.traveler.TimController;
 import us.dot.its.jpo.ode.traveler.TimController.TimControllerException;
+import us.dot.its.jpo.ode.traveler.TimPduCreator;
+import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.wrapper.AbstractSubscriberProcessor;
@@ -96,8 +101,8 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
           String httpResponseStatus = null;
 
           try {
-             rsuResponse = TimController.createAndSend(travelerInfo.getSnmp(), curRsu, 
-                travelerInfo.getTim().getIndex(), rsuSRMPayload);
+             rsuResponse = createAndSend(travelerInfo.getSnmp(), curRsu, 
+                travelerInfo.getOde().getIndex(), rsuSRMPayload);
 
              if (null == rsuResponse || null == rsuResponse.getResponse()) {
                 // Timeout
@@ -138,6 +143,29 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        logger.info("TIM deposit response {}", responseList);
        
        return;
+    }
+
+    /**
+     * Create an SNMP session given the values in
+     * 
+     * @param tim
+     *           - The TIM parameters (payload, channel, mode, etc)
+     * @param props
+     *           - The SNMP properties (ip, username, password, etc)
+     * @return ResponseEvent
+     * @throws TimPduCreatorException
+     * @throws IOException
+     */
+    public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, int index, String payload)
+          throws IOException, TimPduCreatorException {
+
+       SnmpSession session = new SnmpSession(rsu);
+
+       // Send the PDU
+       ResponseEvent response = null;
+       ScopedPDU pdu = TimPduCreator.createPDU(snmp, payload, index);
+       response = session.set(pdu, session.getSnmp(), session.getTarget(), false);
+       return response;
     }
 
     private void depositToDDS(TravelerInputData travelerinputData, String rsuSRMPayload)

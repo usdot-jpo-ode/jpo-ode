@@ -38,9 +38,7 @@ import us.dot.its.jpo.ode.model.OdeMsgPayload;
 import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
-import us.dot.its.jpo.ode.snmp.SNMP;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
-import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
@@ -250,7 +248,7 @@ public class TimController {
       JSONObject encodableTim;
       try {
          encodableTim = JsonUtils.toJSONObject(travelerinputData.toJson());
-         
+         encodableTim.getJSONObject("ode").put("index", encodableTim.getJSONObject("tim").getInt("index"));
          //TODO build encodable TIM
          
       } catch (Exception e) {
@@ -269,29 +267,6 @@ public class TimController {
       }
 
       return ResponseEntity.status(HttpStatus.OK).body("Success");
-   }
-
-   /**
-    * Create an SNMP session given the values in
-    * 
-    * @param tim
-    *           - The TIM parameters (payload, channel, mode, etc)
-    * @param props
-    *           - The SNMP properties (ip, username, password, etc)
-    * @return ResponseEvent
-    * @throws TimPduCreatorException
-    * @throws IOException
-    */
-   public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, int index, String payload)
-         throws IOException, TimPduCreatorException {
-
-      SnmpSession session = new SnmpSession(rsu);
-
-      // Send the PDU
-      ResponseEvent response = null;
-      ScopedPDU pdu = TimPduCreator.createPDU(snmp, payload, index);
-      response = session.set(pdu, session.getSnmp(), session.getTarget(), false);
-      return response;
    }
 
    /**

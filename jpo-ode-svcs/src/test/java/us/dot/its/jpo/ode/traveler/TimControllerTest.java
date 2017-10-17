@@ -29,6 +29,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
+import us.dot.its.jpo.ode.services.asn1.Asn1EncodedDataRouter;
 import us.dot.its.jpo.ode.snmp.SNMP;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
@@ -226,7 +227,7 @@ public class TimControllerTest {
                mockRsu.getRsuTarget();
                result = "snmpException";
 
-               TimController.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
+               Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
                result = new Exception("SNMP Error");
 
                mockTravelerInputData.getSdw();
@@ -279,7 +280,7 @@ public class TimControllerTest {
                mockRsu.getRsuTarget();
                result = "nullResponse";
 
-               TimController.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
+               Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
                result = null;
 
                mockTravelerInputData.getSdw();
@@ -326,7 +327,7 @@ public class TimControllerTest {
                mockRsu.getRsuTarget();
                result = "badResponse";
 
-               TimController.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
+               Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
                result = mockResponseEvent;
                mockResponseEvent.getResponse();
                result = mockPdu;
@@ -383,7 +384,7 @@ public class TimControllerTest {
                mockRsu.getRsuTarget();
                result = "nonexistentialRsu";
 
-               TimController.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
+               Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
                result = mockResponseEvent;
                mockResponseEvent.getResponse();
                result = mockPdu;
@@ -441,7 +442,7 @@ public class TimControllerTest {
                mockRsu.getRsuTarget();
                result = "goodResponse";
 
-               TimController.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
+               Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString);
                result = mockResponseEvent;
                mockResponseEvent.getResponse();
                result = mockPdu;
