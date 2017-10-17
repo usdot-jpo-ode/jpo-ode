@@ -21,24 +21,38 @@ public class TravelerMessageFromHumanToAsnConverter {
 
    public static JsonNode changeTravelerInformationToAsnValues(JsonNode timData) {
 
-      // TODO Make any necessary modifications to jsonNode before returning
-
       // replace data frames
-      return replaceDataFrames(timData.get("TravelerInformation").get("dataFrames"));
+      // INPUT: 
+      // "dataframes": [{},{}]
+      // OUTPUT:
+      // "dataFrames": [
+      //   {"TravelerDataFrame" : {}},
+      //   {"TravelerDataFrame" : {}}
+      //  ]
+      
+      return replaceDataFrames(timData.get("tim").get("dataframes"));
 
    }
 
    public static JsonNode replaceDataFrames(JsonNode dataFrames) {
+
+      if (dataFrames == null) {
+         return JsonUtils.newNode();
+      }
+      
       ArrayNode replacedDataFrames = JsonUtils.newNode().arrayNode();
 
       if (dataFrames.isArray()) {
          Iterator<JsonNode> dataFramesIter = dataFrames.elements();
 
          while (dataFramesIter.hasNext()) {
-            JsonNode curFrame = dataFramesIter.next();
-            replacedDataFrames.add(replaceDataFrame(curFrame));
+            JsonNode oldFrame = dataFramesIter.next();
+            replacedDataFrames.add(replaceDataFrame(oldFrame));
          }
+      } else {
+         replacedDataFrames.add(replaceDataFrame(dataFrames));
       }
+         
 
       return replacedDataFrames;
    }
@@ -60,17 +74,21 @@ public class TravelerMessageFromHumanToAsnConverter {
 
          while (regionsIter.hasNext()) {
             JsonNode curRegion = regionsIter.next();
-            replacedRegions.add(translateAnchor(curRegion));
+            ObjectNode updatedNode = (ObjectNode) ((ObjectNode)curRegion).set("anchor",translateAnchor(curRegion.get("anchorPosition")));
+            updatedNode.remove("anchorPosition");
+            replacedRegions.add(updatedNode);
          }
-      }
+      } 
+//      else {
+//         replacedRegions.add(translateAnchor(regions.get("anchorPosition")));
+//      }
 
       return replacedRegions;
    }
 
    public static JsonNode translateAnchor(JsonNode region) {
       // takes anchor (position3d) and replaces lat/long/elev
-      JsonNode oldAnchor = region.get("anchor");
-      return JsonUtils.newObjectNode("anchor", Position3DBuilder.genericPosition3D(oldAnchor).toJson());
+      return Position3DBuilder.position3D(region);
 
    }
 

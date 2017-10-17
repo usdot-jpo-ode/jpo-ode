@@ -256,8 +256,6 @@ public class TimController {
          ((ObjectNode) encodableTim.get("ode"))
             .put("index", encodableTim.get("tim").get("index").asInt());
          
-         //TODO build encodable TIM
-         
       } catch (Exception e) {
          String errMsg = "Error converting to encodable TIM.";
          logger.error(errMsg, e);
