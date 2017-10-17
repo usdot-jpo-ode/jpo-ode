@@ -84,8 +84,6 @@ public class TimPduCreator {
         VariableBinding rsuSRMEnable = new VariableBinding(new OID("1.0.15628.4.1.4.1.10.".concat(Integer.toString(index))), new Integer32(snmp.getEnable()));
         VariableBinding rsuSRMStatus = new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(index))), new Integer32(snmp.getStatus()));
         
-        logger.info("PAYLOAD LENGTH: {}", new OctetString(DatatypeConverter.parseHexBinary(payload)).getBERPayloadLength());
-        
         ScopedPDU pdu = new ScopedPDU();
         pdu.add(rsuSRMPsid);
         pdu.add(rsuSRMDsrcMsgId);
