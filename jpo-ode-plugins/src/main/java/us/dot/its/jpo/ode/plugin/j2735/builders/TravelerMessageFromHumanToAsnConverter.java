@@ -2,6 +2,9 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.util.Iterator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -14,13 +17,14 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 //import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class TravelerMessageFromHumanToAsnConverter {
+   private static final Logger logger = LoggerFactory.getLogger(TravelerMessageFromHumanToAsnConverter.class);
 
    public static JsonNode changeTravelerInformationToAsnValues(JsonNode timData) {
 
       // TODO Make any necessary modifications to jsonNode before returning
 
       // replace data frames
-      return replaceDataFrames(timData.get("dataFrames"));
+      return replaceDataFrames(timData.get("TravelerInformation").get("dataFrames"));
 
    }
 

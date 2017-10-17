@@ -52,11 +52,12 @@ public class TravelerMessageFromHumanToAsnConverterTest {
       ObjectNode dataFrames = JsonUtils.newObjectNode("dataFrames", new ArrayNode(JsonNodeFactory.instance, dataFrameList));
       
       
-      ObjectNode tim = JsonUtils.newObjectNode("TravelerInformation", dataFrames);
+      ObjectNode tim = JsonUtils.newNode();
+      tim.set("TravelerInformation", dataFrames);
       
       JsonNode deTranslatedTim = TravelerMessageFromHumanToAsnConverter.changeTravelerInformationToAsnValues(tim);
       
-      assertEquals("string", deTranslatedTim.toString());
+      assertEquals("string", deTranslatedTim);
    }
    
 
