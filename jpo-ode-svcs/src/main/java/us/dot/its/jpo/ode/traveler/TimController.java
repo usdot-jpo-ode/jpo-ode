@@ -29,8 +29,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
@@ -248,9 +246,10 @@ public class TimController {
       }
 
       // Craft ASN-encodable TIM
-      JsonNode encodableTim;
+      
+      JSONObject encodableTim;
       try {
-         encodableTim = JsonUtils.toObjectNode(travelerinputData.toJson());
+         encodableTim = JsonUtils.toJSONObject(travelerinputData.toJson());
          
          //TODO build encodable TIM
          
@@ -260,6 +259,7 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
+      // Encode TIM
       try {
          publish(encodableTim.toString());
       } catch (Exception e) {
