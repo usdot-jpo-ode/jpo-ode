@@ -12,6 +12,8 @@ import us.dot.its.jpo.ode.coder.stream.BinaryDecoderPublisher;
 import us.dot.its.jpo.ode.coder.stream.HexDecoderPublisher;
 import us.dot.its.jpo.ode.coder.stream.JsonDecoderPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
+import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmSerializer;
+import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 
 public class FileDecoderPublisher {
 
@@ -24,11 +26,13 @@ public class FileDecoderPublisher {
    @Autowired
    public FileDecoderPublisher(OdeProperties odeProperties) {
 
-      MessagePublisher messagePub = new MessagePublisher(odeProperties);
+      OdeStringPublisher bsmStringMsgPub = new OdeStringPublisher(odeProperties);
+      OdeDataPublisher bsmByteMsgPub = new OdeDataPublisher(odeProperties, OdeBsmSerializer.class.getName());
+      OdeDataPublisher timByteMsgPub = new OdeDataPublisher(odeProperties, OdeTimSerializer.class.getName());
 
-      this.jsonDecPub = new JsonDecoderPublisher(messagePub);
-      this.hexDecPub = new HexDecoderPublisher(messagePub);
-      this.binDecPub = new BinaryDecoderPublisher(messagePub);
+      this.jsonDecPub = new JsonDecoderPublisher(bsmStringMsgPub);
+      this.hexDecPub = new HexDecoderPublisher(bsmByteMsgPub);
+      this.binDecPub = new BinaryDecoderPublisher(bsmByteMsgPub, timByteMsgPub);
    }
 
    public void decodeAndPublishFile(
@@ -39,21 +43,16 @@ public class FileDecoderPublisher {
 
       logger.info("Decoding and publishing file {}", fileName);
       
-      boolean hasMetadataHeader = false;
-      if (fileType.equals(ImporterFileType.BSM_LOG_FILE)) {
-         hasMetadataHeader = true;
-      }
-
       try {
          if (filePath.toString().endsWith(".hex") || filePath.toString().endsWith(".txt")) {
             logger.info("Decoding {} as hex file.", filePath);
-            hexDecPub.decodeAndPublish(fileInputStream, fileName, hasMetadataHeader);
+            hexDecPub.decodeAndPublish(fileInputStream, fileName, fileType);
          } else if (filePath.toString().endsWith(".json")) {
             logger.info("Decoding {} as json file.", filePath);
-            jsonDecPub.decodeAndPublish(fileInputStream, fileName, hasMetadataHeader);
+            jsonDecPub.decodeAndPublish(fileInputStream, fileName, fileType);
          } else {
             logger.info("Decoding {} as binary/signed file.", filePath);
-            binDecPub.decodeAndPublish(fileInputStream, fileName, hasMetadataHeader);
+            binDecPub.decodeAndPublish(fileInputStream, fileName, fileType);
          }
       } catch (Exception e) {
          logger.error("Failed to decode and publish file.", e);

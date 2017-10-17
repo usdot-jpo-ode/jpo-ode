@@ -76,7 +76,7 @@ public class ConsumerExample {
 					// Serialize the record value
 					SerializationUtils<J2735Bsm> serializer = new SerializationUtils<J2735Bsm>();
 					J2735Bsm bsm =  serializer.deserialize(record.value());
-					System.out.print(bsm.toString()); 
+					System.out.println(bsm.toString()); 
 				}
 			}
 		} else {
@@ -87,7 +87,7 @@ public class ConsumerExample {
 			while (true) {		
 				ConsumerRecords<String, String> records = stringConsumer.poll(100);
 				for (ConsumerRecord<String, String> record : records) {
-					System.out.print(record.value()); 
+					System.out.println(record.value()); 
 				}
 			}
 		

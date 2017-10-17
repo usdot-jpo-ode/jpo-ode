@@ -8,12 +8,14 @@ import java.time.ZonedDateTime;
 import com.oss.asn1.Coder;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
+import com.oss.asn1.OpenType;
 
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.Circle;
 import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane;
 import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane.OffsetXaxis;
 import us.dot.its.jpo.ode.j2735.dsrc.ComputedLane.OffsetYaxis;
+import us.dot.its.jpo.ode.j2735.dsrc.DSRCmsgID;
 import us.dot.its.jpo.ode.j2735.dsrc.DeltaAngle;
 import us.dot.its.jpo.ode.j2735.dsrc.DescriptiveName;
 import us.dot.its.jpo.ode.j2735.dsrc.DirectionOfUse;
@@ -28,6 +30,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.HeadingSlice;
 import us.dot.its.jpo.ode.j2735.dsrc.LaneDataAttribute;
 import us.dot.its.jpo.ode.j2735.dsrc.LaneDataAttributeList;
 import us.dot.its.jpo.ode.j2735.dsrc.LaneID;
+import us.dot.its.jpo.ode.j2735.dsrc.MessageFrame;
 import us.dot.its.jpo.ode.j2735.dsrc.MinuteOfTheYear;
 import us.dot.its.jpo.ode.j2735.dsrc.MsgCRC;
 import us.dot.its.jpo.ode.j2735.dsrc.MsgCount;
@@ -156,6 +159,16 @@ public class OssTravelerMessageBuilder {
       Coder coder = J2735.getPERUnalignedCoder();
       ByteArrayOutputStream sink = new ByteArrayOutputStream();
       coder.encode(travelerInfo, sink);
+      byte[] bytes = sink.toByteArray();
+      return CodecUtils.toHex(bytes);
+   }
+   
+   public String encodeTravelerInformationToMessageFrameHex() throws EncodeFailedException, EncodeNotSupportedException {
+      Coder coder = J2735.getPERUnalignedCoder();
+      coder.enableAutomaticEncoding();
+      ByteArrayOutputStream sink = new ByteArrayOutputStream();
+      MessageFrame mf = new MessageFrame(new DSRCmsgID(31), new OpenType(travelerInfo));
+      coder.encode(mf, sink);
       byte[] bytes = sink.toByteArray();
       return CodecUtils.toHex(bytes);
    }

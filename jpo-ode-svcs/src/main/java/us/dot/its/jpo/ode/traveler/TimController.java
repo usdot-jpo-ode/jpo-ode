@@ -41,7 +41,7 @@ import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
 import us.dot.its.jpo.ode.model.OdeObject;
-import us.dot.its.jpo.ode.model.OdeTravelerInformationData;
+import us.dot.its.jpo.ode.model.OdeTimData;
 import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
@@ -51,7 +51,7 @@ import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
-import us.dot.its.jpo.ode.wrapper.serdes.OdeTravelerInformationMessageSerializer;
+import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 
 @Controller
 public class TimController {
@@ -74,7 +74,7 @@ public class TimController {
       this.odeProperties = odeProperties;
 
       this.messageProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(),
-            odeProperties.getKafkaProducerType(), null, OdeTravelerInformationMessageSerializer.class.getName());
+            odeProperties.getKafkaProducerType(), null, OdeTimSerializer.class.getName());
 
       try {
          depositor = new DdsDepositor<>(this.odeProperties);
@@ -253,7 +253,7 @@ public class TimController {
       // Add metadata to message and publish to kafka
       OdeMsgPayload timDataPayload = new OdeMsgPayload(travelerinputData.getTim());
       OdeMsgMetadata timMetadata = new OdeMsgMetadata(timDataPayload);
-      OdeTravelerInformationData odeTimData = new OdeTravelerInformationData(timMetadata, timDataPayload);
+      OdeTimData odeTimData = new OdeTimData(timMetadata, timDataPayload);
       messageProducer.send(odeProperties.getKafkaTopicOdeTimPojo(), null, odeTimData);
 
       // Craft ASN-encodable TIM
@@ -267,10 +267,13 @@ public class TimController {
       }
 
       // Encode TIM
-      String rsuSRMPayload = null;
+      String timHexString = null;
+      String messageFrameHexString = null;
       try {
-         rsuSRMPayload = builder.encodeTravelerInformationToHex();
-         logger.debug("Encoded Hex TIM: {}", rsuSRMPayload);
+         timHexString = builder.encodeTravelerInformationToHex();
+         logger.debug("Encoded Hex TIM: {}", timHexString);
+         messageFrameHexString = builder.encodeTravelerInformationToMessageFrameHex();
+         logger.debug("Encoded Hex TIM in message frame: {}", messageFrameHexString);
       } catch (Exception e) {
          String errMsg = "Failed to encode TIM.";
          logger.error(errMsg, e);
@@ -287,7 +290,7 @@ public class TimController {
 
          try {
             rsuResponse = createAndSend(travelerinputData.getSnmp(), curRsu, travelerinputData.getTim().getIndex(),
-                  rsuSRMPayload);
+                  messageFrameHexString);
 
             if (null == rsuResponse || null == rsuResponse.getResponse()) {
                // Timeout
@@ -317,7 +320,7 @@ public class TimController {
       // Deposit to DDS
       String ddsMessage = "";
       try {
-         depositToDDS(travelerinputData, rsuSRMPayload);
+         depositToDDS(travelerinputData, timHexString);
          ddsMessage = "\"dds_deposit\":{\"success\":\"true\"}";
          logger.info("DDS deposit successful.");
       } catch (Exception e) {
