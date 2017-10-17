@@ -24,16 +24,16 @@ public class ToJsonServiceControllerTest {
       new Expectations() {
          {
             new ToJsonConverter<>((OdeProperties) any, anyBoolean, anyString);
-            times = 2;
+            times = 3;
 
             new MessageConsumer<>(anyString, anyString, (MessageProcessor<?, ?>) any, anyString);
-            times = 2;
+            times = 3;
 
             capturingMessageConsumer.setName(anyString);
-            times = 2;
+            times = 3;
 
             capturingToJsonConverter.start((MessageConsumer) any, anyString);
-            times = 2;
+            times = 3;
          }
       };
       new ToJsonServiceController(injectableOdeProperties);

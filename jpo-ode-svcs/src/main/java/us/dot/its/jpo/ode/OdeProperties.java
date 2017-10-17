@@ -78,6 +78,9 @@ public class OdeProperties implements EnvironmentAware {
     */
    private String kafkaTopicOdeTimPojo = "topic.OdeTimPojo";
    private String kafkaTopicOdeTimJson = "topic.OdeTimJson";
+   private String kafkaTopicOdeDNMsgJson= "topic.OdeDNMsgJson";
+   private String kafkaTopicOdeDNMsgPojo= "topic.OdeDNMsgPojo";
+
 
    /*
     * BSM Properties
@@ -596,6 +599,16 @@ public class OdeProperties implements EnvironmentAware {
    public void setKafkaTopicOdeTimPojo(String kafkaTopicOdeTimPojo) {
       this.kafkaTopicOdeTimPojo = kafkaTopicOdeTimPojo;
    }
+   public String getKafkaTopicOdeDNMsgPojo() {return kafkaTopicOdeDNMsgPojo; }
+
+   public void setKafkaTopicOdeDNMsgPojo(String kafkaTopicOdeDNMsgPojo) {
+      this.kafkaTopicOdeDNMsgPojo = kafkaTopicOdeDNMsgPojo;
+   }
+   public String getKafkaTopicOdeDNMsgJson() {return kafkaTopicOdeDNMsgJson; }
+
+   public void setKafkaTopicOdeDNMsgJson(String kafkaTopicOdeDNMsgJson) {
+      this.kafkaTopicOdeDNMsgJson = kafkaTopicOdeDNMsgJson;
+   }
 
    public String getKafkaTopicOdeTimJson() {
       return kafkaTopicOdeTimJson;
@@ -605,12 +618,12 @@ public class OdeProperties implements EnvironmentAware {
       this.kafkaTopicOdeTimJson = kafkaTopicOdeTimJson;
    }
 
-    public String getUploadLocationBsmLog() {
-        return uploadLocationBsmLog;
+   public String getUploadLocationBsmLog() {
+      return uploadLocationBsmLog;
     }
     
-    public void setUploadLocationBsmLog(String uploadLocationBsmLog) {
-        this.uploadLocationBsmLog = uploadLocationBsmLog;
-    }
+   public void setUploadLocationBsmLog(String uploadLocationBsmLog) {
+      this.uploadLocationBsmLog = uploadLocationBsmLog;
+   }
 
 }

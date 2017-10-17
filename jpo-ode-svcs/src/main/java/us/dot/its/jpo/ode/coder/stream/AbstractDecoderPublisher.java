@@ -7,7 +7,6 @@ import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.coder.TimDecoderHelper;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
-import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
 import us.dot.its.jpo.ode.model.SerialId;
 
 public abstract class AbstractDecoderPublisher implements DecoderPublisher {
@@ -18,8 +17,6 @@ public abstract class AbstractDecoderPublisher implements DecoderPublisher {
 
    protected BsmDecoderHelper bsmDecoder;
    protected TimDecoderHelper timDecoder;
-
-   protected BsmLogFileParser bsmFileParser;
 
    protected static AtomicLong bundleId = new AtomicLong(0);
 

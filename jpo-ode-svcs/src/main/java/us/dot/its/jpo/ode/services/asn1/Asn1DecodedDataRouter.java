@@ -8,6 +8,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
 import us.dot.its.jpo.ode.coder.OdeTimDataCreatorHelper;
 import us.dot.its.jpo.ode.context.AppContext;
+import us.dot.its.jpo.ode.importer.parser.LogFileParser.RecordType;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
@@ -44,13 +45,21 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
                  .getJSONObject("MessageFrame")
                  .getInt("messageId");
            
+           RecordType recordType = RecordType.valueOf(consumed.getJSONObject(AppContext.METADATA_STRING)
+                 .getString("recordType"));
+           
            if (messageId == J2735DSRCmsgID.BasicSafetyMessage.getMsgID()) {
          	  //ODE-518/ODE-604 Demultiplex the messages to appropriate topics based on the "recordType"
               bsmProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), getRecord().key(),
                  OdeBsmDataCreatorHelper.createOdeBsmData(consumedData));
            } else if (messageId == J2735DSRCmsgID.TravelerInformation.getMsgID()) {
-              timProducer.send(odeProperties.getKafkaTopicOdeTimJson(), getRecord().key(), 
-                 OdeTimDataCreatorHelper.createOdeTimData(consumedData).toString());
+              if (recordType == RecordType.dnMsg) {
+                 timProducer.send(odeProperties.getKafkaTopicOdeDNMsgJson(), getRecord().key(), 
+                    OdeTimDataCreatorHelper.createOdeTimData(consumedData).toString());
+              } else {
+                 timProducer.send(odeProperties.getKafkaTopicOdeTimJson(), getRecord().key(), 
+                    OdeTimDataCreatorHelper.createOdeTimData(consumedData).toString());
+              }
            }
         } catch (Exception e) {
            logger.error("Failed to route received data: " + consumedData, e);
