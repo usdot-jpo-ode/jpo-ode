@@ -20,7 +20,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       // TODO Make any necessary modifications to jsonNode before returning
 
       // replace data frames
-      return replaceDataFrames(timData.get("dataFrames"));
+      return replaceDataFrames(timData.get("tim").get("dataframes"));
 
    }
 
