@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import mockit.Capturing;
@@ -42,9 +43,13 @@ public class ImporterProcessorTest {
    @Capturing
    OdeFileUtils capturingOdeFileUtils;
 
+
+
    @Mocked
    Path mockFile;
-
+   @Mocked
+   Path mockFileBackup;
+   
    @Injectable
    Path injectableDir;
    @Injectable
@@ -67,7 +72,7 @@ public class ImporterProcessorTest {
 
       testImporterProcessor.processDirectory(injectableDir, injectableBackupDir);
    }
-
+ 
    @Test
    public void processExistingFilesShouldProcessOneFile(@Mocked DirectoryStream<Path> mockDirectoryStream,
          @Mocked Iterator<Path> mockIterator) {
@@ -111,18 +116,19 @@ public class ImporterProcessorTest {
    @Test
    public void processAndBackupFileShouldOdeFileUtilsException() {
 
+      
+      
       try {
-         new Expectations(FileInputStream.class, BufferedInputStream.class) {
+         new Expectations(FileInputStream.class) {
             {
-               new BufferedInputStream((InputStream) any, anyInt);
-               result = null;
                new FileInputStream((File) any);
-               result = null;
-               capturingFileDecoderPublisher.decodeAndPublishFile((Path) any, (BufferedInputStream) any, ImporterFileType.BSM_LOG_FILE);
+               result = null; 
+
+               
+               OdeFileUtils.backupFile((Path) any, (Path) any);
                times = 1;
 
-               OdeFileUtils.backupFile((Path) any, (Path) any);
-               result = new IOException("testException123");
+            
             }
          };
       } catch (Exception e) {
@@ -130,5 +136,6 @@ public class ImporterProcessorTest {
       }
       testImporterProcessor.processAndBackupFile(mockFile, injectableBackupDir);
    }
+
 
 }
