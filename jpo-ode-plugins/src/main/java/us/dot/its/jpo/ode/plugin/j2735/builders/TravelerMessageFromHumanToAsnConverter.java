@@ -74,16 +74,26 @@ public class TravelerMessageFromHumanToAsnConverter {
 
          while (regionsIter.hasNext()) {
             JsonNode curRegion = regionsIter.next();
-            ObjectNode updatedNode = (ObjectNode) ((ObjectNode)curRegion).set("anchor",translateAnchor(curRegion.get("anchorPosition")));
-            updatedNode.remove("anchorPosition");
-            replacedRegions.add(updatedNode);
+            replacedRegions.add(translateGeoGraphicalPathRegion(curRegion));
          }
       } 
-//      else {
-//         replacedRegions.add(translateAnchor(regions.get("anchorPosition")));
-//      }
 
       return replacedRegions;
+   }
+   
+   public static ObjectNode translateGeoGraphicalPathRegion(JsonNode region) {
+      
+      
+      // Step 1 - Translate Position3D
+      // replace "anchorPosition" with "anchor" and translate values
+      ObjectNode updatedNode = JsonUtils.setElement("anchor", region, translateAnchor(region.get("anchorPosition")));
+      updatedNode = JsonUtils.removeElement("anchorPosition", updatedNode);
+      
+      // Step 2 - Translate LaneWidth
+      updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").asLong()));
+      
+      return updatedNode;
+      
    }
 
    public static JsonNode translateAnchor(JsonNode region) {

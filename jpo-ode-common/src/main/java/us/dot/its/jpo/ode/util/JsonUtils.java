@@ -161,4 +161,33 @@ public class JsonUtils {
       return nodeProps;
    }
 
+   /**
+    * Removes element with matching name from JsonNode and returns a new,
+    * updated ObjectNode.
+    * 
+    * @param fieldToBeRemoved
+    * @return
+    */
+   public static ObjectNode removeElement(String fieldToBeRemoved, JsonNode tree) {
+
+      ObjectNode updatedTree = (ObjectNode) tree;
+      updatedTree.remove(fieldToBeRemoved);
+      return updatedTree;
+   }
+
+   /**
+    * Creates or replaces designated field within the tree and returns the new
+    * tree.
+    * 
+    * @param newOrExistingFieldName
+    * @param value
+    * @return
+    */
+   public static ObjectNode setElement(String newOrExistingFieldName, JsonNode tree, JsonNode newValue) {
+
+      ObjectNode updatedTree = (ObjectNode) ((ObjectNode) tree).set(newOrExistingFieldName, newValue);
+      
+      return updatedTree;
+   }
+
 }
