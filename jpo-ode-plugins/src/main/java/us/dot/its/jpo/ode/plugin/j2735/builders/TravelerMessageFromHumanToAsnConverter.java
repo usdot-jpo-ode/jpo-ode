@@ -1,7 +1,12 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.util.Iterator;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 //import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
 //import us.dot.its.jpo.ode.plugin.j2735.TimFieldValidator;
@@ -10,41 +15,59 @@ import org.json.JSONObject;
 
 public class TravelerMessageFromHumanToAsnConverter {
 
-   public static JSONObject makeTravelerInformationUserFriendly(JSONObject timData) {
+   public static JsonNode changeTravelerInformationToAsnValues(JsonNode timData) {
 
-      //TODO Make any necessary modifications to jsonNode before returning
-      
-      
+      // TODO Make any necessary modifications to jsonNode before returning
+
       // replace data frames
-      replaceDataFrames(timData.getJSONArray("dataFrames"));
-            
-       
-      
-      return timData;
+      return replaceDataFrames(timData.get("dataFrames"));
+
    }
-   
-   public static void replaceDataFrames(JSONArray dataFrames) {
-      // for each data frame, replace regions
-      for (int i = 0; i < dataFrames.length(); i++) {
-         replaceDataFrame(dataFrames.getJSONObject(i));
+
+   public static JsonNode replaceDataFrames(JsonNode dataFrames) {
+      ArrayNode replacedDataFrames = JsonUtils.newNode().arrayNode();
+
+      if (dataFrames.isArray()) {
+         Iterator<JsonNode> dataFramesIter = dataFrames.elements();
+
+         while (dataFramesIter.hasNext()) {
+            JsonNode curFrame = dataFramesIter.next();
+            replacedDataFrames.add(replaceDataFrame(curFrame));
+         }
       }
+
+      return replacedDataFrames;
    }
-   
-   public static void replaceDataFrame(JSONObject dataFrame) {
-      replaceGeographicalPathRegions(dataFrame.getJSONArray("regions"));
+
+   /**
+    * Convert necessary fields within the dataframe. For now just pos3d.
+    * 
+    * @param dataFrame
+    */
+   public static JsonNode replaceDataFrame(JsonNode dataFrame) {
+      return replaceGeographicalPathRegions(dataFrame.get("regions"));
    }
-   
-   public static void replaceGeographicalPathRegions(JSONArray regions) {
-      // takes array of Geographical Path and passes each to replace anchor
-      for (int i = 0; i < regions.length(); i++) {
-         replaceAnchorPoint(regions.getJSONObject(i));
+
+   public static JsonNode replaceGeographicalPathRegions(JsonNode regions) {
+      ArrayNode replacedRegions = JsonUtils.newNode().arrayNode();
+
+      if (regions.isArray()) {
+         Iterator<JsonNode> regionsIter = regions.elements();
+
+         while (regionsIter.hasNext()) {
+            JsonNode curRegion = regionsIter.next();
+            replacedRegions.add(translateAnchor(curRegion));
+         }
       }
+
+      return replacedRegions;
    }
-   
-   public static void replaceAnchorPoint(JSONObject region) {
+
+   public static JsonNode translateAnchor(JsonNode region) {
       // takes anchor (position3d) and replaces lat/long/elev
-      //JSONObject convertedPosition = Position3DBuilder.genericPosition3D(region.getJSONObject("anchor"));
-      //region.put("anchor", convertedPosition);
+      JsonNode oldAnchor = region.get("anchor");
+      return JsonUtils.newObjectNode("anchor", Position3DBuilder.genericPosition3D(oldAnchor).toJson());
+
    }
 
 //   public TravelerInformation buildTravelerInformation(JsonNode jsonNode)
