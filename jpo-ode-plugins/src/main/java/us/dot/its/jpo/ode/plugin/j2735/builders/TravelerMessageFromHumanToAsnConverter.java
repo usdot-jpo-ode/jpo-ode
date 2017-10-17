@@ -1,18 +1,73 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import org.json.JSONObject;
+import java.util.Iterator;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 //import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
 //import us.dot.its.jpo.ode.plugin.j2735.TimFieldValidator;
 //import us.dot.its.jpo.ode.util.CodecUtils;
 //import us.dot.its.jpo.ode.util.DateTimeUtils;
 
-public class TravelerMessageBuilder {
+public class TravelerMessageFromHumanToAsnConverter {
 
-   public static JSONObject makeTravelerInformationUserFriendly(JSONObject timData) {
+   public static JsonNode changeTravelerInformationToAsnValues(JsonNode timData) {
 
-      //TODO Make any necessary modifications to jsonNode before returning
-      return timData;
+      // TODO Make any necessary modifications to jsonNode before returning
+
+      // replace data frames
+      return replaceDataFrames(timData.get("dataFrames"));
+
+   }
+
+   public static JsonNode replaceDataFrames(JsonNode dataFrames) {
+      ArrayNode replacedDataFrames = JsonUtils.newNode().arrayNode();
+
+      if (dataFrames.isArray()) {
+         Iterator<JsonNode> dataFramesIter = dataFrames.elements();
+
+         while (dataFramesIter.hasNext()) {
+            JsonNode curFrame = dataFramesIter.next();
+            replacedDataFrames.add(replaceDataFrame(curFrame));
+         }
+      }
+
+      return replacedDataFrames;
+   }
+
+   /**
+    * Convert necessary fields within the dataframe. For now just pos3d.
+    * 
+    * @param dataFrame
+    */
+   public static JsonNode replaceDataFrame(JsonNode dataFrame) {
+      return replaceGeographicalPathRegions(dataFrame.get("regions"));
+   }
+
+   public static JsonNode replaceGeographicalPathRegions(JsonNode regions) {
+      ArrayNode replacedRegions = JsonUtils.newNode().arrayNode();
+
+      if (regions.isArray()) {
+         Iterator<JsonNode> regionsIter = regions.elements();
+
+         while (regionsIter.hasNext()) {
+            JsonNode curRegion = regionsIter.next();
+            replacedRegions.add(translateAnchor(curRegion));
+         }
+      }
+
+      return replacedRegions;
+   }
+
+   public static JsonNode translateAnchor(JsonNode region) {
+      // takes anchor (position3d) and replaces lat/long/elev
+      JsonNode oldAnchor = region.get("anchor");
+      return JsonUtils.newObjectNode("anchor", Position3DBuilder.genericPosition3D(oldAnchor).toJson());
+
    }
 
 //   public TravelerInformation buildTravelerInformation(JsonNode jsonNode)
