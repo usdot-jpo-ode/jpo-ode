@@ -2,6 +2,8 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
 
+import org.json.JSONObject;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.j2735.dsrc.Elevation;
@@ -12,12 +14,12 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 
 public class Position3DBuilder {
    
-   public static J2735Position3D genericPosition3D(JsonNode pos) {
+   public static J2735Position3D genericPosition3D(JSONObject pos) {
       J2735Position3D jpos = new J2735Position3D();
 
-      Long longitude = pos.get("long").asLong();
-      Long latitude = pos.get("lat").asLong();
-      Long elevation = pos.get("elevation").asLong();
+      Long longitude = pos.getLong("long");
+      Long latitude = pos.getLong("lat");
+      Long elevation = pos.getLong("elevation");
 
       if (longitude != null) {
          if (longitude == 1800000001) {

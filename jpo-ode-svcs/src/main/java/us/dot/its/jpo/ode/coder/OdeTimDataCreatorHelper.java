@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeTimPayload;
-import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageBuilder;
+import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
@@ -26,7 +26,7 @@ public class OdeTimDataCreatorHelper {
       JSONObject payload = timData.getJSONObject(AppContext.PAYLOAD_STRING);
       payload.put(AppContext.DATA_TYPE_STRING, "TravelerInformation");
       // Do other TIM specific mods before returning the data 
-      JSONObject tim = TravelerMessageBuilder.makeTravelerInformationUserFriendly(
+      JSONObject tim = TravelerMessageFromHumanToAsnConverter.makeTravelerInformationUserFriendly(
          payload.getJSONObject(AppContext.DATA_STRING)
             .getJSONObject("MessageFrame")
             .getJSONObject("value")

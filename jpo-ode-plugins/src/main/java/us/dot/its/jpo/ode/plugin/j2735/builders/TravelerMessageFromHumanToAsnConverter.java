@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 //import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
@@ -7,12 +8,43 @@ import org.json.JSONObject;
 //import us.dot.its.jpo.ode.util.CodecUtils;
 //import us.dot.its.jpo.ode.util.DateTimeUtils;
 
-public class TravelerMessageBuilder {
+public class TravelerMessageFromHumanToAsnConverter {
 
    public static JSONObject makeTravelerInformationUserFriendly(JSONObject timData) {
 
       //TODO Make any necessary modifications to jsonNode before returning
+      
+      
+      // replace data frames
+      replaceDataFrames(timData.getJSONArray("dataFrames"));
+            
+       
+      
       return timData;
+   }
+   
+   public static void replaceDataFrames(JSONArray dataFrames) {
+      // for each data frame, replace regions
+      for (int i = 0; i < dataFrames.length(); i++) {
+         replaceDataFrame(dataFrames.getJSONObject(i));
+      }
+   }
+   
+   public static void replaceDataFrame(JSONObject dataFrame) {
+      replaceGeographicalPathRegions(dataFrame.getJSONArray("regions"));
+   }
+   
+   public static void replaceGeographicalPathRegions(JSONArray regions) {
+      // takes array of Geographical Path and passes each to replace anchor
+      for (int i = 0; i < regions.length(); i++) {
+         replaceAnchorPoint(regions.getJSONObject(i));
+      }
+   }
+   
+   public static void replaceAnchorPoint(JSONObject region) {
+      // takes anchor (position3d) and replaces lat/long/elev
+      //JSONObject convertedPosition = Position3DBuilder.genericPosition3D(region.getJSONObject("anchor"));
+      //region.put("anchor", convertedPosition);
    }
 
 //   public TravelerInformation buildTravelerInformation(JsonNode jsonNode)
