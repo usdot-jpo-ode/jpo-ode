@@ -197,23 +197,96 @@ public class TravelerMessageFromHumanToAsnConverter {
    
    public static ObjectNode replaceOldRegion(JsonNode oldRegion) {
       
+      // old region == ValidRegion
+      // elements:
+      // direction - no changes
+      // extent - no changes
+      // area - needs changes
+      
       ObjectNode updatedNode = (ObjectNode) oldRegion;
       
+      updatedNode.set("area", replaceArea(updatedNode.get("area")));
+      
+      return updatedNode;
+   }
+   
+   public static ObjectNode replaceArea(JsonNode area) {
+      
+      // area contains one of:
+      // shapePointSet
+      // circle
+      // regionPointSet
+      
+      ObjectNode updatedNode = (ObjectNode) area;
       
       
-      JsonNode areaNode = updatedNode.get("area");
-      if (areaNode.get("shapePointSet") != null) {
+      if (updatedNode.get("shapePointSet") != null) {
+         updatedNode.set("shapePointSet", replaceShapePointSet(updatedNode.get("shapePointSet")));
          
+      } else if (updatedNode.get("circle") != null) {
+         updatedNode.set("circle", replaceCircle(updatedNode.get("circle")));
          
-         
-      } else if (areaNode.get("circle") != null) {
-         
-      } else if (areaNode.get("regionPointSet") != null) {
-         
+      } else if (updatedNode.get("regionPointSet") != null) {
+         updatedNode.set("regionPointSet", replaceRegionPointSet(updatedNode.get("regionPointSet")));
       }
       
+      return updatedNode;
+   }
+   
+   private static ObjectNode replaceRegionPointSet(JsonNode regionPointSet) {
+      // TODO Auto-generated method stub
+      ObjectNode updatedNode = (ObjectNode) regionPointSet;
+      return updatedNode;
+   }
+
+   public static ObjectNode replaceCircle(JsonNode circle) {
+      // TODO Auto-generated method stub
+      ObjectNode updatedNode = (ObjectNode) circle;
+      return updatedNode;
+   }
+
+   public static ObjectNode replaceShapePointSet(JsonNode shapePointSet) {
+      // shape point set contains:
+      // anchor
+      // lane width
+      // directionality
+      // node list
       
+      ObjectNode updatedNode = (ObjectNode) shapePointSet;
       
+      // replace anchor
+      if (updatedNode.get("anchor") != null) {
+         updatedNode = JsonUtils.setElement("anchor", updatedNode, translateAnchor(updatedNode.get("anchorPosition")));
+         updatedNode = JsonUtils.removeElement("anchorPosition", updatedNode);
+      }
+      
+      // replace lane width
+      if (updatedNode.get("laneWidth") != null) {
+         updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").asLong()));
+      }
+      
+      // directionality does not need replacement
+      
+      // replace node list
+      updatedNode.set("nodeList", updatedNode.get("nodeList"));
+      
+      return updatedNode;
+   }
+   
+   public static ObjectNode replaceNodeListXY (JsonNode nodeList) {
+      // nodeListXY contains either NodeSetXY or ComputedLane
+      
+      ObjectNode updatedNode = (ObjectNode) nodeList;
+      
+      if (updatedNode.get("nodes") != null) {
+         updatedNode.set("nodes", replaceNodeSetXY(updatedNode.get("nodes")));
+      }
+      
+      return updatedNode;
+   }
+   
+   public static ObjectNode replaceNodeSetXY(JsonNode nodeSet) {
+      ObjectNode updatedNode = (ObjectNode) nodeSet;
       
       return updatedNode;
    }
