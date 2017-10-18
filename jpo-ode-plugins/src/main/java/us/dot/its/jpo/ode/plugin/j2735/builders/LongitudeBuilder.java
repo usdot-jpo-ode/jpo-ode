@@ -4,16 +4,14 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
-
 public class LongitudeBuilder {
 
    private LongitudeBuilder() {
       throw new UnsupportedOperationException();
    }
 
-   public static Longitude longitude(BigDecimal lon) {
-      return new Longitude(lon.scaleByPowerOfTen(7).intValue());
+   public static int longitude(BigDecimal lon) {
+      return lon.scaleByPowerOfTen(7).intValue();
    }
 
    public static BigDecimal genericLongitude(JsonNode longitude) {
