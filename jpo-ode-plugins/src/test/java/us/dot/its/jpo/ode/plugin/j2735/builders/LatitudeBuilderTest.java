@@ -26,6 +26,24 @@ public class LatitudeBuilderTest {
 
       assertEquals(expectedValue, LatitudeBuilder.genericLatitude(testInput));
    }
+   
+   @Test
+   public void testConversionDeticatedNullValue() throws JsonProcessingException, IOException {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode testInput = mapper.readTree("900000001");
+      BigDecimal expectedValue = null;
+
+      assertEquals(expectedValue, LatitudeBuilder.genericLatitude(testInput));
+   }
+   
+   @Test
+   public void testConversionNullEntry() throws JsonProcessingException, IOException {
+      JsonNode testInput = null;
+      BigDecimal expectedValue = null;
+
+      assertEquals(expectedValue, LatitudeBuilder.genericLatitude(testInput));
+   }
+   
 
    @Test
    public void testConstructorIsPrivate()
@@ -40,4 +58,6 @@ public class LatitudeBuilderTest {
          assertEquals(InvocationTargetException.class, e.getClass());
       }
    }
+   
+   
 }
