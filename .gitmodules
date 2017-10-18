@@ -1,3 +1,0 @@
-[submodule "asn1_codec"]
-	path = asn1_codec
-	url = https://github.com/usdot-jpo-ode/asn1_codec.git

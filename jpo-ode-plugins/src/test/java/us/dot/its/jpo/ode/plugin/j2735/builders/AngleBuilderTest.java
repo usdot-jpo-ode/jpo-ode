@@ -16,6 +16,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import us.dot.its.jpo.ode.util.JsonUtils;
+
 public class AngleBuilderTest {
 
    /**
@@ -152,6 +154,33 @@ public class AngleBuilderTest {
       } catch (Exception e) {
          assertEquals(InvocationTargetException.class, e.getClass());
       }
+   }
+   
+   @Test
+   public void testJsonNode() throws JsonProcessingException, IOException {
+
+      
+
+      JsonNode expectedValue = JsonUtils.newObjectNode("angle", 
+              BigDecimal.valueOf(25).divide(BigDecimal.valueOf(0.0125)).intValue());
+
+      JsonNode actualValue = AngleBuilder.angle(25);
+
+      assertEquals(expectedValue, actualValue);
+
+   }
+   
+   @Test
+   public void testlongToDecimalNull() throws JsonProcessingException, IOException {
+
+      
+
+	   BigDecimal expectedValue = null;
+
+      BigDecimal actualValue = AngleBuilder.longToDecimal((long)28800);
+
+      assertEquals(expectedValue, actualValue);
+
    }
 
 }
