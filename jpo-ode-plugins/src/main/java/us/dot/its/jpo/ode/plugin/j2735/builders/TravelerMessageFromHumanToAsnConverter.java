@@ -252,8 +252,22 @@ public class TravelerMessageFromHumanToAsnConverter {
    }
 
    public static ObjectNode replaceCircle(JsonNode circle) {
-      // TODO Auto-generated method stub
+      
+//      Circle ::= SEQUENCE {
+//         center Position3D,
+//         radius Radius-B12,
+//         units DistanceUnits
+//         }
+      
       ObjectNode updatedNode = (ObjectNode) circle;
+      // replace center
+      updatedNode.set("center", Position3DBuilder.position3D(updatedNode.get("position")));
+      updatedNode.remove("position");
+      
+      // radius does not need replacement
+      
+      // units do not need replacement
+      
       return updatedNode;
    }
 
@@ -293,9 +307,73 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       if (updatedNode.get("nodes") != null) {
          updatedNode.set("nodes", replaceNodeSetXY(updatedNode.get("nodes")));
+      } else if (updatedNode.get("computed") != null) {
+         replaceComputedLane(updatedNode.get("computed") );
       }
 
       return updatedNode;
+   }
+
+   private static ObjectNode replaceComputedLane(JsonNode jsonNode) {
+//      referenceLaneId LaneID
+//      offsetXaxis CHOICE {
+//      small DrivenLineOffsetSm,
+//      large DrivenLineOffsetLg
+//      }
+//      offsetYaxis CHOICE {
+//      small DrivenLineOffsetSm,
+//      large DrivenLineOffsetLg
+//      }
+//      rotateXY Angle OPTIONAL
+//      scaleXaxis Scale-B12 OPTIONAL
+//      scaleYaxis Scale-B12 OPTIONAL
+      
+      
+      
+      // TODO REST schema here is very different than ASN schema
+      // must verify correct structure
+      
+      
+      // lane id does not need replacement
+      
+      // detect and remove the nodes
+      ObjectNode updatedNode = (ObjectNode) jsonNode;
+      
+      if (updatedNode.get("offsetSmallX") != null) {
+         ObjectNode small = JsonUtils.newObjectNode("small", DrivenLineOffsetSmBuilder.drivenLaneOffsetSm(updatedNode.get("offsetSmallX").decimalValue()));
+         updatedNode.set("offsetXaxis", small);
+         updatedNode.remove("offsetSmallX");
+      }
+      if (updatedNode.get("offsetLargeX") != null) {
+         ObjectNode large = JsonUtils.newObjectNode("large", DrivenLineOffsetLgBuilder.drivenLineOffsetLg(updatedNode.get("offsetLargeX").decimalValue()));
+         updatedNode.set("offsetXaxis", large);
+         updatedNode.remove("offsetLargeX");
+      }
+      if (updatedNode.get("offsetSmallY") != null) {
+         ObjectNode small = JsonUtils.newObjectNode("small", DrivenLineOffsetSmBuilder.drivenLaneOffsetSm(updatedNode.get("offsetSmallY").decimalValue()));
+         updatedNode.set("offsetYaxis", small);
+         updatedNode.remove("offsetSmallY");
+      }
+      if (updatedNode.get("offsetLargeY") != null) {
+         ObjectNode large = JsonUtils.newObjectNode("large", DrivenLineOffsetLgBuilder.drivenLineOffsetLg(updatedNode.get("offsetLargeY").decimalValue()));
+         updatedNode.set("offsetYaxis", large);
+         updatedNode.remove("offsetLargeY");
+      }
+      if (updatedNode.get("angle") != null) {
+         updatedNode.put("rotateXY", AngleBuilder.angle(updatedNode.get("angle").decimalValue()));
+         updatedNode.remove("angle");
+      }
+      if (updatedNode.get("xScale") != null) {
+         updatedNode.put("scaleXaxis", ScaleB12Builder.scaleB12(updatedNode.get("xScale").decimalValue()));
+         updatedNode.remove("xScale");
+      }
+      if (updatedNode.get("yScale") != null) {
+         updatedNode.put("scaleYaxis", ScaleB12Builder.scaleB12(updatedNode.get("yScale").decimalValue()));
+         updatedNode.remove("yScale");
+      }
+      
+      return updatedNode;
+      
    }
 
    public static ObjectNode replaceNodeSetXY(JsonNode nodeSet) {
@@ -313,10 +391,14 @@ public class TravelerMessageFromHumanToAsnConverter {
          }
       }
 
+      updatedNode.set("nodes", replacedDataFrames);
+
       return updatedNode;
    }
 
    private static JsonNode replaceNodeXY(JsonNode oldNode) {
+
+      // TODO
       // nodexy contains:
       // delta NodeOffsetPointXY
       // attributes NodeAttributeSetXY (optional)
@@ -362,7 +444,29 @@ public class TravelerMessageFromHumanToAsnConverter {
 
    }
 
-   private static ObjectNode replaceLaneDataAttributeList(JsonNode jsonNode) {
+   private static ObjectNode replaceLaneDataAttributeList(JsonNode laneDataAttributeList) {
+
+      // iterate and replace
+      ObjectNode updatedNode = (ObjectNode) laneDataAttributeList;
+
+      ArrayNode updatedLaneDataAttributeList = JsonUtils.newNode().arrayNode();
+
+      if (laneDataAttributeList.isArray()) {
+         Iterator<JsonNode> laneDataAttributeListIter = laneDataAttributeList.elements();
+
+         while (laneDataAttributeListIter.hasNext()) {
+            JsonNode oldNode = laneDataAttributeListIter.next();
+            updatedLaneDataAttributeList.add(replaceLaneDataAttribute(oldNode));
+         }
+      }
+
+      updatedNode.set("NodeSetXY", updatedLaneDataAttributeList);
+
+      return updatedNode;
+   }
+
+   public static ObjectNode replaceLaneDataAttribute(JsonNode oldNode) {
+      // choice between 1 of the following:
       // pathEndPointAngle DeltaAngle
       // laneCrownPointCenter RoadwayCrownAngle
       // laneCrownPointLeft RoadwayCrownAngle
@@ -370,11 +474,59 @@ public class TravelerMessageFromHumanToAsnConverter {
       // laneAngle MergeDivergeNodeAngle
       // speedLimits SpeedLimitList
 
+      ObjectNode updatedNode = (ObjectNode) oldNode;
+
       // pathEndPointAngle DeltaAngle does not need to be replaced
+      if (updatedNode.get("pathEndPointAngle") != null) {
+         // do nothing
+      } else if (updatedNode.get("laneCrownPointCenter") != null) {
+         updatedNode.put("laneCrownPointCenter",
+               RoadwayCrownAngleBuilder.roadwayCrownAngle(updatedNode.get("laneCrownPointCenter").decimalValue()));
+      } else if (updatedNode.get("laneCrownPointLeft") != null) {
+         updatedNode.put("laneCrownPointLeft",
+               RoadwayCrownAngleBuilder.roadwayCrownAngle(updatedNode.get("laneCrownPointLeft").decimalValue()));
+      } else if (updatedNode.get("laneCrownPointRight") != null) {
+         updatedNode.put("laneCrownPointRight",
+               RoadwayCrownAngleBuilder.roadwayCrownAngle(updatedNode.get("laneCrownPointRight").decimalValue()));
+      } else if (updatedNode.get("laneAngle") != null) {
+         updatedNode.put("laneAngle",
+               MergeDivergeNodeAngleBuilder.mergeDivergeNodeAngle(updatedNode.get("laneAngle").decimalValue()));
+      } else if (updatedNode.get("speedLimits") != null) {
+         updatedNode.set("speedLimits", replaceSpeedLimitList(updatedNode.get("speedLimits")));
+      }
 
-      // TODO
       return null;
+   }
 
+   private static ArrayNode replaceSpeedLimitList(JsonNode speedLimitList) {
+
+      // iterate and replace
+      ArrayNode updatedLaneDataAttributeList = JsonUtils.newNode().arrayNode();
+
+      if (speedLimitList.isArray()) {
+         Iterator<JsonNode> speedLimitListIter = speedLimitList.elements();
+
+         while (speedLimitListIter.hasNext()) {
+            JsonNode oldNode = speedLimitListIter.next();
+            updatedLaneDataAttributeList.add(replaceRegulatorySpeedLimit(oldNode));
+         }
+      }
+
+      return updatedLaneDataAttributeList;
+   }
+
+   private static ObjectNode replaceRegulatorySpeedLimit(JsonNode regulatorySpeedLimitNode) {
+      // contains:
+      // type SpeedLimitType
+      // speed Velocity
+
+      ObjectNode updatedNode = (ObjectNode) regulatorySpeedLimitNode;
+      // type does not need to be replaced
+      
+      // replace velocity
+      updatedNode.put("speed", VelocityBuilder.velocity(updatedNode.get("speed").decimalValue()));
+
+      return updatedNode;
    }
 
    public static ObjectNode replaceNodeOffsetPointXY(JsonNode delta) {
