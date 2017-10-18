@@ -12,15 +12,6 @@ public class TravelerMessageFromHumanToAsnConverter {
 
    public static JsonNode changeTravelerInformationToAsnValues(JsonNode timData) {
 
-      // replace data frames
-      // INPUT:
-      // "dataframes": [{},{}]
-      // OUTPUT:
-      // "dataFrames": [
-      // {"TravelerDataFrame" : {}},
-      // {"TravelerDataFrame" : {}}
-      // ]
-
       // First thing to do is cast to ObjectNode so we can edit values in place
       ObjectNode timDataObjectNode = (ObjectNode) timData;
 
@@ -145,14 +136,14 @@ public class TravelerMessageFromHumanToAsnConverter {
 
          while (regionsIter.hasNext()) {
             JsonNode curRegion = regionsIter.next();
-            replacedRegions.add(translateGeoGraphicalPathRegion(curRegion));
+            replacedRegions.add(replaceGeoGraphicalPathRegion(curRegion));
          }
       }
 
       return replacedRegions;
    }
 
-   public static ObjectNode translateGeoGraphicalPathRegion(JsonNode region) {
+   public static ObjectNode replaceGeoGraphicalPathRegion(JsonNode region) {
 
       ObjectNode updatedNode = (ObjectNode) region;
 
@@ -165,6 +156,10 @@ public class TravelerMessageFromHumanToAsnConverter {
       updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").asLong()));
 
       // Step 3 - translate regions
+      if (updatedNode.get("description").get("path") != null) {
+         updatedNode = replacePath(updatedNode);
+      }
+
       if (updatedNode.get("description").get("geometry") != null) {
          updatedNode = replaceGeometry(updatedNode);
       }
@@ -177,12 +172,104 @@ public class TravelerMessageFromHumanToAsnConverter {
 
    }
 
+   private static ObjectNode replacePath(JsonNode pathNode) {
+      // OffsetSystem ::= SEQUENCE {
+      // scale Zoom OPTIONAL,
+      // offset CHOICE {
+      // xy NodeListXY, -- offsets of 1.0 centimeters
+      // ll NodeListLL -- offsets of 0.1 microdegrees
+      // }
+      // }
+      ObjectNode updatedNode = (ObjectNode) pathNode;
+
+      // zoom does not need to be replaced
+      if (updatedNode.get("type").asText().equals("ll")) {
+         ObjectNode nodeList = replaceNodeListLL(updatedNode.get("nodes"));
+         ObjectNode ll = JsonUtils.newObjectNode("ll", nodeList);
+         ObjectNode offset = JsonUtils.newObjectNode("offset", ll);
+         updatedNode.set("offset", offset);
+         updatedNode.remove("nodes");
+      } else if (updatedNode.get("type").asText().equals("xy")) {
+         ObjectNode nodeList = replaceNodeListXY(updatedNode.get("nodes"));
+         ObjectNode xy = JsonUtils.newObjectNode("xy", nodeList);
+         ObjectNode offset = JsonUtils.newObjectNode("offset", xy);
+         updatedNode.set("offset", offset);
+         updatedNode.remove("nodes");
+      }
+
+      updatedNode.remove("type");
+      return null;
+   }
+
+   private static ObjectNode replaceNodeListLL(JsonNode jsonNode) {
+
+      // technically this can have more options in the future
+
+      return replaceNodeSetLL(jsonNode);
+   }
+
+   private static ObjectNode replaceNodeSetLL(JsonNode nodeSet) {
+      ObjectNode updatedNode = (ObjectNode) nodeSet;
+
+      ArrayNode replacedDataFrames = JsonUtils.newNode().arrayNode();
+
+      if (updatedNode.isArray()) {
+         Iterator<JsonNode> nodeSetLLIter = updatedNode.elements();
+
+         while (nodeSetLLIter.hasNext()) {
+            JsonNode oldNode = nodeSetLLIter.next();
+            replacedDataFrames.add(replaceNodeLL(oldNode));
+         }
+      }
+
+      updatedNode.set("nodes", replacedDataFrames);
+
+      return updatedNode;
+   }
+
+   private static ObjectNode replaceNodeLL(JsonNode oldNode) {
+
+      // TODO rest schema for this is misleading/incorrect
+
+      // input:
+      // {
+      // "nodeLong": "0.0031024",
+      // "nodeLat": "0.0014506",
+      // "delta": "node-LL3"
+      // },
+
+      // output:
+      // NodeLL ::= SEQUENCE {
+      // delta NodeOffsetPointLL
+      // attributes NodeAttributeSetLL OPTIONAL
+      // }
+
+      ObjectNode updatedNode = (ObjectNode) oldNode;
+
+      // step 1: convert long and lat
+
+      return null;
+   }
+
    public static ObjectNode replaceGeometry(JsonNode geometry) {
+
+      // direction HeadingSlice
+      // extent Extent OPTIONAL
+      // laneWidth LaneWidth OPTIONAL
+      // circle Circle
 
       ObjectNode updatedNode = (ObjectNode) geometry;
 
+      // direction does not need to be replaced
+      // extend does not need to be replaced
+
       // replace lane width
-      updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").asLong()));
+      if (updatedNode.get("laneWidth") != null) {
+         updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").asLong()));
+      }
+
+      // replace circle
+      replaceCircle(updatedNode.get("circle"));
 
       return updatedNode;
    }
@@ -252,22 +339,22 @@ public class TravelerMessageFromHumanToAsnConverter {
    }
 
    public static ObjectNode replaceCircle(JsonNode circle) {
-      
-//      Circle ::= SEQUENCE {
-//         center Position3D,
-//         radius Radius-B12,
-//         units DistanceUnits
-//         }
-      
+
+      // Circle ::= SEQUENCE {
+      // center Position3D,
+      // radius Radius-B12,
+      // units DistanceUnits
+      // }
+
       ObjectNode updatedNode = (ObjectNode) circle;
       // replace center
       updatedNode.set("center", Position3DBuilder.position3D(updatedNode.get("position")));
       updatedNode.remove("position");
-      
+
       // radius does not need replacement
-      
+
       // units do not need replacement
-      
+
       return updatedNode;
    }
 
@@ -308,54 +395,55 @@ public class TravelerMessageFromHumanToAsnConverter {
       if (updatedNode.get("nodes") != null) {
          updatedNode.set("nodes", replaceNodeSetXY(updatedNode.get("nodes")));
       } else if (updatedNode.get("computed") != null) {
-         replaceComputedLane(updatedNode.get("computed") );
+         replaceComputedLane(updatedNode.get("computed"));
       }
 
       return updatedNode;
    }
 
    private static ObjectNode replaceComputedLane(JsonNode jsonNode) {
-//      referenceLaneId LaneID
-//      offsetXaxis CHOICE {
-//      small DrivenLineOffsetSm,
-//      large DrivenLineOffsetLg
-//      }
-//      offsetYaxis CHOICE {
-//      small DrivenLineOffsetSm,
-//      large DrivenLineOffsetLg
-//      }
-//      rotateXY Angle OPTIONAL
-//      scaleXaxis Scale-B12 OPTIONAL
-//      scaleYaxis Scale-B12 OPTIONAL
-      
-      
-      
+      // referenceLaneId LaneID
+      // offsetXaxis CHOICE {
+      // small DrivenLineOffsetSm,
+      // large DrivenLineOffsetLg
+      // }
+      // offsetYaxis CHOICE {
+      // small DrivenLineOffsetSm,
+      // large DrivenLineOffsetLg
+      // }
+      // rotateXY Angle OPTIONAL
+      // scaleXaxis Scale-B12 OPTIONAL
+      // scaleYaxis Scale-B12 OPTIONAL
+
       // TODO REST schema here is very different than ASN schema
       // must verify correct structure
-      
-      
+
       // lane id does not need replacement
-      
+
       // detect and remove the nodes
       ObjectNode updatedNode = (ObjectNode) jsonNode;
-      
+
       if (updatedNode.get("offsetSmallX") != null) {
-         ObjectNode small = JsonUtils.newObjectNode("small", DrivenLineOffsetSmBuilder.drivenLaneOffsetSm(updatedNode.get("offsetSmallX").decimalValue()));
+         ObjectNode small = JsonUtils.newObjectNode("small",
+               DrivenLineOffsetSmBuilder.drivenLaneOffsetSm(updatedNode.get("offsetSmallX").decimalValue()));
          updatedNode.set("offsetXaxis", small);
          updatedNode.remove("offsetSmallX");
       }
       if (updatedNode.get("offsetLargeX") != null) {
-         ObjectNode large = JsonUtils.newObjectNode("large", DrivenLineOffsetLgBuilder.drivenLineOffsetLg(updatedNode.get("offsetLargeX").decimalValue()));
+         ObjectNode large = JsonUtils.newObjectNode("large",
+               DrivenLineOffsetLgBuilder.drivenLineOffsetLg(updatedNode.get("offsetLargeX").decimalValue()));
          updatedNode.set("offsetXaxis", large);
          updatedNode.remove("offsetLargeX");
       }
       if (updatedNode.get("offsetSmallY") != null) {
-         ObjectNode small = JsonUtils.newObjectNode("small", DrivenLineOffsetSmBuilder.drivenLaneOffsetSm(updatedNode.get("offsetSmallY").decimalValue()));
+         ObjectNode small = JsonUtils.newObjectNode("small",
+               DrivenLineOffsetSmBuilder.drivenLaneOffsetSm(updatedNode.get("offsetSmallY").decimalValue()));
          updatedNode.set("offsetYaxis", small);
          updatedNode.remove("offsetSmallY");
       }
       if (updatedNode.get("offsetLargeY") != null) {
-         ObjectNode large = JsonUtils.newObjectNode("large", DrivenLineOffsetLgBuilder.drivenLineOffsetLg(updatedNode.get("offsetLargeY").decimalValue()));
+         ObjectNode large = JsonUtils.newObjectNode("large",
+               DrivenLineOffsetLgBuilder.drivenLineOffsetLg(updatedNode.get("offsetLargeY").decimalValue()));
          updatedNode.set("offsetYaxis", large);
          updatedNode.remove("offsetLargeY");
       }
@@ -371,9 +459,9 @@ public class TravelerMessageFromHumanToAsnConverter {
          updatedNode.put("scaleYaxis", ScaleB12Builder.scaleB12(updatedNode.get("yScale").decimalValue()));
          updatedNode.remove("yScale");
       }
-      
+
       return updatedNode;
-      
+
    }
 
    public static ObjectNode replaceNodeSetXY(JsonNode nodeSet) {
@@ -522,7 +610,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       ObjectNode updatedNode = (ObjectNode) regulatorySpeedLimitNode;
       // type does not need to be replaced
-      
+
       // replace velocity
       updatedNode.put("speed", VelocityBuilder.velocity(updatedNode.get("speed").decimalValue()));
 
