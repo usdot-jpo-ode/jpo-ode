@@ -22,7 +22,8 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       timDataObjectNode.put("timeStamp",
             translateISOTimeStampToMinuteOfYear(timDataObjectNode.get("timeStamp").asText()));
-      replaceDataFrames(timDataObjectNode.get("dataframes"));
+      timDataObjectNode.set("dataFrames", replaceDataFrames(timDataObjectNode.get("dataframes")));
+      timDataObjectNode.remove("dataframes");
 
       return timDataObjectNode;
 
@@ -41,10 +42,8 @@ public class TravelerMessageFromHumanToAsnConverter {
 
          while (dataFramesIter.hasNext()) {
             ObjectNode oldFrame = (ObjectNode) dataFramesIter.next();
-            replacedDataFrames.add(replaceDataFrame(oldFrame));
+            replacedDataFrames.add(JsonUtils.newObjectNode("TravelerDataFrame",replaceDataFrame(oldFrame)));
          }
-      } else {
-         replacedDataFrames.add(replaceDataFrame((ObjectNode) dataFrames));
       }
 
       return replacedDataFrames;
@@ -94,6 +93,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       // <startYear>2017</startYear>
       // <startTime>308065</startTime>
       // </TravelerDataFrame>
+      // </dataFrames>
 
       // sspTimRights does not need replacement
       // sspMsgRights1 does not need replacement
@@ -208,21 +208,20 @@ public class TravelerMessageFromHumanToAsnConverter {
          Iterator<JsonNode> itemsIter = items.elements();
 
          while (itemsIter.hasNext()) {
-            TextNode curItem = (TextNode) itemsIter.next();
+            JsonNode curItem = itemsIter.next();
             // check to see if it is a number or text
             if (curItem.asText().matches("^[0-9]")) {
                // it's a number, so create "itis"
-               newItems.add(JsonUtils.newObjectNode("itis", curItem.asInt()));
+               newItems.add(JsonUtils.newNode().set("item", JsonUtils.newNode().put("text", curItem.asText())));
             } else {
-               newItems.add(JsonUtils.newObjectNode("text", curItem.asText()));
+               newItems.add(JsonUtils.newNode().set("item", JsonUtils.newNode().put("itis", curItem.asInt())));
             }
          }
       }
 
       // final step, transform into correct format
-      ObjectNode sequence = JsonUtils.newObjectNode("SEQUENCE", newItems);
-      ObjectNode contentType = JsonUtils.newObjectNode(replacedContentName, sequence);
-      dataFrame.set("content", contentType);
+      ObjectNode sequence = (ObjectNode) JsonUtils.newNode().set("sequence", newItems);
+      dataFrame.set("content", JsonUtils.newNode().set(replacedContentName, sequence));
       dataFrame.remove("items");
    }
 
@@ -417,6 +416,21 @@ public class TravelerMessageFromHumanToAsnConverter {
       ObjectNode updatedNode = (ObjectNode) oldNode;
 
       // step 1: convert long and lat
+      if (updatedNode.get("delta").asText().equals("node-LL1")) {
+         
+      } else if (updatedNode.get("delta").asText().equals("node-LL2")) {
+         
+      } else if (updatedNode.get("delta").asText().equals("node-LL3")) {
+         
+      } else if (updatedNode.get("delta").asText().equals("node-LL4")) {
+         
+      } else if (updatedNode.get("delta").asText().equals("node-LL5")) {
+         
+      } else if (updatedNode.get("delta").asText().equals("node-LL6")) {
+         
+      } else if (updatedNode.get("delta").asText().equals("node-LatLon")) {
+         
+      }
 
       return updatedNode;
    }
