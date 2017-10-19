@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -24,7 +24,6 @@ public class TravelerMessageFromHumanToAsnConverterTest {
 
       JsonNode deTranslatedTim = TravelerMessageFromHumanToAsnConverter.changeTravelerInformationToAsnValues(testJson);
 
-      
       JSONObject timObject = new JSONObject();
       timObject.put("TravelerInformation", JsonUtils.toJSONObject(deTranslatedTim.toString()));
       assertEquals("string", XML.toString(timObject));
