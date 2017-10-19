@@ -9,7 +9,7 @@ public class LatitudeBuilder {
    private LatitudeBuilder() {
       throw new UnsupportedOperationException();
    }
-   
+
    public static int latitude(BigDecimal lat) {
       return lat.scaleByPowerOfTen(7).intValue();
    }

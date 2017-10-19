@@ -28,7 +28,7 @@ public class LongitudeBuilderTest {
 
       assertEquals(expectedValue, LongitudeBuilder.genericLongitude(testInput));
    }
-   
+
    @Test
    public void testConversionDeticatedNullValue() throws JsonProcessingException, IOException {
       ObjectMapper mapper = new ObjectMapper();
@@ -37,7 +37,7 @@ public class LongitudeBuilderTest {
 
       assertEquals(expectedValue, LongitudeBuilder.genericLongitude(testInput));
    }
-   
+
    @Test
    public void testConversionNullEntry() throws JsonProcessingException, IOException {
       JsonNode testInput = null;
@@ -45,25 +45,18 @@ public class LongitudeBuilderTest {
 
       assertEquals(expectedValue, LongitudeBuilder.genericLongitude(testInput));
    }
-   
+
    @Test
    public void testBigDecimal() throws JsonProcessingException, IOException {
-      
+
       BigDecimal testInput = new BigDecimal(1.0);
-      
+
       Longitude expectedValue = new Longitude(10000000);
-      
-     
 
       assertEquals(expectedValue, LongitudeBuilder.longitude(testInput));
-      
-      
-      
+
    }
-   
-   
-   
-   
+
    @Test
    public void testConstructorIsPrivate()
          throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
