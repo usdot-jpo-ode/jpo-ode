@@ -60,7 +60,7 @@ services:
     image: jpoode_acm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      ACM_CONFIG_FILE: ${ADM_CONFIG_FILE}
+      ACM_CONFIG_FILE: adm.properties
       ACM_FUNCTION: decode
     depends_on:
       - kafka
@@ -73,7 +73,7 @@ services:
     image: jpoode_acm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      ACM_CONFIG_FILE: ${AEM_CONFIG_FILE}
+      ACM_CONFIG_FILE: aem.properties
       ACM_FUNCTION: encode
     depends_on:
       - kafka
