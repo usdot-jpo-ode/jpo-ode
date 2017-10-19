@@ -1,31 +1,29 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
+import java.text.ParseException;
+import java.time.ZonedDateTime;
 import java.util.Iterator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
+import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class TravelerMessageFromHumanToAsnConverter {
 
    public static JsonNode changeTravelerInformationToAsnValues(JsonNode timData) {
 
-      // replace data frames
-      // INPUT: 
-      // "dataframes": [{},{}]
-      // OUTPUT:
-      // "dataFrames": [
-      //   {"TravelerDataFrame" : {}},
-      //   {"TravelerDataFrame" : {}}
-      //  ]
-      
-      // First thing to do is cast to ObjectNode so we can edit values in place
-      ObjectNode timDataObjectNode = (ObjectNode) timData;
-      
-      replaceDataFrames(timDataObjectNode.get("tim").get("dataframes"));
-      
+      // Cast to ObjectNode to allow manipulation in place
+      ObjectNode replacedTim = (ObjectNode) timData;
+      ObjectNode timDataObjectNode = (ObjectNode) replacedTim.get("tim");
+
+      timDataObjectNode.put("timeStamp",
+            translateISOTimeStampToMinuteOfYear(timDataObjectNode.get("timeStamp").asText()));
+      replaceDataFrames(timDataObjectNode.get("dataframes"));
+
       return timDataObjectNode;
 
    }
@@ -35,20 +33,19 @@ public class TravelerMessageFromHumanToAsnConverter {
       if (dataFrames == null) {
          return JsonUtils.newNode();
       }
-      
+
       ArrayNode replacedDataFrames = JsonUtils.newNode().arrayNode();
 
       if (dataFrames.isArray()) {
          Iterator<JsonNode> dataFramesIter = dataFrames.elements();
 
          while (dataFramesIter.hasNext()) {
-            JsonNode oldFrame = dataFramesIter.next();
+            ObjectNode oldFrame = (ObjectNode) dataFramesIter.next();
             replacedDataFrames.add(replaceDataFrame(oldFrame));
          }
       } else {
-         replacedDataFrames.add(replaceDataFrame(dataFrames));
+         replacedDataFrames.add(replaceDataFrame((ObjectNode) dataFrames));
       }
-         
 
       return replacedDataFrames;
    }
@@ -58,84 +55,249 @@ public class TravelerMessageFromHumanToAsnConverter {
     * 
     * @param dataFrame
     */
-   public static ObjectNode replaceDataFrame(JsonNode dataFrame) {
-      
-      ObjectNode updatedNode = (ObjectNode) dataFrame;
-      
-      // replace the msgID and relevant fields
-      replaceMsgId(updatedNode);
+   public static ObjectNode replaceDataFrame(ObjectNode dataFrame) {
 
-      
-      
+      // INPUT
+      //////
+      // "dataframes": [
+      // {
+      // "startDateTime": "2017-08-02T22:25:00.000Z",
+      // "durationTime": 1,
+      // "frameType": "1",
+      // "sspTimRights": "0",
+      // "msgID": "RoadSignID",
+      // "position": {
+      // "latitude": "41.678473",
+      // "longitude": "-108.782775",
+      // "elevation": "917.1432"
+      // },
+      // "viewAngle": "1010101010101010",
+      // "mutcd": "5",
+      // "crc": "0000000000000000",
+      // "priority": "0",
+      // "sspLocationRights": "3",
+      // "regions": []
+      // "sspMsgTypes": "2",
+      // "sspMsgContent": "3",
+      // "content": "Advisory",
+      // "items": [
+      // "513"
+      // ],
+      // "url": "null"
+      // }
+      // ]
+
+      /// OUTPUT:
+      //////
+      // <dataFrames>
+      // <TravelerDataFrame>
+      // <startYear>2017</startYear>
+      // <startTime>308065</startTime>
+      // </TravelerDataFrame>
+
+      // sspTimRights does not need replacement
+      // sspMsgRights1 does not need replacement
+      // sspMsgRights2 does not need replacement
+      // priority does not need replacement
+      // durationTime does not need replacement
+      // url does not need replacement
+
+      replaceDataFrameTimestamp(dataFrame);
+
+      // replace content
+      replaceContent(dataFrame);
+
+      // replace frameType
+      replaceFrameType(dataFrame);
+
+      // replace the msgID and relevant fields
+      replaceMsgId(dataFrame);
+
       // replace the geographical path regions
-      replaceGeographicalPathRegions(dataFrame.get("regions"));
-      
-      return updatedNode;
+      dataFrame.set("regions", replaceGeographicalPathRegions(dataFrame.get("regions")));
+
+      return dataFrame;
    }
-   
-   public static ObjectNode replaceMsgId(JsonNode msgIDNode) {
-      
-//    <msgId>
-//    <roadSignID>
-//       <position>
-//          <lat>416784730</lat>
-//          <long>-1087827750</long>
-//          <elevation>9171</elevation>
-//       </position>
-//       <viewAngle>0101010101010100</viewAngle>
-//       <mutcdCode>
-//          <guide />
-//       </mutcdCode>
-//       <crc>0000</crc>
-//    </roadSignID>
-// </msgId>
-    
-    // replace the messageID
-    // TODO WRONG SCHEMA STRUCTURE - postion3d here should be inside the RoadSignID element
-      
-      ObjectNode updatedNode = (ObjectNode) msgIDNode;
-      
-      JsonNode msgID = updatedNode.get("msgID");
+
+   public static long translateISOTimeStampToMinuteOfYear(String isoTime) {
+      int startYear = 0;
+      int startMinute = 527040;
+      try {
+         ZonedDateTime zDateTime = DateTimeUtils.isoDateTime(isoTime);
+         startYear = zDateTime.getYear();
+         startMinute = (int) DateTimeUtils.difference(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0), zDateTime)
+               / 60000;
+      } catch (ParseException e) {
+         // failed to parse datetime, default back to unknown values
+      }
+
+      return startMinute;
+   }
+
+   public static void replaceDataFrameTimestamp(ObjectNode dataFrame) {
+
+      // EXPECTED INPUT:
+      // "timeStamp": "2017-08-03T22:25:36.297Z"
+
+      // EXPECTED OUTPUT:
+      // <startYear>2017</startYear>
+      // <startTime>308065</startTime>
+
+      // unknown year value = 0
+      // unknown minuteofyear = 527040
+      int startYear = 0;
+      int startMinute = 527040;
+      try {
+         ZonedDateTime zDateTime = DateTimeUtils.isoDateTime(dataFrame.get("startDateTime").asText());
+         startYear = zDateTime.getYear();
+         startMinute = (int) DateTimeUtils.difference(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0), zDateTime)
+               / 60000;
+      } catch (ParseException e) {
+         // failed to parse datetime, default back to unknown values
+      }
+
+      dataFrame.put("startYear", startYear);
+      dataFrame.put("startMinute", startMinute);
+      dataFrame.remove("timeStamp");
+   }
+
+   public static void replaceContent(ObjectNode dataFrame) {
+
+      // EXPECTED OUTPUT:
+      ///////
+      // <content>
+      // <advisory>
+      // <SEQUENCE>
+      // <item>
+      // <itis>513</itis>
+      // </item>
+      // </SEQUENCE>
+      // </advisory>
+      // </content>
+
+      // EXPECTED INPUT:
+      ////////
+      // "content": "Advisory",
+      // "items": [
+      // "513"
+      // ],
+
+      // step 1, figure out the name of the content
+      String content = dataFrame.get("content").asText();
+      String replacedContentName;
+      if ("Work Zone".equals(content)) {
+         replacedContentName = "workZone";
+      } else if ("Speed Limit".equals(content)) {
+         replacedContentName = "speedLimit";
+      } else if ("Exit Service".equals(content)) {
+         replacedContentName = "exitService";
+      } else if ("Generic Signage".equals(content)) {
+         replacedContentName = "genericSign";
+      } else {
+         // default
+         replacedContentName = "advisory";
+      }
+
+      // step 2, reformat item list
+      ArrayNode items = (ArrayNode) dataFrame.get("items");
+      ArrayNode newItems = JsonUtils.newNode().arrayNode();
+      if (items.isArray()) {
+         // take the array of ITIScodesAndText items and transform it into
+         // schema-appropriate array
+
+         Iterator<JsonNode> itemsIter = items.elements();
+
+         while (itemsIter.hasNext()) {
+            TextNode curItem = (TextNode) itemsIter.next();
+            // check to see if it is a number or text
+            if (curItem.asText().matches("^[0-9]")) {
+               // it's a number, so create "itis"
+               newItems.add(JsonUtils.newObjectNode("itis", curItem.asInt()));
+            } else {
+               newItems.add(JsonUtils.newObjectNode("text", curItem.asText()));
+            }
+         }
+      }
+
+      // final step, transform into correct format
+      ObjectNode sequence = JsonUtils.newObjectNode("SEQUENCE", newItems);
+      ObjectNode contentType = JsonUtils.newObjectNode(replacedContentName, sequence);
+      dataFrame.set("content", contentType);
+      dataFrame.remove("items");
+   }
+
+   public static void replaceFrameType(ObjectNode dataFrame) {
+      String frameType;
+      switch (dataFrame.get("frameType").asInt()) {
+      case 1:
+         frameType = "advisory";
+         break;
+      case 2:
+         frameType = "roadSignage";
+         break;
+      case 3:
+         frameType = "commercialSignage";
+         break;
+      default:
+         frameType = "unknown";
+      }
+      dataFrame.set("frameType", JsonUtils.newObjectNode(frameType, null));
+   }
+
+   public static void replaceMsgId(ObjectNode dataFrame) {
+
+      // <msgId>
+      // <roadSignID>
+      // <position>
+      // <lat>416784730</lat>
+      // <long>-1087827750</long>
+      // <elevation>9171</elevation>
+      // </position>
+      // <viewAngle>0101010101010100</viewAngle>
+      // <mutcdCode>
+      // <guide />
+      // </mutcdCode>
+      // <crc>0000</crc>
+      // </roadSignID>
+      // </msgId>
+
+      JsonNode msgID = dataFrame.get("msgID");
       if (msgID != null) {
          if (msgID.asText().equals("RoadSignID")) {
 
             ObjectNode roadSignID = JsonUtils.newNode();
-            JsonUtils.addNode(roadSignID, "position", translateAnchor(updatedNode.get("position")));
-            JsonUtils.addNode(roadSignID, "viewAngle", updatedNode.get("viewAngle").asText());
-            JsonUtils.addNode(roadSignID, "mutcdCode", updatedNode.get("mutcd").asText());
-            roadSignID.put("crc", updatedNode.get("crc").asText());
-            // TODO - we can't do the following because .addNode calls as POJO
-            //JsonUtils.addNode(roadSignID, "crc", dataFrame.get("crc").asText());
+            roadSignID.set("position", Position3DBuilder.position3D(dataFrame.get("position")));
+            roadSignID.put("viewAngle", dataFrame.get("viewAngle").asText());
+            roadSignID.put("mutcdCode", dataFrame.get("mutcd").asText());
+            roadSignID.put("crc", dataFrame.get("crc").asText());
 
-            updatedNode.remove("msgID");
-            updatedNode.remove("position");
-            updatedNode.remove("viewAngle");
-            updatedNode.remove("mutcd");
-            updatedNode.remove("crc");
+            dataFrame.remove("msgID");
+            dataFrame.remove("position");
+            dataFrame.remove("viewAngle");
+            dataFrame.remove("mutcd");
+            dataFrame.remove("crc");
 
             ObjectNode msgId = JsonUtils.newNode();
             msgId.set("roadSignID", roadSignID);
 
-            updatedNode.set("msgID", msgId);
+            dataFrame.set("msgID", msgId);
 
          } else if (msgID.asText().equals("FurtherInfoID")) {
-            
+
             // TODO - this may not be correct since msgID schema is inconsistent
-            
-            updatedNode.remove("msgID");
-            updatedNode.remove("position");
-            updatedNode.remove("viewAngle");
-            updatedNode.remove("mutcd");
-            updatedNode.remove("crc");
-            
+
+            dataFrame.remove("msgID");
+            dataFrame.remove("position");
+            dataFrame.remove("viewAngle");
+            dataFrame.remove("mutcd");
+            dataFrame.remove("crc");
+
             ObjectNode msgId = JsonUtils.newNode();
             msgId.put("furtherInfoID", msgID.get("FurtherInfoID").asText());
-            
-            updatedNode.set("msgID", msgId);
+
+            dataFrame.set("msgID", msgId);
          }
       }
-      
-      return updatedNode;
    }
 
    public static JsonNode replaceGeographicalPathRegions(JsonNode regions) {
@@ -146,102 +308,223 @@ public class TravelerMessageFromHumanToAsnConverter {
 
          while (regionsIter.hasNext()) {
             JsonNode curRegion = regionsIter.next();
-            replacedRegions.add(translateGeoGraphicalPathRegion(curRegion));
+            replacedRegions.add(replaceGeoGraphicalPathRegion(curRegion));
          }
-      } 
+      }
 
       return replacedRegions;
    }
-   
-   public static ObjectNode translateGeoGraphicalPathRegion(JsonNode region) {
-      
-      
+
+   public static ObjectNode replaceGeoGraphicalPathRegion(JsonNode region) {
+
+      ObjectNode updatedNode = (ObjectNode) region;
+
       // Step 1 - Translate Position3D
       // replace "anchorPosition" with "anchor" and translate values
-      ObjectNode updatedNode = JsonUtils.setElement("anchor", region, translateAnchor(region.get("anchorPosition")));
-      updatedNode = JsonUtils.removeElement("anchorPosition", updatedNode);
-      
+      updatedNode.set("anchor", Position3DBuilder.position3D(updatedNode.get("anchorPosition")));
+      updatedNode.remove("anchorPosition");
+
       // Step 2 - Translate LaneWidth
       updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").asLong()));
-      
+
       // Step 3 - translate regions
-      if (updatedNode.get("description").get("geometry") != null) {
-         updatedNode = replaceGeometry(updatedNode);
+      if (updatedNode.get("description").asText().equals("path")) {
+         updatedNode = replacePath(updatedNode.get("path"));
+      } else if (updatedNode.get("description").asText().equals("geometry")) {
+         updatedNode = replaceGeometry(updatedNode.get("geometry"));
+      } else if (updatedNode.get("description").asText().equals("oldRegion")) {
+         updatedNode = replaceOldRegion(updatedNode.get("oldRegion"));
       }
-      
-      if (updatedNode.get("description").get("oldRegion") != null) {
-         updatedNode = replaceOldRegion(updatedNode);
-      }
-      
-      
-      
+
       return updatedNode;
+
+   }
+
+   private static ObjectNode replacePath(JsonNode pathNode) {
+      // OffsetSystem ::= SEQUENCE {
+      // scale Zoom OPTIONAL,
+      // offset CHOICE {
+      // xy NodeListXY, -- offsets of 1.0 centimeters
+      // ll NodeListLL -- offsets of 0.1 microdegrees
+      // }
+      // }
+      ObjectNode updatedNode = (ObjectNode) pathNode;
+
+      // zoom does not need to be replaced
+      if (updatedNode.get("type").asText().equals("ll")) {
+         ArrayNode nodeList = replaceNodeListLL(updatedNode.get("nodes"));
+         ObjectNode ll = JsonUtils.newObjectNode("ll", nodeList);
+         ObjectNode offset = JsonUtils.newObjectNode("offset", ll);
+         updatedNode.set("offset", offset);
+         updatedNode.remove("nodes");
+      } else if (updatedNode.get("type").asText().equals("xy")) {
+         ObjectNode nodeList = replaceNodeListXY(updatedNode.get("nodes"));
+         ObjectNode xy = JsonUtils.newObjectNode("xy", nodeList);
+         ObjectNode offset = JsonUtils.newObjectNode("offset", xy);
+         updatedNode.set("offset", offset);
+         updatedNode.remove("nodes");
+      }
+
+      updatedNode.remove("type");
+      return updatedNode;
+   }
+
+   private static ArrayNode replaceNodeListLL(JsonNode jsonNode) {
+
+      // technically this can have more options in the future
+
+      return replaceNodeSetLL((ArrayNode) jsonNode);
+   }
+
+   private static ArrayNode replaceNodeSetLL(ArrayNode nodeSet) {
+      ArrayNode updatedNode = (ArrayNode) nodeSet;
+
+      ArrayNode replacedDataFrames = JsonUtils.newNode().arrayNode();
+
+      if (updatedNode.isArray()) {
+         Iterator<JsonNode> nodeSetLLIter = updatedNode.elements();
+
+         while (nodeSetLLIter.hasNext()) {
+            JsonNode oldNode = nodeSetLLIter.next();
+            replacedDataFrames.add(replaceNodeLL(oldNode));
+         }
+      }
+
+      // updatedNode.set("nodes", replacedDataFrames);
+
+      return replacedDataFrames;
+   }
+
+   private static ObjectNode replaceNodeLL(JsonNode oldNode) {
+
+      // TODO
+
+      // input:
+      // {
+      // "nodeLong": "0.0031024",
+      // "nodeLat": "0.0014506",
+      // "delta": "node-LL3"
+      // },
+
+      // output:
+      // NodeLL ::= SEQUENCE {
+      // delta NodeOffsetPointLL
+      // attributes NodeAttributeSetLL OPTIONAL
+      // }
       
+      
+
+      ObjectNode updatedNode = (ObjectNode) oldNode;
+
+      // step 1: convert long and lat
+
+      return updatedNode;
    }
 
-   public static ObjectNode translateAnchor(JsonNode region) {
-      // takes anchor (position3d) and replaces lat/long/elev
-      return Position3DBuilder.position3D(region);
-
-   }
-   
    public static ObjectNode replaceGeometry(JsonNode geometry) {
-      
+
+      // direction HeadingSlice
+      // extent Extent OPTIONAL
+      // laneWidth LaneWidth OPTIONAL
+      // circle Circle
+
       ObjectNode updatedNode = (ObjectNode) geometry;
-      
+
+      // direction does not need to be replaced
+      // extend does not need to be replaced
+
       // replace lane width
-      updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").asLong()));
-      
+      if (updatedNode.get("laneWidth") != null) {
+         updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").asLong()));
+      }
+
+      // replace circle
+      replaceCircle(updatedNode.get("circle"));
+
       return updatedNode;
    }
-   
+
    public static ObjectNode replaceOldRegion(JsonNode oldRegion) {
-      
+
       // old region == ValidRegion
       // elements:
       // direction - no changes
       // extent - no changes
       // area - needs changes
-      
+
       ObjectNode updatedNode = (ObjectNode) oldRegion;
-      
+
       updatedNode.set("area", replaceArea(updatedNode.get("area")));
-      
+
       return updatedNode;
    }
-   
+
    public static ObjectNode replaceArea(JsonNode area) {
-      
+
       // area contains one of:
       // shapePointSet
       // circle
       // regionPointSet
-      
+
       ObjectNode updatedNode = (ObjectNode) area;
-      
-      
+
       if (updatedNode.get("shapePointSet") != null) {
          updatedNode.set("shapePointSet", replaceShapePointSet(updatedNode.get("shapePointSet")));
-         
+
       } else if (updatedNode.get("circle") != null) {
          updatedNode.set("circle", replaceCircle(updatedNode.get("circle")));
-         
+
       } else if (updatedNode.get("regionPointSet") != null) {
          updatedNode.set("regionPointSet", replaceRegionPointSet(updatedNode.get("regionPointSet")));
       }
-      
+
       return updatedNode;
    }
-   
+
    private static ObjectNode replaceRegionPointSet(JsonNode regionPointSet) {
-      // TODO Auto-generated method stub
+      // regionPointSet contains:
+      // anchor
+      // zoom
+      // nodeList (regionList)
       ObjectNode updatedNode = (ObjectNode) regionPointSet;
+
+      // replace anchor (optional)
+      if (updatedNode.get("anchorPosition") != null) {
+         updatedNode.set("anchor", Position3DBuilder.position3D(updatedNode.get("anchorPosition")));
+         updatedNode.remove("anchorPosition");
+      }
+
+      // zoom doesnt need replacement (also optional)
+
+      // replace regionList (required)
+      updatedNode.set("nodeList", replaceRegionList(updatedNode.get("nodeList")));
+
+      return updatedNode;
+   }
+
+   private static JsonNode replaceRegionList(JsonNode regionList) {
+      // TODO Auto-generated method stub
+      ObjectNode updatedNode = (ObjectNode) regionList;
       return updatedNode;
    }
 
    public static ObjectNode replaceCircle(JsonNode circle) {
-      // TODO Auto-generated method stub
+
+      // Circle ::= SEQUENCE {
+      // center Position3D,
+      // radius Radius-B12,
+      // units DistanceUnits
+      // }
+
       ObjectNode updatedNode = (ObjectNode) circle;
+      // replace center
+      updatedNode.set("center", Position3DBuilder.position3D(updatedNode.get("position")));
+      updatedNode.remove("position");
+
+      // radius does not need replacement
+
+      // units do not need replacement
+
       return updatedNode;
    }
 
@@ -251,615 +534,369 @@ public class TravelerMessageFromHumanToAsnConverter {
       // lane width
       // directionality
       // node list
-      
+
       ObjectNode updatedNode = (ObjectNode) shapePointSet;
-      
+
       // replace anchor
       if (updatedNode.get("anchor") != null) {
-         updatedNode = JsonUtils.setElement("anchor", updatedNode, translateAnchor(updatedNode.get("anchorPosition")));
-         updatedNode = JsonUtils.removeElement("anchorPosition", updatedNode);
+         updatedNode.set("anchor", Position3DBuilder.position3D(updatedNode.get("anchorPosition")));
+         updatedNode.remove("anchorPosition");
       }
-      
+
       // replace lane width
       if (updatedNode.get("laneWidth") != null) {
          updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").asLong()));
       }
-      
+
       // directionality does not need replacement
-      
+
       // replace node list
       updatedNode.set("nodeList", updatedNode.get("nodeList"));
-      
-      return updatedNode;
-   }
-   
-   public static ObjectNode replaceNodeListXY (JsonNode nodeList) {
-      // nodeListXY contains either NodeSetXY or ComputedLane
-      
-      ObjectNode updatedNode = (ObjectNode) nodeList;
-      
-      if (updatedNode.get("nodes") != null) {
-         updatedNode.set("nodes", replaceNodeSetXY(updatedNode.get("nodes")));
-      }
-      
-      return updatedNode;
-   }
-   
-   public static ObjectNode replaceNodeSetXY(JsonNode nodeSet) {
-      ObjectNode updatedNode = (ObjectNode) nodeSet;
-      
+
       return updatedNode;
    }
 
-//   public TravelerInformation buildTravelerInformation(JsonNode jsonNode)
-//         throws ParseException, EncodeFailedException, EncodeNotSupportedException, IllegalArgumentException {
-//
-//      travelerInfo = new TravelerInformation();
-//      TimFieldValidator.validateMessageCount(jsonNode.getMsgCnt());
-//      travelerInfo.setMsgCnt(new MsgCount(jsonNode.getMsgCnt()));
-//      travelerInfo.setTimeStamp(
-//            new MinuteOfTheYear(getMinuteOfTheYear(jsonNode.getTimeStamp())));
-//      ByteBuffer buf = ByteBuffer.allocate(9).put((byte) 0).putLong(jsonNode.getPacketID());
-//      travelerInfo.setPacketID(new UniqueMSGID(buf.array()));
-//      TimFieldValidator.validateURL(jsonNode.getUrlB());
-//      travelerInfo.setUrlB(new URL_Base(jsonNode.getUrlB()));
-//      travelerInfo.setDataFrames(buildDataFrames(jsonNode));
-//
-//      return travelerInfo;
-//   }
-//
-//   private TravelerDataFrameList buildDataFrames(
-//         J2735TravelerInformationMessage tim) 
-//         throws ParseException {
-//      TravelerDataFrameList dataFrames = new TravelerDataFrameList();
-//
-//      TimFieldValidator.validateFrameCount(tim.getDataframes().length);
-//      int len = tim.getDataframes().length;
-//      for (int i = 0; i < len; i++) {
-//         J2735TravelerInformationMessage.DataFrame inputDataFrame = tim.getDataframes()[i];
-//         TravelerDataFrame dataFrame = new TravelerDataFrame();
-//
-//         // Part I, header
-//         TIMHeaderBuilder.buildTimHeader(inputDataFrame, dataFrame);
-//
-//         // -- Part II, Applicable Regions of Use
-//         TimFieldValidator.validateHeaderIndex(inputDataFrame.getsspLocationRights());
-//         dataFrame.setSspLocationRights(new SSPindex(inputDataFrame.getsspLocationRights()));
-//         dataFrame.setRegions(buildRegions(inputDataFrame.getRegions()));
-//
-//         // -- Part III, Content
-//         TimFieldValidator.validateHeaderIndex(inputDataFrame.getsspMsgTypes());
-//         dataFrame.setSspMsgRights1(new SSPindex(inputDataFrame.getsspMsgTypes())); // allowed
-//         // message
-//         // types
-//         TimFieldValidator.validateHeaderIndex(inputDataFrame.getsspMsgContent());
-//         dataFrame.setSspMsgRights2(new SSPindex(inputDataFrame.getsspMsgContent())); // allowed
-//         // message
-//         // content
-//         dataFrame.setContent(buildContent(inputDataFrame));
-//         TimFieldValidator.validateURLShort(inputDataFrame.getUrl());
-//         dataFrame.setUrl(new URL_Short(inputDataFrame.getUrl()));
-//         dataFrames.add(dataFrame);
-//      }
-//      return dataFrames;
-//   }
-//
-//   public String encodeTravelerInformationToHex() 
-//         throws EncodeFailedException, EncodeNotSupportedException {
-//      Coder coder = J2735.getPERUnalignedCoder();
-//      ByteArrayOutputStream sink = new ByteArrayOutputStream();
-//      coder.encode(travelerInfo, sink);
-//      byte[] bytes = sink.toByteArray();
-//      return CodecUtils.toHex(bytes);
-//   }
-//
-//   public Content buildContent(J2735TravelerInformationMessage.DataFrame inputDataFrame) {
-//      String contentType = inputDataFrame.getContent();
-//      String[] codes = inputDataFrame.getItems();
-//      Content content = new Content();
-//      if ("Advisory".equals(contentType)) {
-//         content.setAdvisory(buildAdvisory(codes));
-//      } else if ("Work Zone".equals(contentType)) {
-//         content.setWorkZone(buildWorkZone(codes));
-//      } else if ("Speed Limit".equals(contentType)) {
-//         content.setSpeedLimit(buildSpeedLimit(codes));
-//      } else if ("Exit Service".equals(contentType)) {
-//         content.setExitService(buildExitService(codes));
-//      } else if ("Generic Signage".equals(contentType)) {
-//         content.setGenericSign(buildGenericSignage(codes));
-//      }
-//      return content;
-//   }
-//
-//   public ITIScodesAndText buildAdvisory(String[] codes) {
-//      ITIScodesAndText itisText = new ITIScodesAndText();
-//      for (String code : codes) {
-//         TimFieldValidator.validateITISCodes(code);
-//         ITIScodesAndText.Sequence_ seq = new ITIScodesAndText.Sequence_();
-//         ITIScodesAndText.Sequence_.Item item = new ITIScodesAndText.Sequence_.Item();
-//         item.setItis(Long.parseLong(code));
-//         seq.setItem(item);
-//         itisText.add(seq);
-//      }
-//      return itisText;
-//   }
-//
-//   public WorkZone buildWorkZone(String[] codes) {
-//      WorkZone wz = new WorkZone();
-//      for (String code : codes) {
-//         TimFieldValidator.validateContentCodes(code);
-//         WorkZone.Sequence_ seq = new WorkZone.Sequence_();
-//         WorkZone.Sequence_.Item item = new WorkZone.Sequence_.Item();
-//         item.setItis(Long.parseLong(code));
-//         seq.setItem(item);
-//         wz.add(seq);
-//      }
-//      return wz;
-//   }
-//
-//   public SpeedLimit buildSpeedLimit(String[] codes) {
-//      SpeedLimit sl = new SpeedLimit();
-//      for (String code : codes) {
-//         TimFieldValidator.validateContentCodes(code);
-//         SpeedLimit.Sequence_ seq = new SpeedLimit.Sequence_();
-//         SpeedLimit.Sequence_.Item item = new SpeedLimit.Sequence_.Item();
-//         item.setItis(Long.parseLong(code));
-//         seq.setItem(item);
-//         sl.add(seq);
-//      }
-//      return sl;
-//   }
-//
-//   public ExitService buildExitService(String[] codes) {
-//      ExitService es = new ExitService();
-//      for (String code : codes) {
-//         TimFieldValidator.validateContentCodes(code);
-//         ExitService.Sequence_ seq = new ExitService.Sequence_();
-//         ExitService.Sequence_.Item item = new ExitService.Sequence_.Item();
-//         item.setItis(Long.parseLong(code));
-//         seq.setItem(item);
-//         es.add(seq);
-//      }
-//      return es;
-//   }
-//
-//   public GenericSignage buildGenericSignage(String[] codes) {
-//      GenericSignage gs = new GenericSignage();
-//      for (String code : codes) {
-//         TimFieldValidator.validateContentCodes(code);
-//         GenericSignage.Sequence_ seq = new GenericSignage.Sequence_();
-//         GenericSignage.Sequence_.Item item = new GenericSignage.Sequence_.Item();
-//         item.setItis(Long.parseLong(code));
-//         seq.setItem(item);
-//         gs.add(seq);
-//      }
-//      return gs;
-//   }
-//
-//   private Regions buildRegions(J2735TravelerInformationMessage.DataFrame.Region[] inputRegions) {
-//      Regions regions = new Regions();
-//      for (J2735TravelerInformationMessage.DataFrame.Region inputRegion : inputRegions) {
-//         GeographicalPath geoPath = new GeographicalPath();
-//         Description description = new Description();
-//         TimFieldValidator.validateGeoName(inputRegion.getName());
-//         geoPath.setName(new DescriptiveName(inputRegion.getName()));
-//         TimFieldValidator.validateRoadID(inputRegion.getRegulatorID());
-//         TimFieldValidator.validateRoadID(inputRegion.getSegmentID());
-//         geoPath.setId(new RoadSegmentReferenceID(new RoadRegulatorID(inputRegion.getRegulatorID()),
-//               new RoadSegmentID(inputRegion.getSegmentID())));
-//         geoPath.setAnchor(OssPosition3D.position3D(inputRegion.getAnchorPosition()));
-//         TimFieldValidator.validateLaneWidth(inputRegion.getLaneWidth());
-//         geoPath.setLaneWidth(OssLaneWidth.laneWidth(inputRegion.getLaneWidth()));
-//         TimFieldValidator.validateDirectionality(inputRegion.getDirectionality());
-//         geoPath.setDirectionality(new DirectionOfUse(inputRegion.getDirectionality()));
-//         geoPath.setClosedPath(inputRegion.isClosedPath());
-//         TimFieldValidator.validateHeading(inputRegion.getDirection());
-//         geoPath.setDirection(getHeadingSlice(inputRegion.getDirection()));
-//
-//         if ("path".equals(inputRegion.getDescription())) {
-//            OffsetSystem offsetSystem = new OffsetSystem();
-//            TimFieldValidator.validateZoom(inputRegion.getPath().getScale());
-//            offsetSystem.setScale(new Zoom(inputRegion.getPath().getScale()));
-//            if ("xy".equals(inputRegion.getPath().getType())) {
-//               if (inputRegion.getPath().getNodes() != null) {
-//                  offsetSystem.setOffset(new OffsetSystem.Offset());
-//                  offsetSystem.offset.setXy(buildNodeXYList(inputRegion.getPath().getNodes()));
-//               } else {
-//                  offsetSystem.setOffset(new OffsetSystem.Offset());
-//                  offsetSystem.offset.setXy(buildComputedLane(inputRegion.getPath().getComputedLane()));
-//               }
-//            } else if ("ll".equals(inputRegion.getPath().getType()) && inputRegion.getPath().getNodes().length > 0) {
-//               offsetSystem.setOffset(new OffsetSystem.Offset());
-//               offsetSystem.offset.setLl(buildNodeLLList(inputRegion.getPath().getNodes()));
-//            }
-//            description.setPath(offsetSystem);
-//            geoPath.setDescription(description);
-//         } else if ("geometry".equals(inputRegion.getDescription())) {
-//            GeometricProjection geo = new GeometricProjection();
-//            TimFieldValidator.validateHeading(inputRegion.getGeometry().getDirection());
-//            geo.setDirection(getHeadingSlice(inputRegion.getGeometry().getDirection()));
-//            TimFieldValidator.validateExtent(inputRegion.getGeometry().getExtent());
-//            geo.setExtent(new Extent(inputRegion.getGeometry().getExtent()));
-//            TimFieldValidator.validateLaneWidth(inputRegion.getGeometry().getLaneWidth());
-//            geo.setLaneWidth(OssLaneWidth.laneWidth(inputRegion.getGeometry().getLaneWidth()));
-//            geo.setCircle(buildGeoCircle(inputRegion.getGeometry()));
-//            description.setGeometry(geo);
-//            geoPath.setDescription(description);
-//
-//         } else { // oldRegion
-//            ValidRegion validRegion = new ValidRegion();
-//            TimFieldValidator.validateHeading(inputRegion.getOldRegion().getDirection());
-//            validRegion.setDirection(getHeadingSlice(inputRegion.getOldRegion().getDirection()));
-//            TimFieldValidator.validateExtent(inputRegion.getOldRegion().getExtent());
-//            validRegion.setExtent(new Extent(inputRegion.getOldRegion().getExtent()));
-//            Area area = new Area();
-//            if ("shapePointSet".equals(inputRegion.getOldRegion().getArea())) {
-//               ShapePointSet sps = new ShapePointSet();
-//               sps.setAnchor(OssPosition3D.position3D(inputRegion.getOldRegion().getShapepoint().getPosition()));
-//               TimFieldValidator.validateLaneWidth(inputRegion.getOldRegion().getShapepoint().getLaneWidth());
-//               sps.setLaneWidth(OssLaneWidth.laneWidth(inputRegion.getOldRegion().getShapepoint().getLaneWidth()));
-//               TimFieldValidator.validateDirectionality(inputRegion.getOldRegion().getShapepoint().getDirectionality());
-//               sps.setDirectionality(
-//                     new DirectionOfUse(inputRegion.getOldRegion().getShapepoint().getDirectionality()));
-//               if (inputRegion.getOldRegion().getShapepoint().getNodexy() != null) {
-//                  sps.setNodeList(buildNodeXYList(inputRegion.getOldRegion().getShapepoint().getNodexy()));
-//               } else {
-//                  sps.setNodeList(buildComputedLane(inputRegion.getOldRegion().getShapepoint().getComputedLane()));
-//               }
-//               area.setShapePointSet(sps);
-//               validRegion.setArea(area);
-//            } else if ("regionPointSet".equals(inputRegion.getOldRegion().getArea())) {
-//               RegionPointSet rps = new RegionPointSet();
-//               rps.setAnchor(OssPosition3D.position3D(inputRegion.getOldRegion().getRegionPoint().getPosition()));
-//               TimFieldValidator.validateZoom(inputRegion.getOldRegion().getRegionPoint().getScale());
-//               rps.setScale(new Zoom(inputRegion.getOldRegion().getRegionPoint().getScale()));
-//               RegionList rl = buildRegionOffsets(inputRegion.getOldRegion().getRegionPoint().getRegionList());
-//               rps.setNodeList(rl);
-//               area.setRegionPointSet(rps);
-//               validRegion.setArea(area);
-//            } else {// circle
-//               area.setCircle(buildOldCircle(inputRegion.getOldRegion()));
-//               validRegion.setArea(area);
-//            }
-//            description.setOldRegion(validRegion);
-//            geoPath.setDescription(description);
-//         }
-//         regions.add(geoPath);
-//      }
-//      return regions;
-//   }
-//
-//   public RegionList buildRegionOffsets(
-//         J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[] list) {
-//      RegionList myList = new RegionList();
-//      for (int i = 0; i < list.length; i++) {
-//         RegionOffsets ele = new RegionOffsets();
-//         TimFieldValidator.validatex16Offset(list[i].getxOffset());
-//         ele.setXOffset(OssOffsetLLB16.offsetLLB16(list[i].getxOffset()));
-//         TimFieldValidator.validatey16Offset(list[i].getyOffset());
-//         ele.setYOffset(OssOffsetLLB16.offsetLLB16(list[i].getyOffset()));
-//         TimFieldValidator.validatez16Offset(list[i].getzOffset());
-//         ele.setZOffset(OssOffsetLLB16.offsetLLB16(list[i].getzOffset()));
-//         myList.add(ele);
-//      }
-//      return myList;
-//   }
-//
-//   public Circle buildGeoCircle(J2735TravelerInformationMessage.DataFrame.Region.Geometry geo) {
-//      Circle circle = new Circle();
-//      circle.setCenter(OssPosition3D.position3D(geo.getCircle().getPosition()));
-//      TimFieldValidator.validateRadius(geo.getCircle().getRadius());
-//      circle.setRadius(new Radius_B12(geo.getCircle().getRadius()));
-//      TimFieldValidator.validateUnits(geo.getCircle().getUnits());
-//      circle.setUnits(new DistanceUnits(geo.getCircle().getUnits()));
-//      return circle;
-//   }
-//
-//   public Circle buildOldCircle(J2735TravelerInformationMessage.DataFrame.Region.OldRegion reg) {
-//      Circle circle = new Circle();
-//      circle.setCenter(OssPosition3D.position3D(reg.getCircle().getPosition()));
-//      TimFieldValidator.validateRadius(reg.getCircle().getRadius());
-//      circle.setRadius(new Radius_B12(reg.getCircle().getRadius()));
-//      TimFieldValidator.validateUnits(reg.getCircle().getUnits());
-//      circle.setUnits(new DistanceUnits(reg.getCircle().getUnits()));
-//      return circle;
-//   }
-//
-//   public NodeListXY buildNodeXYList(J2735TravelerInformationMessage.NodeXY[] inputNodes) {
-//      NodeListXY nodeList = new NodeListXY();
-//      NodeSetXY nodes = new NodeSetXY();
-//      for (int i = 0; i < inputNodes.length; i++) {
-//         J2735TravelerInformationMessage.NodeXY point = inputNodes[i];
-//
-//         NodeXY node = new NodeXY();
-//         NodeOffsetPointXY nodePoint = new NodeOffsetPointXY();
-//
-//         switch (point.getDelta()) {
-//         case "node-XY1":
-//            TimFieldValidator.validateB10Offset(point.getX());
-//            TimFieldValidator.validateB10Offset(point.getY());
-//            Node_XY_20b xy = new Node_XY_20b(OssOffsetB10.offsetB10(point.getX()), OssOffsetB10.offsetB10(point.getY()));
-//            nodePoint.setNode_XY1(xy);
-//            break;
-//         case "node-XY2":
-//            TimFieldValidator.validateB11Offset(point.getX());
-//            TimFieldValidator.validateB11Offset(point.getY());
-//            Node_XY_22b xy2 = new Node_XY_22b(OssOffsetB11.offsetB11(point.getX()), OssOffsetB11.offsetB11(point.getY()));
-//            nodePoint.setNode_XY2(xy2);
-//            break;
-//         case "node-XY3":
-//            TimFieldValidator.validateB12Offset(point.getX());
-//            TimFieldValidator.validateB12Offset(point.getY());
-//            Node_XY_24b xy3 = new Node_XY_24b(OssOffsetB12.offsetB12(point.getX()), OssOffsetB12.offsetB12(point.getY()));
-//            nodePoint.setNode_XY3(xy3);
-//            break;
-//         case "node-XY4":
-//            TimFieldValidator.validateB13Offset(point.getX());
-//            TimFieldValidator.validateB13Offset(point.getY());
-//            Node_XY_26b xy4 = new Node_XY_26b(OssOffsetB13.offsetB13(point.getX()), OssOffsetB13.offsetB13(point.getY()));
-//            nodePoint.setNode_XY4(xy4);
-//            break;
-//         case "node-XY5":
-//            TimFieldValidator.validateB14Offset(point.getX());
-//            TimFieldValidator.validateB14Offset(point.getY());
-//            Node_XY_28b xy5 = new Node_XY_28b(OssOffsetB14.offsetB14(point.getX()), OssOffsetB14.offsetB14(point.getY()));
-//            nodePoint.setNode_XY5(xy5);
-//            break;
-//         case "node-XY6":
-//            TimFieldValidator.validateB16Offset(point.getX());
-//            TimFieldValidator.validateB16Offset(point.getY());
-//            Node_XY_32b xy6 = new Node_XY_32b(OssOffsetB16.offsetB16(point.getX()), OssOffsetB16.offsetB16(point.getY()));
-//            nodePoint.setNode_XY6(xy6);
-//            break;
-//         case "node-LatLon":
-//            TimFieldValidator.validateLatitude(point.getNodeLat());
-//            TimFieldValidator.validateLongitude(point.getNodeLong());
-//            Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(OssLongitude.longitude(point.getNodeLong()),
-//                  OssLatitude.latitude(point.getNodeLat()));
-//            nodePoint.setNode_LatLon(nodeLatLong);
-//            break;
-//         default:
-//            break;
-//         }
-//
-//         node.setDelta(nodePoint);
-//         if (point.getAttributes() != null) {
-//            NodeAttributeSetXY attributes = new NodeAttributeSetXY();
-//
-//            if (point.getAttributes().getLocalNodes().length > 0) {
-//               NodeAttributeXYList localNodeList = new NodeAttributeXYList();
-//               for (J2735TravelerInformationMessage.LocalNode localNode : point.getAttributes().getLocalNodes()) {
-//                  localNodeList.add(new NodeAttributeXY(localNode.getType()));
-//               }
-//               attributes.setLocalNode(localNodeList);
-//            }
-//
-//            if (point.getAttributes().getDisabledLists().length > 0) {
-//               SegmentAttributeXYList disabledNodeList = new SegmentAttributeXYList();
-//               for (J2735TravelerInformationMessage.DisabledList disabledList : point.getAttributes().getDisabledLists()) {
-//                  disabledNodeList.add(new SegmentAttributeXY(disabledList.getType()));
-//               }
-//               attributes.setDisabled(disabledNodeList);
-//            }
-//
-//            if (point.getAttributes().getEnabledLists().length > 0) {
-//               SegmentAttributeXYList enabledNodeList = new SegmentAttributeXYList();
-//               for (J2735TravelerInformationMessage.EnabledList enabledList : point.getAttributes().getEnabledLists()) {
-//                  enabledNodeList.add(new SegmentAttributeXY(enabledList.getType()));
-//               }
-//               attributes.setEnabled(enabledNodeList);
-//            }
-//
-//            if (point.getAttributes().getDataLists().length > 0) {
-//               LaneDataAttributeList dataNodeList = new LaneDataAttributeList();
-//               for (J2735TravelerInformationMessage.DataList dataList : point.getAttributes().getDataLists()) {
-//
-//                  LaneDataAttribute dataAttribute = new LaneDataAttribute();
-//
-//                  dataAttribute.setPathEndPointAngle(new DeltaAngle(dataList.getPathEndpointAngle()));
-//                  dataAttribute.setLaneCrownPointCenter(OssRoadwayCrownAngle.roadwayCrownAngle(dataList.getLaneCrownCenter()));
-//                  dataAttribute.setLaneCrownPointLeft(OssRoadwayCrownAngle.roadwayCrownAngle(dataList.getLaneCrownLeft()));
-//                  dataAttribute.setLaneCrownPointRight(OssRoadwayCrownAngle.roadwayCrownAngle(dataList.getLaneCrownRight()));
-//                  dataAttribute.setLaneAngle(OssMergeDivergeNodeAngle.mergeDivergeNodeAngle(dataList.getLaneAngle()));
-//
-//                  SpeedLimitList speedDataList = new SpeedLimitList();
-//                  for (J2735TravelerInformationMessage.SpeedLimits speedLimit : dataList.getSpeedLimits()) {
-//                     speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.getType()),
-//                           OssVelocity.velocity(speedLimit.getVelocity())));
-//                  }
-//
-//                  dataAttribute.setSpeedLimits(speedDataList);
-//                  dataNodeList.add(dataAttribute);
-//               }
-//
-//               attributes.setData(dataNodeList);
-//            }
-//
-//            attributes.setDWidth(OssOffsetB10.offsetB10(point.getAttributes().getdWidth()));
-//            attributes.setDElevation(OssOffsetB10.offsetB10(point.getAttributes().getdElevation()));
-//
-//            node.setAttributes(attributes);
-//
-//         }
-//         nodes.add(node);
-//      }
-//
-//      nodeList.setNodes(nodes);
-//      return nodeList;
-//   }
-//
-//   private NodeListXY buildComputedLane(J2735TravelerInformationMessage.ComputedLane inputLane) {
-//      NodeListXY nodeList = new NodeListXY();
-//
-//      ComputedLane computedLane = new ComputedLane();
-//      OffsetXaxis ox = new OffsetXaxis();
-//      OffsetYaxis oy = new OffsetYaxis();
-//
-//      computedLane.setReferenceLaneId(new LaneID(inputLane.getLaneID()));
-//      if (inputLane.getOffsetLargeX().doubleValue() > 0) {
-//         ox.setLarge(OssDrivenLineOffsetLg.drivenLineOffsetLg(inputLane.getOffsetLargeX()));
-//         computedLane.offsetXaxis = ox;
-//      } else {
-//         ox.setSmall(OssDrivenLineOffsetSm.drivenLaneOffsetSm(inputLane.getOffsetSmallX()));
-//         computedLane.offsetXaxis = ox;
-//      }
-//
-//      if (inputLane.getOffsetLargeY().doubleValue() > 0) {
-//         oy.setLarge(OssDrivenLineOffsetLg.drivenLineOffsetLg(inputLane.getOffsetLargeY()));
-//         computedLane.offsetYaxis = oy;
-//      } else {
-//         oy.setSmall(OssDrivenLineOffsetSm.drivenLaneOffsetSm(inputLane.getOffsetSmallY()));
-//         computedLane.offsetYaxis = oy;
-//      }
-//      computedLane.setRotateXY(OssAngle.angle(inputLane.getAngle()));
-//      computedLane.setScaleXaxis(OssScaleB12.scaleB12(inputLane.getxScale()));
-//      computedLane.setScaleYaxis(OssScaleB12.scaleB12(inputLane.getyScale()));
-//
-//      nodeList.setComputed(computedLane);
-//      return nodeList;
-//   }
-//
-//   public NodeListLL buildNodeLLList(J2735TravelerInformationMessage.NodeXY[] inputNodes) {
-//      NodeListLL nodeList = new NodeListLL();
-//      NodeSetLL nodes = new NodeSetLL();
-//      for (int i = 0; i < inputNodes.length; i++) {
-//         J2735TravelerInformationMessage.NodeXY point = inputNodes[i];
-//
-//         NodeLL node = new NodeLL();
-//         NodeOffsetPointLL nodePoint = new NodeOffsetPointLL();
-//
-//         switch (point.getDelta()) {
-//         case "node-LL1":
-//            TimFieldValidator.validateLL12Offset(point.getNodeLat());
-//            TimFieldValidator.validateLL12Offset(point.getNodeLong());
-//            Node_LL_24B xy1 = new Node_LL_24B(OssOffsetLLB12.offsetLLB12(point.getNodeLat()),
-//                  OssOffsetLLB12.offsetLLB12(point.getNodeLong()));
-//            nodePoint.setNode_LL1(xy1);
-//            break;
-//         case "node-LL2":
-//            TimFieldValidator.validateLL14Offset(point.getNodeLat());
-//            TimFieldValidator.validateLL14Offset(point.getNodeLong());
-//            Node_LL_28B xy2 = new Node_LL_28B(OssOffsetLLB14.offsetLLB14(point.getNodeLat()),
-//                  OssOffsetLLB14.offsetLLB14(point.getNodeLong()));
-//            nodePoint.setNode_LL2(xy2);
-//            break;
-//         case "node-LL3":
-//            TimFieldValidator.validateLL16Offset(point.getNodeLat());
-//            TimFieldValidator.validateLL16Offset(point.getNodeLong());
-//            Node_LL_32B xy3 = new Node_LL_32B(OssOffsetLLB16.offsetLLB16(point.getNodeLat()),
-//                  OssOffsetLLB16.offsetLLB16(point.getNodeLong()));
-//            nodePoint.setNode_LL3(xy3);
-//            break;
-//         case "node-LL4":
-//            TimFieldValidator.validateLL18Offset(point.getNodeLat());
-//            TimFieldValidator.validateLL18Offset(point.getNodeLong());
-//            Node_LL_36B xy4 = new Node_LL_36B(OssOffsetLLB18.offsetLLB18(point.getNodeLat()),
-//                  OssOffsetLLB18.offsetLLB18(point.getNodeLong()));
-//            nodePoint.setNode_LL4(xy4);
-//            break;
-//         case "node-LL5":
-//            TimFieldValidator.validateLL22Offset(point.getNodeLat());
-//            TimFieldValidator.validateLL22Offset(point.getNodeLong());
-//            Node_LL_44B xy5 = new Node_LL_44B(OssOffsetLLB22.offsetLLB22(point.getNodeLat()),
-//                  OssOffsetLLB22.offsetLLB22(point.getNodeLong()));
-//            nodePoint.setNode_LL5(xy5);
-//            break;
-//         case "node-LL6":
-//            TimFieldValidator.validateLL24Offset(point.getNodeLat());
-//            TimFieldValidator.validateLL24Offset(point.getNodeLong());
-//            Node_LL_48B xy6 = new Node_LL_48B(OssOffsetLLB24.offsetLLB24(point.getNodeLat()),
-//                  OssOffsetLLB24.offsetLLB24(point.getNodeLong()));
-//            nodePoint.setNode_LL6(xy6);
-//            break;
-//         case "node-LatLon":
-//            TimFieldValidator.validateLatitude(point.getNodeLat());
-//            TimFieldValidator.validateLongitude(point.getNodeLong());
-//            Node_LLmD_64b nodeLatLong = new Node_LLmD_64b(OssLongitude.longitude(point.getNodeLong()),
-//                  OssLatitude.latitude(point.getNodeLat()));
-//            nodePoint.setNode_LatLon(nodeLatLong);
-//            break;
-//         default:
-//            break;
-//         }
-//
-//         node.setDelta(nodePoint);
-//         if (point.getAttributes() != null) {
-//            NodeAttributeSetLL attributes = new NodeAttributeSetLL();
-//
-//            if (point.getAttributes().getLocalNodes().length > 0) {
-//               NodeAttributeLLList localNodeList = new NodeAttributeLLList();
-//               for (J2735TravelerInformationMessage.LocalNode localNode : point.getAttributes().getLocalNodes()) {
-//                  localNodeList.add(new NodeAttributeLL(localNode.getType()));
-//               }
-//               attributes.setLocalNode(localNodeList);
-//            }
-//
-//            if (point.getAttributes().getDisabledLists().length > 0) {
-//               SegmentAttributeLLList disabledNodeList = new SegmentAttributeLLList();
-//               for (J2735TravelerInformationMessage.DisabledList disabledList : point.getAttributes().getDisabledLists()) {
-//                  disabledNodeList.add(new SegmentAttributeLL(disabledList.getType()));
-//               }
-//               attributes.setDisabled(disabledNodeList);
-//            }
-//
-//            if (point.getAttributes().getEnabledLists().length > 0) {
-//               SegmentAttributeLLList enabledNodeList = new SegmentAttributeLLList();
-//               for (J2735TravelerInformationMessage.EnabledList enabledList : point.getAttributes().getEnabledLists()) {
-//                  enabledNodeList.add(new SegmentAttributeLL(enabledList.getType()));
-//               }
-//               attributes.setEnabled(enabledNodeList);
-//            }
-//
-//            if (point.getAttributes().getDataLists().length > 0) {
-//               LaneDataAttributeList dataNodeList = new LaneDataAttributeList();
-//               for (J2735TravelerInformationMessage.DataList dataList : point.getAttributes().getDataLists()) {
-//
-//                  LaneDataAttribute dataAttribute = new LaneDataAttribute();
-//
-//                  dataAttribute.setPathEndPointAngle(new DeltaAngle(dataList.getPathEndpointAngle()));
-//                  dataAttribute.setLaneCrownPointCenter(OssRoadwayCrownAngle.roadwayCrownAngle(dataList.getLaneCrownCenter()));
-//                  dataAttribute.setLaneCrownPointLeft(OssRoadwayCrownAngle.roadwayCrownAngle(dataList.getLaneCrownLeft()));
-//                  dataAttribute.setLaneCrownPointRight(OssRoadwayCrownAngle.roadwayCrownAngle(dataList.getLaneCrownRight()));
-//                  dataAttribute.setLaneAngle(OssMergeDivergeNodeAngle.mergeDivergeNodeAngle(dataList.getLaneAngle()));
-//
-//                  SpeedLimitList speedDataList = new SpeedLimitList();
-//                  for (J2735TravelerInformationMessage.SpeedLimits speedLimit : dataList.getSpeedLimits()) {
-//                     speedDataList.add(new RegulatorySpeedLimit(new SpeedLimitType(speedLimit.getType()),
-//                           OssVelocity.velocity(speedLimit.getVelocity())));
-//                  }
-//
-//                  dataAttribute.setSpeedLimits(speedDataList);
-//                  dataNodeList.add(dataAttribute);
-//               }
-//
-//               attributes.setData(dataNodeList);
-//            }
-//
-//            attributes.setDWidth(OssOffsetB10.offsetB10(point.getAttributes().getdWidth()));
-//            attributes.setDElevation(OssOffsetB10.offsetB10(point.getAttributes().getdElevation()));
-//
-//            node.setAttributes(attributes);
-//         }
-//         nodes.add(node);
-//      }
-//      nodeList.setNodes(nodes);
-//      return nodeList;
-//   }
-//   
-//   public static long getMinuteOfTheYear(String timestamp) throws ParseException {
-//      ZonedDateTime start = DateTimeUtils.isoDateTime(timestamp);
-//      long diff = DateTimeUtils.difference(DateTimeUtils.isoDateTime(start.getYear() + "-01-01T00:00:00+00:00"), start);
-//      long minutes = diff / 60000;
-//      TimFieldValidator.validateStartTime(minutes);
-//      return minutes;
-//   }
-//   
-//   public static HeadingSlice getHeadingSlice(String heading) {
-//      return new HeadingSlice(CodecUtils.shortStringToByteArray(heading));
-//   }
-//   
-//   public static MsgCRC getMsgCrc(String crc) {
-//      return new MsgCRC(CodecUtils.shortStringToByteArray(crc));
-//   }
+   public static ObjectNode replaceNodeListXY(JsonNode nodeList) {
+      // nodeListXY contains either NodeSetXY or ComputedLane
+
+      ObjectNode updatedNode = (ObjectNode) nodeList;
+
+      if (updatedNode.get("nodes") != null) {
+         updatedNode.set("nodes", replaceNodeSetXY(updatedNode.get("nodes")));
+      } else if (updatedNode.get("computed") != null) {
+         replaceComputedLane(updatedNode.get("computed"));
+      }
+
+      return updatedNode;
+   }
+
+   private static ObjectNode replaceComputedLane(JsonNode jsonNode) {
+      // referenceLaneId LaneID
+      // offsetXaxis CHOICE {
+      // small DrivenLineOffsetSm,
+      // large DrivenLineOffsetLg
+      // }
+      // offsetYaxis CHOICE {
+      // small DrivenLineOffsetSm,
+      // large DrivenLineOffsetLg
+      // }
+      // rotateXY Angle OPTIONAL
+      // scaleXaxis Scale-B12 OPTIONAL
+      // scaleYaxis Scale-B12 OPTIONAL
+
+      // TODO REST schema here is very different than ASN schema
+      // must verify correct structure
+
+      // lane id does not need replacement
+
+      // detect and remove the nodes
+      ObjectNode updatedNode = (ObjectNode) jsonNode;
+
+      if (updatedNode.get("offsetSmallX") != null) {
+         ObjectNode small = JsonUtils.newObjectNode("small",
+               DrivenLineOffsetSmBuilder.drivenLaneOffsetSm(updatedNode.get("offsetSmallX").decimalValue()));
+         updatedNode.set("offsetXaxis", small);
+         updatedNode.remove("offsetSmallX");
+      }
+      if (updatedNode.get("offsetLargeX") != null) {
+         ObjectNode large = JsonUtils.newObjectNode("large",
+               DrivenLineOffsetLgBuilder.drivenLineOffsetLg(updatedNode.get("offsetLargeX").decimalValue()));
+         updatedNode.set("offsetXaxis", large);
+         updatedNode.remove("offsetLargeX");
+      }
+      if (updatedNode.get("offsetSmallY") != null) {
+         ObjectNode small = JsonUtils.newObjectNode("small",
+               DrivenLineOffsetSmBuilder.drivenLaneOffsetSm(updatedNode.get("offsetSmallY").decimalValue()));
+         updatedNode.set("offsetYaxis", small);
+         updatedNode.remove("offsetSmallY");
+      }
+      if (updatedNode.get("offsetLargeY") != null) {
+         ObjectNode large = JsonUtils.newObjectNode("large",
+               DrivenLineOffsetLgBuilder.drivenLineOffsetLg(updatedNode.get("offsetLargeY").decimalValue()));
+         updatedNode.set("offsetYaxis", large);
+         updatedNode.remove("offsetLargeY");
+      }
+      if (updatedNode.get("angle") != null) {
+         updatedNode.put("rotateXY", AngleBuilder.angle(updatedNode.get("angle").decimalValue()));
+         updatedNode.remove("angle");
+      }
+      if (updatedNode.get("xScale") != null) {
+         updatedNode.put("scaleXaxis", ScaleB12Builder.scaleB12(updatedNode.get("xScale").decimalValue()));
+         updatedNode.remove("xScale");
+      }
+      if (updatedNode.get("yScale") != null) {
+         updatedNode.put("scaleYaxis", ScaleB12Builder.scaleB12(updatedNode.get("yScale").decimalValue()));
+         updatedNode.remove("yScale");
+      }
+
+      return updatedNode;
+
+   }
+
+   public static ObjectNode replaceNodeSetXY(JsonNode nodeSet) {
+
+      ObjectNode updatedNode = (ObjectNode) nodeSet;
+
+      ArrayNode replacedDataFrames = JsonUtils.newNode().arrayNode();
+
+      if (updatedNode.isArray()) {
+         Iterator<JsonNode> nodeSetXYIter = updatedNode.elements();
+
+         while (nodeSetXYIter.hasNext()) {
+            JsonNode oldNode = nodeSetXYIter.next();
+            replacedDataFrames.add(replaceNodeXY(oldNode));
+         }
+      }
+
+      updatedNode.set("nodes", replacedDataFrames);
+
+      return updatedNode;
+   }
+
+   private static JsonNode replaceNodeXY(JsonNode oldNode) {
+
+      // TODO
+      // nodexy contains:
+      // delta NodeOffsetPointXY
+      // attributes NodeAttributeSetXY (optional)
+
+      ObjectNode updatedNode = (ObjectNode) oldNode;
+
+      replaceNodeOffsetPointXY(updatedNode.get("delta"));
+
+      if (updatedNode.get("attributes") != null) {
+         replaceNodeAttributeSetXY(updatedNode);
+      }
+
+      return null;
+   }
+
+   private static ObjectNode replaceNodeAttributeSetXY(JsonNode jsonNode) {
+      // localNode NodeAttributeXYList OPTIONAL,
+      // disabled SegmentAttributeXYList OPTIONAL,
+      // enabled SegmentAttributeXYList OPTIONAL,
+      // data LaneDataAttributeList OPTIONAL,
+      // dWidth Offset-B10 OPTIONAL,
+      // dElevation Offset-B10 OPTIONAL,
+
+      ObjectNode updatedNode = (ObjectNode) jsonNode;
+
+      // localNode NodeAttributeXYList does not need to be replaced
+
+      // disabled SegmentAttributeXYList does not need to be replaced
+      // enabled SegmentAttributeXYList does not need to be replaced
+
+      if (updatedNode.get("data") != null) {
+         replaceLaneDataAttributeList(updatedNode.get("data"));
+      }
+      if (updatedNode.get("dWidth") != null) {
+         updatedNode.put("dWidth", OffsetB10Builder.offsetB10(updatedNode.get("dWidth").decimalValue()));
+      }
+
+      if (updatedNode.get("dElevation") != null) {
+         updatedNode.put("dElevation", OffsetB10Builder.offsetB10(updatedNode.get("dElevation").decimalValue()));
+      }
+
+      return updatedNode;
+
+   }
+
+   private static ObjectNode replaceLaneDataAttributeList(JsonNode laneDataAttributeList) {
+
+      // iterate and replace
+      ObjectNode updatedNode = (ObjectNode) laneDataAttributeList;
+
+      ArrayNode updatedLaneDataAttributeList = JsonUtils.newNode().arrayNode();
+
+      if (laneDataAttributeList.isArray()) {
+         Iterator<JsonNode> laneDataAttributeListIter = laneDataAttributeList.elements();
+
+         while (laneDataAttributeListIter.hasNext()) {
+            JsonNode oldNode = laneDataAttributeListIter.next();
+            updatedLaneDataAttributeList.add(replaceLaneDataAttribute(oldNode));
+         }
+      }
+
+      updatedNode.set("NodeSetXY", updatedLaneDataAttributeList);
+
+      return updatedNode;
+   }
+
+   public static ObjectNode replaceLaneDataAttribute(JsonNode oldNode) {
+      // choice between 1 of the following:
+      // pathEndPointAngle DeltaAngle
+      // laneCrownPointCenter RoadwayCrownAngle
+      // laneCrownPointLeft RoadwayCrownAngle
+      // laneCrownPointRight RoadwayCrownAngle
+      // laneAngle MergeDivergeNodeAngle
+      // speedLimits SpeedLimitList
+
+      ObjectNode updatedNode = (ObjectNode) oldNode;
+
+      // pathEndPointAngle DeltaAngle does not need to be replaced
+      if (updatedNode.get("pathEndPointAngle") != null) {
+         // do nothing
+      } else if (updatedNode.get("laneCrownPointCenter") != null) {
+         updatedNode.put("laneCrownPointCenter",
+               RoadwayCrownAngleBuilder.roadwayCrownAngle(updatedNode.get("laneCrownPointCenter").decimalValue()));
+      } else if (updatedNode.get("laneCrownPointLeft") != null) {
+         updatedNode.put("laneCrownPointLeft",
+               RoadwayCrownAngleBuilder.roadwayCrownAngle(updatedNode.get("laneCrownPointLeft").decimalValue()));
+      } else if (updatedNode.get("laneCrownPointRight") != null) {
+         updatedNode.put("laneCrownPointRight",
+               RoadwayCrownAngleBuilder.roadwayCrownAngle(updatedNode.get("laneCrownPointRight").decimalValue()));
+      } else if (updatedNode.get("laneAngle") != null) {
+         updatedNode.put("laneAngle",
+               MergeDivergeNodeAngleBuilder.mergeDivergeNodeAngle(updatedNode.get("laneAngle").decimalValue()));
+      } else if (updatedNode.get("speedLimits") != null) {
+         updatedNode.set("speedLimits", replaceSpeedLimitList(updatedNode.get("speedLimits")));
+      }
+
+      return null;
+   }
+
+   private static ArrayNode replaceSpeedLimitList(JsonNode speedLimitList) {
+
+      // iterate and replace
+      ArrayNode updatedLaneDataAttributeList = JsonUtils.newNode().arrayNode();
+
+      if (speedLimitList.isArray()) {
+         Iterator<JsonNode> speedLimitListIter = speedLimitList.elements();
+
+         while (speedLimitListIter.hasNext()) {
+            JsonNode oldNode = speedLimitListIter.next();
+            updatedLaneDataAttributeList.add(replaceRegulatorySpeedLimit(oldNode));
+         }
+      }
+
+      return updatedLaneDataAttributeList;
+   }
+
+   private static ObjectNode replaceRegulatorySpeedLimit(JsonNode regulatorySpeedLimitNode) {
+      // contains:
+      // type SpeedLimitType
+      // speed Velocity
+
+      ObjectNode updatedNode = (ObjectNode) regulatorySpeedLimitNode;
+      // type does not need to be replaced
+
+      // replace velocity
+      updatedNode.put("speed", VelocityBuilder.velocity(updatedNode.get("speed").decimalValue()));
+
+      return updatedNode;
+   }
+
+   public static ObjectNode replaceNodeOffsetPointXY(JsonNode delta) {
+
+      // NodeOffsetPointXY contains one of:
+      // node-XY1 Node-XY-20b, -- node is within 5.11m of last node
+      // node-XY2 Node-XY-22b, -- node is within 10.23m of last node
+      // node-XY3 Node-XY-24b, -- node is within 20.47m of last node
+      // node-XY4 Node-XY-26b, -- node is within 40.96m of last node
+      // node-XY5 Node-XY-28b, -- node is within 81.91m of last node
+      // node-XY6 Node-XY-32b, -- node is within 327.67m of last node
+      // node-LatLon Node-LLmD-64b, -- node is a full 32b Lat/Lon range
+
+      ObjectNode updatedNode = (ObjectNode) delta;
+
+      if (delta.get("node-XY1") != null) {
+         updatedNode.set("node-XY1", replaceNode_XY1(updatedNode.get("node-XY1")));
+      } else if (delta.get("node-XY2") != null) {
+         updatedNode.set("node-XY2", replaceNode_XY2(updatedNode.get("node-XY2")));
+
+      } else if (delta.get("node-XY3") != null) {
+         updatedNode.set("node-XY3", replaceNode_XY3(updatedNode.get("node-XY3")));
+
+      } else if (delta.get("node-XY4") != null) {
+         updatedNode.set("node-XY4", replaceNode_XY4(updatedNode.get("node-XY4")));
+
+      } else if (delta.get("node-XY5") != null) {
+         updatedNode.set("node-XY5", replaceNode_XY5(updatedNode.get("node-XY5")));
+
+      } else if (delta.get("node-XY6") != null) {
+         updatedNode.set("node-XY6", replaceNode_XY6(updatedNode.get("node-XY6")));
+
+      } else if (delta.get("node-LatLon") != null) {
+         updatedNode.set("node-LatLon", replaceNode_LatLon(delta.get("node-LatLon")));
+      }
+
+      return updatedNode;
+   }
+
+   private static JsonNode replaceNode_XY1(JsonNode jsonNode) {
+      // xy1 = Node-XY-20b = Offset-B10
+
+      ObjectNode updatedNode = (ObjectNode) jsonNode;
+
+      updatedNode.put("x", OffsetB10Builder.offsetB10(updatedNode.get("x").decimalValue()));
+      updatedNode.put("y", OffsetB10Builder.offsetB10(updatedNode.get("y").decimalValue()));
+
+      return updatedNode;
+   }
+
+   private static JsonNode replaceNode_XY2(JsonNode jsonNode) {
+      // xy2 = Node-XY-22b = Offset-B11
+      ObjectNode updatedNode = (ObjectNode) jsonNode;
+
+      updatedNode.put("x", OffsetB11Builder.offsetB11(updatedNode.get("x").decimalValue()));
+      updatedNode.put("y", OffsetB11Builder.offsetB11(updatedNode.get("y").decimalValue()));
+
+      return updatedNode;
+   }
+
+   private static ObjectNode replaceNode_XY3(JsonNode jsonNode) {
+      // XY3 = Node-XY-24b = Offset-B12
+      ObjectNode updatedNode = (ObjectNode) jsonNode;
+
+      updatedNode.put("x", OffsetB12Builder.offsetB12(updatedNode.get("x").decimalValue()));
+      updatedNode.put("y", OffsetB12Builder.offsetB12(updatedNode.get("y").decimalValue()));
+
+      return updatedNode;
+   }
+
+   private static ObjectNode replaceNode_XY4(JsonNode jsonNode) {
+      // XY4 = Node-XY-26b = Offset-B13
+      ObjectNode updatedNode = (ObjectNode) jsonNode;
+
+      updatedNode.put("x", OffsetB13Builder.offsetB13(updatedNode.get("x").decimalValue()));
+      updatedNode.put("y", OffsetB13Builder.offsetB13(updatedNode.get("y").decimalValue()));
+
+      return updatedNode;
+   }
+
+   private static ObjectNode replaceNode_XY5(JsonNode jsonNode) {
+      // XY5 = Node-XY-28b = Offset-B14
+      ObjectNode updatedNode = (ObjectNode) jsonNode;
+
+      updatedNode.put("x", OffsetB14Builder.offsetB14(updatedNode.get("x").decimalValue()));
+      updatedNode.put("y", OffsetB14Builder.offsetB14(updatedNode.get("y").decimalValue()));
+
+      return updatedNode;
+   }
+
+   private static ObjectNode replaceNode_XY6(JsonNode jsonNode) {
+      // XY6 = Node-XY-32b = Offset-B16
+      ObjectNode updatedNode = (ObjectNode) jsonNode;
+
+      updatedNode.put("x", OffsetB16Builder.offsetB16(updatedNode.get("x").decimalValue()));
+      updatedNode.put("y", OffsetB16Builder.offsetB16(updatedNode.get("y").decimalValue()));
+
+      return updatedNode;
+   }
+
+   private static ObjectNode replaceNode_LatLon(JsonNode jsonNode) {
+      // LatLon = Node-LLmD-64b
+      // Node-LLmD-64b ::= SEQUENCE {
+      // lon Longitude,
+      // lat Latitude
+      // }
+
+      ObjectNode updatedNode = (ObjectNode) jsonNode;
+
+      updatedNode.put("lon", LongitudeBuilder.longitude(updatedNode.get("lon").decimalValue()));
+      updatedNode.put("lat", LatitudeBuilder.latitude(updatedNode.get("lat").decimalValue()));
+
+      return null;
+   }
 
 }
