@@ -37,7 +37,6 @@ import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
-import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
@@ -234,27 +233,27 @@ public class TimController {
       }
 
       // Convert JSON to POJO
-      TravelerInputData travelerinputData = null;
+      ObjectNode travelerinputData = null;
       try {
-         travelerinputData = (TravelerInputData) JsonUtils.fromJson(jsonString, TravelerInputData.class);
+         travelerinputData = JsonUtils.toObjectNode(jsonString);
 
          logger.debug("J2735TravelerInputData: {}", jsonString);
 
       } catch (Exception e) {
-         String errMsg = "Malformed JSON.";
+         String errMsg = "Malformed or non-compliant JSON.";
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
+      
+      ((ObjectNode) travelerinputData.get("ode")).put("index", travelerinputData.get("tim").get("index").asInt());
+   
       // Craft ASN-encodable TIM
       
       ObjectNode encodableTim;
       try {
-         encodableTim = (ObjectNode) TravelerMessageFromHumanToAsnConverter.changeTravelerInformationToAsnValues(
-            JsonUtils.toObjectNode(travelerinputData.toJson()));
-         
-         ((ObjectNode) encodableTim.get("ode"))
-            .put("index", encodableTim.get("tim").get("index").asInt());
+         encodableTim = (ObjectNode) TravelerMessageFromHumanToAsnConverter
+               .changeTravelerInformationToAsnValues(travelerinputData);
          
       } catch (Exception e) {
          String errMsg = "Error converting to encodable TIM.";
