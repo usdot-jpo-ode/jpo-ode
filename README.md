@@ -137,8 +137,10 @@ Additionally, read the following guides to familiarize yourself with Docker and 
 |Name|Visibility|Description|
 |----|----------|-----------|
 |[jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode)|public|Contains the public components of the application code.|
+|[jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)|public|Privacy Protection Module|
 |[jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)|public|S3 depositor service. Optional, comment out of `docker-compose.yml` file if not used.|
 |[jpo-security](https://github.com/usdot-jpo-ode/jpo-security)|public|Security dependencies.|
+|[asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)|public|ASN.1 Encoder/Decoder module|
 |jpo-ode-private|private|Proprietary dependencies.|
 
 Building this application requires all repositories. If you need access to the private repositories, please reach out to a member of the development team.
@@ -156,25 +158,16 @@ git config --global core.autocrlf false
 Clone the source code from the GitHub repository using Git command:
 
 ```bash
-git clone https://github.com/usdot-jpo-ode/jpo-ode.git
+git clone --recurse-submodules https://github.com/usdot-jpo-ode/jpo-ode.git
 ```
 
-#### Step 2 - Clone S3 Bucket Depositor repository
+*Note*: Make sure you specify the --recurse-submodules option on the clone command line. This option will cause the cloning of all dependent submodules:
+- Privacy Protection Module (PPM) - [jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)
+- S3 Bucket Depositor - [jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)
+- Security - [jpo-security](https://github.com/usdot-jpo-ode/jpo-security)
+- ASN.1 CODEC - [asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)
 
-Clone the source code from the GitHub repository:
-
-```bash
-git clone https://github.com/usdot-jpo-ode/jpo-s3-deposit.git
-```
-
-#### Step 3 - Clone the security repository:
-
-Clone the source code from the GitHub repository:
-```bash
-git clone https://github.com/usdot-jpo-ode/jpo-security.git
-```
-
-#### Step 4 - Clone private repository
+#### Step 2 - Clone private repository
 
 Clone the source code from the BitBucket repository:
 

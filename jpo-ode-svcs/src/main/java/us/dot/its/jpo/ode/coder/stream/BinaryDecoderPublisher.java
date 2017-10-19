@@ -11,15 +11,10 @@ import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
 import us.dot.its.jpo.ode.importer.parser.DistressMsgFileParser;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
-import us.dot.its.jpo.ode.importer.parser.RxMsgFileParser;
 import us.dot.its.jpo.ode.importer.parser.TimLogFileParser;
 import us.dot.its.jpo.ode.model.OdeData;
 
 public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
-
-   private static final String BSMS_FOR_EVENT_PREFIX = "bsmLogDuringEvent";
-   private static final String RECEIVED_MESSAGES_PREFIX = "rxMsg";
-   private static final String DISTRESS_MESSAGES_PREFIX = "dnMsg";
 
    private static final Logger logger = LoggerFactory.getLogger(BinaryDecoderPublisher.class);
    private OdeDataPublisher timMessagePublisher;
@@ -31,7 +26,8 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
    }
 
    @Override
-   public void decodeAndPublish(BufferedInputStream bis, String fileName, ImporterFileType fileType) throws Exception {
+   public void decodeAndPublish(BufferedInputStream bis, String fileName, ImporterFileType fileType) 
+         throws Exception {
       OdeData decoded = null;
 
       LogFileParser fileParser = null;
@@ -43,18 +39,7 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
             ParserStatus status = ParserStatus.UNKNOWN;
 
             if (fileType == ImporterFileType.BSM_LOG_FILE) {
-               if (fileName.startsWith(BSMS_FOR_EVENT_PREFIX)) {
-                  logger.debug("Parsing as \"BSM For Event\" log file type.");
-                  fileParser = new BsmLogFileParser(bundleId.incrementAndGet());
-               } else if (fileName.startsWith(RECEIVED_MESSAGES_PREFIX)) {
-                  logger.debug("Parsing as \"Received Messages\" log file type.");
-                  fileParser = new RxMsgFileParser(bundleId.incrementAndGet());
-               } else if (fileName.startsWith(DISTRESS_MESSAGES_PREFIX)) {
-                  logger.debug("Parsing as \"Distress Notifications\" log file type.");
-                  fileParser = new DistressMsgFileParser(bundleId.incrementAndGet());
-               } else {
-                  throw new IllegalArgumentException("Unknown log file prefix: " + fileName);
-               }
+               fileParser = LogFileParser.factory(fileName, bundleId.incrementAndGet());
 
                status = fileParser.parseFile(bis, fileName);
                if (status == ParserStatus.COMPLETE) {
@@ -63,13 +48,9 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
                         logger.debug("Attempting to decode log file message as a BSM...");
                         decoded = bsmDecoder.decode((BsmLogFileParser) fileParser,
                               this.serialId.setBundleId(bundleId.get()));
-                     } else if (fileParser instanceof RxMsgFileParser) {
+                     } else if (fileParser instanceof TimLogFileParser) {
                         logger.debug("Attempting to decode log file message as a rxTIM...");
-                        decoded = timDecoder.decode((RxMsgFileParser) fileParser,
-                              this.serialId.setBundleId(bundleId.get()));
-                     } else if (fileParser instanceof DistressMsgFileParser) {
-                        logger.debug("Attempting to decode log file message as a distress TIM...");
-                        decoded = timDecoder.decode((DistressMsgFileParser) fileParser,
+                        decoded = timDecoder.decode((TimLogFileParser) fileParser,
                               this.serialId.setBundleId(bundleId.get()));
                      }
                   } catch (Exception e) {
@@ -94,10 +75,13 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
                      logger.debug("Decoded a bsm: {}", decoded);
                      bsmMessagePublisher.publish(decoded, 
                         bsmMessagePublisher.getOdeProperties().getKafkaTopicOdeBsmPojo());
-                  } else if (fileType == ImporterFileType.BSM_LOG_FILE && fileParser instanceof TimLogFileParser) {
+                  } else if (fileParser instanceof DistressMsgFileParser) {
+                     // this 'else if' should be before the next 'else if' 
+                     logger.debug("Decoded a distressMsg: {}", decoded);
+                     timMessagePublisher.publish(decoded, timMessagePublisher.getOdeProperties().getKafkaTopicOdeDNMsgPojo());
+                  } else if (fileParser instanceof TimLogFileParser) {
                      logger.debug("Decoded a tim: {}", decoded);
-                     timMessagePublisher.publish(decoded, 
-                        bsmMessagePublisher.getOdeProperties().getKafkaTopicOdeTimPojo());
+                     timMessagePublisher.publish(decoded, timMessagePublisher.getOdeProperties().getKafkaTopicOdeTimPojo());
                   }
                }
             } else {

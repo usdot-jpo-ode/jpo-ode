@@ -27,7 +27,7 @@ public class ToJsonConverterTest {
       new Expectations() {{
          JsonUtils.toJson(any, anyBoolean);
       }};
-      testToJsonConverter.transform(new String());
+      testToJsonConverter.process(new String());
    }
 
 

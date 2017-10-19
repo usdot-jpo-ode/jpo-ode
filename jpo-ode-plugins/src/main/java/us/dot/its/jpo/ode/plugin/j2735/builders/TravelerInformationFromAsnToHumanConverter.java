@@ -8,9 +8,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
-public class TravelerInformationBuilder {
+public class TravelerInformationFromAsnToHumanConverter {
 
-   private TravelerInformationBuilder() {
+   private TravelerInformationFromAsnToHumanConverter() {
       throw new UnsupportedOperationException();
    }
 

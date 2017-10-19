@@ -23,16 +23,26 @@ public class AsnCodecRouterServiceController {
 
       logger.info("Starting {}", this.getClass().getSimpleName());
 
-      // asn1_codec Routing
+      // asn1_codec Decoder Routing
       logger.info("Routing DECODED data received ASN.1 Decoder");
 
-      Asn1CodecRouter asn1codecRouter = new Asn1CodecRouter(odeProps);
+      Asn1DecodedDataRouter decoderRouter = new Asn1DecodedDataRouter(odeProps);
 
       MessageConsumer<String, String> asn1DecoderConsumer = MessageConsumer.defaultStringMessageConsumer(
-         odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), asn1codecRouter);
+         odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), decoderRouter);
 
       asn1DecoderConsumer.setName("Asn1DecoderConsumer");
-      asn1codecRouter.start(asn1DecoderConsumer, odeProps.getKafkaTopicAsn1DecoderOutput());
+      decoderRouter.start(asn1DecoderConsumer, odeProps.getKafkaTopicAsn1DecoderOutput());
 
+      // asn1_codec Encoder Routing
+      logger.info("Routing ENCODED data received ASN.1 Encoder");
+
+      Asn1EncodedDataRouter enocderRouter = new Asn1EncodedDataRouter(odeProps);
+
+      MessageConsumer<String, String> encoderConsumer = MessageConsumer.defaultStringMessageConsumer(
+         odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), enocderRouter);
+
+      encoderConsumer.setName("Asn1EncoderConsumer");
+      enocderRouter.start(encoderConsumer, odeProps.getKafkaTopicAsn1EncoderOutput());
    }
 }

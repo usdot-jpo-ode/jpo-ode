@@ -28,9 +28,9 @@ public class AccelerationSet4WayBuilder {
       if (accelLong == 2001) {
          genericAccelerationSet4Way.setAccelLong(null);
       } else if (accelLong < -2000) {
-         genericAccelerationSet4Way.setAccelLong(BigDecimal.valueOf(-20.00));
+         genericAccelerationSet4Way.setAccelLong(BigDecimal.valueOf(-2000, 2));
       } else if (accelLong > 2001) {
-         genericAccelerationSet4Way.setAccelLong(BigDecimal.valueOf(20.00));
+         genericAccelerationSet4Way.setAccelLong(BigDecimal.valueOf(2000, 2));
       } else {
          genericAccelerationSet4Way.setAccelLong(BigDecimal.valueOf(accelLong, 2));
       }
@@ -38,9 +38,9 @@ public class AccelerationSet4WayBuilder {
       if (accelLat == 2001) {
          genericAccelerationSet4Way.setAccelLat(null);
       } else if (accelLat < -2000) {
-         genericAccelerationSet4Way.setAccelLat(BigDecimal.valueOf(-20.00));
+         genericAccelerationSet4Way.setAccelLat(BigDecimal.valueOf(-2000,2));
       } else if (accelLat > 2001) {
-         genericAccelerationSet4Way.setAccelLat(BigDecimal.valueOf(20.00));
+         genericAccelerationSet4Way.setAccelLat(BigDecimal.valueOf(2000,2));
       } else {
          genericAccelerationSet4Way.setAccelLat(BigDecimal.valueOf(accelLat, 2));
       }

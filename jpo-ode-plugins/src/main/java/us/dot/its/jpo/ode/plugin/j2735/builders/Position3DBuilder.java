@@ -3,12 +3,14 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 import java.math.BigDecimal;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import us.dot.its.jpo.ode.j2735.dsrc.Elevation;
 import us.dot.its.jpo.ode.j2735.dsrc.Latitude;
 import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
 import us.dot.its.jpo.ode.j2735.dsrc.Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class Position3DBuilder {
    
@@ -47,22 +49,27 @@ public class Position3DBuilder {
 
    }
 
-   public static Position3D position3D(J2735Position3D jpos) {
-      Position3D pos = new Position3D();
-      
-      if (jpos.getLongitude() != null) {
-         pos.set_long(new Longitude(jpos.getLongitude().scaleByPowerOfTen(7).longValue()));
+   public static ObjectNode position3D(JsonNode jpos) {
+
+      ObjectNode posNode = JsonUtils.newNode();
+
+      JsonNode latitude = jpos.get("latitude");
+      if (latitude != null) {
+         JsonUtils.addNode(posNode, "lat", BigDecimal.valueOf(latitude.asLong()).scaleByPowerOfTen(7).longValue());
       }
 
-      if (jpos.getLatitude() != null) {
-         pos.setLat(new Latitude(jpos.getLatitude().scaleByPowerOfTen(7).longValue()));
+      JsonNode longitude = jpos.get("longitude");
+      if (longitude != null) {
+         JsonUtils.addNode(posNode, "long", BigDecimal.valueOf(longitude.asLong()).scaleByPowerOfTen(7).longValue());
       }
 
-     if (jpos.getElevation() != null) {
-        pos.setElevation(new Elevation(jpos.getElevation().scaleByPowerOfTen(1).longValue()));
-     }
+      JsonNode elevation = jpos.get("elevation");
+      if (elevation != null) {
+         JsonUtils.addNode(posNode, "elevation",
+               BigDecimal.valueOf(elevation.asLong()).scaleByPowerOfTen(1).longValue());
+      }
 
-      return pos;
+      return posNode;
    }
 
 }

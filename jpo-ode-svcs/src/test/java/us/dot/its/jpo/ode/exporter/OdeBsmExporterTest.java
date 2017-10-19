@@ -1,15 +1,8 @@
 package us.dot.its.jpo.ode.exporter;
 
-import static org.junit.Assert.assertEquals;
-
+import mockit.*;
 import org.junit.Test;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-
-import mockit.Capturing;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
-import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProcessor;

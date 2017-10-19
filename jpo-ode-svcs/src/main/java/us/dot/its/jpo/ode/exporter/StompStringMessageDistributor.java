@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import us.dot.its.jpo.ode.subscriber.Subscriber;
-import us.dot.its.jpo.ode.wrapper.MessageProcessor;
+import us.dot.its.jpo.ode.wrapper.AbstractSubscriberProcessor;
 
-public class StompStringMessageDistributor extends MessageProcessor<String, String> {
+public class StompStringMessageDistributor extends AbstractSubscriberProcessor<String, String> {
    private static Logger logger = LoggerFactory.getLogger(StompStringMessageDistributor.class);
 
    private SimpMessagingTemplate template;
@@ -20,8 +20,8 @@ public class StompStringMessageDistributor extends MessageProcessor<String, Stri
    }
 
    @Override
-   public Object call() throws Exception {
-      template.convertAndSend(topic, new Subscriber(record.value()));
+   protected Object process(String consumedData) {
+      template.convertAndSend(topic, new Subscriber(consumedData));
       return null;
    }
 

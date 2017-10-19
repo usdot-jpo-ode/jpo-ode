@@ -23,7 +23,6 @@ public class VsdDepositor extends AbstractSubscriberDepositor {
 
    public VsdDepositor(OdeProperties odeProps) {
       super(odeProps, odeProps.getVsdDepositorPort());
-      consumer.setName(this.getClass().getSimpleName());
       this.deserializer = new VehSitDataMessageDeserializer();
    }
 

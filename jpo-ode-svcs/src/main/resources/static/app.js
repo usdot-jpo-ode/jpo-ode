@@ -27,6 +27,9 @@ function connect() {
         stompClient.subscribe('/topic/filtered_messages', function (greeting) {
                 showFilteredMessage(JSON.parse(greeting.body).content);
         });
+        stompClient.subscribe('/topic/ode_dn_messages', function (greeting) {
+                showDNMessage(JSON.parse(greeting.body).content);
+        });
     });
 }
 
@@ -52,6 +55,10 @@ function showMessage(message) {
 
 function showFilteredMessage(message) {
     $("#filtered_messages").append("<tr><td>" + message + "</td></tr>");
+}
+
+function showDNMessage(message) {
+    $("#distress_notifications").append("<tr><td>" + message + "</td></tr>");
 }
 
 function upload() {

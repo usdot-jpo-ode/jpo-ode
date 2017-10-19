@@ -20,7 +20,6 @@ import gov.usdot.cv.security.cert.CertificateException;
 import gov.usdot.cv.security.crypto.CryptoException;
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import gov.usdot.cv.security.msg.MessageException;
-import us.dot.its.jpo.ode.importer.parser.DistressMsgFileParser;
 import us.dot.its.jpo.ode.importer.parser.RxMsgFileParser;
 import us.dot.its.jpo.ode.importer.parser.TimLogFileParser;
 import us.dot.its.jpo.ode.j2735.J2735;
@@ -32,6 +31,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.MessageFrame;
 import us.dot.its.jpo.ode.j2735.dsrc.Speed;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.model.OdeData;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.OdeTimData;
 import us.dot.its.jpo.ode.model.OdeTimMetadata;
 import us.dot.its.jpo.ode.model.OdeTimPayload;
@@ -136,6 +136,7 @@ public class TimDecoderHelper {
             timMetadata.setReceivedAt(DateTimeUtils.now());
             timMetadata.setSerialId(serialId);
             timMetadata.setLogFileName(fileParser.getFilename());
+            timMetadata.setRecordType(fileParser.getRecordType().name());
             
             OdeTimSpecificMetadata timSpecificMetadata = new OdeTimSpecificMetadata(
                   new OdeTimSpecificMetadataLocation(
@@ -162,13 +163,14 @@ public class TimDecoderHelper {
                } else {
                   generatedAt = getGeneratedAt(fileParser);
                }
-               timMetadata.setGeneratedAt(generatedAt.toString());
+               timMetadata.setRecordGeneratedAt(generatedAt.toString());
                timMetadata.setValidSignature(true);
             } else {
                logger.debug("Message does not contain time");
-               timMetadata.setGeneratedAt(getGeneratedAt(fileParser).toString());
+               timMetadata.setRecordGeneratedAt(getGeneratedAt(fileParser).toString());
                timMetadata.setValidSignature(fileParser.isValidSignature());
             }
+            timMetadata.setRecordGeneratedBy(GeneratedBy.OBU);
 
             odeTimData = new OdeTimData(timMetadata, timPayload);
 

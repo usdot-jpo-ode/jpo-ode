@@ -15,7 +15,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
-import org.snmp4j.TransportMapping;
 import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 
@@ -24,10 +23,9 @@ import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.services.asn1.Asn1EncodedDataRouter;
 import us.dot.its.jpo.ode.snmp.SNMP;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
-import us.dot.its.jpo.ode.traveler.TimController;
-import us.dot.its.jpo.ode.traveler.TimPduCreator;
 import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 
 public class TimPduCreatorTest {
@@ -59,7 +57,7 @@ public class TimPduCreatorTest {
       }
 
       try {
-         assertNull(TimController.createAndSend(mockSNMP, mockRSU, 0, ""));
+         assertNull(Asn1EncodedDataRouter.createAndSend(mockSNMP, mockRSU, 0, ""));
          fail("Should have thrown IOException");
       } catch (IOException e) {
       }
@@ -113,7 +111,7 @@ public class TimPduCreatorTest {
       }
 
       assertEquals(mockResponseEvent,
-            TimController.createAndSend(
+         Asn1EncodedDataRouter.createAndSend(
                   mockTimParameters, mockSnmpProperties, 0, ""));
    }
 
@@ -136,7 +134,7 @@ public class TimPduCreatorTest {
          fail("Unexpected exception: " + e);
       }
       System.out.println("test 2");
-      assertNull(TimController.createAndSend(
+      assertNull(Asn1EncodedDataRouter.createAndSend(
             mockTimParameters, mockSnmpProperties, 0, ""));
 
       new Verifications() {

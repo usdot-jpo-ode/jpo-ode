@@ -19,6 +19,6 @@ public class ServiceManager implements UdpManager{
    }
    
    public void submit(AbstractSubscriberDepositor dep, String... topics) {
-      dep.subscribe(topics);
+      dep.start(topics);
    }
 }

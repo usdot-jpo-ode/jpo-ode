@@ -16,6 +16,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
+
 public class LongitudeBuilderTest {
 
    @Test
@@ -25,6 +27,32 @@ public class LongitudeBuilderTest {
       BigDecimal expectedValue = BigDecimal.valueOf(25.1234567);
 
       assertEquals(expectedValue, LongitudeBuilder.genericLongitude(testInput));
+   }
+
+   @Test
+   public void testConversionDeticatedNullValue() throws JsonProcessingException, IOException {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode testInput = mapper.readTree("1800000001");
+      BigDecimal expectedValue = null;
+
+      assertEquals(expectedValue, LongitudeBuilder.genericLongitude(testInput));
+   }
+
+   @Test
+   public void testConversionNullEntry() throws JsonProcessingException, IOException {
+      JsonNode testInput = null;
+      BigDecimal expectedValue = null;
+
+      assertEquals(expectedValue, LongitudeBuilder.genericLongitude(testInput));
+   }
+
+   @Test
+   public void testBigDecimal() throws JsonProcessingException, IOException {
+
+      BigDecimal testInput = new BigDecimal(1.0);
+
+      assertEquals(10000000, LongitudeBuilder.longitude(testInput));
+
    }
 
    @Test

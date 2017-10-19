@@ -1,10 +1,10 @@
 package us.dot.its.jpo.ode.model;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 public class OdeAsn1Metadata extends OdeLogMetadata {
 
@@ -16,32 +16,16 @@ public class OdeAsn1Metadata extends OdeLogMetadata {
       super();
    }
 
-   public OdeAsn1Metadata(String payloadType, SerialId serialId, String receivedAt) {
-      super(payloadType, serialId, receivedAt);
-   }
-
-   public OdeAsn1Metadata(OdeMsgPayload payload, SerialId serialId, String receivedAt, String generatedAt) {
-      super(payload, serialId, receivedAt, generatedAt);
-   }
-
    public OdeAsn1Metadata(OdeMsgPayload payload) {
       super(payload);
    }
 
-   public OdeAsn1Metadata(OdeMsgPayload payload, String generatedAt) {
-      super(payload);
-      this.generatedAt = generatedAt;
-   }
-
-   public OdeAsn1Metadata(String payloadType, SerialId serialId, String receivedAt, String generatedAt) {
-      super(payloadType, serialId, receivedAt);
-      this.generatedAt = generatedAt;
-   }
-
    public OdeAsn1Metadata(JsonNode metadata) {
       setEncodings(metadata.get("encodings").get("encodings"));
-      setGeneratedAt(metadata.get("generatedAt").asText());
+      setRecordGeneratedAt(metadata.get("generatedAt").asText());
+      setRecordGeneratedBy(GeneratedBy.valueOf(metadata.get("generatedBy").asText()));
       setLogFileName(metadata.get("logFileName").asText());
+      setRecordType(metadata.get("recordType").asText());
       setPayloadType(metadata.get("payloadType").asText());
       setReceivedAt(metadata.get("receivedAt").asText());
       setSanitized(metadata.get("sanitized").asBoolean());

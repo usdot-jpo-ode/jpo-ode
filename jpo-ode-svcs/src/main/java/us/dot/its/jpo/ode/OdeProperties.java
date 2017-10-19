@@ -78,6 +78,9 @@ public class OdeProperties implements EnvironmentAware {
     */
    private String kafkaTopicOdeTimPojo = "topic.OdeTimPojo";
    private String kafkaTopicOdeTimJson = "topic.OdeTimJson";
+   private String kafkaTopicOdeDNMsgJson= "topic.OdeDNMsgJson";
+   private String kafkaTopicOdeDNMsgPojo= "topic.OdeDNMsgPojo";
+
 
    /*
     * BSM Properties
@@ -565,20 +568,20 @@ public class OdeProperties implements EnvironmentAware {
       this.kafkaTopicAsn1DecoderOutput = kafkaTopicAsn1DecoderOutput;
    }
 
-   public String getKafkaTopicAsn1EncodedTim() {
+   public String getKafkaTopicAsn1EncoderInput() {
       return kafkaTopicAsn1EncoderInput;
    }
 
-   public void setKafkaTopicAsn1EncodedTim(String kafkaTopicAsn1EncodedTim) {
-      this.kafkaTopicAsn1EncoderInput = kafkaTopicAsn1EncodedTim;
+   public void setKafkaTopicAsn1EncoderInput(String kafkaTopicAsn1EncoderInput) {
+      this.kafkaTopicAsn1EncoderInput = kafkaTopicAsn1EncoderInput;
    }
 
-   public String getKafkaTopicAsn1DecodedTim() {
+   public String getKafkaTopicAsn1EncoderOutput() {
       return kafkaTopicAsn1EncoderOutput;
    }
 
-   public void setKafkaTopicAsn1DecodedTim(String kafkaTopicAsn1DecodedTim) {
-      this.kafkaTopicAsn1EncoderOutput = kafkaTopicAsn1DecodedTim;
+   public void setKafkaTopicAsn1EncoderOutput(String kafkaTopicAsn1EncoderOutput) {
+      this.kafkaTopicAsn1EncoderOutput = kafkaTopicAsn1EncoderOutput;
    }
 
    public int getImportProcessorBufferSize() {
@@ -596,6 +599,16 @@ public class OdeProperties implements EnvironmentAware {
    public void setKafkaTopicOdeTimPojo(String kafkaTopicOdeTimPojo) {
       this.kafkaTopicOdeTimPojo = kafkaTopicOdeTimPojo;
    }
+   public String getKafkaTopicOdeDNMsgPojo() {return kafkaTopicOdeDNMsgPojo; }
+
+   public void setKafkaTopicOdeDNMsgPojo(String kafkaTopicOdeDNMsgPojo) {
+      this.kafkaTopicOdeDNMsgPojo = kafkaTopicOdeDNMsgPojo;
+   }
+   public String getKafkaTopicOdeDNMsgJson() {return kafkaTopicOdeDNMsgJson; }
+
+   public void setKafkaTopicOdeDNMsgJson(String kafkaTopicOdeDNMsgJson) {
+      this.kafkaTopicOdeDNMsgJson = kafkaTopicOdeDNMsgJson;
+   }
 
    public String getKafkaTopicOdeTimJson() {
       return kafkaTopicOdeTimJson;
@@ -605,12 +618,12 @@ public class OdeProperties implements EnvironmentAware {
       this.kafkaTopicOdeTimJson = kafkaTopicOdeTimJson;
    }
 
-    public String getUploadLocationBsmLog() {
-        return uploadLocationBsmLog;
+   public String getUploadLocationBsmLog() {
+      return uploadLocationBsmLog;
     }
     
-    public void setUploadLocationBsmLog(String uploadLocationBsmLog) {
-        this.uploadLocationBsmLog = uploadLocationBsmLog;
-    }
+   public void setUploadLocationBsmLog(String uploadLocationBsmLog) {
+      this.uploadLocationBsmLog = uploadLocationBsmLog;
+   }
 
 }

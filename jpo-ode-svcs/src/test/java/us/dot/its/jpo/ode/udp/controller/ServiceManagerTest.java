@@ -45,7 +45,7 @@ public class ServiceManagerTest {
 
       new Expectations() {
          {
-            mockAbstractSubscriberDepositor.subscribe(anyString);
+            mockAbstractSubscriberDepositor.start(anyString);
          }
       };
 

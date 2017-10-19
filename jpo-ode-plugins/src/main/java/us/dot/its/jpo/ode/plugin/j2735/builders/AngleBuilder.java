@@ -42,5 +42,9 @@ public class AngleBuilder {
        return JsonUtils.newObjectNode("angle", 
           BigDecimal.valueOf(ang).divide(BigDecimal.valueOf(0.0125)).intValue());
     }
+    
+    public static int angle(BigDecimal ang) {
+       return ang.divide(BigDecimal.valueOf(0.0125)).intValue();
+    }
 
 }
