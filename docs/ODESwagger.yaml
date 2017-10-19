@@ -2,8 +2,7 @@ swagger: '2.0'
 info:
   title: ODE REST API
   description: >-
-    Description of functions available from the Operational Data Environment
-    (ODE) via RESTful interface.
+    Description of functions available from the Operational Data Environment (ODE) via RESTful interface. Ranges given follow interval notation, for example (0,1) or (0..1) means 0 &lt; x &lt; 1 and [0,1] or [0..1] means 0 &le; x &le; 1.
   version: 0.0.1
 host: yourhostname
 schemes:
@@ -196,14 +195,16 @@ definitions:
         description: Index of message storage on RSU.
       msgCnt:
         type: integer
+        description: Range [0..127], used to provide a sequence number within a stream of messages with the same DSRCmsgID and from the same sender.
       timestamp:
         type: string
-        description: ISO time of message creation.
+        description: ISO 8601 time of message creation, for example "2017-08-03T22:25:36.297Z".
       packetId:
         type: integer
+        description: Provides a unique message ID.  Converted to 9 byte octet string.
       urlB:
         type: string
-        description: UrlB
+        description: Standard URL link to designated resource.
       dataFrames:
         type: array
         items:
@@ -256,8 +257,10 @@ definitions:
           contents are not valid.
       frameType:
         type: integer
+        description: TravelerInfoType enum, 0 = unknown, 1 = advisory, 2 = roadSignage, 3 = commercialSignage.
       msgID:
         type: string
+        description: Either RoadSignID or FurtherInfoID.
       position:
         $ref: '#/definitions/J2735Position3D'
       viewAngle:
@@ -271,6 +274,7 @@ definitions:
         type: string
       durationTime:
         type: integer
+        description: Range [0..3200], message duration time, in minutes. A value of 32000 means forever.
       priority:
         type: integer
       sspLocationRights:
@@ -281,6 +285,7 @@ definitions:
         type: integer
       content:
         type: string
+        description: Part III content type, one of "Advisory", "Work Zone", "Generic Signage", "Speed Limit", or "Exit Service".
       items:
         type: array
         items:

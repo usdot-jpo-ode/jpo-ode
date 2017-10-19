@@ -4,6 +4,7 @@ services:
     image: wurstmeister/zookeeper
     ports:
       - "2181:2181"
+
   kafka:
     build: ./docker/kafka
     ports:
@@ -22,6 +23,10 @@ services:
                                      # This configuration controls the period of time after
                                      # which Kafka will force the log to roll even if the segment
                                      # file isn't full to ensure that retention can delete or compact old data.
+    depends_on:
+      - zookeeper
+    links:
+      - zookeeper
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
@@ -46,18 +51,48 @@ services:
       - kafka
     links:
       - kafka
+      - zookeeper
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/host_share
+      - ${DOCKER_SHARED_VOLUME}:/jpo-ode
+
+  adm:
+    build: ./asn1_codec
+    image: jpoode_acm:latest
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      ACM_CONFIG_FILE: adm.properties
+      ACM_FUNCTION: decode
+    depends_on:
+      - kafka
+    links:
+      - kafka
+    volumes:
+      - ${DOCKER_SHARED_VOLUME}:/asn1_codec
+
+  aem:
+    image: jpoode_acm:latest
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      ACM_CONFIG_FILE: aem.properties
+      ACM_FUNCTION: encode
+    depends_on:
+      - kafka
+    links:
+      - kafka
+    volumes:
+      - ${DOCKER_SHARED_VOLUME}:/asn1_codec
 
   ppm:
-    build: ../jpo-cvdp
+    build: ./jpo-cvdp
+    image: jpoode_ppm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
 
   cvpep_bsm_s3dep:
-    build: ../jpo-s3-deposit
+    build: ./jpo-s3-deposit
+    image: jpoode_s3dep:latest
     environment:
       AWS_ACCESS_KEY_ID: ${CVPEP_BSM_S3_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${CVPEP_BSM_S3_SECRET_ACCESS_KEY}
@@ -71,7 +106,7 @@ services:
      - kafka
 
   rde_bsm_s3dep:
-    build: ../jpo-s3-deposit
+    image: jpoode_s3dep:latest
     environment:
       AWS_ACCESS_KEY_ID: ${RDE_BSM_S3_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${RDE_BSM_S3_SECRET_ACCESS_KEY}
@@ -85,7 +120,7 @@ services:
      - kafka
 
   cvpep_tim_s3dep:
-    build: ../jpo-s3-deposit
+    image: jpoode_s3dep:latest
     environment:
       AWS_ACCESS_KEY_ID: ${CVPEP_TIM_S3_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${CVPEP_TIM_S3_SECRET_ACCESS_KEY}
@@ -99,7 +134,7 @@ services:
      - kafka
 
   rde_tim_s3dep:
-    build: ../jpo-s3-deposit
+    image: jpoode_s3dep:latest
     environment:
       AWS_ACCESS_KEY_ID: ${RDE_TIM_S3_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${RDE_TIM_S3_SECRET_ACCESS_KEY}

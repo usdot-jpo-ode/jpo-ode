@@ -2,7 +2,6 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import us.dot.its.jpo.ode.j2735.semi.GeoRegion;
 import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion;
 
 public class GeoRegionBuilder {
@@ -18,10 +17,10 @@ public class GeoRegionBuilder {
 
    }
 
-   public static GeoRegion geoRegion(J2735GeoRegion geoRegion) {
-
-      return new GeoRegion(Position3DBuilder.position3D(geoRegion.getNwCorner()),
-            Position3DBuilder.position3D(geoRegion.getSeCorner()));
-
-   }
+//   public static GeoRegion geoRegion(J2735GeoRegion geoRegion) {
+//
+//      return new GeoRegion(Position3DBuilder.position3D(geoRegion.getNwCorner()),
+//            Position3DBuilder.position3D(geoRegion.getSeCorner()));
+//
+//   }
 }
