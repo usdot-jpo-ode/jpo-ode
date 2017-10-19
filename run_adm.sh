@@ -1,2 +1,2 @@
 #!/bin/sh
-./acm -c config/adm.properties -T decode -R
+/home/asn1_codec/build/acm -c adm.properties -T decode -R

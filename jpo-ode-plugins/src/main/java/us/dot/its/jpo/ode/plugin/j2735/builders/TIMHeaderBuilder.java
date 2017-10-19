@@ -48,7 +48,7 @@ public class TIMHeaderBuilder {
          msgId.setChosenFlag(MsgId.roadSignID_chosen);
          RoadSignID roadSignID = new RoadSignID();
          TimFieldValidator.validatePosition(dataFrame.getPosition());
-         roadSignID.setPosition(Position3DBuilder.position3D(dataFrame.getPosition()));
+//         roadSignID.setPosition(Position3DBuilder.position3D(dataFrame.getPosition()));
          TimFieldValidator.validateHeading(dataFrame.getViewAngle());
          // TODO
          //roadSignID.setViewAngle(TravelerMessageBuilder.getHeadingSlice(dataFrame.getViewAngle()));
