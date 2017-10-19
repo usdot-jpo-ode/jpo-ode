@@ -60,7 +60,7 @@ services:
     image: jpoode_acm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      ACM_CONFIG_FILE: ${ADM_CONFIG_FILE}
+      ACM_CONFIG_FILE: adm.properties
       ACM_FUNCTION: decode
     depends_on:
       - kafka
@@ -73,7 +73,7 @@ services:
     image: jpoode_acm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      ACM_CONFIG_FILE: ${AEM_CONFIG_FILE}
+      ACM_CONFIG_FILE: aem.properties
       ACM_FUNCTION: encode
     depends_on:
       - kafka
@@ -83,7 +83,7 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec
 
   ppm:
-    build: ../jpo-cvdp
+    build: ./jpo-cvdp
     image: jpoode_ppm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
@@ -91,7 +91,7 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
 
   cvpep_bsm_s3dep:
-    build: ../jpo-s3-deposit
+    build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest
     environment:
       AWS_ACCESS_KEY_ID: ${CVPEP_BSM_S3_ACCESS_KEY_ID}
