@@ -45,8 +45,6 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssLatitude;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssLongitude;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssMessageFrame.OssMessageFrameException;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssSpeedOrVelocity;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerInformation;
 import us.dot.its.jpo.ode.security.SecurityManager;
 import us.dot.its.jpo.ode.security.SecurityManager.SecurityManagerException;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
@@ -175,7 +173,64 @@ public class TimDecoderHelper {
             odeTimData = new OdeTimData(timMetadata, timPayload);
 
          } else if (mf.getMessageId().intValue() == DSRC_MSG_ID_BSM) {
-            throw new IOException("Unexpected BSM in TIM log file.");
+             logger.debug("We have a BSM: " + mf.messageId);
+
+             BasicSafetyMessage bsm;
+            if (mf.value.getDecodedValue() != null) {
+               bsm = (BasicSafetyMessage) mf.value.getDecodedValue();
+            } else if (mf.value.getEncodedValueAsStream() != null) {
+               bsm = new BasicSafetyMessage();
+               try {
+                  asnDecoder.decode(mf.value.getEncodedValueAsStream(), bsm);
+               } catch (DecodeFailedException | DecodeNotSupportedException e) {
+                  throw new OssMessageFrameException("Error decoding OpenType value", e);
+               }
+            } else {
+               throw new OssMessageFrameException("No OpenType value");
+            }
+
+            OdeBsmPayload bsmPayload = new OdeBsmPayload(OssBsm.genericBsm(bsm));
+
+             OdeTimMetadata bsmMetadata = new OdeTimMetadata(bsmPayload);
+
+             bsmMetadata.setReceivedAt(DateTimeUtils.now());
+             bsmMetadata.setSerialId(serialId);
+             bsmMetadata.setLogFileName(fileParser.getFilename());
+
+             OdeTimSpecificMetadata bsmSpecificMetadata = new OdeTimSpecificMetadata(
+                    new OdeTimSpecificMetadataLocation(
+                            OssLatitude.genericLatitude(new Latitude(fileParser.getLocation().getLatitude())).toString(),
+                            OssLongitude.genericLongitude(new Longitude(fileParser.getLocation().getLongitude())).toString(),
+                            OssElevation.genericElevation(new Elevation(fileParser.getLocation().getElevation())).toString(),
+                            OssSpeedOrVelocity.genericSpeed(new Speed(fileParser.getLocation().getSpeed())).toString(),
+                            OssHeading.genericHeading(new Heading(fileParser.getLocation().getHeading())).toString()), null);
+
+            if (fileParser instanceof RxMsgFileParser) {
+                bsmSpecificMetadata.setRxSource( ((RxMsgFileParser) fileParser).getRxSource());
+            }
+
+             bsmMetadata.setReceivedMessageDetails(bsmSpecificMetadata);
+
+            ZonedDateTime generatedAt;
+            if (message != null) {
+               Date ieeeGenTime = message.getGenerationTime();
+
+               logger.debug("Generated time: {}", ieeeGenTime);
+
+               if (ieeeGenTime != null) {
+                  generatedAt = DateTimeUtils.isoDateTime(ieeeGenTime);
+               } else {
+                  generatedAt = getGeneratedAt(fileParser);
+               }
+                bsmMetadata.setGeneratedAt(generatedAt.toString());
+                bsmMetadata.setValidSignature(true);
+            } else {
+               logger.debug("Message does not contain time");
+                bsmMetadata.setGeneratedAt(getGeneratedAt(fileParser).toString());
+                bsmMetadata.setValidSignature(fileParser.isValidSignature());
+            }
+
+            odeTimData = new OdeTimData(bsmMetadata, bsmPayload);
          } else {
             throw new IOException("Unknown message ID extracted: " + mf.messageId);
          }
