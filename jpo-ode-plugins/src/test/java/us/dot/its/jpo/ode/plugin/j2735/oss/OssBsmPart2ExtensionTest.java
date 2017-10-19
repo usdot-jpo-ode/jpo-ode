@@ -101,13 +101,13 @@ public class OssBsmPart2ExtensionTest {
         Integer expectedBasicVehicleClass = 0;
         
         Integer testBasicVehicleRole = 0;
-        String expectedBasicVehicleRole = "BASICVEHICLE";
+        String expectedBasicVehicleRole = "basicVehicle";
         
         Integer testIso3833VehicleType = 0;
         Integer expectedVCIso3833VehicleType = 0;
         
         Integer testVehicleType = 0;
-        String expectedVehicleType = "NONE";
+        String expectedVehicleType = "none";
         
         Integer testVehicleGroupAffected = 9217;
         String expectedVehicleGroupAffected = "all-vehicles";
@@ -116,10 +116,10 @@ public class OssBsmPart2ExtensionTest {
         String expectedIncidentResponseEquipment = "ground-fire-suppression";
         
         Integer testResponderGroupAffected = 9729;
-        String expectedResponderGroupAffected = "EMERGENCY_VEHICLE_UNITS";
+        String expectedResponderGroupAffected = "emergency_vehicle_units";
         
         Integer testFuelType = 0;
-        String expectedFuelType = "UNKNOWNFUEL";
+        String expectedFuelType = "unknownFuel";
         
         VehicleClassification testVehicleClassification = new VehicleClassification(
                 new BasicVehicleClass(testBasicVehicleClass),

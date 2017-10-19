@@ -27,8 +27,8 @@ public class RxMsgFileParserTest {
    @Test
    public void testStepsAlreadyDone() {
 
-      ParserStatus expectedStatus = ParserStatus.COMPLETE;
-      int expectedStep = 0;
+      ParserStatus expectedStatus = ParserStatus.INIT;
+      int expectedStep = 12;
 
       BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
 
