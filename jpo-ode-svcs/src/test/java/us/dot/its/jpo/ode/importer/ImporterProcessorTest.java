@@ -36,8 +36,6 @@ public class ImporterProcessorTest {
    ImporterFileType injectableImporterDirType = ImporterFileType.BSM_LOG_FILE;
 
    @Capturing
-   FileDecoderPublisher capturingFileDecoderPublisher;
-   @Capturing
    FileAsn1CodecPublisher capturingFileAsn1CodecPublisher;
    @Capturing
    OdeFileUtils capturingOdeFileUtils;
@@ -118,7 +116,7 @@ public class ImporterProcessorTest {
                result = null;
                new FileInputStream((File) any);
                result = null;
-               capturingFileDecoderPublisher.decodeAndPublishFile((Path) any, (BufferedInputStream) any, ImporterFileType.BSM_LOG_FILE);
+               capturingFileAsn1CodecPublisher.publishFile((Path) any, (BufferedInputStream) any, ImporterFileType.BSM_LOG_FILE);
                times = 1;
 
                OdeFileUtils.backupFile((Path) any, (Path) any);

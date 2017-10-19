@@ -21,7 +21,7 @@ public class TravelerMessageFromHumanToAsnConverterTest {
 
       JsonNode deTranslatedTim = TravelerMessageFromHumanToAsnConverter.changeTravelerInformationToAsnValues(testJson);
 
-      assertEquals("string", deTranslatedTim);
+      assertEquals("{\"index\":\"13\",\"msgCnt\":\"1\",\"timeStamp\":23174,\"urlB\":\"null\",\"dataframes\":[{\"startDateTime\":\"2017-08-02T22:25:00.000Z\",\"durationTime\":1,\"frameType\":{\"advisory\":null},\"sspTimRights\":\"0\",\"priority\":\"0\",\"sspLocationRights\":\"3\",\"regions\":[{\"scale\":\"0\",\"offset\":{\"offset\":{\"ll\":[{\"nodeLong\":\"0.0031024\",\"nodeLat\":\"0.0014506\",\"delta\":\"node-LL3\"},{\"nodeLong\":\"0.0030974\",\"nodeLat\":\"0.0014568\",\"delta\":\"node-LL3\"},{\"nodeLong\":\"0.0030983\",\"nodeLat\":\"0.0014559\",\"delta\":\"node-LL3\"},{\"nodeLong\":\"0.0030980\",\"nodeLat\":\"0.0014563\",\"delta\":\"node-LL3\"},{\"nodeLong\":\"0.0030982\",\"nodeLat\":\"0.0014562\",\"delta\":\"node-LL3\"}]}}}],\"sspMsgTypes\":\"2\",\"sspMsgContent\":\"3\",\"content\":{\"advisory\":{\"SEQUENCE\":[{\"text\":513}]}},\"url\":\"null\",\"startYear\":2017,\"startMinute\":21733,\"msgID\":{\"roadSignID\":{\"position\":{\"lat\":410000000,\"long\":-1080000000,\"elevation\":9170},\"viewAngle\":\"1010101010101010\",\"mutcdCode\":\"5\",\"crc\":\"0000000000000000\"}}}]}", deTranslatedTim.toString());
    }
 
 }

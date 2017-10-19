@@ -51,9 +51,7 @@ public class LongitudeBuilderTest {
 
       BigDecimal testInput = new BigDecimal(1.0);
 
-      Longitude expectedValue = new Longitude(10000000);
-
-      assertEquals(expectedValue, LongitudeBuilder.longitude(testInput));
+      assertEquals(10000000, LongitudeBuilder.longitude(testInput));
 
    }
 
