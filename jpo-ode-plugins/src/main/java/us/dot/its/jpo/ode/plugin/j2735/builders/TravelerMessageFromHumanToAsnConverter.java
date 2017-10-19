@@ -1,27 +1,30 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
+import java.text.ParseException;
+import java.time.ZonedDateTime;
 import java.util.Iterator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class TravelerMessageFromHumanToAsnConverter {
 
    public static JsonNode changeTravelerInformationToAsnValues(JsonNode timData) {
 
-      // First thing to do is cast to ObjectNode so we can edit values in place
+      // Cast to ObjectNode to allow manipulation in place
       ObjectNode timDataObjectNode = (ObjectNode) timData;
 
-      replaceDataFrames(timDataObjectNode.get("tim").get("dataframes"));
+      replaceDataFrames((ObjectNode) timDataObjectNode.get("tim").get("dataframes"));
 
       return timDataObjectNode;
 
    }
 
-   public static JsonNode replaceDataFrames(JsonNode dataFrames) {
+   public static JsonNode replaceDataFrames(ObjectNode dataFrames) {
 
       if (dataFrames == null) {
          return JsonUtils.newNode();
@@ -33,7 +36,7 @@ public class TravelerMessageFromHumanToAsnConverter {
          Iterator<JsonNode> dataFramesIter = dataFrames.elements();
 
          while (dataFramesIter.hasNext()) {
-            JsonNode oldFrame = dataFramesIter.next();
+            ObjectNode oldFrame = (ObjectNode) dataFramesIter.next();
             replacedDataFrames.add(replaceDataFrame(oldFrame));
          }
       } else {
@@ -48,20 +51,181 @@ public class TravelerMessageFromHumanToAsnConverter {
     * 
     * @param dataFrame
     */
-   public static ObjectNode replaceDataFrame(JsonNode dataFrame) {
+   public static ObjectNode replaceDataFrame(ObjectNode dataFrame) {
 
-      ObjectNode updatedNode = (ObjectNode) dataFrame;
+      // INPUT
+      //////
+      // "dataframes": [
+      // {
+      // "startDateTime": "2017-08-02T22:25:00.000Z",
+      // "durationTime": 1,
+      // "frameType": "1",
+      // "sspTimRights": "0",
+      // "msgID": "RoadSignID",
+      // "position": {
+      // "latitude": "41.678473",
+      // "longitude": "-108.782775",
+      // "elevation": "917.1432"
+      // },
+      // "viewAngle": "1010101010101010",
+      // "mutcd": "5",
+      // "crc": "0000000000000000",
+      // "priority": "0",
+      // "sspLocationRights": "3",
+      // "regions": []
+      // "sspMsgTypes": "2",
+      // "sspMsgContent": "3",
+      // "content": "Advisory",
+      // "items": [
+      // "513"
+      // ],
+      // "url": "null"
+      // }
+      // ]
+
+      /// OUTPUT:
+      //////
+      // <dataFrames>
+      // <TravelerDataFrame>
+      // <startYear>2017</startYear>
+      // <startTime>308065</startTime>
+      // </TravelerDataFrame>
+
+      // sspTimRights does not need replacement
+      // sspMsgRights1 does not need replacement
+      // sspMsgRights2 does not need replacement
+      // priority does not need replacement
+      // durationTime does not need replacement
+      // url does not need replacement
+
+      replaceTime(dataFrame);
+
+      // replace content
+      replaceContent(dataFrame);
+
+      // replace frameType
+      replaceFrameType(dataFrame);
 
       // replace the msgID and relevant fields
-      replaceMsgId(updatedNode);
+      replaceMsgId(dataFrame);
 
       // replace the geographical path regions
       replaceGeographicalPathRegions(dataFrame.get("regions"));
 
-      return updatedNode;
+      return dataFrame;
    }
 
-   public static ObjectNode replaceMsgId(JsonNode msgIDNode) {
+   public static void replaceTime(ObjectNode dataFrame) {
+
+      // EXPECTED INPUT:
+      // "timeStamp": "2017-08-03T22:25:36.297Z"
+
+      // EXPECTED OUTPUT:
+      // <startYear>2017</startYear>
+      // <startTime>308065</startTime>
+
+      // unknown year value = 0
+      // unknown minuteofyear = 527040
+      int startYear = 0;
+      int startMinute = 527040;
+      try {
+         ZonedDateTime zDateTime = DateTimeUtils.isoDateTime(dataFrame.get("timeStamp").asText());
+         startYear = zDateTime.getYear();
+         startMinute = (int) DateTimeUtils.difference(zDateTime, DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0))
+               / 60000;
+      } catch (ParseException e) {
+         // failed to parse datetime, default back to unknown values
+      }
+
+      dataFrame.put("startYear", startYear);
+      dataFrame.put("startMinute", startMinute);
+      dataFrame.remove("timeStamp");
+   }
+
+   public static void replaceContent(ObjectNode dataFrame) {
+
+      // EXPECTED OUTPUT:
+      ///////
+      // <content>
+      // <advisory>
+      // <SEQUENCE>
+      // <item>
+      // <itis>513</itis>
+      // </item>
+      // </SEQUENCE>
+      // </advisory>
+      // </content>
+
+      // EXPECTED INPUT:
+      ////////
+      // "content": "Advisory",
+      // "items": [
+      // "513"
+      // ],
+
+      // step 1, figure out the name of the content
+      String content = dataFrame.get("content").asText();
+      String replacedContentName;
+      if ("Work Zone".equals(content)) {
+         replacedContentName = "workZone";
+      } else if ("Speed Limit".equals(content)) {
+         replacedContentName = "speedLimit";
+      } else if ("Exit Service".equals(content)) {
+         replacedContentName = "exitService";
+      } else if ("Generic Signage".equals(content)) {
+         replacedContentName = "genericSign";
+      } else {
+         // default
+         replacedContentName = "advisory";
+      }
+
+      // step 2, reformat item list
+      ObjectNode items = (ObjectNode) dataFrame.get("items");
+      ArrayNode newItems = JsonUtils.newNode().arrayNode();
+      if (items.isArray()) {
+         // take the array of ITIScodesAndText items and transform it into
+         // schema-appropriate array
+
+         Iterator<JsonNode> itemsIter = items.elements();
+
+         while (itemsIter.hasNext()) {
+            ObjectNode curItem = (ObjectNode) itemsIter.next();
+            // check to see if it is a number or text
+            if (curItem.asText().matches("^[0-9]")) {
+               // it's a number, so create "itis"
+               newItems.add(JsonUtils.newObjectNode("itis", curItem.asInt()));
+            } else {
+               newItems.add(JsonUtils.newObjectNode("text", curItem.asText()));
+            }
+         }
+      }
+
+      // final step, transform into correct format
+      ObjectNode sequence = JsonUtils.newObjectNode("SEQUENCE", newItems);
+      ObjectNode contentType = JsonUtils.newObjectNode(replacedContentName, sequence);
+      dataFrame.set("content", contentType);
+      dataFrame.remove("items");
+   }
+
+   public static void replaceFrameType(ObjectNode dataFrame) {
+      String frameType;
+      switch (dataFrame.get("frameType").asInt()) {
+      case 1:
+         frameType = "advisory";
+         break;
+      case 2:
+         frameType = "roadSignage";
+         break;
+      case 3:
+         frameType = "commercialSignage";
+         break;
+      default:
+         frameType = "unknown";
+      }
+      dataFrame.set("frameType", JsonUtils.newObjectNode(frameType, null));
+   }
+
+   public static void replaceMsgId(ObjectNode dataFrame) {
 
       // <msgId>
       // <roadSignID>
@@ -78,54 +242,43 @@ public class TravelerMessageFromHumanToAsnConverter {
       // </roadSignID>
       // </msgId>
 
-      // replace the messageID
-      // TODO WRONG SCHEMA STRUCTURE - postion3d here should be inside the
-      // RoadSignID element
-
-      ObjectNode updatedNode = (ObjectNode) msgIDNode;
-
-      JsonNode msgID = updatedNode.get("msgID");
+      JsonNode msgID = dataFrame.get("msgID");
       if (msgID != null) {
          if (msgID.asText().equals("RoadSignID")) {
 
             ObjectNode roadSignID = JsonUtils.newNode();
-            JsonUtils.addNode(roadSignID, "position", Position3DBuilder.position3D(updatedNode.get("position")));
-            JsonUtils.addNode(roadSignID, "viewAngle", updatedNode.get("viewAngle").asText());
-            JsonUtils.addNode(roadSignID, "mutcdCode", updatedNode.get("mutcd").asText());
-            roadSignID.put("crc", updatedNode.get("crc").asText());
-            // TODO - we can't do the following because .addNode calls as POJO
-            // JsonUtils.addNode(roadSignID, "crc",
-            // dataFrame.get("crc").asText());
+            JsonUtils.addNode(roadSignID, "position", Position3DBuilder.position3D(dataFrame.get("position")));
+            JsonUtils.addNode(roadSignID, "viewAngle", dataFrame.get("viewAngle").asText());
+            JsonUtils.addNode(roadSignID, "mutcdCode", dataFrame.get("mutcd").asText());
+            roadSignID.put("crc", dataFrame.get("crc").asText());
 
-            updatedNode.remove("msgID");
-            updatedNode.remove("position");
-            updatedNode.remove("viewAngle");
-            updatedNode.remove("mutcd");
-            updatedNode.remove("crc");
+            dataFrame.remove("msgID");
+            dataFrame.remove("position");
+            dataFrame.remove("viewAngle");
+            dataFrame.remove("mutcd");
+            dataFrame.remove("crc");
 
             ObjectNode msgId = JsonUtils.newNode();
             msgId.set("roadSignID", roadSignID);
 
-            updatedNode.set("msgID", msgId);
+            dataFrame.set("msgID", msgId);
 
          } else if (msgID.asText().equals("FurtherInfoID")) {
 
             // TODO - this may not be correct since msgID schema is inconsistent
 
-            updatedNode.remove("msgID");
-            updatedNode.remove("position");
-            updatedNode.remove("viewAngle");
-            updatedNode.remove("mutcd");
-            updatedNode.remove("crc");
+            dataFrame.remove("msgID");
+            dataFrame.remove("position");
+            dataFrame.remove("viewAngle");
+            dataFrame.remove("mutcd");
+            dataFrame.remove("crc");
 
             ObjectNode msgId = JsonUtils.newNode();
             msgId.put("furtherInfoID", msgID.get("FurtherInfoID").asText());
 
-            updatedNode.set("msgID", msgId);
+            dataFrame.set("msgID", msgId);
          }
       }
-
-      return updatedNode;
    }
 
    public static JsonNode replaceGeographicalPathRegions(JsonNode regions) {
@@ -369,9 +522,8 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // replace anchor
       if (updatedNode.get("anchor") != null) {
-         updatedNode = JsonUtils.setElement("anchor", updatedNode,
-               Position3DBuilder.position3D(updatedNode.get("anchorPosition")));
-         updatedNode = JsonUtils.removeElement("anchorPosition", updatedNode);
+         updatedNode.set("anchor", Position3DBuilder.position3D(updatedNode.get("anchorPosition")));
+         updatedNode.remove("anchorPosition");
       }
 
       // replace lane width
