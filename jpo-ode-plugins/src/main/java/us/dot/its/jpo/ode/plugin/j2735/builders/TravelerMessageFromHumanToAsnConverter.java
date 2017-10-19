@@ -7,7 +7,6 @@ import java.util.Iterator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -42,7 +41,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
          while (dataFramesIter.hasNext()) {
             ObjectNode oldFrame = (ObjectNode) dataFramesIter.next();
-            replacedDataFrames.add(JsonUtils.newObjectNode("TravelerDataFrame",replaceDataFrame(oldFrame)));
+            replacedDataFrames.add(JsonUtils.newObjectNode("TravelerDataFrame", replaceDataFrame(oldFrame)));
          }
       }
 
@@ -398,38 +397,48 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // TODO
 
-      // input:
+      // EXPECTED INPUT:
+      // "type": "ll",
+      // "nodes": [
       // {
       // "nodeLong": "0.0031024",
       // "nodeLat": "0.0014506",
       // "delta": "node-LL3"
       // },
 
-      // output:
-      // NodeLL ::= SEQUENCE {
-      // delta NodeOffsetPointLL
-      // attributes NodeAttributeSetLL OPTIONAL
-      // }
-      
-      
+      // EXPECTED OUTPUT:
+      // <offset>
+      //  <ll>
+      //   <nodes>
+      //    <NodeLL>
+      //     <delta>
+      //      <node-LL3>
+      //       <lon>14506</lon>
+      //       <lat>31024</lat>
+      //      </node-LL3>
+      //     </delta>
+      //    </NodeLL>
+      //   </nodes>
+      //  </ll>
+      // </offset>
 
       ObjectNode updatedNode = (ObjectNode) oldNode;
 
       // step 1: convert long and lat
       if (updatedNode.get("delta").asText().equals("node-LL1")) {
-         
+
       } else if (updatedNode.get("delta").asText().equals("node-LL2")) {
-         
+
       } else if (updatedNode.get("delta").asText().equals("node-LL3")) {
-         
+
       } else if (updatedNode.get("delta").asText().equals("node-LL4")) {
-         
+
       } else if (updatedNode.get("delta").asText().equals("node-LL5")) {
-         
+
       } else if (updatedNode.get("delta").asText().equals("node-LL6")) {
-         
+
       } else if (updatedNode.get("delta").asText().equals("node-LatLon")) {
-         
+
       }
 
       return updatedNode;
