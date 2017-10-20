@@ -318,7 +318,7 @@ public class TimController {
       
       //Create an encoding element
       //Asn1Encoding enc = new Asn1Encoding("/payload/data/MessageFrame", "MessageFrame", EncodingRule.UPER);
-      Asn1Encoding enc = new Asn1Encoding("/payload/data/MessageFrame/TravelerInformation", "TravelerInformation", EncodingRule.UPER);
+      Asn1Encoding enc = new Asn1Encoding("payload/data/MessageFrame/", "MessageFrame", EncodingRule.UPER);
       
       // TODO this nesting is to match encoder schema
       metaObject.put("encodings", new JSONObject().put("encodings", JsonUtils.toJSONObject(enc.toJson())));
