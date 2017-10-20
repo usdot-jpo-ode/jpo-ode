@@ -4,8 +4,6 @@ public class OdeTimMetadata extends OdeLogMetadata {
    
    private static final long serialVersionUID = 1851475623026081007L;
    
-   private OdeTimSpecificMetadata receivedMessageDetails;
-   
    public OdeTimMetadata() {
       super();
    }
@@ -14,11 +12,4 @@ public class OdeTimMetadata extends OdeLogMetadata {
       super(timPayload);
    }
 
-   public OdeTimSpecificMetadata getReceivedMessageDetails() {
-      return receivedMessageDetails;
-   }
-
-   public void setReceivedMessageDetails(OdeTimSpecificMetadata receivedMessageDetails) {
-      this.receivedMessageDetails = receivedMessageDetails;
-   }
 }

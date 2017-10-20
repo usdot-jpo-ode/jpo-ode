@@ -27,7 +27,7 @@ public class OdeAsn1Metadata extends OdeLogMetadata {
       setLogFileName(metadata.get("logFileName").asText());
       setRecordType(metadata.get("recordType").asText());
       setPayloadType(metadata.get("payloadType").asText());
-      setReceivedAt(metadata.get("receivedAt").asText());
+      setOdeReceivedAt(metadata.get("receivedAt").asText());
       setSanitized(metadata.get("sanitized").asBoolean());
       setSchemaVersion(metadata.get("schemaVersion").asInt());
       setSerialId(new SerialId(metadata.get("serialId")));
