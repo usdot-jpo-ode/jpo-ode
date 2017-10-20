@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.subscriber;
+package us.dot.its.jpo.ode.stomp;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

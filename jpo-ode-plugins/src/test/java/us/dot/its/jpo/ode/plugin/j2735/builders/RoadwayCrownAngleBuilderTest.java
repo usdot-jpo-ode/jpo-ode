@@ -59,9 +59,9 @@ public class RoadwayCrownAngleBuilderTest {
 
       try {
          RoadwayCrownAngleBuilder.roadwayCrownAngle(testInput);
-         fail("Expected IllegalAccessException");
+         fail("Expected IllegalArgumentException");
       } catch (Exception e) {
-         assertTrue(e.getClass().equals(IllegalArgumentException.class));
+         assertTrue(e instanceof IllegalArgumentException);
       }
    }
 
@@ -71,9 +71,9 @@ public class RoadwayCrownAngleBuilderTest {
 
       try {
          RoadwayCrownAngleBuilder.roadwayCrownAngle(testInput);
-         fail("Expected IllegalAccessException");
+         fail("Expected IllegalArgumentException");
       } catch (Exception e) {
-         assertTrue(e.getClass().equals(IllegalArgumentException.class));
+         assertTrue(e instanceof IllegalArgumentException);
       }
    }
 

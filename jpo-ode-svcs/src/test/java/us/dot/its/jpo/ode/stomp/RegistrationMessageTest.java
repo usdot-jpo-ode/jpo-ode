@@ -1,8 +1,10 @@
-package us.dot.its.jpo.ode.subscriber;
+package us.dot.its.jpo.ode.stomp;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+
+import us.dot.its.jpo.ode.stomp.RegistrationMessage;
 
 public class RegistrationMessageTest {
 
