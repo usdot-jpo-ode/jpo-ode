@@ -53,8 +53,8 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
   "schemaVersion": 3,
   "metadata": {
       "schemaVersion": 3,
-      "generatedBy": "OBU",
-      "generatedAt": "2017-07-14T15:46:47.707Z[UTC]", 
+      "recordGeneratedBy": "OBU",
+      "recordGeneratedAt": "2017-07-14T15:46:47.707Z[UTC]", 
       "logFileName": "tim.uper",
       "payloadType": "us.dot.its.jpo.ode.model.OdeTIMPayload",
       "recordType": "receivedMsgRecord",
@@ -175,8 +175,8 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
   "schemaVersion": 3,
   "metadata": {
     "schemaVersion":3,
-    "generatedBy": "OBU",
-    "generatedAt": "2016-08-10T16:35:45.138Z[UTC]", 
+    "recordGeneratedBy": "OBU",
+    "recrodGeneratedAt": "2016-08-10T16:35:45.138Z[UTC]", 
     "logFileName": "bsm.uper",
     "payloadType": "us.dot.its.jpo.ode.model.OdeBsmPayload",
     "recordType": "bsmRxRecord",
