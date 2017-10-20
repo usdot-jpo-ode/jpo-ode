@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.subscriber;
+package us.dot.its.jpo.ode.stomp;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +9,7 @@ import mockit.Mocked;
 import mockit.Tested;
 import mockit.Verifications;
 import mockit.integration.junit4.JMockit;
+import us.dot.its.jpo.ode.stomp.WebSocketConfig;
 
 @RunWith(JMockit.class)
 public class WebSocketConfigTest {

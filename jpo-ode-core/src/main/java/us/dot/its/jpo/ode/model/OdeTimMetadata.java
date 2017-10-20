@@ -12,4 +12,8 @@ public class OdeTimMetadata extends OdeLogMetadata {
       super(timPayload);
    }
 
+   public OdeTimMetadata(OdeBsmPayload bsmPayload) {
+      super(bsmPayload);
+   }
+
 }

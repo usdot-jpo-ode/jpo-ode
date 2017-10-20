@@ -24,6 +24,11 @@ public class OdeLogMetadata extends OdeMsgMetadata {
 		super();
 	}
 
+	public OdeLogMetadata(String payloadType, SerialId serialId, String receivedAt) {
+		super(payloadType, serialId, receivedAt);
+	}
+
+
 	public String getLogFileName() {
 		return logFileName;
 	}

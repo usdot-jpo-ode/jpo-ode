@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.subscriber;
+package us.dot.its.jpo.ode.stomp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -12,22 +12,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 @Controller
-public class SubscriberController {
+public class StompController {
 
     @Autowired
     private SimpMessagingTemplate template;
 
     @MessageMapping("/connect")
-    @SendTo("/topic/subscribers")
-    public Subscriber greeting(RegistrationMessage message) throws InterruptedException {
+    @SendTo("/topic/StompContent")
+    public StompContent greeting(RegistrationMessage message) throws InterruptedException {
         Thread.sleep(10); // simulated delay
-        return new Subscriber(message.getName());
+        return new StompContent(message.getName());
     }
 
     @RequestMapping(value="/newMessage", method=RequestMethod.POST)
     @ResponseBody
     public String messages() {
-        template.convertAndSend("/topic/messages", new Subscriber("test"));
+        template.convertAndSend("/topic/messages", new StompContent("test"));
         return "{\"success\": true}" ;
     }
 
