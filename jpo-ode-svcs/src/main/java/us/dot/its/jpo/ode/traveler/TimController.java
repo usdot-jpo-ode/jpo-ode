@@ -331,8 +331,8 @@ public class TimController {
       String outputXml = XML.toString(root);
       String fixedXml = outputXml.replaceAll("tcontent>","content>");
       
-      // transform all "null" fields into empty tags
-      fixedXml = fixedXml.replaceAll("null", "");
+      // workaround for self-closing tags: transform all "null" fields into empty tags
+      fixedXml = fixedXml.replaceAll("EMPTY_TAG", "");
       
       logger.debug("Fixed XML: {}", fixedXml);
       messageProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, fixedXml);

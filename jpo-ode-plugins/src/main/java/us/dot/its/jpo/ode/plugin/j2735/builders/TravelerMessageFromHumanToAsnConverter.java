@@ -255,7 +255,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       default:
          frameType = "unknown";
       }
-      dataFrame.set("frameType", JsonUtils.newObjectNode(frameType, null));
+      dataFrame.set("frameType", JsonUtils.newObjectNode(frameType, "EMPTY_TAG"));
    }
 
    public static void replaceMsgId(ObjectNode dataFrame) {
@@ -307,7 +307,7 @@ public class TravelerMessageFromHumanToAsnConverter {
             default:
                mutcdName = "none";
             }
-            roadSignID.set("mtcdCode", JsonUtils.newNode().set(mutcdName, null));
+            roadSignID.set("mtcdCode", JsonUtils.newNode().put(mutcdName, "EMPTY_TAG"));
             roadSignID.put("crc", dataFrame.get("crc").asText());
 
             dataFrame.remove("msgID");
@@ -428,9 +428,11 @@ public class TravelerMessageFromHumanToAsnConverter {
       default:
          directionName = "unavailable";
       }
-      updatedNode.set("directionality", JsonUtils.newNode().set(directionName, null));
+      updatedNode.set("directionality", JsonUtils.newNode().put(directionName, "EMPTY_TAG"));
 
-      // closed path does not need to be replaced
+      // replace closed path
+      String closedPathBoolean = updatedNode.get("closedPath").asText();
+      updatedNode.set("closedPath", JsonUtils.newNode().put(closedPathBoolean, "EMPTY_TAG"));
 
       // transform regions
       String description = updatedNode.get("description").asText();
@@ -477,11 +479,12 @@ public class TravelerMessageFromHumanToAsnConverter {
       // zoom does not need to be replaced
       String nodeType = updatedNode.get("type").asText();
       if ("ll".equals(nodeType)) {
-         ArrayNode nodeList = replaceNodeListLL(updatedNode.get("nodes"));
+         JsonNode nodeList = JsonUtils.newNode().set("NodeLL",  replaceNodeListLL(updatedNode.get("nodes")));
          updatedNode.set("offset", JsonUtils.newNode().set("ll", JsonUtils.newNode().set("nodes", nodeList)));
          updatedNode.remove("nodes");
       } else if ("xy".equals(nodeType)) {
-         ObjectNode nodeList = replaceNodeListXY(updatedNode.get("nodes"));
+         //ObjectNode nodeList = replaceNodeListXY(updatedNode.get("nodes"));
+         JsonNode nodeList = JsonUtils.newNode().set("NodeXY",  replaceNodeListXY(updatedNode.get("nodes")));
          //ObjectNode xy = JsonUtils.newObjectNode("xy", nodeList);
          updatedNode.set("offset", JsonUtils.newNode().set("xy", JsonUtils.newNode().set("nodes", nodeList)));
          //updatedNode.set("offset", xy);
@@ -578,9 +581,9 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       ObjectNode innerNode = (ObjectNode) JsonUtils.newNode().set(delta.asText(), latLong);
       ObjectNode deltaNode = (ObjectNode) JsonUtils.newNode().set("delta", innerNode);
-      ObjectNode outerNode = (ObjectNode) JsonUtils.newNode().set("NodeLL", deltaNode);
+      //ObjectNode outerNode = (ObjectNode) JsonUtils.newNode().set("NodeLL", deltaNode);
 
-      return outerNode;
+      return deltaNode;
    }
 
    public static ObjectNode replaceGeometry(JsonNode geometry) {
@@ -799,18 +802,18 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       ObjectNode updatedNode = (ObjectNode) nodeSet;
 
-      ArrayNode replacedDataFrames = JsonUtils.newNode().arrayNode();
+      ArrayNode newNodeSet = JsonUtils.newNode().arrayNode();
 
       if (updatedNode.isArray()) {
          Iterator<JsonNode> nodeSetXYIter = updatedNode.elements();
 
          while (nodeSetXYIter.hasNext()) {
             JsonNode oldNode = nodeSetXYIter.next();
-            replacedDataFrames.add(replaceNodeXY(oldNode));
+            newNodeSet.add(replaceNodeXY(oldNode));
          }
       }
 
-      updatedNode.set("nodes", replacedDataFrames);
+      updatedNode.set("nodes", newNodeSet);
 
       return updatedNode;
    }
