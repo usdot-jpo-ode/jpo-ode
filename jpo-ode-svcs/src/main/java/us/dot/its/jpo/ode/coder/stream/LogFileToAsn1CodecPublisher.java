@@ -20,7 +20,9 @@ import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Metadata;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
+import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
 import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
+import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.util.XmlUtils;
 
 public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {

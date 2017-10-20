@@ -27,4 +27,13 @@ public class UdpServiceThreadFactoryTest {
       assertEquals(expectedName, actualThread.getName());
    }
 
+   @Test
+   public void shouldSetThreadName(@Injectable Thread testThreadTwo) {
+      Thread actualThreadTwo = testUdpServiceThreadFactory.newThread(testThreadTwo);
+      testUdpServiceThreadFactory.setThreadName(expectedName);
+     
+      assertEquals(expectedName, actualThreadTwo.getName());
+      
+   }
+   
 }

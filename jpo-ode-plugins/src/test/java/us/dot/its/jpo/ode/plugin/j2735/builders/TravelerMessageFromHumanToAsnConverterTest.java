@@ -25,7 +25,7 @@ public class TravelerMessageFromHumanToAsnConverterTest {
 
       JsonNode deTranslatedTim = TravelerMessageFromHumanToAsnConverter.changeTravelerInformationToAsnValues(testJson);
 
-      assertEquals("string", deTranslatedTim);
+      assertEquals(testJson.toString() , deTranslatedTim.toString());
       JSONObject timObject = new JSONObject();
       timObject.put("TravelerInformation", JsonUtils.toJSONObject(deTranslatedTim.toString()));
       assertNotNull(XML.toString(timObject));

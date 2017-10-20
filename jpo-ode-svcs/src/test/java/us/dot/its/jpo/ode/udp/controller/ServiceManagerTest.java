@@ -20,8 +20,12 @@ public class ServiceManagerTest {
    @Tested
    ServiceManager testServiceManager;
 
+   @Mocked
+   Executors mockExecutors;
+   
    @Injectable
    ThreadFactory mockThreadFactory;
+   
 
    @Test
    public void receiverSubmitCallsExecutorService(@Capturing Executors mockExecutors,
@@ -40,16 +44,17 @@ public class ServiceManagerTest {
       testServiceManager.submit(mockAbstractUdpReceiverPublisher);
 
    }
-
-   public void depositorCallsSubscribe(@Mocked AbstractSubscriberDepositor mockAbstractSubscriberDepositor) {
+@Test
+   public void depositorCallsSubscribe(@Mocked AbstractSubscriberDepositor mockAbstractSubscriberDepositor, @Mocked String mockString) {
 
       new Expectations() {
          {
             mockAbstractSubscriberDepositor.start(anyString);
+            times = 1;
          }
       };
 
-      testServiceManager.submit(mockAbstractSubscriberDepositor);
+      testServiceManager.submit(mockAbstractSubscriberDepositor, mockString);
    }
 
 }
