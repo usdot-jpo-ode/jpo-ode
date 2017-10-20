@@ -20,6 +20,9 @@ public class StompStringExporterTest {
 
    @Injectable
    SimpMessagingTemplate injectableSimpMessagingTemplate;
+   
+   @Injectable
+   String odeTopic;
 
    @SuppressWarnings({ "rawtypes", "unchecked" })
    @Test
