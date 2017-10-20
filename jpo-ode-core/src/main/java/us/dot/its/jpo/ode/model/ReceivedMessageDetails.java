@@ -1,27 +1,27 @@
 package us.dot.its.jpo.ode.model;
 
-public class OdeTimSpecificMetadata extends OdeObject {
+public class ReceivedMessageDetails extends OdeObject {
 
    private static final long serialVersionUID = -122988228561853841L;
 
-   private OdeTimSpecificMetadataLocation locationData;
+   private OdeLogMsgMetadataLocation locationData;
    private RxSource rxSource;
 
-   public OdeTimSpecificMetadata() {
+   public ReceivedMessageDetails() {
       super();
    }
    
-   public OdeTimSpecificMetadata(OdeTimSpecificMetadataLocation locationData, RxSource rxSource) {
+   public ReceivedMessageDetails(OdeLogMsgMetadataLocation locationData, RxSource rxSource) {
       super();
       this.setLocationData(locationData);
       this.setRxSource(rxSource);
    }
 
-   public OdeTimSpecificMetadataLocation getLocationData() {
+   public OdeLogMsgMetadataLocation getLocationData() {
       return locationData;
    }
 
-   public void setLocationData(OdeTimSpecificMetadataLocation locationData) {
+   public void setLocationData(OdeLogMsgMetadataLocation locationData) {
       this.locationData = locationData;
    }
 

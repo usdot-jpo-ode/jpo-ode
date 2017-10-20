@@ -65,11 +65,11 @@ public class OdeMsgMetadata extends OdeObject {
         this.serialId = serialId;
     }
 
-    public String getReceivedAt() {
+    public String getOdeReceivedAt() {
         return odeReceivedAt;
     }
 
-    public void setReceivedAt(String receivedAt) {
+    public void setOdeReceivedAt(String receivedAt) {
         this.odeReceivedAt = receivedAt;
     }
     

@@ -6,6 +6,15 @@ public class OdeLogMetadata extends OdeMsgMetadata {
 
 	private String logFileName;
 	private String recordType;
+   private ReceivedMessageDetails receivedMessageDetails;
+   
+   public ReceivedMessageDetails getReceivedMessageDetails() {
+      return receivedMessageDetails;
+   }
+
+   public void setReceivedMessageDetails(ReceivedMessageDetails receivedMessageDetails) {
+      this.receivedMessageDetails = receivedMessageDetails;
+   }
 
 	public OdeLogMetadata(OdeMsgPayload payload) {
 		super(payload);

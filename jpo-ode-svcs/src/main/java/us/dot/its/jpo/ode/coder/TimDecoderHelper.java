@@ -25,9 +25,23 @@ import us.dot.its.jpo.ode.importer.parser.TimLogFileParser;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.j2735.dsrc.*;
 import us.dot.its.jpo.ode.model.*;
+import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
-import us.dot.its.jpo.ode.plugin.j2735.oss.*;
+import us.dot.its.jpo.ode.model.OdeTimData;
+import us.dot.its.jpo.ode.model.OdeTimMetadata;
+import us.dot.its.jpo.ode.model.OdeTimPayload;
+import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
+import us.dot.its.jpo.ode.model.SerialId;
+import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsm;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssElevation;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssHeading;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssLatitude;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssLongitude;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssMessageFrame.OssMessageFrameException;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssSpeedOrVelocity;
+import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerInformation;
 import us.dot.its.jpo.ode.security.SecurityManager;
 import us.dot.its.jpo.ode.security.SecurityManager.SecurityManagerException;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
@@ -114,18 +128,12 @@ public class TimDecoderHelper {
 
             OdeTimMetadata timMetadata = new OdeTimMetadata(timPayload);
 
-            timMetadata.setReceivedAt(DateTimeUtils.now());
+            timMetadata.setOdeReceivedAt(DateTimeUtils.now());
             timMetadata.setSerialId(serialId);
             timMetadata.setLogFileName(fileParser.getFilename());
             timMetadata.setRecordType(fileParser.getRecordType().name());
             
-            OdeTimSpecificMetadata timSpecificMetadata = new OdeTimSpecificMetadata(
-                  new OdeTimSpecificMetadataLocation(
-                        OssLatitude.genericLatitude(new Latitude(fileParser.getLocation().getLatitude())).toString(),
-                        OssLongitude.genericLongitude(new Longitude(fileParser.getLocation().getLongitude())).toString(),
-                        OssElevation.genericElevation(new Elevation(fileParser.getLocation().getElevation())).toString(),
-                        OssSpeedOrVelocity.genericSpeed(new Speed(fileParser.getLocation().getSpeed())).toString(),
-                        OssHeading.genericHeading(new Heading(fileParser.getLocation().getHeading())).toString()), null);
+            ReceivedMessageDetails timSpecificMetadata = buildReceivedMessageDetails(fileParser);
             
             if (fileParser instanceof RxMsgFileParser) {
                timSpecificMetadata.setRxSource( ((RxMsgFileParser) fileParser).getRxSource());
@@ -176,21 +184,15 @@ public class TimDecoderHelper {
 
              OdeTimMetadata bsmMetadata = new OdeTimMetadata(bsmPayload);
 
-             bsmMetadata.setReceivedAt(DateTimeUtils.now());
+             bsmMetadata.setOdeReceivedAt(DateTimeUtils.now());
              bsmMetadata.setSerialId(serialId);
              bsmMetadata.setLogFileName(fileParser.getFilename());
 
-             OdeTimSpecificMetadata bsmSpecificMetadata = new OdeTimSpecificMetadata(
-                    new OdeTimSpecificMetadataLocation(
-                            OssLatitude.genericLatitude(new Latitude(fileParser.getLocation().getLatitude())).toString(),
-                            OssLongitude.genericLongitude(new Longitude(fileParser.getLocation().getLongitude())).toString(),
-                            OssElevation.genericElevation(new Elevation(fileParser.getLocation().getElevation())).toString(),
-                            OssSpeedOrVelocity.genericSpeed(new Speed(fileParser.getLocation().getSpeed())).toString(),
-                            OssHeading.genericHeading(new Heading(fileParser.getLocation().getHeading())).toString()), null);
-
-            if (fileParser instanceof RxMsgFileParser) {
+             ReceivedMessageDetails bsmSpecificMetadata = buildReceivedMessageDetails(fileParser);
+             
+             if (fileParser instanceof RxMsgFileParser) {
                 bsmSpecificMetadata.setRxSource( ((RxMsgFileParser) fileParser).getRxSource());
-            }
+             }
 
              bsmMetadata.setReceivedMessageDetails(bsmSpecificMetadata);
 
@@ -220,6 +222,21 @@ public class TimDecoderHelper {
       }
       return odeTimData;
    }
+   
+   public static ReceivedMessageDetails buildReceivedMessageDetails(TimLogFileParser fileParser) {
+      ReceivedMessageDetails timSpecificMetadata = new ReceivedMessageDetails(
+            new OdeLogMsgMetadataLocation(
+                  OssLatitude.genericLatitude(new Latitude(fileParser.getLocation().getLatitude())).toString(),
+                  OssLongitude.genericLongitude(new Longitude(fileParser.getLocation().getLongitude())).toString(),
+                  OssElevation.genericElevation(new Elevation(fileParser.getLocation().getElevation())).toString(),
+                  OssSpeedOrVelocity.genericSpeed(new Speed(fileParser.getLocation().getSpeed())).toString(),
+                  OssHeading.genericHeading(new Heading(fileParser.getLocation().getHeading())).toString()), null);
+      
+      if (fileParser instanceof RxMsgFileParser) {
+         timSpecificMetadata.setRxSource( ((RxMsgFileParser) fileParser).getRxSource());
+      }
+      return timSpecificMetadata; 
+    }
 
    private ZonedDateTime getGeneratedAt(TimLogFileParser fileParser) {
       return DateTimeUtils.isoDateTime(fileParser.getUtcTimeInSec() * 1000 + fileParser.getmSec());

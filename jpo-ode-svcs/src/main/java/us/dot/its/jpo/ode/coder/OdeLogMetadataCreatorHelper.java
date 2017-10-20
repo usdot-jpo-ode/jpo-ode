@@ -21,7 +21,7 @@ public class OdeLogMetadataCreatorHelper {
           * TODO Temporarily put in place for testing CV PEP. Should be removed
           * after testing is complete.
           */
-         metadata.setRecordGeneratedAt(metadata.getReceivedAt());
+         metadata.setRecordGeneratedAt(metadata.getOdeReceivedAt());
       }
 
       metadata.setRecordGeneratedBy(GeneratedBy.OBU);
