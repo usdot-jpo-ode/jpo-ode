@@ -12,6 +12,16 @@ public class OdeAsn1Metadata extends OdeLogMetadata {
 
    private List<Asn1Encoding> encodings = new ArrayList<Asn1Encoding>();
 
+   private ReceivedMessageDetails receivedMessageDetails;
+   
+   public ReceivedMessageDetails getReceivedMessageDetails() {
+      return receivedMessageDetails;
+   }
+
+   public void setReceivedMessageDetails(ReceivedMessageDetails receivedMessageDetails) {
+      this.receivedMessageDetails = receivedMessageDetails;
+   }
+
    public OdeAsn1Metadata() {
       super();
    }
