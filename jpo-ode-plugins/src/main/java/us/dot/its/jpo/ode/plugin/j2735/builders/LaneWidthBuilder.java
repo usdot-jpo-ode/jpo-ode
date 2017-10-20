@@ -9,7 +9,7 @@ public class LaneWidthBuilder {
    }
 
    public static Long laneWidth(Long jlw) {
-      return BigDecimal.valueOf(jlw).scaleByPowerOfTen(1).longValue();
+      return BigDecimal.valueOf(jlw).scaleByPowerOfTen(2).longValue();
    }
 
 }
