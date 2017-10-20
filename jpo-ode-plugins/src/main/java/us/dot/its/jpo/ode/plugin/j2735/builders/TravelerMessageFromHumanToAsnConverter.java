@@ -14,7 +14,7 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class TravelerMessageFromHumanToAsnConverter {
 
-   public static JsonNode changeTravelerInformationToAsnValues(JsonNode timData) {
+   public static ObjectNode changeTravelerInformationToAsnValues(JsonNode timData) {
 
       // Cast to ObjectNode to allow manipulation in place
       ObjectNode replacedTim = (ObjectNode) timData;
@@ -101,11 +101,13 @@ public class TravelerMessageFromHumanToAsnConverter {
       // priority does not need replacement
       // durationTime does not need replacement
       // url does not need replacement
+      
+      
 
       replaceDataFrameTimestamp(dataFrame);
 
       // replace content
-      replaceContent(dataFrame);
+      dataFrame = replaceContent(dataFrame);
 
       // replace frameType
       replaceFrameType(dataFrame);
@@ -223,8 +225,10 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // final step, transform into correct format
       JsonNode sequence = JsonUtils.newNode().set("SEQUENCE", newItems);
-      JsonNode content = JsonUtils.newNode().set("content", JsonUtils.newNode().set(replacedContentName, sequence));
-      updatedNode.set("content", content);
+      
+      // TODO the following field is called "content" but this results in an failed conversion to XML
+      // see @us.dot.its.jpo.ode.traveler.TimController.publish
+      updatedNode.set("tcontent", JsonUtils.newNode().set(replacedContentName, sequence));
       updatedNode.remove("items");
       
       return updatedNode;
@@ -312,8 +316,6 @@ public class TravelerMessageFromHumanToAsnConverter {
             dataFrame.set("msgID", msgId);
 
          } else if (msgID.asText().equals("FurtherInfoID")) {
-
-            // TODO - this may not be correct since msgID schema is inconsistent
 
             dataFrame.remove("msgID");
             dataFrame.remove("position");
@@ -1044,7 +1046,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       updatedNode.put("lon", LongitudeBuilder.longitude(updatedNode.get("lon").decimalValue()));
       updatedNode.put("lat", LatitudeBuilder.latitude(updatedNode.get("lat").decimalValue()));
 
-      return null;
+      return updatedNode;
    }
 
 }

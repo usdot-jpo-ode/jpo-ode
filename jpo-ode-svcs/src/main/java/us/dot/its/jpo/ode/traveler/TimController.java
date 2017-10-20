@@ -245,15 +245,17 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
-      
-      ((ObjectNode) travelerinputData.get("ode")).put("index", travelerinputData.get("tim").get("index").asInt());
+      // TODO 
+      //((ObjectNode) travelerinputData.get("ode")).put("index", travelerinputData.get("tim").get("index").asInt());
    
       // Craft ASN-encodable TIM
       
       ObjectNode encodableTim;
       try {
-         encodableTim = (ObjectNode) TravelerMessageFromHumanToAsnConverter
+         encodableTim = TravelerMessageFromHumanToAsnConverter
                .changeTravelerInformationToAsnValues(travelerinputData);
+         
+         logger.debug("Encodable TIM: {}", encodableTim);
          
       } catch (Exception e) {
          String errMsg = "Error converting to encodable TIM.";
@@ -296,6 +298,8 @@ public class TimController {
       //Create TravelerInformation
       JSONObject timObject = new JSONObject();
       timObject.put("TravelerInformation", requestObj.remove("tim")); //with "tim" removed, the remaining requestObject must go in as "request" element of metadata
+      
+      timObject = new JSONObject(timObject.toString().replace("\"tcontent\":","\"content\":"));
       
       //Create a MessageFrame
       JSONObject mfObject = new JSONObject();
