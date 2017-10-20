@@ -26,8 +26,9 @@ public class TravelerMessageFromHumanToAsnConverter {
       // TODO packetID is optional
       timDataObjectNode.put("packetID", String.format("%018X", timDataObjectNode.get("packetID").asInt()));
 
-      timDataObjectNode.put("timeStamp",
-            translateISOTimeStampToMinuteOfYear(timDataObjectNode.get("timeStamp").asText()));
+//      timDataObjectNode.put("timeStamp",
+//            translateISOTimeStampToMinuteOfYear(timDataObjectNode.get("timeStamp").asText()));
+      timDataObjectNode.remove("timeStamp");
       timDataObjectNode.set("dataFrames", replaceDataFrames(timDataObjectNode.get("dataframes")));
       timDataObjectNode.remove("dataframes");
 
