@@ -20,6 +20,8 @@ public class TravelerMessageFromHumanToAsnConverter {
       ObjectNode replacedTim = (ObjectNode) timData;
       ObjectNode timDataObjectNode = (ObjectNode) replacedTim.get("tim");
       
+      replacedTim.remove("index");
+      
       
       // TODO packetID is optional
       timDataObjectNode.put("packetID", String.format("%018X", timDataObjectNode.get("packetID").asInt()));
@@ -307,8 +309,8 @@ public class TravelerMessageFromHumanToAsnConverter {
             default:
                mutcdName = "none";
             }
-            roadSignID.set("mtcdCode", JsonUtils.newNode().put(mutcdName, "EMPTY_TAG"));
-            roadSignID.put("crc", dataFrame.get("crc").asText());
+            roadSignID.set("mutcdCode", JsonUtils.newNode().put(mutcdName, "EMPTY_TAG"));
+            roadSignID.put("crc", String.format("%04X", dataFrame.get("crc").asInt()));
 
             dataFrame.remove("msgID");
             dataFrame.remove("position");
