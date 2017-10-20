@@ -7,10 +7,10 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProcessor;
 
-public class OdeBsmExporterTest {
+public class StompStringExporterTest {
 
    @Tested
-   OdeBsmExporter testOdeBsmExporter;
+   StompStringExporter testStompExporter;
 
    @Injectable
    OdeProperties injectableOdeProperties;
@@ -33,6 +33,6 @@ public class OdeBsmExporterTest {
          mockMessageConsumer.subscribe(anyString);
          times = 1;
       }};
-      testOdeBsmExporter.subscribe();
+      testStompExporter.subscribe();
    }
 }

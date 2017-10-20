@@ -1,6 +1,7 @@
-package us.dot.its.jpo.ode.subscriber;
+package us.dot.its.jpo.ode.stomp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,19 +12,22 @@ import mockit.Mocked;
 import mockit.Tested;
 import mockit.Verifications;
 import mockit.integration.junit4.JMockit;
+import us.dot.its.jpo.ode.stomp.RegistrationMessage;
+import us.dot.its.jpo.ode.stomp.StompContent;
+import us.dot.its.jpo.ode.stomp.StompController;
 
 @RunWith(JMockit.class)
-public class SubscriberControllerTest {
+public class StompControllerTest {
     
     @Tested
-    SubscriberController testSubscriberController;
+    StompController testStompController;
     @Injectable
     SimpMessagingTemplate template;
 
     @Test
     public void testGreeting(@Mocked Thread unused, @Mocked RegistrationMessage mockRegistrationMessage) {
         try {
-            testSubscriberController.greeting(mockRegistrationMessage);
+            testStompController.greeting(mockRegistrationMessage);
         } catch (InterruptedException e) {
             fail("Unexpected exception testing greeting method: " + e);
         }
@@ -41,16 +45,16 @@ public class SubscriberControllerTest {
     
     @Test
     public void testMessages() {
-        assertEquals("{\"success\": true}", testSubscriberController.messages());
+        assertEquals("{\"success\": true}", testStompController.messages());
         
         new Verifications() {{
-            template.convertAndSend(anyString, (Subscriber) any);
+            template.convertAndSend(anyString, (StompContent) any);
         }};
     }
     
     @Test
     public void testTest() {
-        assertEquals("index", testSubscriberController.test());
+        assertEquals("index", testStompController.test());
     }
 
 }

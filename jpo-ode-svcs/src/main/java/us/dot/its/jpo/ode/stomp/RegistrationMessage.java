@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.subscriber;
+package us.dot.its.jpo.ode.stomp;
 
 public class RegistrationMessage {
 

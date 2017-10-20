@@ -1,14 +1,16 @@
-package us.dot.its.jpo.ode.subscriber;
+package us.dot.its.jpo.ode.exporter;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class SubscriberTest {
+import us.dot.its.jpo.ode.stomp.StompContent;
+
+public class StompContentTest {
 
     @Test
     public void testGetter() {
-        Subscriber testSubscriber = new Subscriber("testContent");
+        StompContent testSubscriber = new StompContent("testContent");
 
         assertEquals("testContent", testSubscriber.getContent());
     }
