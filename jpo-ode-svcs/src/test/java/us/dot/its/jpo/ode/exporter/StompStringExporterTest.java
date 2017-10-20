@@ -13,13 +13,13 @@ public class StompStringExporterTest {
    StompStringExporter testStompExporter;
 
    @Injectable
-   OdeProperties injectableOdeProperties;
-
+   OdeProperties odeProperties;
    @Injectable
-   String injectableTopic = "testTopic";
-
+   String stompTopic = "testTopic";
    @Injectable
-   SimpMessagingTemplate injectableSimpMessagingTemplate;
+   SimpMessagingTemplate simpMessagingTemplate;
+   @Injectable
+   String odeTopic = "testTopic";
 
    @SuppressWarnings({ "rawtypes", "unchecked" })
    @Test

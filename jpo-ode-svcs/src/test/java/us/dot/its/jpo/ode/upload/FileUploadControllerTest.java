@@ -46,7 +46,7 @@ public class FileUploadControllerTest {
    MultipartFile mockMultipartFile;
 
    @Before
-   public void constructorShouldLaunchFiveThreads() {
+   public void constructorShouldLaunchSevenThreads() {
       new Expectations() {
          {
             mockOdeProperties.getUploadLocationRoot();
@@ -62,7 +62,7 @@ public class FileUploadControllerTest {
             result = mockExecutorService;
 
             mockExecutorService.submit((Runnable) any);
-            times = 6;
+            times = 7;
          }
       };
       testFileUploadController = new FileUploadController(mockStorageService, mockOdeProperties,
