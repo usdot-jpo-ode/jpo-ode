@@ -7,18 +7,21 @@ import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 /**
  * Created by anthonychen on 10/16/17.
  */
-public class DNMsgExporter extends Exporter{
+public class StompStringExporter extends Exporter{
 
     private OdeProperties odeProperties;
     private SimpMessagingTemplate template;
+    private String odeTopic;
 
-    public DNMsgExporter(
+    public StompStringExporter(
             OdeProperties odeProperties,
-            String topic,
-            SimpMessagingTemplate template) {
-        super(topic);
+            String stompTopic,
+            SimpMessagingTemplate template,
+            String odeTopic) {
+        super(stompTopic);
         this.odeProperties = odeProperties;
         this.template = template;
+        this.odeTopic = odeTopic;
     }
 
     @Override
@@ -28,6 +31,6 @@ public class DNMsgExporter extends Exporter{
                 new StompStringMessageDistributor(template, getTopic())));
 
         getConsumer().setName(this.getClass().getSimpleName());
-        getConsumer().subscribe(odeProperties.getKafkaTopicOdeDNMsgJson());
+        getConsumer().subscribe(odeTopic);
     }
 }

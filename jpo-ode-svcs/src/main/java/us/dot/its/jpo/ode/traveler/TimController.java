@@ -245,15 +245,17 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
-      
-      ((ObjectNode) travelerinputData.get("ode")).put("index", travelerinputData.get("tim").get("index").asInt());
+      // TODO 
+      //((ObjectNode) travelerinputData.get("ode")).put("index", travelerinputData.get("tim").get("index").asInt());
    
       // Craft ASN-encodable TIM
       
       ObjectNode encodableTim;
       try {
-         encodableTim = (ObjectNode) TravelerMessageFromHumanToAsnConverter
+         encodableTim = TravelerMessageFromHumanToAsnConverter
                .changeTravelerInformationToAsnValues(travelerinputData);
+         
+         logger.debug("Encodable TIM: {}", encodableTim);
          
       } catch (Exception e) {
          String errMsg = "Error converting to encodable TIM.";
@@ -295,11 +297,12 @@ public class TimController {
 
       //Create TravelerInformation
       JSONObject timObject = new JSONObject();
+      //requestObj = new JSONObject(requestObj.toString().replace("\"tcontent\":","\"content\":"));
       timObject.put("TravelerInformation", requestObj.remove("tim")); //with "tim" removed, the remaining requestObject must go in as "request" element of metadata
       
       //Create a MessageFrame
       JSONObject mfObject = new JSONObject();
-      mfObject.put("value", timObject);
+      mfObject.put("value", timObject);//new JSONObject().put("TravelerInformation", requestObj));
       mfObject.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
       
       JSONObject dataObj = new JSONObject();
@@ -309,6 +312,7 @@ public class TimController {
       
       //Create a valid metadata from scratch
       OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
+      
       JSONObject metaObject = JsonUtils.toJSONObject(metadata.toJson());
       metaObject.put("request", requestObj);
       
@@ -323,7 +327,15 @@ public class TimController {
       JSONObject root = new JSONObject();
       root.put("OdeAsn1Data", message);
       
-      messageProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, XML.toString(root));
+      // workaround for the "content" bug
+      String outputXml = XML.toString(root);
+      String fixedXml = outputXml.replaceAll("tcontent>","content>");
+      
+      // workaround for self-closing tags: transform all "null" fields into empty tags
+      fixedXml = fixedXml.replaceAll("EMPTY_TAG", "");
+      
+      logger.debug("Fixed XML: {}", fixedXml);
+      messageProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, fixedXml);
    }
 
 

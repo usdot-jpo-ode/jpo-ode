@@ -82,6 +82,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        // Convert JSON to POJO
        TravelerInputData travelerinputData = null;
        try {
+          logger.debug("JSON: {}", request);
           travelerinputData = (TravelerInputData) JsonUtils.fromJson(request, TravelerInputData.class);
 
        } catch (Exception e) {

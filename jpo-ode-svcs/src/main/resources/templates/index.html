@@ -86,6 +86,13 @@
                         <div id="snmp-response"></div>
                     </div>
                 </div>
+                <div class="row">
+	                <form>
+	                    <p class="help-block">Show...</p>
+	                    <input type="radio" name="sanitized" value="false"  checked="checked"/> All Records<br></br>
+	                    <input type="radio" name="sanitized" value="true"/> Sanitized Records Only<br></br>
+	                </form>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -93,30 +100,10 @@
                 <table id="conversation" class="table table-striped">
                     <thead>
                         <tr>
-                            <th>BSMs</th>
+                            <th>Messages</th>
                         </tr>
                     </thead>
                     <tbody id="messages"> </tbody>
-                </table>
-            </div>
-            <div class="col-md-6">
-                <table id="conversation_filtered" class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Filtered BSMs</th>
-                        </tr>
-                    </thead>
-                    <tbody id="filtered_messages"> </tbody>
-                </table>
-            </div>
-            <div class="col-md-6">
-                <table id="dnMsg" class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Distress Notifications</th>
-                    </tr>
-                    </thead>
-                    <tbody id="distress_notifications"> </tbody>
                 </table>
             </div>
         </div>

@@ -36,7 +36,7 @@ public class OdeMsgMetadata extends OdeObject {
                receivedAt);
    }
 
-    private OdeMsgMetadata(String payloadType, SerialId serialId, String receivedAt) {
+    public OdeMsgMetadata(String payloadType, SerialId serialId, String receivedAt) {
         super();
         this.payloadType = payloadType;
         this.serialId = serialId;
@@ -65,11 +65,11 @@ public class OdeMsgMetadata extends OdeObject {
         this.serialId = serialId;
     }
 
-    public String getReceivedAt() {
+    public String getOdeReceivedAt() {
         return odeReceivedAt;
     }
 
-    public void setReceivedAt(String receivedAt) {
+    public void setOdeReceivedAt(String receivedAt) {
         this.odeReceivedAt = receivedAt;
     }
     

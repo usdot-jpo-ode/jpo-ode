@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import us.dot.its.jpo.ode.subscriber.Subscriber;
+import us.dot.its.jpo.ode.stomp.StompContent;
 import us.dot.its.jpo.ode.wrapper.AbstractSubscriberProcessor;
 
 public class StompStringMessageDistributor extends AbstractSubscriberProcessor<String, String> {
@@ -21,7 +21,7 @@ public class StompStringMessageDistributor extends AbstractSubscriberProcessor<S
 
    @Override
    protected Object process(String consumedData) {
-      template.convertAndSend(topic, new Subscriber(consumedData));
+      template.convertAndSend(topic, new StompContent(consumedData));
       return null;
    }
 

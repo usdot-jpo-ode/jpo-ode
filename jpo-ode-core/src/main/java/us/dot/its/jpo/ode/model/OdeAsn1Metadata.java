@@ -12,6 +12,16 @@ public class OdeAsn1Metadata extends OdeLogMetadata {
 
    private List<Asn1Encoding> encodings = new ArrayList<Asn1Encoding>();
 
+   private ReceivedMessageDetails receivedMessageDetails;
+   
+   public ReceivedMessageDetails getReceivedMessageDetails() {
+      return receivedMessageDetails;
+   }
+
+   public void setReceivedMessageDetails(ReceivedMessageDetails receivedMessageDetails) {
+      this.receivedMessageDetails = receivedMessageDetails;
+   }
+
    public OdeAsn1Metadata() {
       super();
    }
@@ -27,7 +37,7 @@ public class OdeAsn1Metadata extends OdeLogMetadata {
       setLogFileName(metadata.get("logFileName").asText());
       setRecordType(metadata.get("recordType").asText());
       setPayloadType(metadata.get("payloadType").asText());
-      setReceivedAt(metadata.get("receivedAt").asText());
+      setOdeReceivedAt(metadata.get("odReceivedAt").asText());
       setSanitized(metadata.get("sanitized").asBoolean());
       setSchemaVersion(metadata.get("schemaVersion").asInt());
       setSerialId(new SerialId(metadata.get("serialId")));
