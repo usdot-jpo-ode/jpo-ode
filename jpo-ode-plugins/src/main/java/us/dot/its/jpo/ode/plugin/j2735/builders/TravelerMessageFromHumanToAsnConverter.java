@@ -5,6 +5,9 @@ import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.util.Iterator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -13,7 +16,7 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class TravelerMessageFromHumanToAsnConverter {
-   
+  
    // JSON cannot have empty fields like XML, so the XML must be modified by removing all flag field values
    private static final String EMPTY_FIELD_FLAG = "EMPTY_TAG";
 
@@ -118,8 +121,15 @@ public class TravelerMessageFromHumanToAsnConverter {
       // </dataFrames>
 
       // sspTimRights does not need replacement
-      // sspMsgRights1 does not need replacement
-      // sspMsgRights2 does not need replacement
+      
+      // replace sspMsgTypes with sspMsgRights1
+      dataFrame.put("sspMsgRights1", dataFrame.get("sspMsgTypes").asInt());
+      dataFrame.remove("sspMsgTypes");
+      
+      // replace sspMsgContent with sspMsgRights2
+      dataFrame.put("sspMsgRights2", dataFrame.get("sspMsgContent").asInt());
+      dataFrame.remove("sspMsgContent");
+      
       // priority does not need replacement
       // durationTime does not need replacement
       // url does not need replacement
@@ -130,7 +140,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       dataFrame = replaceContent(dataFrame);
 
       // replace frameType
-      dataFrame.set("frameType", replaceFrameType(dataFrame));
+      dataFrame.set("frameType", replaceFrameType(dataFrame.get("frameType")));
 
       // replace the msgID and relevant fields
       replaceMsgId(dataFrame);
@@ -259,6 +269,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
    public static ObjectNode replaceFrameType(JsonNode oldFrameType) {
       
+      
       String frameType;
       switch (oldFrameType.asInt()) {
       case 1:
@@ -346,7 +357,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
             ObjectNode msgIdNode = (ObjectNode) JsonUtils.newNode().set("roadSignID", roadSignID);
 
-            dataFrame.set("msgID", msgIdNode);
+            dataFrame.set("msgId", msgIdNode);
 
          } else if (msgID.asText().equals("FurtherInfoID")) {
 
