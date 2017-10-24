@@ -292,7 +292,7 @@ public class TimController {
       
       //Create valid payload from scratch
       OdeMsgPayload payload = new OdeMsgPayload();
-      payload.setDataType("MessageFrame");
+      payload.setDataType("us.dot.its.jpo.ode.model.OdeHexByteArray");
       JSONObject payloadObj = JsonUtils.toJSONObject(payload.toJson());
 
       //Create TravelerInformation
