@@ -5,9 +5,6 @@ import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.util.Iterator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -122,13 +119,17 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // sspTimRights does not need replacement
       
+   // replace sspMsgContent with sspMsgRights2
+      dataFrame.put("sspMsgRights2", dataFrame.get("sspMsgContent").asInt());
+      dataFrame.remove("sspMsgContent");
+      
       // replace sspMsgTypes with sspMsgRights1
       dataFrame.put("sspMsgRights1", dataFrame.get("sspMsgTypes").asInt());
       dataFrame.remove("sspMsgTypes");
       
-      // replace sspMsgContent with sspMsgRights2
-      dataFrame.put("sspMsgRights2", dataFrame.get("sspMsgContent").asInt());
-      dataFrame.remove("sspMsgContent");
+      
+      
+      dataFrame.put("sspTimRights", dataFrame.get("sspTimRights").asText());
       
       // priority does not need replacement
       // durationTime does not need replacement
@@ -136,8 +137,11 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       replaceDataFrameTimestamp(dataFrame);
 
+
+      // replace the geographical path regions
+      dataFrame.set("regions", transformRegions(dataFrame.get("regions")));
       // replace content
-      dataFrame = replaceContent(dataFrame);
+      replaceContent(dataFrame);
 
       // replace frameType
       dataFrame.set("frameType", replaceFrameType(dataFrame.get("frameType")));
@@ -145,8 +149,6 @@ public class TravelerMessageFromHumanToAsnConverter {
       // replace the msgID and relevant fields
       replaceMsgId(dataFrame);
 
-      // replace the geographical path regions
-      dataFrame.set("regions", transformRegions(dataFrame.get("regions")));
 
       return dataFrame;
    }
@@ -385,6 +387,8 @@ public class TravelerMessageFromHumanToAsnConverter {
             JsonNode curRegion = regionsIter.next();
             replacedRegions.add(JsonUtils.newNode().set("GeographicalPath", transformRegion(curRegion)));
          }
+      } else {
+         replacedRegions.add(JsonUtils.newNode().put("GeographicalPath", EMPTY_FIELD_FLAG));
       }
 
       return replacedRegions;
