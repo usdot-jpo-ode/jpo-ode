@@ -16,10 +16,6 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistory;
 
 public class PathHistoryBuilderTest {
 
-   @Test
-   public void test() {
-      fail("Not yet implemented");
-   }
    @Ignore
    @Test
    public void testInZeroPositive() throws JsonProcessingException, IOException {
