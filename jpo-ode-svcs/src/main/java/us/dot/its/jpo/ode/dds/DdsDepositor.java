@@ -20,16 +20,16 @@ import us.dot.its.jpo.ode.model.OdeDepRequest;
 import us.dot.its.jpo.ode.model.OdeMessage;
 import us.dot.its.jpo.ode.model.OdeRequest.DataSource;
 import us.dot.its.jpo.ode.model.OdeRequestType;
-import us.dot.its.jpo.ode.traveler.AsdMessage;
+import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
 import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
 
-public class DdsDepositor<MessageType> extends AbstractWebSocketClient { // NOSONAR
+public class DdsDepositor<T> extends AbstractWebSocketClient { // NOSONAR
 
    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
    private OdeProperties odeProperties;
-   private DdsRequestManager<MessageType> requestManager;
+   private DdsRequestManager<DdsStatusMessage> requestManager;
    private OdeDepRequest depRequest;
 
    public DdsDepositor(OdeProperties odeProperties) {
@@ -43,21 +43,19 @@ public class DdsDepositor<MessageType> extends AbstractWebSocketClient { // NOSO
       depRequest.setRequestType(OdeRequestType.Deposit);
    }
 
-   // @SuppressWarnings("unchecked")
-   public void deposit(AsdMessage asdMsg) throws DdsRequestManagerException, DdsClientException, WebSocketException,
+   public void deposit(DdsAdvisorySituationData asdMsg) throws DdsRequestManagerException, DdsClientException, WebSocketException,
          ParseException, EncodeFailedException, EncodeNotSupportedException {
 
       if (this.requestManager == null) {
-
-         this.requestManager = (DdsRequestManager<MessageType>) new DdsDepositRequestManager(odeProperties);
+         this.requestManager = new DdsDepositRequestManager(odeProperties);
       }
 
       if (!this.requestManager.isConnected()) {
-         this.requestManager.connect((WebSocketMessageHandler<MessageType>) new StatusMessageHandler(this),
+         this.requestManager.connect((WebSocketMessageHandler<DdsStatusMessage>)new StatusMessageHandler(this),
                DepositResponseDecoder.class);
       }
 
-      depRequest.setData(asdMsg.encodeHex());
+      depRequest.setData(asdMsg.getAsdmDetails().getAdvisoryMessage());
 
       this.requestManager.sendRequest(depRequest);
    }
@@ -90,8 +88,9 @@ public class DdsDepositor<MessageType> extends AbstractWebSocketClient { // NOSO
       return depRequest;
    }
 
-   public void setRequestManager(DdsRequestManager<MessageType> requestManager) {
-      this.requestManager = requestManager;
+   @SuppressWarnings("unchecked")
+   public void setRequestManager(DdsRequestManager<T> requestManager) {
+      this.requestManager = (DdsRequestManager<DdsStatusMessage>) requestManager;
    }
 
    public OdeProperties getOdeProperties() {

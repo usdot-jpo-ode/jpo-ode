@@ -22,9 +22,9 @@ import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.snmp.SNMP;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
-import us.dot.its.jpo.ode.traveler.AsdMessage;
 import us.dot.its.jpo.ode.traveler.TimController.TimControllerException;
 import us.dot.its.jpo.ode.traveler.TimPduCreator;
 import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
@@ -175,9 +175,12 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
           EncodeFailedException, EncodeNotSupportedException {
        // Step 4 - Step Deposit TIM to SDW if sdw element exists
        if (travelerinputData.getSdw() != null) {
-          AsdMessage message = new AsdMessage(travelerinputData.getSnmp().getDeliverystart(),
-                travelerinputData.getSnmp().getDeliverystop(), rsuSRMPayload,
-                travelerinputData.getSdw().getServiceRegion(), travelerinputData.getSdw().getTtl());
+          DdsAdvisorySituationData message = new DdsAdvisorySituationData(
+                travelerinputData.getSnmp().getDeliverystart(),
+                travelerinputData.getSnmp().getDeliverystop(), 
+                rsuSRMPayload,
+                travelerinputData.getSdw().getServiceRegion(), 
+                travelerinputData.getSdw().getTtl());
           depositor.deposit(message);
        }
     }

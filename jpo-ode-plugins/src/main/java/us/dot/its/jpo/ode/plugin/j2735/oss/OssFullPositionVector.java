@@ -1,9 +1,10 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import us.dot.its.jpo.ode.j2735.dsrc.FullPositionVector;
+import us.dot.its.jpo.ode.plugin.j2735.DsrcPosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735FullPositionVector;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TimeConfidence;
+import us.dot.its.jpo.ode.plugin.j2735.builders.Position3DBuilder;
 
 public class OssFullPositionVector {
     
@@ -46,10 +47,11 @@ public class OssFullPositionVector {
         // Required elements
         J2735FullPositionVector fpv = new J2735FullPositionVector();
         
-        fpv.setPosition(new J2735Position3D(
-                initialPosition.lat.longValue(), 
-                initialPosition._long.longValue(),
-                initialPosition.elevation.longValue()));
+        fpv.setPosition(Position3DBuilder.odePosition3D(
+              new DsrcPosition3D(
+                    initialPosition.lat.longValue(), 
+                    initialPosition._long.longValue(),
+                    initialPosition.elevation.longValue())));
         
         // Optional elements
         if (initialPosition.heading != null) {

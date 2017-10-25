@@ -128,8 +128,13 @@ public class JsonUtils {
       return mapper.createObjectNode();
    }
 
-   public static ObjectNode toObjectNode(String tree) throws JsonProcessingException, IOException {
-      ObjectNode jsonNode = (ObjectNode) mapper.readTree(tree);
+   public static ObjectNode toObjectNode(String tree) throws JsonUtilsException {
+      ObjectNode jsonNode;
+      try {
+         jsonNode = (ObjectNode) mapper.readTree(tree);
+      } catch (Exception e) {
+         throw new JsonUtilsException("Error converting JSON tree to ObjectNode", e);
+      }
       return jsonNode;
    }
 

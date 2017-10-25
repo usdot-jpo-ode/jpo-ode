@@ -8,27 +8,27 @@ import java.math.BigDecimal;
 
 import org.junit.Test;
 
-public class J2735Position3DTest {
+public class OdePosition3DTest {
    @Test
    public void checkEqualsAndHashCode() {
-      J2735Position3D po = new J2735Position3D();
-      J2735Position3D pos = new J2735Position3D();
+      OdePosition3D po = new OdePosition3D();
+      OdePosition3D pos = new OdePosition3D();
       assertTrue(po.equals(pos));
       assertEquals(po.hashCode(), pos.hashCode());
    }
 
    @Test
    public void checkEqualsAndHashCodeValues() {
-      J2735Position3D po = new J2735Position3D((long) 1, (long) 2, (long) 3);
-      J2735Position3D pos = new J2735Position3D((long) 1, (long) 2, (long) 3);
+      OdePosition3D po = new OdePosition3D(BigDecimal.valueOf(1.1d), BigDecimal.valueOf(2.2d), BigDecimal.valueOf(3.3d));
+      OdePosition3D pos = new OdePosition3D(BigDecimal.valueOf(1.1d), BigDecimal.valueOf(2.2d), BigDecimal.valueOf(3.3d));
       assertTrue(po.equals(pos));
       assertEquals(po.hashCode(), pos.hashCode());
    }
 
    @Test
    public void checkHashCode() {
-      J2735Position3D po = new J2735Position3D();
-      J2735Position3D pos = new J2735Position3D();
+      OdePosition3D po = new OdePosition3D();
+      OdePosition3D pos = new OdePosition3D();
       assertEquals(po.hashCode(), pos.hashCode());
       po.setLatitude(BigDecimal.valueOf(1));
       assertNotEquals(po.hashCode(), pos.hashCode());

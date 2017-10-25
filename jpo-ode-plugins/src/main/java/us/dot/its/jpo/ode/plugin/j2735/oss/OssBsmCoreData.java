@@ -4,9 +4,10 @@ import java.math.BigDecimal;
 
 import us.dot.its.jpo.ode.j2735.dsrc.BSMcoreData;
 import us.dot.its.jpo.ode.j2735.dsrc.SteeringWheelAngle;
+import us.dot.its.jpo.ode.plugin.j2735.DsrcPosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmCoreData;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TransmissionState;
+import us.dot.its.jpo.ode.plugin.j2735.builders.Position3DBuilder;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class OssBsmCoreData {
@@ -28,10 +29,11 @@ public class OssBsmCoreData {
             genericBsmCoreData.setSecMark(null);
         }
 
-        genericBsmCoreData.setPosition(new J2735Position3D(
+        genericBsmCoreData.setPosition(
+              Position3DBuilder.odePosition3D(new DsrcPosition3D(
               coreData.lat.longValue(), 
               coreData._long.longValue(),
-              coreData.elev.longValue()));
+              coreData.elev.longValue())));
 
         genericBsmCoreData.setAccelSet(OssAccelerationSet4Way.genericAccelerationSet4Way(coreData.getAccelSet()));
 

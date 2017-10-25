@@ -282,8 +282,8 @@ public class TravelerMessageFromHumanToAsnConverter {
       if (msgID != null) {
          if (msgID.asText().equals("RoadSignID")) {
 
-            ObjectNode roadSignID = JsonUtils.newNode();
-            roadSignID.set("position", Position3DBuilder.position3D(dataFrame.get("position")));
+            ObjectNode roadSignID = JsonUtils.newObjectNode("position", 
+                  Position3DBuilder.dsrcPosition3D(dataFrame.get("position")));
             roadSignID.put("viewAngle", dataFrame.get("viewAngle").asText());
 
             // transform mutcdCode
@@ -403,14 +403,17 @@ public class TravelerMessageFromHumanToAsnConverter {
       // name does not need to be replaced
 
       // replace regulatorID and segmentID with id
-      ObjectNode id = JsonUtils.newNode().put("region", updatedNode.get("regulatorID").asInt()).put("id",
-            updatedNode.get("segmentID").asInt());
+      ObjectNode id = JsonUtils.newNode()
+            .put("region",updatedNode.get("regulatorID").asInt())
+            .put("id", updatedNode.get("segmentID").asInt());
+      
       updatedNode.set("id", id);
       updatedNode.remove("regulatorID");
       updatedNode.remove("segmentID");
 
       // replace "anchorPosition" with "anchor" and translate values
-      updatedNode.set("anchor", Position3DBuilder.position3D(updatedNode.get("anchorPosition")));
+      JsonUtils.addNode(updatedNode, "anchor", 
+            Position3DBuilder.dsrcPosition3D(updatedNode.get("anchorPosition")));
       updatedNode.remove("anchorPosition");
 
       // replace LaneWidth
@@ -658,7 +661,10 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // replace anchor (optional)
       if (updatedNode.get("anchorPosition") != null) {
-         updatedNode.set("anchor", Position3DBuilder.position3D(updatedNode.get("anchorPosition")));
+         JsonUtils.addNode(updatedNode, "anchor", 
+               Position3DBuilder.dsrcPosition3D(
+                     Position3DBuilder.odePosition3D(
+                           updatedNode.get("anchorPosition"))));
          updatedNode.remove("anchorPosition");
       }
 
@@ -686,7 +692,8 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       ObjectNode updatedNode = (ObjectNode) circle;
       // replace center
-      updatedNode.set("center", Position3DBuilder.position3D(updatedNode.get("position")));
+      JsonUtils.addNode(updatedNode, "center", 
+            Position3DBuilder.dsrcPosition3D(updatedNode.get("position")));
       updatedNode.remove("position");
 
       // radius does not need replacement
@@ -707,7 +714,9 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // replace anchor
       if (updatedNode.get("anchor") != null) {
-         updatedNode.set("anchor", Position3DBuilder.position3D(updatedNode.get("anchorPosition")));
+         JsonUtils.addNode(updatedNode, "anchor",
+               Position3DBuilder.dsrcPosition3D(
+                     updatedNode.get("anchorPosition")));
          updatedNode.remove("anchorPosition");
       }
 

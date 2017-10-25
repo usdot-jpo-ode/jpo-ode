@@ -16,63 +16,52 @@
  *******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import java.math.BigDecimal;
+import com.google.gson.annotations.SerializedName;
 
-import us.dot.its.jpo.ode.j2735.dsrc.Elevation;
-import us.dot.its.jpo.ode.j2735.dsrc.Latitude;
-import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
-import us.dot.its.jpo.ode.j2735.dsrc.Position3D;
-import us.dot.its.jpo.ode.j2735.dsrc.Position3D.Regional;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssPosition3D;
 
-public class J2735Position3D extends Asn1Object {
+public class DsrcPosition3D extends Asn1Object {
    private static final long serialVersionUID = 1L;
 
-   private BigDecimal latitude; // in degrees
-   private BigDecimal longitude; // in degrees
-   private BigDecimal elevation; // in meters
+   @SerializedName("lat")
+   private Long lat; // in degrees
+   @SerializedName("long")
+   private Long _long; // in degrees
+   @SerializedName("elevation")
+   private Long elevation; // in meters
 
-   public J2735Position3D() {
+   public DsrcPosition3D() {
       super();
    }
 
-   public J2735Position3D(BigDecimal latitude, BigDecimal longitude, BigDecimal elevation) {
+   public DsrcPosition3D(Long latitude, Long longitude, Long elevation) {
       super();
-      this.latitude = latitude;
-      this.longitude = longitude;
+      this.lat = latitude;
+      this._long = longitude;
       this.elevation = elevation;
    }
 
-   public J2735Position3D(Long lat, Long lon, Long elev) {
-      J2735Position3D gpos = OssPosition3D.genericPosition3D(
-            new Position3D(new Latitude(lat), new Longitude(lon), new Elevation(elev), new Regional()));
-      this.latitude = gpos.latitude;
-      this.longitude = gpos.longitude;
-      this.elevation = gpos.elevation;
+   public Long getLatitude() {
+      return lat;
    }
 
-   public BigDecimal getLatitude() {
-      return latitude;
+   public void setLatitude(Long latitude) {
+      this.lat = latitude;
    }
 
-   public void setLatitude(BigDecimal latitude) {
-      this.latitude = latitude;
+   public Long getLongitude() {
+      return _long;
    }
 
-   public BigDecimal getLongitude() {
-      return longitude;
+   public void setLongitude(Long longitude) {
+      this._long = longitude;
    }
 
-   public void setLongitude(BigDecimal longitude) {
-      this.longitude = longitude;
-   }
-
-   public BigDecimal getElevation() {
+   public Long getElevation() {
       return elevation;
    }
 
-   public void setElevation(BigDecimal elevation) {
+   public void setElevation(Long elevation) {
       this.elevation = elevation;
    }
 
@@ -80,9 +69,9 @@ public class J2735Position3D extends Asn1Object {
    public int hashCode() {
       final int prime = 31;
       int result = 1;
+      result = prime * result + ((_long == null) ? 0 : _long.hashCode());
       result = prime * result + ((elevation == null) ? 0 : elevation.hashCode());
-      result = prime * result + ((latitude == null) ? 0 : latitude.hashCode());
-      result = prime * result + ((longitude == null) ? 0 : longitude.hashCode());
+      result = prime * result + ((lat == null) ? 0 : lat.hashCode());
       return result;
    }
 
@@ -94,21 +83,21 @@ public class J2735Position3D extends Asn1Object {
          return false;
       if (getClass() != obj.getClass())
          return false;
-      J2735Position3D other = (J2735Position3D) obj;
+      DsrcPosition3D other = (DsrcPosition3D) obj;
+      if (_long == null) {
+         if (other._long != null)
+            return false;
+      } else if (!_long.equals(other._long))
+         return false;
       if (elevation == null) {
          if (other.elevation != null)
             return false;
       } else if (!elevation.equals(other.elevation))
          return false;
-      if (latitude == null) {
-         if (other.latitude != null)
+      if (lat == null) {
+         if (other.lat != null)
             return false;
-      } else if (!latitude.equals(other.latitude))
-         return false;
-      if (longitude == null) {
-         if (other.longitude != null)
-            return false;
-      } else if (!longitude.equals(other.longitude))
+      } else if (!lat.equals(other.lat))
          return false;
       return true;
    }

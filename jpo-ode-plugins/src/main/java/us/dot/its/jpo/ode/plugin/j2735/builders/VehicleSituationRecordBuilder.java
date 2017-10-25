@@ -43,7 +43,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735BitString;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BrakeSystemStatus;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmCoreData;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
+import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TransmissionState;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleSize;
 import us.dot.its.jpo.ode.util.CodecUtils;
@@ -86,7 +86,7 @@ public class VehicleSituationRecordBuilder {
     * @param jPos
     * @return
     */
-   public static Position3D convertPosition3D(J2735Position3D jPos) {
+   public static Position3D convertPosition3D(OdePosition3D jPos) {
 
       Position3D nPos = new Position3D();
 
