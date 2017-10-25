@@ -292,7 +292,7 @@ public class TimController {
       
       //Create valid payload from scratch
       OdeMsgPayload payload = new OdeMsgPayload();
-      payload.setDataType("MessageFrame");
+      payload.setDataType("us.dot.its.jpo.ode.model.OdeHexByteArray");
       JSONObject payloadObj = JsonUtils.toJSONObject(payload.toJson());
 
       //Create TravelerInformation
@@ -318,7 +318,7 @@ public class TimController {
       
       //Create an encoding element
       //Asn1Encoding enc = new Asn1Encoding("/payload/data/MessageFrame", "MessageFrame", EncodingRule.UPER);
-      Asn1Encoding enc = new Asn1Encoding("payload/data/MessageFrame/", "MessageFrame", EncodingRule.UPER);
+      Asn1Encoding enc = new Asn1Encoding("root", "MessageFrame", EncodingRule.UPER);
       
       // TODO this nesting is to match encoder schema
       metaObject.put("encodings", new JSONObject().put("encodings", JsonUtils.toJSONObject(enc.toJson())));

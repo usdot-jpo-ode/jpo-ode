@@ -13,22 +13,36 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class TravelerMessageFromHumanToAsnConverter {
+  
+   // JSON cannot have empty fields like XML, so the XML must be modified by removing all flag field values
+   private static final String EMPTY_FIELD_FLAG = "EMPTY_TAG";
 
    public static ObjectNode changeTravelerInformationToAsnValues(JsonNode timData) {
+      // msgCnt MsgCount,
+      // timeStamp MinuteOfTheYear OPTIONAL
+      // packetID UniqueMSGID OPTIONAL
+      // urlB URL-Base OPTIONAL
+      // dataFrames TravelerDataFrameList
 
       // Cast to ObjectNode to allow manipulation in place
       ObjectNode replacedTim = (ObjectNode) timData;
       ObjectNode timDataObjectNode = (ObjectNode) replacedTim.get("tim");
-      
-      replacedTim.remove("index");
-      
-      
-      // TODO packetID is optional
-      timDataObjectNode.put("packetID", String.format("%018X", timDataObjectNode.get("packetID").asInt()));
+      timDataObjectNode.remove("index");
 
-//      timDataObjectNode.put("timeStamp",
-//            translateISOTimeStampToMinuteOfYear(timDataObjectNode.get("timeStamp").asText()));
-      timDataObjectNode.remove("timeStamp");
+      // packetID is optional
+      if (timDataObjectNode.get("packetID") != null) {
+         timDataObjectNode.put("packetID", String.format("%018X", timDataObjectNode.get("packetID").asInt()));
+      }
+
+      // timeStamp is optional
+      if (timDataObjectNode.get("timeStamp") != null) {
+         timDataObjectNode.put("timeStamp",
+               translateISOTimeStampToMinuteOfYear(timDataObjectNode.get("timeStamp").asText()));
+      }
+
+      // urlB is optional but does not need replacement
+
+      // dataFrames are required
       timDataObjectNode.set("dataFrames", replaceDataFrames(timDataObjectNode.get("dataframes")));
       timDataObjectNode.remove("dataframes");
 
@@ -49,6 +63,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
          while (dataFramesIter.hasNext()) {
             ObjectNode oldFrame = (ObjectNode) dataFramesIter.next();
+            // wrap each data frame inside a TravelerDataFrame
             replacedDataFrames.add(JsonUtils.newObjectNode("TravelerDataFrame", replaceDataFrame(oldFrame)));
          }
       }
@@ -103,27 +118,37 @@ public class TravelerMessageFromHumanToAsnConverter {
       // </dataFrames>
 
       // sspTimRights does not need replacement
-      // sspMsgRights1 does not need replacement
-      // sspMsgRights2 does not need replacement
+      
+   // replace sspMsgContent with sspMsgRights2
+      dataFrame.put("sspMsgRights2", dataFrame.get("sspMsgContent").asInt());
+      dataFrame.remove("sspMsgContent");
+      
+      // replace sspMsgTypes with sspMsgRights1
+      dataFrame.put("sspMsgRights1", dataFrame.get("sspMsgTypes").asInt());
+      dataFrame.remove("sspMsgTypes");
+      
+      
+      
+      dataFrame.put("sspTimRights", dataFrame.get("sspTimRights").asText());
+      
       // priority does not need replacement
       // durationTime does not need replacement
       // url does not need replacement
-      
-      
 
       replaceDataFrameTimestamp(dataFrame);
 
+
+      // replace the geographical path regions
+      dataFrame.set("regions", transformRegions(dataFrame.get("regions")));
       // replace content
-      dataFrame = replaceContent(dataFrame);
+      replaceContent(dataFrame);
 
       // replace frameType
-      replaceFrameType(dataFrame);
+      dataFrame.set("frameType", replaceFrameType(dataFrame.get("frameType")));
 
       // replace the msgID and relevant fields
       replaceMsgId(dataFrame);
 
-      // replace the geographical path regions
-      dataFrame.set("regions", transformRegions(dataFrame.get("regions")));
 
       return dataFrame;
    }
@@ -190,7 +215,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       // "items": [
       // "513"
       // ],
-      
+
       ObjectNode updatedNode = (ObjectNode) dataFrame;
 
       // step 1, figure out the name of the content
@@ -234,18 +259,21 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // final step, transform into correct format
       JsonNode sequence = JsonUtils.newNode().set("SEQUENCE", newItems);
-      
-      // TODO the following field is called "content" but this results in an failed conversion to XML
+
+      // TODO the following field is called "content" but this results in a
+      // failed conversion to XML
       // see @us.dot.its.jpo.ode.traveler.TimController.publish
       updatedNode.set("tcontent", JsonUtils.newNode().set(replacedContentName, sequence));
       updatedNode.remove("items");
-      
+
       return updatedNode;
    }
 
-   public static void replaceFrameType(ObjectNode dataFrame) {
+   public static ObjectNode replaceFrameType(JsonNode oldFrameType) {
+      
+      
       String frameType;
-      switch (dataFrame.get("frameType").asInt()) {
+      switch (oldFrameType.asInt()) {
       case 1:
          frameType = "advisory";
          break;
@@ -258,7 +286,8 @@ public class TravelerMessageFromHumanToAsnConverter {
       default:
          frameType = "unknown";
       }
-      dataFrame.set("frameType", JsonUtils.newObjectNode(frameType, "EMPTY_TAG"));
+      
+      return JsonUtils.newObjectNode(frameType, EMPTY_FIELD_FLAG);
    }
 
    public static void replaceMsgId(ObjectNode dataFrame) {
@@ -286,43 +315,51 @@ public class TravelerMessageFromHumanToAsnConverter {
                   Position3DBuilder.dsrcPosition3D(dataFrame.get("position")));
             roadSignID.put("viewAngle", dataFrame.get("viewAngle").asText());
 
-            // transform mutcdCode
-            String mutcdName;
-            switch (dataFrame.get("mutcd").asInt()) {
-            case 1:
-               mutcdName = "regulatory";
-               break;
-            case 2:
-               mutcdName = "warning";
-               break;
-            case 3:
-               mutcdName = "maintenance";
-               break;
-            case 4:
-               mutcdName = "motoristService";
-               break;
-            case 5:
-               mutcdName = "guide";
-               break;
-            case 6:
-               mutcdName = "rec";
-               break;
-            default:
-               mutcdName = "none";
+            // mutcdCode is optional
+            if (dataFrame.get("mutcd") != null) {
+               // transform mutcdCode
+               String mutcdName;
+               switch (dataFrame.get("mutcd").asInt()) {
+               case 1:
+                  mutcdName = "regulatory";
+                  break;
+               case 2:
+                  mutcdName = "warning";
+                  break;
+               case 3:
+                  mutcdName = "maintenance";
+                  break;
+               case 4:
+                  mutcdName = "motoristService";
+                  break;
+               case 5:
+                  mutcdName = "guide";
+                  break;
+               case 6:
+                  mutcdName = "rec";
+                  break;
+               default:
+                  mutcdName = "none";
+               }
+               roadSignID.set("mutcdCode", JsonUtils.newNode().put(mutcdName, EMPTY_FIELD_FLAG));
+
+               dataFrame.remove("mutcd");
             }
-            roadSignID.set("mutcdCode", JsonUtils.newNode().put(mutcdName, "EMPTY_TAG"));
-            roadSignID.put("crc", String.format("%04X", dataFrame.get("crc").asInt()));
+
+            // crc is optional
+            JsonNode crcNode = dataFrame.get("crc");
+            if (crcNode != null) {
+               roadSignID.put("crc", String.format("%04X", crcNode.asInt()));
+               dataFrame.remove("crc");
+            }
 
             dataFrame.remove("msgID");
             dataFrame.remove("position");
             dataFrame.remove("viewAngle");
-            dataFrame.remove("mutcd");
-            dataFrame.remove("crc");
 
-            ObjectNode msgId = JsonUtils.newNode();
-            msgId.set("roadSignID", roadSignID);
+            ObjectNode msgIdNode = (ObjectNode) JsonUtils.newNode().set("roadSignID", roadSignID);
 
-            dataFrame.set("msgID", msgId);
+            dataFrame.set("msgId", msgIdNode);
 
          } else if (msgID.asText().equals("FurtherInfoID")) {
 
@@ -350,6 +387,8 @@ public class TravelerMessageFromHumanToAsnConverter {
             JsonNode curRegion = regionsIter.next();
             replacedRegions.add(JsonUtils.newNode().set("GeographicalPath", transformRegion(curRegion)));
          }
+      } else {
+         replacedRegions.add(JsonUtils.newNode().put("GeographicalPath", EMPTY_FIELD_FLAG));
       }
 
       return replacedRegions;
@@ -434,11 +473,11 @@ public class TravelerMessageFromHumanToAsnConverter {
       default:
          directionName = "unavailable";
       }
-      updatedNode.set("directionality", JsonUtils.newNode().put(directionName, "EMPTY_TAG"));
+      updatedNode.set("directionality", JsonUtils.newNode().put(directionName, EMPTY_FIELD_FLAG));
 
       // replace closed path
       String closedPathBoolean = updatedNode.get("closedPath").asText();
-      updatedNode.set("closedPath", JsonUtils.newNode().put(closedPathBoolean, "EMPTY_TAG"));
+      updatedNode.set("closedPath", JsonUtils.newNode().put(closedPathBoolean, EMPTY_FIELD_FLAG));
 
       // transform regions
       String description = updatedNode.get("description").asText();
@@ -485,15 +524,15 @@ public class TravelerMessageFromHumanToAsnConverter {
       // zoom does not need to be replaced
       String nodeType = updatedNode.get("type").asText();
       if ("ll".equals(nodeType)) {
-         JsonNode nodeList = JsonUtils.newNode().set("NodeLL",  replaceNodeListLL(updatedNode.get("nodes")));
+         JsonNode nodeList = JsonUtils.newNode().set("NodeLL", replaceNodeListLL(updatedNode.get("nodes")));
          updatedNode.set("offset", JsonUtils.newNode().set("ll", JsonUtils.newNode().set("nodes", nodeList)));
          updatedNode.remove("nodes");
       } else if ("xy".equals(nodeType)) {
-         //ObjectNode nodeList = replaceNodeListXY(updatedNode.get("nodes"));
-         JsonNode nodeList = JsonUtils.newNode().set("NodeXY",  replaceNodeListXY(updatedNode.get("nodes")));
-         //ObjectNode xy = JsonUtils.newObjectNode("xy", nodeList);
+         // ObjectNode nodeList = replaceNodeListXY(updatedNode.get("nodes"));
+         JsonNode nodeList = JsonUtils.newNode().set("NodeXY", replaceNodeListXY(updatedNode.get("nodes")));
+         // ObjectNode xy = JsonUtils.newObjectNode("xy", nodeList);
          updatedNode.set("offset", JsonUtils.newNode().set("xy", JsonUtils.newNode().set("nodes", nodeList)));
-         //updatedNode.set("offset", xy);
+         // updatedNode.set("offset", xy);
          updatedNode.remove("nodes");
       }
 
@@ -587,7 +626,8 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       ObjectNode innerNode = (ObjectNode) JsonUtils.newNode().set(delta.asText(), latLong);
       ObjectNode deltaNode = (ObjectNode) JsonUtils.newNode().set("delta", innerNode);
-      //ObjectNode outerNode = (ObjectNode) JsonUtils.newNode().set("NodeLL", deltaNode);
+      // ObjectNode outerNode = (ObjectNode) JsonUtils.newNode().set("NodeLL",
+      // deltaNode);
 
       return deltaNode;
    }

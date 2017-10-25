@@ -43,7 +43,10 @@ public class LogFileParser implements FileParser {
 
    public static LogFileParser factory(String fileName, long bundleId) {
       LogFileParser fileParser;
-      if (fileName.startsWith(RecordType.bsmLogDuringEvent.name()) || fileName.startsWith(RecordType.bsmTx.name())) {
+      if (fileName.startsWith(RecordType.bsmTx.name())) {
+         logger.debug("Parsing as \"Transmit BSM \" log file type.");
+         fileParser = new BsmLogFileParser(bundleId).setRecordType(RecordType.bsmTx);
+      } else if (fileName.startsWith(RecordType.bsmLogDuringEvent.name())) {
          logger.debug("Parsing as \"BSM For Event\" log file type.");
          fileParser = new BsmLogFileParser(bundleId).setRecordType(RecordType.bsmLogDuringEvent);
       } else if (fileName.startsWith(RecordType.rxMsg.name())) {

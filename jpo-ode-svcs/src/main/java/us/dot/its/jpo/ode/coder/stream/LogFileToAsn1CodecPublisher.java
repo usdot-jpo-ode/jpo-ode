@@ -20,9 +20,7 @@ import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Metadata;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
-import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
 import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
-import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.util.XmlUtils;
 
 public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
@@ -42,28 +40,27 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       XmlUtils xmlUtils = new XmlUtils();
       ParserStatus status = ParserStatus.UNKNOWN;
 
+      if (fileType == ImporterFileType.BSM_LOG_FILE) {
+         fileParser = LogFileParser.factory(fileName, bundleId.incrementAndGet());
+      } else {
+         status = ParserStatus.NA;
+      }
+      
       do {
          try {
-
-            if (fileType == ImporterFileType.BSM_LOG_FILE) {
-            	fileParser = LogFileParser.factory(fileName, bundleId.incrementAndGet());
-
-               status = fileParser.parseFile(bis, fileName);
-               if (status == ParserStatus.COMPLETE) {
-                  publish(xmlUtils);
-               } else if (status == ParserStatus.EOF) {
-                  // if parser returns PARTIAL record, we will go back and continue
-                  // parsing
-                  // but if it's UNKNOWN, it means that we could not parse the
-                  // header bytes
-                  if (status == ParserStatus.INIT) {
-                     logger.error("Failed to parse the header bytes.");
-                  } else {
-                     logger.error("Failed to decode ASN.1 data");
-                  }
+            status = fileParser.parseFile(bis, fileName);
+            if (status == ParserStatus.COMPLETE) {
+               publish(xmlUtils);
+            } else if (status == ParserStatus.EOF) {
+               // if parser returns PARTIAL record, we will go back and continue
+               // parsing
+               // but if it's UNKNOWN, it means that we could not parse the
+               // header bytes
+               if (status == ParserStatus.INIT) {
+                  logger.error("Failed to parse the header bytes.");
+               } else {
+                  logger.error("Failed to decode ASN.1 data");
                }
-            } else {
-                status = ParserStatus.NA;
             }
          } catch (Exception e) {
             logger.error("Error decoding and publishing data.", e);
@@ -87,8 +84,6 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       metadata.addEncoding(msgEncoding).addEncoding(unsecuredDataEncoding);
       OdeAsn1Data asn1Data = new OdeAsn1Data(metadata, payload);
 
-      // publisher.publish(asn1Data.toJson(false),
-      // publisher.getOdeProperties().getKafkaTopicAsn1EncodedBsm());
       publisher.publish(xmlUtils.toXml(asn1Data),
          publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
    }
