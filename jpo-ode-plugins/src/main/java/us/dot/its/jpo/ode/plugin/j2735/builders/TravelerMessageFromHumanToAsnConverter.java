@@ -154,7 +154,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       replaceContent(dataFrame);
 
       // replace frameType
-      dataFrame.set("frameType", replaceFrameType(dataFrame.get("frameType")));
+      //dataFrame.set("frameType", replaceFrameType(dataFrame.get("frameType")));
 
       // replace the msgID and relevant fields
       replaceMsgId(dataFrame);
@@ -244,7 +244,7 @@ public class TravelerMessageFromHumanToAsnConverter {
          replacedContentName = "advisory";
       }
       updatedNode.remove("content");
-      updatedNode.put("frameType", replacedContentName);
+      updatedNode.set("frameType", replaceFrameType(updatedNode.get("frameType")));
 
       // step 2, reformat item list
       ArrayNode items = (ArrayNode) updatedNode.get("items");

@@ -1,18 +1,22 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import us.dot.its.jpo.ode.model.OdeObject;
 
+@JsonPropertyOrder({ "lat", "llong", "elevation" })
 public class Position extends OdeObject {
    private static final long serialVersionUID = 1L;
 
-   private String elevation;
+   @JsonProperty("lat")
+   private String lat;
 
-   @JsonProperty("long")
+   @JsonProperty("llong")
    private String llong; // TODO needs to be "long"
 
-   private String lat;
+   @JsonProperty("elevation")
+   private String elevation;
 
    public String getElevation() {
       return elevation;

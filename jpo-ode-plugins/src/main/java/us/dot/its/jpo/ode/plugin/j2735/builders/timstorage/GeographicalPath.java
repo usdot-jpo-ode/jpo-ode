@@ -1,104 +1,99 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import us.dot.its.jpo.ode.model.OdeObject;
 
-public class GeographicalPath extends OdeObject
-{
+@JsonPropertyOrder({ "name", "id", "anchor", "laneWidth", "directionality", "closedPath", "direction", "description" })
+public class GeographicalPath extends OdeObject {
    private static final long serialVersionUID = 1L;
 
+   @JsonProperty("name")
+   private String name;
+
+   @JsonProperty("id")
    private Id id;
 
-    private String closedPath;
+   @JsonProperty("anchor")
+   private Anchor anchor;
 
-    private String direction;
+   @JsonProperty("laneWidth")
+   private String laneWidth;
 
-    private Description description;
+   @JsonProperty("directionality")
+   private Directionality directionality;
 
-    private String name;
+   @JsonProperty("closedPath")
+   private String closedPath;
 
-    private Directionality directionality;
+   @JsonProperty("direction")
+   private String direction;
 
-    private String laneWidth;
+   @JsonProperty("description")
+   private Description description;
 
-    private Anchor anchor;
+   public Id getId() {
+      return id;
+   }
 
-    public Id getId ()
-    {
-        return id;
-    }
+   public void setId(Id id) {
+      this.id = id;
+   }
 
-    public void setId (Id id)
-    {
-        this.id = id;
-    }
+   public String isClosedPath() {
+      return closedPath;
+   }
 
-    public String isClosedPath ()
-    {
-        return closedPath;
-    }
+   public void setClosedPath(String closedPath) {
+      this.closedPath = closedPath;
+   }
 
-    public void setClosedPath (String closedPath)
-    {
-        this.closedPath = closedPath;
-    }
+   public String getDirection() {
+      return direction;
+   }
 
-    public String getDirection ()
-    {
-        return direction;
-    }
+   public void setDirection(String direction) {
+      this.direction = direction;
+   }
 
-    public void setDirection (String direction)
-    {
-        this.direction = direction;
-    }
+   public Description getDescription() {
+      return description;
+   }
 
-    public Description getDescription ()
-    {
-        return description;
-    }
+   public void setDescription(Description description) {
+      this.description = description;
+   }
 
-    public void setDescription (Description description)
-    {
-        this.description = description;
-    }
+   public String getName() {
+      return name;
+   }
 
-    public String getName ()
-    {
-        return name;
-    }
+   public void setName(String name) {
+      this.name = name;
+   }
 
-    public void setName (String name)
-    {
-        this.name = name;
-    }
+   public Directionality getDirectionality() {
+      return directionality;
+   }
 
-    public Directionality getDirectionality ()
-    {
-        return directionality;
-    }
+   public void setDirectionality(Directionality directionality) {
+      this.directionality = directionality;
+   }
 
-    public void setDirectionality (Directionality directionality)
-    {
-        this.directionality = directionality;
-    }
+   public String getLaneWidth() {
+      return laneWidth;
+   }
 
-    public String getLaneWidth ()
-    {
-        return laneWidth;
-    }
+   public void setLaneWidth(String laneWidth) {
+      this.laneWidth = laneWidth;
+   }
 
-    public void setLaneWidth (String laneWidth)
-    {
-        this.laneWidth = laneWidth;
-    }
+   public Anchor getAnchor() {
+      return anchor;
+   }
 
-    public Anchor getAnchor ()
-    {
-        return anchor;
-    }
-
-    public void setAnchor (Anchor anchor)
-    {
-        this.anchor = anchor;
-    }
+   public void setAnchor(Anchor anchor) {
+      this.anchor = anchor;
+   }
 }
