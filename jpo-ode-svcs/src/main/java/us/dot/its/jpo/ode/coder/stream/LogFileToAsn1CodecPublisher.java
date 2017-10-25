@@ -40,28 +40,27 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       XmlUtils xmlUtils = new XmlUtils();
       ParserStatus status = ParserStatus.UNKNOWN;
 
+      if (fileType == ImporterFileType.BSM_LOG_FILE) {
+         fileParser = LogFileParser.factory(fileName, bundleId.incrementAndGet());
+      } else {
+         status = ParserStatus.NA;
+      }
+      
       do {
          try {
-
-            if (fileType == ImporterFileType.BSM_LOG_FILE) {
-            	fileParser = LogFileParser.factory(fileName, bundleId.incrementAndGet());
-
-               status = fileParser.parseFile(bis, fileName);
-               if (status == ParserStatus.COMPLETE) {
-                  publish(xmlUtils);
-               } else if (status == ParserStatus.EOF) {
-                  // if parser returns PARTIAL record, we will go back and continue
-                  // parsing
-                  // but if it's UNKNOWN, it means that we could not parse the
-                  // header bytes
-                  if (status == ParserStatus.INIT) {
-                     logger.error("Failed to parse the header bytes.");
-                  } else {
-                     logger.error("Failed to decode ASN.1 data");
-                  }
+            status = fileParser.parseFile(bis, fileName);
+            if (status == ParserStatus.COMPLETE) {
+               publish(xmlUtils);
+            } else if (status == ParserStatus.EOF) {
+               // if parser returns PARTIAL record, we will go back and continue
+               // parsing
+               // but if it's UNKNOWN, it means that we could not parse the
+               // header bytes
+               if (status == ParserStatus.INIT) {
+                  logger.error("Failed to parse the header bytes.");
+               } else {
+                  logger.error("Failed to decode ASN.1 data");
                }
-            } else {
-                status = ParserStatus.NA;
             }
          } catch (Exception e) {
             logger.error("Error decoding and publishing data.", e);
