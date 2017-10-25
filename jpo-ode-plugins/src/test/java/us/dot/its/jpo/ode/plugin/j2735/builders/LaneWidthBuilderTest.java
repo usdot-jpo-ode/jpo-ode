@@ -8,10 +8,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class LaneWidthBuilderTest {
-
+   @Ignore
    @Test
    public void testConversion() {
       long expectedValue = (long) 12345;

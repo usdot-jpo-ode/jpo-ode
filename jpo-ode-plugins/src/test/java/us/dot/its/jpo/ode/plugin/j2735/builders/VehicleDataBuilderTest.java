@@ -8,12 +8,10 @@ import java.math.BigDecimal;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import us.dot.its.jpo.ode.j2735.dsrc.VehicleData;
-import us.dot.its.jpo.ode.j2735.dsrc.VehicleHeight;
-import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleData;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssVehicleData;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 /**
  * -- Summary --
@@ -48,14 +46,13 @@ public class VehicleDataBuilderTest {
    @Ignore
    @Test
    public void shouldCreateVehicleDataWithHeight() {
-       ObjectMapper mapper = new ObjectMapper();
-       BigDecimal testInput = BigDecimal.ZERO.setScale(2);
+
        BigDecimal expectedValue = BigDecimal.ZERO.setScale(2);
        
+       JsonNode testVehicleData = JsonUtils.newNode().put("height", 0);
        
-       
-       J2735VehicleData testVehicleData = new J2735VehicleData();
-       testVehicleData.setHeight(testInput);
+       //J2735VehicleData testVehicleData = new J2735VehicleData();
+      // testVehicleData.setHeight(testInput);
        
        try {
            BigDecimal actualValue = VehicleDataBuilder
