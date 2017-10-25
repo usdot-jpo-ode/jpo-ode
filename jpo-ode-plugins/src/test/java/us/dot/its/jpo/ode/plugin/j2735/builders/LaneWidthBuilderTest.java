@@ -17,7 +17,6 @@ public class LaneWidthBuilderTest {
    public void testConversion() {
       long expectedValue = (long) 12345;
       long testInput = (long) 123.45;
-
       long returnValue = LaneWidthBuilder.laneWidth(testInput);
       
       assertEquals(expectedValue, returnValue);
