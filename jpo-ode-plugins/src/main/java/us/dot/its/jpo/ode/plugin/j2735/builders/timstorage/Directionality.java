@@ -1,22 +1,16 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class Directionality
-{
-    private String both;
+import us.dot.its.jpo.ode.model.OdeObject;
 
-    public String getBoth ()
-    {
-        return both;
-    }
+public class Directionality extends OdeObject {
+   private static final long serialVersionUID = 1L;
+   private String both;
 
-    public void setBoth (String both)
-    {
-        this.both = both;
-    }
+   public String getBoth() {
+      return both;
+   }
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [both = "+both+"]";
-    }
+   public void setBoth(String both) {
+      this.both = both;
+   }
 }

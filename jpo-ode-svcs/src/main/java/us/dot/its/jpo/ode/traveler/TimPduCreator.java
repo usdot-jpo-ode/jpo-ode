@@ -11,7 +11,7 @@ import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.VariableBinding;
 
-import us.dot.its.jpo.ode.snmp.SNMP;
+import us.dot.its.jpo.ode.plugin.SNMP;
 
 
 /**

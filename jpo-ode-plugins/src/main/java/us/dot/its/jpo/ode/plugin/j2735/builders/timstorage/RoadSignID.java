@@ -1,58 +1,47 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class RoadSignID
-{
-    private Position position;
+import us.dot.its.jpo.ode.model.OdeObject;
 
-    private String crc;
+public class RoadSignID extends OdeObject {
+   private static final long serialVersionUID = 1L;
 
-    private MutcdCode mutcdCode;
+   private Position position;
 
-    private String viewAngle;
+   private String crc;
 
-    public Position getPosition ()
-    {
-        return position;
-    }
+   private MutcdCode mutcdCode;
 
-    public void setPosition (Position position)
-    {
-        this.position = position;
-    }
+   private String viewAngle;
 
-    public String getCrc ()
-    {
-        return crc;
-    }
+   public Position getPosition() {
+      return position;
+   }
 
-    public void setCrc (String crc)
-    {
-        this.crc = crc;
-    }
+   public void setPosition(Position position) {
+      this.position = position;
+   }
 
-    public MutcdCode getMutcdCode ()
-    {
-        return mutcdCode;
-    }
+   public String getCrc() {
+      return crc;
+   }
 
-    public void setMutcdCode (MutcdCode mutcdCode)
-    {
-        this.mutcdCode = mutcdCode;
-    }
+   public void setCrc(String crc) {
+      this.crc = crc;
+   }
 
-    public String getViewAngle ()
-    {
-        return viewAngle;
-    }
+   public MutcdCode getMutcdCode() {
+      return mutcdCode;
+   }
 
-    public void setViewAngle (String viewAngle)
-    {
-        this.viewAngle = viewAngle;
-    }
+   public void setMutcdCode(MutcdCode mutcdCode) {
+      this.mutcdCode = mutcdCode;
+   }
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [position = "+position+", crc = "+crc+", mutcdCode = "+mutcdCode+", viewAngle = "+viewAngle+"]";
-    }
+   public String getViewAngle() {
+      return viewAngle;
+   }
+
+   public void setViewAngle(String viewAngle) {
+      this.viewAngle = viewAngle;
+   }
 }

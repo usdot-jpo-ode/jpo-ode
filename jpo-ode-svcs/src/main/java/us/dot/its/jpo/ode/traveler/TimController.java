@@ -40,6 +40,8 @@ import us.dot.its.jpo.ode.model.OdeMsgPayload;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
+import us.dot.its.jpo.ode.plugin.j2735.builders.timstorage.Tim;
+import us.dot.its.jpo.ode.plugin.j2735.builders.timstorage.TravelerInformation;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -288,7 +290,10 @@ public class TimController {
    }
 
    private void publish(String request) throws JsonUtilsException, XmlUtilsException {
-      JSONObject requestObj = JsonUtils.toJSONObject(request);
+      
+      Tim inOrderTim = (Tim) JsonUtils.jacksonFromJson(request, Tim.class);
+      logger.debug("In order tim: {}", inOrderTim);
+      JSONObject requestObj = JsonUtils.toJSONObject(inOrderTim.toJson());
       
       //Create valid payload from scratch
       OdeMsgPayload payload = new OdeMsgPayload();
@@ -330,12 +335,17 @@ public class TimController {
       JSONObject root = new JSONObject();
       root.put("OdeAsn1Data", message);
       
-      // workaround for the "content" bug
-      String outputXml = XML.toString(root);
-      String fixedXml = outputXml.replaceAll("tcontent>","content>");
       
-      // workaround for self-closing tags: transform all "null" fields into empty tags
-      fixedXml = fixedXml.replaceAll("EMPTY_TAG", "");
+      /// String replacements
+      
+      String outputXml = XML.toString(root);
+      String fixedXml = outputXml.replaceAll("tcontent>","content>");// workaround for the "content" reserved name
+      fixedXml = fixedXml.replaceAll("llong>","long>"); // workaround for "long" being a type in java
+      
+      // workarounds for self-closing tags
+      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.EMPTY_FIELD_FLAG, "");
+      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_TRUE, "<true />");
+      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_FALSE, "<false />");
       
       logger.debug("Fixed XML: {}", fixedXml);
       messageProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, fixedXml);

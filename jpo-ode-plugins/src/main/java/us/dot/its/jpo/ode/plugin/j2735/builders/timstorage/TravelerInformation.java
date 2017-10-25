@@ -1,70 +1,66 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class TravelerInformation
-{
-    private String timeStamp;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-    private String urlB;
+import us.dot.its.jpo.ode.model.OdeObject;
 
-    private String packetID;
+@JsonPropertyOrder({ "msgCnt", "timeStamp", "packetID", "urlB", "dataFrames" })
+public class TravelerInformation extends OdeObject {
+   private static final long serialVersionUID = 1L;
 
-    private DataFrames dataFrames;
+   @JsonProperty("msgCnt")
+   private String msgCnt;
 
-    private String msgCnt;
+   @JsonProperty("timeStamp")
+   private int timeStamp;
 
-    public String getTimeStamp ()
-    {
-        return timeStamp;
-    }
+   @JsonProperty("packetID")
+   private String packetID;
 
-    public void setTimeStamp (String timeStamp)
-    {
-        this.timeStamp = timeStamp;
-    }
+   @JsonProperty("urlB")
+   private String urlB;
 
-    public String getUrlB ()
-    {
-        return urlB;
-    }
+   @JsonProperty("dataFrames")
+   private DataFrames[] dataFrames;
 
-    public void setUrlB (String urlB)
-    {
-        this.urlB = urlB;
-    }
+   public int getTimeStamp() {
+      return timeStamp;
+   }
 
-    public String getPacketID ()
-    {
-        return packetID;
-    }
+   public void setTimeStamp(int timeStamp) {
+      this.timeStamp = timeStamp;
+   }
 
-    public void setPacketID (String packetID)
-    {
-        this.packetID = packetID;
-    }
+   public String getUrlB() {
+      return urlB;
+   }
 
-    public DataFrames getDataFrames ()
-    {
-        return dataFrames;
-    }
+   public void setUrlB(String urlB) {
+      this.urlB = urlB;
+   }
 
-    public void setDataFrames (DataFrames dataFrames)
-    {
-        this.dataFrames = dataFrames;
-    }
+   public String getPacketID() {
+      return packetID;
+   }
 
-    public String getMsgCnt ()
-    {
-        return msgCnt;
-    }
+   public void setPacketID(String packetID) {
+      this.packetID = packetID;
+   }
 
-    public void setMsgCnt (String msgCnt)
-    {
-        this.msgCnt = msgCnt;
-    }
+   public DataFrames[] getDataFrames() {
+      return dataFrames;
+   }
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [timeStamp = "+timeStamp+", urlB = "+urlB+", packetID = "+packetID+", dataFrames = "+dataFrames+", msgCnt = "+msgCnt+"]";
-    }
+   public void setDataFrames(DataFrames[] dataFrames) {
+      this.dataFrames = dataFrames;
+   }
+
+   public String getMsgCnt() {
+      return msgCnt;
+   }
+
+   public void setMsgCnt(String msgCnt) {
+      this.msgCnt = msgCnt;
+   }
 }

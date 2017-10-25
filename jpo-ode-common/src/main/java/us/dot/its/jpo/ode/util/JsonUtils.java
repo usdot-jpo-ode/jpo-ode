@@ -80,6 +80,20 @@ public class JsonUtils {
        * (IOException e) { e.printStackTrace(); } return o;
        */
    }
+   
+   public static Object jacksonFromJson(String s, Class<?> clazz) {
+      try {
+         return mapper.readValue(s, clazz);
+      } catch (IOException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+         return null;
+      }
+      /*
+       * Object o = null; try { o = mapper.readValue(s, clazz); } catch
+       * (IOException e) { e.printStackTrace(); } return o;
+       */
+   }
 
    // This method does not seem to work so commenting it out.
    // public static Object fromObjectNode(JsonNode s, Class<?> clazz) {

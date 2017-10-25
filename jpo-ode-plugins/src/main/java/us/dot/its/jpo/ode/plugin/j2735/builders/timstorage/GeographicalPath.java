@@ -1,10 +1,14 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class GeographicalPath
-{
-    private Id id;
+import us.dot.its.jpo.ode.model.OdeObject;
 
-    private boolean closedPath;
+public class GeographicalPath extends OdeObject
+{
+   private static final long serialVersionUID = 1L;
+
+   private Id id;
+
+    private String closedPath;
 
     private String direction;
 
@@ -28,12 +32,12 @@ public class GeographicalPath
         this.id = id;
     }
 
-    public boolean isClosedPath ()
+    public String isClosedPath ()
     {
         return closedPath;
     }
 
-    public void setClosedPath (boolean closedPath)
+    public void setClosedPath (String closedPath)
     {
         this.closedPath = closedPath;
     }
@@ -96,11 +100,5 @@ public class GeographicalPath
     public void setAnchor (Anchor anchor)
     {
         this.anchor = anchor;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [id = "+id+", closedPath = "+closedPath+", direction = "+direction+", description = "+description+", name = "+name+", directionality = "+directionality+", laneWidth = "+laneWidth+", anchor = "+anchor+"]";
     }
 }

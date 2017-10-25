@@ -1,46 +1,40 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class Position
-{
-    private String elevation;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    private String lon; // TODO needs to be "long"
+import us.dot.its.jpo.ode.model.OdeObject;
 
-    private String lat;
+public class Position extends OdeObject {
+   private static final long serialVersionUID = 1L;
 
-    public String getElevation ()
-    {
-        return elevation;
-    }
+   private String elevation;
 
-    public void setElevation (String elevation)
-    {
-        this.elevation = elevation;
-    }
+   @JsonProperty("long")
+   private String llong; // TODO needs to be "long"
 
-    public String getlon ()
-    {
-        return lon;
-    }
+   private String lat;
 
-    public void setlon (String lon)
-    {
-        this.lon = lon;
-    }
+   public String getElevation() {
+      return elevation;
+   }
 
-    public String getLat ()
-    {
-        return lat;
-    }
+   public void setElevation(String elevation) {
+      this.elevation = elevation;
+   }
 
-    public void setLat (String lat)
-    {
-        this.lat = lat;
-    }
+   public String getlon() {
+      return llong;
+   }
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [elevation = "+elevation+", lon = "+lon+", lat = "+lat+"]";
-    }
+   public void setlon(String lon) {
+      this.llong = lon;
+   }
+
+   public String getLat() {
+      return lat;
+   }
+
+   public void setLat(String lat) {
+      this.lat = lat;
+   }
 }

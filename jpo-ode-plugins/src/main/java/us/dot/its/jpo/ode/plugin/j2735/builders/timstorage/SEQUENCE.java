@@ -1,22 +1,16 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class SEQUENCE
-{
-    private Item item;
+import us.dot.its.jpo.ode.model.OdeObject;
 
-    public Item getItem ()
-    {
-        return item;
-    }
+public class SEQUENCE extends OdeObject {
+   private static final long serialVersionUID = 1L;
+   private Item item;
 
-    public void setItem (Item item)
-    {
-        this.item = item;
-    }
+   public Item getItem() {
+      return item;
+   }
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [item = "+item+"]";
-    }
+   public void setItem(Item item) {
+      this.item = item;
+   }
 }

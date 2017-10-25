@@ -1,8 +1,11 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class NodeLL
+import us.dot.its.jpo.ode.model.OdeObject;
+
+public class NodeLL extends OdeObject
 {
-    private Delta delta;
+   private static final long serialVersionUID = 1L;
+   private Delta delta;
 
     public Delta getDelta ()
     {
@@ -12,11 +15,5 @@ public class NodeLL
     public void setDelta (Delta delta)
     {
         this.delta = delta;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [delta = "+delta+"]";
     }
 }

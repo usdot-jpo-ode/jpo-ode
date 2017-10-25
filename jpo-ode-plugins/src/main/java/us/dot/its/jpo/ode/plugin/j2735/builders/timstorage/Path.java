@@ -1,6 +1,8 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class Path
+import us.dot.its.jpo.ode.model.OdeObject;
+
+public class Path extends OdeObject
 {
     private String scale;
 
@@ -24,11 +26,5 @@ public class Path
     public void setOffset (Offset offset)
     {
         this.offset = offset;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [scale = "+scale+", offset = "+offset+"]";
     }
 }
