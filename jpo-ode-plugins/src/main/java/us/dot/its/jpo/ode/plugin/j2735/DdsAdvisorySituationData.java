@@ -24,10 +24,14 @@ public class DdsAdvisorySituationData extends Asn1Object {
    DdsGeoRegion serviceRegion;     //  GeoRegion,                 -- NW and SE corners of the region applicable
    DdsAdvisoryDetails asdmDetails;
    
+   public DdsAdvisorySituationData() {
+      super();
+   }
+
    public DdsAdvisorySituationData(
          String startTime,
          String stopTime,
-         String advisoryMessage,
+         J2735MessageFrame advisoryMessage,
          OdeGeoRegion serviceRegion,
          SituationDataWarehouse.SDW.TimeToLive ttl) throws ParseException {
       super();
@@ -56,14 +60,14 @@ public class DdsAdvisorySituationData extends Asn1Object {
          this.setTimeToLive(SituationDataWarehouse.SDW.TimeToLive.thirtyminutes.ordinal());
    }
 
-   private J2735DFullTime dFullTimeFromIsoTimeString(String startTime) throws ParseException {
-      ZonedDateTime zdtStart = DateTimeUtils.isoDateTime(startTime);
+   private J2735DFullTime dFullTimeFromIsoTimeString(String isoTime) throws ParseException {
+      ZonedDateTime zdtTime = DateTimeUtils.isoDateTime(isoTime);
       J2735DFullTime dStartTime = new J2735DFullTime();
-      dStartTime.setYear(zdtStart.getYear());
-      dStartTime.setMonth(zdtStart.getMonthValue());
-      dStartTime.setDay(zdtStart.getDayOfMonth());
-      dStartTime.setHour(zdtStart.getHour());
-      dStartTime.setMinute(zdtStart.getMinute());
+      dStartTime.setYear(zdtTime.getYear());
+      dStartTime.setMonth(zdtTime.getMonthValue());
+      dStartTime.setDay(zdtTime.getDayOfMonth());
+      dStartTime.setHour(zdtTime.getHour());
+      dStartTime.setMinute(zdtTime.getMinute());
       return dStartTime;
    }
 

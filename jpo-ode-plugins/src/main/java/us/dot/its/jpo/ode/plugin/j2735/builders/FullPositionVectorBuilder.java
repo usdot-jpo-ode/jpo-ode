@@ -33,7 +33,7 @@ public class FullPositionVectorBuilder {
        
        Long timeConfidence = null;
        if (initialPosition.get("timeConfidence") != null) {
-          elevation = initialPosition.get("timeConfidence").asLong();
+          timeConfidence = initialPosition.get("timeConfidence").asLong();
        }
        
        // TODO these bound checks should be lower down in the hierarchy
@@ -48,13 +48,15 @@ public class FullPositionVectorBuilder {
             throw new IllegalArgumentException("Latitude value out of bounds [-900000000..900000001]");
         }
         
-        if (elevation < ELEV_LOWER_BOUND
-                || elevation > ELEV_UPPER_BOUND) {
+        if (null == elevation 
+              || elevation.longValue() < ELEV_LOWER_BOUND 
+              || elevation.longValue() > ELEV_UPPER_BOUND) {
             throw new IllegalArgumentException("Elevation value out of bounds [-4096..61439]");
         }
         
-        if (timeConfidence < TIME_CONF_LOWER_BOUND
-                || timeConfidence > TIME_CONF_UPPER_BOUND) {
+        if (null == timeConfidence 
+              || timeConfidence.longValue() < TIME_CONF_LOWER_BOUND
+              || timeConfidence.longValue() > TIME_CONF_UPPER_BOUND) {
             throw new IllegalArgumentException("Time confidence value out of bounds [0..39]");
         }
         

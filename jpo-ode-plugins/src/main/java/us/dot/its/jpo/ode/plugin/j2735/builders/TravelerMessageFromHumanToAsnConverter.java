@@ -27,7 +27,9 @@ public class TravelerMessageFromHumanToAsnConverter {
       // Cast to ObjectNode to allow manipulation in place
       ObjectNode replacedTim = (ObjectNode) timData;
       ObjectNode timDataObjectNode = (ObjectNode) replacedTim.get("tim");
-      timDataObjectNode.remove("index");
+      JsonNode index = timDataObjectNode.remove("index");
+      ObjectNode ode = (ObjectNode) replacedTim.get("ode");
+      ode.set("index", index);
 
       // packetID is optional
       if (timDataObjectNode.get("packetID") != null) {

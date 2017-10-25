@@ -23,7 +23,8 @@ public class DdsAdvisoryDetails extends Asn1Object {
    int distType;                    //0, 1 or 2    ,
    J2735DFullTime startTime;        //OPTIONAL,
    J2735DFullTime stopTime;         //OPTIONAL,
-   String advisoryMessage;          //  OCTET STRING (SIZE(0..1400))  -- Encoded advisory message
+   String advisoryMessageBytes;          //  OCTET STRING (SIZE(0..1400))  -- Encoded advisory message
+   J2735MessageFrame advisoryMessage;
 
 
    public DdsAdvisoryDetails() {
@@ -36,7 +37,7 @@ public class DdsAdvisoryDetails extends Asn1Object {
    }
    
    public DdsAdvisoryDetails(String asdmID, AdvisoryBroadcastType asdmType, int distType, J2735DFullTime startTime,
-         J2735DFullTime stopTime, String advisoryMessage) {
+         J2735DFullTime stopTime, J2735MessageFrame advisoryMessage) {
       super();
       this.asdmID = asdmID;
       this.asdmType = asdmType;
@@ -45,12 +46,6 @@ public class DdsAdvisoryDetails extends Asn1Object {
       this.stopTime = stopTime;
       this.advisoryMessage = advisoryMessage;
    }
-
-   public DdsAdvisoryDetails(String id, AdvisoryBroadcastType tim, byte[] distroType, J2735DFullTime dStartTime,
-         J2735DFullTime dStopTime, String advisoryMessage2) {
-      // TODO Auto-generated constructor stub
-   }
-
 
    public void setAsdmID(String asdmID) {
       this.asdmID = asdmID;
@@ -79,10 +74,16 @@ public class DdsAdvisoryDetails extends Asn1Object {
    public void setStopTime(J2735DFullTime stopTime) {
       this.stopTime = stopTime;
    }
-   public String getAdvisoryMessage() {
+   public String getAdvisoryMessageBytes() {
+      return advisoryMessageBytes;
+   }
+   public void setAdvisoryMessageBytes(String advisoryMessageBytes) {
+      this.advisoryMessageBytes = advisoryMessageBytes;
+   }
+   public J2735MessageFrame getAdvisoryMessage() {
       return advisoryMessage;
    }
-   public void setAdvisoryMessage(String advisoryMessage) {
+   public void setAdvisoryMessage(J2735MessageFrame advisoryMessage) {
       this.advisoryMessage = advisoryMessage;
    }
    @Override
@@ -90,6 +91,7 @@ public class DdsAdvisoryDetails extends Asn1Object {
       final int prime = 31;
       int result = 1;
       result = prime * result + ((advisoryMessage == null) ? 0 : advisoryMessage.hashCode());
+      result = prime * result + ((advisoryMessageBytes == null) ? 0 : advisoryMessageBytes.hashCode());
       result = prime * result + ((asdmID == null) ? 0 : asdmID.hashCode());
       result = prime * result + ((asdmType == null) ? 0 : asdmType.hashCode());
       result = prime * result + distType;
@@ -110,6 +112,11 @@ public class DdsAdvisoryDetails extends Asn1Object {
          if (other.advisoryMessage != null)
             return false;
       } else if (!advisoryMessage.equals(other.advisoryMessage))
+         return false;
+      if (advisoryMessageBytes == null) {
+         if (other.advisoryMessageBytes != null)
+            return false;
+      } else if (!advisoryMessageBytes.equals(other.advisoryMessageBytes))
          return false;
       if (asdmID == null) {
          if (other.asdmID != null)

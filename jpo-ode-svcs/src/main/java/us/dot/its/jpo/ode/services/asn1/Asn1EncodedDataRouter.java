@@ -22,7 +22,6 @@ import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.snmp.SNMP;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.traveler.TimController.TimControllerException;
@@ -61,12 +60,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
            // Convert JSON to POJO
            TravelerInputData travelerinputData = buildTravelerInputData(consumedObj);
            
-           String hexBytes = consumedObj
-                 .getJSONObject(AppContext.PAYLOAD_STRING)
-                 .getJSONObject(AppContext.DATA_STRING)
-                 .getString("bytes");
-           
-           processEncodedTim(travelerinputData, hexBytes);
+           processEncodedTim(travelerinputData, consumedObj);
            
         } catch (Exception e) {
            logger.error("Error in processing received message from ASN.1 Encoder module: " + consumedData, e);
@@ -93,10 +87,23 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        return travelerinputData;
     }
 
-    public void processEncodedTim(TravelerInputData travelerInfo, String rsuSRMPayload) throws TimControllerException {
+    public void processEncodedTim(TravelerInputData travelerInfo, JSONObject consumedObj) throws TimControllerException {
        // Send TIMs and record results
        HashMap<String, String> responseList = new HashMap<>();
 
+       String asdBytes = consumedObj
+             .getJSONObject(AppContext.PAYLOAD_STRING)
+             .getJSONObject(AppContext.DATA_STRING)
+             .getJSONObject("AdvisorySituationData")
+             .getString("bytes");
+       
+
+       String timBytes = consumedObj
+             .getJSONObject(AppContext.PAYLOAD_STRING)
+             .getJSONObject(AppContext.DATA_STRING)
+             .getJSONObject("MessageFrame")
+             .getString("bytes");
+       
        for (RSU curRsu : travelerInfo.getRsus()) {
 
           ResponseEvent rsuResponse = null;
@@ -104,7 +111,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
           try {
              rsuResponse = createAndSend(travelerInfo.getSnmp(), curRsu, 
-                travelerInfo.getOde().getIndex(), rsuSRMPayload);
+                travelerInfo.getOde().getIndex(), timBytes);
 
              if (null == rsuResponse || null == rsuResponse.getResponse()) {
                 // Timeout
@@ -132,7 +139,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        // Deposit to DDS
        String ddsMessage = "";
        try {
-          depositToDDS(travelerInfo, rsuSRMPayload);
+          depositToDDS(travelerInfo, asdBytes);
           ddsMessage = "\"dds_deposit\":{\"success\":\"true\"}";
           logger.info("DDS deposit successful.");
        } catch (Exception e) {
@@ -170,18 +177,12 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        return response;
     }
 
-    private void depositToDDS(TravelerInputData travelerinputData, String rsuSRMPayload)
+    private void depositToDDS(TravelerInputData travelerinputData, String asdBytes)
           throws ParseException, DdsRequestManagerException, DdsClientException, WebSocketException,
           EncodeFailedException, EncodeNotSupportedException {
        // Step 4 - Step Deposit TIM to SDW if sdw element exists
        if (travelerinputData.getSdw() != null) {
-          DdsAdvisorySituationData message = new DdsAdvisorySituationData(
-                travelerinputData.getSnmp().getDeliverystart(),
-                travelerinputData.getSnmp().getDeliverystop(), 
-                rsuSRMPayload,
-                travelerinputData.getSdw().getServiceRegion(), 
-                travelerinputData.getSdw().getTtl());
-          depositor.deposit(message);
+          depositor.deposit(asdBytes);
        }
     }
 

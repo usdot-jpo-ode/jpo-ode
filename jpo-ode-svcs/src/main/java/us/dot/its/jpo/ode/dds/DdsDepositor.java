@@ -43,21 +43,35 @@ public class DdsDepositor<T> extends AbstractWebSocketClient { // NOSONAR
       depRequest.setRequestType(OdeRequestType.Deposit);
    }
 
-   public void deposit(DdsAdvisorySituationData asdMsg) throws DdsRequestManagerException, DdsClientException, WebSocketException,
-         ParseException, EncodeFailedException, EncodeNotSupportedException {
+   public void deposit(DdsAdvisorySituationData asdMsg) throws DdsRequestManagerException, DdsClientException,
+         WebSocketException, ParseException, EncodeFailedException, EncodeNotSupportedException {
 
+      setUpReqMgr();
+
+      depRequest.setData(asdMsg.getAsdmDetails().getAdvisoryMessageBytes());
+
+      this.requestManager.sendRequest(depRequest);
+   }
+
+   public void deposit(String encodedAsdMsg) throws DdsRequestManagerException, DdsClientException,
+         WebSocketException, ParseException, EncodeFailedException, EncodeNotSupportedException {
+
+      setUpReqMgr();
+
+      depRequest.setData(encodedAsdMsg);
+
+      this.requestManager.sendRequest(depRequest);
+   }
+
+   private void setUpReqMgr() throws DdsRequestManagerException {
       if (this.requestManager == null) {
          this.requestManager = new DdsDepositRequestManager(odeProperties);
       }
 
       if (!this.requestManager.isConnected()) {
-         this.requestManager.connect((WebSocketMessageHandler<DdsStatusMessage>)new StatusMessageHandler(this),
-               DepositResponseDecoder.class);
+         this.requestManager.connect((WebSocketMessageHandler<DdsStatusMessage>) new StatusMessageHandler(this),
+            DepositResponseDecoder.class);
       }
-
-      depRequest.setData(asdMsg.getAsdmDetails().getAdvisoryMessage());
-
-      this.requestManager.sendRequest(depRequest);
    }
 
    @Override
