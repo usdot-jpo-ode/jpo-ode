@@ -453,7 +453,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       updatedNode.remove("anchorPosition");
 
       // replace LaneWidth
-      updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").asLong()));
+      updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").decimalValue()));
 
       // replace directionality
       String directionName;
@@ -643,7 +643,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // replace lane width
       if (updatedNode.get("laneWidth") != null) {
-         updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").asLong()));
+         updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").decimalValue()));
       }
 
       // replace circle
@@ -753,7 +753,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // replace lane width
       if (updatedNode.get("laneWidth") != null) {
-         updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").asLong()));
+         updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").decimalValue()));
       }
 
       // directionality does not need replacement
