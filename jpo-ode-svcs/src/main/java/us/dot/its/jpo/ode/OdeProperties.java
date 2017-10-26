@@ -80,6 +80,8 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeTimJson = "topic.OdeTimJson";
    private String kafkaTopicOdeDNMsgJson= "topic.OdeDNMsgJson";
    private String kafkaTopicOdeDNMsgPojo= "topic.OdeDNMsgPojo";
+   private String kafkaTopicOdeBsmDuringEventPojo= "topic.OdeBsmDuringEventPojo";
+   private String kafkaTopicOdeBsmRxPojo= "topic.OdeBsmRxPojo";
 
 
    /*
@@ -160,10 +162,10 @@ public class OdeProperties implements EnvironmentAware {
       EventLogger.logger.info("Initializing services on host {}", hostId);
 
       if (kafkaBrokers == null) {
-         logger.info(
-               "ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP from which will derive the Kafka bootstrap-server");
-
          kafkaBrokers = System.getenv("DOCKER_HOST_IP") + ":9092";
+
+         logger.info(
+               "ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP => {}", kafkaBrokers);
       }
 
       if (kafkaBrokers == null)
@@ -624,6 +626,22 @@ public class OdeProperties implements EnvironmentAware {
     
    public void setUploadLocationBsmLog(String uploadLocationBsmLog) {
       this.uploadLocationBsmLog = uploadLocationBsmLog;
+   }
+
+   public String getKafkaTopicOdeBsmDuringEventPojo() {
+      return kafkaTopicOdeBsmDuringEventPojo;
+   }
+
+   public void setKafkaTopicOdeBsmDuringEventPojo(String kafkaTopicOdeBsmDuringEventPojo) {
+      this.kafkaTopicOdeBsmDuringEventPojo = kafkaTopicOdeBsmDuringEventPojo;
+   }
+
+   public String getKafkaTopicOdeBsmRxPojo() {
+      return kafkaTopicOdeBsmRxPojo;
+   }
+
+   public void setKafkaTopicOdeBsmRxPojo(String kafkaTopicOdeBsmRxPojo) {
+      this.kafkaTopicOdeBsmRxPojo = kafkaTopicOdeBsmRxPojo;
    }
 
 }

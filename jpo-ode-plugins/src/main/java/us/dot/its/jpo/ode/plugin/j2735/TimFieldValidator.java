@@ -62,7 +62,7 @@ public class TimFieldValidator {
          throw new IllegalArgumentException("Invalid header sspIndex [0..31]: " + count);
    }
 
-   public static void validatePosition(J2735Position3D position) {
+   public static void validatePosition(OdePosition3D position) {
       if (position.getLatitude().doubleValue() < -90.0 || position.getLatitude().doubleValue() > 90.0)
          throw new IllegalArgumentException("Invalid Latitude [-90..90]: " + position.getLatitude().doubleValue());
       if (position.getLongitude().doubleValue() < -180.0 || position.getLongitude().doubleValue() > 180.0)

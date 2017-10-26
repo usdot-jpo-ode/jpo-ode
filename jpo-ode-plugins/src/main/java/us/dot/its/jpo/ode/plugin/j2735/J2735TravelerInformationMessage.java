@@ -408,7 +408,7 @@ public class J2735TravelerInformationMessage extends OdeObject {
       private int frameType;
       private String msgID;
       private String furtherInfoID;
-      private J2735Position3D position;
+      private OdePosition3D position;
       private String viewAngle;
       private int mutcd;
       private String crc;
@@ -429,7 +429,7 @@ public class J2735TravelerInformationMessage extends OdeObject {
          private String name;
          private int regulatorID;
          private int segmentID;
-         private J2735Position3D anchorPosition;
+         private OdePosition3D anchorPosition;
          private BigDecimal laneWidth;
          private long directionality;
          private boolean closedPath;
@@ -453,7 +453,7 @@ public class J2735TravelerInformationMessage extends OdeObject {
             public static class ShapePoint extends OdeObject {
 
                private static final long serialVersionUID = -209874574767391032L;
-               private J2735Position3D position;
+               private OdePosition3D position;
                private BigDecimal laneWidth;
                private int directionality;
                private String nodeType;
@@ -500,11 +500,11 @@ public class J2735TravelerInformationMessage extends OdeObject {
                   this.laneWidth = laneWidth;
                }
 
-               public J2735Position3D getPosition() {
+               public OdePosition3D getPosition() {
                   return position;
                }
 
-               public void setPosition(J2735Position3D position) {
+               public void setPosition(OdePosition3D position) {
                   this.position = position;
                }
             }
@@ -512,7 +512,7 @@ public class J2735TravelerInformationMessage extends OdeObject {
             public static class RegionPoint extends OdeObject {
 
                private static final long serialVersionUID = -3978458353968571032L;
-               private J2735Position3D position;
+               private OdePosition3D position;
                private int scale;
                private RegionList[] regionList;
 
@@ -564,11 +564,11 @@ public class J2735TravelerInformationMessage extends OdeObject {
                   this.scale = scale;
                }
 
-               public J2735Position3D getPosition() {
+               public OdePosition3D getPosition() {
                   return position;
                }
 
-               public void setPosition(J2735Position3D position) {
+               public void setPosition(OdePosition3D position) {
                   this.position = position;
                }
             }
@@ -666,7 +666,7 @@ public class J2735TravelerInformationMessage extends OdeObject {
          public static class Circle extends OdeObject {
 
             private static final long serialVersionUID = -8156052898034497978L;
-            private J2735Position3D position;
+            private OdePosition3D position;
             private int radius;
             private int units;
 
@@ -686,11 +686,11 @@ public class J2735TravelerInformationMessage extends OdeObject {
                this.radius = radius;
             }
 
-            public J2735Position3D getPosition() {
+            public OdePosition3D getPosition() {
                return position;
             }
 
-            public void setPosition(J2735Position3D position) {
+            public void setPosition(OdePosition3D position) {
                this.position = position;
             }
          }
@@ -809,11 +809,11 @@ public class J2735TravelerInformationMessage extends OdeObject {
             this.laneWidth = laneWidth;
          }
 
-         public J2735Position3D getAnchorPosition() {
+         public OdePosition3D getAnchorPosition() {
             return anchorPosition;
          }
 
-         public void setAnchorPosition(J2735Position3D anchorPosition) {
+         public void setAnchorPosition(OdePosition3D anchorPosition) {
             this.anchorPosition = anchorPosition;
          }
 
@@ -971,11 +971,11 @@ public class J2735TravelerInformationMessage extends OdeObject {
          this.sspTimRights = sspTimRights;
       }
 
-      public J2735Position3D getPosition() {
+      public OdePosition3D getPosition() {
          return position;
       }
 
-      public void setPosition(J2735Position3D position) {
+      public void setPosition(OdePosition3D position) {
          this.position = position;
       }
 

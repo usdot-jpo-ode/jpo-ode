@@ -11,14 +11,15 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse;
-import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion;
+import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
+import us.dot.its.jpo.ode.plugin.j2735.OdeGeoRegion;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class AsdMessageTest {
 
     @Tested
-    AsdMessage testAsdMessage;
+    DdsAdvisorySituationData testAsdMessage;
 
     @Injectable
     String startTime = "12:34";
@@ -27,9 +28,10 @@ public class AsdMessageTest {
     @Injectable
     String advisoryMessage = "message";
     @Injectable
-    J2735GeoRegion serviceRegion;
+    OdeGeoRegion serviceRegion;
     @Injectable
-    SituationDataWarehouse.SDW.TimeToLive ttl = SituationDataWarehouse.SDW.TimeToLive.ONEMINUTE;
+    SituationDataWarehouse.SDW.TimeToLive ttl = 
+    SituationDataWarehouse.SDW.TimeToLive.oneminute;
 
     @Mocked
     ZonedDateTime mockZonedDateTimeStart;
@@ -41,7 +43,7 @@ public class AsdMessageTest {
             @Mocked final J2735 mockJ2735) {
 
         try {
-            testAsdMessage.encodeHex();
+            testAsdMessage.getAsdmDetails().getAdvisoryMessage();
         } catch (Exception e) {
             fail("Unexpected exception in method .enodeHex(): " + e);
         }

@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.traveler;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -8,7 +9,6 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.json.JSONObject;
 import org.json.XML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,15 +29,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
+import us.dot.its.jpo.ode.model.OdeAsdPayload;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
+import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
+import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
@@ -232,10 +238,11 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
-      // Convert JSON to POJO
-      ObjectNode travelerinputData = null;
+      TravelerInputData travelerinputData = null; 
       try {
-         travelerinputData = JsonUtils.toObjectNode(jsonString);
+         // Convert JSON to POJO
+         travelerinputData = (TravelerInputData) JsonUtils.fromJson(jsonString, TravelerInputData.class);
+         
 
          logger.debug("J2735TravelerInputData: {}", jsonString);
 
@@ -245,17 +252,14 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
-      // TODO 
-      //((ObjectNode) travelerinputData.get("ode")).put("index", travelerinputData.get("tim").get("index").asInt());
-   
       // Craft ASN-encodable TIM
-      
-      ObjectNode encodableTim;
+      ObjectNode encodableTid;
       try {
-         encodableTim = TravelerMessageFromHumanToAsnConverter
-               .changeTravelerInformationToAsnValues(travelerinputData);
+         encodableTid = TravelerMessageFromHumanToAsnConverter
+               .changeTravelerInformationToAsnValues(
+                  JsonUtils.toObjectNode(travelerinputData.toJson()));
          
-         logger.debug("Encodable TIM: {}", encodableTim);
+         logger.debug("Encodable TravelerInputData: {}", encodableTid);
          
       } catch (Exception e) {
          String errMsg = "Error converting to encodable TIM.";
@@ -265,7 +269,7 @@ public class TimController {
 
       // Encode TIM
       try {
-         publish(encodableTim.toString());
+         publish(travelerinputData, encodableTid);
       } catch (Exception e) {
          String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
          logger.error(errMsg, e);
@@ -287,49 +291,66 @@ public class TimController {
       return "{\"" + key + "\":\"" + value + "\"}";
    }
 
-   private void publish(String request) throws JsonUtilsException, XmlUtilsException {
-      JSONObject requestObj = JsonUtils.toJSONObject(request);
+   private void publish(TravelerInputData travelerinputData, ObjectNode tidObj) throws JsonUtilsException, XmlUtilsException, ParseException {
+      SDW sdw = travelerinputData.getSdw();
+      DdsAdvisorySituationData asd = 
+            new DdsAdvisorySituationData(
+               travelerinputData.getSnmp().getDeliverystart(),
+               travelerinputData.getSnmp().getDeliverystop(), 
+               null,
+               sdw.getServiceRegion(),
+               sdw.getTtl());
       
-      //Create valid payload from scratch
-      OdeMsgPayload payload = new OdeMsgPayload();
-      payload.setDataType("MessageFrame");
-      JSONObject payloadObj = JsonUtils.toJSONObject(payload.toJson());
-
-      //Create TravelerInformation
-      JSONObject timObject = new JSONObject();
-      //requestObj = new JSONObject(requestObj.toString().replace("\"tcontent\":","\"content\":"));
-      timObject.put("TravelerInformation", requestObj.remove("tim")); //with "tim" removed, the remaining requestObject must go in as "request" element of metadata
+      JsonNode timObj = tidObj.remove("tim");
+      ObjectNode requestObj = tidObj; // with 'tim' element removed, encodableTid becomes the 'request' element
       
       //Create a MessageFrame
-      JSONObject mfObject = new JSONObject();
-      mfObject.put("value", timObject);//new JSONObject().put("TravelerInformation", requestObj));
-      mfObject.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
+      ObjectNode mfObject = JsonUtils.newNode();
+      mfObject.set("MessageFrame", 
+         ((ObjectNode) JsonUtils.newNode()
+               .set("value", timObj))
+               .put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID()));
       
-      JSONObject dataObj = new JSONObject();
-      dataObj.put("MessageFrame", mfObject);
+
+      ObjectNode asdObj = JsonUtils.toObjectNode(asd.toJson());
+      ObjectNode asdmDetails = (ObjectNode) asdObj.get("asdmDetails");
+      //Remove 'advisoryMessageBytes' and add 'advisoryMessage'
+      asdmDetails.remove("advisoryMessageBytes");
+      asdmDetails.set("advisoryMessage", mfObject);
       
-      payloadObj.put(AppContext.DATA_STRING, dataObj);
+      ObjectNode dataObj = JsonUtils.newNode();
+      dataObj.set("AdvisorySituationData", asdObj);
+      
+      //Create valid payload from scratch
+      OdeMsgPayload payload = new OdeAsdPayload();
+      ObjectNode payloadObj = JsonUtils.toObjectNode(payload.toJson());
+      payloadObj.set(AppContext.DATA_STRING, dataObj);
       
       //Create a valid metadata from scratch
       OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
       
-      JSONObject metaObject = JsonUtils.toJSONObject(metadata.toJson());
-      metaObject.put("request", requestObj);
+      ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());
+      metaObject.set("request", requestObj);
       
-      //Create an encoding element
-      Asn1Encoding enc = new Asn1Encoding("/payload/data/MessageFrame", "MessageFrame", EncodingRule.UPER);
-      metaObject.put("encodings", JsonUtils.toJSONObject(enc.toJson()));
+      //Create encoding instructions
+      Asn1Encoding asdEnc = new Asn1Encoding("AdvisorySituationData", "AdvisorySituationData", EncodingRule.UPER);
+      Asn1Encoding mfEnc = new Asn1Encoding("MessageFrame", "MessageFrame", EncodingRule.UPER);
       
-      JSONObject message = new JSONObject();
-      message.put(AppContext.METADATA_STRING, metaObject);
-      message.put(AppContext.PAYLOAD_STRING, payloadObj);
+      ArrayNode encodings = JsonUtils.newArrayNode();
+      encodings.add(JsonUtils.toObjectNode(asdEnc.toJson()));
+      encodings.add(JsonUtils.toObjectNode(mfEnc.toJson()));
+      metaObject.set("encodings", encodings );
       
-      JSONObject root = new JSONObject();
-      root.put("OdeAsn1Data", message);
+      ObjectNode message = JsonUtils.newNode();
+      message.set(AppContext.METADATA_STRING, metaObject);
+      message.set(AppContext.PAYLOAD_STRING, payloadObj);
       
-      // workaround for the "content" bug
-      String outputXml = XML.toString(root);
-      String fixedXml = outputXml.replaceAll("tcontent>","content>");
+      ObjectNode root = JsonUtils.newNode();
+      root.set("OdeAsn1Data", message);
+      
+      //Convert to XML
+      String outputXml = XML.toString(JsonUtils.toJSONObject(root.toString()));
+      String fixedXml = outputXml.replaceAll("tcontent>","content>"); // workaround for the "content" bug
       
       // workaround for self-closing tags: transform all "null" fields into empty tags
       fixedXml = fixedXml.replaceAll("EMPTY_TAG", "");

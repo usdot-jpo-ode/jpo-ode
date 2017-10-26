@@ -63,11 +63,13 @@ public class FileUploadController {
       threadPool.submit(new ImporterDirectoryWatcher(odeProperties, messageFramePath, backupPath, ImporterFileType.MESSAGE_FRAME));
       threadPool.submit(new ImporterDirectoryWatcher(odeProperties, bsmLogPath, backupPath, ImporterFileType.BSM_LOG_FILE));
 
-      // Create the exporters
+      // Create unfiltered exporters
       threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeBsmJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, FILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicFilteredOdeBsmJson()));
       threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeDNMsgJson()));
       threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeTimJson()));
+
+      // Create filtered exporters
+      threadPool.submit(new StompStringExporter(odeProperties, FILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicFilteredOdeBsmJson()));
    }
 
    @PostMapping("/upload/{type}")

@@ -50,8 +50,16 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
            
            if (messageId == J2735DSRCmsgID.BasicSafetyMessage.getMsgID()) {
          	  //ODE-518/ODE-604 Demultiplex the messages to appropriate topics based on the "recordType"
-              bsmProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), getRecord().key(),
-                 OdeBsmDataCreatorHelper.createOdeBsmData(consumedData));
+              if (recordType == RecordType.bsmLogDuringEvent) {
+                 bsmProducer.send(odeProperties.getKafkaTopicOdeBsmDuringEventPojo(), getRecord().key(),
+                    OdeBsmDataCreatorHelper.createOdeBsmData(consumedData));
+              } else if (recordType == RecordType.rxMsg) {
+                 bsmProducer.send(odeProperties.getKafkaTopicOdeBsmRxPojo(), getRecord().key(),
+                    OdeBsmDataCreatorHelper.createOdeBsmData(consumedData));
+              } else { // txBsm
+                 bsmProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), getRecord().key(),
+                    OdeBsmDataCreatorHelper.createOdeBsmData(consumedData));
+              }
            } else if (messageId == J2735DSRCmsgID.TravelerInformation.getMsgID()) {
               if (recordType == RecordType.dnMsg) {
                  timProducer.send(odeProperties.getKafkaTopicOdeDNMsgJson(), getRecord().key(), 

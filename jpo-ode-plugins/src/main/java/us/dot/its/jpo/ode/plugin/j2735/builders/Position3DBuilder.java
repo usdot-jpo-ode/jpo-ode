@@ -3,23 +3,27 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 import java.math.BigDecimal;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import us.dot.its.jpo.ode.j2735.dsrc.Elevation;
-import us.dot.its.jpo.ode.j2735.dsrc.Latitude;
-import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
-import us.dot.its.jpo.ode.j2735.dsrc.Position3D;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
-import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.plugin.j2735.DsrcPosition3D;
+import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 
 public class Position3DBuilder {
    
-   public static J2735Position3D genericPosition3D(JsonNode pos) {
-      J2735Position3D jpos = new J2735Position3D();
-
-      Long longitude = pos.get("long").asLong();
-      Long latitude = pos.get("lat").asLong();
+   public static DsrcPosition3D dsrcPosition3D(JsonNode pos) {
+      Long longitude = pos.get("longitude").asLong();
+      Long latitude = pos.get("latitude").asLong();
       Long elevation = pos.get("elevation").asLong();
+
+      return new DsrcPosition3D(longitude, latitude, elevation);
+
+   }
+
+   public static OdePosition3D odePosition3D(DsrcPosition3D dsrcPos) {
+      return odePosition3D(dsrcPos.getLongitude(), dsrcPos.getLatitude(), dsrcPos.getElevation());
+   }
+
+   private static OdePosition3D odePosition3D(Long longitude, Long latitude, Long elevation) {
+      OdePosition3D jpos = new OdePosition3D();
 
       if (longitude != null) {
          if (longitude == 1800000001) {
@@ -46,30 +50,42 @@ public class Position3DBuilder {
       }
 
       return jpos;
-
    }
 
-   public static ObjectNode position3D(JsonNode jpos) {
-
-      ObjectNode posNode = JsonUtils.newNode();
-
-      JsonNode latitude = jpos.get("latitude");
-      if (latitude != null) {
-         JsonUtils.addNode(posNode, "lat", BigDecimal.valueOf(latitude.asLong()).scaleByPowerOfTen(7).longValue());
-      }
+   public static OdePosition3D odePosition3D(JsonNode jpos) {
 
       JsonNode longitude = jpos.get("longitude");
-      if (longitude != null) {
-         JsonUtils.addNode(posNode, "long", BigDecimal.valueOf(longitude.asLong()).scaleByPowerOfTen(7).longValue());
-      }
-
+      JsonNode latitude = jpos.get("latitude");
       JsonNode elevation = jpos.get("elevation");
-      if (elevation != null) {
-         JsonUtils.addNode(posNode, "elevation",
-               BigDecimal.valueOf(elevation.asLong()).scaleByPowerOfTen(1).longValue());
+      
+      OdePosition3D dPos = new OdePosition3D(
+            BigDecimal.valueOf(longitude.asDouble()),
+            BigDecimal.valueOf(latitude.asDouble()),
+            BigDecimal.valueOf(elevation.asDouble()));
+      
+      return dPos;
+   }
+
+   public static DsrcPosition3D dsrcPosition3D(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation) {
+      DsrcPosition3D dPos = new DsrcPosition3D();
+
+      if (longitude != null) {
+         dPos.setLongitude(longitude.scaleByPowerOfTen(7).longValue());
       }
 
-      return posNode;
+      if (latitude != null) {
+         dPos.setLatitude(latitude.scaleByPowerOfTen(7).longValue());
+      }
+
+      if (elevation != null) {
+         dPos.setElevation(elevation.scaleByPowerOfTen(1).longValue());
+      }
+
+      return dPos;
+   }
+
+   public static DsrcPosition3D dsrcPosition3D(OdePosition3D odePosition3D) {
+      return dsrcPosition3D(odePosition3D.getLatitude(), odePosition3D.getLatitude(), odePosition3D.getElevation());
    }
 
 }

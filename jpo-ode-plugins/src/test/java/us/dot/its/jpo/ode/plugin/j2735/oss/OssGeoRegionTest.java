@@ -16,23 +16,23 @@ import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.j2735.dsrc.Position3D;
 import us.dot.its.jpo.ode.j2735.semi.GeoRegion;
-import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
+import us.dot.its.jpo.ode.plugin.j2735.OdeGeoRegion;
+import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 
 public class OssGeoRegionTest {
 
    @Capturing
-   J2735GeoRegion capturingJ2735GeoRegion;
+   OdeGeoRegion capturingJ2735GeoRegion;
    @Capturing
    OssPosition3D capturingOssPosition3D;
 
    @Injectable
    GeoRegion injectableGeoRegion;
    @Injectable
-   J2735GeoRegion injectableJ2735GeoRegion;
+   OdeGeoRegion injectableJ2735GeoRegion;
 
    @Mocked
-   J2735Position3D mockJ2735Position3D;
+   OdePosition3D mockJ2735Position3D;
 
    @Mocked
    Position3D mockPosition3D;
@@ -46,7 +46,7 @@ public class OssGeoRegionTest {
          }
       };
 
-      J2735GeoRegion actualRegion = OssGeoRegion.genericGeoRegion(injectableGeoRegion);
+      OdeGeoRegion actualRegion = OssGeoRegion.genericGeoRegion(injectableGeoRegion);
       assertEquals("NW corner incorrect", mockJ2735Position3D, actualRegion.getNwCorner());
       assertEquals("SE corner incorrect", mockJ2735Position3D, actualRegion.getSeCorner());
    }
@@ -55,7 +55,7 @@ public class OssGeoRegionTest {
    public void testGeoRegionReturnsGeoRegion() {
       new Expectations() {
          {
-            OssPosition3D.position3D((J2735Position3D) any);
+            OssPosition3D.position3D((OdePosition3D) any);
             result = mockPosition3D;
          }
       };

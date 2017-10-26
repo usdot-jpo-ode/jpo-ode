@@ -1,54 +1,34 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 
 import org.junit.Test;
 
 import us.dot.its.jpo.ode.j2735.dsrc.Acceleration;
-import us.dot.its.jpo.ode.j2735.dsrc.AccelerationSet4Way;
 import us.dot.its.jpo.ode.j2735.dsrc.AntiLockBrakeStatus;
 import us.dot.its.jpo.ode.j2735.dsrc.AuxiliaryBrakeStatus;
 import us.dot.its.jpo.ode.j2735.dsrc.BrakeAppliedStatus;
 import us.dot.its.jpo.ode.j2735.dsrc.BrakeBoostApplied;
-import us.dot.its.jpo.ode.j2735.dsrc.BrakeSystemStatus;
-import us.dot.its.jpo.ode.j2735.dsrc.DDateTime;
-import us.dot.its.jpo.ode.j2735.dsrc.DDay;
-import us.dot.its.jpo.ode.j2735.dsrc.DHour;
-import us.dot.its.jpo.ode.j2735.dsrc.DMinute;
-import us.dot.its.jpo.ode.j2735.dsrc.DMonth;
-import us.dot.its.jpo.ode.j2735.dsrc.DOffset;
-import us.dot.its.jpo.ode.j2735.dsrc.DSecond;
-import us.dot.its.jpo.ode.j2735.dsrc.DYear;
 import us.dot.its.jpo.ode.j2735.dsrc.Heading;
 import us.dot.its.jpo.ode.j2735.dsrc.Position3D;
 import us.dot.its.jpo.ode.j2735.dsrc.StabilityControlStatus;
 import us.dot.its.jpo.ode.j2735.dsrc.SteeringWheelAngle;
-import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.j2735.dsrc.TractionControlStatus;
-import us.dot.its.jpo.ode.j2735.dsrc.TransmissionAndSpeed;
 import us.dot.its.jpo.ode.j2735.dsrc.TransmissionState;
 import us.dot.its.jpo.ode.j2735.dsrc.VehicleLength;
 import us.dot.its.jpo.ode.j2735.dsrc.VehicleSize;
 import us.dot.its.jpo.ode.j2735.dsrc.VehicleWidth;
-import us.dot.its.jpo.ode.plugin.j2735.J2735AccelerationSet4Way;
-import us.dot.its.jpo.ode.plugin.j2735.J2735BitString;
-import us.dot.its.jpo.ode.plugin.j2735.J2735BrakeSystemStatus;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.plugin.j2735.J2735BsmCoreData;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
-import us.dot.its.jpo.ode.plugin.j2735.J2735PositionalAccuracy;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TransmissionState;
-import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleSize;
-import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.j2735.dsrc.Velocity;
 import us.dot.its.jpo.ode.j2735.dsrc.VerticalAcceleration;
 import us.dot.its.jpo.ode.j2735.dsrc.YawRate;
-import us.dot.its.jpo.ode.j2735.semi.FundamentalSituationalStatus;
-import us.dot.its.jpo.ode.j2735.semi.VehSitRecord;
-import us.dot.its.jpo.ode.j2735.semi.VsmEventFlag;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssVehicleSituationRecord;
+import us.dot.its.jpo.ode.plugin.j2735.J2735BitString;
+import us.dot.its.jpo.ode.plugin.j2735.J2735TransmissionState;
+import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleSize;
+import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 public class OssVehicleSituationRecordTest {
 	/*
 	   @Test
@@ -76,7 +56,7 @@ public class OssVehicleSituationRecordTest {
       BigDecimal testInput = BigDecimal.valueOf(-179.9999998);
       int expectedValue = -1799999998;
 
-      J2735Position3D testPos = new J2735Position3D();
+      OdePosition3D testPos = new OdePosition3D();
       testPos.setLongitude(testInput);
       testPos.setLatitude(null);
       testPos.setElevation(null);
@@ -94,7 +74,7 @@ public class OssVehicleSituationRecordTest {
       BigDecimal testInput = BigDecimal.valueOf(-89.9999998);
       int expectedValue = -899999998;
 
-      J2735Position3D testPos = new J2735Position3D();
+      OdePosition3D testPos = new OdePosition3D();
       testPos.setLongitude(null);
       testPos.setLatitude(testInput);
       testPos.setElevation(null);
@@ -110,7 +90,7 @@ public class OssVehicleSituationRecordTest {
       BigDecimal testInput = BigDecimal.valueOf(-409.4);
       int expectedValue = -4094;
 
-      J2735Position3D testPos = new J2735Position3D();
+      OdePosition3D testPos = new OdePosition3D();
       testPos.setLongitude(null);
       testPos.setLatitude(null);
       testPos.setElevation(testInput);

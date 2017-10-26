@@ -29,6 +29,7 @@ import us.dot.its.jpo.ode.http.InternalServerErrorException;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
 import us.dot.its.jpo.ode.services.asn1.Asn1EncodedDataRouter;
 import us.dot.its.jpo.ode.snmp.SNMP;
@@ -63,7 +64,7 @@ public class TimControllerTest {
    @Mocked
    ScopedPDU mockScopedPdu;
    @Mocked
-   AsdMessage mockAsdMsg;
+   DdsAdvisorySituationData mockAsdMsg;
    
    @Capturing
    MessageProducer<?,?> capturingMessageProducer;

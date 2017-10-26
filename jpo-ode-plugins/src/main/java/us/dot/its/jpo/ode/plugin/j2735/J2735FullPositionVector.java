@@ -7,7 +7,7 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 public class J2735FullPositionVector extends Asn1Object {
 	private static final long serialVersionUID = 1L;
 
-	private J2735Position3D position;
+	private OdePosition3D position;
 	private BigDecimal heading;
 	private J2735PositionalAccuracy posAccuracy;
 	private J2735PositionConfidenceSet posConfidence;
@@ -16,11 +16,11 @@ public class J2735FullPositionVector extends Asn1Object {
 	private J2735TimeConfidence timeConfidence;
 	private J2735DDateTime utcTime;
 
-	public J2735Position3D getPosition() {
+	public OdePosition3D getPosition() {
 		return position;
 	}
 
-	public void setPosition(J2735Position3D position) {
+	public void setPosition(OdePosition3D position) {
 		this.position = position;
 	}
 

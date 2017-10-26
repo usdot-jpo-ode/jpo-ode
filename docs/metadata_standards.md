@@ -17,8 +17,8 @@ All files are in a JSON format and are broken into three core fields:
 Field Name | Definition 
 --- | --- 
 schemaVersion | Version of the metadata schema
-generatedAt | Closest time to which the record was created, either signed or received by the generatedBy source in UTC format. This information is taken from the communication header.
-generatedBy | Source of the record, whether [OBU, RSU, TMC].
+recordGeneratedAt | Closest time to which the record was created, either signed or received by the generatedBy source in UTC format. This information is taken from the communication header.
+recordGeneratedBy | Source of the record, whether [OBU, RSU, TMC].
 logFileName | Name of the original file that deposited the message into the ODE
 payloadType | ODE specific Java class identifying the type of payload included with the message
 recordType | Type of message
@@ -53,8 +53,8 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
   "schemaVersion": 3,
   "metadata": {
       "schemaVersion": 3,
-      "generatedBy": "OBU",
-      "generatedAt": "2017-07-14T15:46:47.707Z[UTC]", 
+      "recordGeneratedBy": "OBU",
+      "recordGeneratedAt": "2017-07-14T15:46:47.707Z[UTC]", 
       "logFileName": "tim.uper",
       "payloadType": "us.dot.its.jpo.ode.model.OdeTIMPayload",
       "recordType": "receivedMsgRecord",
@@ -175,8 +175,8 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
   "schemaVersion": 3,
   "metadata": {
     "schemaVersion":3,
-    "generatedBy": "OBU",
-    "generatedAt": "2016-08-10T16:35:45.138Z[UTC]", 
+    "recordGeneratedBy": "OBU",
+    "recrodGeneratedAt": "2016-08-10T16:35:45.138Z[UTC]", 
     "logFileName": "bsm.uper",
     "payloadType": "us.dot.its.jpo.ode.model.OdeBsmPayload",
     "recordType": "bsmRxRecord",
