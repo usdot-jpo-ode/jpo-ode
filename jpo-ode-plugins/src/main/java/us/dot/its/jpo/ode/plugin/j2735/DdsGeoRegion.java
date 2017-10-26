@@ -4,18 +4,19 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 public class DdsGeoRegion extends Asn1Object {
    private static final long serialVersionUID = -8496515705143160656L;
-   private OdePosition3D nwCorner;
-   private OdePosition3D seCorner;
-   public OdePosition3D getNwCorner() {
+   private DsrcPosition3D nwCorner;
+   private DsrcPosition3D seCorner;
+   
+   public DsrcPosition3D getNwCorner() {
       return nwCorner;
    }
-   public void setNwCorner(OdePosition3D nwCorner) {
+   public void setNwCorner(DsrcPosition3D nwCorner) {
       this.nwCorner = nwCorner;
    }
-   public OdePosition3D getSeCorner() {
+   public DsrcPosition3D getSeCorner() {
       return seCorner;
    }
-   public void setSeCorner(OdePosition3D seCorner) {
+   public void setSeCorner(DsrcPosition3D seCorner) {
       this.seCorner = seCorner;
    }
    @Override

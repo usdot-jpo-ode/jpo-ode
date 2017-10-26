@@ -45,6 +45,7 @@ import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
+import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.plugin.j2735.builders.timstorage.Tim;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
@@ -317,7 +318,7 @@ public class TimController {
                   travelerinputData.getSnmp().getDeliverystart(),
                   travelerinputData.getSnmp().getDeliverystop(), 
                   null,
-                  sdw.getServiceRegion(),
+                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()),
                   sdw.getTtl());
          ObjectNode asdBodyObj = JsonUtils.toObjectNode(asd.toJson());
          ObjectNode asdmDetails = (ObjectNode) asdBodyObj.get("asdmDetails");
@@ -352,7 +353,8 @@ public class TimController {
          Asn1Encoding asdEnc = new Asn1Encoding("AdvisorySituationData", "AdvisorySituationData", EncodingRule.UPER);
          encodings.add(JsonUtils.newNode().set("encodings", JsonUtils.toObjectNode(asdEnc.toJson())));
       }
-      metaObject.set("encodings", encodings );
+      ObjectNode encodingWrap = (ObjectNode) JsonUtils.newNode().set("wrap", encodings);
+      metaObject.set("encodings_palceholder", null);
       
       ObjectNode message = JsonUtils.newNode();
       message.set(AppContext.METADATA_STRING, metaObject);
@@ -364,6 +366,13 @@ public class TimController {
       //Convert to XML
       logger.debug("pre-xml tim: {}", root);
       String outputXml = XmlUtils.toXmlS(root);
+      String encStr = XmlUtils.toXmlS(encodingWrap)
+            .replace("</wrap><wrap>", "")
+            .replace("<wrap>", "")
+            .replace("</wrap>", "")
+            .replace("<ObjectNode>", "<encodings>")
+            .replace("</ObjectNode>", "</encodings>");
+      outputXml = outputXml.replace("<encodings_palceholder/>", encStr);
       
       // Fix  tagnames by String replacements
       String fixedXml = outputXml.replaceAll("tcontent>","content>");// workaround for the "content" reserved name
