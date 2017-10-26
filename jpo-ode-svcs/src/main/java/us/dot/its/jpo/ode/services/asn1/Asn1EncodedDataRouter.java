@@ -91,63 +91,65 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        // Send TIMs and record results
        HashMap<String, String> responseList = new HashMap<>();
 
-       String asdBytes = consumedObj
+       JSONObject dataObj = consumedObj
              .getJSONObject(AppContext.PAYLOAD_STRING)
-             .getJSONObject(AppContext.DATA_STRING)
-             .getJSONObject("AdvisorySituationData")
-             .getString("bytes");
+             .getJSONObject(AppContext.DATA_STRING);
        
+       JSONObject asdObj = dataObj.getJSONObject("AdvisorySituationData");
+       if (null != asdObj) {
+          String asdBytes = asdObj.getString("bytes");
 
-       String timBytes = consumedObj
-             .getJSONObject(AppContext.PAYLOAD_STRING)
-             .getJSONObject(AppContext.DATA_STRING)
-             .getJSONObject("MessageFrame")
-             .getString("bytes");
-       
-       for (RSU curRsu : travelerInfo.getRsus()) {
-
-          ResponseEvent rsuResponse = null;
-          String httpResponseStatus = null;
-
+          // Deposit to DDS
+          String ddsMessage = "";
           try {
-             rsuResponse = createAndSend(travelerInfo.getSnmp(), curRsu, 
-                travelerInfo.getOde().getIndex(), timBytes);
-
-             if (null == rsuResponse || null == rsuResponse.getResponse()) {
-                // Timeout
-                httpResponseStatus = "Timeout";
-             } else if (rsuResponse.getResponse().getErrorStatus() == 0) {
-                // Success
-                httpResponseStatus = "Success";
-             } else if (rsuResponse.getResponse().getErrorStatus() == 5) {
-                // Error, message already exists
-                httpResponseStatus = "Message already exists at ".concat(Integer.toString(travelerInfo.getTim().getIndex()));
-             } else {
-                // Misc error
-                httpResponseStatus = "Error code " + rsuResponse.getResponse().getErrorStatus() + " "
-                            + rsuResponse.getResponse().getErrorStatusText();
-             }
-
+             depositToDDS(travelerInfo, asdBytes);
+             ddsMessage = "\"dds_deposit\":{\"success\":\"true\"}";
+             logger.info("DDS deposit successful.");
           } catch (Exception e) {
-             logger.error("Exception caught in TIM deposit loop.", e);
-             httpResponseStatus = e.getClass().getName() + ": " + e.getMessage();
+             ddsMessage = "\"dds_deposit\":{\"success\":\"false\"}";
+             logger.error("Error on DDS deposit.", e);
           }
+
+          responseList.put("ddsMessage", ddsMessage);
           
-          responseList.put(curRsu.getRsuTarget(), httpResponseStatus);
        }
+       
+       JSONObject mfObj = dataObj.getJSONObject("MessageFrame");
+       if (null != mfObj) {
+          String timBytes = mfObj.getString("bytes");
+          for (RSU curRsu : travelerInfo.getRsus()) {
 
-       // Deposit to DDS
-       String ddsMessage = "";
-       try {
-          depositToDDS(travelerInfo, asdBytes);
-          ddsMessage = "\"dds_deposit\":{\"success\":\"true\"}";
-          logger.info("DDS deposit successful.");
-       } catch (Exception e) {
-          ddsMessage = "\"dds_deposit\":{\"success\":\"false\"}";
-          logger.error("Error on DDS deposit.", e);
+             ResponseEvent rsuResponse = null;
+             String httpResponseStatus = null;
+
+             try {
+                rsuResponse = createAndSend(travelerInfo.getSnmp(), curRsu, 
+                   travelerInfo.getOde().getIndex(), timBytes);
+
+                if (null == rsuResponse || null == rsuResponse.getResponse()) {
+                   // Timeout
+                   httpResponseStatus = "Timeout";
+                } else if (rsuResponse.getResponse().getErrorStatus() == 0) {
+                   // Success
+                   httpResponseStatus = "Success";
+                } else if (rsuResponse.getResponse().getErrorStatus() == 5) {
+                   // Error, message already exists
+                   httpResponseStatus = "Message already exists at ".concat(Integer.toString(travelerInfo.getTim().getIndex()));
+                } else {
+                   // Misc error
+                   httpResponseStatus = "Error code " + rsuResponse.getResponse().getErrorStatus() + " "
+                               + rsuResponse.getResponse().getErrorStatusText();
+                }
+
+             } catch (Exception e) {
+                logger.error("Exception caught in TIM deposit loop.", e);
+                httpResponseStatus = e.getClass().getName() + ": " + e.getMessage();
+             }
+             
+             responseList.put(curRsu.getRsuTarget(), httpResponseStatus);
+          }
+
        }
-
-       responseList.put("ddsMessage", ddsMessage);
        
        logger.info("TIM deposit response {}", responseList);
        

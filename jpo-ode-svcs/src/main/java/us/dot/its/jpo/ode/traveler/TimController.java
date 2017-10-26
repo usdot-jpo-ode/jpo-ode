@@ -39,6 +39,7 @@ import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsdPayload;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
+import us.dot.its.jpo.ode.model.OdeTimPayload;
 import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
@@ -293,15 +294,6 @@ public class TimController {
    }
 
    private void publish(TravelerInputData travelerinputData, ObjectNode encodableTidObj) throws JsonUtilsException, XmlUtilsException, ParseException {
-      SDW sdw = travelerinputData.getSdw();
-      DdsAdvisorySituationData asd = 
-            new DdsAdvisorySituationData(
-               travelerinputData.getSnmp().getDeliverystart(),
-               travelerinputData.getSnmp().getDeliverystop(), 
-               null,
-               sdw.getServiceRegion(),
-               sdw.getTtl());
-      
       Tim inOrderTid = (Tim) JsonUtils.jacksonFromJson(encodableTidObj.toString(), Tim.class);
       logger.debug("In order tim: {}", inOrderTid);
       ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
@@ -310,25 +302,42 @@ public class TimController {
       ObjectNode requestObj = inOrderTidObj; // with 'tim' element removed, encodableTid becomes the 'request' element
 
       //Create a MessageFrame
-      ObjectNode mfObject = JsonUtils.newNode();
-      mfObject.set("MessageFrame", 
-         ((ObjectNode) JsonUtils.newNode()
-               .set("value", timObj))
-               .put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID()));
-
-      ObjectNode asdObj = JsonUtils.toObjectNode(asd.toJson());
-      ObjectNode asdmDetails = (ObjectNode) asdObj.get("asdmDetails");
-      //Remove 'advisoryMessageBytes' and add 'advisoryMessage'
-      asdmDetails.remove("advisoryMessageBytes");
-      asdmDetails.set("advisoryMessage", mfObject);
-      
-      ObjectNode dataObj = JsonUtils.newNode();
-      dataObj.set("AdvisorySituationData", asdObj);
+      ObjectNode mfBodyObj = JsonUtils.newNode();
+      mfBodyObj.set("value", timObj);
+      mfBodyObj.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
       
       //Create valid payload from scratch
-      OdeMsgPayload payload = new OdeAsdPayload();
+      OdeMsgPayload payload = null;
+
+      ObjectNode dataBodyObj = JsonUtils.newNode();
+      SDW sdw = travelerinputData.getSdw();
+      if (null != sdw) {
+         DdsAdvisorySituationData asd = 
+               new DdsAdvisorySituationData(
+                  travelerinputData.getSnmp().getDeliverystart(),
+                  travelerinputData.getSnmp().getDeliverystop(), 
+                  null,
+                  sdw.getServiceRegion(),
+                  sdw.getTtl());
+         ObjectNode asdBodyObj = JsonUtils.toObjectNode(asd.toJson());
+         ObjectNode asdmDetails = (ObjectNode) asdBodyObj.get("asdmDetails");
+         //Remove 'advisoryMessageBytes' and add 'advisoryMessage'
+         asdmDetails.remove("advisoryMessageBytes");
+         asdmDetails.set("advisoryMessage", JsonUtils.newNode().set("MessageFrame", mfBodyObj));
+         
+         dataBodyObj = (ObjectNode) JsonUtils.newNode().set("AdvisorySituationData", asdBodyObj);
+         
+         //Create valid payload from scratch
+         payload = new OdeAsdPayload();
+
+      } else {
+         dataBodyObj = (ObjectNode) JsonUtils.newNode().set("MessageFrame", mfBodyObj);
+         payload = new OdeTimPayload();
+         payload.setDataType("MessageFrame");
+      }
+      
       ObjectNode payloadObj = JsonUtils.toObjectNode(payload.toJson());
-      payloadObj.set(AppContext.DATA_STRING, dataObj);
+      payloadObj.set(AppContext.DATA_STRING, dataBodyObj);
       
       //Create a valid metadata from scratch
       OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
@@ -336,11 +345,13 @@ public class TimController {
       metaObject.set("request", requestObj);
       
       //Create encoding instructions
-      Asn1Encoding asdEnc = new Asn1Encoding("AdvisorySituationData", "AdvisorySituationData", EncodingRule.UPER);
-      Asn1Encoding mfEnc = new Asn1Encoding("MessageFrame", "MessageFrame", EncodingRule.UPER);
       ArrayNode encodings = JsonUtils.newArrayNode();
-      encodings.add(JsonUtils.toObjectNode(asdEnc.toJson()));
-      encodings.add(JsonUtils.toObjectNode(mfEnc.toJson()));
+      Asn1Encoding mfEnc = new Asn1Encoding("MessageFrame", "MessageFrame", EncodingRule.UPER);
+      encodings.add(JsonUtils.newNode().set("encodings", JsonUtils.toObjectNode(mfEnc.toJson())));
+      if (null != sdw) {
+         Asn1Encoding asdEnc = new Asn1Encoding("AdvisorySituationData", "AdvisorySituationData", EncodingRule.UPER);
+         encodings.add(JsonUtils.newNode().set("encodings", JsonUtils.toObjectNode(asdEnc.toJson())));
+      }
       metaObject.set("encodings", encodings );
       
       ObjectNode message = JsonUtils.newNode();

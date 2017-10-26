@@ -10,8 +10,8 @@ import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 public class Position3DBuilder {
    
    public static DsrcPosition3D dsrcPosition3D(JsonNode pos) {
-      Long longitude = pos.get("longitude").asLong();
-      Long latitude = pos.get("latitude").asLong();
+      Long longitude = pos.get("long").asLong();
+      Long latitude = pos.get("lat").asLong();
       Long elevation = pos.get("elevation").asLong();
 
       return new DsrcPosition3D(longitude, latitude, elevation);

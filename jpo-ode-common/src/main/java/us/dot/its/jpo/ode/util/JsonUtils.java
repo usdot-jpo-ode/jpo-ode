@@ -82,13 +82,11 @@ public class JsonUtils {
        */
    }
    
-   public static Object jacksonFromJson(String s, Class<?> clazz) {
+   public static Object jacksonFromJson(String s, Class<?> clazz) throws JsonUtilsException {
       try {
          return mapper.readValue(s, clazz);
       } catch (IOException e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-         return null;
+         throw new JsonUtilsException("Error deserializing JSON tree to " + clazz.getName(), e);
       }
       /*
        * Object o = null; try { o = mapper.readValue(s, clazz); } catch
