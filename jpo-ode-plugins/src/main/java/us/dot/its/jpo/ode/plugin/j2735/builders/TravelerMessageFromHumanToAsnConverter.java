@@ -813,25 +813,22 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       if (updatedNode.get("offsetSmallX") != null) {
          ObjectNode small = JsonUtils.newObjectNode("small",
-               DrivenLineOffsetSmBuilder.drivenLaneOffsetSm(updatedNode.get("offsetSmallX").decimalValue()));
+               updatedNode.get("offsetSmallX").asInt());
          updatedNode.set("offsetXaxis", small);
          updatedNode.remove("offsetSmallX");
       }
       if (updatedNode.get("offsetLargeX") != null) {
-         ObjectNode large = JsonUtils.newObjectNode("large",
-               DrivenLineOffsetLgBuilder.drivenLineOffsetLg(updatedNode.get("offsetLargeX").decimalValue()));
+         ObjectNode large = JsonUtils.newObjectNode("large", updatedNode.get("offsetLargeX").asInt());
          updatedNode.set("offsetXaxis", large);
          updatedNode.remove("offsetLargeX");
       }
       if (updatedNode.get("offsetSmallY") != null) {
-         ObjectNode small = JsonUtils.newObjectNode("small",
-               DrivenLineOffsetSmBuilder.drivenLaneOffsetSm(updatedNode.get("offsetSmallY").decimalValue()));
+         ObjectNode small = JsonUtils.newObjectNode("small", updatedNode.get("offsetSmallY").asInt());
          updatedNode.set("offsetYaxis", small);
          updatedNode.remove("offsetSmallY");
       }
       if (updatedNode.get("offsetLargeY") != null) {
-         ObjectNode large = JsonUtils.newObjectNode("large",
-               DrivenLineOffsetLgBuilder.drivenLineOffsetLg(updatedNode.get("offsetLargeY").decimalValue()));
+         ObjectNode large = JsonUtils.newObjectNode("large", updatedNode.get("offsetLargeY").asInt());
          updatedNode.set("offsetYaxis", large);
          updatedNode.remove("offsetLargeY");
       }
