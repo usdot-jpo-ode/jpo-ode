@@ -13,7 +13,7 @@ public class Anchor extends OdeObject {
    private String lat;
 
    @JsonProperty("long")
-   private String llong; // TODO needs to be "long"
+   private String llong;
 
    @JsonProperty("elevation")
    private String elevation;
