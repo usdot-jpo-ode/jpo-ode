@@ -1,56 +1,55 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import us.dot.its.jpo.ode.model.OdeObject;
 
-public class Geometry extends OdeObject
-{
+@JsonPropertyOrder({ "direction", "extent", "laneWidth", "circle" })
+public class Geometry extends OdeObject {
    private static final long serialVersionUID = 1L;
 
+   @JsonProperty("direction")
+   private String direction;
+
+   @JsonProperty("extent")
    private String extent;
 
-    private String direction;
+   @JsonProperty("laneWidth")
+   private String laneWidth;
 
-    private Circle circle;
+   @JsonProperty("circle")
+   private Circle circle;
 
-    private String laneWidth;
+   public String getExtent() {
+      return extent;
+   }
 
-    public String getExtent ()
-    {
-        return extent;
-    }
+   public void setExtent(String extent) {
+      this.extent = extent;
+   }
 
-    public void setExtent (String extent)
-    {
-        this.extent = extent;
-    }
+   public String getDirection() {
+      return direction;
+   }
 
-    public String getDirection ()
-    {
-        return direction;
-    }
+   public void setDirection(String direction) {
+      this.direction = direction;
+   }
 
-    public void setDirection (String direction)
-    {
-        this.direction = direction;
-    }
+   public Circle getCircle() {
+      return circle;
+   }
 
-    public Circle getCircle ()
-    {
-        return circle;
-    }
+   public void setCircle(Circle circle) {
+      this.circle = circle;
+   }
 
-    public void setCircle (Circle circle)
-    {
-        this.circle = circle;
-    }
+   public String getLaneWidth() {
+      return laneWidth;
+   }
 
-    public String getLaneWidth ()
-    {
-        return laneWidth;
-    }
-
-    public void setLaneWidth (String laneWidth)
-    {
-        this.laneWidth = laneWidth;
-    }
+   public void setLaneWidth(String laneWidth) {
+      this.laneWidth = laneWidth;
+   }
 }

@@ -9,8 +9,8 @@ import us.dot.its.jpo.ode.model.OdeObject;
 public class Circle extends OdeObject {
    private static final long serialVersionUID = 1L;
 
-   @JsonProperty("center")
-   private Position position;
+   @JsonProperty("position")
+   private Position center;
 
    @JsonProperty("radius")
    private String radius;
@@ -19,11 +19,11 @@ public class Circle extends OdeObject {
    private String units;
 
    public Position getPosition() {
-      return position;
+      return center;
    }
 
    public void setPosition(Position position) {
-      this.position = position;
+      this.center = position;
    }
 
    public String getRadius() {
