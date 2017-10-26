@@ -16,7 +16,7 @@ public class LaneWidthBuilderTest {
    
    @Test
    public void testConversion() {
-      BigDecimal expectedValue = BigDecimal.valueOf(12345);
+      int expectedValue = 12345;
       BigDecimal testInput = BigDecimal.valueOf(123.45);
 
       assertEquals(expectedValue, LaneWidthBuilder.laneWidth(testInput));

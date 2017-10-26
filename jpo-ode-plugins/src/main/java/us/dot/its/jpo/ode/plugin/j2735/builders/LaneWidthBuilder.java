@@ -8,8 +8,8 @@ public class LaneWidthBuilder {
       throw new UnsupportedOperationException();
    }
 
-   public static BigDecimal laneWidth(BigDecimal jlw) {
-      return jlw.scaleByPowerOfTen(2);
+   public static int laneWidth(BigDecimal jlw) {
+      return (jlw.scaleByPowerOfTen(2).intValue());
    }
 
 }
