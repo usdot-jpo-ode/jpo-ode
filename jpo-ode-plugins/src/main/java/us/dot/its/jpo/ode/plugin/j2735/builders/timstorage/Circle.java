@@ -5,11 +5,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import us.dot.its.jpo.ode.model.OdeObject;
 
-@JsonPropertyOrder({"center", "radius", "units"})
+@JsonPropertyOrder({ "center", "radius", "units" })
 public class Circle extends OdeObject {
    private static final long serialVersionUID = 1L;
 
-   @JsonProperty("position")
    private Position center;
 
    @JsonProperty("radius")
@@ -18,10 +17,12 @@ public class Circle extends OdeObject {
    @JsonProperty("units")
    private String units;
 
+   @JsonProperty("position")
    public Position getPosition() {
       return center;
    }
 
+   @JsonProperty("center")
    public void setPosition(Position position) {
       this.center = position;
    }

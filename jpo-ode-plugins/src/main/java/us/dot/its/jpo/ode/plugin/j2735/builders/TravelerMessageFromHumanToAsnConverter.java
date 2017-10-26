@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -184,8 +185,8 @@ public class TravelerMessageFromHumanToAsnConverter {
       try {
          ZonedDateTime zDateTime = DateTimeUtils.isoDateTime(dataFrame.get("startDateTime").asText());
          startYear = zDateTime.getYear();
-         startMinute = (int) DateTimeUtils.difference(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0), zDateTime)
-               / 60000;
+         ZonedDateTime beginningOfYear = ZonedDateTime.of(startYear, 1, 1, 0, 0, 0, 0, zDateTime.getZone());
+         startMinute = (int)ChronoUnit.MINUTES.between(beginningOfYear, zDateTime);
       } catch (ParseException e) {
          // failed to parse datetime, default back to unknown values
       }
@@ -667,11 +668,13 @@ public class TravelerMessageFromHumanToAsnConverter {
       ObjectNode updatedNode = (ObjectNode) geometry;
 
       // direction does not need to be replaced
-      // extend does not need to be replaced
+      
+      // extent does not need to be replaced (optional)
 
       // replace lane width
-      if (updatedNode.get("laneWidth") != null) {
-         updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").decimalValue()));
+      JsonNode laneWidth = updatedNode.get("laneWidth");
+      if (laneWidth != null) {
+         updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(laneWidth.decimalValue()));
       }
 
       // replace circle
