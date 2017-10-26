@@ -1,8 +1,11 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class MsgId
+import us.dot.its.jpo.ode.model.OdeObject;
+
+public class MsgId extends OdeObject
 {
-    private RoadSignID roadSignID;
+   private static final long serialVersionUID = 1L;
+   private RoadSignID roadSignID;
 
     public RoadSignID getRoadSignID ()
     {
@@ -12,11 +15,5 @@ public class MsgId
     public void setRoadSignID (RoadSignID roadSignID)
     {
         this.roadSignID = roadSignID;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [roadSignID = "+roadSignID+"]";
     }
 }

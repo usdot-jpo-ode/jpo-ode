@@ -1,166 +1,143 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class TravelerDataFrame
-{
-    private String sspLocationRights;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-    private Regions regions;
+import us.dot.its.jpo.ode.model.OdeObject;
 
-    private String url;
+@JsonPropertyOrder({ "sspTimRights", "frameType", "startYear", "startTime", "duratonTime", "priority",
+      "sspLocationRights", "regions", "sspMsgRights1", "sspMsgRights2", "content", "url" })
+public class TravelerDataFrame extends OdeObject {
+   private static final long serialVersionUID = 1L;
 
-    private FrameType frameType;
+   private String sspTimRights;
 
-    private String duratonTime;
+   private FrameType frameType;
 
-    private Content content;
+   private MsgId msgId;
 
-    private String startTime;
+   private String startYear;
 
-    private String startYear;
+   private String startTime;
 
-    private String priority;
+   private String duratonTime;
 
-    private MsgId msgId;
+   private String priority;
 
-    private String sspMsgRights2;
+   private String sspLocationRights;
 
-    private String sspTimRights;
+   private Regions[] regions;
 
-    private String sspMsgRights1;
+   private String sspMsgRights1;
 
-    public String getSspLocationRights ()
-    {
-        return sspLocationRights;
-    }
+   private String sspMsgRights2;
 
-    public void setSspLocationRights (String sspLocationRights)
-    {
-        this.sspLocationRights = sspLocationRights;
-    }
+   @JsonProperty("tcontent")
+   private Content tcontent;
 
-    public Regions getRegions ()
-    {
-        return regions;
-    }
+   private String url;
 
-    public void setRegions (Regions regions)
-    {
-        this.regions = regions;
-    }
+   public String getSspLocationRights() {
+      return sspLocationRights;
+   }
 
-    public String getUrl ()
-    {
-        return url;
-    }
+   public void setSspLocationRights(String sspLocationRights) {
+      this.sspLocationRights = sspLocationRights;
+   }
 
-    public void setUrl (String url)
-    {
-        this.url = url;
-    }
+   public Regions[] getRegions() {
+      return regions;
+   }
 
-    public FrameType getFrameType ()
-    {
-        return frameType;
-    }
+   public void setRegions(Regions[] regions) {
+      this.regions = regions;
+   }
 
-    public void setFrameType (FrameType frameType)
-    {
-        this.frameType = frameType;
-    }
+   public String getUrl() {
+      return url;
+   }
 
-    public String getDuratonTime ()
-    {
-        return duratonTime;
-    }
+   public void setUrl(String url) {
+      this.url = url;
+   }
 
-    public void setDuratonTime (String duratonTime)
-    {
-        this.duratonTime = duratonTime;
-    }
+   public FrameType getFrameType() {
+      return frameType;
+   }
 
-    public Content getContent ()
-    {
-        return content;
-    }
+   public void setFrameType(FrameType frameType) {
+      this.frameType = frameType;
+   }
 
-    public void setContent (Content content)
-    {
-        this.content = content;
-    }
+   public String getDuratonTime() {
+      return duratonTime;
+   }
 
-    public String getStartTime ()
-    {
-        return startTime;
-    }
+   public void setDuratonTime(String duratonTime) {
+      this.duratonTime = duratonTime;
+   }
 
-    public void setStartTime (String startTime)
-    {
-        this.startTime = startTime;
-    }
+   public Content getContent() {
+      return tcontent;
+   }
 
-    public String getStartYear ()
-    {
-        return startYear;
-    }
+   public void setContent(Content content) {
+      this.tcontent = content;
+   }
 
-    public void setStartYear (String startYear)
-    {
-        this.startYear = startYear;
-    }
+   public String getStartTime() {
+      return startTime;
+   }
 
-    public String getPriority ()
-    {
-        return priority;
-    }
+   public void setStartTime(String startTime) {
+      this.startTime = startTime;
+   }
 
-    public void setPriority (String priority)
-    {
-        this.priority = priority;
-    }
+   public String getStartYear() {
+      return startYear;
+   }
 
-    public MsgId getMsgId ()
-    {
-        return msgId;
-    }
+   public void setStartYear(String startYear) {
+      this.startYear = startYear;
+   }
 
-    public void setMsgId (MsgId msgId)
-    {
-        this.msgId = msgId;
-    }
+   public String getPriority() {
+      return priority;
+   }
 
-    public String getSspMsgRights2 ()
-    {
-        return sspMsgRights2;
-    }
+   public void setPriority(String priority) {
+      this.priority = priority;
+   }
 
-    public void setSspMsgRights2 (String sspMsgRights2)
-    {
-        this.sspMsgRights2 = sspMsgRights2;
-    }
+   public MsgId getMsgId() {
+      return msgId;
+   }
 
-    public String getSspTimRights ()
-    {
-        return sspTimRights;
-    }
+   public void setMsgId(MsgId msgId) {
+      this.msgId = msgId;
+   }
 
-    public void setSspTimRights (String sspTimRights)
-    {
-        this.sspTimRights = sspTimRights;
-    }
+   public String getSspMsgRights2() {
+      return sspMsgRights2;
+   }
 
-    public String getSspMsgRights1 ()
-    {
-        return sspMsgRights1;
-    }
+   public void setSspMsgRights2(String sspMsgRights2) {
+      this.sspMsgRights2 = sspMsgRights2;
+   }
 
-    public void setSspMsgRights1 (String sspMsgRights1)
-    {
-        this.sspMsgRights1 = sspMsgRights1;
-    }
+   public String getSspTimRights() {
+      return sspTimRights;
+   }
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [sspLocationRights = "+sspLocationRights+", regions = "+regions+", url = "+url+", frameType = "+frameType+", duratonTime = "+duratonTime+", content = "+content+", startTime = "+startTime+", startYear = "+startYear+", priority = "+priority+", msgId = "+msgId+", sspMsgRights2 = "+sspMsgRights2+", sspTimRights = "+sspTimRights+", sspMsgRights1 = "+sspMsgRights1+"]";
-    }
+   public void setSspTimRights(String sspTimRights) {
+      this.sspTimRights = sspTimRights;
+   }
+
+   public String getSspMsgRights1() {
+      return sspMsgRights1;
+   }
+
+   public void setSspMsgRights1(String sspMsgRights1) {
+      this.sspMsgRights1 = sspMsgRights1;
+   }
 }

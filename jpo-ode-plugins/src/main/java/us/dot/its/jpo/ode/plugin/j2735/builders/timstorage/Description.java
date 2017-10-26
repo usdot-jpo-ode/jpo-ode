@@ -1,8 +1,14 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class Description
+import us.dot.its.jpo.ode.model.OdeObject;
+
+public class Description extends OdeObject
 {
-    private Path path;
+   private static final long serialVersionUID = 1L;
+
+   private Path path;
+    
+    private Geometry geometry;
 
     public Path getPath ()
     {
@@ -14,9 +20,11 @@ public class Description
         this.path = path;
     }
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [path = "+path+"]";
-    }
+   public Geometry getGeometry() {
+      return geometry;
+   }
+
+   public void setGeometry(Geometry geometry) {
+      this.geometry = geometry;
+   }
 }

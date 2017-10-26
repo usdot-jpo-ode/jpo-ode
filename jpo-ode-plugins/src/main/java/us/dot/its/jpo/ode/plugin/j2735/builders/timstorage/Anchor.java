@@ -1,46 +1,45 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class Anchor
-{
-    private String elevation;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-    private String lon; // TODO needs to be "long"
+import us.dot.its.jpo.ode.model.OdeObject;
 
-    private String lat;
+@JsonPropertyOrder({ "lat", "llong", "elevation" })
+public class Anchor extends OdeObject {
+   private static final long serialVersionUID = 1L;
 
-    public String getElevation ()
-    {
-        return elevation;
-    }
+   @JsonProperty("lat")
+   private String lat;
 
-    public void setElevation (String elevation)
-    {
-        this.elevation = elevation;
-    }
+   @JsonProperty("llong")
+   private String llong;
 
-    public String getlon ()
-    {
-        return lon;
-    }
+   @JsonProperty("elevation")
+   private String elevation;
 
-    public void setlon (String lon)
-    {
-        this.lon = lon;
-    }
+   public String getElevation() {
+      return elevation;
+   }
 
-    public String getLat ()
-    {
-        return lat;
-    }
+   public void setElevation(String elevation) {
+      this.elevation = elevation;
+   }
 
-    public void setLat (String lat)
-    {
-        this.lat = lat;
-    }
+   public String getlon() {
+      return llong;
+   }
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [elevation = "+elevation+", lon = "+lon+", lat = "+lat+"]";
-    }
+   public void setlon(String lon) {
+      this.llong = lon;
+   }
+
+   public String getLat() {
+      return lat;
+   }
+
+   public void setLat(String lat) {
+      this.lat = lat;
+   }
+
 }

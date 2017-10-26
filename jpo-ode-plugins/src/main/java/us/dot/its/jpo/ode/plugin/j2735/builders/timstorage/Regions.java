@@ -1,22 +1,23 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class Regions
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import us.dot.its.jpo.ode.model.OdeObject;
+
+public class Regions extends OdeObject
 {
-    private GeographicalPath GeographicalPath;
+   private static final long serialVersionUID = 1L;
+   
+   @JsonProperty("GeographicalPath")
+   private GeographicalPath geographicalPath;
 
     public GeographicalPath getGeographicalPath ()
     {
-        return GeographicalPath;
+        return geographicalPath;
     }
 
     public void setGeographicalPath (GeographicalPath GeographicalPath)
     {
-        this.GeographicalPath = GeographicalPath;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [GeographicalPath = "+GeographicalPath+"]";
+        this.geographicalPath = GeographicalPath;
     }
 }

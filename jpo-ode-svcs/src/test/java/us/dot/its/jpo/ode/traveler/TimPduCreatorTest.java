@@ -22,9 +22,9 @@ import ch.qos.logback.classic.Logger;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
+import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.services.asn1.Asn1EncodedDataRouter;
-import us.dot.its.jpo.ode.snmp.SNMP;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 
