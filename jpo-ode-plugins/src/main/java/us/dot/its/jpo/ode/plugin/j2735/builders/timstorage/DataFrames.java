@@ -1,23 +1,20 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class DataFrames
-{
-    private TravelerDataFrame TravelerDataFrame;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    public TravelerDataFrame getTravelerDataFrame ()
-    {
-        return TravelerDataFrame;
-    }
+import us.dot.its.jpo.ode.model.OdeObject;
 
-    public void setTravelerDataFrame (TravelerDataFrame TravelerDataFrame)
-    {
-        this.TravelerDataFrame = TravelerDataFrame;
-    }
+public class DataFrames extends OdeObject {
+   private static final long serialVersionUID = 1L;
+   
+   @JsonProperty("TravelerDataFrame")
+   private TravelerDataFrame TravelerDataFrame;
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [TravelerDataFrame = "+TravelerDataFrame+"]";
-    }
+   public TravelerDataFrame getTravelerDataFrame() {
+      return TravelerDataFrame;
+   }
+
+   public void setTravelerDataFrame(TravelerDataFrame TravelerDataFrame) {
+      this.TravelerDataFrame = TravelerDataFrame;
+   }
 }
-

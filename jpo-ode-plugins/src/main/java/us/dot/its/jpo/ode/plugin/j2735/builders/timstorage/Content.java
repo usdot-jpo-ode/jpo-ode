@@ -1,8 +1,11 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class Content
+import us.dot.its.jpo.ode.model.OdeObject;
+
+public class Content extends OdeObject
 {
-    private Advisory advisory;
+   private static final long serialVersionUID = 1L;
+   private Advisory advisory;
 
     public Advisory getAdvisory ()
     {
@@ -12,11 +15,5 @@ public class Content
     public void setAdvisory (Advisory advisory)
     {
         this.advisory = advisory;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [advisory = "+advisory+"]";
     }
 }

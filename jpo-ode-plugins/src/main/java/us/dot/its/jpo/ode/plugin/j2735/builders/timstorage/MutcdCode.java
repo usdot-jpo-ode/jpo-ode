@@ -1,22 +1,16 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class MutcdCode
-{
-    private String guide;
+import us.dot.its.jpo.ode.model.OdeObject;
 
-    public String getGuide ()
-    {
-        return guide;
-    }
+public class MutcdCode extends OdeObject {
+   private static final long serialVersionUID = 1L;
+   private String guide;
 
-    public void setGuide (String guide)
-    {
-        this.guide = guide;
-    }
+   public String getGuide() {
+      return guide;
+   }
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [guide = "+guide+"]";
-    }
+   public void setGuide(String guide) {
+      this.guide = guide;
+   }
 }

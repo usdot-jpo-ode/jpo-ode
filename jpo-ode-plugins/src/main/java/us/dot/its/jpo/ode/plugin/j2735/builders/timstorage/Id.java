@@ -1,34 +1,27 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class Id
-{
-    private String region;
+import us.dot.its.jpo.ode.model.OdeObject;
 
-    private String id;
+public class Id extends OdeObject {
+   private static final long serialVersionUID = 1L;
 
-    public String getRegion ()
-    {
-        return region;
-    }
+   private String region;
 
-    public void setRegion (String region)
-    {
-        this.region = region;
-    }
+   private String id;
 
-    public String getId ()
-    {
-        return id;
-    }
+   public String getRegion() {
+      return region;
+   }
 
-    public void setId (String id)
-    {
-        this.id = id;
-    }
+   public void setRegion(String region) {
+      this.region = region;
+   }
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [region = "+region+", id = "+id+"]";
-    }
+   public String getId() {
+      return id;
+   }
+
+   public void setId(String id) {
+      this.id = id;
+   }
 }

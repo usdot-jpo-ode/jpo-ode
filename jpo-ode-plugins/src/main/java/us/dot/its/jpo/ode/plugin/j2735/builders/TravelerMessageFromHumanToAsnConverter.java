@@ -15,7 +15,9 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 public class TravelerMessageFromHumanToAsnConverter {
   
    // JSON cannot have empty fields like XML, so the XML must be modified by removing all flag field values
-   private static final String EMPTY_FIELD_FLAG = "EMPTY_TAG";
+   public static final String EMPTY_FIELD_FLAG = "EMPTY_TAG";
+   public static final String BOOLEAN_OBJECT_TRUE = "BOOLEAN_OBJECT_TRUE";
+   public static final String BOOLEAN_OBJECT_FALSE = "BOOLEAN_OBJECT_FALSE";
 
    public static ObjectNode changeTravelerInformationToAsnValues(JsonNode timData) {
       // msgCnt MsgCount,
@@ -134,7 +136,15 @@ public class TravelerMessageFromHumanToAsnConverter {
       dataFrame.put("sspTimRights", dataFrame.get("sspTimRights").asText());
       
       // priority does not need replacement
-      // durationTime does not need replacement
+      
+      
+      // TODO incorrect spelling in j2735 schema
+      // replace durationTime with duratonTime
+      dataFrame.put("duratonTime", dataFrame.get("durationTime").asInt());
+      dataFrame.remove("durationTime");
+      
+      
+      
       // url does not need replacement
 
       replaceDataFrameTimestamp(dataFrame);
@@ -146,7 +156,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       replaceContent(dataFrame);
 
       // replace frameType
-      dataFrame.set("frameType", replaceFrameType(dataFrame.get("frameType")));
+      //dataFrame.set("frameType", replaceFrameType(dataFrame.get("frameType")));
 
       // replace the msgID and relevant fields
       replaceMsgId(dataFrame);
@@ -236,7 +246,7 @@ public class TravelerMessageFromHumanToAsnConverter {
          replacedContentName = "advisory";
       }
       updatedNode.remove("content");
-      updatedNode.put("frameType", replacedContentName);
+      updatedNode.set("frameType", replaceFrameType(updatedNode.get("frameType")));
 
       // step 2, reformat item list
       ArrayNode items = (ArrayNode) updatedNode.get("items");
@@ -289,7 +299,7 @@ public class TravelerMessageFromHumanToAsnConverter {
          frameType = "unknown";
       }
       
-      return JsonUtils.newObjectNode(frameType, EMPTY_FIELD_FLAG);
+      return JsonUtils.newNode().put(frameType, EMPTY_FIELD_FLAG);
    }
 
    public static void replaceMsgId(ObjectNode dataFrame) {
@@ -478,8 +488,12 @@ public class TravelerMessageFromHumanToAsnConverter {
       updatedNode.set("directionality", JsonUtils.newNode().put(directionName, EMPTY_FIELD_FLAG));
 
       // replace closed path
-      String closedPathBoolean = updatedNode.get("closedPath").asText();
-      updatedNode.set("closedPath", JsonUtils.newNode().put(closedPathBoolean, EMPTY_FIELD_FLAG));
+      Boolean closedPathBoolean = updatedNode.get("closedPath").asBoolean();
+      if (closedPathBoolean) {
+      updatedNode.put("closedPath", BOOLEAN_OBJECT_TRUE);
+      } else {
+         updatedNode.put("closedPath", BOOLEAN_OBJECT_FALSE);
+      }
 
       // transform regions
       String description = updatedNode.get("description").asText();

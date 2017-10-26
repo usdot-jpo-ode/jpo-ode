@@ -1,58 +1,55 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class RoadSignID
-{
-    private Position position;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-    private String crc;
+import us.dot.its.jpo.ode.model.OdeObject;
 
-    private MutcdCode mutcdCode;
+@JsonPropertyOrder({ "position", "viewAngle", "mutcdCode", "crc" })
+public class RoadSignID extends OdeObject {
+   private static final long serialVersionUID = 1L;
 
-    private String viewAngle;
+   @JsonProperty("position")
+   private Position position;
 
-    public Position getPosition ()
-    {
-        return position;
-    }
+   @JsonProperty("viewAngle")
+   private String viewAngle;
 
-    public void setPosition (Position position)
-    {
-        this.position = position;
-    }
+   @JsonProperty("mutcdCode")
+   private MutcdCode mutcdCode;
 
-    public String getCrc ()
-    {
-        return crc;
-    }
+   @JsonProperty("crc")
+   private String crc;
 
-    public void setCrc (String crc)
-    {
-        this.crc = crc;
-    }
+   public Position getPosition() {
+      return position;
+   }
 
-    public MutcdCode getMutcdCode ()
-    {
-        return mutcdCode;
-    }
+   public void setPosition(Position position) {
+      this.position = position;
+   }
 
-    public void setMutcdCode (MutcdCode mutcdCode)
-    {
-        this.mutcdCode = mutcdCode;
-    }
+   public String getCrc() {
+      return crc;
+   }
 
-    public String getViewAngle ()
-    {
-        return viewAngle;
-    }
+   public void setCrc(String crc) {
+      this.crc = crc;
+   }
 
-    public void setViewAngle (String viewAngle)
-    {
-        this.viewAngle = viewAngle;
-    }
+   public MutcdCode getMutcdCode() {
+      return mutcdCode;
+   }
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [position = "+position+", crc = "+crc+", mutcdCode = "+mutcdCode+", viewAngle = "+viewAngle+"]";
-    }
+   public void setMutcdCode(MutcdCode mutcdCode) {
+      this.mutcdCode = mutcdCode;
+   }
+
+   public String getViewAngle() {
+      return viewAngle;
+   }
+
+   public void setViewAngle(String viewAngle) {
+      this.viewAngle = viewAngle;
+   }
 }
