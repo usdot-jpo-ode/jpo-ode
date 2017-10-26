@@ -2,8 +2,8 @@ package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
 import us.dot.its.jpo.ode.model.OdeObject;
 
-public class FrameType extends OdeObject{
-   
+public class FrameType extends OdeObject {
+
    private static final long serialVersionUID = 1L;
 
    private String advisory;
@@ -11,6 +11,7 @@ public class FrameType extends OdeObject{
    private String commercialSignage;
 
    private String roadSignage;
+
    private String unknown;
 
    public String getAdvisory() {

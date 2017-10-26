@@ -459,7 +459,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       // lane width (optional)
       JsonNode laneWidth = updatedNode.get("laneWidth");
       if (laneWidth != null) {
-         updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(laneWidth.asLong()));
+         updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(laneWidth.decimalValue()));
       }
 
       // directionality (optional)
@@ -658,7 +658,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // replace lane width
       if (updatedNode.get("laneWidth") != null) {
-         updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").asLong()));
+         updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").decimalValue()));
       }
 
       // replace circle
@@ -768,7 +768,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // replace lane width
       if (updatedNode.get("laneWidth") != null) {
-         updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").asLong()));
+         updatedNode.put("laneWidth", LaneWidthBuilder.laneWidth(updatedNode.get("laneWidth").decimalValue()));
       }
 
       // directionality does not need replacement

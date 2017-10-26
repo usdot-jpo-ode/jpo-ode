@@ -4,7 +4,9 @@ import us.dot.its.jpo.ode.model.OdeObject;
 
 public class Path extends OdeObject
 {
-    private String scale;
+   private static final long serialVersionUID = 1L;
+
+   private String scale;
 
     private Offset offset;
 
