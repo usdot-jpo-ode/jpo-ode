@@ -69,6 +69,8 @@ public class DdsAdvisorySituationData extends Asn1Object {
       dStartTime.setDay(zdtTime.getDayOfMonth());
       dStartTime.setHour(zdtTime.getHour());
       dStartTime.setMinute(zdtTime.getMinute());
+//      dStartTime.setSecond(zdtTime.getSecond());
+//      dStartTime.setOffset(zdtTime.getOffset().getTotalSeconds());
       return dStartTime;
    }
 

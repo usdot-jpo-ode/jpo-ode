@@ -304,8 +304,8 @@ public class TimController {
 
       //Create a MessageFrame
       ObjectNode mfBodyObj = JsonUtils.newNode();
-      mfBodyObj.set("value", timObj);
       mfBodyObj.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
+      mfBodyObj.set("value", (ObjectNode) JsonUtils.newNode().set("TravelerInformation", timObj));
       
       //Create valid payload from scratch
       OdeMsgPayload payload = null;
