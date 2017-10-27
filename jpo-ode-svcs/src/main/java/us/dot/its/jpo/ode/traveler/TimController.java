@@ -395,7 +395,9 @@ public class TimController {
       String fixedXml = outputXml.replaceAll("tcontent>","content>");// workaround for the "content" reserved name
       fixedXml = fixedXml.replaceAll("llong>","long>"); // workaround for "long" being a type in java
       fixedXml = fixedXml.replaceAll("node_LL3>", "node-LL3>");
+      fixedXml = fixedXml.replaceAll("node_LatLon>", "node-LatLon>");
       fixedXml = fixedXml.replaceAll("nodeLL>", "NodeLL>");
+      fixedXml = fixedXml.replaceAll("nodeXY>", "NodeXY>");
       fixedXml = fixedXml.replaceAll("sequence>", "SEQUENCE>");
       fixedXml = fixedXml.replaceAll("geographicalPath>", "GeographicalPath>");
       

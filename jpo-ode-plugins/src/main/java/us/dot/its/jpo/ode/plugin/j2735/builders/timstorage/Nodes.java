@@ -9,6 +9,9 @@ public class Nodes extends OdeObject {
    private static final long serialVersionUID = 1L;
    @JsonProperty("NodeLL")
    private NodeLL[] nodeLL;
+   
+   @JsonProperty("NodeXY")
+   private NodeXY[] nodeXY;
 
    public NodeLL[] getNodeLL() {
       return nodeLL;
