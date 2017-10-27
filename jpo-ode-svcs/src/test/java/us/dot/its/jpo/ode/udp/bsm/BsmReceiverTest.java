@@ -17,17 +17,13 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
 import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher;
 import us.dot.its.jpo.ode.model.OdeBsmData;
-import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
-import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 
 public class BsmReceiverTest {
 
@@ -42,12 +38,13 @@ public class BsmReceiverTest {
    @Mocked J2735MessageFrame mockJ2735MessageFrame;
    @Mocked J2735Bsm mockJ2735Bsm;
 
-   @Capturing
-   OssJ2735Coder capturingOssJ2735Coder;
-   @Capturing
-   Oss1609dot2Coder capturingOss1609dot2Coder;
-   @Capturing
-   BsmDecoderHelper capturingBinaryDecoderHelper;
+   //TODO open-ode
+//   @Capturing
+//   OssJ2735Coder capturingOssJ2735Coder;
+//   @Capturing
+//   Oss1609dot2Coder capturingOss1609dot2Coder;
+//   @Capturing
+//   BsmDecoderHelper capturingBinaryDecoderHelper;
    @Capturing
    OdeDataPublisher capturingMessagePublisher;
    @Capturing DatagramSocket capturingDatagramSocket;
@@ -95,14 +92,16 @@ public class BsmReceiverTest {
                mockedDatagramPacket.getLength();
                result = sampleBsmPacketByte.length;
                
-               capturingOssJ2735Coder.decodeUPERMessageFrameBytes((byte[]) any);
-               result = mockJ2735MessageFrame;
+               //TODO open-ode
+//               capturingOssJ2735Coder.decodeUPERMessageFrameBytes((byte[]) any);
+//               result = mockJ2735MessageFrame;
                
                mockJ2735MessageFrame.getValue();
                result = mockJ2735Bsm;
                
-               capturingOdeBsmDataCreatorHelper.createOdeBsmData((J2735Bsm) any, null, (SerialId) any);
-               result = mockOdeBsmData;
+             //TODO open-ode
+//               capturingOdeBsmDataCreatorHelper.createOdeBsmData((J2735Bsm) any, null, (SerialId) any);
+//               result = mockOdeBsmData;
                
                capturingMessagePublisher.publish(mockOdeBsmData, anyString);
                times = 1;
@@ -139,14 +138,16 @@ public class BsmReceiverTest {
                mockedDatagramPacket.getLength();
                result = sampleBsmPacketByte.length;
                
-               capturingOssJ2735Coder.decodeUPERMessageFrameBytes((byte[]) any);
-               result = null;
+               //TODO open-ode
+//               capturingOssJ2735Coder.decodeUPERMessageFrameBytes((byte[]) any);
+//               result = null;
+//               
+//               capturingOssJ2735Coder.decodeUPERBsmBytes((byte[]) any);
+//               result = mockJ2735Bsm;
                
-               capturingOssJ2735Coder.decodeUPERBsmBytes((byte[]) any);
-               result = mockJ2735Bsm;
-               
-               capturingOdeBsmDataCreatorHelper.createOdeBsmData((J2735Bsm) any, null, (SerialId) any);
-               result = mockOdeBsmData;
+             //TODO open-ode
+//               capturingOdeBsmDataCreatorHelper.createOdeBsmData((J2735Bsm) any, null, (SerialId) any);
+//               result = mockOdeBsmData;
                
                capturingMessagePublisher.publish(mockOdeBsmData, anyString);
                times = 1;

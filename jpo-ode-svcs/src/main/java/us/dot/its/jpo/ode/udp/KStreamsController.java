@@ -1,13 +1,10 @@
 package us.dot.its.jpo.ode.udp;
 
-import java.util.Arrays;
 import java.util.Properties;
-import java.util.concurrent.Executors;
 
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KStreamBuilder;
@@ -17,12 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
-import us.dot.its.jpo.ode.udp.isd.IsdDepositor;
-import us.dot.its.jpo.ode.udp.isd.IsdReceiver;
-import us.dot.its.jpo.ode.udp.vsd.VsdDepositor;
-import us.dot.its.jpo.ode.udp.vsd.VsdReceiver;
-import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 @Controller
 public class KStreamsController {

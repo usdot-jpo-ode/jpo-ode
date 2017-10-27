@@ -12,7 +12,8 @@ import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.AbstractSubscriberDepositor;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
-import us.dot.its.jpo.ode.udp.vsd.VsdDepositor;
+//TODO open-ode
+//import us.dot.its.jpo.ode.udp.vsd.VsdDepositor;
 
 public class UdpServicesControllerTest {
 
@@ -27,8 +28,9 @@ public class UdpServicesControllerTest {
    AbstractUdpReceiverPublisher capturingAbstractUdpReceiverPublisher;
    @Capturing
    AbstractSubscriberDepositor capturingAbstractSubscriberDepositor;
-   @Capturing
-   VsdDepositor capturingVsdDepositor;
+ //TODO open-ode
+//   @Capturing
+//   VsdDepositor capturingVsdDepositor;
 
    @Test
    public void shouldSubmit5ThreadsVsdOn() {
@@ -69,8 +71,9 @@ public class UdpServicesControllerTest {
             mockServiceManager.submit((AbstractSubscriberDepositor) any, anyString);
             times = 1;
 
-            new VsdDepositor((OdeProperties) any);
-            times = 0;
+          //TODO open-ode
+//            new VsdDepositor((OdeProperties) any);
+//            times = 0;
          }
       };
 

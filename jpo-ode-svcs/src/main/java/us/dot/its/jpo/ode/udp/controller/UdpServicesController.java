@@ -9,8 +9,6 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
 import us.dot.its.jpo.ode.udp.isd.IsdDepositor;
 import us.dot.its.jpo.ode.udp.isd.IsdReceiver;
-import us.dot.its.jpo.ode.udp.vsd.VsdDepositor;
-import us.dot.its.jpo.ode.udp.vsd.VsdReceiver;
 
 /**
  * Centralized UDP service dispatcher.
@@ -31,13 +29,15 @@ public class UdpServicesController {
       logger.debug("Starting UDP receiver services...");
       rm.submit(new BsmReceiver(odeProps));
       rm.submit(new IsdReceiver(odeProps));
-      rm.submit(new VsdReceiver(odeProps));
+   // TODO open-ode
+//      rm.submit(new VsdReceiver(odeProps));
       logger.debug("UDP receiver services started.");
 
       logger.debug("Starting UDP depositor services...");
       rm.submit(new IsdDepositor(odeProps), odeProps.getKafkaTopicIsdPojo());
       if (odeProps.getDepositSanitizedBsmToSdc()) {
-         rm.submit(new VsdDepositor(odeProps), odeProps.getKafkaTopicVsdPojo());
+      // TODO open-ode
+//         rm.submit(new VsdDepositor(odeProps), odeProps.getKafkaTopicVsdPojo());
       } else {
          logger.warn("WARNING - SDC BSM/VSD deposit option disabled, not starting VSD depositor service.");
       }

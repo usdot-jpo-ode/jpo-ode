@@ -24,10 +24,12 @@
       <artifactId>jpo-ode-common</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
+    <!-- TODO open-ode
     <dependency>
       <groupId>gov.usdot</groupId>
       <artifactId>fedgov-cv-security-2016</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
+    -->
   </dependencies>
 </project>
