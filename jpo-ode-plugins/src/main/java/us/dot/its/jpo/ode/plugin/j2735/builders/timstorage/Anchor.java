@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import us.dot.its.jpo.ode.model.OdeObject;
 
-@JsonPropertyOrder({ "lat", "llong", "elevation" })
+@JsonPropertyOrder({ "lat", "long", "elevation" })
 public class Anchor extends OdeObject {
    private static final long serialVersionUID = 1L;
 
@@ -18,28 +18,28 @@ public class Anchor extends OdeObject {
    @JsonProperty("elevation")
    private String elevation;
 
-   public String getElevation() {
-      return elevation;
-   }
-
-   public void setElevation(String elevation) {
-      this.elevation = elevation;
-   }
-
-   public String getlon() {
-      return llong;
-   }
-
-   public void setlon(String lon) {
-      this.llong = lon;
-   }
-
    public String getLat() {
       return lat;
    }
 
    public void setLat(String lat) {
       this.lat = lat;
+   }
+
+   public String getLlong() {
+      return llong;
+   }
+
+   public void setLlong(String llong) {
+      this.llong = llong;
+   }
+
+   public String getElevation() {
+      return elevation;
+   }
+
+   public void setElevation(String elevation) {
+      this.elevation = elevation;
    }
 
 }
