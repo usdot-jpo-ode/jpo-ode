@@ -1,8 +1,12 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class Node_LL3
+import us.dot.its.jpo.ode.model.OdeObject;
+
+public class Node_LL3 extends OdeObject
 {
-    private String lon;
+   private static final long serialVersionUID = 1L;
+
+   private String lon;
 
     private String lat;
 
@@ -24,12 +28,6 @@ public class Node_LL3
     public void setLat (String lat)
     {
         this.lat = lat;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [lon = "+lon+", lat = "+lat+"]";
     }
 }
 

@@ -6,13 +6,13 @@ public class J2735DFullTime extends Asn1Object {
 
    private static final long serialVersionUID = -8184240048723364037L;
 
+   private Integer year;
+   private Integer month;
    private Integer day;
    private Integer hour;
    private Integer minute;
-   private Integer month;
-   private Integer offset;
    private Integer second;
-   private Integer year;
+   private Integer offset;
    
    public Integer getDay() {
       return day;

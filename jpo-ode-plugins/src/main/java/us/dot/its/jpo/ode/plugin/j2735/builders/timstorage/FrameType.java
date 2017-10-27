@@ -1,22 +1,48 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class FrameType
-{
-    private String advisory;
+import us.dot.its.jpo.ode.model.OdeObject;
 
-    public String getAdvisory ()
-    {
-        return advisory;
-    }
+public class FrameType extends OdeObject {
 
-    public void setAdvisory (String advisory)
-    {
-        this.advisory = advisory;
-    }
+   private static final long serialVersionUID = 1L;
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [advisory = "+advisory+"]";
-    }
+   private String advisory;
+
+   private String commercialSignage;
+
+   private String roadSignage;
+
+   private String unknown;
+
+   public String getAdvisory() {
+      return advisory;
+   }
+
+   public void setAdvisory(String advisory) {
+      this.advisory = advisory;
+   }
+
+   public String getUnknown() {
+      return unknown;
+   }
+
+   public void setUnknown(String unknown) {
+      this.unknown = unknown;
+   }
+
+   public String getRoadSignage() {
+      return roadSignage;
+   }
+
+   public void setRoadSignage(String roadSignage) {
+      this.roadSignage = roadSignage;
+   }
+
+   public String getCommercialSignage() {
+      return commercialSignage;
+   }
+
+   public void setCommercialSignage(String commercialSignage) {
+      this.commercialSignage = commercialSignage;
+   }
 }

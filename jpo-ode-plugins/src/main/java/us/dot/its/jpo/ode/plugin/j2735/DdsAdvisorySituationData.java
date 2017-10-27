@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
+import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.util.Random;
@@ -8,7 +9,6 @@ import us.dot.its.jpo.ode.plugin.SituationDataWarehouse;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisoryDetails.AdvisoryBroadcastType;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisoryDetails.DistributionType;
-import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
@@ -17,7 +17,7 @@ public class DdsAdvisorySituationData extends Asn1Object {
 
    int dialogID = 0x9C;             //SemiDialogID -- 0x9C Advisory Situation Data Deposit
    int seqID = 0x05;                //SemiSequenceID -- 0x05 Data
-   String groupID = "jode";         //GroupID -- unique ID used to identify an organization
+   String groupID;                  //GroupID -- unique ID used to identify an organization
    String requestID;                //DSRC.TemporaryID -- random 4 byte ID generated for data transfer
    String recordID;                 //DSRC.TemporaryID -- used by the provider to overwrite existing record(s)
    int timeToLive;                  //TimeToLive -- indicates how long the SDW should persist the record(s)
@@ -26,15 +26,16 @@ public class DdsAdvisorySituationData extends Asn1Object {
    
    public DdsAdvisorySituationData() {
       super();
+      groupID = CodecUtils.toHex(ByteBuffer.wrap("jode".getBytes(), 0, 4).array());
    }
 
    public DdsAdvisorySituationData(
          String startTime,
          String stopTime,
          J2735MessageFrame advisoryMessage,
-         OdeGeoRegion serviceRegion,
+         DdsGeoRegion serviceRegion,
          SituationDataWarehouse.SDW.TimeToLive ttl) throws ParseException {
-      super();
+      this();
       
       J2735DFullTime dStartTime = dFullTimeFromIsoTimeString(startTime);
       
@@ -53,7 +54,7 @@ public class DdsAdvisorySituationData extends Asn1Object {
             advisoryMessage));
 
       this.setRequestID(id);
-      this.setServiceRegion(GeoRegionBuilder.ddsGeoRegion(serviceRegion));
+      this.setServiceRegion(serviceRegion);
       if (ttl != null)
          this.setTimeToLive(ttl.ordinal());
       else
@@ -68,6 +69,8 @@ public class DdsAdvisorySituationData extends Asn1Object {
       dStartTime.setDay(zdtTime.getDayOfMonth());
       dStartTime.setHour(zdtTime.getHour());
       dStartTime.setMinute(zdtTime.getMinute());
+//      dStartTime.setSecond(zdtTime.getSecond());
+//      dStartTime.setOffset(zdtTime.getOffset().getTotalSeconds());
       return dStartTime;
    }
 

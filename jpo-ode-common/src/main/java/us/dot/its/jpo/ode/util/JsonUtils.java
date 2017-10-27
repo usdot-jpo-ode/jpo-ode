@@ -81,6 +81,18 @@ public class JsonUtils {
        * (IOException e) { e.printStackTrace(); } return o;
        */
    }
+   
+   public static Object jacksonFromJson(String s, Class<?> clazz) throws JsonUtilsException {
+      try {
+         return mapper.readValue(s, clazz);
+      } catch (IOException e) {
+         throw new JsonUtilsException("Error deserializing JSON tree to " + clazz.getName(), e);
+      }
+      /*
+       * Object o = null; try { o = mapper.readValue(s, clazz); } catch
+       * (IOException e) { e.printStackTrace(); } return o;
+       */
+   }
 
    // This method does not seem to work so commenting it out.
    // public static Object fromObjectNode(JsonNode s, Class<?> clazz) {

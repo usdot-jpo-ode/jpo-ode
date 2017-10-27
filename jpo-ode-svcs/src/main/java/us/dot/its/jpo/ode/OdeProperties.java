@@ -74,29 +74,46 @@ public class OdeProperties implements EnvironmentAware {
    private int messagesUntilTrustReestablished = 10; // renew trust session every x messages
    
    /*
-    * TIM properties
+    * Kafka Topics
     */
+   //BSM
+   private String kafkaTopicOdeBsmPojo = "topic.OdeBsmPojo";
+   private String kafkaTopicOdeBsmJson = "topic.OdeBsmJson";
+   private String kafkaTopicOdeBsmRxPojo= "topic.OdeBsmRxPojo";
+   private String kafkaTopicOdeBsmTxPojo= "topic.OdeBsmTxPojo";
+   private String kafkaTopicOdeBsmDuringEventPojo= "topic.OdeBsmDuringEventPojo";
+   private String kafkaTopicFilteredOdeBsmJson = "topic.FilteredOdeBsmJson";
+
+   //TIM
    private String kafkaTopicOdeTimPojo = "topic.OdeTimPojo";
    private String kafkaTopicOdeTimJson = "topic.OdeTimJson";
    private String kafkaTopicOdeDNMsgJson= "topic.OdeDNMsgJson";
    private String kafkaTopicOdeDNMsgPojo= "topic.OdeDNMsgPojo";
-   private String kafkaTopicOdeBsmDuringEventPojo= "topic.OdeBsmDuringEventPojo";
-   private String kafkaTopicOdeBsmRxPojo= "topic.OdeBsmRxPojo";
+   private String kafkaTopicOdeTimRxJson= "topic.OdeTimRxJson";
+   private String kafkaTopicOdeTimBroadcastPojo= "topic.OdeTimBroadcastPojo";
+   private String kafkaTopicOdeTimBroadcastJson= "topic.OdeTimBroadcastJson";
 
+   //VSD
+   private String kafkaTopicVsdPojo = "AsnVsdPojo";
+
+   //ISD
+   private String kafkaTopicIsdPojo = "AsnIsdPojo";
+
+   //ASN.1 CODEC
+   private String kafkaTopicAsn1DecoderInput = "topic.Asn1DecoderInput";
+   private String kafkaTopicAsn1DecoderOutput = "topic.Asn1DecoderOutput";
+   private String kafkaTopicAsn1EncoderInput = "topic.Asn1EncoderInput";
+   private String kafkaTopicAsn1EncoderOutput = "topic.Asn1EncoderOutput";
 
    /*
     * BSM Properties
     */
-   private String kafkaTopicFilteredOdeBsmJson = "topic.FilteredOdeBsmJson";
-   private String kafkaTopicOdeBsmPojo = "topic.OdeBsmPojo";
-   private String kafkaTopicOdeBsmJson = "topic.OdeBsmJson";
    private int bsmReceiverPort = 46800;
    private int bsmBufferSize = 500;
 
    /*
     * Vehicle Situation Data (VSD) Properties
     */
-   private String kafkaTopicVsdPojo = "AsnVsdPojo";
    private int vsdBufferSize = 500;
    private int vsdReceiverPort = 46753;
    private int vsdDepositorPort = 5555;
@@ -105,20 +122,11 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * Intersection Situation Data (ISD) Properties
     */
-   private String kafkaTopicIsdPojo = "AsnIsdPojo";
    private int isdBufferSize = 500;
    private int isdReceiverPort = 46801;
    private int isdDepositorPort = 6666;
    private int isdTrustPort = 6667;
    private int dataReceiptBufferSize;
-
-   /*
-    * ASN.1 CODEC topics
-    */
-   private String kafkaTopicAsn1DecoderInput = "topic.Asn1DecoderInput";
-   private String kafkaTopicAsn1DecoderOutput = "topic.Asn1DecoderOutput";
-   private String kafkaTopicAsn1EncoderInput = "topic.Asn1EncoderInput";
-   private String kafkaTopicAsn1EncoderOutput = "topic.Asn1EncoderOutput";
 
    private int importProcessorBufferSize = OdePlugin.INPUT_STREAM_BUFFER_SIZE;
 
@@ -642,6 +650,38 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setKafkaTopicOdeBsmRxPojo(String kafkaTopicOdeBsmRxPojo) {
       this.kafkaTopicOdeBsmRxPojo = kafkaTopicOdeBsmRxPojo;
+   }
+
+   public String getKafkaTopicOdeBsmTxPojo() {
+      return kafkaTopicOdeBsmTxPojo;
+   }
+
+   public void setKafkaTopicOdeBsmTxPojo(String kafkaTopicOdeBsmTxPojo) {
+      this.kafkaTopicOdeBsmTxPojo = kafkaTopicOdeBsmTxPojo;
+   }
+
+   public String getKafkaTopicOdeTimRxJson() {
+      return kafkaTopicOdeTimRxJson;
+   }
+
+   public void setKafkaTopicOdeTimRxJson(String kafkaTopicOdeTimRxJson) {
+      this.kafkaTopicOdeTimRxJson = kafkaTopicOdeTimRxJson;
+   }
+
+   public String getKafkaTopicOdeTimBroadcastPojo() {
+      return kafkaTopicOdeTimBroadcastPojo;
+   }
+
+   public void setKafkaTopicOdeTimBroadcastPojo(String kafkaTopicOdeTimBroadcastPojo) {
+      this.kafkaTopicOdeTimBroadcastPojo = kafkaTopicOdeTimBroadcastPojo;
+   }
+
+   public String getKafkaTopicOdeTimBroadcastJson() {
+      return kafkaTopicOdeTimBroadcastJson;
+   }
+
+   public void setKafkaTopicOdeTimBroadcastJson(String kafkaTopicOdeTimBroadcastJson) {
+      this.kafkaTopicOdeTimBroadcastJson = kafkaTopicOdeTimBroadcastJson;
    }
 
 }

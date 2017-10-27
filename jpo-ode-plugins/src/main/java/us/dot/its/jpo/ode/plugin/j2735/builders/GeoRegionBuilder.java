@@ -20,7 +20,9 @@ public class GeoRegionBuilder {
    }
 
    public static DdsGeoRegion ddsGeoRegion(OdeGeoRegion serviceRegion) {
-      // TODO Auto-generated method stub
-      return null;
+      DdsGeoRegion ddsRegion = new DdsGeoRegion();
+      ddsRegion.setNwCorner(Position3DBuilder.dsrcPosition3D(serviceRegion.getNwCorner()));
+      ddsRegion.setSeCorner(Position3DBuilder.dsrcPosition3D(serviceRegion.getSeCorner()));
+      return ddsRegion ;
    }
 }

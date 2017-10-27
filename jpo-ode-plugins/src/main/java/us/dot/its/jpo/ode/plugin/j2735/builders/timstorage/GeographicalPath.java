@@ -1,106 +1,99 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class GeographicalPath
-{
-    private Id id;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-    private boolean closedPath;
+import us.dot.its.jpo.ode.model.OdeObject;
 
-    private String direction;
+@JsonPropertyOrder({ "name", "id", "anchor", "laneWidth", "directionality", "closedPath", "direction", "description" })
+public class GeographicalPath extends OdeObject {
+   private static final long serialVersionUID = 1L;
 
-    private Description description;
+   @JsonProperty("name")
+   private String name;
 
-    private String name;
+   @JsonProperty("id")
+   private Id id;
 
-    private Directionality directionality;
+   @JsonProperty("anchor")
+   private Anchor anchor;
 
-    private String laneWidth;
+   @JsonProperty("laneWidth")
+   private String laneWidth;
 
-    private Anchor anchor;
+   @JsonProperty("directionality")
+   private Directionality directionality;
 
-    public Id getId ()
-    {
-        return id;
-    }
+   @JsonProperty("closedPath")
+   private String closedPath;
 
-    public void setId (Id id)
-    {
-        this.id = id;
-    }
+   @JsonProperty("direction")
+   private String direction;
 
-    public boolean isClosedPath ()
-    {
-        return closedPath;
-    }
+   @JsonProperty("description")
+   private Description description;
 
-    public void setClosedPath (boolean closedPath)
-    {
-        this.closedPath = closedPath;
-    }
+   public Id getId() {
+      return id;
+   }
 
-    public String getDirection ()
-    {
-        return direction;
-    }
+   public void setId(Id id) {
+      this.id = id;
+   }
 
-    public void setDirection (String direction)
-    {
-        this.direction = direction;
-    }
+   public String isClosedPath() {
+      return closedPath;
+   }
 
-    public Description getDescription ()
-    {
-        return description;
-    }
+   public void setClosedPath(String closedPath) {
+      this.closedPath = closedPath;
+   }
 
-    public void setDescription (Description description)
-    {
-        this.description = description;
-    }
+   public String getDirection() {
+      return direction;
+   }
 
-    public String getName ()
-    {
-        return name;
-    }
+   public void setDirection(String direction) {
+      this.direction = direction;
+   }
 
-    public void setName (String name)
-    {
-        this.name = name;
-    }
+   public Description getDescription() {
+      return description;
+   }
 
-    public Directionality getDirectionality ()
-    {
-        return directionality;
-    }
+   public void setDescription(Description description) {
+      this.description = description;
+   }
 
-    public void setDirectionality (Directionality directionality)
-    {
-        this.directionality = directionality;
-    }
+   public String getName() {
+      return name;
+   }
 
-    public String getLaneWidth ()
-    {
-        return laneWidth;
-    }
+   public void setName(String name) {
+      this.name = name;
+   }
 
-    public void setLaneWidth (String laneWidth)
-    {
-        this.laneWidth = laneWidth;
-    }
+   public Directionality getDirectionality() {
+      return directionality;
+   }
 
-    public Anchor getAnchor ()
-    {
-        return anchor;
-    }
+   public void setDirectionality(Directionality directionality) {
+      this.directionality = directionality;
+   }
 
-    public void setAnchor (Anchor anchor)
-    {
-        this.anchor = anchor;
-    }
+   public String getLaneWidth() {
+      return laneWidth;
+   }
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [id = "+id+", closedPath = "+closedPath+", direction = "+direction+", description = "+description+", name = "+name+", directionality = "+directionality+", laneWidth = "+laneWidth+", anchor = "+anchor+"]";
-    }
+   public void setLaneWidth(String laneWidth) {
+      this.laneWidth = laneWidth;
+   }
+
+   public Anchor getAnchor() {
+      return anchor;
+   }
+
+   public void setAnchor(Anchor anchor) {
+      this.anchor = anchor;
+   }
 }

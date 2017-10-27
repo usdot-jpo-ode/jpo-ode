@@ -1,6 +1,8 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class Ll
+import us.dot.its.jpo.ode.model.OdeObject;
+
+public class Ll extends OdeObject
 {
     private Nodes nodes;
 
@@ -14,9 +16,4 @@ public class Ll
         this.nodes = nodes;
     }
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [nodes = "+nodes+"]";
-    }
 }

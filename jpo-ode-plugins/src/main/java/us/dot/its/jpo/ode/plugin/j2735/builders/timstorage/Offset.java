@@ -1,22 +1,16 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-public class Offset
-{
-    private Ll ll;
+import us.dot.its.jpo.ode.model.OdeObject;
 
-    public Ll getLl ()
-    {
-        return ll;
-    }
+public class Offset extends OdeObject {
+   private static final long serialVersionUID = 1L;
+   private Ll ll;
 
-    public void setLl (Ll ll)
-    {
-        this.ll = ll;
-    }
+   public Ll getLl() {
+      return ll;
+   }
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [ll = "+ll+"]";
-    }
+   public void setLl(Ll ll) {
+      this.ll = ll;
+   }
 }

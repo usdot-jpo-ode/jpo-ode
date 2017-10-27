@@ -19,7 +19,7 @@ public class DdsAdvisoryDetails extends Asn1Object {
    }
    
    String asdmID;                   //         DSRC.TemporaryID,
-   AdvisoryBroadcastType asdmType;  //    AdvisoryBroadcastType,
+   int asdmType;                    //    AdvisoryBroadcastType,
    int distType;                    //0, 1 or 2    ,
    J2735DFullTime startTime;        //OPTIONAL,
    J2735DFullTime stopTime;         //OPTIONAL,
@@ -40,7 +40,7 @@ public class DdsAdvisoryDetails extends Asn1Object {
          J2735DFullTime stopTime, J2735MessageFrame advisoryMessage) {
       super();
       this.asdmID = asdmID;
-      this.asdmType = asdmType;
+      this.asdmType = asdmType.ordinal();
       this.distType = distType;
       this.startTime = startTime;
       this.stopTime = stopTime;
@@ -50,10 +50,10 @@ public class DdsAdvisoryDetails extends Asn1Object {
    public void setAsdmID(String asdmID) {
       this.asdmID = asdmID;
    }
-   public AdvisoryBroadcastType getAsdmType() {
+   public int getAsdmType() {
       return asdmType;
    }
-   public void setAsdmType(AdvisoryBroadcastType asdmType) {
+   public void setAsdmType(int asdmType) {
       this.asdmType = asdmType;
    }
    public int getDistType() {
@@ -93,7 +93,7 @@ public class DdsAdvisoryDetails extends Asn1Object {
       result = prime * result + ((advisoryMessage == null) ? 0 : advisoryMessage.hashCode());
       result = prime * result + ((advisoryMessageBytes == null) ? 0 : advisoryMessageBytes.hashCode());
       result = prime * result + ((asdmID == null) ? 0 : asdmID.hashCode());
-      result = prime * result + ((asdmType == null) ? 0 : asdmType.hashCode());
+      result = prime * result + asdmType;
       result = prime * result + distType;
       result = prime * result + ((startTime == null) ? 0 : startTime.hashCode());
       result = prime * result + ((stopTime == null) ? 0 : stopTime.hashCode());

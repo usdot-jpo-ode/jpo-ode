@@ -34,4 +34,22 @@ public abstract class AbstractSubPubTransformer<K, S, P> extends AbstractSubscri
         
        return toBePublished;
     }
+
+   public MessageProducer<K, P> getProducer() {
+      return producer;
+   }
+
+   public void setProducer(MessageProducer<K, P> producer) {
+      this.producer = producer;
+   }
+
+   public String getOutputTopic() {
+      return outputTopic;
+   }
+
+   public void setOutputTopic(String outputTopic) {
+      this.outputTopic = outputTopic;
+   }
+    
+    
 }

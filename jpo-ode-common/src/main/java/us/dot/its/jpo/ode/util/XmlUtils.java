@@ -30,6 +30,7 @@ public class XmlUtils {
    static {
       staticXmlMapper = new XmlMapper();
       staticXmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+      staticXmlMapper.setDefaultUseWrapper(true);
    }
    
    
@@ -37,6 +38,7 @@ public class XmlUtils {
       super();
       xmlMapper = new XmlMapper();
       xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+      xmlMapper.setDefaultUseWrapper(true);
    }
 
    public String toXml(Object o) throws JsonProcessingException {
