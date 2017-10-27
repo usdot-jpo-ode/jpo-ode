@@ -39,8 +39,11 @@ import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsdPayload;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
+import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.model.OdeTimData;
 import us.dot.its.jpo.ode.model.OdeTimPayload;
 import us.dot.its.jpo.ode.model.TravelerInputData;
+import us.dot.its.jpo.ode.plugin.ODE;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
@@ -54,6 +57,7 @@ import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
+import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 
 @Controller
 public class TimController {
@@ -75,7 +79,8 @@ public class TimController {
                                                        // needed
 
    private OdeProperties odeProperties;
-   private MessageProducer<String, String> messageProducer;
+   private MessageProducer<String, String> stringMsgProducer;
+   private MessageProducer<String, OdeObject> timProducer;
 
    private final ExecutorService threadPool;
 
@@ -84,8 +89,10 @@ public class TimController {
       super();
       this.odeProperties = odeProperties;
 
-      this.messageProducer = MessageProducer.defaultStringMessageProducer(
+      this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(
          odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType());
+      this.timProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(),
+            odeProperties.getKafkaProducerType(), null, OdeTimSerializer.class.getName());
 
       this.threadPool = Executors.newFixedThreadPool(odeProperties.getRsuSrmSlots() * THREADPOOL_MULTIPLIER);
    }
@@ -245,7 +252,9 @@ public class TimController {
       try {
          // Convert JSON to POJO
          travelerinputData = (TravelerInputData) JsonUtils.fromJson(jsonString, TravelerInputData.class);
-         
+         if (travelerinputData.getOde() == null) {
+            travelerinputData.setOde(new ODE());
+         }
 
          logger.debug("J2735TravelerInputData: {}", jsonString);
 
@@ -254,6 +263,13 @@ public class TimController {
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
+
+      // Add metadata to message and publish to kafka
+      OdeMsgPayload timDataPayload = new OdeMsgPayload(travelerinputData.getTim());
+      OdeMsgMetadata timMetadata = new OdeMsgMetadata(timDataPayload);
+      OdeTimData odeTimData = new OdeTimData(timMetadata, timDataPayload);
+      timProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastPojo(), null, odeTimData);
+      stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastJson(), null, odeTimData.toJson());
 
       // Craft ASN-encodable TIM
       ObjectNode encodableTid;
@@ -272,7 +288,8 @@ public class TimController {
 
       // Encode TIM
       try {
-         publish(travelerinputData, encodableTid);
+         String xmlMsg = convertToXml(travelerinputData, encodableTid);
+         stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlMsg);
       } catch (Exception e) {
          String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
          logger.error(errMsg, e);
@@ -294,7 +311,7 @@ public class TimController {
       return "{\"" + key + "\":\"" + value + "\"}";
    }
 
-   private void publish(TravelerInputData travelerinputData, ObjectNode encodableTidObj) throws JsonUtilsException, XmlUtilsException, ParseException {
+   private String convertToXml(TravelerInputData travelerinputData, ObjectNode encodableTidObj) throws JsonUtilsException, XmlUtilsException, ParseException {
       Tim inOrderTid = (Tim) JsonUtils.jacksonFromJson(encodableTidObj.toString(), Tim.class);
       logger.debug("In order tim: {}", inOrderTid);
       ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
@@ -393,7 +410,7 @@ public class TimController {
       fixedXml = fixedXml.replace("</ObjectNode>", "");
       
       logger.debug("Fixed XML: {}", fixedXml);
-      messageProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, fixedXml);
+      return fixedXml;
    }
    
 /// TODO - old publish method via GSON, results in unordered output
