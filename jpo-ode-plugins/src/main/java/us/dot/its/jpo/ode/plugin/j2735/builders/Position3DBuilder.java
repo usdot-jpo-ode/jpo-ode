@@ -60,7 +60,7 @@ public class Position3DBuilder {
 
       JsonNode longitude = jpos.get("longitude");
       if (longitude != null) {
-         JsonUtils.addNode(posNode, "long", BigDecimal.valueOf(longitude.asLong()).scaleByPowerOfTen(7).longValue());
+         JsonUtils.addNode(posNode, "llong", BigDecimal.valueOf(longitude.asLong()).scaleByPowerOfTen(7).longValue());
       }
 
       JsonNode elevation = jpos.get("elevation");

@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.plugin;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 
 import us.dot.its.jpo.ode.model.OdeObject;
@@ -11,16 +12,22 @@ public class SituationDataWarehouse {
       private static final long serialVersionUID = -7731139391317960325L;
 
       public enum TimeToLive {
+         @JsonProperty("oneminute")
          @SerializedName("oneminute")
          ONEMINUTE, 
+         @JsonProperty("thirtyminutes")
          @SerializedName("thirtyminutes")
          THIRTYMINUTES, 
+         @JsonProperty("oneday")
          @SerializedName("oneday")
          ONEDAY, 
+         @JsonProperty("oneweek")
          @SerializedName("oneweek")
          ONEWEEK, 
+         @JsonProperty("onemonth")
          @SerializedName("onemonth")
          ONEMONTH, 
+         @JsonProperty("oneyear")
          @SerializedName("oneyear")
          ONEYEAR
       }

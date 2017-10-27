@@ -24,7 +24,7 @@ public class DDateTimeBuilder {
     private DDateTimeBuilder() {
        throw new UnsupportedOperationException();
     }
-
+    
     public static J2735DDateTime genericDDateTime(JsonNode dDateTime) {
 
         // Bounds checks
