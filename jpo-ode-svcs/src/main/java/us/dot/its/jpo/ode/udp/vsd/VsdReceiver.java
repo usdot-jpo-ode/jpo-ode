@@ -42,7 +42,8 @@ public class VsdReceiver extends BsmReceiver {
               odeProperties.getKafkaBrokers(),
               odeProperties.getKafkaProducerType(), 
               null, 
-              OdeBsmSerializer.class.getName());
+              OdeBsmSerializer.class.getName(), 
+              odeProps.getKafkaTopicsDisabledSet());
    }
 
    @Override

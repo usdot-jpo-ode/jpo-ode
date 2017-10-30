@@ -90,9 +90,11 @@ public class TimController {
       this.odeProperties = odeProperties;
 
       this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(
-         odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType());
+         odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(), 
+         odeProperties.getKafkaTopicsDisabledSet());
       this.timProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(),
-            odeProperties.getKafkaProducerType(), null, OdeTimSerializer.class.getName());
+            odeProperties.getKafkaProducerType(), null, OdeTimSerializer.class.getName(), 
+            odeProperties.getKafkaTopicsDisabledSet());
 
       this.threadPool = Executors.newFixedThreadPool(odeProperties.getRsuSrmSlots() * THREADPOOL_MULTIPLIER);
    }
@@ -269,8 +271,9 @@ public class TimController {
       OdeMsgMetadata timMetadata = new OdeMsgMetadata(timDataPayload);
       OdeTimData odeTimData = new OdeTimData(timMetadata, timDataPayload);
       timProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastPojo(), null, odeTimData);
-      stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastJson(), null, odeTimData.toJson());
 
+      stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastJson(), null, odeTimData.toJson());
+      
       // Craft ASN-encodable TIM
       ObjectNode encodableTid;
       try {

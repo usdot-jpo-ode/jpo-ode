@@ -14,8 +14,10 @@ public class OdeStringPublisher extends MessagePublisher {
 
    public OdeStringPublisher(OdeProperties odeProps) {
       super(odeProps);
-      this.stringProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
-            odeProperties.getKafkaProducerType());
+      this.stringProducer = MessageProducer.defaultStringMessageProducer(
+         odeProperties.getKafkaBrokers(),
+         odeProperties.getKafkaProducerType(), 
+         odeProperties.getKafkaTopicsDisabledSet());
 
    }
 
