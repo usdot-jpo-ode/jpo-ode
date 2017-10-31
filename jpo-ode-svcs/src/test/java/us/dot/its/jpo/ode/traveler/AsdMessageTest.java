@@ -12,7 +12,8 @@ import mockit.Tested;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
-import us.dot.its.jpo.ode.plugin.j2735.OdeGeoRegion;
+import us.dot.its.jpo.ode.plugin.j2735.DdsGeoRegion;
+import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
@@ -26,9 +27,9 @@ public class AsdMessageTest {
     @Injectable
     String stopTime = "12:35";
     @Injectable
-    String advisoryMessage = "message";
+    J2735MessageFrame advisoryMessage;
     @Injectable
-    OdeGeoRegion serviceRegion;
+    DdsGeoRegion serviceRegion;
     @Injectable
     SituationDataWarehouse.SDW.TimeToLive ttl = 
     SituationDataWarehouse.SDW.TimeToLive.oneminute;
@@ -45,7 +46,7 @@ public class AsdMessageTest {
         try {
             testAsdMessage.getAsdmDetails().getAdvisoryMessage();
         } catch (Exception e) {
-            fail("Unexpected exception in method .enodeHex(): " + e);
+            fail("Unexpected exception in method .encodeHex(): " + e);
         }
     }
 
