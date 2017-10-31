@@ -14,9 +14,9 @@ public class AntennaOffsetSetBuilder {
 
         J2735AntennaOffsetSet genericAntennaOffsetSet = new J2735AntennaOffsetSet();
 
-        genericAntennaOffsetSet.setAntOffsetX(OffsetBuilder.genericVertOffset_B07(antennaOffsetSet.get("antOffsetX")));
-        genericAntennaOffsetSet.setAntOffsetY(OffsetBuilder.genericVertOffset_B07(antennaOffsetSet.get("antOffsetY")));
-        genericAntennaOffsetSet.setAntOffsetZ(OffsetBuilder.genericVertOffset_B07(antennaOffsetSet.get("antOffsetZ")));
+        genericAntennaOffsetSet.setAntOffsetX(OffsetBuilder.genericOffset_B12(antennaOffsetSet.get("antOffsetX")));
+        genericAntennaOffsetSet.setAntOffsetY(OffsetBuilder.genericOffset_B09(antennaOffsetSet.get("antOffsetY")));
+        genericAntennaOffsetSet.setAntOffsetZ(OffsetBuilder.genericOffset_B10(antennaOffsetSet.get("antOffsetZ")));
 
         return genericAntennaOffsetSet;
     }
