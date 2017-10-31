@@ -7,7 +7,7 @@ US Department of Transportation Joint Program office (JPO) Operational Data Envi
 
 In the context of ITS, an Operational Data Environment is a real-time data acquisition and distribution software system that processes and routes data from Connected-X devices –including connected vehicles (CV), personal mobile devices, and infrastructure components and sensors –to subscribing applications to support the operation, maintenance, and use of the transportation system, as well as related research and development efforts.
 
-![ODE Dataflows](images/data_flow_v2.png)
+![ODE Dataflows](images/data_flow_v1.png)
 
 <a name="toc"/>
 
@@ -88,13 +88,7 @@ Run:
 ```
 travis login --org
 ```
-Enter personal github account credentials and then run this:
-
-```
-travis env set BITBUCKET_UN_APP_PW 'yourbitbucketusername:yourbitbucketpassword' -r yourtravisusername/jpo-ode
-```
-
-The login information will be saved and this needs to be done only once.
+Enter personal github account credentials.
 
 In order to allow Sonar to run, personal key must be added with this command:
 (Key can be obtained from the JPO-ODE development team)
@@ -139,16 +133,13 @@ Additionally, read the following guides to familiarize yourself with Docker and 
 |[jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode)|public|Contains the public components of the application code.|
 |[jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)|public|Privacy Protection Module|
 |[jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)|public|S3 depositor service. Optional, comment out of `docker-compose.yml` file if not used.|
-|[jpo-security](https://github.com/usdot-jpo-ode/jpo-security)|public|Security dependencies.|
 |[asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)|public|ASN.1 Encoder/Decoder module|
-|jpo-ode-private|private|Proprietary dependencies.|
 
-Building this application requires all repositories. If you need access to the private repositories, please reach out to a member of the development team.
-
+Building this application requires all repositories. 
 
 #### Step 1 - Clone public repository
 
-Disable Git core.autocrlf (Only the First Time)
+Disable `git core.autocrlf` (Only the First Time)
 **NOTE**: If running on Windows, please make sure that your global git config is set up to not convert End-of-Line characters during checkout. This is important for building docker images correctly.
 
 ```bash
@@ -164,16 +155,7 @@ git clone --recurse-submodules https://github.com/usdot-jpo-ode/jpo-ode.git
 *Note*: Make sure you specify the --recurse-submodules option on the clone command line. This option will cause the cloning of all dependent submodules:
 - Privacy Protection Module (PPM) - [jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)
 - S3 Bucket Depositor - [jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)
-- Security - [jpo-security](https://github.com/usdot-jpo-ode/jpo-security)
 - ASN.1 CODEC - [asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)
-
-#### Step 2 - Clone private repository
-
-Clone the source code from the BitBucket repository:
-
-```bash
-git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
-```
 
 ---
 ### Build and Deploy the Application
@@ -191,22 +173,7 @@ Instructions for how to use the *.env* file can be found [here](https://github.c
 
 The ODE application uses Maven to manage builds.
 
-**Step 1**: Build the private repository artifacts consisting of J2735 ASN.1 Java API and IEEE1609.2 ASN.1 Java API
-
-Navigate to the root directory of the `jpo-ode-private` project:
-
-```bash
- cd jpo-ode-private/
- mvn clean install
-```
-
-**Step 2**: Build the public 1609.2 Security Library
-```bash
-cd jpo-security
-mvn clean install -DskipTests
-```
-
-**Step 3**: Build the S3 Bucket Depositor Service
+**Step 1**: Build the S3 Bucket Depositor Service
 
 Note - if you do not intend on using this feature, edit the docker-compose.yml file and comment out (add a `#` to) the lines including and below `s3dep:`.
 
@@ -216,14 +183,14 @@ Navigate to the root directory of the `jpo-s3-depositor` project:
 mvn clean compile assembly:single install
 ```
 
-**Step 4** (Optional)
+**Step 2** (Optional)
 Familiarize yourself with Docker and follow the instructions in the [README.md](docker/README.md).
 
 If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the $DOCKER_HOST_IP:9092, or wish to set the CAS username/password, `ODE_EXTERNAL_IPVs`, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
 
-**Step 5**: Navigate to the root directory of the jpo-ode project.
+**Step 3**: Navigate to the root directory of the jpo-ode project.
 
-**Step 6**: Build and deploy the application.
+**Step 4**: Build and deploy the application.
 
 The easiest way to do this is to run the ```clean-build-and-deploy``` script.
 This script executes the following commands:
