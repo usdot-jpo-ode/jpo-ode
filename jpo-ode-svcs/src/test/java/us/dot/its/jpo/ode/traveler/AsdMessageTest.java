@@ -7,7 +7,8 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
-import us.dot.its.jpo.ode.plugin.j2735.OdeGeoRegion;
+import us.dot.its.jpo.ode.plugin.j2735.DdsGeoRegion;
+import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 
 public class AsdMessageTest {
 
@@ -19,9 +20,9 @@ public class AsdMessageTest {
     @Injectable
     String stopTime = "12:35";
     @Injectable
-    String advisoryMessage = "message";
+    J2735MessageFrame advisoryMessage;
     @Injectable
-    OdeGeoRegion serviceRegion;
+    DdsGeoRegion serviceRegion;
     @Injectable
     SituationDataWarehouse.SDW.TimeToLive ttl = 
     SituationDataWarehouse.SDW.TimeToLive.oneminute;
