@@ -44,10 +44,10 @@ public class UdpServicesControllerTest {
             result = mockServiceManager;
 
             mockServiceManager.submit((AbstractUdpReceiverPublisher) any);
-            times = 3;
+            times = 2;
 
             mockServiceManager.submit((AbstractSubscriberDepositor) any, anyString);
-            times = 2;
+            times = 1;
          }
       };
 
@@ -66,7 +66,7 @@ public class UdpServicesControllerTest {
             result = mockServiceManager;
 
             mockServiceManager.submit((AbstractUdpReceiverPublisher) any);
-            times = 3;
+            times = 2;
 
             mockServiceManager.submit((AbstractSubscriberDepositor) any, anyString);
             times = 1;
