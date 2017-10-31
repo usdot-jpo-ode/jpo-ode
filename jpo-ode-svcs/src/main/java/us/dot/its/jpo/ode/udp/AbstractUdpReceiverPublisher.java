@@ -7,9 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.oss.asn1.AbstractData;
-import com.oss.asn1.Coder;
-
 import us.dot.its.jpo.ode.OdeProperties;
 
 public abstract class AbstractUdpReceiverPublisher implements Runnable {
@@ -59,14 +56,14 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
       }
    }
 
-   protected AbstractData decodeData(byte[] msg) throws UdpReceiverException {
-      AbstractData decoded = null;
-      //TODO open-ode
+   //TODO open-ode
+//   protected AbstractData decodeData(byte[] msg) throws UdpReceiverException {
+//      AbstractData decoded = null;
 //      try {
 //         decoded = J2735Util.decode(coder, msg);
 //      } catch (DecodeFailedException | DecodeNotSupportedException e) {
 //         throw new UdpReceiverException("Unable to decode UDP message", e);
 //      }
-      return decoded;
-   }
+//      return decoded;
+//   }
 }

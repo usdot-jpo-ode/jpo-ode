@@ -8,9 +8,6 @@ import javax.websocket.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oss.asn1.EncodeFailedException;
-import com.oss.asn1.EncodeNotSupportedException;
-
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsClient.DdsClientException;
 import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
@@ -44,7 +41,7 @@ public class DdsDepositor<T> extends AbstractWebSocketClient { // NOSONAR
    }
 
    public void deposit(DdsAdvisorySituationData asdMsg) throws DdsRequestManagerException, DdsClientException,
-         WebSocketException, ParseException, EncodeFailedException, EncodeNotSupportedException {
+         WebSocketException, ParseException {
 
       setUpReqMgr();
 
@@ -54,7 +51,7 @@ public class DdsDepositor<T> extends AbstractWebSocketClient { // NOSONAR
    }
 
    public void deposit(String encodedAsdMsg) throws DdsRequestManagerException, DdsClientException,
-         WebSocketException, ParseException, EncodeFailedException, EncodeNotSupportedException {
+         WebSocketException, ParseException {
 
       setUpReqMgr();
 
