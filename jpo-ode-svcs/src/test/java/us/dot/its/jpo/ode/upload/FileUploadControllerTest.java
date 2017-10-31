@@ -51,18 +51,14 @@ public class FileUploadControllerTest {
          {
             mockOdeProperties.getUploadLocationRoot();
             result = "testRootDir";
-            mockOdeProperties.getUploadLocationBsm();
-            result = "testBsmDir";
-            mockOdeProperties.getUploadLocationMessageFrame();
-            result = "testMessageFrameDir";
-            mockOdeProperties.getUploadLocationBsmLog();
+            mockOdeProperties.getUploadLocationObuLog();
             result = "testLogFileDir";
 
             Executors.newCachedThreadPool();
             result = mockExecutorService;
 
             mockExecutorService.submit((Runnable) any);
-            times = 7;
+            times =5;
          }
       };
       testFileUploadController = new FileUploadController(mockStorageService, mockOdeProperties,

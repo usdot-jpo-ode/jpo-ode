@@ -40,7 +40,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       XmlUtils xmlUtils = new XmlUtils();
       ParserStatus status = ParserStatus.UNKNOWN;
 
-      if (fileType == ImporterFileType.BSM_LOG_FILE) {
+      if (fileType == ImporterFileType.OBU_LOG_FILE) {
          fileParser = LogFileParser.factory(fileName, bundleId.incrementAndGet());
       } else {
          status = ParserStatus.NA;

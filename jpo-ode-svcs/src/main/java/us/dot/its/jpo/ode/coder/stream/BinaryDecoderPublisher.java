@@ -38,7 +38,7 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
             // Step 1 - parse and decode
             ParserStatus status = ParserStatus.UNKNOWN;
 
-            if (fileType == ImporterFileType.BSM_LOG_FILE) {
+            if (fileType == ImporterFileType.OBU_LOG_FILE) {
                fileParser = LogFileParser.factory(fileName, bundleId.incrementAndGet());
 
                status = fileParser.parseFile(bis, fileName);
@@ -70,7 +70,7 @@ public class BinaryDecoderPublisher extends AbstractDecoderPublisher {
 
             // Step 2 - publish
             if (decoded != null) {
-               if (fileType == ImporterFileType.BSM_LOG_FILE) {
+               if (fileType == ImporterFileType.OBU_LOG_FILE) {
                   if (fileParser instanceof BsmLogFileParser) {
                      logger.debug("Decoded a bsm: {}", decoded);
                      bsmMessagePublisher.publish(decoded, 
