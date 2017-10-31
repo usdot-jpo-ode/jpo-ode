@@ -30,7 +30,7 @@ public class EmergencyDetailsBuilder {
       }
       JsonNode responseType = vehicleAlerts.get("responseType");
       if (responseType != null) {
-          va.setResponseType(J2735ResponseType.valueOf(responseType.asText().replaceAll("-", "_").toUpperCase()));
+          va.setResponseType(J2735ResponseType.valueOf(responseType.fields().next().getKey().replaceAll("-", "_").toUpperCase()));
       }
 		
 		return va;
