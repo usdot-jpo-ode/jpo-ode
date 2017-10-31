@@ -280,9 +280,6 @@ public class TimController {
          encodableTid = TravelerMessageFromHumanToAsnConverter
                .changeTravelerInformationToAsnValues(
                   JsonUtils.toObjectNode(travelerinputData.toJson()));
-         
-         logger.debug("Encodable TravelerInputData: {}", encodableTid);
-         
       } catch (Exception e) {
          String errMsg = "Error converting to encodable TIM.";
          logger.error(errMsg, e);
@@ -316,7 +313,7 @@ public class TimController {
 
    private String convertToXml(TravelerInputData travelerinputData, ObjectNode encodableTidObj) throws JsonUtilsException, XmlUtilsException, ParseException {
       Tim inOrderTid = (Tim) JsonUtils.jacksonFromJson(encodableTidObj.toString(), Tim.class);
-      logger.debug("In order tim: {}", inOrderTid);
+      
       ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
       
       JsonNode timObj = inOrderTidObj.remove("tim");
@@ -384,7 +381,6 @@ public class TimController {
       root.set("OdeAsn1Data", message);
       
       //Convert to XML
-      logger.debug("pre-xml tim: {}", root);
       String outputXml = XmlUtils.toXmlS(root);
       String encStr = XmlUtils.toXmlS(encodingWrap)
             .replace("</wrap><wrap>", "")
