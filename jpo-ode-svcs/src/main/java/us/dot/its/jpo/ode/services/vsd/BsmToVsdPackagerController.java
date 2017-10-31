@@ -28,8 +28,10 @@ public class BsmToVsdPackagerController {
          logger.info("Converting {} records from topic {} and publishing to topic {} ",
                OdeBsmData.class.getSimpleName(), inputTopic, outputTopic);
 
-         BsmToVsdPackager converter = new BsmToVsdPackager(MessageProducer.defaultByteArrayMessageProducer(
-               odeProps.getKafkaBrokers(), odeProps.getKafkaProducerType()), outputTopic);
+         BsmToVsdPackager converter = new BsmToVsdPackager(
+            MessageProducer.defaultByteArrayMessageProducer(
+               odeProps.getKafkaBrokers(), odeProps.getKafkaProducerType(), 
+               odeProps.getKafkaTopicsDisabledSet()), outputTopic);
 
          MessageConsumer<String, String> consumer = new MessageConsumer<String, String>(odeProps.getKafkaBrokers(),
                this.getClass().getSimpleName(), converter, MessageConsumer.SERIALIZATION_STRING_DESERIALIZER);

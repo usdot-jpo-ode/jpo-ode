@@ -9,6 +9,9 @@ public class Delta extends OdeObject {
    private static final long serialVersionUID = 1L;
    @JsonProperty("node-LL3")
    private Node_LL3 node_LL3;
+   
+   @JsonProperty("node-LatLon")
+   private Node_LatLon node_LatLon;
 
    public Node_LL3 getNode_LL3() {
       return node_LL3;
