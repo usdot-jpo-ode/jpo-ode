@@ -38,11 +38,7 @@ public class FileSystemStorageServiceTest {
             {
                 mockOdeProperties.getUploadLocationRoot();
                 result = anyString;
-                mockOdeProperties.getUploadLocationBsm();
-                result = anyString;
-                mockOdeProperties.getUploadLocationMessageFrame();
-                result = anyString;
-                mockOdeProperties.getUploadLocationBsmLog();
+                mockOdeProperties.getUploadLocationObuLog();
                 result = anyString;
             }
         };
@@ -54,8 +50,6 @@ public class FileSystemStorageServiceTest {
         FileSystemStorageService testFileSystemStorageService = new FileSystemStorageService(mockOdeProperties);
 
         assertNotNull(testFileSystemStorageService.getRootLocation());
-        assertNotNull(testFileSystemStorageService.getBsmLocation());
-        assertNotNull(testFileSystemStorageService.getMessageFrameLocation());
 
     }
 
@@ -83,7 +77,7 @@ public class FileSystemStorageServiceTest {
     @Test
     public void storeShouldTryToResolveBsmFilename(@Mocked MultipartFile mockMultipartFile) {
 
-        String testType = "bsm";
+        String testType = "obulog";
 
         new Expectations() {
             {
@@ -112,7 +106,7 @@ public class FileSystemStorageServiceTest {
     @Test
     public void storeShouldThrowAnErrorEmptyFile(@Mocked MultipartFile mockMultipartFile) {
 
-        String testType = "mf";
+        String testType = "obulog";
 
         new Expectations() {
             {
@@ -141,7 +135,7 @@ public class FileSystemStorageServiceTest {
     @Test
     public void storeShouldRethrowDeleteException(@Mocked MultipartFile mockMultipartFile, @Mocked Files unused) {
 
-        String testType = "bsm";
+        String testType = "obulog";
 
         new Expectations() {
             {
@@ -183,7 +177,7 @@ public class FileSystemStorageServiceTest {
     public void storeShouldRethrowCopyException(@Mocked MultipartFile mockMultipartFile, @Mocked Files unusedFiles,
             @Mocked final Logger mockLogger, @Mocked LoggerFactory unusedLogger, @Mocked InputStream mockInputStream) {
 
-        String testType = "bsm";
+        String testType = "obulog";
 
         try {
             new Expectations() {
@@ -399,7 +393,7 @@ public class FileSystemStorageServiceTest {
             new Verifications() {
                 {
                     Files.createDirectory((Path) any);
-                    times = 3;
+                    times = 1;
                 }
             };
         } catch (IOException e) {

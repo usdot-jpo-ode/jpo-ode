@@ -9,6 +9,15 @@ public class NamedNumberBuilder {
     private NamedNumberBuilder() {
        throw new UnsupportedOperationException();
     }
+    
+    // TODO - values may no longer be needed for ASN1c encoder
+    public static J2735NamedNumber genericNamedNumber(String name) {
+       J2735NamedNumber gnn = new J2735NamedNumber();
+
+       gnn.setName(name);
+       gnn.setValue(null);
+       return gnn;
+   }
 
     public static J2735NamedNumber genericGenericLocations(JsonNode genericLocations) {
         J2735NamedNumber gnn = new J2735NamedNumber();

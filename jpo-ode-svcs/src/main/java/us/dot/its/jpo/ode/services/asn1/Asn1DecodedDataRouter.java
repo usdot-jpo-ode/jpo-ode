@@ -50,16 +50,32 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
            
            if (messageId == J2735DSRCmsgID.BasicSafetyMessage.getMsgID()) {
          	  //ODE-518/ODE-604 Demultiplex the messages to appropriate topics based on the "recordType"
+              OdeBsmData odeBsmData = OdeBsmDataCreatorHelper.createOdeBsmData(consumedData);
+              if (recordType == RecordType.bsmLogDuringEvent) {
+                 bsmProducer.send(odeProperties.getKafkaTopicOdeBsmDuringEventPojo(), getRecord().key(),
+                    odeBsmData);
+              } else if (recordType == RecordType.rxMsg) {
+                 bsmProducer.send(odeProperties.getKafkaTopicOdeBsmRxPojo(), getRecord().key(),
+                    odeBsmData);
+              } else if (recordType == RecordType.bsmTx) {
+                 bsmProducer.send(odeProperties.getKafkaTopicOdeBsmTxPojo(), getRecord().key(),
+                    odeBsmData);
+              }
+              // Send all BSMs also to OdeBsmPojo
               bsmProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), getRecord().key(),
-                 OdeBsmDataCreatorHelper.createOdeBsmData(consumedData));
+                 odeBsmData);
            } else if (messageId == J2735DSRCmsgID.TravelerInformation.getMsgID()) {
+              String odeTimData = OdeTimDataCreatorHelper.createOdeTimData(consumed).toString();
               if (recordType == RecordType.dnMsg) {
                  timProducer.send(odeProperties.getKafkaTopicOdeDNMsgJson(), getRecord().key(), 
-                    OdeTimDataCreatorHelper.createOdeTimData(consumed).toString());
-              } else {
-                 timProducer.send(odeProperties.getKafkaTopicOdeTimJson(), getRecord().key(), 
-                    OdeTimDataCreatorHelper.createOdeTimData(consumed).toString());
+                    odeTimData);
+              } else if (recordType == RecordType.rxMsg){
+                 timProducer.send(odeProperties.getKafkaTopicOdeTimRxJson(), getRecord().key(), 
+                    odeTimData);
               }
+              // Send all TIMs also to OdeTimJson
+              timProducer.send(odeProperties.getKafkaTopicOdeTimJson(), getRecord().key(), 
+                 odeTimData);
            }
         } catch (Exception e) {
            logger.error("Failed to route received data: " + consumedData, e);

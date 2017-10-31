@@ -7,7 +7,7 @@ US Department of Transportation Joint Program office (JPO) Operational Data Envi
 
 In the context of ITS, an Operational Data Environment is a real-time data acquisition and distribution software system that processes and routes data from Connected-X devices –including connected vehicles (CV), personal mobile devices, and infrastructure components and sensors –to subscribing applications to support the operation, maintenance, and use of the transportation system, as well as related research and development efforts.
 
-![ODE Dataflows](images/data_flow_v1.png)
+![ODE Dataflows](images/data_flow_v2.png)
 
 <a name="toc"/>
 
@@ -285,24 +285,31 @@ You can run the application on your local machine while other services are deplo
 Once the ODE is running, you should be able to access the jpo-ode web UI at `localhost:8080`.
 
 1. Press the `Connect` button to connect to the ODE WebSocket service.
-2. Press `Choose File` button to select a file with J2735 BSM or MessageFrame records in ASN.1 UPER encoding
+2. Press `Choose File` button to select an OBU log file containing BSMs and/or TIM messages as specified by the WYDOT CV Pilot project. See below documents for details:
+a. [Wyoming CV Pilot Log File Design](data/Wyoming_CV_Pilot_Log_File_Design.docx) 
+b. [WYDOT Log Records](data/wydotLogRecords_Tony.h) 
 3. Press `Upload` button to upload the file to ODE.
 
-Upload a file containing BSM messages or J2735 MessageFrame in ASN.1 UPER encoded binary format. For example, try the file [data/bsm.uper](data/bsm.uper) or [data/messageFrame.uper](data/messageFrame.uper) and observe the decoded messages returned to the web UI page while connected tot he WebSocket interface.
+Upload records within the files must be embedding BSM and/or TIM messages wrapped in J2735 MessageFrame and ASN.1 UPER encoded, wrapped in IEEE 1609.2 envelope and ASN.1 COER encoded binary format. The following files are a samples of each supported type. Uploading any of the files below will you will observe the decoded messages returned to the web UI page while connected to the WebSocket interface:
 
-Alternatively, you may upload a file containing BSM messages in ASN.1 UPER encoded hexadecimal format. For example, a file containing the following pure BSM record and a file extension of `.hex` or  `.txt` would be processed and decoded by the ODE and results returned to the web UI page:
-```text
-401480CA4000000000000000000000000000000000000000000000000000000000000000F800D9EFFFB7FFF00000000000000000000000000000000000000000000000000000001FE07000000000000000000000000000000000001FF0
-```
-*Note: Hexadecimal file format is for test purposes only. ODE is not expected to receive ASN.1 data records in hexadecimal format from the field devices.*
+ - [data/bsmLogDuringEvent.bin](data/bsmLogDuringEvent.bin)
+ - [data/bsmTx.bin](data/bsmTx.bin)
+ - [data/dnMsg.bin](data/dnMsg.bin)
+ - [data/rxMsg_BSM.bin](data/rxMsg_BSM.bin)
+ - [data/rxMsg_TIM.bin](data/rxMsg_TIM.bin)
 
-Another way data can be uploaded to the ODE is through copying the file to the location specified by the `ode.uploadLocationRoot/ode.uploadLocationBsm` or `ode.uploadLocationRoot/ode.uploadLocationMessageFrame` property. If not specified,  Default locations would be `uploads/bsm` and `uploads/messageframe` sub-directories off of the location where ODE is launched.
+Another way data can be uploaded to the ODE is through copying the file to the location specified by the `ode.uploadLocationRoot/ode.uploadLocationObuLog`property. If not specified,  Default locations would be `uploads/bsmlog`sub-directory off of the location where ODE is launched.
 
-The result of uploading and decoding of the message will be displayed on the UI screen.
+The result of uploading and decoding of messages will be displayed on the UI screen.
 
 ![ODE UI](images/ode-ui.png)
 
-*Notice that the empty fields in the J2735 message are represented by a `null` value. Also note that ODE output strips the MessageFrame header and returns a pure BSM in the J2735 BSM subscription topic.*
+*Notice that the empty fields in the J2735 message are represented by a `null` value. Also note that ODE output strips the MessageFrame header and returns a pure BSM or TIM in the subscription topic.*
+
+### asn1_codec Module (ASN.1 Encoder and Decoder)
+ODE requires the deployment of asn1_codec module. ODE's `docker-compose.yml` file is set up to build and deploy the module in a Docker container. If you wish to run `asn1_codec` module outside Docker (i.e. directly on the host machine), please refer to the documentation of `asn1_codec` module.
+
+The only requirement for deploying `asn1_codec` module on Docker is the setup of two environment variables `DOCKER_HOST_IP` and `DOCKER_SHARED_VOLUME`.
 
 ### PPM Module (Geofencing and Filtering)
 

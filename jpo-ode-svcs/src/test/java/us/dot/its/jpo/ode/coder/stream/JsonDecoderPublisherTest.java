@@ -55,7 +55,7 @@ public class JsonDecoderPublisherTest {
       try {
 
           BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-          new JsonDecoderPublisher(mockOdeStringPublisher).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
+          new JsonDecoderPublisher(mockOdeStringPublisher).decodeAndPublish(bis, "testFileName", ImporterFileType.OBU_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -80,7 +80,7 @@ public class JsonDecoderPublisherTest {
       try {
 
           BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-          new JsonDecoderPublisher(mockOdeStringPublisher).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
+          new JsonDecoderPublisher(mockOdeStringPublisher).decodeAndPublish(bis, "testFileName", ImporterFileType.OBU_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }

@@ -181,7 +181,7 @@ public class OssMessageFrameTest {
         
         J2735Bsm actualbsm = null;
         try {
-            actualbsm = OssMessageFrame.genericMessageFrame(testMessageFrame).getValue();
+            actualbsm = (J2735Bsm) OssMessageFrame.genericMessageFrame(testMessageFrame).getValue();
             
             if (actualbsm.getCoreData() == null) {
                 fail("Bsm core data failed to populate");

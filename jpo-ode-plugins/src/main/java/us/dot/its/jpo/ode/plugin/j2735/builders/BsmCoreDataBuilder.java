@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmCoreData;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
+import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TransmissionState;
 
 public class BsmCoreDataBuilder {
@@ -27,7 +27,7 @@ public class BsmCoreDataBuilder {
             genericBsmCoreData.setSecMark(null);
         }
 
-         genericBsmCoreData.setPosition(new J2735Position3D(LatitudeBuilder.genericLatitude(coreData.get("lat")),
+         genericBsmCoreData.setPosition(new OdePosition3D(LatitudeBuilder.genericLatitude(coreData.get("lat")),
                LongitudeBuilder.genericLongitude(coreData.get("long")),
                ElevationBuilder.genericElevation(coreData.get("elev"))));
 

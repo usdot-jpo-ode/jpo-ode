@@ -19,9 +19,9 @@ public class EmergencyDetailsBuilder {
 		
 		// Required elements
 		va.setSspRights(vehicleAlerts.get("sspRights").asInt());
-      va.setSirenUse(J2735SirenInUse.valueOf(vehicleAlerts.get("sirenUse").asText().replaceAll("-", "_").toUpperCase()));
-      va.setLightsUse(J2735LightbarInUse.valueOf(vehicleAlerts.get("lightsUse").asText().replaceAll("-", "_").toUpperCase()));
-      va.setMulti(J2735MultiVehicleResponse.valueOf(vehicleAlerts.get("multi").asText().replaceAll("-", "_").toUpperCase()));
+      va.setSirenUse(J2735SirenInUse.valueOf(vehicleAlerts.get("sirenUse").fields().next().getKey().replaceAll("-", "_").toUpperCase()));
+      va.setLightsUse(J2735LightbarInUse.valueOf(vehicleAlerts.get("lightsUse").fields().next().getKey().replaceAll("-", "_").toUpperCase()));
+      va.setMulti(J2735MultiVehicleResponse.valueOf(vehicleAlerts.get("multi").fields().next().getKey().replaceAll("-", "_").toUpperCase()));
 
 		// Optional elements
       JsonNode events = vehicleAlerts.get("events");
@@ -30,7 +30,7 @@ public class EmergencyDetailsBuilder {
       }
       JsonNode responseType = vehicleAlerts.get("responseType");
       if (responseType != null) {
-          va.setResponseType(J2735ResponseType.valueOf(responseType.asText().replaceAll("-", "_").toUpperCase()));
+          va.setResponseType(J2735ResponseType.valueOf(responseType.fields().next().getKey().replaceAll("-", "_").toUpperCase()));
       }
 		
 		return va;

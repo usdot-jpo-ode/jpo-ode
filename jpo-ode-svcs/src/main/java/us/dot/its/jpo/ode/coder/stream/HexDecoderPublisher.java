@@ -37,7 +37,7 @@ public class HexDecoderPublisher extends AbstractDecoderPublisher  {
             line = scanner.nextLine();
 
             ParserStatus status = ParserStatus.UNKNOWN;
-            if (fileType == ImporterFileType.BSM_LOG_FILE) {
+            if (fileType == ImporterFileType.OBU_LOG_FILE) {
                 status = bsmFileParser.parseFile(new BufferedInputStream(
                    new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName);
             } else {
