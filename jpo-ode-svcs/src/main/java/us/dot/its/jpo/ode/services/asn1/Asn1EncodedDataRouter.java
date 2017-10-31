@@ -10,9 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.event.ResponseEvent;
 
-import com.oss.asn1.EncodeFailedException;
-import com.oss.asn1.EncodeNotSupportedException;
-
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.dds.DdsClient.DdsClientException;
@@ -180,8 +177,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
     }
 
     private void depositToDDS(TravelerInputData travelerinputData, String asdBytes)
-          throws ParseException, DdsRequestManagerException, DdsClientException, WebSocketException,
-          EncodeFailedException, EncodeNotSupportedException {
+          throws ParseException, DdsRequestManagerException, DdsClientException, WebSocketException {
        // Step 4 - Step Deposit TIM to SDW if sdw element exists
        if (travelerinputData.getSdw() != null) {
           depositor.deposit(asdBytes);

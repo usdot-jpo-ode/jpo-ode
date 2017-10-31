@@ -8,14 +8,14 @@ import us.dot.its.jpo.ode.OdeProperties;
 
 public class DataReceiptReceiverTest {
 
-   @Tested
-   DataReceiptReceiver testDataReceiptReceiver;
-   @Injectable
-   OdeProperties mockOdeProperties;
-   @Injectable
-   DatagramSocket mockDatagramSocket;
-
    //TODO open-ode
+//   @Tested
+//   DataReceiptReceiver testDataReceiptReceiver;
+//   @Injectable
+//   OdeProperties mockOdeProperties;
+//   @Injectable
+//   DatagramSocket mockDatagramSocket;
+//
 //   @Test
 //   public void test(@Mocked final J2735Util mockJ2735Util, @Mocked final LoggerFactory disabledLoggerFactory) {
 //      try {

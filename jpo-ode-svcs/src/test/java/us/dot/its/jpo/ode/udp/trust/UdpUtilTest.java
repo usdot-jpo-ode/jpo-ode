@@ -1,30 +1,16 @@
 package us.dot.its.jpo.ode.udp.trust;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
-import com.oss.asn1.AbstractData;
-import com.oss.asn1.EncodeFailedException;
-import com.oss.asn1.PERUnalignedCoder;
-
-import mockit.Capturing;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
 import us.dot.its.jpo.ode.udp.UdpUtil;
-import us.dot.its.jpo.ode.udp.UdpUtil.UdpUtilException;
 
 public class UdpUtilTest {
 

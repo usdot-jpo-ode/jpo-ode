@@ -6,8 +6,6 @@ import java.net.SocketException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oss.asn1.Coder;
-
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.UdpUtil;
 import us.dot.its.jpo.ode.udp.UdpUtil.UdpUtilException;
@@ -27,7 +25,7 @@ public abstract class AbstractSubscriberDepositor extends AbstractSubscriberProc
    protected DatagramSocket socket;;
 // TODO open-ode
 //   protected TrustManager trustManager;
-   protected Coder coder;
+//   protected Coder coder;
    private MessageConsumer<String, byte[]> consumer;
 
    public AbstractSubscriberDepositor(OdeProperties odeProps, int port) {
