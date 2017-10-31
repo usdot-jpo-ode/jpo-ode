@@ -48,9 +48,7 @@ public class OdeProperties implements EnvironmentAware {
 
    // File import properties
    private String uploadLocationRoot = "uploads";
-   private String uploadLocationBsm = "bsm";
-   private String uploadLocationMessageFrame = "messageframe";
-   private String uploadLocationBsmLog = "bsmlog";
+   private String uploadLocationObuLogLog = "bsmlog";
 
    /*
     * USDOT Situation Data Clearinghouse (SDC)/ Situation Data Warehouse (SDW),
@@ -163,8 +161,6 @@ public class OdeProperties implements EnvironmentAware {
    public void init() {
 
       uploadLocations.add(Paths.get(uploadLocationRoot));
-      uploadLocations.add(Paths.get(uploadLocationRoot, uploadLocationBsm));
-      uploadLocations.add(Paths.get(uploadLocationRoot, uploadLocationMessageFrame));
 
       String hostname;
       try {
@@ -214,14 +210,6 @@ public class OdeProperties implements EnvironmentAware {
       return hostId;
    }
 
-   public String getUploadLocationBsm() {
-      return uploadLocationBsm;
-   }
-
-   public void setUploadLocationBsm(String uploadLocation) {
-      this.uploadLocationBsm = uploadLocation;
-   }
-
    public String getPluginsLocations() {
       return pluginsLocations;
    }
@@ -265,14 +253,6 @@ public class OdeProperties implements EnvironmentAware {
    @Override
    public void setEnvironment(Environment environment) {
       env = environment;
-   }
-
-   public String getUploadLocationMessageFrame() {
-      return uploadLocationMessageFrame;
-   }
-
-   public void setUploadLocationMessageFrame(String uploadLocationMessageFrame) {
-      this.uploadLocationMessageFrame = uploadLocationMessageFrame;
    }
 
    public String getUploadLocationRoot() {
@@ -658,12 +638,12 @@ public class OdeProperties implements EnvironmentAware {
       this.kafkaTopicOdeTimJson = kafkaTopicOdeTimJson;
    }
 
-   public String getUploadLocationBsmLog() {
-      return uploadLocationBsmLog;
-    }
-    
-   public void setUploadLocationBsmLog(String uploadLocationBsmLog) {
-      this.uploadLocationBsmLog = uploadLocationBsmLog;
+   public String getUploadLocationObuLog() {
+      return uploadLocationObuLogLog;
+   }
+
+   public void setUploadLocationObuLog(String uploadLocationObuLog) {
+      this.uploadLocationObuLogLog = uploadLocationObuLog;
    }
 
    public String getKafkaTopicOdeBsmDuringEventPojo() {

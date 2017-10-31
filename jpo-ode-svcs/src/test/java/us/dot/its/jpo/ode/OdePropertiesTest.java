@@ -64,8 +64,7 @@ public class OdePropertiesTest {
       String testKafkaBrokers = "testKafkaBrokers123456";
       String testKafkaProducerType = "testKafkaProducerType123456";
       String testPluginsLocations = "testpluginsLocations123456";
-      String testUploadLocationBsm = "testuploadLocationBsm123456";
-      String testUploadLocationMessageFrame = "testuploadLocationMessageFrame123456";
+      String testUploadLocationObuLog = "testuploadLocationObuLog123456";
       String testUploadLocationRoot = "testUploadLocationRoot123456";
       String testSdcIp = "testSdcIp";
       int testSdcPort = 123;
@@ -110,8 +109,7 @@ public class OdePropertiesTest {
       testOdeProperties.setKafkaBrokers(testKafkaBrokers);
       testOdeProperties.setKafkaProducerType(testKafkaProducerType);
       testOdeProperties.setPluginsLocations(testPluginsLocations);
-      testOdeProperties.setUploadLocationBsm(testUploadLocationBsm);
-      testOdeProperties.setUploadLocationMessageFrame(testUploadLocationMessageFrame);
+      testOdeProperties.setUploadLocationObuLog(testUploadLocationObuLog);
       testOdeProperties.setUploadLocationRoot(testUploadLocationRoot);
       testOdeProperties.setSdcIp(testSdcIp);
       testOdeProperties.setSdcPort(testSdcPort);
@@ -156,9 +154,7 @@ public class OdePropertiesTest {
       assertEquals("Incorrect testKafkaBrokers", testKafkaBrokers, testOdeProperties.getKafkaBrokers());
       assertEquals("Incorrect testKafkaProducerType", testKafkaProducerType, testOdeProperties.getKafkaProducerType());
       assertEquals("Incorrect testpluginsLocations", testPluginsLocations, testOdeProperties.getPluginsLocations());
-      assertEquals("Incorrect testUploadLocationBsm", testUploadLocationBsm, testOdeProperties.getUploadLocationBsm());
-      assertEquals("Incorrect testUploadLocationMessageFrame", testUploadLocationMessageFrame,
-            testOdeProperties.getUploadLocationMessageFrame());
+      assertEquals("Incorrect testUploadLocationObuLog", testUploadLocationObuLog, testOdeProperties.getUploadLocationObuLog());
       assertEquals("Incorrect testUploadLocationRoot", testUploadLocationRoot,
             testOdeProperties.getUploadLocationRoot());
       assertEquals("Incorrect testSdcIp", testSdcIp, testOdeProperties.getSdcIp());

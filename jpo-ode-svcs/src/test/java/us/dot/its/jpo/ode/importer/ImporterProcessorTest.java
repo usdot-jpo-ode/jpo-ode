@@ -33,7 +33,7 @@ public class ImporterProcessorTest {
    @Injectable
    OdeProperties injectableOdeProperties;
    @Injectable
-   ImporterFileType injectableImporterDirType = ImporterFileType.BSM_LOG_FILE;
+   ImporterFileType injectableImporterDirType = ImporterFileType.OBU_LOG_FILE;
 
    @Capturing
    FileAsn1CodecPublisher capturingFileAsn1CodecPublisher;

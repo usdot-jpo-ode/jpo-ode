@@ -18,7 +18,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 public class ImporterDirectoryWatcher implements Runnable {
    
    public enum ImporterFileType {
-      BSM, MESSAGE_FRAME, BSM_LOG_FILE
+      OBU_LOG_FILE
    }
 
    private static final Logger logger = LoggerFactory.getLogger(ImporterDirectoryWatcher.class);
