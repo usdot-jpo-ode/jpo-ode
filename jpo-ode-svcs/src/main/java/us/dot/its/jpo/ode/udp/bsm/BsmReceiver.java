@@ -23,11 +23,8 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
    private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
                                                       // least 20 bytes long
 
-//ODE-581   private OssJ2735Coder j2735coder;
-
    private SerialId serialId;
 
-//ODE-581   private OdeDataPublisher publisher;
    private LogFileToAsn1CodecPublisher codecPublisher;
 
    protected static AtomicInteger bundleId = new AtomicInteger(1);
@@ -39,12 +36,10 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
    public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
       super(odeProps, port, bufferSize);
-//ODE-581      this.j2735coder = new OssJ2735Coder();
 
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
-      
-//ODE-581      this.publisher = new OdeDataPublisher(odeProperties, OdeBsmSerializer.class.getName());
+
       this.codecPublisher = new LogFileToAsn1CodecPublisher(new StringPublisher(odeProperties));
    }
 
@@ -71,22 +66,6 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                String payloadHexString = HexUtils.toHexString(payload);
                logger.debug("Packet: {}", payloadHexString);
 
-               //ODE-581 removed decoding and replaced with sending the ASN encoding to asn1_codec
-//               // try decoding as a message frame
-//               J2735Bsm decodedBsm = null;
-//               J2735MessageFrame decodedMf = (J2735MessageFrame) j2735coder.decodeUPERMessageFrameBytes(payload);
-//               if (decodedMf != null) {
-//                  decodedBsm = decodedMf.getValue();
-//               } else {
-//                  // if that failed, try decoding as a bsm
-//                  decodedBsm = (J2735Bsm) j2735coder.decodeUPERBsmBytes(payload);
-//               }
-//
-//               // if that failed, throw an io exception
-//               if (decodedBsm == null) {
-//                  throw new IOException("Failed to decode message received via UDP.");
-//               }
-
                codecPublisher.publish(payload);
             }
          } catch (Exception e) {
@@ -104,9 +83,6 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
     */
    public byte[] removeHeader(byte[] packet) {
       String hexPacket = HexUtils.toHexString(packet);
-
-      // logger.debug("BSM packet length: {}, start index: {}",
-      // hexPacket.length(), startIndex);
 
       int startIndex = hexPacket.indexOf(BSM_START_FLAG);
       if (startIndex == 0) {
