@@ -87,7 +87,7 @@ services:
 #    environment:
 #      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
 #    volumes:
-#      - ${DOCKER_SHARED_VOLUME}:/ppm_data#
+#      - ${DOCKER_SHARED_VOLUME}:/ppm_data
 
 #  cvpep_bsm_s3dep:
 #    build: ./jpo-s3-deposit

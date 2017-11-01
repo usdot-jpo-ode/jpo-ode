@@ -21,7 +21,7 @@ In the context of ITS, an Operational Data Environment is a real-time data acqui
 
 [IV. Quickstart Guide](#quickstart-guide)
 
-[V. Testing the Application](#testing)
+[V. Running the Application](#running)
 
 [VI. ODE Limitation](#dev-tools)
 
@@ -200,7 +200,12 @@ If you wish to change the application properties, such as change the location of
 
 #### Step 3: Build and deploy the application.
 
-Navigate to the root directory of the jpo-ode project. The easiest way to do run the ODE application and all its submodules is using Docker. The script ```clean-build-and-deploy``` executes all the necessary commands to do just that:
+Copy the fillowing files from jpo-ode directory into your DOCKER_SHARED_VOLUME directory.
+- Copy jpo-ode/ppm.properties to ${DOCKER_SHARED_VOLUME}/config.properties. Open the newly copied `config.properties` file in a text editor and update the `metadata.broker.list=your.docker.host.ip:9092` line with your system's DOCKER_HOST_IP in place of the dummy `your.docker.host.ip` string. 
+- Copy jpo-ode/adm.properties to ${DOCKER_SHARED_VOLUME}/adm.properties
+- Copy jpo-ode/aem.properties to ${DOCKER_SHARED_VOLUME}/aem.properties
+
+Navigate to the root directory of the jpo-ode project. The easiest way to build _and_ run the ODE application and all its submodules is using Docker. The script ```clean-build-and-deploy``` executes all the necessary commands to do just that:
 
 ```
 #!/bin/bash
@@ -211,7 +216,7 @@ docker-compose up --build -d
 docker-compose ps
 ```
 
-For other build options, see the next section. Otherwise, move on to section [V. Testing ODE Application](#testing)
+For other build options, see the next section. Otherwise, move on to section [V. Running ODE Application](#running)
 
 [Back to top](#toc)
 
@@ -253,9 +258,9 @@ You can run the application on your local machine while other services are deplo
 
 [Back to top](#toc)
 
-<a name="testing"/>
+<a name="running"/>
 
-## V. Testing ODE Application
+## V. Running ODE Application
 Once the ODE is running, you should be able to access the jpo-ode web UI at `localhost:8080`.
 
 1. Press the `Connect` button to connect to the ODE WebSocket service.
