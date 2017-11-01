@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import org.junit.Before;
 import org.junit.Test;
 
-import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion.GeoRegionException;
+import us.dot.its.jpo.ode.plugin.j2735.OdeGeoRegion.GeoRegionException;
 
 /**
  * The class <code>OdeGeoRegionTest</code> contains tests for the class {@link
@@ -25,24 +25,24 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion.GeoRegionException;
  *
  * @version $Revision$
  */
-public class J2735GeoRegionTest {
+public class OdeGeoRegionTest {
 
-   private J2735GeoRegion region1;
-   private J2735GeoRegion region2;
-   private J2735GeoRegion region3;
-   private J2735GeoRegion region4;
+   private OdeGeoRegion region1;
+   private OdeGeoRegion region2;
+   private OdeGeoRegion region3;
+   private OdeGeoRegion region4;
 
-   private J2735GeoRegion testRegion;
+   private OdeGeoRegion testRegion;
 
    @Before
    public void setup() throws GeoRegionException {
-      region1 = new J2735GeoRegion();
-      region2 = new J2735GeoRegion("44.44,-55.55 22.22,   -33.33");
-      region3 = new J2735GeoRegion(new J2735Position3D(), new J2735Position3D());
-      region4 = new J2735GeoRegion(
-            new J2735Position3D(
+      region1 = new OdeGeoRegion();
+      region2 = new OdeGeoRegion("44.44,-55.55 22.22,   -33.33");
+      region3 = new OdeGeoRegion(new OdePosition3D(), new OdePosition3D());
+      region4 = new OdeGeoRegion(
+            new OdePosition3D(
                   BigDecimal.valueOf(44.44), BigDecimal.valueOf(-55.55), null), 
-            new J2735Position3D (
+            new OdePosition3D (
                   BigDecimal.valueOf(22.22), BigDecimal.valueOf(-33.33), null));
    }
    
@@ -106,7 +106,7 @@ public class J2735GeoRegionTest {
     */
    @Test
    public void testSetNwCorner() {
-      region1.setNwCorner(new J2735Position3D(
+      region1.setNwCorner(new OdePosition3D(
             BigDecimal.valueOf(44.44), BigDecimal.valueOf(-55.55), null));
       
       assertEquals(BigDecimal.valueOf(44.44), region2.getNwCorner().getLatitude());
@@ -137,7 +137,7 @@ public class J2735GeoRegionTest {
     */
    @Test
    public void testSetSeCorner() {
-      region1.setSeCorner(new J2735Position3D (
+      region1.setSeCorner(new OdePosition3D (
             BigDecimal.valueOf(22.22), BigDecimal.valueOf(-33.33), null));
       assertEquals(BigDecimal.valueOf(22.22), region2.getSeCorner().getLatitude());
       assertEquals(BigDecimal.valueOf(-33.33), region2.getSeCorner().getLongitude());
@@ -149,67 +149,67 @@ public class J2735GeoRegionTest {
     */
    @Test
    public void testGetCenterPosition() throws GeoRegionException {
-      J2735Position3D result = region2.getCenterPosition();
+      OdePosition3D result = region2.getCenterPosition();
       assertEquals(BigDecimal.valueOf(33.33), result.getLatitude());
       assertEquals(BigDecimal.valueOf(-44.44), result.getLongitude());
    }
 
    @Test
    public void testContainsPosition3DNull() throws GeoRegionException {
-      assertFalse(region1.contains((J2735Position3D)null));
+      assertFalse(region1.contains((OdePosition3D)null));
    }
 
    @Test
    public void testContainsPosition3DFailsNwLatitude() throws GeoRegionException {
       //region2=(44.44, -55.55), (22.22, -33.33)
       //Test pos.getLatitude().doubleValue() > nw.getLatitude().doubleValue()
-      assertFalse(region2.contains(new J2735Position3D(BigDecimal.valueOf(66.66), BigDecimal.valueOf(-44.44), null)));
+      assertFalse(region2.contains(new OdePosition3D(BigDecimal.valueOf(66.66), BigDecimal.valueOf(-44.44), null)));
       //Test nw.getLatitude() == null
       region2.getNwCorner().setLatitude(null);
-      assertFalse(region2.contains(new J2735Position3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-44.44), null)));
+      assertFalse(region2.contains(new OdePosition3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-44.44), null)));
       //Test nw == null
       region2.setNwCorner(null);
-      assertFalse(region2.contains(new J2735Position3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-44.44), null)));
+      assertFalse(region2.contains(new OdePosition3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-44.44), null)));
    }
 
    @Test
    public void testContainsPosition3DFailsNwLongitude() throws GeoRegionException {
       //region2=(44.44, -55.55), (22.22, -33.33)
       //Test pos.getLongitude().doubleValue() < nw.getLongitude().doubleValue()
-      assertFalse(region2.contains(new J2735Position3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-22.22), null)));
+      assertFalse(region2.contains(new OdePosition3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-22.22), null)));
       //Test nw.getLatitude() == null
       region2.getNwCorner().setLongitude(null);
-      assertFalse(region2.contains(new J2735Position3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-44.44), null)));
+      assertFalse(region2.contains(new OdePosition3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-44.44), null)));
    }
 
    @Test
    public void testContainsPosition3DFailsSeLatitude() throws GeoRegionException {
       //region2=(44.44, -22.22), (55.55, -33.33)
       //Test pos.getLatitude().doubleValue() < se.getLatitude().doubleValue()
-      assertFalse(region2.contains(new J2735Position3D(BigDecimal.valueOf(11.11), BigDecimal.valueOf(-44.44), null)));
+      assertFalse(region2.contains(new OdePosition3D(BigDecimal.valueOf(11.11), BigDecimal.valueOf(-44.44), null)));
       //Test nw.getLatitude() == null
       region2.getSeCorner().setLatitude(null);
-      assertFalse(region2.contains(new J2735Position3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-44.44), null)));
+      assertFalse(region2.contains(new OdePosition3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-44.44), null)));
       //Test nw == null
       region2.setSeCorner(null);
-      assertFalse(region2.contains(new J2735Position3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-44.44), null)));
+      assertFalse(region2.contains(new OdePosition3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-44.44), null)));
    }
 
    @Test
    public void testContainsPosition3DFailsSeLongitude() throws GeoRegionException {
       //region2=(44.44, -55.55), (22.22, -33.33)
       //Test pos.getLongitude().doubleValue() > se.getLongitude().doubleValue()
-      assertFalse(region2.contains(new J2735Position3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-22.22), null)));
+      assertFalse(region2.contains(new OdePosition3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-22.22), null)));
       //Test se.getLatitude() == null
       region2.getSeCorner().setLongitude(null);
-      assertFalse(region2.contains(new J2735Position3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-44.44), null)));
+      assertFalse(region2.contains(new OdePosition3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-44.44), null)));
    }
 
    @Test
    public void testContainsPosition3DPasses() throws GeoRegionException {
       //region2=(44.44, -55.55), (22.22, -33.33)
       //Test pos.getLatitude().doubleValue() > nw.getLatitude().doubleValue()
-      assertTrue(region2.contains(new J2735Position3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-44.44), null)));
+      assertTrue(region2.contains(new OdePosition3D(BigDecimal.valueOf(33.33), BigDecimal.valueOf(-44.44), null)));
    }
 
    /**
@@ -226,10 +226,10 @@ public class J2735GeoRegionTest {
 
        BigDecimal elev = BigDecimal.ZERO;
 
-       J2735Position3D nwPoint = new J2735Position3D(nwLat, nwLon, elev);
-       J2735Position3D sePoint = new J2735Position3D(seLat, seLon, elev);
+       OdePosition3D nwPoint = new OdePosition3D(nwLat, nwLon, elev);
+       OdePosition3D sePoint = new OdePosition3D(seLat, seLon, elev);
 
-       testRegion = new J2735GeoRegion(nwPoint, sePoint);
+       testRegion = new OdeGeoRegion(nwPoint, sePoint);
 
    }
 
@@ -244,7 +244,7 @@ public class J2735GeoRegionTest {
 
        BigDecimal elev = BigDecimal.ZERO;
 
-       J2735Position3D testPoint = new J2735Position3D(testLat, testLon, elev);
+       OdePosition3D testPoint = new OdePosition3D(testLat, testLon, elev);
 
        assertFalse(testRegion.contains(testPoint));
 
@@ -261,7 +261,7 @@ public class J2735GeoRegionTest {
 
        BigDecimal elev = BigDecimal.ZERO;
 
-       J2735Position3D testPoint = new J2735Position3D(testLat, testLon, elev);
+       OdePosition3D testPoint = new OdePosition3D(testLat, testLon, elev);
 
        assertTrue(testRegion.contains(testPoint));
 

@@ -16,8 +16,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
-
 public class LongitudeBuilderTest {
 
    @Test

@@ -17,7 +17,7 @@ public class J2735FullPositionVectorTest {
    
    @Test
    public void testGettersAndSetters() {
-      J2735Position3D position = new J2735Position3D();
+      OdePosition3D position = new OdePosition3D();
       fpv.setPosition(position);
       assertEquals(position,fpv.getPosition());
       BigDecimal heading = BigDecimal.valueOf(1);

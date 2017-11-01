@@ -42,10 +42,15 @@
                 <form>
                     <p class="help-block">Upload a signed or unsigned data file encoded in binary UPER encoded, hex UPER encoded or JSON.</p>
                     <input type="file" id="file" name="file" />
+                    <!-- 
                     <br></br>
                     <input type="radio" name="fileType" value="bsmlog"  checked="checked"/> Log file<br></br>
                     <input type="radio" name="fileType" value="bsm"/> Raw BSM file<br></br>
                     <input type="radio" name="fileType" value="mf" /> MessageFrame+BSM file<br></br>
+                    -->
+                    <p class="help-block">Show...</p>
+                    <input type="radio" name="sanitized" value="false"  checked="checked"/> All Records<br></br>
+	                <input type="radio" name="sanitized" value="true"/> Sanitized Records Only<br></br>
                     <button id="upload" class="btn btn-default" type="submit">Upload</button>
                 </form>
                 <div>
@@ -85,13 +90,6 @@
                         </form>
                         <div id="snmp-response"></div>
                     </div>
-                </div>
-                <div class="row">
-	                <form>
-	                    <p class="help-block">Show...</p>
-	                    <input type="radio" name="sanitized" value="false"  checked="checked"/> All Records<br></br>
-	                    <input type="radio" name="sanitized" value="true"/> Sanitized Records Only<br></br>
-	                </form>
                 </div>
             </div>
         </div>

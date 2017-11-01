@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 
 import org.junit.Test;
 
-import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
+import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.TimFieldValidator;
 
 public class TimFieldValidatorTest {
@@ -430,7 +430,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundLat() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(-90.1), BigDecimal.valueOf(45.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(-90.1), BigDecimal.valueOf(45.0),
             BigDecimal.valueOf(1000.0));
       try {
          TimFieldValidator.validatePosition(position);
@@ -442,7 +442,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundLat() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(90.1), BigDecimal.valueOf(45.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(90.1), BigDecimal.valueOf(45.0),
             BigDecimal.valueOf(1000.0));
       try {
          TimFieldValidator.validatePosition(position);
@@ -454,7 +454,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerLat() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(-90.0), BigDecimal.valueOf(45.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(-90.0), BigDecimal.valueOf(45.0),
             BigDecimal.valueOf(1000.0));
       try {
          TimFieldValidator.validatePosition(position);
@@ -465,7 +465,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperLat() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(90.0), BigDecimal.valueOf(45.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(90.0), BigDecimal.valueOf(45.0),
             BigDecimal.valueOf(1000.0));
       try {
          TimFieldValidator.validatePosition(position);
@@ -476,7 +476,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundLong() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(45.0), BigDecimal.valueOf(-180.1),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(45.0), BigDecimal.valueOf(-180.1),
             BigDecimal.valueOf(1000.0));
       try {
          TimFieldValidator.validatePosition(position);
@@ -488,7 +488,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundLong() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(45), BigDecimal.valueOf(180.1),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(45), BigDecimal.valueOf(180.1),
             BigDecimal.valueOf(1000.0));
       try {
          TimFieldValidator.validatePosition(position);
@@ -500,7 +500,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerLong() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(45), BigDecimal.valueOf(-180.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(45), BigDecimal.valueOf(-180.0),
             BigDecimal.valueOf(1000.0));
       try {
          TimFieldValidator.validatePosition(position);
@@ -511,7 +511,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperLong() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(45), BigDecimal.valueOf(180.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(45), BigDecimal.valueOf(180.0),
             BigDecimal.valueOf(1000.0));
       try {
          TimFieldValidator.validatePosition(position);
@@ -522,7 +522,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundElevation() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(45), BigDecimal.valueOf(45.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(45), BigDecimal.valueOf(45.0),
             BigDecimal.valueOf(-409.6));
       try {
          TimFieldValidator.validatePosition(position);
@@ -534,7 +534,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundElevation() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(45), BigDecimal.valueOf(45.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(45), BigDecimal.valueOf(45.0),
             BigDecimal.valueOf(6143.91));
       try {
          TimFieldValidator.validatePosition(position);
@@ -546,7 +546,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerElevation() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(45), BigDecimal.valueOf(45.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(45), BigDecimal.valueOf(45.0),
             BigDecimal.valueOf(-409.5));
       try {
          TimFieldValidator.validatePosition(position);
@@ -557,7 +557,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperElevation() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(45), BigDecimal.valueOf(45.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(45), BigDecimal.valueOf(45.0),
             BigDecimal.valueOf(6143.9));
       try {
          TimFieldValidator.validatePosition(position);

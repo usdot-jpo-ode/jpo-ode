@@ -44,30 +44,22 @@ public class FileUploadController {
 
       ExecutorService threadPool = Executors.newCachedThreadPool();
 
-      Path bsmPath = Paths.get(odeProperties.getUploadLocationRoot(), odeProperties.getUploadLocationBsm());
-      logger.debug("UPLOADER - Bsm directory: {}", bsmPath);
-
-      Path messageFramePath = Paths.get(odeProperties.getUploadLocationRoot(),
-            odeProperties.getUploadLocationMessageFrame());
-      logger.debug("UPLOADER - Message frame directory: {}", messageFramePath);
-      
-
-      Path bsmLogPath = Paths.get(odeProperties.getUploadLocationRoot(),
-          odeProperties.getUploadLocationBsmLog());
-      logger.debug("UPLOADER - BSM log file upload directory: {}", bsmLogPath);
+      Path logPath = Paths.get(odeProperties.getUploadLocationRoot(),
+          odeProperties.getUploadLocationObuLog());
+      logger.debug("UPLOADER - BSM log file upload directory: {}", logPath);
       Path backupPath = Paths.get(odeProperties.getUploadLocationRoot(), "backup");
       logger.debug("UPLOADER - Backup directory: {}", backupPath);
 
       // Create the importers that watch folders for new/modified files
-      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, bsmPath, backupPath, ImporterFileType.BSM));
-      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, messageFramePath, backupPath, ImporterFileType.MESSAGE_FRAME));
-      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, bsmLogPath, backupPath, ImporterFileType.BSM_LOG_FILE));
+      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, logPath, backupPath, ImporterFileType.OBU_LOG_FILE));
 
-      // Create the exporters
+      // Create unfiltered exporters
       threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeBsmJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, FILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicFilteredOdeBsmJson()));
       threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeDNMsgJson()));
       threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeTimJson()));
+
+      // Create filtered exporters
+      threadPool.submit(new StompStringExporter(odeProperties, FILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicFilteredOdeBsmJson()));
    }
 
    @PostMapping("/upload/{type}")

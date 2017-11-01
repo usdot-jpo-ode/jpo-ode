@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -75,6 +76,18 @@ public class JsonUtils {
 
    public static Object fromJson(String s, Class<?> clazz) {
       return gsonCompact.fromJson(s, clazz);
+      /*
+       * Object o = null; try { o = mapper.readValue(s, clazz); } catch
+       * (IOException e) { e.printStackTrace(); } return o;
+       */
+   }
+   
+   public static Object jacksonFromJson(String s, Class<?> clazz) throws JsonUtilsException {
+      try {
+         return mapper.readValue(s, clazz);
+      } catch (IOException e) {
+         throw new JsonUtilsException("Error deserializing JSON tree to " + clazz.getName(), e);
+      }
       /*
        * Object o = null; try { o = mapper.readValue(s, clazz); } catch
        * (IOException e) { e.printStackTrace(); } return o;
@@ -128,8 +141,17 @@ public class JsonUtils {
       return mapper.createObjectNode();
    }
 
-   public static ObjectNode toObjectNode(String tree) throws JsonProcessingException, IOException {
-      ObjectNode jsonNode = (ObjectNode) mapper.readTree(tree);
+   public static ArrayNode newArrayNode() {
+      return mapper.createArrayNode();
+   }
+
+   public static ObjectNode toObjectNode(String tree) throws JsonUtilsException {
+      ObjectNode jsonNode;
+      try {
+         jsonNode = (ObjectNode) mapper.readTree(tree);
+      } catch (Exception e) {
+         throw new JsonUtilsException("Error converting JSON tree to ObjectNode", e);
+      }
       return jsonNode;
    }
 

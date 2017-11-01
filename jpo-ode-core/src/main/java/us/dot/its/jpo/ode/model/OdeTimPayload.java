@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.model;
 
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
 
 public class OdeTimPayload extends OdeMsgPayload {
@@ -16,12 +15,12 @@ public class OdeTimPayload extends OdeMsgPayload {
        this.setData(tim);
    }
 
-   public J2735Bsm getBsm() {
-       return (J2735Bsm) getData();
+   public J2735TravelerInformationMessage getTim() {
+       return (J2735TravelerInformationMessage) getData();
    }
 
-   public void setBsm(J2735Bsm bsm) {
-       setData(bsm);
+   public void setTim(J2735TravelerInformationMessage tim) {
+       setData(tim);
    }
 
 }

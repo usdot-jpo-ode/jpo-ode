@@ -16,7 +16,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.GeometricProjection;
 import us.dot.its.jpo.ode.j2735.dsrc.MsgCRC;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame;
 import us.dot.its.jpo.ode.j2735.dsrc.ValidRegion.Area;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
+import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage.DataFrame.Region.Circle;
 
@@ -370,7 +370,7 @@ public class OssTravelerMessageBuilderTest {
       GeometricProjection geo = new GeometricProjection();
       J2735TravelerInformationMessage.DataFrame.Region.Geometry g = new J2735TravelerInformationMessage.DataFrame.Region.Geometry();
       J2735TravelerInformationMessage.DataFrame.Region.Circle c = new J2735TravelerInformationMessage.DataFrame.Region.Circle();
-      J2735Position3D pos = new J2735Position3D((long) 0.0, (long) 0.0, (long) 0.0);
+      OdePosition3D pos = new OdePosition3D(BigDecimal.valueOf(1.1d), BigDecimal.valueOf(2.2d), BigDecimal.valueOf(3.3d));
       c.setPosition(pos);
       c.setRadius(5);
       c.setUnits(10);
@@ -393,7 +393,7 @@ public class OssTravelerMessageBuilderTest {
       GeometricProjection geo = new GeometricProjection();
       J2735TravelerInformationMessage.DataFrame.Region.Geometry g = new J2735TravelerInformationMessage.DataFrame.Region.Geometry();
       J2735TravelerInformationMessage.DataFrame.Region.Circle c = new J2735TravelerInformationMessage.DataFrame.Region.Circle();
-      J2735Position3D pos = new J2735Position3D((long) 0.0, (long) 0.0, (long) 0.0);
+      OdePosition3D pos = new OdePosition3D(BigDecimal.valueOf(1.1d), BigDecimal.valueOf(2.2d), BigDecimal.valueOf(3.3d));
       c.setPosition(pos);
       c.setRadius(5);
       c.setUnits(6);
@@ -414,7 +414,7 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       Area area = new Area();
       J2735TravelerInformationMessage.DataFrame.Region.OldRegion r = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion();
-      J2735Position3D pos = new J2735Position3D((long) 0.0, (long) 0.0, (long) 0.0);
+      OdePosition3D pos = new OdePosition3D(BigDecimal.valueOf(1.1d), BigDecimal.valueOf(2.2d), BigDecimal.valueOf(3.3d));
       Circle c = new Circle();
       c.setPosition(pos);
       c.setRadius(3);
@@ -2278,7 +2278,7 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       Area area = new Area();
       J2735TravelerInformationMessage.DataFrame.Region.OldRegion r = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion();
-      J2735Position3D pos = new J2735Position3D((long) 0.0, (long) 0.0, (long) 0.0);
+      OdePosition3D pos = new OdePosition3D(BigDecimal.valueOf(1.1d), BigDecimal.valueOf(2.2d), BigDecimal.valueOf(3.3d));
       Circle c = new Circle();
       c.setPosition(pos);
       c.setRadius(3);
@@ -2303,7 +2303,7 @@ public class OssTravelerMessageBuilderTest {
       df.setsspTimRights((short) 0);
       df.setFrameType(0);
       df.setMsgID("RoadSignID");
-      df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      df.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
       df.setCrc("1111111111111111");
@@ -2319,7 +2319,7 @@ public class OssTravelerMessageBuilderTest {
       r.setName("bob");
       r.setRegulatorID(23);
       r.setSegmentID(33);
-      r.setAnchorPosition(new J2735Position3D( BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
+      r.setAnchorPosition(new OdePosition3D( BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       r.setLaneWidth(BigDecimal.valueOf(7));
       r.setDirectionality((long) 3);
       r.setClosedPath(false);
@@ -2330,7 +2330,7 @@ public class OssTravelerMessageBuilderTest {
       g.setExtent(1);
       g.setLaneWidth(BigDecimal.valueOf(33));
       J2735TravelerInformationMessage.DataFrame.Region.Circle c = new J2735TravelerInformationMessage.DataFrame.Region.Circle();
-      c.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      c.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       c.setRadius(15);
       c.setUnits(7);
       g.setCircle(c);
@@ -2372,7 +2372,7 @@ public class OssTravelerMessageBuilderTest {
       r.setName("bob");
       r.setRegulatorID(23);
       r.setSegmentID(33);
-      r.setAnchorPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      r.setAnchorPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       r.setLaneWidth(BigDecimal.valueOf(7));
       r.setDirectionality((long) 3);
       r.setClosedPath(false);
@@ -2383,7 +2383,7 @@ public class OssTravelerMessageBuilderTest {
       g.setExtent(1);
       g.setLaneWidth(BigDecimal.valueOf(33));
       J2735TravelerInformationMessage.DataFrame.Region.Circle c = new J2735TravelerInformationMessage.DataFrame.Region.Circle();
-      c.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      c.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       c.setRadius(15);
       c.setUnits(7);
       g.setCircle(c);
@@ -2425,7 +2425,7 @@ public class OssTravelerMessageBuilderTest {
       r.setName("bob");
       r.setRegulatorID(23);
       r.setSegmentID(33);
-      r.setAnchorPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      r.setAnchorPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       r.setLaneWidth(BigDecimal.valueOf(7));
       r.setDirectionality((long) 3);
       r.setClosedPath(false);
@@ -2436,7 +2436,7 @@ public class OssTravelerMessageBuilderTest {
       g.setExtent(1);
       g.setLaneWidth(BigDecimal.valueOf(33));
       J2735TravelerInformationMessage.DataFrame.Region.Circle c = new J2735TravelerInformationMessage.DataFrame.Region.Circle();
-      c.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      c.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       c.setRadius(15);
       c.setUnits(7);
       g.setCircle(c);
@@ -2478,7 +2478,7 @@ public class OssTravelerMessageBuilderTest {
       r.setName("bob");
       r.setRegulatorID(23);
       r.setSegmentID(33);
-      r.setAnchorPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      r.setAnchorPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       r.setLaneWidth(BigDecimal.valueOf(7));
       r.setDirectionality((long) 3);
       r.setClosedPath(false);
@@ -2489,7 +2489,7 @@ public class OssTravelerMessageBuilderTest {
       g.setExtent(1);
       g.setLaneWidth(BigDecimal.valueOf(33));
       J2735TravelerInformationMessage.DataFrame.Region.Circle c = new J2735TravelerInformationMessage.DataFrame.Region.Circle();
-      c.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      c.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       c.setRadius(15);
       c.setUnits(7);
       g.setCircle(c);
@@ -2531,7 +2531,7 @@ public class OssTravelerMessageBuilderTest {
       r.setName("bob");
       r.setRegulatorID(23);
       r.setSegmentID(33);
-      r.setAnchorPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      r.setAnchorPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       r.setLaneWidth(BigDecimal.valueOf(7));
       r.setDirectionality((long) 3);
       r.setClosedPath(false);
@@ -2542,7 +2542,7 @@ public class OssTravelerMessageBuilderTest {
       g.setExtent(1);
       g.setLaneWidth(BigDecimal.valueOf(33));
       J2735TravelerInformationMessage.DataFrame.Region.Circle c = new J2735TravelerInformationMessage.DataFrame.Region.Circle();
-      c.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      c.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       c.setRadius(15);
       c.setUnits(7);
       g.setCircle(c);
@@ -2572,7 +2572,7 @@ public class OssTravelerMessageBuilderTest {
       df.setsspTimRights((short) 0);
       df.setFrameType(0);
       df.setMsgID("RoadSignID");
-      df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      df.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
       df.setCrc("1111111111111111");
@@ -2588,7 +2588,7 @@ public class OssTravelerMessageBuilderTest {
       r.setName("bob");
       r.setRegulatorID(23);
       r.setSegmentID(33);
-      r.setAnchorPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      r.setAnchorPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       r.setLaneWidth(BigDecimal.valueOf(7));
       r.setDirectionality((long) 3);
       r.setClosedPath(false);
@@ -2664,7 +2664,7 @@ public class OssTravelerMessageBuilderTest {
       df.setsspTimRights((short) 0);
       df.setFrameType(0);
       df.setMsgID("RoadSignID");
-      df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      df.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
       df.setCrc("1111111111111110");
@@ -2680,7 +2680,7 @@ public class OssTravelerMessageBuilderTest {
       r.setName("bob");
       r.setRegulatorID(23);
       r.setSegmentID(33);
-      r.setAnchorPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      r.setAnchorPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       r.setLaneWidth(BigDecimal.valueOf(7));
       r.setDirectionality((long) 3);
       r.setClosedPath(false);
@@ -2756,7 +2756,7 @@ public class OssTravelerMessageBuilderTest {
       df.setsspTimRights((short) 0);
       df.setFrameType(0);
       df.setMsgID("RoadSignID");
-      df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      df.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
       df.setCrc("1111111111111110");
@@ -2772,7 +2772,7 @@ public class OssTravelerMessageBuilderTest {
       r.setName("bob");
       r.setRegulatorID(23);
       r.setSegmentID(33);
-      r.setAnchorPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      r.setAnchorPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       r.setLaneWidth(BigDecimal.valueOf(7));
       r.setDirectionality((long) 3);
       r.setClosedPath(false);
@@ -2818,7 +2818,7 @@ public class OssTravelerMessageBuilderTest {
       df.setsspTimRights((short) 0);
       df.setFrameType(0);
       df.setMsgID("RoadSignID");
-      df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      df.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
       df.setCrc("1111111111111110");
@@ -2834,7 +2834,7 @@ public class OssTravelerMessageBuilderTest {
       r.setName("bob");
       r.setRegulatorID(23);
       r.setSegmentID(33);
-      r.setAnchorPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      r.setAnchorPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       r.setLaneWidth(BigDecimal.valueOf(7));
       r.setDirectionality((long) 3);
       r.setClosedPath(false);
@@ -2880,7 +2880,7 @@ public class OssTravelerMessageBuilderTest {
       df.setsspTimRights((short) 0);
       df.setFrameType(0);
       df.setMsgID("RoadSignID");
-      df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      df.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
       df.setCrc("1111111111111111");
@@ -2896,7 +2896,7 @@ public class OssTravelerMessageBuilderTest {
       r.setName("bob");
       r.setRegulatorID(23);
       r.setSegmentID(33);
-      r.setAnchorPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      r.setAnchorPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       r.setLaneWidth(BigDecimal.valueOf(7));
       r.setDirectionality((long) 3);
       r.setClosedPath(false);
@@ -2907,7 +2907,7 @@ public class OssTravelerMessageBuilderTest {
       or.setExtent(1);
       or.setArea("regionPointSet");
       J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint rp = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint();
-      rp.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      rp.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       rp.setScale(0);
       J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[] rList = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
       J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList re = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList();
@@ -2942,7 +2942,7 @@ public class OssTravelerMessageBuilderTest {
       df.setsspTimRights((short) 0);
       df.setFrameType(0);
       df.setMsgID("RoadSignID");
-      df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      df.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
       df.setCrc("1111111111111111");
@@ -2958,7 +2958,7 @@ public class OssTravelerMessageBuilderTest {
       r.setName("bob");
       r.setRegulatorID(23);
       r.setSegmentID(33);
-      r.setAnchorPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      r.setAnchorPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       r.setLaneWidth(BigDecimal.valueOf(7));
       r.setDirectionality((long) 3);
       r.setClosedPath(false);
@@ -2969,7 +2969,7 @@ public class OssTravelerMessageBuilderTest {
       or.setExtent(1);
       or.setArea("shapePointSet");
       J2735TravelerInformationMessage.DataFrame.Region.OldRegion.ShapePoint sp = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.ShapePoint();
-      sp.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      sp.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       sp.setLaneWidth(BigDecimal.valueOf(10));
       sp.setDirectionality(2);
       sp.setNodeType("xy");
@@ -3041,7 +3041,7 @@ public class OssTravelerMessageBuilderTest {
       df.setsspTimRights((short) 0);
       df.setFrameType(0);
       df.setMsgID("RoadSignID");
-      df.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      df.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       df.setViewAngle("1010101010101010");
       df.setMutcd(5);
       df.setCrc("1111111111111111");
@@ -3057,7 +3057,7 @@ public class OssTravelerMessageBuilderTest {
       r.setName("bob");
       r.setRegulatorID(23);
       r.setSegmentID(33);
-      r.setAnchorPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      r.setAnchorPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       r.setLaneWidth(BigDecimal.valueOf(7));
       r.setDirectionality((long) 3);
       r.setClosedPath(false);
@@ -3068,7 +3068,7 @@ public class OssTravelerMessageBuilderTest {
       or.setExtent(1);
       or.setArea("shapePointSet");
       J2735TravelerInformationMessage.DataFrame.Region.OldRegion.ShapePoint sp = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.ShapePoint();
-      sp.setPosition(new J2735Position3D((long) -41.678473, (long) -108.782775, (long) 917.1432));
+      sp.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       sp.setLaneWidth(BigDecimal.valueOf(10));
       sp.setDirectionality(2);
       sp.setNodeType("xy");

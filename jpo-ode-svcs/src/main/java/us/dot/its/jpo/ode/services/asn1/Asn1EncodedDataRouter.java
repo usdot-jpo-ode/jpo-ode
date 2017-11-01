@@ -21,10 +21,9 @@ import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.TravelerInputData;
+import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.snmp.SNMP;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
-import us.dot.its.jpo.ode.traveler.AsdMessage;
 import us.dot.its.jpo.ode.traveler.TimController.TimControllerException;
 import us.dot.its.jpo.ode.traveler.TimPduCreator;
 import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
@@ -61,12 +60,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
            // Convert JSON to POJO
            TravelerInputData travelerinputData = buildTravelerInputData(consumedObj);
            
-           String hexBytes = consumedObj
-                 .getJSONObject(AppContext.PAYLOAD_STRING)
-                 .getJSONObject(AppContext.DATA_STRING)
-                 .getString("bytes");
-           
-           processEncodedTim(travelerinputData, hexBytes);
+           processEncodedTim(travelerinputData, consumedObj);
            
         } catch (Exception e) {
            logger.error("Error in processing received message from ASN.1 Encoder module: " + consumedData, e);
@@ -93,54 +87,69 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        return travelerinputData;
     }
 
-    public void processEncodedTim(TravelerInputData travelerInfo, String rsuSRMPayload) throws TimControllerException {
+    public void processEncodedTim(TravelerInputData travelerInfo, JSONObject consumedObj) throws TimControllerException {
        // Send TIMs and record results
        HashMap<String, String> responseList = new HashMap<>();
 
-       for (RSU curRsu : travelerInfo.getRsus()) {
+       JSONObject dataObj = consumedObj
+             .getJSONObject(AppContext.PAYLOAD_STRING)
+             .getJSONObject(AppContext.DATA_STRING);
+       
+       JSONObject asdObj = dataObj.getJSONObject("AdvisorySituationData");
+       if (null != asdObj) {
+          String asdBytes = asdObj.getString("bytes");
 
-          ResponseEvent rsuResponse = null;
-          String httpResponseStatus = null;
-
+          // Deposit to DDS
+          String ddsMessage = "";
           try {
-             rsuResponse = createAndSend(travelerInfo.getSnmp(), curRsu, 
-                travelerInfo.getOde().getIndex(), rsuSRMPayload);
-
-             if (null == rsuResponse || null == rsuResponse.getResponse()) {
-                // Timeout
-                httpResponseStatus = "Timeout";
-             } else if (rsuResponse.getResponse().getErrorStatus() == 0) {
-                // Success
-                httpResponseStatus = "Success";
-             } else if (rsuResponse.getResponse().getErrorStatus() == 5) {
-                // Error, message already exists
-                httpResponseStatus = "Message already exists at ".concat(Integer.toString(travelerInfo.getTim().getIndex()));
-             } else {
-                // Misc error
-                httpResponseStatus = "Error code " + rsuResponse.getResponse().getErrorStatus() + " "
-                            + rsuResponse.getResponse().getErrorStatusText();
-             }
-
+             depositToDDS(travelerInfo, asdBytes);
+             ddsMessage = "\"dds_deposit\":{\"success\":\"true\"}";
+             logger.info("DDS deposit successful.");
           } catch (Exception e) {
-             logger.error("Exception caught in TIM deposit loop.", e);
-             httpResponseStatus = e.getClass().getName() + ": " + e.getMessage();
+             ddsMessage = "\"dds_deposit\":{\"success\":\"false\"}";
+             logger.error("Error on DDS deposit.", e);
           }
+
+          responseList.put("ddsMessage", ddsMessage);
           
-          responseList.put(curRsu.getRsuTarget(), httpResponseStatus);
        }
+       
+       JSONObject mfObj = dataObj.getJSONObject("MessageFrame");
+       if (null != mfObj) {
+          String timBytes = mfObj.getString("bytes");
+          for (RSU curRsu : travelerInfo.getRsus()) {
 
-       // Deposit to DDS
-       String ddsMessage = "";
-       try {
-          depositToDDS(travelerInfo, rsuSRMPayload);
-          ddsMessage = "\"dds_deposit\":{\"success\":\"true\"}";
-          logger.info("DDS deposit successful.");
-       } catch (Exception e) {
-          ddsMessage = "\"dds_deposit\":{\"success\":\"false\"}";
-          logger.error("Error on DDS deposit.", e);
+             ResponseEvent rsuResponse = null;
+             String httpResponseStatus = null;
+
+             try {
+                rsuResponse = createAndSend(travelerInfo.getSnmp(), curRsu, 
+                   travelerInfo.getOde().getIndex(), timBytes);
+
+                if (null == rsuResponse || null == rsuResponse.getResponse()) {
+                   // Timeout
+                   httpResponseStatus = "Timeout";
+                } else if (rsuResponse.getResponse().getErrorStatus() == 0) {
+                   // Success
+                   httpResponseStatus = "Success";
+                } else if (rsuResponse.getResponse().getErrorStatus() == 5) {
+                   // Error, message already exists
+                   httpResponseStatus = "Message already exists at ".concat(Integer.toString(travelerInfo.getTim().getIndex()));
+                } else {
+                   // Misc error
+                   httpResponseStatus = "Error code " + rsuResponse.getResponse().getErrorStatus() + " "
+                               + rsuResponse.getResponse().getErrorStatusText();
+                }
+
+             } catch (Exception e) {
+                logger.error("Exception caught in TIM deposit loop.", e);
+                httpResponseStatus = e.getClass().getName() + ": " + e.getMessage();
+             }
+             
+             responseList.put(curRsu.getRsuTarget(), httpResponseStatus);
+          }
+
        }
-
-       responseList.put("ddsMessage", ddsMessage);
        
        logger.info("TIM deposit response {}", responseList);
        
@@ -170,15 +179,12 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        return response;
     }
 
-    private void depositToDDS(TravelerInputData travelerinputData, String rsuSRMPayload)
+    private void depositToDDS(TravelerInputData travelerinputData, String asdBytes)
           throws ParseException, DdsRequestManagerException, DdsClientException, WebSocketException,
           EncodeFailedException, EncodeNotSupportedException {
        // Step 4 - Step Deposit TIM to SDW if sdw element exists
        if (travelerinputData.getSdw() != null) {
-          AsdMessage message = new AsdMessage(travelerinputData.getSnmp().getDeliverystart(),
-                travelerinputData.getSnmp().getDeliverystop(), rsuSRMPayload,
-                travelerinputData.getSdw().getServiceRegion(), travelerinputData.getSdw().getTtl());
-          depositor.deposit(message);
+          depositor.deposit(asdBytes);
        }
     }
 

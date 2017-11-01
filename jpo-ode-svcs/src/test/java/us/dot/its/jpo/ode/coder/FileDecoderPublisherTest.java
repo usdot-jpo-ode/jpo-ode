@@ -42,18 +42,18 @@ public class FileDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
+               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
                times = 1;
-               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
+               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
                times = 0;
-               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
+               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
                times = 0;
             }
          };
 
          Path testPath = Paths.get("testFile.hex");
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         testedFileDecoderPublisher.decodeAndPublishFile(testPath, bis, ImporterFileType.BSM_LOG_FILE);
+         testedFileDecoderPublisher.decodeAndPublishFile(testPath, bis, ImporterFileType.OBU_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -64,18 +64,18 @@ public class FileDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
+               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
                times = 1;
-               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
+               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
                times = 0;
-               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
+               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
                times = 0;
             }
          };
 
          Path testPath = Paths.get("testFile.txt");
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         testedFileDecoderPublisher.decodeAndPublishFile(testPath, bis, ImporterFileType.BSM_LOG_FILE);
+         testedFileDecoderPublisher.decodeAndPublishFile(testPath, bis, ImporterFileType.OBU_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -86,18 +86,18 @@ public class FileDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
+               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
                times = 0;
-               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
+               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
                times = 1;
-               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
+               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
                times = 0;
             }
          };
 
          Path testPath = Paths.get("testFile.json");
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         testedFileDecoderPublisher.decodeAndPublishFile(testPath, bis, ImporterFileType.BSM_LOG_FILE);
+         testedFileDecoderPublisher.decodeAndPublishFile(testPath, bis, ImporterFileType.OBU_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -108,18 +108,18 @@ public class FileDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
+               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
                times = 0;
-               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
+               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
                times = 0;
-               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.BSM_LOG_FILE);
+               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
                times = 1;
             }
          };
 
          Path testPath = Paths.get("testFile.uper");
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         testedFileDecoderPublisher.decodeAndPublishFile(testPath, bis, ImporterFileType.BSM_LOG_FILE);
+         testedFileDecoderPublisher.decodeAndPublishFile(testPath, bis, ImporterFileType.OBU_LOG_FILE);
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }

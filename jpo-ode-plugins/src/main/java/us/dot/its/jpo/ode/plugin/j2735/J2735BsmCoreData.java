@@ -11,7 +11,7 @@ public class J2735BsmCoreData extends Asn1Object {
 	private String id;
 	private Integer secMark;
 
-	private J2735Position3D position;
+	private OdePosition3D position;
 	private J2735AccelerationSet4Way accelSet;
 	private J2735PositionalAccuracy accuracy;
 
@@ -46,11 +46,11 @@ public class J2735BsmCoreData extends Asn1Object {
 		this.secMark = secMark;
 	}
 
-	public J2735Position3D getPosition() {
+	public OdePosition3D getPosition() {
 		return position;
 	}
 
-	public void setPosition(J2735Position3D position) {
+	public void setPosition(OdePosition3D position) {
 		this.position = position;
 	}
 

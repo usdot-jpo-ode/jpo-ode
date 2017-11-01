@@ -49,7 +49,7 @@ public class BinaryDecoderPublisherTest {
          };
 
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new BinaryDecoderPublisher(mockOdeDataPublisher, null).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
+         new BinaryDecoderPublisher(mockOdeDataPublisher, null).decodeAndPublish(bis, "testFileName", ImporterFileType.OBU_LOG_FILE);
 
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
@@ -73,7 +73,7 @@ public class BinaryDecoderPublisherTest {
          };
 
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new BinaryDecoderPublisher(mockOdeDataPublisher, null).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
+         new BinaryDecoderPublisher(mockOdeDataPublisher, null).decodeAndPublish(bis, "testFileName", ImporterFileType.OBU_LOG_FILE);
 
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
@@ -97,7 +97,7 @@ public class BinaryDecoderPublisherTest {
          };
 
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         new BinaryDecoderPublisher(mockOdeDataPublisher, null).decodeAndPublish(bis, "testFileName", ImporterFileType.BSM_LOG_FILE);
+         new BinaryDecoderPublisher(mockOdeDataPublisher, null).decodeAndPublish(bis, "testFileName", ImporterFileType.OBU_LOG_FILE);
 
       } catch (Exception e) {
          fail("Unexpected exception: " + e);

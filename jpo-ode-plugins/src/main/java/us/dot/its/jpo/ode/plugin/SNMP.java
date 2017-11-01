@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.snmp;
+package us.dot.its.jpo.ode.plugin;
 
 import java.text.ParseException;
 import java.time.ZonedDateTime;

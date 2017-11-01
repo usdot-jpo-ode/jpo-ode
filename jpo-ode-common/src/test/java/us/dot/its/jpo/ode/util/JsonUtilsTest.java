@@ -1,17 +1,21 @@
 package us.dot.its.jpo.ode.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 
 public class JsonUtilsTest {
 
@@ -130,7 +134,7 @@ public class JsonUtilsTest {
     }
 
     @Test
-    public void testToObjectNode() throws JsonProcessingException, IOException {
+    public void testToObjectNode() throws JsonUtilsException {
         ObjectNode on = JsonUtils.toObjectNode("{\"key\":\"value\"}");
         assertEquals("{\"key\":\"value\"}", on.toString());
         ObjectNode ovdf = JsonUtils.toObjectNode(OVDF);

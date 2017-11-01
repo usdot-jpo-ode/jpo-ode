@@ -37,18 +37,22 @@ public class ImporterProcessor {
    public void processDirectory(Path dir, Path backupDir) {
       int count = 0;
       // Process files already in the directory
-      logger.debug("Started processing existing files at location: {}", dir);
+      logger.debug("Started processing files at location: {}", dir);
       try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
 
          for (Path entry : stream) {
-            logger.debug("Found a file to process: {}", entry.getFileName());
-            processAndBackupFile(entry, backupDir);
-            count++;
+            if (entry.toFile().isDirectory()) {
+               processDirectory(entry, backupDir);
+            } else {
+               logger.debug("Found a file to process: {}", entry.getFileName());
+               processAndBackupFile(entry, backupDir);
+               count++;
+            }
          }
 
-         logger.debug("Finished processing {} existing files at location: {}", count, dir);
+         logger.debug("Finished processing {} files at location: {}", count, dir);
       } catch (Exception e) {
-         logger.error("Error processing existing files.", e);
+         logger.error("Error processing files.", e);
       }
    }
 
