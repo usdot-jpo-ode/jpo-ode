@@ -14,7 +14,7 @@ import com.oss.asn1.AbstractData;
 
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
+import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.semi.ConnectionPoint;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
@@ -27,14 +27,14 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Excepti
 import us.dot.its.jpo.ode.udp.UdpUtil;
 import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
-import us.dot.its.jpo.ode.wrapper.OdeBsmSerializer;
+import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmSerializer;
 
 public class VsdReceiver extends BsmReceiver {
 
    private static final Logger logger = LoggerFactory.getLogger(VsdReceiver.class);
    protected MessageProducer<String, OdeBsmData> odeBsmDataProducer;
    private SerialId serialId = new SerialId();
-
+   
    @Autowired
    public VsdReceiver(OdeProperties odeProps) {
       super(odeProps, odeProps.getVsdReceiverPort(), odeProps.getVsdBufferSize());
@@ -125,10 +125,10 @@ public class VsdReceiver extends BsmReceiver {
              i++, msg.getBundle().getSize(), odeProperties.getKafkaTopicOdeBsmPojo());
          
          J2735Bsm j2735Bsm = OssBsm.genericBsm(entry);
-         serialId.addBundleId(1);
-         OdeBsmData odeBsmData = BsmDecoderHelper.createOdeBsmData(
-             (J2735Bsm) j2735Bsm, new IEEE1609p2Message(), null, serialId);
-         
+         serialId.addBundleId(1).addRecordId(1);
+         OdeBsmData odeBsmData = OdeBsmDataCreatorHelper.createOdeBsmData(
+            (J2735Bsm) j2735Bsm, new IEEE1609p2Message(), null);
+        
          odeBsmDataProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), null, odeBsmData);
       }
    }

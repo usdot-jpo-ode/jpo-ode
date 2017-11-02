@@ -1,37 +1,41 @@
-Master: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=master)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) [![Quality Gate](https://sonarqube.com/api/badges/gate?key=usdot.jpo.ode:jpo-ode)](https://sonarqube.com/dashboard?id=usdot.jpo.ode%3Ajpo-ode)
+Master: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=master)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=usdot.jpo.ode:jpo-ode)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode)
 
-Develop: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=develop)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) [![Quality Gate](https://sonarqube.com/api/badges/gate?key=usdot.jpo.ode:jpo-ode:develop)](https://sonarqube.com/dashboard?id=usdot.jpo.ode%3Ajpo-ode%3Adevelop)
+Develop: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=develop)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=usdot.jpo.ode:jpo-ode:develop)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode%3Adevelop)
 
 # jpo-ode
 US Department of Transportation Joint Program office (JPO) Operational Data Environment (ODE)
 
 In the context of ITS, an Operational Data Environment is a real-time data acquisition and distribution software system that processes and routes data from Connected-X devices –including connected vehicles (CV), personal mobile devices, and infrastructure components and sensors –to subscribing applications to support the operation, maintenance, and use of the transportation system, as well as related research and development efforts.
 
+![ODE Dataflows](images/data_flow_v2.png)
+
 <a name="toc"/>
 
-## Table of Contents 
+## Table of Contents
 
-[I. Release Notes](#release-notes) 
+[I. Release Notes](#release-notes)
 
-[II. Documentation](#documentation) 
+[II. Documentation](#documentation)
 
-[III. Collaboration Tools](#collaboration-tools) 
+[III. Collaboration Tools](#collaboration-tools)
 
-[IV. Getting Started](#getting-started) 
+[IV. Getting Started](#getting-started)
 
-[V. Testing the Application](#testing) 
+[V. Testing the Application](#testing)
 
-[VI. ODE Limitation](#dev-tools) 
+[VI. ODE Limitation](#dev-tools)
 
-[VII. Development Tools](#dev-tools) 
+[VII. Development Tools](#dev-tools)
 
-[VIII.  Contribution Information](#contribution-info) 
+[VIII. Contribution Information](#contribution-info)
 
---- 
+[IX. Troubleshooting](#troubleshooting)
+
+---
 
 <a name="release-notes"/>
 
- 
+
 ## [I. Release Notes](ReleaseNotes.md)
 
 
@@ -55,6 +59,9 @@ All stakeholders are invited to provide input to these documents. Stakeholders s
 - Main repository on GitHub (public)
 	- https://github.com/usdot-jpo-ode/jpo-ode
 	- git@github.com:usdot-jpo-ode/jpo-ode.git
+- Security repository on GitHub (public)
+        - https://github.com/usdot-jpo-ode/jpo-security.git
+	- git@github.com:usdot-jpo-ode/jpo-security.git
 - Private repository on BitBucket
 	- https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 	- git@bitbucket.org:usdot-jpo-ode/jpo-ode-private.git
@@ -97,7 +104,7 @@ travis env set SONAR_SECURITY_TOKEN <key> -pr <user-account>/<repo-name>
 ```
 
 ### Static Code Analysis
-https://sonarqube.com/organizations/usdot-jpo-ode/projects
+https://sonarcloud.io/organizations/usdot-jpo-ode/projects
 
 [Back to top](#toc)
 
@@ -105,7 +112,7 @@ https://sonarqube.com/organizations/usdot-jpo-ode/projects
 
 ## IV. Getting Started
 
-The following instructions describe the procedure to fetch, build, and run the application. 
+The following instructions describe the procedure to fetch, build, and run the application. If you are installing the ODE in an Ubuntu environment, see this [quick start guide](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Prepare-a-fresh-Ubuntu-instance-for-ODE-installation).
 
 ### Prerequisites
 * JDK 1.8: http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html
@@ -114,28 +121,29 @@ The following instructions describe the procedure to fetch, build, and run the a
 
 Additionally, read the following guides to familiarize yourself with Docker and Kafka.
 
-**Docker** 
+**Docker**
 
 [README.md](docker/README.md)
 
-**Kafka** 
+**Kafka**
 
 [README.md](docker/kafka/README.md)
 
 ---
 ### Obtain the Source Code
 
-**NOTE**: The ODE consists of five repositories: 
+**NOTE**: The ODE consists of four repositories:
 
 |Name|Visibility|Description|
 |----|----------|-----------|
 |[jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode)|public|Contains the public components of the application code.|
+|[jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)|public|Privacy Protection Module|
 |[jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)|public|S3 depositor service. Optional, comment out of `docker-compose.yml` file if not used.|
-|[jpo-security](https://github.com/usdot-jpo-ode/jpo-security)|public|Public security dependencies.|
+|[jpo-security](https://github.com/usdot-jpo-ode/jpo-security)|public|Security dependencies.|
+|[asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)|public|ASN.1 Encoder/Decoder module|
 |jpo-ode-private|private|Proprietary dependencies.|
-|fedgov-cv-security-2016|private|Private security dependencies.|
 
-Building this application requires all repositories. If you need access to the private repositories, please reach out to a member of the development team. 
+Building this application requires all repositories. If you need access to the private repositories, please reach out to a member of the development team.
 
 
 #### Step 1 - Clone public repository
@@ -150,65 +158,34 @@ git config --global core.autocrlf false
 Clone the source code from the GitHub repository using Git command:
 
 ```bash
-git clone https://github.com/usdot-jpo-ode/jpo-ode.git
+git clone --recurse-submodules https://github.com/usdot-jpo-ode/jpo-ode.git
 ```
 
-#### Step 2 - Clone S3 Bucket Depositor repository
+*Note*: Make sure you specify the --recurse-submodules option on the clone command line. This option will cause the cloning of all dependent submodules:
+- Privacy Protection Module (PPM) - [jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)
+- S3 Bucket Depositor - [jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)
+- Security - [jpo-security](https://github.com/usdot-jpo-ode/jpo-security)
+- ASN.1 CODEC - [asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)
 
-Clone the source code from the GitHub repository:
-
-```bash
-git clone https://github.com/usdot-jpo-ode/jpo-s3-deposit.git
-```
-
-#### Step 3 - Clone the public security repository:
-
-Clone the source code from the GitHub repository:
-```bash
-git clone https://github.com/usdot-jpo-ode/jpo-security.git
-```
-
-#### Step 4 - Clone private repository
+#### Step 2 - Clone private repository
 
 Clone the source code from the BitBucket repository:
 
 ```bash
 git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 ```
-#### Step 5 - Clone 1609.2 security library repository
-
-Clone the source code from the BitBucket repository:
-
-```bash
-git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdot-jpo-ode/fedgov-cv-security-2016.git
-```
 
 ---
 ### Build and Deploy the Application
 
 #### Environment Variables
-ODE configuration can be customized for every deployment environment using the OS's environment variables. The following table list the environment variables used in Docker files and shell scripts to automate the deployment process and customize it for each deployment environment. Setting these environment variables will allow the deployment to take place without any modification to the default configuration files.
+ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the *.env* file found in the root of the jpo-ode repository.
 
-|Environment Variable|Description|
-|--------------------|-----------|
-|[DOCKER_HOST_IP](docker/README.md#obtaining-docker_host_ip)      |The IP address of Docker host machine|
-|DOCKER_SHARED_VOLUME|The full path of a directory on the host machine to be shared with docker containers.|
-|CVPEP_AWS_ACCESS_KEY_ID|The data deposit S3 bucket access ID|
-|CVPEP_AWS_SECRET_ACCESS_KEY|The data deposit S3 bucket secret key|
-|CVPEP_DEPOSIT_BUCKET_NAME|The name of the S3 data deposit bucket|
-|CVPEP_DEPOSIT_KEY_NAME|The key used for S3 file names.|
-|CVPEP_DEPOSIT_TOPIC|The Kafka topic to which the S3 depositor subscribes|
-|RDE_AWS_ACCESS_KEY_ID|The data deposit S3 bucket access ID|
-|RDE_AWS_SECRET_ACCESS_KEY|The data deposit S3 bucket secret key|
-|RDE_DEPOSIT_BUCKET_NAME|The name of the S3 data deposit bucket|
-|RDE_DEPOSIT_KEY_NAME|The key used for S3 file names.|
-|RDE_DEPOSIT_TOPIC|The Kafka topic to which the S3 depositor subscribes|
-|ODE_DDS_CAS_USERNAME|The username for authenticating the USDOT Situation Data Warehouse WebSocket server |
-|ODE_DDS_CAS_PASSWORD|The password for authenticating the USDOT Situation Data Warehouse WebSocket server |
-|ODE_EXTERNAL_IPV4|The IPv4 address of the server running ODE |
-|ODE_EXTERNAL_IPV6|The IPv6 address of the server running ODE |
+Instructions for how to use the *.env* file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
 
-To be able to change the configuration of the application during runtime, you may store the configuration files in the location specified by the DOCKER_SHARED_VOLUME/config environment variable.
+**Note** Docker builds may fail if you are on a corporate network due to DNS resolution errors. 
+[See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
+
 
 #### Build Process
 
@@ -229,16 +206,7 @@ cd jpo-security
 mvn clean install -DskipTests
 ```
 
-**Step 3**: Build the private 1609.2 Security Library 
-
-Navigate to the root directory of the `fedgov-cv-security-2016` project:
-
-```bash
- cd fedgov-cv-security-2016
- mvn clean install -DskipTests
-```
-
-**Step 4**: Build the S3 Bucket Depositor Service
+**Step 3**: Build the S3 Bucket Depositor Service
 
 Note - if you do not intend on using this feature, edit the docker-compose.yml file and comment out (add a `#` to) the lines including and below `s3dep:`.
 
@@ -248,16 +216,16 @@ Navigate to the root directory of the `jpo-s3-depositor` project:
 mvn clean compile assembly:single install
 ```
 
-**Step 5** (Optional)
+**Step 4** (Optional)
 Familiarize yourself with Docker and follow the instructions in the [README.md](docker/README.md).
 
 If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the $DOCKER_HOST_IP:9092, or wish to set the CAS username/password, `ODE_EXTERNAL_IPVs`, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
 
-**Step 6**: Navigate to the root directory of the jpo-ode project.
+**Step 5**: Navigate to the root directory of the jpo-ode project.
 
-**Step 7**: Build and deploy the application. 
+**Step 6**: Build and deploy the application.
 
-The easiest way to do this is to run the ```clean-build-and-deploy``` script. 
+The easiest way to do this is to run the ```clean-build-and-deploy``` script.
 This script executes the following commands:
 
 ```
@@ -317,24 +285,31 @@ You can run the application on your local machine while other services are deplo
 Once the ODE is running, you should be able to access the jpo-ode web UI at `localhost:8080`.
 
 1. Press the `Connect` button to connect to the ODE WebSocket service.
-2. Press `Choose File` button to select a file with J2735 BSM or MessageFrame records in ASN.1 UPER encoding
+2. Press `Choose File` button to select an OBU log file containing BSMs and/or TIM messages as specified by the WYDOT CV Pilot project. See below documents for details:
+a. [Wyoming CV Pilot Log File Design](data/Wyoming_CV_Pilot_Log_File_Design.docx) 
+b. [WYDOT Log Records](data/wydotLogRecords_Tony.h) 
 3. Press `Upload` button to upload the file to ODE.
 
-Upload a file containing BSM messages or J2735 MessageFrame in ASN.1 UPER encoded binary format. For example, try the file [data/bsm.uper](data/bsm.uper) or [data/messageFrame.uper](data/messageFrame.uper) and observe the decoded messages returned to the web UI page while connected tot he WebSocket interface.
+Upload records within the files must be embedding BSM and/or TIM messages wrapped in J2735 MessageFrame and ASN.1 UPER encoded, wrapped in IEEE 1609.2 envelope and ASN.1 COER encoded binary format. The following files are a samples of each supported type. Uploading any of the files below will you will observe the decoded messages returned to the web UI page while connected to the WebSocket interface:
 
-Alternatively, you may upload a file containing BSM messages in ASN.1 UPER encoded hexadecimal format. For example, a file containing the following pure BSM record and a file extension of `.hex` or  `.txt` would be processed and decoded by the ODE and results returned to the web UI page:
-```text
-401480CA4000000000000000000000000000000000000000000000000000000000000000F800D9EFFFB7FFF00000000000000000000000000000000000000000000000000000001FE07000000000000000000000000000000000001FF0
-```
-*Note: Hexadecimal file format is for test purposes only. ODE is not expected to receive ASN.1 data records in hexadecimal format from the field devices.*
+ - [data/bsmLogDuringEvent.bin](data/bsmLogDuringEvent.bin)
+ - [data/bsmTx.bin](data/bsmTx.bin)
+ - [data/dnMsg.bin](data/dnMsg.bin)
+ - [data/rxMsg_BSM.bin](data/rxMsg_BSM.bin)
+ - [data/rxMsg_TIM.bin](data/rxMsg_TIM.bin)
 
-Another way data can be uploaded to the ODE is through copying the file to the location specified by the `ode.uploadLocationRoot/ode.uploadLocationBsm` or `ode.uploadLocationRoot/ode.uploadLocationMessageFrame` property. If not specified,  Default locations would be `uploads/bsm` and `uploads/messageframe` sub-directories off of the location where ODE is launched.
+Another way data can be uploaded to the ODE is through copying the file to the location specified by the `ode.uploadLocationRoot/ode.uploadLocationObuLog`property. If not specified,  Default locations would be `uploads/bsmlog`sub-directory off of the location where ODE is launched.
 
-The result of uploading and decoding of the message will be displayed on the UI screen.
+The result of uploading and decoding of messages will be displayed on the UI screen.
 
 ![ODE UI](images/ode-ui.png)
 
-*Notice that the empty fields in the J2735 message are represented by a `null` value. Also note that ODE output strips the MessageFrame header and returns a pure BSM in the J2735 BSM subscription topic.*
+*Notice that the empty fields in the J2735 message are represented by a `null` value. Also note that ODE output strips the MessageFrame header and returns a pure BSM or TIM in the subscription topic.*
+
+### asn1_codec Module (ASN.1 Encoder and Decoder)
+ODE requires the deployment of asn1_codec module. ODE's `docker-compose.yml` file is set up to build and deploy the module in a Docker container. If you wish to run `asn1_codec` module outside Docker (i.e. directly on the host machine), please refer to the documentation of `asn1_codec` module.
+
+The only requirement for deploying `asn1_codec` module on Docker is the setup of two environment variables `DOCKER_HOST_IP` and `DOCKER_SHARED_VOLUME`.
 
 ### PPM Module (Geofencing and Filtering)
 
@@ -346,8 +321,8 @@ To run the ODE with PPM module, you must install and start the PPM service. PPM 
  - PPM properties for communications with ODE (set in yourconfig.properties)
 	 - privacy.topic.consumer (default = j2735BsmRawJson)
 	 - privacy.topic.producer (default = j2735BsmFilteredJson)
- 
-Follow the instructions [here](https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md) (https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md) to install and build the PPM service. 
+
+Follow the instructions [here](https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md) (https://github.com/usdot-jpo-ode/jpo-cvdp/blob/master/docs/installation.md) to install and build the PPM service.
 
 During the build process, edit the sample config file located in `config/example.properties` and point the property `metadata.broker.list` towards the host of your docker machine or wherever the kafka brokers are hosted. You may use the command `docker-machine ls` to find the kafka service.
 
@@ -394,9 +369,14 @@ To be added.
 
 <a name="contribution-info"/>
 
-## VII. Contribution Information
+## VIII. Contribution Information
 
-Please read our [contributing guide](docs/contributing_guide.md) to learn about our development process, how to propose pull requests and improvements, and how to build and test your changes to this project. 
+Please read our [contributing guide](docs/contributing_guide.md) to learn about our development process, how to propose pull requests and improvements, and how to build and test your changes to this project.
 
+<a name="troubleshooting"/>
+
+## IX. Troubleshooting
+
+Please read our [Wiki](https://github.com/usdot-jpo-ode/jpo-ode/wiki) for more information, or check the [ODE User Guide](https://github.com/usdot-jpo-ode/jpo-ode/raw/develop/docs/JPO_ODE_UserGuide.docx).
 
 [Back to top](#toc)

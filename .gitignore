@@ -42,10 +42,11 @@
 /jpo-ode-common/.classpath
 /jpo-ode-common/.project
 /jpo-ode-common/.settings
+/jpo-ode-common/bin
 
 ####################
 ### jpo-ode-core ###
-
+/jpo-ode-core/bin
 /jpo-ode-core/target/
 !/jpo-ode-core/.mvn/wrapper/maven-wrapper.jar
 /jpo-ode-core/src/test/resources/CVMessages/VehicleSituationDataServiceResponse.uper
@@ -100,3 +101,6 @@ jpo-ode-consumer-example/target/
 /jpo-ode-svcs/SNMP_Error.log
 
 *.DS_Store
+/SNMP_Error.log
+/Events.log
+/uploads

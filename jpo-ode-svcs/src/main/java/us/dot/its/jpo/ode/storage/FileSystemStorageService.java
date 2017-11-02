@@ -24,20 +24,17 @@ public class FileSystemStorageService implements StorageService {
     private static Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
 
     private Path rootLocation;
-    private Path bsmLocation;
-    private Path messageFrameLocation;
+    private Path logFileLocation;
 
     @Autowired
     public FileSystemStorageService(OdeProperties properties) {
 
         this.rootLocation = Paths.get(properties.getUploadLocationRoot());
-        this.bsmLocation = Paths.get(properties.getUploadLocationRoot(), properties.getUploadLocationBsm());
-        this.messageFrameLocation = Paths.get(properties.getUploadLocationRoot(),
-                properties.getUploadLocationMessageFrame());
+        this.logFileLocation = Paths.get(properties.getUploadLocationRoot(), 
+           properties.getUploadLocationObuLog());
 
         logger.info("Upload location (root): {}", this.rootLocation);
-        logger.info("Upload location (bsm): {}", this.bsmLocation);
-        logger.info("Upload location (message frame): {}", this.messageFrameLocation);
+        logger.info("Upload location (OBU log file): {}", this.logFileLocation);
     }
 
     @Override
@@ -45,10 +42,8 @@ public class FileSystemStorageService implements StorageService {
 
         // Discern the destination path via the file type (bsm or messageFrame)
         Path path;
-        if (("bsm").equals(type)) {
-            path = this.bsmLocation.resolve(file.getOriginalFilename());
-        } else if (("messageFrame").equals(type)) {
-            path = this.messageFrameLocation.resolve(file.getOriginalFilename());
+        if (("bsmlog").equals(type) || ("obulog").equals(type)) {
+           path = this.logFileLocation.resolve(file.getOriginalFilename());
         } else {
             EventLogger.logger.info("File type unknown: {} {}", type, file.getName());
             throw new StorageException("File type unknown: " + type + " " + file.getName());
@@ -121,8 +116,6 @@ public class FileSystemStorageService implements StorageService {
     public void init() {
         try {
             Files.createDirectory(rootLocation);
-            Files.createDirectory(bsmLocation);
-            Files.createDirectory(messageFrameLocation);
         } catch (IOException e) {
             EventLogger.logger.info("Failed to initialize storage service {}", this.rootLocation);
             throw new StorageException("Failed to initialize storage service " + this.rootLocation, e);
@@ -131,14 +124,6 @@ public class FileSystemStorageService implements StorageService {
 
     public Path getRootLocation() {
         return rootLocation;
-    }
-
-    public Path getBsmLocation() {
-        return bsmLocation;
-    }
-
-    public Path getMessageFrameLocation() {
-        return messageFrameLocation;
     }
 
     public void setRootLocation(Path rootLocation) {

@@ -16,11 +16,15 @@
  *******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
-public class OdeMsgPayload extends OdeMessage {
+public class OdeMsgPayload extends OdeObject {
     private static final long serialVersionUID = -7711340868799607662L;
 
     private String dataType;
     private OdeObject data;
+    
+    public OdeMsgPayload() {
+       super();
+    }
 
     public OdeMsgPayload(OdeObject data) {
         super();

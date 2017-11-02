@@ -44,8 +44,7 @@ public class OdeProperties implements EnvironmentAware {
 
    // File import properties
    private String uploadLocationRoot = "uploads";
-   private String uploadLocationBsm = "bsm";
-   private String uploadLocationMessageFrame = "messageframe";
+   private String uploadLocationObuLogLog = "bsmlog";
 
    /*
     * USDOT Situation Data Clearinghouse (SDC)/ Situation Data Warehouse (SDW),
@@ -62,7 +61,6 @@ public class OdeProperties implements EnvironmentAware {
    private int sdcPort = 46753;
 
    // Enable/disable depositing sanitized BSMs to SDC
-   // note: requires enabledVsdKafkaTopic=true to work
    private boolean depositSanitizedBsmToSdc = false;
    private int serviceRespExpirationSeconds = 10;
    private int serviceResponseBufferSize = 500;
@@ -72,25 +70,48 @@ public class OdeProperties implements EnvironmentAware {
     */
    private int trustRetries = 2; // if trust handshake fails, how many times to retry
    private int messagesUntilTrustReestablished = 10; // renew trust session every x messages
+   
+   /*
+    * Kafka Topics
+    */
+   //BSM
+   private String kafkaTopicOdeBsmPojo = "topic.OdeBsmPojo";
+   private String kafkaTopicOdeBsmJson = "topic.OdeBsmJson";
+   private String kafkaTopicOdeBsmRxPojo= "topic.OdeBsmRxPojo";
+   private String kafkaTopicOdeBsmTxPojo= "topic.OdeBsmTxPojo";
+   private String kafkaTopicOdeBsmDuringEventPojo= "topic.OdeBsmDuringEventPojo";
+   private String kafkaTopicFilteredOdeBsmJson = "topic.FilteredOdeBsmJson";
+
+   //TIM
+   private String kafkaTopicOdeTimPojo = "topic.OdeTimPojo";
+   private String kafkaTopicOdeTimJson = "topic.OdeTimJson";
+   private String kafkaTopicOdeDNMsgJson= "topic.OdeDNMsgJson";
+   private String kafkaTopicOdeDNMsgPojo= "topic.OdeDNMsgPojo";
+   private String kafkaTopicOdeTimRxJson= "topic.OdeTimRxJson";
+   private String kafkaTopicOdeTimBroadcastPojo= "topic.OdeTimBroadcastPojo";
+   private String kafkaTopicOdeTimBroadcastJson= "topic.OdeTimBroadcastJson";
+
+   //VSD
+   private String kafkaTopicVsdPojo = "AsnVsdPojo";
+
+   //ISD
+   private String kafkaTopicIsdPojo = "AsnIsdPojo";
+
+   //ASN.1 CODEC
+   private String kafkaTopicAsn1DecoderInput = "topic.Asn1DecoderInput";
+   private String kafkaTopicAsn1DecoderOutput = "topic.Asn1DecoderOutput";
+   private String kafkaTopicAsn1EncoderInput = "topic.Asn1EncoderInput";
+   private String kafkaTopicAsn1EncoderOutput = "topic.Asn1EncoderOutput";
 
    /*
     * BSM Properties
     */
-   private String kafkaTopicRawBsmPojo = "topic.j2735Bsm"; // TODO Deprecate per ODE-436
-   private String kafkaTopicRawBsmJson = "topic.j2735RawBsmJson"; // TODO Deprecate per ODE-436
-   private String kafkaTopicFilteredOdeBsmJson = "topic.FilteredOdeBsmJson";
-   private String kafkaTopicOdeBsmPojo = "topic.OdeBsmPojo";
-   private String kafkaTopicOdeBsmJson = "topic.OdeBsmJson";
-   private String kafkaTopicEncodedBytes = "topic.EncodedBytes";
-   private String kafkaTopicDecodedJson = "topic.DecodedJson";
    private int bsmReceiverPort = 46800;
    private int bsmBufferSize = 500;
 
    /*
     * Vehicle Situation Data (VSD) Properties
     */
-   private boolean enabledVsdKafkaTopic = true;
-   private String kafkaTopicEncodedVsd = "encodedVsd";
    private int vsdBufferSize = 500;
    private int vsdReceiverPort = 46753;
    private int vsdDepositorPort = 5555;
@@ -99,7 +120,6 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * Intersection Situation Data (ISD) Properties
     */
-   private String kafkaTopicEncodedIsd = "encodedIsd";
    private int isdBufferSize = 500;
    private int isdReceiverPort = 46801;
    private int isdDepositorPort = 6666;
@@ -132,8 +152,6 @@ public class OdeProperties implements EnvironmentAware {
    public void init() {
 
       uploadLocations.add(Paths.get(uploadLocationRoot));
-      uploadLocations.add(Paths.get(uploadLocationRoot, uploadLocationBsm));
-      uploadLocations.add(Paths.get(uploadLocationRoot, uploadLocationMessageFrame));
 
       String hostname;
       try {
@@ -148,10 +166,10 @@ public class OdeProperties implements EnvironmentAware {
       EventLogger.logger.info("Initializing services on host {}", hostId);
 
       if (kafkaBrokers == null) {
-         logger.info(
-               "ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP from which will derive the Kafka bootstrap-server");
-
          kafkaBrokers = System.getenv("DOCKER_HOST_IP") + ":9092";
+
+         logger.info(
+               "ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP => {}", kafkaBrokers);
       }
 
       if (kafkaBrokers == null)
@@ -177,14 +195,6 @@ public class OdeProperties implements EnvironmentAware {
 
    public String getHostId() {
       return hostId;
-   }
-
-   public String getUploadLocationBsm() {
-      return uploadLocationBsm;
-   }
-
-   public void setUploadLocationBsm(String uploadLocation) {
-      this.uploadLocationBsm = uploadLocation;
    }
 
    public String getPluginsLocations() {
@@ -232,14 +242,6 @@ public class OdeProperties implements EnvironmentAware {
       env = environment;
    }
 
-   public String getUploadLocationMessageFrame() {
-      return uploadLocationMessageFrame;
-   }
-
-   public void setUploadLocationMessageFrame(String uploadLocationMessageFrame) {
-      this.uploadLocationMessageFrame = uploadLocationMessageFrame;
-   }
-
    public String getUploadLocationRoot() {
       return uploadLocationRoot;
    }
@@ -276,12 +278,12 @@ public class OdeProperties implements EnvironmentAware {
       this.externalIpv6 = externalIpv6;
    }
 
-   public String getKafkaTopicEncodedIsd() {
-      return kafkaTopicEncodedIsd;
+   public String getKafkaTopicIsdPojo() {
+      return kafkaTopicIsdPojo;
    }
 
-   public void setKafkaTopicEncodedIsd(String kafkaTopicEncodedIsd) {
-      this.kafkaTopicEncodedIsd = kafkaTopicEncodedIsd;
+   public void setKafkaTopicIsdPojo(String kafkaTopicIsdPojo) {
+      this.kafkaTopicIsdPojo = kafkaTopicIsdPojo;
    }
 
    public int getVsdDepositorPort() {
@@ -508,45 +510,13 @@ public class OdeProperties implements EnvironmentAware {
       return JPO_ODE_GROUP_ID;
    }
 
-   public boolean isEnabledVsdKafkaTopic() {
-      return enabledVsdKafkaTopic;
+   public String getKafkaTopicVsdPojo() {
+      return kafkaTopicVsdPojo;
    }
 
-   public void setEnabledVsdKafkaTopic(boolean enabledVsdKafkaTopic) {
-      this.enabledVsdKafkaTopic = enabledVsdKafkaTopic;
+   public void setKafkaTopicVsdPojo(String kafkaTopicVsdPojo) {
+      this.kafkaTopicVsdPojo = kafkaTopicVsdPojo;
    }
-
-   public String getKafkaTopicEncodedVsd() {
-      return kafkaTopicEncodedVsd;
-   }
-
-   public void setKafkaTopicEncodedVsd(String kafkaTopicEncodedVsd) {
-      this.kafkaTopicEncodedVsd = kafkaTopicEncodedVsd;
-   }
-
-   // TODO Deprecate per ODE-436
-   @Deprecated
-    public String getKafkaTopicRawBsmPojo() {
-        return kafkaTopicRawBsmPojo;
-    }
-
-   // TODO Deprecate per ODE-436
-   @Deprecated
-    public void setKafkaTopicRawBsmPojo(String kafkaTopicRawBsmPojo) {
-        this.kafkaTopicRawBsmPojo = kafkaTopicRawBsmPojo;
-    }
-
-   // TODO Deprecate per ODE-436
-   @Deprecated
-    public String getKafkaTopicRawBsmJson() {
-        return kafkaTopicRawBsmJson;
-    }
-
-   // TODO Deprecate per ODE-436
-   @Deprecated
-    public void setKafkaTopicRawBsmJson(String kafkaTopicRawBsmJson) {
-        this.kafkaTopicRawBsmJson = kafkaTopicRawBsmJson;
-    }
 
     public String getKafkaTopicFilteredOdeBsmJson() {
        return kafkaTopicFilteredOdeBsmJson;
@@ -572,28 +542,126 @@ public class OdeProperties implements EnvironmentAware {
        this.kafkaTopicOdeBsmJson = kafkaTopicOdeBsmJson;
     }
 
-    public String getKafkaTopicEncodedBytes() {
-        return kafkaTopicEncodedBytes;
-    }
+   public String getKafkaTopicAsn1DecoderInput() {
+      return kafkaTopicAsn1DecoderInput;
+   }
 
-    public void setKafkaTopicEncodedBytes(String kafkaTopicEncodedBytes) {
-        this.kafkaTopicEncodedBytes = kafkaTopicEncodedBytes;
-    }
+   public void setKafkaTopicAsn1DecoderInput(String kafkaTopicAsn1DecoderInput) {
+      this.kafkaTopicAsn1DecoderInput = kafkaTopicAsn1DecoderInput;
+   }
 
-    public String getKafkaTopicDecodedJson() {
-        return kafkaTopicDecodedJson;
-    }
+   public String getKafkaTopicAsn1DecoderOutput() {
+      return kafkaTopicAsn1DecoderOutput;
+   }
 
-    public void setKafkaTopicDecodedJson(String kafkaTopicDecodedJson) {
-        this.kafkaTopicDecodedJson = kafkaTopicDecodedJson;
-    }
+   public void setKafkaTopicAsn1DecoderOutput(String kafkaTopicAsn1DecoderOutput) {
+      this.kafkaTopicAsn1DecoderOutput = kafkaTopicAsn1DecoderOutput;
+   }
 
-    public int getImportProcessorBufferSize() {
+   public String getKafkaTopicAsn1EncoderInput() {
+      return kafkaTopicAsn1EncoderInput;
+   }
+
+   public void setKafkaTopicAsn1EncoderInput(String kafkaTopicAsn1EncoderInput) {
+      this.kafkaTopicAsn1EncoderInput = kafkaTopicAsn1EncoderInput;
+   }
+
+   public String getKafkaTopicAsn1EncoderOutput() {
+      return kafkaTopicAsn1EncoderOutput;
+   }
+
+   public void setKafkaTopicAsn1EncoderOutput(String kafkaTopicAsn1EncoderOutput) {
+      this.kafkaTopicAsn1EncoderOutput = kafkaTopicAsn1EncoderOutput;
+   }
+
+   public int getImportProcessorBufferSize() {
         return importProcessorBufferSize;
     }
 
     public void setImportProcessorBufferSize(int importProcessorBufferSize) {
         this.importProcessorBufferSize = importProcessorBufferSize;
     }
+
+   public String getKafkaTopicOdeTimPojo() {
+      return kafkaTopicOdeTimPojo;
+   }
+
+   public void setKafkaTopicOdeTimPojo(String kafkaTopicOdeTimPojo) {
+      this.kafkaTopicOdeTimPojo = kafkaTopicOdeTimPojo;
+   }
+   public String getKafkaTopicOdeDNMsgPojo() {return kafkaTopicOdeDNMsgPojo; }
+
+   public void setKafkaTopicOdeDNMsgPojo(String kafkaTopicOdeDNMsgPojo) {
+      this.kafkaTopicOdeDNMsgPojo = kafkaTopicOdeDNMsgPojo;
+   }
+   public String getKafkaTopicOdeDNMsgJson() {return kafkaTopicOdeDNMsgJson; }
+
+   public void setKafkaTopicOdeDNMsgJson(String kafkaTopicOdeDNMsgJson) {
+      this.kafkaTopicOdeDNMsgJson = kafkaTopicOdeDNMsgJson;
+   }
+
+   public String getKafkaTopicOdeTimJson() {
+      return kafkaTopicOdeTimJson;
+   }
+
+   public void setKafkaTopicOdeTimJson(String kafkaTopicOdeTimJson) {
+      this.kafkaTopicOdeTimJson = kafkaTopicOdeTimJson;
+   }
+
+   public String getUploadLocationObuLog() {
+      return uploadLocationObuLogLog;
+   }
+
+   public void setUploadLocationObuLog(String uploadLocationObuLog) {
+      this.uploadLocationObuLogLog = uploadLocationObuLog;
+   }
+
+   public String getKafkaTopicOdeBsmDuringEventPojo() {
+      return kafkaTopicOdeBsmDuringEventPojo;
+   }
+
+   public void setKafkaTopicOdeBsmDuringEventPojo(String kafkaTopicOdeBsmDuringEventPojo) {
+      this.kafkaTopicOdeBsmDuringEventPojo = kafkaTopicOdeBsmDuringEventPojo;
+   }
+
+   public String getKafkaTopicOdeBsmRxPojo() {
+      return kafkaTopicOdeBsmRxPojo;
+   }
+
+   public void setKafkaTopicOdeBsmRxPojo(String kafkaTopicOdeBsmRxPojo) {
+      this.kafkaTopicOdeBsmRxPojo = kafkaTopicOdeBsmRxPojo;
+   }
+
+   public String getKafkaTopicOdeBsmTxPojo() {
+      return kafkaTopicOdeBsmTxPojo;
+   }
+
+   public void setKafkaTopicOdeBsmTxPojo(String kafkaTopicOdeBsmTxPojo) {
+      this.kafkaTopicOdeBsmTxPojo = kafkaTopicOdeBsmTxPojo;
+   }
+
+   public String getKafkaTopicOdeTimRxJson() {
+      return kafkaTopicOdeTimRxJson;
+   }
+
+   public void setKafkaTopicOdeTimRxJson(String kafkaTopicOdeTimRxJson) {
+      this.kafkaTopicOdeTimRxJson = kafkaTopicOdeTimRxJson;
+   }
+
+   public String getKafkaTopicOdeTimBroadcastPojo() {
+      return kafkaTopicOdeTimBroadcastPojo;
+   }
+
+   public void setKafkaTopicOdeTimBroadcastPojo(String kafkaTopicOdeTimBroadcastPojo) {
+      this.kafkaTopicOdeTimBroadcastPojo = kafkaTopicOdeTimBroadcastPojo;
+   }
+
+   public String getKafkaTopicOdeTimBroadcastJson() {
+      return kafkaTopicOdeTimBroadcastJson;
+   }
+
+   public void setKafkaTopicOdeTimBroadcastJson(String kafkaTopicOdeTimBroadcastJson) {
+      this.kafkaTopicOdeTimBroadcastJson = kafkaTopicOdeTimBroadcastJson;
+   }
 
 }

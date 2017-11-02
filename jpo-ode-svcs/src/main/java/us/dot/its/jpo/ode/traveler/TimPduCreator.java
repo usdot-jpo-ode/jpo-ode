@@ -2,6 +2,8 @@ package us.dot.its.jpo.ode.traveler;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.smi.Integer32;
@@ -9,7 +11,7 @@ import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.VariableBinding;
 
-import us.dot.its.jpo.ode.snmp.SNMP;
+import us.dot.its.jpo.ode.plugin.SNMP;
 
 
 /**
@@ -17,6 +19,8 @@ import us.dot.its.jpo.ode.snmp.SNMP;
  * encoded TIM payload, and then send a request to the RSU.
  */
 public class TimPduCreator {
+   
+   private static final Logger logger = LoggerFactory.getLogger(TimPduCreator.class);
     
     public static class TimPduCreatorException extends Exception {
       private static final long serialVersionUID = 1L;
@@ -95,6 +99,7 @@ public class TimPduCreator {
         
         return pdu;
       } catch (Exception e) {
+         logger.error("Exception creating PDU.", e);
          throw new TimPduCreatorException("Error creating PDU", e);
       }
     }

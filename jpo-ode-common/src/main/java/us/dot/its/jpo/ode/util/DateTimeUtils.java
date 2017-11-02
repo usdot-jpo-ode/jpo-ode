@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.util;
 
 import java.text.ParseException;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -34,6 +35,10 @@ public class DateTimeUtils {
        return ZonedDateTime.from(date.toInstant().atZone(ZoneId.of("UTC")));
     }
     
+   public static ZonedDateTime isoDateTime(long epockMillis) {
+      return ZonedDateTime.ofInstant(Instant.ofEpochMilli(epockMillis), ZoneId.of("UTC"));
+   }
+
    public static boolean isBetweenTimesInclusive(
          ZonedDateTime dateTime,
          ZonedDateTime startDateTime,

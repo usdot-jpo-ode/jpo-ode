@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.udp.bsm;
 
 import java.net.DatagramPacket;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
@@ -8,8 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.MessagePublisher;
-import us.dot.its.jpo.ode.coder.stream.ByteDecoderPublisher;
+import us.dot.its.jpo.ode.coder.StringPublisher;
+import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher;
+import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
@@ -21,7 +23,14 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
    private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
                                                       // least 20 bytes long
 
-   private ByteDecoderPublisher byteDecoderPublisher;
+//ODE-581   private OssJ2735Coder j2735coder;
+
+   private SerialId serialId;
+
+//ODE-581   private OdeDataPublisher publisher;
+   private LogFileToAsn1CodecPublisher codecPublisher;
+
+   protected static AtomicInteger bundleId = new AtomicInteger(1);
 
    @Autowired
    public BsmReceiver(OdeProperties odeProps) {
@@ -30,10 +39,13 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
    public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
       super(odeProps, port, bufferSize);
+//ODE-581      this.j2735coder = new OssJ2735Coder();
 
-      MessagePublisher messagePub = new MessagePublisher(odeProperties);
-
-      byteDecoderPublisher = new ByteDecoderPublisher(messagePub);
+      this.serialId = new SerialId();
+      this.serialId.setBundleId(bundleId.incrementAndGet());
+      
+//ODE-581      this.publisher = new OdeDataPublisher(odeProperties, OdeBsmSerializer.class.getName());
+      this.codecPublisher = new LogFileToAsn1CodecPublisher(new StringPublisher(odeProperties));
    }
 
    @Override
@@ -56,8 +68,26 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
                // extract the actualPacket from the buffer
                byte[] payload = removeHeader(packet.getData());
-               logger.debug("Packet: {}", HexUtils.toHexString(payload));
-               byteDecoderPublisher.decodeAndPublish(payload);
+               String payloadHexString = HexUtils.toHexString(payload);
+               logger.debug("Packet: {}", payloadHexString);
+
+               //ODE-581 removed decoding and replaced with sending the ASN encoding to asn1_codec
+//               // try decoding as a message frame
+//               J2735Bsm decodedBsm = null;
+//               J2735MessageFrame decodedMf = (J2735MessageFrame) j2735coder.decodeUPERMessageFrameBytes(payload);
+//               if (decodedMf != null) {
+//                  decodedBsm = decodedMf.getValue();
+//               } else {
+//                  // if that failed, try decoding as a bsm
+//                  decodedBsm = (J2735Bsm) j2735coder.decodeUPERBsmBytes(payload);
+//               }
+//
+//               // if that failed, throw an io exception
+//               if (decodedBsm == null) {
+//                  throw new IOException("Failed to decode message received via UDP.");
+//               }
+
+               codecPublisher.publish(payload);
             }
          } catch (Exception e) {
             logger.error("Error receiving packet", e);
@@ -66,19 +96,31 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
    }
 
    /**
-    * Attempts to strip WSMP header bytes. Looks for BSM start sequence "0014"
-    * occurring after 20 bytes. If not after 20 bytes, message probably does not
-    * contain a header.
+    * Attempts to strip WSMP header bytes. If message starts with "0014",
+    * message is raw BSM. Otherwise, headers are >= 20 bytes, so look past that
+    * for start of payload BSM.
     * 
     * @param packet
     */
    public byte[] removeHeader(byte[] packet) {
       String hexPacket = HexUtils.toHexString(packet);
+
+      // logger.debug("BSM packet length: {}, start index: {}",
+      // hexPacket.length(), startIndex);
+
       int startIndex = hexPacket.indexOf(BSM_START_FLAG);
-      logger.debug("BSM packet length: {}, start index: {}", hexPacket.length(), startIndex);
-      if (startIndex >= HEADER_MINIMUM_SIZE) {
-         hexPacket = hexPacket.substring(startIndex, hexPacket.length());
+      if (startIndex == 0) {
+         logger.info("Message is raw BSM with no headers.");
+      } else if (startIndex == -1) {
+         logger.error("Message contains no BSM start flag.");
+      } else {
+         // We likely found a message with a header, look past the first 20
+         // bytes for the start of the BSM
+         int trueStartIndex = HEADER_MINIMUM_SIZE
+               + hexPacket.substring(HEADER_MINIMUM_SIZE, hexPacket.length()).indexOf(BSM_START_FLAG);
+         hexPacket = hexPacket.substring(trueStartIndex, hexPacket.length());
       }
+
       return HexUtils.fromHexString(hexPacket);
    }
 }

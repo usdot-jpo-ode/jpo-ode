@@ -17,7 +17,7 @@ import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW.TimeToLive;
-import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion;
+import us.dot.its.jpo.ode.plugin.j2735.OdeGeoRegion;
 
 @RunWith(JMockit.class)
 public class SituationDataWarehouseTest {
@@ -26,10 +26,10 @@ public class SituationDataWarehouseTest {
 
    @Test
    public void testGettersAndSetters() {
-      J2735GeoRegion serviceRegion = new J2735GeoRegion();
+      OdeGeoRegion serviceRegion = new OdeGeoRegion();
       testSDW.setServiceRegion(serviceRegion);
       assertEquals(serviceRegion, testSDW.getServiceRegion());
-      TimeToLive ttl = TimeToLive.THIRTYMINUTES;
+      TimeToLive ttl = TimeToLive.thirtyminutes;
       testSDW.setTtl(ttl);
       assertEquals(ttl, testSDW.getTtl());
    }
@@ -61,11 +61,11 @@ public class SituationDataWarehouseTest {
 
    @Test
    public void testEnumerations() {
-      assertNotNull(TimeToLive.ONEMINUTE);
-      assertNotNull(TimeToLive.THIRTYMINUTES);
-      assertNotNull(TimeToLive.ONEDAY);
-      assertNotNull(TimeToLive.ONEWEEK);
-      assertNotNull(TimeToLive.ONEMONTH);
-      assertNotNull(TimeToLive.ONEYEAR);
+      assertNotNull(TimeToLive.oneminute);
+      assertNotNull(TimeToLive.thirtyminutes);
+      assertNotNull(TimeToLive.oneday);
+      assertNotNull(TimeToLive.oneweek);
+      assertNotNull(TimeToLive.onemonth);
+      assertNotNull(TimeToLive.oneyear);
    }
 }

@@ -1,21 +1,5 @@
 package us.dot.its.jpo.ode.asn1.j2735;
 
-import us.dot.its.jpo.ode.asn1.j2735.msg.ids.ConnectedVehicleMessageID;
-import us.dot.its.jpo.ode.asn1.j2735.msg.ids.ConnectedVehicleMessageLookup;
-import us.dot.its.jpo.ode.asn1.j2735.msg.ids.SEMIMessageID;
-import us.dot.its.jpo.ode.j2735.dsrc.DDateTime;
-import us.dot.its.jpo.ode.j2735.dsrc.DDay;
-import us.dot.its.jpo.ode.j2735.dsrc.DFullTime;
-import us.dot.its.jpo.ode.j2735.dsrc.DHour;
-import us.dot.its.jpo.ode.j2735.dsrc.DMinute;
-import us.dot.its.jpo.ode.j2735.dsrc.DMonth;
-import us.dot.its.jpo.ode.j2735.dsrc.DOffset;
-import us.dot.its.jpo.ode.j2735.dsrc.DSecond;
-import us.dot.its.jpo.ode.j2735.dsrc.DYear;
-import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
-import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
-import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -24,8 +8,6 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -45,49 +27,28 @@ import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 import com.oss.coders.DecoderException;
 
+import us.dot.its.jpo.ode.asn1.j2735.msg.ids.ConnectedVehicleMessageID;
+import us.dot.its.jpo.ode.asn1.j2735.msg.ids.ConnectedVehicleMessageLookup;
+import us.dot.its.jpo.ode.asn1.j2735.msg.ids.SEMIMessageID;
+import us.dot.its.jpo.ode.j2735.dsrc.DDateTime;
+import us.dot.its.jpo.ode.j2735.dsrc.DDay;
+import us.dot.its.jpo.ode.j2735.dsrc.DFullTime;
+import us.dot.its.jpo.ode.j2735.dsrc.DHour;
+import us.dot.its.jpo.ode.j2735.dsrc.DMinute;
+import us.dot.its.jpo.ode.j2735.dsrc.DMonth;
+import us.dot.its.jpo.ode.j2735.dsrc.DOffset;
+import us.dot.its.jpo.ode.j2735.dsrc.DSecond;
+import us.dot.its.jpo.ode.j2735.dsrc.DYear;
+import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
+import us.dot.its.jpo.ode.j2735.semi.SemiDialogID;
+import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
+
 public class J2735Util {
 	
 	private static final Logger logger = Logger.getLogger(J2735Util.class);
 	
 	private final static int LAT_LONG_CONVERSION_FACTOR = 10000000;
 	private final static int LAT_LONG_DECIMAL_PRECISION = 7;
-	
-	public static byte[] shortsToBytes(short[] shorts) {
-		ByteBuffer buffer = ByteBuffer.allocate(shorts.length*2).order(ByteOrder.BIG_ENDIAN);
-		for (short num: shorts) {
-			buffer.putShort(num);
-		}
-		return buffer.array();
-	}
-	
-	public static byte[] shortToBytes(short number) {
-		short[] shorts = new short[] { number };
-		return shortsToBytes(shorts);
-	}
-	
-	public static short bytesToShort(byte[] bytes) {
-		return bytesToShorts(bytes)[0];
-	}
-	
-	public static short[] bytesToShorts(byte[] bytes) {
-		ByteBuffer buffer = ByteBuffer.allocate(bytes.length).order(ByteOrder.BIG_ENDIAN);
-		buffer.put(bytes);
-		buffer.flip();
-		int numberOfShorts = bytes.length / 2;
-		short[] shorts = new short[numberOfShorts];
-		for (int i = 0; i < numberOfShorts; i++) {
-			shorts[i] = buffer.getShort();
-		}
-		return shorts;
-	}
-	
-	public static byte[] mergeBytes(byte[]... bytes) throws IOException {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		for (byte[] bArray: bytes) {
-			outputStream.write(bArray);
-		}
-		return outputStream.toByteArray();
-	}
 	
 	public static AbstractData decode(Coder coder, byte[] message) throws DecodeFailedException, DecodeNotSupportedException {
 		AbstractData abstractData = null;

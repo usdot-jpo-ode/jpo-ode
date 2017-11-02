@@ -6,15 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.model.OdeBsmData;
-// TODO Deprecate per ODE-436
-// vvvvvvvvvvvvvvvvvvvvvvvvvv
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.wrapper.J2735BsmDeserializer;
-// ^^^^^^^^^^^^^^^^^^^^^^^^^^
-// TODO Deprecate per ODE-436
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
-import us.dot.its.jpo.ode.wrapper.OdeBsmDeserializer;
+import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmDeserializer;
+import us.dot.its.jpo.ode.wrapper.serdes.OdeTimDeserializer;
 
 /**
  * Launches ToJsonConverter service
@@ -23,47 +17,40 @@ import us.dot.its.jpo.ode.wrapper.OdeBsmDeserializer;
 public class ToJsonServiceController {
 
    private static final Logger logger = LoggerFactory.getLogger(ToJsonServiceController.class);
-   org.apache.kafka.common.serialization.Serdes bas;
+   
+   private OdeProperties odeProperties;
 
    @Autowired
    public ToJsonServiceController(OdeProperties odeProps) {
       super();
+      
+      this.odeProperties = odeProps;
 
       logger.info("Starting {}", this.getClass().getSimpleName());
 
-      // TODO Deprecate per ODE-436
-      // vvvvvvvvvvvvvvvvvvvvvvvvvv
-      logger.info("Converting {} records from topic {} and publishing to topic {} ", J2735Bsm.class.getSimpleName(),
-            odeProps.getKafkaTopicRawBsmPojo(), odeProps.getKafkaTopicRawBsmJson());
+      // BSM POJO --> JSON converter
+      launchConverter(odeProps.getKafkaTopicOdeBsmPojo(), OdeBsmDeserializer.class.getName(),
+         new ToJsonConverter<>(odeProps, false, odeProps.getKafkaTopicOdeBsmJson()));
 
-      ToJsonConverter<J2735Bsm> j2735BsmConverter = new ToJsonConverter<J2735Bsm>(odeProps, false,
-            odeProps.getKafkaTopicRawBsmJson());
+      // TIM POJO --> JSON converter
+      launchConverter(odeProps.getKafkaTopicOdeTimPojo(), OdeTimDeserializer.class.getName(),
+         new ToJsonConverter<>(odeProps, false, odeProps.getKafkaTopicOdeTimJson()));
 
-      MessageConsumer<String, J2735Bsm> j2735BsmConsumer = new MessageConsumer<String, J2735Bsm>(odeProps.getKafkaBrokers(),
-            this.getClass().getSimpleName(), j2735BsmConverter, J2735BsmDeserializer.class.getName());
+      // Broadcast TIM POJO --> Broadcast TIM JSON converter
+      launchConverter(odeProps.getKafkaTopicOdeTimBroadcastPojo(), OdeTimDeserializer.class.getName(),
+         new ToJsonConverter<>(odeProps, false, odeProps.getKafkaTopicOdeTimBroadcastJson()));
+   }
 
-      j2735BsmConsumer.setName("j2735BsmConsumer");
-      j2735BsmConverter.start(j2735BsmConsumer, odeProps.getKafkaTopicRawBsmPojo());
-      // ^^^^^^^^^^^^^^^^^^^^^^^^^^
-      // TODO Deprecate per ODE-436
+   private <V> void launchConverter(String fromTopic, String serializerFQN, 
+      ToJsonConverter<V> jsonConverter) {
+      logger.info("Converting records from topic {} and publishing to topic {} ", 
+         fromTopic, jsonConverter.getOutputTopic());
 
-      logger.info("Converting {} records from topic {} and publishing to topic {} ", 
-          OdeBsmData.class.getSimpleName(),
-          odeProps.getKafkaTopicOdeBsmPojo(), odeProps.getKafkaTopicOdeBsmJson());
+      MessageConsumer<String, V> consumer = new MessageConsumer<String, V>(
+            odeProperties.getKafkaBrokers(), this.getClass().getSimpleName(), 
+            jsonConverter, serializerFQN);
 
-      ToJsonConverter<OdeBsmData> odeBsmConverter = 
-              new ToJsonConverter<OdeBsmData>(
-                      odeProps, false,
-                      odeProps.getKafkaTopicOdeBsmJson());
-
-      MessageConsumer<String, OdeBsmData> odeBsmConsumer = 
-              new MessageConsumer<String, OdeBsmData>(
-                      odeProps.getKafkaBrokers(),
-                      this.getClass().getSimpleName(), 
-                      odeBsmConverter, OdeBsmDeserializer.class.getName());
-
-      odeBsmConsumer.setName("odeBsmConsumer");
-      odeBsmConverter.start(odeBsmConsumer, odeProps.getKafkaTopicOdeBsmPojo());
-
+      consumer.setName(this.getClass().getName() + fromTopic + "Consumer");
+      jsonConverter.start(consumer, fromTopic);
    }
 }

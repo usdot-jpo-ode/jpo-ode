@@ -42,7 +42,7 @@ public class OssMessageFrame {
 
         PERUnalignedCoder coder = J2735.getPERUnalignedCoder();
 
-        if (genericMessageFrame.getMessageId() == J2735DSRCmsgID.BASICSAFETYMESSAGE) {
+        if (genericMessageFrame.getMessageId() == J2735DSRCmsgID.BasicSafetyMessage) {
 
             // If basicSafetyMessage
             BasicSafetyMessage bsm;

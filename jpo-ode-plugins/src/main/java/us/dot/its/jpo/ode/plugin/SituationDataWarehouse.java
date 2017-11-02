@@ -1,7 +1,7 @@
 package us.dot.its.jpo.ode.plugin;
 
 import us.dot.its.jpo.ode.model.OdeObject;
-import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion;
+import us.dot.its.jpo.ode.plugin.j2735.OdeGeoRegion;
 
 public class SituationDataWarehouse {
    public static class SDW extends OdeObject {
@@ -9,21 +9,27 @@ public class SituationDataWarehouse {
       private static final long serialVersionUID = -7731139391317960325L;
 
       public enum TimeToLive {
-         ONEMINUTE, THIRTYMINUTES, ONEDAY, ONEWEEK, ONEMONTH, ONEYEAR
+         oneminute, 
+         thirtyminutes, 
+         oneday, 
+         oneweek, 
+         onemonth, 
+         oneyear
       }
 
-      private J2735GeoRegion serviceRegion;
-      private TimeToLive ttl = TimeToLive.THIRTYMINUTES;
+      private OdeGeoRegion serviceRegion;
+      private TimeToLive ttl = null;
 
-      public J2735GeoRegion getServiceRegion() {
+      public OdeGeoRegion getServiceRegion() {
          return serviceRegion;
       }
 
-      public void setServiceRegion(J2735GeoRegion serviceRegion) {
+      public void setServiceRegion(OdeGeoRegion serviceRegion) {
          this.serviceRegion = serviceRegion;
       }
 
       public TimeToLive getTtl() {
+         if (ttl == null) return TimeToLive.thirtyminutes;
          return ttl;
       }
 

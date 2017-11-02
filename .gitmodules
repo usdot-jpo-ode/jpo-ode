@@ -1,0 +1,9 @@
+[submodule "asn1_codec"]
+	path = asn1_codec
+	url = https://github.com/usdot-jpo-ode/asn1_codec.git
+[submodule "jpo-cvdp"]
+	path = jpo-cvdp
+	url = https://github.com/usdot-jpo-ode/jpo-cvdp.git
+[submodule "jpo-s3-deposit"]
+	path = jpo-s3-deposit
+	url = https://github.com/usdot-jpo-ode/jpo-s3-deposit.git

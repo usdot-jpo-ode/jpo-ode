@@ -17,13 +17,14 @@ public class BsmToVsdPackagerControllerTest {
    @Capturing
    BsmToVsdPackager capturingBsmToVsdPackager;
 
+   @SuppressWarnings({ "rawtypes", "unchecked" })
    @Test
-   public void shouldNotCreatePackagerWhenTopicDisabled() {
+   public void shouldNotCreatePackagerWhenBsmDepositDisabled() {
 
       new Expectations() {
 
          {
-            mockOdeProperties.isEnabledVsdKafkaTopic();
+            mockOdeProperties.getDepositSanitizedBsmToSdc();
             result = false;
 
             new BsmToVsdPackager((MessageProducer) any, anyString);
@@ -34,12 +35,13 @@ public class BsmToVsdPackagerControllerTest {
       new BsmToVsdPackagerController(mockOdeProperties);
    }
 
+   @SuppressWarnings({ "rawtypes", "unchecked" })
    @Test
-   public void shouldCreatePackagerWhenTopicEnabled(@Capturing MessageProducer<?,?> capturingMessageProducer,
+   public void shouldCreatePackagerWhenBsmDepositEnabled(@Capturing MessageProducer<?,?> capturingMessageProducer,
          @Capturing MessageConsumer<?, ?> capturingMessageConsumer) {
       new Expectations() {
          {
-            mockOdeProperties.isEnabledVsdKafkaTopic();
+            mockOdeProperties.getDepositSanitizedBsmToSdc();
             result = true;
 
             new BsmToVsdPackager((MessageProducer) any, anyString);

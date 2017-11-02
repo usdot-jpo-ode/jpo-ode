@@ -3,49 +3,65 @@ package us.dot.its.jpo.ode.coder.stream;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
-import us.dot.its.jpo.ode.coder.MessagePublisher;
+import us.dot.its.jpo.ode.coder.OdeDataPublisher;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
+import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
+import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeData;
-import us.dot.its.jpo.ode.model.SerialId;
 
-public class HexDecoderPublisher implements DecoderPublisher {
+public class HexDecoderPublisher extends AbstractDecoderPublisher  {
 
    private static final Logger logger = LoggerFactory.getLogger(HexDecoderPublisher.class);
-   private MessagePublisher publisher;
-   private SerialId serialId;
-   private static AtomicInteger bundleId = new AtomicInteger(1);
 
-   public HexDecoderPublisher(MessagePublisher dataPub) {
-      this.publisher = dataPub;
-
-      this.serialId = new SerialId();
-      this.serialId.setBundleId(bundleId.incrementAndGet());
+   public HexDecoderPublisher(OdeDataPublisher dataPub) {
+        super(dataPub);
    }
 
    @Override
-   public void decodeAndPublish(BufferedInputStream is, String fileName) throws Exception {
+   public void decodeAndPublish(BufferedInputStream bis, String fileName, ImporterFileType fileType ) throws Exception {
       String line = null;
       OdeData decoded = null;
+      
+      BsmLogFileParser bsmFileParser = new BsmLogFileParser(bundleId.incrementAndGet());
 
-      try (Scanner scanner = new Scanner(is)) {
+      try (Scanner scanner = new Scanner(bis)) {
 
          boolean empty = true;
          while (scanner.hasNextLine()) {
             empty = false;
             line = scanner.nextLine();
 
-            decoded = BsmDecoderHelper.decode(new BufferedInputStream(new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName, this.serialId.setBundleId(bundleId.incrementAndGet()));
+            ParserStatus status = ParserStatus.UNKNOWN;
+            if (fileType == ImporterFileType.OBU_LOG_FILE) {
+                status = bsmFileParser.parseFile(new BufferedInputStream(
+                   new ByteArrayInputStream(HexUtils.fromHexString(line))), fileName);
+            } else {
+                bsmFileParser.setPayload(HexUtils.fromHexString(line));
+                status = ParserStatus.NA;
+            }
+            
+            if (status == ParserStatus.COMPLETE) {
+                decoded = bsmDecoder.decode(bsmFileParser, 
+                    this.serialId.setBundleId(bundleId.get()));
+            } else if (status == ParserStatus.EOF) {
+                return;
+            }
             if (decoded != null) {
                logger.debug("Decoded: {}", decoded);
-               publisher.publish(decoded);
+               bsmMessagePublisher.publish(decoded, bsmMessagePublisher.getOdeProperties().getKafkaTopicOdeBsmPojo());
             } else {
-               logger.debug("Failed to decode {}.", line);
+                // if parser returns PARTIAL record, we will go back and continue parsing
+                // but if it's UNKNOWN, it means that we could not parse the header bytes
+                if (status == ParserStatus.INIT) {
+                    logger.error("Failed to parse the header bytes: {}", line);
+                } else {
+                    logger.error("Failed to decode ASN.1 data: {}", line);
+                }
             }
          }
 

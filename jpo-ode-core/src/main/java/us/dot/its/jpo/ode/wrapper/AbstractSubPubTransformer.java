@@ -1,56 +1,55 @@
 package us.dot.its.jpo.ode.wrapper;
 
-import java.util.Arrays;
-import java.util.concurrent.Executors;
+/**
+ * @author 572682
+ *
+ * This abstract class provides a basic pipeline functionality through the messaging
+ * framework. The objects of this class subscribe to a topic, process received messages
+ * and publish the results to another topic.
+ *   
+ * @param <K> Message Key type
+ * @param <S> Received Message Value Type
+ * @param <P> Published Message Value Type
+ */
+public abstract class AbstractSubPubTransformer<K, S, P> extends AbstractSubscriberProcessor<K, S> {
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public abstract class AbstractSubPubTransformer<K, V1, V2> extends MessageProcessor<K, V1> {
-
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-    protected int messagesConsumed = 0;
     protected int messagesPublished = 0;
-    protected MessageProducer<K, V2> producer;
+    protected MessageProducer<K, P> producer;
     protected String outputTopic;
 
-    public AbstractSubPubTransformer(MessageProducer<K, V2> producer, String outputTopic) {
+    public AbstractSubPubTransformer(MessageProducer<K, P> producer, String outputTopic) {
+       super();
         this.producer = producer;
         this.outputTopic = outputTopic;
     }
 
-    /**
-     * Starts a Kafka listener that runs call() every time a new msg arrives
-     * 
-     * @param consumer
-     * @param inputTopics
-     */
-    public void start(MessageConsumer<K, V1> consumer, String... inputTopics) {
-        logger.info("Subscribing to {}", Arrays.asList(inputTopics).toString());
-        
-        Executors.newSingleThreadExecutor().submit(new Runnable() {
-            @Override
-            public void run() {
-                consumer.subscribe(inputTopics);
-            }
-        });
-    }
-
     @Override
     public Object call() {
-        messagesConsumed++;
-        
-        V1 consumedData = record.value();
-        
-        V2 toBePublished = transform(consumedData);
+       @SuppressWarnings("unchecked")
+       P toBePublished = (P) super.call();
 
-        if (null != toBePublished) {
-           producer.send(outputTopic, record.key(), toBePublished);
-        }
+       if (null != toBePublished) {
+          producer.send(outputTopic, getRecord().key(), toBePublished);
+       }
         
-        return consumedData;
+       return toBePublished;
     }
 
-    protected abstract V2 transform(V1 consumedData);
+   public MessageProducer<K, P> getProducer() {
+      return producer;
+   }
 
+   public void setProducer(MessageProducer<K, P> producer) {
+      this.producer = producer;
+   }
+
+   public String getOutputTopic() {
+      return outputTopic;
+   }
+
+   public void setOutputTopic(String outputTopic) {
+      this.outputTopic = outputTopic;
+   }
+    
+    
 }

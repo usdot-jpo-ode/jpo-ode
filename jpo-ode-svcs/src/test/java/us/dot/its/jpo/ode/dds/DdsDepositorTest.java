@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -21,7 +22,7 @@ import us.dot.its.jpo.ode.model.OdeMessage;
 import us.dot.its.jpo.ode.model.OdeRequest;
 import us.dot.its.jpo.ode.model.OdeRequest.DataSource;
 import us.dot.its.jpo.ode.model.OdeRequestType;
-import us.dot.its.jpo.ode.traveler.AsdMessage;
+import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
 
 @RunWith(JMockit.class)
@@ -53,7 +54,7 @@ public class DdsDepositorTest {
     @Test
     public void shouldTryConnectingWhenConnectedFalse(@Mocked OdeProperties mockOdeProperties,
             @Mocked DdsRequestManager<Object> mockRequestManager, @Mocked Logger mockLogger,
-            @Mocked AsdMessage mockMessage) {
+            @Mocked DdsAdvisorySituationData mockMessage) {
 
         new Expectations() {
             {
@@ -91,7 +92,7 @@ public class DdsDepositorTest {
     @Test
     public void shouldNotTryConnectingWhenConnectedTrue(@Mocked OdeProperties mockOdeProperties,
             @Mocked DdsRequestManager<Object> mockRequestManager, @Mocked Logger mockLogger,
-            @Mocked AsdMessage mockAsdMessage) {
+            @Mocked DdsAdvisorySituationData mockAsdMessage) {
 
         DdsDepositor<Object> testDdsDepositor = new DdsDepositor<Object>(mockOdeProperties);
 

@@ -6,12 +6,12 @@ import us.dot.its.jpo.ode.j2735.dsrc.Elevation;
 import us.dot.its.jpo.ode.j2735.dsrc.Latitude;
 import us.dot.its.jpo.ode.j2735.dsrc.Longitude;
 import us.dot.its.jpo.ode.j2735.dsrc.Position3D;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
+import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 
 public class OssPosition3D {
    
-   public static J2735Position3D genericPosition3D(Position3D pos) {
-      J2735Position3D jpos = new J2735Position3D();
+   public static OdePosition3D genericPosition3D(Position3D pos) {
+      OdePosition3D jpos = new OdePosition3D();
 
          if (pos._long != null) {
              if (pos._long.longValue() == 1800000001) {
@@ -45,7 +45,7 @@ public class OssPosition3D {
       
    }
 
-   public static Position3D position3D(J2735Position3D jpos) {
+   public static Position3D position3D(OdePosition3D jpos) {
       Position3D pos = new Position3D();
       
       if (jpos.getLongitude() != null) {

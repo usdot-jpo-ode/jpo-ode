@@ -12,24 +12,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.oss.asn1.AbstractData;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.coder.ByteArrayPublisher;
 import us.dot.its.jpo.ode.j2735.semi.ConnectionPoint;
 import us.dot.its.jpo.ode.j2735.semi.IntersectionSituationData;
 import us.dot.its.jpo.ode.j2735.semi.ServiceRequest;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.udp.UdpUtil;
-import us.dot.its.jpo.ode.wrapper.MessageProducer;
+import us.dot.its.jpo.ode.wrapper.serdes.IntersectionSituationDataSerializer;
 
 public class IsdReceiver extends AbstractUdpReceiverPublisher {
 
    private static Logger logger = LoggerFactory.getLogger(IsdReceiver.class);
-   protected MessageProducer<String, byte[]> byteArrayProducer;
+   protected ByteArrayPublisher publisher;
+   private IntersectionSituationDataSerializer serializer;
 
    @Autowired
    public IsdReceiver(OdeProperties odeProps) {
       super(odeProps, odeProps.getIsdReceiverPort(), odeProps.getIsdBufferSize());
-      byteArrayProducer = MessageProducer.defaultByteArrayMessageProducer(
-          odeProperties.getKafkaBrokers(), 
-          odeProperties.getKafkaProducerType());
+      this.publisher = new ByteArrayPublisher(odeProps);
+      this.serializer = new IntersectionSituationDataSerializer();
    }
 
    @Override
@@ -90,18 +91,14 @@ public class IsdReceiver extends AbstractUdpReceiverPublisher {
          } else if (decoded instanceof IntersectionSituationData) {
             String hexMsg = HexUtils.toHexString(data);
             logger.debug("Received ISD: {}", hexMsg);
-            publish(data, odeProperties.getKafkaTopicEncodedIsd());
+            publisher.publish(serializer.serialize(null, (IntersectionSituationData) decoded), odeProperties.getKafkaTopicIsdPojo());
          } else {
-            logger.error("Unknown message type received {}", HexUtils.toHexString(data));
+            String hexMsg = HexUtils.toHexString(data);
+            logger.error("Unknown message type received {}", hexMsg);
          }
       } catch (Exception e) {
          logger.error("Error processing message", e);
       }
    }
-
-   protected void publish(byte[] data, String topic) {
-       logger.debug("Publishing data to topic {}", topic);
-       byteArrayProducer.send(topic, null, data);
-    }
 
 }

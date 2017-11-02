@@ -25,7 +25,7 @@ import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
 import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
-import us.dot.its.jpo.ode.coder.MessagePublisher;
+import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.j2735.dsrc.BasicSafetyMessage;
 import us.dot.its.jpo.ode.j2735.semi.ConnectionPoint;
 import us.dot.its.jpo.ode.j2735.semi.IpAddress;
@@ -63,7 +63,7 @@ public class VsdReceiverTest {
    @Capturing
    BsmDecoderHelper capturingBinaryDecoderHelper;
    @Capturing
-   MessagePublisher capturingMessagePublisher;
+   OdeDataPublisher capturingMessagePublisher;
 
    @Mocked
    OssJ2735Coder mockOssJ2735Coder;

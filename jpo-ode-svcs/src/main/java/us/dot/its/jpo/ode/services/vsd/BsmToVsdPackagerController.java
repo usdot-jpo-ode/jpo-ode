@@ -22,9 +22,9 @@ public class BsmToVsdPackagerController {
       String inputTopic = odeProps.getKafkaTopicFilteredOdeBsmJson();
       // String inputTopic = odeProps.getKafkaTopicOdeBsmJson();
 
-      String outputTopic = odeProps.getKafkaTopicEncodedVsd();
+      String outputTopic = odeProps.getKafkaTopicVsdPojo();
 
-      if (odeProps.isEnabledVsdKafkaTopic()) {
+      if (odeProps.getDepositSanitizedBsmToSdc()) {
          logger.info("Converting {} records from topic {} and publishing to topic {} ",
                OdeBsmData.class.getSimpleName(), inputTopic, outputTopic);
 

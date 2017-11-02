@@ -20,47 +20,46 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.exporter.FilteredBsmExporter;
-import us.dot.its.jpo.ode.exporter.OdeBsmExporter;
+import us.dot.its.jpo.ode.exporter.StompStringExporter;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
 
 @Controller
 public class FileUploadController {
-   // private static final String OUTPUT_TOPIC = "/topic/messages";
    private static final String FILTERED_OUTPUT_TOPIC = "/topic/filtered_messages";
-   private static final String ODE_BSM_OUTPUT_TOPIC = "/topic/ode_bsm_messages";
+   private static final String UNFILTERED_OUTPUT_TOPIC = "/topic/unfiltered_messages";
 
    private static Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
    private final StorageService storageService;
 
    @Autowired
-   public FileUploadController(StorageService storageService, OdeProperties odeProperties,
+   public FileUploadController(
+   		StorageService storageService, OdeProperties odeProperties,
          SimpMessagingTemplate template) {
       super();
       this.storageService = storageService;
 
       ExecutorService threadPool = Executors.newCachedThreadPool();
 
-      Path bsmPath = Paths.get(odeProperties.getUploadLocationRoot(), odeProperties.getUploadLocationBsm());
-      logger.debug("UPLOADER - Bsm directory: {}", bsmPath);
-
-      Path messageFramePath = Paths.get(odeProperties.getUploadLocationRoot(),
-            odeProperties.getUploadLocationMessageFrame());
-      logger.debug("UPLOADER - Message Frame directory: {}", messageFramePath);
-
+      Path logPath = Paths.get(odeProperties.getUploadLocationRoot(),
+          odeProperties.getUploadLocationObuLog());
+      logger.debug("UPLOADER - BSM log file upload directory: {}", logPath);
       Path backupPath = Paths.get(odeProperties.getUploadLocationRoot(), "backup");
       logger.debug("UPLOADER - Backup directory: {}", backupPath);
 
       // Create the importers that watch folders for new/modified files
-      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, bsmPath, backupPath));
-      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, messageFramePath, backupPath));
+      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, logPath, backupPath, ImporterFileType.OBU_LOG_FILE));
 
-      // Create the exporters
-      threadPool.submit(new OdeBsmExporter(odeProperties, ODE_BSM_OUTPUT_TOPIC, template));
-      threadPool.submit(new FilteredBsmExporter(odeProperties, FILTERED_OUTPUT_TOPIC, template));
+      // Create unfiltered exporters
+      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeBsmJson()));
+      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeDNMsgJson()));
+      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeTimJson()));
+
+      // Create filtered exporters
+      threadPool.submit(new StompStringExporter(odeProperties, FILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicFilteredOdeBsmJson()));
    }
 
    @PostMapping("/upload/{type}")

@@ -357,7 +357,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnMinimumBasicVehicleRole() {
         
         Integer testInput = 0;
-        String expectedValue = "BASICVEHICLE";
+        String expectedValue = "basicVehicle";
         
         BasicVehicleRole testBasicVehicleRole = new BasicVehicleRole(testInput);
         
@@ -378,7 +378,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnCornerCaseMinimumBasicVehicleRole() {
         
         Integer testInput = 1;
-        String expectedValue = "PUBLICTRANSPORT";
+        String expectedValue = "publicTransport";
         
         BasicVehicleRole testBasicVehicleRole = new BasicVehicleRole(testInput);
         
@@ -400,7 +400,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnMiddleBasicVehicleRole() {
         
         Integer testInput = 10;
-        String expectedValue = "MOTORCYCLE";
+        String expectedValue = "motorcycle";
         
         BasicVehicleRole testBasicVehicleRole = new BasicVehicleRole(testInput);
         
@@ -421,7 +421,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnCornerCaseMaximumBasicVehicleRole() {
         
         Integer testInput = 21;
-        String expectedValue = "NONMOTORIZED";
+        String expectedValue = "nonMotorized";
         
         BasicVehicleRole testBasicVehicleRole = new BasicVehicleRole(testInput);
         
@@ -442,7 +442,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnMaximumBasicVehicleRole() {
         
         Integer testInput = 22;
-        String expectedValue = "MILITARY";
+        String expectedValue = "military";
         
         BasicVehicleRole testBasicVehicleRole = new BasicVehicleRole(testInput);
         
@@ -464,7 +464,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnMinimumVehicleType() {
         
         Integer testInput = 0;
-        String expectedValue = "NONE";
+        String expectedValue = "none";
         
         VehicleType testVehicleType = new VehicleType(testInput);
         
@@ -485,7 +485,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnCornerCaseMinimumVehicleType() {
         
         Integer testInput = 1;
-        String expectedValue = "UNKNOWN";
+        String expectedValue = "unknown";
         
         VehicleType testVehicleType = new VehicleType(testInput);
         
@@ -506,7 +506,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnMiddleVehicleType() {
         
         Integer testInput = 6;
-        String expectedValue = "BUS";
+        String expectedValue = "bus";
         
         VehicleType testVehicleType = new VehicleType(testInput);
         
@@ -527,7 +527,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnCornerCaseMaximumVehicleType() {
         
         Integer testInput = 14;
-        String expectedValue = "AXLECNT6MULTITRAILER";
+        String expectedValue = "axleCnt6MultiTrailer";
         
         VehicleType testVehicleType = new VehicleType(testInput);
         
@@ -548,7 +548,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnMaximumVehicleType() {
         
         Integer testInput = 15;
-        String expectedValue = "AXLECNT7MULTITRAILER";
+        String expectedValue = "axleCnt7MultiTrailer";
         
         VehicleType testVehicleType = new VehicleType(testInput);
         
@@ -706,7 +706,7 @@ public class OssVehicleClassificationTest {
         
         Integer testInput = 9729;
         
-        String expectedValue = "EMERGENCY_VEHICLE_UNITS";
+        String expectedValue = "emergency_vehicle_units";
         
         ResponderGroupAffected testResponderGroupAffected = new ResponderGroupAffected(testInput);
         
@@ -728,7 +728,7 @@ public class OssVehicleClassificationTest {
         
         Integer testInput = 9730;
         
-        String expectedValue = "FEDERAL_LAW_ENFORCEMENT_UNITS";
+        String expectedValue = "federal_law_enforcement_units";
         
         ResponderGroupAffected testResponderGroupAffected = new ResponderGroupAffected(testInput);
         
@@ -750,7 +750,7 @@ public class OssVehicleClassificationTest {
         
         Integer testInput = 9731;
         
-        String expectedValue = "STATE_POLICE_UNITS";
+        String expectedValue = "state_police_units";
         
         ResponderGroupAffected testResponderGroupAffected = new ResponderGroupAffected(testInput);
         
@@ -773,7 +773,7 @@ public class OssVehicleClassificationTest {
         
         Integer testInput = 9741;
         
-        String expectedValue = "TRANSPORTATION_RESPONSE_UNITS";
+        String expectedValue = "transportation_response_units";
         
         ResponderGroupAffected testResponderGroupAffected = new ResponderGroupAffected(testInput);
         
@@ -795,7 +795,7 @@ public class OssVehicleClassificationTest {
         
         Integer testInput = 9742;
         
-        String expectedValue = "PRIVATE_CONTRACTOR_RESPONSE_UNITS";
+        String expectedValue = "private_contractor_response_units";
         
         ResponderGroupAffected testResponderGroupAffected = new ResponderGroupAffected(testInput);
         
@@ -817,7 +817,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnMinimumFuelType() {
         
         Integer testInput = 0;
-        String expectedValue = "UNKNOWNFUEL";
+        String expectedValue = "unknownFuel";
         
         FuelType testFuelType = new FuelType(testInput);
         
@@ -838,7 +838,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnCornerCaseMinimumFuelType() {
         
         Integer testInput = 1;
-        String expectedValue = "GASOLINE";
+        String expectedValue = "gasoline";
         
         FuelType testFuelType = new FuelType(testInput);
         
@@ -859,7 +859,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnMiddleFuelType() {
         
         Integer testInput = 4;
-        String expectedValue = "ELECTRIC";
+        String expectedValue = "electric";
         
         FuelType testFuelType = new FuelType(testInput);
         
@@ -880,7 +880,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnCornerCaseMaximumFuelType() {
         
         Integer testInput = 8;
-        String expectedValue = "NATGASCOMP";
+        String expectedValue = "natGasComp";
         
         FuelType testFuelType = new FuelType(testInput);
         
@@ -901,7 +901,7 @@ public class OssVehicleClassificationTest {
     public void shouldReturnMaximumFuelType() {
         
         Integer testInput = 9;
-        String expectedValue = "PROPANE";
+        String expectedValue = "propane";
         
         FuelType testFuelType = new FuelType(testInput);
         

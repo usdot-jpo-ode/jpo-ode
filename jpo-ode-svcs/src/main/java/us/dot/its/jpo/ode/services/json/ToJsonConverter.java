@@ -19,7 +19,7 @@ public class ToJsonConverter<V> extends AbstractSubPubTransformer<String, V, Str
     }
 
     @Override
-    protected String transform(V consumedData) {
+    protected String process(V consumedData) {
         return JsonUtils.toJson(consumedData, verbose);
     }
 }

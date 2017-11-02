@@ -1,24 +1,23 @@
 package us.dot.its.jpo.ode.upload;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
+import mockit.Capturing;
+import mockit.Expectations;
+import mockit.Injectable;
+import mockit.Mocked;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.multipart.MultipartFile;
-
-import mockit.Capturing;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static org.junit.Assert.assertEquals;
 
 public class FileUploadControllerTest {
 
@@ -47,21 +46,19 @@ public class FileUploadControllerTest {
    MultipartFile mockMultipartFile;
 
    @Before
-   public void constructorShouldLaunchFourThreads() {
+   public void constructorShouldLaunchSevenThreads() {
       new Expectations() {
          {
             mockOdeProperties.getUploadLocationRoot();
             result = "testRootDir";
-            mockOdeProperties.getUploadLocationBsm();
-            result = "testBsmDir";
-            mockOdeProperties.getUploadLocationMessageFrame();
-            result = "testMessageFrameDir";
+            mockOdeProperties.getUploadLocationObuLog();
+            result = "testLogFileDir";
 
             Executors.newCachedThreadPool();
             result = mockExecutorService;
 
             mockExecutorService.submit((Runnable) any);
-            times = 4;
+            times =5;
          }
       };
       testFileUploadController = new FileUploadController(mockStorageService, mockOdeProperties,

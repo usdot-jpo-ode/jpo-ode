@@ -64,8 +64,7 @@ public class OdePropertiesTest {
       String testKafkaBrokers = "testKafkaBrokers123456";
       String testKafkaProducerType = "testKafkaProducerType123456";
       String testPluginsLocations = "testpluginsLocations123456";
-      String testUploadLocationBsm = "testuploadLocationBsm123456";
-      String testUploadLocationMessageFrame = "testuploadLocationMessageFrame123456";
+      String testUploadLocationObuLog = "testuploadLocationObuLog123456";
       String testUploadLocationRoot = "testUploadLocationRoot123456";
       String testSdcIp = "testSdcIp";
       int testSdcPort = 123;
@@ -96,7 +95,6 @@ public class OdePropertiesTest {
       boolean testVerboseJson = true;
       int testRsuSrmSlots = 22;
       int testTrustRetries = 23;
-      boolean testEnabledVsdKafkaTopic = false;
       String testKafkaTopicEncodedVsd = "testKafkaTopicEncodedVsd";
       String testKafkaTopicOdeBsmPojo = "testKafkaTopicOdeBsmPojo";
       String testKafkaTopicOdeBsmJson = "testKafkaTopicOdeBsmJson";
@@ -111,14 +109,13 @@ public class OdePropertiesTest {
       testOdeProperties.setKafkaBrokers(testKafkaBrokers);
       testOdeProperties.setKafkaProducerType(testKafkaProducerType);
       testOdeProperties.setPluginsLocations(testPluginsLocations);
-      testOdeProperties.setUploadLocationBsm(testUploadLocationBsm);
-      testOdeProperties.setUploadLocationMessageFrame(testUploadLocationMessageFrame);
+      testOdeProperties.setUploadLocationObuLog(testUploadLocationObuLog);
       testOdeProperties.setUploadLocationRoot(testUploadLocationRoot);
       testOdeProperties.setSdcIp(testSdcIp);
       testOdeProperties.setSdcPort(testSdcPort);
       testOdeProperties.setExternalIpv4(testExternalIpv4);
       testOdeProperties.setExternalIpv6(testExternalIpv6);
-      testOdeProperties.setKafkaTopicEncodedIsd(testKafkaTopicEncodedIsd);
+      testOdeProperties.setKafkaTopicIsdPojo(testKafkaTopicEncodedIsd);
       testOdeProperties.setVsdDepositorPort(testVsdDepositorPort);
       testOdeProperties.setIsdDepositorPort(testIsdDepositorPort);
       testOdeProperties.setIsdReceiverPort(testIsdReceiverPort);
@@ -143,8 +140,7 @@ public class OdePropertiesTest {
       testOdeProperties.setVerboseJson(testVerboseJson);
       testOdeProperties.setRsuSrmSlots(testRsuSrmSlots);
       testOdeProperties.setTrustRetries(testTrustRetries);
-      testOdeProperties.setEnabledVsdKafkaTopic(testEnabledVsdKafkaTopic);
-      testOdeProperties.setKafkaTopicEncodedVsd(testKafkaTopicEncodedVsd);
+      testOdeProperties.setKafkaTopicVsdPojo(testKafkaTopicEncodedVsd);
       testOdeProperties.setKafkaTopicOdeBsmPojo(testKafkaTopicOdeBsmPojo);
       testOdeProperties.setKafkaTopicOdeBsmJson(testKafkaTopicOdeBsmJson);
 
@@ -158,9 +154,7 @@ public class OdePropertiesTest {
       assertEquals("Incorrect testKafkaBrokers", testKafkaBrokers, testOdeProperties.getKafkaBrokers());
       assertEquals("Incorrect testKafkaProducerType", testKafkaProducerType, testOdeProperties.getKafkaProducerType());
       assertEquals("Incorrect testpluginsLocations", testPluginsLocations, testOdeProperties.getPluginsLocations());
-      assertEquals("Incorrect testUploadLocationBsm", testUploadLocationBsm, testOdeProperties.getUploadLocationBsm());
-      assertEquals("Incorrect testUploadLocationMessageFrame", testUploadLocationMessageFrame,
-            testOdeProperties.getUploadLocationMessageFrame());
+      assertEquals("Incorrect testUploadLocationObuLog", testUploadLocationObuLog, testOdeProperties.getUploadLocationObuLog());
       assertEquals("Incorrect testUploadLocationRoot", testUploadLocationRoot,
             testOdeProperties.getUploadLocationRoot());
       assertEquals("Incorrect testSdcIp", testSdcIp, testOdeProperties.getSdcIp());
@@ -168,7 +162,7 @@ public class OdePropertiesTest {
       assertEquals("Incorrect testExternalIpv4", testExternalIpv4, testOdeProperties.getExternalIpv4());
       assertEquals("Incorrect testExternalIpv6", testExternalIpv6, testOdeProperties.getExternalIpv6());
       assertEquals("Incorrect testKafkaTopicEncodedIsd", testKafkaTopicEncodedIsd,
-            testOdeProperties.getKafkaTopicEncodedIsd());
+            testOdeProperties.getKafkaTopicIsdPojo());
       assertEquals("Incorrect testVsdDepositorPort", testVsdDepositorPort, testOdeProperties.getVsdDepositorPort());
       assertEquals("Incorrect testIsdDepositorPort", testIsdDepositorPort, testOdeProperties.getIsdDepositorPort());
       assertEquals("Incorrect testIsdReceiverPort", testIsdReceiverPort, testOdeProperties.getIsdReceiverPort());
@@ -202,10 +196,8 @@ public class OdePropertiesTest {
       assertEquals("Incorrect testVerboseJson", testVerboseJson, testOdeProperties.getVerboseJson());
       assertEquals("Incorrect testRsuSrmSlots", testRsuSrmSlots, testOdeProperties.getRsuSrmSlots());
       assertEquals("Incorrect testTrustRetries", testTrustRetries, testOdeProperties.getTrustRetries());
-      assertEquals("Incorrect testEnabledVsdKafkaTopic", testEnabledVsdKafkaTopic,
-            testOdeProperties.isEnabledVsdKafkaTopic());
       assertEquals("Incorrect testKafkaTopicEncodedVsd", testKafkaTopicEncodedVsd,
-            testOdeProperties.getKafkaTopicEncodedVsd());
+            testOdeProperties.getKafkaTopicVsdPojo());
       assertEquals("Incorrect testKafkaTopicOdeBsmPojo", testKafkaTopicOdeBsmPojo,
             testOdeProperties.getKafkaTopicOdeBsmPojo());
       assertEquals("Incorrect testKafkaTopicOdeBsmJson", testKafkaTopicOdeBsmJson,

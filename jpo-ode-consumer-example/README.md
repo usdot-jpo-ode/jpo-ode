@@ -14,7 +14,7 @@ mvn clean compile assembly:single install
 To run the jar, be sure to include the topic at the end and group id at the end. If this is not a distributed system, the group can be any string.
 
 ```
-java -jar target/consumer-example-1.0-SNAPSHOT-jar-with-dependencies.jar     
+java -jar target/consumer-example-0.0.1-SNAPSHOT-jar-with-dependencies.jar    
 
 usage: Consumer Example
  -b,--bootstrap-server <arg>   Endpoint ('ip:port')
@@ -26,7 +26,7 @@ usage: Consumer Example
 Example Usage As Of: 1/11/17
 
 ``` 
-java -jar target/consumer-example-1.0-SNAPSHOT-jar-with-dependencies.jar --bootstrap-server localhost:9092 -g group1 -t topic.J2735Bsm -type byte
+java -jar target/consumer-example-0.0.1-SNAPSHOT-jar-with-dependencies.jar --bootstrap-server localhost:9092 -g group1 -t topic.J2735Bsm -type byte
 ```
 
 It should return the following confirmation

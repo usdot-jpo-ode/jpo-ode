@@ -1,83 +1,147 @@
+
 package us.dot.its.jpo.ode.coder;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-import java.io.InputStream;
-import java.text.ParseException;
-import java.time.ZonedDateTime;
-
-import org.junit.Ignore;
 import org.junit.Test;
 
+import com.oss.asn1.EncodeFailedException;
+
+import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Ieee1609Dot2Content;
+import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Ieee1609Dot2Data;
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mocked;
-import us.dot.its.jpo.ode.j2735.dsrc.AntiLockBrakeStatus;
-import us.dot.its.jpo.ode.model.OdeBsmData;
-import us.dot.its.jpo.ode.model.OdeObject;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssVehicleSituationRecord;
-import us.dot.its.jpo.ode.util.DateTimeUtils;
-import us.dot.its.jpo.ode.wrapper.MessageProducer;
+import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
+import us.dot.its.jpo.ode.model.SerialId;
+import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
 
 public class DecoderHelperTest {
-   
-  
-	@Test
-	@Ignore
-	public void test() {
-		fail("Not yet implemented");
-	}
+   @Mocked
+   String mockString;
+   @Mocked
+   private SerialId mockSerialId;
+   @Mocked
+   Ieee1609Dot2Data mockIeee1609Dot2Data;
+   @Capturing
+   Ieee1609Dot2Data capturingIeee1609Dot2Data;
+   @Capturing
+   Oss1609dot2Coder capturingOss1609dot2Coder;
+   @Capturing
+   IEEE1609p2Message capturingIEEE1609p2Message;
+   @Mocked
+   EncodeFailedException mockEncodeFailedException;
+   @Mocked
+   Ieee1609Dot2Content mockIeee1609Dot2Content;
+   @Mocked
+   BsmLogFileParser mockBsmFileParser;
 
+   @Test
+   public void decodeBsmTestTwo() {
+      new Expectations() {
+         {
+            capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
+            result = null;
+         }
+      };
 
+      BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
+      try {
+         testingBsmDecoderHelper.decode(mockBsmFileParser, mockSerialId);
+      } catch (Exception e) {
 
-@Ignore
-@Test
-public void decodeBsmTest() {
+         fail("Unexpected error" + e);
+      }
 
+   }
 
- InputStream testInput = null;
- 
- J2735MessageFrame expectedValue = new J2735MessageFrame();
- expectedValue = null;
-// OdeObject actualValue = BsmDecoderHelper.decodeBsm(testInput);
+   @Test
+   public void decodeBsmTestThree() {
+      try {
 
- // assertEquals(expectedValue, actualValue);
+         BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
+
+         testingBsmDecoderHelper.decode(mockBsmFileParser, mockSerialId);
+      } catch (Exception e) {
+
+         fail("Unexpected error" + e);
+      }
+
+   }
+
+   @Test
+   public void decodeBsmTestFour() {
+      try {
+         new Expectations() {
+            {
+               capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
+               result = mockIeee1609Dot2Data;
+
+               IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
+               result = mockEncodeFailedException;
+
+            }
+         };
+
+         BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
+
+         testingBsmDecoderHelper.decode(mockBsmFileParser, mockSerialId);
+      } catch (Exception e) {
+         fail("Unexpected error" + e);
+      }
+
+   }
+
+   @Test
+   public void decodeBsmTestFive() {
+      try {
+         new Expectations() {
+            {
+               capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
+               result = mockIeee1609Dot2Data;
+
+               IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
+
+               result = null;
+            }
+         };
+
+         BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
+
+         testingBsmDecoderHelper.decode(mockBsmFileParser, mockSerialId);
+      } catch (Exception e) {
+         fail("Unexpected error" + e);
+      }
+
+   }
+
+   @Test
+   public void decodeBsmTestSix() {
+      try {
+         new Expectations() {
+            {
+               capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
+               result = mockIeee1609Dot2Data;
+
+               IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
+               result = mockEncodeFailedException;
+
+               mockIeee1609Dot2Data.getContent();
+               result = mockIeee1609Dot2Content;
+
+               Ieee1609ContentValidator.getUnsecuredData((Ieee1609Dot2Content) any);
+               result = new byte[0];
+            }
+         };
+
+         BsmDecoderHelper testingBsmDecoderHelper = new BsmDecoderHelper();
+
+         assertNull(testingBsmDecoderHelper.decode(mockBsmFileParser, mockSerialId));
+      } catch (Exception e) {
+         fail("Unexpected error" + e);
+      }
+
+   }
 }
-
-
-
-
-@Test
-public void decodeBsmByteTest() {
-
-
-   byte[] testInput = {6, 1, 1, 4, 6, 1, 1, 1, 6, 1};
- 
- J2735MessageFrame expectedValue = new J2735MessageFrame();
- expectedValue = null;
- OdeObject actualValue = BsmDecoderHelper.decodeBsm(testInput);
-
-  assertEquals(expectedValue, actualValue);
-}
-
-
-@Test
-public void decodeBsmByteTestTwo() {
-
-
-   byte[] testInput = {6, 1, 1, 4, 6, 1, 1, 1, 6, 1};
- 
- J2735MessageFrame expectedValue = new J2735MessageFrame();
- expectedValue = null;
- OdeObject actualValue = BsmDecoderHelper.decodeBsm(testInput);
-
-  assertEquals(expectedValue, actualValue);
-}
-
-}
-

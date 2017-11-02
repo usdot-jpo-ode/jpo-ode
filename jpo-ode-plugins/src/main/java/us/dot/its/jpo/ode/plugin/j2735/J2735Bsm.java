@@ -3,12 +3,16 @@ package us.dot.its.jpo.ode.plugin.j2735;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 public class J2735Bsm extends Asn1Object {
 	private static final long serialVersionUID = 1L;
 
 	private J2735BsmCoreData coreData;
+	
+	@JacksonXmlElementWrapper(useWrapping=false)
 	private List<J2735BsmPart2Content> partII = new ArrayList<>();
 
 	public J2735BsmCoreData getCoreData() {
