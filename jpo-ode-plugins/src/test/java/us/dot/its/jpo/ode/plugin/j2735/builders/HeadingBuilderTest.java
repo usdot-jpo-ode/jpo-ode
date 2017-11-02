@@ -15,6 +15,9 @@ import org.junit.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class HeadingBuilderTest {
    
@@ -28,12 +31,11 @@ public class HeadingBuilderTest {
     */
    @Test
    public void shouldReturnCoarseHeadingMin() throws JsonProcessingException, IOException{
-       ObjectMapper mapper = new ObjectMapper();
       
        BigDecimal expectedValue = BigDecimal.ZERO.setScale(1);
 
-       JsonNode testHeading = mapper.readTree("0");
-       BigDecimal actualValue = HeadingBuilder.genericCoarseHeading(testHeading);
+       ObjectNode testHeading = JsonUtils.newNode().put("angle", "0");
+       BigDecimal actualValue = HeadingBuilder.genericCoarseHeading(testHeading.get("angle"));
 
        assertEquals(expectedValue, actualValue);
 
