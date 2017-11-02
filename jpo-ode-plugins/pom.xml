@@ -16,10 +16,7 @@
   </parent>
   <properties>
     <!-- SonarQube Properties -->
-    <sonar.exclusions>
-      **/src/main/java/us/dot/its/jpo/ode/plugin/j2735/J2735*.java,
-      **/src/main/java/us/dot/its/jpo/ode/plugin/builders/timstorage/*.java
-    </sonar.exclusions>
+    <sonar.exclusions>src/main/java/us/dot/its/jpo/ode/plugin/j2735/J2735*.java, src/main/java/us/dot/its/jpo/ode/plugin/builders/timstorage/**/*</sonar.exclusions>
   </properties>
   <dependencies>
     <dependency>
