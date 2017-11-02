@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
 public enum J2735EssPrecipSituation {
+   NA,
 	OTHER,
 	UNKNOWN,
 	NOPRECIPITATION,
@@ -16,5 +17,4 @@ public enum J2735EssPrecipSituation {
 	FROZENPRECIPITATIONSLIGHT,
 	FROZENPRECIPITATIONMODERATE,
 	FROZENPRECIPITATIONHEAVY
-
 }

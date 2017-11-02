@@ -107,6 +107,7 @@ public class TimControllerQueryTest {
       assertEquals(HttpStatus.OK, testTimController.asyncQueryForTims("testString").getStatusCode());
    }
    
+   @SuppressWarnings({ "rawtypes", "unchecked" })
    @Test
    public void shouldStopThreadsOnInterruptException(@Mocked InterruptedException mockInterruptedException) {
       try {

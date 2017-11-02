@@ -4,13 +4,6 @@ import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.oss.asn1.EncodeFailedException;
-import com.oss.asn1.EncodeNotSupportedException;
-
-import gov.usdot.cv.security.cert.CertificateException;
-import gov.usdot.cv.security.crypto.CryptoException;
-import gov.usdot.cv.security.msg.MessageException;
-
 public class SecurityManagerFunctionalTest {
    
    @Test @Ignore
@@ -21,13 +14,14 @@ public class SecurityManagerFunctionalTest {
       byte[] bMsg = HexUtils.fromHexString(hexMsg);
       
       SecurityManager sm = new SecurityManager();
-      try {
-         System.out.println(sm.decodeSignedMessage(bMsg));
-      } catch (EncodeFailedException | MessageException | CertificateException | CryptoException
-            | EncodeNotSupportedException e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
+//TODO open-ode
+//      try {
+//         System.out.println(sm.decodeSignedMessage(bMsg));
+//      } catch (EncodeFailedException | MessageException | CertificateException | CryptoException
+//            | EncodeNotSupportedException e) {
+//         // TODO Auto-generated catch block
+//         e.printStackTrace();
+//      }
    }
 
 }
