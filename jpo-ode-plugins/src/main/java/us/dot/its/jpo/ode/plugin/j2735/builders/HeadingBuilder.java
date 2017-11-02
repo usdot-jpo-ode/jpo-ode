@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class HeadingBuilder {
     
     public static BigDecimal genericHeading(JsonNode heading) {
-        return AngleBuilder.longToDecimal(heading.asLong());
+        return AngleBuilder.longToDecimal(heading.asLong()).setScale(1);
     }
 
     public static BigDecimal genericCoarseHeading(JsonNode coarseHeading) {
@@ -19,7 +19,7 @@ public class HeadingBuilder {
         BigDecimal result = null;
 
         if (coarseHeading.asInt() != 240) {
-            result = BigDecimal.valueOf(coarseHeading.asLong() * 15, 1);
+            result = BigDecimal.valueOf(coarseHeading.asLong() * 15, 1).setScale(1);
         }
 
         return result;
