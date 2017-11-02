@@ -19,7 +19,10 @@ public class PathHistoryPointBuilder {
       long latOffset = pathHistoryPoint.get("latOffset").asLong();
       long lonOffset = pathHistoryPoint.get("lonOffset").asLong();
       long elevationOffset = pathHistoryPoint.get("elevationOffset").asLong();
-
+      long timeOffset = pathHistoryPoint.get("timeOffset").asLong();
+      
+      
+      
       // Required elements
       if (latOffset == -131072) {
          php.setLatOffset(null);
@@ -51,8 +54,18 @@ public class PathHistoryPointBuilder {
          php.setElevationOffset(BigDecimal.valueOf(elevationOffset, 1));
       }
 
-      php.setTimeOffset(TimeOffsetBuilder.genericTimeOffset(pathHistoryPoint.get("timeOffset")));
+      if (timeOffset == 65535) {
+         php.setElevationOffset(null);
+      } else if (timeOffset <= 0) {
+         throw new IllegalArgumentException("timeOffset value out of bounds [below 0]");
+      } else if (timeOffset >= 65534) {
+         php.setTimeOffset(BigDecimal.valueOf(655.34));
+      } else {
+         php.setTimeOffset(BigDecimal.valueOf(timeOffset, 2));
+      }
+      
 
+      
       // Optional elements
       if (pathHistoryPoint.get("speed") != null) {
          php.setSpeed(SpeedOrVelocityBuilder.genericSpeed(pathHistoryPoint.get("speed")));
@@ -60,10 +73,22 @@ public class PathHistoryPointBuilder {
       if (pathHistoryPoint.get("posAccuracy") != null) {
          php.setPosAccuracy(PositionalAccuracyBuilder.genericPositionalAccuracy(pathHistoryPoint.get("posAccuracy")));
       }
+      
+      
+      
       if (pathHistoryPoint.get("heading") != null) {
-         php.setHeading(HeadingBuilder.genericHeading(pathHistoryPoint.get("heading")));
+         if (pathHistoryPoint.get("heading").asLong() == 240) {
+            php.setHeading(null);
+      } else if (pathHistoryPoint.get("heading").asLong() < 0) {
+         throw new IllegalArgumentException("heading value out of bounds [below 0]");
+      } else if (pathHistoryPoint.get("heading").asLong() > 240) {
+         throw new IllegalArgumentException("heading value out of bounds [above 240]");
+      } else {
+         php.setHeading(BigDecimal.valueOf((pathHistoryPoint.get("heading").asDouble() * 1.5)).setScale(1));
       }
-
+      
+      }
+      
       return php;
    }
 
