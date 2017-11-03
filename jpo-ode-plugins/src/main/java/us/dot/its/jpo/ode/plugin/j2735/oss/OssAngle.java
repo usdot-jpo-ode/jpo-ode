@@ -35,5 +35,9 @@ public class OssAngle {
         
         return result;
     }
+    
+    public static Angle angle(long ang) {
+       return new Angle(BigDecimal.valueOf(ang).divide(BigDecimal.valueOf(0.0125)).intValue());
+    }
 
 }

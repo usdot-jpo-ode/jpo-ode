@@ -25,78 +25,76 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.OdeControlData;
-import us.dot.its.jpo.ode.model.OdeDataType;
 import us.dot.its.jpo.ode.model.OdeMessage;
 import us.dot.its.jpo.ode.model.OdeStatus;
 import us.dot.its.jpo.ode.model.OdeStatus.Code;
 import us.dot.its.jpo.ode.model.StatusTag;
-import us.dot.its.jpo.ode.model.WebSocketClient;
 import us.dot.its.jpo.ode.wrapper.AbstractWebsocketMessageHandler;
+import us.dot.its.jpo.ode.wrapper.WebSocketClient;
 
 public class StatusMessageHandler extends AbstractWebsocketMessageHandler<DdsStatusMessage> {
 
-	private static final Logger logger = LoggerFactory.getLogger(StatusMessageHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(StatusMessageHandler.class);
 
-	public StatusMessageHandler(WebSocketClient client) {
-		super(client);
-	}
+    public StatusMessageHandler(WebSocketClient client) {
+        super(client);
+    }
 
-	@Override
-	public void onMessage(DdsStatusMessage statusMsg) {
-		super.onMessage(statusMsg);
+    @Override
+    public void onMessage(DdsStatusMessage statusMsg) {
+        super.onMessage(statusMsg);
 
-		try {
-			if (statusMsg != null) {
-				OdeControlData controlData = new OdeControlData(statusMsg);
-				handleControlMessage(controlData);
-			}
-		} catch (Exception e) {
-			logger.error("Error handling ControlMessage. ", e);
-		}
-	}
+        try {
+            if (statusMsg != null) {
+                OdeControlData controlData = new OdeControlData(statusMsg);
+                handleControlMessage(controlData);
+            }
+        } catch (Exception e) {
+            logger.error("Error handling ControlMessage. ", e);
+        }
+    }
 
-	private void handleControlMessage(OdeControlData controlData) {
-		String infoMsg = controlData.toJson(false);
-		logger.info(infoMsg);
-		EventLogger.logger.info(infoMsg);
-	}
+    private void handleControlMessage(OdeControlData controlData) {
+        String infoMsg = controlData.toJson(false);
+        logger.info(infoMsg);
+        EventLogger.logger.info(infoMsg);
+    }
 
-	@Override
-	public void onOpen(Session session, EndpointConfig config) {
-		this.getClient().onOpen(session);
-		OdeControlData controlData = new OdeControlData(StatusTag.OPENED);
-		controlData.setMessage("WebSocket Connection to DDS Opened.");
+    @Override
+    public void onOpen(Session session, EndpointConfig config) {
+        this.getClient().onOpen(session);
+        OdeControlData controlData = new OdeControlData(StatusTag.OPENED);
+        controlData.setMessage("WebSocket Connection to DDS Opened.");
 
-		handleControlMessage(controlData);
-	}
+        handleControlMessage(controlData);
+    }
 
-	@Override
-	public void onClose(Session session, CloseReason reason) {
-		this.getClient().onClose(reason);
-		OdeControlData controlData = new OdeControlData(StatusTag.CLOSED);
-		controlData.setMessage("WebSocket Connection to DDS Closed. Reason: " + reason.getReasonPhrase());
+    @Override
+    public void onClose(Session session, CloseReason reason) {
+        this.getClient().onClose(reason);
+        OdeControlData controlData = new OdeControlData(StatusTag.CLOSED);
+        controlData.setMessage("WebSocket Connection to DDS Closed. Reason: " + reason.getReasonPhrase());
 
-		handleControlMessage(controlData);
-	}
+        handleControlMessage(controlData);
+    }
 
-	@Override
-	public void onError(Session session, Throwable t) {
-		this.getClient().onError(t);
-		OdeControlData controlData = new OdeControlData(StatusTag.ERROR);
-		controlData.setMessage("WebSocket Connection to DDS Errored. Message: " + t.getMessage());
+    @Override
+    public void onError(Session session, Throwable t) {
+        this.getClient().onError(t);
+        OdeControlData controlData = new OdeControlData(StatusTag.ERROR);
+        controlData.setMessage("WebSocket Connection to DDS Errored. Message: " + t.getMessage());
 
-		handleControlMessage(controlData);
-	}
+        handleControlMessage(controlData);
+    }
 
-	@Override
-	public OdeMessage buildOdeMessage(DdsStatusMessage message) {
-		OdeStatus status = new OdeStatus();
+    @Override
+    public OdeMessage buildOdeMessage(DdsStatusMessage message) {
+        OdeStatus status = new OdeStatus();
 
-		status.setCode(Code.SUCCESS);
-		status.setDataType(OdeDataType.Status);
-		status.setMessage(message.toString());
+        status.setCode(Code.SUCCESS);
+        status.setMessage(message.toString());
 
-		return status;
-	}
+        return status;
+    }
 
 }

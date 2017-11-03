@@ -1,28 +1,25 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import us.dot.its.jpo.ode.j2735.semi.GeoRegion;
-import us.dot.its.jpo.ode.plugin.j2735.J2735GeoRegion;
+import us.dot.its.jpo.ode.plugin.j2735.OdeGeoRegion;
 
 public class OssGeoRegion {
-   
-   public static J2735GeoRegion genericGeoRegion(GeoRegion geoRegion) {
-      
-      return new J2735GeoRegion(
-            OssPosition3D.geneticPosition3D(geoRegion.nwCorner),
-            OssPosition3D.geneticPosition3D(geoRegion.seCorner));
-      
-   }
 
-   public static GeoRegion geoRegion(J2735GeoRegion geoRegion) {
-      
-      return new GeoRegion(
-            OssPosition3D.position3D(geoRegion.getNwCorner()), 
-            OssPosition3D.position3D(geoRegion.getSeCorner()));
-      
-   }
-   
    private OssGeoRegion() {
       throw new UnsupportedOperationException();
    }
 
+   public static OdeGeoRegion genericGeoRegion(GeoRegion geoRegion) {
+
+      return new OdeGeoRegion(OssPosition3D.genericPosition3D(geoRegion.getNwCorner()),
+            OssPosition3D.genericPosition3D(geoRegion.getSeCorner()));
+
+   }
+
+   public static GeoRegion geoRegion(OdeGeoRegion geoRegion) {
+
+      return new GeoRegion(OssPosition3D.position3D(geoRegion.getNwCorner()),
+            OssPosition3D.position3D(geoRegion.getSeCorner()));
+
+   }
 }

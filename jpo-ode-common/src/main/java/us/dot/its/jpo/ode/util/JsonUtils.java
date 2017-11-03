@@ -21,21 +21,39 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class JsonUtils {
-    
-    private JsonUtils() {}
    
+   public static class JsonUtilsException extends Exception {
+
+      private static final long serialVersionUID = 1L;
+
+      public JsonUtilsException(String string, Exception e) {
+         super(string, e);
+      }
+
+   }
+
    private static Gson gsonCompact;
    private static Gson gsonVerbose;
    private static ObjectMapper mapper;
-   
+   private static Logger logger;
+
+   private JsonUtils() {
+      logger = LoggerFactory.getLogger(JsonUtils.class);
+   }
+
    static {
       gsonCompact = new GsonBuilder().create();
       gsonVerbose = new GsonBuilder().serializeNulls().create();
@@ -47,65 +65,74 @@ public class JsonUtils {
       // convert java object to JSON format,
       // and returned as JSON formatted string
       return verbose ? gsonVerbose.toJson(o) : gsonCompact.toJson(o);
-//      String json = null;
-//      try {
-//         json = mapper.writeValueAsString(o);
-//      } catch (JsonProcessingException e) {
-//         e.printStackTrace();
-//      }
-//      return json;
+      // String json = null;
+      // try {
+      // json = mapper.writeValueAsString(o);
+      // } catch (JsonProcessingException e) {
+      // e.printStackTrace();
+      // }
+      // return json;
    }
 
    public static Object fromJson(String s, Class<?> clazz) {
       return gsonCompact.fromJson(s, clazz);
-      /*Object o = null;
-      try {
-         o = mapper.readValue(s, clazz);
-      } catch (IOException e) {
-         e.printStackTrace();
-      }
-      return o;*/
+      /*
+       * Object o = null; try { o = mapper.readValue(s, clazz); } catch
+       * (IOException e) { e.printStackTrace(); } return o;
+       */
    }
    
-// This method does not seem to work so commenting it out.
-//   public static Object fromObjectNode(JsonNode s, Class<?> clazz) {
-//      Object o = null;
-//      try {
-//         o = mapper.treeToValue(s, clazz);
-//      } catch (IOException e) {
-//         e.printStackTrace();
-//      }
-//      return o;
-//   }
-   
+   public static Object jacksonFromJson(String s, Class<?> clazz) throws JsonUtilsException {
+      try {
+         return mapper.readValue(s, clazz);
+      } catch (IOException e) {
+         throw new JsonUtilsException("Error deserializing JSON tree to " + clazz.getName(), e);
+      }
+      /*
+       * Object o = null; try { o = mapper.readValue(s, clazz); } catch
+       * (IOException e) { e.printStackTrace(); } return o;
+       */
+   }
+
+   // This method does not seem to work so commenting it out.
+   // public static Object fromObjectNode(JsonNode s, Class<?> clazz) {
+   // Object o = null;
+   // try {
+   // o = mapper.treeToValue(s, clazz);
+   // } catch (IOException e) {
+   // e.printStackTrace();
+   // }
+   // return o;
+   // }
+
    public static String newJson(String key, Object value) {
-   	return newObjectNode(key, value).toString();
+      return newObjectNode(key, value).toString();
    }
 
    public static ObjectNode newObjectNode(String key, Object value) {
-      
-//    JsonObject json = new JsonObject();
-//    
-//    json.add(key, gson.toJsonTree(value));
+
+      // JsonObject json = new JsonObject();
+      //
+      // json.add(key, gson.toJsonTree(value));
 
       ObjectNode json = mapper.createObjectNode();
       json.putPOJO(key, value);
       return json;
    }
-   
+
    public static ObjectNode addNode(ObjectNode tree, String fieldName, Object fieldValue) {
       tree.putPOJO(fieldName, fieldValue);
       return tree;
    }
-   
+
    public static JsonNode getJsonNode(String tree, String fieldName) {
       JsonNode node = null;
       try {
          JsonNode jsonNode = mapper.readTree(tree);
          node = jsonNode.get(fieldName);
-         
+
       } catch (IOException e) {
-         e.printStackTrace();
+         logger.error("IOException", e);
       }
       return node;
    }
@@ -114,12 +141,28 @@ public class JsonUtils {
       return mapper.createObjectNode();
    }
 
-   public static ObjectNode toObjectNode(String tree) 
-         throws JsonProcessingException, IOException {
-      ObjectNode jsonNode = (ObjectNode) mapper.readTree(tree);
+   public static ArrayNode newArrayNode() {
+      return mapper.createArrayNode();
+   }
+
+   public static ObjectNode toObjectNode(String tree) throws JsonUtilsException {
+      ObjectNode jsonNode;
+      try {
+         jsonNode = (ObjectNode) mapper.readTree(tree);
+      } catch (Exception e) {
+         throw new JsonUtilsException("Error converting JSON tree to ObjectNode", e);
+      }
       return jsonNode;
    }
-   
+
+   public static JSONObject toJSONObject(String json) throws JsonUtilsException {
+      try {
+         return new JSONObject(json);
+      } catch (Exception e) {
+         throw new JsonUtilsException("Error decoding " + json + "to JSONObject", e);
+      }
+   }
+
    public static boolean isValid(String tree) throws IOException {
       try {
          ObjectNode jsonNode = (ObjectNode) mapper.readTree(tree);
@@ -129,16 +172,14 @@ public class JsonUtils {
       }
    }
 
-   public static HashMap<String, JsonNode> jsonNodeToHashMap(
-         JsonNode jsonNode) {
+   public static HashMap<String, JsonNode> jsonNodeToHashMap(JsonNode jsonNode) {
       HashMap<String, JsonNode> nodeProps = new HashMap<String, JsonNode>();
       Iterator<Entry<String, JsonNode>> iter = jsonNode.fields();
-      
-      while(iter.hasNext()) {
+
+      while (iter.hasNext()) {
          Entry<String, JsonNode> element = iter.next();
          nodeProps.put(element.getKey(), element.getValue());
       }
       return nodeProps;
    }
-
 }

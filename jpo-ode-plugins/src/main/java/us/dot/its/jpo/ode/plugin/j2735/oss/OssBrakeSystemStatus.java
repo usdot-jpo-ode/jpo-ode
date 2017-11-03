@@ -24,8 +24,8 @@ public class OssBrakeSystemStatus {
                 appliedWheelBrakes.put(eventName, eventStatus);
             }
         }
-
         genericBrakesStatus.setWheelBrakes(appliedWheelBrakes);
+
         genericBrakesStatus.setTraction(brakesStatus.traction.name());
         genericBrakesStatus.setAbs(brakesStatus.abs.name());
         genericBrakesStatus.setScs(brakesStatus.scs.name());

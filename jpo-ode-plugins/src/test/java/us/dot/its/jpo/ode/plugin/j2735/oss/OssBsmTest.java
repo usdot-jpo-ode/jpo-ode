@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.util.Map;
@@ -50,7 +49,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.VerticalAcceleration;
 import us.dot.its.jpo.ode.j2735.dsrc.YawRate;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmCoreData;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
+import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssBsmPart2Content.OssBsmPart2Exception;
 
 /**
@@ -241,7 +240,7 @@ public class OssBsmTest {
 
     @Test
     public void test_basicSafetyMessage(@Injectable J2735Bsm mockJ2735Bsm,
-            @Mocked J2735BsmCoreData mockJ2735BsmCoreData, @Mocked J2735Position3D mockJ2735Position3D,
+            @Mocked J2735BsmCoreData mockJ2735BsmCoreData, @Mocked OdePosition3D mockJ2735Position3D,
             @Mocked BigDecimal mockBigDecimal) {
 
         new Expectations() {
@@ -266,11 +265,14 @@ public class OssBsmTest {
     }
 
     @Test
-    public void testConstructorIsPrivate() throws NoSuchMethodException, SecurityException, InstantiationException,
-            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public void testConstructorIsPrivate() throws NoSuchMethodException, SecurityException  {
         Constructor<OssBsm> constructor = OssBsm.class.getDeclaredConstructor();
         assertTrue(Modifier.isPrivate(constructor.getModifiers()));
         constructor.setAccessible(true);
-        constructor.newInstance();
+        try {
+           constructor.newInstance();
+        } catch (Exception e) {
+           assertTrue(e.getCause() instanceof UnsupportedOperationException);
+        }
     }
 }

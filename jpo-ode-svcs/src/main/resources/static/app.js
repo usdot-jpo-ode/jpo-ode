@@ -18,11 +18,11 @@ function connect() {
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/subscribers', function (greeting) {
-            showGreeting(JSON.parse(greeting.body).content);
+        stompClient.subscribe('/topic/unfiltered_messages', function (greeting) {
+        	showMessage(JSON.parse(greeting.body).content);
         });
-        stompClient.subscribe('/topic/messages', function (greeting) {
-            showMessage(JSON.parse(greeting.body).content);
+        stompClient.subscribe('/topic/filtered_messages', function (greeting) {
+        	showFilteredMessage(JSON.parse(greeting.body).content);
         });
     });
 }
@@ -39,33 +39,34 @@ function sendName() {
     stompClient.send("/app/connect", {}, JSON.stringify({'name': $("#name").val()}));
 }
 
-function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
+function showMessage(message) {
+	if ($('input[name=sanitized]:checked').val() == "false")
+		$("#messages").prepend("<tr><td>" + message + "</td></tr>");
 }
 
-function showMessage(message) {
-    $("#messages").append("<tr><td>" + message + "</td></tr>");
+function showFilteredMessage(message) {
+	if ($('input[name=sanitized]:checked').val() == "true")
+		$("#messages").prepend("<tr><td>" + message + "</td></tr>");
 }
 
 function upload() {
     var formData = new FormData();
     formData.append('file', $('#file').get(0).files[0]);
-    var uploadType = $('input[name=fileType]:checked').val();
     console.log("Ajax call submitted");
     $.ajax({
-        url: '/upload/' + uploadType,
+//      url: '/upload/'+$('input[name=fileType]:checked').val(),
+      url: '/upload/bsmlog',
         type: 'POST',
         data: formData,
         cache: false,
         contentType: false,
         processData: false
     }).done(function(response) {
-        console.log("File upload response received: " + response);
-        if ($.parseJSON(response).success) {
-            $( "#uploadResponse" ).append("<tr><td>Success</td><td>" + $('#file').get(0).files[0].name + "</td></tr>");
-        } else {
-            $( "#uploadResponse" ).append("<tr><td>Error</td><td>" + $('#file').get(0).files[0].name + "</td></tr>");
-        }
+        console.log("File upload success.");
+        $( "#uploadResponse" ).append("<tr><td>File Received</td><td>" + $('#file').get(0).files[0].name + "</td></tr>");
+    }).fail(function(response) {
+    	console.log("File upload error.");
+    	$( "#uploadResponse" ).append("<tr><td>Error</td><td>" + $('#file').get(0).files[0].name + "</td></tr>");
     });
 }
 function sendSnmp() {

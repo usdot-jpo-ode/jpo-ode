@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.model;
 
-public class OdeAuthorization extends OdeMsgPayload{
+public class OdeAuthorization extends OdeMessage{
 
    private static final long serialVersionUID = -8496344900381434672L;
 

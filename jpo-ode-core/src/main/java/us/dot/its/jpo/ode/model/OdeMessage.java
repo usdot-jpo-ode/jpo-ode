@@ -2,48 +2,46 @@ package us.dot.its.jpo.ode.model;
 
 public class OdeMessage extends OdeObject {
 
-   private static final long serialVersionUID = 6381260328835278701L;
+    private static final long serialVersionUID = 6381260328835278701L;
 
-   private Integer version;
+    private Integer schemaVersion;
 
-   public OdeMessage() {
-      super();
-      this.version = 1;
-   }
+    public OdeMessage() {
+        super();
+        this.schemaVersion = 3;
+    }
 
-   public Integer getVersion() {
-      return version;
-   }
+    public Integer getSchemaVersion() {
+        return schemaVersion;
+    }
 
-   public OdeMessage setVersion(Integer v) {
-      this.version = v;
-      return this;
-   }
+    public void setSchemaVersion(Integer schemaVersion) {
+        this.schemaVersion = schemaVersion;
+    }
 
-   @Override
-   public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + ((version == null) ? 0 : version.hashCode());
-      return result;
-   }
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((schemaVersion == null) ? 0 : schemaVersion.hashCode());
+        return result;
+    }
 
-   @Override
-   public boolean equals(Object obj) {
-      if (this == obj)
-         return true;
-      if (obj == null)
-         return false;
-      if (getClass() != obj.getClass())
-         return false;
-      OdeMessage other = (OdeMessage) obj;
-      if (version == null) {
-         if (other.version != null)
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
             return false;
-      } else if (!version.equals(other.version))
-         return false;
-      return true;
-   }
+        if (getClass() != obj.getClass())
+            return false;
+        OdeMessage other = (OdeMessage) obj;
+        if (schemaVersion == null) {
+            if (other.schemaVersion != null)
+                return false;
+        } else if (!schemaVersion.equals(other.schemaVersion))
+            return false;
+        return true;
+    }
 
-   
 }

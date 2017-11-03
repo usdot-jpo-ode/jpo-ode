@@ -11,9 +11,9 @@ import java.math.BigDecimal;
 
 import org.junit.Test;
 
-import us.dot.its.jpo.ode.plugin.TimFieldValidator;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
-//Tests for TimValidation
+import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
+import us.dot.its.jpo.ode.plugin.j2735.TimFieldValidator;
+
 public class TimFieldValidatorTest {
    @Test
    public void testConstructorIsPrivate()
@@ -430,7 +430,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundLat() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(-90.1), BigDecimal.valueOf(45.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(-90.1), BigDecimal.valueOf(45.0),
             BigDecimal.valueOf(1000.0));
       try {
          TimFieldValidator.validatePosition(position);
@@ -442,7 +442,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundLat() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(90.1), BigDecimal.valueOf(45.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(90.1), BigDecimal.valueOf(45.0),
             BigDecimal.valueOf(1000.0));
       try {
          TimFieldValidator.validatePosition(position);
@@ -454,7 +454,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerLat() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(-90.0), BigDecimal.valueOf(45.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(-90.0), BigDecimal.valueOf(45.0),
             BigDecimal.valueOf(1000.0));
       try {
          TimFieldValidator.validatePosition(position);
@@ -465,7 +465,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperLat() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(90.0), BigDecimal.valueOf(45.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(90.0), BigDecimal.valueOf(45.0),
             BigDecimal.valueOf(1000.0));
       try {
          TimFieldValidator.validatePosition(position);
@@ -476,7 +476,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundLong() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(45.0), BigDecimal.valueOf(-180.1),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(45.0), BigDecimal.valueOf(-180.1),
             BigDecimal.valueOf(1000.0));
       try {
          TimFieldValidator.validatePosition(position);
@@ -488,7 +488,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundLong() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(45), BigDecimal.valueOf(180.1),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(45), BigDecimal.valueOf(180.1),
             BigDecimal.valueOf(1000.0));
       try {
          TimFieldValidator.validatePosition(position);
@@ -500,7 +500,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerLong() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(45), BigDecimal.valueOf(-180.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(45), BigDecimal.valueOf(-180.0),
             BigDecimal.valueOf(1000.0));
       try {
          TimFieldValidator.validatePosition(position);
@@ -511,7 +511,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperLong() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(45), BigDecimal.valueOf(180.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(45), BigDecimal.valueOf(180.0),
             BigDecimal.valueOf(1000.0));
       try {
          TimFieldValidator.validatePosition(position);
@@ -522,7 +522,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundElevation() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(45), BigDecimal.valueOf(45.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(45), BigDecimal.valueOf(45.0),
             BigDecimal.valueOf(-409.6));
       try {
          TimFieldValidator.validatePosition(position);
@@ -534,7 +534,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundElevation() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(45), BigDecimal.valueOf(45.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(45), BigDecimal.valueOf(45.0),
             BigDecimal.valueOf(6143.91));
       try {
          TimFieldValidator.validatePosition(position);
@@ -546,7 +546,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerElevation() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(45), BigDecimal.valueOf(45.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(45), BigDecimal.valueOf(45.0),
             BigDecimal.valueOf(-409.5));
       try {
          TimFieldValidator.validatePosition(position);
@@ -557,7 +557,7 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperElevation() {
-      J2735Position3D position = new J2735Position3D(BigDecimal.valueOf(45), BigDecimal.valueOf(45.0),
+      OdePosition3D position = new OdePosition3D(BigDecimal.valueOf(45), BigDecimal.valueOf(45.0),
             BigDecimal.valueOf(6143.9));
       try {
          TimFieldValidator.validatePosition(position);
@@ -970,7 +970,7 @@ public class TimFieldValidatorTest {
    public void checkLowerLaneWidth() {
       int lane = -1;
       try {
-         TimFieldValidator.validateLaneWidth(lane);
+         TimFieldValidator.validateLaneWidth(BigDecimal.valueOf(lane));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -981,7 +981,7 @@ public class TimFieldValidatorTest {
    public void checkLowerBoundLaneWidth() {
       int lane = 0;
       try {
-         TimFieldValidator.validateLaneWidth(lane);
+         TimFieldValidator.validateLaneWidth(BigDecimal.valueOf(lane));
       } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
@@ -989,9 +989,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperLaneWidth() {
-      int lane = 32768;
+      double lane = 327.68;
       try {
-         TimFieldValidator.validateLaneWidth(lane);
+         TimFieldValidator.validateLaneWidth(BigDecimal.valueOf(lane));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1000,9 +1000,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundLaneWidth() {
-      int lane = 32767;
+      double lane = 327.67;
       try {
-         TimFieldValidator.validateLaneWidth(lane);
+         TimFieldValidator.validateLaneWidth(BigDecimal.valueOf(lane));
       } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
@@ -1220,9 +1220,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerX16Offset() {
-      int x = -32769;
+      double x = -0.0032769;
       try {
-         TimFieldValidator.validatex16Offset(x);
+         TimFieldValidator.validatex16Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1231,19 +1231,20 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundX16Offset() {
-      int x = -32768;
+      double x = -0.0032768;
       try {
-         TimFieldValidator.validatex16Offset(x);
+         TimFieldValidator.validatex16Offset(BigDecimal.valueOf(x));
+         fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
-         fail("Unexpected Exception");
+         assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
 
    @Test
    public void checkUpperX16Offset() {
-      int x = 32768;
+      double x = 0.0032768;
       try {
-         TimFieldValidator.validatex16Offset(x);
+         TimFieldValidator.validatex16Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1252,9 +1253,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundX16Offset() {
-      int x = 32767;
+      double x = 0.0032767;
       try {
-         TimFieldValidator.validatex16Offset(x);
+         TimFieldValidator.validatex16Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
@@ -1262,9 +1263,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerY16Offset() {
-      int y = -32769;
+      double y = -0.0032769;
       try {
-         TimFieldValidator.validatey16Offset(y);
+         TimFieldValidator.validatey16Offset(BigDecimal.valueOf(y));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1273,19 +1274,20 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundY16Offset() {
-      int y = -32768;
+      double y = -0.0032768;
       try {
-         TimFieldValidator.validatey16Offset(y);
+         TimFieldValidator.validatey16Offset(BigDecimal.valueOf(y));
+         fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
-         fail("Unexpected Exception");
+         assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
 
    @Test
    public void checkUpperY16Offset() {
-      int y = 32768;
+      double y = 0.0032768;
       try {
-         TimFieldValidator.validatey16Offset(y);
+         TimFieldValidator.validatey16Offset(BigDecimal.valueOf(y));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1294,9 +1296,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundY16Offset() {
-      int y = 32767;
+      double y = 0.0032767;
       try {
-         TimFieldValidator.validatey16Offset(y);
+         TimFieldValidator.validatey16Offset(BigDecimal.valueOf(y));
       } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
@@ -1304,9 +1306,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerZ16Offset() {
-      int z = -32769;
+      double z = -0.0032769;
       try {
-         TimFieldValidator.validatez16Offset(z);
+         TimFieldValidator.validatez16Offset(BigDecimal.valueOf(z));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1315,19 +1317,20 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundZ16Offset() {
-      int z = -32768;
+      double z = -0.0032768;
       try {
-         TimFieldValidator.validatez16Offset(z);
+         TimFieldValidator.validatez16Offset(BigDecimal.valueOf(z));
+         fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
-         fail("Unexpected Exception");
+         assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
 
    @Test
    public void checkUpperZ16Offset() {
-      int z = 32768;
+      double z = 0.0032768;
       try {
-         TimFieldValidator.validatez16Offset(z);
+         TimFieldValidator.validatez16Offset(BigDecimal.valueOf(z));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1336,9 +1339,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundZ16Offset() {
-      int z = 32767;
+      double z = 0.0032767;
       try {
-         TimFieldValidator.validatez16Offset(z);
+         TimFieldValidator.validatez16Offset(BigDecimal.valueOf(z));
       } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
@@ -1409,9 +1412,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerB10Offset() {
-      int x = -513;
+      double x = -5.13;
       try {
-         TimFieldValidator.validateB10Offset(x);
+         TimFieldValidator.validateB10Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1420,9 +1423,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundB10Offset() {
-      int x = 511;
+      double x = 5.11;
       try {
-         TimFieldValidator.validateB10Offset(x);
+         TimFieldValidator.validateB10Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -1430,9 +1433,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperB10Offset() {
-      int x = 512;
+      double x = 5.12;
       try {
-         TimFieldValidator.validateB10Offset(x);
+         TimFieldValidator.validateB10Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1441,9 +1444,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundB10Offset() {
-      int x = 511;
+      double x = 5.11;
       try {
-         TimFieldValidator.validateB10Offset(x);
+         TimFieldValidator.validateB10Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -1451,9 +1454,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerB11Offset() {
-      int x = -1025;
+      double x = -10.25;
       try {
-         TimFieldValidator.validateB11Offset(x);
+         TimFieldValidator.validateB11Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1462,9 +1465,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundB11Offset() {
-      int x = -1024;
+      double x = -10.24;
       try {
-         TimFieldValidator.validateB11Offset(x);
+         TimFieldValidator.validateB11Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -1472,9 +1475,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperB11Offset() {
-      int x = 1024;
+      double x = 10.24;
       try {
-         TimFieldValidator.validateB11Offset(x);
+         TimFieldValidator.validateB11Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1483,9 +1486,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundB11Offset() {
-      int x = 1023;
+      double x = 10.23;
       try {
-         TimFieldValidator.validateB11Offset(x);
+         TimFieldValidator.validateB11Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -1493,9 +1496,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerB12Offset() {
-      int x = -2049;
+      double x = -20.49;
       try {
-         TimFieldValidator.validateB12Offset(x);
+         TimFieldValidator.validateB12Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1504,9 +1507,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundB12Offset() {
-      int x = -2048;
+      double x = -20.48;
       try {
-         TimFieldValidator.validateB12Offset(x);
+         TimFieldValidator.validateB12Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -1514,9 +1517,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperB12Offset() {
-      int x = 2048;
+      double x = 20.48;
       try {
-         TimFieldValidator.validateB12Offset(x);
+         TimFieldValidator.validateB12Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1525,9 +1528,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundB12Offset() {
-      int x = 2047;
+      double x = 20.47;
       try {
-         TimFieldValidator.validateB12Offset(x);
+         TimFieldValidator.validateB12Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -1535,9 +1538,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerB13Offset() {
-      int x = -4097;
+      double x = -40.97;
       try {
-         TimFieldValidator.validateB13Offset(x);
+         TimFieldValidator.validateB13Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1546,9 +1549,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundB13Offset() {
-      int x = -4096;
+      double x = -40.96;
       try {
-         TimFieldValidator.validateB13Offset(x);
+         TimFieldValidator.validateB13Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -1556,9 +1559,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperB13Offset() {
-      int x = 4096;
+      double x = 40.96;
       try {
-         TimFieldValidator.validateB13Offset(x);
+         TimFieldValidator.validateB13Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1567,9 +1570,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundB13Offset() {
-      int x = 4095;
+      double x = 40.95;
       try {
-         TimFieldValidator.validateB13Offset(x);
+         TimFieldValidator.validateB13Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -1577,9 +1580,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerB14Offset() {
-      int x = -8193;
+      double x = -81.93;
       try {
-         TimFieldValidator.validateB14Offset(x);
+         TimFieldValidator.validateB14Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1588,9 +1591,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundB14Offset() {
-      int x = -8192;
+      double x = -81.92;
       try {
-         TimFieldValidator.validateB14Offset(x);
+         TimFieldValidator.validateB14Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -1598,9 +1601,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperB14Offset() {
-      int x = 8192;
+      double x = 81.92;
       try {
-         TimFieldValidator.validateB14Offset(x);
+         TimFieldValidator.validateB14Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1609,9 +1612,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundB14Offset() {
-      int x = 8191;
+      double x = 81.91;
       try {
-         TimFieldValidator.validateB14Offset(x);
+         TimFieldValidator.validateB14Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -1619,9 +1622,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerB16Offset() {
-      int x = -32769;
+      double x = -327.69;
       try {
-         TimFieldValidator.validateB16Offset(x);
+         TimFieldValidator.validateB16Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1630,9 +1633,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundB16Offset() {
-      int x = -32768;
+      double x = -327.68;
       try {
-         TimFieldValidator.validateB16Offset(x);
+         TimFieldValidator.validateB16Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -1640,9 +1643,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperB16Offset() {
-      int x = 32768;
+      double x = 327.68;
       try {
-         TimFieldValidator.validateB16Offset(x);
+         TimFieldValidator.validateB16Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1651,9 +1654,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundB16Offset() {
-      int x = 32767;
+      double x = 327.67;
       try {
-         TimFieldValidator.validateB16Offset(x);
+         TimFieldValidator.validateB16Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -1661,9 +1664,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerLL12Offset() {
-      int x = -2049;
+      double x = -0.0002049;
       try {
-         TimFieldValidator.validateLL12Offset(x);
+         TimFieldValidator.validateLL12Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1672,19 +1675,20 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundLL12Offset() {
-      int x = -2048;
+      double x = -0.0002048;
       try {
-         TimFieldValidator.validateLL12Offset(x);
+         TimFieldValidator.validateLL12Offset(BigDecimal.valueOf(x));
+         fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
+         assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
 
    @Test
    public void checkUpperLL12Offset() {
-      int x = 2048;
+      double x = 0.0002048;
       try {
-         TimFieldValidator.validateLL12Offset(x);
+         TimFieldValidator.validateLL12Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1693,9 +1697,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundLL12Offset() {
-      int x = 2047;
+      double x = 0.0002047;
       try {
-         TimFieldValidator.validateLL12Offset(x);
+         TimFieldValidator.validateLL12Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -1703,9 +1707,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerLL14Offset() {
-      int x = -8193;
+      double x = -0.0008193;
       try {
-         TimFieldValidator.validateLL14Offset(x);
+         TimFieldValidator.validateLL14Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1714,19 +1718,20 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundLL14Offset() {
-      int x = -8192;
+      double x = -0.0008192;
       try {
-         TimFieldValidator.validateLL14Offset(x);
+         TimFieldValidator.validateLL14Offset(BigDecimal.valueOf(x));
+         fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
+         assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
 
    @Test
    public void checkUpperLL14Offset() {
-      int x = 8192;
+      double x = 0.0008192;
       try {
-         TimFieldValidator.validateLL14Offset(x);
+         TimFieldValidator.validateLL14Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1735,9 +1740,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundLL14Offset() {
-      int x = 8191;
+      double x = 0.0008191;
       try {
-         TimFieldValidator.validateLL14Offset(x);
+         TimFieldValidator.validateLL14Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -1745,9 +1750,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerLL16Offset() {
-      int x = -32769;
+      double x = -327.69;
       try {
-         TimFieldValidator.validateLL16Offset(x);
+         TimFieldValidator.validateLL16Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1756,19 +1761,20 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundLL16Offset() {
-      int x = -32768;
+      double x = -0.0032768;
       try {
-         TimFieldValidator.validateLL16Offset(x);
+         TimFieldValidator.validateLL16Offset(BigDecimal.valueOf(x));
+         fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
+         assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
 
    @Test
    public void checkUpperLL16Offset() {
-      int x = 32768;
+      double x = 0.0032768;
       try {
-         TimFieldValidator.validateLL16Offset(x);
+         TimFieldValidator.validateLL16Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1777,9 +1783,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundLL16Offset() {
-      int x = 32767;
+      double x = 0.0032767;
       try {
-         TimFieldValidator.validateLL16Offset(x);
+         TimFieldValidator.validateLL16Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -1787,9 +1793,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerLL18Offset() {
-      int x = -131073;
+      double x = -0.0131073;
       try {
-         TimFieldValidator.validateLL18Offset(x);
+         TimFieldValidator.validateLL18Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1798,19 +1804,20 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundLL18Offset() {
-      int x = -131072;
+      double x = -0.0131072;
       try {
-         TimFieldValidator.validateLL18Offset(x);
+         TimFieldValidator.validateLL18Offset(BigDecimal.valueOf(x));
+         fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
+         assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
 
    @Test
    public void checkUpperLL18Offset() {
-      int x = 131072;
+      double x = 0.0131072;
       try {
-         TimFieldValidator.validateLL18Offset(x);
+         TimFieldValidator.validateLL18Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1819,9 +1826,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundLL18Offset() {
-      int x = 131071;
+      double x = 0.0131071;
       try {
-         TimFieldValidator.validateLL18Offset(x);
+         TimFieldValidator.validateLL18Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -1829,9 +1836,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerLL22Offset() {
-      int x = -2097153;
+      double x = -0.2097153;
       try {
-         TimFieldValidator.validateLL22Offset(x);
+         TimFieldValidator.validateLL22Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1840,19 +1847,20 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundLL22Offset() {
-      int x = -2097152;
+      double x = -0.2097152;
       try {
-         TimFieldValidator.validateLL22Offset(x);
+         TimFieldValidator.validateLL22Offset(BigDecimal.valueOf(x));
+         fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
+         assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
 
    @Test
    public void checkUpperLL22Offset() {
-      int x = 2097152;
+      double x = 0.2097152;
       try {
-         TimFieldValidator.validateLL22Offset(x);
+         TimFieldValidator.validateLL22Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1861,9 +1869,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundLL22Offset() {
-      int x = 2097151;
+      double x = 0.2097151;
       try {
-         TimFieldValidator.validateLL22Offset(x);
+         TimFieldValidator.validateLL22Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -1871,9 +1879,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerLL24Offset() {
-      int x = -8388609;
+      double x = -0.8388609;
       try {
-         TimFieldValidator.validateLL24Offset(x);
+         TimFieldValidator.validateLL24Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1882,19 +1890,20 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundLL24Offset() {
-      int x = -8388608;
+      double x = -0.8388608;
       try {
-         TimFieldValidator.validateLL24Offset(x);
+         TimFieldValidator.validateLL24Offset(BigDecimal.valueOf(x));
+         fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
+         assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
 
    @Test
    public void checkUpperLL24Offset() {
-      int x = 8388608;
+      double x = 0.8388608;
       try {
-         TimFieldValidator.validateLL24Offset(x);
+         TimFieldValidator.validateLL24Offset(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -1903,9 +1912,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundLL24Offset() {
-      int x = 8388607;
+      double x = 0.8388607;
       try {
-         TimFieldValidator.validateLL24Offset(x);
+         TimFieldValidator.validateLL24Offset(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -2039,9 +2048,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerAngle() {
-      int x = -1;
+      double x = -1;
       try {
-         TimFieldValidator.validateAngle(x);
+         TimFieldValidator.validateAngle(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -2050,9 +2059,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundAngle() {
-      int x = 0;
+      double x = 0;
       try {
-         TimFieldValidator.validateAngle(x);
+         TimFieldValidator.validateAngle(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -2060,9 +2069,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperAngle() {
-      int x = 28801;
+      double x = 360;
       try {
-         TimFieldValidator.validateAngle(x);
+         TimFieldValidator.validateAngle(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -2071,9 +2080,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundAngle() {
-      int x = 28800;
+      double x = 359.9875;
       try {
-         TimFieldValidator.validateAngle(x);
+         TimFieldValidator.validateAngle(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -2081,9 +2090,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerB12Scale() {
-      int x = -2049;
+      double x = -0.1;
       try {
-         TimFieldValidator.validateB12Scale(x);
+         TimFieldValidator.validateB12Scale(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -2092,9 +2101,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundB12Scale() {
-      int x = -2048;
+      double x = 0;
       try {
-         TimFieldValidator.validateB12Scale(x);
+         TimFieldValidator.validateB12Scale(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -2102,9 +2111,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperB12Scale() {
-      int x = 2048;
+      double x = 202.36;
       try {
-         TimFieldValidator.validateB12Scale(x);
+         TimFieldValidator.validateB12Scale(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -2113,9 +2122,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundB12Scale() {
-      int x = 2047;
+      double x = 202.35;
       try {
-         TimFieldValidator.validateB12Scale(x);
+         TimFieldValidator.validateB12Scale(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -2123,9 +2132,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerVelocity() {
-      int x = -1;
+      double x = -0.02;
       try {
-         TimFieldValidator.validateVelocity(x);
+         TimFieldValidator.validateVelocity(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -2134,9 +2143,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLowerBoundVelocity() {
-      int x = 0;
+      double x = 0;
       try {
-         TimFieldValidator.validateVelocity(x);
+         TimFieldValidator.validateVelocity(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -2144,9 +2153,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperVelocity() {
-      int x = 8192;
+      double x = 163.84;
       try {
-         TimFieldValidator.validateVelocity(x);
+         TimFieldValidator.validateVelocity(BigDecimal.valueOf(x));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -2155,9 +2164,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkUpperBoundVelocity() {
-      int x = 8191;
+      double x = 163.82;
       try {
-         TimFieldValidator.validateVelocity(x);
+         TimFieldValidator.validateVelocity(BigDecimal.valueOf(x));
       } catch (RuntimeException e) {
          fail("Unexcpected Exception");
       }
@@ -2291,9 +2300,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLatitudeLower() {
-      long lat = (long) -90.0;
+      double lat = -90.0;
       try {
-         TimFieldValidator.validateLatitude(lat);
+         TimFieldValidator.validateLatitude(BigDecimal.valueOf(lat));
       } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
@@ -2301,9 +2310,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLatitudeLowerBound() {
-      long lat = (long) -91.0;
+      double lat = -91.0;
       try {
-         TimFieldValidator.validateLatitude(lat);
+         TimFieldValidator.validateLatitude(BigDecimal.valueOf(lat));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -2312,9 +2321,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLatitudeUpper() {
-      long lat = (long) 90.0;
+      double lat = 90.0;
       try {
-         TimFieldValidator.validateLatitude(lat);
+         TimFieldValidator.validateLatitude(BigDecimal.valueOf(lat));
       } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
@@ -2322,9 +2331,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLatitudeUpperBound() {
-      long lat = (long) 91.0;
+      double lat = 91.0;
       try {
-         TimFieldValidator.validateLatitude(lat);
+         TimFieldValidator.validateLatitude(BigDecimal.valueOf(lat));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -2333,9 +2342,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLongitudeLower() {
-      long lonng = (long) -180.0;
+      double lonng = -180.0;
       try {
-         TimFieldValidator.validateLongitude(lonng);
+         TimFieldValidator.validateLongitude(BigDecimal.valueOf(lonng));
       } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
@@ -2343,9 +2352,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLongitudeLowerBound() {
-      long lonng = (long) -181.0;
+      double lonng = -181.0;
       try {
-         TimFieldValidator.validateLongitude(lonng);
+         TimFieldValidator.validateLongitude(BigDecimal.valueOf(lonng));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -2354,9 +2363,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLongitudeUpper() {
-      long lonng = (long) 180.0;
+      double lonng = 180.0;
       try {
-         TimFieldValidator.validateLongitude(lonng);
+         TimFieldValidator.validateLongitude(BigDecimal.valueOf(lonng));
       } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
@@ -2364,9 +2373,9 @@ public class TimFieldValidatorTest {
 
    @Test
    public void checkLongitudeUpperBound() {
-      long lonng = (long) 181.0;
+      double lonng = 181.0;
       try {
-         TimFieldValidator.validateLongitude(lonng);
+         TimFieldValidator.validateLongitude(BigDecimal.valueOf(lonng));
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());

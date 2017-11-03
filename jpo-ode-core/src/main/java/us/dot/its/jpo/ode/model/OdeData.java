@@ -16,85 +16,38 @@
  *******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+public class OdeData extends OdeObject implements OdeFilterable {
+    private static final long serialVersionUID = -7711340868799607662L;
 
-import us.dot.its.jpo.ode.util.DateTimeUtils;
+    private OdeMsgMetadata metadata;
+    private OdeMsgPayload payload;
 
-public class OdeData extends OdeMsgPayload implements OdeFilterable {
-   private static final long serialVersionUID = -7711340868799607662L;
-   private String serialId;
-   private String receivedAt;
+    public OdeData() {
+        super();
+    }
 
-   
-   public OdeData() {
-      super();
-      this.receivedAt = DateTimeUtils.isoDateTime(ZonedDateTime.now(ZoneOffset.UTC));
-   }
+    public OdeData(OdeMsgMetadata metadata, OdeMsgPayload payload) {
+        super();
+        this.metadata = metadata;
+        this.payload = payload;
+        this.metadata.setPayloadType(payload.getClass().getName());
+    }
 
-   public OdeData(String serialId) {
-      super();
-      setSerialId(serialId);
-      this.receivedAt = DateTimeUtils.isoDateTime(ZonedDateTime.now(ZoneOffset.UTC));
-   }
+    public OdeMsgMetadata getMetadata() {
+        return metadata;
+    }
 
-   public OdeData(String streamId, long bundleId, long recordId) {
-      super();
-      setSerialId(buildSerialId(streamId, bundleId, recordId));
-      this.receivedAt = DateTimeUtils.isoDateTime(ZonedDateTime.now(ZoneOffset.UTC));
-   }
+    public void setMetadata(OdeMsgMetadata metadata) {
+        this.metadata = metadata;
+    }
 
-   public String getSerialId() {
-      return serialId;
-   }
+    public OdeMsgPayload getPayload() {
+        return payload;
+    }
 
-   public void setSerialId(String serialId) {
-      this.serialId = serialId;
-   }
-
-   public static String buildSerialId(String streamId, long bundleId, long recordId) {
-      return streamId + "." + bundleId + "." + recordId;
-   }
-
-   public String getReceivedAt() {
-      return receivedAt;
-   }
-
-   public void setReceivedAt(String receivedAt) {
-      this.receivedAt = receivedAt;
-   }
-
-   @Override
-   public int hashCode() {
-      final int prime = 31;
-      int result = super.hashCode();
-      result = prime * result
-            + ((receivedAt == null) ? 0 : receivedAt.hashCode());
-      result = prime * result + ((serialId == null) ? 0 : serialId.hashCode());
-      return result;
-   }
-
-   @Override
-   public boolean equals(Object obj) {
-      if (this == obj)
-         return true;
-      if (!super.equals(obj))
-         return false;
-      if (getClass() != obj.getClass())
-         return false;
-      OdeData other = (OdeData) obj;
-      if (receivedAt == null) {
-         if (other.receivedAt != null)
-            return false;
-      } else if (!receivedAt.equals(other.receivedAt))
-         return false;
-      if (serialId == null) {
-         if (other.serialId != null)
-            return false;
-      } else if (!serialId.equals(other.serialId))
-         return false;
-      return true;
-   }
+    public void setPayload(OdeMsgPayload payload) {
+        this.payload = payload;
+    }
 
 
 }

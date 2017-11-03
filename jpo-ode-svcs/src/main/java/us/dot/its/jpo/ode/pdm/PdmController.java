@@ -1,76 +1,80 @@
 package us.dot.its.jpo.ode.pdm;
 
-import java.text.ParseException;
-import java.util.HashMap;
+import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.snmp4j.ScopedPDU;
 import org.snmp4j.event.ResponseEvent;
-import org.snmp4j.smi.Address;
-import org.snmp4j.smi.GenericAddress;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import us.dot.its.jpo.ode.ManagerAndControllerServices;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.plugin.j2735.pdm.J2735ProbeDataManagement;
-import us.dot.its.jpo.ode.plugin.j2735.pdm.PDM;
-import us.dot.its.jpo.ode.snmp.SnmpProperties;
+import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 @Controller
 public class PdmController {
 
-    @ResponseBody
-    @RequestMapping(value = "/pdm", method = RequestMethod.POST, produces = "application/json")
-    public String pdmMessage(@RequestBody String jsonString) {
-        if (null == jsonString) {
-            String msg = "PDM CONTROLLER - Endpoint received null request";
-            ManagerAndControllerServices.log(false, msg, null);
-            throw new PdmException(msg);
-        }
+   private static Logger logger = LoggerFactory.getLogger(PdmController.class);
 
-        J2735ProbeDataManagement pdm = (J2735ProbeDataManagement) JsonUtils.fromJson(jsonString,
-                J2735ProbeDataManagement.class);
-        
-        HashMap<String, String> responseList = new HashMap<>();
-        for (RSU curRsu : pdm.getRsuList()) {
+   @ResponseBody
+   @RequestMapping(value = "/pdm", method = RequestMethod.POST, produces = "application/json")
+   public ResponseEntity<String> pdmMessage(@RequestBody String jsonString) {
+      if (null == jsonString) {
+         logger.error("PDM controller received empty request");
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Empty request");
+      }
 
-            ResponseEvent response = null;
-            try {
-                response = sendToRsu(curRsu, pdm.getPdm());
+      J2735PdmRequest pdmRequest = (J2735PdmRequest) JsonUtils.fromJson(jsonString, J2735PdmRequest.class);
 
-                if (null == response || null == response.getResponse()) {
-                    responseList.put(curRsu.getRsuTarget(),
-                          ManagerAndControllerServices.log(false, "PDM CONTROLLER - No response from RSU IP=" + curRsu.getRsuTarget(), null));
-                } else if (0 == response.getResponse().getErrorStatus()) {
-                    responseList.put(curRsu.getRsuTarget(), ManagerAndControllerServices.log(true, "PDM CONTROLLER - SNMP deposit successful: " + response.getResponse(), null));
-                } else {
-                    responseList.put(curRsu.getRsuTarget(),
-                          ManagerAndControllerServices.log(false,
-                                    "PDM CONTROLLER - Error, SNMP deposit failed, error code="
-                                            + response.getResponse().getErrorStatus() + "("
-                                            + response.getResponse().getErrorStatusText() + ")",
-                                    null));
-                }
+      String jsonPdmRequest = pdmRequest.toJson(true);
+      logger.debug("J2735PdmRequest: {}", jsonPdmRequest);
 
-            } catch (ParseException e) {
-                responseList.put(curRsu.getRsuTarget(),
-                      ManagerAndControllerServices.log(false, "PDM CONTROLLER - Exception while sending message to RSU", e));
+      String aggregateBodyMessage = "[";
+      ScopedPDU pdu = PdmUtil.createPDU(pdmRequest.getPdm());
+      for (RSU curRsu : pdmRequest.getRsuList()) {
+
+         String curRsuMessage = "Error";
+
+         ResponseEvent response = null;
+         try {
+            response = createAndSend(pdu, curRsu);
+            if (null == response || null == response.getResponse()) {
+               curRsuMessage = "Timeout";
+            } else if (0 == response.getResponse().getErrorStatus()) {
+               curRsuMessage = "Deposit successful";
+            } else {
+               curRsuMessage = "Deposit failed: " + response.getResponse().getErrorStatusText();
             }
-        }
+         } catch (IOException e) {
+            logger.error("Exception sending PDM: ", e);
+            curRsuMessage = "Exception occurred";
+         }
 
-        return responseList.toString();
-    }
+         if (!("[".equals(aggregateBodyMessage))) {
+            // Add a comma after the first message
+            aggregateBodyMessage = aggregateBodyMessage.concat(",");
+         }
 
-    private ResponseEvent sendToRsu(RSU rsu, PDM params) throws ParseException {
-        Address addr = GenericAddress.parse(rsu.getRsuTarget() + "/161");
+         aggregateBodyMessage = aggregateBodyMessage.concat("{\"" + curRsu.getRsuTarget() + "\":\"" + curRsuMessage + "\"}");
+      }
 
-        // Populate the SnmpProperties object with SNMP preferences
-        SnmpProperties testProps = new SnmpProperties(addr, rsu.getRsuUsername(), rsu.getRsuPassword(), rsu.getRsuRetries(),
-                rsu.getRsuTimeout());
+      aggregateBodyMessage = aggregateBodyMessage.concat("]");
+      aggregateBodyMessage = "{\"rsu_responses\":".concat(aggregateBodyMessage).concat("}");
 
-        return ManagerAndControllerServices.createAndSend(params, testProps);
-    }
+      return ResponseEntity.status(HttpStatus.OK).body(aggregateBodyMessage);
+   }
+
+   public static ResponseEvent createAndSend(ScopedPDU pdu, RSU rsu) throws IOException {
+      SnmpSession session = new SnmpSession(rsu);
+
+      return session.set(pdu, session.getSnmp(), session.getTarget(), false);
+   }
+
 }

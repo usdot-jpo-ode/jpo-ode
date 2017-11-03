@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.model;
 
+import us.dot.its.jpo.ode.wrapper.WebSocketClient;
+
 public abstract class AbstractWebSocketClient implements WebSocketClient {
    private OdeRequest odeRequest;
 

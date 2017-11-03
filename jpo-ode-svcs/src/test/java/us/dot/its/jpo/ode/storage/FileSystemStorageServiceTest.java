@@ -38,13 +38,8 @@ public class FileSystemStorageServiceTest {
             {
                 mockOdeProperties.getUploadLocationRoot();
                 result = anyString;
-                minTimes = 0;
-                mockOdeProperties.getUploadLocationBsm();
+                mockOdeProperties.getUploadLocationObuLog();
                 result = anyString;
-                minTimes = 0;
-                mockOdeProperties.getUploadLocationMessageFrame();
-                result = anyString;
-                minTimes = 0;
             }
         };
     }
@@ -55,8 +50,6 @@ public class FileSystemStorageServiceTest {
         FileSystemStorageService testFileSystemStorageService = new FileSystemStorageService(mockOdeProperties);
 
         assertNotNull(testFileSystemStorageService.getRootLocation());
-        assertNotNull(testFileSystemStorageService.getBsmLocation());
-        assertNotNull(testFileSystemStorageService.getMessageFrameLocation());
 
     }
 
@@ -84,7 +77,7 @@ public class FileSystemStorageServiceTest {
     @Test
     public void storeShouldTryToResolveBsmFilename(@Mocked MultipartFile mockMultipartFile) {
 
-        String testType = "bsm";
+        String testType = "obulog";
 
         new Expectations() {
             {
@@ -111,9 +104,9 @@ public class FileSystemStorageServiceTest {
     }
 
     @Test
-    public void storeShouldTryToResolveMessageFrameFilename(@Mocked MultipartFile mockMultipartFile) {
+    public void storeShouldThrowAnErrorEmptyFile(@Mocked MultipartFile mockMultipartFile) {
 
-        String testType = "messageFrame";
+        String testType = "obulog";
 
         new Expectations() {
             {
@@ -142,7 +135,7 @@ public class FileSystemStorageServiceTest {
     @Test
     public void storeShouldRethrowDeleteException(@Mocked MultipartFile mockMultipartFile, @Mocked Files unused) {
 
-        String testType = "bsm";
+        String testType = "obulog";
 
         new Expectations() {
             {
@@ -184,7 +177,7 @@ public class FileSystemStorageServiceTest {
     public void storeShouldRethrowCopyException(@Mocked MultipartFile mockMultipartFile, @Mocked Files unusedFiles,
             @Mocked final Logger mockLogger, @Mocked LoggerFactory unusedLogger, @Mocked InputStream mockInputStream) {
 
-        String testType = "bsm";
+        String testType = "obulog";
 
         try {
             new Expectations() {
@@ -254,8 +247,10 @@ public class FileSystemStorageServiceTest {
     }
 
     @Test
-    public void loadAsResourceShouldThrowExceptionWhenFileNotExists(@Mocked Path mockRootPath,
-            @Mocked Path mockResolvedPath, @Mocked UrlResource mockUrlResource) {
+    public void loadAsResourceShouldThrowExceptionWhenFileNotExists(
+          @Mocked Path mockRootPath,
+          @Mocked Path mockResolvedPath,
+          @Mocked UrlResource mockUrlResource) {
 
         try {
             new Expectations() {
@@ -265,7 +260,9 @@ public class FileSystemStorageServiceTest {
 
                     mockResolvedPath.toUri();
 
-                    new UrlResource((URI) any);
+                    new UrlResource((URI) any); 
+                    result = mockUrlResource;
+                    
                     mockUrlResource.exists();
                     result = false;
                 }
@@ -298,8 +295,11 @@ public class FileSystemStorageServiceTest {
                     mockResolvedPath.toUri();
 
                     new UrlResource((URI) any);
+                    result = mockUrlResource;
+
                     mockUrlResource.exists();
                     result = true;
+                    
                     mockUrlResource.isReadable();
                     result = false;
                 }
@@ -363,6 +363,7 @@ public class FileSystemStorageServiceTest {
                     mockResolvedPath.toUri();
 
                     new UrlResource((URI) any);
+                    result = mockUrlResource;
 
                     mockUrlResource.exists();
                     result = true;
@@ -392,7 +393,7 @@ public class FileSystemStorageServiceTest {
             new Verifications() {
                 {
                     Files.createDirectory((Path) any);
-                    times = 3;
+                    times = 1;
                 }
             };
         } catch (IOException e) {

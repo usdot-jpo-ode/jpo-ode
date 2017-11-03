@@ -11,7 +11,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.integration.junit4.JMockit;
-import us.dot.its.jpo.ode.subscriber.Subscriber;
+import us.dot.its.jpo.ode.stomp.StompContent;
 
 @RunWith(JMockit.class)
 public class StompStringMessageDistributorTest {
@@ -24,7 +24,7 @@ public class StompStringMessageDistributorTest {
 
         new Expectations() {
             {
-                mockSimpMessagingTemplate.convertAndSend(testTopic, (Subscriber) any);
+                mockSimpMessagingTemplate.convertAndSend(testTopic, (StompContent) any);
                 mockConsumerRecord.value();
                 result = anyString;
             }

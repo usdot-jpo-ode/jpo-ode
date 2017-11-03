@@ -11,17 +11,26 @@
     <script src="/app.js"></script>
 </head>
 
-<body style="padding-top:70px;">
+<body style="padding-top: 70px;">
     <noscript>
-        <h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
-    enabled. Please enable
-    Javascript and reload this page!</h2></noscript>
+        <h2 style="color: #ff0000">Seems your browser doesn't support
+			Javascript! Websocket relies on Javascript being enabled. Please
+			enable Javascript and reload this page!</h2> </noscript>
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container"> <a class="navbar-brand" href="#">ODE Demo Console</a> </div>
     </nav>
     <div class="container">
         <div class="row">
-            <div class="col-md-4">
+            <div class="column-left">
+                <div class="col-md-12">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label for="connect">WebSocket connection:</label>
+                            <button id="connect" class="btn btn-default">Connect</button>
+                            <button id="disconnect" class="btn btn-default" disabled="disabled">Disconnect</button>
+                        </div>
+                    </form>
+                </div>
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -31,16 +40,17 @@
                     <tbody> </tbody>
                 </table>
                 <form>
-                    <div class="form-group">
-                        <p class="help-block">Upload a message file encoded in hex or UPER.</p>
-                        <label for="exampleInputFile">Select file</label>
-                        <input type="file" id="file" name="file" />
-                        <label for="exampleInputFile">Message file format</label>
-                        <br/>
-                        <input type="radio" name="fileType" value="bsm" checked="true" /> BSM without header
-                        <br/>
-                        <input type="radio" name="fileType" value="messageFrame" /> BSM with header
-                        <br/> </div>
+                    <p class="help-block">Upload a signed or unsigned data file encoded in binary UPER encoded, hex UPER encoded or JSON.</p>
+                    <input type="file" id="file" name="file" />
+                    <!-- 
+                    <br></br>
+                    <input type="radio" name="fileType" value="bsmlog"  checked="checked"/> Log file<br></br>
+                    <input type="radio" name="fileType" value="bsm"/> Raw BSM file<br></br>
+                    <input type="radio" name="fileType" value="mf" /> MessageFrame+BSM file<br></br>
+                    -->
+                    <p class="help-block">Show...</p>
+                    <input type="radio" name="sanitized" value="false"  checked="checked"/> All Records<br></br>
+	                <input type="radio" name="sanitized" value="true"/> Sanitized Records Only<br></br>
                     <button id="upload" class="btn btn-default" type="submit">Upload</button>
                 </form>
                 <div>
@@ -54,12 +64,13 @@
                         <tbody id="uploadResponse"></tbody>
                     </table>
                 </div>
-                <div> </div>
                 <div>
                     <ul>
-                        <li th:each="file : ${files}"> <a th:href="${file}" th:text="${file}" /> </li>
+                        <li th:each="file : ${files}"><a th:href="${file}" th:text="${file}" /></li>
                     </ul>
                 </div>
+            </div>
+            <div class="column-right">
                 <div class="row">
                     <div class="col-md-12">
                         <table class="table table-striped">
@@ -81,30 +92,17 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-8">
-                <div class="row">
-                    <div class="col-md-12">
-                        <form class="form-inline">
-                            <div class="form-group">
-                                <label for="connect">WebSocket connection:</label>
-                                <button id="connect" class="btn btn-default">Connect</button>
-                                <button id="disconnect" class="btn btn-default" disabled="disabled">Disconnect </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <table id="conversation" class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>BSMs</th>
-                                </tr>
-                            </thead>
-                            <tbody id="messages"> </tbody>
-                        </table>
-                    </div>
-                </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <table id="conversation" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Messages</th>
+                        </tr>
+                    </thead>
+                    <tbody id="messages"> </tbody>
+                </table>
             </div>
         </div>
     </div>
