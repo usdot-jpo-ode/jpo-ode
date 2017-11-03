@@ -1,5 +1,23 @@
 ## ODE Release Notes ##
 ----------
+### Sprint 24
+- ODE-537 ASN1 CODEC Module development
+- ODE-543 Publish a defined v3 for metadata	Story	Medule
+- ODE-581 Integrate ODE with asn1 decoder module (adm) for BSM decoding
+- ODE-584 Decode Inbound TIM through asn1 decoder module (adm)
+- ODE-585 Implement asn1 decoding capability
+- ODE-586 Implement asn1 encoding capability
+- ODE-592 Added Message Frame to Outbound TIM messages
+- ODE-593 Support the receiving and publishing of Distress Notifications
+- ODE-604 Support multiple types of payloads for receivedMsgRecord
+### Sprint 23
+- ODE-559	ASN1 CODEC Decoder Module Connection
+### Sprint 22
+- ODE-528	Support publishing of TIM data received from WYDOT log files
+### Sprint 21
+- ODE-483 Implementing generatedAt field in the metadata for TIM
+- ODE-512	Support receiving WYDOT BSM Log files
+- 
 ### Sprint 20
 - ODE-476 Change TIM schema to use real unit values
 - ODE-485 TIM S3 depositor service
