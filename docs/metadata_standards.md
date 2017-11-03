@@ -77,7 +77,7 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
 			"rxFrom": 0
 		},
 		"sanitized": false,
-		"validSignature": "true"
+		"validSignature": true
 	},
 	"payload": {
 		"dataType": "us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage",
@@ -182,7 +182,7 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
 		},
 		"odeReceivedAt": "2017-09-26T20:00:08.48Z[UTC]",
 		"sanitized": false,
-		"validSignature": "true"
+		"validSignature": true
 	},
 	"payload": {
 		"dataType": "us.dot.its.jpo.ode.plugin.j2735.J2735Bsm",
