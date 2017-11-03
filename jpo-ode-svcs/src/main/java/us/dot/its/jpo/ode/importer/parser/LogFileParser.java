@@ -1,19 +1,18 @@
 package us.dot.its.jpo.ode.importer.parser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import us.dot.its.jpo.ode.util.DateTimeUtils;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.time.ZonedDateTime;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class LogFileParser implements FileParser {
    private static final Logger logger = LoggerFactory.getLogger(LogFileParser.class);
 
    public enum RecordType {
-      bsmLogDuringEvent, rxMsg, dnMsg, bsmTx, unsupported
+      bsmLogDuringEvent, rxMsg, dnMsg, bsmTx, driverAlert, unsupported
    }
 
    public static final int BUFFER_SIZE = 4096;
@@ -25,7 +24,7 @@ public class LogFileParser implements FileParser {
    protected ParserStatus status;
 
    protected long bundleId;
-   protected byte[] readBuffer = new byte[BUFFER_SIZE];
+   protected transient byte[] readBuffer = new byte[BUFFER_SIZE];
    protected int step = 0;
 
    protected String filename;
@@ -55,6 +54,9 @@ public class LogFileParser implements FileParser {
       } else if (fileName.startsWith(RecordType.dnMsg.name())) {
          logger.debug("Parsing as \"Distress Notifications\" log file type.");
          fileParser = new DistressMsgFileParser(bundleId).setRecordType(RecordType.dnMsg);
+      } else if (fileName.startsWith(RecordType.driverAlert.name())) {
+         logger.debug("Parsing as \"Driver Alert\" log file type.");
+         fileParser = new DriverAlertFileParser(bundleId).setRecordType(RecordType.driverAlert);
       } else {
          throw new IllegalArgumentException("Unknown log file prefix: " + fileName);
       }

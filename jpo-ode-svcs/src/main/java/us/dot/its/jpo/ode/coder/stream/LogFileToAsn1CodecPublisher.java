@@ -1,27 +1,23 @@
 package us.dot.its.jpo.ode.coder.stream;
 
-import java.io.BufferedInputStream;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import us.dot.its.jpo.ode.coder.OdeLogMetadataCreatorHelper;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.coder.TimDecoderHelper;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
+import us.dot.its.jpo.ode.importer.parser.DriverAlertFileParser;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
 import us.dot.its.jpo.ode.importer.parser.TimLogFileParser;
-import us.dot.its.jpo.ode.model.Asn1Encoding;
+import us.dot.its.jpo.ode.model.*;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
-import us.dot.its.jpo.ode.model.OdeAsn1Data;
-import us.dot.its.jpo.ode.model.OdeAsn1Metadata;
-import us.dot.its.jpo.ode.model.OdeAsn1Payload;
-import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
+import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
+
+import java.io.BufferedInputStream;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
@@ -69,23 +65,32 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
    }
 
    private void publish(XmlUtils xmlUtils) throws JsonProcessingException {
-      OdeAsn1Payload payload = new OdeAsn1Payload(fileParser.getPayload());
-      OdeAsn1Metadata metadata = new OdeAsn1Metadata(payload);
-      metadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
-      OdeLogMetadataCreatorHelper.updateLogMetadata(metadata, fileParser);
-      if (fileParser instanceof TimLogFileParser) {
-         ReceivedMessageDetails receivedMsgDetails = TimDecoderHelper.buildReceivedMessageDetails((TimLogFileParser) fileParser);
-         metadata.setReceivedMessageDetails(receivedMsgDetails);
-      }
-      
-      Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
-      Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",
-            EncodingRule.UPER);
-      metadata.addEncoding(msgEncoding).addEncoding(unsecuredDataEncoding);
-      OdeAsn1Data asn1Data = new OdeAsn1Data(metadata, payload);
 
-      publisher.publish(xmlUtils.toXml(asn1Data),
-         publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
+      if (fileParser instanceof DriverAlertFileParser){
+         logger.debug("Publishing a driver alert.");
+         publisher.publish(JsonUtils.toJson(fileParser, false),
+                 publisher.getOdeProperties().getKafkaTopicDriverAlertJson());
+
+      } else {
+         OdeAsn1Payload payload = new OdeAsn1Payload(fileParser.getPayload());
+         OdeAsn1Metadata metadata = new OdeAsn1Metadata(payload);
+         metadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
+         OdeLogMetadataCreatorHelper.updateLogMetadata(metadata, fileParser);
+         if (fileParser instanceof TimLogFileParser) {
+            ReceivedMessageDetails receivedMsgDetails = TimDecoderHelper.buildReceivedMessageDetails((TimLogFileParser) fileParser);
+            metadata.setReceivedMessageDetails(receivedMsgDetails);
+         }
+
+
+         Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
+         Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",
+                 EncodingRule.UPER);
+         metadata.addEncoding(msgEncoding).addEncoding(unsecuredDataEncoding);
+         OdeAsn1Data asn1Data = new OdeAsn1Data(metadata, payload);
+
+         publisher.publish(xmlUtils.toXml(asn1Data),
+                 publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
+      }
    }
 
    @Override
