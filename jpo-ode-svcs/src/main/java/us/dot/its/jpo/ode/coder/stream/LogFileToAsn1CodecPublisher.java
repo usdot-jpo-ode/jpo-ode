@@ -5,12 +5,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.dot.its.jpo.ode.coder.OdeLogMetadataCreatorHelper;
 import us.dot.its.jpo.ode.coder.StringPublisher;
-import us.dot.its.jpo.ode.coder.TimDecoderHelper;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.importer.parser.DriverAlertFileParser;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
-import us.dot.its.jpo.ode.importer.parser.TimLogFileParser;
 import us.dot.its.jpo.ode.model.*;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -68,7 +66,14 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
       if (fileParser instanceof DriverAlertFileParser){
          logger.debug("Publishing a driver alert.");
-         publisher.publish(JsonUtils.toJson(fileParser, false),
+         OdeDriverAlertPayload driverAlertData = new OdeDriverAlertPayload(((DriverAlertFileParser) fileParser).getAlert());
+         OdeDriverAlertMetadata driverAlertMetadata= new OdeDriverAlertMetadata(driverAlertData);
+         driverAlertMetadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
+         OdeLogMetadataCreatorHelper.updateLogMetadata(driverAlertMetadata, fileParser);
+
+         OdeAsn1Data driverAlertOdeData = new OdeAsn1Data(driverAlertMetadata, driverAlertData);
+
+         publisher.publish(JsonUtils.toJson(driverAlertOdeData, false),
                  publisher.getOdeProperties().getKafkaTopicDriverAlertJson());
 
       } else {
@@ -76,10 +81,6 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
          OdeAsn1Metadata metadata = new OdeAsn1Metadata(payload);
          metadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
          OdeLogMetadataCreatorHelper.updateLogMetadata(metadata, fileParser);
-         if (fileParser instanceof TimLogFileParser) {
-            ReceivedMessageDetails receivedMsgDetails = TimDecoderHelper.buildReceivedMessageDetails((TimLogFileParser) fileParser);
-            metadata.setReceivedMessageDetails(receivedMsgDetails);
-         }
 
 
          Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
