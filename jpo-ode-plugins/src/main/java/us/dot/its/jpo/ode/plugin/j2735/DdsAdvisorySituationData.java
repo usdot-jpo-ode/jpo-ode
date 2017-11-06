@@ -26,7 +26,8 @@ public class DdsAdvisorySituationData extends Asn1Object {
    
    public DdsAdvisorySituationData() {
       super();
-      groupID = CodecUtils.toHex(ByteBuffer.wrap("jode".getBytes(), 0, 4).array());
+      byte gid[] = {0, 0, 0, 0};
+      groupID = CodecUtils.toHex(gid);
    }
 
    public DdsAdvisorySituationData(

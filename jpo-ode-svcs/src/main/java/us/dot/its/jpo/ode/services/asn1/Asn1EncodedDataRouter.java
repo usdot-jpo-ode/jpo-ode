@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +57,15 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
         try {
            JSONObject consumedObj = XmlUtils.toJSONObject(consumedData)
                  .getJSONObject(OdeAsn1Data.class.getSimpleName());
+           
+           JSONObject metadata = consumedObj.getJSONObject(AppContext.METADATA_STRING);
+           JSONObject request = metadata.getJSONObject("request");
+           Object rsu = request.get("rsus");
+           if (!(rsu instanceof JSONArray)) {
+              JSONArray rsus = new JSONArray();
+              rsus.put(rsu);
+              request.put("rsus", rsus);
+           }
 
            // Convert JSON to POJO
            TravelerInputData travelerinputData = buildTravelerInputData(consumedObj);

@@ -55,7 +55,7 @@ function upload() {
     console.log("Ajax call submitted");
     $.ajax({
 //      url: '/upload/'+$('input[name=fileType]:checked').val(),
-      url: '/upload/bsmlog',
+      url: '/upload/obulog',
         type: 'POST',
         data: formData,
         cache: false,
