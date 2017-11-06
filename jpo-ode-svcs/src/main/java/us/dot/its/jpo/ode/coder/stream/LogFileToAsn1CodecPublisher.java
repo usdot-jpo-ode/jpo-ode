@@ -66,14 +66,15 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
       if (fileParser instanceof DriverAlertFileParser){
          logger.debug("Publishing a driver alert.");
-         OdeDriverAlertPayload driverAlertData = new OdeDriverAlertPayload(((DriverAlertFileParser) fileParser).getAlert());
-         OdeDriverAlertMetadata driverAlertMetadata= new OdeDriverAlertMetadata(driverAlertData);
+         OdeDriverAlertPayload driverAlertPayload = new OdeDriverAlertPayload(((DriverAlertFileParser) fileParser).getAlert());
+         OdeDriverAlertMetadata driverAlertMetadata= new OdeDriverAlertMetadata(driverAlertPayload);
          driverAlertMetadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
          OdeLogMetadataCreatorHelper.updateLogMetadata(driverAlertMetadata, fileParser);
 
-         OdeAsn1Data driverAlertOdeData = new OdeAsn1Data(driverAlertMetadata, driverAlertData);
+         OdeDriverAlertData driverAlertData = new OdeDriverAlertData(driverAlertMetadata, driverAlertPayload);
 
-         publisher.publish(JsonUtils.toJson(driverAlertOdeData, false),
+
+         publisher.publish(JsonUtils.toJson(driverAlertData, false),
                  publisher.getOdeProperties().getKafkaTopicDriverAlertJson());
 
       } else {

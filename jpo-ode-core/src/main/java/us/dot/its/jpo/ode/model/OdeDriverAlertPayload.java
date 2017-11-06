@@ -10,6 +10,7 @@ public class OdeDriverAlertPayload extends OdeMsgPayload {
         private static final long serialVersionUID = 7061315628111448390L;
         private String alert;
 
+
         public OdeDriverAlertPayload(String alert) {
             this.alert = alert;
         }
