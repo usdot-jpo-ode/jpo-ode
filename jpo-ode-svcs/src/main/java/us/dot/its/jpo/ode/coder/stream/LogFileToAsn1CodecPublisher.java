@@ -21,6 +21,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
+   public class LogFileToAsn1CodecPublisherException extends Exception {
+
+      private static final long serialVersionUID = 1L;
+
+      public LogFileToAsn1CodecPublisherException(String string, Exception e) {
+         super (string, e);
+      }
+
+   }
+
    protected static final Logger logger = LoggerFactory.getLogger(LogFileToAsn1CodecPublisher.class);
 
    protected StringPublisher publisher;
@@ -32,7 +42,8 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       this.publisher = dataPub;
    }
 
-   public void publish(BufferedInputStream bis, String fileName, ImporterFileType fileType) throws Exception {
+   public void publish(BufferedInputStream bis, String fileName, ImporterFileType fileType) 
+         throws LogFileToAsn1CodecPublisherException {
       XmlUtils xmlUtils = new XmlUtils();
       ParserStatus status = ParserStatus.UNKNOWN;
 
@@ -59,7 +70,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
                }
             }
          } catch (Exception e) {
-            logger.error("Error decoding and publishing data.", e);
+            throw new LogFileToAsn1CodecPublisherException("Error parsing or publishing data.", e);
          }
       } while (status == ParserStatus.COMPLETE);
    }

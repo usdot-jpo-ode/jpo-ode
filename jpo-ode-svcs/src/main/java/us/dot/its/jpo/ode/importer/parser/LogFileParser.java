@@ -63,7 +63,8 @@ public class LogFileParser implements FileParser {
       return fileParser;
    }
 
-   public ParserStatus parseFile(BufferedInputStream bis, String fileName) throws FileParserException {
+   public ParserStatus parseFile(BufferedInputStream bis, String fileName) 
+         throws FileParserException {
 
       status = ParserStatus.INIT;
 
@@ -78,6 +79,11 @@ public class LogFileParser implements FileParser {
    }
 
    public ParserStatus parseStep(BufferedInputStream bis, int length) throws FileParserException {
+      if (length > BUFFER_SIZE) {
+         throw new FileParserException("Data size of " + length 
+               + " is larger than allocated buffer size of " + BUFFER_SIZE);
+      }
+      
       try {
          int numBytes;
          if (bis.markSupported()) {
