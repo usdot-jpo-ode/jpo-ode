@@ -1,14 +1,14 @@
 package us.dot.its.jpo.ode.importer.parser;
 
+import us.dot.its.jpo.ode.util.CodecUtils;
+
 import java.io.BufferedInputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
-import us.dot.its.jpo.ode.util.CodecUtils;
-
 public class DriverAlertFileParser extends TimLogFileParser {
 
-   private byte[] alert;
+   private String alert;
 
    public DriverAlertFileParser(long bundleId) {
       super(bundleId);
@@ -65,12 +65,12 @@ public class DriverAlertFileParser extends TimLogFileParser {
       return status;
    }
 
-   public byte[] getAlert() {
+   public String getAlert() {
       return alert;
    }
 
    public void setAlert(byte[] alert) {
-      this.alert = alert;
+      this.alert = new String(alert);
    }
 
 }

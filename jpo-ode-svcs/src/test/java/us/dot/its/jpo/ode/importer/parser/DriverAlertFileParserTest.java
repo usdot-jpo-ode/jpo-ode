@@ -1,18 +1,16 @@
 package us.dot.its.jpo.ode.importer.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import mockit.Injectable;
+import mockit.Tested;
+import org.junit.Test;
+import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
+import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 
-import org.apache.tomcat.util.buf.HexUtils;
-import org.junit.Test;
-
-import mockit.Injectable;
-import mockit.Tested;
-import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
-import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class DriverAlertFileParserTest {
 
@@ -421,8 +419,8 @@ public class DriverAlertFileParserTest {
       try {
          assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(expectedLength, testDriverAlertFileParser.getLength());
-         assertEquals(HexUtils.toHexString(expectedPayload),
-               HexUtils.toHexString(testDriverAlertFileParser.getAlert()));
+         assertEquals(new String(expectedPayload),
+               testDriverAlertFileParser.getAlert());
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
