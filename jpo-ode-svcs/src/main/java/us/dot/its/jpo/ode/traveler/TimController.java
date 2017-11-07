@@ -346,7 +346,7 @@ public class TimController {
          dataBodyObj = (ObjectNode) JsonUtils.newNode().set("AdvisorySituationData", asdBodyObj);
          
          //Create valid payload from scratch
-         payload = new OdeAsdPayload();
+         payload = new OdeAsdPayload(asd);
 
       } else {
          dataBodyObj = (ObjectNode) JsonUtils.newNode().set("MessageFrame", mfBodyObj);
