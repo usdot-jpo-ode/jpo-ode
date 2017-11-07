@@ -1,15 +1,15 @@
 ## ODE Release Notes ##
 ----------
-### Sprint 24
-ODE-588 Free and Open Source ODE Minimum Viable Product
-ODE-615 ORNL Implement SDW TIM encoding
-ODE-587 Implement TIM data encoding through ASN.1 Encoder Module (AEM)
-ODE-596 Support receiving and publishing of Driver Alert Messages
-ODE-610 Update Documentation for Open Source ODE
-ODE-611 WyDOT deployment Support
-ODE-612 Unit testing for open source version of ODE
-ODE-613 SDW Sending of TIM Messages
-ODE-631 Add capability to disable output topics
+### Sprint 25
+- ODE-588 Free and Open Source ODE Minimum Viable Product
+- ODE-615 ORNL Implement SDW TIM encoding
+- ODE-587 Implement TIM data encoding through ASN.1 Encoder Module (AEM)
+- ODE-596 Support receiving and publishing of Driver Alert Messages
+- ODE-610 Update Documentation for Open Source ODE
+- ODE-611 WyDOT deployment Support
+- ODE-612 Unit testing for open source version of ODE
+- ODE-613 SDW Sending of TIM Messages
+- ODE-631 Add capability to disable output topics
 ### Sprint 24
 - ODE-537 ASN1 CODEC Module development
 - ODE-543 Publish a defined v3 for metadata	Story	Medule
