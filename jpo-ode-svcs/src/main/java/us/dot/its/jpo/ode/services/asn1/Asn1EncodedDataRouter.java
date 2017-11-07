@@ -58,6 +58,12 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
            JSONObject consumedObj = XmlUtils.toJSONObject(consumedData)
                  .getJSONObject(OdeAsn1Data.class.getSimpleName());
            
+           /*
+            * When receiving the 'rsus' in xml, since there is only one 'rsu'
+            * and there is no construct for array in xml, the rsus does not
+            * translate to an array of 1 element. The following workaround,
+            * resolves this issue. 
+            */
            JSONObject metadata = consumedObj.getJSONObject(AppContext.METADATA_STRING);
            JSONObject request = metadata.getJSONObject("request");
            Object rsu = request.get("rsus");
