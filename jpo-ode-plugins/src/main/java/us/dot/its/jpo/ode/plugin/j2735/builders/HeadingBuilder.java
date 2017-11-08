@@ -5,24 +5,28 @@ import java.math.BigDecimal;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class HeadingBuilder {
-    
-    public static BigDecimal genericHeading(JsonNode heading) {
-        return AngleBuilder.longToDecimal(heading.asLong());
-    }
 
-    public static BigDecimal genericCoarseHeading(JsonNode coarseHeading) {
+   public static BigDecimal genericHeading(JsonNode heading) {
+      return genericHeading(heading.asLong());
+   }
 
-        if (coarseHeading.asInt() < 0 || coarseHeading.asInt() > 240) {
-            throw new IllegalArgumentException("Coarse heading value out of bounds");
-        }
+   public static BigDecimal genericHeading(long heading) {
+      return AngleBuilder.longToDecimal(heading);
+   }
 
-        BigDecimal result = null;
+   public static BigDecimal genericCoarseHeading(JsonNode coarseHeading) {
 
-        if (coarseHeading.asInt() != 240) {
-            result = BigDecimal.valueOf(coarseHeading.asLong() * 15, 1);
-        }
+      if (coarseHeading.asInt() < 0 || coarseHeading.asInt() > 240) {
+         throw new IllegalArgumentException("Coarse heading value out of bounds");
+      }
 
-        return result;
-    }
+      BigDecimal result = null;
+
+      if (coarseHeading.asInt() != 240) {
+         result = BigDecimal.valueOf(coarseHeading.asLong() * 15, 1);
+      }
+
+      return result;
+   }
 
 }

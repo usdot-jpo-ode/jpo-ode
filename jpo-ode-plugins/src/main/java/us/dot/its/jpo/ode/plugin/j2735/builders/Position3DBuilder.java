@@ -26,27 +26,15 @@ public class Position3DBuilder {
       OdePosition3D jpos = new OdePosition3D();
 
       if (latitude != null) {
-         if (latitude == 900000001) {
-            jpos.setLatitude(null);
-         } else {
-            jpos.setLatitude(BigDecimal.valueOf(latitude, 7));
-         }
+         jpos.setLatitude(LatitudeBuilder.genericLatitude(latitude));
       }
 
       if (longitude != null) {
-         if (longitude == 1800000001) {
-            jpos.setLongitude(null);
-         } else {
-            jpos.setLongitude(BigDecimal.valueOf(longitude, 7));
-         }
+         jpos.setLongitude(LongitudeBuilder.genericLongitude(longitude));
       }
 
       if (elevation != null) {
-         if (elevation == -4096) {
-            jpos.setElevation(null);
-         } else {
-            jpos.setElevation(BigDecimal.valueOf(elevation, 1));
-         }
+         jpos.setElevation(ElevationBuilder.genericElevation(elevation));
       }
 
       return jpos;
@@ -66,19 +54,19 @@ public class Position3DBuilder {
       return dPos;
    }
 
-   public static DsrcPosition3D dsrcPosition3D(BigDecimal latitude, BigDecimal longitude, BigDecimal elevation) {
+   private static DsrcPosition3D dsrcPosition3D(BigDecimal latitude, BigDecimal longitude, BigDecimal elevation) {
       DsrcPosition3D dPos = new DsrcPosition3D();
 
       if (latitude != null) {
-         dPos.setLatitude(latitude.scaleByPowerOfTen(7).longValue());
+         dPos.setLatitude(LatitudeBuilder.j2735Latitude(latitude));
       }
 
       if (longitude != null) {
-         dPos.setLongitude(longitude.scaleByPowerOfTen(7).longValue());
+         dPos.setLongitude(LongitudeBuilder.j2735Longitude(longitude));
       }
 
       if (elevation != null) {
-         dPos.setElevation(elevation.scaleByPowerOfTen(1).longValue());
+         dPos.setElevation(ElevationBuilder.j2735Elevation(elevation));
       }
 
       return dPos;

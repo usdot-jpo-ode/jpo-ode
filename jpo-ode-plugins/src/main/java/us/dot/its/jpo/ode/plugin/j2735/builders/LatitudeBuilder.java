@@ -10,16 +10,23 @@ public class LatitudeBuilder {
       throw new UnsupportedOperationException();
    }
 
-   public static int latitude(BigDecimal lat) {
-      return lat.scaleByPowerOfTen(7).intValue();
+   public static long j2735Latitude(BigDecimal latitude) {
+      return latitude.scaleByPowerOfTen(7).intValue();
+   }
+
+   public static long j2735Latitude(JsonNode latitude) {
+      return j2735Latitude(latitude.decimalValue());
    }
 
    public static BigDecimal genericLatitude(JsonNode latitude) {
+      return genericLatitude(latitude.asInt());
+   }
+   
+   public static BigDecimal genericLatitude(long latitude) {
       BigDecimal returnValue = null;
 
-      if ((latitude != null) && (latitude.asLong() != 900000001)) {
-         returnValue = BigDecimal.valueOf(latitude.asLong(), 7);
-
+      if (latitude != 900000001) {
+         returnValue = BigDecimal.valueOf(latitude, 7);
       }
       return returnValue;
    }

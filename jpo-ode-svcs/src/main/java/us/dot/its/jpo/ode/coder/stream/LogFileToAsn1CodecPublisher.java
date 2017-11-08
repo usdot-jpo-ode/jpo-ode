@@ -5,23 +5,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.dot.its.jpo.ode.coder.OdeLogMetadataCreatorHelper;
 import us.dot.its.jpo.ode.coder.StringPublisher;
+import us.dot.its.jpo.ode.coder.TimDecoderHelper;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.importer.parser.DriverAlertFileParser;
-import us.dot.its.jpo.ode.importer.parser.TimLogFileParser;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
-import us.dot.its.jpo.ode.coder.TimDecoderHelper;
-import us.dot.its.jpo.ode.j2735.dsrc.*;
+import us.dot.its.jpo.ode.importer.parser.TimLogFileParser;
 import us.dot.its.jpo.ode.model.*;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
-import us.dot.its.jpo.ode.model.OdeAsn1Data;
-import us.dot.its.jpo.ode.model.OdeAsn1Metadata;
-import us.dot.its.jpo.ode.model.OdeAsn1Payload;
-import us.dot.its.jpo.ode.model.OdeDriverAlertData;
-import us.dot.its.jpo.ode.model.OdeDriverAlertMetadata;
-import us.dot.its.jpo.ode.model.OdeDriverAlertPayload;
-import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
-import us.dot.its.jpo.ode.plugin.j2735.oss.*;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
 
@@ -98,7 +89,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
          driverAlertMetadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
 
          driverAlertMetadata.setReceivedMessageDetails(receivedMsgDetails);
-          OdeLogMetadataCreatorHelper.updateLogMetadata(driverAlertMetadata, fileParser);
+         OdeLogMetadataCreatorHelper.updateLogMetadata(driverAlertMetadata, fileParser);
 
          OdeDriverAlertData driverAlertData = new OdeDriverAlertData(driverAlertMetadata, driverAlertPayload);
 
