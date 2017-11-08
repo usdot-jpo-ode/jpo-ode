@@ -11,6 +11,7 @@ import us.dot.its.jpo.ode.importer.parser.TimLogFileParser;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
 import us.dot.its.jpo.ode.coder.TimDecoderHelper;
+import us.dot.its.jpo.ode.importer.parser.TimLogLocation;
 import us.dot.its.jpo.ode.model.*;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -82,7 +83,19 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
          OdeDriverAlertPayload driverAlertPayload = new OdeDriverAlertPayload(((DriverAlertFileParser) fileParser).getAlert());
          OdeDriverAlertMetadata driverAlertMetadata= new OdeDriverAlertMetadata(driverAlertPayload);
          driverAlertMetadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
-         OdeLogMetadataCreatorHelper.updateLogMetadata(driverAlertMetadata, fileParser);
+
+
+         TimLogLocation driverAlertLocation = ((DriverAlertFileParser) fileParser).getLocation();
+         OdeLogMsgMetadataLocation driverAlertMetadataLocation =   new OdeLogMsgMetadataLocation(
+                 Integer.toString(driverAlertLocation.getLatitude()),
+                 Integer.toString(driverAlertLocation.getLongitude()),
+                 Integer.toString(driverAlertLocation.getElevation()),
+                 Integer.toString(driverAlertLocation.getSpeed()),
+                 Integer.toString(driverAlertLocation.getHeading())
+         );
+          ReceivedMessageDetails driverAlertReceivedDetails = new ReceivedMessageDetails(driverAlertMetadataLocation, null);
+         driverAlertMetadata.setReceivedMessageDetails(driverAlertReceivedDetails);
+          OdeLogMetadataCreatorHelper.updateLogMetadata(driverAlertMetadata, fileParser);
 
          OdeDriverAlertData driverAlertData = new OdeDriverAlertData(driverAlertMetadata, driverAlertPayload);
 
