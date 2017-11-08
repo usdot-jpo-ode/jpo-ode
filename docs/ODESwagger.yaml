@@ -585,6 +585,9 @@ definitions:
   SDW:
     type: object
     properties:
+      groupID:
+        type: string
+        description: Eight-digit hex code of the groupID to use, for example "A123B456".
       ttl:
         type: string
         description: Message time to live.

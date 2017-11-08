@@ -296,7 +296,7 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
-      return ResponseEntity.status(HttpStatus.OK).body("Success");
+      return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("Success", "true"));
    }
 
    /**
@@ -336,14 +336,14 @@ public class TimController {
                   travelerinputData.getSnmp().getDeliverystop(), 
                   null,
                   GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()),
-                  sdw.getTtl());
+                  sdw.getTtl(), sdw.getGroupID());
          ObjectNode asdBodyObj = JsonUtils.toObjectNode(asd.toJson());
          ObjectNode asdmDetails = (ObjectNode) asdBodyObj.get("asdmDetails");
          //Remove 'advisoryMessageBytes' and add 'advisoryMessage'
          asdmDetails.remove("advisoryMessageBytes");
          asdmDetails.set("advisoryMessage", JsonUtils.newNode().set("MessageFrame", mfBodyObj));
          
-         dataBodyObj = (ObjectNode) JsonUtils.newNode().set("AdvisorySituationData", asdBodyObj);
+         dataBodyObj.set("AdvisorySituationData", asdBodyObj);
          
          //Create valid payload from scratch
          payload = new OdeAsdPayload(asd);
