@@ -8,7 +8,7 @@ public class OffsetLLB16Builder {
       throw new UnsupportedOperationException();
    }
 
-   public static int offsetLLB16(BigDecimal offset) {
-      return offset.scaleByPowerOfTen(7).intValue();
+   public static Long offsetLLB16(BigDecimal offset) {
+      return offset.scaleByPowerOfTen(7).longValue();
    }
 }

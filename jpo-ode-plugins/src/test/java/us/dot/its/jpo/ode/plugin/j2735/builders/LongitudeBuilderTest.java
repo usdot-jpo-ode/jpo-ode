@@ -37,19 +37,11 @@ public class LongitudeBuilderTest {
    }
 
    @Test
-   public void testConversionNullEntry() throws JsonProcessingException, IOException {
-      JsonNode testInput = null;
-      BigDecimal expectedValue = null;
-
-      assertEquals(expectedValue, LongitudeBuilder.genericLongitude(testInput));
-   }
-
-   @Test
    public void testBigDecimal() throws JsonProcessingException, IOException {
 
       BigDecimal testInput = new BigDecimal(1.0);
 
-      assertEquals(10000000, LongitudeBuilder.longitude(testInput));
+      assertEquals(10000000, LongitudeBuilder.j2735Longitude(testInput));
 
    }
 

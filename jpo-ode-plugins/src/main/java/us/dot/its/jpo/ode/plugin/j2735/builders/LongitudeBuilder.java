@@ -10,15 +10,23 @@ public class LongitudeBuilder {
       throw new UnsupportedOperationException();
    }
 
-   public static int longitude(BigDecimal lon) {
-      return lon.scaleByPowerOfTen(7).intValue();
+   public static long j2735Longitude(BigDecimal longitude) {
+      return longitude.scaleByPowerOfTen(7).intValue();
+   }
+
+   public static long j2735Longitude(JsonNode longitude) {
+      return j2735Longitude(longitude.decimalValue());
    }
 
    public static BigDecimal genericLongitude(JsonNode longitude) {
+      return genericLongitude(longitude.asInt());
+   }
+   
+   public static BigDecimal genericLongitude(long longitude) {
       BigDecimal returnValue = null;
 
-      if ((longitude != null) && (longitude.asLong() != 1800000001)) {
-         returnValue = BigDecimal.valueOf(longitude.asLong(), 7);
+      if (longitude != 1800000001) {
+         returnValue = BigDecimal.valueOf(longitude, 7);
 
       }
       return returnValue;

@@ -8,7 +8,7 @@ public class OffsetB10Builder {
       throw new UnsupportedOperationException();
    }
 
-   public static int offsetB10(BigDecimal offset) {
-      return offset.scaleByPowerOfTen(2).intValue();
+   public static Long offsetB10(BigDecimal offset) {
+      return offset.scaleByPowerOfTen(2).longValue();
    }
 }

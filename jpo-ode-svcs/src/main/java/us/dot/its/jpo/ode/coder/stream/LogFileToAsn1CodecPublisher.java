@@ -1,26 +1,39 @@
 package us.dot.its.jpo.ode.coder.stream;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import us.dot.its.jpo.ode.coder.OdeLogMetadataCreatorHelper;
-import us.dot.its.jpo.ode.coder.StringPublisher;
-import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
-import us.dot.its.jpo.ode.importer.parser.DriverAlertFileParser;
-import us.dot.its.jpo.ode.importer.parser.TimLogFileParser;
-import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
-import us.dot.its.jpo.ode.importer.parser.LogFileParser;
-import us.dot.its.jpo.ode.coder.TimDecoderHelper;
-import us.dot.its.jpo.ode.importer.parser.TimLogLocation;
-import us.dot.its.jpo.ode.j2735.dsrc.*;
-import us.dot.its.jpo.ode.model.*;
-import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
-import us.dot.its.jpo.ode.plugin.j2735.oss.*;
-import us.dot.its.jpo.ode.util.JsonUtils;
-import us.dot.its.jpo.ode.util.XmlUtils;
-
 import java.io.BufferedInputStream;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import us.dot.its.jpo.ode.coder.OdeLogMetadataCreatorHelper;
+import us.dot.its.jpo.ode.coder.StringPublisher;
+import us.dot.its.jpo.ode.coder.TimDecoderHelper;
+import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
+import us.dot.its.jpo.ode.importer.parser.DriverAlertFileParser;
+import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
+import us.dot.its.jpo.ode.importer.parser.LogFileParser;
+import us.dot.its.jpo.ode.importer.parser.TimLogFileParser;
+import us.dot.its.jpo.ode.importer.parser.TimLogLocation;
+import us.dot.its.jpo.ode.model.Asn1Encoding;
+import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
+import us.dot.its.jpo.ode.model.OdeAsn1Data;
+import us.dot.its.jpo.ode.model.OdeAsn1Metadata;
+import us.dot.its.jpo.ode.model.OdeAsn1Payload;
+import us.dot.its.jpo.ode.model.OdeDriverAlertData;
+import us.dot.its.jpo.ode.model.OdeDriverAlertMetadata;
+import us.dot.its.jpo.ode.model.OdeDriverAlertPayload;
+import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
+import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
+import us.dot.its.jpo.ode.plugin.j2735.builders.ElevationBuilder;
+import us.dot.its.jpo.ode.plugin.j2735.builders.HeadingBuilder;
+import us.dot.its.jpo.ode.plugin.j2735.builders.LatitudeBuilder;
+import us.dot.its.jpo.ode.plugin.j2735.builders.LongitudeBuilder;
+import us.dot.its.jpo.ode.plugin.j2735.builders.SpeedOrVelocityBuilder;
+import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.util.XmlUtils;
 
 public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
@@ -89,15 +102,16 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
          TimLogLocation driverAlertLocation = ((DriverAlertFileParser) fileParser).getLocation();
          OdeLogMsgMetadataLocation driverAlertMetadataLocation =   new OdeLogMsgMetadataLocation(
-                 OssLatitude.genericLatitude(new Latitude(driverAlertLocation.getLatitude())).toString(),
-                 OssLongitude.genericLongitude(new Longitude(driverAlertLocation.getLongitude())).toString(),
-                 OssElevation.genericElevation(new Elevation(driverAlertLocation.getElevation())).toString(),
-                 OssSpeedOrVelocity.genericSpeed(new Speed(driverAlertLocation.getSpeed())).toString(),
-                 OssHeading.genericHeading(new Heading(driverAlertLocation.getHeading())).toString()
+                 LatitudeBuilder.genericLatitude(driverAlertLocation.getLatitude()).toString(),
+                 LongitudeBuilder.genericLongitude(driverAlertLocation.getLongitude()).toString(),
+                 ElevationBuilder.genericElevation(driverAlertLocation.getElevation()).toString(),
+                 SpeedOrVelocityBuilder.genericSpeedOrVelocity(driverAlertLocation.getSpeed()).toString(),
+                 HeadingBuilder.genericHeading(driverAlertLocation.getHeading()).toString()
          );
-          ReceivedMessageDetails driverAlertReceivedDetails = new ReceivedMessageDetails(driverAlertMetadataLocation, null);
+         
+         ReceivedMessageDetails driverAlertReceivedDetails = new ReceivedMessageDetails(driverAlertMetadataLocation, null);
          driverAlertMetadata.setReceivedMessageDetails(driverAlertReceivedDetails);
-          OdeLogMetadataCreatorHelper.updateLogMetadata(driverAlertMetadata, fileParser);
+         OdeLogMetadataCreatorHelper.updateLogMetadata(driverAlertMetadata, fileParser);
 
          OdeDriverAlertData driverAlertData = new OdeDriverAlertData(driverAlertMetadata, driverAlertPayload);
 
