@@ -12,8 +12,10 @@ import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
 import us.dot.its.jpo.ode.coder.TimDecoderHelper;
 import us.dot.its.jpo.ode.importer.parser.TimLogLocation;
+import us.dot.its.jpo.ode.j2735.dsrc.*;
 import us.dot.its.jpo.ode.model.*;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
+import us.dot.its.jpo.ode.plugin.j2735.oss.*;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
 
@@ -87,11 +89,11 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
          TimLogLocation driverAlertLocation = ((DriverAlertFileParser) fileParser).getLocation();
          OdeLogMsgMetadataLocation driverAlertMetadataLocation =   new OdeLogMsgMetadataLocation(
-                 Integer.toString(driverAlertLocation.getLatitude()),
-                 Integer.toString(driverAlertLocation.getLongitude()),
-                 Integer.toString(driverAlertLocation.getElevation()),
-                 Integer.toString(driverAlertLocation.getSpeed()),
-                 Integer.toString(driverAlertLocation.getHeading())
+                 OssLatitude.genericLatitude(new Latitude(driverAlertLocation.getLatitude())).toString(),
+                 OssLongitude.genericLongitude(new Longitude(driverAlertLocation.getLongitude())).toString(),
+                 OssElevation.genericElevation(new Elevation(driverAlertLocation.getElevation())).toString(),
+                 OssSpeedOrVelocity.genericSpeed(new Speed(driverAlertLocation.getSpeed())).toString(),
+                 OssHeading.genericHeading(new Heading(driverAlertLocation.getHeading())).toString()
          );
           ReceivedMessageDetails driverAlertReceivedDetails = new ReceivedMessageDetails(driverAlertMetadataLocation, null);
          driverAlertMetadata.setReceivedMessageDetails(driverAlertReceivedDetails);
