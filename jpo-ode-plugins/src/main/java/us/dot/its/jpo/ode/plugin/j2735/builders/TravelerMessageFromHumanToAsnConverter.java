@@ -619,8 +619,8 @@ public class TravelerMessageFromHumanToAsnConverter {
       BigDecimal latOffset = oldNode.get("nodeLat").decimalValue();
       BigDecimal longOffset = oldNode.get("nodeLong").decimalValue();
       JsonNode delta = oldNode.get("delta");
-      Integer transformedLat = null;
-      Integer transformedLong = null;
+      Long transformedLat = null;
+      Long transformedLong = null;
 
       if ("node-LL1".equals(delta.asText())) {
          transformedLat = OffsetLLB12Builder.offsetLLB12(latOffset);
@@ -641,8 +641,8 @@ public class TravelerMessageFromHumanToAsnConverter {
          transformedLat = OffsetLLB24Builder.offsetLLB24(latOffset);
          transformedLong = OffsetLLB24Builder.offsetLLB24(longOffset);
       } else if ("node-LatLon".equals(delta.asText())) {
-         transformedLat = LatitudeBuilder.latitude(latOffset);
-         transformedLong = LongitudeBuilder.longitude(longOffset);
+         transformedLat = LatitudeBuilder.j2735Latitude(latOffset);
+         transformedLong = LongitudeBuilder.j2735Longitude(longOffset);
       }
 
       ObjectNode latLong = JsonUtils.newNode().put("lat", transformedLat).put("lon", transformedLong);
@@ -1057,8 +1057,8 @@ public class TravelerMessageFromHumanToAsnConverter {
       BigDecimal latOffset = oldNode.get("nodeLat").decimalValue();
       BigDecimal longOffset = oldNode.get("nodeLong").decimalValue();
       JsonNode delta = oldNode.get("delta");
-      Integer transformedLat = null;
-      Integer transformedLong = null;
+      Long transformedLat = null;
+      Long transformedLong = null;
 
       if ("node-XY1".equals(delta.asText())) {
          transformedLat = OffsetB10Builder.offsetB10(latOffset);
@@ -1079,8 +1079,8 @@ public class TravelerMessageFromHumanToAsnConverter {
          transformedLat = OffsetB16Builder.offsetB16(latOffset);
          transformedLong = OffsetB16Builder.offsetB16(longOffset);
       } else if ("node-LatLon".equals(delta.asText())) {
-         transformedLat = LatitudeBuilder.latitude(latOffset);
-         transformedLong = LongitudeBuilder.longitude(longOffset);
+         transformedLat = LatitudeBuilder.j2735Latitude(latOffset);
+         transformedLong = LongitudeBuilder.j2735Longitude(longOffset);
       }
 
       ObjectNode latLong = JsonUtils.newNode().put("lat", transformedLat).put("lon", transformedLong);
@@ -1202,8 +1202,8 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       ObjectNode updatedNode = (ObjectNode) jsonNode;
 
-      updatedNode.put("lon", LongitudeBuilder.longitude(updatedNode.get("nodeLong").decimalValue()));
-      updatedNode.put("lat", LatitudeBuilder.latitude(updatedNode.get("nodeLat").decimalValue()));
+      updatedNode.put("lon", LongitudeBuilder.j2735Longitude(updatedNode.get("nodeLong").decimalValue()));
+      updatedNode.put("lat", LatitudeBuilder.j2735Latitude(updatedNode.get("nodeLat").decimalValue()));
       updatedNode.remove("nodeLong");
       updatedNode.remove("nodeLat");
 
