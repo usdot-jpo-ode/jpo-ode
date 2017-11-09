@@ -161,6 +161,85 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.OK).body("{\"indicies_set\":" + resultTable.keySet() + "}");
       }
    }
+   
+   /**
+    * Checks given RSU for all TIMs set
+    * 
+    * @param jsonString
+    *           Request body containing RSU info
+    * @return list of occupied TIM slots on RSU
+    */
+   @ResponseBody
+   @CrossOrigin
+   @RequestMapping(value = "/tim/bulkQuery", method = RequestMethod.POST)
+   public synchronized ResponseEntity<String> bulkQuery(@RequestBody String jsonString) { // NOSONAR
+
+      if (null == jsonString || jsonString.isEmpty()) {
+         logger.error("Empty request.");
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, "Empty request."));
+      }
+
+      ConcurrentSkipListMap<Integer, Integer> resultTable = new ConcurrentSkipListMap<>();
+      RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
+
+      SnmpSession snmpSession = null;
+      try {
+         snmpSession = new SnmpSession(queryTarget);
+         snmpSession.startListen();
+      } catch (IOException e) {
+         logger.error("Error creating SNMP session.", e);
+         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+               .body(jsonKeyValue(ERRSTR, "Failed to create SNMP session."));
+      }
+      
+      PDU pdu = new ScopedPDU();
+      pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.1")));
+      pdu.setType(PDU.GETBULK);
+      
+      ResponseEvent response = null;
+      try {
+         response = snmpSession.getSnmp().send(pdu, snmpSession.getTarget());
+      } catch (IOException e) {
+         logger.error("Error creating SNMP session.", e);
+         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+               .body(jsonKeyValue(ERRSTR, "Failed to create SNMP session."));
+      }
+
+      // Repeatedly query the RSU to establish set rows
+//      List<Callable<Object>> queryThreadList = new ArrayList<>();
+//
+//      for (int i = 0; i < odeProperties.getRsuSrmSlots(); i++) {
+//         ScopedPDU pdu = new ScopedPDU();
+//         pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
+//         pdu.setType(PDU.GET);
+//         queryThreadList.add(Executors
+//               .callable(new TimQueryThread(snmpSession.getSnmp(), pdu, snmpSession.getTarget(), resultTable, i)));
+//      }
+//
+//      try {
+//         threadPool.invokeAll(queryThreadList);
+//      } catch (InterruptedException e) { // NOSONAR
+//         logger.error("Error submitting query threads for execution.", e);
+//         threadPool.shutdownNow();
+//      }
+
+      try {
+         snmpSession.endSession();
+      } catch (IOException e) {
+         logger.error("Error closing SNMP session.", e);
+      }
+      
+      return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("Success", response.getResponse().toString()));
+
+//      if (resultTable.containsValue(TimQueryThread.TIMEOUT_FLAG)) {
+//         logger.error("TIM query timed out.");
+//         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//               .body(jsonKeyValue(ERRSTR, "Query timeout, increase retries."));
+//      } else {
+//         logger.info("TIM query successful: {}", resultTable.keySet());
+//         return ResponseEntity.status(HttpStatus.OK).body("{\"indicies_set\":" + resultTable.keySet() + "}");
+//      }
+   }
 
    @ResponseBody
    @CrossOrigin
