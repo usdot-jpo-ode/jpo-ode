@@ -296,12 +296,17 @@ public class TimController {
             SNMP snmp = travelerInputData.getSnmp();
             if (null != snmp) {
 
-               asd = new DdsAdvisorySituationData(snmp.getDeliverystart(),
-                     snmp.getDeliverystop(), null,
-                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
+               asd = new DdsAdvisorySituationData(
+                  snmp.getDeliverystart(),
+                  snmp.getDeliverystop(), null,
+                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()),
+                  sdw.getTtl(), sdw.getGroupID());
             } else {
-               asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), null,
-                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
+               asd = new DdsAdvisorySituationData(
+                  sdw.getDeliverystart(), 
+                  sdw.getDeliverystop(), null,
+                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()),
+                  sdw.getTtl(), sdw.getGroupID());
             }
          } catch (ParseException e) {
             String errMsg = "Error AdvisorySituationDatae: " + e.getMessage();
@@ -335,9 +340,7 @@ public class TimController {
       return "{\"" + key + "\":\"" + value + "\"}";
    }
 
-   private String convertToXml(
-      DdsAdvisorySituationData asd, 
-      ObjectNode encodableTidObj) 
+   private String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj) 
             throws JsonUtilsException, XmlUtilsException, ParseException {
       
       Tim inOrderTid = (Tim) JsonUtils.jacksonFromJson(encodableTidObj.toString(), Tim.class);
