@@ -45,6 +45,7 @@ import us.dot.its.jpo.ode.model.OdeTimPayload;
 import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.ODE;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
@@ -311,7 +312,7 @@ public class TimController {
       return "{\"" + key + "\":\"" + value + "\"}";
    }
 
-   private String convertToXml(TravelerInputData travelerinputData, ObjectNode encodableTidObj) throws JsonUtilsException, XmlUtilsException, ParseException {
+   private String convertToXml(TravelerInputData travelerInputData, ObjectNode encodableTidObj) throws JsonUtilsException, XmlUtilsException, ParseException {
       Tim inOrderTid = (Tim) JsonUtils.jacksonFromJson(encodableTidObj.toString(), Tim.class);
       logger.debug("In order tim: {}", inOrderTid);
       ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
@@ -328,15 +329,23 @@ public class TimController {
       OdeMsgPayload payload = null;
 
       ObjectNode dataBodyObj = JsonUtils.newNode();
-      SDW sdw = travelerinputData.getSdw();
+      SDW sdw = travelerInputData.getSdw();
       if (null != sdw) {
-         DdsAdvisorySituationData asd = 
-               new DdsAdvisorySituationData(
-                  travelerinputData.getSnmp().getDeliverystart(),
-                  travelerinputData.getSnmp().getDeliverystop(), 
-                  null,
-                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()),
-                  sdw.getTtl(), sdw.getGroupID());
+
+         // take deliverystart and stop times from SNMP object, if present
+         // else take from SDW object
+         DdsAdvisorySituationData asd;
+         SNMP snmp = travelerInputData.getSnmp();
+         if (null != snmp) {
+
+            asd = new DdsAdvisorySituationData(snmp.getDeliverystart(),
+                  snmp.getDeliverystop(), null,
+                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
+         } else {
+            asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), null,
+                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
+         }
+
          ObjectNode asdBodyObj = JsonUtils.toObjectNode(asd.toJson());
          ObjectNode asdmDetails = (ObjectNode) asdBodyObj.get("asdmDetails");
          //Remove 'advisoryMessageBytes' and add 'advisoryMessage'

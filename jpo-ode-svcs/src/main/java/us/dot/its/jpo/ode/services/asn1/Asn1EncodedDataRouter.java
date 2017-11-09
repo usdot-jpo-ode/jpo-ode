@@ -52,37 +52,41 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
     }
 
-    @Override
-    public Object process(String consumedData) {
-        try {
-           JSONObject consumedObj = XmlUtils.toJSONObject(consumedData)
-                 .getJSONObject(OdeAsn1Data.class.getSimpleName());
-           
-           /*
-            * When receiving the 'rsus' in xml, since there is only one 'rsu'
-            * and there is no construct for array in xml, the rsus does not
-            * translate to an array of 1 element. The following workaround,
-            * resolves this issue. 
-            */
-           JSONObject metadata = consumedObj.getJSONObject(AppContext.METADATA_STRING);
-           JSONObject request = metadata.getJSONObject("request");
-           Object rsu = request.get("rsus");
-           if (!(rsu instanceof JSONArray)) {
-              JSONArray rsus = new JSONArray();
-              rsus.put(rsu);
-              request.put("rsus", rsus);
-           }
+   @Override
+   public Object process(String consumedData) {
+      try {
+         JSONObject consumedObj = XmlUtils.toJSONObject(consumedData).getJSONObject(OdeAsn1Data.class.getSimpleName());
 
-           // Convert JSON to POJO
-           TravelerInputData travelerinputData = buildTravelerInputData(consumedObj);
-           
-           processEncodedTim(travelerinputData, consumedObj);
-           
-        } catch (Exception e) {
-           logger.error("Error in processing received message from ASN.1 Encoder module: " + consumedData, e);
-        }
-        return null;
-    }
+         /*
+          * When receiving the 'rsus' in xml, since there is only one 'rsu' and
+          * there is no construct for array in xml, the rsus does not translate
+          * to an array of 1 element. The following workaround, resolves this
+          * issue.
+          */
+         JSONObject metadata = consumedObj.getJSONObject(AppContext.METADATA_STRING);
+
+         if (metadata.has("request")) {
+            JSONObject request = metadata.getJSONObject("request");
+            if (request.has("rsus")) {
+               Object rsu = request.get("rsus");
+               if (!(rsu instanceof JSONArray)) {
+                  JSONArray rsus = new JSONArray();
+                  rsus.put(rsu);
+                  request.put("rsus", rsus);
+               }
+            }
+         }
+
+         // Convert JSON to POJO
+         TravelerInputData travelerinputData = buildTravelerInputData(consumedObj);
+
+         processEncodedTim(travelerinputData, consumedObj);
+
+      } catch (Exception e) {
+         logger.error("Error in processing received message from ASN.1 Encoder module: " + consumedData, e);
+      }
+      return null;
+   }
 
     public TravelerInputData buildTravelerInputData(JSONObject consumedObj) {
        String request = consumedObj
@@ -131,12 +135,14 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        }
        
        JSONObject mfObj = dataObj.getJSONObject("MessageFrame");
-       if (null != mfObj) {
-          String timBytes = mfObj.getString("bytes");
-          for (RSU curRsu : travelerInfo.getRsus()) {
+       
+      // only send message to rsu if snmp, rsus, and message frame fields are present
+      if (null != travelerInfo.getSnmp() && null != travelerInfo.getRsus() && null != mfObj) {
+         String timBytes = mfObj.getString("bytes");
+         for (RSU curRsu : travelerInfo.getRsus()) {
 
-             ResponseEvent rsuResponse = null;
-             String httpResponseStatus = null;
+            ResponseEvent rsuResponse = null;
+            String httpResponseStatus = null;
 
              try {
                 rsuResponse = createAndSend(travelerInfo.getSnmp(), curRsu, 

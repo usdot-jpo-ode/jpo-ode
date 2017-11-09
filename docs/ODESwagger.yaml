@@ -543,6 +543,7 @@ definitions:
         type: string
   SNMP:
     type: object
+    description: Optional field, needed for SNMP deposit to RSU.
     properties:
       rsuid:
         type: string
@@ -556,16 +557,17 @@ definitions:
         type: string
       deliverystart:
         type: string
-        description: ISO string for message delivery start time
+        description: ISO string for message delivery start time. Takes priority over "deliverystart" field in SDW.
       deliverystop:
         type: string
-        description: ISO string for message delivery stop time
+        description: ISO string for message delivery stop time. Takes priority over "deliverystop" field in SDW.
       enable:
         type: string
       status:
         type: string
   RSU:
     type: object
+    summary: Optional field, needed for SNMP deposit to RSU.
     properties:
       rsuTarget:
         type: string
@@ -585,9 +587,15 @@ definitions:
   SDW:
     type: object
     properties:
+      deliverystart:
+        type: string
+        description: Optional field, ISO string for message delivery start time. Identical to "deliverystart" field in SNMP for when RSU deposit not desired.
+      deliverystop:
+        type: string
+        description: Optional field, ISO string for message delivery stop time. Identical to "deliverystop" field in SNMP for when RSU deposit not desired.
       groupID:
         type: string
-        description: Eight-digit hex code of the groupID to use, for example "A123B456".
+        description: Eight-digit hex code of the groupID to use, for example "A123B456". GroupID is used
       ttl:
         type: string
         description: Message time to live.

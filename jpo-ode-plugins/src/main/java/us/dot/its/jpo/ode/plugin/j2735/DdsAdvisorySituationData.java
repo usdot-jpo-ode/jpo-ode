@@ -63,15 +63,26 @@ public class DdsAdvisorySituationData extends Asn1Object {
    }
 
    private J2735DFullTime dFullTimeFromIsoTimeString(String isoTime) throws ParseException {
-      ZonedDateTime zdtTime = DateTimeUtils.isoDateTime(isoTime);
+
       J2735DFullTime dStartTime = new J2735DFullTime();
-      dStartTime.setYear(zdtTime.getYear());
-      dStartTime.setMonth(zdtTime.getMonthValue());
-      dStartTime.setDay(zdtTime.getDayOfMonth());
-      dStartTime.setHour(zdtTime.getHour());
-      dStartTime.setMinute(zdtTime.getMinute());
-      // dStartTime.setSecond(zdtTime.getSecond());
-      // dStartTime.setOffset(zdtTime.getOffset().getTotalSeconds());
+      
+      // use time if present, if not use undefined flag values
+      if (null != isoTime) {
+         ZonedDateTime zdtTime = DateTimeUtils.isoDateTime(isoTime);
+         dStartTime.setYear(zdtTime.getYear());
+         dStartTime.setMonth(zdtTime.getMonthValue());
+         dStartTime.setDay(zdtTime.getDayOfMonth());
+         dStartTime.setHour(zdtTime.getHour());
+         dStartTime.setMinute(zdtTime.getMinute());
+         // dStartTime.setSecond(zdtTime.getSecond());
+         // dStartTime.setOffset(zdtTime.getOffset().getTotalSeconds());
+      } else {
+         dStartTime.setYear(0);
+         dStartTime.setMonth(0);
+         dStartTime.setDay(0);
+         dStartTime.setHour(31);
+         dStartTime.setMinute(60);
+      }
       return dStartTime;
    }
 

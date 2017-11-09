@@ -20,6 +20,8 @@ public class SituationDataWarehouse {
       private OdeGeoRegion serviceRegion;
       private TimeToLive ttl = null;
       private String groupID = null;
+      private String deliverystart;
+      private String deliverystop;
 
       public OdeGeoRegion getServiceRegion() {
          return serviceRegion;
@@ -44,6 +46,22 @@ public class SituationDataWarehouse {
 
       public void setGroupID(String groupID) {
          this.groupID = groupID;
+      }
+
+      public String getDeliverystop() {
+         return deliverystop;
+      }
+
+      public void setDeliverystop(String deliverystop) {
+         this.deliverystop = deliverystop;
+      }
+
+      public String getDeliverystart() {
+         return deliverystart;
+      }
+
+      public void setDeliverystart(String deliverystart) {
+         this.deliverystart = deliverystart;
       }
    }
    private SituationDataWarehouse() {
