@@ -77,16 +77,15 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
    private void publish(XmlUtils xmlUtils) throws JsonProcessingException {
 
-      ReceivedMessageDetails receivedMsgDetails = 
-            TimDecoderHelper.buildReceivedMessageDetails((TimLogFileParser) fileParser);
-
-
       if (fileParser instanceof DriverAlertFileParser){
          logger.debug("Publishing a driver alert.");
          OdeDriverAlertPayload driverAlertPayload = new OdeDriverAlertPayload(((DriverAlertFileParser) fileParser).getAlert());
          OdeDriverAlertMetadata driverAlertMetadata= new OdeDriverAlertMetadata(driverAlertPayload);
 
          driverAlertMetadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
+
+         ReceivedMessageDetails receivedMsgDetails = 
+               TimDecoderHelper.buildReceivedMessageDetails((TimLogFileParser) fileParser);
 
          driverAlertMetadata.setReceivedMessageDetails(receivedMsgDetails);
          OdeLogMetadataCreatorHelper.updateLogMetadata(driverAlertMetadata, fileParser);
@@ -104,7 +103,10 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
          OdeLogMetadataCreatorHelper.updateLogMetadata(metadata, fileParser);
 
          if (fileParser instanceof TimLogFileParser) {
-           metadata.setReceivedMessageDetails(receivedMsgDetails);
+            ReceivedMessageDetails receivedMsgDetails = 
+                  TimDecoderHelper.buildReceivedMessageDetails((TimLogFileParser) fileParser);
+
+            metadata.setReceivedMessageDetails(receivedMsgDetails);
          }
 
          Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);

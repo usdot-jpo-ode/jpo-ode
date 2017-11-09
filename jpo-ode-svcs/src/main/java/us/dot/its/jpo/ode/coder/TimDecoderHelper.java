@@ -20,7 +20,6 @@ import gov.usdot.cv.security.cert.CertificateException;
 import gov.usdot.cv.security.crypto.CryptoException;
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import gov.usdot.cv.security.msg.MessageException;
-import us.dot.its.jpo.ode.importer.parser.DriverAlertFileParser;
 import us.dot.its.jpo.ode.importer.parser.RxMsgFileParser;
 import us.dot.its.jpo.ode.importer.parser.TimLogFileParser;
 import us.dot.its.jpo.ode.importer.parser.TimLogLocation;
@@ -229,7 +228,7 @@ public class TimDecoderHelper {
    }
    
    public static ReceivedMessageDetails buildReceivedMessageDetails(TimLogFileParser fileParser) {
-      TimLogLocation locationDetails = ((DriverAlertFileParser) fileParser).getLocation();
+      TimLogLocation locationDetails = ((TimLogFileParser) fileParser).getLocation();
       ReceivedMessageDetails timSpecificMetadata = new ReceivedMessageDetails(
             new OdeLogMsgMetadataLocation(
                LatitudeBuilder.genericLatitude(locationDetails.getLatitude()).toString(),
