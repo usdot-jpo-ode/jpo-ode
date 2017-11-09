@@ -45,6 +45,7 @@ import us.dot.its.jpo.ode.model.OdeTimPayload;
 import us.dot.its.jpo.ode.model.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.ODE;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
@@ -248,12 +249,12 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
-      TravelerInputData travelerinputData = null; 
+      TravelerInputData travelerInputData = null; 
       try {
          // Convert JSON to POJO
-         travelerinputData = (TravelerInputData) JsonUtils.fromJson(jsonString, TravelerInputData.class);
-         if (travelerinputData.getOde() == null) {
-            travelerinputData.setOde(new ODE());
+         travelerInputData = (TravelerInputData) JsonUtils.fromJson(jsonString, TravelerInputData.class);
+         if (travelerInputData.getOde() == null) {
+            travelerInputData.setOde(new ODE());
          }
 
          logger.debug("J2735TravelerInputData: {}", jsonString);
@@ -265,7 +266,7 @@ public class TimController {
       }
 
       // Add metadata to message and publish to kafka
-      OdeMsgPayload timDataPayload = new OdeMsgPayload(travelerinputData.getTim());
+      OdeMsgPayload timDataPayload = new OdeMsgPayload(travelerInputData.getTim());
       OdeMsgMetadata timMetadata = new OdeMsgMetadata(timDataPayload);
       OdeTimData odeTimData = new OdeTimData(timMetadata, timDataPayload);
       timProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastPojo(), null, odeTimData);
@@ -276,7 +277,7 @@ public class TimController {
       try {
          encodableTid = TravelerMessageFromHumanToAsnConverter
                .changeTravelerInformationToAsnValues(
-                  JsonUtils.toObjectNode(travelerinputData.toJson()));
+                  JsonUtils.toObjectNode(travelerInputData.toJson()));
          
          logger.debug("Encodable TravelerInputData: {}", encodableTid);
          
@@ -286,16 +287,22 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
-      SDW sdw = travelerinputData.getSdw();
+      SDW sdw = travelerInputData.getSdw();
       DdsAdvisorySituationData asd = null; 
       if (null != sdw) {
          try {
-            asd = new DdsAdvisorySituationData(
-                     travelerinputData.getSnmp().getDeliverystart(),
-                     travelerinputData.getSnmp().getDeliverystop(), 
-                     null,
-                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()),
-                     sdw.getTtl());
+            // take deliverystart and stop times from SNMP object, if present
+            // else take from SDW object
+            SNMP snmp = travelerInputData.getSnmp();
+            if (null != snmp) {
+
+               asd = new DdsAdvisorySituationData(snmp.getDeliverystart(),
+                     snmp.getDeliverystop(), null,
+                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
+            } else {
+               asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), null,
+                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
+            }
          } catch (ParseException e) {
             String errMsg = "Error AdvisorySituationDatae: " + e.getMessage();
             logger.error(errMsg, e);
@@ -313,7 +320,7 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
-      return ResponseEntity.status(HttpStatus.OK).body("Success");
+      return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("Success", "true"));
    }
 
    /**
@@ -330,7 +337,6 @@ public class TimController {
 
    private String convertToXml(
       DdsAdvisorySituationData asd, 
-      
       ObjectNode encodableTidObj) 
             throws JsonUtilsException, XmlUtilsException, ParseException {
       
@@ -357,7 +363,7 @@ public class TimController {
          asdmDetails.remove("advisoryMessageBytes");
          asdmDetails.set("advisoryMessage", JsonUtils.newNode().set("MessageFrame", mfBodyObj));
          
-         dataBodyObj = (ObjectNode) JsonUtils.newNode().set("AdvisorySituationData", asdBodyObj);
+         dataBodyObj.set("AdvisorySituationData", asdBodyObj);
          
          //Create valid payload from scratch
          payload = new OdeAsdPayload(asd);

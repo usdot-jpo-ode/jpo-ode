@@ -66,4 +66,27 @@ public class OdeFileUtils {
          throw new IOException("Unable to move file to backup: " + e);
       }
    }
+   
+   /**
+    * Attempts to move and overwrite a file to destination directory. Throws exception if directory doesn't exist or move failed.
+    * @param file
+    * @param destination
+    * @throws IOException 
+    */
+   public static void moveFile(Path file, Path destination) throws IOException {
+   // Check that the destination directory actually exists before moving the
+      // file
+      if (!destination.toFile().exists()) {
+         throw new IOException("Directory does not exist: " + destination);
+      }
+
+      Path targetPath = Paths.get(destination.toString(), file.getFileName().toString());
+
+      // Attempt to move the file to the backup directory
+      try {
+         Files.move(file, targetPath, StandardCopyOption.REPLACE_EXISTING);
+      } catch (IOException e) {
+         throw new IOException("Unable to move file to backup: " + e);
+      }
+   }
 }
