@@ -286,9 +286,26 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
+      SDW sdw = travelerinputData.getSdw();
+      DdsAdvisorySituationData asd = null; 
+      if (null != sdw) {
+         try {
+            asd = new DdsAdvisorySituationData(
+                     travelerinputData.getSnmp().getDeliverystart(),
+                     travelerinputData.getSnmp().getDeliverystop(), 
+                     null,
+                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()),
+                     sdw.getTtl());
+         } catch (ParseException e) {
+            String errMsg = "Error AdvisorySituationDatae: " + e.getMessage();
+            logger.error(errMsg, e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
+         }
+      }
+      
       // Encode TIM
       try {
-         String xmlMsg = convertToXml(travelerinputData, encodableTid);
+         String xmlMsg = convertToXml(asd, encodableTid);
          stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlMsg);
       } catch (Exception e) {
          String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
@@ -311,7 +328,12 @@ public class TimController {
       return "{\"" + key + "\":\"" + value + "\"}";
    }
 
-   private String convertToXml(TravelerInputData travelerinputData, ObjectNode encodableTidObj) throws JsonUtilsException, XmlUtilsException, ParseException {
+   private String convertToXml(
+      DdsAdvisorySituationData asd, 
+      
+      ObjectNode encodableTidObj) 
+            throws JsonUtilsException, XmlUtilsException, ParseException {
+      
       Tim inOrderTid = (Tim) JsonUtils.jacksonFromJson(encodableTidObj.toString(), Tim.class);
       logger.debug("In order tim: {}", inOrderTid);
       ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
@@ -328,15 +350,7 @@ public class TimController {
       OdeMsgPayload payload = null;
 
       ObjectNode dataBodyObj = JsonUtils.newNode();
-      SDW sdw = travelerinputData.getSdw();
-      if (null != sdw) {
-         DdsAdvisorySituationData asd = 
-               new DdsAdvisorySituationData(
-                  travelerinputData.getSnmp().getDeliverystart(),
-                  travelerinputData.getSnmp().getDeliverystop(), 
-                  null,
-                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()),
-                  sdw.getTtl());
+      if (null != asd) {
          ObjectNode asdBodyObj = JsonUtils.toObjectNode(asd.toJson());
          ObjectNode asdmDetails = (ObjectNode) asdBodyObj.get("asdmDetails");
          //Remove 'advisoryMessageBytes' and add 'advisoryMessage'
@@ -347,7 +361,6 @@ public class TimController {
          
          //Create valid payload from scratch
          payload = new OdeAsdPayload(asd);
-
       } else {
          dataBodyObj = (ObjectNode) JsonUtils.newNode().set("MessageFrame", mfBodyObj);
          payload = new OdeTimPayload();
@@ -366,7 +379,7 @@ public class TimController {
       ArrayNode encodings = JsonUtils.newArrayNode();
       Asn1Encoding mfEnc = new Asn1Encoding("MessageFrame", "MessageFrame", EncodingRule.UPER);
       encodings.add(JsonUtils.newNode().set("encodings", JsonUtils.toObjectNode(mfEnc.toJson())));
-      if (null != sdw) {
+      if (null != asd) {
          Asn1Encoding asdEnc = new Asn1Encoding("AdvisorySituationData", "AdvisorySituationData", EncodingRule.UPER);
          encodings.add(JsonUtils.newNode().set("encodings", JsonUtils.toObjectNode(asdEnc.toJson())));
       }
