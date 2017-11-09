@@ -28,17 +28,20 @@ public class ImporterDirectoryWatcher implements Runnable {
    private ImporterProcessor importerProcessor;
 
    private Path inbox;
-
    private Path backup;
+   private Path failed;
 
-   public ImporterDirectoryWatcher(OdeProperties odeProperties, Path dir, Path backupDir, ImporterFileType fileType) {
+   public ImporterDirectoryWatcher(OdeProperties odeProperties, Path dir, Path backupDir, Path failureDir, ImporterFileType fileType) {
       this.inbox = dir;
       this.backup = backupDir;
+      this.failed = failureDir;
       this.watching = true;
 
       try {
          OdeFileUtils.createDirectoryRecursively(inbox);
          logger.debug("Created directory {}", inbox);
+         OdeFileUtils.createDirectoryRecursively(failed);
+         logger.debug("Created directory {}", failed);
          OdeFileUtils.createDirectoryRecursively(backup);
          logger.debug("Created directory {}", backup);
       } catch (IOException e) {
@@ -53,7 +56,7 @@ public class ImporterDirectoryWatcher implements Runnable {
 
       // Begin by processing all files already in the inbox
       logger.info("Processing existing files in {}", inbox);
-      importerProcessor.processDirectory(inbox, backup);
+      importerProcessor.processDirectory(inbox, backup, failed);
 
       // Create a generic watch service
       WatchService watcher = null;
@@ -99,7 +102,7 @@ public class ImporterDirectoryWatcher implements Runnable {
             Path filename = inbox.resolve(ev.context());
             logger.debug("File event on {}", filename);
 
-            importerProcessor.processAndBackupFile(filename, backup);
+            importerProcessor.processAndBackupFile(filename, backup, failed);
          } else if (OVERFLOW == kind) {
             continue;
          } else {
