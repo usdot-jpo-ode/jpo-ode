@@ -33,6 +33,8 @@ public class AsdMessageTest {
     @Injectable
     SituationDataWarehouse.SDW.TimeToLive ttl = 
     SituationDataWarehouse.SDW.TimeToLive.oneminute;
+    @Injectable
+    String groupID = "01234567";
 
     @Mocked
     ZonedDateTime mockZonedDateTimeStart;
