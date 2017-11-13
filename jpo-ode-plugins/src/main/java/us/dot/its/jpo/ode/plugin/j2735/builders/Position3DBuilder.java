@@ -42,16 +42,14 @@ public class Position3DBuilder {
 
    public static OdePosition3D odePosition3D(JsonNode jpos) {
 
-      JsonNode latitude = jpos.get("latitude");
-      JsonNode longitude = jpos.get("longitude");
-      JsonNode elevation = jpos.get("elevation");
-      
-      OdePosition3D dPos = new OdePosition3D(
-         BigDecimal.valueOf(latitude.asDouble()),
-         BigDecimal.valueOf(longitude.asDouble()),
-         BigDecimal.valueOf(elevation.asDouble()));
-      
-      return dPos;
+      Long latitude = jpos.get("latitude").asLong();
+      Long longitude = jpos.get("longitude").asLong();
+      Long elevation = null;
+      if (jpos.get("elevation") != null) {
+         elevation = jpos.get("elevation").asLong();
+      }
+
+      return odePosition3D(latitude, longitude, elevation);
    }
 
    private static DsrcPosition3D dsrcPosition3D(BigDecimal latitude, BigDecimal longitude, BigDecimal elevation) {
