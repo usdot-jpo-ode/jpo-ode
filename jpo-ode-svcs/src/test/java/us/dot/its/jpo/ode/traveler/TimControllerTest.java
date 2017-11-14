@@ -27,7 +27,7 @@ import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.http.InternalServerErrorException;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
-import us.dot.its.jpo.ode.model.TravelerInputData;
+import us.dot.its.jpo.ode.model.OdeTravelerInputData;
 import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
@@ -48,7 +48,7 @@ public class TimControllerTest {
    DdsDepositor<DdsStatusMessage> mockDepositor;
 
    @Mocked
-   TravelerInputData mockTravelerInputData;
+   OdeTravelerInputData mockTravelerInputData;
    @Mocked
    TravelerInformation mockTravelerInfo;
    @Mocked
@@ -130,7 +130,7 @@ public class TimControllerTest {
                result = "something";
                minTimes = 0;
 
-               JsonUtils.fromJson(anyString, TravelerInputData.class);
+               JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
                result = mockTravelerInputData;
                mockTravelerInputData.toJson(true);
                result = "mockTim";
@@ -168,7 +168,7 @@ public class TimControllerTest {
                result = "something";
                minTimes = 0;
 
-               JsonUtils.fromJson(anyString, TravelerInputData.class);
+               JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
                result = mockTravelerInputData;
                mockTravelerInputData.toJson(true);
                result = anyString;
@@ -209,7 +209,7 @@ public class TimControllerTest {
                result = "something";
                minTimes = 0;
 
-               JsonUtils.fromJson(anyString, TravelerInputData.class);
+               JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
                result = mockTravelerInputData;
                mockTravelerInputData.toJson(true);
                result = anyString;
@@ -263,7 +263,7 @@ public class TimControllerTest {
                result = "something";
                minTimes = 0;
 
-               JsonUtils.fromJson(anyString, TravelerInputData.class);
+               JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
                result = mockTravelerInputData;
                mockTravelerInputData.toJson(true);
                result = "mockTim";
@@ -311,7 +311,7 @@ public class TimControllerTest {
                result = "something";
                minTimes = 0;
 
-               JsonUtils.fromJson(anyString, TravelerInputData.class);
+               JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
                result = mockTravelerInputData;
                mockTravelerInputData.toJson(true);
                result = "mockTim";
@@ -369,7 +369,7 @@ public class TimControllerTest {
                result = "something";
                minTimes = 0;
 
-               JsonUtils.fromJson(anyString, TravelerInputData.class);
+               JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
                result = mockTravelerInputData;
                mockTravelerInputData.toJson(true);
                result = "mockTim";
@@ -428,7 +428,7 @@ public class TimControllerTest {
                result = "something";
                minTimes = 0;
 
-               JsonUtils.fromJson(anyString, TravelerInputData.class);
+               JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
                result = mockTravelerInputData;
                mockTravelerInputData.toJson(true);
                result = "mockTim";

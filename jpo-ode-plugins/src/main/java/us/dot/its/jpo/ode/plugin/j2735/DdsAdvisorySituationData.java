@@ -6,6 +6,7 @@ import java.util.Random;
 
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
+import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2DataTag;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisoryDetails.AdvisoryBroadcastType;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisoryDetails.DistributionType;
 import us.dot.its.jpo.ode.util.CodecUtils;
@@ -33,7 +34,7 @@ public class DdsAdvisorySituationData extends Asn1Object {
       groupID = CodecUtils.toHex(gid);
    }
 
-   public DdsAdvisorySituationData(String startTime, String stopTime, J2735MessageFrame advisoryMessage,
+   public DdsAdvisorySituationData(String startTime, String stopTime, Ieee1609Dot2DataTag advisoryMessage,
          DdsGeoRegion serviceRegion, SituationDataWarehouse.SDW.TimeToLive ttl, String groupID) throws ParseException {
       this();
 

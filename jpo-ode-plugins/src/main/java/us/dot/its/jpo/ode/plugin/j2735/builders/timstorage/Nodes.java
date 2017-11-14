@@ -2,9 +2,9 @@ package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-public class Nodes extends OdeObject {
+public class Nodes extends Asn1Object {
 
    private static final long serialVersionUID = 1L;
    @JsonProperty("NodeLL")

@@ -50,7 +50,7 @@ import us.dot.its.jpo.ode.j2735.semi.SemiSequenceID;
 import us.dot.its.jpo.ode.j2735.semi.TimeToLive;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeObject;
-import us.dot.its.jpo.ode.model.TravelerInputData;
+import us.dot.its.jpo.ode.model.OdeTravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse;
@@ -69,6 +69,16 @@ import us.dot.its.jpo.ode.wrapper.AbstractSubscriberProcessor;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
 
 public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, String> {
+
+   public static class Asn1EncodedDataRouterException extends Exception {
+
+      private static final long serialVersionUID = 1L;
+
+      public Asn1EncodedDataRouterException(String string) {
+         super(string);
+      }
+
+   }
 
    public class AsdMessage extends OdeObject {
 
@@ -144,6 +154,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
    @Override
    public Object process(String consumedData) {
       try {
+         logger.debug("Consumed: {}", consumedData);
          JSONObject consumedObj = XmlUtils.toJSONObject(consumedData).getJSONObject(OdeAsn1Data.class.getSimpleName());
 
          /*
@@ -156,6 +167,12 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
          if (metadata.has("request")) {
             JSONObject request = metadata.getJSONObject("request");
+
+            // Convert JSON to POJO
+            OdeTravelerInputData travelerinputData = buildTravelerInputData(consumedObj);
+
+            processEncodedTim(travelerinputData, consumedObj);
+
             if (request.has("rsus")) {
                Object rsu = request.get("rsus");
                if (!(rsu instanceof JSONArray)) {
@@ -164,13 +181,9 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
                   request.put("rsus", rsus);
                }
             }
+         } else {
+            throw new Asn1EncodedDataRouterException("Encoder response missing 'request'");
          }
-
-         // Convert JSON to POJO
-         TravelerInputData travelerinputData = buildTravelerInputData(consumedObj);
-
-         processEncodedTim(travelerinputData, consumedObj);
-
       } catch (Exception e) {
          String msg = "Error in processing received message from ASN.1 Encoder module: " + consumedData;
          EventLogger.logger.error(msg, e);
@@ -179,16 +192,16 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       return null;
    }
 
-    public TravelerInputData buildTravelerInputData(JSONObject consumedObj) {
+    public OdeTravelerInputData buildTravelerInputData(JSONObject consumedObj) {
        String request = consumedObj
              .getJSONObject(AppContext.METADATA_STRING)
              .getJSONObject("request").toString();
        
        // Convert JSON to POJO
-       TravelerInputData travelerinputData = null;
+       OdeTravelerInputData travelerinputData = null;
        try {
           logger.debug("JSON: {}", request);
-          travelerinputData = (TravelerInputData) JsonUtils.fromJson(request, TravelerInputData.class);
+          travelerinputData = (OdeTravelerInputData) JsonUtils.fromJson(request, OdeTravelerInputData.class);
 
        } catch (Exception e) {
           String errMsg = "Malformed JSON.";
@@ -199,7 +212,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        return travelerinputData;
     }
 
-    public void processEncodedTim(TravelerInputData travelerInfo, JSONObject consumedObj) throws TimControllerException {
+    public void processEncodedTim(OdeTravelerInputData travelerInfo, JSONObject consumedObj) throws TimControllerException {
        // Send TIMs and record results
        HashMap<String, String> responseList = new HashMap<>();
 
@@ -321,7 +334,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        return response;
     }
 
-    private void depositToDDS(TravelerInputData travelerinputData, String asdBytes)
+    private void depositToDDS(OdeTravelerInputData travelerinputData, String asdBytes)
           throws ParseException, DdsRequestManagerException, DdsClientException, WebSocketException,
           EncodeFailedException, EncodeNotSupportedException {
        // Step 4 - Step Deposit TIM to SDW if sdw element exists
@@ -342,7 +355,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
     * @throws WebSocketException
     * @throws EncodeNotSupportedException
     */
-   private void depositToDDSUsingOss(TravelerInputData travelerInputData, String mfTimBytes) 
+   private void depositToDDSUsingOss(OdeTravelerInputData travelerInputData, String mfTimBytes) 
          throws ParseException, EncodeFailedException, DdsRequestManagerException, DdsClientException, WebSocketException, EncodeNotSupportedException {
       // Step 4 - Step Deposit IEEE 1609.2 wrapped TIM to SDW if sdw element exists
       SDW sdw = travelerInputData.getSdw();

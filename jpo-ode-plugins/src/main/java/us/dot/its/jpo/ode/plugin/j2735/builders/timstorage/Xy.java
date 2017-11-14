@@ -1,8 +1,8 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 
-import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-public class Xy extends OdeObject {
+public class Xy extends Asn1Object {
    
    private static final long serialVersionUID = 1L;
    private Nodes nodes;

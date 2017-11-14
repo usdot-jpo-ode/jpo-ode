@@ -122,4 +122,59 @@ public class SNMP extends OdeObject {
       return CodecUtils.toHex(bdt);
    }
 
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + channel;
+      result = prime * result + ((deliverystart == null) ? 0 : deliverystart.hashCode());
+      result = prime * result + ((deliverystop == null) ? 0 : deliverystop.hashCode());
+      result = prime * result + enable;
+      result = prime * result + interval;
+      result = prime * result + mode;
+      result = prime * result + msgid;
+      result = prime * result + ((rsuid == null) ? 0 : rsuid.hashCode());
+      result = prime * result + status;
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      SNMP other = (SNMP) obj;
+      if (channel != other.channel)
+         return false;
+      if (deliverystart == null) {
+         if (other.deliverystart != null)
+            return false;
+      } else if (!deliverystart.equals(other.deliverystart))
+         return false;
+      if (deliverystop == null) {
+         if (other.deliverystop != null)
+            return false;
+      } else if (!deliverystop.equals(other.deliverystop))
+         return false;
+      if (enable != other.enable)
+         return false;
+      if (interval != other.interval)
+         return false;
+      if (mode != other.mode)
+         return false;
+      if (msgid != other.msgid)
+         return false;
+      if (rsuid == null) {
+         if (other.rsuid != null)
+            return false;
+      } else if (!rsuid.equals(other.rsuid))
+         return false;
+      if (status != other.status)
+         return false;
+      return true;
+   }
+
 }

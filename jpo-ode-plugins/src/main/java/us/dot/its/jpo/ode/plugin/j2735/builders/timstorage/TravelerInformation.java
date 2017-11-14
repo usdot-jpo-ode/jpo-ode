@@ -3,10 +3,10 @@ package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 @JsonPropertyOrder({ "msgCnt", "timeStamp", "packetID", "urlB", "dataFrames" })
-public class TravelerInformation extends OdeObject {
+public class TravelerInformation extends Asn1Object {
    private static final long serialVersionUID = 1L;
 
    @JsonProperty("msgCnt")
@@ -22,7 +22,7 @@ public class TravelerInformation extends OdeObject {
    private String urlB;
 
    @JsonProperty("dataFrames")
-   private DataFrames[] dataFrames;
+   private DataFrame[] dataFrames;
 
    public int getTimeStamp() {
       return timeStamp;
@@ -48,11 +48,11 @@ public class TravelerInformation extends OdeObject {
       this.packetID = packetID;
    }
 
-   public DataFrames[] getDataFrames() {
+   public DataFrame[] getDataFrames() {
       return dataFrames;
    }
 
-   public void setDataFrames(DataFrames[] dataFrames) {
+   public void setDataFrames(DataFrame[] dataFrames) {
       this.dataFrames = dataFrames;
    }
 

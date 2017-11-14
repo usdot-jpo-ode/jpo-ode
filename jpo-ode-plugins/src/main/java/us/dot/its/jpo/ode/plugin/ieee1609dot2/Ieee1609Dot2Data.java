@@ -8,6 +8,12 @@ public class Ieee1609Dot2Data extends Asn1Object {
    private Byte protocolVersion;
    private Ieee1609Dot2Content content;
    
+   
+   public Ieee1609Dot2Data() {
+      super();
+      protocolVersion = 3;
+   }
+   
    public Byte getProtocolVersion() {
       return protocolVersion;
    }

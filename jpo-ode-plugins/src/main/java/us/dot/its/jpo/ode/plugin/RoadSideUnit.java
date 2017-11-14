@@ -65,6 +65,49 @@ public class RoadSideUnit {
       public void setRsuTimeout(int rsuTimeout) {
          this.rsuTimeout = rsuTimeout;
       }
+
+      @Override
+      public int hashCode() {
+         final int prime = 31;
+         int result = 1;
+         result = prime * result + ((rsuPassword == null) ? 0 : rsuPassword.hashCode());
+         result = prime * result + rsuRetries;
+         result = prime * result + ((rsuTarget == null) ? 0 : rsuTarget.hashCode());
+         result = prime * result + rsuTimeout;
+         result = prime * result + ((rsuUsername == null) ? 0 : rsuUsername.hashCode());
+         return result;
+      }
+
+      @Override
+      public boolean equals(Object obj) {
+         if (this == obj)
+            return true;
+         if (obj == null)
+            return false;
+         if (getClass() != obj.getClass())
+            return false;
+         RSU other = (RSU) obj;
+         if (rsuPassword == null) {
+            if (other.rsuPassword != null)
+               return false;
+         } else if (!rsuPassword.equals(other.rsuPassword))
+            return false;
+         if (rsuRetries != other.rsuRetries)
+            return false;
+         if (rsuTarget == null) {
+            if (other.rsuTarget != null)
+               return false;
+         } else if (!rsuTarget.equals(other.rsuTarget))
+            return false;
+         if (rsuTimeout != other.rsuTimeout)
+            return false;
+         if (rsuUsername == null) {
+            if (other.rsuUsername != null)
+               return false;
+         } else if (!rsuUsername.equals(other.rsuUsername))
+            return false;
+         return true;
+      }
    }
 
    private RoadSideUnit() {

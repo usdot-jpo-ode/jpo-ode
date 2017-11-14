@@ -3,11 +3,11 @@ package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 @JsonPropertyOrder({ "sspTimRights", "frameType", "startYear", "startTime", "duratonTime", "priority",
       "sspLocationRights", "regions", "sspMsgRights1", "sspMsgRights2", "content", "url" })
-public class TravelerDataFrame extends OdeObject {
+public class TravelerDataFrame extends Asn1Object {
    private static final long serialVersionUID = 1L;
 
    private String sspTimRights;
