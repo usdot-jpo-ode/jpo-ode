@@ -44,6 +44,7 @@ public class OdeProperties implements EnvironmentAware {
    // File import properties
    private String uploadLocationRoot = "uploads";
    private String uploadLocationObuLogLog = "bsmlog";
+   private Integer fileWatcherPeriod = 5; // time to wait between processing inbox directory for new files
 
    /*
     * USDOT Situation Data Clearinghouse (SDC)/ Situation Data Warehouse (SDW),
@@ -681,5 +682,13 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setKafkaTopicDriverAlertJson(String kafkaTopicDriverAlertJson) {
       this.kafkaTopicDriverAlertJson = kafkaTopicDriverAlertJson;
+   }
+
+   public Integer getFileWatcherPeriod() {
+      return fileWatcherPeriod;
+   }
+
+   public void setFileWatcherPeriod(Integer fileWatcherPeriod) {
+      this.fileWatcherPeriod = fileWatcherPeriod;
    }
 }
