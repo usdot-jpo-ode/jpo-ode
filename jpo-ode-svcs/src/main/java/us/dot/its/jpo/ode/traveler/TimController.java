@@ -2,12 +2,7 @@ package us.dot.its.jpo.ode.traveler;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,26 +76,20 @@ public class TimController {
    private static final Logger logger = LoggerFactory.getLogger(TimController.class);
 
    private static final String ERRSTR = "error";
-   private static final int THREADPOOL_MULTIPLIER = 3; // multiplier of threads
-                                                       // needed
 
    private OdeProperties odeProperties;
    private MessageProducer<String, String> stringMsgProducer;
    private MessageProducer<String, OdeObject> timProducer;
-
-   private final ExecutorService threadPool;
 
    @Autowired
    public TimController(OdeProperties odeProperties) {
       super();
       this.odeProperties = odeProperties;
 
-      this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(
-         odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType());
-      this.timProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(),
-            odeProperties.getKafkaProducerType(), null, OdeTimSerializer.class.getName());
-
-      this.threadPool = Executors.newFixedThreadPool(odeProperties.getRsuSrmSlots() * THREADPOOL_MULTIPLIER);
+      this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
+            odeProperties.getKafkaProducerType());
+      this.timProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(),
+            null, OdeTimSerializer.class.getName());
    }
 
    /**
@@ -113,70 +102,6 @@ public class TimController {
    @ResponseBody
    @CrossOrigin
    @RequestMapping(value = "/tim/query", method = RequestMethod.POST)
-   public synchronized ResponseEntity<String> asyncQueryForTims(@RequestBody String jsonString) { // NOSONAR
-
-      if (null == jsonString || jsonString.isEmpty()) {
-         logger.error("Empty request.");
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, "Empty request."));
-      }
-
-      ConcurrentSkipListMap<Integer, Integer> resultTable = new ConcurrentSkipListMap<>();
-      RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
-
-      SnmpSession snmpSession = null;
-      try {
-         snmpSession = new SnmpSession(queryTarget);
-         snmpSession.startListen();
-      } catch (IOException e) {
-         logger.error("Error creating SNMP session.", e);
-         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-               .body(jsonKeyValue(ERRSTR, "Failed to create SNMP session."));
-      }
-
-      // Repeatedly query the RSU to establish set rows
-      List<Callable<Object>> queryThreadList = new ArrayList<>();
-
-      for (int i = 0; i < odeProperties.getRsuSrmSlots(); i++) {
-         ScopedPDU pdu = new ScopedPDU();
-         pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
-         pdu.setType(PDU.GET);
-         queryThreadList.add(Executors
-               .callable(new TimQueryThread(snmpSession.getSnmp(), pdu, snmpSession.getTarget(), resultTable, i)));
-      }
-
-      try {
-         threadPool.invokeAll(queryThreadList);
-      } catch (InterruptedException e) { // NOSONAR
-         logger.error("Error submitting query threads for execution.", e);
-         threadPool.shutdownNow();
-      }
-
-      try {
-         snmpSession.endSession();
-      } catch (IOException e) {
-         logger.error("Error closing SNMP session.", e);
-      }
-
-      if (resultTable.containsValue(TimQueryThread.TIMEOUT_FLAG)) {
-         logger.error("TIM query timed out.");
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-               .body(jsonKeyValue(ERRSTR, "Query timeout, increase retries."));
-      } else {
-         logger.info("TIM query successful: {}", resultTable.keySet());
-         return ResponseEntity.status(HttpStatus.OK).body("{\"indicies_set\":" + resultTable.keySet() + "}");
-      }
-   }
-   
-   /**
-    * Checks given RSU for all TIMs set
-    * 
-    * @param jsonString
-    *           Request body containing RSU info
-    * @return list of occupied TIM slots on RSU
-    */
-   @ResponseBody
-   @CrossOrigin
-   @RequestMapping(value = "/tim/bulkQuery", method = RequestMethod.POST)
    public synchronized ResponseEntity<String> bulkQuery(@RequestBody String jsonString) { // NOSONAR
 
       if (null == jsonString || jsonString.isEmpty()) {
@@ -195,13 +120,14 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                .body(jsonKeyValue(ERRSTR, "Failed to create SNMP session."));
       }
-      
+
       PDU pdu = new ScopedPDU();
-      pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.1")));
-      pdu.setType(PDU.GETBULK);
-      pdu.setMaxRepetitions(100);
-      pdu.setNonRepeaters(0);
+      pdu.setType(PDU.GET);
       
+      for (int i = 0; i < odeProperties.getRsuSrmSlots(); i++) {
+         pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
+      }
+
       ResponseEvent response = null;
       try {
          response = snmpSession.getSnmp().send(pdu, snmpSession.getTarget());
@@ -211,41 +137,29 @@ public class TimController {
                .body(jsonKeyValue(ERRSTR, "Failed to create SNMP session."));
       }
 
-      // Repeatedly query the RSU to establish set rows
-//      ConcurrentSkipListMap<Integer, Integer> resultTable = new ConcurrentSkipListMap<>();
-//      List<Callable<Object>> queryThreadList = new ArrayList<>();
-//
-//      for (int i = 0; i < odeProperties.getRsuSrmSlots(); i++) {
-//         ScopedPDU pdu = new ScopedPDU();
-//         pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
-//         pdu.setType(PDU.GET);
-//         queryThreadList.add(Executors
-//               .callable(new TimQueryThread(snmpSession.getSnmp(), pdu, snmpSession.getTarget(), resultTable, i)));
-//      }
-//
-//      try {
-//         threadPool.invokeAll(queryThreadList);
-//      } catch (InterruptedException e) { // NOSONAR
-//         logger.error("Error submitting query threads for execution.", e);
-//         threadPool.shutdownNow();
-//      }
-
       try {
          snmpSession.endSession();
       } catch (IOException e) {
          logger.error("Error closing SNMP session.", e);
       }
-      
-      return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("Success", response.getResponse().toString()));
 
-//      if (resultTable.containsValue(TimQueryThread.TIMEOUT_FLAG)) {
-//         logger.error("TIM query timed out.");
-//         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//               .body(jsonKeyValue(ERRSTR, "Query timeout, increase retries."));
-//      } else {
-//         logger.info("TIM query successful: {}", resultTable.keySet());
-//         return ResponseEntity.status(HttpStatus.OK).body("{\"indicies_set\":" + resultTable.keySet() + "}");
-//      }
+      // Process response
+      if (response == null || response.getResponse() == null) {
+         logger.error("RSU query failed, timeout.");
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+               .body(jsonKeyValue(ERRSTR, "Timeout, no response from RSU."));
+      }
+
+      HashMap<String, Boolean> resultsMap = new HashMap<>();
+      for (Object vbo : response.getResponse().getVariableBindings().toArray()) {
+         VariableBinding vb = (VariableBinding) vbo;
+         if (vb.getVariable().toInt() == 1) {
+            resultsMap.put(vb.getOid().toString().substring(21), true);
+         }
+      }
+
+      logger.info("RSU query successful: {}", resultsMap.keySet());
+      return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("indicies_set", resultsMap.keySet().toString()));
    }
 
    @ResponseBody
@@ -361,11 +275,10 @@ public class TimController {
       ObjectNode encodableTid;
       try {
          encodableTid = TravelerMessageFromHumanToAsnConverter
-               .changeTravelerInformationToAsnValues(
-                  JsonUtils.toObjectNode(travelerInputData.toJson()));
-         
+               .changeTravelerInformationToAsnValues(JsonUtils.toObjectNode(travelerInputData.toJson()));
+
          logger.debug("Encodable TravelerInputData: {}", encodableTid);
-         
+
       } catch (Exception e) {
          String errMsg = "Error converting to encodable TIM.";
          logger.error(errMsg, e);
@@ -373,7 +286,7 @@ public class TimController {
       }
 
       SDW sdw = travelerInputData.getSdw();
-      DdsAdvisorySituationData asd = null; 
+      DdsAdvisorySituationData asd = null;
       if (null != sdw) {
          try {
             Ieee1609Dot2DataTag ieeeDataTag = new Ieee1609Dot2DataTag();
@@ -391,17 +304,11 @@ public class TimController {
             SNMP snmp = travelerInputData.getSnmp();
             if (null != snmp) {
 
-               asd = new DdsAdvisorySituationData(
-                  snmp.getDeliverystart(),
-                  snmp.getDeliverystop(), ieeeDataTag,
-                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()),
-                  sdw.getTtl(), sdw.getGroupID());
+               asd = new DdsAdvisorySituationData(snmp.getDeliverystart(), snmp.getDeliverystop(), null,
+                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
             } else {
-               asd = new DdsAdvisorySituationData(
-                  sdw.getDeliverystart(), 
-                  sdw.getDeliverystop(), ieeeDataTag,
-                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()),
-                  sdw.getTtl(), sdw.getGroupID());
+               asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), null,
+                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
             }
             
             
@@ -411,7 +318,7 @@ public class TimController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
          }
       }
-      
+
       // Encode TIM
       try {
          String xmlMsg = convertToXml(asd, encodableTid);
@@ -437,13 +344,13 @@ public class TimController {
       return "{\"" + key + "\":\"" + value + "\"}";
    }
 
-   private String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj) 
-            throws JsonUtilsException, XmlUtilsException, ParseException {
-      
+   private String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj)
+         throws JsonUtilsException, XmlUtilsException, ParseException {
+
       TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(), TravelerInputData.class);
       logger.debug("In order tim: {}", inOrderTid);
       ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
-      
+
       JsonNode timObj = inOrderTidObj.remove("tim");
       ObjectNode requestObj = inOrderTidObj; // with 'tim' element removed, encodableTid becomes the 'request' element
 
@@ -470,26 +377,26 @@ public class TimController {
          payload = new OdeTimPayload();
          payload.setDataType("MessageFrame");
       }
-      
+
       ObjectNode payloadObj = JsonUtils.toObjectNode(payload.toJson());
       payloadObj.set(AppContext.DATA_STRING, dataBodyObj);
-      
-      //Create a valid metadata from scratch
+
+      // Create a valid metadata from scratch
       OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
       ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());
       metaObject.set("request", requestObj);
       
       //Workaround for XML Array issue. Set a placeholder for the encodings to be added later as a string replacement
       metaObject.set("encodings_palceholder", null);
-      
+
       ObjectNode message = JsonUtils.newNode();
       message.set(AppContext.METADATA_STRING, metaObject);
       message.set(AppContext.PAYLOAD_STRING, payloadObj);
-      
+
       ObjectNode root = JsonUtils.newNode();
       root.set("OdeAsn1Data", message);
-      
-      //Convert to XML
+
+      // Convert to XML
       logger.debug("pre-xml: {}", root);
       String outputXml = XmlUtils.toXmlS(root);
       String encStr = buildEncodings(asd);
@@ -503,17 +410,16 @@ public class TimController {
       fixedXml = fixedXml.replaceAll("nodeXY>", "NodeXY>");
       fixedXml = fixedXml.replaceAll("sequence>", "SEQUENCE>");
       fixedXml = fixedXml.replaceAll("geographicalPath>", "GeographicalPath>");
-      
+
       // workarounds for self-closing tags
       fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.EMPTY_FIELD_FLAG, "");
       fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_TRUE, "<true />");
       fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_FALSE, "<false />");
-      
-      
+
       // remove the surrounding <ObjectNode></ObjectNode>
       fixedXml = fixedXml.replace("<ObjectNode>", "");
       fixedXml = fixedXml.replace("</ObjectNode>", "");
-      
+
       logger.debug("Fixed XML: {}", fixedXml);
       return fixedXml;
    }
