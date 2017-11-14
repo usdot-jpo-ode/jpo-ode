@@ -38,7 +38,7 @@ public class ImporterProcessor {
    public void processDirectory(Path dir, Path backupDir, Path failureDir) {
       int count = 0;
       // Process files already in the directory
-      logger.debug("Started processing files at location: {}", dir);
+      //logger.debug("Started processing files at location: {}", dir);
       try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
 
          for (Path entry : stream) {
@@ -51,7 +51,7 @@ public class ImporterProcessor {
             }
          }
 
-         logger.debug("Finished processing {} files at location: {}", count, dir);
+         //logger.debug("Finished processing {} files at location: {}", count, dir);
       } catch (Exception e) {
          logger.error("Error processing files.", e);
       }
