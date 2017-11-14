@@ -1,0 +1,149 @@
+{
+  "metadata": {
+    "logFileName": "rxMsg_BSM.bin",
+    "recordType": "rxMsg",
+    "payloadType": "us.dot.its.jpo.ode.model.OdeBsmPayload",
+    "serialId": {
+      "streamId": "a78fa018-fc6b-49e5-bac0-23eb78d9eb6f",
+      "bundleSize": 1,
+      "bundleId": 5,
+      "recordId": 2,
+      "serialNumber": 0
+    },
+    "odeReceivedAt": "2017-11-09T13:37:02.158Z[UTC]",
+    "schemaVersion": 3,
+    "recordGeneratedAt": "2017-10-25T22:38:36.431Z[UTC]",
+    "recordGeneratedBy": "OBU",
+    "validSignature": false,
+    "sanitized": false
+  },
+  "payload": {
+    "dataType": "us.dot.its.jpo.ode.plugin.j2735.J2735Bsm",
+    "data": {
+      "coreData": {
+        "msgCnt": 45,
+        "id": "FDCC0000",
+        "secMark": 36500,
+        "position": {
+          "latitude": 40.4739029,
+          "longitude": -104.9692314,
+          "elevation": 1491.1
+        },
+        "accelSet": {
+          "accelYaw": 0
+        },
+        "accuracy": {
+          "semiMajor": 1.8,
+          "semiMinor": 2.3
+        },
+        "transmission": "NEUTRAL",
+        "speed": 0.04,
+        "heading": 239.6,
+        "brakes": {
+          "wheelBrakes": {
+            "leftFront": false,
+            "rightFront": false,
+            "unavailable": true,
+            "leftRear": false,
+            "rightRear": false
+          },
+          "traction": "unavailable",
+          "abs": "unavailable",
+          "scs": "unavailable",
+          "brakeBoost": "unavailable",
+          "auxBrakes": "unavailable"
+        },
+        "size": {
+          "width": 200,
+          "length": 570
+        }
+      },
+      "partII": [
+        {
+          "id": "VehicleSafetyExtensions",
+          "value": {
+            "pathHistory": {
+              "crumbData": [
+                {
+                  "elevationOffset": -2,
+                  "latOffset": -0.0001015,
+                  "lonOffset": -0.0001205,
+                  "timeOffset": 26.37
+                },
+                {
+                  "elevationOffset": -1.9,
+                  "latOffset": -0.0001313,
+                  "lonOffset": -0.0001538,
+                  "timeOffset": 28.07
+                },
+                {
+                  "elevationOffset": -1.6,
+                  "latOffset": -0.000191,
+                  "lonOffset": -0.0001572,
+                  "timeOffset": 29.86
+                },
+                {
+                  "elevationOffset": -0.5,
+                  "latOffset": -0.0002463,
+                  "lonOffset": -0.0000711,
+                  "timeOffset": 31.97
+                },
+                {
+                  "elevationOffset": 1.2,
+                  "latOffset": -0.0002988,
+                  "lonOffset": 0.0000262,
+                  "timeOffset": 33.86
+                },
+                {
+                  "elevationOffset": 2.2,
+                  "latOffset": -0.000367,
+                  "lonOffset": 0.0000378,
+                  "timeOffset": 35.27
+                },
+                {
+                  "elevationOffset": 2.6,
+                  "latOffset": -0.0004553,
+                  "lonOffset": -0.0000233,
+                  "timeOffset": 37.08
+                },
+                {
+                  "elevationOffset": 2.7,
+                  "latOffset": -0.0006426,
+                  "lonOffset": -0.0003134,
+                  "timeOffset": 40.17
+                },
+                {
+                  "elevationOffset": 2.6,
+                  "latOffset": -0.001171,
+                  "lonOffset": -0.0014196,
+                  "timeOffset": 47.86
+                }
+              ]
+            },
+            "pathPrediction": {
+              "confidence": 50,
+              "radiusOfCurve": 0
+            }
+          }
+        },
+        {
+          "id": "SupplementalVehicleExtensions",
+          "value": {
+            "classDetails": {
+              "fuelType": "unknownFuel",
+              "hpmsType": "none",
+              "keyType": 0,
+              "regional": [],
+              "role": "basicVehicle"
+            },
+            "vehicleData": {
+              "height": 1.9
+            },
+            "weatherProbe": {},
+            "regional": []
+          }
+        }
+      ]
+    }
+  }
+}

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.FileAsn1CodecPublisher;
+import us.dot.its.jpo.ode.eventlog.EventLogger;
 // Removed for ODE-559
 //import us.dot.its.jpo.ode.coder.FileDecoderPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
@@ -34,29 +35,29 @@ public class ImporterProcessor {
       this.fileType = fileType;
    }
 
-   public void processDirectory(Path dir, Path backupDir) {
+   public void processDirectory(Path dir, Path backupDir, Path failureDir) {
       int count = 0;
       // Process files already in the directory
-      logger.debug("Started processing files at location: {}", dir);
+      //logger.debug("Started processing files at location: {}", dir);
       try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
 
          for (Path entry : stream) {
             if (entry.toFile().isDirectory()) {
-               processDirectory(entry, backupDir);
+               processDirectory(entry, backupDir, failureDir);
             } else {
                logger.debug("Found a file to process: {}", entry.getFileName());
-               processAndBackupFile(entry, backupDir);
+               processAndBackupFile(entry, backupDir, failureDir);
                count++;
             }
          }
 
-         logger.debug("Finished processing {} files at location: {}", count, dir);
+         //logger.debug("Finished processing {} files at location: {}", count, dir);
       } catch (Exception e) {
          logger.error("Error processing files.", e);
       }
    }
 
-   public void processAndBackupFile(Path filePath, Path backupDir) {
+   public void processAndBackupFile(Path filePath, Path backupDir, Path failureDir) {
 
       /*
        * ODE-559 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -72,15 +73,26 @@ public class ImporterProcessor {
       // ODE-559 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
       // ODE-559
+      boolean success = true;
       try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
          BufferedInputStream bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
          codecPublisher.publishFile(filePath, bis, fileType);
       } catch (Exception e) {
-         logger.error("Unable to open or process file: " + filePath, e);
+         success = false;
+         logger.error("Failed to open or process file: " + filePath, e);
+         EventLogger.logger.error("Failed to open or process file: " + filePath, e);  
       }
       
       try {
-         OdeFileUtils.backupFile(filePath, backupDir);
+         if (success) {
+            OdeFileUtils.backupFile(filePath, backupDir);
+            logger.info("File moved to backup: {}", backupDir);
+            EventLogger.logger.info("File moved to backup: {}", backupDir);  
+         } else {
+            OdeFileUtils.moveFile(filePath, failureDir);
+            logger.info("File moved to failure directory: {}", failureDir);  
+            EventLogger.logger.info("File moved to failure directory: {}", failureDir);
+         }
       } catch (IOException e) {
          logger.error("Unable to backup file: " + filePath, e);
       }

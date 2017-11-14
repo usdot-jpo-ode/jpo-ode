@@ -42,11 +42,13 @@ public class FileUploadController {
       Path logPath = Paths.get(odeProperties.getUploadLocationRoot(),
           odeProperties.getUploadLocationObuLog());
       logger.debug("UPLOADER - BSM log file upload directory: {}", logPath);
+      Path failurePath = Paths.get(odeProperties.getUploadLocationRoot(), "failed");
+      logger.debug("UPLOADER - Failure directory: {}", failurePath);
       Path backupPath = Paths.get(odeProperties.getUploadLocationRoot(), "backup");
       logger.debug("UPLOADER - Backup directory: {}", backupPath);
 
       // Create the importers that watch folders for new/modified files
-      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, logPath, backupPath, ImporterFileType.OBU_LOG_FILE));
+      threadPool.submit(new ImporterDirectoryWatcher(odeProperties, logPath, backupPath, failurePath, ImporterFileType.OBU_LOG_FILE, odeProperties.getFileWatcherPeriod()));
 
       // Create unfiltered exporters
       threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeBsmJson()));

@@ -1,0 +1,113 @@
+{
+  "metadata": {
+    "recordGeneratedBy": "OBU",
+    "receivedMessageDetails": {
+      "locationData": {
+        "elevation": 1479.1,
+        "heading": "347.4000",
+        "latitude": 40.5402335,
+        "speed": 34.02,
+        "longitude": -104.9958775
+      },
+      "rxSource": ""
+    },
+    "schemaVersion": 3,
+    "validSignature": false,
+    "payloadType": "us.dot.its.jpo.ode.model.OdeTimPayload",
+    "serialId": {
+      "recordId": 2,
+      "serialNumber": 0,
+      "streamId": "f0e54e50-258e-44c2-a542-e1d9a045a791",
+      "bundleSize": 1,
+      "bundleId": 2
+    },
+    "sanitized": false,
+    "recordGeneratedAt": "2017-10-03T16:32:25.251Z[UTC]",
+    "recordType": "dnMsg",
+    "logFileName": "dnMsg.bin",
+    "odeReceivedAt": "2017-11-09T13:10:42.451Z[UTC]"
+  },
+  "payload": {
+    "data": {
+      "MessageFrame": {
+        "messageId": 31,
+        "value": {
+          "TravelerInformation": {
+            "timeStamp": 396992,
+            "packetID": "7040085F0000000000",
+            "dataFrames": {
+              "TravelerDataFrame": {
+                "regions": {
+                  "GeographicalPath": {
+                    "anchor": {
+                      "elevation": 14791,
+                      "lat": 405405260,
+                      "long": -1049959575
+                    },
+                    "laneWidth": 400,
+                    "directionality": {
+                      "forward": ""
+                    },
+                    "description": {
+                      "path": {
+                        "offset": {
+                          "xy": {
+                            "nodes": {
+                              "NodeXY": [
+                                {
+                                  "delta": {
+                                    "node-LatLon": {
+                                      "lon": -1049956858,
+                                      "lat": 405396071
+                                    }
+                                  }
+                                },
+                                {
+                                  "delta": {
+                                    "node-LatLon": {
+                                      "lon": -1049951508,
+                                      "lat": 405377816
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "direction": 1000000000000011
+                  }
+                },
+                "duratonTime": 2880,
+                "sspMsgRights1": 1,
+                "sspMsgRights2": 1,
+                "sspTimRights": 1,
+                "sspLocationRights": 1,
+                "frameType": {
+                  "advisory": ""
+                },
+                "msgId": {
+                  "furtherInfoID": "0214"
+                },
+                "startTime": 396992,
+                "priority": 7,
+                "content": {
+                  "advisory": {
+                    "SEQUENCE": {
+                      "item": {
+                        "itis": 532
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "msgCnt": 16
+          }
+        }
+      }
+    },
+    "dataType": "TravelerInformation"
+  }
+}

@@ -81,10 +81,13 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
          logger.debug("Publishing a driver alert.");
          OdeDriverAlertPayload driverAlertPayload = new OdeDriverAlertPayload(((DriverAlertFileParser) fileParser).getAlert());
          OdeDriverAlertMetadata driverAlertMetadata= new OdeDriverAlertMetadata(driverAlertPayload);
-         driverAlertMetadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
-         ReceivedMessageDetails driverAlertSpecificMetadata = TimDecoderHelper.buildReceivedMessageDetails((DriverAlertFileParser) fileParser);
 
-         driverAlertMetadata.setReceivedMessageDetails(driverAlertSpecificMetadata);
+         driverAlertMetadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
+
+         ReceivedMessageDetails receivedMsgDetails = 
+               TimDecoderHelper.buildReceivedMessageDetails((TimLogFileParser) fileParser);
+
+         driverAlertMetadata.setReceivedMessageDetails(receivedMsgDetails);
          OdeLogMetadataCreatorHelper.updateLogMetadata(driverAlertMetadata, fileParser);
 
          OdeDriverAlertData driverAlertData = new OdeDriverAlertData(driverAlertMetadata, driverAlertPayload);
@@ -100,7 +103,9 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
          OdeLogMetadataCreatorHelper.updateLogMetadata(metadata, fileParser);
 
          if (fileParser instanceof TimLogFileParser) {
-           ReceivedMessageDetails receivedMsgDetails = TimDecoderHelper.buildReceivedMessageDetails((TimLogFileParser) fileParser);
+            ReceivedMessageDetails receivedMsgDetails = 
+                  TimDecoderHelper.buildReceivedMessageDetails((TimLogFileParser) fileParser);
+
             metadata.setReceivedMessageDetails(receivedMsgDetails);
          }
 
