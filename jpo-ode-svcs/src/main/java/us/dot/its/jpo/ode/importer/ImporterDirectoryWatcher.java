@@ -9,6 +9,9 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,17 +31,25 @@ public class ImporterDirectoryWatcher implements Runnable {
    private ImporterProcessor importerProcessor;
 
    private Path inbox;
-
    private Path backup;
+   private Path failed;
 
-   public ImporterDirectoryWatcher(OdeProperties odeProperties, Path dir, Path backupDir, ImporterFileType fileType) {
+   private ScheduledExecutorService executor;
+
+   private Integer timePeriod;
+
+   public ImporterDirectoryWatcher(OdeProperties odeProperties, Path dir, Path backupDir, Path failureDir, ImporterFileType fileType, Integer timePeriod) {
       this.inbox = dir;
       this.backup = backupDir;
+      this.failed = failureDir;
       this.watching = true;
+      this.timePeriod = timePeriod;
 
       try {
          OdeFileUtils.createDirectoryRecursively(inbox);
          logger.debug("Created directory {}", inbox);
+         OdeFileUtils.createDirectoryRecursively(failed);
+         logger.debug("Created directory {}", failed);
          OdeFileUtils.createDirectoryRecursively(backup);
          logger.debug("Created directory {}", backup);
       } catch (IOException e) {
@@ -46,37 +57,38 @@ public class ImporterDirectoryWatcher implements Runnable {
       }
 
       this.importerProcessor = new ImporterProcessor(odeProperties, fileType);
+      
+      executor = Executors.newScheduledThreadPool(1);
    }
 
    @Override
    public void run() {
 
-      // Begin by processing all files already in the inbox
-      logger.info("Processing existing files in {}", inbox);
-      importerProcessor.processDirectory(inbox, backup);
-
-      // Create a generic watch service
-      WatchService watcher = null;
-      try {
-         watcher = inbox.getFileSystem().newWatchService();
-
-         WatchKey keyForTrackedDir = inbox.register(watcher, ENTRY_MODIFY);
-         if (keyForTrackedDir == null) {
-            throw new IOException("Watch key null");
-         }
-      } catch (IOException e) {
-         logger.error("Watch service failed to create: {}", e);
-         return;
-      }
-
-      logger.info("Watch service active on {}", inbox);
+      logger.info("Processing inbox directory {} every {} seconds.", inbox, timePeriod);
 
       // Watch directory for file events
-      while (isWatching()) {
-         pollDirectory(watcher);
+      executor.scheduleWithFixedDelay(() -> {
+         importerProcessor.processDirectory(inbox, backup, failed);
+      }, 0, timePeriod, TimeUnit.SECONDS);
+      
+      try {
+         // This line will only execute in the event that .scheduleWithFixedDelay() throws an error
+         executor.awaitTermination(timePeriod, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+         Thread.currentThread().interrupt();
+         logger.error("Directory watcher polling loop interrupted!", e);
       }
+
+      // ODE-646: the old method of watching the directory used file
+      // event notifications and was unreliable for large quantities of files
+      
+      // while (isWatching()) {
+      // //pollDirectory(watcher);
+      // pollDirectoryNew();
+      // }
    }
 
+   @Deprecated // TODO - replaced by periodic checking
    public void pollDirectory(WatchService watcher) {
       // wait for key to be signaled
       WatchKey wk;
@@ -99,7 +111,7 @@ public class ImporterDirectoryWatcher implements Runnable {
             Path filename = inbox.resolve(ev.context());
             logger.debug("File event on {}", filename);
 
-            importerProcessor.processAndBackupFile(filename, backup);
+            importerProcessor.processAndBackupFile(filename, backup, failed);
          } else if (OVERFLOW == kind) {
             continue;
          } else {

@@ -51,6 +51,8 @@ public class ImporterProcessorTest {
    Path injectableDir;
    @Injectable
    Path injectableBackupDir;
+   @Injectable
+   Path injectableFailureDir;
    
 
    @Test
@@ -67,7 +69,7 @@ public class ImporterProcessorTest {
          fail("Unexpected exception in expectations block: " + e);
       }
 
-      testImporterProcessor.processDirectory(injectableDir, injectableBackupDir);
+      testImporterProcessor.processDirectory(injectableDir, injectableBackupDir, injectableFailureDir);
    }
  
    @Test
@@ -91,7 +93,7 @@ public class ImporterProcessorTest {
          fail("Unexpected exception in expectations block: " + e);
       }
 
-      testImporterProcessor.processDirectory(injectableDir, injectableBackupDir);
+      testImporterProcessor.processDirectory(injectableDir, injectableBackupDir, injectableFailureDir);
    }
 
    @Test
@@ -107,7 +109,7 @@ public class ImporterProcessorTest {
       } catch (FileNotFoundException e) {
          fail("Unexpected exception in expectations block: " + e);
       }
-      testImporterProcessor.processAndBackupFile(mockFile, injectableBackupDir);
+      testImporterProcessor.processAndBackupFile(mockFile, injectableBackupDir, injectableFailureDir);
    }
 
    @Ignore // TODO - injectable odeProperties returns buffer size 0 causing IllegalArgumentException to be thrown
@@ -125,7 +127,7 @@ public class ImporterProcessorTest {
       } catch (Exception e) {
          fail("Unexpected exception in expectations block: " + e);
       }
-      testImporterProcessor.processAndBackupFile(Paths.get("testFile.txt"), injectableBackupDir);
+      testImporterProcessor.processAndBackupFile(Paths.get("testFile.txt"), injectableBackupDir, injectableFailureDir);
    }
 
 

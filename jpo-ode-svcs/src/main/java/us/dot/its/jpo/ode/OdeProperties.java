@@ -48,6 +48,7 @@ public class OdeProperties implements EnvironmentAware {
    // File import properties
    private String uploadLocationRoot = "uploads";
    private String uploadLocationObuLogLog = "bsmlog";
+   private Integer fileWatcherPeriod = 5; // time to wait between processing inbox directory for new files
 
    /*
     * USDOT Situation Data Clearinghouse (SDC)/ Situation Data Warehouse (SDW),
@@ -98,6 +99,10 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeTimRxJson= "topic.OdeTimRxJson";
    private String kafkaTopicOdeTimBroadcastPojo= "topic.OdeTimBroadcastPojo";
    private String kafkaTopicOdeTimBroadcastJson= "topic.OdeTimBroadcastJson";
+   private String kafkaTopicFilteredOdeTimJson = "topic.FilteredOdeTimJson";
+
+   // DriverAlerts
+   private String kafkaTopicDriverAlertJson = "topic.OdeDriverAlertJson";
 
    //VSD
    private String kafkaTopicVsdPojo = "topic.AsnVsdPojo";
@@ -685,4 +690,27 @@ public class OdeProperties implements EnvironmentAware {
       this.kafkaTopicOdeTimBroadcastJson = kafkaTopicOdeTimBroadcastJson;
    }
 
+   public String getKafkaTopicFilteredOdeTimJson() {
+      return kafkaTopicFilteredOdeTimJson;
+   }
+
+   public void setKafkaTopicFilteredOdeTimJson(String kafkaTopicFilteredOdeTimJson) {
+      this.kafkaTopicFilteredOdeTimJson = kafkaTopicFilteredOdeTimJson;
+   }
+
+   public String getKafkaTopicDriverAlertJson() {
+      return kafkaTopicDriverAlertJson;
+   }
+
+   public void setKafkaTopicDriverAlertJson(String kafkaTopicDriverAlertJson) {
+      this.kafkaTopicDriverAlertJson = kafkaTopicDriverAlertJson;
+   }
+
+   public Integer getFileWatcherPeriod() {
+      return fileWatcherPeriod;
+   }
+
+   public void setFileWatcherPeriod(Integer fileWatcherPeriod) {
+      this.fileWatcherPeriod = fileWatcherPeriod;
+   }
 }

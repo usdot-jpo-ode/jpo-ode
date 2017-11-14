@@ -3,10 +3,10 @@ package us.dot.its.jpo.ode.plugin.builders.timstorage;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 @JsonPropertyOrder({ "name", "id", "anchor", "laneWidth", "directionality", "closedPath", "direction", "description" })
-public class GeographicalPath extends OdeObject {
+public class GeographicalPath extends Asn1Object {
    private static final long serialVersionUID = 1L;
 
    @JsonProperty("name")

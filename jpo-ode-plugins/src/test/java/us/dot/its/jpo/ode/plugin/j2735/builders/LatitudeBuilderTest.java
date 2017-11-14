@@ -37,15 +37,6 @@ public class LatitudeBuilderTest {
    }
    
    @Test
-   public void testConversionNullEntry() throws JsonProcessingException, IOException {
-      JsonNode testInput = null;
-      BigDecimal expectedValue = null;
-
-      assertEquals(expectedValue, LatitudeBuilder.genericLatitude(testInput));
-   }
-   
-
-   @Test
    public void testConstructorIsPrivate()
          throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
       Constructor<LatitudeBuilder> constructor = LatitudeBuilder.class.getDeclaredConstructor();

@@ -1,8 +1,11 @@
 package us.dot.its.jpo.ode.plugin.builders.timstorage;
 
-public class Item
-{
-    private String itis;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
+
+public class Item extends Asn1Object {
+   private static final long serialVersionUID = 1L;
+   
+   private String itis;
 
     public String getItis ()
     {

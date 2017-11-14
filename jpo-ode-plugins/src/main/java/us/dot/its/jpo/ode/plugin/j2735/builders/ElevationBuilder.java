@@ -10,22 +10,32 @@ public class ElevationBuilder {
       throw new UnsupportedOperationException();
    }
 
+   public static long j2735Elevation(BigDecimal elevation) {
+      return elevation.scaleByPowerOfTen(1).intValue();
+   }
+
+   public static long j2735Elevation(JsonNode elevation) {
+      return j2735Elevation(elevation.decimalValue());
+   }
+
    public static BigDecimal genericElevation(JsonNode elevation) {
+      return genericElevation(elevation.asInt());
+   }
+   
+   public static BigDecimal genericElevation(long elevation) {
       BigDecimal returnValue = null;
 
-      if ((elevation.asLong() != -4096) && (elevation.asLong() < 61439) && (elevation.asLong() > -4095)) {
-         returnValue = BigDecimal.valueOf(elevation.asLong(), 1);
+      if ((elevation != -4096) && (elevation < 61439) && (elevation > -4095)) {
+         returnValue = BigDecimal.valueOf(elevation, 1);
       }
-      else if (elevation.asLong() >= 61439) {
+      else if (elevation >= 61439) {
          returnValue = BigDecimal.valueOf((long)61439, 1);
       }
-      else if ((elevation.asLong() <= -4095) && (elevation.asLong() != -4096)) {
+      else if ((elevation <= -4095) && (elevation != -4096)) {
          returnValue = BigDecimal.valueOf((long)-4095, 1);
       }
-     
-
-      
-      
       return returnValue;
    }
+   
+   
 }

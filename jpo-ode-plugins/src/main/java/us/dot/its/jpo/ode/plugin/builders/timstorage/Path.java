@@ -1,32 +1,27 @@
 package us.dot.its.jpo.ode.plugin.builders.timstorage;
 
-import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-public class Path extends OdeObject
-{
+public class Path extends Asn1Object {
    private static final long serialVersionUID = 1L;
 
    private String scale;
 
-    private Offset offset;
+   private Offset offset;
 
-    public String getScale ()
-    {
-        return scale;
-    }
+   public String getScale() {
+      return scale;
+   }
 
-    public void setScale (String scale)
-    {
-        this.scale = scale;
-    }
+   public void setScale(String scale) {
+      this.scale = scale;
+   }
 
-    public Offset getOffset ()
-    {
-        return offset;
-    }
+   public Offset getOffset() {
+      return offset;
+   }
 
-    public void setOffset (Offset offset)
-    {
-        this.offset = offset;
-    }
+   public void setOffset(Offset offset) {
+      this.offset = offset;
+   }
 }
