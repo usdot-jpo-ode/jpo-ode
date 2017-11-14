@@ -195,6 +195,8 @@ public class TimController {
       PDU pdu = new ScopedPDU();
       pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.1")));
       pdu.setType(PDU.GETBULK);
+      pdu.setMaxRepetitions(100);
+      pdu.setNonRepeaters(0);
       
       ResponseEvent response = null;
       try {
