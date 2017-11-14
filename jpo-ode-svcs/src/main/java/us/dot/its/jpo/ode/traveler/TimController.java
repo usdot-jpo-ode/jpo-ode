@@ -2,12 +2,7 @@ package us.dot.its.jpo.ode.traveler;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,26 +71,20 @@ public class TimController {
    private static final Logger logger = LoggerFactory.getLogger(TimController.class);
 
    private static final String ERRSTR = "error";
-   private static final int THREADPOOL_MULTIPLIER = 3; // multiplier of threads
-                                                       // needed
 
    private OdeProperties odeProperties;
    private MessageProducer<String, String> stringMsgProducer;
    private MessageProducer<String, OdeObject> timProducer;
-
-   private final ExecutorService threadPool;
 
    @Autowired
    public TimController(OdeProperties odeProperties) {
       super();
       this.odeProperties = odeProperties;
 
-      this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(
-         odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType());
-      this.timProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(),
-            odeProperties.getKafkaProducerType(), null, OdeTimSerializer.class.getName());
-
-      this.threadPool = Executors.newFixedThreadPool(odeProperties.getRsuSrmSlots() * THREADPOOL_MULTIPLIER);
+      this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
+            odeProperties.getKafkaProducerType());
+      this.timProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(),
+            null, OdeTimSerializer.class.getName());
    }
 
    /**
@@ -108,70 +97,6 @@ public class TimController {
    @ResponseBody
    @CrossOrigin
    @RequestMapping(value = "/tim/query", method = RequestMethod.POST)
-   public synchronized ResponseEntity<String> asyncQueryForTims(@RequestBody String jsonString) { // NOSONAR
-
-      if (null == jsonString || jsonString.isEmpty()) {
-         logger.error("Empty request.");
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, "Empty request."));
-      }
-
-      ConcurrentSkipListMap<Integer, Integer> resultTable = new ConcurrentSkipListMap<>();
-      RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
-
-      SnmpSession snmpSession = null;
-      try {
-         snmpSession = new SnmpSession(queryTarget);
-         snmpSession.startListen();
-      } catch (IOException e) {
-         logger.error("Error creating SNMP session.", e);
-         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-               .body(jsonKeyValue(ERRSTR, "Failed to create SNMP session."));
-      }
-
-      // Repeatedly query the RSU to establish set rows
-      List<Callable<Object>> queryThreadList = new ArrayList<>();
-
-      for (int i = 0; i < odeProperties.getRsuSrmSlots(); i++) {
-         ScopedPDU pdu = new ScopedPDU();
-         pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
-         pdu.setType(PDU.GET);
-         queryThreadList.add(Executors
-               .callable(new TimQueryThread(snmpSession.getSnmp(), pdu, snmpSession.getTarget(), resultTable, i)));
-      }
-
-      try {
-         threadPool.invokeAll(queryThreadList);
-      } catch (InterruptedException e) { // NOSONAR
-         logger.error("Error submitting query threads for execution.", e);
-         threadPool.shutdownNow();
-      }
-
-      try {
-         snmpSession.endSession();
-      } catch (IOException e) {
-         logger.error("Error closing SNMP session.", e);
-      }
-
-      if (resultTable.containsValue(TimQueryThread.TIMEOUT_FLAG)) {
-         logger.error("TIM query timed out.");
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-               .body(jsonKeyValue(ERRSTR, "Query timeout, increase retries."));
-      } else {
-         logger.info("TIM query successful: {}", resultTable.keySet());
-         return ResponseEntity.status(HttpStatus.OK).body("{\"indicies_set\":" + resultTable.keySet() + "}");
-      }
-   }
-   
-   /**
-    * Checks given RSU for all TIMs set
-    * 
-    * @param jsonString
-    *           Request body containing RSU info
-    * @return list of occupied TIM slots on RSU
-    */
-   @ResponseBody
-   @CrossOrigin
-   @RequestMapping(value = "/tim/bulkQuery", method = RequestMethod.POST)
    public synchronized ResponseEntity<String> bulkQuery(@RequestBody String jsonString) { // NOSONAR
 
       if (null == jsonString || jsonString.isEmpty()) {
@@ -179,7 +104,6 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, "Empty request."));
       }
 
-      ConcurrentSkipListMap<Integer, Integer> resultTable = new ConcurrentSkipListMap<>();
       RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
 
       SnmpSession snmpSession = null;
@@ -191,13 +115,14 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                .body(jsonKeyValue(ERRSTR, "Failed to create SNMP session."));
       }
-      
+
       PDU pdu = new ScopedPDU();
-      pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.1")));
-      pdu.setType(PDU.GETBULK);
-      pdu.setMaxRepetitions(100);
-      pdu.setNonRepeaters(0);
+      pdu.setType(PDU.GET);
       
+      for (int i = 0; i < odeProperties.getRsuSrmSlots(); i++) {
+         pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
+      }
+
       ResponseEvent response = null;
       try {
          response = snmpSession.getSnmp().send(pdu, snmpSession.getTarget());
@@ -207,40 +132,29 @@ public class TimController {
                .body(jsonKeyValue(ERRSTR, "Failed to create SNMP session."));
       }
 
-      // Repeatedly query the RSU to establish set rows
-//      List<Callable<Object>> queryThreadList = new ArrayList<>();
-//
-//      for (int i = 0; i < odeProperties.getRsuSrmSlots(); i++) {
-//         ScopedPDU pdu = new ScopedPDU();
-//         pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
-//         pdu.setType(PDU.GET);
-//         queryThreadList.add(Executors
-//               .callable(new TimQueryThread(snmpSession.getSnmp(), pdu, snmpSession.getTarget(), resultTable, i)));
-//      }
-//
-//      try {
-//         threadPool.invokeAll(queryThreadList);
-//      } catch (InterruptedException e) { // NOSONAR
-//         logger.error("Error submitting query threads for execution.", e);
-//         threadPool.shutdownNow();
-//      }
-
       try {
          snmpSession.endSession();
       } catch (IOException e) {
          logger.error("Error closing SNMP session.", e);
       }
-      
-      return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("Success", response.getResponse().toString()));
 
-//      if (resultTable.containsValue(TimQueryThread.TIMEOUT_FLAG)) {
-//         logger.error("TIM query timed out.");
-//         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//               .body(jsonKeyValue(ERRSTR, "Query timeout, increase retries."));
-//      } else {
-//         logger.info("TIM query successful: {}", resultTable.keySet());
-//         return ResponseEntity.status(HttpStatus.OK).body("{\"indicies_set\":" + resultTable.keySet() + "}");
-//      }
+      // Process response
+      if (response == null || response.getResponse() == null) {
+         logger.error("RSU query failed, timeout.");
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+               .body(jsonKeyValue(ERRSTR, "Timeout, no response from RSU."));
+      }
+
+      HashMap<String, Boolean> resultsMap = new HashMap<>();
+      for (Object vbo : response.getResponse().getVariableBindings().toArray()) {
+         VariableBinding vb = (VariableBinding) vbo;
+         if (vb.getVariable().toInt() == 1) {
+            resultsMap.put(vb.getOid().toString().substring(21), true);
+         }
+      }
+
+      logger.info("RSU query successful: {}", resultsMap.keySet());
+      return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("indicies_set", resultsMap.keySet().toString()));
    }
 
    @ResponseBody
@@ -330,7 +244,7 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
-      TravelerInputData travelerInputData = null; 
+      TravelerInputData travelerInputData = null;
       try {
          // Convert JSON to POJO
          travelerInputData = (TravelerInputData) JsonUtils.fromJson(jsonString, TravelerInputData.class);
@@ -357,11 +271,10 @@ public class TimController {
       ObjectNode encodableTid;
       try {
          encodableTid = TravelerMessageFromHumanToAsnConverter
-               .changeTravelerInformationToAsnValues(
-                  JsonUtils.toObjectNode(travelerInputData.toJson()));
-         
+               .changeTravelerInformationToAsnValues(JsonUtils.toObjectNode(travelerInputData.toJson()));
+
          logger.debug("Encodable TravelerInputData: {}", encodableTid);
-         
+
       } catch (Exception e) {
          String errMsg = "Error converting to encodable TIM.";
          logger.error(errMsg, e);
@@ -369,7 +282,7 @@ public class TimController {
       }
 
       SDW sdw = travelerInputData.getSdw();
-      DdsAdvisorySituationData asd = null; 
+      DdsAdvisorySituationData asd = null;
       if (null != sdw) {
          try {
             // take deliverystart and stop times from SNMP object, if present
@@ -377,17 +290,11 @@ public class TimController {
             SNMP snmp = travelerInputData.getSnmp();
             if (null != snmp) {
 
-               asd = new DdsAdvisorySituationData(
-                  snmp.getDeliverystart(),
-                  snmp.getDeliverystop(), null,
-                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()),
-                  sdw.getTtl(), sdw.getGroupID());
+               asd = new DdsAdvisorySituationData(snmp.getDeliverystart(), snmp.getDeliverystop(), null,
+                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
             } else {
-               asd = new DdsAdvisorySituationData(
-                  sdw.getDeliverystart(), 
-                  sdw.getDeliverystop(), null,
-                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()),
-                  sdw.getTtl(), sdw.getGroupID());
+               asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), null,
+                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
             }
          } catch (ParseException e) {
             String errMsg = "Error AdvisorySituationDatae: " + e.getMessage();
@@ -395,7 +302,7 @@ public class TimController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
          }
       }
-      
+
       // Encode TIM
       try {
          String xmlMsg = convertToXml(asd, encodableTid);
@@ -421,51 +328,53 @@ public class TimController {
       return "{\"" + key + "\":\"" + value + "\"}";
    }
 
-   private String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj) 
-            throws JsonUtilsException, XmlUtilsException, ParseException {
-      
+   private String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj)
+         throws JsonUtilsException, XmlUtilsException, ParseException {
+
       Tim inOrderTid = (Tim) JsonUtils.jacksonFromJson(encodableTidObj.toString(), Tim.class);
       logger.debug("In order tim: {}", inOrderTid);
       ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
-      
-      JsonNode timObj = inOrderTidObj.remove("tim");
-      ObjectNode requestObj = inOrderTidObj; // with 'tim' element removed, encodableTid becomes the 'request' element
 
-      //Create a MessageFrame
+      JsonNode timObj = inOrderTidObj.remove("tim");
+      ObjectNode requestObj = inOrderTidObj; // with 'tim' element removed,
+                                             // encodableTid becomes the
+                                             // 'request' element
+
+      // Create a MessageFrame
       ObjectNode mfBodyObj = JsonUtils.newNode();
       mfBodyObj.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
       mfBodyObj.set("value", (ObjectNode) JsonUtils.newNode().set("TravelerInformation", timObj));
-      
-      //Create valid payload from scratch
+
+      // Create valid payload from scratch
       OdeMsgPayload payload = null;
 
       ObjectNode dataBodyObj = JsonUtils.newNode();
       if (null != asd) {
          ObjectNode asdBodyObj = JsonUtils.toObjectNode(asd.toJson());
          ObjectNode asdmDetails = (ObjectNode) asdBodyObj.get("asdmDetails");
-         //Remove 'advisoryMessageBytes' and add 'advisoryMessage'
+         // Remove 'advisoryMessageBytes' and add 'advisoryMessage'
          asdmDetails.remove("advisoryMessageBytes");
          asdmDetails.set("advisoryMessage", JsonUtils.newNode().set("MessageFrame", mfBodyObj));
-         
+
          dataBodyObj.set("AdvisorySituationData", asdBodyObj);
-         
-         //Create valid payload from scratch
+
+         // Create valid payload from scratch
          payload = new OdeAsdPayload(asd);
       } else {
          dataBodyObj = (ObjectNode) JsonUtils.newNode().set("MessageFrame", mfBodyObj);
          payload = new OdeTimPayload();
          payload.setDataType("MessageFrame");
       }
-      
+
       ObjectNode payloadObj = JsonUtils.toObjectNode(payload.toJson());
       payloadObj.set(AppContext.DATA_STRING, dataBodyObj);
-      
-      //Create a valid metadata from scratch
+
+      // Create a valid metadata from scratch
       OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
       ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());
       metaObject.set("request", requestObj);
-      
-      //Create encoding instructions
+
+      // Create encoding instructions
       ArrayNode encodings = JsonUtils.newArrayNode();
       Asn1Encoding mfEnc = new Asn1Encoding("MessageFrame", "MessageFrame", EncodingRule.UPER);
       encodings.add(JsonUtils.newNode().set("encodings", JsonUtils.toObjectNode(mfEnc.toJson())));
@@ -475,111 +384,128 @@ public class TimController {
       }
       ObjectNode encodingWrap = (ObjectNode) JsonUtils.newNode().set("wrap", encodings);
       metaObject.set("encodings_palceholder", null);
-      
+
       ObjectNode message = JsonUtils.newNode();
       message.set(AppContext.METADATA_STRING, metaObject);
       message.set(AppContext.PAYLOAD_STRING, payloadObj);
-      
+
       ObjectNode root = JsonUtils.newNode();
       root.set("OdeAsn1Data", message);
-      
-      //Convert to XML
+
+      // Convert to XML
       logger.debug("pre-xml tim: {}", root);
       String outputXml = XmlUtils.toXmlS(root);
-      String encStr = XmlUtils.toXmlS(encodingWrap)
-            .replace("</wrap><wrap>", "")
-            .replace("<wrap>", "")
-            .replace("</wrap>", "")
-            .replace("<ObjectNode>", "<encodings>")
-            .replace("</ObjectNode>", "</encodings>");
+      String encStr = XmlUtils.toXmlS(encodingWrap).replace("</wrap><wrap>", "").replace("<wrap>", "")
+            .replace("</wrap>", "").replace("<ObjectNode>", "<encodings>").replace("</ObjectNode>", "</encodings>");
       outputXml = outputXml.replace("<encodings_palceholder/>", encStr);
-      
-      // Fix  tagnames by String replacements
-      String fixedXml = outputXml.replaceAll("tcontent>","content>");// workaround for the "content" reserved name
-      fixedXml = fixedXml.replaceAll("llong>","long>"); // workaround for "long" being a type in java
+
+      // Fix tagnames by String replacements
+      String fixedXml = outputXml.replaceAll("tcontent>", "content>");// workaround
+                                                                      // for the
+                                                                      // "content"
+                                                                      // reserved
+                                                                      // name
+      fixedXml = fixedXml.replaceAll("llong>", "long>"); // workaround for
+                                                         // "long" being a type
+                                                         // in java
       fixedXml = fixedXml.replaceAll("node_LL3>", "node-LL3>");
       fixedXml = fixedXml.replaceAll("node_LatLon>", "node-LatLon>");
       fixedXml = fixedXml.replaceAll("nodeLL>", "NodeLL>");
       fixedXml = fixedXml.replaceAll("nodeXY>", "NodeXY>");
       fixedXml = fixedXml.replaceAll("sequence>", "SEQUENCE>");
       fixedXml = fixedXml.replaceAll("geographicalPath>", "GeographicalPath>");
-      
+
       // workarounds for self-closing tags
       fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.EMPTY_FIELD_FLAG, "");
       fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_TRUE, "<true />");
       fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_FALSE, "<false />");
-      
-      
+
       // remove the surrounding <ObjectNode></ObjectNode>
       fixedXml = fixedXml.replace("<ObjectNode>", "");
       fixedXml = fixedXml.replace("</ObjectNode>", "");
-      
+
       logger.debug("Fixed XML: {}", fixedXml);
       return fixedXml;
    }
-   
-/// TODO - old publish method via GSON, results in unordered output
-//   private void publish(String request) throws JsonUtilsException, XmlUtilsException {
-//      
-//      Tim inOrderTim = (Tim) JsonUtils.jacksonFromJson(request, Tim.class);
-//      logger.debug("In order tim: {}", inOrderTim);
-//      JSONObject requestObj = JsonUtils.toJSONObject(inOrderTim.toJson());
-//      
-//      //Create valid payload from scratch
-//      OdeMsgPayload payload = new OdeMsgPayload();
-//      payload.setDataType("us.dot.its.jpo.ode.model.OdeHexByteArray");
-//      JSONObject payloadObj = JsonUtils.toJSONObject(payload.toJson());
-//
-//      //Create TravelerInformation
-//      JSONObject timObject = new JSONObject();
-//      //requestObj = new JSONObject(requestObj.toString().replace("\"tcontent\":","\"content\":"));
-//      timObject.put("TravelerInformation", requestObj.remove("tim")); //with "tim" removed, the remaining requestObject must go in as "request" element of metadata
-//      
-//      //Create a MessageFrame
-//      JSONObject mfObject = new JSONObject();
-//      mfObject.put("value", timObject);//new JSONObject().put("TravelerInformation", requestObj));
-//      mfObject.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
-//      
-//      JSONObject dataObj = new JSONObject();
-//      dataObj.put("MessageFrame", mfObject);
-//      
-//      payloadObj.put(AppContext.DATA_STRING, dataObj);
-//      
-//      //Create a valid metadata from scratch
-//      OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
-//      
-//      JSONObject metaObject = JsonUtils.toJSONObject(metadata.toJson());
-//      metaObject.put("request", requestObj);
-//      
-//      //Create an encoding element
-//      //Asn1Encoding enc = new Asn1Encoding("/payload/data/MessageFrame", "MessageFrame", EncodingRule.UPER);
-//      Asn1Encoding enc = new Asn1Encoding("root", "MessageFrame", EncodingRule.UPER);
-//      
-//      // TODO this nesting is to match encoder schema
-//      metaObject.put("encodings", new JSONObject().put("encodings", JsonUtils.toJSONObject(enc.toJson())));
-//      
-//      JSONObject message = new JSONObject();
-//      message.put(AppContext.METADATA_STRING, metaObject);
-//      message.put(AppContext.PAYLOAD_STRING, payloadObj);
-//      
-//      JSONObject root = new JSONObject();
-//      root.put("OdeAsn1Data", message);
-//      
-//      
-//      /// String replacements
-//      logger.debug("pre-xml tim: {}", root);
-//      String outputXml = XML.toString(root);
-//      String fixedXml = outputXml.replaceAll("tcontent>","content>");// workaround for the "content" reserved name
-//      fixedXml = fixedXml.replaceAll("llong>","long>"); // workaround for "long" being a type in java
-//      
-//      // workarounds for self-closing tags
-//      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.EMPTY_FIELD_FLAG, "");
-//      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_TRUE, "<true />");
-//      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_FALSE, "<false />");
-//      
-//      logger.debug("Fixed XML: {}", fixedXml);
-//      messageProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, fixedXml);
-//   }
 
+   /// TODO - old publish method via GSON, results in unordered output
+   // private void publish(String request) throws JsonUtilsException,
+   /// XmlUtilsException {
+   //
+   // Tim inOrderTim = (Tim) JsonUtils.jacksonFromJson(request, Tim.class);
+   // logger.debug("In order tim: {}", inOrderTim);
+   // JSONObject requestObj = JsonUtils.toJSONObject(inOrderTim.toJson());
+   //
+   // //Create valid payload from scratch
+   // OdeMsgPayload payload = new OdeMsgPayload();
+   // payload.setDataType("us.dot.its.jpo.ode.model.OdeHexByteArray");
+   // JSONObject payloadObj = JsonUtils.toJSONObject(payload.toJson());
+   //
+   // //Create TravelerInformation
+   // JSONObject timObject = new JSONObject();
+   // //requestObj = new
+   /// JSONObject(requestObj.toString().replace("\"tcontent\":","\"content\":"));
+   // timObject.put("TravelerInformation", requestObj.remove("tim")); //with
+   /// "tim" removed, the remaining requestObject must go in as "request"
+   /// element of metadata
+   //
+   // //Create a MessageFrame
+   // JSONObject mfObject = new JSONObject();
+   // mfObject.put("value", timObject);//new
+   /// JSONObject().put("TravelerInformation", requestObj));
+   // mfObject.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
+   //
+   // JSONObject dataObj = new JSONObject();
+   // dataObj.put("MessageFrame", mfObject);
+   //
+   // payloadObj.put(AppContext.DATA_STRING, dataObj);
+   //
+   // //Create a valid metadata from scratch
+   // OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
+   //
+   // JSONObject metaObject = JsonUtils.toJSONObject(metadata.toJson());
+   // metaObject.put("request", requestObj);
+   //
+   // //Create an encoding element
+   // //Asn1Encoding enc = new Asn1Encoding("/payload/data/MessageFrame",
+   /// "MessageFrame", EncodingRule.UPER);
+   // Asn1Encoding enc = new Asn1Encoding("root", "MessageFrame",
+   /// EncodingRule.UPER);
+   //
+   // // TODO this nesting is to match encoder schema
+   // metaObject.put("encodings", new JSONObject().put("encodings",
+   /// JsonUtils.toJSONObject(enc.toJson())));
+   //
+   // JSONObject message = new JSONObject();
+   // message.put(AppContext.METADATA_STRING, metaObject);
+   // message.put(AppContext.PAYLOAD_STRING, payloadObj);
+   //
+   // JSONObject root = new JSONObject();
+   // root.put("OdeAsn1Data", message);
+   //
+   //
+   // /// String replacements
+   // logger.debug("pre-xml tim: {}", root);
+   // String outputXml = XML.toString(root);
+   // String fixedXml = outputXml.replaceAll("tcontent>","content>");//
+   /// workaround for the "content" reserved name
+   // fixedXml = fixedXml.replaceAll("llong>","long>"); // workaround for "long"
+   /// being a type in java
+   //
+   // // workarounds for self-closing tags
+   // fixedXml =
+   /// fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.EMPTY_FIELD_FLAG,
+   /// "");
+   // fixedXml =
+   /// fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_TRUE,
+   /// "<true />");
+   // fixedXml =
+   /// fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_FALSE,
+   /// "<false />");
+   //
+   // logger.debug("Fixed XML: {}", fixedXml);
+   // messageProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null,
+   /// fixedXml);
+   // }
 
 }
