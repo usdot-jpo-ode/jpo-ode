@@ -50,7 +50,6 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.MessageFrame;
-import us.dot.its.jpo.ode.plugin.j2735.timstorage.TravelerInputData;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -260,7 +259,7 @@ public class TimController {
             travelerInputData.setOde(new ODE());
          }
 
-         logger.debug("J2735TravelerInputData: {}", jsonString);
+         logger.debug("OdeTravelerInputData: {}", jsonString);
 
       } catch (Exception e) {
          String errMsg = "Malformed or non-compliant JSON.";
@@ -283,7 +282,7 @@ public class TimController {
          logger.debug("Encodable TravelerInputData: {}", encodableTid);
 
       } catch (Exception e) {
-         String errMsg = "Error converting to encodable TIM.";
+         String errMsg = "Error converting to encodable TravelerInputData.";
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
@@ -315,7 +314,7 @@ public class TimController {
             
             
          } catch (Exception e) {
-            String errMsg = "Error AdvisorySituationDatae: " + e.getMessage();
+            String errMsg = "Error AdvisorySituationData: " + e.getMessage();
             logger.error(errMsg, e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
          }
@@ -349,7 +348,7 @@ public class TimController {
    public String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj)
          throws JsonUtilsException, XmlUtilsException {
 
-      TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(), TravelerInputData.class);
+      OdeTravelerInputData inOrderTid = (OdeTravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(), OdeTravelerInputData.class);
       logger.debug("In order tim: {}", inOrderTid);
       ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
 

@@ -14,7 +14,7 @@ public class OffsetB12BuilderTest {
 
    @Test
    public void testConversion() {
-      int expectedValue = 312;
+      Long expectedValue = 312L;
       BigDecimal testInput = BigDecimal.valueOf(3.124);
 
       assertEquals(expectedValue, OffsetB12Builder.offsetB12(testInput));
