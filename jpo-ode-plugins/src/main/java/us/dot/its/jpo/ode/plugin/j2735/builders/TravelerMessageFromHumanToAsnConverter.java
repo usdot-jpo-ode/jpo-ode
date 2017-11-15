@@ -815,7 +815,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 //      return null;
    }
 
-   private static ObjectNode replaceComputedLane(JsonNode jsonNode) {
+   public static ObjectNode replaceComputedLane(JsonNode jsonNode) {
       // referenceLaneId LaneID
       // offsetXaxis CHOICE {
       // small DrivenLineOffsetSm,
@@ -902,7 +902,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       return outputNodeList;
    }
 
-   private static JsonNode replaceNodeXY(JsonNode oldNode) {
+   public static JsonNode replaceNodeXY(JsonNode oldNode) {
 
       // TODO
       // nodexy contains:
@@ -1092,7 +1092,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       
    }
 
-   private static JsonNode replaceNode_XY1(JsonNode jsonNode) {
+   public static JsonNode replaceNode_XY1(JsonNode jsonNode) {
       // xy1 = Node-XY-20b = Offset-B10
 
       ObjectNode updatedNode = (ObjectNode) jsonNode;
@@ -1103,7 +1103,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       return updatedNode;
    }
 
-   private static JsonNode replaceNode_XY2(JsonNode jsonNode) {
+   public static JsonNode replaceNode_XY2(JsonNode jsonNode) {
       // xy2 = Node-XY-22b = Offset-B11
       ObjectNode updatedNode = (ObjectNode) jsonNode;
 
@@ -1113,7 +1113,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       return updatedNode;
    }
 
-   private static ObjectNode replaceNode_XY3(JsonNode jsonNode) {
+   public static ObjectNode replaceNode_XY3(JsonNode jsonNode) {
       // XY3 = Node-XY-24b = Offset-B12
       ObjectNode updatedNode = (ObjectNode) jsonNode;
 
@@ -1123,7 +1123,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       return updatedNode;
    }
 
-   private static ObjectNode replaceNode_XY4(JsonNode jsonNode) {
+   public static ObjectNode replaceNode_XY4(JsonNode jsonNode) {
       // XY4 = Node-XY-26b = Offset-B13
       ObjectNode updatedNode = (ObjectNode) jsonNode;
 
@@ -1133,7 +1133,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       return updatedNode;
    }
 
-   private static ObjectNode replaceNode_XY5(JsonNode jsonNode) {
+   public static ObjectNode replaceNode_XY5(JsonNode jsonNode) {
       // XY5 = Node-XY-28b = Offset-B14
       ObjectNode updatedNode = (ObjectNode) jsonNode;
 
@@ -1143,7 +1143,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       return updatedNode;
    }
 
-   private static ObjectNode replaceNode_XY6(JsonNode jsonNode) {
+   public static ObjectNode replaceNode_XY6(JsonNode jsonNode) {
       // XY6 = Node-XY-32b = Offset-B16
       ObjectNode updatedNode = (ObjectNode) jsonNode;
 
@@ -1153,7 +1153,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       return updatedNode;
    }
 
-   private static ObjectNode replaceNode_LatLon(JsonNode jsonNode) {
+   public static ObjectNode replaceNode_LatLon(JsonNode jsonNode) {
       // LatLon = Node-LLmD-64b
       // Node-LLmD-64b ::= SEQUENCE {
       // lon Longitude,

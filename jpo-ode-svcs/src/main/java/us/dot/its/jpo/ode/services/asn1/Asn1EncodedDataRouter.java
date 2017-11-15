@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.services.asn1;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.HashMap;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -131,13 +132,13 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
              .getJSONObject(AppContext.DATA_STRING);
        
        if (null != travelerInfo.getSdw()) {
-         JSONObject mfTimObj = dataObj.getJSONObject("MessageFrame");
-         if (null != mfTimObj) {
-            String mfTimBytes = mfTimObj.getString("bytes");
+         JSONObject asdObj = dataObj.getJSONObject("AdvisorySituationData");
+         if (null != asdObj) {
+            String asdBytes = asdObj.getString("bytes");
 
             // Deposit to DDS
             try {
-               depositToDDS(travelerInfo, mfTimBytes);
+               depositToDDS(travelerInfo, asdBytes);
                logger.info("DDS deposit successful.");
             } catch (Exception e) {
                logger.error("Error on DDS deposit.", e);

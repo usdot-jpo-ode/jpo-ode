@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.traveler;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -32,11 +31,9 @@ import us.dot.its.jpo.ode.http.InternalServerErrorException;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.SNMP;
-import us.dot.its.jpo.ode.plugin.builders.timstorage.TravelerInformation;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.plugin.j2735.J2735BsmCoreData;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.TravelerInformation;
 import us.dot.its.jpo.ode.services.asn1.Asn1EncodedDataRouter;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
