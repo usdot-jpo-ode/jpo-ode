@@ -304,10 +304,10 @@ public class TimController {
             SNMP snmp = travelerInputData.getSnmp();
             if (null != snmp) {
 
-               asd = new DdsAdvisorySituationData(snmp.getDeliverystart(), snmp.getDeliverystop(), null,
+               asd = new DdsAdvisorySituationData(snmp.getDeliverystart(), snmp.getDeliverystop(), ieeeDataTag,
                      GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
             } else {
-               asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), null,
+               asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), ieeeDataTag,
                      GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
             }
             
