@@ -21,7 +21,8 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.model.OdeObject;
-import us.dot.its.jpo.ode.model.TravelerInputData;
+import us.dot.its.jpo.ode.plugin.builders.timstorage.TravelerInputData;
+import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -43,8 +44,6 @@ public class TimControllerDepositTest {
    JsonUtils capturingJsonUtils;
    @Capturing
    TravelerMessageFromHumanToAsnConverter capturingTravelerMessageFromHumanToAsnConverter;
-   @Capturing
-   TimControllerHelper capturingTimControllerHelper;
 
    @Mocked
    MessageProducer<String, String> mockStringMessageProducer;
@@ -134,7 +133,7 @@ public class TimControllerDepositTest {
 
       ResponseEntity<String> response = testTimController.postTim("test123");
       assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-      assertEquals("{\"error\":\"Error converting to encodable TIM.\"}", response.getBody());
+      assertEquals("{\"error\":\"Malformed or non-compliant JSON.\"}", response.getBody());
    }
 
    @Test
@@ -155,7 +154,7 @@ public class TimControllerDepositTest {
             TravelerMessageFromHumanToAsnConverter.changeTravelerInformationToAsnValues((JsonNode) any);
             result = mockObjectNode;
 
-            TimControllerHelper.convertToXml((TravelerInputData) any, (ObjectNode) any);
+            testTimController.convertToXml((DdsAdvisorySituationData) any, (ObjectNode) any);
             result = new XmlUtils.XmlUtilsException("testException123");
          }
       };
@@ -183,7 +182,7 @@ public class TimControllerDepositTest {
             TravelerMessageFromHumanToAsnConverter.changeTravelerInformationToAsnValues((JsonNode) any);
             result = mockObjectNode;
 
-            TimControllerHelper.convertToXml((TravelerInputData) any, (ObjectNode) any);
+            testTimController.convertToXml((DdsAdvisorySituationData) any, (ObjectNode) any);
             result = "it worked";
          }
       };

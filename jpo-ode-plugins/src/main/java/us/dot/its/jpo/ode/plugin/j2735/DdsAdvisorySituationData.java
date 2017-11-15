@@ -15,18 +15,18 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 public class DdsAdvisorySituationData extends Asn1Object {
    private static final long serialVersionUID = 2755274323293805425L;
 
-   int dialogID = 0x9C;    // SemiDialogID -- 0x9C Advisory Situation Data Deposit
-   int seqID = 0x05;       // SemiSequenceID -- 0x05 Data
-   String groupID;         // GroupID -- unique ID used to identify an organization
-   String requestID;       // DSRC.TemporaryID -- random 4 byte ID generated for data
+   private int dialogID = 0x9C;    // SemiDialogID -- 0x9C Advisory Situation Data Deposit
+   private int seqID = 0x05;       // SemiSequenceID -- 0x05 Data
+   private String groupID;         // GroupID -- unique ID used to identify an organization
+   private String requestID;       // DSRC.TemporaryID -- random 4 byte ID generated for data
                            // transfer
-   String recordID;        // DSRC.TemporaryID -- used by the provider to overwrite
+   private String recordID;        // DSRC.TemporaryID -- used by the provider to overwrite
                            // existing record(s)
-   int timeToLive;         // TimeToLive -- indicates how long the SDW should persist
+   private int timeToLive;         // TimeToLive -- indicates how long the SDW should persist
                             // the record(s)
-   DdsGeoRegion serviceRegion; // GeoRegion, -- NW and SE corners of the region
+   private DdsGeoRegion serviceRegion; // GeoRegion, -- NW and SE corners of the region
                                // applicable
-   DdsAdvisoryDetails asdmDetails;
+   private DdsAdvisoryDetails asdmDetails;
 
    public DdsAdvisorySituationData() {
       super();

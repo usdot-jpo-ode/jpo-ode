@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.traveler;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -15,6 +16,8 @@ import org.snmp4j.event.ResponseEvent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
@@ -26,12 +29,14 @@ import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.http.InternalServerErrorException;
-import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
-import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.SNMP;
+import us.dot.its.jpo.ode.plugin.builders.timstorage.TravelerInformation;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugin.j2735.J2735BsmCoreData;
+import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.services.asn1.Asn1EncodedDataRouter;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
@@ -51,8 +56,9 @@ public class TimControllerTest {
    OdeTravelerInputData mockTravelerInputData;
    @Mocked
    TravelerInformation mockTravelerInfo;
-   @Mocked
-   OssTravelerMessageBuilder mockBuilder;
+//TODO open-ode   
+//   @Mocked
+//   OssTravelerMessageBuilder mockBuilder;
    @Mocked
    RSU mockRsu;
    @Mocked
@@ -63,8 +69,6 @@ public class TimControllerTest {
    PDU mockPdu;
    @Mocked
    ScopedPDU mockScopedPdu;
-   @Mocked
-   DdsAdvisorySituationData mockAsdMsg;
    
    @Capturing
    MessageProducer<?,?> capturingMessageProducer;
@@ -96,7 +100,8 @@ public class TimControllerTest {
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
-               mockTravelerInputData.toString();
+             //TODO open-ode   
+//               mockTravelerIData.toString();
                result = "something";
                minTimes = 0;
             }
@@ -135,8 +140,9 @@ public class TimControllerTest {
                mockTravelerInputData.toJson(true);
                result = "mockTim";
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
-               result = new Exception(new IOException("ExceptionInception"));
+             //TODO open-ode   
+//               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+//               result = new Exception(new IOException("ExceptionInception"));
             }
          };
       } catch (Exception e) {
@@ -173,11 +179,12 @@ public class TimControllerTest {
                mockTravelerInputData.toJson(true);
                result = anyString;
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
-               result = mockTravelerInfo;
-
-               mockBuilder.encodeTravelerInformationToHex();
-               result = new Exception("Encoding error.");
+             //TODO open-ode   
+//               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = new Exception("Encoding error.");
             }
          };
       } catch (Exception e) {
@@ -214,11 +221,12 @@ public class TimControllerTest {
                mockTravelerInputData.toJson(true);
                result = anyString;
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
-               result = mockTravelerInfo;
-
-               mockBuilder.encodeTravelerInformationToHex();
-               result = anyString;
+             //TODO open-ode   
+//               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = anyString;
 
                mockTravelerInputData.getRsus();
                result = new RSU[] { mockRsu };
@@ -268,11 +276,12 @@ public class TimControllerTest {
                mockTravelerInputData.toJson(true);
                result = "mockTim";
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
-               result = mockTravelerInfo;
-
-               mockBuilder.encodeTravelerInformationToHex();
-               result = anyString;
+             //TODO open-ode   
+//               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = anyString;
 
                mockTravelerInputData.getRsus();
                result = new RSU[] { mockRsu };
@@ -316,11 +325,12 @@ public class TimControllerTest {
                mockTravelerInputData.toJson(true);
                result = "mockTim";
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
-               result = mockTravelerInfo;
-
-               mockBuilder.encodeTravelerInformationToHex();
-               result = anyString;
+             //TODO open-ode   
+//               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = anyString;
 
                mockTravelerInputData.getRsus();
                result = new RSU[] { mockRsu };
@@ -374,11 +384,12 @@ public class TimControllerTest {
                mockTravelerInputData.toJson(true);
                result = "mockTim";
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
-               result = mockTravelerInfo;
-
-               mockBuilder.encodeTravelerInformationToHex();
-               result = anyString;
+             //TODO open-ode   
+//               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = anyString;
 
                mockTravelerInputData.getRsus();
                result = new RSU[] { mockRsu };
@@ -433,11 +444,12 @@ public class TimControllerTest {
                mockTravelerInputData.toJson(true);
                result = "mockTim";
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
-               result = mockTravelerInfo;
-
-               mockBuilder.encodeTravelerInformationToHex();
-               result = anyString;
+             //TODO open-ode   
+//               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = anyString;
 
                mockTravelerInputData.getRsus();
                result = new RSU[] { mockRsu };
@@ -510,4 +522,19 @@ public class TimControllerTest {
       assertEquals(HttpStatus.BAD_REQUEST, testTimController.deleteTim("testJsonString", 42).getStatusCode());
    }
 
+   @Ignore
+   @Test
+   public void testConvertToXml() throws Exception {
+      DdsAdvisorySituationData testTravelerinputData = new DdsAdvisorySituationData();
+      testTravelerinputData.setDialogID(156);
+      testTravelerinputData.setGroupID("00000000");
+      testTravelerinputData.setRecordID("00000000");
+      testTravelerinputData.setRequestID("00000000");
+      testTravelerinputData.setSeqID(5);
+      
+      ObjectNode encodableTid = TravelerMessageFromHumanToAsnConverter
+            .changeTravelerInformationToAsnValues(JsonUtils.toObjectNode(testTravelerinputData.toJson()));
+
+      assertEquals("", testTimController.convertToXml(testTravelerinputData, encodableTid));
+   }
 }

@@ -1,7 +1,5 @@
 package us.dot.its.jpo.ode.model;
 
-import us.dot.its.jpo.ode.plugin.j2735.DsrcPosition3D;
-
 public class OdeLogMsgMetadataLocation extends OdeObject {
 
    private static final long serialVersionUID = 3174683494132372801L;
@@ -12,15 +10,11 @@ public class OdeLogMsgMetadataLocation extends OdeObject {
    String speed;
    String heading;
 
-   public OdeLogMsgMetadataLocation() {
+   public OdeLogMsgMetadataLocation(String latitude, String longitude, String elevation, String speed, String heading) {
       super();
-   }
-
-   public OdeLogMsgMetadataLocation(DsrcPosition3D position, String speed, String heading) {
-      super();
-      this.latitude = position.getLatitude().toString();
-      this.longitude = position.getLongitude().toString();
-      this.elevation = position.getElevation().toString();
+      this.latitude = latitude;
+      this.longitude = longitude;
+      this.elevation = elevation;
       this.speed = speed;
       this.heading = heading;
    }

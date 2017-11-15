@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
+package us.dot.its.jpo.ode.plugin.builders.timstorage;
 
 public class TravelerInputData extends TravelerInputDataBase {
 

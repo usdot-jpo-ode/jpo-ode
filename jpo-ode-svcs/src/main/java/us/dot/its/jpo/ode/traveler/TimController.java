@@ -41,6 +41,8 @@ import us.dot.its.jpo.ode.plugin.ODE;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
+import us.dot.its.jpo.ode.plugin.builders.timstorage.MessageFrame;
+import us.dot.its.jpo.ode.plugin.builders.timstorage.TravelerInputData;
 import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2Content;
 import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2Data;
 import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2DataTag;
@@ -49,8 +51,6 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
-import us.dot.its.jpo.ode.plugin.j2735.builders.timstorage.MessageFrame;
-import us.dot.its.jpo.ode.plugin.j2735.builders.timstorage.TravelerInputData;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -306,11 +306,10 @@ public class TimController {
             // else take from SDW object
             SNMP snmp = travelerInputData.getSnmp();
             if (null != snmp) {
-
-               asd = new DdsAdvisorySituationData(snmp.getDeliverystart(), snmp.getDeliverystop(), null,
+               asd = new DdsAdvisorySituationData(snmp.getDeliverystart(), snmp.getDeliverystop(), ieeeDataTag,
                      GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
             } else {
-               asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), null,
+               asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), ieeeDataTag,
                      GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
             }
             
@@ -347,7 +346,7 @@ public class TimController {
       return "{\"" + key + "\":\"" + value + "\"}";
    }
 
-   private String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj)
+   public String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj)
          throws JsonUtilsException, XmlUtilsException {
 
       TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(), TravelerInputData.class);
@@ -372,7 +371,6 @@ public class TimController {
 
          payload = new OdeAsdPayload(asd);
       } else {
-         //Build a MessageFrame
          ObjectNode mfBodyObj = (ObjectNode) JsonUtils.newNode();
          mfBodyObj.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
          mfBodyObj.set("value", (ObjectNode) JsonUtils.newNode().set("TravelerInformation", timObj));

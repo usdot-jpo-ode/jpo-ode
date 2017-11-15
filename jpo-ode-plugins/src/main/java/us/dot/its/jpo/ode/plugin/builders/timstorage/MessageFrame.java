@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.plugin.j2735.builders.timstorage;
+package us.dot.its.jpo.ode.plugin.builders.timstorage;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
