@@ -403,7 +403,14 @@ public class TimController {
       outputXml = outputXml.replace("<encodings_palceholder/>", encStr);
       
       // Fix  tagnames by String replacements
-      String fixedXml = outputXml.replaceAll("tcontent>","content>");// workaround for the "content" reserved name
+      String fixedXml = outputXml.replaceAll("tcontent>", "content>");// workaround
+                                                                      // for the
+                                                                      // "content"
+                                                                      // reserved
+                                                                      // name
+      fixedXml = fixedXml.replaceAll("llong>", "long>"); // workaround for
+                                                         // "long" being a type
+                                                         // in java
       fixedXml = fixedXml.replaceAll("node_LL3>", "node-LL3>");
       fixedXml = fixedXml.replaceAll("node_LatLon>", "node-LatLon>");
       fixedXml = fixedXml.replaceAll("nodeLL>", "NodeLL>");
