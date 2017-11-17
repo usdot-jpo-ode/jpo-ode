@@ -86,7 +86,7 @@ services:
     image: jpoode_ppm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      PPM_CONFIG_FILE: config.properties
+      PPM_CONFIG_FILE: ppmBsm.properties
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
 
