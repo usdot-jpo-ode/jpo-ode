@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.traveler;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.HashMap;
 
 import org.slf4j.Logger;
@@ -51,7 +50,6 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.MessageFrame;
-import us.dot.its.jpo.ode.plugin.j2735.timstorage.TravelerInputData;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -76,6 +74,8 @@ public class TimController {
    private static final Logger logger = LoggerFactory.getLogger(TimController.class);
 
    private static final String ERRSTR = "error";
+   private static final String SUCCESS = "success";
+
 
    private OdeProperties odeProperties;
    private MessageProducer<String, String> stringMsgProducer;
@@ -86,10 +86,12 @@ public class TimController {
       super();
       this.odeProperties = odeProperties;
 
-      this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
-            odeProperties.getKafkaProducerType());
-      this.timProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(),
-            null, OdeTimSerializer.class.getName());
+      this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(
+         odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(),
+         odeProperties.getKafkaTopicsDisabledSet());
+      this.timProducer = new MessageProducer<>(
+            odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(),
+            null, OdeTimSerializer.class.getName(), odeProperties.getKafkaTopicsDisabledSet());
    }
 
    /**
@@ -257,7 +259,7 @@ public class TimController {
             travelerInputData.setOde(new ODE());
          }
 
-         logger.debug("J2735TravelerInputData: {}", jsonString);
+         logger.debug("OdeTravelerInputData: {}", jsonString);
 
       } catch (Exception e) {
          String errMsg = "Malformed or non-compliant JSON.";
@@ -270,7 +272,7 @@ public class TimController {
       OdeMsgMetadata timMetadata = new OdeMsgMetadata(timDataPayload);
       OdeTimData odeTimData = new OdeTimData(timMetadata, timDataPayload);
       timProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastPojo(), null, odeTimData);
-
+      
       // Craft ASN-encodable TIM
       ObjectNode encodableTid;
       try {
@@ -280,7 +282,7 @@ public class TimController {
          logger.debug("Encodable TravelerInputData: {}", encodableTid);
 
       } catch (Exception e) {
-         String errMsg = "Error converting to encodable TIM.";
+         String errMsg = "Error converting to encodable TravelerInputData.";
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
@@ -303,7 +305,6 @@ public class TimController {
             // else take from SDW object
             SNMP snmp = travelerInputData.getSnmp();
             if (null != snmp) {
-
                asd = new DdsAdvisorySituationData(snmp.getDeliverystart(), snmp.getDeliverystop(), ieeeDataTag,
                      GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
             } else {
@@ -312,8 +313,8 @@ public class TimController {
             }
             
             
-         } catch (ParseException e) {
-            String errMsg = "Error AdvisorySituationDatae: " + e.getMessage();
+         } catch (Exception e) {
+            String errMsg = "Error AdvisorySituationData: " + e.getMessage();
             logger.error(errMsg, e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
          }
@@ -329,7 +330,7 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
-      return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("Success", "true"));
+      return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue(SUCCESS, "true"));
    }
 
    /**
@@ -344,10 +345,10 @@ public class TimController {
       return "{\"" + key + "\":\"" + value + "\"}";
    }
 
-   private String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj)
-         throws JsonUtilsException, XmlUtilsException, ParseException {
+   public String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj)
+         throws JsonUtilsException, XmlUtilsException {
 
-      TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(), TravelerInputData.class);
+      OdeTravelerInputData inOrderTid = (OdeTravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(), OdeTravelerInputData.class);
       logger.debug("In order tim: {}", inOrderTid);
       ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
 
@@ -369,7 +370,6 @@ public class TimController {
 
          payload = new OdeAsdPayload(asd);
       } else {
-         //Build a MessageFrame
          ObjectNode mfBodyObj = (ObjectNode) JsonUtils.newNode();
          mfBodyObj.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
          mfBodyObj.set("value", (ObjectNode) JsonUtils.newNode().set("TravelerInformation", timObj));

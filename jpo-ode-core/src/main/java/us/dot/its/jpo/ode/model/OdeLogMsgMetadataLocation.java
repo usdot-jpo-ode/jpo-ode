@@ -10,10 +10,6 @@ public class OdeLogMsgMetadataLocation extends OdeObject {
    String speed;
    String heading;
 
-   public OdeLogMsgMetadataLocation() {
-      super();
-   }
-
    public OdeLogMsgMetadataLocation(String latitude, String longitude, String elevation, String speed, String heading) {
       super();
       this.latitude = latitude;

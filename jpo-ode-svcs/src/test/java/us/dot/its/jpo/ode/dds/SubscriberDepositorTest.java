@@ -1,15 +1,12 @@
 package us.dot.its.jpo.ode.dds;
 
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.tomcat.util.buf.HexUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import mockit.Capturing;
@@ -18,10 +15,10 @@ import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.j2735.dsrc.TemporaryID;
 import us.dot.its.jpo.ode.udp.UdpUtil;
 import us.dot.its.jpo.ode.udp.UdpUtil.UdpUtilException;
-import us.dot.its.jpo.ode.udp.trust.TrustManager;
+//TODO open-ode
+//import us.dot.its.jpo.ode.udp.trust.TrustManager;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 public class SubscriberDepositorTest {
@@ -74,25 +71,26 @@ public class SubscriberDepositorTest {
       assertNull(testAbstractSubscriberDepositor.call());
    }
 
-   @Ignore
-   @Test
-   public void testCall(@Capturing TrustManager capturingTrustManager,
-         @Mocked ConsumerRecord<String, byte[]> mockConsumerRecord, @Capturing HexUtils mockHexUtils,
-         @Capturing TemporaryID capturingTemporaryID, @Mocked TemporaryID mockTemporaryID) {
-      new Expectations() {
-         {
-            new TemporaryID((byte[]) any);
-            result = mockTemporaryID;
-
-            mockTemporaryID.byteArrayValue();
-            result = new byte[] { 0 };
-
-            mockConsumerRecord.value();
-            result = new byte[] { 0 };
-         }
-      };
-      testAbstractSubscriberDepositor.setRecord(mockConsumerRecord);
-      assertTrue(testAbstractSubscriberDepositor.call() instanceof byte[]);
-   }
+   //TODO open-ode
+//   @Ignore
+//   @Test
+//   public void testCall(@Capturing TrustManager capturingTrustManager,
+//         @Mocked ConsumerRecord<String, byte[]> mockConsumerRecord, @Capturing HexUtils mockHexUtils,
+//         @Capturing TemporaryID capturingTemporaryID, @Mocked TemporaryID mockTemporaryID) {
+//      new Expectations() {
+//         {
+//            new TemporaryID((byte[]) any);
+//            result = mockTemporaryID;
+//
+//            mockTemporaryID.byteArrayValue();
+//            result = new byte[] { 0 };
+//
+//            mockConsumerRecord.value();
+//            result = new byte[] { 0 };
+//         }
+//      };
+//      testAbstractSubscriberDepositor.setRecord(mockConsumerRecord);
+//      assertTrue(testAbstractSubscriberDepositor.call() instanceof byte[]);
+//   }
 
 }

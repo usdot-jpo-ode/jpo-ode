@@ -1,179 +1,129 @@
 package us.dot.its.jpo.ode.udp.bsm;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.SocketException;
 
-import org.apache.commons.codec.binary.Hex;
-import org.junit.Before;
-import org.junit.Ignore;
+import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.Test;
 
 import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
+import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
-import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
-import us.dot.its.jpo.ode.coder.OdeDataPublisher;
+import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher;
-import us.dot.its.jpo.ode.model.OdeBsmData;
-import us.dot.its.jpo.ode.model.SerialId;
-import us.dot.its.jpo.ode.plugin.PluginFactory;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
-import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 
 public class BsmReceiverTest {
+
+   @Tested
+   BsmReceiver testBsmReceiver;
 
    @Injectable
    OdeProperties mockOdeProperties;
 
+   @Capturing
+   LogFileToAsn1CodecPublisher capturingLogFileToAsn1CodecPublisher;
+   @Capturing
+   StringPublisher capturingStringPublisher;
+   @Capturing
+   DatagramSocket capturingDatagramSocket;
+
+   @Capturing
+   DatagramPacket capturingDatagramPacket;
    @Mocked
-   DatagramSocket mockedDatagramSocket;
-   
-   @Mocked OdeBsmData mockOdeBsmData;
-   
-   @Mocked J2735MessageFrame mockJ2735MessageFrame;
-   @Mocked J2735Bsm mockJ2735Bsm;
+   DatagramPacket mockDatagramPacket;
 
-   @Capturing
-   OssJ2735Coder capturingOssJ2735Coder;
-   @Capturing
-   Oss1609dot2Coder capturingOss1609dot2Coder;
-   @Capturing
-   BsmDecoderHelper capturingBinaryDecoderHelper;
-   @Capturing
-   OdeDataPublisher capturingMessagePublisher;
-   @Capturing DatagramSocket capturingDatagramSocket;
-   @Mocked LogFileToAsn1CodecPublisher codecPublisher;
-   
-   @Capturing OdeBsmDataCreatorHelper capturingOdeBsmDataCreatorHelper;
-
-   @Capturing
-   PluginFactory capturingPluginFactory;
-
-   private BsmReceiver testBsmReceiver;
-
-   @Before
-   public void createTestObject() throws SocketException {
-      new Expectations(LogFileToAsn1CodecPublisher.class) {
+   @Test(timeout = 4000)
+   public void testEmptyPacket() throws Exception {
+      new Expectations() {
          {
-            mockOdeProperties.getKafkaBrokers(); result = "kafkaBrokers";
+            capturingDatagramSocket.receive((DatagramPacket) any);
+            result = null;
+
+            capturingLogFileToAsn1CodecPublisher.publish((byte[]) any);
+            times = 0;
          }
       };
-      testBsmReceiver = new BsmReceiver(mockOdeProperties);
       testBsmReceiver.setStopped(true);
-   }
-
-   @Ignore
-   @Test
-   public void testRunMessageFrame(@Mocked DatagramPacket mockedDatagramPacket, @Mocked J2735Bsm mockedJ2735Bsm) {
-      try {
-         new Expectations() {
-            {
-               new DatagramPacket((byte[]) any, anyInt);
-               result = mockedDatagramPacket;
-               
-               capturingDatagramSocket.receive((DatagramPacket) any);
-               result = null;
-
-               String sampleBsmPacketStr = "030000ac000c001700000000000000200026ad01f13c00b1001480ad5f7bf1400014ff277c5e951cc867008d1d7ffffffff0017080fdfa1fa1007fff8000000000020214c1c0ffc7bffc2f963d160ffab401cef8261ba0ffedc0142fca96c61002dbff6efaeb3d61001ebff4afb8d6860ffe3bffc2fc4ec8e0ff7fc00e0fb50bce0ffe2bffe4fe347e20ffc5c0048fa5887e0ffb5c00dcfbdc87a0ffdb3feccfbe11ae0ffe03fe9cfde5e520ffc23ff90fd078060ffff3ff38fdea88a0ffe83ff84fb8f5a6fffe00000000";
-               byte[] sampleBsmPacketByte = Hex.decodeHex(sampleBsmPacketStr.toCharArray());
-
-               mockedDatagramPacket.getLength();
-               result = sampleBsmPacketByte.length;
-
-               mockedDatagramPacket.getData();
-               result = sampleBsmPacketByte;
-
-               mockedDatagramPacket.getLength();
-               result = sampleBsmPacketByte.length;
-               
-               capturingOssJ2735Coder.decodeUPERMessageFrameBytes((byte[]) any);
-               result = mockJ2735MessageFrame;
-               
-               mockJ2735MessageFrame.getValue();
-               result = mockJ2735Bsm;
-               
-               capturingOdeBsmDataCreatorHelper.createOdeBsmData((J2735Bsm) any, null, (SerialId) any);
-               result = mockOdeBsmData;
-               
-               capturingMessagePublisher.publish(mockOdeBsmData, anyString);
-               times = 1;
-            }
-         };
-      } catch (Exception e) {
-         fail("Unexpected exception: " + e);
-      }
-
-      testBsmReceiver.run();
-   }
-   
-   @Ignore
-   @Test
-   public void testRunDetectBsm(@Mocked DatagramPacket mockedDatagramPacket, @Mocked J2735Bsm mockedJ2735Bsm) {
-      try {
-         new Expectations() {
-            {
-               new DatagramPacket((byte[]) any, anyInt);
-               result = mockedDatagramPacket;
-               
-               capturingDatagramSocket.receive((DatagramPacket) any);
-               result = null;
-
-               String sampleBsmPacketStr = "030000ac000c001700000000000000200026ad01f13c00b1001480ad5f7bf1400014ff277c5e951cc867008d1d7ffffffff0017080fdfa1fa1007fff8000000000020214c1c0ffc7bffc2f963d160ffab401cef8261ba0ffedc0142fca96c61002dbff6efaeb3d61001ebff4afb8d6860ffe3bffc2fc4ec8e0ff7fc00e0fb50bce0ffe2bffe4fe347e20ffc5c0048fa5887e0ffb5c00dcfbdc87a0ffdb3feccfbe11ae0ffe03fe9cfde5e520ffc23ff90fd078060ffff3ff38fdea88a0ffe83ff84fb8f5a6fffe00000000";
-               byte[] sampleBsmPacketByte = Hex.decodeHex(sampleBsmPacketStr.toCharArray());
-
-               mockedDatagramPacket.getLength();
-               result = sampleBsmPacketByte.length;
-
-               mockedDatagramPacket.getData();
-               result = sampleBsmPacketByte;
-
-               mockedDatagramPacket.getLength();
-               result = sampleBsmPacketByte.length;
-               
-               capturingOssJ2735Coder.decodeUPERMessageFrameBytes((byte[]) any);
-               result = null;
-               
-               capturingOssJ2735Coder.decodeUPERBsmBytes((byte[]) any);
-               result = mockJ2735Bsm;
-               
-               capturingOdeBsmDataCreatorHelper.createOdeBsmData((J2735Bsm) any, null, (SerialId) any);
-               result = mockOdeBsmData;
-               
-               capturingMessagePublisher.publish(mockOdeBsmData, anyString);
-               times = 1;
-            }
-         };
-      } catch (Exception e) {
-         fail("Unexpected exception: " + e);
-      }
-
       testBsmReceiver.run();
    }
 
-   @Ignore
-   @Test
-   public void testRunException(@Mocked DatagramPacket mockedDatagramPacket, @Mocked J2735Bsm mockedJ2735Bsm)
-         throws IOException {
+   @Test(timeout = 4000)
+   public void testNonEmptyPacket() throws Exception {
       new Expectations() {
          {
             new DatagramPacket((byte[]) any, anyInt);
-            result = mockedDatagramPacket;
+            result = mockDatagramPacket;
 
-            capturingDatagramSocket.receive(mockedDatagramPacket);
-            result = new SocketException();
+            mockDatagramPacket.getLength();
+            result = 1;
+
+            capturingLogFileToAsn1CodecPublisher.publish((byte[]) any);
+            times = 1;
          }
       };
-
+      testBsmReceiver.setStopped(true);
       testBsmReceiver.run();
+   }
+
+   @Test(timeout = 4000)
+   public void testPublishException() throws Exception {
+      new Expectations() {
+         {
+            new DatagramPacket((byte[]) any, anyInt);
+            result = mockDatagramPacket;
+
+            mockDatagramPacket.getLength();
+            result = 1;
+
+            capturingLogFileToAsn1CodecPublisher.publish((byte[]) any);
+            result = new IOException("testException123");
+         }
+      };
+      testBsmReceiver.setStopped(true);
+      testBsmReceiver.run();
+   }
+
+   /**
+    * Test when packet starts with "0014" it removes nothing
+    */
+   @Test
+   public void testRemoveHeaderNoHeader() {
+      String expectedHex = "0014012345678900";
+      byte[] testInput = HexUtils.fromHexString(expectedHex);
+
+      assertEquals(expectedHex, HexUtils.toHexString(testBsmReceiver.removeHeader(testInput)));
+   }
+
+   /**
+    * Test when packet contains no "0014" it removes nothing
+    */
+   @Test
+   public void testRemoveHeaderNoBsm() {
+      String expectedHex = "012345678900";
+      byte[] testInput = HexUtils.fromHexString(expectedHex);
+
+      assertEquals(expectedHex, HexUtils.toHexString(testBsmReceiver.removeHeader(testInput)));
+   }
+
+   /**
+    * Test when packet does not start with 0014 but still contains it, removes
+    * header. Note that headers are >= 20 bytes <br>
+    * Input = "0123456789012345678900140987654321" <br>
+    * Output = "00140987654321"
+    */
+   @Test
+   public void testRemoveHeaderContainsHeader() {
+      String inputHex = "0123456789012345678900140987654321";
+      String expectedHex = "00140987654321";
+      byte[] testInput = HexUtils.fromHexString(inputHex);
+
+      assertEquals(expectedHex, HexUtils.toHexString(testBsmReceiver.removeHeader(testInput)));
    }
 
 }

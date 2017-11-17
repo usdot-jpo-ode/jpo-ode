@@ -14,7 +14,8 @@ public class StringPublisher extends MessagePublisher {
    public StringPublisher(OdeProperties odeProps) {
       super(odeProps);
       this.stringProducer = MessageProducer.defaultStringMessageProducer(
-         odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType());
+         odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(), 
+         odeProperties.getKafkaTopicsDisabledSet());
 
    }
 

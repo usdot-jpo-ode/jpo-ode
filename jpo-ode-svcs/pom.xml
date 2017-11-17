@@ -97,21 +97,25 @@
       <artifactId>jpo-ode-core</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
+    <!--
     <dependency>
       <groupId>us.dot.its.jpo.ode</groupId>
       <artifactId>j2735</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
+    -->
     <dependency>
       <groupId>usdot.jpo.ode</groupId>
       <artifactId>jpo-ode-plugins</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
+    <!-- TODO open-ode
     <dependency>
       <groupId>gov.usdot</groupId>
       <artifactId>fedgov-cv-security-2016</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
+    -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-messaging</artifactId>

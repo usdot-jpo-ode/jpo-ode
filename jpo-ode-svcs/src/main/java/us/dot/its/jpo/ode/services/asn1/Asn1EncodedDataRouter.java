@@ -125,7 +125,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
     public void processEncodedTim(OdeTravelerInputData travelerInfo, JSONObject consumedObj) throws TimControllerException {
        // Send TIMs and record results
-       HashMap<String, String> responseList = new HashMap<>();
+       //HashMap<String, String> responseList = new HashMap<>();
 
        JSONObject dataObj = consumedObj
              .getJSONObject(AppContext.PAYLOAD_STRING)
@@ -137,17 +137,13 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             String asdBytes = asdObj.getString("bytes");
 
             // Deposit to DDS
-            String ddsMessage = "";
             try {
                depositToDDS(travelerInfo, asdBytes);
-               ddsMessage = "\"dds_deposit\":{\"success\":\"true\"}";
                logger.info("DDS deposit successful.");
             } catch (Exception e) {
-               ddsMessage = "\"dds_deposit\":{\"success\":\"false\"}";
                logger.error("Error on DDS deposit.", e);
             }
 
-            responseList.put("ddsMessage", ddsMessage);
          } else {
             String msg = "ASN.1 Encoder did not return ASD encoding {}";
             EventLogger.logger.error(msg, consumedObj.toString());
@@ -155,50 +151,39 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          }
        }
        
+       // Deposit to RSUs
        JSONObject mfObj = dataObj.getJSONObject("MessageFrame");
        
       // only send message to rsu if snmp, rsus, and message frame fields are present
       if (null != travelerInfo.getSnmp() && null != travelerInfo.getRsus() && null != mfObj) {
          String timBytes = mfObj.getString("bytes");
          for (RSU curRsu : travelerInfo.getRsus()) {
+             
+             logger.info("Depositing TIM via SNMP to RSU {}", curRsu.getRsuTarget());
 
             ResponseEvent rsuResponse = null;
-            String httpResponseStatus = null;
 
              try {
                 rsuResponse = createAndSend(travelerInfo.getSnmp(), curRsu, 
                    travelerInfo.getOde().getIndex(), timBytes);
 
                 if (null == rsuResponse || null == rsuResponse.getResponse()) {
-                   // Timeout
-                   httpResponseStatus = "Timeout";
+                   logger.error("RSU SNMP deposit to {} failed, timeout.", curRsu.getRsuTarget());
                 } else if (rsuResponse.getResponse().getErrorStatus() == 0) {
-                   // Success
-                   httpResponseStatus = "Success";
+                   logger.info("RSU SNMP deposit to {} successful.", curRsu.getRsuTarget());
                 } else if (rsuResponse.getResponse().getErrorStatus() == 5) {
-                   // Error, message already exists
-                   httpResponseStatus = "Message already exists at ".concat(Integer.toString(travelerInfo.getTim().getIndex()));
+                   logger.error("RSU SNMP deposit to {} failed, message already exists at index {}.", curRsu.getRsuTarget(), travelerInfo.getOde().getIndex());
                 } else {
-                   // Misc error
-                   httpResponseStatus = "Error code " + rsuResponse.getResponse().getErrorStatus() + " "
-                               + rsuResponse.getResponse().getErrorStatusText();
+                   logger.error("RSU SNMP deposit to {} failed, error code {}, error: {}", curRsu.getRsuTarget(), rsuResponse.getResponse().getErrorStatus(), rsuResponse.getResponse().getErrorStatusText());
                 }
 
              } catch (Exception e) {
-                String msg = "Exception caught in TIM deposit loop.";
-               EventLogger.logger.error(msg, e);
+                String msg = "Exception caught in TIM RSU SNMP deposit loop.";
+                EventLogger.logger.error(msg, e);
                 logger.error(msg, e);
-                httpResponseStatus = e.getClass().getName() + ": " + e.getMessage();
              }
-             
-             responseList.put(curRsu.getRsuTarget(), httpResponseStatus);
           }
-
        }
-       
-       logger.info("TIM deposit response {}", responseList);
-       
-       return;
     }
 
     /**
@@ -239,7 +224,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 //    * @param travelerInputData
 //    * @param mfTimBytes
 //    * @throws ParseException
-//    * @throws EncodeFailedExceptionmcon
+//    * @throws EncodeFailedException
 //    * @throws DdsRequestManagerException
 //    * @throws DdsClientException
 //    * @throws WebSocketException

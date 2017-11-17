@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.kafka.clients.producer.Producer;
 import org.junit.Before;
@@ -40,12 +41,13 @@ public class SerializableMessageProducerPoolTest {
         };
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testCreate(@Mocked final MessageProducer<?, ?> mockMessageProducer) {
-
         new Expectations() {
             {
-                new MessageProducer<String, String>(anyString, anyString, anyString, (Properties) any);
+                new MessageProducer<String, String>(anyString, anyString, anyString, 
+                      (Properties) any, (Set<String>)any);
             }
         };
 

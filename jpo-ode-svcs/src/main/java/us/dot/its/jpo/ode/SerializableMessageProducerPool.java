@@ -58,7 +58,8 @@ public class SerializableMessageProducerPool<K, V> extends SerializableObjectPoo
 
    @Override
    protected MessageProducer<K, V> create() {
-      return new MessageProducer<>(brokers, type, partitionerClass, props);
+      return new MessageProducer<>(brokers, type, partitionerClass, props,
+            odeProperties.getKafkaTopicsDisabledSet());
    }
 
    @Override

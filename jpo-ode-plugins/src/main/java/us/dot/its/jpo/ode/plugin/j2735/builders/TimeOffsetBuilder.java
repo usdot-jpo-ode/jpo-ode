@@ -24,7 +24,7 @@ public class TimeOffsetBuilder {
         } else if (timeOffset.asInt() > TIME_OFFSET_UPPER_BOUND) {
             result = BigDecimal.valueOf(655.34);
         } else {
-            result = BigDecimal.valueOf(timeOffset.longValue(), 2);
+            result = BigDecimal.valueOf(timeOffset.asLong(), 2);
         }
 
         return result;
