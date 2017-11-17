@@ -37,16 +37,21 @@ import us.dot.its.jpo.ode.model.OdeMsgPayload;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.model.OdeTimData;
 import us.dot.its.jpo.ode.model.OdeTimPayload;
-import us.dot.its.jpo.ode.model.TravelerInputData;
+import us.dot.its.jpo.ode.model.OdeTravelerInputData;
 import us.dot.its.jpo.ode.plugin.ODE;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
+import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2Content;
+import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2Data;
+import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2DataTag;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
+import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
-import us.dot.its.jpo.ode.plugin.j2735.builders.timstorage.Tim;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.MessageFrame;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.TravelerInputData;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -244,10 +249,10 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
-      TravelerInputData travelerInputData = null;
+      OdeTravelerInputData travelerInputData = null; 
       try {
          // Convert JSON to POJO
-         travelerInputData = (TravelerInputData) JsonUtils.fromJson(jsonString, TravelerInputData.class);
+         travelerInputData = (OdeTravelerInputData) JsonUtils.fromJson(jsonString, OdeTravelerInputData.class);
          if (travelerInputData.getOde() == null) {
             travelerInputData.setOde(new ODE());
          }
@@ -265,7 +270,6 @@ public class TimController {
       OdeMsgMetadata timMetadata = new OdeMsgMetadata(timDataPayload);
       OdeTimData odeTimData = new OdeTimData(timMetadata, timDataPayload);
       timProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastPojo(), null, odeTimData);
-      stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastJson(), null, odeTimData.toJson());
 
       // Craft ASN-encodable TIM
       ObjectNode encodableTid;
@@ -285,17 +289,29 @@ public class TimController {
       DdsAdvisorySituationData asd = null;
       if (null != sdw) {
          try {
+            Ieee1609Dot2DataTag ieeeDataTag = new Ieee1609Dot2DataTag();
+            Ieee1609Dot2Data ieee = new Ieee1609Dot2Data();
+            Ieee1609Dot2Content ieeeContent = new Ieee1609Dot2Content();
+            J2735MessageFrame j2735Mf = new J2735MessageFrame();
+            MessageFrame mf = new MessageFrame();
+            mf.setMessageFrame(j2735Mf);
+            ieeeContent.setUnsecuredData(mf);
+            ieee.setContent(ieeeContent );
+            ieeeDataTag.setIeee1609Dot2Data(ieee);
+            
             // take deliverystart and stop times from SNMP object, if present
             // else take from SDW object
             SNMP snmp = travelerInputData.getSnmp();
             if (null != snmp) {
 
-               asd = new DdsAdvisorySituationData(snmp.getDeliverystart(), snmp.getDeliverystop(), null,
+               asd = new DdsAdvisorySituationData(snmp.getDeliverystart(), snmp.getDeliverystop(), ieeeDataTag,
                      GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
             } else {
-               asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), null,
+               asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), ieeeDataTag,
                      GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
             }
+            
+            
          } catch (ParseException e) {
             String errMsg = "Error AdvisorySituationDatae: " + e.getMessage();
             logger.error(errMsg, e);
@@ -331,36 +347,32 @@ public class TimController {
    private String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj)
          throws JsonUtilsException, XmlUtilsException, ParseException {
 
-      Tim inOrderTid = (Tim) JsonUtils.jacksonFromJson(encodableTidObj.toString(), Tim.class);
+      TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(), TravelerInputData.class);
       logger.debug("In order tim: {}", inOrderTid);
       ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
 
       JsonNode timObj = inOrderTidObj.remove("tim");
-      ObjectNode requestObj = inOrderTidObj; // with 'tim' element removed,
-                                             // encodableTid becomes the
-                                             // 'request' element
+      ObjectNode requestObj = inOrderTidObj; // with 'tim' element removed, encodableTid becomes the 'request' element
 
-      // Create a MessageFrame
-      ObjectNode mfBodyObj = JsonUtils.newNode();
-      mfBodyObj.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
-      mfBodyObj.set("value", (ObjectNode) JsonUtils.newNode().set("TravelerInformation", timObj));
-
-      // Create valid payload from scratch
+      //Create valid payload from scratch
       OdeMsgPayload payload = null;
 
       ObjectNode dataBodyObj = JsonUtils.newNode();
       if (null != asd) {
-         ObjectNode asdBodyObj = JsonUtils.toObjectNode(asd.toJson());
-         ObjectNode asdmDetails = (ObjectNode) asdBodyObj.get("asdmDetails");
-         // Remove 'advisoryMessageBytes' and add 'advisoryMessage'
-         asdmDetails.remove("advisoryMessageBytes");
-         asdmDetails.set("advisoryMessage", JsonUtils.newNode().set("MessageFrame", mfBodyObj));
+         ObjectNode asdObj = JsonUtils.toObjectNode(asd.toJson());
+         ObjectNode mfBodyObj = (ObjectNode) asdObj.findValue("MessageFrame");
+         mfBodyObj.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
+         mfBodyObj.set("value", (ObjectNode) JsonUtils.newNode().set(
+            "TravelerInformation", timObj));
 
-         dataBodyObj.set("AdvisorySituationData", asdBodyObj);
+         dataBodyObj.set("AdvisorySituationData", asdObj);
 
-         // Create valid payload from scratch
          payload = new OdeAsdPayload(asd);
       } else {
+         //Build a MessageFrame
+         ObjectNode mfBodyObj = (ObjectNode) JsonUtils.newNode();
+         mfBodyObj.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
+         mfBodyObj.set("value", (ObjectNode) JsonUtils.newNode().set("TravelerInformation", timObj));
          dataBodyObj = (ObjectNode) JsonUtils.newNode().set("MessageFrame", mfBodyObj);
          payload = new OdeTimPayload();
          payload.setDataType("MessageFrame");
@@ -373,16 +385,8 @@ public class TimController {
       OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
       ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());
       metaObject.set("request", requestObj);
-
-      // Create encoding instructions
-      ArrayNode encodings = JsonUtils.newArrayNode();
-      Asn1Encoding mfEnc = new Asn1Encoding("MessageFrame", "MessageFrame", EncodingRule.UPER);
-      encodings.add(JsonUtils.newNode().set("encodings", JsonUtils.toObjectNode(mfEnc.toJson())));
-      if (null != asd) {
-         Asn1Encoding asdEnc = new Asn1Encoding("AdvisorySituationData", "AdvisorySituationData", EncodingRule.UPER);
-         encodings.add(JsonUtils.newNode().set("encodings", JsonUtils.toObjectNode(asdEnc.toJson())));
-      }
-      ObjectNode encodingWrap = (ObjectNode) JsonUtils.newNode().set("wrap", encodings);
+      
+      //Workaround for XML Array issue. Set a placeholder for the encodings to be added later as a string replacement
       metaObject.set("encodings_palceholder", null);
 
       ObjectNode message = JsonUtils.newNode();
@@ -393,13 +397,12 @@ public class TimController {
       root.set("OdeAsn1Data", message);
 
       // Convert to XML
-      logger.debug("pre-xml tim: {}", root);
+      logger.debug("pre-xml: {}", root);
       String outputXml = XmlUtils.toXmlS(root);
-      String encStr = XmlUtils.toXmlS(encodingWrap).replace("</wrap><wrap>", "").replace("<wrap>", "")
-            .replace("</wrap>", "").replace("<ObjectNode>", "<encodings>").replace("</ObjectNode>", "</encodings>");
+      String encStr = buildEncodings(asd);
       outputXml = outputXml.replace("<encodings_palceholder/>", encStr);
-
-      // Fix tagnames by String replacements
+      
+      // Fix  tagnames by String replacements
       String fixedXml = outputXml.replaceAll("tcontent>", "content>");// workaround
                                                                       // for the
                                                                       // "content"
@@ -428,84 +431,90 @@ public class TimController {
       return fixedXml;
    }
 
-   /// TODO - old publish method via GSON, results in unordered output
-   // private void publish(String request) throws JsonUtilsException,
-   /// XmlUtilsException {
-   //
-   // Tim inOrderTim = (Tim) JsonUtils.jacksonFromJson(request, Tim.class);
-   // logger.debug("In order tim: {}", inOrderTim);
-   // JSONObject requestObj = JsonUtils.toJSONObject(inOrderTim.toJson());
-   //
-   // //Create valid payload from scratch
-   // OdeMsgPayload payload = new OdeMsgPayload();
-   // payload.setDataType("us.dot.its.jpo.ode.model.OdeHexByteArray");
-   // JSONObject payloadObj = JsonUtils.toJSONObject(payload.toJson());
-   //
-   // //Create TravelerInformation
-   // JSONObject timObject = new JSONObject();
-   // //requestObj = new
-   /// JSONObject(requestObj.toString().replace("\"tcontent\":","\"content\":"));
-   // timObject.put("TravelerInformation", requestObj.remove("tim")); //with
-   /// "tim" removed, the remaining requestObject must go in as "request"
-   /// element of metadata
-   //
-   // //Create a MessageFrame
-   // JSONObject mfObject = new JSONObject();
-   // mfObject.put("value", timObject);//new
-   /// JSONObject().put("TravelerInformation", requestObj));
-   // mfObject.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
-   //
-   // JSONObject dataObj = new JSONObject();
-   // dataObj.put("MessageFrame", mfObject);
-   //
-   // payloadObj.put(AppContext.DATA_STRING, dataObj);
-   //
-   // //Create a valid metadata from scratch
-   // OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
-   //
-   // JSONObject metaObject = JsonUtils.toJSONObject(metadata.toJson());
-   // metaObject.put("request", requestObj);
-   //
-   // //Create an encoding element
-   // //Asn1Encoding enc = new Asn1Encoding("/payload/data/MessageFrame",
-   /// "MessageFrame", EncodingRule.UPER);
-   // Asn1Encoding enc = new Asn1Encoding("root", "MessageFrame",
-   /// EncodingRule.UPER);
-   //
-   // // TODO this nesting is to match encoder schema
-   // metaObject.put("encodings", new JSONObject().put("encodings",
-   /// JsonUtils.toJSONObject(enc.toJson())));
-   //
-   // JSONObject message = new JSONObject();
-   // message.put(AppContext.METADATA_STRING, metaObject);
-   // message.put(AppContext.PAYLOAD_STRING, payloadObj);
-   //
-   // JSONObject root = new JSONObject();
-   // root.put("OdeAsn1Data", message);
-   //
-   //
-   // /// String replacements
-   // logger.debug("pre-xml tim: {}", root);
-   // String outputXml = XML.toString(root);
-   // String fixedXml = outputXml.replaceAll("tcontent>","content>");//
-   /// workaround for the "content" reserved name
-   // fixedXml = fixedXml.replaceAll("llong>","long>"); // workaround for "long"
-   /// being a type in java
-   //
-   // // workarounds for self-closing tags
-   // fixedXml =
-   /// fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.EMPTY_FIELD_FLAG,
-   /// "");
-   // fixedXml =
-   /// fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_TRUE,
-   /// "<true />");
-   // fixedXml =
-   /// fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_FALSE,
-   /// "<false />");
-   //
-   // logger.debug("Fixed XML: {}", fixedXml);
-   // messageProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null,
-   /// fixedXml);
-   // }
+   private String buildEncodings(DdsAdvisorySituationData asd) throws JsonUtilsException, XmlUtilsException {
+      ArrayNode encodings = JsonUtils.newArrayNode();
+      encodings.add(addEncoding("MessageFrame", "MessageFrame", EncodingRule.UPER));
+      if (null != asd) {
+         encodings.add(addEncoding("Ieee1609Dot2Data", "Ieee1609Dot2Data", EncodingRule.COER));
+         encodings.add(addEncoding("AdvisorySituationData", "AdvisorySituationData", EncodingRule.UPER));
+      }
+      ObjectNode encodingWrap = (ObjectNode) JsonUtils.newNode().set("wrap", encodings);
+      String encStr = XmlUtils.toXmlS(encodingWrap)
+            .replace("</wrap><wrap>", "")
+            .replace("<wrap>", "")
+            .replace("</wrap>", "")
+            .replace("<ObjectNode>", "<encodings>")
+            .replace("</ObjectNode>", "</encodings>");
+      return encStr;
+   }
+
+   private JsonNode addEncoding(String name, String type, EncodingRule rule) throws JsonUtilsException {
+      Asn1Encoding mfEnc = new Asn1Encoding(name, type, rule);
+      return JsonUtils.newNode().set("encodings", JsonUtils.toObjectNode(mfEnc.toJson()));
+   }
+   
+/// TODO - old publish method via GSON, results in unordered output
+//   private void publish(String request) throws JsonUtilsException, XmlUtilsException {
+//      
+//      Tim inOrderTim = (Tim) JsonUtils.jacksonFromJson(request, Tim.class);
+//      logger.debug("In order tim: {}", inOrderTim);
+//      JSONObject requestObj = JsonUtils.toJSONObject(inOrderTim.toJson());
+//      
+//      //Create valid payload from scratch
+//      OdeMsgPayload payload = new OdeMsgPayload();
+//      payload.setDataType("us.dot.its.jpo.ode.model.OdeHexByteArray");
+//      JSONObject payloadObj = JsonUtils.toJSONObject(payload.toJson());
+//
+//      //Create TravelerInformation
+//      JSONObject timObject = new JSONObject();
+//      //requestObj = new JSONObject(requestObj.toString().replace("\"tcontent\":","\"content\":"));
+//      timObject.put("TravelerInformation", requestObj.remove("tim")); //with "tim" removed, the remaining requestObject must go in as "request" element of metadata
+//      
+//      //Create a MessageFrame
+//      JSONObject mfObject = new JSONObject();
+//      mfObject.put("value", timObject);//new JSONObject().put("TravelerInformation", requestObj));
+//      mfObject.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
+//      
+//      JSONObject dataObj = new JSONObject();
+//      dataObj.put("MessageFrame", mfObject);
+//      
+//      payloadObj.put(AppContext.DATA_STRING, dataObj);
+//      
+//      //Create a valid metadata from scratch
+//      OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
+//      
+//      JSONObject metaObject = JsonUtils.toJSONObject(metadata.toJson());
+//      metaObject.put("request", requestObj);
+//      
+//      //Create an encoding element
+//      //Asn1Encoding enc = new Asn1Encoding("/payload/data/MessageFrame", "MessageFrame", EncodingRule.UPER);
+//      Asn1Encoding enc = new Asn1Encoding("root", "MessageFrame", EncodingRule.UPER);
+//      
+//      // TODO this nesting is to match encoder schema
+//      metaObject.put("encodings", new JSONObject().put("encodings", JsonUtils.toJSONObject(enc.toJson())));
+//      
+//      JSONObject message = new JSONObject();
+//      message.put(AppContext.METADATA_STRING, metaObject);
+//      message.put(AppContext.PAYLOAD_STRING, payloadObj);
+//      
+//      JSONObject root = new JSONObject();
+//      root.put("OdeAsn1Data", message);
+//      
+//      
+//      /// String replacements
+//      logger.debug("pre-xml tim: {}", root);
+//      String outputXml = XML.toString(root);
+//      String fixedXml = outputXml.replaceAll("tcontent>","content>");// workaround for the "content" reserved name
+//      fixedXml = fixedXml.replaceAll("llong>","long>"); // workaround for "long" being a type in java
+//      
+//      // workarounds for self-closing tags
+//      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.EMPTY_FIELD_FLAG, "");
+//      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_TRUE, "<true />");
+//      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_FALSE, "<false />");
+//      
+//      logger.debug("Fixed XML: {}", fixedXml);
+//      messageProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, fixedXml);
+//   }
+
 
 }

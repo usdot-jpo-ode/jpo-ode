@@ -29,7 +29,7 @@ public enum OdeDataType {
    Control("control", OdeControlData.class),
    Authorization("auth", OdeAuthorization.class),
    BasicSafetyMessage("bsm", J2735Bsm.class),
-   TravelerInformationMessage("tim", TravelerInputData.class),
+   TravelerInformationMessage("tim", OdeTravelerInputData.class),
    AggregateData("agg", OdeAggregateData.class),
    AsnBase64("asnbase64", String.class),
    AsnHex("asnhex", String.class),
