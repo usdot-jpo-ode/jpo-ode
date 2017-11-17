@@ -54,9 +54,7 @@ public class FullPositionVectorBuilder {
             throw new IllegalArgumentException("Elevation value out of bounds [-4096..61439]");
         }
         
-        if (null == timeConfidence 
-              || timeConfidence.longValue() < TIME_CONF_LOWER_BOUND
-              || timeConfidence.longValue() > TIME_CONF_UPPER_BOUND) {
+        if (null == timeConfidence) {
             throw new IllegalArgumentException("Time confidence value out of bounds [0..39]");
         }
         
