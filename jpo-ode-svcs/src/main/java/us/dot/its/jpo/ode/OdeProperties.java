@@ -170,15 +170,18 @@ public class OdeProperties implements EnvironmentAware {
       EventLogger.logger.info("Initializing services on host {}", hostId);
 
       if (kafkaBrokers == null) {
-         kafkaBrokers = System.getenv("DOCKER_HOST_IP") + ":9092";
 
-         logger.info(
-               "ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP => {}", kafkaBrokers);
+         logger.info("ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP => {}", kafkaBrokers);
+
+         String dockerIp = System.getenv("DOCKER_HOST_IP");
+         
+         if (dockerIp == null) {
+            throw new MissingPropertyException(
+                  "Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
+         }
+
+         kafkaBrokers = dockerIp + ":9092";
       }
-
-      if (kafkaBrokers == null)
-         throw new MissingPropertyException(
-               "Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
    }
 
    public List<Path> getUploadLocations() {
