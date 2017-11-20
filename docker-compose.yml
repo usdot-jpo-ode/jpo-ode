@@ -81,14 +81,23 @@ services:
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec
 
-  ppm:
+  ppm_bsm:
     build: ./jpo-cvdp
     image: jpoode_ppm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      PPM_CONFIG_FILE: ppmBsm.properties
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
 
+  ppm_tim:
+    build: ./jpo-cvdp
+    image: jpoode_ppm:latest
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      PPM_CONFIG_FILE: ppmTim.properties
+    volumes:
+      - ${DOCKER_SHARED_VOLUME}:/ppm_data
   cvpep_bsm_s3dep:
     build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest
