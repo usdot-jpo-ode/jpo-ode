@@ -172,13 +172,13 @@ public class OdeProperties implements EnvironmentAware {
 
          String dockerIp = CommonUtils.getEnvironmentVariable("DOCKER_HOST_IP");
          
-//         if (dockerIp == null) {
-//            logger.warn("Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
-//            throw new MissingPropertyException(
-//                  "Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
-//         } else {
+         if (dockerIp == null) {
+            logger.warn("Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
+            throw new MissingPropertyException(
+                  "Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
+         } else {
             kafkaBrokers = dockerIp + ":9092";
-//         }
+         }
 
          
       }
