@@ -1,33 +1,48 @@
 package us.dot.its.jpo.ode;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.core.env.Environment;
 
+import groovy.lang.MissingPropertyException;
+import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
-import mockit.integration.junit4.JMockit;
+import us.dot.its.jpo.ode.util.CommonUtils;
 
-@RunWith(JMockit.class)
 public class OdePropertiesTest {
 
    @Tested
    OdeProperties testOdeProperties;
    @Injectable
    Environment mockEnv;
+   
+   @Capturing CommonUtils capturingCommonUtils;
+   
+
+   @Before
+   public void setup() {
+      new Expectations() {
+         {
+         CommonUtils.getEnvironmentVariable("DOCKER_HOST_IP");
+         result = "testKafkaBrokers";
+      }};
+   }
 
    @Test
    public void testInit() {
+      new Expectations() {{}};
       try {
-         testOdeProperties.init();
+         new OdeProperties();
       } catch (Exception e) {
          fail("Unexpected exception: " + e);
       }
@@ -47,9 +62,29 @@ public class OdePropertiesTest {
       }
 
       try {
-         testOdeProperties.init();
+         new OdeProperties();
       } catch (Exception e) {
          fail("Unexpected exception in init: " + e);
+      }
+   }
+   
+   @Test
+   public void missingDockerHostIpShouldThrowException(@Mocked final InetAddress mockInetAddress) {
+      try {
+         new Expectations() {
+            {
+               CommonUtils.getEnvironmentVariable("DOCKER_HOST_IP");
+               result = null;
+            }
+         };
+      } catch (Exception e) {
+         fail("Unexpected exception in expectations block: " + e);
+      }
+
+      try {
+         new OdeProperties();
+      } catch (Exception e) {
+         assertTrue(e instanceof MissingPropertyException);
       }
    }
 

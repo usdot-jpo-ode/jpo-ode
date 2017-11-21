@@ -11,6 +11,7 @@ import org.springframework.core.env.Environment;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.OdePlugin;
+import us.dot.its.jpo.ode.util.CommonUtils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -24,7 +25,7 @@ import java.util.UUID;
 @PropertySource("classpath:application.properties")
 public class OdeProperties implements EnvironmentAware {
 
-   private Logger logger = LoggerFactory.getLogger(this.getClass());
+   private static final Logger logger = LoggerFactory.getLogger(OdeProperties.class);
 
    @Autowired
    private Environment env;
@@ -150,10 +151,6 @@ public class OdeProperties implements EnvironmentAware {
 
    public OdeProperties() {
       super();
-      init();
-   }
-
-   public void init() {
 
       uploadLocations.add(Paths.get(uploadLocationRoot));
 
@@ -173,14 +170,17 @@ public class OdeProperties implements EnvironmentAware {
 
          logger.info("ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP => {}", kafkaBrokers);
 
-         String dockerIp = System.getenv("DOCKER_HOST_IP");
+         String dockerIp = CommonUtils.getEnvironmentVariable("DOCKER_HOST_IP");
          
-         if (dockerIp == null) {
-            throw new MissingPropertyException(
-                  "Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
-         }
+//         if (dockerIp == null) {
+//            logger.warn("Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
+//            throw new MissingPropertyException(
+//                  "Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
+//         } else {
+            kafkaBrokers = dockerIp + ":9092";
+//         }
 
-         kafkaBrokers = dockerIp + ":9092";
+         
       }
    }
 
