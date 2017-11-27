@@ -16,6 +16,8 @@
   <packaging>jar</packaging>
   
   <properties>
+    <libdir>${basedir}/lib</libdir>
+
     <!-- SonarQube Properties -->
     <sonar.exclusions>src/main/java/us/dot/its/jpo/ode/util/GeoUtils.java</sonar.exclusions>
     <sonar.exclusions>src/main/java/us/dot/its/jpo/ode/util/WebSocketUtils.java</sonar.exclusions>
@@ -51,5 +53,39 @@
       <artifactId>kryo</artifactId>
       <version>4.0.0</version>
     </dependency>
+    <dependency>
+        <groupId>com.safenet-inc</groupId>
+        <artifactId>luna-provider</artifactId>
+        <version>6.2.2-4</version>
+    </dependency>
   </dependencies>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-install-plugin</artifactId>
+            <version>2.5.2</version>
+            <executions>
+                <execution>
+                    <id>install-luna-provider.jar</id>
+                    <phase>clean</phase>
+                    <configuration>
+                        <file>${libdir}/LunaProvider.jar</file>
+                        <repositoryLayout>default</repositoryLayout>
+                        <groupId>com.safenet-inc</groupId>
+                        <artifactId>luna-provider</artifactId>
+                        <version>6.2.2-4</version>
+                        <packaging>jar</packaging>
+                        <generatePom>true</generatePom>
+                    </configuration>
+                    <goals>
+                        <goal>install-file</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 </project>

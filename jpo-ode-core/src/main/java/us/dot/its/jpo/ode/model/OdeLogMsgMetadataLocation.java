@@ -1,20 +1,22 @@
 package us.dot.its.jpo.ode.model;
 
+import java.math.BigDecimal;
+
 public class OdeLogMsgMetadataLocation extends OdeObject {
 
    private static final long serialVersionUID = 3174683494132372801L;
 
-   String latitude;
-   String longitude;
-   String elevation;
-   String speed;
-   String heading;
+   BigDecimal latitude;
+   BigDecimal longitude;
+   BigDecimal elevation;
+   BigDecimal speed;
+   BigDecimal heading;
 
    public OdeLogMsgMetadataLocation() {
       super();
    }
 
-   public OdeLogMsgMetadataLocation(String latitude, String longitude, String elevation, String speed, String heading) {
+   public OdeLogMsgMetadataLocation(BigDecimal latitude, BigDecimal longitude, BigDecimal elevation, BigDecimal speed, BigDecimal heading) {
       super();
       this.latitude = latitude;
       this.longitude = longitude;
@@ -23,43 +25,43 @@ public class OdeLogMsgMetadataLocation extends OdeObject {
       this.heading = heading;
    }
 
-   public String getLatitude() {
+   public BigDecimal getLatitude() {
       return latitude;
    }
 
-   public void setLatitude(String latitude) {
+   public void setLatitude(BigDecimal latitude) {
       this.latitude = latitude;
    }
 
-   public String getLongitude() {
+   public BigDecimal getLongitude() {
       return longitude;
    }
 
-   public void setLongitude(String longitude) {
+   public void setLongitude(BigDecimal longitude) {
       this.longitude = longitude;
    }
 
-   public String getElevation() {
+   public BigDecimal getElevation() {
       return elevation;
    }
 
-   public void setElevation(String elevation) {
+   public void setElevation(BigDecimal elevation) {
       this.elevation = elevation;
    }
 
-   public String getSpeed() {
+   public BigDecimal getSpeed() {
       return speed;
    }
 
-   public void setSpeed(String speed) {
+   public void setSpeed(BigDecimal speed) {
       this.speed = speed;
    }
 
-   public String getHeading() {
+   public BigDecimal getHeading() {
       return heading;
    }
 
-   public void setHeading(String heading) {
+   public void setHeading(BigDecimal heading) {
       this.heading = heading;
    }
 

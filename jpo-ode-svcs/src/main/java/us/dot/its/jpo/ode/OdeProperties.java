@@ -143,6 +143,8 @@ public class OdeProperties implements EnvironmentAware {
    private String selfCertPath;
    private String selfPrivateKeyReconstructionFilePath;
    private String selfSigningPrivateKeyFilePath;
+   private String hsmLoginId;
+   private String hsmLoginPassword;
 
    private int dataReceiptExpirationSeconds;
 
@@ -690,5 +692,21 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setFileWatcherPeriod(Integer fileWatcherPeriod) {
       this.fileWatcherPeriod = fileWatcherPeriod;
+   }
+
+   public String getHsmLoginId() {
+      return hsmLoginId;
+   }
+
+   public void setHsmLoginId(String hsmLoginId) {
+      this.hsmLoginId = hsmLoginId;
+   }
+
+   public String getHsmLoginPassword() {
+      return hsmLoginPassword;
+   }
+
+   public void setHsmLoginPassword(String hsmLoginPassword) {
+      this.hsmLoginPassword = hsmLoginPassword;
    }
 }
