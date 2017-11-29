@@ -231,11 +231,11 @@ public class TimDecoderHelper {
       TimLogLocation locationDetails = ((TimLogFileParser) fileParser).getLocation();
       ReceivedMessageDetails timSpecificMetadata = new ReceivedMessageDetails(
             new OdeLogMsgMetadataLocation(
-               LatitudeBuilder.genericLatitude(locationDetails.getLatitude()).toString(),
-               LongitudeBuilder.genericLongitude(locationDetails.getLongitude()).toString(),
-               ElevationBuilder.genericElevation(locationDetails.getElevation()).toString(),
-               SpeedOrVelocityBuilder.genericSpeedOrVelocity(locationDetails.getSpeed()).toString(),
-               HeadingBuilder.genericHeading(locationDetails.getHeading()).toString()
+               LatitudeBuilder.genericLatitude(locationDetails.getLatitude()).stripTrailingZeros().toString(),
+               LongitudeBuilder.genericLongitude(locationDetails.getLongitude()).stripTrailingZeros().toString(),
+               ElevationBuilder.genericElevation(locationDetails.getElevation()).stripTrailingZeros().toString(),
+               SpeedOrVelocityBuilder.genericSpeedOrVelocity(locationDetails.getSpeed()).stripTrailingZeros().toString(),
+               HeadingBuilder.genericHeading(locationDetails.getHeading()).stripTrailingZeros().toString()
                   ), null);
       
       if (fileParser instanceof RxMsgFileParser) {
