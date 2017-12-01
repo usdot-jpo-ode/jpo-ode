@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import us.dot.its.jpo.ode.util.CodecUtils;
+
 import javax.crypto.Cipher;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
@@ -79,6 +81,9 @@ final class CryptoController {
 
         this.logger.info("Signing Message '{}'", message);
 
+        byte[] derPrefix = CodecUtils.fromHex("3031300d060960864801650304020105000420");
+
+        this.signingSignature.update(derPrefix);
         this.signingSignature.update(message.getBytes(Charset.defaultCharset()));
         String signature = this.encoder.encodeToString(this.signingSignature.sign());
 

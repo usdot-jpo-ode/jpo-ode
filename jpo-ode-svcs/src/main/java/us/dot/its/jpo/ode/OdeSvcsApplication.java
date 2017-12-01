@@ -5,7 +5,6 @@ import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.Signature;
-import java.security.spec.ECGenParameterSpec;
 
 import javax.annotation.PreDestroy;
 import javax.crypto.Cipher;
@@ -55,14 +54,14 @@ public class OdeSvcsApplication {
 
    @Bean
    Cipher decryptionCipher(KeyPair keyPair) throws GeneralSecurityException {
-       Cipher cipher = Cipher.getInstance("ECIES/NONE/NoPadding", "LunaProvider");
+       Cipher cipher = Cipher.getInstance("RSA/NONE/NoPadding", "LunaProvider");
        cipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
        return cipher;
    }
 
    @Bean
    Cipher encryptionCipher(KeyPair keyPair) throws GeneralSecurityException {
-       Cipher cipher = Cipher.getInstance("ECIES/NONE/NoPadding", "LunaProvider");
+       Cipher cipher = Cipher.getInstance("RSA/NONE/NoPadding", "LunaProvider");
        cipher.init(Cipher.ENCRYPT_MODE, keyPair.getPublic());
        return cipher;
    }
@@ -70,15 +69,14 @@ public class OdeSvcsApplication {
    @Bean
    @DependsOn("slotManager")
    KeyPair keyPair() throws GeneralSecurityException {
-       KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("ECDSA", "LunaProvider");
-       ECGenParameterSpec ecSpec = new ECGenParameterSpec("prime256v1");
-       keyPairGenerator.initialize(ecSpec);
+       KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA", "LunaProvider");
+       keyPairGenerator.initialize(2048);
        return keyPairGenerator.generateKeyPair();
    }
 
    @Bean
    Signature signingSignature(KeyPair keyPair) throws GeneralSecurityException {
-       Signature signature = Signature.getInstance("SHA256withECDSA");
+       Signature signature = Signature.getInstance("noneWithRSA");
        signature.initSign(keyPair.getPrivate());
        return signature;
    }
@@ -93,7 +91,7 @@ public class OdeSvcsApplication {
 
    @Bean
    Signature verificationSignature(KeyPair keyPair) throws GeneralSecurityException {
-       Signature signature = Signature.getInstance("SHA256withECDSA");
+       Signature signature = Signature.getInstance("noneWithRSA");
        signature.initVerify(keyPair.getPublic());
        return signature;
    }
