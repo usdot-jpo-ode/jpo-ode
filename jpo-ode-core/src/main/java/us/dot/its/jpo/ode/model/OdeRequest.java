@@ -124,7 +124,7 @@ public class OdeRequest extends BaseRequest {
    @Override
    public int hashCode() {
       final int prime = 31;
-      int result = super.hashCode();
+      int result = 1;
       result = prime * result + ((dataSource == null) ? 0 : dataSource.hashCode());
       result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
       result = prime * result + ((id == null) ? 0 : id.hashCode());
@@ -136,7 +136,7 @@ public class OdeRequest extends BaseRequest {
    public boolean equals(Object obj) {
       if (this == obj)
          return true;
-      if (!super.equals(obj))
+      if (obj == null)
          return false;
       if (getClass() != obj.getClass())
          return false;
