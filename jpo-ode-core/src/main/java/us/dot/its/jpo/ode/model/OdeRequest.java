@@ -16,8 +16,6 @@
  *******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
-import java.math.BigDecimal;
-
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
@@ -49,15 +47,7 @@ public class OdeRequest extends BaseRequest {
       this.setDataSource(other.getDataSource());
       this.setDataType(other.getDataType());
       this.setId(other.getId());
-      this.setNwLat(other.getNwLat());
-      this.setNwLon(other.getNwLon());
       this.setRequestType(other.getRequestType());
-      this.setSeLat(other.getSeLat());
-      this.setSeLon(other.getSeLon());
-   }
-
-   public OdeRequest(BigDecimal nwLat, BigDecimal nwLon, BigDecimal seLat, BigDecimal seLon) {
-      super(nwLat, nwLon, seLat, seLon);
    }
 
    public static OdeRequest create(String rtype, String dtype, String message) throws OdeRequestException {
