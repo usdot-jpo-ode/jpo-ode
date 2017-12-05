@@ -6,6 +6,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.annotations.Expose;
 
 import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.FrameType;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.MutcdCode;
 
 public class J2735TravelerInformationMessage extends OdeObject {
    private static final long serialVersionUID = -200529140190872305L;
@@ -17,7 +20,7 @@ public class J2735TravelerInformationMessage extends OdeObject {
    @Expose
    private String timeStamp;
    @Expose
-   private int packetID;
+   private String packetID;
    @Expose
    private String urlB;
    @Expose
@@ -41,11 +44,11 @@ public class J2735TravelerInformationMessage extends OdeObject {
       this.timeStamp = timeStamp;
    }
 
-   public int getPacketID() {
+   public String getPacketID() {
       return packetID;
    }
 
-   public void setPacketID(int packetID) {
+   public void setPacketID(String packetID) {
       this.packetID = packetID;
    }
 
@@ -405,13 +408,8 @@ public class J2735TravelerInformationMessage extends OdeObject {
 
       private static final long serialVersionUID = 537503046055742396L;
       private short sspTimRights;// Start Header Information
-      private int frameType;
-      private String msgID;
-      private String furtherInfoID;
-      private OdePosition3D position;
-      private String viewAngle;
-      private int mutcd;
-      private String crc;
+      private FrameType.TravelerInfoType frameType;
+      private MsgId msgId;
       private String startDateTime;
       private int durationTime;
       private int priority;// End header Information
@@ -843,6 +841,70 @@ public class J2735TravelerInformationMessage extends OdeObject {
 
       }
 
+      public static class RoadSignID extends OdeObject {
+
+         private static final long serialVersionUID = 1L;
+
+         private OdePosition3D position;
+         private String viewAngle;
+         private MutcdCode.MutcdCodeEnum mutcdCode;
+         private String crc;
+         
+         public OdePosition3D getPosition() {
+            return position;
+         }
+         public void setPosition(OdePosition3D position) {
+            this.position = position;
+         }
+         public String getViewAngle() {
+            return viewAngle;
+         }
+         public void setViewAngle(String viewAngle) {
+            this.viewAngle = viewAngle;
+         }
+         public MutcdCode.MutcdCodeEnum getMutcdCode() {
+            return mutcdCode;
+         }
+         public void setMutcdCode(MutcdCode.MutcdCodeEnum mutcdCode) {
+            this.mutcdCode = mutcdCode;
+         }
+         public String getCrc() {
+            return crc;
+         }
+         public void setCrc(String crc) {
+            this.crc = crc;
+         }
+
+      }
+      
+      public static class MsgId extends Asn1Object {
+         private static final long serialVersionUID = 1L;
+
+         private RoadSignID roadSignID;
+         private String furtherInfoID;
+         
+         public RoadSignID getRoadSignID() {
+            return roadSignID;
+         }
+         public void setRoadSignID(RoadSignID roadSignID) {
+            this.roadSignID = roadSignID;
+         }
+         public String getFurtherInfoID() {
+            return furtherInfoID;
+         }
+         public void setFurtherInfoID(String furtherInfoID) {
+            this.furtherInfoID = furtherInfoID;
+         }
+      }
+
+      public MsgId getMsgId() {
+         return msgId;
+      }
+
+      public void setMsgId(MsgId msgId) {
+         this.msgId = msgId;
+      }
+
       public String getUrl() {
          return url;
       }
@@ -923,43 +985,11 @@ public class J2735TravelerInformationMessage extends OdeObject {
          this.startDateTime = startDateTime;
       }
 
-      public String getCrc() {
-         return crc;
-      }
-
-      public void setCrc(String crc) {
-         this.crc = crc;
-      }
-
-      public int getMutcd() {
-         return mutcd;
-      }
-
-      public void setMutcd(int mutcd) {
-         this.mutcd = mutcd;
-      }
-
-      public String getViewAngle() {
-         return viewAngle;
-      }
-
-      public void setViewAngle(String viewAngle) {
-         this.viewAngle = viewAngle;
-      }
-
-      public String getMsgID() {
-         return msgID;
-      }
-
-      public void setMsgID(String msgID) {
-         this.msgID = msgID;
-      }
-
-      public int getFrameType() {
+      public FrameType.TravelerInfoType getFrameType() {
          return frameType;
       }
 
-      public void setFrameType(int frameType) {
+      public void setFrameType(FrameType.TravelerInfoType frameType) {
          this.frameType = frameType;
       }
 
@@ -971,20 +1001,36 @@ public class J2735TravelerInformationMessage extends OdeObject {
          this.sspTimRights = sspTimRights;
       }
 
-      public OdePosition3D getPosition() {
-         return position;
+      public short getSspTimRights() {
+         return sspTimRights;
       }
 
-      public void setPosition(OdePosition3D position) {
-         this.position = position;
+      public void setSspTimRights(short sspTimRights) {
+         this.sspTimRights = sspTimRights;
       }
 
-      public String getFurtherInfoID() {
-         return furtherInfoID;
+      public short getSspLocationRights() {
+         return sspLocationRights;
       }
 
-      public void setFurtherInfoID(String furtherInfoID) {
-         this.furtherInfoID = furtherInfoID;
+      public void setSspLocationRights(short sspLocationRights) {
+         this.sspLocationRights = sspLocationRights;
+      }
+
+      public short getSspMsgTypes() {
+         return sspMsgTypes;
+      }
+
+      public void setSspMsgTypes(short sspMsgTypes) {
+         this.sspMsgTypes = sspMsgTypes;
+      }
+
+      public short getSspMsgContent() {
+         return sspMsgContent;
+      }
+
+      public void setSspMsgContent(short sspMsgContent) {
+         this.sspMsgContent = sspMsgContent;
       }
 
    }

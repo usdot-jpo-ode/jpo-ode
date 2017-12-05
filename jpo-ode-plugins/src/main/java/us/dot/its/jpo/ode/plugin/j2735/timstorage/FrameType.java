@@ -6,6 +6,13 @@ public class FrameType extends Asn1Object {
 
    private static final long serialVersionUID = 1L;
 
+   public enum TravelerInfoType {
+      unknown,
+      advisory,
+      roadSignage,
+      commercialSignage
+   }
+
    private String advisory;
 
    private String commercialSignage;

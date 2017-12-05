@@ -22,6 +22,7 @@ import us.dot.its.jpo.ode.j2735.dsrc.DirectionOfUse;
 import us.dot.its.jpo.ode.j2735.dsrc.DistanceUnits;
 import us.dot.its.jpo.ode.j2735.dsrc.ExitService;
 import us.dot.its.jpo.ode.j2735.dsrc.Extent;
+import us.dot.its.jpo.ode.j2735.dsrc.FurtherInfoID;
 import us.dot.its.jpo.ode.j2735.dsrc.GenericSignage;
 import us.dot.its.jpo.ode.j2735.dsrc.GeographicalPath;
 import us.dot.its.jpo.ode.j2735.dsrc.GeographicalPath.Description;
@@ -98,6 +99,7 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class OssTravelerMessageBuilder {
+   private static final int PACKET_ID_LENGTH = 9;
    private TravelerInformation travelerInfo;
 
    public TravelerInformation buildTravelerInformation(
@@ -109,7 +111,8 @@ public class OssTravelerMessageBuilder {
       travelerInfo.setMsgCnt(new MsgCount(tim.getMsgCnt()));
       travelerInfo.setTimeStamp(
             new MinuteOfTheYear(getMinuteOfTheYear(tim.getTimeStamp())));
-      ByteBuffer buf = ByteBuffer.allocate(9).put((byte) 0).putLong(tim.getPacketID());
+      String packetID = tim.getPacketID();
+      ByteBuffer buf = ByteBuffer.allocate(PACKET_ID_LENGTH).put(CodecUtils.fromHex(packetID.substring(0, Math.min(PACKET_ID_LENGTH-1, packetID.length()) )));
       travelerInfo.setPacketID(new UniqueMSGID(buf.array()));
       TimFieldValidator.validateURL(tim.getUrlB());
       travelerInfo.setUrlB(new URL_Base(tim.getUrlB()));
@@ -680,6 +683,10 @@ public class OssTravelerMessageBuilder {
    
    public static MsgCRC getMsgCrc(String crc) {
       return new MsgCRC(CodecUtils.shortStringToByteArray(crc));
+   }
+
+   public static FurtherInfoID getMsgFurtherInfoID(String furtherInfoId) {
+      return new FurtherInfoID(CodecUtils.shortStringToByteArray(furtherInfoId));
    }
 
 }
