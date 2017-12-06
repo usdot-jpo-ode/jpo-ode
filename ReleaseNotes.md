@@ -1,5 +1,9 @@
 ## ODE Release Notes ##
 ----------
+### Sprint 28
+- ODE-670 J2735TravelerInformationMessage.packetID needs to be BigInteger
+see https://github.com/usdot-jpo-ode/jpo-ode/wiki/TIM-REST-Endpoint-Changes for interface changes.
+
 ### Sprint 27
 - ODE-661 CVPEP Data Inconsistency for TIM Files 
 - ODE-657 Continue Supporting WyDOT issues 
