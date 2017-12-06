@@ -15,6 +15,7 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 import javax.crypto.Cipher;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
 import java.security.Signature;
 import java.util.Base64;
 import java.util.Map;
@@ -36,6 +37,8 @@ final class CryptoController {
     private final Signature signingSignature;
 
     private final Signature verificationSignature;
+
+    private final byte[] DER_PREFIX = CodecUtils.fromHex("3031300d060960864801650304020105000420");
 
     @Autowired
     CryptoController(@Qualifier("decryptionCipher") Cipher decryptionCipher,
@@ -81,28 +84,32 @@ final class CryptoController {
 
         this.logger.info("Signing Message '{}'", message);
 
-        byte[] derPrefix = CodecUtils.fromHex("3031300d060960864801650304020105000420");
+        MessageDigest hash = MessageDigest.getInstance("SHA256", "LunaProvider");
+        hash.update(message.getBytes());
+        byte[] digest = hash.digest();
 
-        this.signingSignature.update(derPrefix);
-        this.signingSignature.update(message.getBytes(Charset.defaultCharset()));
+        this.signingSignature.update(DER_PREFIX);
+        this.signingSignature.update(digest);
         String signature = this.encoder.encodeToString(this.signingSignature.sign());
+        String digestString = this.encoder.encodeToString(digest);
 
-        return Util.zip(new String[]{"message", "signature"}, new String[]{message, signature});
+        return Util.zip(new String[]{"digest", "signature"}, new String[]{digestString, signature});
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/verify", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     Map<String, Object> verify(@RequestBody Map<String, String> payload) throws GeneralSecurityException {
-        String message = Optional.of(payload.get("message"))
+        String digest = Optional.of(payload.get("digest"))
                 .orElseThrow(() -> new IllegalArgumentException("Payload must contain 'message'"));
         String signature = Optional.of(payload.get("signature"))
                 .orElseThrow(() -> new IllegalArgumentException("Payload must contain 'signature'"));
 
-        this.logger.info("Verifying Message '{}' and Signature '{}'", message, signature);
+        this.logger.info("Verifying Message '{}' and Signature '{}'", digest, signature);
 
-        this.verificationSignature.update(message.getBytes(Charset.defaultCharset()));
+        this.verificationSignature.update(DER_PREFIX);
+        this.verificationSignature.update(this.decoder.decode(digest));
         boolean verified = this.verificationSignature.verify(this.decoder.decode(signature));
 
-        return Util.zip(new String[]{"message", "signature", "verified"}, new Object[]{message, signature, verified});
+        return Util.zip(new String[]{"message", "signature", "verified"}, new Object[]{digest, signature, verified});
     }
 
 }
