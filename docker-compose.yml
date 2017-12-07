@@ -67,7 +67,7 @@ services:
     links:
       - kafka
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/asn1_codec
+      - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
 
   aem:
     build: ./asn1_codec
@@ -80,7 +80,7 @@ services:
     links:
       - kafka
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/asn1_codec
+      - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
 
   ppm_bsm:
     build: ./jpo-cvdp

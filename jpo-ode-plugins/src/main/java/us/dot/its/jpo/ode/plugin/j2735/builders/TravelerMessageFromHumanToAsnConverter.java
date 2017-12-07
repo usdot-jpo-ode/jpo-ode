@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import us.dot.its.jpo.ode.plugin.j2735.DsrcPosition3D;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -38,11 +39,6 @@ public class TravelerMessageFromHumanToAsnConverter {
          ode.set("index", index);
       }
       
-      // packetID is optional
-      if (timDataObjectNode.get("packetID") != null) {
-         timDataObjectNode.put("packetID", String.format("%018X", timDataObjectNode.get("packetID").asInt()));
-      }
-
       // timeStamp is optional
       if (timDataObjectNode.get("timeStamp") != null) {
          timDataObjectNode.put("timeStamp",
@@ -235,8 +231,10 @@ public class TravelerMessageFromHumanToAsnConverter {
          replacedContentName = "advisory";
       }
       updatedNode.remove("content");
-      updatedNode.set("frameType", replaceFrameType(updatedNode.get("frameType")));
-
+//      updatedNode.set("frameType", replaceFrameType(updatedNode.get("frameType")));
+      updatedNode.set("frameType", 
+         JsonUtils.newNode().put(updatedNode.get("frameType").asText(), EMPTY_FIELD_FLAG));
+      
       // step 2, reformat item list
       ArrayNode items = (ArrayNode) updatedNode.get("items");
       ArrayNode newItems = JsonUtils.newNode().arrayNode();
@@ -270,25 +268,25 @@ public class TravelerMessageFromHumanToAsnConverter {
       return updatedNode;
    }
 
-   public static ObjectNode replaceFrameType(JsonNode oldFrameType) {
-
-      String frameType;
-      switch (oldFrameType.asInt()) {
-      case 1:
-         frameType = "advisory";
-         break;
-      case 2:
-         frameType = "roadSignage";
-         break;
-      case 3:
-         frameType = "commercialSignage";
-         break;
-      default:
-         frameType = "unknown";
-      }
-
-      return JsonUtils.newNode().put(frameType, EMPTY_FIELD_FLAG);
-   }
+//   public static ObjectNode replaceFrameType(JsonNode oldFrameType) {
+//
+//      String frameType;
+//      switch (oldFrameType.asInt()) {
+//      case 1:
+//         frameType = "advisory";
+//         break;
+//      case 2:
+//         frameType = "roadSignage";
+//         break;
+//      case 3:
+//         frameType = "commercialSignage";
+//         break;
+//      default:
+//         frameType = "unknown";
+//      }
+//
+//      return JsonUtils.newNode().put(frameType, EMPTY_FIELD_FLAG);
+//   }
 
    public static void replaceMsgId(ObjectNode dataFrame) {
 
@@ -307,73 +305,27 @@ public class TravelerMessageFromHumanToAsnConverter {
       // </roadSignID>
       // </msgId>
 
-      JsonNode msgID = dataFrame.get("msgID");
-      if (msgID != null) {
-         if (msgID.asText().equals("RoadSignID")) {
-
-            ObjectNode roadSignID = JsonUtils.newObjectNode("position", 
-               Position3DBuilder.dsrcPosition3D(
-                  Position3DBuilder.odePosition3D(dataFrame.get("position"))));
-            roadSignID.put("viewAngle", dataFrame.get("viewAngle").asText());
-
+      JsonNode msgId = dataFrame.get("msgId");
+      if (msgId != null) {
+         ObjectNode roadSignID = (ObjectNode) msgId.get("roadSignID");
+         if (roadSignID != null) {
+            
+            DsrcPosition3D position = Position3DBuilder.dsrcPosition3D(
+                  Position3DBuilder.odePosition3D(roadSignID.get("position")));
+            
+            roadSignID.putPOJO("position", position);
+            
             // mutcdCode is optional
-            if (dataFrame.get("mutcd") != null) {
-               // transform mutcdCode
-               String mutcdName;
-               switch (dataFrame.get("mutcd").asInt()) {
-               case 1:
-                  mutcdName = "regulatory";
-                  break;
-               case 2:
-                  mutcdName = "warning";
-                  break;
-               case 3:
-                  mutcdName = "maintenance";
-                  break;
-               case 4:
-                  mutcdName = "motoristService";
-                  break;
-               case 5:
-                  mutcdName = "guide";
-                  break;
-               case 6:
-                  mutcdName = "rec";
-                  break;
-               default:
-                  mutcdName = "none";
-               }
-               roadSignID.set("mutcdCode", JsonUtils.newNode().put(mutcdName, EMPTY_FIELD_FLAG));
-
-               dataFrame.remove("mutcd");
+            JsonNode mutcdNode = roadSignID.get("mutcdCode");
+            if (mutcdNode != null) {
+               roadSignID.set("mutcdCode", JsonUtils.newNode().put(mutcdNode.asText(), EMPTY_FIELD_FLAG));
             }
 
             // crc is optional
-            JsonNode crcNode = dataFrame.get("crc");
+            JsonNode crcNode = roadSignID.get("crc");
             if (crcNode != null) {
                roadSignID.put("crc", String.format("%04X", crcNode.asInt()));
-               dataFrame.remove("crc");
             }
-
-            dataFrame.remove("msgID");
-            dataFrame.remove("position");
-            dataFrame.remove("viewAngle");
-
-            ObjectNode msgIdNode = (ObjectNode) JsonUtils.newNode().set("roadSignID", roadSignID);
-
-            dataFrame.set("msgId", msgIdNode);
-
-         } else if (msgID.asText().equals("FurtherInfoID")) {
-
-            dataFrame.remove("msgID");
-            dataFrame.remove("position");
-            dataFrame.remove("viewAngle");
-            dataFrame.remove("mutcd");
-            dataFrame.remove("crc");
-
-            ObjectNode msgId = JsonUtils.newNode();
-            msgId.put("furtherInfoID", msgID.get("FurtherInfoID").asText());
-
-            dataFrame.set("msgID", msgId);
          }
       }
    }

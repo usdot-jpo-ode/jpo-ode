@@ -198,48 +198,6 @@ public class TimFieldValidatorTest {
    }
 
    @Test
-   public void checkEmptyMessageID() {
-      String str = "";
-      try {
-         TimFieldValidator.validateMessageID(str);
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkRoadMessageID() {
-      String str = "RoadSignID";
-      try {
-         TimFieldValidator.validateMessageID(str);
-      } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
-      }
-   }
-
-   @Test
-   public void checkFurtherMessageID() {
-      String str = "FurtherInfoID";
-      try {
-         TimFieldValidator.validateMessageID(str);
-      } catch (RuntimeException e) {
-         fail("Unexcpected Exception");
-      }
-   }
-
-   @Test
-   public void checkInvalidMessageID() {
-      String str = "testString";
-      try {
-         TimFieldValidator.validateMessageID(str);
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
    public void checkLowerStartTime() {
       long time = -1;
       try {
@@ -404,27 +362,6 @@ public class TimFieldValidatorTest {
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBoundInfoType() {
-      int type = -1;
-      try {
-         TimFieldValidator.validateInfoType(type);
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerInfoType() {
-      int type = 0;
-      try {
-         TimFieldValidator.validateInfoType(type);
-      } catch (RuntimeException e) {
-         fail("Unexpected Exception");
       }
    }
 
@@ -604,48 +541,6 @@ public class TimFieldValidatorTest {
       String head = "1011011010101100";
       try {
          TimFieldValidator.validateHeading(head);
-      } catch (RuntimeException e) {
-         fail("Unexpected Exception");
-      }
-   }
-
-   @Test
-   public void checkLowerMUTCD() {
-      int code = -1;
-      try {
-         TimFieldValidator.validateMUTCDCode(code);
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBoundMUTCD() {
-      int code = 0;
-      try {
-         TimFieldValidator.validateMUTCDCode(code);
-      } catch (RuntimeException e) {
-         fail("Unexpected Exception");
-      }
-   }
-
-   @Test
-   public void checkUpperMUTCD() {
-      int code = 7;
-      try {
-         TimFieldValidator.validateMUTCDCode(code);
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkUpperBoundMUTCD() {
-      int code = 6;
-      try {
-         TimFieldValidator.validateMUTCDCode(code);
       } catch (RuntimeException e) {
          fail("Unexpected Exception");
       }
