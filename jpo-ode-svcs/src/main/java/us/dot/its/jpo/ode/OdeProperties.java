@@ -1,18 +1,5 @@
 package us.dot.its.jpo.ode;
 
-import groovy.lang.MissingPropertyException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
-import us.dot.its.jpo.ode.context.AppContext;
-import us.dot.its.jpo.ode.eventlog.EventLogger;
-import us.dot.its.jpo.ode.plugin.OdePlugin;
-import us.dot.its.jpo.ode.util.CommonUtils;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
@@ -20,6 +7,20 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+
+import groovy.lang.MissingPropertyException;
+import us.dot.its.jpo.ode.context.AppContext;
+import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.plugin.OdePlugin;
+import us.dot.its.jpo.ode.util.CommonUtils;
 
 @ConfigurationProperties("ode")
 @PropertySource("classpath:application.properties")
@@ -146,6 +147,9 @@ public class OdeProperties implements EnvironmentAware {
    private String selfSigningPrivateKeyFilePath;
    private String hsmTokenLabel;
    private String hsmTokenPassword;
+   private String cryptoProvider;
+   private String keystoreProvider; 
+   private String slot;
 
    private int dataReceiptExpirationSeconds;
 
@@ -711,6 +715,30 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setHsmTokenPassword(String hsmTokenPassword) {
       this.hsmTokenPassword = hsmTokenPassword;
+   }
+
+   public String getCryptoProvider() {
+      return cryptoProvider;
+   }
+
+   public void setCryptoProvider(String cryptoProvider) {
+      this.cryptoProvider = cryptoProvider;
+   }
+
+   public String getKeystoreProvider() {
+      return keystoreProvider;
+   }
+
+   public void setKeystoreProvider(String keystoreProvider) {
+      this.keystoreProvider = keystoreProvider;
+   }
+
+   public String getSlot() {
+      return slot;
+   }
+
+   public void setSlot(String slot) {
+      this.slot = slot;
    }
 
 }

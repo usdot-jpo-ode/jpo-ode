@@ -101,9 +101,6 @@ final class CryptoController {
 
    private final Signature verificationSignature;
 
-   private final byte[] DER_PREFIX = CodecUtils.fromHex("3031300d060960864801650304020105000420");
-
-
    @Autowired
    CryptoController(
       @Qualifier("keyPair") KeyPair keyPair,
@@ -156,12 +153,11 @@ final class CryptoController {
 
       String signature = this.encoder.encodeToString(sign(digest));
 
-      return Util.zip(new String[] { DIGEST, SIGNATURE }, new String[] { digestString, signature });
+      return Util.zip(new String[] { MESSAGE, DIGEST, SIGNATURE }, new String[] { message, digestString, signature });
    }
 
-   byte[] sign(byte[] digest) throws GeneralSecurityException {
-      this.signingSignature.update(DER_PREFIX);
-      this.signingSignature.update(digest);
+   byte[] sign(byte[] data) throws GeneralSecurityException {
+      this.signingSignature.update(data);
       return this.signingSignature.sign();
    }
 
@@ -181,7 +177,6 @@ final class CryptoController {
 
       this.logger.info("Verifying Message '{}' and Signature '{}'", digest, signature);
 
-      this.verificationSignature.update(DER_PREFIX);
       this.verificationSignature.update(this.decoder.decode(digest));
       boolean verified = this.verificationSignature.verify(this.decoder.decode(signature));
 
@@ -209,6 +204,7 @@ final class CryptoController {
       this.logger.info("validityPeriodDurationHours:  '{}'", validityPeriodDurationHours);
 
       PublicKey pubKey = this.keyPair.getPublic();
+      this.logger.info("public ley:  '{}'", CodecUtils.toHex(pubKey.getEncoded()));
 
 //      //TODO
 //      CertificateId id;
@@ -259,7 +255,7 @@ final class CryptoController {
 //
 //      byte[] seecrEncode = this.coerCoder.encode(seecr).array();
       
-      String csrFileName = this.encoder.encodeToString(pubKey.getEncoded())  + ".oer";
+      String csrFileName = CodecUtils.toHex(pubKey.getEncoded()).substring(0, 64)  + ".oer";
       FileOutputStream keyfos = new FileOutputStream(csrFileName);
       
 //      keyfos.write(seecrEncode);
