@@ -63,6 +63,11 @@ public class DateTimeUtils {
       }
    }
 
+   /**
+    * @param t1 Time point 1
+    * @param t2 Time point 2
+    * @return time points are different in milliseconds
+    */
    public static long difference(ZonedDateTime t1, ZonedDateTime t2) {
       return t2.toInstant().toEpochMilli() - t1.toInstant().toEpochMilli();
    }
