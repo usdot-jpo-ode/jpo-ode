@@ -16,9 +16,13 @@ import us.dot.its.jpo.ode.j2735.dsrc.GeometricProjection;
 import us.dot.its.jpo.ode.j2735.dsrc.MsgCRC;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame;
 import us.dot.its.jpo.ode.j2735.dsrc.ValidRegion.Area;
-import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
+import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage.DataFrame.MsgId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage.DataFrame.Region.Circle;
+import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage.DataFrame.RoadSignID;
+import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.FrameType;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.MutcdCode;
 
 public class OssTravelerMessageBuilderTest {
 
@@ -2292,21 +2296,27 @@ public class OssTravelerMessageBuilderTest {
    }
 
    @Test
-   public void checkTravelerMessageBuilder() {
+   public void checkTravelerMessageBuilderRoadSignId() {
       J2735TravelerInformationMessage tim = new J2735TravelerInformationMessage();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
-      tim.setPacketID(10);
+      tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
       df.setsspTimRights((short) 0);
-      df.setFrameType(0);
-      df.setMsgID("RoadSignID");
-      df.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
-      df.setViewAngle("1010101010101010");
-      df.setMutcd(5);
-      df.setCrc("1111111111111111");
+      df.setFrameType(FrameType.TravelerInfoType.advisory);
+      
+      RoadSignID roadSignID = new RoadSignID(); 
+      roadSignID.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
+      roadSignID.setViewAngle("1010101010101010");
+      roadSignID.setMutcdCode(MutcdCode.MutcdCodeEnum.guide);
+      roadSignID.setCrc("1111111111111111");
+      
+      MsgId msgId = new MsgId();
+      msgId.setRoadSignID(roadSignID);
+      
+      df.setMsgId(msgId);
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -2353,13 +2363,16 @@ public class OssTravelerMessageBuilderTest {
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
-      tim.setPacketID(10);
+      tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
       df.setsspTimRights((short) 0);
-      df.setFrameType(0);
-      df.setMsgID("FurtherInfoID");
-      df.setFurtherInfoID("0000000000000001");
+      df.setFrameType(FrameType.TravelerInfoType.advisory);
+      
+      MsgId msgId = new MsgId();
+      msgId.setFurtherInfoID("ABCD");
+      
+      df.setMsgId(msgId);
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -2406,13 +2419,15 @@ public class OssTravelerMessageBuilderTest {
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
-      tim.setPacketID(10);
+      tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
       df.setsspTimRights((short) 0);
-      df.setFrameType(0);
-      df.setMsgID("FurtherInfoID");
-      df.setFurtherInfoID(null);
+      df.setFrameType(FrameType.TravelerInfoType.advisory);
+      
+      MsgId msgId = new MsgId();
+      
+      df.setMsgId(msgId);
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -2448,8 +2463,9 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       try {
          b.buildTravelerInformation(tim);
+         fail("Expected IllegalArgumentException");
       } catch (Exception e) {
-         fail("Unexpected exception");
+         assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
    
@@ -2459,13 +2475,16 @@ public class OssTravelerMessageBuilderTest {
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
-      tim.setPacketID(10);
+      tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
       df.setsspTimRights((short) 0);
-      df.setFrameType(0);
-      df.setMsgID("FurtherInfoID");
-      df.setFurtherInfoID("");
+      df.setFrameType(FrameType.TravelerInfoType.advisory);
+      
+      MsgId msgId = new MsgId();
+      msgId.setFurtherInfoID("");
+      
+      df.setMsgId(msgId);
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -2501,24 +2520,25 @@ public class OssTravelerMessageBuilderTest {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       try {
          b.buildTravelerInformation(tim);
+         fail("Expected IllegalArgumentException");
       } catch (Exception e) {
-         fail("Unexpected exception");
+         assertEquals(IllegalArgumentException.class, e.getClass());
       }
    }
    
    @Test
-   public void checkTravelerMessageBuilderBadMessageID() {
+   public void checkTravelerMessageBuilderNullMsgID() {
       J2735TravelerInformationMessage tim = new J2735TravelerInformationMessage();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
-      tim.setPacketID(10);
+      tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
       df.setsspTimRights((short) 0);
-      df.setFrameType(0);
-      df.setMsgID("blah");
-      df.setFurtherInfoID("0000000000000001");
+      df.setFrameType(FrameType.TravelerInfoType.advisory);
+      
+      df.setMsgId(null);
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -2566,16 +2586,22 @@ public class OssTravelerMessageBuilderTest {
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
-      tim.setPacketID(10);
+      tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
       df.setsspTimRights((short) 0);
-      df.setFrameType(0);
-      df.setMsgID("RoadSignID");
-      df.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
-      df.setViewAngle("1010101010101010");
-      df.setMutcd(5);
-      df.setCrc("1111111111111111");
+      df.setFrameType(FrameType.TravelerInfoType.advisory);
+      
+      RoadSignID roadSignID = new RoadSignID(); 
+      roadSignID.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
+      roadSignID.setViewAngle("1010101010101010");
+      roadSignID.setMutcdCode(MutcdCode.MutcdCodeEnum.guide);
+      roadSignID.setCrc("1111111111111111");
+      
+      MsgId msgId = new MsgId();
+      msgId.setRoadSignID(roadSignID);
+      
+      df.setMsgId(msgId);
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -2658,16 +2684,22 @@ public class OssTravelerMessageBuilderTest {
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
-      tim.setPacketID(10);
+      tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
       df.setsspTimRights((short) 0);
-      df.setFrameType(0);
-      df.setMsgID("RoadSignID");
-      df.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
-      df.setViewAngle("1010101010101010");
-      df.setMutcd(5);
-      df.setCrc("1111111111111110");
+      df.setFrameType(FrameType.TravelerInfoType.advisory);
+      
+      RoadSignID roadSignID = new RoadSignID(); 
+      roadSignID.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
+      roadSignID.setViewAngle("1010101010101010");
+      roadSignID.setMutcdCode(MutcdCode.MutcdCodeEnum.guide);
+      roadSignID.setCrc("1111111111111111");
+      
+      MsgId msgId = new MsgId();
+      msgId.setRoadSignID(roadSignID);
+      
+      df.setMsgId(msgId);
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -2750,16 +2782,22 @@ public class OssTravelerMessageBuilderTest {
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
-      tim.setPacketID(10);
+      tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
       df.setsspTimRights((short) 0);
-      df.setFrameType(0);
-      df.setMsgID("RoadSignID");
-      df.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
-      df.setViewAngle("1010101010101010");
-      df.setMutcd(5);
-      df.setCrc("1111111111111110");
+      df.setFrameType(FrameType.TravelerInfoType.advisory);
+      
+      RoadSignID roadSignID = new RoadSignID(); 
+      roadSignID.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
+      roadSignID.setViewAngle("1010101010101010");
+      roadSignID.setMutcdCode(MutcdCode.MutcdCodeEnum.guide);
+      roadSignID.setCrc("1111111111111111");
+      
+      MsgId msgId = new MsgId();
+      msgId.setRoadSignID(roadSignID);
+      
+      df.setMsgId(msgId);
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -2812,16 +2850,22 @@ public class OssTravelerMessageBuilderTest {
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
-      tim.setPacketID(10);
+      tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
       df.setsspTimRights((short) 0);
-      df.setFrameType(0);
-      df.setMsgID("RoadSignID");
-      df.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
-      df.setViewAngle("1010101010101010");
-      df.setMutcd(5);
-      df.setCrc("1111111111111110");
+      df.setFrameType(FrameType.TravelerInfoType.advisory);
+      
+      RoadSignID roadSignID = new RoadSignID(); 
+      roadSignID.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
+      roadSignID.setViewAngle("1010101010101010");
+      roadSignID.setMutcdCode(MutcdCode.MutcdCodeEnum.guide);
+      roadSignID.setCrc("1111111111111111");
+      
+      MsgId msgId = new MsgId();
+      msgId.setRoadSignID(roadSignID);
+      
+      df.setMsgId(msgId);
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -2874,16 +2918,22 @@ public class OssTravelerMessageBuilderTest {
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
-      tim.setPacketID(10);
+      tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
       df.setsspTimRights((short) 0);
-      df.setFrameType(0);
-      df.setMsgID("RoadSignID");
-      df.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
-      df.setViewAngle("1010101010101010");
-      df.setMutcd(5);
-      df.setCrc("1111111111111111");
+      df.setFrameType(FrameType.TravelerInfoType.advisory);
+      
+      RoadSignID roadSignID = new RoadSignID(); 
+      roadSignID.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
+      roadSignID.setViewAngle("1010101010101010");
+      roadSignID.setMutcdCode(MutcdCode.MutcdCodeEnum.guide);
+      roadSignID.setCrc("1111111111111111");
+      
+      MsgId msgId = new MsgId();
+      msgId.setRoadSignID(roadSignID);
+      
+      df.setMsgId(msgId);
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -2936,16 +2986,22 @@ public class OssTravelerMessageBuilderTest {
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
-      tim.setPacketID(10);
+      tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
       df.setsspTimRights((short) 0);
-      df.setFrameType(0);
-      df.setMsgID("RoadSignID");
-      df.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
-      df.setViewAngle("1010101010101010");
-      df.setMutcd(5);
-      df.setCrc("1111111111111111");
+      df.setFrameType(FrameType.TravelerInfoType.advisory);
+      
+      RoadSignID roadSignID = new RoadSignID(); 
+      roadSignID.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
+      roadSignID.setViewAngle("1010101010101010");
+      roadSignID.setMutcdCode(MutcdCode.MutcdCodeEnum.guide);
+      roadSignID.setCrc("1111111111111111");
+      
+      MsgId msgId = new MsgId();
+      msgId.setRoadSignID(roadSignID);
+      
+      df.setMsgId(msgId);
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
@@ -3035,16 +3091,22 @@ public class OssTravelerMessageBuilderTest {
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
-      tim.setPacketID(10);
+      tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
       df.setsspTimRights((short) 0);
-      df.setFrameType(0);
-      df.setMsgID("RoadSignID");
-      df.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
-      df.setViewAngle("1010101010101010");
-      df.setMutcd(5);
-      df.setCrc("1111111111111111");
+      df.setFrameType(FrameType.TravelerInfoType.advisory);
+      
+      RoadSignID roadSignID = new RoadSignID(); 
+      roadSignID.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
+      roadSignID.setViewAngle("1010101010101010");
+      roadSignID.setMutcdCode(MutcdCode.MutcdCodeEnum.guide);
+      roadSignID.setCrc("1111111111111111");
+      
+      MsgId msgId = new MsgId();
+      msgId.setRoadSignID(roadSignID);
+      
+      df.setMsgId(msgId);
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);

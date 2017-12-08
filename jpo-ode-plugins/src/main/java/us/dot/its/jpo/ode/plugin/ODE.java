@@ -5,7 +5,7 @@ import us.dot.its.jpo.ode.model.OdeObject;
 public class ODE extends OdeObject {
    private static final long serialVersionUID = 664813454587275001L;
 
-   private int version = 1;
+   private int version = 2;
    private int index;
 
    public int getVersion() {
