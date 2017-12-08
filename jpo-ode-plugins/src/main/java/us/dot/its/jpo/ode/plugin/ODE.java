@@ -4,9 +4,13 @@ import us.dot.its.jpo.ode.model.OdeObject;
 
 public class ODE extends OdeObject {
    private static final long serialVersionUID = 664813454587275001L;
+   
+   public static final int POST = 0;
+   public static final int PUTS = 1;
 
    private int version = 1;
    private int index;
+   private int verb;
 
    public int getVersion() {
       return version;
@@ -23,12 +27,21 @@ public class ODE extends OdeObject {
    public void setIndex(int index) {
       this.index = index;
    }
+   
+   public int getVerb() {
+      return verb;
+   }
+
+   public void setVerb(int verb) {
+      this.verb = verb;
+   }
 
    @Override
    public int hashCode() {
       final int prime = 31;
       int result = 1;
       result = prime * result + index;
+      result = prime * result + verb;
       result = prime * result + version;
       return result;
    }
@@ -44,10 +57,10 @@ public class ODE extends OdeObject {
       ODE other = (ODE) obj;
       if (index != other.index)
          return false;
+      if (verb != other.verb)
+         return false;
       if (version != other.version)
          return false;
       return true;
    }
-   
-   
 }

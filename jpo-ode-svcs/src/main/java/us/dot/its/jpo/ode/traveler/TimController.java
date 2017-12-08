@@ -229,6 +229,110 @@ public class TimController {
 
       return ResponseEntity.status(returnCode).body(bodyMsg);
    }
+   
+   /**
+    * Deposit a TIM
+    * 
+    * @param jsonString
+    *           TIM in JSON
+    * @return list of success/failures
+    */
+   @ResponseBody
+   @RequestMapping(value = "/tim", method = RequestMethod.PUT, produces = "application/json")
+   @CrossOrigin
+   public ResponseEntity<String> updateTim(@RequestBody String jsonString) {
+
+      // Check empty
+      if (null == jsonString || jsonString.isEmpty()) {
+         String errMsg = "Empty request.";
+         logger.error(errMsg);
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
+      }
+
+      OdeTravelerInputData travelerInputData = null; 
+      try {
+         // Convert JSON to POJO
+         travelerInputData = (OdeTravelerInputData) JsonUtils.fromJson(jsonString, OdeTravelerInputData.class);
+         if (travelerInputData.getOde() == null) {
+            travelerInputData.setOde(new ODE());
+         }
+         
+         travelerInputData.getOde().setVerb(0);
+
+         logger.debug("J2735TravelerInputData: {}", jsonString);
+
+      } catch (Exception e) {
+         String errMsg = "Malformed or non-compliant JSON.";
+         logger.error(errMsg, e);
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
+      }
+
+      // Add metadata to message and publish to kafka
+      OdeMsgPayload timDataPayload = new OdeMsgPayload(travelerInputData.getTim());
+      OdeMsgMetadata timMetadata = new OdeMsgMetadata(timDataPayload);
+      OdeTimData odeTimData = new OdeTimData(timMetadata, timDataPayload);
+      timProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastPojo(), null, odeTimData);
+
+      // Craft ASN-encodable TIM
+      ObjectNode encodableTid;
+      try {
+         encodableTid = TravelerMessageFromHumanToAsnConverter
+               .changeTravelerInformationToAsnValues(JsonUtils.toObjectNode(travelerInputData.toJson()));
+
+         logger.debug("Encodable TravelerInputData: {}", encodableTid);
+
+      } catch (Exception e) {
+         String errMsg = "Error converting to encodable TIM.";
+         logger.error(errMsg, e);
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
+      }
+
+      SDW sdw = travelerInputData.getSdw();
+      DdsAdvisorySituationData asd = null;
+      if (null != sdw) {
+         try {
+            Ieee1609Dot2DataTag ieeeDataTag = new Ieee1609Dot2DataTag();
+            Ieee1609Dot2Data ieee = new Ieee1609Dot2Data();
+            Ieee1609Dot2Content ieeeContent = new Ieee1609Dot2Content();
+            J2735MessageFrame j2735Mf = new J2735MessageFrame();
+            MessageFrame mf = new MessageFrame();
+            mf.setMessageFrame(j2735Mf);
+            ieeeContent.setUnsecuredData(mf);
+            ieee.setContent(ieeeContent );
+            ieeeDataTag.setIeee1609Dot2Data(ieee);
+            
+            // take deliverystart and stop times from SNMP object, if present
+            // else take from SDW object
+            SNMP snmp = travelerInputData.getSnmp();
+            if (null != snmp) {
+
+               asd = new DdsAdvisorySituationData(snmp.getDeliverystart(), snmp.getDeliverystop(), ieeeDataTag,
+                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
+            } else {
+               asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), ieeeDataTag,
+                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
+            }
+            
+            
+         } catch (ParseException e) {
+            String errMsg = "Error AdvisorySituationDatae: " + e.getMessage();
+            logger.error(errMsg, e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
+         }
+      }
+
+      // Encode TIM
+      try {
+         String xmlMsg = convertToXml(asd, encodableTid);
+         stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlMsg);
+      } catch (Exception e) {
+         String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
+         logger.error(errMsg, e);
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
+      }
+
+      return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("Success", "true"));
+   }
 
    /**
     * Deposit a TIM
@@ -256,6 +360,8 @@ public class TimController {
          if (travelerInputData.getOde() == null) {
             travelerInputData.setOde(new ODE());
          }
+         
+         travelerInputData.getOde().setVerb(1);
 
          logger.debug("J2735TravelerInputData: {}", jsonString);
 
