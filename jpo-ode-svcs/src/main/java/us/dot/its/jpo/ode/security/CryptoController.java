@@ -1,23 +1,33 @@
 package us.dot.its.jpo.ode.security;
 
-import org.campllc.scms.protocols.Protocols;
-import org.campllc.scms.protocols.ieee1609dot2.CertificateId;
-import org.campllc.scms.protocols.ieee1609dot2.SequenceOfPsidGroupPermissions;
-import org.campllc.scms.protocols.ieee1609dot2.SignerIdentifier;
-import org.campllc.scms.protocols.ieee1609dot2.ToBeSignedCertificate;
-import org.campllc.scms.protocols.ieee1609dot2.ToBeSignedData;
-import org.campllc.scms.protocols.ieee1609dot2.VerificationKeyIndicator;
-import org.campllc.scms.protocols.ieee1609dot2basetypes.CrlSeries;
-import org.campllc.scms.protocols.ieee1609dot2basetypes.GeographicRegion;
-import org.campllc.scms.protocols.ieee1609dot2basetypes.HashAlgorithm;
-import org.campllc.scms.protocols.ieee1609dot2basetypes.HashedId3;
-import org.campllc.scms.protocols.ieee1609dot2basetypes.Uint8;
-import org.campllc.scms.protocols.ieee1609dot2basetypes.ValidityPeriod;
-import org.campllc.scms.protocols.ieee1609dot2ecaendentityinterface.EeEcaCertRequest;
-import org.campllc.scms.protocols.ieee1609dot2scmsprotocol.ScopedCertificateRequest;
-import org.campllc.scms.protocols.ieee1609dot2scmsprotocol.SignedCertificateRequest;
-import org.campllc.scms.protocols.ieee1609dot2scmsprotocol.SignedEeEnrollmentCertRequest;
-import org.campllc.scms.protocols.ieee1609dot2scmsprotocol.SignedEeEnrollmentCertRequest.Content;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
+import java.security.KeyPair;
+import java.security.KeyStoreException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
+import java.text.ParseException;
+import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Date;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.crypto.Cipher;
+
+import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
+import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import org.bouncycastle.crypto.util.PrivateKeyFactory;
+import org.bouncycastle.crypto.util.PublicKeyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,44 +38,86 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.oss.asn1.AbstractData;
 import com.oss.asn1.COERCoder;
+import com.oss.asn1.DecodeFailedException;
+import com.oss.asn1.DecodeNotSupportedException;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
-import com.oss.asn1.Null;
 import com.oss.asn1.OctetString;
 
+import gov.usdot.asn1.generated.ieee1609dot2.Ieee1609dot2;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.EccP256CurvePoint;
-import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.EcdsaP256Signature;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Time32;
 import gov.usdot.cv.security.clock.ClockHelper;
+import gov.usdot.cv.security.crypto.CryptoException;
+import gov.usdot.cv.security.crypto.CryptoProvider;
+import gov.usdot.cv.security.crypto.ECDSAProvider;
+import gov.usdot.cv.security.crypto.EcdsaP256SignatureWrapper;
 import gov.usdot.cv.security.util.Time32Helper;
+import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
-
-import javax.crypto.Cipher;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.security.GeneralSecurityException;
-import java.security.KeyPair;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PublicKey;
-import java.security.Signature;
-import java.text.ParseException;
-import java.time.ZonedDateTime;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 @RestController
 final class CryptoController {
+
+   public class EcR_Params extends OdeObject {
+
+      private static final long serialVersionUID = 1L;
+      
+      private String type;
+      private byte[] value;
+      
+      public String getType() {
+         return type;
+      }
+      public void setType(String type) {
+         this.type = type;
+      }
+      public byte[] getValue() {
+         return value;
+      }
+      public void setValue(byte[] value) {
+         this.value = value;
+      }
+    
+      public String toHex() {
+         return JsonUtils.newObjectNode("type", type).put("value", CodecUtils.toHex(value)).toString();
+      }
+   }
+
+   public class EcParams extends OdeObject {
+      private static final long serialVersionUID = 1L;
+
+      private EcR_Params r;
+      private byte[] s;
+      
+      public EcR_Params getR() {
+         return r;
+      }
+      public void setR(EcR_Params r) {
+         this.r = r;
+      }
+      public byte[] getS() {
+         return s;
+      }
+      public void setS(byte[] s) {
+         this.s = s;
+      }
+      
+      public String toHex() {
+         String rStr = r.toHex();
+         String sStr = CodecUtils.toHex(s);
+         return "{r:" + rStr + ",s:" + sStr + "}";
+      }
+      
+   }
+   private static final String X_ONLY = "x-only";
+
+   private static final String COMPRESSED_Y_1 = "compressed-y-1";
+
+   private static final String COMPRESSED_Y_0 = "compressed-y-0";
 
    private static final String VALIDITY_PERIOD_STOP = "validityPeriodStop";
 
@@ -91,7 +143,7 @@ final class CryptoController {
 
    private final Base64.Encoder encoder = Base64.getEncoder();
    
-   private final COERCoder coerCoder = Protocols.getCOERCoder();
+   private final COERCoder coerCoder = Ieee1609dot2.getCOERCoder();
 
    private final KeyPair keyPair;
    
@@ -101,14 +153,18 @@ final class CryptoController {
 
    private final Signature verificationSignature;
 
+   private final Certificate enrollmentCert;
+
    @Autowired
    CryptoController(
       @Qualifier("keyPair") KeyPair keyPair,
+      @Qualifier("enrollmentCert") Certificate enrollmentCert,
       @Qualifier("decryptionCipher") Cipher decryptionCipher,
       @Qualifier("encryptionCipher") Cipher encryptionCipher,
       @Qualifier("signingSignature") Signature signingSignature,
       @Qualifier("verificationSignature") Signature verificationSignature) {
       this.keyPair = keyPair;
+      this.enrollmentCert = enrollmentCert;
       this.decryptionCipher = decryptionCipher;
       this.encryptionCipher = encryptionCipher;
       this.signingSignature = signingSignature;
@@ -142,18 +198,31 @@ final class CryptoController {
    }
 
    @RequestMapping(method = RequestMethod.POST, value = "/sign", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-   Map<String, String> sign(@RequestBody Map<String, String> payload) throws GeneralSecurityException {
+   Map<String, String> sign(@RequestBody Map<String, String> payload) throws GeneralSecurityException, DecodeFailedException, DecodeNotSupportedException {
       String message = Optional.of(payload.get(MESSAGE))
             .orElseThrow(() -> new IllegalArgumentException(PAYLOAD_MUST_CONTAIN + MESSAGE));
 
       this.logger.info("Signing Message '{}'", message);
 
-      byte[] digest = digest(message.getBytes());
-      String digestString = this.encoder.encodeToString(digest);
+//      byte[] digest = digest(message.getBytes());
+//      String digestString = this.encoder.encodeToString(digest);
 
-      String signature = this.encoder.encodeToString(sign(digest));
+      byte[] sig = sign(message.getBytes());
+      
+//      EcdsaP256Signature asnSig = new EcdsaP256Signature();
+//      coerCoder.decode(ByteBuffer.wrap(sig), asnSig);
+//      EccP256CurvePoint r = asnSig.getR();
+//      OctetString xOnly = r.getX_only();
+//      OctetString s = asnSig.getS();
+      
+//      String signature = this.encoder.encodeToString(sig);
+      String signature = CodecUtils.toHex(sig);
+//      String xOnlyString = CodecUtils.toHex(xOnly.byteArrayValue());
+//      String sString = CodecUtils.toHex(s.byteArrayValue());
 
-      return Util.zip(new String[] { MESSAGE, DIGEST, SIGNATURE }, new String[] { message, digestString, signature });
+//      return Util.zip(new String[] { MESSAGE, DIGEST, SIGNATURE, "x-only", "s" }, new String[] { message, digestString, signature, xOnlyString, sString});
+//      return Util.zip(new String[] { MESSAGE, SIGNATURE, "x-only", "s" }, new String[] { message, signature, xOnlyString, sString});
+      return Util.zip(new String[] { MESSAGE, SIGNATURE }, new String[] { message, signature});
    }
 
    byte[] sign(byte[] data) throws GeneralSecurityException {
@@ -170,21 +239,22 @@ final class CryptoController {
    
    @RequestMapping(method = RequestMethod.POST, value = "/verify", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
    Map<String, Object> verify(@RequestBody Map<String, String> payload) throws GeneralSecurityException {
-      String digest = Optional.of(payload.get(DIGEST))
-            .orElseThrow(() -> new IllegalArgumentException(PAYLOAD_MUST_CONTAIN + DIGEST));
+      String message = Optional.of(payload.get(MESSAGE))
+            .orElseThrow(() -> new IllegalArgumentException(PAYLOAD_MUST_CONTAIN + MESSAGE));
       String signature = Optional.of(payload.get(SIGNATURE))
             .orElseThrow(() -> new IllegalArgumentException(PAYLOAD_MUST_CONTAIN + SIGNATURE));
 
-      this.logger.info("Verifying Message '{}' and Signature '{}'", digest, signature);
+      this.logger.info("Verifying Message '{}' and Signature '{}'", message, signature);
 
-      this.verificationSignature.update(this.decoder.decode(digest));
-      boolean verified = this.verificationSignature.verify(this.decoder.decode(signature));
+      this.verificationSignature.update(message.getBytes());
+//      boolean verified = this.verificationSignature.verify(this.decoder.decode(signature));
+      boolean verified = this.verificationSignature.verify(CodecUtils.fromHex(signature));
 
-      return Util.zip(new String[] { DIGEST, SIGNATURE, "verified" }, new Object[] { digest, signature, verified });
+      return Util.zip(new String[] { MESSAGE, SIGNATURE, "verified" }, new Object[] { message, signature, verified });
    }
 
-   @RequestMapping(method = RequestMethod.POST, value = "/csr", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-   Map<String, Object> csr(@RequestBody Map<String, String> payload) throws GeneralSecurityException, ParseException, EncodeFailedException, EncodeNotSupportedException, IOException {
+   @RequestMapping(method = RequestMethod.POST, value = "/savecsr", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+   Map<String, Object> savecsr(@RequestBody Map<String, String> payload) throws GeneralSecurityException, ParseException, EncodeFailedException, EncodeNotSupportedException, IOException {
       Date nowDate = ClockHelper.nowDate();
       ZonedDateTime nowZdt = DateTimeUtils.isoDateTime(nowDate);
       Time32 currentTime = Time32Helper.dateToTime32(nowDate);
@@ -265,4 +335,64 @@ final class CryptoController {
          new Object[] { name, csrFileName});
    }
 
+   @RequestMapping(method = RequestMethod.GET, value = "/pkSigParams", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+   Map<String, Object> pkSigParams() throws CryptoException, KeyStoreException, CertificateEncodingException, IOException {
+      ECDSAProvider provider = new CryptoProvider().getSigner();
+//      AsymmetricCipherKeyPair keyPair = provider.generateKeyPair();
+//      logger.info("Generated keypair: {}", keyPair);
+//      
+//      ECPrivateKeyParameters privateKey = (ECPrivateKeyParameters)keyPair.getPrivate();
+//      ECPublicKeyParameters  publicKey  = (ECPublicKeyParameters)keyPair.getPublic();
+
+      ECPrivateKeyParameters privateKey = (ECPrivateKeyParameters) PrivateKeyFactory.createKey(keyPair.getPrivate().getEncoded());
+      ECPublicKeyParameters  publicKey  = (ECPublicKeyParameters) PublicKeyFactory.createKey(keyPair.getPublic().getEncoded());
+
+      final int maxByteBuffer = (1 << 16) - 1;
+      ByteBuffer privateByteBuffer = ByteBuffer.allocate(maxByteBuffer);
+      provider.encodePrivateKey(privateByteBuffer, privateKey);
+      byte[] privateKeyBytes = (privateByteBuffer != null) ? (Arrays.copyOfRange(privateByteBuffer.array(), 0, privateByteBuffer.position())) : null;
+      logger.debug("Private key size: {}", privateKeyBytes.length);
+      
+      EccP256CurvePoint encodedPublicKey = provider.encodePublicKey(publicKey);
+      logger.debug("Public Key encoded");
+      
+      EcR_Params encodedPubKeyParams = getEcParams(encodedPublicKey);
+      
+      byte[] signerCertBytes = enrollmentCert.getEncoded();
+      EcdsaP256SignatureWrapper pubKeySignature = provider.computeSignature(
+         encodedPubKeyParams.getValue(), signerCertBytes, privateKey);
+      logger.info("Signed Public Key");
+      
+      gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Signature encodedPubKeySig = 
+            pubKeySignature.encode();
+      
+      EccP256CurvePoint encodedPubKeySigR = encodedPubKeySig.getEcdsaNistP256Signature().getR();
+      OctetString encodedPubKeySigS = encodedPubKeySig.getEcdsaNistP256Signature().getS();
+      
+      EcR_Params encodedPubKeySigRParams = getEcParams(encodedPubKeySigR);
+
+      EcParams encodedPubKeySigParams = new EcParams();
+      encodedPubKeySigParams.setR(encodedPubKeySigRParams);
+      encodedPubKeySigParams.setS(encodedPubKeySigS.byteArrayValue());
+      
+      return Util.zip(new String[] { "publicKeyCurvePoint", "privateKeySignature" },
+         new Object[] {encodedPubKeyParams.toHex(), encodedPubKeySigParams.toHex()});
+   }
+   
+   EcR_Params getEcParams(EccP256CurvePoint eccP256CurvePoint) {
+      EcR_Params ecrParams = new EcR_Params();
+      
+      if(eccP256CurvePoint.hasCompressed_y_0()) {
+         ecrParams.setValue(eccP256CurvePoint.getCompressed_y_0().byteArrayValue());
+         ecrParams.setType(COMPRESSED_Y_0);
+      } else if (eccP256CurvePoint.hasCompressed_y_1()) {
+         ecrParams.setValue(eccP256CurvePoint.getCompressed_y_1().byteArrayValue());
+         ecrParams.setType(COMPRESSED_Y_1);
+      } else if (eccP256CurvePoint.hasX_only()) {
+         ecrParams.setValue(eccP256CurvePoint.getX_only().byteArrayValue());
+         ecrParams.setType(X_ONLY);
+      }
+
+      return ecrParams;
+   }
 }

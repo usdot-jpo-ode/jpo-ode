@@ -145,12 +145,14 @@ public class OdeProperties implements EnvironmentAware {
    private String selfCertPath;
    private String selfPrivateKeyReconstructionFilePath;
    private String selfSigningPrivateKeyFilePath;
+   //HSM
    private String hsmTokenLabel;
    private String hsmTokenPassword;
    private String cryptoProvider;
    private String keystoreProvider; 
-   private String slot;
-
+   private String hsmSlotNumber;
+   private String hsmKeyPairAlias;
+   
    private int dataReceiptExpirationSeconds;
 
    private static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
@@ -733,12 +735,20 @@ public class OdeProperties implements EnvironmentAware {
       this.keystoreProvider = keystoreProvider;
    }
 
-   public String getSlot() {
-      return slot;
+   public String getHsmSlotNumber() {
+      return hsmSlotNumber;
    }
 
-   public void setSlot(String slot) {
-      this.slot = slot;
+   public void setHsmSlotNumber(String hsmSlotNumber) {
+      this.hsmSlotNumber = hsmSlotNumber;
+   }
+
+   public String getHsmKeyPairAlias() {
+      return hsmKeyPairAlias;
+   }
+
+   public void setHsmKeyPairAlias(String hsmKeyPairAlias) {
+      this.hsmKeyPairAlias = hsmKeyPairAlias;
    }
 
 }
