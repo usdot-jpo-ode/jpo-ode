@@ -6,7 +6,7 @@ public class ODE extends OdeObject {
    private static final long serialVersionUID = 664813454587275001L;
    
    public static final int POST = 0;
-   public static final int PUTS = 1;
+   public static final int PUT = 1;
 
    private int version = 1;
    private int index;
