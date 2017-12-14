@@ -177,7 +177,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
                    httpResponseStatus = "Success";
                 } else if (rsuResponse.getResponse().getErrorStatus() == 5) {
                    // Error, message already exists
-                   httpResponseStatus = "Message already exists at ".concat(Integer.toString(travelerInfo.getTim().getIndex()));
+                   httpResponseStatus = "Message already exists at ".concat(Integer.toString(travelerInfo.getOde().getIndex()));
                 } else {
                    // Misc error
                    httpResponseStatus = "Error code " + rsuResponse.getResponse().getErrorStatus() + " "
