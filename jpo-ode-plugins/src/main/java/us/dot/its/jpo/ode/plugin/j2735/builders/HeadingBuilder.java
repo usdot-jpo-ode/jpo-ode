@@ -7,9 +7,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class HeadingBuilder {
     
-    public static BigDecimal genericHeading(JsonNode heading) {
-        return AngleBuilder.longToDecimal(heading.asLong()).setScale(1, RoundingMode.HALF_DOWN);
-    }
+   public static BigDecimal genericHeading(JsonNode heading) {
+      return genericHeading(heading.asLong());
+   }
+
+   public static BigDecimal genericHeading(long heading) {
+      return AngleBuilder.longToDecimal(heading).setScale(1, RoundingMode.HALF_DOWN);
+   }
 
     public static BigDecimal genericCoarseHeading(JsonNode coarseHeading) {
 
