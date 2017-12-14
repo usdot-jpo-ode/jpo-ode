@@ -11,10 +11,14 @@ import org.junit.Test;
 public class TimeStampConverterTest {
    
    @Test
-   public void test1() {
+   public void testKnownTime() {
       String testInput = "2017-11-20T22:16:12.874Z";
       
-      int expectedResult = 0;
+      long expectedResult = 466456;
+      
+      long actualResult = TravelerMessageFromHumanToAsnConverter.translateISOTimeStampToMinuteOfYear(testInput);
+      
+      assertEquals(expectedResult, actualResult);  
    }
    
    /**
@@ -35,7 +39,7 @@ public class TimeStampConverterTest {
     */
    @Test
    public void testLowerBound() {
-      String testInput = "2017-1-00T00:00:00.000Z";
+      String testInput = "2017-01-01T00:00:00.000Z";
       long expectedResult = 0;
       
       long actualResult = TravelerMessageFromHumanToAsnConverter.translateISOTimeStampToMinuteOfYear(testInput);
@@ -44,11 +48,11 @@ public class TimeStampConverterTest {
    }
    
    /**
-    * Latest time in the year should return max value
+    * Latest time in a leap year should return max value
     */
    @Test
    public void testUpperBound() {
-      String testInput = "2017-1-00T00:00:00.000Z";
+      String testInput = "2016-12-31T23:59:00.000Z";
       long expectedResult = 527039;
       
       long actualResult = TravelerMessageFromHumanToAsnConverter.translateISOTimeStampToMinuteOfYear(testInput);

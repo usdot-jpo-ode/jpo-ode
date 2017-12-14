@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
@@ -156,9 +157,8 @@ public class TravelerMessageFromHumanToAsnConverter {
       try {
          ZonedDateTime zDateTime = DateTimeUtils.isoDateTime(isoTime);
          startYear = zDateTime.getYear();
-         startMinute = (int) DateTimeUtils.difference(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0), zDateTime)
-               / 60000;
-      } catch (ParseException e) {
+         startMinute = (int) Duration.between(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0), zDateTime).toMinutes();
+      } catch (Exception e) { // NOSONR
          // failed to parse datetime, default back to unknown values
       }
 
