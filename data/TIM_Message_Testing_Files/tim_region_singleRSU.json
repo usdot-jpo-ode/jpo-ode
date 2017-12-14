@@ -6,21 +6,24 @@
   	"index": "10",
     "msgCnt": "13",
     "timeStamp": "2017-03-13T01:07:11-05:00",
-    "packetID": "1",
+    "packetID": "EC9C236B0000000000",
     "urlB": "null",
     "dataframes": [
       {
         "sspTimRights": "0",
-        "frameType": "0",
-        "msgID": "RoadSignID",
-        "position": {
-          "latitude": "41.678473",
-          "longitude": "-108.782775",
-          "elevation": "917.1432"
+        "frameType": "advisory",
+        "msgId": {
+          "roadSignID": {
+            "position": {
+              "latitude": "41.678473",
+              "longitude": "-108.782775",
+              "elevation": "917.1432"
+            },
+            "viewAngle": "1010101010101010",
+            "mutcdCode": "warning",
+            "crc": "0000000000000000"
+          }
         },
-        "viewAngle": "1010101010101010",
-        "mutcd": "5",
-        "crc": "0000000000000000",
         "startDateTime": "2017-12-01T17:47:11-05:00",
         "durationTime": "22",
         "priority": "0",
@@ -73,18 +76,6 @@
       "rsuPassword": "password",
       "rsuRetries": "0",
       "rsuTimeout": "2000"
-    },{
-      "rsuTarget": "127.0.0.2",
-      "rsuUsername": "user",
-      "rsuPassword": "password",
-      "rsuRetries": "1",
-      "rsuTimeout": "1000"
-    },{
-      "rsuTarget": "127.0.0.3",
-      "rsuUsername": "user",
-      "rsuPassword": "password",
-      "rsuRetries": "1",
-      "rsuTimeout": "1000"
     }
   ],
   "snmp": {
@@ -99,7 +90,7 @@
     "status": "4"
   },
   "sdw": {
-    "ttl": "oneminute",
+    "ttl": "oneday",
     "serviceRegion": {
       "nwCorner": {
         "latitude": "44.998459",

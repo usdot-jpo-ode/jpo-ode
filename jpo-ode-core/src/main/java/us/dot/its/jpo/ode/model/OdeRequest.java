@@ -16,8 +16,6 @@
  *******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
-import java.math.BigDecimal;
-
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
@@ -49,15 +47,7 @@ public class OdeRequest extends BaseRequest {
       this.setDataSource(other.getDataSource());
       this.setDataType(other.getDataType());
       this.setId(other.getId());
-      this.setNwLat(other.getNwLat());
-      this.setNwLon(other.getNwLon());
       this.setRequestType(other.getRequestType());
-      this.setSeLat(other.getSeLat());
-      this.setSeLon(other.getSeLon());
-   }
-
-   public OdeRequest(BigDecimal nwLat, BigDecimal nwLon, BigDecimal seLat, BigDecimal seLon) {
-      super(nwLat, nwLon, seLat, seLon);
    }
 
    public static OdeRequest create(String rtype, String dtype, String message) throws OdeRequestException {
@@ -134,7 +124,7 @@ public class OdeRequest extends BaseRequest {
    @Override
    public int hashCode() {
       final int prime = 31;
-      int result = super.hashCode();
+      int result = 1;
       result = prime * result + ((dataSource == null) ? 0 : dataSource.hashCode());
       result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
       result = prime * result + ((id == null) ? 0 : id.hashCode());
@@ -146,7 +136,7 @@ public class OdeRequest extends BaseRequest {
    public boolean equals(Object obj) {
       if (this == obj)
          return true;
-      if (!super.equals(obj))
+      if (obj == null)
          return false;
       if (getClass() != obj.getClass())
          return false;

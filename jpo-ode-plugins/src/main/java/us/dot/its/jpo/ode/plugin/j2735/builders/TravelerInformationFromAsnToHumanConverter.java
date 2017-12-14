@@ -1,11 +1,8 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import java.nio.ByteOrder;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
-import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class TravelerInformationFromAsnToHumanConverter {
@@ -23,9 +20,7 @@ public class TravelerInformationFromAsnToHumanConverter {
       // Instead, time must be extracted from log file metadata
       genericTim.setTimeStamp(DateTimeUtils.now());
 
-      byte[] packetIDbytes = CodecUtils.fromHex(asnTim.get("packetID").asText());
-
-      genericTim.setPacketID(CodecUtils.bytesToInt(packetIDbytes, 0, packetIDbytes.length, ByteOrder.BIG_ENDIAN));
+      genericTim.setPacketID(asnTim.get("packetID").asText());
 
       if (asnTim.get("urlB") != null) {
          genericTim.setUrlB(asnTim.get("urlB").asText());

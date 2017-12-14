@@ -49,6 +49,7 @@ public class DdsStatusMessageDecoder extends DdsDecoder {
 
    @Override
    public DdsMessage decode(String message) throws DecodeException {
+      logger.debug("Received from DDS: {}", message);
       DdsStatusMessage statusMsg = null;
       try {
          String[] msgComponents = parseFullMsg(message);
