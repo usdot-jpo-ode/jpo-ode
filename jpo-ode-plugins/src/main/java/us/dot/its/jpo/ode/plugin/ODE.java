@@ -8,7 +8,7 @@ public class ODE extends OdeObject {
    public static final int POST = 0;
    public static final int PUT = 1;
 
-   private int version = 1;
+   private int version = 2;
    private int index;
    private int verb;
 

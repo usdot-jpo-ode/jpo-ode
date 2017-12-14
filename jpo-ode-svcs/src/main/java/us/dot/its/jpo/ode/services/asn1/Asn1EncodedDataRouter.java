@@ -79,11 +79,6 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          if (metadata.has("request")) {
             JSONObject request = metadata.getJSONObject("request");
 
-            // Convert JSON to POJO
-            OdeTravelerInputData travelerinputData = buildTravelerInputData(consumedObj);
-
-            processEncodedTim(travelerinputData, consumedObj);
-
             if (request.has("rsus")) {
                Object rsu = request.get("rsus");
                if (!(rsu instanceof JSONArray)) {
@@ -92,6 +87,12 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
                   request.put("rsus", rsus);
                }
             }
+
+            // Convert JSON to POJO
+            OdeTravelerInputData travelerinputData = buildTravelerInputData(consumedObj);
+
+            processEncodedTim(travelerinputData, consumedObj);
+
          } else {
             throw new Asn1EncodedDataRouterException("Encoder response missing 'request'");
          }

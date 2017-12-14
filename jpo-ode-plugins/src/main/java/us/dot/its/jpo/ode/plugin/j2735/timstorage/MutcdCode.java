@@ -5,6 +5,16 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 public class MutcdCode extends Asn1Object {
    private static final long serialVersionUID = 1L;
    
+   public enum MutcdCodeEnum {
+      none,             // (0), -- non-MUTCD information
+      regulatory,       // (1), -- "R" Regulatory signs
+      warning,          // (2), -- "W" warning signs
+      maintenance,      // (3), -- "M" Maintenance and construction
+      motoristService,  // (4), -- Motorist Services
+      guide,            // (5), -- "G" Guide signs
+      rec               // (6), -- Recreation and Cultural Interest
+   }
+
    private String none; // (0), -- non-MUTCD information
    private String regulatory; // (1), -- "R" Regulatory signs
    private String warning; // (2), -- "W" warning signs

@@ -1,24 +1,31 @@
 {
+  "ode": {
+    "version": 2
+  },
   "tim": {
   	"index": "13",
     "msgCnt": "1",
     "timeStamp": "2017-08-03T22:25:36.297Z",
     "urlB": "null",
+    "packetID": "EC9C236B0000000000",
     "dataframes": [
       {
         "startDateTime": "2017-08-02T22:25:00.000Z",
         "durationTime": 1,
-        "frameType": "1",
         "sspTimRights": "0",
-        "msgID": "RoadSignID",
-        "position": {
-          "latitude": "41.678473",
-          "longitude": "-108.782775",
-          "elevation": "917.1432"
+        "frameType": "advisory",
+        "msgId": {
+          "roadSignID": {
+            "position": {
+              "latitude": "41.678473",
+              "longitude": "-108.782775",
+              "elevation": "917.1432"
+            },
+            "viewAngle": "1010101010101010",
+            "mutcdCode": "warning",
+            "crc": "0000000000000000"
+          }
         },
-        "viewAngle": "1010101010101010",
-        "mutcd": "5",
-        "crc": "0000000000000000",
         "priority": "0",
         "sspLocationRights": "3",
         "regions": [
@@ -98,5 +105,18 @@
     "deliverystop": "2018-01-01T17:47:11-05:15",
     "enable": "1",
     "status": "4"
+  },
+  "sdw": {
+    "ttl": "oneminute",
+    "serviceRegion": {
+      "nwCorner": {
+        "latitude": "44.998459",
+        "longitude": "-111.040817"
+      },
+      "seCorner": {
+        "latitude": "41.104674",
+        "longitude": "-104.111312"
+      }
+    }
   }
 }
