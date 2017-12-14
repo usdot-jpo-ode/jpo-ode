@@ -158,7 +158,7 @@ public class TravelerMessageFromHumanToAsnConverter {
          ZonedDateTime zDateTime = DateTimeUtils.isoDateTime(isoTime);
          startYear = zDateTime.getYear();
          startMinute = (int) Duration.between(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0), zDateTime).toMinutes();
-      } catch (Exception e) { // NOSONR
+      } catch (Exception e) { // NOSONAR
          // failed to parse datetime, default back to unknown values
       }
 
