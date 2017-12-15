@@ -2,7 +2,6 @@ package us.dot.its.jpo.ode.security;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
@@ -14,7 +13,6 @@ import java.security.Signature;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
@@ -236,7 +234,8 @@ final class CryptoController {
 //      byte[] digest = digest(message.getBytes());
 //      String digestString = this.encoder.encodeToString(digest);
 
-      byte[] sig = sign(message.getBytes());
+      this.signingSignature.update(message.getBytes());
+      byte[] sig= this.signingSignature.sign();
       
 //      EcdsaP256Signature asnSig = new EcdsaP256Signature();
 //      coerCoder.decode(ByteBuffer.wrap(sig), asnSig);
@@ -252,11 +251,6 @@ final class CryptoController {
 //      return Util.zip(new String[] { MESSAGE, DIGEST, SIGNATURE, "x-only", "s" }, new String[] { message, digestString, signature, xOnlyString, sString});
 //      return Util.zip(new String[] { MESSAGE, SIGNATURE, "x-only", "s" }, new String[] { message, signature, xOnlyString, sString});
       return Util.zip(new String[] { MESSAGE, SIGNATURE }, new String[] { message, signature});
-   }
-
-   byte[] sign(byte[] data) throws GeneralSecurityException {
-      this.signingSignature.update(data);
-      return this.signingSignature.sign();
    }
 
    public byte[] digest(byte[] data) throws NoSuchAlgorithmException, NoSuchProviderException {
@@ -334,11 +328,10 @@ final class CryptoController {
       certRequestPermissions.add(pgp);
       VerificationKeyIndicator verifyKeyIndicator = new VerificationKeyIndicator();
       PublicVerificationKey verificationKey = new PublicVerificationKey();
-      ECPrivateKeyParameters privateKey = (ECPrivateKeyParameters) PrivateKeyFactory.createKey(keyPair.getPrivate().getEncoded());
       ECPublicKeyParameters  publicKey  = (ECPublicKeyParameters) PublicKeyFactory.createKey(keyPair.getPublic().getEncoded());
-      EccP256CurvePoint ecdsaNistP256 = createEccP256CurvePoint(privateKey, publicKey);
+      EccP256CurvePoint encodedPublicKey = provider.encodePublicKey(publicKey);
       
-      verificationKey.setEcdsaNistP256(ecdsaNistP256 );
+      verificationKey.setEcdsaNistP256(encodedPublicKey );
       verifyKeyIndicator.setVerificationKey(verificationKey );
       ToBeSignedCertificate tbsData = new ToBeSignedCertificate(
          id, cracaId, crlSeries, validityPeriod, region, null, null, null, 
@@ -353,32 +346,30 @@ final class CryptoController {
       eca_ee.setEeEcaCertRequest(eeEcaCertRequest);
       scmsPduContent.setEca_ee(eca_ee );
       
-      
       ScopedCertificateRequest tbsRequest = 
             new ScopedCertificateRequest(new Uint8(1), scmsPduContent);
       
       SignerIdentifier signer = new SignerIdentifier();
       signer.setSelf(Null.VALUE);
       
-      EcdsaP256SignatureWrapper pubKeySignature = createEcdsaP256Signature(
-         privateKey, ecdsaNistP256);
+      ECPrivateKeyParameters privateKey = (ECPrivateKeyParameters) PrivateKeyFactory.createKey(keyPair.getPrivate().getEncoded());
+      EcdsaP256SignatureWrapper tbsRequestSignature = provider.computeSignature(
+         Ieee1609dot2Helper.encodeCOER(tbsRequest), enrollmentCert.getEncoded(), privateKey);
       gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Signature signature = 
-            pubKeySignature.encode();
+            tbsRequestSignature.encode();
       
-      gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2scmsprotocol.SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest signedCertificateRequest = 
-            new gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2scmsprotocol.SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest();
-      SignedCertificateRequest value = new SignedCertificateRequest(HashAlgorithm.sha256, tbsRequest, signer, signature);
-      signedCertificateRequest.setContainedValue(value );
-      
+      SignedCertificateRequest decodedSSR = new SignedCertificateRequest(HashAlgorithm.sha256, tbsRequest, signer, signature);
+      SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest signedCertificateRequest = 
+            new SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest(decodedSSR);
+      signedCertificateRequest.setValue(Ieee1609dot2Helper.encodeCOER(decodedSSR));
       SignedEeEnrollmentCertRequest.Content seecrContent = new SignedEeEnrollmentCertRequest.Content();
       seecrContent.setSignedCertificateRequest(signedCertificateRequest);
       
-      SignedEeEnrollmentCertRequest seecr = 
-            new SignedEeEnrollmentCertRequest(new Uint8(3), seecrContent);
+      SignedEeEnrollmentCertRequest seecr =  new SignedEeEnrollmentCertRequest(new Uint8(3), seecrContent );
 
       byte[] seecrEncode = Ieee1609dot2Helper.encodeCOER(seecr);
       
-      String csrFileName = CodecUtils.toHex(getEcParams(ecdsaNistP256).getValue())  + ".oer";
+      String csrFileName = CodecUtils.toHex(getEcParams(encodedPublicKey).getValue())  + ".oer";
       FileOutputStream keyfos = new FileOutputStream(csrFileName);
       
       keyfos.write(seecrEncode);
@@ -388,8 +379,8 @@ final class CryptoController {
          new Object[] { name, csrFileName});
    }
 
-   @RequestMapping(method = RequestMethod.GET, value = "/pkSigParams", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-   Map<String, Object> pkSigParams() throws CryptoException, KeyStoreException, CertificateEncodingException, IOException {
+   @RequestMapping(method = RequestMethod.GET, value = "/csrdemo", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+   Map<String, Object> csrDemo() throws CryptoException, KeyStoreException, CertificateEncodingException, IOException {
 //      AsymmetricCipherKeyPair keyPair = provider.generateKeyPair();
 //      logger.info("Generated keypair: {}", keyPair);
 //      
@@ -399,9 +390,10 @@ final class CryptoController {
       ECPrivateKeyParameters privateKey = (ECPrivateKeyParameters) PrivateKeyFactory.createKey(keyPair.getPrivate().getEncoded());
       ECPublicKeyParameters  publicKey  = (ECPublicKeyParameters) PublicKeyFactory.createKey(keyPair.getPublic().getEncoded());
 
-      EccP256CurvePoint encodedPublicKey = createEccP256CurvePoint(privateKey, publicKey);
+      EccP256CurvePoint encodedPublicKey = provider.encodePublicKey(publicKey);
       
-      EcdsaP256SignatureWrapper pubKeySignature = createEcdsaP256Signature(privateKey, encodedPublicKey);
+      EcdsaP256SignatureWrapper pubKeySignature = provider.computeSignature(
+         getEcParams(encodedPublicKey).getValue(), enrollmentCert.getEncoded(), privateKey);
       
       gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Signature encodedPubKeySig = 
             pubKeySignature.encode();
@@ -421,31 +413,16 @@ final class CryptoController {
          new Object[] {encodedPubKeyParams.toHex(), encodedPubKeySigParams.toHex()});
    }
 
-   private EcdsaP256SignatureWrapper createEcdsaP256Signature(
-      ECPrivateKeyParameters privateKey,
-      EccP256CurvePoint encodedPublicKey) throws CertificateEncodingException {
-      byte[] signerCertBytes = enrollmentCert.getEncoded();
-      EcdsaP256SignatureWrapper pubKeySignature = provider.computeSignature(
-         getEcParams(encodedPublicKey).getValue(), signerCertBytes, privateKey);
-      logger.info("Signed Public Key");
-      return pubKeySignature;
-   }
+//   private EcdsaP256SignatureWrapper createEcdsaP256Signature(
+//      ECPrivateKeyParameters privateKey,
+//      EccP256CurvePoint encodedPublicKey) throws CertificateEncodingException {
+//      EcdsaP256SignatureWrapper pubKeySignature = provider.computeSignature(
+//         getEcParams(encodedPublicKey).getValue(), enrollmentCert.getEncoded(), privateKey);
+//      logger.info("Signed Public Key");
+//      return pubKeySignature;
+//   }
 
-   private EccP256CurvePoint createEccP256CurvePoint(
-      ECPrivateKeyParameters privateKey,
-      ECPublicKeyParameters publicKey) throws CryptoException {
-      final int maxByteBuffer = (1 << 16) - 1;
-      ByteBuffer privateByteBuffer = ByteBuffer.allocate(maxByteBuffer);
-      provider.encodePrivateKey(privateByteBuffer, privateKey);
-      byte[] privateKeyBytes = (privateByteBuffer != null) ? (Arrays.copyOfRange(privateByteBuffer.array(), 0, privateByteBuffer.position())) : null;
-      logger.debug("Private key size: {}", privateKeyBytes.length);
-      
-      EccP256CurvePoint encodedPublicKey = provider.encodePublicKey(publicKey);
-      logger.debug("Public Key encoded");
-      return encodedPublicKey;
-   }
-   
-   EcR_Params getEcParams(EccP256CurvePoint eccP256CurvePoint) {
+   private EcR_Params getEcParams(EccP256CurvePoint eccP256CurvePoint) {
       EcR_Params ecrParams = new EcR_Params();
       
       if(eccP256CurvePoint.hasCompressed_y_0()) {
