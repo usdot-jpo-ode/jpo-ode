@@ -101,19 +101,17 @@ public class TimController {
       
       this.threadPool = Executors.newFixedThreadPool(odeProperties.getRsuSrmSlots() * 3);
    }
-   
-   
-   
-   
-   
-   
+
    /**
+    * TODO - This is the asynchronous, slower method for querying RSUs
+    * 
     * Checks given RSU for all TIMs set
     * 
     * @param jsonString
     *           Request body containing RSU info
     * @return list of occupied TIM slots on RSU
     */
+   @Deprecated
    @ResponseBody
    @CrossOrigin
    @RequestMapping(value = "/tim/queryold", method = RequestMethod.POST)
@@ -171,13 +169,6 @@ public class TimController {
       }
    }
    
-   
-   
-   
-   
-   
-   
-
    /**
     * Checks given RSU for all TIMs set
     * 
@@ -213,8 +204,6 @@ public class TimController {
       for (int i = 0; i < odeProperties.getRsuSrmSlots(); i++) {
          pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
       }
-      
-      logger.debug("VARIABLE BINDINGS?!?!?!: {}", pdu.getVariableBindings());
 
       ResponseEvent response = null;
       try {
