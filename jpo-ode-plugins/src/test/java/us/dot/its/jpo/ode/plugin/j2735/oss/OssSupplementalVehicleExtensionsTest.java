@@ -72,7 +72,7 @@ public class OssSupplementalVehicleExtensionsTest {
         testsve.setClassification(new BasicVehicleClass());
         testsve.setClassDetails(new VehicleClassification());
         testsve.setVehicleData(new VehicleData());
-        testsve.setWeatherReport(new WeatherReport(new EssPrecipYesNo(1)));
+        testsve.setWeatherReport(new WeatherReport(new EssPrecipYesNo(2)));
         testsve.setWeatherProbe(new WeatherProbe());
         
         try {
