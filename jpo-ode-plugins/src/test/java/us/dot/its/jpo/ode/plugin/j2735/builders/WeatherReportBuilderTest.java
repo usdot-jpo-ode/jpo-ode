@@ -94,7 +94,7 @@ public class WeatherReportBuilderTest {
       ObjectNode testInputNode = JsonUtils.newNode();
 
       testInputNode.put("isRaining", 2);
-      testInputNode.put("precipSituation", 13);
+      testInputNode.put("precipSituation", 12);
 
       J2735WeatherReport actualValue = WeatherReportBuilder.genericWeatherReport(testInputNode);
 
