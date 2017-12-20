@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.security;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -27,7 +26,6 @@ import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.crypto.util.PrivateKeyFactory;
 import org.bouncycastle.crypto.util.PublicKeyFactory;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +75,7 @@ import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2scmsprotocol.ScmsPDU;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2scmsprotocol.ScopedCertificateRequest;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2scmsprotocol.SignedCertificateRequest;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2scmsprotocol.SignedEeEnrollmentCertRequest;
+import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2scmsprotocol.SignedEeEnrollmentCertRequest.Content;
 import gov.usdot.cv.security.clock.ClockHelper;
 import gov.usdot.cv.security.crypto.CryptoException;
 import gov.usdot.cv.security.crypto.CryptoProvider;
@@ -89,6 +88,8 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 
 @RestController
 final class CryptoController {
+
+   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
    private static final int CRL_SERIES = 0;
 
@@ -179,8 +180,6 @@ final class CryptoController {
    private static final Object REGIONS = "regions";
 
    private static final Object PSIDS = "psids";
-
-   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
    private final Base64.Decoder decoder = Base64.getDecoder();
 
@@ -281,18 +280,25 @@ final class CryptoController {
    }
 
    @RequestMapping(method = RequestMethod.POST, value = "/csr", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-   Map<String, Object> csr(@RequestBody Map<String, String> payload) throws GeneralSecurityException, ParseException, EncodeFailedException, EncodeNotSupportedException, IOException, CryptoException {
+   Map<String, Object> csr(@RequestBody Map<String, String> payload) throws GeneralSecurityException, ParseException, EncodeFailedException, EncodeNotSupportedException, IOException, CryptoException, DecodeFailedException, DecodeNotSupportedException {
 
       CsrParams csrParams = new CsrParams(payload);
       SignedEeEnrollmentCertRequest seecr = buildCsr(csrParams);
       
       byte[] seecrEncode = Ieee1609dot2Helper.encodeCOER(seecr);
       
-      EccP256CurvePoint publickKey = seecr.getContent().getSignedCertificateRequest().getContainedValue()
-         .getTbsRequest().getContent().getEca_ee().getEeEcaCertRequest()
-         .getTbsData().getVerifyKeyIndicator().getVerificationKey().getEcdsaNistP256();
+      Content content = seecr.getContent();
+      SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest signedCertReq = 
+            content.getSignedCertificateRequest();
+      byte[] encodedSCR = signedCertReq.byteArrayValue();
+      SignedCertificateRequest decodedSCR = new SignedCertificateRequest();
+      Ieee1609dot2Helper.decodeCOER(encodedSCR, decodedSCR);
+      ScopedCertificateRequest tbsReq = decodedSCR.getTbsRequest();
       
-      String csrFileName = CodecUtils.toHex(getCurvePointValue(publickKey))  + ".oer";
+      EccP256CurvePoint eccP256CurvePoint = 
+            tbsReq.getContent().getEca_ee().getEeEcaCertRequest().getTbsData().getVerifyKeyIndicator().getVerificationKey().getEcdsaNistP256();
+      
+      String csrFileName = CodecUtils.toHex(getCurvePointValue(eccP256CurvePoint))  + ".oer";
       FileOutputStream keyfos = new FileOutputStream(csrFileName);
 
       keyfos.write(seecrEncode);
@@ -316,64 +322,44 @@ final class CryptoController {
       CsrParams csrParams = new CsrParams(payload);
       SignedEeEnrollmentCertRequest seecr = buildCsr(csrParams);
       
-      gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2scmsprotocol.SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest signedCertificateRequest = 
-            seecr.getContent().getSignedCertificateRequest();
-      
-      byte[] seecrEncode = Ieee1609dot2Helper.encodeCOER(seecr);
+      byte[] signedEeEnrollmentCertRequest = Ieee1609dot2Helper.encodeCOER(seecr);
 
-      gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Signature signature = 
-            signedCertificateRequest.getContainedValue().getSignature();
-      
-      byte[] ecdsaSignature = Ieee1609dot2Helper.encodeDER(signature);
-      
-//      Signature ecdsaSign = Signature.getInstance("SHA256withECDSA", new BouncyCastleProvider());
-//      ecdsaSign.initSign(keyPair.getPrivate());
-//      ecdsaSign.update(signedCertificateRequest.byteArrayValue());
-//      byte[] ecdsaSignature = ecdsaSign.sign();
-
-      return Util.zip(new String[] { "publicKey", "csr", "signature", "signedEeEnrollmentCertRequest" },
-         new Object[] {CodecUtils.toHex(keyPair.getPublic().getEncoded()), 
-               CodecUtils.toHex(signedCertificateRequest.byteArrayValue()), 
-               CodecUtils.toHex(ecdsaSignature), CodecUtils.toHex(seecrEncode)});
+      return Util.zip(new String[] {"signedEeEnrollmentCertRequest"},
+         new Object[] {CodecUtils.toHex(signedEeEnrollmentCertRequest)});
    }
 
    @RequestMapping(method = RequestMethod.POST, value = "/csrdemoverify", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-   Map<String, Object> csrDemoVerify(@RequestBody Map<String, String> payload) throws IOException, DecodeFailedException, DecodeNotSupportedException, CertificateEncodingException {
-      String csr = Optional.of(payload.get("csr"))
-            .orElseThrow(() -> new IllegalArgumentException(PAYLOAD_MUST_CONTAIN + "csr"));
+   Map<String, Object> csrDemoVerify(@RequestBody Map<String, String> payload) throws IOException, DecodeFailedException, DecodeNotSupportedException, CertificateEncodingException, EncodeFailedException, EncodeNotSupportedException {
       String signedEeEnrollmentCertRequest = Optional.of(payload.get("signedEeEnrollmentCertRequest"))
             .orElseThrow(() -> new IllegalArgumentException(PAYLOAD_MUST_CONTAIN + "signedEeEnrollmentCertRequest"));
-      String csrSignature = Optional.of(payload.get("signature"))
-            .orElseThrow(() -> new IllegalArgumentException(PAYLOAD_MUST_CONTAIN + "signature"));
-      String publicKey = Optional.of(payload.get("publicKey"))
-            .orElseThrow(() -> new IllegalArgumentException(PAYLOAD_MUST_CONTAIN + "publicKey"));
 
-      logger.info("Genrating CSR for '{}':  '{}'", "csr", csr);
       logger.info("Genrating CSR for '{}':  '{}'", "signedEeEnrollmentCertRequest", signedEeEnrollmentCertRequest);
-      logger.info("Genrating CSR for '{}':  '{}'", "csrSignature", csrSignature);
-      logger.info("Genrating CSR for '{}':  '{}'", "publicKey", publicKey);
-
-      ECPublicKeyParameters  publicKeyParams  = 
-            (ECPublicKeyParameters) PublicKeyFactory.createKey(CodecUtils.fromHex(publicKey));
 
       ECDSAProvider ecdsaProvider = new ECDSAProvider();
       
-      byte[] toBeVerified = CodecUtils.fromHex(csr);
-      gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Signature signature = 
-            new gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Signature();
-
-      Ieee1609dot2Helper.decodeDER(CodecUtils.fromHex(csrSignature), signature);
-
-//      Signature ecdsaVerify = Signature.getInstance("SHA256withECDSA", new BouncyCastleProvider());
-//      ecdsaVerify.initVerify(keyPair.getPublic());
-//      ecdsaVerify.update(toBeVerified);
+      SignedEeEnrollmentCertRequest seecr = new SignedEeEnrollmentCertRequest();
+      Ieee1609dot2Helper.decodeCOER(CodecUtils.fromHex(signedEeEnrollmentCertRequest), seecr);
+      Content content = seecr.getContent();
+      SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest signedCertReq = 
+            content.getSignedCertificateRequest();
+      byte[] encodedSCR = signedCertReq.byteArrayValue();
+      SignedCertificateRequest decodedSCR = new SignedCertificateRequest();
+      Ieee1609dot2Helper.decodeCOER(encodedSCR, decodedSCR);
+      gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Signature signature = decodedSCR.getSignature();
+      ScopedCertificateRequest tbsReq = decodedSCR.getTbsRequest();
+      byte[] toBeVerified = Ieee1609dot2Helper.encodeCOER(tbsReq);
       
       EcdsaP256SignatureWrapper signtureWrapper = EcdsaP256SignatureWrapper.decode(signature, ecdsaProvider);
       
+      EccP256CurvePoint eccP256CurvePoint = 
+            tbsReq.getContent().getEca_ee().getEeEcaCertRequest().getTbsData().getVerifyKeyIndicator().getVerificationKey().getEcdsaNistP256();
+      
+      ECPublicKeyParameters publicKeyParams = provider.decodePublicKey(eccP256CurvePoint);
+
       boolean verified = ecdsaProvider.verifySignature(toBeVerified, 
          enrollmentCert.getEncoded(), publicKeyParams, signtureWrapper);
 
-      return Util.zip(new String[] { "csr", "signature", "verified" }, new Object[] { csr, csrSignature, verified });
+      return Util.zip(new String[] { "signedEeEnrollmentCertRequest", "verified" }, new Object[] { signedEeEnrollmentCertRequest, verified });
    }
 
    private SignedEeEnrollmentCertRequest buildCsr(CsrParams csrParams) throws IOException, CryptoException, EncodeFailedException, EncodeNotSupportedException, CertificateEncodingException {
@@ -444,15 +430,14 @@ final class CryptoController {
       gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Signature signature = 
             tbsRequestSignature.encode();
       
-      SignedCertificateRequest decodedSSR = new SignedCertificateRequest(HashAlgorithm.sha256, tbsRequest, signer, signature);
+      SignedCertificateRequest decodedSCR = new SignedCertificateRequest(HashAlgorithm.sha256, tbsRequest, signer, signature);
+      byte[] encodedSCR = Ieee1609dot2Helper.encodeCOER(decodedSCR);
       SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest signedCertificateRequest = 
-            new SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest(decodedSSR);
-      signedCertificateRequest.setValue(encodedTbsRequest);
-      SignedEeEnrollmentCertRequest.Content seecrContent = new SignedEeEnrollmentCertRequest.Content();
-      seecrContent.setSignedCertificateRequest(signedCertificateRequest);
+            new SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest(encodedSCR);
+      SignedEeEnrollmentCertRequest.Content seecrContent = 
+            SignedEeEnrollmentCertRequest.Content.createContentWithSignedCertificateRequest(signedCertificateRequest);
       
       SignedEeEnrollmentCertRequest seecr =  new SignedEeEnrollmentCertRequest(new Uint8(3), seecrContent );
-
       return seecr;
    }
 

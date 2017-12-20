@@ -53,10 +53,10 @@ public class OdeProperties implements EnvironmentAware {
     * a.k.a Data Distribution System (DDS) Properties
     */
    // DDS WebSocket Properties
-   private String ddsCasUrl = "https://cas.connectedvcs.com/accounts/v1/tickets";
+   private String ddsCasUrl = "https://cas.cvmvp.com/accounts/v1/tickets";
    private String ddsCasUsername = "";
    private String ddsCasPass = "";
-   private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
+   private String ddsWebsocketUrl = "wss://webapp.cvmvp.com/whtools/websocket";
 
    // IPv4 address and listening UDP port for SDC
    private String sdcIp = "104.130.170.234";// NOSONAR
