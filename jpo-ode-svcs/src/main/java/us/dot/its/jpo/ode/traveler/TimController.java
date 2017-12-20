@@ -2,7 +2,13 @@ package us.dot.its.jpo.ode.traveler;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,6 +87,8 @@ public class TimController {
    private MessageProducer<String, String> stringMsgProducer;
    private MessageProducer<String, OdeObject> timProducer;
 
+   private ExecutorService threadPool;
+
    @Autowired
    public TimController(OdeProperties odeProperties) {
       super();
@@ -90,8 +98,77 @@ public class TimController {
             odeProperties.getKafkaProducerType());
       this.timProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(),
             null, OdeTimSerializer.class.getName());
+      
+      this.threadPool = Executors.newFixedThreadPool(odeProperties.getRsuSrmSlots() * 3);
    }
 
+   /**
+    * TODO - This is the asynchronous, slower method for querying RSUs
+    * 
+    * Checks given RSU for all TIMs set
+    * 
+    * @param jsonString
+    *           Request body containing RSU info
+    * @return list of occupied TIM slots on RSU
+    */
+   @Deprecated
+   @ResponseBody
+   @CrossOrigin
+   @RequestMapping(value = "/tim/queryold", method = RequestMethod.POST)
+   public synchronized ResponseEntity<String> asyncQueryForTims(@RequestBody String jsonString) { // NOSONAR
+
+      if (null == jsonString || jsonString.isEmpty()) {
+         logger.error("Empty request.");
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, "Empty request."));
+      }
+
+      ConcurrentSkipListMap<Integer, Integer> resultTable = new ConcurrentSkipListMap<>();
+      RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
+
+      SnmpSession snmpSession = null;
+      try {
+         snmpSession = new SnmpSession(queryTarget);
+         snmpSession.startListen();
+      } catch (IOException e) {
+         logger.error("Error creating SNMP session.", e);
+         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+               .body(jsonKeyValue(ERRSTR, "Failed to create SNMP session."));
+      }
+
+      // Repeatedly query the RSU to establish set rows
+      List<Callable<Object>> queryThreadList = new ArrayList<>();
+
+      for (int i = 0; i < odeProperties.getRsuSrmSlots(); i++) {
+         ScopedPDU pdu = new ScopedPDU();
+         pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
+         pdu.setType(PDU.GET);
+         queryThreadList.add(Executors
+               .callable(new TimQueryThread(snmpSession.getSnmp(), pdu, snmpSession.getTarget(), resultTable, i)));
+      }
+
+      try {
+         threadPool.invokeAll(queryThreadList);
+      } catch (InterruptedException e) { // NOSONAR
+         logger.error("Error submitting query threads for execution.", e);
+         threadPool.shutdownNow();
+      }
+
+      try {
+         snmpSession.endSession();
+      } catch (IOException e) {
+         logger.error("Error closing SNMP session.", e);
+      }
+
+      if (resultTable.containsValue(TimQueryThread.TIMEOUT_FLAG)) {
+         logger.error("TIM query timed out.");
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+               .body(jsonKeyValue(ERRSTR, "Query timeout, increase retries."));
+      } else {
+         logger.info("TIM query successful: {}", resultTable.keySet());
+         return ResponseEntity.status(HttpStatus.OK).body("{\"indicies_set\":" + resultTable.keySet() + "}");
+      }
+   }
+   
    /**
     * Checks given RSU for all TIMs set
     * 
