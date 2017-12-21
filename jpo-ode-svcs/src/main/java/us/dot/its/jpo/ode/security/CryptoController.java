@@ -95,10 +95,10 @@ final class CryptoController {
 
    public class CsrParams extends OdeObject {
       private static final long serialVersionUID = 1L;
-      private String name;
-      private Integer validityPeriodDurationHours;
-      private String[] regionsArray;
-      private String[] psidsArray;
+      private String name; // Name associated with the CSR
+      private Integer validityPeriodDurationHours; // validity period duration of the CSR in hours
+      private String[] regionsArray; // space separated list of region codes in decimal integer
+      private String[] psidsArray; // space separated list of PSID codes in decimal integer
       private Time32 currentTime;
       
       
@@ -362,6 +362,84 @@ final class CryptoController {
       return Util.zip(new String[] { "signedEeEnrollmentCertRequest", "verified" }, new Object[] { signedEeEnrollmentCertRequest, verified });
    }
 
+   /**
+    * Builds a SignedEeEnrollmentCertRequest containing a Certificate Signing Request (CSR)
+    * containing a public key, and the signature of the CSR using the corresponding private key. 
+    * 
+    * Here's a sample SignedEeEnrollmentCertRequest
+    * 
+    * value SignedEeEnrollmentCertRequest ::= 
+{
+  protocolVersion 3,
+  content signedCertificateRequest : 
+      CONTAINING
+      {
+        hashId sha256,
+        tbsRequest 
+        {
+          version 1,
+          content eca-ee : eeEcaCertRequest : 
+              {
+                version 1,
+                currentTime 431026272,
+                tbsData 
+                {
+                  id name : "obeenr",
+                  cracaId '000000'H,
+                  crlSeries 4,
+                  validityPeriod 
+                  {
+                    start 431026272,
+                    duration hours : 4320
+                  },
+                  region identifiedRegion : 
+                    {
+                      countryOnly : 124,
+                      countryOnly : 484,
+                      countryOnly : 840
+                    },
+                  certRequestPermissions 
+                  {
+                    {
+                      subjectPermissions explicit : 
+                        {
+                          {
+                            psid 32,
+                            sspRange opaque : 
+                              {
+                              }
+                          },
+                          {
+                            psid 38,
+                            sspRange opaque : 
+                              {
+                              }
+                          }
+                        },
+                      minChainDepth 0
+                    }
+                  },
+                  verifyKeyIndicator verificationKey : ecdsaNistP256 : compressed-y-1 : '8751D2FDC5D7BF8CCE4A7FACE5E5AD7B92 ...'H
+                }
+              }
+        },
+        signer self : NULL,
+        signature ecdsaNistP256Signature : 
+          {
+            r x-only : '301D57F8D01E98C685428C49328BE8164B ...'H,
+            s '3121B89C7919FD75D7AB411CFB254A4466 ...'H
+          }
+      }
+}
+    * @param csrParams parameters for buiding the CSR
+    * @return a SignedEeEnrollmentCertRequest
+    * 
+    * @throws IOException
+    * @throws CryptoException
+    * @throws EncodeFailedException
+    * @throws EncodeNotSupportedException
+    * @throws CertificateEncodingException
+    */
    private SignedEeEnrollmentCertRequest buildCsr(CsrParams csrParams) throws IOException, CryptoException, EncodeFailedException, EncodeNotSupportedException, CertificateEncodingException {
       Date nowDate = ClockHelper.nowDate();
       Time32 currentTime = Time32Helper.dateToTime32(nowDate);
