@@ -6,13 +6,11 @@ import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyStore;
+import java.security.KeyStore.PrivateKeyEntry;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.Signature;
-import java.security.KeyStore.Entry;
-import java.security.KeyStore.PrivateKeyEntry;
-import java.security.KeyStore.ProtectionParameter;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.Enumeration;
@@ -20,7 +18,6 @@ import java.util.concurrent.Executors;
 
 import javax.crypto.Cipher;
 
-import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +31,6 @@ import com.oss.asn1.EncodeNotSupportedException;
 import com.safenetinc.luna.LunaSlotManager;
 import com.safenetinc.luna.provider.LunaCertificateX509;
 
-import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.CertificateType;
 import gov.usdot.cv.security.cert.CertificateManager;
 import gov.usdot.cv.security.cert.CertificateWrapper;
 import gov.usdot.cv.security.crypto.CryptoProvider;
@@ -43,8 +39,6 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 
 @Controller
 public class SecurityController {
-
-   private static final int CERTIFICATE_VERSION = 3;
 
    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -65,6 +59,7 @@ public class SecurityController {
    }
 
    @Bean
+   @DependsOn("slotManager")
    KeyStore keyStore(
       @Value("${ode.keyStoreProvider}") String keystoreProvider,
       @Value("${ode.hsmSlotNumber}") String slot,
@@ -87,15 +82,17 @@ public class SecurityController {
 
          while (aliases.hasMoreElements()) {
             String alias = aliases.nextElement();
-//            LunaCertificateX509 cert = (LunaCertificateX509) keyStore.getCertificate(alias);
-//            if (null != cert) {
-//               byte[] certBytes = cert.getEncoded();
-//               logger.debug("Certificate {}: {}", alias, CodecUtils.toHex(certBytes));
-//
-//               CertificateWrapper certificateWrapper = CertificateWrapper.fromBytes(
-//                  new CryptoProvider(), certBytes);
-//               CertificateManager.put(alias, certificateWrapper);
-//            }
+            LunaCertificateX509 cert = (LunaCertificateX509) keyStore.getCertificate(alias);
+            if (null != cert) {
+               byte[] certBytes = cert.getEncoded();
+               logger.debug("Certificate {}: {}", alias, CodecUtils.toHex(certBytes));
+
+               gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Certificate certificate = 
+                     convertX509CertToIEEE1609Dot2Cert(cert);
+               CertificateWrapper certificateWrapper = CertificateWrapper.fromCertificate(new CryptoProvider(), certificate);
+               
+               CertificateManager.put(alias, certificateWrapper);
+            }
             logger.info("Key alias: {}", alias);
          }
       } catch (KeyStoreException kse) {
@@ -107,9 +104,25 @@ public class SecurityController {
       } catch (IOException e) {
          // this should never happen
          logger.error("Unexpected IOException while loading keystore.", e);
+      } catch (Exception e) {
+         logger.error("Unknown Exception", e);
       }
       return keyStore;
 
+   }
+
+   /**
+    * Method to convert a X.509 certificate to IEEE 1609.2 certificate
+    * TODO This method should be added to CertificateWrapper class in jpo-security
+    * 
+    * @param cert X509 certificate
+    * @return equivalent IEEE 1609.2 certificate 
+    * @throws Exception
+    */
+   private gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Certificate
+         convertX509CertToIEEE1609Dot2Cert(LunaCertificateX509 cert) throws Exception {
+      // TODO Auto-generated method stub
+      throw new Exception("convertX509CertToIEEE1609Dot2Cert not implemented");
    }
 
    @Bean
@@ -129,7 +142,7 @@ public class SecurityController {
    }
 
    @Bean
-   @DependsOn("slotManager")
+   @DependsOn("keyStore")
    KeyPair keyPair(
       @Value("${ode.hsmKeyPairAlias}") String hsmKeyPairAlias,
       @Value("${ode.hsmTokenPassword}") String password) throws GeneralSecurityException {
@@ -169,7 +182,6 @@ public class SecurityController {
    }
 
    @Bean(destroyMethod = "logout")
-   @DependsOn("keyStore")
    LunaSlotManager slotManager(
       @Value("${ode.hsmTokenLabel}") String tokenLabel,
       @Value("${ode.hsmTokenPassword}") String password,
