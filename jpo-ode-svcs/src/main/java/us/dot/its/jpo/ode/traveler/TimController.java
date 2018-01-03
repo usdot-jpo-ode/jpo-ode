@@ -306,20 +306,15 @@ public class TimController {
 
       return ResponseEntity.status(returnCode).body(bodyMsg);
    }
-
+   
    /**
-    * Deposit a TIM
-    * 
+    * Send a TIM with the appropriate deposit type, ODE.PUT or ODE.POST
     * @param jsonString
-    *           TIM in JSON
-    * @return list of success/failures
+    * @param verb
+    * @return
     */
-   @ResponseBody
-   @RequestMapping(value = "/tim", method = RequestMethod.POST, produces = "application/json")
-   @CrossOrigin
-   public ResponseEntity<String> postTim(@RequestBody String jsonString) {
-
-      // Check empty
+   public ResponseEntity<String> depositTim(String jsonString, int verb) {
+   // Check empty
       if (null == jsonString || jsonString.isEmpty()) {
          String errMsg = "Empty request.";
          logger.error(errMsg);
@@ -333,6 +328,8 @@ public class TimController {
          if (travelerInputData.getOde() == null) {
             travelerInputData.setOde(new ODE());
          }
+         
+         travelerInputData.getOde().setVerb(verb);
 
          logger.debug("J2735TravelerInputData: {}", jsonString);
 
@@ -407,6 +404,36 @@ public class TimController {
       }
 
       return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("Success", "true"));
+   }
+   
+   /**
+    * Update an already-deposited TIM
+    * 
+    * @param jsonString
+    *           TIM in JSON
+    * @return list of success/failures
+    */
+   @ResponseBody
+   @RequestMapping(value = "/tim", method = RequestMethod.PUT, produces = "application/json")
+   @CrossOrigin
+   public ResponseEntity<String> updateTim(@RequestBody String jsonString) {
+      
+      return depositTim(jsonString, ODE.PUT);
+   }
+
+   /**
+    * Deposit a new TIM
+    * 
+    * @param jsonString
+    *           TIM in JSON
+    * @return list of success/failures
+    */
+   @ResponseBody
+   @RequestMapping(value = "/tim", method = RequestMethod.POST, produces = "application/json")
+   @CrossOrigin
+   public ResponseEntity<String> postTim(@RequestBody String jsonString) {
+
+      return depositTim(jsonString, ODE.POST);
    }
 
    /**
