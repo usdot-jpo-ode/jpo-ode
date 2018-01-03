@@ -90,6 +90,8 @@ services:
       PPM_CONFIG_FILE: ppmBsm.properties
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
+    depends_on:
+      - kafka
 
   ppm_tim:
     build: ./jpo-cvdp
@@ -99,6 +101,9 @@ services:
       PPM_CONFIG_FILE: ppmTim.properties
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
+    depends_on:
+      - kafka
+
   cvpep_bsm_s3dep:
     build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest
