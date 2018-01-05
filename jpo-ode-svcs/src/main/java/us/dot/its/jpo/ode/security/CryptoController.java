@@ -430,8 +430,9 @@ final class CryptoController {
     * @throws EncodeFailedException
     * @throws EncodeNotSupportedException
     * @throws CertificateEncodingException
+    * @throws SignatureException 
     */
-   private SignedEeEnrollmentCertRequest buildCsr(CsrParams csrParams) throws IOException, CryptoException, EncodeFailedException, EncodeNotSupportedException, CertificateEncodingException {
+   private SignedEeEnrollmentCertRequest buildCsr(CsrParams csrParams) throws IOException, CryptoException, EncodeFailedException, EncodeNotSupportedException, CertificateEncodingException, SignatureException {
       Date nowDate = ClockHelper.nowDate();
       Time32 currentTime = Time32Helper.dateToTime32(nowDate);
 
@@ -496,6 +497,12 @@ final class CryptoController {
       byte[] encodedTbsRequest = Ieee1609dot2Helper.encodeCOER(tbsRequest);
       EcdsaP256SignatureWrapper tbsRequestSignature = provider.computeSignature(
          encodedTbsRequest, enrollmentCert.getEncoded(), privateKey);
+      
+//      byte[] digest = provider.computeDigest(encodedTbsRequest, enrollmentCert.getEncoded());
+//      this.signingSignature.update(digest);
+//      byte[] sig= this.signingSignature.sign();
+//      EcdsaP256SignatureWrapper tbsRequestSignature = new EcdsaP256SignatureWrapper(r, s);
+      
       gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Signature signature = 
             tbsRequestSignature.encode();
       

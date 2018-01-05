@@ -152,14 +152,14 @@ public class SecurityController {
    @DependsOn("encryptionCipher")
    Cipher decryptionCipher(KeyPair keyPair) throws GeneralSecurityException {
       Cipher cipher = Cipher.getInstance("ECIES", this.cryptoProvider);
-//      cipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate(), parameters);
+      cipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate(), parameters);
       return cipher;
    }
 
    @Bean
    Cipher encryptionCipher(KeyPair keyPair) throws GeneralSecurityException {
       Cipher cipher = Cipher.getInstance("ECIES", this.cryptoProvider);
-//      cipher.init(Cipher.ENCRYPT_MODE, keyPair.getPublic());
+      cipher.init(Cipher.ENCRYPT_MODE, keyPair.getPublic());
       parameters = cipher.getParameters();
       return cipher;
    }
@@ -176,6 +176,7 @@ public class SecurityController {
       PrivateKeyEntry prKE = (PrivateKeyEntry) keyStore.getEntry(hsmKeyPairAlias, param);
       KeyPair pair;
       if (prKE != null) {
+         logger.info("Entry with alias {} found", hsmKeyPairAlias);
          enrollmentCert = prKE.getCertificate();
    
          PublicKey pubKey = enrollmentCert.getPublicKey();
@@ -192,6 +193,8 @@ public class SecurityController {
 //      g.initialize(ecSpec, new SecureRandom());
 //      KeyPair pair = g.generateKeyPair();
       
+         logger.info("Entry with alias {} NOT found. Generating a new key pair...", hsmKeyPairAlias);
+         
          KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("ECDSA", this.cryptoProvider);
          ECGenParameterSpec ecSpec = new ECGenParameterSpec("prime256v1");
          keyPairGenerator.initialize(ecSpec);
@@ -204,7 +207,7 @@ public class SecurityController {
          // store the certificate and key in the KeyStore.
          try {
              // Save the Certificate to the Luna KeyStore
-             logger.info("Storing Certificate to KeyStore");
+             logger.info("Storing Certificate {} to KeyStore...", hsmKeyPairAlias);
              keyStore.setKeyEntry(hsmKeyPairAlias, pair.getPrivate(), null, certChain);
              keyStore.store(null, null);
          } catch (Exception e) {
