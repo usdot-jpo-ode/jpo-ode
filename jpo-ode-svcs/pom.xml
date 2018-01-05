@@ -121,6 +121,16 @@
       <artifactId>snmp4j</artifactId>
       <version>1.10.1</version>
     </dependency>
+    <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk15on</artifactId>
+        <version>1.58</version>
+    </dependency>
+    <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcmail-jdk15on</artifactId>
+        <version>1.58</version>
+    </dependency>
   </dependencies>
 
   <build>

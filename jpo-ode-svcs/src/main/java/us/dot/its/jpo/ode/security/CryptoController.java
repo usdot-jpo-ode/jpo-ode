@@ -310,15 +310,6 @@ final class CryptoController {
 
    @RequestMapping(method = RequestMethod.POST, value = "/csrdemo", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
    Map<String, Object> csrDemo(@RequestBody Map<String, String> payload) throws CryptoException, KeyStoreException, CertificateEncodingException, IOException, EncodeFailedException, EncodeNotSupportedException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-//      AsymmetricCipherKeyPair keyPair = provider.generateKeyPair();
-//      logger.info("Generated keypair: {}", keyPair);
-//      
-//      ECPrivateKeyParameters privateKey = (ECPrivateKeyParameters)keyPair.getPrivate();
-//      ECPublicKeyParameters  publicKey  = (ECPublicKeyParameters)keyPair.getPublic();
-
-//      ECPrivateKeyParameters privateKey = (ECPrivateKeyParameters) PrivateKeyFactory.createKey(keyPair.getPrivate().getEncoded());
-//      EccP256CurvePoint encodedPublicKey = buildPublicKeyCurvePoint();
-
       CsrParams csrParams = new CsrParams(payload);
       SignedEeEnrollmentCertRequest seecr = buildCsr(csrParams);
       
