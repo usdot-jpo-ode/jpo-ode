@@ -168,7 +168,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
              try {
                 rsuResponse = createAndSend(travelerInfo.getSnmp(), curRsu, 
-                   travelerInfo.getOde().getIndex(), timBytes);
+                   travelerInfo.getOde().getIndex(), timBytes, travelerInfo.getOde().getVerb());
 
                 if (null == rsuResponse || null == rsuResponse.getResponse()) {
                    // Timeout
@@ -213,14 +213,14 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
      * @throws TimPduCreatorException
      * @throws IOException
      */
-    public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, int index, String payload)
+    public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, int index, String payload, int verb)
           throws IOException, TimPduCreatorException {
 
        SnmpSession session = new SnmpSession(rsu);
 
        // Send the PDU
        ResponseEvent response = null;
-       ScopedPDU pdu = TimPduCreator.createPDU(snmp, payload, index);
+       ScopedPDU pdu = TimPduCreator.createPDU(snmp, payload, index, verb);
        response = session.set(pdu, session.getSnmp(), session.getTarget(), false);
        EventLogger.logger.info("Message Sent to {}: {}", rsu.getRsuTarget(), payload);
        return response;
