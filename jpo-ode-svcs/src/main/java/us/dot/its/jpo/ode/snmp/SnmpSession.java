@@ -10,6 +10,7 @@ import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.security.AuthMD5;
+import org.snmp4j.security.AuthSHA;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModels;
 import org.snmp4j.security.SecurityProtocols;
@@ -73,7 +74,7 @@ public class SnmpSession {
       USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
       SecurityModels.getInstance().addSecurityModel(usm);
       snmp.getUSM().addUser(new OctetString(rsu.getRsuUsername()), new UsmUser(new OctetString(rsu.getRsuUsername()),
-            AuthMD5.ID, new OctetString(rsu.getRsuPassword()), null, null));
+            AuthSHA.ID, new OctetString(rsu.getRsuPassword()), null, null));
 
       // Assert the ready flag so the user can begin sending messages
       ready = true;

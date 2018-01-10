@@ -45,6 +45,48 @@ paths:
           schema:
             $ref: '#/definitions/Status'
   /tim:
+    put:
+      summary: >-
+        Used to update an existing TIM already present on an RSU.
+      operationId: tim_post
+      description: >-
+        Update a Traveler Information Message (TIM) that has already been deposited to an RSU. Parameters and response codes are identical to the POST request. Will also deposit the new message to the SDW, if the SDW field is present.
+      parameters:
+        - name: TravelerInputData
+          in: body
+          description: >-
+            Message containing the parameters for a Traveler Information Message
+            including delivery information.
+          required: true
+          schema:
+            $ref: '#/definitions/TravelerInputData'
+      tags:
+        - TIM
+      responses:
+        '200':
+          description: >-
+            Traveleer Information Message was submitted successfully. See the
+            response body or ODE User Guide for details.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Status'
+        '400':
+          description: >-
+            Bad Request. Issued if request is invalid or failed to be executed.
+            See the response body or ODE User Guide for details.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Status'
+        '500':
+          description: >-
+            Internal Server Error. See the response body or ODE User Guide for
+            details.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Status'
     post:
       summary: >-
         Submit Traveler Information Message (TIM) for broadcast to Connected
