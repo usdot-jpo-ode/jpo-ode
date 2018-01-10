@@ -180,12 +180,6 @@ public class SecurityController {
          enrollmentCert = prKE.getCertificate();
    
          PublicKey pubKey = enrollmentCert.getPublicKey();
-         if (pubKey != null) {
-            logger.info("Public Key: {}", CodecUtils.toHex(pubKey.getEncoded()));
-         } else {
-            logger.info("Public Key: {}", pubKey);
-         }
-         
          pair = new KeyPair(pubKey, prKE.getPrivateKey());
       } else {
 //      ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("prime256v1");
@@ -214,6 +208,18 @@ public class SecurityController {
              logger.error("Exception while storing Certificate", e);
          }
       }
+
+      if (pair != null) {
+         logger.info("Private Key [{}], [{}]: {}", 
+            pair.getPrivate().getFormat(),
+            pair.getPrivate().getAlgorithm(),
+            CodecUtils.toHex(pair.getPrivate().getEncoded()));
+         logger.info("Public Key [{}], [{}]: {}", 
+            pair.getPublic().getFormat(),
+            pair.getPublic().getAlgorithm(),
+            CodecUtils.toHex(pair.getPublic().getEncoded()));
+      }
+
       return pair;
    }
 
