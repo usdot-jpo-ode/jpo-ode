@@ -89,7 +89,7 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 @RestController
 final class CryptoController {
 
-   private final Logger logger = LoggerFactory.getLogger(this.getClass());
+   private final static Logger logger = LoggerFactory.getLogger(CryptoController.class);
 
    private static final int CRL_SERIES = 0;
 
@@ -220,7 +220,7 @@ final class CryptoController {
       String cipherText = Optional.of(payload.get(CIPHER_TEXT))
             .orElseThrow(() -> new IllegalArgumentException(PAYLOAD_MUST_CONTAIN + CIPHER_TEXT));
 
-      this.logger.info("Decrypting Cipher Text '{}'", cipherText);
+      logger.info("Decrypting Cipher Text '{}'", cipherText);
 
       this.decryptionCipher.update(this.decoder.decode(cipherText));
       String message = new String(this.decryptionCipher.doFinal(), Charset.defaultCharset()).trim();
@@ -233,7 +233,7 @@ final class CryptoController {
       String message = Optional.of(payload.get(MESSAGE))
             .orElseThrow(() -> new IllegalArgumentException(PAYLOAD_MUST_CONTAIN + MESSAGE));
 
-      this.logger.info("Encrypting Message '{}'", message);
+      logger.info("Encrypting Message '{}'", message);
 
       this.encryptionCipher.update(message.getBytes(Charset.defaultCharset()));
       String cipherText = this.encoder.encodeToString(this.encryptionCipher.doFinal());
@@ -246,7 +246,7 @@ final class CryptoController {
       String message = Optional.of(payload.get(MESSAGE))
             .orElseThrow(() -> new IllegalArgumentException(PAYLOAD_MUST_CONTAIN + MESSAGE));
 
-      this.logger.info("Signing Message '{}'", message);
+      logger.info("Signing Message '{}'", message);
 
       this.signingSignature.update(message.getBytes());
       byte[] sig= this.signingSignature.sign();
@@ -270,7 +270,7 @@ final class CryptoController {
       String signature = Optional.of(payload.get(SIGNATURE))
             .orElseThrow(() -> new IllegalArgumentException(PAYLOAD_MUST_CONTAIN + SIGNATURE));
 
-      this.logger.info("Verifying Message '{}' and Signature '{}'", message, signature);
+      logger.info("Verifying Message '{}' and Signature '{}'", message, signature);
 
       this.verificationSignature.update(message.getBytes());
       boolean verified = this.verificationSignature.verify(CodecUtils.fromHex(signature));
@@ -561,13 +561,12 @@ final class CryptoController {
                      CodecUtils.toHex(signature)));
          }
       } catch (Exception e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
+         logger.error("Error decoding encoded signature", e);
       }
       return sigs;
   }
 
-   public byte[] encodeECDSASignature(BigInteger[] sigs) throws Exception {
+   public static byte[] encodeECDSASignature(BigInteger[] sigs) throws Exception {
       ByteArrayOutputStream s = new ByteArrayOutputStream();
       
       DERSequenceGenerator seq = new DERSequenceGenerator(s);
