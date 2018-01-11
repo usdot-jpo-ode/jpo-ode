@@ -13,16 +13,12 @@ import java.security.KeyStore.PrivateKeyEntry;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.SecureRandom;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECGenParameterSpec;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,14 +26,8 @@ import java.util.Enumeration;
 import java.util.concurrent.Executors;
 
 import javax.crypto.Cipher;
-import javax.security.auth.x500.X500Principal;
 
-import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.jce.spec.ECParameterSpec;
-import org.bouncycastle.jce.spec.ECPrivateKeySpec;
-import org.bouncycastle.x509.X509V1CertificateGenerator;
-import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,9 +41,6 @@ import com.oss.asn1.EncodeNotSupportedException;
 import com.safenetinc.luna.LunaSlotManager;
 import com.safenetinc.luna.provider.LunaCertificateX509;
 
-import gov.usdot.cv.security.cert.CertificateManager;
-import gov.usdot.cv.security.cert.CertificateWrapper;
-import gov.usdot.cv.security.crypto.CryptoProvider;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
@@ -68,9 +55,6 @@ public class SecurityController {
    private AlgorithmParameters parameters;
 
    private Certificate enrollmentCert;
-
-   private static final String LUNA_PROVIDER = "LunaProvider";
-   private static final String BOUNCYCASTLE_PROVIDER = "BC";
 
    @Autowired
    protected SecurityController(OdeProperties odeProps) {
@@ -286,32 +270,28 @@ public class SecurityController {
       @Value("${ode.hsmTokenLabel}") String tokenLabel,
       @Value("${ode.hsmTokenPassword}") String password,
       @Value("${ode.cryptoProvider}") String cryptoProvider) {
+      
       this.cryptoProvider = cryptoProvider;
+      
       LunaSlotManager slotManager = null;
-//      if (cryptoProvider.equals(LUNA_PROVIDER)) {
-         try {
-            slotManager = LunaSlotManager.getInstance();
-            slotManager.login(tokenLabel, password);
-            java.security.Provider provider = new com.safenetinc.luna.provider.LunaProvider();
-            if (java.security.Security.getProvider(provider.getName()) == null) {
-               // removing the provider is only necessary if it is already
-               // registered
-               // and you want to change its position
-               // java.security.Security.removeProvider(provider.getName());
-               java.security.Security.addProvider(provider);
-               com.safenetinc.luna.LunaSlotManager.getInstance().logout();
-            }
-         } catch (Exception e) {
-            logger.error("Exception caught during loading of the providers.", e);
-            throw e;
+      try {
+         slotManager = LunaSlotManager.getInstance();
+         slotManager.login(tokenLabel, password);
+         java.security.Provider provider = new com.safenetinc.luna.provider.LunaProvider();
+         if (java.security.Security.getProvider(provider.getName()) == null) {
+            // removing the provider is only necessary if it is already
+            // registered
+            // and you want to change its position
+            // java.security.Security.removeProvider(provider.getName());
+            java.security.Security.addProvider(provider);
+            com.safenetinc.luna.LunaSlotManager.getInstance().logout();
          }
-//      } else if (cryptoProvider.equals(BOUNCYCASTLE_PROVIDER)) { 
-         java.security.Security.addProvider(new BouncyCastleProvider());
-//      } else {
-//         throw new IllegalArgumentException("ode.cryptoProvider property not defined");
-//      }
-      
-      
+      } catch (Exception e) {
+         logger.error("Exception caught during loading of the providers.", e);
+         throw e;
+      }
+
+      java.security.Security.addProvider(new BouncyCastleProvider());
       return slotManager;
    }
 

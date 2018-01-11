@@ -1,24 +1,18 @@
 package us.dot.its.jpo.ode.security;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
 import java.security.KeyPair;
-import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Signature;
-import java.security.SignatureException;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
-import java.security.spec.ECParameterSpec;
-import java.security.spec.ECPoint;
-import java.security.spec.EllipticCurve;
-import java.text.ParseException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
@@ -26,13 +20,14 @@ import java.util.Optional;
 
 import javax.crypto.Cipher;
 
-import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
-import org.bouncycastle.crypto.params.ECDomainParameters;
-import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Integer;
+import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.DERSequenceGenerator;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
-import org.bouncycastle.crypto.util.PrivateKeyFactory;
 import org.bouncycastle.crypto.util.PublicKeyFactory;
-import org.bouncycastle.jcajce.provider.asymmetric.util.ECUtil;
 import org.bouncycastle.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,16 +41,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.oss.asn1.DecodeFailedException;
 import com.oss.asn1.DecodeNotSupportedException;
-import com.oss.asn1.EncodeFailedException;
-import com.oss.asn1.EncodeNotSupportedException;
 import com.oss.asn1.Null;
 import com.oss.asn1.OctetString;
-import com.safenetinc.luna.provider.key.LunaPrivateKeyECDsa;
-import com.safenetinc.luna.provider.keyfactory.LunaKeyFactory;
-import com.safenetinc.luna.provider.keyfactory.LunaKeyFactoryEC;
-import com.safenetinc.luna.provider.param.LunaECUtils;
-import com.safenetinc.luna.provider.param.LunaParametersEC;
-import com.safenetinc.luna.provider.signature.LunaSignatureSHA256withECDSA;
 
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.CertificateId;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.PsidGroupPermissions;
@@ -67,7 +54,6 @@ import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.VerificationKeyIndicat
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.CrlSeries;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Duration;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.EccP256CurvePoint;
-import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.EcdsaP256Signature;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.GeographicRegion;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.HashAlgorithm;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.HashedId3;
@@ -287,14 +273,13 @@ final class CryptoController {
       this.logger.info("Verifying Message '{}' and Signature '{}'", message, signature);
 
       this.verificationSignature.update(message.getBytes());
-//      boolean verified = this.verificationSignature.verify(this.decoder.decode(signature));
       boolean verified = this.verificationSignature.verify(CodecUtils.fromHex(signature));
 
       return Util.zip(new String[] { MESSAGE, SIGNATURE, "verified" }, new Object[] { message, signature, verified });
    }
 
    @RequestMapping(method = RequestMethod.POST, value = "/csr", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-   Map<String, Object> csr(@RequestBody Map<String, String> payload) throws GeneralSecurityException, ParseException, EncodeFailedException, EncodeNotSupportedException, IOException, CryptoException, DecodeFailedException, DecodeNotSupportedException {
+   Map<String, Object> csr(@RequestBody Map<String, String> payload) throws Exception {
 
       CsrParams csrParams = new CsrParams(payload);
       SignedEeEnrollmentCertRequest seecr = buildCsr(csrParams);
@@ -312,7 +297,8 @@ final class CryptoController {
       EccP256CurvePoint eccP256CurvePoint = 
             tbsReq.getContent().getEca_ee().getEeEcaCertRequest().getTbsData().getVerifyKeyIndicator().getVerificationKey().getEcdsaNistP256();
       
-      String csrFileName = CodecUtils.toHex(getCurvePointValue(eccP256CurvePoint))  + ".oer";
+      
+      String csrFileName = CodecUtils.toHex(ECDSAProvider.getPublicKeyBytes(eccP256CurvePoint))  + ".oer";
       FileOutputStream keyfos = new FileOutputStream(csrFileName);
 
       keyfos.write(seecrEncode);
@@ -323,7 +309,7 @@ final class CryptoController {
    }
 
    @RequestMapping(method = RequestMethod.POST, value = "/csrdemo", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-   Map<String, Object> csrDemo(@RequestBody Map<String, String> payload) throws CryptoException, KeyStoreException, CertificateEncodingException, IOException, EncodeFailedException, EncodeNotSupportedException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+   Map<String, Object> csrDemo(@RequestBody Map<String, String> payload) throws Exception {
 
       CsrParams csrParams = new CsrParams(payload);
       logger.info("Generating CSR with parms:  {}", csrParams);
@@ -337,14 +323,12 @@ final class CryptoController {
    }
 
    @RequestMapping(method = RequestMethod.POST, value = "/csrdemoverify", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-   Map<String, Object> csrDemoVerify(@RequestBody Map<String, String> payload) throws IOException, DecodeFailedException, DecodeNotSupportedException, CertificateEncodingException, EncodeFailedException, EncodeNotSupportedException {
+   Map<String, Object> csrDemoVerify(@RequestBody Map<String, String> payload) throws Exception {
       String signedEeEnrollmentCertRequest = Optional.of(payload.get("signedEeEnrollmentCertRequest"))
             .orElseThrow(() -> new IllegalArgumentException(PAYLOAD_MUST_CONTAIN + "signedEeEnrollmentCertRequest"));
 
       logger.info("Veriying CSR for '{}':  '{}'", "signedEeEnrollmentCertRequest", signedEeEnrollmentCertRequest);
 
-      ECDSAProvider ecdsaProvider = new ECDSAProvider();
-      
       SignedEeEnrollmentCertRequest seecr = new SignedEeEnrollmentCertRequest();
       Ieee1609dot2Helper.decodeCOER(CodecUtils.fromHex(signedEeEnrollmentCertRequest), seecr);
       Content content = seecr.getContent();
@@ -357,16 +341,23 @@ final class CryptoController {
       ScopedCertificateRequest tbsReq = decodedSCR.getTbsRequest();
       byte[] toBeVerified = Ieee1609dot2Helper.encodeCOER(tbsReq);
       
-      EcdsaP256SignatureWrapper signtureWrapper = EcdsaP256SignatureWrapper.decode(signature, ecdsaProvider);
+      ECDSAProvider ecdsaProvider = new ECDSAProvider();
       
-      EccP256CurvePoint eccP256CurvePoint = 
-            tbsReq.getContent().getEca_ee().getEeEcaCertRequest().getTbsData().getVerifyKeyIndicator().getVerificationKey().getEcdsaNistP256();
+      EcdsaP256SignatureWrapper signatureWrapper = EcdsaP256SignatureWrapper.decode(signature, ecdsaProvider);
+
+//      EccP256CurvePoint eccP256CurvePoint = 
+//            tbsReq.getContent().getEca_ee().getEeEcaCertRequest().getTbsData().getVerifyKeyIndicator().getVerificationKey().getEcdsaNistP256();
+//      
+//      ECPublicKeyParameters publicKeyParams = provider.decodePublicKey(eccP256CurvePoint);
+//
+//      boolean verified = ecdsaProvider.verifySignature(toBeVerified, 
+//         enrollmentCert.getEncoded(), publicKeyParams, signatureWrapper);
+
+      byte[] digest = provider.computeDigest(toBeVerified, enrollmentCert.getEncoded());
+      this.verificationSignature.update(digest);
+      byte[] encodedSig = encodeECDSASignature(new BigInteger[]{signatureWrapper.getR(), signatureWrapper.getS()});
+      boolean verified = this.verificationSignature.verify(encodedSig);
       
-      ECPublicKeyParameters publicKeyParams = provider.decodePublicKey(eccP256CurvePoint);
-
-      boolean verified = ecdsaProvider.verifySignature(toBeVerified, 
-         enrollmentCert.getEncoded(), publicKeyParams, signtureWrapper);
-
       return Util.zip(new String[] { "signedEeEnrollmentCertRequest", "verified" }, new Object[] { signedEeEnrollmentCertRequest, verified });
    }
 
@@ -441,16 +432,9 @@ final class CryptoController {
 }
     * @param csrParams parameters for buiding the CSR
     * @return a SignedEeEnrollmentCertRequest
-    * 
-    * @throws IOException
-    * @throws CryptoException
-    * @throws EncodeFailedException
-    * @throws EncodeNotSupportedException
-    * @throws CertificateEncodingException
-    * @throws SignatureException 
-    * @throws InvalidKeyException 
+    * @throws Exception 
     */
-   private SignedEeEnrollmentCertRequest buildCsr(CsrParams csrParams) throws IOException, CryptoException, EncodeFailedException, EncodeNotSupportedException, CertificateEncodingException, SignatureException, InvalidKeyException {
+   private SignedEeEnrollmentCertRequest buildCsr(CsrParams csrParams) throws Exception {
       Date nowDate = ClockHelper.nowDate();
       Time32 currentTime = Time32Helper.dateToTime32(nowDate);
 
@@ -508,34 +492,29 @@ final class CryptoController {
       ScopedCertificateRequest tbsRequest = 
             new ScopedCertificateRequest(new Uint8(1), scmsPduContent);
       
-      SignerIdentifier signer = new SignerIdentifier();
-      signer.setSelf(Null.VALUE);
-      
-      ECPrivateKeyParameters privateKeyParams = 
-            (ECPrivateKeyParameters) ECUtil.generatePrivateKeyParameter(keyPair.getPrivate());
+      byte[] encodedTbsRequest = Ieee1609dot2Helper.encodeCOER(tbsRequest);
+
+//      ECPrivateKeyParameters privateKeyParams = 
+//            (ECPrivateKeyParameters) ECUtil.generatePrivateKeyParameter(keyPair.getPrivate());
       
 //      ECPrivateKeyParameters privateKeyParams = (ECPrivateKeyParameters) PrivateKeyFactory.createKey(keyPair.getPrivate().getEncoded());
-      byte[] encodedTbsRequest = Ieee1609dot2Helper.encodeCOER(tbsRequest);
-      EcdsaP256SignatureWrapper tbsRequestSignature = provider.computeSignature(
-         encodedTbsRequest, enrollmentCert.getEncoded(), privateKeyParams );
-      
-//      byte[] digest = provider.computeDigest(encodedTbsRequest, enrollmentCert.getEncoded());
-//      this.signingSignature.update(digest);
-//      byte[] sig= this.signingSignature.sign();
-//      logger.debug("sig: {}", CodecUtils.toHex(sig));
-//      ECParameterSpec sigParams = LunaParametersEC.decodeParameters(sig);
-//      EllipticCurve curve = sigParams.getCurve();
-//      int cofactor = sigParams.getCofactor();
-//      ECPoint generator = sigParams.getGenerator();
-//      BigInteger order = sigParams.getOrder();
-//
-//      EccP256CurvePoint r = new EccP256CurvePoint();
-//      byte[] s = new byte[]{0};
 //      
-//      EcdsaP256Signature signature = new EcdsaP256Signature(r, new OctetString(s));
+//      EcdsaP256SignatureWrapper tbsRequestSignature = provider.computeSignature(
+//         encodedTbsRequest, enrollmentCert.getEncoded(), privateKeyParams );
+      
+      byte[] digest = provider.computeDigest(encodedTbsRequest, enrollmentCert.getEncoded());
+      this.signingSignature.update(digest);
+      byte[] sig= this.signingSignature.sign();
+      logger.debug("signature: {}", CodecUtils.toHex(sig));
+      
+      BigInteger[] sigParts = decodeECDSASignature(sig);
+      EcdsaP256SignatureWrapper tbsRequestSignature = new EcdsaP256SignatureWrapper(sigParts[0], sigParts[1]);
       
       gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Signature signature = 
             tbsRequestSignature.encode();
+      
+      SignerIdentifier signer = new SignerIdentifier();
+      signer.setSelf(Null.VALUE);
       
       SignedCertificateRequest decodedSCR = new SignedCertificateRequest(HashAlgorithm.sha256, tbsRequest, signer, signature);
       byte[] encodedSCR = Ieee1609dot2Helper.encodeCOER(decodedSCR);
@@ -555,16 +534,46 @@ final class CryptoController {
       return encodedPublicKey;
    }
 
-   private byte[] getCurvePointValue(EccP256CurvePoint eccP256CurvePoint) {
-      if(eccP256CurvePoint.hasCompressed_y_0()) {
-         return eccP256CurvePoint.getCompressed_y_0().byteArrayValue();
-      } else if (eccP256CurvePoint.hasCompressed_y_1()) {
-         return eccP256CurvePoint.getCompressed_y_1().byteArrayValue();
-      } else if (eccP256CurvePoint.hasX_only()) {
-         return eccP256CurvePoint.getX_only().byteArrayValue();
+   private static BigInteger[] decodeECDSASignature(byte[] signature) throws Exception {
+      BigInteger[] sigs = new BigInteger[2];
+      ByteArrayInputStream inStream = new ByteArrayInputStream(signature);
+      try (ASN1InputStream asnInputStream = new ASN1InputStream(inStream)){
+         ASN1Primitive asn1 = asnInputStream.readObject();
+
+         int count = 0;
+         if (asn1 instanceof ASN1Sequence) {
+             ASN1Sequence asn1Sequence = (ASN1Sequence) asn1;
+             ASN1Encodable[] asn1Encodables = asn1Sequence.toArray();
+             for (ASN1Encodable asn1Encodable : asn1Encodables) {
+                 ASN1Primitive asn1Primitive = asn1Encodable.toASN1Primitive();
+                 if (asn1Primitive instanceof ASN1Integer) {
+                     ASN1Integer asn1Integer = (ASN1Integer) asn1Primitive;
+                     BigInteger integer = asn1Integer.getValue();
+                     if (count  < 2) {
+                         sigs[count] = integer;
+                     }
+                     count++;
+                 }
+             }
+         }
+         if (count != 2) {
+             throw new CryptoException(String.format("Invalid ECDSA signature. Expected count of 2 but got: %d. Signature is: %s", count,
+                     CodecUtils.toHex(signature)));
+         }
+      } catch (Exception e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
       }
+      return sigs;
+  }
 
-      return null;
+   public byte[] encodeECDSASignature(BigInteger[] sigs) throws Exception {
+      ByteArrayOutputStream s = new ByteArrayOutputStream();
+      
+      DERSequenceGenerator seq = new DERSequenceGenerator(s);
+      seq.addObject(new ASN1Integer(sigs[0]));
+      seq.addObject(new ASN1Integer(sigs[1]));
+      seq.close();
+      return s.toByteArray(); 
    }
-
 }

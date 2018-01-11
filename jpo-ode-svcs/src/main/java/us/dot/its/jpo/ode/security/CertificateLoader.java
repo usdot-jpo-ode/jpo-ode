@@ -113,6 +113,15 @@ public class CertificateLoader implements Runnable {
                 Paths.get(odeProperties.getSelfSigningPrivateKeyFilePath()));
     }
 
+    private void saveSelfCerts()  {
+       /*TODO
+        * Save the applications certs at these paths:
+        *   odeProperties.getSelfCertPath(), 
+        *   odeProperties.getSelfPrivateKeyReconstructionFilePath(),
+        *   odeProperties.getSelfSigningPrivateKeyFilePath() 
+        */
+   }
+
     @Override
     public void run() {
 
@@ -124,7 +133,7 @@ public class CertificateLoader implements Runnable {
 
         if (StringUtils.isNotEmpty(odeProperties.getCaCertPath()) &&
             StringUtils.isNotEmpty(odeProperties.getSelfCertPath())) {
-            // 1. Begin by loading CA cert to the store
+            // 1. Begin by loading root, ECA, RA and enrollment certs to the store
             try {
                 loadCert(
                         new CryptoProvider(), 
@@ -134,13 +143,31 @@ public class CertificateLoader implements Runnable {
                 logger.error("Error loading CA certificate", e);
             }
     
-            // 2. Load full certificates of self to the store
+            // TODO
+            // 2. Provision Application Certificates (https://wiki.campllc.org/display/SCP/Use+Case+13%3A+RSE+Application+Certificate+Provisioning)
+            /*
+             * At a high level, two steps are relevant:
+             *    1. Request Application Certificate
+             *    2. Download Application Certificate
+             */
+            provisionApplicationCerts();
+            
+            // TODO
+            // 3. Save the provisioned Applications Certificates
+            saveSelfCerts();
+
+            // 4. Load full certificates of self to the store
             try {
-                loadSelfFullCerts();
+               loadSelfFullCerts();
             } catch (Exception e) {
                 logger.error("Error loading full certificate of self", e);
             }
         }
     }
+
+   private void provisionApplicationCerts() {
+      // TODO Auto-generated method stub
+      
+   }
 
 }
