@@ -3,10 +3,10 @@ package us.dot.its.jpo.ode.security;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -26,7 +26,7 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DERSequenceGenerator;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
-import org.bouncycastle.crypto.util.PublicKeyFactory;
+import org.bouncycastle.jcajce.provider.asymmetric.util.ECUtil;
 import org.bouncycastle.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +90,7 @@ final class CryptoController {
 
    private final static Logger logger = LoggerFactory.getLogger(CryptoController.class);
 
-   private static final int CRL_SERIES = 0;
+   private static final int CRL_SERIES = 4;
 
    public class CsrParams extends OdeObject {
       private static final long serialVersionUID = 1L;
@@ -431,14 +431,11 @@ final class CryptoController {
       Duration duration = new Duration();
       duration.setHours(csrParams.getValidityPeriodDurationHours());
       ValidityPeriod validityPeriod = new ValidityPeriod(currentTime, duration);
-      GeographicRegion region = new GeographicRegion();
       SequenceOfIdentifiedRegion identifiedRegion = new SequenceOfIdentifiedRegion();
       for (String regionStr : csrParams.getRegionsArray())  {
-         IdentifiedRegion ir = new IdentifiedRegion();
-         ir.setCountryOnly(Integer.valueOf(regionStr));
-         identifiedRegion.add(ir);
+         identifiedRegion.add(IdentifiedRegion.createIdentifiedRegionWithCountryOnly(Integer.valueOf(regionStr)));
       }
-      region.setIdentifiedRegion(identifiedRegion);
+      GeographicRegion region = GeographicRegion.createGeographicRegionWithIdentifiedRegion(identifiedRegion);
       SequenceOfPsidGroupPermissions certRequestPermissions = new SequenceOfPsidGroupPermissions();
       PsidGroupPermissions pgp = new PsidGroupPermissions();
       SubjectPermissions subjectPermissions = new SubjectPermissions();
@@ -462,24 +459,22 @@ final class CryptoController {
       verificationKey.setEcdsaNistP256(encodedPublicKey );
       verifyKeyIndicator.setVerificationKey(verificationKey );
       ToBeSignedCertificate tbsData = new ToBeSignedCertificate(
-         id, cracaId, crlSeries, validityPeriod, region, null, null, null, 
-         certRequestPermissions, null, null, verifyKeyIndicator);
-
+         id, cracaId, crlSeries, validityPeriod, verifyKeyIndicator);
+      tbsData.setRegion(region);
+      tbsData.setCertRequestPermissions(certRequestPermissions);
+      
       EeEcaCertRequest eeEcaCertRequest = new EeEcaCertRequest(
          new Uint8(1), new Time32(currentTime.intValue()),
          tbsData);
 
-      ScmsPDU.Content scmsPduContent = new ScmsPDU.Content();
-      EcaEndEntityInterfacePDU eca_ee = new EcaEndEntityInterfacePDU();
-      eca_ee.setEeEcaCertRequest(eeEcaCertRequest);
-      scmsPduContent.setEca_ee(eca_ee );
+      EcaEndEntityInterfacePDU endEntityInterfacePDU = 
+            EcaEndEntityInterfacePDU.createEcaEndEntityInterfacePDUWithEeEcaCertRequest(eeEcaCertRequest);
+      ScopedCertificateRequest scopedCertificateRequest = new ScopedCertificateRequest(new Uint8(1),
+         ScmsPDU.Content.createContentWithEca_ee(endEntityInterfacePDU));
       
-      ScopedCertificateRequest tbsRequest = 
-            new ScopedCertificateRequest(new Uint8(1), scmsPduContent);
-      
-      byte[] encodedTbsRequest = Ieee1609dot2Helper.encodeCOER(tbsRequest);
+      byte[] tbsRequest = Ieee1609dot2Helper.encodeCOER(scopedCertificateRequest);
 
-      byte[] digest = provider.getSigner().computeDigest(encodedTbsRequest, "".getBytes());
+      byte[] digest = provider.getSigner().computeDigest(tbsRequest, "".getBytes());
       this.signingSignature.update(digest);
       byte[] sig= this.signingSignature.sign();
       logger.debug("signature: {}", CodecUtils.toHex(sig));
@@ -490,23 +485,32 @@ final class CryptoController {
       gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Signature signature = 
             tbsRequestSignature.encode();
       
-      SignerIdentifier signer = new SignerIdentifier();
-      signer.setSelf(Null.VALUE);
+      SignerIdentifier signer = SignerIdentifier.createSignerIdentifierWithSelf(new Null());
       
-      SignedCertificateRequest decodedSCR = new SignedCertificateRequest(HashAlgorithm.sha256, tbsRequest, signer, signature);
-      byte[] encodedSCR = Ieee1609dot2Helper.encodeCOER(decodedSCR);
-      SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest signedCertificateRequest = 
-            new SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest(encodedSCR);
-      SignedEeEnrollmentCertRequest.Content seecrContent = 
-            SignedEeEnrollmentCertRequest.Content.createContentWithSignedCertificateRequest(signedCertificateRequest);
+      SignedCertificateRequest signedCertificateRequest = new SignedCertificateRequest(HashAlgorithm.sha256, scopedCertificateRequest, signer, signature);
+//      byte[] encodedSCR = Ieee1609dot2Helper.encodeCOER(signedCertificateRequest);
+//      SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest signedCertificateRequest2 = 
+//            new SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest(encodedSCR);
+//      SignedEeEnrollmentCertRequest.Content seecrContent = 
+//            SignedEeEnrollmentCertRequest.Content.createContentWithSignedCertificateRequest(signedCertificateRequest2);
+//      
+//      SignedEeEnrollmentCertRequest seecr =  new SignedEeEnrollmentCertRequest(new Uint8(3), seecrContent );
       
-      SignedEeEnrollmentCertRequest seecr =  new SignedEeEnrollmentCertRequest(new Uint8(3), seecrContent );
+//      SignedEeEnrollmentCertRequest seecr = new SignedEeEnrollmentCertRequest(
+//         new Uint8(3), SignedEeEnrollmentCertRequest.Content.createContentWithSignedCertificateRequest(
+//               new SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest(signedCertificateRequest)
+//               ));
+      SignedEeEnrollmentCertRequest seecr = new SignedEeEnrollmentCertRequest(
+         new Uint8(3), SignedEeEnrollmentCertRequest.Content.createContentWithSignedCertificateRequest(
+            new SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest(
+               Ieee1609dot2Helper.encodeCOER(signedCertificateRequest))));
+
       return seecr;
    }
 
    
-   private EccP256CurvePoint buildPublicKeyCurvePoint() throws IOException, CryptoException {
-      ECPublicKeyParameters  publicKey  = (ECPublicKeyParameters) PublicKeyFactory.createKey(keyPair.getPublic().getEncoded());
+   private EccP256CurvePoint buildPublicKeyCurvePoint() throws InvalidKeyException, CryptoException {
+      ECPublicKeyParameters  publicKey = (ECPublicKeyParameters) ECUtil.generatePublicKeyParameter(keyPair.getPublic());
       EccP256CurvePoint encodedPublicKey = provider.getSigner().encodePublicKey(publicKey);
       return encodedPublicKey;
    }
