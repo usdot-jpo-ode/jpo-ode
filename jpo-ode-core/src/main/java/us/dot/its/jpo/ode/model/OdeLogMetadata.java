@@ -2,38 +2,90 @@ package us.dot.its.jpo.ode.model;
 
 public class OdeLogMetadata extends OdeMsgMetadata {
 
-	private static final long serialVersionUID = -8601265839394150140L;
+   private static final long serialVersionUID = -8601265839394150140L;
 
-	private String logFileName;
-	private String recordType;
+   public enum RecordType {
+      bsmLogDuringEvent, rxMsg, dnMsg, bsmTx, driverAlert, unsupported
+   }
 
-	public OdeLogMetadata(OdeMsgPayload payload) {
-		super(payload);
-	}
+   public enum SecurityResultCode {
+      success,
+      unknown,
+      inconsistentInputParameters,
+      spduParsingInvalidInput,
+      spduParsingUnsupportedCriticalInformationField,
+      spduParsingCertificateNotFound,
+      spduParsingGenerationTimeNotAvailable,
+      spduParsingGenerationLocationNotAvailable,
+      spduCertificateChainNotEnoughInformationToConstructChain,
+      spduCertificateChainChainEndedAtUntrustedRoot,
+      spduCertificateChainChainWasTooLongForImplementation,
+      spduCertificateChainCertificateRevoked,
+      spduCertificateChainOverdueCRL,
+      spduCertificateChainInconsistentExpiryTimes,
+      spduCertificateChainInconsistentStartTimes,
+      spduCertificateChainInconsistentChainPermissions,
+      spduCryptoVerificationFailure,
+      spduConsistencyFutureCertificateAtGenerationTime,
+      spduConsistencyExpiredCertificateAtGenerationTime,
+      spduConsistencyExpiryDateTooEarly,
+      spduConsistencyExpiryDateTooLate,
+      spduConsistencyGenerationLocationOutsideValidityRegion,
+      spduConsistencyNoGenerationLocation,
+      spduConsistencyUnauthorizedPSID,
+      spduInternalConsistencyExpiryTimeBeforeGenerationTime,
+      spduInternalConsistencyextDataHashDoesntMatch,
+      spduInternalConsistencynoExtDataHashProvided,
+      spduInternalConsistencynoExtDataHashPresent,
+      spduLocalConsistencyPSIDsDontMatch,
+      spduLocalConsistencyChainWasTooLongForSDEE,
+      spduRelevanceGenerationTimeTooFarInPast,
+      spduRelevanceGenerationTimeTooFarInFuture,
+      spduRelevanceExpiryTimeInPast,
+      spduRelevanceGenerationLocationTooDistant,
+      spduRelevanceReplayedSpdu,
+      spduCertificateExpired
+   }
 
-	public OdeLogMetadata() {
-		super();
-	}
 
-	public OdeLogMetadata(String payloadType, SerialId serialId, String receivedAt) {
-		super(payloadType, serialId, receivedAt);
-	}
+   private String logFileName;
+   private RecordType recordType;
+   private SecurityResultCode securityResultCode;
 
+   public OdeLogMetadata(OdeMsgPayload payload) {
+      super(payload);
+   }
 
-	public String getLogFileName() {
-		return logFileName;
-	}
+   public OdeLogMetadata() {
+      super();
+   }
 
-	public void setLogFileName(String logFileName) {
-		this.logFileName = logFileName;
-	}
+   public OdeLogMetadata(String payloadType, SerialId serialId, String receivedAt) {
+      super(payloadType, serialId, receivedAt);
+   }
 
-	public String getRecordType() {
-		return recordType;
-	}
+   public String getLogFileName() {
+      return logFileName;
+   }
 
-	public void setRecordType(String recordType) {
-		this.recordType = recordType;
-	}
+   public void setLogFileName(String logFileName) {
+      this.logFileName = logFileName;
+   }
+
+   public RecordType getRecordType() {
+      return recordType;
+   }
+
+   public void setRecordType(RecordType recordType) {
+      this.recordType = recordType;
+   }
+
+   public SecurityResultCode getSecurityResultCode() {
+      return securityResultCode;
+   }
+
+   public void setSecurityResultCode(SecurityResultCode securityResultCode) {
+      this.securityResultCode = securityResultCode;
+   }
 
 }

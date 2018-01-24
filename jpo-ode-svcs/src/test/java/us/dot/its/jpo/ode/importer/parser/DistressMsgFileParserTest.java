@@ -13,6 +13,7 @@ import mockit.Injectable;
 import mockit.Tested;
 import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
 
 public class DistressMsgFileParserTest {
    
@@ -364,22 +365,21 @@ public class DistressMsgFileParserTest {
    }
 
    /**
-    * Step 8 test. Should extract the "verification status" value, length 1
+    * Step 8 test. Should extract the SecurityResultCode value, length 1
     * bytes, then return EOF.
     */
    @Test
-   public void testStep8True() {
+   public void testStep8Success() {
 
       ParserStatus expectedStatus = ParserStatus.EOF;
-      boolean expectedVerificationStatus = true; // byte value 1 should be true
       int expectedStep = 9;
 
       BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(
-            new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 1 }));
+            new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 0 }));
 
       try {
          assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedVerificationStatus, testDistressMsgFileParser.isValidSignature());
+         assertEquals(SecurityResultCode.success, testDistressMsgFileParser.getSecurityResultCode());
          assertEquals(expectedStep, testDistressMsgFileParser.getStep());
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
@@ -391,19 +391,17 @@ public class DistressMsgFileParserTest {
     * bytes, then return EOF.
     */
    @Test
-   public void testStep8False() {
+   public void testStep8Unknown() {
 
       ParserStatus expectedStatus = ParserStatus.EOF;
-      boolean expectedVerificationStatus = false; // byte value 0 should be
-                                                  // false
       int expectedStep = 9;
 
       BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(
-            new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 0 }));
+            new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 1 }));
 
       try {
          assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedVerificationStatus, testDistressMsgFileParser.isValidSignature());
+         assertEquals(SecurityResultCode.unknown, testDistressMsgFileParser.getSecurityResultCode());
          assertEquals(expectedStep, testDistressMsgFileParser.getStep());
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);

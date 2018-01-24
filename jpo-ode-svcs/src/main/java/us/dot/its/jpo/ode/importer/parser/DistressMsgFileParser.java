@@ -37,12 +37,12 @@ public class DistressMsgFileParser extends TimLogFileParser {
             setmSec(CodecUtils.bytesToShort(readBuffer, 0, MSEC_LENGTH, ByteOrder.LITTLE_ENDIAN));
          }
 
-         // Step 8 - parse verification status
+         // Step 8 - parse SecurityResultCode
          if (getStep() == 8) {
             status = parseStep(bis, VERIFICATION_STATUS_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setValidSignature(readBuffer[0] == 0 ? false : true);
+            setSecurityResultCode(readBuffer[0]);
          }
 
          // Step 9 - parse payload length
