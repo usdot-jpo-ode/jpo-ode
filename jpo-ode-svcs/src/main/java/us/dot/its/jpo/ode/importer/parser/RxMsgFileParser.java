@@ -4,10 +4,16 @@ import java.io.BufferedInputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import us.dot.its.jpo.ode.model.RxSource;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class RxMsgFileParser extends TimLogFileParser {
+
+   private static final Logger logger = LoggerFactory.getLogger(RxMsgFileParser.class);
 
    private static final int RX_SOURCE_LENGTH = 4; // TODO - this is a C
                                                   // enumeration, size is
@@ -51,12 +57,12 @@ public class RxMsgFileParser extends TimLogFileParser {
             setRxSource(RxSource.values()[readBuffer[0]]);
          }
 
-         // Step 9 - parse verification status
+         // Step 9 - parse SecurityResultCode
          if (getStep() == 9) {
             status = parseStep(bis, VERIFICATION_STATUS_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setValidSignature(readBuffer[0] == 0 ? false : true);
+            setSecurityResultCode(readBuffer[0]);
          }
 
          // Step 10 - parse payload length
@@ -90,5 +96,15 @@ public class RxMsgFileParser extends TimLogFileParser {
 
    public void setRxSource(RxSource rxSource) {
       this.rxSource = rxSource;
+   }
+
+   public void setRxSource(int rxSourceOrdinal) {
+      try {
+         setRxSource(RxSource.values()[rxSourceOrdinal]);
+      } catch (Exception e) {
+         logger.error("Invalid RxSource: {}. Valid values are {}-{} inclusive", 
+            rxSourceOrdinal, 0, RxSource.values());
+         setSecurityResultCode(SecurityResultCode.unknown);
+      }
    }
 }

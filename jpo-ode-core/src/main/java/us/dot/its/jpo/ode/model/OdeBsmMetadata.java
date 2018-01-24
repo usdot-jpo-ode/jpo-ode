@@ -4,11 +4,17 @@ public class OdeBsmMetadata extends OdeLogMetadata {
 
     private static final long serialVersionUID = -8601265839394150140L;
 
+    public enum BsmSource {
+       EV, RV, unknown
+    }
+
+    private BsmSource bsmSource;
+    
     public OdeBsmMetadata() {
         super();
     }
 
-   public OdeBsmMetadata(OdeMsgPayload payload) {
+    public OdeBsmMetadata(OdeMsgPayload payload) {
         super(payload);
     }
 
@@ -16,4 +22,11 @@ public class OdeBsmMetadata extends OdeLogMetadata {
        
     }
 
+    public BsmSource getBsmSource() {
+       return bsmSource;
+    }
+
+    public void setBsmSource(BsmSource bsmSource) {
+       this.bsmSource = bsmSource;
+    }
 }

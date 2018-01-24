@@ -1,8 +1,6 @@
 package us.dot.its.jpo.ode.importer.parser;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
@@ -13,9 +11,10 @@ import org.junit.Test;
 
 import mockit.Injectable;
 import mockit.Tested;
-import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser.BsmSource;
 import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
+import us.dot.its.jpo.ode.model.OdeBsmMetadata.BsmSource;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
 
 public class BsmFileParserTest {
 
@@ -74,7 +73,7 @@ public class BsmFileParserTest {
 
       int testDirection = 1;
       ParserStatus expectedStatus = ParserStatus.EOF;
-      BsmSource expectedDirection = BsmSource.RV_RX;
+      BsmSource expectedDirection = BsmSource.RV;
       int expectedStep = 2;
 
       BufferedInputStream testInputStream = new BufferedInputStream(
@@ -82,7 +81,7 @@ public class BsmFileParserTest {
 
       try {
          assertEquals(expectedStatus, testBsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedDirection, testBsmFileParser.getDirection());
+         assertEquals(expectedDirection, testBsmFileParser.getBsmSource());
          assertEquals(expectedStep, testBsmFileParser.getStep());
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
@@ -176,11 +175,11 @@ public class BsmFileParserTest {
    public void testStep4EV_TX() {
 
       BufferedInputStream testInputStream = new BufferedInputStream(
-            new ByteArrayInputStream(new byte[] { 0, 5, 4, 3, 2, 15, 12, 1 }));
+            new ByteArrayInputStream(new byte[] { 0, 5, 4, 3, 2, 15, 12, 0 }));
 
       try {
          testBsmFileParser.parseFile(testInputStream, "testLogFile.bin");
-         assertTrue(testBsmFileParser.isValidSignature());
+         assertEquals(SecurityResultCode.unknown, testBsmFileParser.getSecurityResultCode());
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
@@ -194,11 +193,11 @@ public class BsmFileParserTest {
       ParserStatus expectedStatus = ParserStatus.EOF;
 
       BufferedInputStream testInputStream = new BufferedInputStream(
-            new ByteArrayInputStream(new byte[] { 1, 5, 4, 3, 2, 15, 12, 1 }));
+            new ByteArrayInputStream(new byte[] { 1, 5, 4, 3, 2, 15, 12, 0 }));
 
       try {
          assertEquals(expectedStatus, testBsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertTrue(testBsmFileParser.isValidSignature());
+         assertEquals(SecurityResultCode.success, testBsmFileParser.getSecurityResultCode());
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
@@ -212,11 +211,11 @@ public class BsmFileParserTest {
       ParserStatus expectedStatus = ParserStatus.EOF;
 
       BufferedInputStream testInputStream = new BufferedInputStream(
-            new ByteArrayInputStream(new byte[] { 1, 5, 4, 3, 2, 15, 12, 0 }));
+            new ByteArrayInputStream(new byte[] { 1, 5, 4, 3, 2, 15, 12, 1 }));
 
       try {
          assertEquals(expectedStatus, testBsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertFalse(testBsmFileParser.isValidSignature());
+         assertEquals(SecurityResultCode.unknown, testBsmFileParser.getSecurityResultCode());
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
