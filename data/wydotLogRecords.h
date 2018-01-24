@@ -12,7 +12,7 @@
 
 /* securityResultCode contains below result codes */
 typedef enum _securityResultCode {             /* from dot3 */
-    success = 1,
+    success = 0,
     inconsistentInputParameters = 2,
     spduParsingInvalidInput = 3,
     spduParsingUnsupportedCriticalInformationField = 4,

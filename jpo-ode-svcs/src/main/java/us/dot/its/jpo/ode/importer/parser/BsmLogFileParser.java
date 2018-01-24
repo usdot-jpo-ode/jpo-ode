@@ -4,16 +4,19 @@ import java.io.BufferedInputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import us.dot.its.jpo.ode.model.OdeBsmMetadata.BsmSource;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class BsmLogFileParser extends LogFileParser {
-   public enum BsmSource {
-      EV_TX, RV_RX
-   }
+   private static final Logger logger = LoggerFactory.getLogger(BsmLogFileParser.class);
 
    private static final int DIRECTION_LENGTH = 1;
 
-   private BsmSource direction; // 0 for EV(Tx), 1 for RV(Rx)
+   private BsmSource bsmSource; // 0 for EV(Tx), 1 for RV(Rx)
 
    public BsmLogFileParser(long bundleId) {
       super(bundleId);
@@ -31,7 +34,7 @@ public class BsmLogFileParser extends LogFileParser {
             status = parseStep(bis, DIRECTION_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setDirection(BsmSource.values()[readBuffer[0]]);
+            setBsmSource(readBuffer[0]);
          }
          // Step 2
          if (step == 2) {
@@ -47,16 +50,16 @@ public class BsmLogFileParser extends LogFileParser {
                return status;
             setmSec(CodecUtils.bytesToShort(readBuffer, 0, MSEC_LENGTH, ByteOrder.LITTLE_ENDIAN));
          }
-         // Step 4
+         // Step 4 parse SecurityResultCode
          if (step == 4) {
-            if (getDirection() == BsmSource.EV_TX) {
-               setValidSignature(true);
+            if (getBsmSource() == BsmSource.EV) {
+               setSecurityResultCode(SecurityResultCode.unknown);
                step++;
             } else {
                status = parseStep(bis, VERIFICATION_STATUS_LENGTH);
                if (status != ParserStatus.COMPLETE)
                   return status;
-               setValidSignature(readBuffer[0] == 0 ? false : true);
+               setSecurityResultCode(readBuffer[0]);
             }
          }
          // Step 5
@@ -83,13 +86,22 @@ public class BsmLogFileParser extends LogFileParser {
       return status;
    }
 
-   public BsmSource getDirection() {
-      return direction;
+   public BsmSource getBsmSource() {
+      return bsmSource;
    }
 
-   public BsmLogFileParser setDirection(BsmSource direction) {
-      this.direction = direction;
-      return this;
+   public void setBsmSource(BsmSource bsmSource) {
+      this.bsmSource = bsmSource;
+   }
+
+   public void setBsmSource(byte code) {
+      try {
+         setBsmSource(BsmSource.values()[code]);
+      } catch (Exception e) {
+         logger.error("Invalid BsmSource: {}. Valid values are {}-{} inclusive", 
+            code, 0, BsmSource.values());
+         setBsmSource(BsmSource.unknown);
+      }
    }
 
 }
