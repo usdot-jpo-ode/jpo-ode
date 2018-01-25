@@ -41,7 +41,7 @@ public abstract class DdsRequestManager<T> {
       }
    }
 
-   // @SuppressWarnings("unchecked")
+   @SuppressWarnings("unchecked")
    public Session connect(WebSocketMessageHandler<T> messageHandler, Class<?> decoder)
          throws DdsRequestManagerException {
 

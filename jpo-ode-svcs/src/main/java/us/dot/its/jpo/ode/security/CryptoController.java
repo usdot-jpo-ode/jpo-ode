@@ -282,12 +282,13 @@ final class CryptoController {
       byte[] seecrEncode = Ieee1609dot2Helper.encodeCOER(seecr);
       
       Content content = seecr.getContent();
-      SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest signedCertReq = 
-            content.getSignedCertificateRequest();
-      byte[] encodedSCR = signedCertReq.byteArrayValue();
-      SignedCertificateRequest decodedSCR = new SignedCertificateRequest();
-      Ieee1609dot2Helper.decodeCOER(encodedSCR, decodedSCR);
-      ScopedCertificateRequest tbsReq = decodedSCR.getTbsRequest();
+//      SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest signedCertReq = 
+//            content.getSignedCertificateRequest();
+//      byte[] encodedSCR = signedCertReq.byteArrayValue();
+//      SignedCertificateRequest decodedSCR = new SignedCertificateRequest();
+//      Ieee1609dot2Helper.decodeCOER(encodedSCR, decodedSCR);
+      SignedCertificateRequest signedCertReq = content.getSignedCertificateRequest().getContainedValue();
+      ScopedCertificateRequest tbsReq = signedCertReq.getTbsRequest();
       
       EccP256CurvePoint eccP256CurvePoint = 
             tbsReq.getContent().getEca_ee().getEeEcaCertRequest().getTbsData().getVerifyKeyIndicator().getVerificationKey().getEcdsaNistP256();
@@ -327,13 +328,14 @@ final class CryptoController {
       SignedEeEnrollmentCertRequest seecr = new SignedEeEnrollmentCertRequest();
       Ieee1609dot2Helper.decodeCOER(CodecUtils.fromHex(signedEeEnrollmentCertRequest), seecr);
       Content content = seecr.getContent();
-      SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest signedCertReq = 
-            content.getSignedCertificateRequest();
-      byte[] encodedSCR = signedCertReq.byteArrayValue();
-      SignedCertificateRequest decodedSCR = new SignedCertificateRequest();
-      Ieee1609dot2Helper.decodeCOER(encodedSCR, decodedSCR);
-      gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Signature signature = decodedSCR.getSignature();
-      ScopedCertificateRequest tbsReq = decodedSCR.getTbsRequest();
+//      SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest signedCertReq = 
+//            content.getSignedCertificateRequest();
+//      byte[] encodedSCR = signedCertReq.byteArrayValue();
+//      SignedCertificateRequest decodedSCR = new SignedCertificateRequest();
+//      Ieee1609dot2Helper.decodeCOER(encodedSCR, decodedSCR);
+      SignedCertificateRequest signedCertReq = content.getSignedCertificateRequest().getContainedValue();
+      gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Signature signature = signedCertReq.getSignature();
+      ScopedCertificateRequest tbsReq = signedCertReq.getTbsRequest();
       byte[] toBeVerified = Ieee1609dot2Helper.encodeCOER(tbsReq);
       
       EcdsaP256SignatureWrapper signatureWrapper = EcdsaP256SignatureWrapper.decode(signature, provider.getSigner());
@@ -488,22 +490,14 @@ final class CryptoController {
       SignerIdentifier signer = SignerIdentifier.createSignerIdentifierWithSelf(new Null());
       
       SignedCertificateRequest signedCertificateRequest = new SignedCertificateRequest(HashAlgorithm.sha256, scopedCertificateRequest, signer, signature);
-//      byte[] encodedSCR = Ieee1609dot2Helper.encodeCOER(signedCertificateRequest);
-//      SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest signedCertificateRequest2 = 
-//            new SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest(encodedSCR);
-//      SignedEeEnrollmentCertRequest.Content seecrContent = 
-//            SignedEeEnrollmentCertRequest.Content.createContentWithSignedCertificateRequest(signedCertificateRequest2);
-//      
-//      SignedEeEnrollmentCertRequest seecr =  new SignedEeEnrollmentCertRequest(new Uint8(3), seecrContent );
-      
-//      SignedEeEnrollmentCertRequest seecr = new SignedEeEnrollmentCertRequest(
-//         new Uint8(3), SignedEeEnrollmentCertRequest.Content.createContentWithSignedCertificateRequest(
-//               new SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest(signedCertificateRequest)
-//               ));
+
+//    SignedEeEnrollmentCertRequest seecr = new SignedEeEnrollmentCertRequest(
+//    new Uint8(3), SignedEeEnrollmentCertRequest.Content.createContentWithSignedCertificateRequest(
+//       new SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest(
+//          Ieee1609dot2Helper.encodeCOER(signedCertificateRequest))));
       SignedEeEnrollmentCertRequest seecr = new SignedEeEnrollmentCertRequest(
          new Uint8(3), SignedEeEnrollmentCertRequest.Content.createContentWithSignedCertificateRequest(
-            new SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest(
-               Ieee1609dot2Helper.encodeCOER(signedCertificateRequest))));
+               new SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest(signedCertificateRequest)));
 
       return seecr;
    }
