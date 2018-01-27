@@ -16,7 +16,7 @@ All files are in a JSON format and are broken into three core fields:
 
 Field Name | Definition 
 --- | --- 
-schemaVersion | Version of the metadata schema
+schemaVersion | Version of the metadata schema.
 recordGeneratedAt | Closest time to which the record was created, either signed or received by the generatedBy source in UTC format. This information is taken from the communication header.
 recordGeneratedBy | Source of the record, whether [OBU, RSU, TMC].
 logFileName | Name of the original file that deposited the message into the ODE
@@ -33,7 +33,7 @@ receivedDetails | Information on when the message was received by a vehicle
 receivedDetails/location | Latitude, longitude, elevation, speed, and heading of vehicle when receiving the message
 receivedDetails/rxFrom | Source that the vehicle originally received the message from (Sat, RSU, RV)
 sanitized | Boolean value indicating whether the data has been sanitized by the [Privacy Module](https://github.com/usdot-jpo-ode/jpo-cvdp)
-validSignature | Boolean of signed vs unsigned data based on the SCMS System defined per message
+securityResultCode | Status of IEEE 1609.2 security validation. One of the following enum constants {success, unknown, inconsistentInputParameters, spduParsingInvalidInput, spduParsingUnsupportedCriticalInformationField, spduParsingCertificateNotFound, spduParsingGenerationTimeNotAvailable, spduParsingGenerationLocationNotAvailable, spduCertificateChainNotEnoughInformationToConstructChain, spduCertificateChainChainEndedAtUntrustedRoot, spduCertificateChainChainWasTooLongForImplementation, spduCertificateChainCertificateRevoked, spduCertificateChainOverdueCRL, spduCertificateChainInconsistentExpiryTimes, spduCertificateChainInconsistentStartTimes, spduCertificateChainInconsistentChainPermissions, spduCryptoVerificationFailure, spduConsistencyFutureCertificateAtGenerationTime, spduConsistencyExpiredCertificateAtGenerationTime, spduConsistencyExpiryDateTooEarly, spduConsistencyExpiryDateTooLate, spduConsistencyGenerationLocationOutsideValidityRegion, spduConsistencyNoGenerationLocation, spduConsistencyUnauthorizedPSID, spduInternalConsistencyExpiryTimeBeforeGenerationTime, spduInternalConsistencyextDataHashDoesntMatch, spduInternalConsistencynoExtDataHashProvided, spduInternalConsistencynoExtDataHashPresent, spduLocalConsistencyPSIDsDontMatch, spduLocalConsistencyChainWasTooLongForSDEE, spduRelevanceGenerationTimeTooFarInPast, spduRelevanceGenerationTimeTooFarInFuture, spduRelevanceExpiryTimeInPast, spduRelevanceGenerationLocationTooDistant, spduRelevanceReplayedSpdu, spduCertificateExpired}. 
 
 * Midnight will be represented as 0:00 for all time fields
 
@@ -45,12 +45,11 @@ datatype | ODE classpath for the information represented in the data field of th
 data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard](http://standards.sae.org/j2735_201603/)
 
 #### Sample Data 
-*Schema Version: 3*
+*Schema Version: 4*
 
 ##### Received-TIM
 ```json
 {
-	"schemaVersion": 3,
 	"metadata": {
 		"schemaVersion": 3,
 		"recordGeneratedBy": "OBU",
@@ -77,7 +76,7 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
 			"rxFrom": 0
 		},
 		"sanitized": false,
-		"validSignature": true
+		"securityResultCode": "success",
 	},
 	"payload": {
 		"dataType": "us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage",
@@ -161,18 +160,17 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
 }
 ```
 
-##### Received-BSM
+##### Received-BSM (from host vehicle)
 
 ```json
 {
-	"schemaVersion": 3,
 	"metadata": {
-		"schemaVersion": 3,
+		"schemaVersion": 4,
 		"recordGeneratedBy": "OBU",
 		"recrodGeneratedAt": "2016-08-10T16:35:45.138Z[UTC]",
 		"logFileName": "bsm.uper",
 		"payloadType": "us.dot.its.jpo.ode.model.OdeBsmPayload",
-		"recordType": "bsmRxRecord",
+		"recordType": "bsmTx",
 		"serialId": {
 			"streamId": "f9c7635a-7763-4e21-bece-cb1104f143b9",
 			"bundleSize": 1,
@@ -182,7 +180,8 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
 		},
 		"odeReceivedAt": "2017-09-26T20:00:08.48Z[UTC]",
 		"sanitized": false,
-		"validSignature": true
+		"bsmSource": "EV",
+		"securityResultCode": "unknown"
 	},
 	"payload": {
 		"dataType": "us.dot.its.jpo.ode.plugin.j2735.J2735Bsm",
@@ -325,3 +324,104 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
 }
 ```
 
+##### Received-BSM (from remote vehicle)
+
+```json
+{
+  "metadata": {
+    "logFileName": "bsmLogDuringEvent.bin",
+    "recordType": "bsmLogDuringEvent",
+    "payloadType": "us.dot.its.jpo.ode.model.OdeBsmPayload",
+    "serialId": {
+      "streamId": "ea0a689e-4bc0-4b13-b358-81dba3fb20ad",
+      "bundleSize": 1,
+      "bundleId": 3,
+      "recordId": 2,
+      "serialNumber": 0
+    },
+    "odeReceivedAt": "2017-11-09T13:04:50.862Z[UTC]",
+    "schemaVersion": 4,
+    "recordGeneratedAt": "2017-08-10T21:02:14.799Z[UTC]",
+    "recordGeneratedBy": "OBU",
+    "bsmSource": "RV",
+    "securityResultCode": "success",
+    "sanitized": false
+  },
+  "payload": {
+    "dataType": "us.dot.its.jpo.ode.plugin.j2735.J2735Bsm",
+    "data": {
+      "coreData": {
+        "msgCnt": 59,
+        "id": "CB4A0000",
+        "secMark": 14800,
+        "position": {
+          "latitude": 40.4740358,
+          "longitude": -104.9691948,
+          "elevation": 1507
+        },
+        "accelSet": {
+          "accelLong": -0.02,
+          "accelYaw": 0
+        },
+        "accuracy": {
+          "semiMajor": 12.7,
+          "semiMinor": 12.7
+        },
+        "transmission": "NEUTRAL",
+        "speed": 0.08,
+        "heading": 51.2,
+        "brakes": {
+          "wheelBrakes": {
+            "leftFront": false,
+            "rightFront": false,
+            "unavailable": true,
+            "leftRear": false,
+            "rightRear": false
+          },
+          "traction": "unavailable",
+          "abs": "unavailable",
+          "scs": "unavailable",
+          "brakeBoost": "unavailable",
+          "auxBrakes": "unavailable"
+        },
+        "size": {}
+      },
+      "partII": [
+        {
+          "id": "VehicleSafetyExtensions",
+          "value": {
+            "pathHistory": {
+              "crumbData": [
+                {
+                  "elevationOffset": 26.6,
+                  "latOffset": 0.0000318,
+                  "lonOffset": -0.0000362,
+                  "timeOffset": 284.74
+                }
+              ]
+            },
+            "pathPrediction": {
+              "confidence": 50,
+              "radiusOfCurve": 0
+            }
+          }
+        },
+        {
+          "id": "SupplementalVehicleExtensions",
+          "value": {
+            "classDetails": {
+              "fuelType": "unknownFuel",
+              "hpmsType": "none",
+              "keyType": 0,
+              "regional": [],
+              "role": "basicVehicle"
+            },
+            "weatherProbe": {},
+            "regional": []
+          }
+        }
+      ]
+    }
+  }
+}
+```
