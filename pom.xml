@@ -19,6 +19,8 @@
     <module>jpo-ode-svcs</module>
     <module>jpo-ode-plugins</module>
     <module>jpo-ode-common</module>
+    <module>jpo-s3-deposit</module>
+    <module>jpo-security</module>
   </modules>
 
   <repositories>
@@ -103,7 +105,7 @@
             <dependencies>
               <dependency>
                 <groupId>org.apache.maven.surefire</groupId>
-                <artifactId>surefire-junit47</artifactId> <!-- DO NOT CHANGE THIS. If you do, your tests will misteriously fail for not apparent reason. -->
+                <artifactId>surefire-junit47</artifactId> <!-- DO NOT CHANGE THIS. If you do, your tests will misteriously fail for no apparent reason. -->
                 <version>2.19.1</version>
               </dependency>
             </dependencies>
