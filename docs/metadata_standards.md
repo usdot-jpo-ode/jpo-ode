@@ -328,7 +328,6 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
 
 ```json
 {
-{
   "metadata": {
     "logFileName": "bsmLogDuringEvent.bin",
     "recordType": "bsmLogDuringEvent",
