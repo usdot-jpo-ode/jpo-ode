@@ -345,7 +345,7 @@ data | ODE JSON representation of the J2735 spec, as definted in [J2735 Standard
     "recordGeneratedAt": "2017-08-10T21:02:14.799Z[UTC]",
     "recordGeneratedBy": "OBU",
     "bsmSource": "RV",
-    "securityResultCode": "success",,
+    "securityResultCode": "success",
     "sanitized": false
   },
   "payload": {
