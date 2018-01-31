@@ -30,5 +30,10 @@ public class OdeDriverAlertMetadata extends OdeLogMetadata{
 
     }
 
+   public OdeDriverAlertMetadata(OdeMsgPayload payload, ReceivedMessageDetails receivedMsgDetails) {
+      super(payload);
+      this.receivedMessageDetails = receivedMsgDetails;
+   }
+
 
 }
