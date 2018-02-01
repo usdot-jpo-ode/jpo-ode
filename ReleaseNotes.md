@@ -1,9 +1,17 @@
 ## ODE Release Notes ##
-----------
+-----------------------
+### Sprint 31
+- ODE-685 Added metadata field `bsmSource` to identify the source of the BSM as host (EV) or remote (RV). See https://github.com/usdot-jpo-ode/jpo-ode/wiki/Log-File-Changes-(schemaVersion=4) for details.
+- ODE-688 Deploed firehose into production for CVPEP and RDE
+- ODE-689 and ODE-690: Replaced boolean metadata field `validSignature` with integer `securityResultCode` to better convey the status of security validation. See https://github.com/usdot-jpo-ode/jpo-ode/wiki/Log-File-Changes-(schemaVersion=4) for details.
+- ODE-692 Improved AEM/ADM error handling for when connection with Kafka broker is interrupted
+### Sprint 30
+- ODE-680 Migrated SDW/SDC calls to new production endpoints
+### Sprint 29
+- ODE-675 CHanged jpo-S3-deposit module to send CVPEP data through AWS Firehose
 ### Sprint 28
 - ODE-670 J2735TravelerInformationMessage.packetID needs to be BigInteger
 see https://github.com/usdot-jpo-ode/jpo-ode/wiki/TIM-REST-Endpoint-Changes for interface changes.
-
 ### Sprint 27
 - ODE-661 CVPEP Data Inconsistency for TIM Files 
 - ODE-657 Continue Supporting WyDOT issues 
