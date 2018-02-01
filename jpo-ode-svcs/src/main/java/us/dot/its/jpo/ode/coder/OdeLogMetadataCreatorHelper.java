@@ -3,11 +3,11 @@ package us.dot.its.jpo.ode.coder;
 import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
 import us.dot.its.jpo.ode.importer.parser.TimLogFileParser;
-import us.dot.its.jpo.ode.model.OdeAsn1Metadata;
 import us.dot.its.jpo.ode.model.OdeAsn1WithBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeLogMetadata;
-import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
+import us.dot.its.jpo.ode.model.OdeLogMetadataReceived;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
+import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
 
 public class OdeLogMetadataCreatorHelper {
 
@@ -27,11 +27,11 @@ public class OdeLogMetadataCreatorHelper {
             OdeAsn1WithBsmMetadata odeAsn1WithBsmMetadata = (OdeAsn1WithBsmMetadata) metadata;
             odeAsn1WithBsmMetadata.setBsmSource(bsmLogFileParser.getBsmSource());
          } else if (logFileParser instanceof TimLogFileParser &&
-               metadata instanceof OdeAsn1Metadata) {
+               metadata instanceof OdeLogMetadataReceived) {
             ReceivedMessageDetails receivedMsgDetails = 
                   TimDecoderHelper.buildReceivedMessageDetails((TimLogFileParser) logFileParser);
-            OdeAsn1Metadata odeAsn1Metadata = (OdeAsn1Metadata) metadata;
-            odeAsn1Metadata.setReceivedMessageDetails(receivedMsgDetails);
+            OdeLogMetadataReceived odeLogMetadataReceived = (OdeLogMetadataReceived) metadata;
+            odeLogMetadataReceived.setReceivedMessageDetails(receivedMsgDetails);
          }
       }
 

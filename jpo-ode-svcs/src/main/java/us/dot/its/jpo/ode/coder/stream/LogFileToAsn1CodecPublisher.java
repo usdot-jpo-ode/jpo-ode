@@ -10,13 +10,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import us.dot.its.jpo.ode.coder.OdeLogMetadataCreatorHelper;
 import us.dot.its.jpo.ode.coder.StringPublisher;
-import us.dot.its.jpo.ode.coder.TimDecoderHelper;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
 import us.dot.its.jpo.ode.importer.parser.DriverAlertFileParser;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
-import us.dot.its.jpo.ode.importer.parser.TimLogFileParser;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
@@ -25,11 +23,10 @@ import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdeAsn1WithBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeDriverAlertData;
-import us.dot.its.jpo.ode.model.OdeDriverAlertMetadata;
 import us.dot.its.jpo.ode.model.OdeDriverAlertPayload;
 import us.dot.its.jpo.ode.model.OdeLogMetadata;
+import us.dot.its.jpo.ode.model.OdeLogMetadataReceived;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
-import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
 
@@ -98,9 +95,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       if (fileParser instanceof DriverAlertFileParser){
          logger.debug("Publishing a driverAlert.");
          msgPayload = new OdeDriverAlertPayload(((DriverAlertFileParser) fileParser).getAlert());
-         
-         ReceivedMessageDetails receivedMsgDetails = TimDecoderHelper.buildReceivedMessageDetails((TimLogFileParser) fileParser);
-         msgMetadata = new OdeDriverAlertMetadata(msgPayload, receivedMsgDetails);
+         msgMetadata = new OdeLogMetadataReceived(msgPayload);
 
          msgMetadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
          OdeLogMetadataCreatorHelper.updateLogMetadata(msgMetadata, fileParser);
