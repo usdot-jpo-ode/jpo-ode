@@ -30,10 +30,10 @@ import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
+import us.dot.its.jpo.ode.model.OdeLogMetadataReceived;
 import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.OdeTimData;
-import us.dot.its.jpo.ode.model.OdeTimMetadata;
 import us.dot.its.jpo.ode.model.OdeTimPayload;
 import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
 import us.dot.its.jpo.ode.model.RxSource;
@@ -132,7 +132,7 @@ public class TimDecoderHelper {
 
             OdeTimPayload timPayload = new OdeTimPayload(OssTravelerInformation.genericTim(tim));
 
-            OdeTimMetadata timMetadata = new OdeTimMetadata(timPayload);
+            OdeLogMetadataReceived timMetadata = new OdeLogMetadataReceived(timPayload);
 
             timMetadata.setOdeReceivedAt(DateTimeUtils.now());
             timMetadata.setSerialId(serialId);
@@ -188,7 +188,7 @@ public class TimDecoderHelper {
 
             OdeBsmPayload bsmPayload = new OdeBsmPayload(OssBsm.genericBsm(bsm));
 
-             OdeTimMetadata bsmMetadata = new OdeTimMetadata(bsmPayload);
+            OdeLogMetadataReceived bsmMetadata = new OdeLogMetadataReceived(bsmPayload);
 
              bsmMetadata.setOdeReceivedAt(DateTimeUtils.now());
              bsmMetadata.setSerialId(serialId);
