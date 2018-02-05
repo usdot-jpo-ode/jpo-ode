@@ -148,7 +148,7 @@ public class CodecUtils {
    }
 
    public static byte[] fromHex(String hex) {
-      return DatatypeConverter.parseHexBinary(hex);
+      return DatatypeConverter.parseHexBinary(hex.replaceAll("\\s", ""));
    }
 
    public static String toBase64(byte[] bytes) {

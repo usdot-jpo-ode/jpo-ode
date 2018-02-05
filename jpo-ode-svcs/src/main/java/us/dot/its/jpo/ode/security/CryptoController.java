@@ -7,13 +7,15 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PublicKey;
 import java.security.Signature;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
-import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,6 +29,9 @@ import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DERSequenceGenerator;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.jcajce.provider.asymmetric.util.ECUtil;
+import org.bouncycastle.jce.ECNamedCurveTable;
+import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
+import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -328,11 +333,7 @@ final class CryptoController {
       SignedEeEnrollmentCertRequest seecr = new SignedEeEnrollmentCertRequest();
       Ieee1609dot2Helper.decodeCOER(CodecUtils.fromHex(signedEeEnrollmentCertRequest), seecr);
       Content content = seecr.getContent();
-//      SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest signedCertReq = 
-//            content.getSignedCertificateRequest();
-//      byte[] encodedSCR = signedCertReq.byteArrayValue();
-//      SignedCertificateRequest decodedSCR = new SignedCertificateRequest();
-//      Ieee1609dot2Helper.decodeCOER(encodedSCR, decodedSCR);
+
       SignedCertificateRequest signedCertReq = content.getSignedCertificateRequest().getContainedValue();
       gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Signature signature = signedCertReq.getSignature();
       ScopedCertificateRequest tbsReq = signedCertReq.getTbsRequest();
@@ -341,11 +342,42 @@ final class CryptoController {
       EcdsaP256SignatureWrapper signatureWrapper = EcdsaP256SignatureWrapper.decode(signature, provider.getSigner());
 
       byte[] digest = provider.getSigner().computeDigest(toBeVerified, "".getBytes());
-      this.verificationSignature.update(digest);
+      
+      // let's extract the public key from the CSR
+      EccP256CurvePoint recon = tbsReq.getContent().getEca_ee().getEeEcaCertRequest().getTbsData()
+            .getVerifyKeyIndicator().getVerificationKey().getEcdsaNistP256();
+      
+      logger.debug("Enrollment Public Key [{}], [{}]: {}", 
+         this.keyPair.getPublic().getFormat(),
+         this.keyPair.getPublic().getAlgorithm(),
+         CodecUtils.toHex(this.keyPair.getPublic().getEncoded()));
+      
+      PublicKey pubKey = extractPublicKey(recon);
+      
+      logger.info("Extracted Public Key [{}], [{}]: {}", 
+         pubKey.getFormat(),
+         pubKey.getAlgorithm(),
+         CodecUtils.toHex(pubKey.getEncoded()));
+
+
+      Signature myVerificationSignature = Signature.getInstance("SHA256withECDSA");
+      myVerificationSignature.initVerify(pubKey);
+      myVerificationSignature.update(digest);
+      
       byte[] encodedSig = encodeECDSASignature(new BigInteger[]{signatureWrapper.getR(), signatureWrapper.getS()});
-      boolean verified = this.verificationSignature.verify(encodedSig);
+      boolean verified = myVerificationSignature.verify(encodedSig);
       
       return Util.zip(new String[] { "signedEeEnrollmentCertRequest", "verified" }, new Object[] { signedEeEnrollmentCertRequest, verified });
+   }
+
+   private PublicKey extractPublicKey(EccP256CurvePoint pubKeyCurvePoint)
+         throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException {
+      ECPublicKeyParameters params = provider.getSigner().decodePublicKey(pubKeyCurvePoint);
+      ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec("prime256v1");
+      ECPublicKeySpec pubKeySpec = new ECPublicKeySpec(params.getQ(), spec);
+      KeyFactory keyFactory = KeyFactory.getInstance("ECDSA", "BC");
+      PublicKey pubKey = keyFactory.generatePublic(pubKeySpec);
+      return pubKey;
    }
 
    /**
@@ -422,9 +454,6 @@ final class CryptoController {
     * @throws Exception 
     */
    private SignedEeEnrollmentCertRequest buildCsr(CsrParams csrParams) throws Exception {
-      Date nowDate = ClockHelper.nowDate();
-      Time32 currentTime = Time32Helper.dateToTime32(nowDate);
-
       CertificateId id = new CertificateId();
       id.setName(new Hostname(csrParams.getName()));
       HashedId3 cracaId = new HashedId3();
@@ -432,7 +461,7 @@ final class CryptoController {
       CrlSeries crlSeries = new CrlSeries(CRL_SERIES);
       Duration duration = new Duration();
       duration.setHours(csrParams.getValidityPeriodDurationHours());
-      ValidityPeriod validityPeriod = new ValidityPeriod(currentTime, duration);
+      ValidityPeriod validityPeriod = new ValidityPeriod(csrParams.currentTime, duration);
       SequenceOfIdentifiedRegion identifiedRegion = new SequenceOfIdentifiedRegion();
       for (String regionStr : csrParams.getRegionsArray())  {
          identifiedRegion.add(IdentifiedRegion.createIdentifiedRegionWithCountryOnly(Integer.valueOf(regionStr)));
@@ -456,6 +485,7 @@ final class CryptoController {
       certRequestPermissions.add(pgp);
       VerificationKeyIndicator verifyKeyIndicator = new VerificationKeyIndicator();
       PublicVerificationKey verificationKey = new PublicVerificationKey();
+      
       EccP256CurvePoint encodedPublicKey = buildPublicKeyCurvePoint();
       
       verificationKey.setEcdsaNistP256(encodedPublicKey );
@@ -466,7 +496,7 @@ final class CryptoController {
       tbsData.setCertRequestPermissions(certRequestPermissions);
       
       EeEcaCertRequest eeEcaCertRequest = new EeEcaCertRequest(
-         new Uint8(1), new Time32(currentTime.intValue()),
+         new Uint8(1), new Time32(csrParams.currentTime.intValue()),
          tbsData);
 
       EcaEndEntityInterfacePDU endEntityInterfacePDU = 
@@ -475,7 +505,7 @@ final class CryptoController {
          ScmsPDU.Content.createContentWithEca_ee(endEntityInterfacePDU));
       
       byte[] tbsRequest = Ieee1609dot2Helper.encodeCOER(scopedCertificateRequest);
-
+      logger.debug("tbsRequest = {}", CodecUtils.toHex(tbsRequest));
       byte[] digest = provider.getSigner().computeDigest(tbsRequest, "".getBytes());
       this.signingSignature.update(digest);
       byte[] sig= this.signingSignature.sign();

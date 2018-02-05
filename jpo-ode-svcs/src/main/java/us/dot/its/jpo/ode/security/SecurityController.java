@@ -194,11 +194,11 @@ public class SecurityController {
       }
 
       if (pair != null) {
-         logger.info("Private Key [{}], [{}]: {}", 
+         logger.info("Enrollment Private Key [{}], [{}]: {}", 
             pair.getPrivate().getFormat(),
             pair.getPrivate().getAlgorithm(),
             CodecUtils.toHex(pair.getPrivate().getEncoded()));
-         logger.info("Public Key [{}], [{}]: {}", 
+         logger.info("Enrollment Public Key [{}], [{}]: {}", 
             pair.getPublic().getFormat(),
             pair.getPublic().getAlgorithm(),
             CodecUtils.toHex(pair.getPublic().getEncoded()));
