@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.zip.GZIPInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,15 +74,9 @@ public class ImporterProcessor {
 
       // ODE-559
       boolean success = true;
-      try {
-         InputStream inputStream = new FileInputStream(filePath.toFile());
-         if (Files.probeContentType(filePath).equals("application/gzip")) { 
-            inputStream = new GZIPInputStream(inputStream);
-         }
+      try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
          BufferedInputStream bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
          codecPublisher.publishFile(filePath, bis, fileType);
-         bis.close();
-         inputStream.close();
       } catch (Exception e) {
          success = false;
          logger.error("Failed to open or process file: " + filePath, e);
