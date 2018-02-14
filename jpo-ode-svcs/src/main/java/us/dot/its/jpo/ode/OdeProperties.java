@@ -131,6 +131,11 @@ public class OdeProperties implements EnvironmentAware {
    private int isdTrustPort = 6667;
    private int dataReceiptBufferSize;
 
+   /*
+    * REST Endpoint Properties
+    */
+   private int restResponseTimeout = 15000;
+
    private int importProcessorBufferSize = OdePlugin.INPUT_STREAM_BUFFER_SIZE;
 
 
@@ -694,4 +699,13 @@ public class OdeProperties implements EnvironmentAware {
    public void setFileWatcherPeriod(Integer fileWatcherPeriod) {
       this.fileWatcherPeriod = fileWatcherPeriod;
    }
+
+   public int getRestResponseTimeout() {
+      return restResponseTimeout;
+   }
+
+   public void setRestResponseTimeout(int restResponseTimeout) {
+      this.restResponseTimeout = restResponseTimeout;
+   }
+
 }

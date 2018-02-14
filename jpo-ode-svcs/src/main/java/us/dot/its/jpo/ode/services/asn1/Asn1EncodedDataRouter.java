@@ -48,9 +48,12 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
     private OdeProperties odeProperties;
     private DdsDepositor<DdsStatusMessage> depositor;
 
-    public Asn1EncodedDataRouter(OdeProperties odeProps) {
+    private String requestId;
+
+    public Asn1EncodedDataRouter(OdeProperties odeProps, String requestId) {
       super();
       this.odeProperties = odeProps;
+      this.requestId = requestId;
 
       try {
          depositor = new DdsDepositor<>(this.odeProperties);
@@ -63,7 +66,8 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
     }
 
    @Override
-   public Object process(String consumedData) {
+   public HashMap<String, String> process(String consumedData) {
+      HashMap<String, String> responseList = null;
       try {
          logger.debug("Consumed: {}", consumedData);
          JSONObject consumedObj = XmlUtils.toJSONObject(consumedData).getJSONObject(OdeAsn1Data.class.getSimpleName());
@@ -78,21 +82,27 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
          if (metadata.has("request")) {
             JSONObject request = metadata.getJSONObject("request");
-
-            if (request.has("rsus")) {
-               Object rsu = request.get("rsus");
-               if (!(rsu instanceof JSONArray)) {
-                  JSONArray rsus = new JSONArray();
-                  rsus.put(rsu);
-                  request.put("rsus", rsus);
+            
+            if (request.has("ode")) {
+               JSONObject ode = request.getJSONObject("ode");
+               if (ode.has("requestId")) {
+                  if (ode.getString("requestId").equals(requestId)) {
+                     if (request.has("rsus")) {
+                        Object rsu = request.get("rsus");
+                        if (!(rsu instanceof JSONArray)) {
+                           JSONArray rsus = new JSONArray();
+                           rsus.put(rsu);
+                           request.put("rsus", rsus);
+                        }
+                     }
+         
+                     // Convert JSON to POJO
+                     OdeTravelerInputData travelerinputData = buildTravelerInputData(consumedObj);
+         
+                     responseList = processEncodedTim(travelerinputData, consumedObj);
+                  }
                }
             }
-
-            // Convert JSON to POJO
-            OdeTravelerInputData travelerinputData = buildTravelerInputData(consumedObj);
-
-            processEncodedTim(travelerinputData, consumedObj);
-
          } else {
             throw new Asn1EncodedDataRouterException("Encoder response missing 'request'");
          }
@@ -101,7 +111,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          EventLogger.logger.error(msg, e);
          logger.error(msg, e);
       }
-      return null;
+      return responseList;
    }
 
     public OdeTravelerInputData buildTravelerInputData(JSONObject consumedObj) {
@@ -124,7 +134,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        return travelerinputData;
     }
 
-    public void processEncodedTim(OdeTravelerInputData travelerInfo, JSONObject consumedObj) throws TimControllerException {
+    public HashMap<String, String> processEncodedTim(OdeTravelerInputData travelerInfo, JSONObject consumedObj) throws TimControllerException {
        // Send TIMs and record results
        HashMap<String, String> responseList = new HashMap<>();
 
@@ -195,11 +205,14 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
              responseList.put(curRsu.getRsuTarget(), httpResponseStatus);
           }
 
-       }
-       
-       logger.info("TIM deposit response {}", responseList);
-       
-       return;
+      }
+      
+      
+      String msg = "TIM deposit response " + responseList;
+      logger.info(msg);
+      EventLogger.logger.info(msg);
+      
+      return responseList;
     }
 
     /**

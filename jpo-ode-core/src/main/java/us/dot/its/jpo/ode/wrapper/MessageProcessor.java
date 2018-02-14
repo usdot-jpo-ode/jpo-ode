@@ -20,21 +20,22 @@ public abstract class MessageProcessor<K, V> implements Callable<Object> {
 
    private ConsumerRecord<K, V> record;
 
-   public Map<TopicPartition, Long> process(ConsumerRecords<K, V> consumerRecords) throws Exception {
+   public Object process(ConsumerRecords<K, V> consumerRecords) throws Exception {
 
       Map<TopicPartition, Long> processedOffsets = new HashMap<TopicPartition, Long>();
+      Object result = null;
       for (ConsumerRecord<K, V> recordMetadata : consumerRecords) {
          record = recordMetadata;
 
          TopicPartition topicPartition = new TopicPartition(recordMetadata.topic(), recordMetadata.partition());
          try {
-            call();
+            result  = call();
             processedOffsets.put(topicPartition, recordMetadata.offset());
          } catch (Exception e) {
             throw new Exception("Error processing message", e);
          }
       }
-      return processedOffsets;
+      return result;
    }
    
    public ConsumerRecord<K, V> getRecord() {

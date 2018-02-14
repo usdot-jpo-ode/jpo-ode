@@ -28,7 +28,7 @@ public class MessageConsumer<K, V> {
 
    private boolean isRunning = false;
 
-    public static MessageConsumer<String, byte[]> defaultByteArrayMessageConsumer(
+   public static MessageConsumer<String, byte[]> defaultByteArrayMessageConsumer(
         String brokers, String groupId, MessageProcessor<String, byte[]> processor) {
 
         MessageConsumer<String, byte[]> msgConsumer = new MessageConsumer<String, byte[]>(
@@ -79,6 +79,10 @@ public class MessageConsumer<K, V> {
 
     }
 
+    /**
+     * Consumes messages forver 
+     * @param topics topics to consume
+     */
     public void subscribe(String... topics) {
 
         List<String> listTopics = Arrays.asList(topics);
@@ -105,9 +109,48 @@ public class MessageConsumer<K, V> {
             }
         }
 
-		logger.debug("Closing message consumer.");
+        logger.debug("Closing message consumer.");
         consumer.close();
     }
+
+    /**
+     * Consumes messages until the process method returns a non-null value 
+     * @param topics topics to consume
+     * @return the result of processing the consumed messages
+     */
+    public Object consume(String... topics) {
+
+       List<String> listTopics = Arrays.asList(topics);
+       logger.info("Consuming from {}", listTopics);
+       consumer.subscribe(listTopics);
+
+       isRunning = true;
+       boolean gotMessages = false;
+       Object result = null;
+       while (isRunning) {
+           try {
+               ConsumerRecords<K, V> records = consumer.poll(CONSUMER_POLL_TIMEOUT_MS);
+               if (records != null && !records.isEmpty()) {
+                   gotMessages = true;
+                   logger.debug("{} examining {} message(s)", name, records.count());
+                   result = processor.process(records);
+                   if (result != null)
+                      isRunning = false;
+               } else {
+                   if (gotMessages) {
+                       logger.debug("{} no messages consumed in {} seconds.", name, CONSUMER_POLL_TIMEOUT_MS / 1000);
+                       gotMessages = false;
+                   }
+               }
+           } catch (Exception e) {
+               logger.error(" {} error processing consumed messages", name, e);
+           }
+       }
+
+       logger.debug("Closing message consumer.");
+       consumer.close();
+       return result;
+   }
 
    public void close() {
       isRunning = false;

@@ -34,6 +34,7 @@ import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
 import us.dot.its.jpo.ode.services.asn1.Asn1EncodedDataRouter;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
+import us.dot.its.jpo.ode.traveler.TimController.TimControllerException;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
@@ -200,7 +201,7 @@ public class TimControllerTest {
 
    @Ignore
    @Test
-   public void snmpExceptionShouldLogAndReturn() {
+   public void snmpExceptionShouldLogAndReturn() throws TimControllerException {
 
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
@@ -254,7 +255,7 @@ public class TimControllerTest {
 
    @Ignore
    @Test
-   public void nullResponseShouldLogAndReturn() {
+   public void nullResponseShouldLogAndReturn() throws TimControllerException {
 
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
@@ -302,7 +303,7 @@ public class TimControllerTest {
 
    @Ignore
    @Test
-   public void badResponseShouldLogAndReturn() {
+   public void badResponseShouldLogAndReturn() throws TimControllerException {
 
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
@@ -360,7 +361,7 @@ public class TimControllerTest {
 
    @Ignore
    @Test
-   public void ddsFailureShouldLogAndReturn() {
+   public void ddsFailureShouldLogAndReturn() throws TimControllerException {
 
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
@@ -419,7 +420,7 @@ public class TimControllerTest {
 
    @Ignore
    @Test
-   public void goodResponseShouldLogAndReturn() {
+   public void goodResponseShouldLogAndReturn() throws TimControllerException {
 
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
@@ -482,7 +483,7 @@ public class TimControllerTest {
                new SnmpSession((RSU) any);
                result = new IOException("testException123");
                
-               JsonUtils.fromJson(anyString, (Class) any);
+               JsonUtils.fromJson(anyString, (Class<?>) any);
                result = null;
             }
          };
@@ -500,7 +501,7 @@ public class TimControllerTest {
                new SnmpSession((RSU) any);
                result = new NullPointerException("testException123");
                
-               JsonUtils.fromJson(anyString, (Class) any);
+               JsonUtils.fromJson(anyString, (Class<?>) any);
                result = null;
             }
          };

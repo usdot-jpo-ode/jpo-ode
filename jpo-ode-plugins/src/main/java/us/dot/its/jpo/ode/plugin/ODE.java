@@ -11,6 +11,7 @@ public class ODE extends OdeObject {
    private int version = 2;
    private int index;
    private int verb;
+   private String requestId;
 
    public int getVersion() {
       return version;
@@ -36,11 +37,20 @@ public class ODE extends OdeObject {
       this.verb = verb;
    }
 
+   public String getRequestId() {
+      return requestId;
+   }
+
+   public void setRequestId(String requestId) {
+      this.requestId = requestId;
+   }
+
    @Override
    public int hashCode() {
       final int prime = 31;
       int result = 1;
       result = prime * result + index;
+      result = prime * result + ((requestId == null) ? 0 : requestId.hashCode());
       result = prime * result + verb;
       result = prime * result + version;
       return result;
@@ -56,6 +66,11 @@ public class ODE extends OdeObject {
          return false;
       ODE other = (ODE) obj;
       if (index != other.index)
+         return false;
+      if (requestId == null) {
+         if (other.requestId != null)
+            return false;
+      } else if (!requestId.equals(other.requestId))
          return false;
       if (verb != other.verb)
          return false;

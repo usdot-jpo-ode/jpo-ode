@@ -3,6 +3,11 @@ package us.dot.its.jpo.ode.traveler;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,11 +57,13 @@ import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.MessageFrame;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.TravelerInputData;
+import us.dot.its.jpo.ode.services.asn1.Asn1EncodedDataRouter;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
+import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 
@@ -80,6 +87,8 @@ public class TimController {
    private OdeProperties odeProperties;
    private MessageProducer<String, String> stringMsgProducer;
    private MessageProducer<String, OdeObject> timProducer;
+   ExecutorService asn1EncoderExecPool;
+
 
    @Autowired
    public TimController(OdeProperties odeProperties) {
@@ -90,6 +99,8 @@ public class TimController {
             odeProperties.getKafkaProducerType());
       this.timProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(),
             null, OdeTimSerializer.class.getName());
+
+      this.asn1EncoderExecPool = Executors.newCachedThreadPool();
    }
 
    /**
@@ -250,8 +261,9 @@ public class TimController {
     * @param jsonString
     * @param verb
     * @return
+    * @throws TimControllerException 
     */
-   public ResponseEntity<String> depositTim(String jsonString, int verb) {
+   public ResponseEntity<String> depositTim(String jsonString, int verb) throws TimControllerException {
    // Check empty
       if (null == jsonString || jsonString.isEmpty()) {
          String errMsg = "Empty request.";
@@ -276,6 +288,22 @@ public class TimController {
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
+
+      // asn1_codec Encoder Routing
+      String requestId = UUID.randomUUID().toString();
+      logger.info("Launching ASN.1 Encoder for Request ID: {}", requestId);
+      
+      travelerInputData.getOde().setRequestId(requestId);
+      Asn1EncodedDataRouter enocderRouter = new Asn1EncodedDataRouter(odeProperties, requestId);
+
+      MessageConsumer<String, String> encoderConsumer = MessageConsumer.defaultStringMessageConsumer(
+         odeProperties.getKafkaBrokers(), this.getClass().getSimpleName() + requestId, enocderRouter);
+
+      encoderConsumer.setName("Asn1EncoderConsumer");
+      @SuppressWarnings("unchecked")
+      Future<HashMap<String, String>> future =  
+            (Future<HashMap<String, String>>) enocderRouter.consume(asn1EncoderExecPool,
+               encoderConsumer, odeProperties.getKafkaTopicAsn1EncoderOutput());
 
       // Add metadata to message and publish to kafka
       OdeMsgPayload timDataPayload = new OdeMsgPayload(travelerInputData.getTim());
@@ -341,7 +369,19 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
-      return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("Success", "true"));
+      HashMap<String, String> responseList;
+      try {
+         responseList = future.get(odeProperties.getRestResponseTimeout(), TimeUnit.MILLISECONDS);
+      } catch (Exception e) {
+         encoderConsumer.close();
+         throw new TimControllerException("Error getting deposit response.", e);
+      }
+      
+      if (responseList == null)
+         return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("Success", "true"));
+      else {
+         return ResponseEntity.status(HttpStatus.OK).body(responseList.toString());
+      }
    }
    
    /**
@@ -350,11 +390,12 @@ public class TimController {
     * @param jsonString
     *           TIM in JSON
     * @return list of success/failures
+    * @throws TimControllerException 
     */
    @ResponseBody
    @RequestMapping(value = "/tim", method = RequestMethod.PUT, produces = "application/json")
    @CrossOrigin
-   public ResponseEntity<String> updateTim(@RequestBody String jsonString) {
+   public ResponseEntity<String> updateTim(@RequestBody String jsonString) throws TimControllerException {
       
       return depositTim(jsonString, ODE.PUT);
    }
@@ -365,11 +406,12 @@ public class TimController {
     * @param jsonString
     *           TIM in JSON
     * @return list of success/failures
+    * @throws TimControllerException 
     */
    @ResponseBody
    @RequestMapping(value = "/tim", method = RequestMethod.POST, produces = "application/json")
    @CrossOrigin
-   public ResponseEntity<String> postTim(@RequestBody String jsonString) {
+   public ResponseEntity<String> postTim(@RequestBody String jsonString) throws TimControllerException {
 
       return depositTim(jsonString, ODE.POST);
    }
