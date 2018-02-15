@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 
 public class MessageConsumer<K, V> {
    
-   private String name = "DefaultMessageConsumer";
+   protected String name = "DefaultMessageConsumer";
 
-   private static final int CONSUMER_POLL_TIMEOUT_MS = 60000;
+   protected static final int CONSUMER_POLL_TIMEOUT_MS = 60000;
    public static final String SERIALIZATION_STRING_DESERIALIZER = "org.apache.kafka.common.serialization.StringDeserializer";
    public static final String SERIALIZATION_BYTE_ARRAY_DESERIALIZER = "org.apache.kafka.common.serialization.ByteArrayDeserializer";
    public static final int DEFAULT_CONSUMER_SESSION_TIMEOUT_MS = 30000;
@@ -22,11 +22,11 @@ public class MessageConsumer<K, V> {
 
    private static Logger logger = LoggerFactory.getLogger(MessageConsumer.class);
 
-   private MessageProcessor<K, V> processor;
+   protected MessageProcessor<K, V> processor;
 
-   private KafkaConsumer<K, V> consumer;
+   protected KafkaConsumer<K, V> consumer;
 
-   private boolean isRunning = false;
+   protected boolean isRunning = false;
 
    public static MessageConsumer<String, byte[]> defaultByteArrayMessageConsumer(
         String brokers, String groupId, MessageProcessor<String, byte[]> processor) {
@@ -113,46 +113,7 @@ public class MessageConsumer<K, V> {
         consumer.close();
     }
 
-    /**
-     * Consumes messages until the process method returns a non-null value 
-     * @param topics topics to consume
-     * @return the result of processing the consumed messages
-     */
-    public Object consume(String... topics) {
-
-       List<String> listTopics = Arrays.asList(topics);
-       logger.info("Consuming from {}", listTopics);
-       consumer.subscribe(listTopics);
-
-       isRunning = true;
-       boolean gotMessages = false;
-       Object result = null;
-       while (isRunning) {
-           try {
-               ConsumerRecords<K, V> records = consumer.poll(CONSUMER_POLL_TIMEOUT_MS);
-               if (records != null && !records.isEmpty()) {
-                   gotMessages = true;
-                   logger.debug("{} examining {} message(s)", name, records.count());
-                   result = processor.process(records);
-                   if (result != null)
-                      isRunning = false;
-               } else {
-                   if (gotMessages) {
-                       logger.debug("{} no messages consumed in {} seconds.", name, CONSUMER_POLL_TIMEOUT_MS / 1000);
-                       gotMessages = false;
-                   }
-               }
-           } catch (Exception e) {
-               logger.error(" {} error processing consumed messages", name, e);
-           }
-       }
-
-       logger.debug("Closing message consumer.");
-       consumer.close();
-       return result;
-   }
-
-   public void close() {
+    public void close() {
       isRunning = false;
    }
 
@@ -178,6 +139,10 @@ public class MessageConsumer<K, V> {
 
    public void setName(String name) {
       this.name = name;
+   }
+
+   public boolean isRunning() {
+      return isRunning;
    }
 
 }

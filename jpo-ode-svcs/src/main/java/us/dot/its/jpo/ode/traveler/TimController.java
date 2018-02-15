@@ -63,7 +63,6 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
-import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 
@@ -87,8 +86,7 @@ public class TimController {
    private OdeProperties odeProperties;
    private MessageProducer<String, String> stringMsgProducer;
    private MessageProducer<String, OdeObject> timProducer;
-   ExecutorService asn1EncoderExecPool;
-
+   private ExecutorService asn1EncoderExecPool;
 
    @Autowired
    public TimController(OdeProperties odeProperties) {
@@ -294,17 +292,14 @@ public class TimController {
       logger.info("Launching ASN.1 Encoder for Request ID: {}", requestId);
       
       travelerInputData.getOde().setRequestId(requestId);
-      Asn1EncodedDataRouter enocderRouter = new Asn1EncodedDataRouter(odeProperties, requestId);
+      
+      Asn1EncodedDataRouter encoderRouter = new Asn1EncodedDataRouter(odeProperties, requestId);
 
-      MessageConsumer<String, String> encoderConsumer = MessageConsumer.defaultStringMessageConsumer(
-         odeProperties.getKafkaBrokers(), this.getClass().getSimpleName() + requestId, enocderRouter);
-
-      encoderConsumer.setName("Asn1EncoderConsumer");
       @SuppressWarnings("unchecked")
       Future<HashMap<String, String>> future =  
-            (Future<HashMap<String, String>>) enocderRouter.consume(asn1EncoderExecPool,
-               encoderConsumer, odeProperties.getKafkaTopicAsn1EncoderOutput());
-
+            (Future<HashMap<String, String>>) encoderRouter.consume(
+               asn1EncoderExecPool, odeProperties.getKafkaTopicAsn1EncoderOutput());
+      
       // Add metadata to message and publish to kafka
       OdeMsgPayload timDataPayload = new OdeMsgPayload(travelerInputData.getTim());
       OdeMsgMetadata timMetadata = new OdeMsgMetadata(timDataPayload);
@@ -362,9 +357,13 @@ public class TimController {
       // Encode TIM
       try {
          String xmlMsg = convertToXml(asd, encodableTid);
+
+//       ConcurrentUtils.sleep(5);
+         encoderRouter.waitTillReady();
+       
          stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlMsg);
       } catch (Exception e) {
-         String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
+         String errMsg = "Error sending data to ASN.1 Encoder module";
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
@@ -373,7 +372,7 @@ public class TimController {
       try {
          responseList = future.get(odeProperties.getRestResponseTimeout(), TimeUnit.MILLISECONDS);
       } catch (Exception e) {
-         encoderConsumer.close();
+         encoderRouter.close();
          throw new TimControllerException("Error getting deposit response.", e);
       }
       
