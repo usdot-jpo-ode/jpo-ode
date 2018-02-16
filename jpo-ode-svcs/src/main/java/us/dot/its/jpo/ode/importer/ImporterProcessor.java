@@ -75,19 +75,31 @@ public class ImporterProcessor {
 
       // ODE-559
       boolean success = true;
+      InputStream inputStream = null;
+      BufferedInputStream bis = null;
+      
       try {
-         InputStream inputStream = new FileInputStream(filePath.toFile());
+         inputStream = new FileInputStream(filePath.toFile());
          if (Files.probeContentType(filePath).equals("application/gzip")) { 
             inputStream = new GZIPInputStream(inputStream);
          }
-         BufferedInputStream bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
+         bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
          codecPublisher.publishFile(filePath, bis, fileType);
-         bis.close();
-         inputStream.close();
       } catch (Exception e) {
          success = false;
          logger.error("Failed to open or process file: " + filePath, e);
          EventLogger.logger.error("Failed to open or process file: " + filePath, e);  
+      } finally {
+         try {
+            if (bis != null) {
+               bis.close();
+            }
+            if (inputStream != null) {
+               inputStream.close();
+            }
+         } catch (IOException e) {
+            logger.error("Failed to close file stream: {}", e);
+         }
       }
       
       try {
