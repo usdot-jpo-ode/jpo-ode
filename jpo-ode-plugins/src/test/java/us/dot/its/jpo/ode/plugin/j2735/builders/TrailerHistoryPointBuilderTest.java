@@ -65,7 +65,7 @@ public class TrailerHistoryPointBuilderTest {
          assertEquals("Incorrect position offset x", BigDecimal.ZERO.setScale(2), actualthp.getPositionOffset().getX());
          assertEquals("Incorrect position offset y", BigDecimal.ZERO.setScale(2), actualthp.getPositionOffset().getY());
          assertEquals("Incorrect elevation offset", BigDecimal.ZERO.setScale(1), actualthp.getElevationOffset());
-         assertEquals("Incorrect heading", BigDecimal.ZERO.setScale(1), actualthp.getHeading());
+         assertEquals("Incorrect heading", BigDecimal.ZERO.setScale(4), actualthp.getHeading());
          assertEquals("Incorrect time offset", BigDecimal.valueOf(0.01), actualthp.getTimeOffset());
       } catch (Exception e) {
          fail("Unexpected exception: " + e.getClass());
