@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -12,7 +11,7 @@ public class HeadingBuilder {
    }
 
    public static BigDecimal genericHeading(long heading) {
-      return AngleBuilder.longToDecimal(heading).setScale(1, RoundingMode.HALF_DOWN);
+      return AngleBuilder.longToDecimal(heading);
    }
 
     public static BigDecimal genericCoarseHeading(JsonNode coarseHeading) {
@@ -24,7 +23,7 @@ public class HeadingBuilder {
         BigDecimal result = null;
 
         if (coarseHeading.asInt() != 240) {
-            result = BigDecimal.valueOf(coarseHeading.asLong() * 15, 1).setScale(1, RoundingMode.HALF_DOWN);
+            result = BigDecimal.valueOf(coarseHeading.asLong() * 15, 1);
         }
 
         return result;
