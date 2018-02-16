@@ -13,8 +13,9 @@ import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;
-import us.dot.its.jpo.ode.model.SerialId;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
+import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.builders.BsmBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.BsmPart2ContentBuilder.BsmPart2ContentBuilderException;
@@ -45,12 +46,14 @@ public class OdeBsmDataCreatorHelper {
 
          if (ieeeGenTime != null) {
             generatedAt = DateTimeUtils.isoDateTime(ieeeGenTime);
-         } else {
+         } else if (bsmFileParser != null) {
             generatedAt = bsmFileParser.getGeneratedAt();
+         } else {
+            generatedAt = DateTimeUtils.nowZDT();
          }
-         metadata.setRecordGeneratedAt(generatedAt.toString());
+         metadata.setRecordGeneratedAt(DateTimeUtils.isoDateTime(generatedAt));
          metadata.setRecordGeneratedBy(GeneratedBy.OBU);
-         metadata.setValidSignature(true);
+         metadata.setSecurityResultCode(SecurityResultCode.success);
       }
 
       return new OdeBsmData(metadata, payload);
@@ -59,7 +62,8 @@ public class OdeBsmDataCreatorHelper {
    public static OdeBsmData createOdeBsmData(
       J2735Bsm rawBsm, String filename, SerialId serialId) {
       BsmLogFileParser bsmFileParser = new BsmLogFileParser(serialId.getBundleId());
-      bsmFileParser.setFilename(filename).setUtcTimeInSec(0).setValidSignature(false);
+      bsmFileParser.setFilename(filename).setUtcTimeInSec(0).setSecurityResultCode(SecurityResultCode.unknown);
+;
       return createOdeBsmData(rawBsm, null, bsmFileParser);
    }
 

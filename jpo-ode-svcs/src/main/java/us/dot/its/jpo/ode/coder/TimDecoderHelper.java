@@ -29,12 +29,14 @@ import us.dot.its.jpo.ode.j2735.dsrc.MessageFrame;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;
 import us.dot.its.jpo.ode.model.OdeData;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
+import us.dot.its.jpo.ode.model.OdeLogMetadataReceived;
 import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.OdeTimData;
-import us.dot.its.jpo.ode.model.OdeTimMetadata;
 import us.dot.its.jpo.ode.model.OdeTimPayload;
 import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
+import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.builders.ElevationBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.HeadingBuilder;
@@ -130,12 +132,12 @@ public class TimDecoderHelper {
 
             OdeTimPayload timPayload = new OdeTimPayload(OssTravelerInformation.genericTim(tim));
 
-            OdeTimMetadata timMetadata = new OdeTimMetadata(timPayload);
+            OdeLogMetadataReceived timMetadata = new OdeLogMetadataReceived(timPayload);
 
             timMetadata.setOdeReceivedAt(DateTimeUtils.now());
             timMetadata.setSerialId(serialId);
             timMetadata.setLogFileName(fileParser.getFilename());
-            timMetadata.setRecordType(fileParser.getRecordType().name());
+            timMetadata.setRecordType(fileParser.getRecordType());
             
             ReceivedMessageDetails timSpecificMetadata = buildReceivedMessageDetails(fileParser);
             
@@ -157,11 +159,11 @@ public class TimDecoderHelper {
                   generatedAt = getGeneratedAt(fileParser);
                }
                timMetadata.setRecordGeneratedAt(generatedAt.toString());
-               timMetadata.setValidSignature(true);
+               timMetadata.setSecurityResultCode(SecurityResultCode.success);
             } else {
                logger.debug("Message does not contain time");
                timMetadata.setRecordGeneratedAt(getGeneratedAt(fileParser).toString());
-               timMetadata.setValidSignature(fileParser.isValidSignature());
+               timMetadata.setSecurityResultCode(fileParser.getSecurityResultCode());
             }
             timMetadata.setRecordGeneratedBy(GeneratedBy.OBU);
 
@@ -186,7 +188,7 @@ public class TimDecoderHelper {
 
             OdeBsmPayload bsmPayload = new OdeBsmPayload(OssBsm.genericBsm(bsm));
 
-             OdeTimMetadata bsmMetadata = new OdeTimMetadata(bsmPayload);
+            OdeLogMetadataReceived bsmMetadata = new OdeLogMetadataReceived(bsmPayload);
 
              bsmMetadata.setOdeReceivedAt(DateTimeUtils.now());
              bsmMetadata.setSerialId(serialId);
@@ -212,11 +214,11 @@ public class TimDecoderHelper {
                   generatedAt = getGeneratedAt(fileParser);
                }
                 bsmMetadata.setRecordGeneratedAt(generatedAt.toString());
-                bsmMetadata.setValidSignature(true);
+                bsmMetadata.setSecurityResultCode(SecurityResultCode.success);;
             } else {
                logger.debug("Message does not contain time");
                 bsmMetadata.setRecordGeneratedAt(getGeneratedAt(fileParser).toString());
-                bsmMetadata.setValidSignature(fileParser.isValidSignature());
+                bsmMetadata.setSecurityResultCode(fileParser.getSecurityResultCode());
             }
 
             odeTimData = new OdeTimData(bsmMetadata, bsmPayload);
@@ -239,7 +241,9 @@ public class TimDecoderHelper {
                   ), null);
       
       if (fileParser instanceof RxMsgFileParser) {
-         timSpecificMetadata.setRxSource( ((RxMsgFileParser) fileParser).getRxSource());
+         timSpecificMetadata.setRxSource(((RxMsgFileParser) fileParser).getRxSource());
+      } else {
+         timSpecificMetadata.setRxSource(RxSource.NA);
       }
       return timSpecificMetadata; 
     }

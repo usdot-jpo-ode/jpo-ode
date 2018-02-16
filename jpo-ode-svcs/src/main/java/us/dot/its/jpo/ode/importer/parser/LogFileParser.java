@@ -1,19 +1,18 @@
 package us.dot.its.jpo.ode.importer.parser;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import us.dot.its.jpo.ode.util.DateTimeUtils;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
+import us.dot.its.jpo.ode.util.DateTimeUtils;
+
 public class LogFileParser implements FileParser {
    private static final Logger logger = LoggerFactory.getLogger(LogFileParser.class);
-
-   public enum RecordType {
-      bsmLogDuringEvent, rxMsg, dnMsg, bsmTx, driverAlert, unsupported
-   }
 
    public static final int BUFFER_SIZE = 4096;
    public static final int UTC_TIME_IN_SEC_LENGTH = 4;
@@ -31,9 +30,10 @@ public class LogFileParser implements FileParser {
    protected RecordType recordType;
    protected long utcTimeInSec;
    protected short mSec;
-   protected boolean validSignature;
+   protected SecurityResultCode securityResultCode;
    protected short length;
    protected byte[] payload;
+
 
    public LogFileParser(long bundleId) {
       super();
@@ -164,13 +164,22 @@ public class LogFileParser implements FileParser {
       return this;
    }
 
-   public boolean isValidSignature() {
-      return validSignature;
+   public SecurityResultCode getSecurityResultCode() {
+      return securityResultCode;
    }
 
-   public LogFileParser setValidSignature(boolean validSignature) {
-      this.validSignature = validSignature;
-      return this;
+   public void setSecurityResultCode(SecurityResultCode securityResultCode) {
+      this.securityResultCode = securityResultCode;
+   }
+
+   public void setSecurityResultCode(byte code) {
+      try {
+         setSecurityResultCode(SecurityResultCode.values()[code]);
+      } catch (Exception e) {
+         logger.error("Invalid SecurityResultCode: {}. Valid values are {}-{} inclusive", 
+            code, 0, SecurityResultCode.values());
+         setSecurityResultCode(SecurityResultCode.unknown);
+      }
    }
 
    public short getLength() {
