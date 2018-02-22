@@ -338,10 +338,14 @@ final class CryptoController {
       gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Signature signature = signedCertReq.getSignature();
       ScopedCertificateRequest tbsReq = signedCertReq.getTbsRequest();
       byte[] toBeVerified = Ieee1609dot2Helper.encodeCOER(tbsReq);
+      logger.debug("Extracted tbsRequest = {}", CodecUtils.toHex(toBeVerified));
       
       EcdsaP256SignatureWrapper signatureWrapper = EcdsaP256SignatureWrapper.decode(signature, provider.getSigner());
+      logger.debug("Extracted signature.r = {}", CodecUtils.toHex(signatureWrapper.getR().toByteArray()));
+      logger.debug("Extracted signature.s = {}", CodecUtils.toHex(signatureWrapper.getS().toByteArray()));
 
       byte[] digest = provider.getSigner().computeDigest(toBeVerified, "".getBytes());
+      logger.debug("Calculated digest = {}", CodecUtils.toHex(digest));
       
       // let's extract the public key from the CSR
       EccP256CurvePoint recon = tbsReq.getContent().getEca_ee().getEeEcaCertRequest().getTbsData()
@@ -365,6 +369,7 @@ final class CryptoController {
       myVerificationSignature.update(digest);
       
       byte[] encodedSig = encodeECDSASignature(new BigInteger[]{signatureWrapper.getR(), signatureWrapper.getS()});
+      logger.debug("encodedECDSASignature = {}", CodecUtils.toHex(encodedSig));
       boolean verified = myVerificationSignature.verify(encodedSig);
       
       return Util.zip(new String[] { "signedEeEnrollmentCertRequest", "verified" }, new Object[] { signedEeEnrollmentCertRequest, verified });
