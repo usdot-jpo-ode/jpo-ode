@@ -104,71 +104,7 @@ services:
     depends_on:
       - kafka
 
-  cvpep_bsm_s3dep:
-    build: ./jpo-s3-deposit
-    image: jpoode_s3dep:latest
-    environment:
-      AWS_ACCESS_KEY_ID: ${CVPEP_BSM_S3_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${CVPEP_BSM_S3_SECRET_ACCESS_KEY}
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      DEPOSIT_BUCKET_NAME: ${CVPEP_BSM_S3_BUCKET_NAME}
-      DEPOSIT_KEY_NAME: ${CVPEP_BSM_S3_DEPOSIT_KEY}
-      DEPOSIT_TOPIC: ${CVPEP_BSM_S3_TOPIC}
-      DEPOSIT_OPTION: ${CVPEP_BSM_DESTINATION}
-    depends_on:
-     - kafka
-    links:
-     - kafka
-
-  rde_bsm_s3dep:
-    build: ./jpo-s3-deposit
-    image: jpoode_s3dep:latest
-    environment:
-      AWS_ACCESS_KEY_ID: ${RDE_BSM_S3_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${RDE_BSM_S3_SECRET_ACCESS_KEY}
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      DEPOSIT_BUCKET_NAME: ${RDE_BSM_S3_BUCKET_NAME}
-      DEPOSIT_KEY_NAME: ${RDE_BSM_S3_DEPOSIT_KEY}
-      DEPOSIT_TOPIC: ${RDE_BSM_S3_TOPIC}
-      DEPOSIT_OPTION: ${RDE_BSM_DESTINATION}
-    depends_on:
-     - kafka
-    links:
-     - kafka
-
-  cvpep_tim_s3dep:
-    build: ./jpo-s3-deposit
-    image: jpoode_s3dep:latest
-    environment:
-      AWS_ACCESS_KEY_ID: ${CVPEP_TIM_S3_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${CVPEP_TIM_S3_SECRET_ACCESS_KEY}
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      DEPOSIT_BUCKET_NAME: ${CVPEP_TIM_S3_BUCKET_NAME}
-      DEPOSIT_KEY_NAME: ${CVPEP_TIM_S3_DEPOSIT_KEY}
-      DEPOSIT_TOPIC: ${CVPEP_TIM_S3_TOPIC}
-      DEPOSIT_OPTION: ${CVPEP_TIM_DESTINATION}
-    depends_on:
-     - kafka
-    links:
-     - kafka
-
-  rde_tim_s3dep:
-    build: ./jpo-s3-deposit
-    image: jpoode_s3dep:latest
-    environment:
-      AWS_ACCESS_KEY_ID: ${RDE_TIM_S3_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${RDE_TIM_S3_SECRET_ACCESS_KEY}
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      DEPOSIT_BUCKET_NAME: ${RDE_TIM_S3_BUCKET_NAME}
-      DEPOSIT_KEY_NAME: ${RDE_TIM_S3_DEPOSIT_KEY}
-      DEPOSIT_TOPIC: ${RDE_TIM_S3_TOPIC}
-      DEPOSIT_OPTION: ${RDE_TIM_DESTINATION}
-    depends_on:
-     - kafka
-    links:
-     - kafka
-
-  cvpep_bsm_firehose:
+  cvpep_bsm_depositor:
     build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest
     environment:
@@ -178,13 +114,13 @@ services:
       DEPOSIT_BUCKET_NAME: ${CVPEP_BSM_FIREHOSE_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${CVPEP_BSM_S3_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${CVPEP_BSM_S3_TOPIC}
-      DEPOSIT_OPTION: ${CVPEP_BSM_DESTINATION}
+      DEPOSIT_DESTINATION: ${CVPEP_BSM_DESTINATION}
     depends_on:
      - kafka
     links:
      - kafka
 
-  rde_bsm_firehose:
+  rde_bsm_depositor:
     build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest
     environment:
@@ -194,13 +130,13 @@ services:
       DEPOSIT_BUCKET_NAME: ${RDE_BSM_FIREHOSE_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${RDE_BSM_S3_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${RDE_BSM_S3_TOPIC}
-      DEPOSIT_OPTION: ${RDE_BSM_DESTINATION}
+      DEPOSIT_DESTINATION: ${RDE_BSM_DESTINATION}
     depends_on:
      - kafka
     links:
      - kafka
 
-  cvpep_tim_firehose:
+  cvpep_tim_depositor:
     build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest
     environment:
@@ -210,13 +146,13 @@ services:
       DEPOSIT_BUCKET_NAME: ${CVPEP_TIM_FIREHOSE_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${CVPEP_TIM_S3_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${CVPEP_TIM_S3_TOPIC}
-      DEPOSIT_OPTION: ${CVPEP_TIM_DESTINATION}
+      DEPOSIT_DESTINATION: ${CVPEP_TIM_DESTINATION}
     depends_on:
      - kafka
     links:
      - kafka
 
-  rde_tim_firehose:
+  rde_tim_depositor:
     build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest
     environment:
@@ -226,7 +162,7 @@ services:
       DEPOSIT_BUCKET_NAME: ${RDE_TIM_FIREHOSE_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${RDE_TIM_S3_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${RDE_TIM_S3_TOPIC}
-      DEPOSIT_OPTION: ${RDE_TIM_DESTINATION}
+      DEPOSIT_DESTINATION: ${RDE_TIM_DESTINATION}
     depends_on:
      - kafka
     links:
