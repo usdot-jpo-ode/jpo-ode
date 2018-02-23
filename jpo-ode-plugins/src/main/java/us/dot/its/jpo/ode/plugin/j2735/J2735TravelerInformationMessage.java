@@ -929,36 +929,12 @@ public class J2735TravelerInformationMessage extends OdeObject {
          this.content = content;
       }
 
-      public short getsspMsgContent() {
-         return sspMsgContent;
-      }
-
-      public void setsspMsgContent(short sspMsgContent) {
-         this.sspMsgContent = sspMsgContent;
-      }
-
-      public short getsspMsgTypes() {
-         return sspMsgTypes;
-      }
-
-      public void setsspMsgTypes(short sspMsgTypes) {
-         this.sspMsgTypes = sspMsgTypes;
-      }
-
       public Region[] getRegions() {
          return regions;
       }
 
       public void setRegions(Region[] regions) {
          this.regions = regions;
-      }
-
-      public short getsspLocationRights() {
-         return sspLocationRights;
-      }
-
-      public void setsspLocationRights(short sspLocationRights) {
-         this.sspLocationRights = sspLocationRights;
       }
 
       public int getPriority() {
@@ -991,14 +967,6 @@ public class J2735TravelerInformationMessage extends OdeObject {
 
       public void setFrameType(FrameType.TravelerInfoType frameType) {
          this.frameType = frameType;
-      }
-
-      public short getsspTimRights() {
-         return sspTimRights;
-      }
-
-      public void setsspTimRights(short sspTimRights) {
-         this.sspTimRights = sspTimRights;
       }
 
       public short getSspTimRights() {

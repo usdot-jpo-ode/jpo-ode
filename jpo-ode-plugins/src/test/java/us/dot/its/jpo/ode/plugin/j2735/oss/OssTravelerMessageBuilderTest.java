@@ -2304,7 +2304,7 @@ public class OssTravelerMessageBuilderTest {
       tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
-      df.setsspTimRights((short) 0);
+      df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
       RoadSignID roadSignID = new RoadSignID(); 
@@ -2320,11 +2320,11 @@ public class OssTravelerMessageBuilderTest {
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
-      df.setsspLocationRights((short) 3);
+      df.setSspLocationRights((short) 3);
       J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
       J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
-      df.setsspMsgTypes((short) 2);
-      df.setsspMsgContent((short) 3);
+      df.setSspMsgTypes((short) 2);
+      df.setSspMsgContent((short) 3);
       df.setUrl("www");
       r.setName("bob");
       r.setRegulatorID(23);
@@ -2366,7 +2366,7 @@ public class OssTravelerMessageBuilderTest {
       tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
-      df.setsspTimRights((short) 0);
+      df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
       MsgId msgId = new MsgId();
@@ -2376,11 +2376,11 @@ public class OssTravelerMessageBuilderTest {
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
-      df.setsspLocationRights((short) 3);
+      df.setSspLocationRights((short) 3);
       J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
       J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
-      df.setsspMsgTypes((short) 2);
-      df.setsspMsgContent((short) 3);
+      df.setSspMsgTypes((short) 2);
+      df.setSspMsgContent((short) 3);
       df.setUrl("www");
       r.setName("bob");
       r.setRegulatorID(23);
@@ -2422,7 +2422,7 @@ public class OssTravelerMessageBuilderTest {
       tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
-      df.setsspTimRights((short) 0);
+      df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
       MsgId msgId = new MsgId();
@@ -2431,11 +2431,11 @@ public class OssTravelerMessageBuilderTest {
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
-      df.setsspLocationRights((short) 3);
+      df.setSspLocationRights((short) 3);
       J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
       J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
-      df.setsspMsgTypes((short) 2);
-      df.setsspMsgContent((short) 3);
+      df.setSspMsgTypes((short) 2);
+      df.setSspMsgContent((short) 3);
       df.setUrl("www");
       r.setName("bob");
       r.setRegulatorID(23);
@@ -2478,7 +2478,7 @@ public class OssTravelerMessageBuilderTest {
       tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
-      df.setsspTimRights((short) 0);
+      df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
       MsgId msgId = new MsgId();
@@ -2488,11 +2488,11 @@ public class OssTravelerMessageBuilderTest {
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
-      df.setsspLocationRights((short) 3);
+      df.setSspLocationRights((short) 3);
       J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
       J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
-      df.setsspMsgTypes((short) 2);
-      df.setsspMsgContent((short) 3);
+      df.setSspMsgTypes((short) 2);
+      df.setSspMsgContent((short) 3);
       df.setUrl("www");
       r.setName("bob");
       r.setRegulatorID(23);
@@ -2535,18 +2535,18 @@ public class OssTravelerMessageBuilderTest {
       tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
-      df.setsspTimRights((short) 0);
+      df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
       df.setMsgId(null);
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
-      df.setsspLocationRights((short) 3);
+      df.setSspLocationRights((short) 3);
       J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
       J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
-      df.setsspMsgTypes((short) 2);
-      df.setsspMsgContent((short) 3);
+      df.setSspMsgTypes((short) 2);
+      df.setSspMsgContent((short) 3);
       df.setUrl("www");
       r.setName("bob");
       r.setRegulatorID(23);
@@ -2589,7 +2589,7 @@ public class OssTravelerMessageBuilderTest {
       tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
-      df.setsspTimRights((short) 0);
+      df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
       RoadSignID roadSignID = new RoadSignID(); 
@@ -2605,11 +2605,11 @@ public class OssTravelerMessageBuilderTest {
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
-      df.setsspLocationRights((short) 3);
+      df.setSspLocationRights((short) 3);
       J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
       J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
-      df.setsspMsgTypes((short) 2);
-      df.setsspMsgContent((short) 3);
+      df.setSspMsgTypes((short) 2);
+      df.setSspMsgContent((short) 3);
       df.setUrl("www");
       r.setName("bob");
       r.setRegulatorID(23);
@@ -2687,7 +2687,7 @@ public class OssTravelerMessageBuilderTest {
       tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
-      df.setsspTimRights((short) 0);
+      df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
       RoadSignID roadSignID = new RoadSignID(); 
@@ -2703,11 +2703,11 @@ public class OssTravelerMessageBuilderTest {
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
-      df.setsspLocationRights((short) 3);
+      df.setSspLocationRights((short) 3);
       J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
       J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
-      df.setsspMsgTypes((short) 2);
-      df.setsspMsgContent((short) 3);
+      df.setSspMsgTypes((short) 2);
+      df.setSspMsgContent((short) 3);
       df.setUrl("www");
       r.setName("bob");
       r.setRegulatorID(23);
@@ -2785,7 +2785,7 @@ public class OssTravelerMessageBuilderTest {
       tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
-      df.setsspTimRights((short) 0);
+      df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
       RoadSignID roadSignID = new RoadSignID(); 
@@ -2801,11 +2801,11 @@ public class OssTravelerMessageBuilderTest {
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
-      df.setsspLocationRights((short) 3);
+      df.setSspLocationRights((short) 3);
       J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
       J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
-      df.setsspMsgTypes((short) 2);
-      df.setsspMsgContent((short) 3);
+      df.setSspMsgTypes((short) 2);
+      df.setSspMsgContent((short) 3);
       df.setUrl("www");
       r.setName("bob");
       r.setRegulatorID(23);
@@ -2853,7 +2853,7 @@ public class OssTravelerMessageBuilderTest {
       tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
-      df.setsspTimRights((short) 0);
+      df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
       RoadSignID roadSignID = new RoadSignID(); 
@@ -2869,11 +2869,11 @@ public class OssTravelerMessageBuilderTest {
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
-      df.setsspLocationRights((short) 3);
+      df.setSspLocationRights((short) 3);
       J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
       J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
-      df.setsspMsgTypes((short) 2);
-      df.setsspMsgContent((short) 3);
+      df.setSspMsgTypes((short) 2);
+      df.setSspMsgContent((short) 3);
       df.setUrl("www");
       r.setName("bob");
       r.setRegulatorID(23);
@@ -2921,7 +2921,7 @@ public class OssTravelerMessageBuilderTest {
       tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
-      df.setsspTimRights((short) 0);
+      df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
       RoadSignID roadSignID = new RoadSignID(); 
@@ -2937,11 +2937,11 @@ public class OssTravelerMessageBuilderTest {
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
-      df.setsspLocationRights((short) 3);
+      df.setSspLocationRights((short) 3);
       J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
       J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
-      df.setsspMsgTypes((short) 2);
-      df.setsspMsgContent((short) 3);
+      df.setSspMsgTypes((short) 2);
+      df.setSspMsgContent((short) 3);
       df.setUrl("www");
       r.setName("bob");
       r.setRegulatorID(23);
@@ -2989,7 +2989,7 @@ public class OssTravelerMessageBuilderTest {
       tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
-      df.setsspTimRights((short) 0);
+      df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
       RoadSignID roadSignID = new RoadSignID(); 
@@ -3005,11 +3005,11 @@ public class OssTravelerMessageBuilderTest {
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
-      df.setsspLocationRights((short) 3);
+      df.setSspLocationRights((short) 3);
       J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
       J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
-      df.setsspMsgTypes((short) 2);
-      df.setsspMsgContent((short) 3);
+      df.setSspMsgTypes((short) 2);
+      df.setSspMsgContent((short) 3);
       df.setUrl("www");
       r.setName("bob");
       r.setRegulatorID(23);
@@ -3094,7 +3094,7 @@ public class OssTravelerMessageBuilderTest {
       tim.setPacketID("FEDCBA987654321000");
       J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
       J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
-      df.setsspTimRights((short) 0);
+      df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
       RoadSignID roadSignID = new RoadSignID(); 
@@ -3110,11 +3110,11 @@ public class OssTravelerMessageBuilderTest {
       df.setStartDateTime("2017-12-01T17:47:11-05:00");
       df.setDurationTime(22);
       df.setPriority(0);
-      df.setsspLocationRights((short) 3);
+      df.setSspLocationRights((short) 3);
       J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
       J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
-      df.setsspMsgTypes((short) 2);
-      df.setsspMsgContent((short) 3);
+      df.setSspMsgTypes((short) 2);
+      df.setSspMsgContent((short) 3);
       df.setUrl("www");
       r.setName("bob");
       r.setRegulatorID(23);
