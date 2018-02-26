@@ -145,13 +145,20 @@ public class OdeProperties implements EnvironmentAware {
    private String selfCertPath;
    private String selfPrivateKeyReconstructionFilePath;
    private String selfSigningPrivateKeyFilePath;
-   //HSM
+
    private String hsmTokenLabel;
-   private String hsmTokenPassword;
+   private String keystorePassword;
    private String cryptoProvider;
-   private String keystoreProvider; 
-   private String hsmSlotNumber;
-   private String hsmKeyPairAlias;
+   private String keystoreType;
+
+   /**
+    *  keystore is the absolute or relative path of the keystore file
+    *  or the slot number of Luna HSM in the form of "slot:n" 
+    *  where n is the slot number.
+    * 
+    */
+   private String keystore;   
+   private String keyPairAlias;
    
    private int dataReceiptExpirationSeconds;
 
@@ -711,12 +718,12 @@ public class OdeProperties implements EnvironmentAware {
       this.hsmTokenLabel = hsmTokenLabel;
    }
 
-   public String getHsmTokenPassword() {
-      return hsmTokenPassword;
+   public String getKeystorePassword() {
+      return keystorePassword;
    }
 
-   public void setHsmTokenPassword(String hsmTokenPassword) {
-      this.hsmTokenPassword = hsmTokenPassword;
+   public void setKeystorePassword(String keystorePassword) {
+      this.keystorePassword = keystorePassword;
    }
 
    public String getCryptoProvider() {
@@ -727,28 +734,28 @@ public class OdeProperties implements EnvironmentAware {
       this.cryptoProvider = cryptoProvider;
    }
 
-   public String getKeystoreProvider() {
-      return keystoreProvider;
+   public String getKeystoreType() {
+      return keystoreType;
    }
 
-   public void setKeystoreProvider(String keystoreProvider) {
-      this.keystoreProvider = keystoreProvider;
+   public void setKeystoreType(String keystoreType) {
+      this.keystoreType = keystoreType;
    }
 
-   public String getHsmSlotNumber() {
-      return hsmSlotNumber;
+   public String getKeystore() {
+      return keystore;
    }
 
-   public void setHsmSlotNumber(String hsmSlotNumber) {
-      this.hsmSlotNumber = hsmSlotNumber;
+   public void setKeystore(String keystore) {
+      this.keystore = keystore;
    }
 
-   public String getHsmKeyPairAlias() {
-      return hsmKeyPairAlias;
+   public String getKeyPairAlias() {
+      return keyPairAlias;
    }
 
-   public void setHsmKeyPairAlias(String hsmKeyPairAlias) {
-      this.hsmKeyPairAlias = hsmKeyPairAlias;
+   public void setKeyPairAlias(String keyPairAlias) {
+      this.keyPairAlias = keyPairAlias;
    }
 
 }
