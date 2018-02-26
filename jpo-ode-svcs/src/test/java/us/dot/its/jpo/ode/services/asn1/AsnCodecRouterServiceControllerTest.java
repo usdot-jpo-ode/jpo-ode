@@ -27,7 +27,7 @@ public class AsnCodecRouterServiceControllerTest {
       new Expectations() {
          {
             MessageConsumer.defaultStringMessageConsumer(anyString, anyString, (Asn1DecodedDataRouter) any);
-            times = 2;
+            times = 1;
          }
       };
 
