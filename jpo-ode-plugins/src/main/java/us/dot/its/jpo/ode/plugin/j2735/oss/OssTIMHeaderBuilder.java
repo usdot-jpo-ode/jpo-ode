@@ -25,8 +25,8 @@ public class OssTIMHeaderBuilder {
    public static TravelerDataFrame buildTimHeader(
          J2735TravelerInformationMessage.DataFrame inputDataFrame,
          TravelerDataFrame dataFrame) throws ParseException{
-      TimFieldValidator.validateHeaderIndex(inputDataFrame.getsspTimRights());
-      dataFrame.setSspTimRights(new SSPindex(inputDataFrame.getsspTimRights()));
+      TimFieldValidator.validateHeaderIndex(inputDataFrame.getSspTimRights());
+      dataFrame.setSspTimRights(new SSPindex(inputDataFrame.getSspTimRights()));
       dataFrame.setFrameType(TravelerInfoType.valueOf(inputDataFrame.getFrameType().ordinal()));
       dataFrame.setMsgId(getMessageId(inputDataFrame));
       dataFrame.setStartYear(new DYear(DateTimeUtils.isoDateTime(inputDataFrame.getStartDateTime()).getYear()));
