@@ -72,7 +72,7 @@ public class DdsAdvisorySituationData extends Asn1Object {
       }
    }
 
-   private J2735DFullTime dFullTimeFromIsoTimeString(String isoTime) throws ParseException {
+   public J2735DFullTime dFullTimeFromIsoTimeString(String isoTime) throws ParseException {
 
       J2735DFullTime dStartTime = new J2735DFullTime();
       
@@ -84,8 +84,6 @@ public class DdsAdvisorySituationData extends Asn1Object {
          dStartTime.setDay(zdtTime.getDayOfMonth());
          dStartTime.setHour(zdtTime.getHour());
          dStartTime.setMinute(zdtTime.getMinute());
-         // dStartTime.setSecond(zdtTime.getSecond());
-         // dStartTime.setOffset(zdtTime.getOffset().getTotalSeconds());
       } else {
          dStartTime.setYear(0);
          dStartTime.setMonth(0);
