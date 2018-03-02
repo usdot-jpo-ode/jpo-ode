@@ -179,15 +179,20 @@ git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdo
 ### Build and Deploy the Application
 
 #### Environment Variables
-ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the *.env* file found in the root of the jpo-ode repository.
 
-Instructions for how to use the *.env* file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
+ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the *sample.env* file found in the root of the jpo-ode repository.
+
+Instructions for how to use the *sample.env* file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
+
+**Important!** 
+You must rename `sample.env` to `.env` for Docker to automatically read the file. This file will contain AWS access keys and other private information. Do not push this file to source control.
+
+#### Build Process
 
 **Note** Docker builds may fail if you are on a corporate network due to DNS resolution errors. 
 [See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
 
-
-#### Build Process
+**Note** In order for Docker to automatically read the environment variable file, you must rename it from `sample.env` to `.env`.
 
 The ODE application uses Maven to manage builds.
 
