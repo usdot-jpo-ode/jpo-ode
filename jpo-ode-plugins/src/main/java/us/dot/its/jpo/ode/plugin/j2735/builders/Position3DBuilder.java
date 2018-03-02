@@ -14,7 +14,7 @@ public class Position3DBuilder {
       Long longitude = pos.get("long").asLong();
       Long elevation = pos.get("elevation").asLong();
 
-      return new DsrcPosition3D(longitude, latitude, elevation);
+      return new DsrcPosition3D(latitude, longitude, elevation);
 
    }
 
