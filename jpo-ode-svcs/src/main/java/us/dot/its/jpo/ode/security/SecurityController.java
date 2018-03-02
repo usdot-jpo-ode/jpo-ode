@@ -20,6 +20,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Provider;
 import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.Certificate;
@@ -49,6 +50,7 @@ import com.oss.asn1.EncodeNotSupportedException;
 import com.safenetinc.luna.LunaSlotManager;
 import com.safenetinc.luna.provider.LunaCertificateX509;
 
+import gov.usdot.cv.security.crypto.CryptoProvider;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
@@ -305,7 +307,7 @@ public class SecurityController {
    }
 
    @Bean(destroyMethod = "logout")
-   @DependsOn("provider")
+   @DependsOn("secureRandom")
    LunaSlotManager slotManager(
       @Value("${ode.hsmTokenLabel}") String odeHsmtokenLabel,
       @Value("${ode.keystorePassword}") String odeKeystorePassword) {
@@ -333,16 +335,17 @@ public class SecurityController {
          switch (this.cryptoProvider) {
          case LunaProvider:
             provider = new com.safenetinc.luna.provider.LunaProvider();
+            addProvider(provider);
             addProvider(new BouncyCastleProvider()); // always add BC because we are using it for some things that Luna doesn't provide
             break;
          case BC:
             provider = new BouncyCastleProvider();
+            addProvider(provider);
             break;
          default:
             throw new SecurityException("ode.cryptoProvider not defined.");
          }
          
-         addProvider(provider);
       } catch (Exception e) {
          logger.error("Exception caught during crypto provider loading", e);
       }
@@ -363,6 +366,13 @@ public class SecurityController {
          logger.error("Exception caught during loading of the providers.", e);
          throw e;
       }
+   }
+
+   @Bean
+   @DependsOn("provider")
+   SecureRandom secureRandom() {
+      CryptoProvider.initialize();
+      return CryptoProvider.getSecureRandom();
    }
 
    @Bean

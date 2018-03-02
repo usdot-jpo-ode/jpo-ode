@@ -29,8 +29,6 @@ public class OdeSvcsApplication {
          InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
       SpringApplication.run(OdeSvcsApplication.class, args);
       
-      CryptoProvider.initialize();
-
       MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
       SystemConfig mBean = new SystemConfig(DEFAULT_NO_THREADS, DEFAULT_SCHEMA);
       ObjectName name = new ObjectName("us.dot.its.jpo.ode:type=SystemConfig");
