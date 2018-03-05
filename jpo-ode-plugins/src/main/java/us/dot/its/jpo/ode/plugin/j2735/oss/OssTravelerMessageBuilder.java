@@ -136,17 +136,17 @@ public class OssTravelerMessageBuilder {
          OssTIMHeaderBuilder.buildTimHeader(inputDataFrame, dataFrame);
 
          // -- Part II, Applicable Regions of Use
-         TimFieldValidator.validateHeaderIndex(inputDataFrame.getsspLocationRights());
-         dataFrame.setSspLocationRights(new SSPindex(inputDataFrame.getsspLocationRights()));
+         TimFieldValidator.validateHeaderIndex(inputDataFrame.getSspLocationRights());
+         dataFrame.setSspLocationRights(new SSPindex(inputDataFrame.getSspLocationRights()));
          dataFrame.setRegions(buildRegions(inputDataFrame.getRegions()));
 
          // -- Part III, Content
-         TimFieldValidator.validateHeaderIndex(inputDataFrame.getsspMsgTypes());
-         dataFrame.setSspMsgRights1(new SSPindex(inputDataFrame.getsspMsgTypes())); // allowed
+         TimFieldValidator.validateHeaderIndex(inputDataFrame.getSspMsgTypes());
+         dataFrame.setSspMsgRights1(new SSPindex(inputDataFrame.getSspMsgTypes())); // allowed
          // message
          // types
-         TimFieldValidator.validateHeaderIndex(inputDataFrame.getsspMsgContent());
-         dataFrame.setSspMsgRights2(new SSPindex(inputDataFrame.getsspMsgContent())); // allowed
+         TimFieldValidator.validateHeaderIndex(inputDataFrame.getSspMsgContent());
+         dataFrame.setSspMsgRights2(new SSPindex(inputDataFrame.getSspMsgContent())); // allowed
          // message
          // content
          dataFrame.setContent(buildContent(inputDataFrame));
