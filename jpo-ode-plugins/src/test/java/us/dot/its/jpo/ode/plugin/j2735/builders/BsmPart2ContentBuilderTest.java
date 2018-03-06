@@ -10,7 +10,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -42,7 +41,6 @@ public class BsmPart2ContentBuilderTest {
       assertNull(BsmPart2ContentBuilder.genericPart2Content(JsonUtils.newNode().put("partII-id", "something")));
    }
 
-   @Ignore // TODO - throws a NPE
    @Test
    public void testId0ReturnsVehicleSafetyExtensions() throws BsmPart2ContentBuilderException {
       new Expectations() {
@@ -53,7 +51,7 @@ public class BsmPart2ContentBuilderTest {
             SpecialVehicleExtensionsBuilder.evaluateSpecialVehicleExt((J2735BsmPart2Content) any, (JsonNode) any);
             times = 0;
 
-            SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions(
+            SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions((J2735BsmPart2Content) any,
                   (JsonNode) any);
             times = 0;
 
@@ -61,13 +59,12 @@ public class BsmPart2ContentBuilderTest {
       };
 
       ObjectNode testInput = JsonUtils.newNode();
-      testInput.put("partII-Id", 1);
+      testInput.put("partII-Id", 0);
       testInput.put("partII-Value", "something");
 
       BsmPart2ContentBuilder.genericPart2Content(testInput);
    }
 
-   @Ignore // TODO - throws a NPE
    @Test
    public void testId1ReturnsSpecialVehicleExtensions() throws BsmPart2ContentBuilderException {
       new Expectations() {
@@ -78,7 +75,7 @@ public class BsmPart2ContentBuilderTest {
             SpecialVehicleExtensionsBuilder.evaluateSpecialVehicleExt((J2735BsmPart2Content) any, (JsonNode) any);
             times = 1;
 
-            SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions(
+            SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions((J2735BsmPart2Content) any,
                   (JsonNode) any);
             times = 0;
 
@@ -102,7 +99,7 @@ public class BsmPart2ContentBuilderTest {
             SpecialVehicleExtensionsBuilder.evaluateSpecialVehicleExt((J2735BsmPart2Content) any, (JsonNode) any);
             times = 0;
 
-            SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions(
+            SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions((J2735BsmPart2Content) any,
                   (JsonNode) any);
             times = 1;
 
