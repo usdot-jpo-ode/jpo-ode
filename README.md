@@ -3,9 +3,9 @@ Master: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=
 Develop: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=develop)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=usdot.jpo.ode:jpo-ode:develop)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode%3Adevelop)
 
 # jpo-ode
-US Department of Transportation Joint Program office (JPO) Operational Data Environment (ODE)
+US Department of Transportation (USDOT) Intelligent Transportation Systems Operational Data Environment (ITS ODE)
 
-In the context of ITS, an Operational Data Environment is a real-time data acquisition and distribution software system that processes and routes data from Connected-X devices –including connected vehicles (CV), personal mobile devices, and infrastructure components and sensors –to subscribing applications to support the operation, maintenance, and use of the transportation system, as well as related research and development efforts.
+The ITS ODE is a real-time virtual data router that ingests and processes operational data from various connected devices - including vehicles, infrastructure, and traffic management centers - and distributes it to other devices and subscribing transportation management applications. Using the ITS ODE within intelligent transportation deployments increases data fluidity and interoperability while meeting operational needs and protecting user privacy. The software’s microservices architecture makes it easy to add new capabilities to meet local needs.
 
 ![ODE Dataflows](images/data_flow_v2.png)
 
@@ -179,15 +179,20 @@ git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdo
 ### Build and Deploy the Application
 
 #### Environment Variables
-ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the *.env* file found in the root of the jpo-ode repository.
 
-Instructions for how to use the *.env* file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
+ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the *sample.env* file found in the root of the jpo-ode repository.
+
+Instructions for how to use the *sample.env* file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
+
+**Important!** 
+You must rename `sample.env` to `.env` for Docker to automatically read the file. This file will contain AWS access keys and other private information. Do not push this file to source control.
+
+#### Build Process
 
 **Note** Docker builds may fail if you are on a corporate network due to DNS resolution errors. 
 [See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
 
-
-#### Build Process
+**Note** In order for Docker to automatically read the environment variable file, you must rename it from `sample.env` to `.env`.
 
 The ODE application uses Maven to manage builds.
 
