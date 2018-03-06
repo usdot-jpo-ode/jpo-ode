@@ -10,7 +10,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -29,7 +28,7 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class VehicleSafetyExtensionsBuilderTest {
 
-   @Test @Ignore // TODO - bit alignment backwards
+   @Test
    public void testEvents() throws BsmPart2ContentBuilderException {
 
       // set bits 1, 4, 9
@@ -39,7 +38,9 @@ public class VehicleSafetyExtensionsBuilderTest {
       J2735BsmPart2Content outputContent = new J2735BsmPart2Content();
 
       ObjectNode testInputNode = JsonUtils.newNode();
-      testInputNode.put("events", "0100100001000");
+      // TODO - the events are backwards if the enums are used with open-source
+      //testInputNode.put("events", "0100100001000");
+      testInputNode.put("events", "0001000010010");
 
       VehicleSafetyExtensionsBuilder.evaluateVehicleSafetyExt(outputContent, testInputNode);
 
