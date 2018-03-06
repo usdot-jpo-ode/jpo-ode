@@ -79,11 +79,6 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          if (metadata.has("request")) {
             JSONObject request = metadata.getJSONObject("request");
 
-            // Convert JSON to POJO
-            OdeTravelerInputData travelerinputData = buildTravelerInputData(consumedObj);
-
-            processEncodedTim(travelerinputData, consumedObj);
-
             if (request.has("rsus")) {
                Object rsu = request.get("rsus");
                if (!(rsu instanceof JSONArray)) {
@@ -92,6 +87,12 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
                   request.put("rsus", rsus);
                }
             }
+
+            // Convert JSON to POJO
+            OdeTravelerInputData travelerinputData = buildTravelerInputData(consumedObj);
+
+            processEncodedTim(travelerinputData, consumedObj);
+
          } else {
             throw new Asn1EncodedDataRouterException("Encoder response missing 'request'");
          }
@@ -165,14 +166,15 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
              try {
                 rsuResponse = createAndSend(travelerInfo.getSnmp(), curRsu, 
-                   travelerInfo.getOde().getIndex(), timBytes);
+                   travelerInfo.getOde().getIndex(), timBytes, travelerInfo.getOde().getVerb());
 
                 if (null == rsuResponse || null == rsuResponse.getResponse()) {
                    logger.error("RSU SNMP deposit to {} failed, timeout.", curRsu.getRsuTarget());
                 } else if (rsuResponse.getResponse().getErrorStatus() == 0) {
                    logger.info("RSU SNMP deposit to {} successful.", curRsu.getRsuTarget());
                 } else if (rsuResponse.getResponse().getErrorStatus() == 5) {
-                   logger.error("RSU SNMP deposit to {} failed, message already exists at index {}.", curRsu.getRsuTarget(), travelerInfo.getOde().getIndex());
+                   // Error, message already exists
+                   logger.info("Message already exists at ".concat(Integer.toString(travelerInfo.getOde().getIndex())));
                 } else {
                    logger.error("RSU SNMP deposit to {} failed, error code {}, error: {}", curRsu.getRsuTarget(), rsuResponse.getResponse().getErrorStatus(), rsuResponse.getResponse().getErrorStatusText());
                 }
@@ -197,14 +199,14 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
      * @throws TimPduCreatorException
      * @throws IOException
      */
-    public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, int index, String payload)
+    public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, int index, String payload, int verb)
           throws IOException, TimPduCreatorException {
 
        SnmpSession session = new SnmpSession(rsu);
 
        // Send the PDU
        ResponseEvent response = null;
-       ScopedPDU pdu = TimPduCreator.createPDU(snmp, payload, index);
+       ScopedPDU pdu = TimPduCreator.createPDU(snmp, payload, index, verb);
        response = session.set(pdu, session.getSnmp(), session.getTarget(), false);
        EventLogger.logger.info("Message Sent to {}: {}", rsu.getRsuTarget(), payload);
        return response;

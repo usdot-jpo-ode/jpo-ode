@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode;
 
+import groovy.lang.MissingPropertyException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
@@ -24,12 +25,13 @@ import groovy.lang.MissingPropertyException;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.OdePlugin;
+import us.dot.its.jpo.ode.util.CommonUtils;
 
 @ConfigurationProperties("ode")
 @PropertySource("classpath:application.properties")
 public class OdeProperties implements EnvironmentAware {
 
-   private Logger logger = LoggerFactory.getLogger(this.getClass());
+   private static final Logger logger = LoggerFactory.getLogger(OdeProperties.class);
 
    @Autowired
    private Environment env;
@@ -55,10 +57,10 @@ public class OdeProperties implements EnvironmentAware {
     * a.k.a Data Distribution System (DDS) Properties
     */
    // DDS WebSocket Properties
-   private String ddsCasUrl = "https://cas.connectedvcs.com/accounts/v1/tickets";
+   private String ddsCasUrl = "https://cas.cvmvp.com/accounts/v1/tickets";
    private String ddsCasUsername = "";
    private String ddsCasPass = "";
-   private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
+   private String ddsWebsocketUrl = "wss://webapp.cvmvp.com/whtools/websocket";
 
    // IPv4 address and listening UDP port for SDC
    private String sdcIp = "104.130.170.234";// NOSONAR
@@ -159,10 +161,6 @@ public class OdeProperties implements EnvironmentAware {
 
    public OdeProperties() {
       super();
-      init();
-   }
-
-   public void init() {
 
       uploadLocations.add(Paths.get(uploadLocationRoot));
 
@@ -179,15 +177,21 @@ public class OdeProperties implements EnvironmentAware {
       EventLogger.logger.info("Initializing services on host {}", hostId);
 
       if (kafkaBrokers == null) {
-         kafkaBrokers = System.getenv("DOCKER_HOST_IP") + ":9092";
 
-         logger.info(
-               "ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP => {}", kafkaBrokers);
+         logger.info("ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP => {}", kafkaBrokers);
+
+         String dockerIp = CommonUtils.getEnvironmentVariable("DOCKER_HOST_IP");
+         
+         if (dockerIp == null) {
+            logger.warn("Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
+            throw new MissingPropertyException(
+                  "Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
+         } else {
+            kafkaBrokers = dockerIp + ":9092";
+         }
+
+         
       }
-
-      if (kafkaBrokers == null)
-         throw new MissingPropertyException(
-               "Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
       
       List<String> asList = Arrays.asList(this.getKafkaTopicsDisabled());
       logger.info("Disabled Topics: {}", asList);

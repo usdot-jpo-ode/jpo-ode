@@ -175,15 +175,20 @@ Once you have these repositories obtained, you are ready to build and deploy the
 ---
 ### Build and Deploy the Application
 
-ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the *.env* file found in the root of the jpo-ode repository.
 
-Instructions for how to use the *.env* file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
+ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the *sample.env* file found in the root of the jpo-ode repository.
 
-If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the $DOCKER_HOST_IP:9092, or wish to set the CAS username/password, `ODE_EXTERNAL_IPVs`, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
+Instructions for how to use the *sample.env* file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
 
-**Required**: For the purposes of this quickstart guide, you must set at least the [DOCKER_HOST_IP](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management#obtaining-docker_host_ip) and [DOCKER_SHARED_VOLUME](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management#creating-a-docker_shared_volume) variables either in the environment file described above or as a local environment variable.
+**Important!** 
+You must rename `sample.env` to `.env` for Docker to automatically read the file. This file will contain AWS access keys and other private information. Do not push this file to source control.
 
-#### Step 1: Build the S3 Bucket Depositor Service
+#### Build Process
+
+**Note** Docker builds may fail if you are on a corporate network due to DNS resolution errors. 
+[See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
+
+**Note** In order for Docker to automatically read the environment variable file, you must rename it from `sample.env` to `.env`.
 
 Note - if you do not intend on using this feature, edit the docker-compose.yml file and comment out (add a `#` to) the lines including and below `s3dep:`.
 

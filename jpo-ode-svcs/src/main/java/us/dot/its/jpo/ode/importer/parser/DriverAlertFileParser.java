@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.importer.parser;
 
+import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
 import java.io.BufferedInputStream;
@@ -23,6 +24,9 @@ public class DriverAlertFileParser extends TimLogFileParser {
          if (status != ParserStatus.COMPLETE)
             return status;
 
+         // set SecurityResultCode to unknown since no validation status exists in the log file
+         setSecurityResultCode(SecurityResultCode.unknown);
+         
          // Step 6 - parse utcTimeInSec
          if (getStep() == 6) {
             status = parseStep(bis, UTC_TIME_IN_SEC_LENGTH);

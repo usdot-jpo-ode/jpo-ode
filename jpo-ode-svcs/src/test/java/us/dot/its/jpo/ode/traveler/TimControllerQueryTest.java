@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Vector;
+import java.util.concurrent.Executors;
 
 import org.junit.Test;
 import org.snmp4j.PDU;
@@ -42,6 +43,9 @@ public class TimControllerQueryTest {
    JsonUtils capturingJsonUtils;
    @Capturing
    SnmpSession capturingSnmpSession;
+   
+   @Capturing
+   Executors capturingExecutors;
 
    @Mocked
    Snmp mockSnmp;

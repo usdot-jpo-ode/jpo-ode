@@ -13,6 +13,7 @@ import mockit.Injectable;
 import mockit.Tested;
 import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
 import us.dot.its.jpo.ode.model.RxSource;
 
 public class RxMsgFileParserTest {
@@ -409,38 +410,13 @@ public class RxMsgFileParserTest {
    }
 
    /**
-    * Step 9 test. Should extract the "verification status" value, length 1
+    * Step 9 test. Should extract the SecurityResultCode value, length 1
     * bytes, then return EOF.
     */
    @Test
-   public void testStep9True() {
+   public void testStep9Success() {
 
       ParserStatus expectedStatus = ParserStatus.EOF;
-      boolean expectedVerificationStatus = true; // byte value 1 should be true
-      int expectedStep = 10;
-
-      BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(
-            new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 1, 2, 0, 0, 1 }));
-
-      try {
-         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedVerificationStatus, testRxMsgFileParser.isValidSignature());
-         assertEquals(expectedStep, testRxMsgFileParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
-
-   /**
-    * Step 9 test. Should extract the "verification status" value, length 1
-    * bytes, then return EOF.
-    */
-   @Test
-   public void testStep9False() {
-
-      ParserStatus expectedStatus = ParserStatus.EOF;
-      boolean expectedVerificationStatus = false; // byte value 0 should be
-                                                  // false
       int expectedStep = 10;
 
       BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(
@@ -448,7 +424,29 @@ public class RxMsgFileParserTest {
 
       try {
          assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedVerificationStatus, testRxMsgFileParser.isValidSignature());
+         assertEquals(SecurityResultCode.success, testRxMsgFileParser.getSecurityResultCode());
+         assertEquals(expectedStep, testRxMsgFileParser.getStep());
+      } catch (FileParserException e) {
+         fail("Unexpected exception: " + e);
+      }
+   }
+
+   /**
+    * Step 9 test. Should extract the SecurityResultCode value, length 1
+    * bytes, then return EOF.
+    */
+   @Test
+   public void testStep9Unknown() {
+
+      ParserStatus expectedStatus = ParserStatus.EOF;
+      int expectedStep = 10;
+
+      BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(
+            new byte[] { 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xD, 0xA, 0xC, 1, 2, 3, 4, 0xA, 1, 1, 2, 0, 0, 1 }));
+
+      try {
+         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         assertEquals(SecurityResultCode.unknown, testRxMsgFileParser.getSecurityResultCode());
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);

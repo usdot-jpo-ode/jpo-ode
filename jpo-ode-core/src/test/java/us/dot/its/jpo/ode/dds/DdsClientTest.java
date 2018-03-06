@@ -104,6 +104,7 @@ public class DdsClientTest {
 		}
 	}
    
+   @Ignore
 	@SuppressWarnings("unchecked")
 	@Test(expected = DdsClientException.class)
 	public void testLoginException()

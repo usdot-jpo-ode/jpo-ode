@@ -1,14 +1,32 @@
 ## ODE Release Notes ##
-----------
+-----------------------
+### Sprint 31
+- ODE-685 Added metadata field `bsmSource` to identify the source of the BSM as host (EV) or remote (RV). See https://github.com/usdot-jpo-ode/jpo-ode/wiki/Log-File-Changes-(schemaVersion=4) for details.
+- ODE-688 Deploed firehose into production for CVPEP and RDE
+- ODE-689 and ODE-690: Replaced boolean metadata field `validSignature` with integer `securityResultCode` to better convey the status of security validation. See https://github.com/usdot-jpo-ode/jpo-ode/wiki/Log-File-Changes-(schemaVersion=4) for details.
+- ODE-692 Improved AEM/ADM error handling for when connection with Kafka broker is interrupted
+### Sprint 30
+- ODE-680 Migrated SDW/SDC calls to new production endpoints
+### Sprint 29
+- ODE-675 CHanged jpo-S3-deposit module to send CVPEP data through AWS Firehose
+### Sprint 28
+- ODE-670 J2735TravelerInformationMessage.packetID needs to be BigInteger
+see https://github.com/usdot-jpo-ode/jpo-ode/wiki/TIM-REST-Endpoint-Changes for interface changes.
+### Sprint 27
+- ODE-661 CVPEP Data Inconsistency for TIM Files 
+- ODE-657 Continue Supporting WyDOT issues 
+- ODE-591 ORNL - Further generalize encoding and decoding capability of asn1_codec module
+### Sprint 26
+- ODE-646 Sirius XM Requires ASD messages to be wrapped in IEEE 1698.2 Data
+- ODE-645 Update Documentation for Metadata
+- ODE-642 Address SDW and RSU flexibility
+- ODE-632 ODE Error out on log files
 ### Sprint 25
 - ODE-588 Free and Open Source ODE Minimum Viable Product
 - ODE-615 ORNL Implement SDW TIM encoding
 - ODE-587 Implement TIM data encoding through ASN.1 Encoder Module (AEM)
 - ODE-596 Support receiving and publishing of Driver Alert Messages
-- ODE-610 Update Documentation for Open Source ODE
-- ODE-611 WyDOT deployment Support
-- ODE-612 Unit testing for open source version of ODE
-- ODE-613 SDW Sending of TIM Messages
+- ODE-613 SDW Sending of TIM Messages using asn1_codec
 - ODE-631 Add capability to disable output topics
 ### Sprint 24
 - ODE-537 ASN1 CODEC Module development

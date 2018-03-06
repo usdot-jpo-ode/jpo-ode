@@ -22,7 +22,7 @@ public class OdeBsmDataCreatorHelper {
    private OdeBsmDataCreatorHelper() {
    }
 
-// TODO open-ode
+//TODO open-ode
 //   public static OdeBsmData createOdeBsmData(
 //      J2735Bsm rawBsm, 
 //      IEEE1609p2Message message, 
@@ -40,12 +40,14 @@ public class OdeBsmDataCreatorHelper {
 //
 //         if (ieeeGenTime != null) {
 //            generatedAt = DateTimeUtils.isoDateTime(ieeeGenTime);
-//         } else {
+//         } else if (bsmFileParser != null) {
 //            generatedAt = bsmFileParser.getGeneratedAt();
+//         } else {
+//            generatedAt = DateTimeUtils.nowZDT();
 //         }
-//         metadata.setRecordGeneratedAt(generatedAt.toString());
+//         metadata.setRecordGeneratedAt(DateTimeUtils.isoDateTime(generatedAt));
 //         metadata.setRecordGeneratedBy(GeneratedBy.OBU);
-//         metadata.setValidSignature(true);
+//         metadata.setSecurityResultCode(SecurityResultCode.success);
 //      }
 //
 //      return new OdeBsmData(metadata, payload);
@@ -54,7 +56,8 @@ public class OdeBsmDataCreatorHelper {
 //   public static OdeBsmData createOdeBsmData(
 //      J2735Bsm rawBsm, String filename, SerialId serialId) {
 //      BsmLogFileParser bsmFileParser = new BsmLogFileParser(serialId.getBundleId());
-//      bsmFileParser.setFilename(filename).setUtcTimeInSec(0).setValidSignature(false);
+//      bsmFileParser.setFilename(filename).setUtcTimeInSec(0).setSecurityResultCode(SecurityResultCode.unknown);
+//
 //      return createOdeBsmData(rawBsm, null, bsmFileParser);
 //   }
 
