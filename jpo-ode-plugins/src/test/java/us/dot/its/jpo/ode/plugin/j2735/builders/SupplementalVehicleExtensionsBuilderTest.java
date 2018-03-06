@@ -2,6 +2,12 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 
 import org.junit.Test;
 
@@ -49,7 +55,8 @@ public class SupplementalVehicleExtensionsBuilderTest {
       ObjectNode testInput = JsonUtils.newNode();
       testInput.put("classDetails", "something");
 
-      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions(testInput);
+      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
+            .genericSupplementalVehicleExtensions(testInput);
 
       assertNotNull(result.getClassDetails());
    }
@@ -67,7 +74,8 @@ public class SupplementalVehicleExtensionsBuilderTest {
       ObjectNode testInput = JsonUtils.newNode();
       testInput.put("vehicleData", "something");
 
-      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions(testInput);
+      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
+            .genericSupplementalVehicleExtensions(testInput);
 
       assertNotNull(result.getVehicleData());
    }
@@ -85,7 +93,8 @@ public class SupplementalVehicleExtensionsBuilderTest {
       ObjectNode testInput = JsonUtils.newNode();
       testInput.put("weatherReport", "something");
 
-      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions(testInput);
+      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
+            .genericSupplementalVehicleExtensions(testInput);
 
       assertNotNull(result.getWeatherReport());
    }
@@ -103,7 +112,8 @@ public class SupplementalVehicleExtensionsBuilderTest {
       ObjectNode testInput = JsonUtils.newNode();
       testInput.put("weatherProbe", "something");
 
-      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions(testInput);
+      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
+            .genericSupplementalVehicleExtensions(testInput);
 
       assertNotNull(result.getWeatherProbe());
    }
@@ -121,7 +131,8 @@ public class SupplementalVehicleExtensionsBuilderTest {
       ObjectNode testInput = JsonUtils.newNode();
       testInput.put("obstacle", "something");
 
-      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions(testInput);
+      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
+            .genericSupplementalVehicleExtensions(testInput);
 
       assertNotNull(result.getObstacle());
    }
@@ -139,7 +150,8 @@ public class SupplementalVehicleExtensionsBuilderTest {
       ObjectNode testInput = JsonUtils.newNode();
       testInput.put("status", "something");
 
-      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions(testInput);
+      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
+            .genericSupplementalVehicleExtensions(testInput);
 
       assertNotNull(result.getStatus());
    }
@@ -157,7 +169,8 @@ public class SupplementalVehicleExtensionsBuilderTest {
       ObjectNode testInput = JsonUtils.newNode();
       testInput.put("speedProfile", "something");
 
-      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions(testInput);
+      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
+            .genericSupplementalVehicleExtensions(testInput);
 
       assertNotNull(result.getSpeedProfile());
    }
@@ -175,7 +188,8 @@ public class SupplementalVehicleExtensionsBuilderTest {
       ObjectNode testInput = JsonUtils.newNode();
       testInput.put("theRTCM", "something");
 
-      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions(testInput);
+      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
+            .genericSupplementalVehicleExtensions(testInput);
 
       assertNotNull(result.getTheRTCM());
    }
@@ -186,7 +200,8 @@ public class SupplementalVehicleExtensionsBuilderTest {
       ObjectNode testInput = JsonUtils.newNode();
       testInput.set("regional", JsonUtils.newNode());
 
-      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions(testInput);
+      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
+            .genericSupplementalVehicleExtensions(testInput);
 
       assertNotNull(result.getRegional());
    }
@@ -201,9 +216,25 @@ public class SupplementalVehicleExtensionsBuilderTest {
       ObjectNode testInput = JsonUtils.newNode();
       testInput.set("regional", JsonUtils.newArrayNode().add(testRegionalNode));
 
-      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions(testInput);
+      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
+            .genericSupplementalVehicleExtensions(testInput);
 
       assertNotNull(result.getRegional());
+   }
+
+   @Test
+   public void testConstructorIsPrivate()
+         throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<SupplementalVehicleExtensionsBuilder> constructor = SupplementalVehicleExtensionsBuilder.class
+            .getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+         constructor.newInstance();
+         fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+         assertEquals(InvocationTargetException.class, e.getClass());
+      }
    }
 
 }
