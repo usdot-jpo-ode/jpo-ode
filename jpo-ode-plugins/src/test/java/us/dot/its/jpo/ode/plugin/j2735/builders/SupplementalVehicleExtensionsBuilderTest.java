@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import mockit.Capturing;
 import mockit.Expectations;
+import us.dot.its.jpo.ode.plugin.j2735.J2735BsmPart2Content;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DisabledVehicle;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ObstacleDetection;
 import us.dot.its.jpo.ode.plugin.j2735.J2735RTCMPackage;
@@ -35,9 +36,11 @@ public class SupplementalVehicleExtensionsBuilderTest {
 
       ObjectNode testInput = JsonUtils.newNode();
       testInput.put("classification", 1);
+      
+      J2735BsmPart2Content outputContent = new J2735BsmPart2Content();
 
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
-            .genericSupplementalVehicleExtensions(testInput);
+            .evaluateSupplementalVehicleExtensions(outputContent, testInput);
 
       assertEquals(Integer.valueOf(1), result.getClassification());
    }
@@ -54,9 +57,11 @@ public class SupplementalVehicleExtensionsBuilderTest {
 
       ObjectNode testInput = JsonUtils.newNode();
       testInput.put("classDetails", "something");
+      
+      J2735BsmPart2Content outputContent = new J2735BsmPart2Content();
 
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
-            .genericSupplementalVehicleExtensions(testInput);
+            .evaluateSupplementalVehicleExtensions(outputContent, testInput);
 
       assertNotNull(result.getClassDetails());
    }
@@ -75,7 +80,7 @@ public class SupplementalVehicleExtensionsBuilderTest {
       testInput.put("vehicleData", "something");
 
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
-            .genericSupplementalVehicleExtensions(testInput);
+            .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
       assertNotNull(result.getVehicleData());
    }
@@ -94,7 +99,7 @@ public class SupplementalVehicleExtensionsBuilderTest {
       testInput.put("weatherReport", "something");
 
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
-            .genericSupplementalVehicleExtensions(testInput);
+            .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
       assertNotNull(result.getWeatherReport());
    }
@@ -113,7 +118,7 @@ public class SupplementalVehicleExtensionsBuilderTest {
       testInput.put("weatherProbe", "something");
 
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
-            .genericSupplementalVehicleExtensions(testInput);
+            .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
       assertNotNull(result.getWeatherProbe());
    }
@@ -132,7 +137,7 @@ public class SupplementalVehicleExtensionsBuilderTest {
       testInput.put("obstacle", "something");
 
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
-            .genericSupplementalVehicleExtensions(testInput);
+            .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
       assertNotNull(result.getObstacle());
    }
@@ -151,7 +156,7 @@ public class SupplementalVehicleExtensionsBuilderTest {
       testInput.put("status", "something");
 
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
-            .genericSupplementalVehicleExtensions(testInput);
+            .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
       assertNotNull(result.getStatus());
    }
@@ -170,7 +175,7 @@ public class SupplementalVehicleExtensionsBuilderTest {
       testInput.put("speedProfile", "something");
 
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
-            .genericSupplementalVehicleExtensions(testInput);
+            .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
       assertNotNull(result.getSpeedProfile());
    }
@@ -189,7 +194,7 @@ public class SupplementalVehicleExtensionsBuilderTest {
       testInput.put("theRTCM", "something");
 
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
-            .genericSupplementalVehicleExtensions(testInput);
+            .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
       assertNotNull(result.getTheRTCM());
    }
@@ -201,7 +206,7 @@ public class SupplementalVehicleExtensionsBuilderTest {
       testInput.set("regional", JsonUtils.newNode());
 
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
-            .genericSupplementalVehicleExtensions(testInput);
+            .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
       assertNotNull(result.getRegional());
    }
@@ -217,7 +222,7 @@ public class SupplementalVehicleExtensionsBuilderTest {
       testInput.set("regional", JsonUtils.newArrayNode().add(testRegionalNode));
 
       J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
-            .genericSupplementalVehicleExtensions(testInput);
+            .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
       assertNotNull(result.getRegional());
    }
