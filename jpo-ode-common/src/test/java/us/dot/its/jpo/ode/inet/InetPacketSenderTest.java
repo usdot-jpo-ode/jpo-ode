@@ -21,10 +21,19 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import mockit.Capturing;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
-@Ignore // TODO this test sends real messages and is slow
 public class InetPacketSenderTest {
+   
+   @Capturing
+   DatagramSocket capturingDatagramSocket;
+   
+   @Capturing
+   DatagramPacket capturingDatagramPacket;
+   
+   @Capturing
+   Thread capturingThread;
 
    static final private boolean isDebugOutput = false;
 
@@ -77,13 +86,13 @@ public class InetPacketSenderTest {
       checkBackgroundThreadAssertion();
    }
 
-   @Test
+   @Test @Ignore
    public void testSendPacketOutboundIPv4() throws UnknownHostException, InterruptedException, InetPacketException {
       // Use case: Forwarder sends outgoing IPv4 packet out
       testSendPacketOutbound(CLIENT_HOST_IPV4);
    }
 
-   @Test
+   @Test @Ignore
    public void testSendPacketOutboundIPv6() throws UnknownHostException, InterruptedException, InetPacketException {
       // Use case: Forwarder sends outgoing IPv6 packet out
       testSendPacketOutbound(CLIENT_HOST_IPV6);
