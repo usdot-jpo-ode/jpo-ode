@@ -10,14 +10,11 @@ import static org.junit.Assert.fail;
 import javax.websocket.Session;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 
 import mockit.Expectations;
 import mockit.Mocked;
-import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.model.OdeDepRequest;
@@ -27,8 +24,8 @@ import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
 import us.dot.its.jpo.ode.wrapper.WebSocketMessageDecoder;
 import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
-@RunWith(JMockit.class)
-@Ignore
+
+
 public class DdsDepositRequestManagerTest {
 
     DdsDepositRequestManager testDdsDepositRequestManager;
