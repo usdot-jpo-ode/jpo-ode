@@ -8,7 +8,6 @@ import us.dot.its.jpo.ode.plugin.SituationDataWarehouse;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2DataTag;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisoryDetails.AdvisoryBroadcastType;
-import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisoryDetails.DistributionType;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
@@ -35,7 +34,7 @@ public class DdsAdvisorySituationData extends Asn1Object {
    }
 
    public DdsAdvisorySituationData(String startTime, String stopTime, Ieee1609Dot2DataTag advisoryMessage,
-         DdsGeoRegion serviceRegion, SituationDataWarehouse.SDW.TimeToLive ttl, String groupID) throws ParseException {
+         DdsGeoRegion serviceRegion, SituationDataWarehouse.SDW.TimeToLive ttl, String groupID, byte[] distroType) throws ParseException {
       this();
 
       J2735DFullTime dStartTime = dFullTimeFromIsoTimeString(startTime);
@@ -45,9 +44,9 @@ public class DdsAdvisorySituationData extends Asn1Object {
       byte[] fourRandomBytes = new byte[4];
       new Random(System.currentTimeMillis()).nextBytes(fourRandomBytes);
       String id = CodecUtils.toHex(fourRandomBytes);
-      String distroType = Integer.toString(DistributionType.ip.ordinal());
+      String stringDistroType = CodecUtils.toHex(distroType);
       this.setAsdmDetails(
-            new DdsAdvisoryDetails(id, AdvisoryBroadcastType.tim, distroType, dStartTime, dStopTime, advisoryMessage));
+            new DdsAdvisoryDetails(id, AdvisoryBroadcastType.tim, stringDistroType, dStartTime, dStopTime, advisoryMessage));
 
       this.setRequestID(id);
       this.setServiceRegion(serviceRegion);

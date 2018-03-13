@@ -2,7 +2,6 @@ package us.dot.its.jpo.ode.plugin.j2735;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2DataTag;
-import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class DdsAdvisoryDetails extends Asn1Object {
    private static final long serialVersionUID = 8964772115424427026L;
@@ -12,12 +11,6 @@ public class DdsAdvisoryDetails extends Asn1Object {
       map,           //  (1),
       tim,           //  (2),
       ev             //  (3),
-   }
-
-   public enum DistributionType {
-      none, //(0),  "00000000", not intended for redistribution
-      rsu,  //(1),  "00000001", intended for redistribution over DSRC
-      ip    //(2),  "00000010"  intended for redistribution over IP
    }
    
    String asdmID;                   //         DSRC.TemporaryID,
@@ -43,7 +36,7 @@ public class DdsAdvisoryDetails extends Asn1Object {
       super();
       this.asdmID = asdmID;
       this.asdmType = asdmType.ordinal();
-      this.distType = Integer.toHexString(Integer.valueOf(distType));
+      this.distType = distType;
       this.startTime = startTime;
       this.stopTime = stopTime;
       this.advisoryMessage = advisoryMessage2;

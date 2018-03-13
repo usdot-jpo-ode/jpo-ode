@@ -311,16 +311,19 @@ public class TimController {
             ieee.setContent(ieeeContent );
             ieeeDataTag.setIeee1609Dot2Data(ieee);
             
+            byte sendToRsu = travelerInputData.getRsus() != null ? (byte)1:(byte)0;
+            byte[] distroType = new byte[]{(byte) ((byte)(2) | sendToRsu)};
+            
             // take deliverystart and stop times from SNMP object, if present
             // else take from SDW object
             SNMP snmp = travelerInputData.getSnmp();
             if (null != snmp) {
 
                asd = new DdsAdvisorySituationData(snmp.getDeliverystart(), snmp.getDeliverystop(), ieeeDataTag,
-                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
+                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(), distroType);
             } else {
                asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), ieeeDataTag,
-                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID());
+                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(), distroType);
             }
             
             
