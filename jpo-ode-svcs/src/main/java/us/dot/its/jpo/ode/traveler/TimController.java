@@ -311,8 +311,8 @@ public class TimController {
             ieee.setContent(ieeeContent );
             ieeeDataTag.setIeee1609Dot2Data(ieee);
             
-            byte sendToRsu = travelerInputData.getRsus() != null ? (byte)1:(byte)0;
-            byte[] distroType = new byte[]{(byte) ((byte)(2) | sendToRsu)};
+            byte sendToRsu = travelerInputData.getRsus() != null ? DdsAdvisorySituationData.RSU:DdsAdvisorySituationData.NONE;
+            byte distroType = (byte) (DdsAdvisorySituationData.IP | sendToRsu);
             
             // take deliverystart and stop times from SNMP object, if present
             // else take from SDW object

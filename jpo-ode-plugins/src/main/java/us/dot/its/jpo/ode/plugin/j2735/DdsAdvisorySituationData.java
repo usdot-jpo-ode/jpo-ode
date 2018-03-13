@@ -13,6 +13,11 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class DdsAdvisorySituationData extends Asn1Object {
    private static final long serialVersionUID = 2755274323293805425L;
+   
+   // Distribution Type field values
+   public static final byte NONE = (byte) 0x00;
+   public static final byte RSU = (byte) 0x01;
+   public static final byte IP = (byte) 0x02;
 
    int dialogID = 0x9C;    // SemiDialogID -- 0x9C Advisory Situation Data Deposit
    int seqID = 0x05;       // SemiSequenceID -- 0x05 Data
@@ -34,7 +39,7 @@ public class DdsAdvisorySituationData extends Asn1Object {
    }
 
    public DdsAdvisorySituationData(String startTime, String stopTime, Ieee1609Dot2DataTag advisoryMessage,
-         DdsGeoRegion serviceRegion, SituationDataWarehouse.SDW.TimeToLive ttl, String groupID, byte[] distroType) throws ParseException {
+         DdsGeoRegion serviceRegion, SituationDataWarehouse.SDW.TimeToLive ttl, String groupID, byte distroType) throws ParseException {
       this();
 
       J2735DFullTime dStartTime = dFullTimeFromIsoTimeString(startTime);

@@ -7,6 +7,7 @@ import org.junit.Test;
 import mockit.Tested;
 import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2DataTag;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisoryDetails.AdvisoryBroadcastType;
+import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class DdsAdvisoryDetailsTest {
 
@@ -17,7 +18,7 @@ public class DdsAdvisoryDetailsTest {
    public void testSettersGetters() {
       testDdsAdvisoryDetails.setAsdmID("testAsdmID");
       testDdsAdvisoryDetails.setAsdmType(1);
-      testDdsAdvisoryDetails.setDistType("2");
+      testDdsAdvisoryDetails.setDistType(CodecUtils.toHex(DdsAdvisorySituationData.IP));
       testDdsAdvisoryDetails.setStartTime(new J2735DFullTime());
       testDdsAdvisoryDetails.setStopTime(new J2735DFullTime());
       testDdsAdvisoryDetails.setAdvisoryMessageBytes("testAdvisoryMessageBytes");
@@ -25,7 +26,7 @@ public class DdsAdvisoryDetailsTest {
       
       assertEquals("testAsdmID", testDdsAdvisoryDetails.getAsdmID());
       assertEquals(1, testDdsAdvisoryDetails.getAsdmType());
-      assertEquals("2", testDdsAdvisoryDetails.getDistType());
+      assertEquals("02", testDdsAdvisoryDetails.getDistType());
       assertNotNull(testDdsAdvisoryDetails.getStartTime());
       assertNotNull(testDdsAdvisoryDetails.getStopTime());
       assertEquals("testAdvisoryMessageBytes", testDdsAdvisoryDetails.getAdvisoryMessageBytes());
@@ -34,11 +35,13 @@ public class DdsAdvisoryDetailsTest {
 
    @Test
    public void testHashCodeAndEquals() {
-      DdsAdvisoryDetails ddsad1 = new DdsAdvisoryDetails("asdmID", AdvisoryBroadcastType.tim, "1", new J2735DFullTime(),
+      String distType = CodecUtils.toHex(DdsAdvisorySituationData.RSU);
+      
+      DdsAdvisoryDetails ddsad1 = new DdsAdvisoryDetails("asdmID", AdvisoryBroadcastType.tim, distType, new J2735DFullTime(),
             new J2735DFullTime(), new Ieee1609Dot2DataTag());
-      DdsAdvisoryDetails ddsad2 = new DdsAdvisoryDetails("asdmID", AdvisoryBroadcastType.tim, "1", new J2735DFullTime(),
+      DdsAdvisoryDetails ddsad2 = new DdsAdvisoryDetails("asdmID", AdvisoryBroadcastType.tim, distType, new J2735DFullTime(),
             new J2735DFullTime(), new Ieee1609Dot2DataTag());
-      DdsAdvisoryDetails ddsad3 = new DdsAdvisoryDetails("asdmID", AdvisoryBroadcastType.map, "1", new J2735DFullTime(),
+      DdsAdvisoryDetails ddsad3 = new DdsAdvisoryDetails("asdmID", AdvisoryBroadcastType.map, distType, new J2735DFullTime(),
             new J2735DFullTime(), new Ieee1609Dot2DataTag());
 
       assertEquals("Expected identical hashcodes", ddsad1.hashCode(), ddsad2.hashCode());

@@ -35,7 +35,7 @@ public class AsdMessageTest {
     @Injectable
     String groupID = "01234567";
     @Injectable
-    byte[] distroType = new byte[]{(byte) 1}; 
+    byte distroType = DdsAdvisorySituationData.NONE; 
 
     @Mocked
     ZonedDateTime mockZonedDateTimeStart;
