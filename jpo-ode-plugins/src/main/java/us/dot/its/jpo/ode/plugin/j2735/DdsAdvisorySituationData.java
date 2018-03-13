@@ -45,7 +45,7 @@ public class DdsAdvisorySituationData extends Asn1Object {
       byte[] fourRandomBytes = new byte[4];
       new Random(System.currentTimeMillis()).nextBytes(fourRandomBytes);
       String id = CodecUtils.toHex(fourRandomBytes);
-      int distroType = DistributionType.rsu.ordinal();
+      String distroType = Integer.toString(DistributionType.ip.ordinal());
       this.setAsdmDetails(
             new DdsAdvisoryDetails(id, AdvisoryBroadcastType.tim, distroType, dStartTime, dStopTime, advisoryMessage));
 

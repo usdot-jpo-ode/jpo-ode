@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.plugin.j2735;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2DataTag;
+import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class DdsAdvisoryDetails extends Asn1Object {
    private static final long serialVersionUID = 8964772115424427026L;
@@ -21,7 +22,7 @@ public class DdsAdvisoryDetails extends Asn1Object {
    
    String asdmID;                   //         DSRC.TemporaryID,
    int asdmType;                    //    AdvisoryBroadcastType,
-   int distType;                    //0, 1 or 2    ,
+   String distType;                    //0, 1 or 2    ,
    J2735DFullTime startTime;        //OPTIONAL,
    J2735DFullTime stopTime;         //OPTIONAL,
    String advisoryMessageBytes;          //  OCTET STRING (SIZE(0..1400))  -- Encoded advisory message
@@ -37,12 +38,12 @@ public class DdsAdvisoryDetails extends Asn1Object {
       return asdmID;
    }
    
-   public DdsAdvisoryDetails(String asdmID, AdvisoryBroadcastType asdmType, int distType, J2735DFullTime startTime,
+   public DdsAdvisoryDetails(String asdmID, AdvisoryBroadcastType asdmType, String distType, J2735DFullTime startTime,
          J2735DFullTime stopTime, Ieee1609Dot2DataTag advisoryMessage2) {
       super();
       this.asdmID = asdmID;
       this.asdmType = asdmType.ordinal();
-      this.distType = distType;
+      this.distType = Integer.toHexString(Integer.valueOf(distType));
       this.startTime = startTime;
       this.stopTime = stopTime;
       this.advisoryMessage = advisoryMessage2;
@@ -57,10 +58,10 @@ public class DdsAdvisoryDetails extends Asn1Object {
    public void setAsdmType(int asdmType) {
       this.asdmType = asdmType;
    }
-   public int getDistType() {
+   public String getDistType() {
       return distType;
    }
-   public void setDistType(int distType) {
+   public void setDistType(String distType) {
       this.distType = distType;
    }
    public J2735DFullTime getStartTime() {
@@ -87,6 +88,8 @@ public class DdsAdvisoryDetails extends Asn1Object {
    public void setAdvisoryMessage(Ieee1609Dot2DataTag advisoryMessage) {
       this.advisoryMessage = advisoryMessage;
    }
+
+
    @Override
    public int hashCode() {
       final int prime = 31;
@@ -95,11 +98,13 @@ public class DdsAdvisoryDetails extends Asn1Object {
       result = prime * result + ((advisoryMessageBytes == null) ? 0 : advisoryMessageBytes.hashCode());
       result = prime * result + ((asdmID == null) ? 0 : asdmID.hashCode());
       result = prime * result + asdmType;
-      result = prime * result + distType;
+      result = prime * result + ((distType == null) ? 0 : distType.hashCode());
       result = prime * result + ((startTime == null) ? 0 : startTime.hashCode());
       result = prime * result + ((stopTime == null) ? 0 : stopTime.hashCode());
       return result;
    }
+
+
    @Override
    public boolean equals(Object obj) {
       if (this == obj)
@@ -126,7 +131,10 @@ public class DdsAdvisoryDetails extends Asn1Object {
          return false;
       if (asdmType != other.asdmType)
          return false;
-      if (distType != other.distType)
+      if (distType == null) {
+         if (other.distType != null)
+            return false;
+      } else if (!distType.equals(other.distType))
          return false;
       if (startTime == null) {
          if (other.startTime != null)
@@ -140,6 +148,7 @@ public class DdsAdvisoryDetails extends Asn1Object {
          return false;
       return true;
    }
+   
    
    
 }
