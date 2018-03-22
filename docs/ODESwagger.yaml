@@ -693,7 +693,12 @@ definitions:
         type: string
         description: >-
           Eight-digit hex code of the groupID to use, for example "A123B456".
-          GroupID is used
+          GroupID is a DSRC.TemporaryID used for message identification.
+      recordID:
+        type: string
+        description: >-
+          Eight-digit hex code of the recordID to use, for example "A123B456".
+          RecordID is a DSRC.TemporaryID used for message identification.
       ttl:
         type: string
         description: Message time to live.

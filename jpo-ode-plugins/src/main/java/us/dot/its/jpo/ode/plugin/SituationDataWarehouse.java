@@ -22,6 +22,7 @@ public class SituationDataWarehouse {
       private String groupID = null;
       private String deliverystart;
       private String deliverystop;
+      private String recordId = null;
 
       public OdeGeoRegion getServiceRegion() {
          return serviceRegion;
@@ -64,6 +65,14 @@ public class SituationDataWarehouse {
          this.deliverystart = deliverystart;
       }
 
+      public String getRecordId() {
+         return recordId;
+      }
+
+      public void setRecordId(String recordId) {
+         this.recordId = recordId;
+      }
+
       @Override
       public int hashCode() {
          final int prime = 31;
@@ -71,6 +80,7 @@ public class SituationDataWarehouse {
          result = prime * result + ((deliverystart == null) ? 0 : deliverystart.hashCode());
          result = prime * result + ((deliverystop == null) ? 0 : deliverystop.hashCode());
          result = prime * result + ((groupID == null) ? 0 : groupID.hashCode());
+         result = prime * result + ((recordId == null) ? 0 : recordId.hashCode());
          result = prime * result + ((serviceRegion == null) ? 0 : serviceRegion.hashCode());
          result = prime * result + ((ttl == null) ? 0 : ttl.hashCode());
          return result;
@@ -100,6 +110,11 @@ public class SituationDataWarehouse {
                return false;
          } else if (!groupID.equals(other.groupID))
             return false;
+         if (recordId == null) {
+            if (other.recordId != null)
+               return false;
+         } else if (!recordId.equals(other.recordId))
+            return false;
          if (serviceRegion == null) {
             if (other.serviceRegion != null)
                return false;
@@ -109,6 +124,8 @@ public class SituationDataWarehouse {
             return false;
          return true;
       }
+
+      
    }
    private SituationDataWarehouse() {
       throw new UnsupportedOperationException();
