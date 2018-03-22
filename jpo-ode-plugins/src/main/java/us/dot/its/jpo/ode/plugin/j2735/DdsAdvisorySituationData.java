@@ -39,7 +39,7 @@ public class DdsAdvisorySituationData extends Asn1Object {
    }
 
    public DdsAdvisorySituationData(String startTime, String stopTime, Ieee1609Dot2DataTag advisoryMessage,
-         DdsGeoRegion serviceRegion, SituationDataWarehouse.SDW.TimeToLive ttl, String groupID, byte distroType) throws ParseException {
+         DdsGeoRegion serviceRegion, SituationDataWarehouse.SDW.TimeToLive ttl, String groupID, String recordID, byte distroType) throws ParseException {
       this();
 
       J2735DFullTime dStartTime = dFullTimeFromIsoTimeString(startTime);
@@ -64,6 +64,11 @@ public class DdsAdvisorySituationData extends Asn1Object {
          this.setGroupID(groupID);
       } else {
          this.setGroupID(CodecUtils.toHex(new byte[] { 0, 0, 0, 0 }));
+      }
+      if (recordID != null) {
+         this.setRecordID(recordID);
+      } else {
+         this.setRecordID(CodecUtils.toHex(new byte[] { 0, 0, 0, 0 }));
       }
    }
 
