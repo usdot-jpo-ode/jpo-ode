@@ -146,6 +146,10 @@ public class CodecUtils {
    public static String toHex(byte[] bytes) {
       return bytes != null ? DatatypeConverter.printHexBinary(bytes) : "";
    }
+   
+   public static String toHex(byte b) {
+      return DatatypeConverter.printHexBinary(new byte[]{b});
+   }
 
    public static byte[] fromHex(String hex) {
       return DatatypeConverter.parseHexBinary(hex);

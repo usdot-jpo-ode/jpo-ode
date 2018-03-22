@@ -35,6 +35,8 @@ public class AsdMessageTest {
     @Injectable
     String groupID = "01234567";
     @Injectable
+    byte distroType = DdsAdvisorySituationData.NONE; 
+    @Injectable
     String recordID = "76543210";
 
     @Mocked
