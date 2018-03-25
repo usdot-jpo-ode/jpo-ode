@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.nio.file.Paths;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
@@ -26,6 +27,8 @@ import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECGenParameterSpec;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,6 +47,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Controller;
+import org.thymeleaf.util.StringUtils;
 
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
@@ -67,6 +71,8 @@ public class SecurityController {
    
    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+   private OdeProperties odeProperties;
+
    private Providers cryptoProvider;
    private KeystoreTypes keystoreType;
    private KeyStore keyStore;
@@ -77,8 +83,10 @@ public class SecurityController {
    @Autowired
    protected SecurityController(OdeProperties odeProps) {
       super();
+      this.odeProperties = odeProps;
 
       Executors.newSingleThreadExecutor().submit(new CertificateLoader(odeProps));
+      
    }
 
    @Bean
@@ -97,6 +105,7 @@ public class SecurityController {
           */
          try {
             this.keystoreType = KeystoreTypes.valueOf(odeKeystoreType);
+            this.keyStore = KeyStore.getInstance(keystoreType.name());
          } catch (IllegalArgumentException e) {
             throw new RuntimeException("Invalid value for enum " + KeystoreTypes.class.getSimpleName() + ": " + odeKeystoreType);
          }
@@ -105,14 +114,23 @@ public class SecurityController {
          switch (this.keystoreType) {
          case Luna:
             is1 = new ByteArrayInputStream(odeKeystore.getBytes());
+            keyStore.load(is1, password.toCharArray());
+            is1.close();
             break;
             
          case JKS:
-            is1 = new FileInputStream(odeKeystore);
+            if (Paths.get(odeKeystore).toFile().exists()) {// if keystore file exists, load it
+               is1 = new FileInputStream(odeKeystore);
+               keyStore.load(is1, password.toCharArray());
+               is1.close();
+            } else {// if no keystore file, create a new one
+               FileOutputStream keystoreStream = new FileOutputStream(odeKeystore);
+               keyStore.load(null, null);
+               keyStore.store(keystoreStream, password.toCharArray());
+               keystoreStream.close();
+            }
             break;
          }
-         keyStore = KeyStore.getInstance(keystoreType.name());
-         keyStore.load(is1, password.toCharArray());
 
          Enumeration<String> aliases = keyStore.aliases();
 
@@ -187,8 +205,7 @@ public class SecurityController {
       @Value("${ode.keystorePassword}") String odekeystorePassword,
       @Value("${ode.keystore}") String odeKeystore) throws GeneralSecurityException, FileNotFoundException {
 
-      // password can be a dummy char array as it will be ignored but, we'll use
-      // the available password config property nonetheless
+      // The keystore password is required to retrieve the entry
       KeyStore.ProtectionParameter param = new KeyStore.PasswordProtection(odekeystorePassword.toCharArray());
       PrivateKeyEntry prKE = (PrivateKeyEntry) keyStore.getEntry(odeKeyPairAlias, param);
       KeyPair pair;
@@ -234,14 +251,17 @@ public class SecurityController {
       }
 
       if (pair != null) {
+         ECPrivateKey ecPriKey = (ECPrivateKey) pair.getPrivate();
          logger.info("Enrollment Private Key [{}], [{}]: {}", 
             pair.getPrivate().getFormat(),
             pair.getPrivate().getAlgorithm(),
-            CodecUtils.toHex(pair.getPrivate().getEncoded()));
+            CodecUtils.toHex(ecPriKey.getS().toByteArray()));
+         
+         ECPublicKey ecPubKey = (ECPublicKey) pair.getPublic();
          logger.info("Enrollment Public Key [{}], [{}]: {}", 
             pair.getPublic().getFormat(),
             pair.getPublic().getAlgorithm(),
-            CodecUtils.toHex(pair.getPublic().getEncoded()));
+            CodecUtils.toHex(ecPubKey.getW().getAffineX().toByteArray()));
       }
 
       return pair;
@@ -296,6 +316,17 @@ public class SecurityController {
    @Bean
    @DependsOn("keyPair")
    Certificate enrollmentCert() {
+//      try {
+//         FileCertificateStore.load(
+//               new CryptoProvider(), 
+//               IEEE1609p2Message.getSelfCertificateFriendlyName(), 
+//               this.enrollmentCert.getEncoded());
+//      } catch (DecodeFailedException | EncodeFailedException | DecoderException | IOException
+//            | CryptoException | DecodeNotSupportedException | EncodeNotSupportedException | gov.usdot.cv.security.cert.CertificateException | CertificateEncodingException e) {
+//         // TODO Auto-generated catch block
+//         e.printStackTrace();
+//      }
+
       return this.enrollmentCert;
    }
 
@@ -308,17 +339,18 @@ public class SecurityController {
 
    @Bean(destroyMethod = "logout")
    @DependsOn("secureRandom")
-   LunaSlotManager slotManager(
-      @Value("${ode.hsmTokenLabel}") String odeHsmtokenLabel,
-      @Value("${ode.keystorePassword}") String odeKeystorePassword) {
+   LunaSlotManager slotManager() {
       
       LunaSlotManager slotManager = null;
-      if (this.cryptoProvider == Providers.LunaProvider) {
-         slotManager = LunaSlotManager.getInstance();
-         slotManager.login(odeHsmtokenLabel, odeKeystorePassword);
-         com.safenetinc.luna.LunaSlotManager.getInstance().logout();
+      if (!StringUtils.isEmptyOrWhitespace(odeProperties.getHsmTokenLabel()) && 
+          !StringUtils.isEmptyOrWhitespace(odeProperties.getKeystorePassword())) {
+         if (this.cryptoProvider == Providers.LunaProvider) {
+            slotManager = LunaSlotManager.getInstance();
+            slotManager.login(odeProperties.getHsmTokenLabel(), odeProperties.getKeystorePassword());
+            com.safenetinc.luna.LunaSlotManager.getInstance().logout();
+         }
       }
-
+      
       return slotManager;
    }
 
