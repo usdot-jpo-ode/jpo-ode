@@ -30,7 +30,6 @@ public class CertificateLoader implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(CertificateLoader.class);
 
     private OdeProperties odeProperties;
-
     
     public CertificateLoader(OdeProperties odeProperties) {
         super();

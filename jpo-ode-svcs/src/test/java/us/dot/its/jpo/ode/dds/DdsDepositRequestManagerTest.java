@@ -46,7 +46,7 @@ public class DdsDepositRequestManagerTest {
                 mockOdeProperties.getDdsCasUsername();
                 result = anyString;
                 minTimes = 0;
-                mockOdeProperties.getDdsCasPassword();
+                mockOdeProperties.getDdsCasPass();
                 result = anyString;
                 minTimes = 0;
                 mockOdeProperties.getDdsWebsocketUrl();

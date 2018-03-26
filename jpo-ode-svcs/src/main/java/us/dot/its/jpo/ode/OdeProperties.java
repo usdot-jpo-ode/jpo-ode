@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +47,7 @@ public class OdeProperties implements EnvironmentAware {
 
    // File import properties
    private String uploadLocationRoot = "uploads";
-   private String uploadLocationObuLogLog = "bsmlog";
+   private String uploadLocationObuLogDir = "bsmlog";
    private Integer fileWatcherPeriod = 5; // time to wait between processing inbox directory for new files
 
    /*
@@ -159,14 +161,24 @@ public class OdeProperties implements EnvironmentAware {
     */
    private String keystore;   
    private String keyPairAlias;
-   
+
+   private String scmsEnrollmentDir;          // Directory path to the location of the enrollment files
+   private String scmsRootCertFile;           //+ root.oer: IEEE 1609.2 root CA certificate encoded as OER
+   private String scmsLocalCertChainFile;     //+ LCCF.oer: current Local Certificate Chain File including ICA and PCA certificates.
+   private String scmsLocalPolicyFile;        //+ LPF.oer: current Local Policy File
+   private String scmsCertRevocationListFile; //+ CRL.oer: current Certificate Revocation List
+   private String scmsRootTlsFile;            //+ root.tls: TLS (X.509) root certificate RA’s TLS cert chains to
+   private String scmsRaCertFile;             //  |           +RA.oer: RA’s 1609.2 certificate
+   private String scmsEcaCertFile;            //  |           +ECA.oer: ECA’s 1609.2 certificate
+   private String scmsEnrollmentCertFile;     //  |           +enrollment.oer:  (EE’s enrollment certificate, see enrollmentCert as part of the ECA response SignedEeEnrollmentCertResponse)
+   private String scmsPriKeyReconValueFile;   //  |           +enrollment.s:  (EE’s Private key reconstruction value, see privKeyReconstruction as part of the ECA response SignedEeEnrollmentCertResponse)
+
    private int dataReceiptExpirationSeconds;
 
    private static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
 
-   public OdeProperties() {
-      super();
-
+   @PostConstruct
+   public void initialize() {
       uploadLocations.add(Paths.get(uploadLocationRoot));
 
       String hostname;
@@ -194,8 +206,6 @@ public class OdeProperties implements EnvironmentAware {
          } else {
             kafkaBrokers = dockerIp + ":9092";
          }
-
-         
       }
    }
 
@@ -330,14 +340,6 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setIsdDepositorPort(int isdDepositorPort) {
       this.isdDepositorPort = isdDepositorPort;
-   }
-
-   public String getDdsCasPassword() {
-      return ddsCasPass;
-   }
-
-   public void setDdsCasPassword(String ddsCasPass) {
-      this.ddsCasPass = ddsCasPass;
    }
 
    public int getBsmReceiverPort() {
@@ -500,6 +502,14 @@ public class OdeProperties implements EnvironmentAware {
       this.ddsCasUsername = ddsCasUsername;
    }
 
+   public String getDdsCasPass() {
+      return ddsCasPass;
+   }
+
+   public void setDdsCasPass(String ddsCasPass) {
+      this.ddsCasPass = ddsCasPass;
+   }
+
    public String getDdsWebsocketUrl() {
       return ddsWebsocketUrl;
    }
@@ -630,12 +640,12 @@ public class OdeProperties implements EnvironmentAware {
       this.kafkaTopicOdeTimJson = kafkaTopicOdeTimJson;
    }
 
-   public String getUploadLocationObuLog() {
-      return uploadLocationObuLogLog;
+   public String getUploadLocationObuLogDir() {
+      return uploadLocationObuLogDir;
    }
 
-   public void setUploadLocationObuLog(String uploadLocationObuLog) {
-      this.uploadLocationObuLogLog = uploadLocationObuLog;
+   public void setUploadLocationObuLogDir(String uploadLocationObuLogDir) {
+      this.uploadLocationObuLogDir = uploadLocationObuLogDir;
    }
 
    public String getKafkaTopicOdeBsmDuringEventPojo() {
@@ -756,6 +766,86 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setKeyPairAlias(String keyPairAlias) {
       this.keyPairAlias = keyPairAlias;
+   }
+
+   public String getScmsEnrollmentDir() {
+      return scmsEnrollmentDir;
+   }
+
+   public void setScmsEnrollmentDir(String scmsEnrollmentDir) {
+      this.scmsEnrollmentDir = scmsEnrollmentDir;
+   }
+
+   public String getScmsRootCertFile() {
+      return scmsRootCertFile;
+   }
+
+   public void setScmsRootCertFile(String scmsRootCertFile) {
+      this.scmsRootCertFile = scmsRootCertFile;
+   }
+
+   public String getScmsLocalCertChainFile() {
+      return scmsLocalCertChainFile;
+   }
+
+   public void setScmsLocalCertChainFile(String scmsLocalCertChainFile) {
+      this.scmsLocalCertChainFile = scmsLocalCertChainFile;
+   }
+
+   public String getScmsLocalPolicyFile() {
+      return scmsLocalPolicyFile;
+   }
+
+   public void setScmsLocalPolicyFile(String scmsLocalPolicyFile) {
+      this.scmsLocalPolicyFile = scmsLocalPolicyFile;
+   }
+
+   public String getScmsCertRevocationListFile() {
+      return scmsCertRevocationListFile;
+   }
+
+   public void setScmsCertRevocationListFile(String scmsCertRevocationListFile) {
+      this.scmsCertRevocationListFile = scmsCertRevocationListFile;
+   }
+
+   public String getScmsRootTlsFile() {
+      return scmsRootTlsFile;
+   }
+
+   public void setScmsRootTlsFile(String scmsRootTlsFile) {
+      this.scmsRootTlsFile = scmsRootTlsFile;
+   }
+
+   public String getScmsRaCertFile() {
+      return scmsRaCertFile;
+   }
+
+   public void setScmsRaCertFile(String scmsRaCertFile) {
+      this.scmsRaCertFile = scmsRaCertFile;
+   }
+
+   public String getScmsEcaCertFile() {
+      return scmsEcaCertFile;
+   }
+
+   public void setScmsEcaCertFile(String scmsEcaCertFile) {
+      this.scmsEcaCertFile = scmsEcaCertFile;
+   }
+
+   public String getScmsEnrollmentCertFile() {
+      return scmsEnrollmentCertFile;
+   }
+
+   public void setScmsEnrollmentCertFile(String scmsEnrollmentCertFile) {
+      this.scmsEnrollmentCertFile = scmsEnrollmentCertFile;
+   }
+
+   public String getScmsPriKeyReconValueFile() {
+      return scmsPriKeyReconValueFile;
+   }
+
+   public void setScmsPriKeyReconValueFile(String scmsPriKeyReconValueFile) {
+      this.scmsPriKeyReconValueFile = scmsPriKeyReconValueFile;
    }
 
 }

@@ -51,7 +51,7 @@ public class FileUploadControllerTest {
          {
             mockOdeProperties.getUploadLocationRoot();
             result = "testRootDir";
-            mockOdeProperties.getUploadLocationObuLog();
+            mockOdeProperties.getUploadLocationObuLogDir();
             result = "testLogFileDir";
 
             Executors.newCachedThreadPool();

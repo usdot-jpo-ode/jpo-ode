@@ -40,7 +40,7 @@ public class FileUploadController {
       ExecutorService threadPool = Executors.newCachedThreadPool();
 
       Path logPath = Paths.get(odeProperties.getUploadLocationRoot(),
-          odeProperties.getUploadLocationObuLog());
+          odeProperties.getUploadLocationObuLogDir());
       logger.debug("UPLOADER - BSM log file upload directory: {}", logPath);
       Path failurePath = Paths.get(odeProperties.getUploadLocationRoot(), "failed");
       logger.debug("UPLOADER - Failure directory: {}", failurePath);

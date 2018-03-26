@@ -31,7 +31,7 @@ public class FileSystemStorageService implements StorageService {
 
         this.rootLocation = Paths.get(properties.getUploadLocationRoot());
         this.logFileLocation = Paths.get(properties.getUploadLocationRoot(), 
-           properties.getUploadLocationObuLog());
+           properties.getUploadLocationObuLogDir());
 
         logger.info("Upload location (root): {}", this.rootLocation);
         logger.info("Upload location (OBU log file): {}", this.logFileLocation);

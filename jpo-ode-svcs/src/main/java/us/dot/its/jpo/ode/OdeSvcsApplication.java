@@ -16,8 +16,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-import gov.usdot.cv.security.crypto.CryptoProvider;
-
 @SpringBootApplication
 @EnableConfigurationProperties(OdeProperties.class)
 public class OdeSvcsApplication {

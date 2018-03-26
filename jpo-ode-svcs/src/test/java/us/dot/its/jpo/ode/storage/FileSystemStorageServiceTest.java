@@ -38,7 +38,7 @@ public class FileSystemStorageServiceTest {
             {
                 mockOdeProperties.getUploadLocationRoot();
                 result = anyString;
-                mockOdeProperties.getUploadLocationObuLog();
+                mockOdeProperties.getUploadLocationObuLogDir();
                 result = anyString;
             }
         };

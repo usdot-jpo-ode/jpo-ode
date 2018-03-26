@@ -135,7 +135,7 @@ public class OdePropertiesTest {
       String testKafkaTopicOdeBsmJson = "testKafkaTopicOdeBsmJson";
 
       testOdeProperties.setJ2735CoderClassName(testAsn1CoderClassName);
-      testOdeProperties.setDdsCasPassword(testDdsCasPassword);
+      testOdeProperties.setDdsCasPass(testDdsCasPassword);
       testOdeProperties.setDdsCasUrl(testDdsCasUrl);
       testOdeProperties.setDdsCasUsername(testDdsCasUsername);
       testOdeProperties.setDdsWebsocketUrl(testDdsWebsocketUrl);
@@ -144,7 +144,7 @@ public class OdePropertiesTest {
       testOdeProperties.setKafkaBrokers(testKafkaBrokers);
       testOdeProperties.setKafkaProducerType(testKafkaProducerType);
       testOdeProperties.setPluginsLocations(testPluginsLocations);
-      testOdeProperties.setUploadLocationObuLog(testUploadLocationObuLog);
+      testOdeProperties.setUploadLocationObuLogDir(testUploadLocationObuLog);
       testOdeProperties.setUploadLocationRoot(testUploadLocationRoot);
       testOdeProperties.setSdcIp(testSdcIp);
       testOdeProperties.setSdcPort(testSdcPort);
@@ -181,7 +181,7 @@ public class OdePropertiesTest {
 
       assertEquals("Incorrect testAsn1CoderClassName", testAsn1CoderClassName,
             testOdeProperties.getJ2735CoderClassName());
-      assertEquals("Incorrect testDdsCasPassword", testDdsCasPassword, testOdeProperties.getDdsCasPassword());
+      assertEquals("Incorrect testDdsCasPassword", testDdsCasPassword, testOdeProperties.getDdsCasPass());
       assertEquals("Incorrect testDdsCasUrl", testDdsCasUrl, testOdeProperties.getDdsCasUrl());
       assertEquals("Incorrect testDdsCasUsername", testDdsCasUsername, testOdeProperties.getDdsCasUsername());
       assertEquals("Incorrect testDdsWebsocketUrl", testDdsWebsocketUrl, testOdeProperties.getDdsWebsocketUrl());
@@ -189,7 +189,7 @@ public class OdePropertiesTest {
       assertEquals("Incorrect testKafkaBrokers", testKafkaBrokers, testOdeProperties.getKafkaBrokers());
       assertEquals("Incorrect testKafkaProducerType", testKafkaProducerType, testOdeProperties.getKafkaProducerType());
       assertEquals("Incorrect testpluginsLocations", testPluginsLocations, testOdeProperties.getPluginsLocations());
-      assertEquals("Incorrect testUploadLocationObuLog", testUploadLocationObuLog, testOdeProperties.getUploadLocationObuLog());
+      assertEquals("Incorrect testUploadLocationObuLog", testUploadLocationObuLog, testOdeProperties.getUploadLocationObuLogDir());
       assertEquals("Incorrect testUploadLocationRoot", testUploadLocationRoot,
             testOdeProperties.getUploadLocationRoot());
       assertEquals("Incorrect testSdcIp", testSdcIp, testOdeProperties.getSdcIp());
