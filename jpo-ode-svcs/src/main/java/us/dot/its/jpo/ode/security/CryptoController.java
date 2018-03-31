@@ -1,6 +1,9 @@
 package us.dot.its.jpo.ode.security;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
+import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
@@ -11,7 +14,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.Signature;
-import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
@@ -20,6 +22,12 @@ import java.util.Optional;
 
 import javax.crypto.Cipher;
 
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Integer;
+import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.DERSequenceGenerator;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.jcajce.provider.asymmetric.util.ECUtil;
 import org.bouncycastle.jce.ECNamedCurveTable;
@@ -358,19 +366,21 @@ final class CryptoController {
          extractedPubKey.getAlgorithm(),
          CodecUtils.toHex(extractedPubKey.getW().getAffineX().toByteArray()));
 
-//      Signature myVerificationSignature = Signature.getInstance("SHA256withECDSA");
-//      myVerificationSignature.initVerify(extractedPubKey);
-//      myVerificationSignature.update(digest);
-//      
-//      byte[] encodedSig = encodeECDSASignature(new BigInteger[]{signatureWrapper.getR(), signatureWrapper.getS()});
-//      logger.debug("encodedECDSASignature = {}", CodecUtils.toHex(encodedSig));
-//      boolean verified = myVerificationSignature.verify(encodedSig);
+      Signature myVerificationSignature = Signature.getInstance(
+         verificationSignature.getAlgorithm(),
+         verificationSignature.getProvider());
+      myVerificationSignature.initVerify(extractedPubKey);
+      myVerificationSignature.update(digest);
       
-      boolean verified = provider.getSigner().verifySignature(
-            toBeVerified,
-            "".getBytes(),
-            provider.getSigner().decodePublicKey(recon), 
-            signatureWrapper);
+      byte[] encodedSig = encodeECDSASignature(new BigInteger[]{signatureWrapper.getR(), signatureWrapper.getS()});
+      logger.debug("encodedECDSASignature = {}", CodecUtils.toHex(encodedSig));
+      boolean verified = myVerificationSignature.verify(encodedSig);
+      
+//      boolean verified = provider.getSigner().verifySignature(
+//            toBeVerified,
+//            "".getBytes(),
+//            provider.getSigner().decodePublicKey(recon), 
+//            signatureWrapper);
       
       return Util.zip(new String[] { "signedEeEnrollmentCertRequest", "verified" }, new Object[] { signedEeEnrollmentCertRequest, verified });
    }
@@ -512,19 +522,19 @@ final class CryptoController {
       byte[] tbsRequest = Ieee1609dot2Helper.encodeCOER(scopedCertificateRequest);
       logger.debug("tbsRequest = {}", CodecUtils.toHex(tbsRequest));
 
-//      byte[] digest = provider.getSigner().computeDigest(tbsRequest, "".getBytes());
-//      this.signingSignature.update(digest);
-//      byte[] sig= this.signingSignature.sign();
-//      logger.debug("signature: {}", CodecUtils.toHex(sig));
-//      
-//      BigInteger[] sigParts = decodeECDSASignature(sig);
-//      EcdsaP256SignatureWrapper tbsRequestSignature = new EcdsaP256SignatureWrapper(sigParts[0], sigParts[1]);
+      byte[] digest = provider.getSigner().computeDigest(tbsRequest, "".getBytes());
+      this.signingSignature.update(digest);
+      byte[] sig= this.signingSignature.sign();
+      logger.debug("signature: {}", CodecUtils.toHex(sig));
+      
+      BigInteger[] sigParts = decodeECDSASignature(sig);
+      EcdsaP256SignatureWrapper tbsRequestSignature = new EcdsaP256SignatureWrapper(sigParts[0], sigParts[1]);
 
-      ECPrivateKey ecPrivateKey = (ECPrivateKey) this.keyPair.getPrivate();
-      EcdsaP256SignatureWrapper tbsRequestSignature = 
-            provider.getSigner().computeSignature(tbsRequest, 
-                  "".getBytes(), 
-                  provider.getSigner().decodePrivateKey(ecPrivateKey));
+//      ECPrivateKey ecPrivateKey = (ECPrivateKey) this.keyPair.getPrivate();
+//      EcdsaP256SignatureWrapper tbsRequestSignature = 
+//            provider.getSigner().computeSignature(tbsRequest, 
+//                  "".getBytes(), 
+//                  provider.getSigner().decodePrivateKey(ecPrivateKey));
 
       gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Signature signature = 
             tbsRequestSignature.encode();
@@ -533,10 +543,6 @@ final class CryptoController {
       
       SignedCertificateRequest signedCertificateRequest = new SignedCertificateRequest(HashAlgorithm.sha256, scopedCertificateRequest, signer, signature);
 
-//    SignedEeEnrollmentCertRequest seecr = new SignedEeEnrollmentCertRequest(
-//    new Uint8(3), SignedEeEnrollmentCertRequest.Content.createContentWithSignedCertificateRequest(
-//       new SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest(
-//          Ieee1609dot2Helper.encodeCOER(signedCertificateRequest))));
       SignedEeEnrollmentCertRequest seecr = new SignedEeEnrollmentCertRequest(
          new Uint8(3), SignedEeEnrollmentCertRequest.Content.createContentWithSignedCertificateRequest(
                new SignedEeEnrollmentCertRequest.Content.SignedCertificateRequest(signedCertificateRequest)));
@@ -551,45 +557,45 @@ final class CryptoController {
       return encodedPublicKey;
    }
 
-//   private static BigInteger[] decodeECDSASignature(byte[] signature) throws Exception {
-//      BigInteger[] sigs = new BigInteger[2];
-//      ByteArrayInputStream inStream = new ByteArrayInputStream(signature);
-//      try (ASN1InputStream asnInputStream = new ASN1InputStream(inStream)){
-//         ASN1Primitive asn1 = asnInputStream.readObject();
-//
-//         int count = 0;
-//         if (asn1 instanceof ASN1Sequence) {
-//             ASN1Sequence asn1Sequence = (ASN1Sequence) asn1;
-//             ASN1Encodable[] asn1Encodables = asn1Sequence.toArray();
-//             for (ASN1Encodable asn1Encodable : asn1Encodables) {
-//                 ASN1Primitive asn1Primitive = asn1Encodable.toASN1Primitive();
-//                 if (asn1Primitive instanceof ASN1Integer) {
-//                     ASN1Integer asn1Integer = (ASN1Integer) asn1Primitive;
-//                     BigInteger integer = asn1Integer.getValue();
-//                     if (count  < 2) {
-//                         sigs[count] = integer;
-//                     }
-//                     count++;
-//                 }
-//             }
-//         }
-//         if (count != 2) {
-//             throw new CryptoException(String.format("Invalid ECDSA signature. Expected count of 2 but got: %d. Signature is: %s", count,
-//                     CodecUtils.toHex(signature)));
-//         }
-//      } catch (Exception e) {
-//         logger.error("Error decoding encoded signature", e);
-//      }
-//      return sigs;
-//   }
+   private static BigInteger[] decodeECDSASignature(byte[] signature) throws Exception {
+      BigInteger[] sigs = new BigInteger[2];
+      ByteArrayInputStream inStream = new ByteArrayInputStream(signature);
+      try (ASN1InputStream asnInputStream = new ASN1InputStream(inStream)){
+         ASN1Primitive asn1 = asnInputStream.readObject();
 
-//   private static byte[] encodeECDSASignature(BigInteger[] sigs) throws Exception {
-//      ByteArrayOutputStream s = new ByteArrayOutputStream();
-//      
-//      DERSequenceGenerator seq = new DERSequenceGenerator(s);
-//      seq.addObject(new ASN1Integer(sigs[0]));
-//      seq.addObject(new ASN1Integer(sigs[1]));
-//      seq.close();
-//      return s.toByteArray(); 
-//   }
+         int count = 0;
+         if (asn1 instanceof ASN1Sequence) {
+             ASN1Sequence asn1Sequence = (ASN1Sequence) asn1;
+             ASN1Encodable[] asn1Encodables = asn1Sequence.toArray();
+             for (ASN1Encodable asn1Encodable : asn1Encodables) {
+                 ASN1Primitive asn1Primitive = asn1Encodable.toASN1Primitive();
+                 if (asn1Primitive instanceof ASN1Integer) {
+                     ASN1Integer asn1Integer = (ASN1Integer) asn1Primitive;
+                     BigInteger integer = asn1Integer.getValue();
+                     if (count  < 2) {
+                         sigs[count] = integer;
+                     }
+                     count++;
+                 }
+             }
+         }
+         if (count != 2) {
+             throw new CryptoException(String.format("Invalid ECDSA signature. Expected count of 2 but got: %d. Signature is: %s", count,
+                     CodecUtils.toHex(signature)));
+         }
+      } catch (Exception e) {
+         logger.error("Error decoding encoded signature", e);
+      }
+      return sigs;
+   }
+
+   private static byte[] encodeECDSASignature(BigInteger[] sigs) throws Exception {
+      ByteArrayOutputStream s = new ByteArrayOutputStream();
+      
+      DERSequenceGenerator seq = new DERSequenceGenerator(s);
+      seq.addObject(new ASN1Integer(sigs[0]));
+      seq.addObject(new ASN1Integer(sigs[1]));
+      seq.close();
+      return s.toByteArray(); 
+   }
 }

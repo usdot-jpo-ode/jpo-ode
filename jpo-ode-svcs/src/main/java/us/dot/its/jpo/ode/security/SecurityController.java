@@ -61,6 +61,8 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 @Controller
 public class SecurityController {
 
+   public static final String ALGORITHM = "NONEwithECDSA";
+
    private enum Providers {
       LunaProvider, BC
    };
@@ -218,16 +220,11 @@ public class SecurityController {
          PublicKey pubKey = enrollmentCert.getPublicKey();
          pair = new KeyPair(pubKey, prKE.getPrivateKey());
       } else {
-//      ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("prime256v1");
-//      KeyPairGenerator g = KeyPairGenerator.getInstance("ECDSA", this.cryptoProvider);
-//      g.initialize(ecSpec, new SecureRandom());
-//      KeyPair pair = g.generateKeyPair();
-      
          logger.info("Entry with alias {} NOT found. Generating a new key pair...", odeKeyPairAlias);
          
          KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("ECDSA", provider.getName());
          ECGenParameterSpec ecSpec = new ECGenParameterSpec("prime256v1");
-         keyPairGenerator.initialize(ecSpec);
+         keyPairGenerator.initialize(ecSpec, secureRandom());
          pair = keyPairGenerator.generateKeyPair();
 
          enrollmentCert = certificate(pair);
@@ -304,7 +301,7 @@ public class SecurityController {
             certGen.setNotAfter(notAfter);
             certGen.setSubjectDN(dnName);                       // note: same as issuer
             certGen.setPublicKey(keyPair.getPublic());
-            certGen.setSignatureAlgorithm("SHA256withECDSA");
+            certGen.setSignatureAlgorithm(ALGORITHM);
             cert = certGen.generate(keyPair.getPrivate(), this.cryptoProvider.name());
             break;
          }
@@ -335,8 +332,8 @@ public class SecurityController {
 
    @Bean
    Signature signingSignature(KeyPair keyPair) throws GeneralSecurityException {
-      Signature signature = Signature.getInstance("SHA256withECDSA");
-      signature.initSign(keyPair.getPrivate());
+      Signature signature = Signature.getInstance(ALGORITHM, provider.getName());
+      signature.initSign(keyPair.getPrivate(), secureRandom());
       return signature;
    }
 
@@ -476,7 +473,7 @@ public class SecurityController {
 
    @Bean
    Signature verificationSignature(KeyPair keyPair) throws GeneralSecurityException {
-      Signature signature = Signature.getInstance("SHA256withECDSA");
+      Signature signature = Signature.getInstance(ALGORITHM, provider.getName());
       signature.initVerify(keyPair.getPublic());
       return signature;
    }
