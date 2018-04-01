@@ -250,11 +250,12 @@ public class SecurityController {
       }
 
       if (pair != null) {
-         ECPrivateKey ecPriKey = (ECPrivateKey) pair.getPrivate();
-         logger.info("Enrollment Private Key [{}], [{}]: {}", 
-            pair.getPrivate().getFormat(),
-            pair.getPrivate().getAlgorithm(),
-            CodecUtils.toHex(ecPriKey.getS().toByteArray()));
+         // Note: cannot display private key from HSM
+//         ECPrivateKey ecPriKey = (ECPrivateKey) pair.getPrivate();
+//         logger.info("Enrollment Private Key [{}], [{}]: {}", 
+//            pair.getPrivate().getFormat(),
+//            pair.getPrivate().getAlgorithm(),
+//            CodecUtils.toHex(ecPriKey.getS().toByteArray()));
          
          ECPublicKey ecPubKey = (ECPublicKey) pair.getPublic();
          this.pubKeyHexBytes = CodecUtils.toHex(ecPubKey.getW().getAffineX().toByteArray());
