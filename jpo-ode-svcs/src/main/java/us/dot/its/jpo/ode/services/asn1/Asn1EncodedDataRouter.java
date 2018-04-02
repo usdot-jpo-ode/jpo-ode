@@ -10,6 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.event.ResponseEvent;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
@@ -23,6 +28,7 @@ import us.dot.its.jpo.ode.model.OdeTravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
+import us.dot.its.jpo.ode.traveler.TimController;
 import us.dot.its.jpo.ode.traveler.TimController.TimControllerException;
 import us.dot.its.jpo.ode.traveler.TimPduCreator;
 import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
@@ -133,7 +139,13 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
              .getJSONObject(AppContext.DATA_STRING);
        
        if (null != travelerInfo.getSdw()) {
-         JSONObject asdObj = dataObj.getJSONObject("AdvisorySituationData");
+          JSONObject asdObj = null;
+          if (dataObj.has("AdvisorySituationData")) {
+             asdObj = dataObj.getJSONObject("AdvisorySituationData");
+          } else {
+             logger.error("ASD structure present in metadata but not in JSONObject!");
+          }
+         
          if (null != asdObj) {
             String asdBytes = asdObj.getString("bytes");
 
@@ -158,9 +170,15 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        
        JSONObject mfObj = dataObj.getJSONObject("MessageFrame");
        
+       String encodedTim = mfObj.getString("bytes");
+       logger.debug("Encoded message: {}", encodedTim);
+       
+       sendForSignature(encodedTim);
+       
       // only send message to rsu if snmp, rsus, and message frame fields are present
       if (null != travelerInfo.getSnmp() && null != travelerInfo.getRsus() && null != mfObj) {
          String timBytes = mfObj.getString("bytes");
+         logger.debug("Encoded message: {}", timBytes);
          for (RSU curRsu : travelerInfo.getRsus()) {
 
             ResponseEvent rsuResponse = null;
@@ -200,6 +218,29 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        logger.info("TIM deposit response {}", responseList);
        
        return;
+    }
+    
+    public String sendForSignature(String message) {
+       HttpHeaders headers = new HttpHeaders();
+       headers.setContentType(MediaType.APPLICATION_JSON);
+
+       HttpEntity<String> entity = new HttpEntity<>(TimController.jsonKeyValue("message", message), headers);
+
+       RestTemplate template = new RestTemplate();
+
+       logger.info("Rest request: {}", entity);
+
+       String uri = "http://localhost:8090/sign";
+
+//       ResponseEntity<String> respEntity = template.postForEntity(uri, TimController.jsonKeyValue("message", message),
+//             String.class);
+       
+       ResponseEntity<String> respEntity = template.postForEntity(uri, entity,
+             String.class);
+
+       logger.info("Security services module response: {}", respEntity);
+       
+       return respEntity.getBody();
     }
 
     /**

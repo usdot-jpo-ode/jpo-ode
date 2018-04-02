@@ -385,7 +385,7 @@ public class TimController {
     * @param value
     * @return
     */
-   public String jsonKeyValue(String key, String value) {
+   public static String jsonKeyValue(String key, String value) {
       return "{\"" + key + "\":\"" + value + "\"}";
    }
 
@@ -403,7 +403,8 @@ public class TimController {
       OdeMsgPayload payload = null;
 
       ObjectNode dataBodyObj = JsonUtils.newNode();
-      if (null != asd) {
+ //     if (null != asd) {
+      if (false) {
          ObjectNode asdObj = JsonUtils.toObjectNode(asd.toJson());
          ObjectNode mfBodyObj = (ObjectNode) asdObj.findValue("MessageFrame");
          mfBodyObj.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
@@ -479,10 +480,10 @@ public class TimController {
    private String buildEncodings(DdsAdvisorySituationData asd) throws JsonUtilsException, XmlUtilsException {
       ArrayNode encodings = JsonUtils.newArrayNode();
       encodings.add(addEncoding("MessageFrame", "MessageFrame", EncodingRule.UPER));
-      if (null != asd) {
-         encodings.add(addEncoding("Ieee1609Dot2Data", "Ieee1609Dot2Data", EncodingRule.COER));
-         encodings.add(addEncoding("AdvisorySituationData", "AdvisorySituationData", EncodingRule.UPER));
-      }
+//      if (null != asd) {
+//         encodings.add(addEncoding("Ieee1609Dot2Data", "Ieee1609Dot2Data", EncodingRule.COER));
+//         encodings.add(addEncoding("AdvisorySituationData", "AdvisorySituationData", EncodingRule.UPER));
+//      }
       ObjectNode encodingWrap = (ObjectNode) JsonUtils.newNode().set("wrap", encodings);
       String encStr = XmlUtils.toXmlS(encodingWrap)
             .replace("</wrap><wrap>", "")
