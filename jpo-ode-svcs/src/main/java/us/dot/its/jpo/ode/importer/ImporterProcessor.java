@@ -18,6 +18,7 @@ import us.dot.its.jpo.ode.eventlog.EventLogger;
 // Removed for ODE-559
 //import us.dot.its.jpo.ode.coder.FileDecoderPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
+import us.dot.its.jpo.ode.util.FileUtils;
 
 public class ImporterProcessor {
 
@@ -104,11 +105,11 @@ public class ImporterProcessor {
       
       try {
          if (success) {
-            OdeFileUtils.backupFile(filePath, backupDir);
+            FileUtils.backupFile(filePath, backupDir);
             logger.info("File moved to backup: {}", backupDir);
             EventLogger.logger.info("File moved to backup: {}", backupDir);  
          } else {
-            OdeFileUtils.moveFile(filePath, failureDir);
+            FileUtils.moveFile(filePath, failureDir);
             logger.info("File moved to failure directory: {}", failureDir);  
             EventLogger.logger.info("File moved to failure directory: {}", failureDir);
          }

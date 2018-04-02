@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.util.FileUtils;
 
 public class ImporterDirectoryWatcher implements Runnable {
    
@@ -46,11 +47,11 @@ public class ImporterDirectoryWatcher implements Runnable {
       this.timePeriod = timePeriod;
 
       try {
-         OdeFileUtils.createDirectoryRecursively(inbox);
+         FileUtils.createDirectoryRecursively(inbox);
          logger.debug("Created directory {}", inbox);
-         OdeFileUtils.createDirectoryRecursively(failed);
+         FileUtils.createDirectoryRecursively(failed);
          logger.debug("Created directory {}", failed);
-         OdeFileUtils.createDirectoryRecursively(backup);
+         FileUtils.createDirectoryRecursively(backup);
          logger.debug("Created directory {}", backup);
       } catch (IOException e) {
          logger.error("Error creating directory: " + inbox, e);

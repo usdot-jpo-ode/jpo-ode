@@ -12,7 +12,7 @@ import org.junit.Test;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
-import us.dot.its.jpo.ode.importer.OdeFileUtils;
+import us.dot.its.jpo.ode.util.FileUtils;
 
 public class OdeFileUtilsTest {
    
@@ -24,7 +24,7 @@ public class OdeFileUtilsTest {
    @Test
    public void createDirectoryRecursivelyShouldThrowExceptionDirDoesNotExist() {
        try {
-           OdeFileUtils.createDirectoryRecursively(dir);
+           FileUtils.createDirectoryRecursively(dir);
            fail("Expected IOException directory does not exist");
        } catch (Exception e) {
            assertEquals(IOException.class, e.getClass());
@@ -47,7 +47,7 @@ public class OdeFileUtilsTest {
        }
 
        try {
-          OdeFileUtils.createDirectoryRecursively(dir);
+          FileUtils.createDirectoryRecursively(dir);
            fail("Expected IOException while trying to create directory:");
        } catch (Exception e) {
            assertEquals(IOException.class, e.getClass());
@@ -65,7 +65,7 @@ public class OdeFileUtilsTest {
        };
 
        try {
-          OdeFileUtils.createDirectoryRecursively(dir);
+          FileUtils.createDirectoryRecursively(dir);
        } catch (Exception e) {
            fail("Unexpected exception: " + e);
        }
@@ -82,7 +82,7 @@ public class OdeFileUtilsTest {
        };
 
        try {
-          OdeFileUtils.backupFile(mockFile, backupDir);
+          FileUtils.backupFile(mockFile, backupDir);
            fail("Expected IOException while trying to backup file:");
        } catch (Exception e) {
            assertEquals(IOException.class, e.getClass());
@@ -108,7 +108,7 @@ public class OdeFileUtilsTest {
        }
 
        try {
-          OdeFileUtils.backupFile(mockFile, backupDir);
+          FileUtils.backupFile(mockFile, backupDir);
            fail("Expected IOException while trying to move file:");
        } catch (Exception e) {
            assertEquals(IOException.class, e.getClass());
@@ -127,7 +127,7 @@ public class OdeFileUtilsTest {
        };
 
        try {
-          OdeFileUtils.backupFile(mockFile, backupDir);
+          FileUtils.backupFile(mockFile, backupDir);
        } catch (Exception e) {
            fail("Unexpected exception: " + e);
        }

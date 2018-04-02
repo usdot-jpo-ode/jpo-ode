@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.importer;
+package us.dot.its.jpo.ode.util;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,9 +9,9 @@ import java.nio.file.StandardCopyOption;
 /**
  * Contains file and directory manipulation code
  */
-public class OdeFileUtils {
+public class FileUtils {
 
-   private OdeFileUtils() {
+   private FileUtils() {
    }
 
    /**

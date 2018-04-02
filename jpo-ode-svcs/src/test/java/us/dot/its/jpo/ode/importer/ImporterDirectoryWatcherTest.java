@@ -16,6 +16,7 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
+import us.dot.its.jpo.ode.util.FileUtils;
 
 public class ImporterDirectoryWatcherTest {
 
@@ -36,7 +37,7 @@ public class ImporterDirectoryWatcherTest {
    Integer timePeriod = 5;
 
    @Capturing
-   OdeFileUtils capturingOdeFileUtils;
+   FileUtils capturingOdeFileUtils;
    @Capturing
    ImporterProcessor capturingImporterProcessor;
    @Capturing
@@ -49,7 +50,7 @@ public class ImporterDirectoryWatcherTest {
    public void testConstructor() throws IOException {
       new Expectations() {
          {
-            OdeFileUtils.createDirectoryRecursively((Path) any);
+            FileUtils.createDirectoryRecursively((Path) any);
             times = 3;
 
             Executors.newScheduledThreadPool(1);

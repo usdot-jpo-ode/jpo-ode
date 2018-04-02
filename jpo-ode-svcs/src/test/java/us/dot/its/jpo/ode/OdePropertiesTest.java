@@ -62,7 +62,7 @@ public class OdePropertiesTest {
       }
 
       try {
-         new OdeProperties();
+         new OdeProperties().initialize();
       } catch (Exception e) {
          fail("Unexpected exception in init: " + e);
       }
@@ -82,7 +82,7 @@ public class OdePropertiesTest {
       }
 
       try {
-         new OdeProperties();
+         new OdeProperties().initialize();
       } catch (Exception e) {
          assertTrue(e instanceof MissingPropertyException);
       }

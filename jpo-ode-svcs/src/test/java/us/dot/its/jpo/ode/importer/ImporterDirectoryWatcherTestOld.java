@@ -22,6 +22,7 @@ import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
+import us.dot.its.jpo.ode.util.FileUtils;
 
 @Ignore
 public class ImporterDirectoryWatcherTestOld {
@@ -47,7 +48,7 @@ public class ImporterDirectoryWatcherTestOld {
    WatchEvent<Path> mockWatchEvent;
 
    @Capturing
-   OdeFileUtils capturingOdeFileUtils;
+   FileUtils capturingOdeFileUtils;
    @Capturing
    ImporterProcessor capturingImporterProcessor;
 
@@ -56,7 +57,7 @@ public class ImporterDirectoryWatcherTestOld {
       try {
          new Expectations() {
             {
-               OdeFileUtils.createDirectoryRecursively((Path) any);
+               FileUtils.createDirectoryRecursively((Path) any);
                times = 3;
             }
          };
@@ -72,7 +73,7 @@ public class ImporterDirectoryWatcherTestOld {
       try {
          new Expectations() {
             {
-               OdeFileUtils.createDirectoryRecursively((Path) any);
+               FileUtils.createDirectoryRecursively((Path) any);
                result = new IOException("acceptionIsKindofAWord");
             }
          };
