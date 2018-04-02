@@ -8,12 +8,16 @@ import us.dot.its.jpo.ode.plugin.SituationDataWarehouse;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2DataTag;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisoryDetails.AdvisoryBroadcastType;
-import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisoryDetails.DistributionType;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class DdsAdvisorySituationData extends Asn1Object {
    private static final long serialVersionUID = 2755274323293805425L;
+   
+   // Distribution Type field values
+   public static final byte NONE = (byte) 0x00;
+   public static final byte RSU = (byte) 0x01;
+   public static final byte IP = (byte) 0x02;
 
    int dialogID = 0x9C;    // SemiDialogID -- 0x9C Advisory Situation Data Deposit
    int seqID = 0x05;       // SemiSequenceID -- 0x05 Data
@@ -35,7 +39,7 @@ public class DdsAdvisorySituationData extends Asn1Object {
    }
 
    public DdsAdvisorySituationData(String startTime, String stopTime, Ieee1609Dot2DataTag advisoryMessage,
-         DdsGeoRegion serviceRegion, SituationDataWarehouse.SDW.TimeToLive ttl, String groupID) throws ParseException {
+         DdsGeoRegion serviceRegion, SituationDataWarehouse.SDW.TimeToLive ttl, String groupID, String recordID, byte distroType) throws ParseException {
       this();
 
       J2735DFullTime dStartTime = dFullTimeFromIsoTimeString(startTime);
@@ -45,9 +49,9 @@ public class DdsAdvisorySituationData extends Asn1Object {
       byte[] fourRandomBytes = new byte[4];
       new Random(System.currentTimeMillis()).nextBytes(fourRandomBytes);
       String id = CodecUtils.toHex(fourRandomBytes);
-      int distroType = DistributionType.rsu.ordinal();
+      String stringDistroType = CodecUtils.toHex(distroType);
       this.setAsdmDetails(
-            new DdsAdvisoryDetails(id, AdvisoryBroadcastType.tim, distroType, dStartTime, dStopTime, advisoryMessage));
+            new DdsAdvisoryDetails(id, AdvisoryBroadcastType.tim, stringDistroType, dStartTime, dStopTime, advisoryMessage));
 
       this.setRequestID(id);
       this.setServiceRegion(serviceRegion);
@@ -60,6 +64,11 @@ public class DdsAdvisorySituationData extends Asn1Object {
          this.setGroupID(groupID);
       } else {
          this.setGroupID(CodecUtils.toHex(new byte[] { 0, 0, 0, 0 }));
+      }
+      if (recordID != null) {
+         this.setRecordID(recordID);
+      } else {
+         this.setRecordID(CodecUtils.toHex(new byte[] { 0, 0, 0, 0 }));
       }
    }
 
