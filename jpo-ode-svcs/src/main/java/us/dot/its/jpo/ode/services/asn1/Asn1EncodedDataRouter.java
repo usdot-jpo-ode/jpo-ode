@@ -55,6 +55,7 @@ import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.wrapper.AbstractSubscriberProcessor;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
 
 public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, String> {
@@ -73,6 +74,8 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
     private OdeProperties odeProperties;
     private DdsDepositor<DdsStatusMessage> depositor;
+    
+    private MessageProducer<String, String> stringMsgProducer;
 
     public Asn1EncodedDataRouter(OdeProperties odeProps) {
       super();
@@ -85,6 +88,9 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          EventLogger.logger.error(msg, e);
          logger.error(msg, e);
       }
+      
+      this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
+            odeProperties.getKafkaProducerType());
 
     }
 
@@ -197,6 +203,8 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        logger.debug("Sending message for signature!");
        String signedTim = sendForSignature(encodedTim);
        
+       logger.debug("Message signed!");
+       
        JSONObject jsonifiedResponse = null;
        try {
          jsonifiedResponse = JsonUtils.toJSONObject(signedTim);
@@ -204,7 +212,9 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          logger.error("Unable to parse signed message response {}", e1);
       }
        
-       putSignedTimIntoAsdObject(travelerInfo, jsonifiedResponse.getString("result"));
+       logger.debug("Publishing message for round 2 encoding!");
+       String xmlizedMessage = putSignedTimIntoAsdObject(travelerInfo, jsonifiedResponse.getString("result"));
+       stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlizedMessage);
        
       // only send message to rsu if snmp, rsus, and message frame fields are present
       if (null != travelerInfo.getSnmp() && null != travelerInfo.getRsus() && null != mfObj) {
@@ -251,7 +261,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        return;
     }
     
-   public void putSignedTimIntoAsdObject(OdeTravelerInputData travelerInputData, String signedMsg) {
+   public String putSignedTimIntoAsdObject(OdeTravelerInputData travelerInputData, String signedMsg) {
 
       SDW sdw = travelerInputData.getSdw();
       SNMP snmp = travelerInputData.getSnmp();
@@ -317,11 +327,17 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          String encStr = buildEncodings(asd);
          outputXml = outputXml.replace("<encodings_palceholder/>", encStr);
          
+         // remove the surrounding <ObjectNode></ObjectNode>
+         outputXml = outputXml.replace("<ObjectNode>", "");
+         outputXml = outputXml.replace("</ObjectNode>", "");
+         
       } catch (ParseException | JsonUtilsException | XmlUtilsException e) {
          logger.error("Parsing exception thrown while populating ASD structure: {}", e);
       }
       
       logger.debug("Here is the fully crafted structure, I think this should go to the encoder again: {}", outputXml);
+      
+      return outputXml;
    }
    
    private String buildEncodings(DdsAdvisorySituationData asd) throws JsonUtilsException, XmlUtilsException {
