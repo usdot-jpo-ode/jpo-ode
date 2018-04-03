@@ -16,6 +16,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.dds.DdsClient.DdsClientException;
@@ -23,16 +27,32 @@ import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.model.Asn1Encoding;
+import us.dot.its.jpo.ode.model.OdeAsdPayload;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata;
+import us.dot.its.jpo.ode.model.OdeMsgPayload;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
+import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
+import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
+import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
+import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.MessageFrame;
 import us.dot.its.jpo.ode.plugin.SNMP;
+import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
+import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2Content;
+import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2Data;
+import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2DataTag;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.traveler.TimController;
 import us.dot.its.jpo.ode.traveler.TimController.TimControllerException;
 import us.dot.its.jpo.ode.traveler.TimPduCreator;
 import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
+import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.wrapper.AbstractSubscriberProcessor;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
@@ -162,6 +182,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
             responseList.put("ddsMessage", ddsMessage);
          } else {
+            logger.error("I think this is when we would add the ASD header {}", consumedObj);
             String msg = "ASN.1 Encoder did not return ASD encoding {}";
             EventLogger.logger.error(msg, consumedObj.toString());
             logger.error(msg, consumedObj.toString());
@@ -173,7 +194,17 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        String encodedTim = mfObj.getString("bytes");
        logger.debug("Encoded message: {}", encodedTim);
        
-       sendForSignature(encodedTim);
+       logger.debug("Sending message for signature!");
+       String signedTim = sendForSignature(encodedTim);
+       
+       JSONObject jsonifiedResponse = null;
+       try {
+         jsonifiedResponse = JsonUtils.toJSONObject(signedTim);
+      } catch (JsonUtilsException e1) {
+         logger.error("Unable to parse signed message response {}", e1);
+      }
+       
+       putSignedTimIntoAsdObject(travelerInfo, jsonifiedResponse.getString("result"));
        
       // only send message to rsu if snmp, rsus, and message frame fields are present
       if (null != travelerInfo.getSnmp() && null != travelerInfo.getRsus() && null != mfObj) {
@@ -219,6 +250,98 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
        
        return;
     }
+    
+   public void putSignedTimIntoAsdObject(OdeTravelerInputData travelerInputData, String signedMsg) {
+
+      SDW sdw = travelerInputData.getSdw();
+      SNMP snmp = travelerInputData.getSnmp();
+      DdsAdvisorySituationData asd = null;
+      //
+      Ieee1609Dot2DataTag ieeeDataTag = new Ieee1609Dot2DataTag();
+      Ieee1609Dot2Data ieee = new Ieee1609Dot2Data();
+      Ieee1609Dot2Content ieeeContent = new Ieee1609Dot2Content();
+      J2735MessageFrame j2735Mf = new J2735MessageFrame();
+      MessageFrame mf = new MessageFrame();
+      mf.setMessageFrame(j2735Mf);
+      ieeeContent.setUnsecuredData(mf);
+      ieee.setContent(ieeeContent);
+      ieeeDataTag.setIeee1609Dot2Data(ieee);
+
+      byte sendToRsu = travelerInputData.getRsus() != null ? DdsAdvisorySituationData.RSU
+            : DdsAdvisorySituationData.NONE;
+      byte distroType = (byte) (DdsAdvisorySituationData.IP | sendToRsu);
+      //
+      String outputXml = null;
+      try {
+         if (null != snmp) {
+
+            asd = new DdsAdvisorySituationData(snmp.getDeliverystart(), snmp.getDeliverystop(), ieeeDataTag,
+                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(),
+                  sdw.getRecordId(), distroType);
+         } else {
+            asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), ieeeDataTag,
+                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(),
+                  sdw.getRecordId(), distroType);
+         }
+
+      
+      OdeMsgPayload payload = null;
+
+      ObjectNode dataBodyObj = JsonUtils.newNode();
+         ObjectNode asdObj = JsonUtils.toObjectNode(asd.toJson());
+         ObjectNode mfBodyObj = (ObjectNode) asdObj.findValue("MessageFrame");
+         mfBodyObj.put("bytes", signedMsg);
+
+         dataBodyObj.set("AdvisorySituationData", asdObj);
+
+         payload = new OdeAsdPayload(asd);
+         
+         ObjectNode payloadObj = JsonUtils.toObjectNode(payload.toJson());
+         payloadObj.set(AppContext.DATA_STRING, dataBodyObj);
+         
+         OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
+         ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());
+         
+         metaObject.set("encodings_palceholder", null);
+         
+  
+         
+         ObjectNode message = JsonUtils.newNode();
+         message.set(AppContext.METADATA_STRING, metaObject);
+         message.set(AppContext.PAYLOAD_STRING, payloadObj);
+
+         ObjectNode root = JsonUtils.newNode();
+         root.set("OdeAsn1Data", message);
+         
+         outputXml = XmlUtils.toXmlS(root);
+         String encStr = buildEncodings(asd);
+         outputXml = outputXml.replace("<encodings_palceholder/>", encStr);
+         
+      } catch (ParseException | JsonUtilsException | XmlUtilsException e) {
+         logger.error("Parsing exception thrown while populating ASD structure: {}", e);
+      }
+      
+      logger.debug("Here is the fully crafted structure, I think this should go to the encoder again: {}", outputXml);
+   }
+   
+   private String buildEncodings(DdsAdvisorySituationData asd) throws JsonUtilsException, XmlUtilsException {
+      ArrayNode encodings = JsonUtils.newArrayNode();
+         encodings.add(addEncoding("Ieee1609Dot2Data", "Ieee1609Dot2Data", EncodingRule.COER));
+         encodings.add(addEncoding("AdvisorySituationData", "AdvisorySituationData", EncodingRule.UPER));
+      ObjectNode encodingWrap = (ObjectNode) JsonUtils.newNode().set("wrap", encodings);
+      String encStr = XmlUtils.toXmlS(encodingWrap)
+            .replace("</wrap><wrap>", "")
+            .replace("<wrap>", "")
+            .replace("</wrap>", "")
+            .replace("<ObjectNode>", "<encodings>")
+            .replace("</ObjectNode>", "</encodings>");
+      return encStr;
+   }
+   
+   private JsonNode addEncoding(String name, String type, EncodingRule rule) throws JsonUtilsException {
+      Asn1Encoding mfEnc = new Asn1Encoding(name, type, rule);
+      return JsonUtils.newNode().set("encodings", JsonUtils.toObjectNode(mfEnc.toJson()));
+   }
     
     public String sendForSignature(String message) {
        HttpHeaders headers = new HttpHeaders();
