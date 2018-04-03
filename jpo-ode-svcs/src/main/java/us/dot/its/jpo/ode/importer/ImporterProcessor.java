@@ -1,46 +1,36 @@
 package us.dot.its.jpo.ode.importer;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.zip.GZIPInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.FileAsn1CodecPublisher;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
-// Removed for ODE-559
-//import us.dot.its.jpo.ode.coder.FileDecoderPublisher;
-import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.util.FileUtils;
 
-public class ImporterProcessor {
+public abstract class ImporterProcessor {
+   public enum ImporterFileType {
+      OBU_LOG_FILE,
+      SECURITY_ENROLLMENT_ZIP_FILE, SECURITY_APPLICATION_CERT
+   }
 
    private static final Logger logger = LoggerFactory.getLogger(ImporterProcessor.class);
-// Removed for ODE-559
-//   private FileDecoderPublisher decoderPublisherManager;
-   private FileAsn1CodecPublisher codecPublisher;
-   private OdeProperties odeProperties;
-   private ImporterFileType fileType;
+   protected OdeProperties odeProperties;
+   protected ImporterFileType fileType;
 
    public ImporterProcessor(OdeProperties odeProperties, ImporterFileType fileType) {
-   // Removed for ODE-559
-//      this.decoderPublisherManager = new FileDecoderPublisher(odeProperties);
-      this.codecPublisher = new FileAsn1CodecPublisher(odeProperties);
       this.odeProperties = odeProperties;
       this.fileType = fileType;
    }
 
-   public void processDirectory(Path dir, Path backupDir, Path failureDir) {
+   public int processDirectory(Path dir, Path backupDir, Path failureDir) {
       int count = 0;
       // Process files already in the directory
-      //logger.debug("Started processing files at location: {}", dir);
+      // logger.debug("Processing files at location: {}", dir);
       try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
 
          for (Path entry : stream) {
@@ -48,7 +38,8 @@ public class ImporterProcessor {
                processDirectory(entry, backupDir, failureDir);
             } else {
                logger.debug("Found a file to process: {}", entry.getFileName());
-               processAndBackupFile(entry, backupDir, failureDir);
+               boolean success = processFile(entry);
+               backupFile(success, entry, backupDir, failureDir);
                count++;
             }
          }
@@ -57,52 +48,12 @@ public class ImporterProcessor {
       } catch (Exception e) {
          logger.error("Error processing files.", e);
       }
+      return count;
    }
 
-   public void processAndBackupFile(Path filePath, Path backupDir, Path failureDir) {
+   public abstract boolean processFile(Path filePath);
 
-      /*
-       * ODE-559 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-       * removed lines below when asn1_codec was integrated
-       */
-//      try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
-//         BufferedInputStream bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
-//         decoderPublisherManager.decodeAndPublishFile(filePath, bis, fileType);
-//         bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
-//      } catch (Exception e) {
-//         logger.error("Unable to open or process file: " + filePath, e);
-//      }
-      // ODE-559 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-      // ODE-559
-      boolean success = true;
-      InputStream inputStream = null;
-      BufferedInputStream bis = null;
-      
-      try {
-         inputStream = new FileInputStream(filePath.toFile());
-         if (Files.probeContentType(filePath).equals("application/gzip")) { 
-            inputStream = new GZIPInputStream(inputStream);
-         }
-         bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
-         codecPublisher.publishFile(filePath, bis, fileType);
-      } catch (Exception e) {
-         success = false;
-         logger.error("Failed to open or process file: " + filePath, e);
-         EventLogger.logger.error("Failed to open or process file: " + filePath, e);  
-      } finally {
-         try {
-            if (bis != null) {
-               bis.close();
-            }
-            if (inputStream != null) {
-               inputStream.close();
-            }
-         } catch (IOException e) {
-            logger.error("Failed to close file stream: {}", e);
-         }
-      }
-      
+   public void backupFile(boolean success, Path filePath, Path backupDir, Path failureDir) {
       try {
          if (success) {
             FileUtils.backupFile(filePath, backupDir);

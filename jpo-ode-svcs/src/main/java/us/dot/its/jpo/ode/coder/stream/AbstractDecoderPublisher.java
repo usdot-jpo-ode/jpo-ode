@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import us.dot.its.jpo.ode.coder.BsmDecoderHelper;
 import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.coder.TimDecoderHelper;
-import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
+import us.dot.its.jpo.ode.importer.ImporterProcessor.ImporterFileType;
 import us.dot.its.jpo.ode.model.SerialId;
 
 public abstract class AbstractDecoderPublisher implements DecoderPublisher {

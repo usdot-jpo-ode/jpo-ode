@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher;
-import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 
 public class FileAsn1CodecPublisher {
 
@@ -35,7 +34,7 @@ public class FileAsn1CodecPublisher {
       this.codecPublisher = new LogFileToAsn1CodecPublisher(messagePub);
    }
 
-   public void publishFile(Path filePath, BufferedInputStream fileInputStream, ImporterFileType fileType) 
+   public void publishFile(Path filePath, BufferedInputStream fileInputStream) 
          throws FileAsn1CodecPublisherException {
       String fileName = filePath.toFile().getName();
 
@@ -43,7 +42,7 @@ public class FileAsn1CodecPublisher {
       
       try {
          logger.info("Publishing data from {} to asn1_codec.", filePath);
-         codecPublisher.publish(fileInputStream, fileName, fileType);
+         codecPublisher.publish(fileInputStream, fileName);
       } catch (Exception e) {
          throw new FileAsn1CodecPublisherException("Failed to publish file.", e);
       }

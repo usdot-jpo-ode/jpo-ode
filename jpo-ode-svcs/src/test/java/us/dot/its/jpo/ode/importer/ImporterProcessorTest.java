@@ -23,7 +23,7 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.FileAsn1CodecPublisher;
-import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
+import us.dot.its.jpo.ode.importer.ImporterProcessor.ImporterFileType;
 import us.dot.its.jpo.ode.util.FileUtils;
 
 public class ImporterProcessorTest {
@@ -110,7 +110,8 @@ public class ImporterProcessorTest {
       } catch (FileNotFoundException e) {
          fail("Unexpected exception in expectations block: " + e);
       }
-      testImporterProcessor.processAndBackupFile(mockFile, injectableBackupDir, injectableFailureDir);
+      testImporterProcessor.processFile((Path) mockFile);
+      testImporterProcessor.backupFile(true, (Path) mockFile, (Path) injectableBackupDir, (Path) injectableFailureDir);
    }
 
    @Ignore // TODO - injectable odeProperties returns buffer size 0 causing IllegalArgumentException to be thrown
@@ -121,14 +122,15 @@ public class ImporterProcessorTest {
       try {
          new Expectations() {
             {
-               capturingFileAsn1CodecPublisher.publishFile((Path) any, (BufferedInputStream) any, (ImporterFileType) any);
+               capturingFileAsn1CodecPublisher.publishFile((Path) any, (BufferedInputStream) any);
                times = 1;
             }
          };
       } catch (Exception e) {
          fail("Unexpected exception in expectations block: " + e);
       }
-      testImporterProcessor.processAndBackupFile(Paths.get("testFile.txt"), injectableBackupDir, injectableFailureDir);
+      testImporterProcessor.processFile(Paths.get("testFile.txt"));
+      testImporterProcessor.backupFile(true, Paths.get("testFile.txt"), (Path) injectableBackupDir, (Path) injectableFailureDir);
    }
 
 

@@ -62,7 +62,7 @@ public class FileUploadControllerTest {
          }
       };
       testFileUploadController = new FileUploadController(mockStorageService, mockOdeProperties,
-            injectableSimpMessagingTemplate);
+            injectableSimpMessagingTemplate, "ABCD");
    }
 
    @Test

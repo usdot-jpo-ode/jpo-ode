@@ -1,14 +1,7 @@
 package us.dot.its.jpo.ode.importer;
 
-import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
-import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
-
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchEvent.Kind;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -20,16 +13,11 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.util.FileUtils;
 
 public class ImporterDirectoryWatcher implements Runnable {
-   
-   public enum ImporterFileType {
-      OBU_LOG_FILE
-   }
-
    private static final Logger logger = LoggerFactory.getLogger(ImporterDirectoryWatcher.class);
 
    private boolean watching;
 
-   private ImporterProcessor importerProcessor;
+   private ImporterProcessor importProcessor;
 
    private Path inbox;
    private Path backup;
@@ -39,7 +27,11 @@ public class ImporterDirectoryWatcher implements Runnable {
 
    private Integer timePeriod;
 
-   public ImporterDirectoryWatcher(OdeProperties odeProperties, Path dir, Path backupDir, Path failureDir, ImporterFileType fileType, Integer timePeriod) {
+   public ImporterDirectoryWatcher(
+      OdeProperties odeProperties, 
+      Path dir, Path backupDir, Path failureDir, 
+      Integer timePeriod,
+      ImporterProcessor importProcessor) {
       this.inbox = dir;
       this.backup = backupDir;
       this.failed = failureDir;
@@ -57,7 +49,7 @@ public class ImporterDirectoryWatcher implements Runnable {
          logger.error("Error creating directory: " + inbox, e);
       }
 
-      this.importerProcessor = new ImporterProcessor(odeProperties, fileType);
+      this.importProcessor = importProcessor;
       
       executor = Executors.newScheduledThreadPool(1);
    }
@@ -69,7 +61,7 @@ public class ImporterDirectoryWatcher implements Runnable {
 
       // Watch directory for file events
       executor.scheduleWithFixedDelay(() -> {
-         importerProcessor.processDirectory(inbox, backup, failed);
+         importProcessor.processDirectory(inbox, backup, failed);
       }, 0, timePeriod, TimeUnit.SECONDS);
       
       try {
@@ -89,41 +81,42 @@ public class ImporterDirectoryWatcher implements Runnable {
       // }
    }
 
-   @Deprecated // TODO - replaced by periodic checking
-   public void pollDirectory(WatchService watcher) {
-      // wait for key to be signaled
-      WatchKey wk;
-      try {
-         wk = watcher.take();
-      } catch (InterruptedException e) {
-         Thread.currentThread().interrupt();
-         logger.error("[CRITICAL] Watch service interrupted: {}", e);
-         return;
-      }
-
-      for (WatchEvent<?> event : wk.pollEvents()) {
-         Kind<?> kind = event.kind();
-
-         if (ENTRY_MODIFY == kind) {
-            logger.debug("Notable watch event kind: {}", event.kind());
-
-            @SuppressWarnings("unchecked")
-            WatchEvent<Path> ev = (WatchEvent<Path>) event;
-            Path filename = inbox.resolve(ev.context());
-            logger.debug("File event on {}", filename);
-
-            importerProcessor.processAndBackupFile(filename, backup, failed);
-         } else if (OVERFLOW == kind) {
-            continue;
-         } else {
-            logger.error("Unhandled watch event kind: {}", event.kind());
-         }
-      }
-
-      if (!wk.reset()) {
-         logger.error("Failed to reset directory watcher.");
-      }
-   }
+//   @Deprecated // TODO - replaced by periodic checking
+//   public void pollDirectory(WatchService watcher) {
+//      // wait for key to be signaled
+//      WatchKey wk;
+//      try {
+//         wk = watcher.take();
+//      } catch (InterruptedException e) {
+//         Thread.currentThread().interrupt();
+//         logger.error("[CRITICAL] Watch service interrupted: {}", e);
+//         return;
+//      }
+//
+//      for (WatchEvent<?> event : wk.pollEvents()) {
+//         Kind<?> kind = event.kind();
+//
+//         if (ENTRY_MODIFY == kind) {
+//            logger.debug("Notable watch event kind: {}", event.kind());
+//
+//            @SuppressWarnings("unchecked")
+//            WatchEvent<Path> ev = (WatchEvent<Path>) event;
+//            Path filename = inbox.resolve(ev.context());
+//            logger.debug("File event on {}", filename);
+//
+//            boolean success = importerProcessor.processFile(filename);
+//            importerProcessor.backupFile(success, filename, backup, failed);
+//         } else if (OVERFLOW == kind) {
+//            continue;
+//         } else {
+//            logger.error("Unhandled watch event kind: {}", event.kind());
+//         }
+//      }
+//
+//      if (!wk.reset()) {
+//         logger.error("Failed to reset directory watcher.");
+//      }
+//   }
 
    public boolean isWatching() {
       return watching;

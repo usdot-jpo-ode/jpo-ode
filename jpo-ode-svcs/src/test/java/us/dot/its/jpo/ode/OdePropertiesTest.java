@@ -119,10 +119,6 @@ public class OdePropertiesTest {
       int testDataReceiptExpirationSeconds = 16;
       int testMessagesUntilTrustReestablished = 17;
       int testDataReceiptBufferSize = 18;
-      String testCaCertPath = "testCaCertPath";
-      String testSelfCertPath = "testSelfCertPath";
-      String testSelfPrivateKeyReconstructionFilePath = "testSelfPrivateKeyReconstructionFilePath";
-      String testSelfSigningPrivateKeyFilePath = "testSelfSigningPrivateKeyFilePath";
       int testIsdBufferSize = 19;
       String testKafkaTopicBsmFilteredJson = "testKafkaTopicBsmFilteredJson";
       int testVsdBufferSize = 20;
@@ -164,10 +160,6 @@ public class OdePropertiesTest {
       testOdeProperties.setDataReceiptExpirationSeconds(testDataReceiptExpirationSeconds);
       testOdeProperties.setMessagesUntilTrustReestablished(testMessagesUntilTrustReestablished);
       testOdeProperties.setDataReceiptBufferSize(testDataReceiptBufferSize);
-      testOdeProperties.setCaCertPath(testCaCertPath);
-      testOdeProperties.setSelfCertPath(testSelfCertPath);
-      testOdeProperties.setSelfPrivateKeyReconstructionFilePath(testSelfPrivateKeyReconstructionFilePath);
-      testOdeProperties.setSelfSigningPrivateKeyFilePath(testSelfSigningPrivateKeyFilePath);
       testOdeProperties.setIsdBufferSize(testIsdBufferSize);
       testOdeProperties.setKafkaTopicFilteredOdeBsmJson(testKafkaTopicBsmFilteredJson);
       testOdeProperties.setVsdBufferSize(testVsdBufferSize);
@@ -217,12 +209,6 @@ public class OdePropertiesTest {
             testOdeProperties.getMessagesUntilTrustReestablished());
       assertEquals("Incorrect testDataReceiptBufferSize", testDataReceiptBufferSize,
             testOdeProperties.getDataReceiptBufferSize());
-      assertEquals("Incorrect testCaCertPath", testCaCertPath, testOdeProperties.getCaCertPath());
-      assertEquals("Incorrect testSelfCertPath", testSelfCertPath, testOdeProperties.getSelfCertPath());
-      assertEquals("Incorrect testSelfPrivateKeyReconstructionFilePath", testSelfPrivateKeyReconstructionFilePath,
-            testOdeProperties.getSelfPrivateKeyReconstructionFilePath());
-      assertEquals("Incorrect testSelfSigningPrivateKeyFilePath", testSelfSigningPrivateKeyFilePath,
-            testOdeProperties.getSelfSigningPrivateKeyFilePath());
       assertEquals("Incorrect testIsdBufferSize", testIsdBufferSize, testOdeProperties.getIsdBufferSize());
       assertEquals("Incorrect testKafkaTopicBsmFilteredJson", testKafkaTopicBsmFilteredJson,
             testOdeProperties.getKafkaTopicFilteredOdeBsmJson());

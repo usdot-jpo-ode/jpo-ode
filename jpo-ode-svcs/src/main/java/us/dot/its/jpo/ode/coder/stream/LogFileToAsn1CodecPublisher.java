@@ -10,7 +10,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import us.dot.its.jpo.ode.coder.OdeLogMetadataCreatorHelper;
 import us.dot.its.jpo.ode.coder.StringPublisher;
-import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
 import us.dot.its.jpo.ode.importer.parser.DriverAlertFileParser;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
@@ -53,16 +52,12 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       this.publisher = dataPub;
    }
 
-   public void publish(BufferedInputStream bis, String fileName, ImporterFileType fileType) 
+   public void publish(BufferedInputStream bis, String fileName) 
          throws LogFileToAsn1CodecPublisherException {
       XmlUtils xmlUtils = new XmlUtils();
       ParserStatus status = ParserStatus.UNKNOWN;
 
-      if (fileType == ImporterFileType.OBU_LOG_FILE) {
-         fileParser = LogFileParser.factory(fileName, bundleId.incrementAndGet());
-      } else {
-         status = ParserStatus.NA;
-      }
+      fileParser = LogFileParser.factory(fileName, bundleId.incrementAndGet());
       
       do {
          try {

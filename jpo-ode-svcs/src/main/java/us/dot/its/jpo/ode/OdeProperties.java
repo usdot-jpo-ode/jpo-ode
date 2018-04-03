@@ -48,6 +48,8 @@ public class OdeProperties implements EnvironmentAware {
    // File import properties
    private String uploadLocationRoot = "uploads";
    private String uploadLocationObuLogDir = "bsmlog";
+   private String uploadLocationSecurityEnrollmentDir = "security/enrollment";
+
    private Integer fileWatcherPeriod = 5; // time to wait between processing inbox directory for new files
 
    /*
@@ -143,10 +145,6 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * Security Properties
     */
-   private String caCertPath;
-   private String selfCertPath;
-   private String selfPrivateKeyReconstructionFilePath;
-   private String selfSigningPrivateKeyFilePath;
 
    private String hsmTokenLabel;
    private String keystorePassword;
@@ -162,16 +160,18 @@ public class OdeProperties implements EnvironmentAware {
    private String keystore;   
    private String keyPairAlias;
 
-   private String scmsEnrollmentDir;          // Directory path to the location of the enrollment files
-   private String scmsRootCertFile;           //+ root.oer: IEEE 1609.2 root CA certificate encoded as OER
-   private String scmsLocalCertChainFile;     //+ LCCF.oer: current Local Certificate Chain File including ICA and PCA certificates.
-   private String scmsLocalPolicyFile;        //+ LPF.oer: current Local Policy File
-   private String scmsCertRevocationListFile; //+ CRL.oer: current Certificate Revocation List
-   private String scmsRootTlsFile;            //+ root.tls: TLS (X.509) root certificate RA’s TLS cert chains to
+   private String scmsCertsDir = "certs";                                   // Directory path to the location of the security files
+   private String scmsEnrollmentDir = "certs/enrollment";                   // Directory path to the location of the enrollment files
+   private String scmsRootCertFile = "certs/enrollment/root.oer";           //+ root.oer: IEEE 1609.2 root CA certificate encoded as OER
+   private String scmsLocalCertChainFile = "certs/enrollment/LCCF.oer";     //+ LCCF.oer: current Local Certificate Chain File including ICA and PCA certificates.
+   private String scmsLocalPolicyFile = "certs/enrollment/LPF.oer";         //+ LPF.oer: current Local Policy File
+   private String scmsCertRevocationListFile = "certs/enrollment/CRL.oer";  //+ CRL.oer: current Certificate Revocation List
+   private String scmsRootTlsFile = "certs/enrollment/root.tls";            //+ root.tls: TLS (X.509) root certificate RA’s TLS cert chains to
    private String scmsRaCertFile;             //  |           +RA.oer: RA’s 1609.2 certificate
    private String scmsEcaCertFile;            //  |           +ECA.oer: ECA’s 1609.2 certificate
    private String scmsEnrollmentCertFile;     //  |           +enrollment.oer:  (EE’s enrollment certificate, see enrollmentCert as part of the ECA response SignedEeEnrollmentCertResponse)
    private String scmsPriKeyReconValueFile;   //  |           +enrollment.s:  (EE’s Private key reconstruction value, see privKeyReconstruction as part of the ECA response SignedEeEnrollmentCertResponse)
+   private String scmsApplicationCertFile;    //  Application certificate obtained by ODE
 
    private int dataReceiptExpirationSeconds;
 
@@ -420,38 +420,6 @@ public class OdeProperties implements EnvironmentAware {
    
    public void setDataReceiptBufferSize(int dataReceiptBufferSize) {
       this.dataReceiptBufferSize = dataReceiptBufferSize;
-   }
-
-   public String getCaCertPath() {
-      return caCertPath;
-   }
-
-   public void setCaCertPath(String caCertPath) {
-      this.caCertPath = caCertPath;
-   }
-
-   public String getSelfCertPath() {
-      return selfCertPath;
-   }
-
-   public void setSelfCertPath(String selfCertPath) {
-      this.selfCertPath = selfCertPath;
-   }
-
-   public String getSelfPrivateKeyReconstructionFilePath() {
-      return selfPrivateKeyReconstructionFilePath;
-   }
-
-   public void setSelfPrivateKeyReconstructionFilePath(String selfPrivateKeyReconstructionFilePath) {
-      this.selfPrivateKeyReconstructionFilePath = selfPrivateKeyReconstructionFilePath;
-   }
-
-   public String getSelfSigningPrivateKeyFilePath() {
-      return selfSigningPrivateKeyFilePath;
-   }
-
-   public void setSelfSigningPrivateKeyFilePath(String selfSigningPrivateKeyFilePath) {
-      this.selfSigningPrivateKeyFilePath = selfSigningPrivateKeyFilePath;
    }
 
    public int getIsdBufferSize() {
@@ -768,6 +736,22 @@ public class OdeProperties implements EnvironmentAware {
       this.keyPairAlias = keyPairAlias;
    }
 
+   public String getUploadLocationSecurityEnrollmentDir() {
+      return uploadLocationSecurityEnrollmentDir;
+   }
+
+   public void setUploadLocationSecurityEnrollmentDir(String uploadLocationSecurityEnrollmentDir) {
+      this.uploadLocationSecurityEnrollmentDir = uploadLocationSecurityEnrollmentDir;
+   }
+
+   public String getScmsCertsDir() {
+      return scmsCertsDir;
+   }
+
+   public void setScmsCertsDir(String scmsCertsDir) {
+      this.scmsCertsDir = scmsCertsDir;
+   }
+
    public String getScmsEnrollmentDir() {
       return scmsEnrollmentDir;
    }
@@ -847,5 +831,14 @@ public class OdeProperties implements EnvironmentAware {
    public void setScmsPriKeyReconValueFile(String scmsPriKeyReconValueFile) {
       this.scmsPriKeyReconValueFile = scmsPriKeyReconValueFile;
    }
+
+   public String getScmsApplicationCertFile() {
+      return scmsApplicationCertFile;
+   }
+
+   public void setScmsApplicationCertFile(String scmsApplicationCertFile) {
+      this.scmsApplicationCertFile = scmsApplicationCertFile;
+   }
+
 
 }

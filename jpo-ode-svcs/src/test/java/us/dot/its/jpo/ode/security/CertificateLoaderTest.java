@@ -52,11 +52,11 @@ public class CertificateLoaderTest {
       try {
          new Expectations() {
             {
-               FileCertificateStore.load((CryptoProvider) any, anyString, (Path) any, (Path) any, (Path) any);
+               FileCertificateStore.load((CryptoProvider) any, anyString, (Path) any, (Path) any);
                result = true;
             }
          };
-         assertTrue(testCertificateLoader.loadCert(null, "my name is jonas", mockPath, mockPath, mockPath));
+         assertTrue(testCertificateLoader.loadCert("my name is jonas", mockPath, mockPath));
       } catch (DecodeFailedException | EncodeFailedException | CertificateException | IOException | DecoderException
             | CryptoException | DecodeNotSupportedException | EncodeNotSupportedException e) {
          fail("Unexpected exception: " + e);
@@ -68,11 +68,11 @@ public class CertificateLoaderTest {
       try {
          new Expectations() {
             {
-               FileCertificateStore.load((CryptoProvider) any, anyString, (Path) any, null, null);
+               FileCertificateStore.load((CryptoProvider) any, anyString, (Path) any, null);
                result = true;
             }
          };
-         assertTrue(testCertificateLoader.loadCert(null, "my name is jonas", mockPath));
+         assertTrue(testCertificateLoader.loadCert("my name is jonas", mockPath));
       } catch (DecodeFailedException | EncodeFailedException | CertificateException | IOException | DecoderException
             | CryptoException | DecodeNotSupportedException | EncodeNotSupportedException e) {
          fail("Unexpected exception: " + e);
@@ -81,20 +81,14 @@ public class CertificateLoaderTest {
 
    @Test
    public void testRun(@Capturing IEEE1609p2Message capturingIEEE1609p2Message,
-         @Capturing CertificateManager capturingCertificateManager) {
-      new Expectations() {
+         @Capturing CertificateManager capturingCertificateManager) 
+               throws DecodeFailedException, EncodeFailedException, DecoderException, CertificateException, IOException, CryptoException, DecodeNotSupportedException, EncodeNotSupportedException {
+      new Expectations(FileCertificateStore.class) {
          {
             CertificateManager.clear();
             times = 1;
-
-            mockOdeProperties.getCaCertPath();
-            result = "testCaCertPath";
-            mockOdeProperties.getSelfCertPath();
-            result = "testSelfCertPath";
-            mockOdeProperties.getSelfPrivateKeyReconstructionFilePath();
-            result = "testSelfPrivateKeyReconstructionFilePath";
-            mockOdeProperties.getSelfSigningPrivateKeyFilePath();
-            result = "testSelfSigningPrivateKeyFilePath";
+            FileCertificateStore.load((CryptoProvider) any, anyString, (Path) any);
+            times = 4;
          }
       };
       CertificateLoader runTestCertificateLoader = new CertificateLoader(mockOdeProperties);

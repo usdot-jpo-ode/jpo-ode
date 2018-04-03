@@ -2,7 +2,7 @@ package us.dot.its.jpo.ode.coder.stream;
 
 import java.io.BufferedInputStream;
 
-import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
+import us.dot.its.jpo.ode.importer.ImporterProcessor.ImporterFileType;
 
 public interface DecoderPublisher {
    

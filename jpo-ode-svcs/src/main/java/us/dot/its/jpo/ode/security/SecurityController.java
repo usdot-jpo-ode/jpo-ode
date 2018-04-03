@@ -27,7 +27,6 @@ import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
-import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECGenParameterSpec;
 import java.util.Calendar;
@@ -356,67 +355,9 @@ public class SecurityController {
    }
 
    @DependsOn("keyPair")
-   private void initFilePaths() {
-      if (this.odeProperties.getScmsEnrollmentDir() != null) {
-         if (Paths.get(this.odeProperties.getScmsEnrollmentDir()).toFile().exists()) {
-            String deviceFolder = Paths.get(this.odeProperties.getScmsEnrollmentDir(),
-                     this.pubKeyHexBytes).toString();
-            
-            if (this.odeProperties.getScmsCertRevocationListFile() != null) {
-               this.odeProperties.setScmsCertRevocationListFile(this.odeProperties.getScmsCertRevocationListFile());
-            } else {
-               this.odeProperties.setScmsCertRevocationListFile(Paths.get(this.odeProperties.getScmsEnrollmentDir(), "CRL.oer").toString());
-            }
-
-            if (this.odeProperties.getScmsLocalCertChainFile() != null) {
-               this.odeProperties.setScmsLocalCertChainFile(this.odeProperties.getScmsLocalCertChainFile());
-            } else {
-               this.odeProperties.setScmsLocalCertChainFile(Paths.get(this.odeProperties.getScmsEnrollmentDir(), "LCCF.oer").toString());
-            }
-
-            if (this.odeProperties.getScmsLocalPolicyFile() != null) {
-               this.odeProperties.setScmsLocalPolicyFile(this.odeProperties.getScmsLocalPolicyFile());
-            } else {
-               this.odeProperties.setScmsLocalPolicyFile(Paths.get(this.odeProperties.getScmsEnrollmentDir(), "LPF.oer").toString());
-            }
-
-            if (this.odeProperties.getScmsRootCertFile() != null) {
-               this.odeProperties.setScmsRootCertFile(this.odeProperties.getScmsRootCertFile());
-            } else {
-               this.odeProperties.setScmsRootCertFile(Paths.get(this.odeProperties.getScmsEnrollmentDir(), "root.oer").toString());
-            }
-
-            if (this.odeProperties.getScmsRootTlsFile() != null) {
-               this.odeProperties.setScmsRootTlsFile(this.odeProperties.getScmsRootTlsFile());
-            } else {
-               this.odeProperties.setScmsRootTlsFile(Paths.get(this.odeProperties.getScmsEnrollmentDir(), "root.tls.pem").toString());
-            }
-
-            if (this.odeProperties.getScmsEcaCertFile() != null) {
-               this.odeProperties.setScmsEcaCertFile(this.odeProperties.getScmsEcaCertFile());
-            } else {
-               this.odeProperties.setScmsEcaCertFile(Paths.get(deviceFolder, "ECA.oer").toString());
-            }
-
-            if (this.odeProperties.getScmsEnrollmentCertFile() != null) {
-               this.odeProperties.setScmsEnrollmentCertFile(this.odeProperties.getScmsEnrollmentCertFile());
-            } else {
-               this.odeProperties.setScmsEnrollmentCertFile(Paths.get(deviceFolder, "enrollment.oer").toString());
-            }
-
-            if (this.odeProperties.getScmsPriKeyReconValueFile() != null) {
-               this.odeProperties.setScmsPriKeyReconValueFile(this.odeProperties.getScmsPriKeyReconValueFile());
-            } else {
-               this.odeProperties.setScmsPriKeyReconValueFile(Paths.get(deviceFolder, "enrollment.s").toString());
-            }
-
-            if (this.odeProperties.getScmsRaCertFile() != null) {
-               this.odeProperties.setScmsRaCertFile(this.odeProperties.getScmsRaCertFile());
-            } else {
-               this.odeProperties.setScmsRaCertFile(Paths.get(deviceFolder, "RA.oer").toString());
-            }
-         }
-      }
+   @Bean
+   private String pubKeyHexBytes() {
+      return pubKeyHexBytes;
    }
 
    @Bean
@@ -478,4 +419,59 @@ public class SecurityController {
       signature.initVerify(keyPair.getPublic());
       return signature;
    }
+
+//   private void initFilePaths() {
+//      if (this.odeProperties.getScmsCertsDir() != null) {
+//         Path enrollmentDir;
+//         if (this.odeProperties.getScmsEnrollmentDir() == null) {
+//            enrollmentDir = Paths.get(this.odeProperties.getScmsCertsDir(), "enrollment");
+//            this.odeProperties.setScmsEnrollmentDir(enrollmentDir.toString());
+//         } else {
+//            enrollmentDir = Paths.get(this.odeProperties.getScmsEnrollmentDir());
+//         }
+//
+//         if (this.odeProperties.getScmsCertRevocationListFile() == null) {
+//            this.odeProperties.setScmsCertRevocationListFile(enrollmentDir.resolve("CRL.oer").toString());
+//         }
+//
+//         if (this.odeProperties.getScmsLocalCertChainFile() == null) {
+//            this.odeProperties.setScmsLocalCertChainFile(enrollmentDir.resolve("LCCF.oer").toString());
+//         }
+//
+//         if (this.odeProperties.getScmsLocalPolicyFile() == null) {
+//            this.odeProperties.setScmsLocalPolicyFile(enrollmentDir.resolve("LPF.oer").toString());
+//         }
+//
+//         if (this.odeProperties.getScmsRootCertFile() == null) {
+//            this.odeProperties.setScmsRootCertFile(enrollmentDir.resolve("root.oer").toString());
+//         }
+//
+//         if (this.odeProperties.getScmsRootTlsFile() == null) {
+//            this.odeProperties.setScmsRootTlsFile(enrollmentDir.resolve("root.tls.pem").toString());
+//         }
+//
+//         Path deviceDir = enrollmentDir.resolve(pubKeyHexBytes);
+//         File deviceDirFile = deviceDir.toFile();
+//         if (!deviceDirFile.exists()) {
+//            deviceDirFile.mkdirs();
+//         }
+//         if (this.odeProperties.getScmsEcaCertFile() == null) {
+//            this.odeProperties.setScmsEcaCertFile(deviceDir.resolve("ECA.oer").toString());
+//         }
+//  
+//         if (this.odeProperties.getScmsEnrollmentCertFile() == null) {
+//            this.odeProperties.setScmsEnrollmentCertFile(deviceDir.resolve("enrollment.oer").toString());
+//         }
+//  
+//         if (this.odeProperties.getScmsPriKeyReconValueFile() == null) {
+//            this.odeProperties.setScmsPriKeyReconValueFile(deviceDir.resolve("enrollment.s").toString());
+//         }
+//  
+//         if (this.odeProperties.getScmsRaCertFile() == null) {
+//            this.odeProperties.setScmsRaCertFile(deviceDir.resolve("RA.oer").toString());
+//         }
+//      }
+//   }
+
+
 }
