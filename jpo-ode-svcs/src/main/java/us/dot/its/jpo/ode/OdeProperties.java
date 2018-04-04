@@ -41,6 +41,14 @@ public class OdeProperties implements EnvironmentAware {
    private String externalIpv4 = "";
    private String externalIpv6 = "";
    private int rsuSrmSlots = 100; // number of "store and repeat message" indicies for RSU TIMs
+   
+   
+   /*
+    * Security Services Module Properties
+    */
+   private String securitySvcsSignatureUri;
+   private int securitySvcsPort = 8090;
+   private String securitySvcsSignatureEndpoint = "sign";
 
    // File import properties
    private String uploadLocationRoot = "uploads";
@@ -179,6 +187,9 @@ public class OdeProperties implements EnvironmentAware {
          } else {
             kafkaBrokers = dockerIp + ":9092";
          }
+         
+         // URI for the security services /sign endpoint
+         securitySvcsSignatureUri = "http://" + dockerIp + ":" + securitySvcsPort + "/" + securitySvcsSignatureEndpoint;
 
          
       }
@@ -693,5 +704,13 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setFileWatcherPeriod(Integer fileWatcherPeriod) {
       this.fileWatcherPeriod = fileWatcherPeriod;
+   }
+
+   public String getSecuritySvcsSignatureUri() {
+      return securitySvcsSignatureUri;
+   }
+
+   public void setSecuritySvcsSignatureUri(String securitySvcsSignatureUri) {
+      this.securitySvcsSignatureUri = securitySvcsSignatureUri;
    }
 }
