@@ -278,7 +278,7 @@ public class TimController {
 
       // Short circuit
       // If the TIM has no RSU/SNMP or SDW structures, we are done
-      if (travelerInputData.getRsus() == null && travelerInputData.getSnmp() == null
+      if ((travelerInputData.getRsus() == null || travelerInputData.getSnmp() == null)
             && travelerInputData.getSdw() == null) {
          String warningMsg = "Warning: TIM contains no RSU, SNMP, or SDW fields. Message only published to POJO broadcast stream.";
          logger.warn(warningMsg);
@@ -293,7 +293,7 @@ public class TimController {
 
          logger.debug("Encodable TravelerInputData: {}", encodableTid);
 
-      } catch (Exception e) {
+      } catch (JsonUtilsException e) {
          String errMsg = "Error converting to encodable TIM.";
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
@@ -302,7 +302,7 @@ public class TimController {
       try {
          String xmlMsg = convertToXml(encodableTid);
          stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlMsg);
-      } catch (Exception e) {
+      } catch (JsonUtilsException | XmlUtilsException | ParseException e) {
          String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));

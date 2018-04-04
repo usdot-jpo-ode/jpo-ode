@@ -1,35 +1,19 @@
 package us.dot.its.jpo.ode.services.asn1;
 
-import java.text.ParseException;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
-import us.dot.its.jpo.ode.model.Asn1Encoding;
-import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
-import us.dot.its.jpo.ode.model.OdeAsdPayload;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata;
-import us.dot.its.jpo.ode.model.OdeMsgPayload;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
-import us.dot.its.jpo.ode.plugin.SNMP;
-import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
-import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
-import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.traveler.TimController.TimControllerException;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
-import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 import us.dot.its.jpo.ode.wrapper.AbstractSubscriberProcessor;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
@@ -53,7 +37,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
    public Asn1EncodedDataRouter(OdeProperties odeProperties) {
       super();
-      
+
       this.odeProperties = odeProperties;
 
       this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
@@ -127,22 +111,23 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          throws TimControllerException {
 
       JSONObject dataObj = consumedObj.getJSONObject(AppContext.PAYLOAD_STRING).getJSONObject(AppContext.DATA_STRING);
-      
+
       // CASE 1: no SDW in metadata (SNMP deposit only)
-      //  - sign MF
-      //  - send to RSU
-      // CASE 2: SDW in metadata but no ASD in body (send back for another encoding)
-      //  - sign MF
-      //  - send to RSU
-      //  - craft ASD object
-      //  - publish back to encoder stream
+      // - sign MF
+      // - send to RSU
+      // CASE 2: SDW in metadata but no ASD in body (send back for another
+      // encoding)
+      // - sign MF
+      // - send to RSU
+      // - craft ASD object
+      // - publish back to encoder stream
       // CASE 3: If SDW in metadata and ASD in body (double encoding complete)
-      //  - send to DDS
-      
+      // - send to DDS
+
       if (!dataObj.has("AdvisorySituationData")) {
          // Cases 1 & 2
          // Sign and send to RSUs
-         
+
          JSONObject mfObj = dataObj.getJSONObject("MessageFrame");
 
          String encodedTim = mfObj.getString("bytes");
@@ -160,109 +145,22 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          }
 
          asn1CommandManager.sendToRsus(travelerInfo, signedTim);
-         
+
          if (travelerInfo.getSdw() != null) {
             // Case 2 only
-            
+
             logger.debug("Publishing message for round 2 encoding!");
-            String xmlizedMessage = putSignedTimIntoAsdObject(travelerInfo, signedTim);
+            String xmlizedMessage = asn1CommandManager.packageSignedTimIntoAsd(travelerInfo, signedTim);
 
             stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlizedMessage);
          }
-         
+
       } else {
          // Case 3
          JSONObject asdObj = dataObj.getJSONObject("AdvisorySituationData");
          asn1CommandManager.depositToDDS(asdObj.getString("bytes"));
       }
 
-   }
-
-   public String putSignedTimIntoAsdObject(OdeTravelerInputData travelerInputData, String signedMsg) {
-
-      SDW sdw = travelerInputData.getSdw();
-      SNMP snmp = travelerInputData.getSnmp();
-      DdsAdvisorySituationData asd = null;
-
-      byte sendToRsu = travelerInputData.getRsus() != null ? DdsAdvisorySituationData.RSU
-            : DdsAdvisorySituationData.NONE;
-      byte distroType = (byte) (DdsAdvisorySituationData.IP | sendToRsu);
-      //
-      String outputXml = null;
-      try {
-         if (null != snmp) {
-
-            asd = new DdsAdvisorySituationData(snmp.getDeliverystart(), snmp.getDeliverystop(), null,
-                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(),
-                  sdw.getRecordId(), distroType);
-         } else {
-            asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), null,
-                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(),
-                  sdw.getRecordId(), distroType);
-         }
-
-         OdeMsgPayload payload = null;
-
-         ObjectNode dataBodyObj = JsonUtils.newNode();
-         ObjectNode asdObj = JsonUtils.toObjectNode(asd.toJson());
-         ObjectNode admDetailsObj = (ObjectNode) asdObj.findValue("asdmDetails");
-         admDetailsObj.remove("advisoryMessage");
-         admDetailsObj.put("advisoryMessage", signedMsg);
-
-         dataBodyObj.set("AdvisorySituationData", asdObj);
-
-         payload = new OdeAsdPayload(asd);
-
-         ObjectNode payloadObj = JsonUtils.toObjectNode(payload.toJson());
-         payloadObj.set(AppContext.DATA_STRING, dataBodyObj);
-
-         OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
-         ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());
-
-         ObjectNode requestObj = JsonUtils.toObjectNode(JsonUtils.toJson(travelerInputData, false));
-
-         requestObj.remove("tim");
-
-         metaObject.set("request", requestObj);
-
-         metaObject.set("encodings_placeholder", null);
-
-         ObjectNode message = JsonUtils.newNode();
-         message.set(AppContext.METADATA_STRING, metaObject);
-         message.set(AppContext.PAYLOAD_STRING, payloadObj);
-
-         ObjectNode root = JsonUtils.newNode();
-         root.set("OdeAsn1Data", message);
-
-         outputXml = XmlUtils.toXmlS(root);
-         String encStr = buildEncodings(asd);
-         outputXml = outputXml.replace("<encodings_placeholder/>", encStr);
-
-         // remove the surrounding <ObjectNode></ObjectNode>
-         outputXml = outputXml.replace("<ObjectNode>", "");
-         outputXml = outputXml.replace("</ObjectNode>", "");
-
-      } catch (ParseException | JsonUtilsException | XmlUtilsException e) {
-         logger.error("Parsing exception thrown while populating ASD structure: {}", e);
-      }
-
-      logger.debug("Here is the fully crafted structure, I think this should go to the encoder again: {}", outputXml);
-
-      return outputXml;
-   }
-
-   private String buildEncodings(DdsAdvisorySituationData asd) throws JsonUtilsException, XmlUtilsException {
-      ArrayNode encodings = JsonUtils.newArrayNode();
-      encodings.add(addEncoding("AdvisorySituationData", "AdvisorySituationData", EncodingRule.UPER));
-      ObjectNode encodingWrap = (ObjectNode) JsonUtils.newNode().set("wrap", encodings);
-      String encStr = XmlUtils.toXmlS(encodingWrap).replace("</wrap><wrap>", "").replace("<wrap>", "")
-            .replace("</wrap>", "").replace("<ObjectNode>", "<encodings>").replace("</ObjectNode>", "</encodings>");
-      return encStr;
-   }
-
-   private JsonNode addEncoding(String name, String type, EncodingRule rule) throws JsonUtilsException {
-      Asn1Encoding mfEnc = new Asn1Encoding(name, type, rule);
-      return JsonUtils.newNode().set("encodings", JsonUtils.toObjectNode(mfEnc.toJson()));
    }
 
 }
