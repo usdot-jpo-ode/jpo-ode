@@ -3,13 +3,13 @@ package us.dot.its.jpo.ode.snmp;
 import java.io.IOException;
 
 import org.snmp4j.PDU;
+import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.AuthSHA;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModels;
@@ -21,7 +21,11 @@ import org.snmp4j.smi.GenericAddress;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
+import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.traveler.TimPduCreator;
+import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 
 /**
  * This object is used to abstract away the complexities of SNMP calls and allow
@@ -31,7 +35,7 @@ import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
  * over UDP and is actually connection-less.
  */
 public class SnmpSession {
-
+   
    private Snmp snmp;
    private TransportMapping transport;
    private UserTarget target;
@@ -158,6 +162,30 @@ public class SnmpSession {
    public void startListen() throws IOException {
       transport.listen();
       listening = true;
+   }
+   
+   /**
+    * Create an SNMP session given the values in
+    * 
+    * @param tim
+    *           - The TIM parameters (payload, channel, mode, etc)
+    * @param props
+    *           - The SNMP properties (ip, username, password, etc)
+    * @return ResponseEvent
+    * @throws TimPduCreatorException
+    * @throws IOException
+    */
+   public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, int index, String payload, int verb)
+         throws IOException, TimPduCreatorException {
+
+      SnmpSession session = new SnmpSession(rsu);
+
+      // Send the PDU
+      ResponseEvent response = null;
+      ScopedPDU pdu = TimPduCreator.createPDU(snmp, payload, index, verb);
+      response = session.set(pdu, session.getSnmp(), session.getTarget(), false);
+      EventLogger.logger.info("Message Sent to {}: {}", rsu.getRsuTarget(), payload);
+      return response;
    }
 
    public Snmp getSnmp() {

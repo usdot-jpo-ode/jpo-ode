@@ -44,6 +44,14 @@ public class OdeProperties implements EnvironmentAware {
    private String externalIpv4 = "";
    private String externalIpv6 = "";
    private int rsuSrmSlots = 100; // number of "store and repeat message" indicies for RSU TIMs
+   
+   
+   /*
+    * Security Services Module Properties
+    */
+   private String securitySvcsSignatureUri;
+   private int securitySvcsPort = 8090;
+   private String securitySvcsSignatureEndpoint = "sign";
 
    // File import properties
    private String uploadLocationRoot = "uploads";
@@ -166,11 +174,11 @@ public class OdeProperties implements EnvironmentAware {
    private String scmsLocalCertChainFile = "certs/enrollment/LCCF.oer";     //+ LCCF.oer: current Local Certificate Chain File including ICA and PCA certificates.
    private String scmsLocalPolicyFile = "certs/enrollment/LPF.oer";         //+ LPF.oer: current Local Policy File
    private String scmsCertRevocationListFile = "certs/enrollment/CRL.oer";  //+ CRL.oer: current Certificate Revocation List
-   private String scmsRootTlsFile = "certs/enrollment/root.tls";            //+ root.tls: TLS (X.509) root certificate RAâ€™s TLS cert chains to
-   private String scmsRaCertFile;             //  |           +RA.oer: RAâ€™s 1609.2 certificate
-   private String scmsEcaCertFile;            //  |           +ECA.oer: ECAâ€™s 1609.2 certificate
-   private String scmsEnrollmentCertFile;     //  |           +enrollment.oer:  (EEâ€™s enrollment certificate, see enrollmentCert as part of the ECA response SignedEeEnrollmentCertResponse)
-   private String scmsPriKeyReconValueFile;   //  |           +enrollment.s:  (EEâ€™s Private key reconstruction value, see privKeyReconstruction as part of the ECA response SignedEeEnrollmentCertResponse)
+   private String scmsRootTlsFile = "certs/enrollment/root.tls";            //+ root.tls: TLS (X.509) root certificate RA’s TLS cert chains to
+   private String scmsRaCertFile;             //  |           +RA.oer: RA’s 1609.2 certificate
+   private String scmsEcaCertFile;            //  |           +ECA.oer: ECA’s 1609.2 certificate
+   private String scmsEnrollmentCertFile;     //  |           +enrollment.oer:  (EE’s enrollment certificate, see enrollmentCert as part of the ECA response SignedEeEnrollmentCertResponse)
+   private String scmsPriKeyReconValueFile;   //  |           +enrollment.s:  (EE’s Private key reconstruction value, see privKeyReconstruction as part of the ECA response SignedEeEnrollmentCertResponse)
    private String scmsApplicationCertFile;    //  Application certificate obtained by ODE
 
    private int dataReceiptExpirationSeconds;
@@ -206,6 +214,11 @@ public class OdeProperties implements EnvironmentAware {
          } else {
             kafkaBrokers = dockerIp + ":9092";
          }
+         
+         // URI for the security services /sign endpoint
+         securitySvcsSignatureUri = "http://" + dockerIp + ":" + securitySvcsPort + "/" + securitySvcsSignatureEndpoint;
+
+         
       }
    }
 
@@ -841,4 +854,12 @@ public class OdeProperties implements EnvironmentAware {
    }
 
 
+
+   public String getSecuritySvcsSignatureUri() {
+      return securitySvcsSignatureUri;
+   }
+
+   public void setSecuritySvcsSignatureUri(String securitySvcsSignatureUri) {
+      this.securitySvcsSignatureUri = securitySvcsSignatureUri;
+   }
 }

@@ -17,6 +17,9 @@ public class AsnCodecRouterServiceControllerTest {
 
    @Capturing
    Asn1DecodedDataRouter capturingAsn1DecodedDataRouter;
+   
+   @Capturing 
+   Asn1EncodedDataRouter capturingAsn1EncodedDataRouter;
 
    @Injectable
    OdeProperties injectableOdeProperties;

@@ -21,6 +21,7 @@
     <module>jpo-ode-common</module>
     <module>jpo-s3-deposit</module>
     <module>jpo-security</module>
+    <module>jpo-security-svcs</module>
   </modules>
 
   <repositories>

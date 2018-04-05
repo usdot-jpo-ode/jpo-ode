@@ -10,3 +10,6 @@
 [submodule "jpo-security"]
 	path = jpo-security
 	url = https://github.com/usdot-jpo-ode/jpo-security.git
+[submodule "jpo-security-svcs"]
+	path = jpo-security-svcs
+	url = https://github.com/usdot-jpo-ode/jpo-security-svcs
