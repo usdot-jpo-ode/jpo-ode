@@ -52,7 +52,7 @@ public class CertificateLoaderTest {
       try {
          new Expectations() {
             {
-               FileCertificateStore.load((CryptoProvider) any, anyString, (Path) any, (Path) any);
+               FileCertificateStore.load((CryptoProvider) any, anyString, (Path) any, (Path) any, null, null);
                result = true;
             }
          };
@@ -68,7 +68,7 @@ public class CertificateLoaderTest {
       try {
          new Expectations() {
             {
-               FileCertificateStore.load((CryptoProvider) any, anyString, (Path) any, null);
+               FileCertificateStore.load((CryptoProvider) any, anyString, (Path) any, null, null, null);
                result = true;
             }
          };

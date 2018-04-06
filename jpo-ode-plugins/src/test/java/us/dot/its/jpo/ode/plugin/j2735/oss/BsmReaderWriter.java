@@ -65,7 +65,6 @@ public class BsmReaderWriter {
     private static FileOutputStream binOut;
     private static String selfCert = "self.cert";
     private static String selfCertPrivateKeyReconstructionValue = "self.s";
-    private static String signingPrivateKey = "sign.prv";
     private static String caCert = "ca.cert";
 
     public static void main(String args[]) throws Exception  {
@@ -153,8 +152,6 @@ public class BsmReaderWriter {
 
         caCert = Hex.encodeHexString(Files.readAllBytes(Paths.get(".", caCert)));
 
-        signingPrivateKey  = Hex.encodeHexString(Files.readAllBytes(Paths.get(".", signingPrivateKey)));
-        
         selfCert = Hex.encodeHexString(Files.readAllBytes(Paths.get(".", selfCert)));
         
         selfCertPrivateKeyReconstructionValue = Hex.encodeHexString(Files.readAllBytes(Paths.get(".", selfCertPrivateKeyReconstructionValue)));
@@ -163,10 +160,10 @@ public class BsmReaderWriter {
         
         CryptoProvider cryptoProvider = new CryptoProvider();
         
-        if ( !load(cryptoProvider, CertificateWrapper.getRootPublicCertificateFriendlyName(), caCert, null, null) )
+        if ( !load(cryptoProvider, CertificateWrapper.getRootPublicCertificateFriendlyName(), caCert, null) )
             throw new CertificateException("Couldn't load CA certificate.");
 
-        if ( !load(cryptoProvider, IEEE1609p2Message.getSelfCertificateFriendlyName(), selfCert, selfCertPrivateKeyReconstructionValue, signingPrivateKey) )
+        if ( !load(cryptoProvider, IEEE1609p2Message.getSelfCertificateFriendlyName(), selfCert, selfCertPrivateKeyReconstructionValue) )
             throw new CertificateException("Couldn't load self certificate.");
     }
 
@@ -174,18 +171,15 @@ public class BsmReaderWriter {
         CryptoProvider cryptoProvider,
         String name,
         String hexCert,
-        String hexPrivateKeyReconstructionValue,
-        String hexSigningPrivateKey) throws CertificateException, IOException, DecoderException, CryptoException,
+        String hexPrivateKeyReconstructionValue) throws CertificateException, IOException, DecoderException, CryptoException,
             DecodeFailedException, DecodeNotSupportedException, EncodeFailedException, EncodeNotSupportedException {
         byte[] certBytes = Hex.decodeHex(hexCert.toCharArray());
         CertificateWrapper cert;
-        if (hexPrivateKeyReconstructionValue == null && hexSigningPrivateKey == null) {
+        if (hexPrivateKeyReconstructionValue == null) {
             cert = CertificateWrapper.fromBytes(cryptoProvider, certBytes);
         } else {
             byte[] privateKeyReconstructionValueBytes = Hex.decodeHex(hexPrivateKeyReconstructionValue.toCharArray());
-            byte[] signingPrivateKeyBytes = Hex.decodeHex(hexSigningPrivateKey.toCharArray());
-            cert = CertificateWrapper.fromBytes(cryptoProvider, certBytes, privateKeyReconstructionValueBytes,
-                signingPrivateKeyBytes);
+            cert = CertificateWrapper.fromBytes(cryptoProvider, certBytes, privateKeyReconstructionValueBytes, null, null);
         }
         if (cert != null) {
             boolean isValid = cert.isValid();

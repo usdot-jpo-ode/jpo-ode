@@ -46,13 +46,6 @@ public class OdeProperties implements EnvironmentAware {
    private int rsuSrmSlots = 100; // number of "store and repeat message" indicies for RSU TIMs
    
    
-   /*
-    * Security Services Module Properties
-    */
-   private String securitySvcsSignatureUri;
-   private int securitySvcsPort = 8090;
-   private String securitySvcsSignatureEndpoint = "sign";
-
    // File import properties
    private String uploadLocationRoot = "uploads";
    private String uploadLocationObuLogDir = "bsmlog";
@@ -180,6 +173,12 @@ public class OdeProperties implements EnvironmentAware {
    private String scmsEnrollmentCertFile;     //  |           +enrollment.oer:  (EE’s enrollment certificate, see enrollmentCert as part of the ECA response SignedEeEnrollmentCertResponse)
    private String scmsPriKeyReconValueFile;   //  |           +enrollment.s:  (EE’s Private key reconstruction value, see privKeyReconstruction as part of the ECA response SignedEeEnrollmentCertResponse)
    private String scmsApplicationCertFile;    //  Application certificate obtained by ODE
+
+   //Security Services Module Properties
+   private String securitySvcsSignatureUri;
+   private int securitySvcsPort = 8090;
+   private String securitySvcsSignatureEndpoint = "sign";
+
 
    private int dataReceiptExpirationSeconds;
 

@@ -23,6 +23,7 @@ import gov.usdot.cv.security.cert.CertificateException;
 import gov.usdot.cv.security.cert.CertificateManager;
 import gov.usdot.cv.security.cert.CertificateWrapper;
 import gov.usdot.cv.security.cert.FileCertificateStore;
+import gov.usdot.cv.security.cert.SecureECPrivateKey;
 import gov.usdot.cv.security.crypto.CryptoException;
 import gov.usdot.cv.security.crypto.CryptoProvider;
 import us.dot.its.jpo.ode.OdeProperties;
@@ -32,13 +33,15 @@ public class CertificateLoader implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(CertificateLoader.class);
 
     private OdeProperties odeProperties;
+    private SecureECPrivateKey seedPrivateKey;
     
-    public CertificateLoader(OdeProperties odeProperties) {
-        super();
-        this.odeProperties = odeProperties;
-    }
 
-    public void loadAllCerts(String certsDir) {
+    public CertificateLoader(OdeProperties odeProperties) {
+      super();
+      this.odeProperties = odeProperties;
+   }
+
+   public void loadAllCerts(String certsDir) {
        int count = 0;
        // Process certs
        logger.info("Loading certificates from location: {}", certsDir);
@@ -98,7 +101,7 @@ public class CertificateLoader implements Runnable {
            }
            logger.debug("Loaded {} certificates from: {}", count, zipFilePath);
        } catch (Exception e) {
-           logger.error("Error loading certifcates from " + zipFilePath, e);
+           logger.error("Error loading some certifcates from " + zipFilePath, e);
        }
       return count;
    }
@@ -123,10 +126,11 @@ public class CertificateLoader implements Runnable {
                                            DecodeNotSupportedException, 
                                            EncodeFailedException, 
                                            EncodeNotSupportedException {
-        return loadCert(name, certFilePath, null);
+        return loadCert(name, certFilePath, null, null);
     }
     
-    public boolean loadCert(String name, Path certFilePath, Path privateKeyReconFilePath)
+    public boolean loadCert(String name, Path certFilePath, Path privateKeyReconFilePath, 
+       SecureECPrivateKey seedPrivateKey)
                                            throws CertificateException, 
                                            IOException, 
                                            DecoderException, 
@@ -137,7 +141,8 @@ public class CertificateLoader implements Runnable {
                                            EncodeNotSupportedException {
         
         //load public cert
-        return FileCertificateStore.load(new CryptoProvider(), name, certFilePath, privateKeyReconFilePath);
+        return FileCertificateStore.load(new CryptoProvider(), name, certFilePath, 
+           privateKeyReconFilePath, seedPrivateKey);
    }
     
 
@@ -160,7 +165,7 @@ public class CertificateLoader implements Runnable {
       try {
          loadEnrollmentCerts();
       } catch (Exception e) {
-          logger.error("Error loading Enrollment certificates", e);
+          logger.error("Error loading some Enrollment certificates", e);
       }
  
       // TODO
@@ -180,7 +185,7 @@ public class CertificateLoader implements Runnable {
       try {
          loadApplicationCert();
       } catch (Exception e) {
-          logger.error("Error loading full certificate of self", e);
+          logger.error("Error loading certificate of self", e);
       }
    }
 
@@ -327,7 +332,8 @@ public class CertificateLoader implements Runnable {
             if (!FileCertificateStore.load(new CryptoProvider(),
                CertificateWrapper.getEnrollmentPublicCertificateFriendlyName(),
                Paths.get(odeProperties.getScmsEnrollmentCertFile()),
-               Paths.get(odeProperties.getScmsPriKeyReconValueFile()))) {
+               Paths.get(odeProperties.getScmsPriKeyReconValueFile()), 
+               seedPrivateKey)) {
                success = false;
             }
          } else {
@@ -350,7 +356,8 @@ public class CertificateLoader implements Runnable {
       if (odeProperties.getScmsApplicationCertFile() != null) {
          if (Paths.get(odeProperties.getScmsApplicationCertFile()).toFile().exists()) {
             if (!FileCertificateStore.load(new CryptoProvider(), CertificateWrapper.getSelfCertificateFriendlyName(),
-               Paths.get(odeProperties.getScmsApplicationCertFile()), Paths.get(odeProperties.getScmsPriKeyReconValueFile()))) {
+               Paths.get(odeProperties.getScmsApplicationCertFile()), Paths.get(odeProperties.getScmsPriKeyReconValueFile()), 
+               seedPrivateKey)) {
                success = false;
             }
          } else {
@@ -365,6 +372,14 @@ public class CertificateLoader implements Runnable {
       if (!success) {
          throw new CertificateException("Error loading Application certificate!");
       }
+   }
+
+   public SecureECPrivateKey getSeedPrivateKey() {
+      return seedPrivateKey;
+   }
+
+   public void setSeedPrivateKey(SecureECPrivateKey seedPrivateKey) {
+      this.seedPrivateKey = seedPrivateKey;
    }
 
 }

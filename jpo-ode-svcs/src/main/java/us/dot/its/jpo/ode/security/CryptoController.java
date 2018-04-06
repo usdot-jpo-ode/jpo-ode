@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.security;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.math.BigInteger;
@@ -22,11 +21,7 @@ import java.util.Optional;
 
 import javax.crypto.Cipher;
 
-import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Integer;
-import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DERSequenceGenerator;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.jcajce.provider.asymmetric.util.ECUtil;
@@ -527,7 +522,7 @@ final class CryptoController {
       byte[] sig= this.signingSignature.sign();
       logger.debug("signature: {}", CodecUtils.toHex(sig));
       
-      BigInteger[] sigParts = decodeECDSASignature(sig);
+      BigInteger[] sigParts = ECDSAProvider.decodeECDSASignature(sig);
       EcdsaP256SignatureWrapper tbsRequestSignature = new EcdsaP256SignatureWrapper(sigParts[0], sigParts[1]);
 
 //      ECPrivateKey ecPrivateKey = (ECPrivateKey) this.keyPair.getPrivate();
@@ -555,38 +550,6 @@ final class CryptoController {
       ECPublicKeyParameters  publicKey = (ECPublicKeyParameters) ECUtil.generatePublicKeyParameter(keyPair.getPublic());
       EccP256CurvePoint encodedPublicKey = provider.getSigner().encodePublicKey(publicKey);
       return encodedPublicKey;
-   }
-
-   private static BigInteger[] decodeECDSASignature(byte[] signature) throws Exception {
-      BigInteger[] sigs = new BigInteger[2];
-      ByteArrayInputStream inStream = new ByteArrayInputStream(signature);
-      try (ASN1InputStream asnInputStream = new ASN1InputStream(inStream)){
-         ASN1Primitive asn1 = asnInputStream.readObject();
-
-         int count = 0;
-         if (asn1 instanceof ASN1Sequence) {
-             ASN1Sequence asn1Sequence = (ASN1Sequence) asn1;
-             ASN1Encodable[] asn1Encodables = asn1Sequence.toArray();
-             for (ASN1Encodable asn1Encodable : asn1Encodables) {
-                 ASN1Primitive asn1Primitive = asn1Encodable.toASN1Primitive();
-                 if (asn1Primitive instanceof ASN1Integer) {
-                     ASN1Integer asn1Integer = (ASN1Integer) asn1Primitive;
-                     BigInteger integer = asn1Integer.getValue();
-                     if (count  < 2) {
-                         sigs[count] = integer;
-                     }
-                     count++;
-                 }
-             }
-         }
-         if (count != 2) {
-             throw new CryptoException(String.format("Invalid ECDSA signature. Expected count of 2 but got: %d. Signature is: %s", count,
-                     CodecUtils.toHex(signature)));
-         }
-      } catch (Exception e) {
-         logger.error("Error decoding encoded signature", e);
-      }
-      return sigs;
    }
 
    private static byte[] encodeECDSASignature(BigInteger[] sigs) throws Exception {
