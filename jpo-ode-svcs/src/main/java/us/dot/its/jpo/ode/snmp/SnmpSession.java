@@ -2,6 +2,8 @@ package us.dot.its.jpo.ode.snmp;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
@@ -36,6 +38,8 @@ import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
  */
 public class SnmpSession {
    
+   private static final Logger logger = LoggerFactory.getLogger(SnmpSession.class);
+
    private Snmp snmp;
    private TransportMapping transport;
    private UserTarget target;
@@ -93,8 +97,7 @@ public class SnmpSession {
     * @return ResponseEvent
     * @throws IOException
     */
-   public ResponseEvent set(PDU pdu, Snmp snmpob, UserTarget targetob, Boolean keepOpen)
-         throws IOException {
+   public ResponseEvent set(PDU pdu, Snmp snmpob, UserTarget targetob, Boolean keepOpen) throws IOException {
 
       // Ensure the object has been instantiated
       if (!ready) {
@@ -127,8 +130,7 @@ public class SnmpSession {
     * @return ResponseEvent
     * @throws IOException
     */
-   public ResponseEvent get(PDU pdu, Snmp snmpob, UserTarget targetob,
-         Boolean keepOpen) throws IOException {
+   public ResponseEvent get(PDU pdu, Snmp snmpob, UserTarget targetob, Boolean keepOpen) throws IOException {
 
       // Ensure the object has been instantiated
       if (!ready) {
@@ -163,7 +165,7 @@ public class SnmpSession {
       transport.listen();
       listening = true;
    }
-   
+
    /**
     * Create an SNMP session given the values in
     * 
@@ -184,7 +186,8 @@ public class SnmpSession {
       ResponseEvent response = null;
       ScopedPDU pdu = TimPduCreator.createPDU(snmp, payload, index, verb);
       response = session.set(pdu, session.getSnmp(), session.getTarget(), false);
-      EventLogger.logger.info("Message Sent to {}: {}", rsu.getRsuTarget(), payload);
+      EventLogger.logger.info("Message Sent to {}, index {}: {}", rsu.getRsuTarget(), index, payload);
+      logger.info("Message Sent to {}, index {}: {}", rsu.getRsuTarget(), index, payload);
       return response;
    }
 
