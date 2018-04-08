@@ -29,6 +29,7 @@ import com.oss.asn1.PERUnalignedCoder;
 import gov.usdot.cv.security.cert.CertificateException;
 import gov.usdot.cv.security.cert.CertificateManager;
 import gov.usdot.cv.security.cert.CertificateWrapper;
+import gov.usdot.cv.security.cert.SecureECPrivateKey;
 import gov.usdot.cv.security.crypto.CryptoException;
 import gov.usdot.cv.security.crypto.CryptoProvider;
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
@@ -179,7 +180,8 @@ public class BsmReaderWriter {
             cert = CertificateWrapper.fromBytes(cryptoProvider, certBytes);
         } else {
             byte[] privateKeyReconstructionValueBytes = Hex.decodeHex(hexPrivateKeyReconstructionValue.toCharArray());
-            cert = CertificateWrapper.fromBytes(cryptoProvider, certBytes, privateKeyReconstructionValueBytes, null, null);
+            cert = CertificateWrapper.fromBytes(cryptoProvider, certBytes, 
+                  privateKeyReconstructionValueBytes, new SecureECPrivateKey());
         }
         if (cert != null) {
             boolean isValid = cert.isValid();

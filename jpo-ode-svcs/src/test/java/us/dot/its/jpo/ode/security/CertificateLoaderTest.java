@@ -47,37 +47,37 @@ public class CertificateLoaderTest {
    @Mocked
    OdeProperties mockOdeProperties;
 
-   @Test
-   public void loadCertTrue() {
-      try {
-         new Expectations() {
-            {
-               FileCertificateStore.load((CryptoProvider) any, anyString, (Path) any, (Path) any, null, null);
-               result = true;
-            }
-         };
-         assertTrue(testCertificateLoader.loadCert("my name is jonas", mockPath, mockPath));
-      } catch (DecodeFailedException | EncodeFailedException | CertificateException | IOException | DecoderException
-            | CryptoException | DecodeNotSupportedException | EncodeNotSupportedException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
-
-   @Test
-   public void loadCert3ArgsTrue() {
-      try {
-         new Expectations() {
-            {
-               FileCertificateStore.load((CryptoProvider) any, anyString, (Path) any, null, null, null);
-               result = true;
-            }
-         };
-         assertTrue(testCertificateLoader.loadCert("my name is jonas", mockPath));
-      } catch (DecodeFailedException | EncodeFailedException | CertificateException | IOException | DecoderException
-            | CryptoException | DecodeNotSupportedException | EncodeNotSupportedException e) {
-         fail("Unexpected exception: " + e);
-      }
-   };
+//   @Test
+//   public void loadCertTrue() {
+//      try {
+//         new Expectations() {
+//            {
+//               FileCertificateStore.load((CryptoProvider) any, anyString, (Path) any, (Path) any, null, null);
+//               result = true;
+//            }
+//         };
+//         assertTrue(testCertificateLoader.loadCert("my name is jonas", mockPath, mockPath));
+//      } catch (DecodeFailedException | EncodeFailedException | CertificateException | IOException | DecoderException
+//            | CryptoException | DecodeNotSupportedException | EncodeNotSupportedException e) {
+//         fail("Unexpected exception: " + e);
+//      }
+//   }
+//
+//   @Test
+//   public void loadCert3ArgsTrue() {
+//      try {
+//         new Expectations() {
+//            {
+//               FileCertificateStore.load((CryptoProvider) any, anyString, (Path) any, null, null, null);
+//               result = true;
+//            }
+//         };
+//         assertTrue(testCertificateLoader.loadCert("my name is jonas", mockPath));
+//      } catch (DecodeFailedException | EncodeFailedException | CertificateException | IOException | DecoderException
+//            | CryptoException | DecodeNotSupportedException | EncodeNotSupportedException e) {
+//         fail("Unexpected exception: " + e);
+//      }
+//   };
 
    @Test
    public void testRun(@Capturing IEEE1609p2Message capturingIEEE1609p2Message,

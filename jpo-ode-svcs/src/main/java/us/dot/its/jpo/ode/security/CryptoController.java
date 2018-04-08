@@ -336,11 +336,11 @@ final class CryptoController {
       byte[] toBeVerified = Ieee1609dot2Helper.encodeCOER(tbsReq);
       logger.debug("Extracted tbsRequest = {}", CodecUtils.toHex(toBeVerified));
       
-      EcdsaP256SignatureWrapper signatureWrapper = EcdsaP256SignatureWrapper.decode(signature, provider.getSigner());
+      EcdsaP256SignatureWrapper signatureWrapper = EcdsaP256SignatureWrapper.decode(signature, provider.getECDSAProvider());
       logger.debug("Extracted signature.r = {}", CodecUtils.toHex(signatureWrapper.getR().toByteArray()));
       logger.debug("Extracted signature.s = {}", CodecUtils.toHex(signatureWrapper.getS().toByteArray()));
 
-      byte[] digest = provider.getSigner().computeDigest(toBeVerified, "".getBytes());
+      byte[] digest = provider.getECDSAProvider().computeDigest(toBeVerified, "".getBytes());
       logger.debug("Calculated digest = {}", CodecUtils.toHex(digest));
       
       // let's extract the public key from the CSR
@@ -381,8 +381,8 @@ final class CryptoController {
    }
 
    private PublicKey extractPublicKey(EccP256CurvePoint pubKeyCurvePoint)
-         throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException {
-      ECPublicKeyParameters pubKeyParams = provider.getSigner().decodePublicKey(pubKeyCurvePoint);
+         throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException, CryptoException {
+      ECPublicKeyParameters pubKeyParams = provider.getECDSAProvider().decodePublicKey(pubKeyCurvePoint);
       ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec("prime256v1");
       ECPublicKeySpec pubKeySpec = new ECPublicKeySpec(pubKeyParams.getQ(), spec);
       KeyFactory keyFactory = KeyFactory.getInstance("ECDSA", "BC");
@@ -517,7 +517,7 @@ final class CryptoController {
       byte[] tbsRequest = Ieee1609dot2Helper.encodeCOER(scopedCertificateRequest);
       logger.debug("tbsRequest = {}", CodecUtils.toHex(tbsRequest));
 
-      byte[] digest = provider.getSigner().computeDigest(tbsRequest, "".getBytes());
+      byte[] digest = provider.getECDSAProvider().computeDigest(tbsRequest, "".getBytes());
       this.signingSignature.update(digest);
       byte[] sig= this.signingSignature.sign();
       logger.debug("signature: {}", CodecUtils.toHex(sig));
@@ -548,7 +548,7 @@ final class CryptoController {
    
    private EccP256CurvePoint buildPublicKeyCurvePoint() throws InvalidKeyException, CryptoException {
       ECPublicKeyParameters  publicKey = (ECPublicKeyParameters) ECUtil.generatePublicKeyParameter(keyPair.getPublic());
-      EccP256CurvePoint encodedPublicKey = provider.getSigner().encodePublicKey(publicKey);
+      EccP256CurvePoint encodedPublicKey = provider.getECDSAProvider().encodePublicKey(publicKey);
       return encodedPublicKey;
    }
 
