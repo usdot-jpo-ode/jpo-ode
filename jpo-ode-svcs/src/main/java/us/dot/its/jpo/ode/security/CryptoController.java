@@ -1,18 +1,18 @@
 package us.dot.its.jpo.ode.security;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
-import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
+import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
@@ -21,8 +21,6 @@ import java.util.Optional;
 
 import javax.crypto.Cipher;
 
-import org.bouncycastle.asn1.ASN1Integer;
-import org.bouncycastle.asn1.DERSequenceGenerator;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.jcajce.provider.asymmetric.util.ECUtil;
 import org.bouncycastle.jce.ECNamedCurveTable;
@@ -76,6 +74,7 @@ import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2scmsprotocol.ScopedCert
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2scmsprotocol.SignedCertificateRequest;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2scmsprotocol.SignedEeEnrollmentCertRequest;
 import gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2scmsprotocol.SignedEeEnrollmentCertRequest.Content;
+import gov.usdot.cv.security.cert.SecureECPrivateKey;
 import gov.usdot.cv.security.clock.ClockHelper;
 import gov.usdot.cv.security.crypto.CryptoException;
 import gov.usdot.cv.security.crypto.CryptoProvider;
@@ -187,6 +186,8 @@ final class CryptoController {
 
    private final Base64.Encoder encoder = Base64.getEncoder();
    
+   private final KeyStore keyStore;
+
    private final KeyPair keyPair;
    
    private final Cipher encryptionCipher;
@@ -199,11 +200,13 @@ final class CryptoController {
 
    @Autowired
    CryptoController(
-      @Qualifier("keyPair") KeyPair keyPair,
-      @Qualifier("decryptionCipher") Cipher decryptionCipher,
-      @Qualifier("encryptionCipher") Cipher encryptionCipher,
-      @Qualifier("signingSignature") Signature signingSignature,
-      @Qualifier("verificationSignature") Signature verificationSignature) {
+         @Qualifier("keyStoreCached") KeyStore keyStore,
+         @Qualifier("keyPairCached") KeyPair keyPair,
+         @Qualifier("decryptionCipher") Cipher decryptionCipher,
+         @Qualifier("encryptionCipher") Cipher encryptionCipher,
+         @Qualifier("signingSignature") Signature signingSignature,
+         @Qualifier("verificationSignature") Signature verificationSignature) {
+      this.keyStore = keyStore;
       this.keyPair = keyPair;
       this.decryptionCipher = decryptionCipher;
       this.encryptionCipher = encryptionCipher;
@@ -336,23 +339,24 @@ final class CryptoController {
       byte[] toBeVerified = Ieee1609dot2Helper.encodeCOER(tbsReq);
       logger.debug("Extracted tbsRequest = {}", CodecUtils.toHex(toBeVerified));
       
-      EcdsaP256SignatureWrapper signatureWrapper = EcdsaP256SignatureWrapper.decode(signature, provider.getECDSAProvider());
+      ECDSAProvider ecdsaProvider = provider.getECDSAProvider();
+      EcdsaP256SignatureWrapper signatureWrapper = EcdsaP256SignatureWrapper.decode(signature, ecdsaProvider);
       logger.debug("Extracted signature.r = {}", CodecUtils.toHex(signatureWrapper.getR().toByteArray()));
       logger.debug("Extracted signature.s = {}", CodecUtils.toHex(signatureWrapper.getS().toByteArray()));
 
-      byte[] digest = provider.getECDSAProvider().computeDigest(toBeVerified, "".getBytes());
+      byte[] digest = ecdsaProvider.computeDigest(toBeVerified, "".getBytes());
       logger.debug("Calculated digest = {}", CodecUtils.toHex(digest));
       
       // let's extract the public key from the CSR
       EccP256CurvePoint recon = tbsReq.getContent().getEca_ee().getEeEcaCertRequest().getTbsData()
             .getVerifyKeyIndicator().getVerificationKey().getEcdsaNistP256();
       
-      ECPublicKey enrollPubKey = (ECPublicKey) this.keyPair.getPublic();
-      
-      logger.debug("Enrollment Public Key [{}], [{}]: {}", 
-         enrollPubKey.getFormat(),
-         enrollPubKey.getAlgorithm(),
-         CodecUtils.toHex(enrollPubKey.getW().getAffineX().toByteArray()));
+//      ECPublicKey enrollPubKey = (ECPublicKey) this.keyPair.getPublic();
+//      
+//      logger.debug("Enrollment Public Key [{}], [{}]: {}", 
+//         enrollPubKey.getFormat(),
+//         enrollPubKey.getAlgorithm(),
+//         CodecUtils.toHex(enrollPubKey.getW().getAffineX().toByteArray()));
       
       ECPublicKey extractedPubKey = (ECPublicKey) extractPublicKey(recon);
       
@@ -361,21 +365,20 @@ final class CryptoController {
          extractedPubKey.getAlgorithm(),
          CodecUtils.toHex(extractedPubKey.getW().getAffineX().toByteArray()));
 
-      Signature myVerificationSignature = Signature.getInstance(
-         verificationSignature.getAlgorithm(),
-         verificationSignature.getProvider());
-      myVerificationSignature.initVerify(extractedPubKey);
-      myVerificationSignature.update(digest);
+//      Signature myVerificationSignature = Signature.getInstance(
+//         verificationSignature.getAlgorithm(),
+//         verificationSignature.getProvider());
+//      myVerificationSignature.initVerify(extractedPubKey);
+//      myVerificationSignature.update(digest);
+//      byte[] encodedSig = ECDSAProvider.encodeECDSASignature(new BigInteger[]{signatureWrapper.getR(), signatureWrapper.getS()});
+//      logger.debug("encodedECDSASignature = {}", CodecUtils.toHex(encodedSig));
+//      boolean verified = myVerificationSignature.verify(encodedSig);
       
-      byte[] encodedSig = encodeECDSASignature(new BigInteger[]{signatureWrapper.getR(), signatureWrapper.getS()});
-      logger.debug("encodedECDSASignature = {}", CodecUtils.toHex(encodedSig));
-      boolean verified = myVerificationSignature.verify(encodedSig);
-      
-//      boolean verified = provider.getSigner().verifySignature(
-//            toBeVerified,
-//            "".getBytes(),
-//            provider.getSigner().decodePublicKey(recon), 
-//            signatureWrapper);
+      boolean verified = ecdsaProvider.verifySignature(
+            toBeVerified,
+            "".getBytes(),
+            ecdsaProvider.decodePublicKey(recon), 
+            signatureWrapper);
       
       return Util.zip(new String[] { "signedEeEnrollmentCertRequest", "verified" }, new Object[] { signedEeEnrollmentCertRequest, verified });
    }
@@ -517,26 +520,26 @@ final class CryptoController {
       byte[] tbsRequest = Ieee1609dot2Helper.encodeCOER(scopedCertificateRequest);
       logger.debug("tbsRequest = {}", CodecUtils.toHex(tbsRequest));
 
-      byte[] digest = provider.getECDSAProvider().computeDigest(tbsRequest, "".getBytes());
-      this.signingSignature.update(digest);
-      byte[] sig= this.signingSignature.sign();
-      logger.debug("signature: {}", CodecUtils.toHex(sig));
+      ECDSAProvider ecdsaProvider = provider.getECDSAProvider();
+//      byte[] digest = ecdsaProvider.computeDigest(tbsRequest, "".getBytes());
+//      this.signingSignature.update(digest);
+//      byte[] sig= this.signingSignature.sign();
+//      logger.debug("signature: {}", CodecUtils.toHex(sig));
+//      BigInteger[] sigParts = ECDSAProvider.decodeECDSASignature(tbsRequestSignature.);
+//      EcdsaP256SignatureWrapper tbsRequestSignature = new EcdsaP256SignatureWrapper(sigParts[0], sigParts[1]);
       
-      BigInteger[] sigParts = ECDSAProvider.decodeECDSASignature(sig);
-      EcdsaP256SignatureWrapper tbsRequestSignature = new EcdsaP256SignatureWrapper(sigParts[0], sigParts[1]);
-
-//      ECPrivateKey ecPrivateKey = (ECPrivateKey) this.keyPair.getPrivate();
-//      EcdsaP256SignatureWrapper tbsRequestSignature = 
-//            provider.getSigner().computeSignature(tbsRequest, 
-//                  "".getBytes(), 
-//                  provider.getSigner().decodePrivateKey(ecPrivateKey));
+      ECPrivateKey ecPrivateKey = (ECPrivateKey) this.keyPair.getPrivate();
+      EcdsaP256SignatureWrapper tbsRequestSignature = 
+            ecdsaProvider.computeSignature(tbsRequest, 
+                  "".getBytes(), 
+                  new SecureECPrivateKey(keyStore, ecPrivateKey));
 
       gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2basetypes.Signature signature = 
             tbsRequestSignature.encode();
       
-      SignerIdentifier signer = SignerIdentifier.createSignerIdentifierWithSelf(new Null());
+      SignerIdentifier signerId = SignerIdentifier.createSignerIdentifierWithSelf(new Null());
       
-      SignedCertificateRequest signedCertificateRequest = new SignedCertificateRequest(HashAlgorithm.sha256, scopedCertificateRequest, signer, signature);
+      SignedCertificateRequest signedCertificateRequest = new SignedCertificateRequest(HashAlgorithm.sha256, scopedCertificateRequest, signerId, signature);
 
       SignedEeEnrollmentCertRequest seecr = new SignedEeEnrollmentCertRequest(
          new Uint8(3), SignedEeEnrollmentCertRequest.Content.createContentWithSignedCertificateRequest(
@@ -552,13 +555,4 @@ final class CryptoController {
       return encodedPublicKey;
    }
 
-   private static byte[] encodeECDSASignature(BigInteger[] sigs) throws Exception {
-      ByteArrayOutputStream s = new ByteArrayOutputStream();
-      
-      DERSequenceGenerator seq = new DERSequenceGenerator(s);
-      seq.addObject(new ASN1Integer(sigs[0]));
-      seq.addObject(new ASN1Integer(sigs[1]));
-      seq.close();
-      return s.toByteArray(); 
-   }
 }

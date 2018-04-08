@@ -55,26 +55,19 @@ import com.safenetinc.luna.provider.LunaCertificateX509;
 
 import gov.usdot.cv.security.cert.SecureECPrivateKey;
 import gov.usdot.cv.security.crypto.CryptoProvider;
+import gov.usdot.cv.security.crypto.ECDSAProvider;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
 @Controller
 public class SecurityController {
 
-   private static final String KEYPAIR_GENERATION_ALGORTHM_SPECS = "prime256v1";
-
-   private static final String KEYPAIR_GENERATION_ALGORITHM = "ECDSA";
-
-   private static final String ENCRYPTION_ALGORITHM = "ECIES";
-
-   public static final String SIGNATURE_ALGORITHM = "NONEwithECDSA";
-
    private enum Providers {
       LunaProvider, BC
    };
    
    private enum KeystoreTypes {
-      Luna, JKS
+      Luna, JKS, BKS
    };
    
    private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -84,6 +77,7 @@ public class SecurityController {
    private Providers cryptoProvider;
    private KeystoreTypes keystoreType;
    private KeyStore keyStore;
+   private KeyPair keyPair;
    private AlgorithmParameters parameters;
    private Certificate enrollmentCert;
    private Provider provider;
@@ -101,7 +95,7 @@ public class SecurityController {
    }
 
    @Bean
-   @DependsOn("slotManager")
+   @DependsOn("provider")
    KeyStore keyStore(
       @Value("${ode.keystoreType}") String odeKeystoreType,
       @Value("${ode.keystore}") String odeKeystore,
@@ -116,7 +110,8 @@ public class SecurityController {
           */
          try {
             this.keystoreType = KeystoreTypes.valueOf(odeKeystoreType);
-            this.keyStore = KeyStore.getInstance(keystoreType.name());
+            this.keyStore = KeyStore.getInstance(
+                  this.keystoreType.name(), providerCached());
          } catch (IllegalArgumentException e) {
             throw new RuntimeException("Invalid value for enum " + KeystoreTypes.class.getSimpleName() + ": " + odeKeystoreType);
          }
@@ -129,7 +124,7 @@ public class SecurityController {
             is1.close();
             break;
             
-         case JKS:
+         default:
             if (Paths.get(odeKeystore).toFile().exists()) {// if keystore file exists, load it
                is1 = new FileInputStream(odeKeystore);
                keyStore.load(is1, password.toCharArray());
@@ -140,6 +135,9 @@ public class SecurityController {
                keyStore.store(keystoreStream, password.toCharArray());
                keystoreStream.close();
             }
+            this.keyStore = KeyStore.getInstance(
+                  this.keystoreType.name(), 
+                  providerCached());
             break;
          }
 
@@ -178,6 +176,12 @@ public class SecurityController {
       return keyStore;
 
    }
+   
+   @Bean
+   @DependsOn("keyStore")
+   KeyStore keyStoreCached() {
+      return this.keyStore;
+   }
 
    /**
     * Method to convert a X.509 certificate to IEEE 1609.2 certificate
@@ -196,7 +200,7 @@ public class SecurityController {
    @Bean
    @DependsOn("encryptionCipher")
    Cipher decryptionCipher(KeyPair keyPair) throws GeneralSecurityException {
-      Cipher cipher = Cipher.getInstance(ENCRYPTION_ALGORITHM, this.cryptoProvider.name());
+      Cipher cipher = Cipher.getInstance(CryptoProvider.ENCRYPTION_ALGORITHM, this.cryptoProvider.name());
       cipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate(), parameters);
       return cipher;
    }
@@ -204,7 +208,7 @@ public class SecurityController {
    @Bean
    @DependsOn("provider")
    Cipher encryptionCipher(KeyPair keyPair) throws GeneralSecurityException {
-      Cipher cipher = Cipher.getInstance(ENCRYPTION_ALGORITHM, provider);
+      Cipher cipher = Cipher.getInstance(CryptoProvider.ENCRYPTION_ALGORITHM, provider);
       cipher.init(Cipher.ENCRYPT_MODE, keyPair.getPublic());
       parameters = cipher.getParameters();
       return cipher;
@@ -220,22 +224,23 @@ public class SecurityController {
       // The keystore password is required to retrieve the entry
       KeyStore.ProtectionParameter param = new KeyStore.PasswordProtection(odekeystorePassword.toCharArray());
       PrivateKeyEntry prKE = (PrivateKeyEntry) keyStore.getEntry(odeKeyPairAlias, param);
-      KeyPair pair;
       if (prKE != null) {
          logger.info("Entry with alias {} found", odeKeyPairAlias);
          enrollmentCert = prKE.getCertificate();
    
          PublicKey pubKey = enrollmentCert.getPublicKey();
-         pair = new KeyPair(pubKey, prKE.getPrivateKey());
+         this.keyPair = new KeyPair(pubKey, prKE.getPrivateKey());
       } else {
          logger.info("Entry with alias {} NOT found. Generating a new key pair...", odeKeyPairAlias);
          
-         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KEYPAIR_GENERATION_ALGORITHM, provider.getName());
-         ECGenParameterSpec ecSpec = new ECGenParameterSpec(KEYPAIR_GENERATION_ALGORTHM_SPECS);
+         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(
+               ECDSAProvider.KEYPAIR_GENERATION_ALGORITHM);
+         ECGenParameterSpec ecSpec = new ECGenParameterSpec(
+               ECDSAProvider.KEYPAIR_GENERATION_ALGORTHM_SPECS);
          keyPairGenerator.initialize(ecSpec, secureRandom());
-         pair = keyPairGenerator.generateKeyPair();
+         this.keyPair = keyPairGenerator.generateKeyPair();
 
-         enrollmentCert = certificate(pair);
+         enrollmentCert = certificate(this.keyPair);
          Certificate[] certChain =  new Certificate[1];
          certChain[0] = enrollmentCert;
          
@@ -250,16 +255,16 @@ public class SecurityController {
          try {
             // Save the Certificate to the KeyStore
             logger.info("Storing Certificate {} to KeyStore...", odeKeyPairAlias);
-            keyStore.setKeyEntry(odeKeyPairAlias, pair.getPrivate(), odekeystorePassword.toCharArray(), certChain);
+            keyStore.setKeyEntry(odeKeyPairAlias, this.keyPair.getPrivate(), odekeystorePassword.toCharArray(), certChain);
             keyStore.store(keystoreStream, odekeystorePassword.toCharArray());
          } catch (Exception e) {
             logger.error("Exception while storing Certificate", e);
          }
       }
 
-      if (pair != null) {
+      if (this.keyPair != null) {
          
-         certificateLoader.setSeedPrivateKey(new SecureECPrivateKey(keyStore, pair.getPrivate()));
+         certificateLoader.setSeedPrivateKey(new SecureECPrivateKey(keyStore, this.keyPair.getPrivate()));
          // Note: cannot display private key from HSM
 //         ECPrivateKey ecPriKey = (ECPrivateKey) pair.getPrivate();
 //         logger.info("Enrollment Private Key [{}], [{}]: {}", 
@@ -267,17 +272,22 @@ public class SecurityController {
 //            pair.getPrivate().getAlgorithm(),
 //            CodecUtils.toHex(ecPriKey.getS().toByteArray()));
          
-         ECPublicKey ecPubKey = (ECPublicKey) pair.getPublic();
+         ECPublicKey ecPubKey = (ECPublicKey) this.keyPair.getPublic();
          this.pubKeyHexBytes = CodecUtils.toHex(ecPubKey.getW().getAffineX().toByteArray());
          logger.info("Enrollment Public Key [{}], [{}]: {}", 
-            pair.getPublic().getFormat(),
-            pair.getPublic().getAlgorithm(),
-            pubKeyHexBytes);
+               this.keyPair.getPublic().getFormat(),
+               this.keyPair.getPublic().getAlgorithm(),
+               pubKeyHexBytes);
       }
 
-      return pair;
+      return this.keyPair;
    }
 
+   @Bean
+   @DependsOn("keyPair")
+   KeyPair keyPairCached() {
+      return this.keyPair;
+   }
    /**
     * @param keyPair EC public/private key pair
     * @return
@@ -294,7 +304,7 @@ public class SecurityController {
       //generate a self-signed ECDSA certificate.
       Calendar expiry = Calendar.getInstance();
       Date notBefore = expiry.getTime();              // time from which certificate is valid
-      expiry.add(Calendar.DAY_OF_YEAR, 180);
+      expiry.add(Calendar.DAY_OF_YEAR, odeProperties.getSelfCertExpPeriodDays());
       Date notAfter = expiry.getTime();
       BigInteger serialNumber = BigInteger.valueOf(System.currentTimeMillis());     // serial number for certificate
       Certificate cert = null;
@@ -312,7 +322,7 @@ public class SecurityController {
             certGen.setNotAfter(notAfter);
             certGen.setSubjectDN(dnName);                       // note: same as issuer
             certGen.setPublicKey(keyPair.getPublic());
-            certGen.setSignatureAlgorithm(SIGNATURE_ALGORITHM);
+            certGen.setSignatureAlgorithm(ECDSAProvider.SIGNATURE_ALGORITHM);
             cert = certGen.generate(keyPair.getPrivate(), this.cryptoProvider.name());
             break;
          }
@@ -326,24 +336,13 @@ public class SecurityController {
 
    @Bean
    @DependsOn("keyPair")
-   Certificate enrollmentCert() {
-//      try {
-//         FileCertificateStore.load(
-//               new CryptoProvider(), 
-//               IEEE1609p2Message.getSelfCertificateFriendlyName(), 
-//               this.enrollmentCert.getEncoded());
-//      } catch (DecodeFailedException | EncodeFailedException | DecoderException | IOException
-//            | CryptoException | DecodeNotSupportedException | EncodeNotSupportedException | gov.usdot.cv.security.cert.CertificateException | CertificateEncodingException e) {
-//         // TODO Auto-generated catch block
-//         e.printStackTrace();
-//      }
-
-      return this.enrollmentCert;
+   Certificate enrollmentCertCached() {
+     return this.enrollmentCert;
    }
 
    @Bean
    Signature signingSignature(KeyPair keyPair) throws GeneralSecurityException {
-      Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM, provider.getName());
+      Signature signature = Signature.getInstance(ECDSAProvider.SIGNATURE_ALGORITHM, provider.getName());
       signature.initSign(keyPair.getPrivate(), secureRandom());
       return signature;
    }
@@ -383,12 +382,12 @@ public class SecurityController {
          
          switch (this.cryptoProvider) {
          case LunaProvider:
-            provider = new com.safenetinc.luna.provider.LunaProvider();
+            this.provider = new com.safenetinc.luna.provider.LunaProvider();
             addProvider(provider);
             addProvider(new BouncyCastleProvider()); // always add BC because we are using it for some things that Luna doesn't provide
             break;
          case BC:
-            provider = new BouncyCastleProvider();
+            this.provider = new BouncyCastleProvider();
             addProvider(provider);
             break;
          default:
@@ -399,9 +398,15 @@ public class SecurityController {
          logger.error("Exception caught during crypto provider loading", e);
       }
 
-      return provider;
+      return this.provider;
    }
 
+   @Bean
+   @DependsOn("provider")
+   Provider providerCached() {
+      return this.provider;
+   }
+   
    private void addProvider(Provider provider) throws Exception {
       try {
          if (java.security.Security.getProvider(provider.getName()) == null) {
@@ -426,7 +431,7 @@ public class SecurityController {
 
    @Bean
    Signature verificationSignature(KeyPair keyPair) throws GeneralSecurityException {
-      Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM, provider.getName());
+      Signature signature = Signature.getInstance(ECDSAProvider.SIGNATURE_ALGORITHM, provider.getName());
       signature.initVerify(keyPair.getPublic());
       return signature;
    }

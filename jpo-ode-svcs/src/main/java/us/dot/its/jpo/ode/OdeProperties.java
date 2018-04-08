@@ -161,17 +161,19 @@ public class OdeProperties implements EnvironmentAware {
    private String keystore;   
    private String keyPairAlias;
 
+   private int selfCertExpPeriodDays = 1095;                                // Default expiration period is 3 years 
+
    private String scmsCertsDir = "certs";                                   // Directory path to the location of the security files
    private String scmsEnrollmentDir = "certs/enrollment";                   // Directory path to the location of the enrollment files
    private String scmsRootCertFile = "certs/enrollment/root.oer";           //+ root.oer: IEEE 1609.2 root CA certificate encoded as OER
    private String scmsLocalCertChainFile = "certs/enrollment/LCCF.oer";     //+ LCCF.oer: current Local Certificate Chain File including ICA and PCA certificates.
    private String scmsLocalPolicyFile = "certs/enrollment/LPF.oer";         //+ LPF.oer: current Local Policy File
    private String scmsCertRevocationListFile = "certs/enrollment/CRL.oer";  //+ CRL.oer: current Certificate Revocation List
-   private String scmsRootTlsFile = "certs/enrollment/root.tls";            //+ root.tls: TLS (X.509) root certificate RA’s TLS cert chains to
-   private String scmsRaCertFile;             //  |           +RA.oer: RA’s 1609.2 certificate
-   private String scmsEcaCertFile;            //  |           +ECA.oer: ECA’s 1609.2 certificate
-   private String scmsEnrollmentCertFile;     //  |           +enrollment.oer:  (EE’s enrollment certificate, see enrollmentCert as part of the ECA response SignedEeEnrollmentCertResponse)
-   private String scmsPriKeyReconValueFile;   //  |           +enrollment.s:  (EE’s Private key reconstruction value, see privKeyReconstruction as part of the ECA response SignedEeEnrollmentCertResponse)
+   private String scmsRootTlsFile = "certs/enrollment/root.tls";            //+ root.tls: TLS (X.509) root certificate RAï¿½s TLS cert chains to
+   private String scmsRaCertFile;             //  |           +RA.oer: RAï¿½s 1609.2 certificate
+   private String scmsEcaCertFile;            //  |           +ECA.oer: ECAï¿½s 1609.2 certificate
+   private String scmsEnrollmentCertFile;     //  |           +enrollment.oer:  (EEï¿½s enrollment certificate, see enrollmentCert as part of the ECA response SignedEeEnrollmentCertResponse)
+   private String scmsPriKeyReconValueFile;   //  |           +enrollment.s:  (EEï¿½s Private key reconstruction value, see privKeyReconstruction as part of the ECA response SignedEeEnrollmentCertResponse)
    private String scmsApplicationCertFile;    //  Application certificate obtained by ODE
 
    //Security Services Module Properties
@@ -756,6 +758,14 @@ public class OdeProperties implements EnvironmentAware {
       this.uploadLocationSecurityEnrollmentDir = uploadLocationSecurityEnrollmentDir;
    }
 
+   public int getSelfCertExpPeriodDays() {
+      return selfCertExpPeriodDays;
+   }
+
+   public void setSelfCertExpPeriodDays(int selfCertExpPeriodDays) {
+      this.selfCertExpPeriodDays = selfCertExpPeriodDays;
+   }
+
    public String getScmsCertsDir() {
       return scmsCertsDir;
    }
@@ -861,4 +871,5 @@ public class OdeProperties implements EnvironmentAware {
    public void setSecuritySvcsSignatureUri(String securitySvcsSignatureUri) {
       this.securitySvcsSignatureUri = securitySvcsSignatureUri;
    }
+
 }
