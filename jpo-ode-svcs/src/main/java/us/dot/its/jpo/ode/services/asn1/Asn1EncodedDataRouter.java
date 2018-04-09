@@ -144,6 +144,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             logger.error("Unable to parse signed message response {}", e1);
          }
 
+         logger.debug("Sending message to RSUs...");
          asn1CommandManager.sendToRsus(travelerInfo, signedTim);
 
          if (travelerInfo.getSdw() != null) {

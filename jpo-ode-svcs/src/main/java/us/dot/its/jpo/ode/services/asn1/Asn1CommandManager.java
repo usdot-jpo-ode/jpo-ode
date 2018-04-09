@@ -126,7 +126,7 @@ public class Asn1CommandManager {
 
       RestTemplate template = new RestTemplate();
 
-      logger.info("Rest request: {}", entity);
+      logger.info("Security services module request: {}", entity);
 
       ResponseEntity<String> respEntity = template.postForEntity(signatureUri, entity, String.class);
 
@@ -193,7 +193,7 @@ public class Asn1CommandManager {
 
          outputXml = XmlUtils.toXmlS(root);
          
-         String encStr = buildEncodings(asd);
+         String encStr = buildEncodings();
          outputXml = outputXml.replace("<encodings_placeholder/>", encStr);
 
          // remove the surrounding <ObjectNode></ObjectNode>
@@ -204,17 +204,21 @@ public class Asn1CommandManager {
          logger.error("Parsing exception thrown while populating ASD structure: {}", e);
       }
 
-      logger.debug("Here is the fully crafted structure, I think this should go to the encoder again: {}", outputXml);
+      logger.debug("Fully crafted ASD to be encoded: {}", outputXml);
 
       return outputXml;
    }
    
-   private String buildEncodings(DdsAdvisorySituationData asd) throws JsonUtilsException, XmlUtilsException {
+   private String buildEncodings() throws JsonUtilsException, XmlUtilsException {
       ArrayNode encodings = JsonUtils.newArrayNode();
       encodings.add(addEncoding("AdvisorySituationData", "AdvisorySituationData", EncodingRule.UPER));
       ObjectNode encodingWrap = (ObjectNode) JsonUtils.newNode().set("wrap", encodings);
-      String encStr = XmlUtils.toXmlS(encodingWrap).replace("</wrap><wrap>", "").replace("<wrap>", "")
-            .replace("</wrap>", "").replace("<ObjectNode>", "<encodings>").replace("</ObjectNode>", "</encodings>");
+      String encStr = XmlUtils.toXmlS(encodingWrap)
+            .replace("</wrap><wrap>", "")
+            .replace("<wrap>", "")
+            .replace("</wrap>", "")
+            .replace("<ObjectNode>", "<encodings>")
+            .replace("</ObjectNode>", "</encodings>");
       return encStr;
    }
 
