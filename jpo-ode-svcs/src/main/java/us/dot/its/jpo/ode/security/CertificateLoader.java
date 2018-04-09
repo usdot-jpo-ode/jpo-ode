@@ -27,6 +27,8 @@ import gov.usdot.cv.security.cert.SecureECPrivateKey;
 import gov.usdot.cv.security.crypto.CryptoException;
 import gov.usdot.cv.security.crypto.CryptoProvider;
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.util.UtilException;
+import us.dot.its.jpo.ode.util.ZipUtils;
 
 public class CertificateLoader implements Runnable {
 
@@ -75,7 +77,7 @@ public class CertificateLoader implements Runnable {
        }
    }
 
-    public int loadAllCerts(Path zipFilePath) {
+    public int loadEnrollmentCerts(Path zipFilePath) {
        int count = 0;
        // Process certs
        logger.info("Loading certificates from: {}", zipFilePath);
@@ -83,38 +85,46 @@ public class CertificateLoader implements Runnable {
           // get the zipped file list entry
           ZipEntry entry = zis.getNextEntry();
 
+          //Load explicit and static files
+          ZipEntry enrollmentCertEntry = null;
+          ZipEntry privateKeyReconEntry = null;
           while (entry != null) {
                logger.debug("Processing {}", entry);
                if (entry.getName().endsWith("root.oer")) {
-                  loadCert(zis, entry, CertificateWrapper.getRootPublicCertificateFriendlyName());
+                  loadCert(zis, entry, CertificateWrapper.getRootPublicCertificateFriendlyName(), null, null);
                } else if (entry.getName().endsWith("ECA.oer")) {
-                  loadCert(zis, entry, CertificateWrapper.getEcaPublicCertificateFriendlyName());
+                  loadCert(zis, entry, CertificateWrapper.getEcaPublicCertificateFriendlyName(), null, null);
                } else if (entry.getName().endsWith("enrollment.oer")) {
-                  loadCert(zis, entry, CertificateWrapper.getEnrollmentPublicCertificateFriendlyName());
+                  enrollmentCertEntry = entry;
                } else if (entry.getName().endsWith("enrollment.s")) {
-                  loadS(zis, entry);
+                  privateKeyReconEntry = entry;
                } else if (entry.getName().endsWith("RA.oer")) {
-                  loadCert(zis, entry, CertificateWrapper.getRaPublicCertificateFriendlyName());
+                  loadCert(zis, entry, CertificateWrapper.getRaPublicCertificateFriendlyName(), null, null);
                }
                count++;
                entry = zis.getNextEntry();
            }
-           logger.debug("Loaded {} certificates from: {}", count, zipFilePath);
+          
+          if (enrollmentCertEntry != null && privateKeyReconEntry != null) {
+             loadCert(zis, entry, CertificateWrapper.getEnrollmentPublicCertificateFriendlyName(),
+                privateKeyReconEntry, seedPrivateKey);
+             count++;
+          }
+          logger.debug("Loaded {} certificates from: {}", count, zipFilePath);
        } catch (Exception e) {
            logger.error("Error loading some certifcates from " + zipFilePath, e);
        }
       return count;
    }
 
-    private void loadS(ZipInputStream zis, ZipEntry entry) {
-      // TODO Auto-generated method stub
-      
-   }
-
-   private boolean loadCert(ZipInputStream zis, ZipEntry entry, String name) 
-         throws CertificateException {
+   private boolean loadCert(ZipInputStream zis, ZipEntry entry, String name,
+      ZipEntry privateKeyReconEntry, 
+      SecureECPrivateKey seedPrivateKey) 
+         throws CertificateException, UtilException {
       logger.info("Loading trsuted certificate: {}", entry.getName());
-      return FileCertificateStore.load(new CryptoProvider(), name, entry, zis);
+      return FileCertificateStore.load(new CryptoProvider(), name, 
+         ZipUtils.readZipEntry(zis, entry), ZipUtils.readZipEntry(zis, privateKeyReconEntry),
+         seedPrivateKey);
    }
 
    public boolean loadCert(String name, Path certFilePath)
@@ -168,13 +178,7 @@ public class CertificateLoader implements Runnable {
           logger.error("Error loading some Enrollment certificates", e);
       }
  
-      // TODO
       // 2. Provision Application Certificate (https://wiki.campllc.org/display/SCP/Use+Case+13%3A+RSE+Application+Certificate+Provisioning)
-      /*
-       * At a high level, two steps are relevant:
-       *    1. Request Application Certificate
-       *    2. Download Application Certificate
-       */
       try {
          provisionApplicationCerts();
       } catch (Exception e) {
@@ -256,7 +260,13 @@ public class CertificateLoader implements Runnable {
        }
     }
 
-    private void provisionApplicationCerts() {
+    /**
+    *
+    * At a high level, two steps are relevant:
+    *    1. Request Application Certificate
+    *    2. Download Application Certificate
+    */
+   private void provisionApplicationCerts() {
       // TODO Auto-generated method stub
       
    }

@@ -77,4 +77,21 @@ public class ZipUtils {
          throw new UtilException("Error unziping file: " + zipFilePath, ex);
       }
    }
+   
+   public static byte[] readZipEntry(ZipInputStream zis, ZipEntry ze) throws UtilException {
+      byte[] buffer = new byte[(int) ze.getSize()];
+
+      try {
+         if (!ze.isDirectory()) { 
+            logger.debug("reading : " + ze.getName());
+
+            if (zis.read(buffer) != buffer.length) {
+               throw new UtilException("Unable to read zip entry: " + ze.getName());
+            }
+         }
+      } catch (Exception ex) {
+         throw new UtilException("Error unziping file: " + ze.getName(), ex);
+      }
+      return buffer;
+   }
 }
