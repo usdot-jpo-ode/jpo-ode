@@ -47,20 +47,6 @@ public class FileUploadControllerTest {
 
    @Before
    public void constructorShouldLaunchSevenThreads() {
-      new Expectations() {
-         {
-            mockOdeProperties.getUploadLocationRoot();
-            result = "testRootDir";
-            mockOdeProperties.getUploadLocationObuLogDir();
-            result = "testLogFileDir";
-
-            Executors.newCachedThreadPool();
-            result = mockExecutorService;
-
-            mockExecutorService.submit((Runnable) any);
-            times = 6;
-         }
-      };
       testFileUploadController = new FileUploadController(mockStorageService, mockOdeProperties,
             injectableSimpMessagingTemplate, "ABCD");
    }

@@ -38,7 +38,7 @@ public class ImporterDirectoryWatcherTest {
 
    @Capturing
    FileUtils capturingOdeFileUtils;
-   @Capturing
+   @Injectable
    ImporterProcessor capturingImporterProcessor;
    @Capturing
    Executors capturingExecutors;

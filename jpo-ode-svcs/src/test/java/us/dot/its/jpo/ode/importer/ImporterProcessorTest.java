@@ -29,7 +29,7 @@ import us.dot.its.jpo.ode.util.FileUtils;
 public class ImporterProcessorTest {
 
    @Tested
-   ImporterProcessor testImporterProcessor;
+   ObuLogFileImportProcessor testImporterProcessor;
 
    @Injectable
    OdeProperties injectableOdeProperties;
