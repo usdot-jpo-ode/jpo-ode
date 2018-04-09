@@ -111,7 +111,7 @@ public class SecurityController {
          try {
             this.keystoreType = KeystoreTypes.valueOf(odeKeystoreType);
             this.keyStore = KeyStore.getInstance(
-                  this.keystoreType.name(), providerCached());
+                  this.keystoreType.name(), provider);
          } catch (IllegalArgumentException e) {
             throw new RuntimeException("Invalid value for enum " + KeystoreTypes.class.getSimpleName() + ": " + odeKeystoreType);
          }
@@ -135,9 +135,6 @@ public class SecurityController {
                keyStore.store(keystoreStream, password.toCharArray());
                keystoreStream.close();
             }
-            this.keyStore = KeyStore.getInstance(
-                  this.keystoreType.name(), 
-                  providerCached());
             break;
          }
 
@@ -150,15 +147,6 @@ public class SecurityController {
             if (null != cert) {
                byte[] certBytes = cert.getEncoded();
                logger.debug("Certificate {}: {}", alias, CodecUtils.toHex(certBytes));
-// TODO Uncomment
-//               gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Certificate certificate;
-//               try {
-//                  certificate = convertX509CertToIEEE1609Dot2Cert(cert);
-//                  CertificateWrapper certificateWrapper = CertificateWrapper.fromCertificate(new CryptoProvider(), certificate);
-//                  CertificateManager.put(alias, certificateWrapper);
-//               } catch (Exception e) {
-//                  logger.error("Error converting cert from X.509 to IEEE 1609.2", e);
-//               }
             }
          }
       } catch (KeyStoreException kse) {
@@ -181,20 +169,6 @@ public class SecurityController {
    @DependsOn("keyStore")
    KeyStore keyStoreCached() {
       return this.keyStore;
-   }
-
-   /**
-    * Method to convert a X.509 certificate to IEEE 1609.2 certificate
-    * TODO This method should be added to CertificateWrapper class in jpo-security
-    * 
-    * @param cert X509 certificate
-    * @return equivalent IEEE 1609.2 certificate 
-    * @throws Exception
-    */
-   private gov.usdot.asn1.generated.ieee1609dot2.ieee1609dot2.Certificate
-         convertX509CertToIEEE1609Dot2Cert(Certificate cert) throws Exception {
-      // TODO Auto-generated method stub
-      throw new Exception("convertX509CertToIEEE1609Dot2Cert not implemented");
    }
 
    @Bean
@@ -336,8 +310,8 @@ public class SecurityController {
 
    @Bean
    @DependsOn("keyPair")
-   Certificate enrollmentCertCached() {
-     return this.enrollmentCert;
+   Certificate enrollmentCert() {
+      return this.enrollmentCert;
    }
 
    @Bean
@@ -364,13 +338,14 @@ public class SecurityController {
       return slotManager;
    }
 
-   @DependsOn("keyPair")
    @Bean
+   @DependsOn("keyPair")
    private String pubKeyHexBytes() {
       return pubKeyHexBytes;
    }
 
    @Bean
+   @DependsOn("slotManager")
    Provider provider (@Value("${ode.cryptoProvider}") String odeCryptoProvider) {
       
       try {
@@ -423,7 +398,6 @@ public class SecurityController {
    }
 
    @Bean
-   @DependsOn("provider")
    SecureRandom secureRandom() {
       CryptoProvider.initialize();
       return CryptoProvider.getSecureRandom();
@@ -435,59 +409,5 @@ public class SecurityController {
       signature.initVerify(keyPair.getPublic());
       return signature;
    }
-
-//   private void initFilePaths() {
-//      if (this.odeProperties.getScmsCertsDir() != null) {
-//         Path enrollmentDir;
-//         if (this.odeProperties.getScmsEnrollmentDir() == null) {
-//            enrollmentDir = Paths.get(this.odeProperties.getScmsCertsDir(), "enrollment");
-//            this.odeProperties.setScmsEnrollmentDir(enrollmentDir.toString());
-//         } else {
-//            enrollmentDir = Paths.get(this.odeProperties.getScmsEnrollmentDir());
-//         }
-//
-//         if (this.odeProperties.getScmsCertRevocationListFile() == null) {
-//            this.odeProperties.setScmsCertRevocationListFile(enrollmentDir.resolve("CRL.oer").toString());
-//         }
-//
-//         if (this.odeProperties.getScmsLocalCertChainFile() == null) {
-//            this.odeProperties.setScmsLocalCertChainFile(enrollmentDir.resolve("LCCF.oer").toString());
-//         }
-//
-//         if (this.odeProperties.getScmsLocalPolicyFile() == null) {
-//            this.odeProperties.setScmsLocalPolicyFile(enrollmentDir.resolve("LPF.oer").toString());
-//         }
-//
-//         if (this.odeProperties.getScmsRootCertFile() == null) {
-//            this.odeProperties.setScmsRootCertFile(enrollmentDir.resolve("root.oer").toString());
-//         }
-//
-//         if (this.odeProperties.getScmsRootTlsFile() == null) {
-//            this.odeProperties.setScmsRootTlsFile(enrollmentDir.resolve("root.tls.pem").toString());
-//         }
-//
-//         Path deviceDir = enrollmentDir.resolve(pubKeyHexBytes);
-//         File deviceDirFile = deviceDir.toFile();
-//         if (!deviceDirFile.exists()) {
-//            deviceDirFile.mkdirs();
-//         }
-//         if (this.odeProperties.getScmsEcaCertFile() == null) {
-//            this.odeProperties.setScmsEcaCertFile(deviceDir.resolve("ECA.oer").toString());
-//         }
-//  
-//         if (this.odeProperties.getScmsEnrollmentCertFile() == null) {
-//            this.odeProperties.setScmsEnrollmentCertFile(deviceDir.resolve("enrollment.oer").toString());
-//         }
-//  
-//         if (this.odeProperties.getScmsPriKeyReconValueFile() == null) {
-//            this.odeProperties.setScmsPriKeyReconValueFile(deviceDir.resolve("enrollment.s").toString());
-//         }
-//  
-//         if (this.odeProperties.getScmsRaCertFile() == null) {
-//            this.odeProperties.setScmsRaCertFile(deviceDir.resolve("RA.oer").toString());
-//         }
-//      }
-//   }
-
 
 }

@@ -351,12 +351,12 @@ final class CryptoController {
       EccP256CurvePoint recon = tbsReq.getContent().getEca_ee().getEeEcaCertRequest().getTbsData()
             .getVerifyKeyIndicator().getVerificationKey().getEcdsaNistP256();
       
-//      ECPublicKey enrollPubKey = (ECPublicKey) this.keyPair.getPublic();
-//      
-//      logger.debug("Enrollment Public Key [{}], [{}]: {}", 
-//         enrollPubKey.getFormat(),
-//         enrollPubKey.getAlgorithm(),
-//         CodecUtils.toHex(enrollPubKey.getW().getAffineX().toByteArray()));
+      ECPublicKey enrollPubKey = (ECPublicKey) this.keyPair.getPublic();
+      
+      logger.debug("Enrollment Public Key [{}], [{}]: {}", 
+         enrollPubKey.getFormat(),
+         enrollPubKey.getAlgorithm(),
+         CodecUtils.toHex(enrollPubKey.getW().getAffineX().toByteArray()));
       
       ECPublicKey extractedPubKey = (ECPublicKey) extractPublicKey(recon);
       
