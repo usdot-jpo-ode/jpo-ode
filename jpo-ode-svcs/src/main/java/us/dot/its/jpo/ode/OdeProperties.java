@@ -177,9 +177,7 @@ public class OdeProperties implements EnvironmentAware {
    private String scmsApplicationCertFile;    //  Application certificate obtained by ODE
 
    //Security Services Module Properties
-   private String securitySvcsSignatureUri;
-   private int securitySvcsPort = 8090;
-   private String securitySvcsSignatureEndpoint = "sign";
+   private String securitySvcsSignatureUri;   // The URI for signing data using the jpo-security-svcs module
 
 
    private int dataReceiptExpirationSeconds;
@@ -217,9 +215,9 @@ public class OdeProperties implements EnvironmentAware {
          }
          
          // URI for the security services /sign endpoint
-         securitySvcsSignatureUri = "http://" + dockerIp + ":" + securitySvcsPort + "/" + securitySvcsSignatureEndpoint;
-
-         
+         if (securitySvcsSignatureUri == null) {
+            securitySvcsSignatureUri = "http://" + dockerIp + ":8090/sign";
+         }
       }
    }
 
