@@ -56,6 +56,11 @@
         <artifactId>luna-provider</artifactId>
         <version>6.2.2-4</version>
     </dependency>
+    <dependency>
+        <groupId>com.safenet-inc</groupId>
+        <artifactId>safenet-provider</artifactId>
+        <version>5.4</version>
+    </dependency>
   </dependencies>
   <build>
     <pluginManagement>

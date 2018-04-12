@@ -59,11 +59,11 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 public class SecurityController {
 
    private enum Providers {
-      LunaProvider, BC
+      LunaProvider, BC, SAFENET
    };
    
    private enum KeystoreTypes {
-      Luna, JKS, BKS
+      Luna, JKS, BKS, CRYPTOKI
    };
    
    private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -84,7 +84,7 @@ public class SecurityController {
 
    private String odeKeystore;
 
-   private String keystorePassword;
+   private char[] keystorePassword;
 
    @Autowired
    protected SecurityController(OdeProperties odeProps) throws SecurityException {
@@ -125,36 +125,56 @@ public class SecurityController {
           */
          if (this.keystoreType != null) {
             try {
-               this.keyStore = KeyStore.getInstance(
-                     this.keystoreType.name(), provider);
+               this.keyStore = KeyStore.getInstance(this.keystoreType.name(), provider);
             } catch (IllegalArgumentException e) {
                throw new SecurityException("Invalid value for enum " + KeystoreTypes.class.getSimpleName() + ": " + this.keystoreType);
             }
             
             this.odeKeystore = odeProperties.getKeystore();
-            this.keystorePassword = odeProperties.getKeystorePassword();
-            if (odeKeystore != null && keystorePassword != null) {
-               InputStream is1 = null;
-               switch (this.keystoreType) {
-               case Luna:
-                  is1 = new ByteArrayInputStream(odeKeystore.getBytes());
-                  keyStore.load(is1, keystorePassword.toCharArray());
+            byte[] keystoreBytes = null;
+            if (odeKeystore != null) {
+               keystoreBytes = odeKeystore.getBytes();
+            }
+
+            String keystorePasswordStr = odeProperties.getKeystorePassword();
+            if (keystorePasswordStr != null) {
+               this.keystorePassword  = keystorePasswordStr.toCharArray();
+            }
+            
+            InputStream is1 = null;
+            switch (this.keystoreType) {
+            case CRYPTOKI:
+               if (keystoreBytes != null) {
+                  is1 = new ByteArrayInputStream(keystoreBytes);
+                  keyStore.load(is1, this.keystorePassword);
                   is1.close();
-                  break;
-                  
-               default:
-                  if (Paths.get(odeKeystore).toFile().exists()) {// if keystore file exists, load it
-                     is1 = new FileInputStream(odeKeystore);
-                     keyStore.load(is1, keystorePassword.toCharArray());
-                     is1.close();
-                  } else {// if no keystore file, create a new one
-                     FileOutputStream keystoreStream = new FileOutputStream(odeKeystore);
-                     keyStore.load(null, null);
-                     keyStore.store(keystoreStream, keystorePassword.toCharArray());
-                     keystoreStream.close();
-                  }
-                  break;
+               } else {
+                  keyStore.load(null, this.keystorePassword);
                }
+               break;
+               
+            case Luna:
+               if (keystoreBytes != null) {
+                  is1 = new ByteArrayInputStream(keystoreBytes);
+                  keyStore.load(is1, this.keystorePassword);
+                  is1.close();
+               } else {
+                  keyStore.load(null, this.keystorePassword);
+               }
+               break;
+               
+            default:
+               if (Paths.get(odeKeystore).toFile().exists()) {// if keystore file exists, load it
+                  is1 = new FileInputStream(odeKeystore);
+                  keyStore.load(is1, this.keystorePassword);
+                  is1.close();
+               } else {// if no keystore file, create a new one
+                  FileOutputStream keystoreStream = new FileOutputStream(odeKeystore);
+                  keyStore.load(null, null);
+                  keyStore.store(keystoreStream, this.keystorePassword);
+                  keystoreStream.close();
+               }
+               break;
             }
          }
          
@@ -232,7 +252,7 @@ public class SecurityController {
          KeyStore.ProtectionParameter param = null;
          if (keystorePassword != null) {
             // The keystore password is required to retrieve the entry
-            param = new KeyStore.PasswordProtection(keystorePassword.toCharArray());
+            param = new KeyStore.PasswordProtection(this.keystorePassword);
          }
          
          String odeKeyPairAlias = odeProperties.getKeyPairAlias();
@@ -260,17 +280,17 @@ public class SecurityController {
                
                // store the certificate and key in the KeyStore.
                OutputStream keystoreStream;
-               if (this.cryptoProvider.equals(Providers.LunaProvider)) {
-                  keystoreStream = null;
-               } else {
+               if (this.cryptoProvider.equals(Providers.BC)) {
                   keystoreStream = new FileOutputStream(odeKeystore);
+               } else {
+                  keystoreStream = null;
                }
                
                try {
                   // Save the Certificate to the KeyStore
                   logger.info("Storing Certificate {} to KeyStore...", odeKeyPairAlias);
-                  keyStore.setKeyEntry(odeKeyPairAlias, this.keyPair.getPrivate(), keystorePassword.toCharArray(), certChain);
-                  keyStore.store(keystoreStream, keystorePassword.toCharArray());
+                  keyStore.setKeyEntry(odeKeyPairAlias, this.keyPair.getPrivate(), this.keystorePassword, certChain);
+                  keyStore.store(keystoreStream, this.keystorePassword);
                } catch (Exception e) {
                   logger.error("Exception while storing Certificate", e);
                }
@@ -381,10 +401,17 @@ public class SecurityController {
       LunaSlotManager slotManager = null;
       if (!StringUtils.isEmptyOrWhitespace(odeProperties.getHsmTokenLabel()) && 
           !StringUtils.isEmptyOrWhitespace(odeProperties.getKeystorePassword())) {
-         if (this.cryptoProvider == Providers.LunaProvider) {
+         switch (this.cryptoProvider) {
+         case LunaProvider:
             slotManager = LunaSlotManager.getInstance();
             slotManager.login(odeProperties.getHsmTokenLabel(), odeProperties.getKeystorePassword());
             com.safenetinc.luna.LunaSlotManager.getInstance().logout();
+
+         case SAFENET:
+            break;
+            
+         default:
+            break;
          }
       }
       
@@ -404,6 +431,11 @@ public class SecurityController {
       try {
          if (this.cryptoProvider != null) {
             switch (this.cryptoProvider) {
+            case SAFENET:
+               this.provider = new au.com.safenet.crypto.provider.SAFENETProvider();
+               addProvider(provider);
+               addProvider(new BouncyCastleProvider()); // always add BC because we are using it for some things that Luna doesn't provide
+               break;
             case LunaProvider:
                this.provider = new com.safenetinc.luna.provider.LunaProvider();
                addProvider(provider);
