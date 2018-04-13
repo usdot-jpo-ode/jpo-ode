@@ -189,9 +189,9 @@ public class OdeProperties implements EnvironmentAware {
          }
          
          // URI for the security services /sign endpoint
-         securitySvcsSignatureUri = "http://" + dockerIp + ":" + securitySvcsPort + "/" + securitySvcsSignatureEndpoint;
-
-         
+         if (securitySvcsSignatureUri == null) {
+            securitySvcsSignatureUri = "http://" + dockerIp + ":" + securitySvcsPort + "/" + securitySvcsSignatureEndpoint;
+         }
       }
    }
 
