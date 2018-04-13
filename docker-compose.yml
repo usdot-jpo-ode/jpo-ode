@@ -167,7 +167,7 @@ services:
      - kafka
     links:
      - kafka
-  jpo-security-svcs:
+  sec:
     build: ./jpo-security-svcs
     ports:
      - "8090:8090"
