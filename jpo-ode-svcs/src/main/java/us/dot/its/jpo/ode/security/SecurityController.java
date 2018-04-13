@@ -9,7 +9,6 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.nio.file.Paths;
 import java.security.AlgorithmParameters;
-import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -37,10 +36,11 @@ import javax.crypto.Cipher;
 import javax.security.auth.x500.X500Principal;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.x509.X509V3CertificateGenerator;
+import org.bouncycastle.x509.X509V1CertificateGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Controller;
@@ -55,6 +55,7 @@ import gov.usdot.cv.security.crypto.ECDSAProvider;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
+@SuppressWarnings("deprecation")
 @Controller
 public class SecurityController {
 
@@ -71,42 +72,20 @@ public class SecurityController {
    private OdeProperties odeProperties;
 
    private Providers cryptoProvider;
-   private KeystoreTypes keystoreType;
    private KeyStore keyStore;
-   private KeyPair keyPair;
+   private KeyPair seedKeyPair;
    private AlgorithmParameters parameters;
-   private Certificate enrollmentCert;
+   private Certificate seedCert;
    private Provider provider;
 
    private String pubKeyHexBytes;
 
    private CertificateLoader certificateLoader;
 
-   private String odeKeystore;
-
-   private char[] keystorePassword;
-
    @Autowired
    protected SecurityController(OdeProperties odeProps) throws SecurityException {
       super();
       this.odeProperties = odeProps;
-      String odeCryptoProvider = odeProperties.getCryptoProvider();
-      if (odeCryptoProvider != null) {
-         try {
-            this.cryptoProvider = Providers.valueOf(odeCryptoProvider );
-         } catch (IllegalArgumentException e) {
-            throw new SecurityException("Invalid value for enum " + Providers.class.getSimpleName() + ": " + odeCryptoProvider);
-         }
-      }
-      
-      String odeKeystoreType = odeProperties.getKeystoreType();
-      if (odeKeystoreType != null) {
-         try {
-            this.keystoreType = KeystoreTypes.valueOf(odeKeystoreType);
-         } catch (IllegalArgumentException e) {
-            throw new SecurityException("Invalid value for enum " + KeystoreTypes.class.getSimpleName() + ": " + odeKeystoreType);
-         }
-      }
       
       certificateLoader = new CertificateLoader(odeProps);
       Executors.newSingleThreadExecutor().submit(certificateLoader);
@@ -114,95 +93,99 @@ public class SecurityController {
 
    @Bean
    @DependsOn("provider")
-   KeyStore keyStore() throws SecurityException {
+   KeyStore keyStore(
+      @Value("${ode.keystoreType}") String odeKeystoreType,
+      @Value("${ode.keystore}") String odeKeystore,
+      @Value("${ode.keystorePassword}") String odeKeystorePassword) throws SecurityException {
 
-      try {
-         /*
-          * Note: could also use a keystore file, which contains the token label
-          * or slot no. to use. Load that via "new FileInputStream(ksFileName)"
-          * instead of ByteArrayInputStream. Save objects to the keystore via a
-          * FileOutputStream.
-          */
-         if (this.keystoreType != null) {
+      if (odeKeystoreType != null && !StringUtils.isEmptyOrWhitespace(odeKeystoreType)) {
+         try {
+            KeystoreTypes keystoreType = KeystoreTypes.valueOf(odeKeystoreType);
+            /*
+             * Note: could also use a keystore file, which contains the token label
+             * or slot no. to use. Load that via "new FileInputStream(ksFileName)"
+             * instead of ByteArrayInputStream. Save objects to the keystore via a
+             * FileOutputStream.
+             */
             try {
-               this.keyStore = KeyStore.getInstance(this.keystoreType.name(), provider);
+               this.keyStore = KeyStore.getInstance(keystoreType.name(), provider);
             } catch (IllegalArgumentException e) {
-               throw new SecurityException("Invalid value for enum " + KeystoreTypes.class.getSimpleName() + ": " + this.keystoreType);
+               throw new SecurityException("Invalid value for enum " + KeystoreTypes.class.getSimpleName() + ": " + keystoreType, e);
             }
             
-            this.odeKeystore = odeProperties.getKeystore();
             byte[] keystoreBytes = null;
-            if (odeKeystore != null) {
+            if (odeKeystore != null && !StringUtils.isEmptyOrWhitespace(odeKeystore)) {
                keystoreBytes = odeKeystore.getBytes();
             }
 
-            String keystorePasswordStr = odeProperties.getKeystorePassword();
-            if (keystorePasswordStr != null) {
-               this.keystorePassword  = keystorePasswordStr.toCharArray();
+            char[] keystorePassword = null;
+            if (odeKeystorePassword != null && !StringUtils.isEmptyOrWhitespace(odeKeystorePassword)) {
+               keystorePassword  = odeKeystorePassword.toCharArray();
             }
             
             InputStream is1 = null;
-            switch (this.keystoreType) {
+            switch (keystoreType) {
             case CRYPTOKI:
                if (keystoreBytes != null) {
                   is1 = new ByteArrayInputStream(keystoreBytes);
-                  keyStore.load(is1, this.keystorePassword);
+                  keyStore.load(is1, keystorePassword);
                   is1.close();
                } else {
-                  keyStore.load(null, this.keystorePassword);
+                  keyStore.load(null, keystorePassword);
                }
                break;
                
             case Luna:
                if (keystoreBytes != null) {
                   is1 = new ByteArrayInputStream(keystoreBytes);
-                  keyStore.load(is1, this.keystorePassword);
+                  keyStore.load(is1, keystorePassword);
                   is1.close();
                } else {
-                  keyStore.load(null, this.keystorePassword);
+                  keyStore.load(null, keystorePassword);
                }
                break;
                
             default:
                if (Paths.get(odeKeystore).toFile().exists()) {// if keystore file exists, load it
                   is1 = new FileInputStream(odeKeystore);
-                  keyStore.load(is1, this.keystorePassword);
+                  keyStore.load(is1, keystorePassword);
                   is1.close();
                } else {// if no keystore file, create a new one
                   FileOutputStream keystoreStream = new FileOutputStream(odeKeystore);
                   keyStore.load(null, null);
-                  keyStore.store(keystoreStream, this.keystorePassword);
+                  keyStore.store(keystoreStream, keystorePassword);
                   keystoreStream.close();
                }
                break;
             }
-         }
-         
 
-         if (keyStore != null) {
-            Enumeration<String> aliases = keyStore.aliases();
-   
-            while (aliases.hasMoreElements()) {
-               String alias = aliases.nextElement();
-               logger.info("KeyStore entryalias: {}", alias);
-               Certificate cert = keyStore.getCertificate(alias);
-               if (null != cert) {
-                  byte[] certBytes = cert.getEncoded();
-                  logger.debug("Certificate {}: {}", alias, CodecUtils.toHex(certBytes));
+            if (keyStore != null) {
+               Enumeration<String> aliases = keyStore.aliases();
+      
+               while (aliases.hasMoreElements()) {
+                  String alias = aliases.nextElement();
+                  logger.info("KeyStore entryalias: {}", alias);
+                  Certificate cert = keyStore.getCertificate(alias);
+                  if (null != cert) {
+                     byte[] certBytes = cert.getEncoded();
+                     logger.debug("Certificate {}: {}", alias, CodecUtils.toHex(certBytes));
+                  }
                }
             }
+         } catch (IllegalArgumentException e) {
+            throw new SecurityException("Invalid value for enum " + KeystoreTypes.class.getSimpleName() + ": " + odeKeystoreType, e);
+         } catch (KeyStoreException kse) {
+            throw new SecurityException("Unable to create keystore object", kse);
+         } catch (NoSuchAlgorithmException nsae) {
+            throw new SecurityException("Unexpected NoSuchAlgorithmException while loading keystore", nsae);
+         } catch (CertificateException e) {
+            logger.error("Unexpected CertificateException while loading keystore", e);
+         } catch (IOException e) {
+            // this should never happen
+            throw new SecurityException("Unexpected IOException while loading keystore.", e);
+         } catch (Exception e) {
+            throw new SecurityException("Error loading Keystore", e);
          }
-      } catch (KeyStoreException kse) {
-         throw new SecurityException("Unable to create keystore object", kse);
-      } catch (NoSuchAlgorithmException nsae) {
-         throw new SecurityException("Unexpected NoSuchAlgorithmException while loading keystore", nsae);
-      } catch (CertificateException e) {
-         logger.error("Unexpected CertificateException while loading keystore", e);
-      } catch (IOException e) {
-         // this should never happen
-         throw new SecurityException("Unexpected IOException while loading keystore.", e);
-      } catch (Exception e) {
-         throw new SecurityException("Error loading Keystore", e);
       }
       return keyStore;
 
@@ -247,59 +230,62 @@ public class SecurityController {
 
    @Bean
    @DependsOn("keyStore")
-   KeyPair keyPair() throws SecurityException {
+   KeyPair keyPair(
+      @Value("${ode.keyPairAlias}") String odeKeyPairAlias,
+      @Value("${ode.keystorePassword}") String odeKeystorePassword,
+      @Value("${ode.keystore}") String odeKeystore) throws SecurityException {
       try {
          KeyStore.ProtectionParameter param = null;
-         if (keystorePassword != null) {
+         char[] keystorePassword = null;
+         if (odeKeystorePassword != null && !StringUtils.isEmptyOrWhitespace(odeKeystorePassword)) {
+            keystorePassword = odeKeystorePassword.toCharArray();
             // The keystore password is required to retrieve the entry
-            param = new KeyStore.PasswordProtection(this.keystorePassword);
+            param = new KeyStore.PasswordProtection(keystorePassword);
          }
          
-         String odeKeyPairAlias = odeProperties.getKeyPairAlias();
-         if (odeKeyPairAlias != null) {
+         KeyPair keyPair = null;
+         if (odeKeyPairAlias != null && !StringUtils.isEmptyOrWhitespace(odeKeyPairAlias)) {
             PrivateKeyEntry prKE = (PrivateKeyEntry) keyStore.getEntry(odeKeyPairAlias , param);
             if (prKE != null) {
                logger.info("Entry with alias {} found", odeKeyPairAlias);
-               enrollmentCert = prKE.getCertificate();
+               seedCert = prKE.getCertificate();
          
-               PublicKey pubKey = enrollmentCert.getPublicKey();
-               this.keyPair = new KeyPair(pubKey, prKE.getPrivateKey());
+               PublicKey pubKey = seedCert.getPublicKey();
+               keyPair = new KeyPair(pubKey, prKE.getPrivateKey());
             } else {
                logger.info("Entry with alias {} NOT found. Generating a new key pair...", odeKeyPairAlias);
                
-               KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(
+               KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance( 
                      ECDSAProvider.KEYPAIR_GENERATION_ALGORITHM);
                ECGenParameterSpec ecSpec = new ECGenParameterSpec(
                      ECDSAProvider.KEYPAIR_GENERATION_ALGORTHM_SPECS);
                keyPairGenerator.initialize(ecSpec, secureRandom());
-               this.keyPair = keyPairGenerator.generateKeyPair();
+               keyPair = keyPairGenerator.generateKeyPair();
       
-               enrollmentCert = certificate(this.keyPair);
+               seedCert = certificate(keyPair);
                Certificate[] certChain =  new Certificate[1];
-               certChain[0] = enrollmentCert;
+               certChain[0] = seedCert;
                
                // store the certificate and key in the KeyStore.
-               OutputStream keystoreStream;
-               if (this.cryptoProvider.equals(Providers.BC)) {
+               OutputStream keystoreStream = null;
+               if (this.cryptoProvider.equals(Providers.BC) && !StringUtils.isEmptyOrWhitespace(odeKeystore)) {
                   keystoreStream = new FileOutputStream(odeKeystore);
-               } else {
-                  keystoreStream = null;
                }
                
                try {
                   // Save the Certificate to the KeyStore
-                  logger.info("Storing Certificate {} to KeyStore...", odeKeyPairAlias);
-                  keyStore.setKeyEntry(odeKeyPairAlias, this.keyPair.getPrivate(), this.keystorePassword, certChain);
-                  keyStore.store(keystoreStream, this.keystorePassword);
+                  logger.info("Storing seed Certificate {} to KeyStore...", odeKeyPairAlias);
+                  keyStore.setKeyEntry(odeKeyPairAlias, keyPair.getPrivate(), keystorePassword, certChain);
+                  keyStore.store(keystoreStream, keystorePassword);
                } catch (Exception e) {
                   logger.error("Exception while storing Certificate", e);
                }
             }
          }
          
-         if (this.keyPair != null) {
+         if (keyPair != null) {
             
-            certificateLoader.setSeedPrivateKey(new SecureECPrivateKey(keyStore, this.keyPair.getPrivate()));
+            certificateLoader.setSeedPrivateKey(new SecureECPrivateKey(keyStore, keyPair.getPrivate()));
             // Note: cannot display private key from HSM
    //         ECPrivateKey ecPriKey = (ECPrivateKey) pair.getPrivate();
    //         logger.info("Enrollment Private Key [{}], [{}]: {}", 
@@ -307,15 +293,18 @@ public class SecurityController {
    //            pair.getPrivate().getAlgorithm(),
    //            CodecUtils.toHex(ecPriKey.getS().toByteArray()));
             
-            ECPublicKey ecPubKey = (ECPublicKey) this.keyPair.getPublic();
+            ECPublicKey ecPubKey = (ECPublicKey) keyPair.getPublic();
             this.pubKeyHexBytes = CodecUtils.toHex(ecPubKey.getW().getAffineX().toByteArray());
             logger.info("Enrollment Public Key [{}], [{}]: {}", 
-                  this.keyPair.getPublic().getFormat(),
-                  this.keyPair.getPublic().getAlgorithm(),
+                  keyPair.getPublic().getFormat(),
+                  keyPair.getPublic().getAlgorithm(),
                   pubKeyHexBytes);
          }
    
-         return this.keyPair;
+         if (this.seedKeyPair == null) {
+            this.seedKeyPair = keyPair;
+         }
+         return keyPair;
       } catch (Exception e) {
          throw new SecurityException("Error key pair!", e);
       }
@@ -323,8 +312,8 @@ public class SecurityController {
 
    @Bean
    @DependsOn("keyPair")
-   KeyPair keyPairCached() {
-      return this.keyPair;
+   KeyPair seedKeyPair() {
+      return this.seedKeyPair;
    }
    /**
     * @param keyPair EC public/private key pair
@@ -336,7 +325,6 @@ public class SecurityController {
     * @throws InvalidKeyException 
     * @throws CertificateEncodingException 
     */
-   @SuppressWarnings("deprecation")
    private Certificate certificate(KeyPair keyPair) throws SecurityException {
 
       //generate a self-signed ECDSA certificate.
@@ -351,8 +339,8 @@ public class SecurityController {
          case LunaProvider:
             cert = LunaCertificateX509.SelfSign(keyPair, "CN=SCMS Enrollment, L=DC, C=US", serialNumber, notBefore, notAfter);
             break;
-         case BC:
-            X509V3CertificateGenerator certGen = new X509V3CertificateGenerator();
+         default:
+            X509V1CertificateGenerator certGen = new X509V1CertificateGenerator();
             X500Principal              dnName = new X500Principal("CN=SCMS Enrollment, L=DC, C=US");
             certGen.setSerialNumber(serialNumber);
             certGen.setIssuerDN(dnName);
@@ -360,7 +348,7 @@ public class SecurityController {
             certGen.setNotAfter(notAfter);
             certGen.setSubjectDN(dnName);                       // note: same as issuer
             certGen.setPublicKey(keyPair.getPublic());
-            certGen.setSignatureAlgorithm(ECDSAProvider.SIGNATURE_ALGORITHM);
+            certGen.setSignatureAlgorithm(ECDSAProvider.SIGNATURE_ALGORITHM_STD);
             cert = certGen.generate(keyPair.getPrivate(), this.cryptoProvider.name());
             break;
          }
@@ -376,18 +364,22 @@ public class SecurityController {
 
    @Bean
    @DependsOn("keyPair")
-   Certificate enrollmentCert() {
-      return this.enrollmentCert;
+   Certificate seedCertificate() {
+      return this.seedCert;
    }
 
    @Bean
    Signature signingSignature(KeyPair keyPair) throws SecurityException {
       Signature signature = null;
       try {
-         if (provider != null) {
-            signature = Signature.getInstance(ECDSAProvider.SIGNATURE_ALGORITHM, provider);
-            signature.initSign(keyPair.getPrivate(), secureRandom());
+      if (provider != null) {
+         if (provider.getName().equals(Providers.LunaProvider)) {
+            signature = Signature.getInstance(ECDSAProvider.SIGNATURE_ALGORITHM_LUNA, provider);
+         } else {
+            signature = Signature.getInstance(ECDSAProvider.SIGNATURE_ALGORITHM_STD, provider);
          }
+         signature.initSign(keyPair.getPrivate(), secureRandom());
+      }
       } catch (Exception e) {
          throw new SecurityException("Error initializing signer!", e);
       }
@@ -396,26 +388,37 @@ public class SecurityController {
 
    @Bean(destroyMethod = "logout")
    @DependsOn("secureRandom")
-   LunaSlotManager slotManager() {
+   LunaSlotManager slotManager(
+      @Value("${ode.hsmTokenLabel}") String tokenLabel,
+      @Value("${ode.keystorePassword}") String password,
+      @Value("${ode.cryptoProvider}") String cryptoProvider) {
       
-      LunaSlotManager slotManager = null;
-      if (!StringUtils.isEmptyOrWhitespace(odeProperties.getHsmTokenLabel()) && 
-          !StringUtils.isEmptyOrWhitespace(odeProperties.getKeystorePassword())) {
-         switch (this.cryptoProvider) {
-         case LunaProvider:
-            slotManager = LunaSlotManager.getInstance();
-            slotManager.login(odeProperties.getHsmTokenLabel(), odeProperties.getKeystorePassword());
-            com.safenetinc.luna.LunaSlotManager.getInstance().logout();
+      try {
+         LunaSlotManager slotManager = null;
+         if (!StringUtils.isEmptyOrWhitespace(tokenLabel) && 
+             !StringUtils.isEmptyOrWhitespace(password) &&
+             !StringUtils.isEmptyOrWhitespace(cryptoProvider)) {
+            this.cryptoProvider = Providers.valueOf(cryptoProvider );
+            switch (this.cryptoProvider) {
+            case LunaProvider:
+               slotManager = LunaSlotManager.getInstance();
+               slotManager.login(odeProperties.getHsmTokenLabel(), odeProperties.getKeystorePassword());
+               com.safenetinc.luna.LunaSlotManager.getInstance().logout();
 
-         case SAFENET:
-            break;
-            
-         default:
-            break;
+            case SAFENET:
+               break;
+               
+            default:
+               break;
+            }
          }
+         
+         return slotManager;
+      } catch (IllegalArgumentException e) {
+         throw new SecurityException("Invalid value for enum " + Providers.class.getSimpleName() + ": " + cryptoProvider, e);
+      } catch (Exception e) {
+         throw new SecurityException("Error initializing Slot Manager!", e);
       }
-      
-      return slotManager;
    }
 
    @Bean
@@ -426,10 +429,12 @@ public class SecurityController {
 
    @Bean
    @DependsOn("slotManager")
-   Provider provider () throws SecurityException {
+   Provider provider (@Value("${ode.cryptoProvider}") String odeCryptoProvider) 
+      throws SecurityException {
       
       try {
-         if (this.cryptoProvider != null) {
+         if (odeCryptoProvider != null && !StringUtils.isEmptyOrWhitespace(odeCryptoProvider)) {
+            this.cryptoProvider = Providers.valueOf(odeCryptoProvider );
             switch (this.cryptoProvider) {
             case SAFENET:
                this.provider = new au.com.safenet.crypto.provider.SAFENETProvider();
@@ -449,6 +454,8 @@ public class SecurityController {
                throw new SecurityException("ode.cryptoProvider not defined.");
             }
          }         
+      } catch (IllegalArgumentException e) {
+         throw new SecurityException("Invalid value for enum " + Providers.class.getSimpleName() + ": " + odeCryptoProvider, e);
       } catch (Exception e) {
          throw new SecurityException("Exception caught during crypto provider loading", e);
       }
@@ -462,7 +469,7 @@ public class SecurityController {
       return this.provider;
    }
    
-   private void addProvider(Provider provider) throws Exception {
+   private void addProvider(Provider provider) throws SecurityException  {
       try {
          if (java.security.Security.getProvider(provider.getName()) == null) {
             // removing the provider is only necessary if it is already
@@ -483,11 +490,19 @@ public class SecurityController {
    }
 
    @Bean
-   Signature verificationSignature(KeyPair keyPair) throws GeneralSecurityException {
+   Signature verificationSignature(KeyPair keyPair) throws SecurityException {
       Signature signature = null;
-      if (provider != null) {
-         signature = Signature.getInstance(ECDSAProvider.SIGNATURE_ALGORITHM, provider);
-         signature.initVerify(keyPair.getPublic());
+      try {
+         if (provider != null) {
+            if (this.provider.getName().equals(Providers.LunaProvider)) {
+               signature = Signature.getInstance(ECDSAProvider.SIGNATURE_ALGORITHM_LUNA, provider);
+            } else {
+               signature = Signature.getInstance(ECDSAProvider.SIGNATURE_ALGORITHM_STD, provider);
+            }
+            signature.initVerify(keyPair.getPublic());
+         }
+      } catch (Exception e) {
+         throw new SecurityException("Error initializing signer!", e);
       }
       return signature;
    }

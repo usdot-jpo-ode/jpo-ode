@@ -201,7 +201,7 @@ final class CryptoController {
    @Autowired
    CryptoController(
          @Qualifier("keyStoreCached") KeyStore keyStore,
-         @Qualifier("keyPairCached") KeyPair keyPair,
+         @Qualifier("seedKeyPair") KeyPair keyPair,
          @Qualifier("decryptionCipher") Cipher decryptionCipher,
          @Qualifier("encryptionCipher") Cipher encryptionCipher,
          @Qualifier("signingSignature") Signature signingSignature,
@@ -386,7 +386,7 @@ final class CryptoController {
    private PublicKey extractPublicKey(EccP256CurvePoint pubKeyCurvePoint)
          throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException, CryptoException {
       ECPublicKeyParameters pubKeyParams = provider.getECDSAProvider().decodePublicKey(pubKeyCurvePoint);
-      ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec("prime256v1");
+      ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec(ECDSAProvider.KEYPAIR_GENERATION_ALGORTHM_SPECS);
       ECPublicKeySpec pubKeySpec = new ECPublicKeySpec(pubKeyParams.getQ(), spec);
       KeyFactory keyFactory = KeyFactory.getInstance("ECDSA", "BC");
       PublicKey pubKey = keyFactory.generatePublic(pubKeySpec);
