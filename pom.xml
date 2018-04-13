@@ -19,6 +19,7 @@
     <module>jpo-ode-svcs</module>
     <module>jpo-ode-plugins</module>
     <module>jpo-ode-common</module>
+    <module>jpo-security</module>
     <module>jpo-security-svcs</module>
   </modules>
 

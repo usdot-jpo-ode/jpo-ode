@@ -11,6 +11,7 @@ import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
 import us.dot.its.jpo.ode.traveler.TimController.TimControllerException;
+import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
@@ -130,28 +131,34 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
          JSONObject mfObj = dataObj.getJSONObject("MessageFrame");
 
-         String encodedTim = mfObj.getString("bytes");
-         logger.debug("Encoded message: {}", encodedTim);
+         String hexEncodedTim = mfObj.getString("bytes");
+         logger.debug("Encoded message: {}", hexEncodedTim);
 
-         logger.debug("Sending message for signature!");
-         String signedResponse = asn1CommandManager.sendForSignature(encodedTim);
-         logger.debug("Message signed!");
-
-         String signedTim = null;
-         try {
-            signedTim = JsonUtils.toJSONObject(signedResponse).getString("result");
-         } catch (JsonUtilsException e1) {
-            logger.error("Unable to parse signed message response {}", e1);
+         if (odeProperties.getSecuritySvcsSignatureUri() != null &&
+             !odeProperties.getSecuritySvcsSignatureUri().equalsIgnoreCase("UNSECURED")) {
+            logger.debug("Sending message for signature!");
+            String base64EncodedTim = CodecUtils.toBase64(
+               CodecUtils.fromHex(hexEncodedTim));
+            String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim );
+            logger.debug("Message signed!");
+   
+            try {
+               hexEncodedTim = CodecUtils.toHex(
+                  CodecUtils.fromBase64(
+                     JsonUtils.toJSONObject(signedResponse).getString("result")));
+            } catch (JsonUtilsException e1) {
+               logger.error("Unable to parse signed message response {}", e1);
+            }
          }
-
+         
          logger.debug("Sending message to RSUs...");
-         asn1CommandManager.sendToRsus(travelerInfo, signedTim);
+         asn1CommandManager.sendToRsus(travelerInfo, hexEncodedTim);
 
          if (travelerInfo.getSdw() != null) {
             // Case 2 only
 
             logger.debug("Publishing message for round 2 encoding!");
-            String xmlizedMessage = asn1CommandManager.packageSignedTimIntoAsd(travelerInfo, signedTim);
+            String xmlizedMessage = asn1CommandManager.packageSignedTimIntoAsd(travelerInfo, hexEncodedTim);
 
             stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlizedMessage);
          }
