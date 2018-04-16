@@ -24,7 +24,7 @@ public class TravelerMessageFromHumanToAsnConverter {
    public static final String BOOLEAN_OBJECT_TRUE = "BOOLEAN_OBJECT_TRUE";
    public static final String BOOLEAN_OBJECT_FALSE = "BOOLEAN_OBJECT_FALSE";
 
-   public static void changeTravelerInformationToAsnValues(JsonNode timData) throws JsonUtilsException {
+   public static ObjectNode changeTravelerInformationToAsnValues(JsonNode timData) throws JsonUtilsException {
       // msgCnt MsgCount,
       // timeStamp MinuteOfTheYear OPTIONAL
       // packetID UniqueMSGID OPTIONAL
@@ -49,18 +49,18 @@ public class TravelerMessageFromHumanToAsnConverter {
       // urlB is optional but does not need replacement
 
       // dataFrames are required
-      JsonNode dataFrames = timDataObjectNode.get("dataframes");
-      if (dataFrames == null) {
-         timDataObjectNode.set("dataFrames", JsonUtils.newNode());
-      } else {
-         replaceDataFrames(dataFrames);
-         timDataObjectNode.set("dataFrames", dataFrames);
+      timDataObjectNode.set("dataFrames", transformDataFrames(timDataObjectNode.get("dataframes")));
          timDataObjectNode.remove("dataframes");
+
+      return replacedTim;
+
       }
       
-   }
+   public static JsonNode transformDataFrames(JsonNode dataFrames) throws JsonUtilsException {
 
-   public static void replaceDataFrames(JsonNode dataFrames) throws JsonUtilsException {
+      if (dataFrames == null) {
+         return JsonUtils.newNode();
+   }
 
       ArrayNode replacedDataFrames = JsonUtils.newNode().arrayNode();
 
@@ -69,11 +69,13 @@ public class TravelerMessageFromHumanToAsnConverter {
 
          while (dataFramesIter.hasNext()) {
             ObjectNode oldFrame = (ObjectNode) dataFramesIter.next();
-            // wrap each data frame inside a TravelerDataFrame
             replaceDataFrame(oldFrame);
+            // wrap each data frame inside a TravelerDataFrame
             replacedDataFrames.add(JsonUtils.newObjectNode("TravelerDataFrame", oldFrame));
          }
       }
+
+      return replacedDataFrames;
    }
 
    public static void replaceDataFrame(ObjectNode dataFrame) throws JsonUtilsException {
