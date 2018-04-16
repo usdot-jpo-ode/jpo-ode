@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
+
 @ConfigurationProperties("ode")
 @PropertySource("classpath:application.properties")
 public class OdeProperties implements EnvironmentAware {
@@ -41,6 +43,14 @@ public class OdeProperties implements EnvironmentAware {
    private String externalIpv4 = "";
    private String externalIpv6 = "";
    private int rsuSrmSlots = 100; // number of "store and repeat message" indicies for RSU TIMs
+   
+   
+   /*
+    * Security Services Module Properties
+    */
+   private String securitySvcsSignatureUri;
+   private int securitySvcsPort = 8090;
+   private String securitySvcsSignatureEndpoint = "sign";
 
    // File import properties
    private String uploadLocationRoot = "uploads";
@@ -149,8 +159,8 @@ public class OdeProperties implements EnvironmentAware {
 
    private static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
 
-   public OdeProperties() {
-      super();
+   @PostConstruct
+   void initialize() {
 
       uploadLocations.add(Paths.get(uploadLocationRoot));
 
@@ -179,8 +189,11 @@ public class OdeProperties implements EnvironmentAware {
          } else {
             kafkaBrokers = dockerIp + ":9092";
          }
-
          
+         // URI for the security services /sign endpoint
+         if (securitySvcsSignatureUri == null) {
+            securitySvcsSignatureUri = "http://" + dockerIp + ":" + securitySvcsPort + "/" + securitySvcsSignatureEndpoint;
+         }
       }
    }
 
@@ -693,5 +706,13 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setFileWatcherPeriod(Integer fileWatcherPeriod) {
       this.fileWatcherPeriod = fileWatcherPeriod;
+   }
+
+   public String getSecuritySvcsSignatureUri() {
+      return securitySvcsSignatureUri;
+   }
+
+   public void setSecuritySvcsSignatureUri(String securitySvcsSignatureUri) {
+      this.securitySvcsSignatureUri = securitySvcsSignatureUri;
    }
 }

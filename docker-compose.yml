@@ -167,3 +167,9 @@ services:
      - kafka
     links:
      - kafka
+  sec:
+    build: ./jpo-security-svcs
+    ports:
+     - "8090:8090"
+    environment:
+      SEC_CRYPTO_SERVICE_BASE_URI: ${SEC_CRYPTO_SERVICE_BASE_URI}

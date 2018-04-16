@@ -1,3 +1,4 @@
+
 Master: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=master)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=usdot.jpo.ode:jpo-ode)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode)
 
 Develop: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=develop)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=usdot.jpo.ode:jpo-ode:develop)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode%3Adevelop)
@@ -142,6 +143,7 @@ Additionally, read the following guides to familiarize yourself with Docker and 
 |[jpo-security](https://github.com/usdot-jpo-ode/jpo-security)|public|Security dependencies.|
 |[asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)|public|ASN.1 Encoder/Decoder module|
 |jpo-ode-private|private|Proprietary dependencies.|
+|[jpo-security-svcs](https://github.com/usdot-jpo-ode/jpo-security-svcs)|public|Provides cryptographic services.|
 
 Building this application requires all repositories. If you need access to the private repositories, please reach out to a member of the development team.
 
@@ -165,6 +167,7 @@ git clone --recurse-submodules https://github.com/usdot-jpo-ode/jpo-ode.git
 - Privacy Protection Module (PPM) - [jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)
 - S3 Bucket Depositor - [jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)
 - Security - [jpo-security](https://github.com/usdot-jpo-ode/jpo-security)
+- Security Services Module- [jpo-security](https://github.com/usdot-jpo-ode/jpo-security-svcs)
 - ASN.1 CODEC - [asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)
 
 #### Step 2 - Clone private repository

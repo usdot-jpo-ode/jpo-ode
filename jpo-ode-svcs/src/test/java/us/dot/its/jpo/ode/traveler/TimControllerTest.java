@@ -229,7 +229,7 @@ public class TimControllerTest {
                mockRsu.getRsuTarget();
                result = "snmpException";
 
-               Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString, anyInt);
+               //Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString, anyInt);
                result = new Exception("SNMP Error");
 
                mockTravelerInputData.getSdw();
@@ -283,7 +283,7 @@ public class TimControllerTest {
                mockRsu.getRsuTarget();
                result = "nullResponse";
 
-               Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString, anyInt);
+               //Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString, anyInt);
                result = null;
 
                mockTravelerInputData.getSdw();
@@ -331,7 +331,7 @@ public class TimControllerTest {
                mockRsu.getRsuTarget();
                result = "badResponse";
 
-               Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString, anyInt);
+               //Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString, anyInt);
                result = mockResponseEvent;
                mockResponseEvent.getResponse();
                result = mockPdu;
@@ -389,7 +389,7 @@ public class TimControllerTest {
                mockRsu.getRsuTarget();
                result = "nonexistentialRsu";
 
-               Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString, anyInt);
+               //Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString, anyInt);
                result = mockResponseEvent;
                mockResponseEvent.getResponse();
                result = mockPdu;
@@ -448,7 +448,7 @@ public class TimControllerTest {
                mockRsu.getRsuTarget();
                result = "goodResponse";
 
-               Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString, anyInt);
+               //Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString, anyInt);
                result = mockResponseEvent;
                mockResponseEvent.getResponse();
                result = mockPdu;

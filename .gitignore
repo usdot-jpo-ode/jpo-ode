@@ -104,3 +104,14 @@ jpo-ode-consumer-example/target/
 /SNMP_Error.log
 /Events.log
 /uploads
+
+#########################
+### jpo-security-svcs ###
+/jpo-security-svcs/*.log
+
+######################
+### jpo-s3-deposit ###
+/jpo-s3-deposit/.classpath
+/jpo-s3-deposit/.project
+/jpo-s3-deposit/.settings/org.eclipse.jdt.core.prefs
+/jpo-s3-deposit/.settings/org.eclipse.m2e.core.prefs
