@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.services.asn1;
 
+import java.util.HashMap;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -10,7 +12,6 @@ import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
-import us.dot.its.jpo.ode.traveler.TimController.TimControllerException;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -109,7 +110,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
    }
 
    public void processEncodedTim(OdeTravelerInputData travelerInfo, JSONObject consumedObj)
-         throws TimControllerException {
+         throws Asn1EncodedDataRouterException {
 
       JSONObject dataObj = consumedObj.getJSONObject(AppContext.PAYLOAD_STRING).getJSONObject(AppContext.DATA_STRING);
 
@@ -126,6 +127,8 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       // - send to DDS
 
       if (!dataObj.has("AdvisorySituationData")) {
+         // We don't have ASD, therefore it must be just a MessageFrame that needs to be signed
+         // No support for unsecured MessageFrame only payload.
          // Cases 1 & 2
          // Sign and send to RSUs
 
@@ -134,21 +137,18 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          String hexEncodedTim = mfObj.getString("bytes");
          logger.debug("Encoded message: {}", hexEncodedTim);
 
-         if (odeProperties.getSecuritySvcsSignatureUri() != null &&
-             !odeProperties.getSecuritySvcsSignatureUri().equalsIgnoreCase("UNSECURED")) {
-            logger.debug("Sending message for signature!");
-            String base64EncodedTim = CodecUtils.toBase64(
-               CodecUtils.fromHex(hexEncodedTim));
-            String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim );
-            logger.debug("Message signed!");
-   
-            try {
-               hexEncodedTim = CodecUtils.toHex(
-                  CodecUtils.fromBase64(
-                     JsonUtils.toJSONObject(signedResponse).getString("result")));
-            } catch (JsonUtilsException e1) {
-               logger.error("Unable to parse signed message response {}", e1);
-            }
+         logger.debug("Sending message for signature!");
+         String base64EncodedTim = CodecUtils.toBase64(
+            CodecUtils.fromHex(hexEncodedTim));
+         String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim );
+         logger.debug("Message signed!");
+
+         try {
+            hexEncodedTim = CodecUtils.toHex(
+               CodecUtils.fromBase64(
+                  JsonUtils.toJSONObject(signedResponse).getString("result")));
+         } catch (JsonUtilsException e1) {
+            logger.error("Unable to parse signed message response {}", e1);
          }
          
          logger.debug("Sending message to RSUs...");
@@ -164,11 +164,75 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          }
 
       } else {
-         // Case 3
-         JSONObject asdObj = dataObj.getJSONObject("AdvisorySituationData");
-         asn1CommandManager.depositToDDS(asdObj.getString("bytes"));
+         //We have encoded ASD. It could be either UNSECURED or secured. 
+         if (odeProperties.getSecuritySvcsSignatureUri() != null &&
+               !odeProperties.getSecuritySvcsSignatureUri().equalsIgnoreCase("UNSECURED")) {
+            // We have a ASD with signed MessageFrame
+            // Case 3
+            JSONObject asdObj = dataObj.getJSONObject("AdvisorySituationData");
+            asn1CommandManager.depositToDDS(asdObj.getString("bytes"));
+         } else {
+            //We have ASD with UNSECURED MessageFrame
+            processEncodedTimUnsecured(travelerInfo, consumedObj);
+         }
       }
 
    }
 
+   public void processEncodedTimUnsecured(OdeTravelerInputData travelerInfo, JSONObject consumedObj) throws Asn1EncodedDataRouterException {
+      // Send TIMs and record results
+      HashMap<String, String> responseList = new HashMap<>();
+
+      JSONObject dataObj = consumedObj
+            .getJSONObject(AppContext.PAYLOAD_STRING)
+            .getJSONObject(AppContext.DATA_STRING);
+      
+      if (null != travelerInfo.getSdw()) {
+         JSONObject asdObj = null;
+         if (dataObj.has("AdvisorySituationData")) {
+            asdObj = dataObj.getJSONObject("AdvisorySituationData");
+         } else {
+            logger.error("ASD structure present in metadata but not in JSONObject!");
+         }
+        
+        if (null != asdObj) {
+           String asdBytes = asdObj.getString("bytes");
+
+           // Deposit to DDS
+           String ddsMessage = "";
+           try {
+              asn1CommandManager.depositToDDS(asdBytes);
+              ddsMessage = "\"dds_deposit\":{\"success\":\"true\"}";
+              logger.info("DDS deposit successful.");
+           } catch (Exception e) {
+              ddsMessage = "\"dds_deposit\":{\"success\":\"false\"}";
+              logger.error("Error on DDS deposit.", e);
+           }
+
+           responseList.put("ddsMessage", ddsMessage);
+        } else {
+           String msg = "ASN.1 Encoder did not return ASD encoding {}";
+           EventLogger.logger.error(msg, consumedObj.toString());
+           logger.error(msg, consumedObj.toString());
+        }
+      }
+      
+      if (dataObj.has("MessageFrame")) {
+         JSONObject mfObj = dataObj.getJSONObject("MessageFrame");
+         String encodedTim = mfObj.getString("bytes");
+         logger.debug("Encoded message: {}", encodedTim);
+         
+        // only send message to rsu if snmp, rsus, and message frame fields are present
+        if (null != travelerInfo.getSnmp() && null != travelerInfo.getRsus() && null != mfObj) {
+           logger.debug("Encoded message: {}", encodedTim);
+           HashMap<String, String> rsuResponseList = 
+                 asn1CommandManager.sendToRsus(travelerInfo, encodedTim);
+           responseList.putAll(rsuResponseList);
+         }
+      }
+      
+      logger.info("TIM deposit response {}", responseList);
+      
+      return;
+   }
 }

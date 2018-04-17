@@ -2,6 +2,7 @@ package us.dot.its.jpo.ode.services.asn1;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,20 +84,38 @@ public class Asn1CommandManager {
       }
    }
 
-   public void sendToRsus(OdeTravelerInputData travelerInfo, String encodedMsg) {
+   public HashMap<String, String> sendToRsus(OdeTravelerInputData travelerInfo, String encodedMsg) {
 
+      HashMap<String, String> responseList = new HashMap<>();
       for (RSU curRsu : travelerInfo.getRsus()) {
 
          ResponseEvent rsuResponse = null;
 
+         String httpResponseStatus;
          try {
             rsuResponse = SnmpSession.createAndSend(travelerInfo.getSnmp(), curRsu, travelerInfo.getOde().getIndex(),
                   encodedMsg, travelerInfo.getOde().getVerb());
+            if (null == rsuResponse || null == rsuResponse.getResponse()) {
+               // Timeout
+               httpResponseStatus = "Timeout";
+            } else if (rsuResponse.getResponse().getErrorStatus() == 0) {
+               // Success
+               httpResponseStatus = "Success";
+            } else if (rsuResponse.getResponse().getErrorStatus() == 5) {
+               // Error, message already exists
+               httpResponseStatus = "Message already exists at ".concat(Integer.toString(travelerInfo.getOde().getIndex()));
+            } else {
+               // Misc error
+               httpResponseStatus = "Error code " + rsuResponse.getResponse().getErrorStatus() + " "
+                           + rsuResponse.getResponse().getErrorStatusText();
+            }
          } catch (IOException | TimPduCreatorException e) {
             String msg = "Exception caught in TIM RSU deposit loop.";
             EventLogger.logger.error(msg, e);
             logger.error(msg, e);
+            httpResponseStatus = e.getClass().getName() + ": " + e.getMessage();
          }
+         responseList.put(curRsu.getRsuTarget(), httpResponseStatus);
 
          if (null == rsuResponse || null == rsuResponse.getResponse()) {
             // Timeout
@@ -116,6 +135,7 @@ public class Asn1CommandManager {
          }
 
       }
+      return responseList;
    }
 
    public String sendForSignature(String message) {
