@@ -138,22 +138,26 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          String hexEncodedTim = mfObj.getString("bytes");
          logger.debug("Encoded message: {}", hexEncodedTim);
 
-         logger.debug("Sending message for signature!");
-         String base64EncodedTim = CodecUtils.toBase64(
-            CodecUtils.fromHex(hexEncodedTim));
-         String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim );
-
-         try {
-            hexEncodedTim = CodecUtils.toHex(
-               CodecUtils.fromBase64(
-                  JsonUtils.toJSONObject(signedResponse).getString("result")));
-         } catch (JsonUtilsException e1) {
-            logger.error("Unable to parse signed message response {}", e1);
+         if (odeProperties.dataSigningEnabled()) {
+            logger.debug("Sending message for signature!");
+            String base64EncodedTim = CodecUtils.toBase64(
+               CodecUtils.fromHex(hexEncodedTim));
+            String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim );
+   
+            try {
+               hexEncodedTim = CodecUtils.toHex(
+                  CodecUtils.fromBase64(
+                     JsonUtils.toJSONObject(signedResponse).getString("result")));
+            } catch (JsonUtilsException e1) {
+               logger.error("Unable to parse signed message response {}", e1);
+            }
          }
          
          logger.debug("Sending message to RSUs...");
-         asn1CommandManager.sendToRsus(travelerInfo, hexEncodedTim);
-
+         if (null != travelerInfo.getSnmp() && null != travelerInfo.getRsus() && null != hexEncodedTim) {
+            asn1CommandManager.sendToRsus(travelerInfo, hexEncodedTim);
+         }
+         
          if (travelerInfo.getSdw() != null) {
             // Case 2 only
 
@@ -167,8 +171,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          //We have encoded ASD. It could be either UNSECURED or secured.
          logger.debug("securitySvcsSignatureUri = {}", odeProperties.getSecuritySvcsSignatureUri());
 
-         if (odeProperties.getSecuritySvcsSignatureUri() != null &&
-               !odeProperties.getSecuritySvcsSignatureUri().equalsIgnoreCase("UNSECURED")) {
+         if (odeProperties.dataSigningEnabled()) {
             logger.debug("Signed message received. Depositing it to SDW.");
             // We have a ASD with signed MessageFrame
             // Case 3
@@ -227,7 +230,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          logger.debug("Encoded message: {}", encodedTim);
          
         // only send message to rsu if snmp, rsus, and message frame fields are present
-        if (null != travelerInfo.getSnmp() && null != travelerInfo.getRsus() && null != mfObj) {
+        if (null != travelerInfo.getSnmp() && null != travelerInfo.getRsus() && null != encodedTim) {
            logger.debug("Encoded message: {}", encodedTim);
            HashMap<String, String> rsuResponseList = 
                  asn1CommandManager.sendToRsus(travelerInfo, encodedTim);
