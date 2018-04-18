@@ -311,6 +311,7 @@ public class TimController {
       }
 
       try {
+         logger.debug("securitySvcsSignatureUri = {}", odeProperties.getSecuritySvcsSignatureUri());
          if (odeProperties.getSecuritySvcsSignatureUri() != null &&
                !odeProperties.getSecuritySvcsSignatureUri().equalsIgnoreCase("UNSECURED")) {
             // We are to sign the data before sending it out
@@ -381,6 +382,7 @@ public class TimController {
    private String convertToXml(ObjectNode encodableTidObj)
          throws JsonUtilsException, XmlUtilsException, ParseException {
 
+      logger.debug("Converting request to MessageFrame!");
       TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(),
             TravelerInputData.class);
       logger.debug("In order tim: {}", inOrderTid);
@@ -517,6 +519,7 @@ public class TimController {
    private String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj)
          throws JsonUtilsException, XmlUtilsException, ParseException {
 
+      logger.debug("Converting request to ASD/Ieee1609Dot2Data/MessageFrame!");
       TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(), TravelerInputData.class);
       logger.debug("In order tim: {}", inOrderTid);
       ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());

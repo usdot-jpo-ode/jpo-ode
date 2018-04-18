@@ -146,7 +146,7 @@ public class Asn1CommandManager {
 
       RestTemplate template = new RestTemplate();
 
-      logger.info("Security services module request: {}", entity);
+      logger.info("Sending data to security services module at {} to be signed: {}", signatureUri, entity);
 
       ResponseEntity<String> respEntity = template.postForEntity(signatureUri, entity, String.class);
 

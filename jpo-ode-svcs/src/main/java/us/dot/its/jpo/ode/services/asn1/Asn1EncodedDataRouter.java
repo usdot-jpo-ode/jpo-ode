@@ -127,6 +127,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       // - send to DDS
 
       if (!dataObj.has("AdvisorySituationData")) {
+         logger.debug("Unsigned message received");
          // We don't have ASD, therefore it must be just a MessageFrame that needs to be signed
          // No support for unsecured MessageFrame only payload.
          // Cases 1 & 2
@@ -141,7 +142,6 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          String base64EncodedTim = CodecUtils.toBase64(
             CodecUtils.fromHex(hexEncodedTim));
          String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim );
-         logger.debug("Message signed!");
 
          try {
             hexEncodedTim = CodecUtils.toHex(
@@ -164,14 +164,18 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          }
 
       } else {
-         //We have encoded ASD. It could be either UNSECURED or secured. 
+         //We have encoded ASD. It could be either UNSECURED or secured.
+         logger.debug("securitySvcsSignatureUri = {}", odeProperties.getSecuritySvcsSignatureUri());
+
          if (odeProperties.getSecuritySvcsSignatureUri() != null &&
                !odeProperties.getSecuritySvcsSignatureUri().equalsIgnoreCase("UNSECURED")) {
+            logger.debug("Signed message received. Depositing it to SDW.");
             // We have a ASD with signed MessageFrame
             // Case 3
             JSONObject asdObj = dataObj.getJSONObject("AdvisorySituationData");
             asn1CommandManager.depositToDDS(asdObj.getString("bytes"));
          } else {
+            logger.debug("Unsigned ASD received. Depositing it to SDW.");
             //We have ASD with UNSECURED MessageFrame
             processEncodedTimUnsecured(travelerInfo, consumedObj);
          }
