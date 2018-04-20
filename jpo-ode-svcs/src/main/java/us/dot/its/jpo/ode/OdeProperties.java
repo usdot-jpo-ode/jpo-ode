@@ -8,6 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.thymeleaf.util.StringUtils;
+
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.OdePlugin;
@@ -199,6 +201,7 @@ public class OdeProperties implements EnvironmentAware {
 
    public boolean dataSigningEnabled() {
       return getSecuritySvcsSignatureUri() != null &&
+            !StringUtils.isEmptyOrWhitespace(getSecuritySvcsSignatureUri()) &&
             !getSecuritySvcsSignatureUri().startsWith("UNSECURE");
    }
 
