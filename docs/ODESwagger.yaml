@@ -163,19 +163,19 @@ paths:
           description: Misc error
           schema:
             $ref: '#/definitions/Status'
-  /RSU SNMP:
+  /rsuHeartbeat:
     get:
       summary: RSU SNMP Query
       operationId: snmp_get
-      description: Check the health and status of RSU devices through SNMP communication
+      description: Check the health and status of RSU devices through SNMP communication. You should receive a detailed plain text response that looks like the following example. If the device is off, a 4 second timeout will occur and the ODE will indicate this with an "[ERROR] Empty response" message. (This specific OID returns the amount of time since the device was last powered on) "[1.3.6.1.2.1.1.3.0 = 0:05:12.59]"
       parameters:
-        - name: IP
+        - name: ip
           in: query
           description: IP address of an RSU
           required: true
           type: number
           format: string
-        - name: OID
+        - name: oid
           in: query
           description: OID of the attribute you wish to check on
           required: true
@@ -213,6 +213,45 @@ paths:
           description: >-
             Probe Data Management message was submitted successfully. See the
             response body or ODE User Guide for details.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Status'
+        '400':
+          description: >-
+            Bad Request. Issued if request is invalid or failed to be executed.
+            See the response body or ODE User Guide for details.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Status'
+        '500':
+          description: >-
+            Internal Server Error. See the response body or ODE User Guide for
+            details.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Status'
+  /upload/obulog:
+    post:
+      summary: File upload interface
+      operationId: upload-obulog
+      description: >-
+        Uploads an OBU log file to ODE upload folder to be processed and propaged
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          description: The file to upload.
+      tags:
+        - log file
+      responses:
+        '200':
+          description: >-
+            File uploaded successfully
           schema:
             type: array
             items:
@@ -294,7 +333,6 @@ definitions:
     required:
       - sspindex
     properties:
-      # Part I, Frame header
       sspTimRights:
         type: integer
         description: A short header information
@@ -314,8 +352,6 @@ definitions:
           means forever.
       priority:
         type: integer
-
-      # Part II, Applicable Regions of Use
       sspLocationRights:
         type: integer
       sspindex:
@@ -330,8 +366,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Region'
-
-      # Part III, Content
       sspMsgTypes:
         type: integer
       sspMsgContent:
@@ -624,7 +658,7 @@ definitions:
       x:
         type: number
         description: 'Offset-B10 in meters [-5.11..5.11m]'
-      y:
+      'y':
         type: number
         description: 'Offset-B10 in meters [-5.11..5.11m]'
       attributes:
