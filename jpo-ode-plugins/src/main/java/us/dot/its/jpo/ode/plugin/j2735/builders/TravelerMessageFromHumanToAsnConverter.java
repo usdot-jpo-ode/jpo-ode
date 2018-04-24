@@ -24,7 +24,7 @@ public class TravelerMessageFromHumanToAsnConverter {
    public static final String BOOLEAN_OBJECT_TRUE = "BOOLEAN_OBJECT_TRUE";
    public static final String BOOLEAN_OBJECT_FALSE = "BOOLEAN_OBJECT_FALSE";
 
-   public static ObjectNode changeTravelerInformationToAsnValues(JsonNode timData) throws JsonUtilsException {
+   public static void convertTravelerInputDataToEncodableTim(JsonNode tid) throws JsonUtilsException {
       // msgCnt MsgCount,
       // timeStamp MinuteOfTheYear OPTIONAL
       // packetID UniqueMSGID OPTIONAL
@@ -32,10 +32,9 @@ public class TravelerMessageFromHumanToAsnConverter {
       // dataFrames TravelerDataFrameList
 
       // Cast to ObjectNode to allow manipulation in place
-      ObjectNode replacedTim = (ObjectNode) timData;
-      ObjectNode timDataObjectNode = (ObjectNode) replacedTim.get("tim");
+      ObjectNode timDataObjectNode = (ObjectNode) tid.get("tim");
       JsonNode index = timDataObjectNode.remove("index");
-      ObjectNode ode = (ObjectNode) replacedTim.get("ode");
+      ObjectNode ode = (ObjectNode) tid.get("ode");
       if (null != ode) {
          ode.set("index", index);
       }
@@ -51,10 +50,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       // dataFrames are required
       timDataObjectNode.set("dataFrames", transformDataFrames(timDataObjectNode.get("dataframes")));
          timDataObjectNode.remove("dataframes");
-
-      return replacedTim;
-
-      }
+   }
       
    public static JsonNode transformDataFrames(JsonNode dataFrames) throws JsonUtilsException {
 

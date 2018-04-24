@@ -297,12 +297,12 @@ public class TimController {
       }
 
       // Craft ASN-encodable TIM
-      ObjectNode encodableTid;
+      ObjectNode encodableTim;
       try {
-         encodableTid = TravelerMessageFromHumanToAsnConverter
-               .changeTravelerInformationToAsnValues(JsonUtils.toObjectNode(travelerInputData.toJson()));
+         encodableTim = JsonUtils.toObjectNode(travelerInputData.toJson());
+         TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim(encodableTim);
 
-         logger.debug("Encodable TravelerInputData: {}", encodableTid);
+         logger.debug("Encodable TravelerInformationMessage: {}", encodableTim);
 
       } catch (JsonUtilsException e) {
          String errMsg = "Error converting to encodable TIM.";
@@ -318,7 +318,7 @@ public class TimController {
             // We need to send data UNSECURED, so we should try to build the ASD as well as MessageFrame
             asd = buildASD(travelerInputData);
          }
-         xmlMsg = convertToXml(asd, encodableTid);
+         xmlMsg = convertToXml(asd, encodableTim);
          stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlMsg);
       } catch (JsonUtilsException | XmlUtilsException | ParseException e) {
          String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
