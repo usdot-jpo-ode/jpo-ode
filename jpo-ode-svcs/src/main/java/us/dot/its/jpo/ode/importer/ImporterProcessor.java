@@ -80,7 +80,8 @@ public class ImporterProcessor {
       
       try {
          inputStream = new FileInputStream(filePath.toFile());
-         if (Files.probeContentType(filePath).equals("application/gzip")) { 
+         String probeContentType = Files.probeContentType(filePath);
+         if (probeContentType != null && probeContentType.equals("application/gzip")) { 
             inputStream = new GZIPInputStream(inputStream);
          }
          bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
