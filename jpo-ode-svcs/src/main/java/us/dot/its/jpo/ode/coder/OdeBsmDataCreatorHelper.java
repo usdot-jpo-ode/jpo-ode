@@ -6,6 +6,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import us.dot.its.jpo.ode.context.AppContext;
@@ -13,6 +14,7 @@ import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;
+import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.SerialId;
@@ -36,7 +38,7 @@ public class OdeBsmDataCreatorHelper {
 
       OdeBsmPayload payload = new OdeBsmPayload(rawBsm);
 
-      OdeBsmMetadata metadata = new OdeBsmMetadata(payload);
+      OdeLogMetadata metadata = new OdeBsmMetadata(payload);
       OdeLogMetadataCreatorHelper.updateLogMetadata(metadata, bsmFileParser);
       
       // If we have a valid message, override relevant data from the message
@@ -47,7 +49,7 @@ public class OdeBsmDataCreatorHelper {
          if (ieeeGenTime != null) {
             generatedAt = DateTimeUtils.isoDateTime(ieeeGenTime);
          } else if (bsmFileParser != null) {
-            generatedAt = bsmFileParser.getGeneratedAt();
+            generatedAt = bsmFileParser.getTimeParser().getGeneratedAt();
          } else {
             generatedAt = DateTimeUtils.nowZDT();
          }
@@ -62,20 +64,23 @@ public class OdeBsmDataCreatorHelper {
    public static OdeBsmData createOdeBsmData(
       J2735Bsm rawBsm, String filename, SerialId serialId) {
       BsmLogFileParser bsmFileParser = new BsmLogFileParser(serialId.getBundleId());
-      bsmFileParser.setFilename(filename).setUtcTimeInSec(0).setSecurityResultCode(SecurityResultCode.unknown);
+      bsmFileParser.setFilename(filename).getTimeParser().setUtcTimeInSec(0).getSecResCodeParser().setSecurityResultCode(SecurityResultCode.unknown);
 ;
       return createOdeBsmData(rawBsm, null, bsmFileParser);
    }
 
    public static OdeBsmData createOdeBsmData(String consumedData) 
          throws JsonProcessingException, IOException, XmlUtilsException, BsmPart2ContentBuilderException  {
-//    JsonNode consumed = JsonUtils.toObjectNode(consumedData);
-      JsonNode consumed = XmlUtils.toObjectNode(consumedData);
+      ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 
       JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
+      if (metadataNode instanceof ObjectNode) {
+         ObjectNode object = (ObjectNode) metadataNode;
+         object.remove(AppContext.ENCODINGS_STRING);
+      }
       
-      OdeBsmMetadata metadata = (OdeBsmMetadata) JsonUtils.fromJson(
-         metadataNode.toString(), OdeBsmMetadata.class);
+      OdeLogMetadata metadata = (OdeLogMetadata) JsonUtils.fromJson(
+         metadataNode.toString(), OdeLogMetadata.class);
       
 //      JSONObject metadata = bsmJSONData.getJSONObject(AppContext.METADATA_STRING);
 //      metadata.put("payloadType", OdeBsmPayload.class.getSimpleName());

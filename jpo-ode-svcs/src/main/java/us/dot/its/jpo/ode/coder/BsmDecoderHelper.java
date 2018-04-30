@@ -34,7 +34,7 @@ public class BsmDecoderHelper {
    public OdeData decode(BsmLogFileParser bsmFileParser, SerialId serialId) throws Exception {
 
       Ieee1609Dot2Data ieee1609dot2Data = 
-              ieee1609dotCoder.decodeIeee1609Dot2DataBytes(bsmFileParser.getPayload());
+              ieee1609dotCoder.decodeIeee1609Dot2DataBytes(bsmFileParser.getPayloadParser().getPayload());
       OdeObject bsm = null;
       OdeData odeBsmData = null;
       IEEE1609p2Message message = null;
@@ -55,7 +55,7 @@ public class BsmDecoderHelper {
          }
       } else {
          // probably raw BSM or MessageFrame
-         bsm = rawBsmMFSorterIn.decodeBsm(bsmFileParser.getPayload());
+         bsm = rawBsmMFSorterIn.decodeBsm(bsmFileParser.getPayloadParser().getPayload());
       }
       if (bsm != null) {
          logger.debug("Decoded BSM successfully, creating OdeBsmData object.");

@@ -15,8 +15,6 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.stream.BinaryDecoderPublisher;
-import us.dot.its.jpo.ode.coder.stream.HexDecoderPublisher;
 import us.dot.its.jpo.ode.coder.stream.JsonDecoderPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 
@@ -30,10 +28,6 @@ public class FileDecoderPublisherTest {
    @Capturing
    JsonDecoderPublisher capturingJsonDecoderPublisher;
    @Capturing
-   HexDecoderPublisher capturingHexDecoderPublisher;
-   @Capturing
-   BinaryDecoderPublisher capturingBinaryDecoderPublisher;
-   @Capturing
    OdeDataPublisher capturedMessagePublisher;
 
 
@@ -42,11 +36,7 @@ public class FileDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
-               times = 1;
                capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
-               times = 0;
-               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
                times = 0;
             }
          };
@@ -64,11 +54,7 @@ public class FileDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
-               times = 1;
                capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
-               times = 0;
-               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
                times = 0;
             }
          };
@@ -86,12 +72,8 @@ public class FileDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
-               times = 0;
                capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
                times = 1;
-               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
-               times = 0;
             }
          };
 
@@ -108,12 +90,8 @@ public class FileDecoderPublisherTest {
       try {
          new Expectations() {
             {
-               capturingHexDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
-               times = 0;
                capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
                times = 0;
-               capturingBinaryDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
-               times = 1;
             }
          };
 
