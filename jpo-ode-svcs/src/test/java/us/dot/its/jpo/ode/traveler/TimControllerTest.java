@@ -35,7 +35,7 @@ import us.dot.its.jpo.ode.model.OdeTravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
@@ -54,7 +54,7 @@ public class TimControllerTest {
    @Mocked
    OdeTravelerInputData mockTravelerInputData;
    @Mocked
-   J2735TravelerInformationMessage mockTim;
+   OdeTravelerInformationMessage mockTim;
    @Mocked
    MessageProducer<String, OdeObject> mockProducer;
    @Mocked

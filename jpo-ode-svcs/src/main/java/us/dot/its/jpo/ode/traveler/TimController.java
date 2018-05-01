@@ -273,7 +273,7 @@ public class TimController {
 
          travelerInputData.getOde().setVerb(verb);
 
-         logger.debug("J2735TravelerInputData: {}", jsonString);
+         logger.debug("OdeTravelerInputData: {}", jsonString);
 
       } catch (Exception e) {
          String errMsg = "Malformed or non-compliant JSON.";
