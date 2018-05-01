@@ -27,8 +27,13 @@ public class OdeLogMetadataCreatorHelper {
          metadata.setLogFileName(logFileParser.getFilename());
          metadata.setRecordType(logFileParser.getRecordType());
          metadata.setRecordGeneratedAt(logFileParser.getTimeParser().getGeneratedAt().toString());
-         metadata.setSecurityResultCode(logFileParser.getSecResCodeParser().getSecurityResultCode());
+         
+         if (logFileParser.getSecResCodeParser() != null) {
+            metadata.setSecurityResultCode(logFileParser.getSecResCodeParser().getSecurityResultCode());
+         }
+         
          metadata.setReceivedMessageDetails(buildReceivedMessageDetails(logFileParser));
+         
          if (logFileParser instanceof BsmLogFileParser && metadata instanceof OdeBsmMetadata) {
             BsmLogFileParser bsmLogFileParser = (BsmLogFileParser) logFileParser;
             OdeBsmMetadata odeBsmMetadata = (OdeBsmMetadata) metadata;

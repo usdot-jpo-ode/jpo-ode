@@ -38,6 +38,7 @@ public class DriverAlertFileParser extends LogFileParser {
             status = nextStep(bis, fileName, payloadParser);
             if (status != ParserStatus.COMPLETE)
                return status;
+            setAlert(payloadParser.getPayload());
          }
 
          resetStep();

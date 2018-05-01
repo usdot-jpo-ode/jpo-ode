@@ -74,7 +74,7 @@ public class DriverAlertFileParserTest {
          assertEquals(1524772009, testDriverAlertFileParser.getTimeParser().getUtcTimeInSec());
          assertEquals(399, testDriverAlertFileParser.getTimeParser().getmSec());
          assertEquals(17, testDriverAlertFileParser.getPayloadParser().getPayloadLength());
-         assertEquals(expectedPayload, new String(testDriverAlertFileParser.getPayloadParser().getPayload()));
+         assertEquals(expectedPayload, testDriverAlertFileParser.getAlert());
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
