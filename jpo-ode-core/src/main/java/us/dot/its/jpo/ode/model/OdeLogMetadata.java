@@ -54,7 +54,7 @@ public class OdeLogMetadata extends OdeMsgMetadata {
    private RecordType recordType;
    private SecurityResultCode securityResultCode;
    private ReceivedMessageDetails receivedMessageDetails;
-   private List<Asn1Encoding> encodings = new ArrayList<Asn1Encoding>();
+   private List<Asn1Encoding> encodings;
 
    public OdeLogMetadata(OdeMsgPayload payload) {
       super(payload);
@@ -109,6 +109,8 @@ public class OdeLogMetadata extends OdeMsgMetadata {
    }
 
    public OdeLogMetadata addEncoding(Asn1Encoding encoding) {
+      if (encodings == null)
+         encodings = new ArrayList<Asn1Encoding>();
       encodings.add(encoding);
       return this;
    }
