@@ -159,6 +159,7 @@ ODE software consists of the following modules:
 |[jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)|public|Privacy Protection Module|
 |[jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)|public|S3 depositor service. Optional, comment out of `docker-compose.yml` file if not used.|
 |[asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)|public|ASN.1 Encoder/Decoder module|
+|[jpo-security-svcs](https://github.com/usdot-jpo-ode/jpo-security-svcs)|public|Provides cryptographic services.|
 
 Clone the repositories by running these commands:
 
@@ -168,6 +169,7 @@ git clone --recurse-submodules https://github.com/usdot-jpo-ode/jpo-ode.git
 *Note*: Make sure you specify the --recurse-submodules option on the clone command line. This option will cause the cloning of all dependent submodules:
 - Privacy Protection Module (PPM) - [jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)
 - S3 Bucket Depositor - [jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)
+- Security Services Module- [jpo-security](https://github.com/usdot-jpo-ode/jpo-security-svcs)
 - ASN.1 CODEC - [asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)
 
 Once you have these repositories obtained, you are ready to build and deploy the application.

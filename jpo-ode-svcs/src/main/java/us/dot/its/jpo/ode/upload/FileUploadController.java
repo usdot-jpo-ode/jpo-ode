@@ -58,6 +58,7 @@ public class FileUploadController {
 
       // Create filtered exporters
       threadPool.submit(new StompStringExporter(odeProperties, FILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicFilteredOdeBsmJson()));
+      threadPool.submit(new StompStringExporter(odeProperties, FILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicFilteredOdeTimJson()));
    }
 
    @PostMapping("/upload/{type}")

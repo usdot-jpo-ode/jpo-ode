@@ -50,6 +50,8 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.MessageFrame;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.TravelerInputData;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.TravelerInputDataBase;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -74,6 +76,7 @@ public class TimController {
    private static final Logger logger = LoggerFactory.getLogger(TimController.class);
 
    private static final String ERRSTR = "error";
+   private static final String WARNING = "warning";
    private static final String SUCCESS = "success";
 
 
@@ -127,11 +130,11 @@ public class TimController {
       pdu0.setType(PDU.GET);
       PDU pdu1 = new ScopedPDU();
       pdu1.setType(PDU.GET);
-      
-      for (int i = 0; i < odeProperties.getRsuSrmSlots()-50; i++) {
+
+      for (int i = 0; i < odeProperties.getRsuSrmSlots() - 50; i++) {
          pdu0.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
       }
-      
+
       for (int i = 50; i < odeProperties.getRsuSrmSlots(); i++) {
          pdu1.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
       }
@@ -148,7 +151,8 @@ public class TimController {
       }
 
       // Process response
-      if (response0 == null || response0.getResponse() == null || response1 == null || response1.getResponse() == null) {
+      if (response0 == null || response0.getResponse() == null || response1 == null
+            || response1.getResponse() == null) {
          logger.error("RSU query failed, timeout.");
          return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                .body(jsonKeyValue(ERRSTR, "Timeout, no response from RSU."));
@@ -161,14 +165,14 @@ public class TimController {
             resultsMap.put(vb.getOid().toString().substring(21), true);
          }
       }
-      
+
       for (Object vbo : response1.getResponse().getVariableBindings().toArray()) {
          VariableBinding vb = (VariableBinding) vbo;
          if (vb.getVariable().toInt() == 1) {
             resultsMap.put(vb.getOid().toString().substring(21), true);
          }
       }
-      
+
       try {
          snmpSession.endSession();
       } catch (IOException e) {
@@ -246,29 +250,30 @@ public class TimController {
 
       return ResponseEntity.status(returnCode).body(bodyMsg);
    }
-   
+
    /**
     * Send a TIM with the appropriate deposit type, ODE.PUT or ODE.POST
+    * 
     * @param jsonString
     * @param verb
     * @return
     */
    public ResponseEntity<String> depositTim(String jsonString, int verb) {
-   // Check empty
+      // Check empty
       if (null == jsonString || jsonString.isEmpty()) {
          String errMsg = "Empty request.";
          logger.error(errMsg);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
-      OdeTravelerInputData travelerInputData = null; 
+      OdeTravelerInputData travelerInputData = null;
       try {
          // Convert JSON to POJO
          travelerInputData = (OdeTravelerInputData) JsonUtils.fromJson(jsonString, OdeTravelerInputData.class);
          if (travelerInputData.getOde() == null) {
             travelerInputData.setOde(new ODE());
          }
-         
+
          travelerInputData.getOde().setVerb(verb);
 
          logger.debug("OdeTravelerInputData: {}", jsonString);
@@ -285,6 +290,15 @@ public class TimController {
       OdeTimData odeTimData = new OdeTimData(timMetadata, timDataPayload);
       timProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastPojo(), null, odeTimData);
       
+      // Short circuit
+      // If the TIM has no RSU/SNMP or SDW structures, we are done
+      if ((travelerInputData.getRsus() == null || travelerInputData.getSnmp() == null)
+            && travelerInputData.getSdw() == null) {
+         String warningMsg = "Warning: TIM contains no RSU, SNMP, or SDW fields. Message only published to POJO broadcast stream.";
+         logger.warn(warningMsg);
+         return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue(WARNING, warningMsg));
+      }
+
       // Craft ASN-encodable TIM
       ObjectNode encodableTid;
       try {
@@ -293,52 +307,26 @@ public class TimController {
 
          logger.debug("Encodable TravelerInputData: {}", encodableTid);
 
-      } catch (Exception e) {
+      } catch (JsonUtilsException e) {
          String errMsg = "Error converting to encodable TravelerInputData.";
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
-      SDW sdw = travelerInputData.getSdw();
-      DdsAdvisorySituationData asd = null;
-      if (null != sdw) {
-         try {
-            Ieee1609Dot2DataTag ieeeDataTag = new Ieee1609Dot2DataTag();
-            Ieee1609Dot2Data ieee = new Ieee1609Dot2Data();
-            Ieee1609Dot2Content ieeeContent = new Ieee1609Dot2Content();
-            J2735MessageFrame j2735Mf = new J2735MessageFrame();
-            MessageFrame mf = new MessageFrame();
-            mf.setMessageFrame(j2735Mf);
-            ieeeContent.setUnsecuredData(mf);
-            ieee.setContent(ieeeContent );
-            ieeeDataTag.setIeee1609Dot2Data(ieee);
-            
-            byte sendToRsu = travelerInputData.getRsus() != null ? DdsAdvisorySituationData.RSU:DdsAdvisorySituationData.NONE;
-            byte distroType = (byte) (DdsAdvisorySituationData.IP | sendToRsu);
-            
-            // take deliverystart and stop times from SNMP object, if present
-            // else take from SDW object
-            SNMP snmp = travelerInputData.getSnmp();
-            if (null != snmp) {
-               asd = new DdsAdvisorySituationData(snmp.getDeliverystart(), snmp.getDeliverystop(), ieeeDataTag,
-                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(), sdw.getRecordId(), distroType);
-            } else {
-               asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), ieeeDataTag,
-                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(), sdw.getRecordId(), distroType);
-            }
-            
-            
-         } catch (Exception e) {
-            String errMsg = "Error AdvisorySituationData: " + e.getMessage();
-            logger.error(errMsg, e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
-         }
-      }
-
-      // Encode TIM
       try {
-         String xmlMsg = convertToXml(asd, encodableTid);
+         logger.debug("securitySvcsSignatureUri = {}", odeProperties.getSecuritySvcsSignatureUri());
+         String xmlMsg;
+         DdsAdvisorySituationData asd = null;
+         if (!odeProperties.dataSigningEnabled()) {
+            // We need to send data UNSECURED, so we should try to build the ASD as well as MessageFrame
+            asd = buildASD(travelerInputData);
+         }
+         xmlMsg = convertToXml(asd, encodableTid);
          stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlMsg);
+      } catch (JsonUtilsException | XmlUtilsException e) {
+         String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
+         logger.error(errMsg, e);
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       } catch (Exception e) {
          String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
          logger.error(errMsg, e);
@@ -347,7 +335,7 @@ public class TimController {
 
       return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue(SUCCESS, "true"));
    }
-   
+
    /**
     * Update an already-deposited TIM
     * 
@@ -359,7 +347,7 @@ public class TimController {
    @RequestMapping(value = "/tim", method = RequestMethod.PUT, produces = "application/json")
    @CrossOrigin
    public ResponseEntity<String> updateTim(@RequestBody String jsonString) {
-      
+
       return depositTim(jsonString, ODE.PUT);
    }
 
@@ -386,14 +374,152 @@ public class TimController {
     * @param value
     * @return
     */
-   public String jsonKeyValue(String key, String value) {
+   public static String jsonKeyValue(String key, String value) {
       return "{\"" + key + "\":\"" + value + "\"}";
    }
 
-   public String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj)
+//   private String convertToXml(ObjectNode encodableTidObj)
+//         throws JsonUtilsException, XmlUtilsException, ParseException {
+//
+//      logger.debug("Converting request to MessageFrame!");
+//      TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(),
+//            TravelerInputData.class);
+//      logger.debug("In order tim: {}", inOrderTid);
+//      ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
+//
+//      JsonNode timObj = inOrderTidObj.remove("tim");
+//      ObjectNode requestObj = inOrderTidObj; // with 'tim' element removed,
+//                                             // encodableTid becomes the
+//                                             // 'request' element
+//
+//      // Create valid payload from scratch
+//      OdeMsgPayload payload = null;
+//
+//      ObjectNode dataBodyObj = JsonUtils.newNode();
+//
+//      // Build a MessageFrame
+//      ObjectNode mfBodyObj = (ObjectNode) JsonUtils.newNode();
+//      mfBodyObj.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
+//      mfBodyObj.set("value", (ObjectNode) JsonUtils.newNode().set("TravelerInformation", timObj));
+//      dataBodyObj = (ObjectNode) JsonUtils.newNode().set("MessageFrame", mfBodyObj);
+//      payload = new OdeTimPayload();
+//      payload.setDataType("MessageFrame");
+//
+//      ObjectNode payloadObj = JsonUtils.toObjectNode(payload.toJson());
+//      payloadObj.set(AppContext.DATA_STRING, dataBodyObj);
+//
+//      // Create a valid metadata from scratch
+//      OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
+//      ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());
+//      metaObject.set("request", requestObj);
+//
+//      // Workaround for XML Array issue. Set a placeholder for the encodings to
+//      // be added later as a string replacement
+//      metaObject.set("encodings_palceholder", null);
+//
+//      ObjectNode message = JsonUtils.newNode();
+//      message.set(AppContext.METADATA_STRING, metaObject);
+//      message.set(AppContext.PAYLOAD_STRING, payloadObj);
+//
+//      ObjectNode root = JsonUtils.newNode();
+//      root.set("OdeAsn1Data", message);
+//
+//      // Convert to XML
+//      logger.debug("pre-xml: {}", root);
+//      String outputXml = XmlUtils.toXmlS(root);
+//      String encStr = buildEncodings();
+//      outputXml = outputXml.replace("<encodings_palceholder/>", encStr);
+//
+//      // Fix tagnames by String replacements
+//      String fixedXml = outputXml.replaceAll("tcontent>", "content>");// workaround
+//                                                                      // for the
+//                                                                      // "content"
+//                                                                      // reserved
+//                                                                      // name
+//      fixedXml = fixedXml.replaceAll("llong>", "long>"); // workaround for
+//                                                         // "long" being a type
+//                                                         // in java
+//      fixedXml = fixedXml.replaceAll("node_LL3>", "node-LL3>");
+//      fixedXml = fixedXml.replaceAll("node_LatLon>", "node-LatLon>");
+//      fixedXml = fixedXml.replaceAll("nodeLL>", "NodeLL>");
+//      fixedXml = fixedXml.replaceAll("nodeXY>", "NodeXY>");
+//      fixedXml = fixedXml.replaceAll("sequence>", "SEQUENCE>");
+//      fixedXml = fixedXml.replaceAll("geographicalPath>", "GeographicalPath>");
+//
+//      // workarounds for self-closing tags
+//      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.EMPTY_FIELD_FLAG, "");
+//      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_TRUE, "<true />");
+//      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_FALSE, "<false />");
+//
+//      // remove the surrounding <ObjectNode></ObjectNode>
+//      fixedXml = fixedXml.replace("<ObjectNode>", "");
+//      fixedXml = fixedXml.replace("</ObjectNode>", "");
+//
+//      logger.debug("Fixed XML: {}", fixedXml);
+//      return fixedXml;
+//   }
+//
+//   private String buildEncodings() throws JsonUtilsException, XmlUtilsException {
+//      ArrayNode encodings = JsonUtils.newArrayNode();
+//      encodings.add(addEncoding("MessageFrame", "MessageFrame", EncodingRule.UPER));
+//      ObjectNode encodingWrap = (ObjectNode) JsonUtils.newNode().set("wrap", encodings);
+//      String encStr = XmlUtils.toXmlS(encodingWrap).replace("</wrap><wrap>", "").replace("<wrap>", "")
+//            .replace("</wrap>", "").replace("<ObjectNode>", "<encodings>").replace("</ObjectNode>", "</encodings>");
+//      return encStr;
+//   }
+
+   private JsonNode addEncoding(String name, String type, EncodingRule rule) throws JsonUtilsException {
+      Asn1Encoding mfEnc = new Asn1Encoding(name, type, rule);
+      return JsonUtils.newNode().set("encodings", JsonUtils.toObjectNode(mfEnc.toJson()));
+   }
+
+   private DdsAdvisorySituationData buildASD(TravelerInputDataBase travelerInputData) {
+      Ieee1609Dot2DataTag ieeeDataTag = new Ieee1609Dot2DataTag();
+      Ieee1609Dot2Data ieee = new Ieee1609Dot2Data();
+      Ieee1609Dot2Content ieeeContent = new Ieee1609Dot2Content();
+      J2735MessageFrame j2735Mf = new J2735MessageFrame();
+      MessageFrame mf = new MessageFrame();
+      mf.setMessageFrame(j2735Mf);
+      ieeeContent.setUnsecuredData(mf);
+      ieee.setContent(ieeeContent);
+      ieeeDataTag.setIeee1609Dot2Data(ieee);
+
+      byte sendToRsu = travelerInputData.getRsus() != null ? DdsAdvisorySituationData.RSU
+            : DdsAdvisorySituationData.NONE;
+      byte distroType = (byte) (DdsAdvisorySituationData.IP | sendToRsu);
+
+      // take deliverystart and stop times from SNMP object, if present
+      // else take from SDW object
+      SNMP snmp = travelerInputData.getSnmp();
+
+      SDW sdw = travelerInputData.getSdw();
+      DdsAdvisorySituationData asd = null;
+      if (null != sdw) {
+         try {
+            if (null != snmp) {
+   
+               asd = new DdsAdvisorySituationData(snmp.getDeliverystart(), snmp.getDeliverystop(), ieeeDataTag,
+                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(),
+                     sdw.getRecordId(), distroType);
+               } else {
+               asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), ieeeDataTag,
+                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(),
+                     sdw.getRecordId(), distroType);
+            }
+   
+         } catch (Exception e) {
+            String errMsg = "Error AdvisorySituationDatae: " + e.getMessage();
+            logger.error(errMsg, e);
+         }
+      }
+      return asd;
+   }
+
+   String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj)
          throws JsonUtilsException, XmlUtilsException {
 
-      OdeTravelerInputData inOrderTid = (OdeTravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(), OdeTravelerInputData.class);
+      TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(
+            encodableTidObj.toString(), TravelerInputData.class);
       logger.debug("In order tim: {}", inOrderTid);
       ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
 
@@ -405,6 +531,7 @@ public class TimController {
 
       ObjectNode dataBodyObj = JsonUtils.newNode();
       if (null != asd) {
+         logger.debug("Converting request to ASD/Ieee1609Dot2Data/MessageFrame!");
          ObjectNode asdObj = JsonUtils.toObjectNode(asd.toJson());
          ObjectNode mfBodyObj = (ObjectNode) asdObj.findValue("MessageFrame");
          mfBodyObj.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
@@ -415,6 +542,8 @@ public class TimController {
 
          payload = new OdeAsdPayload(asd);
       } else {
+         logger.debug("Converting request to Ieee1609Dot2Data/MessageFrame!");
+         //Build a MessageFrame
          ObjectNode mfBodyObj = (ObjectNode) JsonUtils.newNode();
          mfBodyObj.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
          mfBodyObj.set("value", (ObjectNode) JsonUtils.newNode().set("TravelerInformation", timObj));
@@ -492,74 +621,4 @@ public class TimController {
             .replace("</ObjectNode>", "</encodings>");
       return encStr;
    }
-
-   private JsonNode addEncoding(String name, String type, EncodingRule rule) throws JsonUtilsException {
-      Asn1Encoding mfEnc = new Asn1Encoding(name, type, rule);
-      return JsonUtils.newNode().set("encodings", JsonUtils.toObjectNode(mfEnc.toJson()));
-   }
-   
-/// TODO - old publish method via GSON, results in unordered output
-//   private void publish(String request) throws JsonUtilsException, XmlUtilsException {
-//      
-//      Tim inOrderTim = (Tim) JsonUtils.jacksonFromJson(request, Tim.class);
-//      logger.debug("In order tim: {}", inOrderTim);
-//      JSONObject requestObj = JsonUtils.toJSONObject(inOrderTim.toJson());
-//      
-//      //Create valid payload from scratch
-//      OdeMsgPayload payload = new OdeMsgPayload();
-//      payload.setDataType("us.dot.its.jpo.ode.model.OdeHexByteArray");
-//      JSONObject payloadObj = JsonUtils.toJSONObject(payload.toJson());
-//
-//      //Create TravelerInformation
-//      JSONObject timObject = new JSONObject();
-//      //requestObj = new JSONObject(requestObj.toString().replace("\"tcontent\":","\"content\":"));
-//      timObject.put("TravelerInformation", requestObj.remove("tim")); //with "tim" removed, the remaining requestObject must go in as "request" element of metadata
-//      
-//      //Create a MessageFrame
-//      JSONObject mfObject = new JSONObject();
-//      mfObject.put("value", timObject);//new JSONObject().put("TravelerInformation", requestObj));
-//      mfObject.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
-//      
-//      JSONObject dataObj = new JSONObject();
-//      dataObj.put("MessageFrame", mfObject);
-//      
-//      payloadObj.put(AppContext.DATA_STRING, dataObj);
-//      
-//      //Create a valid metadata from scratch
-//      OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
-//      
-//      JSONObject metaObject = JsonUtils.toJSONObject(metadata.toJson());
-//      metaObject.put("request", requestObj);
-//      
-//      //Create an encoding element
-//      //Asn1Encoding enc = new Asn1Encoding("/payload/data/MessageFrame", "MessageFrame", EncodingRule.UPER);
-//      Asn1Encoding enc = new Asn1Encoding("root", "MessageFrame", EncodingRule.UPER);
-//      
-//      // TODO this nesting is to match encoder schema
-//      metaObject.put("encodings", new JSONObject().put("encodings", JsonUtils.toJSONObject(enc.toJson())));
-//      
-//      JSONObject message = new JSONObject();
-//      message.put(AppContext.METADATA_STRING, metaObject);
-//      message.put(AppContext.PAYLOAD_STRING, payloadObj);
-//      
-//      JSONObject root = new JSONObject();
-//      root.put("OdeAsn1Data", message);
-//      
-//      
-//      /// String replacements
-//      logger.debug("pre-xml tim: {}", root);
-//      String outputXml = XML.toString(root);
-//      String fixedXml = outputXml.replaceAll("tcontent>","content>");// workaround for the "content" reserved name
-//      fixedXml = fixedXml.replaceAll("llong>","long>"); // workaround for "long" being a type in java
-//      
-//      // workarounds for self-closing tags
-//      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.EMPTY_FIELD_FLAG, "");
-//      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_TRUE, "<true />");
-//      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_FALSE, "<false />");
-//      
-//      logger.debug("Fixed XML: {}", fixedXml);
-//      messageProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, fixedXml);
-//   }
-
-
 }

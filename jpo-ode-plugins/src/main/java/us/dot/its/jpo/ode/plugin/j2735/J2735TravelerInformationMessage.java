@@ -432,7 +432,6 @@ public class J2735TravelerInformationMessage extends OdeObject {
          private long directionality;
          private boolean closedPath;
          private String direction;
-         private String regionType;
          private String description;
          private Path path;
          private Geometry geometry;
@@ -765,14 +764,6 @@ public class J2735TravelerInformationMessage extends OdeObject {
 
          public void setDescription(String description) {
             this.description = description;
-         }
-
-         public String getregionType() {
-            return regionType;
-         }
-
-         public void setregionType(String regionType) {
-            this.regionType = regionType;
          }
 
          public String getDirection() {

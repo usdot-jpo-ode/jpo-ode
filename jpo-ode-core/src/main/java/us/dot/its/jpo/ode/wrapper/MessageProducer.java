@@ -110,7 +110,7 @@ public class MessageProducer<K, V> {
              @Override
              public void onCompletion(RecordMetadata returnMetadata, Exception e) {
                 if (null != e) {
-                   logger.debug("Error sending record.", e);
+                   logger.error("Error sending record.", e);
                 } else {
                    logger.debug("Completed publish to topic: {}, offset: {}, partition: {}", returnMetadata.topic(), returnMetadata.offset(), returnMetadata.partition());
                 }
@@ -141,7 +141,7 @@ public class MessageProducer<K, V> {
          @Override
          public void onCompletion(RecordMetadata returnMetadata, Exception e) {
             if (null != e) {
-               logger.debug("Error sending record.", e);
+               logger.error("Error sending record.", e);
             } else {
                logger.debug("Record metadata: {}", returnMetadata);
             }

@@ -104,3 +104,7 @@ jpo-ode-consumer-example/target/
 /SNMP_Error.log
 /Events.log
 /uploads
+
+#########################
+### jpo-security-svcs ###
+/jpo-security-svcs/*.log
