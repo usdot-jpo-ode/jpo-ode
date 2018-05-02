@@ -79,8 +79,8 @@ public class OdeBsmDataCreatorHelper {
          object.remove(AppContext.ENCODINGS_STRING);
       }
       
-      OdeLogMetadata metadata = (OdeLogMetadata) JsonUtils.fromJson(
-         metadataNode.toString(), OdeLogMetadata.class);
+      OdeBsmMetadata metadata = (OdeBsmMetadata) JsonUtils.fromJson(
+         metadataNode.toString(), OdeBsmMetadata.class);
       
 //      JSONObject metadata = bsmJSONData.getJSONObject(AppContext.METADATA_STRING);
 //      metadata.put("payloadType", OdeBsmPayload.class.getSimpleName());
