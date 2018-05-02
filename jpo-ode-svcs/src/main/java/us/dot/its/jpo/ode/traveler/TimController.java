@@ -300,12 +300,12 @@ public class TimController {
       }
 
       // Craft ASN-encodable TIM
-      ObjectNode encodableTid;
+      ObjectNode encodableTim;
       try {
-         encodableTid = TravelerMessageFromHumanToAsnConverter
-               .changeTravelerInformationToAsnValues(JsonUtils.toObjectNode(travelerInputData.toJson()));
+         encodableTim = JsonUtils.toObjectNode(travelerInputData.toJson());
+         TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim(encodableTim);
 
-         logger.debug("Encodable TravelerInputData: {}", encodableTid);
+         logger.debug("Encodable TravelerInformationMessage: {}", encodableTim);
 
       } catch (JsonUtilsException e) {
          String errMsg = "Error converting to encodable TravelerInputData.";
@@ -321,7 +321,7 @@ public class TimController {
             // We need to send data UNSECURED, so we should try to build the ASD as well as MessageFrame
             asd = buildASD(travelerInputData);
          }
-         xmlMsg = convertToXml(asd, encodableTid);
+         xmlMsg = convertToXml(asd, encodableTim);
          stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlMsg);
       } catch (JsonUtilsException | XmlUtilsException e) {
          String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
@@ -377,96 +377,6 @@ public class TimController {
    public static String jsonKeyValue(String key, String value) {
       return "{\"" + key + "\":\"" + value + "\"}";
    }
-
-//   private String convertToXml(ObjectNode encodableTidObj)
-//         throws JsonUtilsException, XmlUtilsException, ParseException {
-//
-//      logger.debug("Converting request to MessageFrame!");
-//      TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(),
-//            TravelerInputData.class);
-//      logger.debug("In order tim: {}", inOrderTid);
-//      ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
-//
-//      JsonNode timObj = inOrderTidObj.remove("tim");
-//      ObjectNode requestObj = inOrderTidObj; // with 'tim' element removed,
-//                                             // encodableTid becomes the
-//                                             // 'request' element
-//
-//      // Create valid payload from scratch
-//      OdeMsgPayload payload = null;
-//
-//      ObjectNode dataBodyObj = JsonUtils.newNode();
-//
-//      // Build a MessageFrame
-//      ObjectNode mfBodyObj = (ObjectNode) JsonUtils.newNode();
-//      mfBodyObj.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
-//      mfBodyObj.set("value", (ObjectNode) JsonUtils.newNode().set("TravelerInformation", timObj));
-//      dataBodyObj = (ObjectNode) JsonUtils.newNode().set("MessageFrame", mfBodyObj);
-//      payload = new OdeTimPayload();
-//      payload.setDataType("MessageFrame");
-//
-//      ObjectNode payloadObj = JsonUtils.toObjectNode(payload.toJson());
-//      payloadObj.set(AppContext.DATA_STRING, dataBodyObj);
-//
-//      // Create a valid metadata from scratch
-//      OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
-//      ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());
-//      metaObject.set("request", requestObj);
-//
-//      // Workaround for XML Array issue. Set a placeholder for the encodings to
-//      // be added later as a string replacement
-//      metaObject.set("encodings_palceholder", null);
-//
-//      ObjectNode message = JsonUtils.newNode();
-//      message.set(AppContext.METADATA_STRING, metaObject);
-//      message.set(AppContext.PAYLOAD_STRING, payloadObj);
-//
-//      ObjectNode root = JsonUtils.newNode();
-//      root.set("OdeAsn1Data", message);
-//
-//      // Convert to XML
-//      logger.debug("pre-xml: {}", root);
-//      String outputXml = XmlUtils.toXmlS(root);
-//      String encStr = buildEncodings();
-//      outputXml = outputXml.replace("<encodings_palceholder/>", encStr);
-//
-//      // Fix tagnames by String replacements
-//      String fixedXml = outputXml.replaceAll("tcontent>", "content>");// workaround
-//                                                                      // for the
-//                                                                      // "content"
-//                                                                      // reserved
-//                                                                      // name
-//      fixedXml = fixedXml.replaceAll("llong>", "long>"); // workaround for
-//                                                         // "long" being a type
-//                                                         // in java
-//      fixedXml = fixedXml.replaceAll("node_LL3>", "node-LL3>");
-//      fixedXml = fixedXml.replaceAll("node_LatLon>", "node-LatLon>");
-//      fixedXml = fixedXml.replaceAll("nodeLL>", "NodeLL>");
-//      fixedXml = fixedXml.replaceAll("nodeXY>", "NodeXY>");
-//      fixedXml = fixedXml.replaceAll("sequence>", "SEQUENCE>");
-//      fixedXml = fixedXml.replaceAll("geographicalPath>", "GeographicalPath>");
-//
-//      // workarounds for self-closing tags
-//      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.EMPTY_FIELD_FLAG, "");
-//      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_TRUE, "<true />");
-//      fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.BOOLEAN_OBJECT_FALSE, "<false />");
-//
-//      // remove the surrounding <ObjectNode></ObjectNode>
-//      fixedXml = fixedXml.replace("<ObjectNode>", "");
-//      fixedXml = fixedXml.replace("</ObjectNode>", "");
-//
-//      logger.debug("Fixed XML: {}", fixedXml);
-//      return fixedXml;
-//   }
-//
-//   private String buildEncodings() throws JsonUtilsException, XmlUtilsException {
-//      ArrayNode encodings = JsonUtils.newArrayNode();
-//      encodings.add(addEncoding("MessageFrame", "MessageFrame", EncodingRule.UPER));
-//      ObjectNode encodingWrap = (ObjectNode) JsonUtils.newNode().set("wrap", encodings);
-//      String encStr = XmlUtils.toXmlS(encodingWrap).replace("</wrap><wrap>", "").replace("<wrap>", "")
-//            .replace("</wrap>", "").replace("<ObjectNode>", "<encodings>").replace("</ObjectNode>", "</encodings>");
-//      return encStr;
-//   }
 
    private JsonNode addEncoding(String name, String type, EncodingRule rule) throws JsonUtilsException {
       Asn1Encoding mfEnc = new Asn1Encoding(name, type, rule);

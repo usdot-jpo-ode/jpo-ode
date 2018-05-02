@@ -2,25 +2,16 @@ package us.dot.its.jpo.ode.importer.parser;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.time.ZonedDateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
-import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
-import us.dot.its.jpo.ode.util.DateTimeUtils;
 
-public class LogFileParser implements FileParser {
+public abstract class LogFileParser implements FileParser {
    private static final Logger logger = LoggerFactory.getLogger(LogFileParser.class);
 
    public static final int BUFFER_SIZE = 4096;
-   public static final int UTC_TIME_IN_SEC_LENGTH = 4;
-   public static final int MSEC_LENGTH = 2;
-   public static final int VERIFICATION_STATUS_LENGTH = 1;
-   public static final int LENGTH_LENGTH = 2;
-
-   protected ParserStatus status;
 
    protected long bundleId;
    protected transient byte[] readBuffer = new byte[BUFFER_SIZE];
@@ -28,12 +19,11 @@ public class LogFileParser implements FileParser {
 
    protected String filename;
    protected RecordType recordType;
-   protected long utcTimeInSec;
-   protected short mSec;
-   protected SecurityResultCode securityResultCode;
-   protected short length;
-   protected byte[] payload;
 
+   protected LocationParser locationParser;
+   protected TimeParser timeParser;
+   protected SecurityResultCodeParser secResCodeParser;
+   protected PayloadParser payloadParser;
 
    public LogFileParser(long bundleId) {
       super();
@@ -66,16 +56,12 @@ public class LogFileParser implements FileParser {
    public ParserStatus parseFile(BufferedInputStream bis, String fileName) 
          throws FileParserException {
 
-      status = ParserStatus.INIT;
-
       if (getStep() == 0) {
          setFilename(fileName);
          setStep(getStep() + 1);
       }
 
-      status = ParserStatus.COMPLETE;
-
-      return status;
+      return ParserStatus.COMPLETE;
    }
 
    public ParserStatus parseStep(BufferedInputStream bis, int length) throws FileParserException {
@@ -119,6 +105,22 @@ public class LogFileParser implements FileParser {
       return this;
    }
 
+   protected int resetStep() {
+      return setStep(0).getStep();
+   }
+   
+   protected ParserStatus nextStep(
+      BufferedInputStream bis, 
+      String fileName, 
+      LogFileParser parser) throws FileParserException {
+      
+      ParserStatus status = parser.parseFile(bis, fileName);
+      if (status == ParserStatus.COMPLETE) {
+         step++;
+      }
+      return status;
+   }
+
    public String getFilename() {
       return filename;
    }
@@ -146,62 +148,36 @@ public class LogFileParser implements FileParser {
       return this;
    }
 
-   public long getUtcTimeInSec() {
-      return utcTimeInSec;
+   public LocationParser getLocationParser() {
+      return locationParser;
    }
 
-   public LogFileParser setUtcTimeInSec(long utcTimeInSec) {
-      this.utcTimeInSec = utcTimeInSec;
-      return this;
+   public void setLocationParser(LocationParser locationParser) {
+      this.locationParser = locationParser;
    }
 
-   public short getmSec() {
-      return mSec;
+   public TimeParser getTimeParser() {
+      return timeParser;
    }
 
-   public LogFileParser setmSec(short mSec) {
-      this.mSec = mSec;
-      return this;
+   public void setTimeParser(TimeParser timeParser) {
+      this.timeParser = timeParser;
    }
 
-   public SecurityResultCode getSecurityResultCode() {
-      return securityResultCode;
+   public SecurityResultCodeParser getSecResCodeParser() {
+      return secResCodeParser;
    }
 
-   public void setSecurityResultCode(SecurityResultCode securityResultCode) {
-      this.securityResultCode = securityResultCode;
+   public void setSecResCodeParser(SecurityResultCodeParser secResCodeParser) {
+      this.secResCodeParser = secResCodeParser;
    }
 
-   public void setSecurityResultCode(byte code) {
-      try {
-         setSecurityResultCode(SecurityResultCode.values()[code]);
-      } catch (Exception e) {
-         logger.error("Invalid SecurityResultCode: {}. Valid values are {}-{} inclusive", 
-            code, 0, SecurityResultCode.values());
-         setSecurityResultCode(SecurityResultCode.unknown);
-      }
+   public PayloadParser getPayloadParser() {
+      return payloadParser;
    }
 
-   public short getLength() {
-      return length;
-   }
-
-   public LogFileParser setLength(short length) {
-      this.length = length;
-      return this;
-   }
-
-   public byte[] getPayload() {
-      return payload;
-   }
-
-   public LogFileParser setPayload(byte[] payload) {
-      this.payload = payload;
-      return this;
-   }
-
-   public ZonedDateTime getGeneratedAt() {
-      return DateTimeUtils.isoDateTime(getUtcTimeInSec() * 1000 + getmSec());
+   public void setPayloadParser(PayloadParser payloadParser) {
+      this.payloadParser = payloadParser;
    }
 
 }

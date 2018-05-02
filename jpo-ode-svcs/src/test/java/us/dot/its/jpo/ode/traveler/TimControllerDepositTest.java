@@ -130,7 +130,7 @@ public class TimControllerDepositTest {
             mockObjectMessageProducer.send(anyString, null, (OdeObject) any);
             times = 1;
 
-            TravelerMessageFromHumanToAsnConverter.changeTravelerInformationToAsnValues((JsonNode) any);
+            TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim((JsonNode) any);
             result = new JsonUtilsException("expectedException123", null);
          }
       };
@@ -155,7 +155,7 @@ public class TimControllerDepositTest {
             mockStringMessageProducer.send(anyString, null, anyString);
             times = 1;
 
-            TravelerMessageFromHumanToAsnConverter.changeTravelerInformationToAsnValues((JsonNode) any);
+            TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim((JsonNode) any);
             result = mockObjectNode;
             
             testTimController.convertToXml((DdsAdvisorySituationData) any, (ObjectNode) any);      
@@ -183,7 +183,7 @@ public class TimControllerDepositTest {
             mockStringMessageProducer.send(anyString, null, anyString);
             times = 2;
 
-            TravelerMessageFromHumanToAsnConverter.changeTravelerInformationToAsnValues((JsonNode) any);
+            TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim((JsonNode) any);
             result = mockObjectNode;
 
             JsonUtils.jacksonFromJson(anyString, OdeTravelerInputData.class);

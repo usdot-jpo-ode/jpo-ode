@@ -4,13 +4,14 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 //TODO open-ode
 //import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.OdeBsmData;
-import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;
+import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.plugin.j2735.builders.BsmBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.BsmPart2ContentBuilder.BsmPart2ContentBuilderException;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -63,13 +64,16 @@ public class OdeBsmDataCreatorHelper {
 
    public static OdeBsmData createOdeBsmData(String consumedData) 
          throws JsonProcessingException, IOException, XmlUtilsException, BsmPart2ContentBuilderException  {
-//    JsonNode consumed = JsonUtils.toObjectNode(consumedData);
-      JsonNode consumed = XmlUtils.toObjectNode(consumedData);
+      ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 
       JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
+      if (metadataNode instanceof ObjectNode) {
+         ObjectNode object = (ObjectNode) metadataNode;
+         object.remove(AppContext.ENCODINGS_STRING);
+      }
       
-      OdeBsmMetadata metadata = (OdeBsmMetadata) JsonUtils.fromJson(
-         metadataNode.toString(), OdeBsmMetadata.class);
+      OdeLogMetadata metadata = (OdeLogMetadata) JsonUtils.fromJson(
+         metadataNode.toString(), OdeLogMetadata.class);
       
 //      JSONObject metadata = bsmJSONData.getJSONObject(AppContext.METADATA_STRING);
 //      metadata.put("payloadType", OdeBsmPayload.class.getSimpleName());

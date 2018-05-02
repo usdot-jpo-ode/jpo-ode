@@ -24,7 +24,7 @@ public class TravelerMessageFromHumanToAsnConverter {
    public static final String BOOLEAN_OBJECT_TRUE = "BOOLEAN_OBJECT_TRUE";
    public static final String BOOLEAN_OBJECT_FALSE = "BOOLEAN_OBJECT_FALSE";
 
-   public static ObjectNode changeTravelerInformationToAsnValues(JsonNode timData) throws JsonUtilsException {
+   public static void convertTravelerInputDataToEncodableTim(JsonNode tid) throws JsonUtilsException {
       // msgCnt MsgCount,
       // timeStamp MinuteOfTheYear OPTIONAL
       // packetID UniqueMSGID OPTIONAL
@@ -32,10 +32,9 @@ public class TravelerMessageFromHumanToAsnConverter {
       // dataFrames TravelerDataFrameList
 
       // Cast to ObjectNode to allow manipulation in place
-      ObjectNode replacedTim = (ObjectNode) timData;
-      ObjectNode timDataObjectNode = (ObjectNode) replacedTim.get("tim");
+      ObjectNode timDataObjectNode = (ObjectNode) tid.get("tim");
       JsonNode index = timDataObjectNode.remove("index");
-      ObjectNode ode = (ObjectNode) replacedTim.get("ode");
+      ObjectNode ode = (ObjectNode) tid.get("ode");
       if (null != ode) {
          ode.set("index", index);
       }
@@ -50,11 +49,8 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // dataFrames are required
       timDataObjectNode.set("dataFrames", transformDataFrames(timDataObjectNode.get("dataframes")));
-      timDataObjectNode.remove("dataframes");
-
-      return replacedTim;
-
-      }
+         timDataObjectNode.remove("dataframes");
+   }
       
    public static JsonNode transformDataFrames(JsonNode dataFrames) throws JsonUtilsException {
 
@@ -1033,9 +1029,49 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       ObjectNode innerNode = (ObjectNode) JsonUtils.newNode().set(delta.asText(), latLong);
       ObjectNode deltaNode = (ObjectNode) JsonUtils.newNode().set("delta", innerNode);
+      // ObjectNode outerNode = (ObjectNode) JsonUtils.newNode().set("NodeLL",
+      // deltaNode);
 
       return deltaNode;
       
+      
+      
+      ///////
+
+      // NodeOffsetPointXY contains one of:
+      // node-XY1 Node-XY-20b, -- node is within 5.11m of last node
+      // node-XY2 Node-XY-22b, -- node is within 10.23m of last node
+      // node-XY3 Node-XY-24b, -- node is within 20.47m of last node
+      // node-XY4 Node-XY-26b, -- node is within 40.96m of last node
+      // node-XY5 Node-XY-28b, -- node is within 81.91m of last node
+      // node-XY6 Node-XY-32b, -- node is within 327.67m of last node
+      // node-LatLon Node-LLmD-64b, -- node is a full 32b Lat/Lon range
+
+//      ObjectNode updatedNode = (ObjectNode) node;
+//      String nodeType = node.get("delta").asText();
+//
+//      if (nodeType.equals("node-XY1")) {
+//         updatedNode.set("node-XY1", replaceNode_XY1(node));
+//      } else if (nodeType.equals("node-XY2")) {
+//         updatedNode.set("node-XY2", replaceNode_XY2(node));
+//
+//      } else if (nodeType.equals("node-XY3")) {
+//         updatedNode.set("node-XY3", replaceNode_XY3(node));
+//
+//      } else if (nodeType.equals("node-XY4")) {
+//         updatedNode.set("node-XY4", replaceNode_XY4(node));
+//
+//      } else if (nodeType.equals("node-XY5")) {
+//         updatedNode.set("node-XY5", replaceNode_XY5(node));
+//
+//      } else if (nodeType.equals("node-XY6")) {
+//         updatedNode.set("node-XY6", replaceNode_XY6(node));
+//
+//      } else if (nodeType.equals("node-LatLon")) {
+//         updatedNode.set("node-LatLon", replaceNode_LatLon(node));
+//      }
+//
+//      return updatedNode;
    }
 
    public static JsonNode replaceNode_XY1(JsonNode jsonNode) {

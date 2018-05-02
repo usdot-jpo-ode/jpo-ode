@@ -7,13 +7,16 @@ import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.FileAsn1CodecPublisher;
+import us.dot.its.jpo.ode.coder.FileAsn1CodecPublisher.FileAsn1CodecPublisherException;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 // Removed for ODE-559
 //import us.dot.its.jpo.ode.coder.FileDecoderPublisher;
@@ -27,6 +30,8 @@ public class ImporterProcessor {
    private FileAsn1CodecPublisher codecPublisher;
    private OdeProperties odeProperties;
    private ImporterFileType fileType;
+   private Pattern gZipPattern = Pattern.compile("application/.*gzip");
+   private Pattern zipPattern = Pattern.compile("application/.*zip.*");
 
    public ImporterProcessor(OdeProperties odeProperties, ImporterFileType fileType) {
    // Removed for ODE-559
@@ -36,7 +41,7 @@ public class ImporterProcessor {
       this.fileType = fileType;
    }
 
-   public void processDirectory(Path dir, Path backupDir, Path failureDir) {
+   public int processDirectory(Path dir, Path backupDir, Path failureDir) {
       int count = 0;
       // Process files already in the directory
       //logger.debug("Started processing files at location: {}", dir);
@@ -56,6 +61,7 @@ public class ImporterProcessor {
       } catch (Exception e) {
          logger.error("Error processing files.", e);
       }
+      return count;
    }
 
    public void processAndBackupFile(Path filePath, Path backupDir, Path failureDir) {
@@ -80,11 +86,23 @@ public class ImporterProcessor {
       
       try {
          inputStream = new FileInputStream(filePath.toFile());
-         if (Files.probeContentType(filePath).equals("application/gzip")) { 
-            inputStream = new GZIPInputStream(inputStream);
+         String probeContentType = Files.probeContentType(filePath);
+         if (probeContentType != null) { 
+            if (gZipPattern.matcher(probeContentType).matches()) {
+               inputStream = new GZIPInputStream(inputStream);
+               bis = publishFile(filePath, inputStream);
+            } else if (zipPattern.matcher(probeContentType).matches()) {
+               inputStream = new ZipInputStream(inputStream);
+               ZipInputStream zis = (ZipInputStream)inputStream;
+               while (zis.getNextEntry() != null) {
+                  bis = publishFile(filePath, inputStream);
+               }
+            } else {
+               throw new IOException("Unsupported file content type: " + probeContentType);
+            }
+         } else {
+            bis = publishFile(filePath, inputStream);
          }
-         bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
-         codecPublisher.publishFile(filePath, bis, fileType);
       } catch (Exception e) {
          success = false;
          logger.error("Failed to open or process file: " + filePath, e);
@@ -115,5 +133,13 @@ public class ImporterProcessor {
       } catch (IOException e) {
          logger.error("Unable to backup file: " + filePath, e);
       }
+   }
+
+   private BufferedInputStream publishFile(Path filePath, InputStream inputStream)
+         throws FileAsn1CodecPublisherException {
+      BufferedInputStream bis;
+      bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
+      codecPublisher.publishFile(filePath, bis, fileType);
+      return bis;
    }
 }

@@ -28,13 +28,15 @@ import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.http.InternalServerErrorException;
+import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.model.OdeTimData;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.TravelerInformation;
-import us.dot.its.jpo.ode.services.asn1.Asn1EncodedDataRouter;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -51,6 +53,14 @@ public class TimControllerTest {
 
    @Mocked
    OdeTravelerInputData mockTravelerInputData;
+   @Mocked
+   OdeTravelerInformationMessage mockTim;
+   @Mocked
+   MessageProducer<String, OdeObject> mockProducer;
+   @Mocked
+   MessageProducer<String, String> mockStringMsgProducer;
+   @Mocked
+   ObjectNode mockEncodableTid;
    @Mocked
    TravelerInformation mockTravelerInfo;
 //TODO open-ode   
@@ -95,19 +105,6 @@ public class TimControllerTest {
    public void badRequestShouldThrowException() {
 
       try {
-         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
-            {
-             //TODO open-ode   
-//               mockTravelerIData.toString();
-               result = "something";
-               minTimes = 0;
-            }
-         };
-      } catch (Exception e) {
-         fail("Unexpected Exception in expectations block: " + e);
-      }
-
-      try {
          ResponseEntity<String> response = testTimController.postTim("test123");
          assertEquals("{\"error\":\"Malformed or non-compliant JSON.\"}", response.getBody());
       } catch (Exception e) {
@@ -123,23 +120,16 @@ public class TimControllerTest {
 
    @Ignore
    @Test
-   public void builderErrorShouldThrowException() {
+   public void testHappyPath(@Mocked ObjectNode mockTid) {
 
+      
+      String tid = "{\"ode\":{\"version\":2},\"tim\":{\"index\":\"10\",\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\",\"packetID\":\"EC9C236B0000000000\",\"urlB\":\"null\",\"dataframes\":[{\"sspTimRights\":\"0\",\"frameType\":\"advisory\",\"msgId\":{\"roadSignID\":{\"position\":{\"latitude\":\"41.678473\",\"longitude\":\"-108.782775\",\"elevation\":\"917.1432\"},\"viewAngle\":\"1010101010101010\",\"mutcdCode\":\"warning\",\"crc\":\"0000000000000000\"}},\"startDateTime\":\"2017-12-01T17:47:11-05:00\",\"durationTime\":\"22\",\"priority\":\"0\",\"sspLocationRights\":\"3\",\"regions\":[{\"name\":\"bob\",\"regulatorID\":\"23\",\"segmentID\":\"33\",\"anchorPosition\":{\"latitude\":\"41.678473\",\"longitude\":\"-108.782775\",\"elevation\":\"917.1432\"},\"laneWidth\":\"7\",\"directionality\":\"3\",\"closedPath\":\"false\",\"direction\":\"1010101010101010\",\"description\":\"geometry\",\"geometry\":{\"direction\":\"1010101010101010\",\"extent\":\"1\",\"laneWidth\":\"33\",\"circle\":{\"position\":{\"latitude\":\"41.678473\",\"longitude\":\"-108.782775\",\"elevation\":\"917.1432\"},\"radius\":\"15\",\"units\":\"7\"}}}],\"sspMsgTypes\":\"2\",\"sspMsgContent\":\"3\",\"content\":\"Advisory\",\"items\":[\"125\",\"some text\",\"250\",\"'98765\"],\"url\":\"null\"}]},\"rsus\":[{\"rsuTarget\":\"127.0.0.1\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":\"0\",\"rsuTimeout\":\"2000\"},{\"rsuTarget\":\"127.0.0.2\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"1000\"},{\"rsuTarget\":\"127.0.0.3\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"1000\"}],\"sdw\":{\"ttl\":\"oneweek\",\"serviceRegion\":{\"nwCorner\":{\"latitude\":\"44.998459\",\"longitude\":\"-111.040817\"},\"seCorner\":{\"latitude\":\"41.104674\",\"longitude\":\"-104.111312\"}}}}";
+//      String encodableTim = "{\"tim\":{\"msgCnt\":13,\"timeStamp\":102607,\"packetID\":\"EC9C236B0000000000\",\"urlB\":\"null\",\"dataFrames\":[{\"TravelerDataFrame\":{\"sspTimRights\":\"0\",\"frameType\":{\"advisory\":\"EMPTY_TAG\"},\"msgId\":{\"roadSignID\":{\"position\":{\"lat\":416784730,\"long\":-1087827750,\"elevation\":9171},\"viewAngle\":\"1010101010101010\",\"mutcdCode\":{\"warning\":\"EMPTY_TAG\"},\"crc\":\"0000\"}},\"priority\":0,\"sspLocationRights\":3,\"regions\":[{\"GeographicalPath\":{\"name\":\"bob\",\"laneWidth\":700,\"directionality\":{\"both\":\"EMPTY_TAG\"},\"closedPath\":\"BOOLEAN_OBJECT_FALSE\",\"direction\":\"1010101010101010\",\"description\":{\"geometry\":{\"direction\":\"1010101010101010\",\"extent\":1,\"laneWidth\":3300,\"circle\":{\"radius\":15,\"units\":7,\"center\":{\"lat\":416784730,\"long\":-1087827750,\"elevation\":9171}}}},\"id\":{\"region\":23,\"id\":33},\"anchor\":{\"lat\":416784730,\"long\":-1087827750,\"elevation\":9171}}}],\"url\":\"null\",\"sspMsgRights2\":3,\"sspMsgRights1\":2,\"duratonTime\":22,\"startYear\":2017,\"startTime\":482027,\"tcontent\":{\"advisory\":{\"SEQUENCE\":[{\"item\":{\"itis\":125}},{\"item\":{\"text\":\"some text\"}},{\"item\":{\"itis\":250}},{\"item\":{\"text\":\"98765\"}}]}}}}]},\"ode\":{\"version\":2,\"index\":10,\"verb\":0},\"sdw\":{\"serviceRegion\":{\"nwCorner\":{\"latitude\":44.998459,\"longitude\":-111.040817},\"seCorner\":{\"latitude\":41.104674,\"longitude\":-104.111312}},\"ttl\":\"oneweek\"},\"rsus\":[{\"rsuTarget\":\"127.0.0.1\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":0,\"rsuTimeout\":2000},{\"rsuTarget\":\"127.0.0.2\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":1,\"rsuTimeout\":1000},{\"rsuTarget\":\"127.0.0.3\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":1,\"rsuTimeout\":1000}]}";
       try {
-         new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
+         new Expectations() {
             {
-               mockTravelerInputData.toString();
-               result = "something";
-               minTimes = 0;
-
-               JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
-               result = mockTravelerInputData;
-               mockTravelerInputData.toJson(true);
-               result = "mockTim";
-
-             //TODO open-ode   
-//               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
-//               result = new Exception(new IOException("ExceptionInception"));
+               mockProducer.send(anyString, anyString, (OdeTimData)any);
+               mockStringMsgProducer.send(anyString, anyString, anyString);
             }
          };
       } catch (Exception e) {
@@ -147,8 +137,8 @@ public class TimControllerTest {
       }
 
       try {
-         ResponseEntity<String> response = testTimController.postTim("test123");
-         assertTrue(response.getBody().contains("Request does not match schema:"));
+         ResponseEntity<String> response = testTimController.postTim(tid);
+         assertTrue(response.getBody().contains("Success"));
       } catch (Exception e) {
          fail("Unexpected exception " + e);
       }
@@ -491,7 +481,7 @@ public class TimControllerTest {
                new SnmpSession((RSU) any);
                result = new IOException("testException123");
                
-               JsonUtils.fromJson(anyString, (Class) any);
+               JsonUtils.fromJson(anyString, (Class<?>) any);
                result = null;
             }
          };
@@ -509,7 +499,7 @@ public class TimControllerTest {
                new SnmpSession((RSU) any);
                result = new NullPointerException("testException123");
                
-               JsonUtils.fromJson(anyString, (Class) any);
+               JsonUtils.fromJson(anyString, (Class<?>) any);
                result = null;
             }
          };
@@ -529,8 +519,9 @@ public class TimControllerTest {
       testTravelerinputData.setRequestID("00000000");
       testTravelerinputData.setSeqID(5);
       
-      ObjectNode encodableTid = TravelerMessageFromHumanToAsnConverter
-            .changeTravelerInformationToAsnValues(JsonUtils.toObjectNode(testTravelerinputData.toJson()));
+      ObjectNode encodableTid = JsonUtils.toObjectNode(testTravelerinputData.toJson());
+      TravelerMessageFromHumanToAsnConverter
+            .convertTravelerInputDataToEncodableTim(encodableTid);
 
       assertEquals("", testTimController.convertToXml(testTravelerinputData, encodableTid));
    }

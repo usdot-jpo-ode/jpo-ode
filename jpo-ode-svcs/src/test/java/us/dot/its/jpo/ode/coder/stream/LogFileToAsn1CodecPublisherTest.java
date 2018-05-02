@@ -12,10 +12,8 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
-import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
-import us.dot.its.jpo.ode.importer.parser.TimLogFileParser;
 
 public class LogFileToAsn1CodecPublisherTest {
 
@@ -29,7 +27,7 @@ public class LogFileToAsn1CodecPublisherTest {
    LogFileParser capturingLogFileParser;
 
    @Mocked
-   TimLogFileParser mockTimLogFileParser;
+   LogFileParser mockTimLogFileParser;
 
    @Test
    public void testPublishEOF() throws Exception {

@@ -1,25 +1,25 @@
 package us.dot.its.jpo.ode.model;
 
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
 
 public class OdeTimPayload extends OdeMsgPayload {
    
    private static final long serialVersionUID = 7061315628111448390L;
 
    public OdeTimPayload() {
-       this(new J2735TravelerInformationMessage());
+       this(new OdeTravelerInformationMessage());
    }
 
-   public OdeTimPayload(J2735TravelerInformationMessage tim) {
+   public OdeTimPayload(OdeTravelerInformationMessage tim) {
        super(tim);
        this.setData(tim);
    }
 
-   public J2735TravelerInformationMessage getTim() {
-       return (J2735TravelerInformationMessage) getData();
+   public OdeTravelerInformationMessage getTim() {
+       return (OdeTravelerInformationMessage) getData();
    }
 
-   public void setTim(J2735TravelerInformationMessage tim) {
+   public void setTim(OdeTravelerInformationMessage tim) {
        setData(tim);
    }
 
