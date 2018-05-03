@@ -3,7 +3,7 @@ package us.dot.its.jpo.ode.importer.parser;
 /**
  * POJO class for TIM log file location data
  */
-public class TimLogLocation {
+public class LogLocation {
 
    private int latitude;
    private int longitude;
@@ -11,7 +11,7 @@ public class TimLogLocation {
    private short speed;
    private short heading;
 
-   public TimLogLocation() {
+   public LogLocation() {
       super();
    }
 

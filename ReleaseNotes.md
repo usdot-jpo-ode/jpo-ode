@@ -1,5 +1,21 @@
 ## ODE Release Notes ##
 -----------------------
+### Sprint 37
+ODE-745	Updated ODE documentation to reflect actual implementation of the ODE output interface schema
+ODE-763	Added support for TIMs with ITIS custom text
+ODE-764	Fixed how Trailer Mass was calculated
+ODE-768 Created a repository of ASN.1 schema files on usdot-jpo-ode GitHub organization based on scms-asn to eliminate dependency on CAMP SCMS and avoid build failures due to scms-asn site outages. All references to CAMP SCMS repository was changed to point to usdot-jpo-ode/scms-asn1 repository.
+### Sprint 36
+ODE-741 Added capability to load Explicit Enrollment Certificates
+### Sprint 35
+ODE-736 Added capability to configure Record ID of SDW TIMs
+### Sprint 34
+ODE-733 Fixed a bug where single-byte OCTET STRINGs were being encoded incorrectly
+### Sprint 33
+ODE-560 Added capability to Receive Compressed Log Files
+ODE-707 Fixed a bug resulting in first TIM deposit after startup not propagating
+ODE-725 Registered ODE in Code.gov
+### Sprint 32
 ### Sprint 31
 - ODE-685 Added metadata field `bsmSource` to identify the source of the BSM as host (EV) or remote (RV). See https://github.com/usdot-jpo-ode/jpo-ode/wiki/Log-File-Changes-(schemaVersion=4) for details.
 - ODE-688 Deploed firehose into production for CVPEP and RDE

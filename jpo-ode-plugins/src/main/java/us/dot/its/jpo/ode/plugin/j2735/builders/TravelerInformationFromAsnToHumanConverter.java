@@ -2,7 +2,7 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class TravelerInformationFromAsnToHumanConverter {
@@ -11,8 +11,8 @@ public class TravelerInformationFromAsnToHumanConverter {
       throw new UnsupportedOperationException();
    }
 
-   public static J2735TravelerInformationMessage genericTim(JsonNode asnTim) {
-      J2735TravelerInformationMessage genericTim = new J2735TravelerInformationMessage();
+   public static OdeTravelerInformationMessage genericTim(JsonNode asnTim) {
+      OdeTravelerInformationMessage genericTim = new OdeTravelerInformationMessage();
 
       genericTim.setMsgCnt(asnTim.get("msgCnt").asInt());
 

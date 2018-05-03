@@ -1,5 +1,8 @@
 package us.dot.its.jpo.ode.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class OdeLogMetadata extends OdeMsgMetadata {
 
    private static final long serialVersionUID = -8601265839394150140L;
@@ -47,10 +50,11 @@ public class OdeLogMetadata extends OdeMsgMetadata {
       spduCertificateExpired
    }
 
-
    private String logFileName;
    private RecordType recordType;
    private SecurityResultCode securityResultCode;
+   private ReceivedMessageDetails receivedMessageDetails;
+   private List<Asn1Encoding> encodings;
 
    public OdeLogMetadata(OdeMsgPayload payload) {
       super(payload);
@@ -86,6 +90,29 @@ public class OdeLogMetadata extends OdeMsgMetadata {
 
    public void setSecurityResultCode(SecurityResultCode securityResultCode) {
       this.securityResultCode = securityResultCode;
+   }
+
+   public ReceivedMessageDetails getReceivedMessageDetails() {
+      return receivedMessageDetails;
+   }
+
+   public void setReceivedMessageDetails(ReceivedMessageDetails receivedMessageDetails) {
+      this.receivedMessageDetails = receivedMessageDetails;
+   }
+
+   public List<Asn1Encoding> getEncodings() {
+      return encodings;
+   }
+
+   public void setEncodings(List<Asn1Encoding> encodings) {
+      this.encodings = encodings;
+   }
+
+   public OdeLogMetadata addEncoding(Asn1Encoding encoding) {
+      if (encodings == null)
+         encodings = new ArrayList<Asn1Encoding>();
+      encodings.add(encoding);
+      return this;
    }
 
 }

@@ -10,8 +10,6 @@ import us.dot.its.jpo.ode.coder.OdeTimDataCreatorHelper;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeBsmData;
-import us.dot.its.jpo.ode.model.OdeBsmMetadata;
-import us.dot.its.jpo.ode.model.OdeBsmMetadata.BsmSource;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
 import us.dot.its.jpo.ode.util.XmlUtils;
@@ -57,16 +55,6 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
                  bsmProducer.send(odeProperties.getKafkaTopicOdeBsmDuringEventPojo(), getRecord().key(),
                     odeBsmData);
               } else if (recordType == RecordType.rxMsg) {
-                 /* 
-                  * ODE-685 If we are handling a rxMsg BSM record, there wouldn't be a bsmSource
-                  * element in the metadata because there is no information in the log record to
-                  * indicate whether the message is BSM or TIM. So we need to infer that since it 
-                  * is an BSM rxMsg, bsmSource can only be RV. 
-                  */
-                 if (odeBsmData.getMetadata() instanceof OdeBsmMetadata) {
-                    OdeBsmMetadata bsmMetadata = (OdeBsmMetadata) odeBsmData.getMetadata();
-                    bsmMetadata.setBsmSource(BsmSource.RV);
-                 }
                  bsmProducer.send(odeProperties.getKafkaTopicOdeBsmRxPojo(), getRecord().key(),
                     odeBsmData);
               } else if (recordType == RecordType.bsmTx) {

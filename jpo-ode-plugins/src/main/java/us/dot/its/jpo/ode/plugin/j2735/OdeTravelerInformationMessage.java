@@ -10,7 +10,7 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.FrameType;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.MutcdCode;
 
-public class J2735TravelerInformationMessage extends OdeObject {
+public class OdeTravelerInformationMessage extends OdeObject {
    private static final long serialVersionUID = -200529140190872305L;
 
    @Expose
@@ -432,7 +432,6 @@ public class J2735TravelerInformationMessage extends OdeObject {
          private long directionality;
          private boolean closedPath;
          private String direction;
-         private String regionType;
          private String description;
          private Path path;
          private Geometry geometry;
@@ -765,14 +764,6 @@ public class J2735TravelerInformationMessage extends OdeObject {
 
          public void setDescription(String description) {
             this.description = description;
-         }
-
-         public String getregionType() {
-            return regionType;
-         }
-
-         public void setregionType(String regionType) {
-            this.regionType = regionType;
          }
 
          public String getDirection() {

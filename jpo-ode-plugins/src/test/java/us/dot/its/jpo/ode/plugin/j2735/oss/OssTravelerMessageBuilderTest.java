@@ -16,10 +16,10 @@ import us.dot.its.jpo.ode.j2735.dsrc.GeometricProjection;
 import us.dot.its.jpo.ode.j2735.dsrc.MsgCRC;
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerDataFrame;
 import us.dot.its.jpo.ode.j2735.dsrc.ValidRegion.Area;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage.DataFrame.MsgId;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage.DataFrame.Region.Circle;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage.DataFrame.RoadSignID;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage.DataFrame.MsgId;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage.DataFrame.Region.Circle;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage.DataFrame.RoadSignID;
 import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.FrameType;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.MutcdCode;
@@ -135,7 +135,7 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkContentAdvisory() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
       df.setContent("Advisory");
       String[] codes = { "250", "10" };
@@ -151,7 +151,7 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkBadContentAdvisory() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
       df.setContent("Advisory");
       String[] codes = { "-1", "10" };
@@ -168,7 +168,7 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkContentWorkZone() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
       df.setContent("Work Zone");
       String[] codes = { "250", "10" };
@@ -184,7 +184,7 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkBadContentWorkZone() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
       df.setContent("Work Zone");
       String[] codes = { "-1", "10" };
@@ -201,7 +201,7 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkContentSpeedLimit() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
       df.setContent("Speed Limit");
       String[] codes = { "250", "10" };
@@ -217,7 +217,7 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkBadContentSpeedLimit() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
       df.setContent("Speed Limit");
       String[] codes = { "-1", "10" };
@@ -234,7 +234,7 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkContentExitService() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
       df.setContent("Exit Service");
       String[] codes = { "250", "10" };
@@ -250,7 +250,7 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkBadContentExitService() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
       df.setContent("Exit Service");
       String[] codes = { "-1", "10" };
@@ -267,7 +267,7 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkContentGenericSignage() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
       df.setContent("Generic Signage");
       String[] codes = { "250", "10" };
@@ -283,7 +283,7 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkBadContentGenericSignage() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       TravelerDataFrame dataFrame = new TravelerDataFrame();
       df.setContent("Generic Signage");
       String[] codes = { "-1", "10" };
@@ -300,8 +300,8 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkBadXRegionOffset() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList();
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList();
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
       rl.setxOffset(BigDecimal.valueOf(-0.0032769));
       rl.setyOffset(BigDecimal.ZERO);
       rl.setzOffset(BigDecimal.ZERO);
@@ -318,8 +318,8 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkBadYRegionOffset() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList();
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList();
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
       rl.setxOffset(BigDecimal.ZERO);
       rl.setyOffset(BigDecimal.valueOf(-0.0032769));
       rl.setzOffset(BigDecimal.ZERO);
@@ -336,8 +336,8 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkBadZRegionOffset() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList();
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList();
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
       rl.setxOffset(BigDecimal.ZERO);
       rl.setyOffset(BigDecimal.ZERO);
       rl.setzOffset(BigDecimal.valueOf(-0.0032769));
@@ -354,8 +354,8 @@ public class OssTravelerMessageBuilderTest {
    @Test
    public void checkRegionOffset() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList();
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList rl = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList();
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[] myList = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
       rl.setxOffset(BigDecimal.ZERO);
       rl.setyOffset(BigDecimal.ZERO);
       rl.setzOffset(BigDecimal.ZERO);
@@ -372,8 +372,8 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadGeoCircle() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       GeometricProjection geo = new GeometricProjection();
-      J2735TravelerInformationMessage.DataFrame.Region.Geometry g = new J2735TravelerInformationMessage.DataFrame.Region.Geometry();
-      J2735TravelerInformationMessage.DataFrame.Region.Circle c = new J2735TravelerInformationMessage.DataFrame.Region.Circle();
+      OdeTravelerInformationMessage.DataFrame.Region.Geometry g = new OdeTravelerInformationMessage.DataFrame.Region.Geometry();
+      OdeTravelerInformationMessage.DataFrame.Region.Circle c = new OdeTravelerInformationMessage.DataFrame.Region.Circle();
       OdePosition3D pos = new OdePosition3D(BigDecimal.valueOf(1.1d), BigDecimal.valueOf(2.2d), BigDecimal.valueOf(3.3d));
       c.setPosition(pos);
       c.setRadius(5);
@@ -395,8 +395,8 @@ public class OssTravelerMessageBuilderTest {
    public void checkGeoCircle() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       GeometricProjection geo = new GeometricProjection();
-      J2735TravelerInformationMessage.DataFrame.Region.Geometry g = new J2735TravelerInformationMessage.DataFrame.Region.Geometry();
-      J2735TravelerInformationMessage.DataFrame.Region.Circle c = new J2735TravelerInformationMessage.DataFrame.Region.Circle();
+      OdeTravelerInformationMessage.DataFrame.Region.Geometry g = new OdeTravelerInformationMessage.DataFrame.Region.Geometry();
+      OdeTravelerInformationMessage.DataFrame.Region.Circle c = new OdeTravelerInformationMessage.DataFrame.Region.Circle();
       OdePosition3D pos = new OdePosition3D(BigDecimal.valueOf(1.1d), BigDecimal.valueOf(2.2d), BigDecimal.valueOf(3.3d));
       c.setPosition(pos);
       c.setRadius(5);
@@ -417,7 +417,7 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadOldCircle() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       Area area = new Area();
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion r = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion();
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion r = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion();
       OdePosition3D pos = new OdePosition3D(BigDecimal.valueOf(1.1d), BigDecimal.valueOf(2.2d), BigDecimal.valueOf(3.3d));
       Circle c = new Circle();
       c.setPosition(pos);
@@ -436,25 +436,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadNodeXY1() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -499,25 +499,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkNodeXY1() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -559,25 +559,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadNodeXY2() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -621,25 +621,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkNodeXY2() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -682,25 +682,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadNodeXY3() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -744,25 +744,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkNodeXY3() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -805,25 +805,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadNodeXY4() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -867,25 +867,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkNodeXY4() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -928,25 +928,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadNodeXY5() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -990,25 +990,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkNodeXY5() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -1051,25 +1051,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadNodeXY6() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -1113,25 +1113,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkNodeXY6() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -1174,25 +1174,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadNodeXYLatLon() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -1236,25 +1236,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkNodeXYLatLon() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -1298,25 +1298,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadNodeXYAttribute() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -1360,25 +1360,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadNodeLL1() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -1422,25 +1422,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkNodeLL1() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -1483,25 +1483,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadNodeLL2() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -1545,25 +1545,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkNodeLL2() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -1605,25 +1605,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadNodeLL3() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -1667,25 +1667,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkNodeLL3() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -1728,25 +1728,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadNodeLL4() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -1790,25 +1790,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkNodeLL4() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -1851,25 +1851,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadNodeLL5() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -1913,25 +1913,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkNodeLL5() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -1974,25 +1974,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadNodeLL6() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -2036,25 +2036,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkNodeLL6() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -2097,25 +2097,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadNodeLLLatLon() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -2159,25 +2159,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkNodeLLLatLon() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -2220,25 +2220,25 @@ public class OssTravelerMessageBuilderTest {
    public void checkBadNodeLLAttribute() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
 
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
 
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
 
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
 
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
 
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
 
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
 
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
 
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
@@ -2281,7 +2281,7 @@ public class OssTravelerMessageBuilderTest {
    public void checkOldCircle() {
       OssTravelerMessageBuilder b = new OssTravelerMessageBuilder();
       Area area = new Area();
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion r = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion();
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion r = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion();
       OdePosition3D pos = new OdePosition3D(BigDecimal.valueOf(1.1d), BigDecimal.valueOf(2.2d), BigDecimal.valueOf(3.3d));
       Circle c = new Circle();
       c.setPosition(pos);
@@ -2297,13 +2297,13 @@ public class OssTravelerMessageBuilderTest {
 
    @Test
    public void checkTravelerMessageBuilderRoadSignId() {
-      J2735TravelerInformationMessage tim = new J2735TravelerInformationMessage();
+      OdeTravelerInformationMessage tim = new OdeTravelerInformationMessage();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
       tim.setPacketID("FEDCBA987654321000");
-      J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame[] dframes = new OdeTravelerInformationMessage.DataFrame[1];
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
@@ -2321,8 +2321,8 @@ public class OssTravelerMessageBuilderTest {
       df.setDurationTime(22);
       df.setPriority(0);
       df.setSspLocationRights((short) 3);
-      J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
-      J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
+      OdeTravelerInformationMessage.DataFrame.Region[] reg = new OdeTravelerInformationMessage.DataFrame.Region[1];
+      OdeTravelerInformationMessage.DataFrame.Region r = new OdeTravelerInformationMessage.DataFrame.Region();
       df.setSspMsgTypes((short) 2);
       df.setSspMsgContent((short) 3);
       df.setUrl("www");
@@ -2335,11 +2335,11 @@ public class OssTravelerMessageBuilderTest {
       r.setClosedPath(false);
       r.setDirection("1010101010101010");
       r.setDescription("geometry");
-      J2735TravelerInformationMessage.DataFrame.Region.Geometry g = new J2735TravelerInformationMessage.DataFrame.Region.Geometry();
+      OdeTravelerInformationMessage.DataFrame.Region.Geometry g = new OdeTravelerInformationMessage.DataFrame.Region.Geometry();
       g.setDirection("1010101010101010");
       g.setExtent(1);
       g.setLaneWidth(BigDecimal.valueOf(33));
-      J2735TravelerInformationMessage.DataFrame.Region.Circle c = new J2735TravelerInformationMessage.DataFrame.Region.Circle();
+      OdeTravelerInformationMessage.DataFrame.Region.Circle c = new OdeTravelerInformationMessage.DataFrame.Region.Circle();
       c.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       c.setRadius(15);
       c.setUnits(7);
@@ -2359,13 +2359,13 @@ public class OssTravelerMessageBuilderTest {
    
    @Test
    public void checkTravelerMessageBuilderFurtherInfo() {
-      J2735TravelerInformationMessage tim = new J2735TravelerInformationMessage();
+      OdeTravelerInformationMessage tim = new OdeTravelerInformationMessage();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
       tim.setPacketID("FEDCBA987654321000");
-      J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame[] dframes = new OdeTravelerInformationMessage.DataFrame[1];
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
@@ -2377,8 +2377,8 @@ public class OssTravelerMessageBuilderTest {
       df.setDurationTime(22);
       df.setPriority(0);
       df.setSspLocationRights((short) 3);
-      J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
-      J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
+      OdeTravelerInformationMessage.DataFrame.Region[] reg = new OdeTravelerInformationMessage.DataFrame.Region[1];
+      OdeTravelerInformationMessage.DataFrame.Region r = new OdeTravelerInformationMessage.DataFrame.Region();
       df.setSspMsgTypes((short) 2);
       df.setSspMsgContent((short) 3);
       df.setUrl("www");
@@ -2391,11 +2391,11 @@ public class OssTravelerMessageBuilderTest {
       r.setClosedPath(false);
       r.setDirection("1010101010101010");
       r.setDescription("geometry");
-      J2735TravelerInformationMessage.DataFrame.Region.Geometry g = new J2735TravelerInformationMessage.DataFrame.Region.Geometry();
+      OdeTravelerInformationMessage.DataFrame.Region.Geometry g = new OdeTravelerInformationMessage.DataFrame.Region.Geometry();
       g.setDirection("1010101010101010");
       g.setExtent(1);
       g.setLaneWidth(BigDecimal.valueOf(33));
-      J2735TravelerInformationMessage.DataFrame.Region.Circle c = new J2735TravelerInformationMessage.DataFrame.Region.Circle();
+      OdeTravelerInformationMessage.DataFrame.Region.Circle c = new OdeTravelerInformationMessage.DataFrame.Region.Circle();
       c.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       c.setRadius(15);
       c.setUnits(7);
@@ -2415,13 +2415,13 @@ public class OssTravelerMessageBuilderTest {
    
    @Test
    public void checkTravelerMessageBuilderNullFurtherInfo() {
-      J2735TravelerInformationMessage tim = new J2735TravelerInformationMessage();
+      OdeTravelerInformationMessage tim = new OdeTravelerInformationMessage();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
       tim.setPacketID("FEDCBA987654321000");
-      J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame[] dframes = new OdeTravelerInformationMessage.DataFrame[1];
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
@@ -2432,8 +2432,8 @@ public class OssTravelerMessageBuilderTest {
       df.setDurationTime(22);
       df.setPriority(0);
       df.setSspLocationRights((short) 3);
-      J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
-      J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
+      OdeTravelerInformationMessage.DataFrame.Region[] reg = new OdeTravelerInformationMessage.DataFrame.Region[1];
+      OdeTravelerInformationMessage.DataFrame.Region r = new OdeTravelerInformationMessage.DataFrame.Region();
       df.setSspMsgTypes((short) 2);
       df.setSspMsgContent((short) 3);
       df.setUrl("www");
@@ -2446,11 +2446,11 @@ public class OssTravelerMessageBuilderTest {
       r.setClosedPath(false);
       r.setDirection("1010101010101010");
       r.setDescription("geometry");
-      J2735TravelerInformationMessage.DataFrame.Region.Geometry g = new J2735TravelerInformationMessage.DataFrame.Region.Geometry();
+      OdeTravelerInformationMessage.DataFrame.Region.Geometry g = new OdeTravelerInformationMessage.DataFrame.Region.Geometry();
       g.setDirection("1010101010101010");
       g.setExtent(1);
       g.setLaneWidth(BigDecimal.valueOf(33));
-      J2735TravelerInformationMessage.DataFrame.Region.Circle c = new J2735TravelerInformationMessage.DataFrame.Region.Circle();
+      OdeTravelerInformationMessage.DataFrame.Region.Circle c = new OdeTravelerInformationMessage.DataFrame.Region.Circle();
       c.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       c.setRadius(15);
       c.setUnits(7);
@@ -2471,13 +2471,13 @@ public class OssTravelerMessageBuilderTest {
    
    @Test
    public void checkTravelerMessageBuilderEmptyFurtherInfo() {
-      J2735TravelerInformationMessage tim = new J2735TravelerInformationMessage();
+      OdeTravelerInformationMessage tim = new OdeTravelerInformationMessage();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
       tim.setPacketID("FEDCBA987654321000");
-      J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame[] dframes = new OdeTravelerInformationMessage.DataFrame[1];
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
@@ -2489,8 +2489,8 @@ public class OssTravelerMessageBuilderTest {
       df.setDurationTime(22);
       df.setPriority(0);
       df.setSspLocationRights((short) 3);
-      J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
-      J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
+      OdeTravelerInformationMessage.DataFrame.Region[] reg = new OdeTravelerInformationMessage.DataFrame.Region[1];
+      OdeTravelerInformationMessage.DataFrame.Region r = new OdeTravelerInformationMessage.DataFrame.Region();
       df.setSspMsgTypes((short) 2);
       df.setSspMsgContent((short) 3);
       df.setUrl("www");
@@ -2503,11 +2503,11 @@ public class OssTravelerMessageBuilderTest {
       r.setClosedPath(false);
       r.setDirection("1010101010101010");
       r.setDescription("geometry");
-      J2735TravelerInformationMessage.DataFrame.Region.Geometry g = new J2735TravelerInformationMessage.DataFrame.Region.Geometry();
+      OdeTravelerInformationMessage.DataFrame.Region.Geometry g = new OdeTravelerInformationMessage.DataFrame.Region.Geometry();
       g.setDirection("1010101010101010");
       g.setExtent(1);
       g.setLaneWidth(BigDecimal.valueOf(33));
-      J2735TravelerInformationMessage.DataFrame.Region.Circle c = new J2735TravelerInformationMessage.DataFrame.Region.Circle();
+      OdeTravelerInformationMessage.DataFrame.Region.Circle c = new OdeTravelerInformationMessage.DataFrame.Region.Circle();
       c.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       c.setRadius(15);
       c.setUnits(7);
@@ -2528,13 +2528,13 @@ public class OssTravelerMessageBuilderTest {
    
    @Test
    public void checkTravelerMessageBuilderNullMsgID() {
-      J2735TravelerInformationMessage tim = new J2735TravelerInformationMessage();
+      OdeTravelerInformationMessage tim = new OdeTravelerInformationMessage();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
       tim.setPacketID("FEDCBA987654321000");
-      J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame[] dframes = new OdeTravelerInformationMessage.DataFrame[1];
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
@@ -2543,8 +2543,8 @@ public class OssTravelerMessageBuilderTest {
       df.setDurationTime(22);
       df.setPriority(0);
       df.setSspLocationRights((short) 3);
-      J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
-      J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
+      OdeTravelerInformationMessage.DataFrame.Region[] reg = new OdeTravelerInformationMessage.DataFrame.Region[1];
+      OdeTravelerInformationMessage.DataFrame.Region r = new OdeTravelerInformationMessage.DataFrame.Region();
       df.setSspMsgTypes((short) 2);
       df.setSspMsgContent((short) 3);
       df.setUrl("www");
@@ -2557,11 +2557,11 @@ public class OssTravelerMessageBuilderTest {
       r.setClosedPath(false);
       r.setDirection("1010101010101010");
       r.setDescription("geometry");
-      J2735TravelerInformationMessage.DataFrame.Region.Geometry g = new J2735TravelerInformationMessage.DataFrame.Region.Geometry();
+      OdeTravelerInformationMessage.DataFrame.Region.Geometry g = new OdeTravelerInformationMessage.DataFrame.Region.Geometry();
       g.setDirection("1010101010101010");
       g.setExtent(1);
       g.setLaneWidth(BigDecimal.valueOf(33));
-      J2735TravelerInformationMessage.DataFrame.Region.Circle c = new J2735TravelerInformationMessage.DataFrame.Region.Circle();
+      OdeTravelerInformationMessage.DataFrame.Region.Circle c = new OdeTravelerInformationMessage.DataFrame.Region.Circle();
       c.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       c.setRadius(15);
       c.setUnits(7);
@@ -2582,13 +2582,13 @@ public class OssTravelerMessageBuilderTest {
    
    @Test
    public void checkTravelerMessageBuilderPathXY() {
-      J2735TravelerInformationMessage tim = new J2735TravelerInformationMessage();
+      OdeTravelerInformationMessage tim = new OdeTravelerInformationMessage();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
       tim.setPacketID("FEDCBA987654321000");
-      J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame[] dframes = new OdeTravelerInformationMessage.DataFrame[1];
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
@@ -2606,8 +2606,8 @@ public class OssTravelerMessageBuilderTest {
       df.setDurationTime(22);
       df.setPriority(0);
       df.setSspLocationRights((short) 3);
-      J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
-      J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
+      OdeTravelerInformationMessage.DataFrame.Region[] reg = new OdeTravelerInformationMessage.DataFrame.Region[1];
+      OdeTravelerInformationMessage.DataFrame.Region r = new OdeTravelerInformationMessage.DataFrame.Region();
       df.setSspMsgTypes((short) 2);
       df.setSspMsgContent((short) 3);
       df.setUrl("www");
@@ -2620,22 +2620,22 @@ public class OssTravelerMessageBuilderTest {
       r.setClosedPath(false);
       r.setDirection("1010101010101010");
       r.setDescription("path");
-      J2735TravelerInformationMessage.DataFrame.Region.Path p = new J2735TravelerInformationMessage.DataFrame.Region.Path();
+      OdeTravelerInformationMessage.DataFrame.Region.Path p = new OdeTravelerInformationMessage.DataFrame.Region.Path();
       p.setScale(2);
       p.setType("xy");
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(BigDecimal.valueOf(1.5));
@@ -2680,13 +2680,13 @@ public class OssTravelerMessageBuilderTest {
    
    @Test
    public void checkTravelerMessageBuilderPathLL() {
-      J2735TravelerInformationMessage tim = new J2735TravelerInformationMessage();
+      OdeTravelerInformationMessage tim = new OdeTravelerInformationMessage();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
       tim.setPacketID("FEDCBA987654321000");
-      J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame[] dframes = new OdeTravelerInformationMessage.DataFrame[1];
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
@@ -2704,8 +2704,8 @@ public class OssTravelerMessageBuilderTest {
       df.setDurationTime(22);
       df.setPriority(0);
       df.setSspLocationRights((short) 3);
-      J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
-      J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
+      OdeTravelerInformationMessage.DataFrame.Region[] reg = new OdeTravelerInformationMessage.DataFrame.Region[1];
+      OdeTravelerInformationMessage.DataFrame.Region r = new OdeTravelerInformationMessage.DataFrame.Region();
       df.setSspMsgTypes((short) 2);
       df.setSspMsgContent((short) 3);
       df.setUrl("www");
@@ -2718,22 +2718,22 @@ public class OssTravelerMessageBuilderTest {
       r.setClosedPath(false);
       r.setDirection("1010101010101010");
       r.setDescription("path");
-      J2735TravelerInformationMessage.DataFrame.Region.Path p = new J2735TravelerInformationMessage.DataFrame.Region.Path();
+      OdeTravelerInformationMessage.DataFrame.Region.Path p = new OdeTravelerInformationMessage.DataFrame.Region.Path();
       p.setScale(2);
       p.setType("ll");
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(BigDecimal.valueOf(1.5));
@@ -2778,13 +2778,13 @@ public class OssTravelerMessageBuilderTest {
    
    @Test
    public void checkTravelerMessageBuilderPathComputedLaneLarge() {
-      J2735TravelerInformationMessage tim = new J2735TravelerInformationMessage();
+      OdeTravelerInformationMessage tim = new OdeTravelerInformationMessage();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
       tim.setPacketID("FEDCBA987654321000");
-      J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame[] dframes = new OdeTravelerInformationMessage.DataFrame[1];
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
@@ -2802,8 +2802,8 @@ public class OssTravelerMessageBuilderTest {
       df.setDurationTime(22);
       df.setPriority(0);
       df.setSspLocationRights((short) 3);
-      J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
-      J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
+      OdeTravelerInformationMessage.DataFrame.Region[] reg = new OdeTravelerInformationMessage.DataFrame.Region[1];
+      OdeTravelerInformationMessage.DataFrame.Region r = new OdeTravelerInformationMessage.DataFrame.Region();
       df.setSspMsgTypes((short) 2);
       df.setSspMsgContent((short) 3);
       df.setUrl("www");
@@ -2816,11 +2816,11 @@ public class OssTravelerMessageBuilderTest {
       r.setClosedPath(false);
       r.setDirection("1010101010101010");
       r.setDescription("path");
-      J2735TravelerInformationMessage.DataFrame.Region.Path p = new J2735TravelerInformationMessage.DataFrame.Region.Path();
+      OdeTravelerInformationMessage.DataFrame.Region.Path p = new OdeTravelerInformationMessage.DataFrame.Region.Path();
       p.setScale(2);
       p.setType("xy");
-      J2735TravelerInformationMessage.NodeXY[] node = null;
-      J2735TravelerInformationMessage.ComputedLane cl = new J2735TravelerInformationMessage.ComputedLane();
+      OdeTravelerInformationMessage.NodeXY[] node = null;
+      OdeTravelerInformationMessage.ComputedLane cl = new OdeTravelerInformationMessage.ComputedLane();
       cl.setAngle(5);
       cl.setLaneID(1);
       cl.setOffsetLargeX(BigDecimal.valueOf(5));
@@ -2846,13 +2846,13 @@ public class OssTravelerMessageBuilderTest {
    
    @Test
    public void checkTravelerMessageBuilderPathComputedLaneSmall() {
-      J2735TravelerInformationMessage tim = new J2735TravelerInformationMessage();
+      OdeTravelerInformationMessage tim = new OdeTravelerInformationMessage();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
       tim.setPacketID("FEDCBA987654321000");
-      J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame[] dframes = new OdeTravelerInformationMessage.DataFrame[1];
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
@@ -2870,8 +2870,8 @@ public class OssTravelerMessageBuilderTest {
       df.setDurationTime(22);
       df.setPriority(0);
       df.setSspLocationRights((short) 3);
-      J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
-      J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
+      OdeTravelerInformationMessage.DataFrame.Region[] reg = new OdeTravelerInformationMessage.DataFrame.Region[1];
+      OdeTravelerInformationMessage.DataFrame.Region r = new OdeTravelerInformationMessage.DataFrame.Region();
       df.setSspMsgTypes((short) 2);
       df.setSspMsgContent((short) 3);
       df.setUrl("www");
@@ -2884,11 +2884,11 @@ public class OssTravelerMessageBuilderTest {
       r.setClosedPath(false);
       r.setDirection("1010101010101010");
       r.setDescription("path");
-      J2735TravelerInformationMessage.DataFrame.Region.Path p = new J2735TravelerInformationMessage.DataFrame.Region.Path();
+      OdeTravelerInformationMessage.DataFrame.Region.Path p = new OdeTravelerInformationMessage.DataFrame.Region.Path();
       p.setScale(2);
       p.setType("xy");
-      J2735TravelerInformationMessage.NodeXY[] node = null;
-      J2735TravelerInformationMessage.ComputedLane cl = new J2735TravelerInformationMessage.ComputedLane();
+      OdeTravelerInformationMessage.NodeXY[] node = null;
+      OdeTravelerInformationMessage.ComputedLane cl = new OdeTravelerInformationMessage.ComputedLane();
       cl.setAngle(5);
       cl.setLaneID(1);
       cl.setOffsetLargeX(BigDecimal.ZERO);
@@ -2914,13 +2914,13 @@ public class OssTravelerMessageBuilderTest {
 
    @Test
    public void checkOldRegion() {
-      J2735TravelerInformationMessage tim = new J2735TravelerInformationMessage();
+      OdeTravelerInformationMessage tim = new OdeTravelerInformationMessage();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
       tim.setPacketID("FEDCBA987654321000");
-      J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame[] dframes = new OdeTravelerInformationMessage.DataFrame[1];
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
@@ -2938,8 +2938,8 @@ public class OssTravelerMessageBuilderTest {
       df.setDurationTime(22);
       df.setPriority(0);
       df.setSspLocationRights((short) 3);
-      J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
-      J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
+      OdeTravelerInformationMessage.DataFrame.Region[] reg = new OdeTravelerInformationMessage.DataFrame.Region[1];
+      OdeTravelerInformationMessage.DataFrame.Region r = new OdeTravelerInformationMessage.DataFrame.Region();
       df.setSspMsgTypes((short) 2);
       df.setSspMsgContent((short) 3);
       df.setUrl("www");
@@ -2952,15 +2952,15 @@ public class OssTravelerMessageBuilderTest {
       r.setClosedPath(false);
       r.setDirection("1010101010101010");
       r.setDescription("oldRegion");
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion or = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion();
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion or = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion();
       or.setDirection("1010101010101010");
       or.setExtent(1);
       or.setArea("regionPointSet");
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint rp = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint();
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint rp = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint();
       rp.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       rp.setScale(0);
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[] rList = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList re = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList();
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[] rList = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList[1];
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList re = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPoint.RegionList();
       re.setxOffset(BigDecimal.valueOf(-0.000036));
       re.setyOffset(BigDecimal.valueOf(0.000021));
       re.setzOffset(BigDecimal.ZERO);
@@ -2982,13 +2982,13 @@ public class OssTravelerMessageBuilderTest {
 
    @Test
    public void checkShapepointXY() {
-      J2735TravelerInformationMessage tim = new J2735TravelerInformationMessage();
+      OdeTravelerInformationMessage tim = new OdeTravelerInformationMessage();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
       tim.setPacketID("FEDCBA987654321000");
-      J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame[] dframes = new OdeTravelerInformationMessage.DataFrame[1];
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
@@ -3006,8 +3006,8 @@ public class OssTravelerMessageBuilderTest {
       df.setDurationTime(22);
       df.setPriority(0);
       df.setSspLocationRights((short) 3);
-      J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
-      J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
+      OdeTravelerInformationMessage.DataFrame.Region[] reg = new OdeTravelerInformationMessage.DataFrame.Region[1];
+      OdeTravelerInformationMessage.DataFrame.Region r = new OdeTravelerInformationMessage.DataFrame.Region();
       df.setSspMsgTypes((short) 2);
       df.setSspMsgContent((short) 3);
       df.setUrl("www");
@@ -3020,28 +3020,28 @@ public class OssTravelerMessageBuilderTest {
       r.setClosedPath(false);
       r.setDirection("1010101010101010");
       r.setDescription("oldRegion");
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion or = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion();
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion or = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion();
       or.setDirection("1010101010101010");
       or.setExtent(1);
       or.setArea("shapePointSet");
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion.ShapePoint sp = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.ShapePoint();
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion.ShapePoint sp = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion.ShapePoint();
       sp.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       sp.setLaneWidth(BigDecimal.valueOf(10));
       sp.setDirectionality(2);
       sp.setNodeType("xy");
-      J2735TravelerInformationMessage.NodeXY n = new J2735TravelerInformationMessage.NodeXY();
-      J2735TravelerInformationMessage.NodeXY[] node = new J2735TravelerInformationMessage.NodeXY[1];
-      J2735TravelerInformationMessage.Attributes at = new J2735TravelerInformationMessage.Attributes();
-      J2735TravelerInformationMessage.LocalNode ln = new J2735TravelerInformationMessage.LocalNode();
-      J2735TravelerInformationMessage.LocalNode[] lnode = new J2735TravelerInformationMessage.LocalNode[1];
-      J2735TravelerInformationMessage.DisabledList dl = new J2735TravelerInformationMessage.DisabledList();
-      J2735TravelerInformationMessage.DisabledList[] dlist = new J2735TravelerInformationMessage.DisabledList[1];
-      J2735TravelerInformationMessage.EnabledList el = new J2735TravelerInformationMessage.EnabledList();
-      J2735TravelerInformationMessage.EnabledList[] elist = new J2735TravelerInformationMessage.EnabledList[1];
-      J2735TravelerInformationMessage.DataList dataL = new J2735TravelerInformationMessage.DataList();
-      J2735TravelerInformationMessage.DataList[] dataList = new J2735TravelerInformationMessage.DataList[1];
-      J2735TravelerInformationMessage.SpeedLimits sl = new J2735TravelerInformationMessage.SpeedLimits();
-      J2735TravelerInformationMessage.SpeedLimits[] slimits = new J2735TravelerInformationMessage.SpeedLimits[1];
+      OdeTravelerInformationMessage.NodeXY n = new OdeTravelerInformationMessage.NodeXY();
+      OdeTravelerInformationMessage.NodeXY[] node = new OdeTravelerInformationMessage.NodeXY[1];
+      OdeTravelerInformationMessage.Attributes at = new OdeTravelerInformationMessage.Attributes();
+      OdeTravelerInformationMessage.LocalNode ln = new OdeTravelerInformationMessage.LocalNode();
+      OdeTravelerInformationMessage.LocalNode[] lnode = new OdeTravelerInformationMessage.LocalNode[1];
+      OdeTravelerInformationMessage.DisabledList dl = new OdeTravelerInformationMessage.DisabledList();
+      OdeTravelerInformationMessage.DisabledList[] dlist = new OdeTravelerInformationMessage.DisabledList[1];
+      OdeTravelerInformationMessage.EnabledList el = new OdeTravelerInformationMessage.EnabledList();
+      OdeTravelerInformationMessage.EnabledList[] elist = new OdeTravelerInformationMessage.EnabledList[1];
+      OdeTravelerInformationMessage.DataList dataL = new OdeTravelerInformationMessage.DataList();
+      OdeTravelerInformationMessage.DataList[] dataList = new OdeTravelerInformationMessage.DataList[1];
+      OdeTravelerInformationMessage.SpeedLimits sl = new OdeTravelerInformationMessage.SpeedLimits();
+      OdeTravelerInformationMessage.SpeedLimits[] slimits = new OdeTravelerInformationMessage.SpeedLimits[1];
       sl.setType(1);
       sl.setVelocity(BigDecimal.ONE);
       dataL.setLaneAngle(BigDecimal.valueOf(1.5));
@@ -3087,13 +3087,13 @@ public class OssTravelerMessageBuilderTest {
    
    @Test
    public void checkShapepointComputedLane() {
-      J2735TravelerInformationMessage tim = new J2735TravelerInformationMessage();
+      OdeTravelerInformationMessage tim = new OdeTravelerInformationMessage();
       tim.setMsgCnt(10);
       tim.setTimeStamp("2017-03-13T01:07:11-05:00");
       tim.setUrlB("www");
       tim.setPacketID("FEDCBA987654321000");
-      J2735TravelerInformationMessage.DataFrame[] dframes = new J2735TravelerInformationMessage.DataFrame[1];
-      J2735TravelerInformationMessage.DataFrame df = new J2735TravelerInformationMessage.DataFrame();
+      OdeTravelerInformationMessage.DataFrame[] dframes = new OdeTravelerInformationMessage.DataFrame[1];
+      OdeTravelerInformationMessage.DataFrame df = new OdeTravelerInformationMessage.DataFrame();
       df.setSspTimRights((short) 0);
       df.setFrameType(FrameType.TravelerInfoType.advisory);
       
@@ -3111,8 +3111,8 @@ public class OssTravelerMessageBuilderTest {
       df.setDurationTime(22);
       df.setPriority(0);
       df.setSspLocationRights((short) 3);
-      J2735TravelerInformationMessage.DataFrame.Region[] reg = new J2735TravelerInformationMessage.DataFrame.Region[1];
-      J2735TravelerInformationMessage.DataFrame.Region r = new J2735TravelerInformationMessage.DataFrame.Region();
+      OdeTravelerInformationMessage.DataFrame.Region[] reg = new OdeTravelerInformationMessage.DataFrame.Region[1];
+      OdeTravelerInformationMessage.DataFrame.Region r = new OdeTravelerInformationMessage.DataFrame.Region();
       df.setSspMsgTypes((short) 2);
       df.setSspMsgContent((short) 3);
       df.setUrl("www");
@@ -3125,17 +3125,17 @@ public class OssTravelerMessageBuilderTest {
       r.setClosedPath(false);
       r.setDirection("1010101010101010");
       r.setDescription("oldRegion");
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion or = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion();
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion or = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion();
       or.setDirection("1010101010101010");
       or.setExtent(1);
       or.setArea("shapePointSet");
-      J2735TravelerInformationMessage.DataFrame.Region.OldRegion.ShapePoint sp = new J2735TravelerInformationMessage.DataFrame.Region.OldRegion.ShapePoint();
+      OdeTravelerInformationMessage.DataFrame.Region.OldRegion.ShapePoint sp = new OdeTravelerInformationMessage.DataFrame.Region.OldRegion.ShapePoint();
       sp.setPosition(new OdePosition3D(BigDecimal.valueOf(-41.678473), BigDecimal.valueOf(-108.782775), BigDecimal.valueOf(917.1432)));
       sp.setLaneWidth(BigDecimal.valueOf(10));
       sp.setDirectionality(2);
       sp.setNodeType("xy");
-      J2735TravelerInformationMessage.NodeXY[] node = null;
-      J2735TravelerInformationMessage.ComputedLane cl = new J2735TravelerInformationMessage.ComputedLane();
+      OdeTravelerInformationMessage.NodeXY[] node = null;
+      OdeTravelerInformationMessage.ComputedLane cl = new OdeTravelerInformationMessage.ComputedLane();
       cl.setAngle(5);
       cl.setLaneID(1);
       cl.setOffsetLargeX(BigDecimal.valueOf(5));

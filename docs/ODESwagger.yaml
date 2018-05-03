@@ -46,11 +46,13 @@ paths:
             $ref: '#/definitions/Status'
   /tim:
     put:
-      summary: >-
-        Used to update an existing TIM already present on an RSU.
-      operationId: tim_post
+      summary: Used to update an existing TIM already present on an RSU.
+      operationId: tim_put
       description: >-
-        Update a Traveler Information Message (TIM) that has already been deposited to an RSU. Parameters and response codes are identical to the POST request. Will also deposit the new message to the SDW, if the SDW field is present.
+        Update a Traveler Information Message (TIM) that has already been
+        deposited to an RSU. Parameters and response codes are identical to the
+        POST request. Will also deposit the new message to the SDW, if the SDW
+        field is present.
       parameters:
         - name: TravelerInputData
           in: body
@@ -161,19 +163,19 @@ paths:
           description: Misc error
           schema:
             $ref: '#/definitions/Status'
-  /RSU SNMP:
+  /rsuHeartbeat:
     get:
       summary: RSU SNMP Query
       operationId: snmp_get
-      description: Check the health and status of RSU devices through SNMP communication
+      description: Check the health and status of RSU devices through SNMP communication. You should receive a detailed plain text response that looks like the following example. If the device is off, a 4 second timeout will occur and the ODE will indicate this with an "[ERROR] Empty response" message. (This specific OID returns the amount of time since the device was last powered on) "[1.3.6.1.2.1.1.3.0 = 0:05:12.59]"
       parameters:
-        - name: IP
+        - name: ip
           in: query
           description: IP address of an RSU
           required: true
           type: number
           format: string
-        - name: OID
+        - name: oid
           in: query
           description: OID of the attribute you wish to check on
           required: true
@@ -231,6 +233,45 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Status'
+  /upload/obulog:
+    post:
+      summary: File upload interface
+      operationId: upload-obulog
+      description: >-
+        Uploads an OBU log file to ODE upload folder to be processed and propaged
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          description: The file to upload.
+      tags:
+        - log file
+      responses:
+        '200':
+          description: >-
+            File uploaded successfully
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Status'
+        '400':
+          description: >-
+            Bad Request. Issued if request is invalid or failed to be executed.
+            See the response body or ODE User Guide for details.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Status'
+        '500':
+          description: >-
+            Internal Server Error. See the response body or ODE User Guide for
+            details.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Status'
 definitions:
   tim:
     type: object
@@ -258,10 +299,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/TravelerDataFrame'
-      snmp:
-        $ref: '#/definitions/SNMP'
-      sdw:
-        $ref: '#/definitions/SDW'
   TravelerInputData:
     type: object
     properties:
@@ -299,14 +336,6 @@ definitions:
       sspTimRights:
         type: integer
         description: A short header information
-      sspindex:
-        type: integer
-        description: >-
-          The SSP index is used to control the data elements that follow the
-          occurrence of the index. The index relates back to the SSP contents in
-          the CERT used to declare what content is allowed by that CERT. In the
-          absence of a matching index in the message sender’s CERT, the message
-          contents are not valid.
       frameType:
         type: string
         description: >-
@@ -325,6 +354,18 @@ definitions:
         type: integer
       sspLocationRights:
         type: integer
+      sspindex:
+        type: integer
+        description: >-
+          The SSP index is used to control the data elements that follow the
+          occurrence of the index. The index relates back to the SSP contents in
+          the CERT used to declare what content is allowed by that CERT. In the
+          absence of a matching index in the message sender’s CERT, the message
+          contents are not valid.
+      regions:
+        type: array
+        items:
+          $ref: '#/definitions/Region'
       sspMsgTypes:
         type: integer
       sspMsgContent:
@@ -337,9 +378,15 @@ definitions:
       items:
         type: array
         items:
-          $ref: '#/definitions/ITISObj'
-      region:
-        $ref: '#/definitions/Region'
+          type: string
+          description: >-
+            If the value is purely an integer number, it will be interpreted as
+            ITIS code.  If it is not an integer, it will be interpreted as a
+            text message. If you intend to send an integral value as a literal
+            integer, prefix the number with a single quote ('), for example,
+            "'98765" will be interpreted as literal 98765. The prefix character
+            will be removed before populating  the TIM message One may mix ITIS
+            code and text in the  items array.
   MsgID:
     type: object
     properties:
@@ -355,7 +402,7 @@ definitions:
     type: object
     properties:
       position:
-        $ref: '#/definitions/J2735Position3D'
+        $ref: '#/definitions/OdePosition3D'
       viewAngle:
         type: string
       mutcdCode:
@@ -377,7 +424,7 @@ definitions:
     properties:
       name:
         type: string
-      regulatorID":
+      regulatorID:
         type: integer
       segmentId:
         type: integer
@@ -404,12 +451,6 @@ definitions:
         $ref: '#/definitions/OldRegion'
       geometry:
         $ref: '#/definitions/Geometry'
-      content:
-        type: string
-      itemss:
-        type: array
-        items:
-          type: integer
   ComputedLane:
     type: object
     properties:
@@ -544,7 +585,7 @@ definitions:
     type: object
     properties:
       position:
-        $ref: '#/definitions/J2735Position3D'
+        $ref: '#/definitions/OdePosition3D'
       radius:
         type: integer
       units:
@@ -553,7 +594,7 @@ definitions:
     type: object
     properties:
       position:
-        $ref: '#/definitions/J2735Position3D'
+        $ref: '#/definitions/OdePosition3D'
       directionality:
         type: integer
       nodeType:
@@ -568,7 +609,7 @@ definitions:
     type: object
     properties:
       position:
-        $ref: '#/definitions/J2735Position3D'
+        $ref: '#/definitions/OdePosition3D'
       zoom:
         type: integer
         description: (OPTIONAL) A zoom scale applied in units of 2^N.
@@ -588,7 +629,7 @@ definitions:
       zOffset:
         type: number
         description: '(OPTIONAL) OffsetLL-B16 measured in degrees [-0.0032767..0.0032767]'
-  J2735Position3D:
+  OdePosition3D:
     type: object
     properties:
       latitude:
@@ -622,13 +663,6 @@ definitions:
         description: 'Offset-B10 in meters [-5.11..5.11m]'
       attributes:
         $ref: '#/definitions/Attribute'
-  ITISObj:
-    type: object
-    properties:
-      ITISCodes:
-        type: integer
-      ITIStext:
-        type: string
   SNMP:
     type: object
     description: 'Optional field, needed for SNMP deposit to RSU.'

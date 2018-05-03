@@ -8,6 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.thymeleaf.util.StringUtils;
+
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.OdePlugin;
@@ -20,6 +22,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import javax.annotation.PostConstruct;
 
 @ConfigurationProperties("ode")
 @PropertySource("classpath:application.properties")
@@ -41,6 +45,14 @@ public class OdeProperties implements EnvironmentAware {
    private String externalIpv4 = "";
    private String externalIpv6 = "";
    private int rsuSrmSlots = 100; // number of "store and repeat message" indicies for RSU TIMs
+   
+   
+   /*
+    * Security Services Module Properties
+    */
+   private String securitySvcsSignatureUri;
+   private int securitySvcsPort = 8090;
+   private String securitySvcsSignatureEndpoint = "sign";
 
    // File import properties
    private String uploadLocationRoot = "uploads";
@@ -149,8 +161,8 @@ public class OdeProperties implements EnvironmentAware {
 
    private static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
 
-   public OdeProperties() {
-      super();
+   @PostConstruct
+   void initialize() {
 
       uploadLocations.add(Paths.get(uploadLocationRoot));
 
@@ -179,10 +191,20 @@ public class OdeProperties implements EnvironmentAware {
          } else {
             kafkaBrokers = dockerIp + ":9092";
          }
-
          
+         // URI for the security services /sign endpoint
+         if (securitySvcsSignatureUri == null) {
+            securitySvcsSignatureUri = "http://" + dockerIp + ":" + securitySvcsPort + "/" + securitySvcsSignatureEndpoint;
+         }
       }
    }
+
+   public boolean dataSigningEnabled() {
+      return getSecuritySvcsSignatureUri() != null &&
+            !StringUtils.isEmptyOrWhitespace(getSecuritySvcsSignatureUri()) &&
+            !getSecuritySvcsSignatureUri().startsWith("UNSECURE");
+   }
+
 
    public List<Path> getUploadLocations() {
       return this.uploadLocations;
@@ -693,5 +715,13 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setFileWatcherPeriod(Integer fileWatcherPeriod) {
       this.fileWatcherPeriod = fileWatcherPeriod;
+   }
+
+   public String getSecuritySvcsSignatureUri() {
+      return securitySvcsSignatureUri;
+   }
+
+   public void setSecuritySvcsSignatureUri(String securitySvcsSignatureUri) {
+      this.securitySvcsSignatureUri = securitySvcsSignatureUri;
    }
 }

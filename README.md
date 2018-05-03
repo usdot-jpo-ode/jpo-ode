@@ -1,3 +1,5 @@
+
+
 Master: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=master)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=usdot.jpo.ode:jpo-ode)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode)
 
 Develop: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=develop)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=usdot.jpo.ode:jpo-ode:develop)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode%3Adevelop)
@@ -46,8 +48,9 @@ ODE provides the following living documents to keep ODE users and stakeholders i
 
 1. [ODE Architecture](docs/JPO%20ODE%20Architecture.docx)
 2. [ODE User Guide](docs/JPO_ODE_UserGuide.docx)
-3. [ODE REST API Guide](https://usdot-jpo-ode.github.io/)
-4. [ODE Smoke Tests](https://github.com/usdot-jpo-ode/jpo-ode/wiki/JPO-ODE-QA-Documents)
+3. [ODE Output Schema Reference Guide](docs/ODE_Output_Schema_Reference.docx)
+4. [ODE REST API Guide](https://usdot-jpo-ode.github.io/)
+5. [ODE Smoke Tests](https://github.com/usdot-jpo-ode/jpo-ode/wiki/JPO-ODE-QA-Documents)
 
 All stakeholders are invited to provide input to these documents. Stakeholders should direct all input on this document to the JPO Product Owner at DOT, FHWA, and JPO. To provide feedback, we recommend that you create an "issue" in this repository (https://github.com/usdot-jpo-ode/jpo-ode/issues). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
 
@@ -142,6 +145,7 @@ Additionally, read the following guides to familiarize yourself with Docker and 
 |[jpo-security](https://github.com/usdot-jpo-ode/jpo-security)|public|Security dependencies.|
 |[asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)|public|ASN.1 Encoder/Decoder module|
 |jpo-ode-private|private|Proprietary dependencies.|
+|[jpo-security-svcs](https://github.com/usdot-jpo-ode/jpo-security-svcs)|public|Provides cryptographic services.|
 
 Building this application requires all repositories. If you need access to the private repositories, please reach out to a member of the development team.
 
@@ -165,6 +169,7 @@ git clone --recurse-submodules https://github.com/usdot-jpo-ode/jpo-ode.git
 - Privacy Protection Module (PPM) - [jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)
 - S3 Bucket Depositor - [jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)
 - Security - [jpo-security](https://github.com/usdot-jpo-ode/jpo-security)
+- Security Services Module- [jpo-security](https://github.com/usdot-jpo-ode/jpo-security-svcs)
 - ASN.1 CODEC - [asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)
 
 #### Step 2 - Clone private repository
@@ -172,7 +177,7 @@ git clone --recurse-submodules https://github.com/usdot-jpo-ode/jpo-ode.git
 Clone the source code from the BitBucket repository:
 
 ```bash
-git clone https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
+git clone --recurse-submodules https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
 ```
 
 ---
@@ -292,16 +297,21 @@ Once the ODE is running, you should be able to access the jpo-ode web UI at `loc
 1. Press the `Connect` button to connect to the ODE WebSocket service.
 2. Press `Choose File` button to select an OBU log file containing BSMs and/or TIM messages as specified by the WYDOT CV Pilot project. See below documents for details:
 a. [Wyoming CV Pilot Log File Design](data/Wyoming_CV_Pilot_Log_File_Design.docx) 
-b. [WYDOT Log Records](data/wydotLogRecords_Tony.h) 
+b. [WYDOT Log Records](data/wydotLogRecords.h) 
 3. Press `Upload` button to upload the file to ODE.
 
 Upload records within the files must be embedding BSM and/or TIM messages wrapped in J2735 MessageFrame and ASN.1 UPER encoded, wrapped in IEEE 1609.2 envelope and ASN.1 COER encoded binary format. The following files are a samples of each supported type. Uploading any of the files below will you will observe the decoded messages returned to the web UI page while connected to the WebSocket interface:
 
  - [data/bsmLogDuringEvent.bin](data/bsmLogDuringEvent.bin)
+ - [data/bsmLogDuringEvent.gz](data/bsmLogDuringEvent.gz)
  - [data/bsmTx.bin](data/bsmTx.bin)
+ - [data/bsmTx.gz](data/bsmTx.gz)
  - [data/dnMsg.bin](data/dnMsg.bin)
+ - [data/dnMsg.gz](data/dnMsg.gz)
  - [data/rxMsg_BSM.bin](data/rxMsg_BSM.bin)
+ - [data/rxMsg_BSM.gz](data/rxMsg_BSM.gz)
  - [data/rxMsg_TIM.bin](data/rxMsg_TIM.bin)
+ - [data/rxMsg_TIM.gz](data/rxMsg_TIM.gz)
 
 Another way data can be uploaded to the ODE is through copying the file to the location specified by the `ode.uploadLocationRoot/ode.uploadLocationObuLog`property. If not specified,  Default locations would be `uploads/bsmlog`sub-directory off of the location where ODE is launched.
 

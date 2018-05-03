@@ -1,7 +1,7 @@
 package us.dot.its.jpo.ode.plugin.j2735.oss;
 
 import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
-import us.dot.its.jpo.ode.plugin.j2735.J2735TravelerInformationMessage;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
@@ -11,8 +11,8 @@ public class OssTravelerInformation {
       throw new UnsupportedOperationException();
   }
    
-   public static J2735TravelerInformationMessage genericTim(TravelerInformation asnTim) {
-      J2735TravelerInformationMessage genericTim = new J2735TravelerInformationMessage();
+   public static OdeTravelerInformationMessage genericTim(TravelerInformation asnTim) {
+      OdeTravelerInformationMessage genericTim = new OdeTravelerInformationMessage();
       
       genericTim.setMsgCnt(asnTim.getMsgCnt().intValue());
       
