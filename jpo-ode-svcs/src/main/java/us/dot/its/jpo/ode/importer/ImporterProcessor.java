@@ -98,7 +98,7 @@ public class ImporterProcessor {
                   bis = publishFile(filePath, inputStream);
                }
             } else {
-               throw new IOException("Unsupported file content type: " + probeContentType);
+               bis = publishFile(filePath, inputStream);
             }
          } else {
             bis = publishFile(filePath, inputStream);
