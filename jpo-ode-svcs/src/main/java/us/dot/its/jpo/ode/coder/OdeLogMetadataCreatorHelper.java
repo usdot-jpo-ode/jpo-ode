@@ -10,6 +10,8 @@ import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
+import us.dot.its.jpo.ode.model.RxSource;
+import us.dot.its.jpo.ode.model.OdeBsmMetadata.BsmSource;
 import us.dot.its.jpo.ode.plugin.j2735.builders.ElevationBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.HeadingBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.LatitudeBuilder;
@@ -34,10 +36,19 @@ public class OdeLogMetadataCreatorHelper {
          
          metadata.setReceivedMessageDetails(buildReceivedMessageDetails(logFileParser));
          
-         if (logFileParser instanceof BsmLogFileParser && metadata instanceof OdeBsmMetadata) {
-            BsmLogFileParser bsmLogFileParser = (BsmLogFileParser) logFileParser;
+         if (metadata instanceof OdeBsmMetadata) {
             OdeBsmMetadata odeBsmMetadata = (OdeBsmMetadata) metadata;
-            odeBsmMetadata.setBsmSource(bsmLogFileParser.getBsmSource());
+            BsmSource bsmSource = BsmSource.unknown; 
+            if (logFileParser instanceof BsmLogFileParser) {
+               BsmLogFileParser bsmLogFileParser = (BsmLogFileParser) logFileParser;
+               bsmSource = bsmLogFileParser.getBsmSource();
+            } else if (logFileParser instanceof RxMsgFileParser) {
+               RxMsgFileParser rxMsgFileParser = (RxMsgFileParser) logFileParser;
+               if (rxMsgFileParser.getRxSource() == RxSource.RV) {
+                  bsmSource = BsmSource.RV;
+               }
+            }
+            odeBsmMetadata.setBsmSource(bsmSource);
          }
       }
 
@@ -47,10 +58,10 @@ public class OdeLogMetadataCreatorHelper {
 
    public static ReceivedMessageDetails buildReceivedMessageDetails(LogFileParser parser) {
       LocationParser locationParser = parser.getLocationParser();
-      ReceivedMessageDetails timSpecificMetadata = null;
+      ReceivedMessageDetails rxMsgDetails = null;
       if (locationParser != null) {
          LogLocation locationDetails = locationParser.getLocation();
-         timSpecificMetadata = new ReceivedMessageDetails(
+         rxMsgDetails = new ReceivedMessageDetails(
                new OdeLogMsgMetadataLocation(
                   LatitudeBuilder.genericLatitude(locationDetails.getLatitude()).stripTrailingZeros().toPlainString(),
                   LongitudeBuilder.genericLongitude(locationDetails.getLongitude()).stripTrailingZeros().toPlainString(),
@@ -60,11 +71,11 @@ public class OdeLogMetadataCreatorHelper {
                      ), null);
       }
       
-      if (parser instanceof RxMsgFileParser && timSpecificMetadata != null) {
+      if (parser instanceof RxMsgFileParser && rxMsgDetails != null) {
          RxMsgFileParser rxMsgFileParser = (RxMsgFileParser) parser;
-         timSpecificMetadata.setRxSource(rxMsgFileParser.getRxSource());
+         rxMsgDetails.setRxSource(rxMsgFileParser.getRxSource());
       }
-      return timSpecificMetadata; 
+      return rxMsgDetails; 
     }
 
 }

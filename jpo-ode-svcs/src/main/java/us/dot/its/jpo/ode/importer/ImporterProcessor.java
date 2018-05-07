@@ -87,17 +87,13 @@ public class ImporterProcessor {
       try {
          inputStream = new FileInputStream(filePath.toFile());
          String probeContentType = Files.probeContentType(filePath);
-         if (probeContentType != null) { 
-            if (gZipPattern.matcher(probeContentType).matches()) {
+         if (probeContentType != null && gZipPattern.matcher(probeContentType).matches() || filePath.endsWith("gz")) {
                inputStream = new GZIPInputStream(inputStream);
                bis = publishFile(filePath, inputStream);
-            } else if (zipPattern.matcher(probeContentType).matches()) {
-               inputStream = new ZipInputStream(inputStream);
-               ZipInputStream zis = (ZipInputStream)inputStream;
-               while (zis.getNextEntry() != null) {
-                  bis = publishFile(filePath, inputStream);
-               }
-            } else {
+         } else if (probeContentType != null & zipPattern.matcher(probeContentType).matches() || filePath.endsWith("zip")) {
+            inputStream = new ZipInputStream(inputStream);
+            ZipInputStream zis = (ZipInputStream)inputStream;
+            while (zis.getNextEntry() != null) {
                bis = publishFile(filePath, inputStream);
             }
          } else {

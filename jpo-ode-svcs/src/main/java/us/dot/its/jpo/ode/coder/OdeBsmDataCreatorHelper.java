@@ -81,11 +81,15 @@ public class OdeBsmDataCreatorHelper {
       
       OdeBsmMetadata metadata = (OdeBsmMetadata) JsonUtils.fromJson(
          metadataNode.toString(), OdeBsmMetadata.class);
-      
-//      JSONObject metadata = bsmJSONData.getJSONObject(AppContext.METADATA_STRING);
-//      metadata.put("payloadType", OdeBsmPayload.class.getSimpleName());
-//      metadata.remove("encodings");
 
+      /*
+       *  ODE-755 and ODE9765Starting with schemaVersion=5 receivedMessageDetails 
+       *  will be present in BSM metadata. None should be present in prior versions.
+       */
+      if (metadata.getSchemaVersion() <= 4) {
+         metadata.setReceivedMessageDetails(null);
+      }
+      
       OdeBsmPayload payload = new OdeBsmPayload(
          BsmBuilder.genericBsm(consumed.findValue("BasicSafetyMessage")));
       return new OdeBsmData(metadata, payload );
