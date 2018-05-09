@@ -39,7 +39,7 @@ public class JsonDecoderPublisherTest {
    OdeBsmDataCreatorHelper capturingOdeBsmDataCreaterHelper;
    
 
-   @Test(timeout = 4000)
+   @Test(timeout = 30000)
    public void shouldNotPublishEmptyFileAndThrowException() {
 
       new Expectations() {
@@ -69,7 +69,7 @@ public class JsonDecoderPublisherTest {
             capturingScanner.hasNextLine();
             returns(true, false);
 
-            capturingOdeBsmDataCreaterHelper.createOdeBsmData((J2735Bsm) any, anyString, (SerialId) any);
+            OdeBsmDataCreatorHelper.createOdeBsmData((J2735Bsm) any, anyString, (SerialId) any);
             result = mockOdeBsmData;
             
             mockOdeStringPublisher.publish((OdeData) any, anyString);

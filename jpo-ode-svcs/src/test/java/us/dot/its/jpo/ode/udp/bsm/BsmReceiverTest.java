@@ -101,7 +101,7 @@ public class BsmReceiverTest {
                mockJ2735MessageFrame.getValue();
                result = mockJ2735Bsm;
                
-               capturingOdeBsmDataCreatorHelper.createOdeBsmData((J2735Bsm) any, null, (SerialId) any);
+               OdeBsmDataCreatorHelper.createOdeBsmData((J2735Bsm) any, null, (SerialId) any);
                result = mockOdeBsmData;
                
                capturingMessagePublisher.publish(mockOdeBsmData, anyString);
@@ -145,7 +145,7 @@ public class BsmReceiverTest {
                capturingOssJ2735Coder.decodeUPERBsmBytes((byte[]) any);
                result = mockJ2735Bsm;
                
-               capturingOdeBsmDataCreatorHelper.createOdeBsmData((J2735Bsm) any, null, (SerialId) any);
+               OdeBsmDataCreatorHelper.createOdeBsmData((J2735Bsm) any, null, (SerialId) any);
                result = mockOdeBsmData;
                
                capturingMessagePublisher.publish(mockOdeBsmData, anyString);

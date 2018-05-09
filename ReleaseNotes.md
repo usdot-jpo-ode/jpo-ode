@@ -1,5 +1,8 @@
 ## ODE Release Notes ##
 -----------------------
+### Sprint 38
+ODE-769 Initiated output schema change SOP. See https://github.com/usdot-jpo-ode/jpo-ode/wiki/SchemaVersion-5-Change-Notice for details
+ODE-771 Fixed PPM crash bug
 ### Sprint 37
 ODE-745	Updated ODE documentation to reflect actual implementation of the ODE output interface schema
 ODE-763	Added support for TIMs with ITIS custom text
