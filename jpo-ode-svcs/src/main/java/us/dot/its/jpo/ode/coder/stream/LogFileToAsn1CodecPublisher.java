@@ -15,6 +15,7 @@ import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
 import us.dot.its.jpo.ode.importer.parser.DriverAlertFileParser;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
+import us.dot.its.jpo.ode.importer.parser.RxMsgFileParser;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
@@ -25,6 +26,7 @@ import us.dot.its.jpo.ode.model.OdeDriverAlertData;
 import us.dot.its.jpo.ode.model.OdeDriverAlertPayload;
 import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
+import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
 
@@ -103,7 +105,8 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
             publisher.getOdeProperties().getKafkaTopicDriverAlertJson());
       } else {
          msgPayload = new OdeAsn1Payload(fileParser.getPayloadParser().getPayload());
-         if (fileParser instanceof BsmLogFileParser) {
+         if (fileParser instanceof BsmLogFileParser || 
+               (fileParser instanceof RxMsgFileParser && ((RxMsgFileParser)fileParser).getRxSource() == RxSource.RV)) {
             logger.debug("Publishing a BSM");
             msgMetadata = new OdeBsmMetadata(msgPayload);
          } else {

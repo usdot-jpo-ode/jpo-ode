@@ -24,6 +24,7 @@ import org.thymeleaf.util.StringUtils;
 
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.plugin.OdePlugin;
 import us.dot.its.jpo.ode.util.CommonUtils;
 
@@ -48,7 +49,7 @@ public class OdeProperties implements EnvironmentAware {
    private String externalIpv4 = "";
    private String externalIpv6 = "";
    private int rsuSrmSlots = 100; // number of "store and repeat message" indicies for RSU TIMs
-   
+   private int outputSchemaVersion= 5;
    
    /*
     * Security Services Module Properties
@@ -150,6 +151,8 @@ public class OdeProperties implements EnvironmentAware {
    private int isdDepositorPort = 6666;
    private int isdTrustPort = 6667;
    private int dataReceiptBufferSize;
+   private int dataReceiptExpirationSeconds;
+
 
    private int importProcessorBufferSize = OdePlugin.INPUT_STREAM_BUFFER_SIZE;
 
@@ -165,13 +168,14 @@ public class OdeProperties implements EnvironmentAware {
    private String selfPrivateKeyReconstructionFilePath;
    private String selfSigningPrivateKeyFilePath;
 
-   private int dataReceiptExpirationSeconds;
-
+   
    private static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
 
    @PostConstruct
    void initialize() {
 
+      OdeMsgMetadata.setSchemaVersion(getOutputSchemaVersion());
+      
       uploadLocations.add(Paths.get(uploadLocationRoot));
 
       String hostname;
@@ -745,4 +749,13 @@ public class OdeProperties implements EnvironmentAware {
    public void setSecuritySvcsSignatureUri(String securitySvcsSignatureUri) {
       this.securitySvcsSignatureUri = securitySvcsSignatureUri;
    }
+
+   public int getOutputSchemaVersion() {
+      return outputSchemaVersion;
+   }
+
+   public void setOutputSchemaVersion(int outputSchemaVersion) {
+      this.outputSchemaVersion = outputSchemaVersion;
+   }
+
 }

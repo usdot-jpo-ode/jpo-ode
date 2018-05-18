@@ -10,8 +10,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 //import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.OdeBsmData;
+import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;
-import us.dot.its.jpo.ode.model.OdeLogMetadata;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.plugin.j2735.builders.BsmBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.BsmPart2ContentBuilder.BsmPart2ContentBuilderException;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -72,13 +73,17 @@ public class OdeBsmDataCreatorHelper {
          object.remove(AppContext.ENCODINGS_STRING);
       }
       
-      OdeLogMetadata metadata = (OdeLogMetadata) JsonUtils.fromJson(
-         metadataNode.toString(), OdeLogMetadata.class);
-      
-//      JSONObject metadata = bsmJSONData.getJSONObject(AppContext.METADATA_STRING);
-//      metadata.put("payloadType", OdeBsmPayload.class.getSimpleName());
-//      metadata.remove("encodings");
+      OdeBsmMetadata metadata = (OdeBsmMetadata) JsonUtils.fromJson(
+         metadataNode.toString(), OdeBsmMetadata.class);
 
+      /*
+       *  ODE-755 and ODE-765 Starting with schemaVersion=5 receivedMessageDetails 
+       *  will be present in BSM metadata. None should be present in prior versions.
+       */
+      if (OdeMsgMetadata.getSchemaVersion() <= 4) {
+         metadata.setReceivedMessageDetails(null);
+      }
+      
       OdeBsmPayload payload = new OdeBsmPayload(
          BsmBuilder.genericBsm(consumed.findValue("BasicSafetyMessage")));
       return new OdeBsmData(metadata, payload );

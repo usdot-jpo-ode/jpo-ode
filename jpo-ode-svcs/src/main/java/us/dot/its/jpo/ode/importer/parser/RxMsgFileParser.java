@@ -5,7 +5,6 @@ import java.io.BufferedInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.RxSource;
 
 public class RxMsgFileParser extends LogFileParser {
@@ -33,7 +32,7 @@ public class RxMsgFileParser extends LogFileParser {
          if (status != ParserStatus.COMPLETE)
             return status;
 
-         // Step 8 - parse rxSource
+         // parse rxSource
          if (getStep() == 1) {
             status = parseStep(bis, RX_SOURCE_LENGTH);
             if (status != ParserStatus.COMPLETE)

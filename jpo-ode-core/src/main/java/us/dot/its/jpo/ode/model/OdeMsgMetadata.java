@@ -13,7 +13,7 @@ public class OdeMsgMetadata extends OdeObject {
    private String payloadType;
    private SerialId serialId;
    private String odeReceivedAt;
-   private Integer schemaVersion = 4;
+   private static Integer schemaVersion;
    private String recordGeneratedAt;
    private GeneratedBy recordGeneratedBy;
    private boolean sanitized = false;
@@ -67,12 +67,12 @@ public class OdeMsgMetadata extends OdeObject {
       this.odeReceivedAt = receivedAt;
    }
 
-   public Integer getSchemaVersion() {
+   public static Integer getSchemaVersion() {
       return schemaVersion;
    }
 
-   public void setSchemaVersion(Integer schemaVersion) {
-      this.schemaVersion = schemaVersion;
+   public static void setSchemaVersion(Integer aSchemaVersion) {
+      schemaVersion = aSchemaVersion;
    }
 
    public String getRecordGeneratedAt() {
@@ -103,12 +103,11 @@ public class OdeMsgMetadata extends OdeObject {
    public int hashCode() {
       final int prime = 31;
       int result = 1;
+      result = prime * result + ((odeReceivedAt == null) ? 0 : odeReceivedAt.hashCode());
+      result = prime * result + ((payloadType == null) ? 0 : payloadType.hashCode());
       result = prime * result + ((recordGeneratedAt == null) ? 0 : recordGeneratedAt.hashCode());
       result = prime * result + ((recordGeneratedBy == null) ? 0 : recordGeneratedBy.hashCode());
-      result = prime * result + ((payloadType == null) ? 0 : payloadType.hashCode());
-      result = prime * result + ((odeReceivedAt == null) ? 0 : odeReceivedAt.hashCode());
       result = prime * result + (sanitized ? 1231 : 1237);
-      result = prime * result + ((schemaVersion == null) ? 0 : schemaVersion.hashCode());
       result = prime * result + ((serialId == null) ? 0 : serialId.hashCode());
       return result;
    }
@@ -122,32 +121,24 @@ public class OdeMsgMetadata extends OdeObject {
       if (getClass() != obj.getClass())
          return false;
       OdeMsgMetadata other = (OdeMsgMetadata) obj;
-      if (recordGeneratedAt == null) {
-         if (other.recordGeneratedAt != null)
+      if (odeReceivedAt == null) {
+         if (other.odeReceivedAt != null)
             return false;
-      } else if (!recordGeneratedAt.equals(other.recordGeneratedAt))
-         return false;
-      if (recordGeneratedBy == null) {
-         if (other.recordGeneratedBy != null)
-            return false;
-      } else if (!recordGeneratedBy.equals(other.recordGeneratedBy))
+      } else if (!odeReceivedAt.equals(other.odeReceivedAt))
          return false;
       if (payloadType == null) {
          if (other.payloadType != null)
             return false;
       } else if (!payloadType.equals(other.payloadType))
          return false;
-      if (odeReceivedAt == null) {
-         if (other.odeReceivedAt != null)
+      if (recordGeneratedAt == null) {
+         if (other.recordGeneratedAt != null)
             return false;
-      } else if (!odeReceivedAt.equals(other.odeReceivedAt))
+      } else if (!recordGeneratedAt.equals(other.recordGeneratedAt))
+         return false;
+      if (recordGeneratedBy != other.recordGeneratedBy)
          return false;
       if (sanitized != other.sanitized)
-         return false;
-      if (schemaVersion == null) {
-         if (other.schemaVersion != null)
-            return false;
-      } else if (!schemaVersion.equals(other.schemaVersion))
          return false;
       if (serialId == null) {
          if (other.serialId != null)
