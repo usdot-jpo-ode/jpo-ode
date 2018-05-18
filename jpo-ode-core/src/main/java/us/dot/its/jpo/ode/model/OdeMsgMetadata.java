@@ -10,10 +10,12 @@ public class OdeMsgMetadata extends OdeObject {
 
    private static final long serialVersionUID = 3979762143291085955L;
 
+   private static int staticSchemaVersion;
+
    private String payloadType;
    private SerialId serialId;
    private String odeReceivedAt;
-   private static Integer schemaVersion;
+   private int schemaVersion;
    private String recordGeneratedAt;
    private GeneratedBy recordGeneratedBy;
    private boolean sanitized = false;
@@ -32,6 +34,7 @@ public class OdeMsgMetadata extends OdeObject {
 
    public OdeMsgMetadata(String payloadType, SerialId serialId, String receivedAt) {
       super();
+      this.schemaVersion = staticSchemaVersion;
       this.payloadType = payloadType;
       this.serialId = serialId;
       this.odeReceivedAt = receivedAt;
@@ -67,11 +70,11 @@ public class OdeMsgMetadata extends OdeObject {
       this.odeReceivedAt = receivedAt;
    }
 
-   public static Integer getSchemaVersion() {
+   public int getSchemaVersion() {
       return schemaVersion;
    }
 
-   public static void setSchemaVersion(Integer aSchemaVersion) {
+   public void setSchemaVersion(int aSchemaVersion) {
       schemaVersion = aSchemaVersion;
    }
 
@@ -99,6 +102,15 @@ public class OdeMsgMetadata extends OdeObject {
       this.sanitized = sanitized;
    }
 
+   
+   public static int getStaticSchemaVersion() {
+      return staticSchemaVersion;
+   }
+
+   public static void setStaticSchemaVersion(int aSchemaVersion) {
+      staticSchemaVersion = aSchemaVersion;
+   }
+
    @Override
    public int hashCode() {
       final int prime = 31;
@@ -108,6 +120,7 @@ public class OdeMsgMetadata extends OdeObject {
       result = prime * result + ((recordGeneratedAt == null) ? 0 : recordGeneratedAt.hashCode());
       result = prime * result + ((recordGeneratedBy == null) ? 0 : recordGeneratedBy.hashCode());
       result = prime * result + (sanitized ? 1231 : 1237);
+      result = prime * result + schemaVersion;
       result = prime * result + ((serialId == null) ? 0 : serialId.hashCode());
       return result;
    }
@@ -139,6 +152,8 @@ public class OdeMsgMetadata extends OdeObject {
       if (recordGeneratedBy != other.recordGeneratedBy)
          return false;
       if (sanitized != other.sanitized)
+         return false;
+      if (schemaVersion != other.schemaVersion)
          return false;
       if (serialId == null) {
          if (other.serialId != null)
