@@ -35,7 +35,7 @@ public class ImporterProcessor {
 
    public ImporterProcessor(OdeProperties odeProperties, ImporterFileType fileType) {
    // Removed for ODE-559
-//      this.decoderPublisherManager = new FileDecoderPublisher(odeProperties);
+//   this.decoderPublisherManager = new FileDecoderPublisher(odeProperties);
       this.codecPublisher = new FileAsn1CodecPublisher(odeProperties);
       this.odeProperties = odeProperties;
       this.fileType = fileType;
@@ -90,7 +90,7 @@ public class ImporterProcessor {
          if (probeContentType != null && gZipPattern.matcher(probeContentType).matches() || filePath.endsWith("gz")) {
                inputStream = new GZIPInputStream(inputStream);
                bis = publishFile(filePath, inputStream);
-         } else if (probeContentType != null & zipPattern.matcher(probeContentType).matches() || filePath.endsWith("zip")) {
+         } else if (probeContentType != null && zipPattern.matcher(probeContentType).matches() || filePath.endsWith("zip")) {
             inputStream = new ZipInputStream(inputStream);
             ZipInputStream zis = (ZipInputStream)inputStream;
             while (zis.getNextEntry() != null) {
