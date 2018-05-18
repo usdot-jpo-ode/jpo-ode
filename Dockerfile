@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:18.04
 MAINTAINER 583114@bah.com
 
 #Install necessary software
@@ -9,7 +9,7 @@ RUN apt-get update && \
 RUN apt-get update && \
     apt-get install -y wget supervisor dnsutils curl jq net-tools
 RUN apt-get update && \
-    apt-get install -y default-jdk
+    apt-get install -y openjdk-8-jdk
 RUN apt-get update && \
     apt-get install -y vim
 RUN apt-get update && \

@@ -16,6 +16,7 @@ import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;
 import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
@@ -83,10 +84,10 @@ public class OdeBsmDataCreatorHelper {
          metadataNode.toString(), OdeBsmMetadata.class);
 
       /*
-       *  ODE-755 and ODE9765Starting with schemaVersion=5 receivedMessageDetails 
+       *  ODE-755 and ODE-765 Starting with schemaVersion=5 receivedMessageDetails 
        *  will be present in BSM metadata. None should be present in prior versions.
        */
-      if (metadata.getSchemaVersion() <= 4) {
+      if (OdeMsgMetadata.getSchemaVersion() <= 4) {
          metadata.setReceivedMessageDetails(null);
       }
       
