@@ -166,7 +166,7 @@ public class OdeProperties implements EnvironmentAware {
    @PostConstruct
    void initialize() {
 
-      OdeMsgMetadata.setSchemaVersion(getOutputSchemaVersion());
+      OdeMsgMetadata.setStaticSchemaVersion(getOutputSchemaVersion());
       
       uploadLocations.add(Paths.get(uploadLocationRoot));
 
