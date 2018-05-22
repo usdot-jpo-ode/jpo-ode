@@ -37,8 +37,9 @@ public class DdsAdvisorySituationDataTest {
       String isoStartTime = "2008-09-15T15:53:00+00:00";
       String isoStopTime = "2012-05-15T15:53:00+00:00";
 
+      byte distroType = (byte) (DdsAdvisorySituationData.IP | DdsAdvisorySituationData.RSU);
       DdsAdvisorySituationData testDdsAdvisorySituationData = new DdsAdvisorySituationData(isoStartTime, isoStopTime,
-            new Ieee1609Dot2DataTag(), new DdsGeoRegion(), SituationDataWarehouse.SDW.TimeToLive.onemonth, "1234");
+            new Ieee1609Dot2DataTag(), new DdsGeoRegion(), SituationDataWarehouse.SDW.TimeToLive.onemonth, "1234", "ABCDEF", distroType);
 
       // verify time parsing
       assertEquals(Integer.valueOf(2008), testDdsAdvisorySituationData.getAsdmDetails().getStartTime().getYear());
@@ -61,8 +62,9 @@ public class DdsAdvisorySituationDataTest {
       // Null TTL should default to thirty minutes
       // Null group ID should default to 00 00 00 00
 
+      byte distroType = (byte) (DdsAdvisorySituationData.IP | DdsAdvisorySituationData.RSU);
       DdsAdvisorySituationData testDdsAdvisorySituationData = new DdsAdvisorySituationData(null, null,
-            new Ieee1609Dot2DataTag(), new DdsGeoRegion(), null, null);
+            new Ieee1609Dot2DataTag(), new DdsGeoRegion(), null, null,"ABCDEF", distroType);
 
       // verify time parsing
       assertEquals(Integer.valueOf(0), testDdsAdvisorySituationData.getAsdmDetails().getStartTime().getYear());
@@ -80,11 +82,12 @@ public class DdsAdvisorySituationDataTest {
    public void testHashCodeAndEquals() throws ParseException {
       String isoStartTime = "2008-09-15T15:53:00+00:00";
       String isoStopTime = "2012-05-15T15:53:00+00:00";
+      byte distroType = (byte) (DdsAdvisorySituationData.IP | DdsAdvisorySituationData.RSU);
 
       DdsAdvisorySituationData ddsasd1 = new DdsAdvisorySituationData();
       DdsAdvisorySituationData ddsasd2 = new DdsAdvisorySituationData();
       DdsAdvisorySituationData ddsasd3 = new DdsAdvisorySituationData(isoStartTime, isoStopTime,
-            new Ieee1609Dot2DataTag(), new DdsGeoRegion(), SituationDataWarehouse.SDW.TimeToLive.onemonth, "1234");
+            new Ieee1609Dot2DataTag(), new DdsGeoRegion(), SituationDataWarehouse.SDW.TimeToLive.onemonth, "1234", "ABCDEF", distroType);
 
       assertEquals("Expected identical hashcodes", ddsasd1.hashCode(), ddsasd2.hashCode());
       assertNotEquals("Expected different hashcodes", ddsasd2.hashCode(), ddsasd3.hashCode());
