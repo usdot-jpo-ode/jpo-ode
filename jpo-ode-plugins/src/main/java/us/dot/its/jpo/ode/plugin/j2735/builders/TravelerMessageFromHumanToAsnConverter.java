@@ -7,6 +7,9 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -17,6 +20,8 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 
 public class TravelerMessageFromHumanToAsnConverter {
+
+   private static final Logger logger = LoggerFactory.getLogger(TravelerMessageFromHumanToAsnConverter.class);
 
    // JSON cannot have empty fields like XML, so the XML must be modified by
    // removing all flag field values
@@ -154,7 +159,7 @@ public class TravelerMessageFromHumanToAsnConverter {
          startYear = zDateTime.getYear();
          startMinute = (int) Duration.between(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0), zDateTime).toMinutes();
       } catch (Exception e) { // NOSONAR
-         // failed to parse datetime, default back to unknown values
+         logger.warn("Failed to parse datetime, default to unknown values");
       }
 
       return startMinute;
@@ -176,10 +181,9 @@ public class TravelerMessageFromHumanToAsnConverter {
       try {
          ZonedDateTime zDateTime = DateTimeUtils.isoDateTime(dataFrame.get("startDateTime").asText());
          startYear = zDateTime.getYear();
-         ZonedDateTime beginningOfYear = ZonedDateTime.of(startYear, 1, 1, 0, 0, 0, 0, zDateTime.getZone());
-         startMinute = (int)ChronoUnit.MINUTES.between(beginningOfYear, zDateTime);
+         startMinute = (int)ChronoUnit.MINUTES.between(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0), zDateTime);
       } catch (ParseException e) {
-         // failed to parse datetime, default back to unknown values
+         logger.warn("Failed to startDateTime, default to unknown values");
       }
 
       dataFrame.put("startYear", startYear);
@@ -572,24 +576,9 @@ public class TravelerMessageFromHumanToAsnConverter {
       Long transformedLat = null;
       Long transformedLong = null;
 
-      if ("node-LL1".equals(delta.asText())) {
-         transformedLat = OffsetLLB12Builder.offsetLLB12(latOffset);
-         transformedLong = OffsetLLB12Builder.offsetLLB12(longOffset);
-      } else if ("node-LL2".equals(delta.asText())) {
-         transformedLat = OffsetLLB14Builder.offsetLLB14(latOffset);
-         transformedLong = OffsetLLB14Builder.offsetLLB14(longOffset);
-      } else if ("node-LL3".equals(delta.asText())) {
-         transformedLat = OffsetLLB16Builder.offsetLLB16(latOffset);
-         transformedLong = OffsetLLB16Builder.offsetLLB16(longOffset);
-      } else if ("node-LL4".equals(delta.asText())) {
-         transformedLat = OffsetLLB18Builder.offsetLLB18(latOffset);
-         transformedLong = OffsetLLB18Builder.offsetLLB18(longOffset);
-      } else if ("node-LL5".equals(delta.asText())) {
-         transformedLat = OffsetLLB22Builder.offsetLLB22(latOffset);
-         transformedLong = OffsetLLB22Builder.offsetLLB22(longOffset);
-      } else if ("node-LL6".equals(delta.asText())) {
-         transformedLat = OffsetLLB24Builder.offsetLLB24(latOffset);
-         transformedLong = OffsetLLB24Builder.offsetLLB24(longOffset);
+      if (delta.asText().startsWith("node-LL")) {
+         transformedLat = OffsetLLBuilder.offsetLL(latOffset);
+         transformedLong = OffsetLLBuilder.offsetLL(longOffset);
       } else if ("node-LatLon".equals(delta.asText())) {
          transformedLat = LatitudeBuilder.j2735Latitude(latOffset);
          transformedLong = LongitudeBuilder.j2735Longitude(longOffset);
@@ -882,11 +871,11 @@ public class TravelerMessageFromHumanToAsnConverter {
          replaceLaneDataAttributeList(updatedNode.get("data"));
       }
       if (updatedNode.get("dWidth") != null) {
-         updatedNode.put("dWidth", OffsetB10Builder.offsetB10(updatedNode.get("dWidth").decimalValue()));
+         updatedNode.put("dWidth", OffsetXyBuilder.offsetXy(updatedNode.get("dWidth").decimalValue()));
       }
 
       if (updatedNode.get("dElevation") != null) {
-         updatedNode.put("dElevation", OffsetB10Builder.offsetB10(updatedNode.get("dElevation").decimalValue()));
+         updatedNode.put("dElevation", OffsetXyBuilder.offsetXy(updatedNode.get("dElevation").decimalValue()));
       }
 
       return updatedNode;
@@ -996,41 +985,27 @@ public class TravelerMessageFromHumanToAsnConverter {
       // .</delta>
       // </NodeLL>
 
-      BigDecimal latOffset = oldNode.get("nodeLat").decimalValue();
-      BigDecimal longOffset = oldNode.get("nodeLong").decimalValue();
+      BigDecimal xOffset = oldNode.get("x").decimalValue();
+      BigDecimal yOffset = oldNode.get("y").decimalValue();
       JsonNode delta = oldNode.get("delta");
-      Long transformedLat = null;
-      Long transformedLong = null;
+      Long transformedX = null;
+      Long transformedY = null;
 
-      if ("node-XY1".equals(delta.asText())) {
-         transformedLat = OffsetB10Builder.offsetB10(latOffset);
-         transformedLong = OffsetB10Builder.offsetB10(longOffset);
-      } else if ("node-XY2".equals(delta.asText())) {
-         transformedLat = OffsetB11Builder.offsetB11(latOffset);
-         transformedLong = OffsetB11Builder.offsetB11(longOffset);
-      } else if ("node-XY3".equals(delta.asText())) {
-         transformedLat = OffsetB12Builder.offsetB12(latOffset);
-         transformedLong = OffsetB12Builder.offsetB12(longOffset);
-      } else if ("node-XY4".equals(delta.asText())) {
-         transformedLat = OffsetB13Builder.offsetB13(latOffset);
-         transformedLong = OffsetB13Builder.offsetB13(longOffset);
-      } else if ("node-XY5".equals(delta.asText())) {
-         transformedLat = OffsetB14Builder.offsetB14(latOffset);
-         transformedLong = OffsetB14Builder.offsetB14(longOffset);
-      } else if ("node-XY6".equals(delta.asText())) {
-         transformedLat = OffsetB16Builder.offsetB16(latOffset);
-         transformedLong = OffsetB16Builder.offsetB16(longOffset);
+      ObjectNode innerNode = (ObjectNode) JsonUtils.newNode();
+      ObjectNode deltaNode = (ObjectNode) JsonUtils.newNode();
+      if ("node-XY".equals(delta.asText())) {
+         transformedX = OffsetXyBuilder.offsetXy(xOffset);
+         transformedY = OffsetXyBuilder.offsetXy(yOffset);
+         ObjectNode xy = JsonUtils.newNode().put("x", transformedX).put("y", transformedY);
+         innerNode.set(delta.asText(), xy);
       } else if ("node-LatLon".equals(delta.asText())) {
-         transformedLat = LatitudeBuilder.j2735Latitude(latOffset);
-         transformedLong = LongitudeBuilder.j2735Longitude(longOffset);
+         transformedX = LatitudeBuilder.j2735Latitude(xOffset);
+         transformedY = LongitudeBuilder.j2735Longitude(yOffset);
+         ObjectNode latLong = JsonUtils.newNode().put("lat", transformedX).put("lon", transformedY);
+         innerNode.set(delta.asText(), latLong);
       }
 
-      ObjectNode latLong = JsonUtils.newNode().put("lat", transformedLat).put("lon", transformedLong);
-
-      ObjectNode innerNode = (ObjectNode) JsonUtils.newNode().set(delta.asText(), latLong);
-      ObjectNode deltaNode = (ObjectNode) JsonUtils.newNode().set("delta", innerNode);
-      // ObjectNode outerNode = (ObjectNode) JsonUtils.newNode().set("NodeLL",
-      // deltaNode);
+      deltaNode.set("delta", innerNode);
 
       return deltaNode;
       
@@ -1079,58 +1054,8 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       ObjectNode updatedNode = (ObjectNode) jsonNode;
 
-      updatedNode.put("x", OffsetB10Builder.offsetB10(updatedNode.get("x").decimalValue()));
-      updatedNode.put("y", OffsetB10Builder.offsetB10(updatedNode.get("y").decimalValue()));
-
-      return updatedNode;
-   }
-
-   public static JsonNode replaceNode_XY2(JsonNode jsonNode) {
-      // xy2 = Node-XY-22b = Offset-B11
-      ObjectNode updatedNode = (ObjectNode) jsonNode;
-
-      updatedNode.put("x", OffsetB11Builder.offsetB11(updatedNode.get("x").decimalValue()));
-      updatedNode.put("y", OffsetB11Builder.offsetB11(updatedNode.get("y").decimalValue()));
-
-      return updatedNode;
-   }
-
-   public static ObjectNode replaceNode_XY3(JsonNode jsonNode) {
-      // XY3 = Node-XY-24b = Offset-B12
-      ObjectNode updatedNode = (ObjectNode) jsonNode;
-
-      updatedNode.put("x", OffsetB12Builder.offsetB12(updatedNode.get("x").decimalValue()));
-      updatedNode.put("y", OffsetB12Builder.offsetB12(updatedNode.get("y").decimalValue()));
-
-      return updatedNode;
-   }
-
-   public static ObjectNode replaceNode_XY4(JsonNode jsonNode) {
-      // XY4 = Node-XY-26b = Offset-B13
-      ObjectNode updatedNode = (ObjectNode) jsonNode;
-
-      updatedNode.put("x", OffsetB13Builder.offsetB13(updatedNode.get("x").decimalValue()));
-      updatedNode.put("y", OffsetB13Builder.offsetB13(updatedNode.get("y").decimalValue()));
-
-      return updatedNode;
-   }
-
-   public static ObjectNode replaceNode_XY5(JsonNode jsonNode) {
-      // XY5 = Node-XY-28b = Offset-B14
-      ObjectNode updatedNode = (ObjectNode) jsonNode;
-
-      updatedNode.put("x", OffsetB14Builder.offsetB14(updatedNode.get("x").decimalValue()));
-      updatedNode.put("y", OffsetB14Builder.offsetB14(updatedNode.get("y").decimalValue()));
-
-      return updatedNode;
-   }
-
-   public static ObjectNode replaceNode_XY6(JsonNode jsonNode) {
-      // XY6 = Node-XY-32b = Offset-B16
-      ObjectNode updatedNode = (ObjectNode) jsonNode;
-
-      updatedNode.put("x", OffsetB16Builder.offsetB16(updatedNode.get("x").decimalValue()));
-      updatedNode.put("y", OffsetB16Builder.offsetB16(updatedNode.get("y").decimalValue()));
+      updatedNode.put("x", OffsetXyBuilder.offsetXy(updatedNode.get("x").decimalValue()));
+      updatedNode.put("y", OffsetXyBuilder.offsetXy(updatedNode.get("y").decimalValue()));
 
       return updatedNode;
    }
