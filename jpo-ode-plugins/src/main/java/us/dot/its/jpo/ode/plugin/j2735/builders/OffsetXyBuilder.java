@@ -2,13 +2,13 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
 
-public class OffsetB13Builder {
+public class OffsetXyBuilder {
 
-   private OffsetB13Builder() {
+   private OffsetXyBuilder() {
       throw new UnsupportedOperationException();
    }
 
-   public static Long offsetB13(BigDecimal offset) {
+   public static Long offsetXy(BigDecimal offset) {
       return offset.scaleByPowerOfTen(2).longValue();
    }
 }
