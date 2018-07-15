@@ -6,4 +6,5 @@ mvn clean
 mvn install
 cd ../jpo-ode
 mvn clean install
+mvn --projects jpo-s3-deposit package assembly:single
 docker-compose up --build --no-recreate -d

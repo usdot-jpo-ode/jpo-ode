@@ -116,7 +116,6 @@ services:
       DEPOSIT_BUCKET_NAME: ${CVPEP_BSM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${CVPEP_BSM_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${CVPEP_BSM_TOPIC}
-      DEPOSIT_DESTINATION: ${CVPEP_BSM_DESTINATION}
     depends_on:
      - kafka
     links:
@@ -132,7 +131,6 @@ services:
       DEPOSIT_BUCKET_NAME: ${RDE_BSM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${RDE_BSM_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${RDE_BSM_TOPIC}
-      DEPOSIT_DESTINATION: ${RDE_BSM_DESTINATION}
     depends_on:
      - kafka
     links:
@@ -148,7 +146,6 @@ services:
       DEPOSIT_BUCKET_NAME: ${CVPEP_TIM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${CVPEP_TIM_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${CVPEP_TIM_TOPIC}
-      DEPOSIT_DESTINATION: ${CVPEP_TIM_DESTINATION}
     depends_on:
      - kafka
     links:
@@ -164,7 +161,6 @@ services:
       DEPOSIT_BUCKET_NAME: ${RDE_TIM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${RDE_TIM_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${RDE_TIM_TOPIC}
-      DEPOSIT_DESTINATION: ${RDE_TIM_DESTINATION}
     depends_on:
      - kafka
     links:
