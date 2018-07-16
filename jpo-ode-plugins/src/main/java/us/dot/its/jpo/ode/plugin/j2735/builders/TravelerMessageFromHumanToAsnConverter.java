@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -159,7 +158,7 @@ public class TravelerMessageFromHumanToAsnConverter {
          startYear = zDateTime.getYear();
          startMinute = (int) Duration.between(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0), zDateTime).toMinutes();
       } catch (Exception e) { // NOSONAR
-         logger.warn("Failed to parse datetime, default to unknown values");
+         logger.warn("Failed to parse datetime {}, defaulting to unknown value {}", isoTime, startMinute);
       }
 
       return startMinute;
@@ -178,12 +177,13 @@ public class TravelerMessageFromHumanToAsnConverter {
       // unknown minuteofyear = 527040
       int startYear = 0;
       int startMinute = 527040;
+      String startDateTime = dataFrame.get("startDateTime").asText();
       try {
-         ZonedDateTime zDateTime = DateTimeUtils.isoDateTime(dataFrame.get("startDateTime").asText());
+         ZonedDateTime zDateTime = DateTimeUtils.isoDateTime(startDateTime);
          startYear = zDateTime.getYear();
          startMinute = (int)ChronoUnit.MINUTES.between(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0), zDateTime);
-      } catch (ParseException e) {
-         logger.warn("Failed to startDateTime, default to unknown values");
+      } catch (Exception e) {
+         logger.warn("Failed to startDateTime {}, defaulting to unknown value {}.", startDateTime, startMinute);
       }
 
       dataFrame.put("startYear", startYear);
@@ -1069,7 +1069,7 @@ public class TravelerMessageFromHumanToAsnConverter {
          return "node-XY6";
       } else {
          throw new IllegalArgumentException("Invalid node X/Y offset: " + transformedX + "/" + transformedY
-               + ". Values must be between a range of -327.67/+327.68 meters.");
+               + ". Values must be between a range of -327.68/+327.67 meters.");
       }
    }
 

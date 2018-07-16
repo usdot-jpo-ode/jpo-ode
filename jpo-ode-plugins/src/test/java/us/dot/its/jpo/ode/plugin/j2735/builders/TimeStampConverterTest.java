@@ -2,7 +2,14 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import mockit.Expectations;
+import mockit.Mocked;
 
 /**
  * Test class for TravelerMessageFromHumanToAsnConverter.translateISOTimeStampToMinuteOfYear()
@@ -10,6 +17,27 @@ import org.junit.Test;
  */
 public class TimeStampConverterTest {
    
+   @Mocked private static Logger logger;
+
+   @BeforeClass
+   public static void classSetup() {
+      new Expectations(LoggerFactory.class) {
+         {
+            LoggerFactory.getLogger(TravelerMessageFromHumanToAsnConverter.class);
+            result = logger;
+         }
+      };
+   }
+   
+   @Before
+   public void setup() {
+      new Expectations(LoggerFactory.class) {
+         {
+            logger.warn(anyString);
+         }
+      };
+   }
+
    @Test
    public void testKnownTime() {
       String testInput = "2017-11-20T22:16:12.874Z";

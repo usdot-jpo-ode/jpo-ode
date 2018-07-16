@@ -492,7 +492,7 @@ public class TimController {
                                                          // "long" being a type
                                                          // in java
       fixedXml = fixedXml.replaceAll("node_LL", "node-LL");
-      fixedXml = fixedXml.replaceAll("node_XY>", "node-XY");
+      fixedXml = fixedXml.replaceAll("node_XY", "node-XY");
       fixedXml = fixedXml.replaceAll("node_LatLon>", "node-LatLon>");
       fixedXml = fixedXml.replaceAll("nodeLL>", "NodeLL>");
       fixedXml = fixedXml.replaceAll("nodeXY>", "NodeXY>");
