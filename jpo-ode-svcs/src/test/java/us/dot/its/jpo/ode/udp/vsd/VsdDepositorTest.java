@@ -40,8 +40,6 @@ public class VsdDepositorTest {
    Coder capturingCoder;
 
    @Mocked
-   EncodeFailedException mockEncodeFailedException;
-   @Mocked
    VehSitDataMessage mockVehSitDataMessage;
 
    @Test
@@ -66,21 +64,16 @@ public class VsdDepositorTest {
    }
 
    @Test
-   public void testEncodeMessageException() {
-      try {
-         new Expectations() {
-            {
-               capturingVehSitDataMessageDeserializer.deserialize(null, (byte[]) any);
+   public void testEncodeMessageException() throws EncodeFailedException, EncodeNotSupportedException {
+      new Expectations() {
+         {
+            capturingVehSitDataMessageDeserializer.deserialize(null, (byte[]) any);
 
-               capturingCoder.encode((AbstractData) any);
-               result = mockEncodeFailedException;
-            }
-         };
-      } catch (EncodeFailedException | EncodeNotSupportedException e) {
-         fail("Unexpected exception: " + e);
-      }
+            capturingCoder.encode((AbstractData) any);
+         }
+      };
 
-      assertNull(testVsdDepositor.encodeMessage(new byte[0]));
+      assertNotNull(testVsdDepositor.encodeMessage(new byte[0]));
    }
 
    @Test

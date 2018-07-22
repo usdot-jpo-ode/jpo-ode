@@ -16,7 +16,6 @@ import org.snmp4j.event.ResponseEvent;
 
 import mockit.Expectations;
 import mockit.Injectable;
-import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 
 @RunWith(JMockit.class)
@@ -102,10 +101,9 @@ public class RsuSnmpTest {
 
     @Test
     public void shouldReturnVariableBindings(@Injectable Snmp mockSnmp, @Injectable ResponseEvent mockResponseEvent,
-            @Injectable PDU mockPDU, @Mocked Vector mockVector) {
+            @Injectable PDU mockPDU) {
 
         String inputMessage = "test_rsu_message_1";
-        String expectedMessage = "test_rsu_message_1";
 
         try {
             new Expectations() {
@@ -118,9 +116,7 @@ public class RsuSnmpTest {
                     mockResponseEvent.getResponse();
                     result = mockPDU;
                     mockPDU.getVariableBindings();
-                    result = mockVector;
-                    mockVector.toString();
-                    result = inputMessage;
+                    result = new Vector();
                 }
             };
         } catch (IOException e) {
@@ -129,7 +125,7 @@ public class RsuSnmpTest {
 
         String actualMessage = RsuSnmp.sendSnmpV3Request("127.0.0.1", "1.1", mockSnmp);
 
-        assertEquals(expectedMessage, actualMessage);
+        assertEquals("[]", actualMessage);
     }
 
 }

@@ -18,7 +18,6 @@ import org.junit.Test;
 
 import com.oss.asn1.AbstractData;
 import com.oss.asn1.Coder;
-import com.oss.asn1.DecodeFailedException;
 import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.EncodeNotSupportedException;
 import com.oss.asn1.PERUnalignedCoder;
@@ -81,11 +80,6 @@ public class IsdDepositorTest {
    @Mocked
    TemporaryID mockTemporaryID;
 
-   @Mocked
-   EncodeFailedException mockEncodeFailedException;
-   @Mocked
-   DecodeFailedException mockDecodeFailedException;
-   
    @Capturing
    Coder capturingCoder;
 
@@ -187,27 +181,6 @@ public class IsdDepositorTest {
    }
 
    @Test
-   public void testSendDataReceiptEncodeFailedException() {
-      try {
-         new Expectations() {
-            {
-               capturingIntersectionSituationDataDeserializer.deserialize(null, (byte[]) any);
-               result = mockIntersectionSituationData;
-
-               mockIntersectionSituationData.getRequestID();
-               result = mockTemporaryID;
-
-               capturingPERUnalignedCoder.encode((AbstractData) any).array();
-               result = mockEncodeFailedException;
-            }
-         };
-      } catch (EncodeFailedException | EncodeNotSupportedException e) {
-         fail("Unexpected exception: " + e);
-      }
-      testIsdDepositor.sendDataReceipt(new byte[] { 1, 2, 3 });
-   }
-   
-   @Test
    public void testEncodeMessageException() {
       try {
          new Expectations() {
@@ -215,14 +188,13 @@ public class IsdDepositorTest {
                capturingIntersectionSituationDataDeserializer.deserialize(null, (byte[]) any);
 
                capturingCoder.encode((AbstractData) any);
-               result = mockEncodeFailedException;
             }
          };
       } catch (EncodeFailedException | EncodeNotSupportedException e) {
          fail("Unexpected exception: " + e);
       }
 
-      assertNull(testIsdDepositor.encodeMessage(new byte[0]));
+      assertNotNull(testIsdDepositor.encodeMessage(new byte[0]));
    }
 
    @Test

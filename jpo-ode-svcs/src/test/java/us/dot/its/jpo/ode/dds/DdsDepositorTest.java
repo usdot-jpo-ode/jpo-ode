@@ -247,18 +247,18 @@ public class DdsDepositorTest {
     }
 
     @Test
-    public void shouldLogOnError(@Mocked OdeProperties mockOdeProperties, @Mocked Logger mockLogger,
-            @Mocked Throwable mockThrowable) {
+    public void shouldLogOnError(@Mocked OdeProperties mockOdeProperties, @Mocked Logger mockLogger) {
 
         DdsDepositor<Object> testDdsDepositor = new DdsDepositor<Object>(mockOdeProperties);
 
         testDdsDepositor.setLogger(mockLogger);
 
-        testDdsDepositor.onError(mockThrowable);
+        Exception e = new Exception();
+        testDdsDepositor.onError(e);
 
         new Verifications() {
             {
-                mockLogger.error(anyString, mockThrowable);
+                mockLogger.error(anyString, e);
             }
         };
     }

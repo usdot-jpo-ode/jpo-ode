@@ -19,7 +19,6 @@ import com.oss.asn1.AbstractData;
 import com.oss.asn1.COERCoder;
 import com.oss.asn1.DecodeFailedException;
 import com.oss.asn1.DecodeNotSupportedException;
-import com.oss.asn1.EncodeFailedException;
 import com.oss.asn1.ValidateFailedException;
 import com.oss.asn1.ValidateNotSupportedException;
 
@@ -48,15 +47,10 @@ public class Oss1609dot2CoderTest {
    COERCoder capturingCOERCoder;
 
    @Mocked
-   EncodeFailedException mockFailedEncodeException;
-
-   @Mocked
    Ieee1609Dot2Data mockIeee1609Dot2Data;
 
    @Capturing
    DatatypeConverter capturingDatatypeConverter;
-   @Mocked
-   DecodeFailedException mockDecodeFailedException;
 
    @Capturing
    LoggerFactory capturingLoggerFactory; // needed otherwise test fails
@@ -73,21 +67,6 @@ public class Oss1609dot2CoderTest {
    }
 
    @Test
-   public void shouldCatchByteDecodingExceptionAndReturnsNull() {
-      try {
-         new Expectations() {
-            {
-               capturingCOERCoder.decode((InputStream) any, (Ieee1609Dot2Data) any);
-               result = mockFailedEncodeException;
-            }
-         };
-      } catch (DecodeFailedException | DecodeNotSupportedException e) {
-         fail("Unexpected errror: " + e);
-      }
-      assertNull(testOss1609dot2Coder.decodeIeee1609Dot2DataBytes(new byte[] { 1, 2, 3 }));
-   }
-
-   @Test
    public void successfulByteDecodingReturnsObject() {
       try {
          new Expectations() {
@@ -100,21 +79,6 @@ public class Oss1609dot2CoderTest {
          fail("Unexpected errror: " + e);
       }
       assertEquals(mockIeee1609Dot2Data, testOss1609dot2Coder.decodeIeee1609Dot2DataBytes(new byte[] { 1, 2, 3 }));
-   }
-
-   @Test
-   public void failedHexDecodingReturnsNull() {
-      try {
-         new Expectations() {
-            {
-               capturingCOERCoder.decode((InputStream) any, (Ieee1609Dot2Data) any);
-               result = mockFailedEncodeException;
-            }
-         };
-      } catch (DecodeFailedException | DecodeNotSupportedException e) {
-         fail("Unexpected errror: " + e);
-      }
-      assertNull(testOss1609dot2Coder.decodeIeee1609Dot2DataHex("test hex message"));
    }
 
    @Test
@@ -134,17 +98,6 @@ public class Oss1609dot2CoderTest {
 
    @Test
    public void failedInputStreamDecodingReturnsNull() {
-
-      try {
-         new Expectations() {
-            {
-               capturingCOERCoder.decode((InputStream) any, (Ieee1609Dot2Data) any);
-               result = mockFailedEncodeException;
-            }
-         };
-      } catch (DecodeFailedException | DecodeNotSupportedException e) {
-         fail("Unexpected errror: " + e);
-      }
 
       BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] {1,2,3}));
       assertNull(testOss1609dot2Coder.decodeIeee1609Dot2DataStream(bis));
@@ -178,30 +131,17 @@ public class Oss1609dot2CoderTest {
 
    @Test
    public void handleDecodeExceptionDecodeNotSupported(@Mocked AbstractData mockAbstractData) {
-      new Expectations() {
-         {
-            mockDecodeFailedException.getDecodedData();
-            result = mockAbstractData;
-         }
-      };
-      testOss1609dot2Coder.handleDecodeException(mockDecodeFailedException);
+      testOss1609dot2Coder.handleDecodeException(new Exception());
    }
 
    @Test
    public void handleDecodeExceptionDecodeNotSupportedNull() {
-      new Expectations() {
-         {
-            mockDecodeFailedException.getDecodedData();
-            result = null;
-         }
-      };
-      testOss1609dot2Coder.handleDecodeException(mockDecodeFailedException);
+      testOss1609dot2Coder.handleDecodeException(new Exception());
    }
 
    @Test
-   public void handleDecodeExceptionDecodeNotSupportedException(
-         @Injectable DecodeNotSupportedException injectableDecodeNotSupportedException) {
-      testOss1609dot2Coder.handleDecodeException(injectableDecodeNotSupportedException);
+   public void handleDecodeExceptionDecodeNotSupportedException() {
+      testOss1609dot2Coder.handleDecodeException(new Exception());
    }
 
    @Test
