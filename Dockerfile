@@ -14,9 +14,8 @@ RUN apt-get update && \
     apt-get install -y vim
 RUN apt-get update && \
     apt-get install -y nano
-#RUN apt-get update && \
-#   apt-cache search maven && \
-#    apt-get install -y maven
+RUN apt-get update && \
+   apt-cache search maven && apt-get install -y maven
 	
 RUN apt-get clean
 
@@ -32,16 +31,19 @@ RUN apt-get clean
 #RUN service docker start
 
 #Add ODE binary files
-ADD jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar /home
+#ADD jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar /home
 
+#Add source files
+ADD . /home/jpo-ode
 ADD docker/start-ode.sh /usr/bin/start-ode.sh
 ADD jpo-ode-svcs/src/main/resources/application.properties /home
 ADD jpo-ode-svcs/src/main/resources/logback.xml /home
 
 # Build ODE inside the image
-#RUN cd /home/jpo-ode/jpo-ode-private && mvn clean && mvn install
-#RUN cd /home/jpo-ode && mvn clean && mvn install
-#RUN cp /home/jpo-ode/jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar /home
+#RUN cd /home/jpo-ode && mvn update
+RUN cd /home/jpo-ode/jpo-ode-private && mvn clean && mvn install
+Run cd /home/jpo-ode && mvn clean install
+RUN cp /home/jpo-ode/jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar /home
 
 #Change permissions and run scripts
 RUN chmod a+x /usr/bin/start-ode.sh
