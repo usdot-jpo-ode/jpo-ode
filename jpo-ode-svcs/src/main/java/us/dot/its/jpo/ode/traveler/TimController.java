@@ -319,6 +319,9 @@ public class TimController {
             asd = buildASD(travelerInputData);
          }
          xmlMsg = convertToXml(asd, encodableTim);
+         // publish Broadcast TIM to a J2735 compliant topic.
+         stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastJsonJ2735(), null,
+            XmlUtils.toJSONObject(xmlMsg).toString());
          stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlMsg);
       } catch (JsonUtilsException | XmlUtilsException | ParseException e) {
          String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
@@ -332,6 +335,7 @@ public class TimController {
 
       return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("Success", "true"));
    }
+
 
    /**
     * Update an already-deposited TIM
