@@ -209,7 +209,7 @@ public class Asn1CommandManager {
          message.set(AppContext.PAYLOAD_STRING, payloadObj);
 
          ObjectNode root = JsonUtils.newNode();
-         root.set("OdeAsn1Data", message);
+         root.set(AppContext.ODE_ASN1_DATA, message);
 
          outputXml = XmlUtils.toXmlS(root);
          

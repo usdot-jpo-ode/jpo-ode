@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
@@ -28,6 +29,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.coder.OdeTimDataCreatorHelper;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
@@ -319,6 +321,12 @@ public class TimController {
             asd = buildASD(travelerInputData);
          }
          xmlMsg = convertToXml(asd, encodableTim);
+         // publish Broadcast TIM to a J2735 compliant topic.
+         JSONObject jsonMsg = XmlUtils.toJSONObject(xmlMsg);
+         String j2735Tim = OdeTimDataCreatorHelper.createOdeTimData(jsonMsg.getJSONObject(AppContext.ODE_ASN1_DATA)).toString();
+         stringMsgProducer.send(odeProperties.getKafkaTopicJ2735TimBroadcastJson(), null, j2735Tim);
+         // publish J2735 TIM also to general un-filtered TIM topic
+         stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimJson(), null, j2735Tim);
          stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlMsg);
       } catch (JsonUtilsException | XmlUtilsException | ParseException e) {
          String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
@@ -474,7 +482,7 @@ public class TimController {
       message.set(AppContext.PAYLOAD_STRING, payloadObj);
 
       ObjectNode root = JsonUtils.newNode();
-      root.set("OdeAsn1Data", message);
+      root.set(AppContext.ODE_ASN1_DATA, message);
 
       // Convert to XML
       logger.debug("pre-xml: {}", root);

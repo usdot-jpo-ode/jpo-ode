@@ -104,6 +104,7 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeTimRxJson= "topic.OdeTimRxJson";
    private String kafkaTopicOdeTimBroadcastPojo= "topic.OdeTimBroadcastPojo";
    private String kafkaTopicOdeTimBroadcastJson= "topic.OdeTimBroadcastJson";
+   private String kafkaTopicJ2735TimBroadcastJson= "topic.J2735TimBroadcastJson";
    private String kafkaTopicFilteredOdeTimJson = "topic.FilteredOdeTimJson";
 
    // DriverAlerts
@@ -695,6 +696,14 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setKafkaTopicOdeTimBroadcastJson(String kafkaTopicOdeTimBroadcastJson) {
       this.kafkaTopicOdeTimBroadcastJson = kafkaTopicOdeTimBroadcastJson;
+   }
+
+   public String getKafkaTopicJ2735TimBroadcastJson() {
+      return kafkaTopicJ2735TimBroadcastJson;
+   }
+
+   public void setKafkaTopicJ2735TimBroadcastJson(String kafkaTopicJ2735TimBroadcastJson) {
+      this.kafkaTopicJ2735TimBroadcastJson = kafkaTopicJ2735TimBroadcastJson;
    }
 
    public String getKafkaTopicFilteredOdeTimJson() {
