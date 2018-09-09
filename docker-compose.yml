@@ -49,7 +49,8 @@ services:
       ODE_EXTERNAL_IPV4: ${ODE_EXTERNAL_IPV4}
       ODE_EXTERNAL_IPV6: ${ODE_EXTERNAL_IPV6}
       ODE_SECURITY_SVCS_SIGNATURE_URI: ${ODE_SECURITY_SVCS_SIGNATURE_URI}
-      ODE_OUTPUT_SCHEMA_VERSION: ${ODE_OUTPUT_SCHEMA_VERSION}
+# Commented out for latest schemaVersion. Uncomment to set for older schemaVersion
+#      ODE_OUTPUT_SCHEMA_VERSION: ${ODE_OUTPUT_SCHEMA_VERSION}
     depends_on:
       - kafka
     links:

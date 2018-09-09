@@ -35,6 +35,7 @@ import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsdPayload;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.model.OdeTimData;
@@ -50,6 +51,7 @@ import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2DataTag;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DSRCmsgID;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
 import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.MessageFrame;
@@ -284,8 +286,11 @@ public class TimController {
       }
 
       // Add metadata to message and publish to kafka
-      OdeMsgPayload timDataPayload = new OdeMsgPayload(travelerInputData.getTim());
+      OdeTravelerInformationMessage tim = travelerInputData.getTim();
+      OdeMsgPayload timDataPayload = new OdeMsgPayload(tim);
       OdeMsgMetadata timMetadata = new OdeMsgMetadata(timDataPayload);
+      timMetadata.setRecordGeneratedBy(GeneratedBy.TMC);
+      timMetadata.setRecordGeneratedAt(tim.getTimeStamp());
       OdeTimData odeTimData = new OdeTimData(timMetadata, timDataPayload);
       timProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastPojo(), null, odeTimData);
 
@@ -320,7 +325,7 @@ public class TimController {
             // We need to send data UNSECURED, so we should try to build the ASD as well as MessageFrame
             asd = buildASD(travelerInputData);
          }
-         xmlMsg = convertToXml(asd, encodableTim);
+         xmlMsg = convertToXml(asd, encodableTim, timMetadata);
          // publish Broadcast TIM to a J2735 compliant topic.
          JSONObject jsonMsg = XmlUtils.toJSONObject(xmlMsg);
          String j2735Tim = OdeTimDataCreatorHelper.createOdeTimData(jsonMsg.getJSONObject(AppContext.ODE_ASN1_DATA)).toString();
@@ -430,7 +435,7 @@ public class TimController {
       return asd;
    }
 
-   private String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj)
+   private String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj, OdeMsgMetadata timMetadata)
          throws JsonUtilsException, XmlUtilsException, ParseException {
 
       TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(), TravelerInputData.class);
@@ -471,6 +476,8 @@ public class TimController {
 
       // Create a valid metadata from scratch
       OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
+      metadata.setRecordGeneratedBy(timMetadata.getRecordGeneratedBy());
+      metadata.setRecordGeneratedAt(timMetadata.getRecordGeneratedAt());
       ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());
       metaObject.set("request", requestObj);
       
