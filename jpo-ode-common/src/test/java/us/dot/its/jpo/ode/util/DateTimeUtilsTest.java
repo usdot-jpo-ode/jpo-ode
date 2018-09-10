@@ -23,7 +23,7 @@ public class DateTimeUtilsTest extends TestCase {
             expectedDate.getHour(),
             expectedDate.getMinute(),
             expectedDate.getSecond(),
-            expectedDate.getNano()/1000000).format(DateTimeFormatter.ISO_INSTANT);
+            expectedDate.getNano()/1000000).format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
       
       assertEquals(sExpectedDate.substring(0, 18), sdate.substring(0, 18));
       ZonedDateTime date2 = DateTimeUtils.isoDateTime("2015-11-30T16:06:15.679Z");
