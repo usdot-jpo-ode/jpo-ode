@@ -1,1 +1,1 @@
-docker run -it -v %DOCKER_SHARED_VOLUME%:/ode_data -e DOCKER_HOST_IP=%DOCKER_HOST_IP% -p "8080:8080" -p "9090:9090" -p "46753:46753/udp" jpoode_ode:latest %1
+docker run -it -v %DOCKER_SHARED_VOLUME%:/ode_data -e DOCKER_HOST_IP=%DOCKER_HOST_IP% -p "8080:8080" -p "9090:9090" -p "46753:46753/udp" jpo-ode_ode:latest %1

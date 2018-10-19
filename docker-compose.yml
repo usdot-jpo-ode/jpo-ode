@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   zookeeper:
     image: wurstmeister/zookeeper
@@ -43,11 +43,8 @@ services:
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ZK: ${DOCKER_HOST_IP}:2181
-      SPRING_CONFIG_LOCATION: /host_share/config/
       ODE_DDS_CAS_USERNAME: ${ODE_DDS_CAS_USERNAME}
       ODE_DDS_CAS_PASSWORD: ${ODE_DDS_CAS_PASSWORD}
-      ODE_EXTERNAL_IPV4: ${ODE_EXTERNAL_IPV4}
-      ODE_EXTERNAL_IPV6: ${ODE_EXTERNAL_IPV6}
       ODE_SECURITY_SVCS_SIGNATURE_URI: ${ODE_SECURITY_SVCS_SIGNATURE_URI}
       ODE_OUTPUT_SCHEMA_VERSION: ${ODE_OUTPUT_SCHEMA_VERSION}
     depends_on:
@@ -60,7 +57,7 @@ services:
 
   adm:
     build: ./asn1_codec
-    image: jpoode_acm:latest
+    image: jpo-ode_acm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ACM_CONFIG_FILE: adm.properties
@@ -73,7 +70,7 @@ services:
 
   aem:
     build: ./asn1_codec
-    image: jpoode_acm:latest
+    image: jpo-ode_acm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ACM_CONFIG_FILE: aem.properties
@@ -86,7 +83,7 @@ services:
 
   ppm_bsm:
     build: ./jpo-cvdp
-    image: jpoode_ppm:latest
+    image: jpo-ode_ppm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       PPM_CONFIG_FILE: ppmBsm.properties
@@ -97,7 +94,7 @@ services:
 
   ppm_tim:
     build: ./jpo-cvdp
-    image: jpoode_ppm:latest
+    image: jpo-ode_ppm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       PPM_CONFIG_FILE: ppmTim.properties
@@ -108,7 +105,7 @@ services:
 
   cvpep_bsm_depositor:
     build: ./jpo-s3-deposit
-    image: jpoode_s3dep:latest
+    image: jpo-ode_s3dep:latest
     environment:
       AWS_ACCESS_KEY_ID: ${CVPEP_BSM_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${CVPEP_BSM_SECRET_ACCESS_KEY}
@@ -123,7 +120,7 @@ services:
 
   rde_bsm_depositor:
     build: ./jpo-s3-deposit
-    image: jpoode_s3dep:latest
+    image: jpo-ode_s3dep:latest
     environment:
       AWS_ACCESS_KEY_ID: ${RDE_BSM_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${RDE_BSM_SECRET_ACCESS_KEY}
@@ -138,7 +135,7 @@ services:
 
   cvpep_tim_depositor:
     build: ./jpo-s3-deposit
-    image: jpoode_s3dep:latest
+    image: jpo-ode_s3dep:latest
     environment:
       AWS_ACCESS_KEY_ID: ${CVPEP_TIM_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${CVPEP_TIM_SECRET_ACCESS_KEY}
@@ -153,7 +150,7 @@ services:
 
   rde_tim_depositor:
     build: ./jpo-s3-deposit
-    image: jpoode_s3dep:latest
+    image: jpo-ode_s3dep:latest
     environment:
       AWS_ACCESS_KEY_ID: ${RDE_TIM_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${RDE_TIM_SECRET_ACCESS_KEY}

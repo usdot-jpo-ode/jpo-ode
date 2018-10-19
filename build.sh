@@ -1,3 +1,2 @@
-mvn clean install
-mvn --projects jpo-s3-deposit package assembly:single
+mvn clean
 docker-compose build
