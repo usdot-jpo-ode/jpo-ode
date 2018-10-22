@@ -151,7 +151,7 @@ public class TrustManagerTest {
                mockServiceResponse.getRequestID();
                result = mockRequestID;
                
-               mockRequestID.equals((ServiceRequest) any);
+               mockRequestID.equals(any);
                result = true;
                
 
