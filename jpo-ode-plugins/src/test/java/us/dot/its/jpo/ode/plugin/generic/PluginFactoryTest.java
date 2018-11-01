@@ -21,7 +21,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 public class PluginFactoryTest {
 
 
-   @Mocked(stubOutClassInitialization = true)
+  @Mocked(stubOutClassInitialization = true)
 	final LoggerFactory unused = null;
 
 	@Test

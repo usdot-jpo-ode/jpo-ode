@@ -29,7 +29,7 @@ services:
     links:
       - zookeeper
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /C/var/run/docker.sock:/var/run/docker.sock
 
   ode:
     build: .

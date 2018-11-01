@@ -1,6 +1,15 @@
 package us.dot.its.jpo.ode;
 
-import groovy.lang.MissingPropertyException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,16 +24,6 @@ import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.plugin.OdePlugin;
 import us.dot.its.jpo.ode.util.CommonUtils;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import javax.annotation.PostConstruct;
 
 @ConfigurationProperties("ode")
 @PropertySource("classpath:application.properties")
@@ -41,6 +40,7 @@ public class OdeProperties implements EnvironmentAware {
    private String pluginsLocations = "plugins";
    private String j2735CoderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder";
    private String kafkaBrokers = null;
+   private String DEFAULT_KAFKA_PORT = "9092";
    private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
    private Boolean verboseJson = false;
    private String externalIpv4 = "";
@@ -190,12 +190,10 @@ public class OdeProperties implements EnvironmentAware {
          String dockerIp = CommonUtils.getEnvironmentVariable("DOCKER_HOST_IP");
          
          if (dockerIp == null) {
-            logger.warn("Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
-            throw new MissingPropertyException(
-                  "Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
-         } else {
-            kafkaBrokers = dockerIp + ":9092";
+            logger.warn("Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined. Defaulting to localhost.");
+            dockerIp = "localhost";
          }
+         kafkaBrokers = dockerIp + ":" + DEFAULT_KAFKA_PORT;
          
          // URI for the security services /sign endpoint
          if (securitySvcsSignatureUri == null) {

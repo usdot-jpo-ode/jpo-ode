@@ -276,9 +276,6 @@ definitions:
   tim:
     type: object
     properties:
-      index:
-        type: integer
-        description: Index of message storage on RSU.
       msgCnt:
         type: integer
         description: >-
@@ -328,6 +325,9 @@ definitions:
     properties:
       version:
         type: integer
+      rsuIndex:
+        type: integer
+        description: Index of message storage on RSU.
   TravelerDataFrame:
     type: object
     required:

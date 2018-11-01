@@ -25,6 +25,7 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.SNMP;
+import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.traveler.TimPduCreator;
 import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
@@ -177,14 +178,14 @@ public class SnmpSession {
     * @throws TimPduCreatorException
     * @throws IOException
     */
-   public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, int index, String payload, int verb)
+   public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, int index, String payload, RequestVerb requestVerb)
          throws IOException, TimPduCreatorException {
 
       SnmpSession session = new SnmpSession(rsu);
 
       // Send the PDU
       ResponseEvent response = null;
-      ScopedPDU pdu = TimPduCreator.createPDU(snmp, payload, index, verb);
+      ScopedPDU pdu = TimPduCreator.createPDU(snmp, payload, index, requestVerb);
       response = session.set(pdu, session.getSnmp(), session.getTarget(), false);
       EventLogger.logger.info("Message Sent to {}, index {}: {}", rsu.getRsuTarget(), index, payload);
       logger.info("Message Sent to {}, index {}: {}", rsu.getRsuTarget(), index, payload);

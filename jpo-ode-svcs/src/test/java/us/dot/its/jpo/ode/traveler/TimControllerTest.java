@@ -52,7 +52,7 @@ public class TimControllerTest {
    DdsDepositor<DdsStatusMessage> mockDepositor;
 
    @Mocked
-   OdeTravelerInputData mockTravelerInputData;
+   OdeTravelerInputData mockOdeTravelerInputData;
    @Mocked
    OdeTravelerInformationMessage mockTim;
    @Mocked
@@ -158,16 +158,16 @@ public class TimControllerTest {
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
-               mockTravelerInputData.toString();
+               mockOdeTravelerInputData.toString();
                result = "something";
                minTimes = 0;
 
                JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
-               result = mockTravelerInputData;
-               mockTravelerInputData.toJson(true);
+               result = mockOdeTravelerInputData;
+               mockOdeTravelerInputData.toJson(true);
                result = anyString;
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
                result = mockTravelerInfo;
 
                mockBuilder.encodeTravelerInformationToHex();
@@ -199,25 +199,25 @@ public class TimControllerTest {
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
-               mockTravelerInputData.toString();
+               mockOdeTravelerInputData.toString();
                result = "something";
                minTimes = 0;
 
                JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
-               result = mockTravelerInputData;
-               mockTravelerInputData.toJson(true);
+               result = mockOdeTravelerInputData;
+               mockOdeTravelerInputData.toJson(true);
                result = anyString;
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
                result = mockTravelerInfo;
 
                mockBuilder.encodeTravelerInformationToHex();
                result = anyString;
 
-               mockTravelerInputData.getRsus();
+               mockOdeTravelerInputData.getRequest().getRsus();
                result = new RSU[] { mockRsu };
 
-               mockTravelerInputData.getSnmp();
+               mockOdeTravelerInputData.getRequest().getSnmp();
                result = mockSnmp;
 
                mockRsu.getRsuTarget();
@@ -226,7 +226,7 @@ public class TimControllerTest {
                //Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString, anyInt);
                result = new Exception("SNMP Error");
 
-               mockTravelerInputData.getSdw();
+               mockOdeTravelerInputData.getRequest().getSdw();
                result = null;
             }
          };
@@ -253,25 +253,25 @@ public class TimControllerTest {
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
-               mockTravelerInputData.toString();
+               mockOdeTravelerInputData.toString();
                result = "something";
                minTimes = 0;
 
                JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
-               result = mockTravelerInputData;
-               mockTravelerInputData.toJson(true);
+               result = mockOdeTravelerInputData;
+               mockOdeTravelerInputData.toJson(true);
                result = "mockTim";
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
                result = mockTravelerInfo;
 
                mockBuilder.encodeTravelerInformationToHex();
                result = anyString;
 
-               mockTravelerInputData.getRsus();
+               mockOdeTravelerInputData.getRequest().getRsus();
                result = new RSU[] { mockRsu };
 
-               mockTravelerInputData.getSnmp();
+               mockOdeTravelerInputData.getRequest().getSnmp();
                result = mockSnmp;
 
                mockRsu.getRsuTarget();
@@ -280,7 +280,7 @@ public class TimControllerTest {
                //Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString, anyInt);
                result = null;
 
-               mockTravelerInputData.getSdw();
+               mockOdeTravelerInputData.getRequest().getSdw();
                result = null;
             }
          };
@@ -301,25 +301,25 @@ public class TimControllerTest {
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
-               mockTravelerInputData.toString();
+               mockOdeTravelerInputData.toString();
                result = "something";
                minTimes = 0;
 
                JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
-               result = mockTravelerInputData;
-               mockTravelerInputData.toJson(true);
+               result = mockOdeTravelerInputData;
+               mockOdeTravelerInputData.toJson(true);
                result = "mockTim";
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
                result = mockTravelerInfo;
 
                mockBuilder.encodeTravelerInformationToHex();
                result = anyString;
 
-               mockTravelerInputData.getRsus();
+               mockOdeTravelerInputData.getRequest().getRsus();
                result = new RSU[] { mockRsu };
 
-               mockTravelerInputData.getSnmp();
+               mockOdeTravelerInputData.getRequest().getSnmp();
                result = mockSnmp;
 
                mockRsu.getRsuTarget();
@@ -332,7 +332,7 @@ public class TimControllerTest {
                mockPdu.getErrorStatus();
                result = -1;
 
-               mockTravelerInputData.getSdw();
+               mockOdeTravelerInputData.getRequest().getSdw();
                result = null;
             }
          };
@@ -359,25 +359,25 @@ public class TimControllerTest {
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
-               mockTravelerInputData.toString();
+               mockOdeTravelerInputData.toString();
                result = "something";
                minTimes = 0;
 
                JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
-               result = mockTravelerInputData;
-               mockTravelerInputData.toJson(true);
+               result = mockOdeTravelerInputData;
+               mockOdeTravelerInputData.toJson(true);
                result = "mockTim";
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
                result = mockTravelerInfo;
 
                mockBuilder.encodeTravelerInformationToHex();
                result = anyString;
 
-               mockTravelerInputData.getRsus();
+               mockOdeTravelerInputData.getRequest().getRsus();
                result = new RSU[] { mockRsu };
 
-               mockTravelerInputData.getSnmp();
+               mockOdeTravelerInputData.getRequest().getSnmp();
                result = mockSnmp;
 
                mockRsu.getRsuTarget();
@@ -390,7 +390,7 @@ public class TimControllerTest {
                mockPdu.getErrorStatus();
                result = 0;
 
-               mockTravelerInputData.getSdw();
+               mockOdeTravelerInputData.getRequest().getSdw();
                result = new InternalServerErrorException("Deposit to SDW Failed");
 
             }
@@ -418,25 +418,25 @@ public class TimControllerTest {
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
-               mockTravelerInputData.toString();
+               mockOdeTravelerInputData.toString();
                result = "something";
                minTimes = 0;
 
                JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
-               result = mockTravelerInputData;
-               mockTravelerInputData.toJson(true);
+               result = mockOdeTravelerInputData;
+               mockOdeTravelerInputData.toJson(true);
                result = "mockTim";
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
                result = mockTravelerInfo;
 
                mockBuilder.encodeTravelerInformationToHex();
                result = anyString;
 
-               mockTravelerInputData.getRsus();
+               mockOdeTravelerInputData.getRequest().getRsus();
                result = new RSU[] { mockRsu };
 
-               mockTravelerInputData.getSnmp();
+               mockOdeTravelerInputData.getRequest().getSnmp();
                result = mockSnmp;
 
                mockRsu.getRsuTarget();
@@ -449,7 +449,7 @@ public class TimControllerTest {
                mockPdu.getErrorStatus();
                result = 0;
 
-               mockTravelerInputData.getSdw();
+               mockOdeTravelerInputData.getRequest().getSdw();
                result = null;
             }
          };

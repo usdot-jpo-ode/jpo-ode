@@ -41,9 +41,10 @@ import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.model.OdeTimData;
 import us.dot.its.jpo.ode.model.OdeTimPayload;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
-import us.dot.its.jpo.ode.plugin.ODE;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.SNMP;
+import us.dot.its.jpo.ode.plugin.ServiceRequest;
+import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
 import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2Content;
 import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2Data;
@@ -55,8 +56,6 @@ import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
 import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.MessageFrame;
-import us.dot.its.jpo.ode.plugin.j2735.timstorage.TravelerInputData;
-import us.dot.its.jpo.ode.plugin.j2735.timstorage.TravelerInputDataBase;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -68,7 +67,9 @@ import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 @Controller
 public class TimController {
 
-   public static class TimControllerException extends Exception {
+   private static final String REQUEST = "request";
+
+  public static class TimControllerException extends Exception {
 
       private static final long serialVersionUID = 1L;
 
@@ -259,7 +260,7 @@ public class TimController {
     * @param verb
     * @return
     */
-   public ResponseEntity<String> depositTim(String jsonString, int verb) {
+   public ResponseEntity<String> depositTim(String jsonString, RequestVerb verb) {
       // Check empty
       if (null == jsonString || jsonString.isEmpty()) {
          String errMsg = "Empty request.";
@@ -267,15 +268,17 @@ public class TimController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       }
 
-      OdeTravelerInputData travelerInputData = null;
+      OdeTravelerInputData odeTID = null;
+      ServiceRequest request;
       try {
          // Convert JSON to POJO
-         travelerInputData = (OdeTravelerInputData) JsonUtils.fromJson(jsonString, OdeTravelerInputData.class);
-         if (travelerInputData.getOde() == null) {
-            travelerInputData.setOde(new ODE());
+         odeTID = (OdeTravelerInputData) JsonUtils.fromJson(jsonString, OdeTravelerInputData.class);
+         request = odeTID.getRequest();
+        if (request.getOde() == null) {
+            request.setOde(new ServiceRequest.OdeInternal());
          }
 
-         travelerInputData.getOde().setVerb(verb);
+        request.getOde().setVerb(verb);
 
          logger.debug("OdeTravelerInputData: {}", jsonString);
 
@@ -286,7 +289,7 @@ public class TimController {
       }
 
       // Add metadata to message and publish to kafka
-      OdeTravelerInformationMessage tim = travelerInputData.getTim();
+      OdeTravelerInformationMessage tim = odeTID.getTim();
       OdeMsgPayload timDataPayload = new OdeMsgPayload(tim);
       OdeMsgMetadata timMetadata = new OdeMsgMetadata(timDataPayload);
       timMetadata.setRecordGeneratedBy(GeneratedBy.TMC);
@@ -296,20 +299,20 @@ public class TimController {
 
       // Short circuit
       // If the TIM has no RSU/SNMP or SDW structures, we are done
-      if ((travelerInputData.getRsus() == null || travelerInputData.getSnmp() == null)
-            && travelerInputData.getSdw() == null) {
+      if (request != null && (request.getRsus() == null || request.getSnmp() == null)
+            && request.getSdw() == null) {
          String warningMsg = "Warning: TIM contains no RSU, SNMP, or SDW fields. Message only published to POJO broadcast stream.";
          logger.warn(warningMsg);
          return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue(WARNING, warningMsg));
       }
 
       // Craft ASN-encodable TIM
-      ObjectNode encodableTim;
+      ObjectNode encodableTid;
       try {
-         encodableTim = JsonUtils.toObjectNode(travelerInputData.toJson());
-         TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim(encodableTim);
+         encodableTid = JsonUtils.toObjectNode(odeTID.toJson());
+         TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim(encodableTid);
 
-         logger.debug("Encodable TravelerInformationMessage: {}", encodableTim);
+         logger.debug("Encodable TravelerInformationMessage: {}", encodableTid);
 
       } catch (JsonUtilsException e) {
          String errMsg = "Error converting to encodable TIM.";
@@ -323,9 +326,9 @@ public class TimController {
          DdsAdvisorySituationData asd = null;
          if (!odeProperties.dataSigningEnabled()) {
             // We need to send data UNSECURED, so we should try to build the ASD as well as MessageFrame
-            asd = buildASD(travelerInputData);
+            asd = buildASD(odeTID.getRequest());
          }
-         xmlMsg = convertToXml(asd, encodableTim, timMetadata);
+         xmlMsg = convertToXml(asd, encodableTid, timMetadata);
          // publish Broadcast TIM to a J2735 compliant topic.
          JSONObject jsonMsg = XmlUtils.toJSONObject(xmlMsg);
          String j2735Tim = OdeTimDataCreatorHelper.createOdeTimData(jsonMsg.getJSONObject(AppContext.ODE_ASN1_DATA)).toString();
@@ -358,7 +361,7 @@ public class TimController {
    @CrossOrigin
    public ResponseEntity<String> updateTim(@RequestBody String jsonString) {
 
-      return depositTim(jsonString, ODE.PUT);
+      return depositTim(jsonString, ServiceRequest.OdeInternal.RequestVerb.PUT);
    }
 
    /**
@@ -373,7 +376,7 @@ public class TimController {
    @CrossOrigin
    public ResponseEntity<String> postTim(@RequestBody String jsonString) {
 
-      return depositTim(jsonString, ODE.POST);
+      return depositTim(jsonString, ServiceRequest.OdeInternal.RequestVerb.POST);
    }
 
    /**
@@ -393,7 +396,7 @@ public class TimController {
       return JsonUtils.newNode().set("encodings", JsonUtils.toObjectNode(mfEnc.toJson()));
    }
 
-   private DdsAdvisorySituationData buildASD(TravelerInputDataBase travelerInputData) {
+   private DdsAdvisorySituationData buildASD(ServiceRequest travelerInputData) {
       Ieee1609Dot2DataTag ieeeDataTag = new Ieee1609Dot2DataTag();
       Ieee1609Dot2Data ieee = new Ieee1609Dot2Data();
       Ieee1609Dot2Content ieeeContent = new Ieee1609Dot2Content();
@@ -438,12 +441,8 @@ public class TimController {
    private String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj, OdeMsgMetadata timMetadata)
          throws JsonUtilsException, XmlUtilsException, ParseException {
 
-      TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(), TravelerInputData.class);
-      logger.debug("In order tim: {}", inOrderTid);
-      ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
-
-      JsonNode timObj = inOrderTidObj.remove("tim");
-      ObjectNode requestObj = inOrderTidObj; // with 'tim' element removed, encodableTid becomes the 'request' element
+      JsonNode timObj = encodableTidObj.get("tim");
+      JsonNode requestObj = encodableTidObj.get(REQUEST);
 
       //Create valid payload from scratch
       OdeMsgPayload payload = null;
@@ -479,7 +478,7 @@ public class TimController {
       metadata.setRecordGeneratedBy(timMetadata.getRecordGeneratedBy());
       metadata.setRecordGeneratedAt(timMetadata.getRecordGeneratedAt());
       ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());
-      metaObject.set("request", requestObj);
+      metaObject.set(REQUEST, requestObj);
       
       //Workaround for XML Array issue. Set a placeholder for the encodings to be added later as a string replacement
       metaObject.set("encodings_palceholder", null);

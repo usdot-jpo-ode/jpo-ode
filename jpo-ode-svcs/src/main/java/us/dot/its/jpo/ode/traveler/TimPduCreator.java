@@ -11,8 +11,9 @@ import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.VariableBinding;
 
-import us.dot.its.jpo.ode.plugin.ODE;
 import us.dot.its.jpo.ode.plugin.SNMP;
+import us.dot.its.jpo.ode.plugin.ServiceRequest;
+import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
 
 
 /**
@@ -47,7 +48,7 @@ public class TimPduCreator {
     * @return PDU
     * @throws TimPduCreatorException
     */
-    public static ScopedPDU createPDU(SNMP snmp, String payload, int index, int verb) throws TimPduCreatorException {
+    public static ScopedPDU createPDU(SNMP snmp, String payload, int index, RequestVerb verb) throws TimPduCreatorException {
       try {  
         //////////////////////////////
         // - OID examples         - //
@@ -95,7 +96,7 @@ public class TimPduCreator {
         pdu.add(rsuSRMDeliveryStop);
         pdu.add(rsuSRMPayload);
         pdu.add(rsuSRMEnable);
-        if (verb == ODE.POST) {
+        if (verb == ServiceRequest.OdeInternal.RequestVerb.POST) {
            pdu.add(rsuSRMStatus);
         }
         pdu.setType(PDU.SET);

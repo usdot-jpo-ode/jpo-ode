@@ -7,8 +7,8 @@ import org.junit.runner.RunWith;
 
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
-import us.dot.its.jpo.ode.plugin.ODE;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.ServiceRequest;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
 
 @RunWith(JMockit.class)
@@ -22,7 +22,7 @@ public class J2735PdmRequestTest {
 
         int testOdeVersion = 3;
 
-        ODE testODE = new ODE();
+        ServiceRequest.OdeInternal testODE = new ServiceRequest.OdeInternal();
         testODE.setVersion(testOdeVersion);
 
         testJ2735ProbeDataManagement.setOde(testODE);
