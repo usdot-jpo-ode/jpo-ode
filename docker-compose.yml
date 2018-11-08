@@ -29,7 +29,7 @@ services:
     links:
       - zookeeper
     volumes:
-      - c:/var/run/docker.sock:/var/run/docker.sock
+      - ${DOCKER_SHARED_VOLUME}/var/run/docker.sock:/var/run/docker.sock
 
   ode:
     build: .
@@ -56,7 +56,7 @@ services:
       - kafka
       - zookeeper
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/jpo-ode
+      - ${DOCKER_SHARED_VOLUME}/ode:/jpo-ode
 
   adm:
     build: ./asn1_codec
@@ -69,7 +69,7 @@ services:
     links:
       - kafka
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
+      - ${DOCKER_SHARED_VOLUME}/adm:/asn1_codec_share
 
   aem:
     build: ./asn1_codec
@@ -82,7 +82,7 @@ services:
     links:
       - kafka
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
+      - ${DOCKER_SHARED_VOLUME}/aem:/asn1_codec_share
 
   ppm_bsm:
     build: 
@@ -96,7 +96,7 @@ services:
       PPM_CONFIG_FILE: ${PPM_BSM_CONFIG_FILE}
       PPM_MAP_FILE: ${PPM_MAP_FILE}
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/ppm_data
+      - ${DOCKER_SHARED_VOLUME}/ppm_bsm:/ppm_data
     depends_on:
       - kafka
 
@@ -112,7 +112,7 @@ services:
       PPM_CONFIG_FILE: ${PPM_TIM_CONFIG_FILE}
       PPM_MAP_FILE: ${PPM_MAP_FILE}
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/ppm_data
+      - ${DOCKER_SHARED_VOLUME}/ppm_tim:/ppm_data
     depends_on:
       - kafka
 
