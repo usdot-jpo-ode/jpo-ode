@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   zookeeper:
     image: wurstmeister/zookeeper
@@ -29,7 +29,7 @@ services:
     links:
       - zookeeper
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - c:/var/run/docker.sock:/var/run/docker.sock
 
   ode:
     build: .
@@ -85,22 +85,32 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
 
   ppm_bsm:
-    build: ./jpo-cvdp
-    image: jpoode_ppm:latest
+    build: 
+      context: ./jpo-cvdp
+      args:
+        PPM_CONFIG_FILE: ${PPM_BSM_CONFIG_FILE}
+        PPM_MAP_FILE: ${PPM_MAP_FILE}
+    image: jpoode_ppm_bsm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      PPM_CONFIG_FILE: ppmBsm.properties
+      PPM_CONFIG_FILE: ${PPM_BSM_CONFIG_FILE}
+      PPM_MAP_FILE: ${PPM_MAP_FILE}
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
     depends_on:
       - kafka
 
   ppm_tim:
-    build: ./jpo-cvdp
-    image: jpoode_ppm:latest
+    build: 
+      context: ./jpo-cvdp
+      args:
+        PPM_CONFIG_FILE: ${PPM_TIM_CONFIG_FILE}
+        PPM_MAP_FILE: ${PPM_MAP_FILE}
+    image: jpoode_ppm_tim:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      PPM_CONFIG_FILE: ppmTim.properties
+      PPM_CONFIG_FILE: ${PPM_TIM_CONFIG_FILE}
+      PPM_MAP_FILE: ${PPM_MAP_FILE}
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
     depends_on:
@@ -116,7 +126,6 @@ services:
       DEPOSIT_BUCKET_NAME: ${CVPEP_BSM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${CVPEP_BSM_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${CVPEP_BSM_TOPIC}
-      DEPOSIT_DESTINATION: ${CVPEP_BSM_DESTINATION}
     depends_on:
      - kafka
     links:
@@ -132,7 +141,6 @@ services:
       DEPOSIT_BUCKET_NAME: ${RDE_BSM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${RDE_BSM_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${RDE_BSM_TOPIC}
-      DEPOSIT_DESTINATION: ${RDE_BSM_DESTINATION}
     depends_on:
      - kafka
     links:
@@ -148,7 +156,6 @@ services:
       DEPOSIT_BUCKET_NAME: ${CVPEP_TIM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${CVPEP_TIM_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${CVPEP_TIM_TOPIC}
-      DEPOSIT_DESTINATION: ${CVPEP_TIM_DESTINATION}
     depends_on:
      - kafka
     links:
@@ -164,7 +171,6 @@ services:
       DEPOSIT_BUCKET_NAME: ${RDE_TIM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${RDE_TIM_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${RDE_TIM_TOPIC}
-      DEPOSIT_DESTINATION: ${RDE_TIM_DESTINATION}
     depends_on:
      - kafka
     links:
