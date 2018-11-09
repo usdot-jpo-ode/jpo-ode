@@ -57,6 +57,7 @@ import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.MessageFrame;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
+import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
@@ -301,7 +302,16 @@ public class TimController {
       OdeMsgPayload timDataPayload = new OdeMsgPayload(tim);
       OdeMsgMetadata timMetadata = new OdeMsgMetadata(timDataPayload);
       timMetadata.setRecordGeneratedBy(GeneratedBy.TMC);
-      timMetadata.setRecordGeneratedAt(tim.getTimeStamp());
+      
+      try {
+        timMetadata.setRecordGeneratedAt(DateTimeUtils.isoDateTime(
+            DateTimeUtils.isoDateTime(tim.getTimeStamp())));
+      } catch (ParseException e) {
+        String errMsg = "Invalid timestamp in tim record: " + tim.getTimeStamp();
+        logger.error(errMsg, e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
+      }
+      
       OdeTimData odeTimData = new OdeTimData(timMetadata, timDataPayload);
       timProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastPojo(), null, odeTimData);
 
