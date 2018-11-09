@@ -44,7 +44,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // dataFrames are required
       timDataObjectNode.set("dataFrames", transformDataFrames(timDataObjectNode.get("dataframes")));
-         timDataObjectNode.remove("dataframes");
+      timDataObjectNode.remove("dataframes");
    }
       
    public static JsonNode transformDataFrames(JsonNode dataFrames) throws JsonUtilsException {

@@ -1,3 +1,7 @@
+# This docker-compose file configures PPM modules with self contained configuration and map files
+# So the module can run without reliance on a shared volume. This was done to avoid corporate network
+# and machine dress-code restrictions that would not permit the container sharing volume with host.
+#
 # DOCKER_SHARED_VOLUME_WINDOWS should be defined for Windows host machine as C: and not defined for Linux hosts
 
 version: '3'
@@ -59,7 +63,7 @@ services:
       - kafka
       - zookeeper
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/jpo-ode
+      - ${DOCKER_SHARED_VOLUME}/ode:/jpo-ode
 
   adm:
     build: ./asn1_codec
@@ -72,7 +76,7 @@ services:
     links:
       - kafka
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
+      - ${DOCKER_SHARED_VOLUME}/adm:/asn1_codec_share
 
   aem:
     build: ./asn1_codec
@@ -85,31 +89,39 @@ services:
     links:
       - kafka
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
+      - ${DOCKER_SHARED_VOLUME}/aem:/asn1_codec_share
 
   ppm_bsm:
     build: 
       context: ./jpo-cvdp
-      dockerfile: Dockerfile
-    image: jpoode_ppm:latest
+      dockerfile: Dockerfile-nsv
+      args:
+        PPM_CONFIG_FILE: ${PPM_BSM_CONFIG_FILE}
+        PPM_MAP_FILE: ${PPM_MAP_FILE}
+    image: jpoode_ppm_bsm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      PPM_CONFIG_FILE: ppmBsm.properties
+      PPM_CONFIG_FILE: ${PPM_BSM_CONFIG_FILE}
+      PPM_MAP_FILE: ${PPM_MAP_FILE}
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/ppm_data
+      - ${DOCKER_SHARED_VOLUME}/ppm_bsm:/ppm_data
     depends_on:
       - kafka
 
   ppm_tim:
     build: 
       context: ./jpo-cvdp
-      dockerfile: Dockerfile
-    image: jpoode_ppm:latest
+      dockerfile: Dockerfile-nsv
+      args:
+        PPM_CONFIG_FILE: ${PPM_TIM_CONFIG_FILE}
+        PPM_MAP_FILE: ${PPM_MAP_FILE}
+    image: jpoode_ppm_tim:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      PPM_CONFIG_FILE: ppmTim.properties
+      PPM_CONFIG_FILE: ${PPM_TIM_CONFIG_FILE}
+      PPM_MAP_FILE: ${PPM_MAP_FILE}
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/ppm_data
+      - ${DOCKER_SHARED_VOLUME}/ppm_tim:/ppm_data
     depends_on:
       - kafka
 

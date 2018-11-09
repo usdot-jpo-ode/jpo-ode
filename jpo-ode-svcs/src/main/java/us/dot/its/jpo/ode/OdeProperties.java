@@ -46,7 +46,7 @@ public class OdeProperties implements EnvironmentAware {
    private String externalIpv4 = "";
    private String externalIpv6 = "";
    private int rsuSrmSlots = 100; // number of "store and repeat message" indicies for RSU TIMs
-   private int outputSchemaVersion= 5;
+   private int outputSchemaVersion= 6;
    
    /*
     * Security Services Module Properties

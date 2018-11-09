@@ -73,6 +73,10 @@ public class TimController {
 
       private static final long serialVersionUID = 1L;
 
+      public TimControllerException(String errMsg) {
+        super(errMsg);
+      }
+
       public TimControllerException(String errMsg, Exception e) {
          super(errMsg, e);
       }
@@ -275,18 +279,22 @@ public class TimController {
          odeTID = (OdeTravelerInputData) JsonUtils.fromJson(jsonString, OdeTravelerInputData.class);
          request = odeTID.getRequest();
         if (request.getOde() == null) {
-            request.setOde(new ServiceRequest.OdeInternal());
+            throw new TimControllerException("ode element is required"); 
          }
 
         request.getOde().setVerb(verb);
 
          logger.debug("OdeTravelerInputData: {}", jsonString);
 
-      } catch (Exception e) {
-         String errMsg = "Malformed or non-compliant JSON.";
+      } catch (TimControllerException e) {
+         String errMsg = "Missing argument";
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
-      }
+      } catch (Exception e) {
+        String errMsg = "Malformed or non-compliant JSON.";
+        logger.error(errMsg, e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
+     }
 
       // Add metadata to message and publish to kafka
       OdeTravelerInformationMessage tim = odeTID.getTim();
