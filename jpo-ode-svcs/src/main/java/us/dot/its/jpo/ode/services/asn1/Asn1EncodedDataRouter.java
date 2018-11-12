@@ -11,8 +11,8 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
-import us.dot.its.jpo.ode.model.OdeTravelerInputData;
 import us.dot.its.jpo.ode.plugin.ServiceRequest;
+import us.dot.its.jpo.ode.traveler.TimController;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -64,8 +64,8 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
           */
          JSONObject metadata = consumedObj.getJSONObject(AppContext.METADATA_STRING);
 
-         if (metadata.has("request")) {
-            JSONObject request = metadata.getJSONObject("request");
+         if (metadata.has(TimController.REQUEST)) {
+            JSONObject request = metadata.getJSONObject(TimController.REQUEST);
 
             if (request.has("rsus")) {
                Object rsu = request.get("rsus");
@@ -77,9 +77,9 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             }
 
             // Convert JSON to POJO
-            OdeTravelerInputData travelerinputData = buildTravelerInputData(consumedObj);
+            ServiceRequest servicerequest = getServicerequest(consumedObj);
 
-            processEncodedTim(travelerinputData.getRequest(), consumedObj);
+            processEncodedTim(servicerequest, consumedObj);
 
          } else {
             throw new Asn1EncodedDataRouterException("Encoder response missing 'request'");
@@ -92,14 +92,14 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       return null;
    }
 
-   public OdeTravelerInputData buildTravelerInputData(JSONObject consumedObj) {
-      String request = consumedObj.getJSONObject(AppContext.METADATA_STRING).getJSONObject("request").toString();
+   public ServiceRequest getServicerequest(JSONObject consumedObj) {
+      String sr = consumedObj.getJSONObject(AppContext.METADATA_STRING).getJSONObject(TimController.REQUEST).toString();
+      logger.debug("ServiceRequest: {}", sr);
 
       // Convert JSON to POJO
-      OdeTravelerInputData travelerinputData = null;
+      ServiceRequest serviceRequest = null;
       try {
-         logger.debug("JSON: {}", request);
-         travelerinputData = (OdeTravelerInputData) JsonUtils.fromJson(request, OdeTravelerInputData.class);
+         serviceRequest = (ServiceRequest) JsonUtils.fromJson(sr, ServiceRequest.class);
 
       } catch (Exception e) {
          String errMsg = "Malformed JSON.";
@@ -107,7 +107,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          logger.error(errMsg, e);
       }
 
-      return travelerinputData;
+      return serviceRequest;
    }
 
    public void processEncodedTim(ServiceRequest request, JSONObject consumedObj)

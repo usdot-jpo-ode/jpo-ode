@@ -56,6 +56,7 @@ import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
 import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.MessageFrame;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.TravelerInputData;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -68,9 +69,9 @@ import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 @Controller
 public class TimController {
 
-   private static final String REQUEST = "request";
+   public static final String REQUEST = "request";
 
-  public static class TimControllerException extends Exception {
+   public static class TimControllerException extends Exception {
 
       private static final long serialVersionUID = 1L;
 
@@ -330,7 +331,7 @@ public class TimController {
          encodableTid = JsonUtils.toObjectNode(odeTID.toJson());
          TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim(encodableTid);
 
-         logger.debug("Encodable TravelerInformationMessage: {}", encodableTid);
+         logger.debug("Encodable Traveler Information Data: {}", encodableTid);
 
       } catch (JsonUtilsException e) {
          String errMsg = "Error converting to encodable TIM.";
@@ -459,8 +460,12 @@ public class TimController {
    private String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj, OdeMsgMetadata timMetadata)
          throws JsonUtilsException, XmlUtilsException, ParseException {
 
-      JsonNode timObj = encodableTidObj.get("tim");
-      JsonNode requestObj = encodableTidObj.get(REQUEST);
+      TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(), TravelerInputData.class);
+      logger.debug("In Order TravelerInputData: {}", inOrderTid);
+      ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
+
+      JsonNode timObj = inOrderTidObj.get("tim");
+      JsonNode requestObj = inOrderTidObj.get(REQUEST);
 
       //Create valid payload from scratch
       OdeMsgPayload payload = null;
