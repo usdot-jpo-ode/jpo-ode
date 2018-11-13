@@ -38,6 +38,7 @@ import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
 import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.model.OdeRequestMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeTimData;
 import us.dot.its.jpo.ode.model.OdeTimPayload;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
@@ -301,7 +302,7 @@ public class TimController {
       // Add metadata to message and publish to kafka
       OdeTravelerInformationMessage tim = odeTID.getTim();
       OdeMsgPayload timDataPayload = new OdeMsgPayload(tim);
-      OdeMsgMetadata timMetadata = new OdeMsgMetadata(timDataPayload);
+      OdeRequestMsgMetadata timMetadata = new OdeRequestMsgMetadata(timDataPayload, request);
       timMetadata.setRecordGeneratedBy(GeneratedBy.TMC);
       
       try {
