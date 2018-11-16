@@ -62,7 +62,7 @@ public class Asn1CommandManagerTest {
          mockOdeTravelerInputData.getRequest().getRsus();
          result = new RSU[]{new RSU()};
          
-         SnmpSession.createAndSend(null, null, anyInt, anyString, (RequestVerb) any);
+         SnmpSession.createAndSend(null, null, anyString, (RequestVerb) any);
          times = 1;
       }};
       testAsn1CommandManager.sendToRsus(mockOdeTravelerInputData.getRequest(), "message");
@@ -74,7 +74,7 @@ public class Asn1CommandManagerTest {
          mockOdeTravelerInputData.getRequest().getRsus();
          result = new RSU[]{new RSU()};
          
-         SnmpSession.createAndSend(null, null, anyInt, anyString, (RequestVerb) any);
+         SnmpSession.createAndSend(null, null, anyString, (RequestVerb) any);
          result = new IOException();
       }};
       testAsn1CommandManager.sendToRsus(mockOdeTravelerInputData.getRequest(), "message");

@@ -37,6 +37,7 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * General Properties
     */
+   private static final int OUTPUT_SCHEMA_VERSION = 6;
    private String pluginsLocations = "plugins";
    private String j2735CoderClassName = "us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder";
    private String kafkaBrokers = null;
@@ -46,7 +47,6 @@ public class OdeProperties implements EnvironmentAware {
    private String externalIpv4 = "";
    private String externalIpv6 = "";
    private int rsuSrmSlots = 100; // number of "store and repeat message" indicies for RSU TIMs
-   private int outputSchemaVersion= 6;
    
    /*
     * Security Services Module Properties
@@ -164,10 +164,11 @@ public class OdeProperties implements EnvironmentAware {
    
    private static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
 
+
    @PostConstruct
    void initialize() {
 
-      OdeMsgMetadata.setStaticSchemaVersion(getOutputSchemaVersion());
+      OdeMsgMetadata.setStaticSchemaVersion(OUTPUT_SCHEMA_VERSION);
       
       uploadLocations.add(Paths.get(uploadLocationRoot));
 
@@ -734,14 +735,6 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setSecuritySvcsSignatureUri(String securitySvcsSignatureUri) {
       this.securitySvcsSignatureUri = securitySvcsSignatureUri;
-   }
-
-   public int getOutputSchemaVersion() {
-      return outputSchemaVersion;
-   }
-
-   public void setOutputSchemaVersion(int outputSchemaVersion) {
-      this.outputSchemaVersion = outputSchemaVersion;
    }
 
 }

@@ -93,7 +93,7 @@ public class Asn1CommandManager {
 
          String httpResponseStatus;
          try {
-            rsuResponse = SnmpSession.createAndSend(request.getSnmp(), curRsu, request.getOde().getRsuIndex(),
+            rsuResponse = SnmpSession.createAndSend(request.getSnmp(), curRsu,
                   encodedMsg, request.getOde().getVerb());
             if (null == rsuResponse || null == rsuResponse.getResponse()) {
                // Timeout
@@ -103,7 +103,7 @@ public class Asn1CommandManager {
                httpResponseStatus = "Success";
             } else if (rsuResponse.getResponse().getErrorStatus() == 5) {
                // Error, message already exists
-               httpResponseStatus = "Message already exists at ".concat(Integer.toString(request.getOde().getRsuIndex()));
+               httpResponseStatus = "Message already exists at ".concat(Integer.toString(curRsu.getRsuIndex()));
             } else {
                // Misc error
                httpResponseStatus = "Error code " + rsuResponse.getResponse().getErrorStatus() + " "
@@ -125,7 +125,7 @@ public class Asn1CommandManager {
             logger.info("RSU SNMP deposit to {} successful.", curRsu.getRsuTarget());
          } else if (rsuResponse.getResponse().getErrorStatus() == 5) {
             // Error, message already exists
-            Integer destIndex = request.getOde().getRsuIndex();
+            Integer destIndex = curRsu.getRsuIndex();
             logger.error("Error on RSU SNMP deposit to {}: message already exists at index {}.", curRsu.getRsuTarget(),
                   destIndex);
          } else {

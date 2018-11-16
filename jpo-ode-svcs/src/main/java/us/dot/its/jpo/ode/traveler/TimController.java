@@ -45,6 +45,7 @@ import us.dot.its.jpo.ode.model.OdeTravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.ServiceRequest;
+import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal;
 import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
 import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2Content;
@@ -279,18 +280,27 @@ public class TimController {
       ServiceRequest request;
       try {
          // Convert JSON to POJO
-         odeTID = (OdeTravelerInputData) JsonUtils.fromJson(jsonString, OdeTravelerInputData.class);
-         request = odeTID.getRequest();
-        if (request.getOde() == null) {
-            throw new TimControllerException("ode element is required"); 
-         }
+        odeTID = (OdeTravelerInputData) JsonUtils.fromJson(jsonString, OdeTravelerInputData.class);
+        request = odeTID.getRequest();
+        if (request == null) {
+          throw new TimControllerException("request element is required as of version 3"); 
+        }
+        if (request.getOde() != null) {
+          if (request.getOde().getVersion() != ServiceRequest.OdeInternal.LATEST_VERSION) {
+            throw new TimControllerException("Invalid REST API Schema Version Specified: " 
+              + request.getOde().getVersion() + ". Supported Schema Version is " 
+                + ServiceRequest.OdeInternal.LATEST_VERSION) ; 
+           }
+        } else {
+          request.setOde(new OdeInternal());
+        }
 
         request.getOde().setVerb(verb);
 
-         logger.debug("OdeTravelerInputData: {}", jsonString);
+        logger.debug("OdeTravelerInputData: {}", jsonString);
 
       } catch (TimControllerException e) {
-         String errMsg = "Missing argument";
+         String errMsg = "Missing or invalid argument: " + e.getMessage();
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
       } catch (Exception e) {
@@ -316,6 +326,9 @@ public class TimController {
       
       OdeTimData odeTimData = new OdeTimData(timMetadata, timDataPayload);
       timProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastPojo(), null, odeTimData);
+
+      String obfuscatedTimData = obfuscateRsuPassword(odeTimData.toJson());
+      stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastJson(), null, obfuscatedTimData);
 
       // Short circuit
       // If the TIM has no RSU/SNMP or SDW structures, we are done
@@ -351,11 +364,16 @@ public class TimController {
          xmlMsg = convertToXml(asd, encodableTid, timMetadata);
          // publish Broadcast TIM to a J2735 compliant topic.
          JSONObject jsonMsg = XmlUtils.toJSONObject(xmlMsg);
+         
          String j2735Tim = OdeTimDataCreatorHelper.createOdeTimData(jsonMsg.getJSONObject(AppContext.ODE_ASN1_DATA)).toString();
-         stringMsgProducer.send(odeProperties.getKafkaTopicJ2735TimBroadcastJson(), null, j2735Tim);
-         // publish J2735 TIM also to general un-filtered TIM topic
-         stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimJson(), null, j2735Tim);
+
          stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlMsg);
+
+         //Publish JSON version
+         String obfuscatedj2735Tim = obfuscateRsuPassword(j2735Tim);
+         stringMsgProducer.send(odeProperties.getKafkaTopicJ2735TimBroadcastJson(), null, obfuscatedj2735Tim);
+         // publish J2735 TIM also to general un-filtered TIM topic
+         stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimJson(), null, obfuscatedj2735Tim);
       } catch (JsonUtilsException | XmlUtilsException | ParseException e) {
          String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
          logger.error(errMsg, e);
@@ -368,6 +386,27 @@ public class TimController {
 
       return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("Success", "true"));
    }
+
+  public static String obfuscateRsuPassword(String message) {
+    return message.replaceAll("\"rsuPassword\": *\".*?\"", "\"rsuPassword\":\"*\"");
+  }
+
+//  public static void obfuscateRsuPassword(JSONObject jsonMsg) {
+//    try {
+//       JSONObject req = jsonMsg.getJSONObject(AppContext.METADATA_STRING).getJSONObject(REQUEST);
+//       JSONArray rsus = req.optJSONArray("rsus");
+//       if (rsus != null) {
+//         for (int index = 0; index < rsus.length(); index++) {
+//           JSONObject rsu = rsus.getJSONObject(index);
+//           if (rsu.has("rsuPassword")) {
+//             rsu.put("rsuPassword", "*");
+//           }
+//         }
+//       }
+//     } catch (JSONException e) {
+//       logger.info("No RSUs found in the metadata/request/rsus");
+//     }
+//  }
 
    /**
     * Update an already-deposited TIM

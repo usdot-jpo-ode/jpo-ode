@@ -13,39 +13,49 @@ public class ServiceRequest extends OdeObject {
        POST, PUT, DELETE, GET
      }
 
-     private int version = 2;
-     private int rsuIndex;
+     public static final int LATEST_VERSION = 3;
+
+     private int version = LATEST_VERSION;
      private RequestVerb verb;
 
-     public int getVersion() {
+    public OdeInternal() {
+      super();
+      setVersion(LATEST_VERSION);
+    }
+
+    public OdeInternal(RequestVerb verb) {
+       this();
+       this.verb = verb;
+     }
+
+    public OdeInternal(int version, RequestVerb verb) {
+      super();
+      this.version = version;
+      this.verb = verb;
+    }
+
+    public int getVersion() {
         return version;
      }
 
-     public void setVersion(int version) {
+     public OdeInternal setVersion(int version) {
         this.version = version;
+        return this;
      }
 
-     public int getRsuIndex() {
-        return rsuIndex;
-     }
-
-     public void setRsuIndex(int index) {
-        this.rsuIndex = index;
-     }
-     
     public RequestVerb getVerb() {
       return verb;
     }
 
-    public void setVerb(RequestVerb verb) {
+    public OdeInternal setVerb(RequestVerb verb) {
       this.verb = verb;
+      return this;
     }
 
     @Override
     public int hashCode() {
       final int prime = 31;
       int result = 1;
-      result = prime * result + rsuIndex;
       result = prime * result + ((verb == null) ? 0 : verb.hashCode());
       result = prime * result + version;
       return result;
@@ -60,8 +70,6 @@ public class ServiceRequest extends OdeObject {
       if (getClass() != obj.getClass())
         return false;
       OdeInternal other = (OdeInternal) obj;
-      if (rsuIndex != other.rsuIndex)
-        return false;
       if (verb != other.verb)
         return false;
       if (version != other.version)

@@ -66,8 +66,10 @@ public class SnmpSession {
       target.setTimeout(rsu.getRsuTimeout());
       target.setVersion(SnmpConstants.version3);
       target.setSecurityLevel(SecurityLevel.AUTH_NOPRIV);
-      target.setSecurityName(new OctetString(rsu.getRsuUsername()));
-
+      if (rsu.getRsuUsername() != null) {
+        target.setSecurityName(new OctetString(rsu.getRsuUsername()));
+      }
+      
       // Set up the UDP transport mapping over which requests are sent
       transport = null;
       try {
@@ -82,9 +84,11 @@ public class SnmpSession {
       // Register the security options and create an SNMP "user"
       USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
       SecurityModels.getInstance().addSecurityModel(usm);
-      snmp.getUSM().addUser(new OctetString(rsu.getRsuUsername()), new UsmUser(new OctetString(rsu.getRsuUsername()),
-            AuthSHA.ID, new OctetString(rsu.getRsuPassword()), null, null));
-
+      if (rsu.getRsuUsername() != null) {
+        snmp.getUSM().addUser(new OctetString(rsu.getRsuUsername()), new UsmUser(new OctetString(rsu.getRsuUsername()),
+              AuthSHA.ID, new OctetString(rsu.getRsuPassword()), null, null));
+      }
+      
       // Assert the ready flag so the user can begin sending messages
       ready = true;
 
@@ -178,17 +182,17 @@ public class SnmpSession {
     * @throws TimPduCreatorException
     * @throws IOException
     */
-   public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, int index, String payload, RequestVerb requestVerb)
+   public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, String payload, RequestVerb requestVerb)
          throws IOException, TimPduCreatorException {
 
       SnmpSession session = new SnmpSession(rsu);
 
       // Send the PDU
       ResponseEvent response = null;
-      ScopedPDU pdu = TimPduCreator.createPDU(snmp, payload, index, requestVerb);
+      ScopedPDU pdu = TimPduCreator.createPDU(snmp, payload, rsu.getRsuIndex(), requestVerb);
       response = session.set(pdu, session.getSnmp(), session.getTarget(), false);
-      EventLogger.logger.info("Message Sent to {}, index {}: {}", rsu.getRsuTarget(), index, payload);
-      logger.info("Message Sent to {}, index {}: {}", rsu.getRsuTarget(), index, payload);
+      EventLogger.logger.info("Message Sent to {}, index {}: {}", rsu.getRsuTarget(), rsu.getRsuIndex(), payload);
+      logger.info("Message Sent to {}, index {}: {}", rsu.getRsuTarget(), rsu.getRsuIndex(), payload);
       return response;
    }
 

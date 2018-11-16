@@ -299,8 +299,13 @@ definitions:
   TravelerInputData:
     type: object
     properties:
+      request:
+        $ref: '#/definitions/request'
       tim:
         $ref: '#/definitions/tim'
+  request:
+    type: object
+    properties:
       rsus:
         type: array
         items:
@@ -325,9 +330,6 @@ definitions:
     properties:
       version:
         type: integer
-      rsuIndex:
-        type: integer
-        description: Index of message storage on RSU.
   TravelerDataFrame:
     type: object
     required:
@@ -695,6 +697,9 @@ definitions:
     type: object
     description: 'Optional field, needed for SNMP deposit to RSU.'
     properties:
+      rsuIndex:
+        type: integer
+        description: Index of message storage on RSU.
       rsuTarget:
         type: string
         description: IPv4 address of RSU

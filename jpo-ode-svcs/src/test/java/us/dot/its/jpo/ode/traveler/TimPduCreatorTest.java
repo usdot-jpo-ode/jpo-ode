@@ -58,7 +58,7 @@ public class TimPduCreatorTest {
       }
 
       try {
-         assertNull(SnmpSession.createAndSend(mockSNMP, mockRSU, 0, "", RequestVerb.POST));
+         assertNull(SnmpSession.createAndSend(mockSNMP, mockRSU, "", RequestVerb.POST));
          fail("Should have thrown IOException");
       } catch (IOException e) {
       }
@@ -113,7 +113,7 @@ public class TimPduCreatorTest {
 
       assertEquals(mockResponseEvent,
          SnmpSession.createAndSend(
-                  mockTimParameters, mockSnmpProperties, 0, "", RequestVerb.POST));
+                  mockTimParameters, mockSnmpProperties, "", RequestVerb.POST));
    }
 
    @Test @Ignore
@@ -136,7 +136,7 @@ public class TimPduCreatorTest {
       }
       System.out.println("test 2");
       assertNull(SnmpSession.createAndSend(
-            mockTimParameters, mockSnmpProperties, 0, "", RequestVerb.POST));
+            mockTimParameters, mockSnmpProperties, "", RequestVerb.POST));
 
       new Verifications() {
          {
