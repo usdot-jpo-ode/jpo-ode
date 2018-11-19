@@ -22,7 +22,6 @@ import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
 import us.dot.its.jpo.ode.coder.OdeDataPublisher;
 import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher;
 import us.dot.its.jpo.ode.model.OdeBsmData;
-import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.PluginFactory;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
@@ -101,7 +100,7 @@ public class BsmReceiverTest {
                mockJ2735MessageFrame.getValue();
                result = mockJ2735Bsm;
                
-               OdeBsmDataCreatorHelper.createOdeBsmData((J2735Bsm) any, null, (SerialId) any);
+               OdeBsmDataCreatorHelper.createOdeBsmData((J2735Bsm) any, null);
                result = mockOdeBsmData;
                
                capturingMessagePublisher.publish(mockOdeBsmData, anyString);
@@ -145,7 +144,7 @@ public class BsmReceiverTest {
                capturingOssJ2735Coder.decodeUPERBsmBytes((byte[]) any);
                result = mockJ2735Bsm;
                
-               OdeBsmDataCreatorHelper.createOdeBsmData((J2735Bsm) any, null, (SerialId) any);
+               OdeBsmDataCreatorHelper.createOdeBsmData((J2735Bsm) any, null);
                result = mockOdeBsmData;
                
                capturingMessagePublisher.publish(mockOdeBsmData, anyString);

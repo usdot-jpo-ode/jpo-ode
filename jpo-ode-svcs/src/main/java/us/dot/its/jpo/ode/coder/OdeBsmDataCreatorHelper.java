@@ -17,7 +17,6 @@ import us.dot.its.jpo.ode.model.OdeBsmPayload;
 import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
-import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.builders.BsmBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.BsmPart2ContentBuilder.BsmPart2ContentBuilderException;
@@ -62,8 +61,8 @@ public class OdeBsmDataCreatorHelper {
    }
 
    public static OdeBsmData createOdeBsmData(
-      J2735Bsm rawBsm, String filename, SerialId serialId) {
-      BsmLogFileParser bsmFileParser = new BsmLogFileParser(serialId.getBundleId());
+      J2735Bsm rawBsm, String filename) {
+      BsmLogFileParser bsmFileParser = new BsmLogFileParser();
       bsmFileParser.setFilename(filename).getTimeParser().setUtcTimeInSec(0).getSecResCodeParser().setSecurityResultCode(SecurityResultCode.unknown);
 ;
       return createOdeBsmData(rawBsm, null, bsmFileParser);

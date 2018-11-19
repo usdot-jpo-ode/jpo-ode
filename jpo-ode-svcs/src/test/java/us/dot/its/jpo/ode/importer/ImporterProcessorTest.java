@@ -120,7 +120,7 @@ public class ImporterProcessorTest {
       try {
          new Expectations() {
             {
-               capturingFileAsn1CodecPublisher.publishFile((Path) any, (BufferedInputStream) any, (ImporterFileType) any);
+               capturingFileAsn1CodecPublisher.publishFile((Path) any, (BufferedInputStream) any, (ImporterFileType) any, anyInt);
                times = 1;
             }
          };

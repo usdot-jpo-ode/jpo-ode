@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher;
-import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
@@ -24,8 +23,6 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                                                       // least 20 bytes long
 
 //ODE-581   private OssJ2735Coder j2735coder;
-
-   private SerialId serialId;
 
 //ODE-581   private OdeDataPublisher publisher;
    private LogFileToAsn1CodecPublisher codecPublisher;
@@ -41,9 +38,6 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
       super(odeProps, port, bufferSize);
 //ODE-581      this.j2735coder = new OssJ2735Coder();
 
-      this.serialId = new SerialId();
-      this.serialId.setBundleId(bundleId.incrementAndGet());
-      
 //ODE-581      this.publisher = new OdeDataPublisher(odeProperties, OdeBsmSerializer.class.getName());
       this.codecPublisher = new LogFileToAsn1CodecPublisher(new StringPublisher(odeProperties));
    }
