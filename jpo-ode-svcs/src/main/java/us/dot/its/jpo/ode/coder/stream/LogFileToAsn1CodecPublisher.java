@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.coder.stream;
 
 import java.io.BufferedInputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -54,7 +55,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       this.serialId = new SerialId();
    }
 
-   public void publish(BufferedInputStream bis, String fileName, ImporterFileType fileType, int numRecords) 
+   public void publish(BufferedInputStream bis, String fileName, ImporterFileType fileType) 
          throws LogFileToAsn1CodecPublisherException {
       XmlUtils xmlUtils = new XmlUtils();
       ParserStatus status = ParserStatus.UNKNOWN;
@@ -65,14 +66,15 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
          status = ParserStatus.NA;
       }
 
-      serialId.setBundleSize(numRecords);
-      
+      List<OdeMsgPayload> payloadList = new ArrayList<OdeMsgPayload>();
       do {
          try {
             status = fileParser.parseFile(bis, fileName);
             if (status == ParserStatus.COMPLETE) {
-               publish(xmlUtils);
+               parsePayload(payloadList);
             } else if (status == ParserStatus.EOF) {
+               publish(xmlUtils, payloadList);
+               
                // if parser returns PARTIAL record, we will go back and continue
                // parsing
                // but if it's UNKNOWN, it means that we could not parse the
@@ -146,52 +148,6 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
      }
    }
 
-   private void publish(XmlUtils xmlUtils) throws JsonProcessingException {
-
-     OdeMsgPayload msgPayload;
-     OdeLogMetadata msgMetadata;
-     OdeData msgData;
-     
-     if (fileParser instanceof DriverAlertFileParser){
-        logger.debug("Publishing a driverAlert.");
-        msgPayload = new OdeDriverAlertPayload(((DriverAlertFileParser) fileParser).getAlert());
-
-        msgMetadata = new OdeLogMetadata(msgPayload);
-        msgMetadata.setSerialId(serialId);
-
-        OdeLogMetadataCreatorHelper.updateLogMetadata(msgMetadata, fileParser);
-        
-        msgData = new OdeDriverAlertData(msgMetadata, msgPayload);
-        publisher.publish(JsonUtils.toJson(msgData, false),
-           publisher.getOdeProperties().getKafkaTopicDriverAlertJson());
-        msgMetadata.getSerialId().increment();
-     } else {
-        msgPayload = new OdeAsn1Payload(fileParser.getPayloadParser().getPayload());
-        
-        if (fileParser instanceof BsmLogFileParser || 
-              (fileParser instanceof RxMsgFileParser && ((RxMsgFileParser)fileParser).getRxSource() == RxSource.RV)) {
-           logger.debug("Publishing a BSM");
-           msgMetadata = new OdeBsmMetadata(msgPayload);
-        } else {
-           logger.debug("Publishing a TIM");
-           msgMetadata = new OdeLogMetadata(msgPayload);
-        }
-        msgMetadata.setSerialId(serialId);
-
-        Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
-        Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",
-                EncodingRule.UPER);
-        msgMetadata.addEncoding(msgEncoding).addEncoding(unsecuredDataEncoding);
-
-        OdeLogMetadataCreatorHelper.updateLogMetadata(msgMetadata, fileParser);
-        
-        msgData = new OdeAsn1Data(msgMetadata, msgPayload);
-        publisher.publish(xmlUtils.toXml(msgData),
-           publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
-        msgMetadata.getSerialId().increment();
-     }
-   }
-
    @Override
    public void publish(byte[] payloadBytes) throws Exception {
       OdeAsn1Payload payload = new OdeAsn1Payload(payloadBytes);
@@ -208,39 +164,4 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       publisher.publish(XmlUtils.toXmlS(asn1Data), publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
    }
 
-  public int getNumberOfRecords(BufferedInputStream bis, String fileName, ImporterFileType fileType) 
-      throws LogFileToAsn1CodecPublisherException {
-    ParserStatus status = ParserStatus.UNKNOWN;
-
-    if (fileType == ImporterFileType.OBU_LOG_FILE) {
-       fileParser = LogFileParser.factory(fileName);
-    } else {
-       status = ParserStatus.NA;
-    }
-
-    int numRecords = 0;
-    do {
-      try {
-         status = fileParser.parseFile(bis, fileName);
-         if (status == ParserStatus.COMPLETE) {
-           numRecords++;
-         } else if (status == ParserStatus.EOF) {
-            bis.close();
-            // if parser returns PARTIAL record, we will go back and continue
-            // parsing
-            // but if it's UNKNOWN, it means that we could not parse the
-            // header bytes
-            if (status == ParserStatus.INIT) {
-               logger.error("Failed to parse the header bytes.");
-            } else {
-               logger.error("Failed to decode ASN.1 data");
-            }
-         }
-      } catch (Exception e) {
-         throw new LogFileToAsn1CodecPublisherException("Error parsing or publishing data.", e);
-      }
-    } while (status == ParserStatus.COMPLETE);
-    
-    return numRecords;
-  }
 }

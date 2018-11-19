@@ -88,22 +88,16 @@ public class ImporterProcessor {
          inputStream = new FileInputStream(filePath.toFile());
          String probeContentType = Files.probeContentType(filePath);
          if (probeContentType != null && gZipPattern.matcher(probeContentType).matches() || filePath.endsWith("gz")) {
-           // Must create a new stream for counting the records. DO NOT use the same stream that parses the file
-           int numRecords = getNumberOfRecords(filePath, new GZIPInputStream(new FileInputStream(filePath.toFile())));
            inputStream = new GZIPInputStream(inputStream);
-           bis = publishFile(filePath, inputStream, numRecords);
+           bis = publishFile(filePath, inputStream);
          } else if (probeContentType != null && zipPattern.matcher(probeContentType).matches() || filePath.endsWith("zip")) {
-            // Must create a new stream for counting the records. DO NOT use the same stream that parses the file
-            int numRecords = getNumberOfRecords(filePath, new ZipInputStream(new FileInputStream(filePath.toFile())));
             inputStream = new ZipInputStream(inputStream);
             ZipInputStream zis = (ZipInputStream)inputStream;
             while (zis.getNextEntry() != null) {
-               bis = publishFile(filePath, inputStream, numRecords);
+               bis = publishFile(filePath, inputStream);
             }
          } else {
-            // Must create a new stream for counting the records. DO NOT use the same stream that parses the file
-            int numRecords = getNumberOfRecords(filePath, new FileInputStream(filePath.toFile()));
-            bis = publishFile(filePath, inputStream, numRecords);
+            bis = publishFile(filePath, inputStream);
          }
       } catch (Exception e) {
          success = false;
@@ -137,18 +131,12 @@ public class ImporterProcessor {
       }
    }
 
-   private BufferedInputStream publishFile(Path filePath, InputStream inputStream, int numRecords)
+   private BufferedInputStream publishFile(Path filePath, InputStream inputStream)
          throws FileAsn1CodecPublisherException {
       BufferedInputStream bis;
       bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
-      codecPublisher.publishFile(filePath, bis, fileType, numRecords);
+      codecPublisher.publishFile(filePath, bis, fileType);
       return bis;
    }
 
-   private int getNumberOfRecords(Path filePath, InputStream inputStream)
-       throws FileAsn1CodecPublisherException {
-    BufferedInputStream bis;
-    bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
-    return codecPublisher.getNumberOfRecords(filePath, bis, fileType);
- }
 }

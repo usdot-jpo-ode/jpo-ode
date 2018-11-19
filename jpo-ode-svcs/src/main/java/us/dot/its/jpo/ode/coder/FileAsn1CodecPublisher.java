@@ -35,7 +35,7 @@ public class FileAsn1CodecPublisher {
       this.codecPublisher = new LogFileToAsn1CodecPublisher(messagePub);
    }
 
-   public void publishFile(Path filePath, BufferedInputStream fileInputStream, ImporterFileType fileType, int numRecords) 
+   public void publishFile(Path filePath, BufferedInputStream fileInputStream, ImporterFileType fileType) 
          throws FileAsn1CodecPublisherException {
       String fileName = filePath.toFile().getName();
 
@@ -43,23 +43,10 @@ public class FileAsn1CodecPublisher {
       
       try {
          logger.info("Publishing data from {} to asn1_codec.", filePath);
-         codecPublisher.publish(fileInputStream, fileName, fileType, numRecords);
+         codecPublisher.publish(fileInputStream, fileName, fileType);
       } catch (Exception e) {
          throw new FileAsn1CodecPublisherException("Failed to publish file.", e);
       }
    }
 
-  public int getNumberOfRecords(Path filePath, BufferedInputStream fileInputStream, ImporterFileType fileType)
-      throws FileAsn1CodecPublisherException {
-    String fileName = filePath.toFile().getName();
-
-    logger.info("Publishing file {}", fileName);
-    
-    try {
-       logger.info("Publishing data from {} to asn1_codec.", filePath);
-       return codecPublisher.getNumberOfRecords(fileInputStream, fileName, fileType);
-    } catch (Exception e) {
-       throw new FileAsn1CodecPublisherException("Failed to publish file.", e);
-    }
-  }
 }
