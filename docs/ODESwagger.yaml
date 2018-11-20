@@ -282,9 +282,6 @@ definitions:
   tim:
     type: object
     properties:
-      index:
-        type: integer
-        description: Index of message storage on RSU.
       msgCnt:
         type: integer
         description: >-
@@ -308,8 +305,13 @@ definitions:
   TravelerInputData:
     type: object
     properties:
+      request:
+        $ref: '#/definitions/request'
       tim:
         $ref: '#/definitions/tim'
+  request:
+    type: object
+    properties:
       rsus:
         type: array
         items:
@@ -703,6 +705,9 @@ definitions:
     type: object
     description: 'Optional field, needed for SNMP deposit to RSU.'
     properties:
+      rsuIndex:
+        type: integer
+        description: Index of message storage on RSU.
       rsuTarget:
         type: string
         description: IPv4 address of RSU

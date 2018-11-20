@@ -14,7 +14,7 @@ public class DateTimeUtils {
    }
 
    public static String now() {
-      return nowZDT().format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
+      return nowZDT().format(DateTimeFormatter.ISO_INSTANT);
    }
 
    public static ZonedDateTime nowZDT() {
@@ -22,7 +22,7 @@ public class DateTimeUtils {
    }
 
    public static String isoDateTime(ZonedDateTime zonedDateTime) {
-      return zonedDateTime.format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
+      return zonedDateTime.format(DateTimeFormatter.ISO_INSTANT);
    }
 
    public static ZonedDateTime

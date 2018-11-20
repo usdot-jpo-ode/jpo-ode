@@ -13,7 +13,6 @@ public abstract class LogFileParser implements FileParser {
 
    public static final int BUFFER_SIZE = 4096;
 
-   protected long bundleId;
    protected transient byte[] readBuffer = new byte[BUFFER_SIZE];
    protected int step = 0;
 
@@ -25,28 +24,27 @@ public abstract class LogFileParser implements FileParser {
    protected SecurityResultCodeParser secResCodeParser;
    protected PayloadParser payloadParser;
 
-   public LogFileParser(long bundleId) {
+   public LogFileParser() {
       super();
-      this.bundleId = bundleId;
    }
 
-   public static LogFileParser factory(String fileName, long bundleId) {
+   public static LogFileParser factory(String fileName) {
       LogFileParser fileParser;
       if (fileName.startsWith(RecordType.bsmTx.name())) {
          logger.debug("Parsing as \"Transmit BSM \" log file type.");
-         fileParser = new BsmLogFileParser(bundleId).setRecordType(RecordType.bsmTx);
+         fileParser = new BsmLogFileParser().setRecordType(RecordType.bsmTx);
       } else if (fileName.startsWith(RecordType.bsmLogDuringEvent.name())) {
          logger.debug("Parsing as \"BSM For Event\" log file type.");
-         fileParser = new BsmLogFileParser(bundleId).setRecordType(RecordType.bsmLogDuringEvent);
+         fileParser = new BsmLogFileParser().setRecordType(RecordType.bsmLogDuringEvent);
       } else if (fileName.startsWith(RecordType.rxMsg.name())) {
          logger.debug("Parsing as \"Received Messages\" log file type.");
-         fileParser = new RxMsgFileParser(bundleId).setRecordType(RecordType.rxMsg);
+         fileParser = new RxMsgFileParser().setRecordType(RecordType.rxMsg);
       } else if (fileName.startsWith(RecordType.dnMsg.name())) {
          logger.debug("Parsing as \"Distress Notifications\" log file type.");
-         fileParser = new DistressMsgFileParser(bundleId).setRecordType(RecordType.dnMsg);
+         fileParser = new DistressMsgFileParser().setRecordType(RecordType.dnMsg);
       } else if (fileName.startsWith(RecordType.driverAlert.name())) {
          logger.debug("Parsing as \"Driver Alert\" log file type.");
-         fileParser = new DriverAlertFileParser(bundleId).setRecordType(RecordType.driverAlert);
+         fileParser = new DriverAlertFileParser().setRecordType(RecordType.driverAlert);
       } else {
          throw new IllegalArgumentException("Unknown log file prefix: " + fileName);
       }
@@ -136,15 +134,6 @@ public abstract class LogFileParser implements FileParser {
 
    public LogFileParser setRecordType(RecordType recordType) {
       this.recordType = recordType;
-      return this;
-   }
-
-   public long getBundleId() {
-      return bundleId;
-   }
-
-   public LogFileParser setBundleId(long bundleId) {
-      this.bundleId = bundleId;
       return this;
    }
 

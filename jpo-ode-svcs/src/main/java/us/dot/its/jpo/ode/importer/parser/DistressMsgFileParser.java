@@ -4,12 +4,12 @@ import java.io.BufferedInputStream;
 
 public class DistressMsgFileParser extends LogFileParser {
 
-   public DistressMsgFileParser(long bundleId) {
-      super(bundleId);
-      setLocationParser(new LocationParser(bundleId));
-      setTimeParser(new TimeParser(bundleId));
-      setSecResCodeParser(new SecurityResultCodeParser(bundleId));
-      setPayloadParser(new PayloadParser(bundleId));
+   public DistressMsgFileParser() {
+      super();
+      setLocationParser(new LocationParser());
+      setTimeParser(new TimeParser());
+      setSecResCodeParser(new SecurityResultCodeParser());
+      setPayloadParser(new PayloadParser());
    }
 
    @Override

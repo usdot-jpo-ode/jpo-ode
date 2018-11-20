@@ -11,7 +11,8 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
-import us.dot.its.jpo.ode.model.OdeTravelerInputData;
+import us.dot.its.jpo.ode.plugin.ServiceRequest;
+import us.dot.its.jpo.ode.traveler.TimController;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -63,8 +64,8 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
           */
          JSONObject metadata = consumedObj.getJSONObject(AppContext.METADATA_STRING);
 
-         if (metadata.has("request")) {
-            JSONObject request = metadata.getJSONObject("request");
+         if (metadata.has(TimController.REQUEST)) {
+            JSONObject request = metadata.getJSONObject(TimController.REQUEST);
 
             if (request.has("rsus")) {
                Object rsu = request.get("rsus");
@@ -76,9 +77,9 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             }
 
             // Convert JSON to POJO
-            OdeTravelerInputData travelerinputData = buildTravelerInputData(consumedObj);
+            ServiceRequest servicerequest = getServicerequest(consumedObj);
 
-            processEncodedTim(travelerinputData, consumedObj);
+            processEncodedTim(servicerequest, consumedObj);
 
          } else {
             throw new Asn1EncodedDataRouterException("Encoder response missing 'request'");
@@ -91,14 +92,14 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       return null;
    }
 
-   public OdeTravelerInputData buildTravelerInputData(JSONObject consumedObj) {
-      String request = consumedObj.getJSONObject(AppContext.METADATA_STRING).getJSONObject("request").toString();
+   public ServiceRequest getServicerequest(JSONObject consumedObj) {
+      String sr = consumedObj.getJSONObject(AppContext.METADATA_STRING).getJSONObject(TimController.REQUEST).toString();
+      logger.debug("ServiceRequest: {}", sr);
 
       // Convert JSON to POJO
-      OdeTravelerInputData travelerinputData = null;
+      ServiceRequest serviceRequest = null;
       try {
-         logger.debug("JSON: {}", request);
-         travelerinputData = (OdeTravelerInputData) JsonUtils.fromJson(request, OdeTravelerInputData.class);
+         serviceRequest = (ServiceRequest) JsonUtils.fromJson(sr, ServiceRequest.class);
 
       } catch (Exception e) {
          String errMsg = "Malformed JSON.";
@@ -106,10 +107,10 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          logger.error(errMsg, e);
       }
 
-      return travelerinputData;
+      return serviceRequest;
    }
 
-   public void processEncodedTim(OdeTravelerInputData travelerInfo, JSONObject consumedObj)
+   public void processEncodedTim(ServiceRequest request, JSONObject consumedObj)
          throws Asn1EncodedDataRouterException {
 
       JSONObject dataObj = consumedObj.getJSONObject(AppContext.PAYLOAD_STRING).getJSONObject(AppContext.DATA_STRING);
@@ -154,15 +155,15 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          }
          
          logger.debug("Sending message to RSUs...");
-         if (null != travelerInfo.getSnmp() && null != travelerInfo.getRsus() && null != hexEncodedTim) {
-            asn1CommandManager.sendToRsus(travelerInfo, hexEncodedTim);
+         if (null != request.getSnmp() && null != request.getRsus() && null != hexEncodedTim) {
+            asn1CommandManager.sendToRsus(request, hexEncodedTim);
          }
          
-         if (travelerInfo.getSdw() != null) {
+         if (request.getSdw() != null) {
             // Case 2 only
 
             logger.debug("Publishing message for round 2 encoding!");
-            String xmlizedMessage = asn1CommandManager.packageSignedTimIntoAsd(travelerInfo, hexEncodedTim);
+            String xmlizedMessage = asn1CommandManager.packageSignedTimIntoAsd(request, hexEncodedTim);
 
             stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlizedMessage);
          }
@@ -180,13 +181,13 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          } else {
             logger.debug("Unsigned ASD received. Depositing it to SDW.");
             //We have ASD with UNSECURED MessageFrame
-            processEncodedTimUnsecured(travelerInfo, consumedObj);
+            processEncodedTimUnsecured(request, consumedObj);
          }
       }
 
    }
 
-   public void processEncodedTimUnsecured(OdeTravelerInputData travelerInfo, JSONObject consumedObj) throws Asn1EncodedDataRouterException {
+   public void processEncodedTimUnsecured(ServiceRequest request, JSONObject consumedObj) throws Asn1EncodedDataRouterException {
       // Send TIMs and record results
       HashMap<String, String> responseList = new HashMap<>();
 
@@ -194,7 +195,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             .getJSONObject(AppContext.PAYLOAD_STRING)
             .getJSONObject(AppContext.DATA_STRING);
       
-      if (null != travelerInfo.getSdw()) {
+      if (null != request.getSdw()) {
          JSONObject asdObj = null;
          if (dataObj.has("AdvisorySituationData")) {
             asdObj = dataObj.getJSONObject("AdvisorySituationData");
@@ -230,10 +231,10 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          logger.debug("Encoded message: {}", encodedTim);
          
         // only send message to rsu if snmp, rsus, and message frame fields are present
-        if (null != travelerInfo.getSnmp() && null != travelerInfo.getRsus() && null != encodedTim) {
+        if (null != request.getSnmp() && null != request.getRsus() && null != encodedTim) {
            logger.debug("Encoded message: {}", encodedTim);
            HashMap<String, String> rsuResponseList = 
-                 asn1CommandManager.sendToRsus(travelerInfo, encodedTim);
+                 asn1CommandManager.sendToRsus(request, encodedTim);
            responseList.putAll(rsuResponseList);
          }
       }

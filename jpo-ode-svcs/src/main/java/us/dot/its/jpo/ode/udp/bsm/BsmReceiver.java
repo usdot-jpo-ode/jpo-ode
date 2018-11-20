@@ -11,8 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher;
+import us.dot.its.jpo.ode.model.Asn1Encoding;
+import us.dot.its.jpo.ode.model.OdeAsn1Data;
+import us.dot.its.jpo.ode.model.OdeAsn1Payload;
+import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.SerialId;
+import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
+import us.dot.its.jpo.ode.util.XmlUtils;
 
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
@@ -25,10 +31,9 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
 //ODE-581   private OssJ2735Coder j2735coder;
 
-   private SerialId serialId;
-
 //ODE-581   private OdeDataPublisher publisher;
-   private LogFileToAsn1CodecPublisher codecPublisher;
+   protected SerialId serialId;
+   protected StringPublisher publisher;
 
    protected static AtomicInteger bundleId = new AtomicInteger(1);
 
@@ -41,11 +46,9 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
       super(odeProps, port, bufferSize);
 //ODE-581      this.j2735coder = new OssJ2735Coder();
 
-      this.serialId = new SerialId();
-      this.serialId.setBundleId(bundleId.incrementAndGet());
-      
 //ODE-581      this.publisher = new OdeDataPublisher(odeProperties, OdeBsmSerializer.class.getName());
-      this.codecPublisher = new LogFileToAsn1CodecPublisher(new StringPublisher(odeProperties));
+      this.serialId = new SerialId();
+      this.publisher = new StringPublisher(odeProperties);
    }
 
    @Override
@@ -87,7 +90,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 //                  throw new IOException("Failed to decode message received via UDP.");
 //               }
 
-               codecPublisher.publish(payload);
+               publish(payload);
             }
          } catch (Exception e) {
             logger.error("Error receiving packet", e);
@@ -123,4 +126,21 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
       return HexUtils.fromHexString(hexPacket);
    }
+   
+   public void publish(byte[] payloadBytes) throws Exception {
+     OdeAsn1Payload payload = new OdeAsn1Payload(payloadBytes);
+     
+     OdeLogMetadata msgMetadata = new OdeLogMetadata(payload);
+     msgMetadata.setSerialId(serialId);
+
+     Asn1Encoding msgEncoding = new Asn1Encoding("root", "MessageFrame", EncodingRule.UPER);
+     msgMetadata.addEncoding(msgEncoding);
+     OdeAsn1Data asn1Data = new OdeAsn1Data(msgMetadata, payload);
+
+     // publisher.publish(asn1Data.toJson(false),
+     // publisher.getOdeProperties().getKafkaTopicAsn1EncodedBsm());
+     publisher.publish(XmlUtils.toXmlS(asn1Data), publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
+     serialId.increment();
+  }
+
 }

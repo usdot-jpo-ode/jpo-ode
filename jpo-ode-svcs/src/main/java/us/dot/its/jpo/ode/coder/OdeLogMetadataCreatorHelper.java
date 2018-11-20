@@ -55,7 +55,6 @@ public class OdeLogMetadataCreatorHelper {
       }
 
       metadata.setRecordGeneratedBy(GeneratedBy.OBU);
-      metadata.getSerialId().addRecordId(1);
    }
 
    public static ReceivedMessageDetails buildReceivedMessageDetails(LogFileParser parser) {

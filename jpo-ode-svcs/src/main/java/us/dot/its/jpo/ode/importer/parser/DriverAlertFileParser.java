@@ -6,11 +6,11 @@ public class DriverAlertFileParser extends LogFileParser {
 
    private String alert;
 
-   public DriverAlertFileParser(long bundleId) {
-      super(bundleId);
-      setLocationParser(new LocationParser(bundleId));
-      setTimeParser(new TimeParser(bundleId));
-      setPayloadParser(new PayloadParser(bundleId));
+   public DriverAlertFileParser() {
+      super();
+      setLocationParser(new LocationParser());
+      setTimeParser(new TimeParser());
+      setPayloadParser(new PayloadParser());
    }
 
    @Override

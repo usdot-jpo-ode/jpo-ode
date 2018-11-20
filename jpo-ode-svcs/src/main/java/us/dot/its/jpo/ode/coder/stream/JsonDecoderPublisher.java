@@ -43,8 +43,7 @@ public class JsonDecoderPublisher implements DecoderPublisher {
 
             J2735Bsm j2735Bsm = (J2735Bsm) JsonUtils.fromJson(line, J2735Bsm.class);
             OdeData odeBsm = OdeBsmDataCreatorHelper.createOdeBsmData(
-               j2735Bsm, fileName, 
-               this.serialId.setBundleId(bundleId.incrementAndGet()).addRecordId(1));
+               j2735Bsm, fileName);
             
             publisher.publish(odeBsm, publisher.getOdeProperties().getKafkaTopicOdeBsmJson());
          }
