@@ -42,6 +42,7 @@ import us.dot.its.jpo.ode.model.OdeRequestMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeTimData;
 import us.dot.its.jpo.ode.model.OdeTimPayload;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
+import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.ServiceRequest;
@@ -95,6 +96,9 @@ public class TimController {
    private OdeProperties odeProperties;
    private MessageProducer<String, String> stringMsgProducer;
    private MessageProducer<String, OdeObject> timProducer;
+   private SerialId serialIdJ2735;
+   private SerialId serialIdOde;
+
 
    @Autowired
    public TimController(OdeProperties odeProperties) {
@@ -105,6 +109,8 @@ public class TimController {
             odeProperties.getKafkaProducerType());
       this.timProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(),
             null, OdeTimSerializer.class.getName());
+      this.serialIdJ2735 = new SerialId();
+      this.serialIdOde = new SerialId();
    }
 
    /**
@@ -313,6 +319,9 @@ public class TimController {
       OdeTravelerInformationMessage tim = odeTID.getTim();
       OdeMsgPayload timDataPayload = new OdeMsgPayload(tim);
       OdeRequestMsgMetadata timMetadata = new OdeRequestMsgMetadata(timDataPayload, request);
+      
+      //Setting the SerialId to OdeBradcastTim serialId to be changed to J2735BroadcastTim serialId after the message has been published to OdeTimBrodcast topic
+      timMetadata.setSerialId(serialIdOde);
       timMetadata.setRecordGeneratedBy(GeneratedBy.TMC);
       
       try {
@@ -329,6 +338,9 @@ public class TimController {
 
       String obfuscatedTimData = obfuscateRsuPassword(odeTimData.toJson());
       stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastJson(), null, obfuscatedTimData);
+      
+      //Now that the message gas been published to OdeBradcastTim topic, it should be changed to J2735BroadcastTim serialId
+      timMetadata.setSerialId(serialIdJ2735);
 
       // Short circuit
       // If the TIM has no RSU/SNMP or SDW structures, we are done
@@ -374,6 +386,9 @@ public class TimController {
          stringMsgProducer.send(odeProperties.getKafkaTopicJ2735TimBroadcastJson(), null, obfuscatedj2735Tim);
          // publish J2735 TIM also to general un-filtered TIM topic
          stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimJson(), null, obfuscatedj2735Tim);
+         
+         serialIdOde.increment();
+         serialIdJ2735.increment();
       } catch (JsonUtilsException | XmlUtilsException | ParseException e) {
          String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
          logger.error(errMsg, e);
@@ -538,6 +553,7 @@ public class TimController {
 
       // Create a valid metadata from scratch
       OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
+      metadata.setSerialId(serialIdJ2735);
       metadata.setRecordGeneratedBy(timMetadata.getRecordGeneratedBy());
       metadata.setRecordGeneratedAt(timMetadata.getRecordGeneratedAt());
       ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());

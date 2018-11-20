@@ -121,7 +121,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
           msgData = new OdeDriverAlertData(msgMetadata, msgPayload);
           publisher.publish(JsonUtils.toJson(msgData, false),
              publisher.getOdeProperties().getKafkaTopicDriverAlertJson());
-          msgMetadata.getSerialId().increment();
+          serialId.increment();
        } else {
           if (fileParser instanceof BsmLogFileParser || 
                 (fileParser instanceof RxMsgFileParser && ((RxMsgFileParser)fileParser).getRxSource() == RxSource.RV)) {
@@ -143,25 +143,10 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
           msgData = new OdeAsn1Data(msgMetadata, msgPayload);
           publisher.publish(xmlUtils.toXml(msgData),
              publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
-          msgMetadata.getSerialId().increment();
+          serialId.increment();
        }
      }
    }
 
-   @Override
-   public void publish(byte[] payloadBytes) throws Exception {
-      OdeAsn1Payload payload = new OdeAsn1Payload(payloadBytes);
-      
-      OdeLogMetadata msgMetadata = new OdeLogMetadata(payload);
-      msgMetadata.setSerialId(serialId);
-
-      Asn1Encoding msgEncoding = new Asn1Encoding("root", "MessageFrame", EncodingRule.UPER);
-      msgMetadata.addEncoding(msgEncoding);
-      OdeAsn1Data asn1Data = new OdeAsn1Data(msgMetadata, payload);
-
-      // publisher.publish(asn1Data.toJson(false),
-      // publisher.getOdeProperties().getKafkaTopicAsn1EncodedBsm());
-      publisher.publish(XmlUtils.toXmlS(asn1Data), publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
-   }
 
 }
