@@ -65,9 +65,11 @@ public class SnmpSession {
       target.setRetries(rsu.getRsuRetries());
       target.setTimeout(rsu.getRsuTimeout());
       target.setVersion(SnmpConstants.version3);
-      target.setSecurityLevel(SecurityLevel.AUTH_NOPRIV);
       if (rsu.getRsuUsername() != null) {
+        target.setSecurityLevel(SecurityLevel.AUTH_NOPRIV);
         target.setSecurityName(new OctetString(rsu.getRsuUsername()));
+      } else {
+        target.setSecurityLevel(SecurityLevel.NOAUTH_NOPRIV);
       }
       
       // Set up the UDP transport mapping over which requests are sent
@@ -191,8 +193,9 @@ public class SnmpSession {
       ResponseEvent response = null;
       ScopedPDU pdu = TimPduCreator.createPDU(snmp, payload, rsu.getRsuIndex(), requestVerb);
       response = session.set(pdu, session.getSnmp(), session.getTarget(), false);
-      EventLogger.logger.info("Message Sent to {}, index {}: {}", rsu.getRsuTarget(), rsu.getRsuIndex(), payload);
-      logger.info("Message Sent to {}, index {}: {}", rsu.getRsuTarget(), rsu.getRsuIndex(), payload);
+      String msg = "Message Sent to {}, index {}: {}";
+      EventLogger.logger.info(msg, rsu.getRsuTarget(), rsu.getRsuIndex(), payload);
+      logger.info(msg, rsu.getRsuTarget(), rsu.getRsuIndex(), payload);
       return response;
    }
 
