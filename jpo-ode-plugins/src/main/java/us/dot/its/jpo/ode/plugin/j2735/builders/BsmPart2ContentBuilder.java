@@ -55,8 +55,7 @@ public class BsmPart2ContentBuilder {
          SpecialVehicleExtensionsBuilder.evaluateSpecialVehicleExt(part2Content, openType.get(id.name()));
          break;
       case SupplementalVehicleExtensions:
-         SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions(part2Content,
-               openType.get(id.name()));
+         SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(part2Content, openType.get(id.name()));
          break;
       }
       return part2Content;

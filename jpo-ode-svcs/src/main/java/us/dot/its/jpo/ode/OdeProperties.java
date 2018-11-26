@@ -1,16 +1,14 @@
 package us.dot.its.jpo.ode;
 
-import groovy.lang.MissingPropertyException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
+
+import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +26,6 @@ import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.plugin.OdePlugin;
 import us.dot.its.jpo.ode.util.CommonUtils;
 
-import javax.annotation.PostConstruct;
-
 @ConfigurationProperties("ode")
 @PropertySource("classpath:application.properties")
 public class OdeProperties implements EnvironmentAware {
@@ -42,14 +38,15 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * General Properties
     */
+   private static final int OUTPUT_SCHEMA_VERSION = 6;
    private String pluginsLocations = "plugins";
    private String kafkaBrokers = null;
+   private String DEFAULT_KAFKA_PORT = "9092";
    private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
    private Boolean verboseJson = false;
    private String externalIpv4 = "";
    private String externalIpv6 = "";
    private int rsuSrmSlots = 100; // number of "store and repeat message" indicies for RSU TIMs
-   private int outputSchemaVersion= 5;
    
    /*
     * Security Services Module Properties
@@ -112,6 +109,7 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeTimRxJson= "topic.OdeTimRxJson";
    private String kafkaTopicOdeTimBroadcastPojo= "topic.OdeTimBroadcastPojo";
    private String kafkaTopicOdeTimBroadcastJson= "topic.OdeTimBroadcastJson";
+   private String kafkaTopicJ2735TimBroadcastJson= "topic.J2735TimBroadcastJson";
    private String kafkaTopicFilteredOdeTimJson = "topic.FilteredOdeTimJson";
 
    // DriverAlerts
@@ -171,10 +169,11 @@ public class OdeProperties implements EnvironmentAware {
    
    private static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
 
+
    @PostConstruct
    void initialize() {
 
-      OdeMsgMetadata.setSchemaVersion(getOutputSchemaVersion());
+      OdeMsgMetadata.setStaticSchemaVersion(OUTPUT_SCHEMA_VERSION);
       
       uploadLocations.add(Paths.get(uploadLocationRoot));
 
@@ -197,12 +196,10 @@ public class OdeProperties implements EnvironmentAware {
          String dockerIp = CommonUtils.getEnvironmentVariable("DOCKER_HOST_IP");
          
          if (dockerIp == null) {
-            logger.warn("Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
-            throw new MissingPropertyException(
-                  "Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
-         } else {
-            kafkaBrokers = dockerIp + ":9092";
+            logger.warn("Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined. Defaulting to localhost.");
+            dockerIp = "localhost";
          }
+         kafkaBrokers = dockerIp + ":" + DEFAULT_KAFKA_PORT;
          
          // URI for the security services /sign endpoint
          if (securitySvcsSignatureUri == null) {
@@ -718,6 +715,14 @@ public class OdeProperties implements EnvironmentAware {
       this.kafkaTopicOdeTimBroadcastJson = kafkaTopicOdeTimBroadcastJson;
    }
 
+   public String getKafkaTopicJ2735TimBroadcastJson() {
+      return kafkaTopicJ2735TimBroadcastJson;
+   }
+
+   public void setKafkaTopicJ2735TimBroadcastJson(String kafkaTopicJ2735TimBroadcastJson) {
+      this.kafkaTopicJ2735TimBroadcastJson = kafkaTopicJ2735TimBroadcastJson;
+   }
+
    public String getKafkaTopicFilteredOdeTimJson() {
       return kafkaTopicFilteredOdeTimJson;
    }
@@ -748,14 +753,6 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setSecuritySvcsSignatureUri(String securitySvcsSignatureUri) {
       this.securitySvcsSignatureUri = securitySvcsSignatureUri;
-   }
-
-   public int getOutputSchemaVersion() {
-      return outputSchemaVersion;
-   }
-
-   public void setOutputSchemaVersion(int outputSchemaVersion) {
-      this.outputSchemaVersion = outputSchemaVersion;
    }
 
 }

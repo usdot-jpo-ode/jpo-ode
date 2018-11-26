@@ -36,9 +36,10 @@ public class ToJsonServiceController {
       launchConverter(odeProps.getKafkaTopicOdeTimPojo(), OdeTimDeserializer.class.getName(),
          new ToJsonConverter<>(odeProps, false, odeProps.getKafkaTopicOdeTimJson()));
 
-      // Broadcast TIM POJO --> Broadcast TIM JSON converter
-      launchConverter(odeProps.getKafkaTopicOdeTimBroadcastPojo(), OdeTimDeserializer.class.getName(),
-         new ToJsonConverter<>(odeProps, false, odeProps.getKafkaTopicOdeTimBroadcastJson()));
+// ODE-787 Now POJO to JSon publishing will be done in us.dot.its.jpo.ode.traveler.TimController.depositTim(String, RequestVerb)
+//      // Broadcast TIM POJO --> Broadcast TIM JSON converter
+//      launchConverter(odeProps.getKafkaTopicOdeTimBroadcastPojo(), OdeTimDeserializer.class.getName(),
+//         new ToJsonConverter<>(odeProps, false, odeProps.getKafkaTopicOdeTimBroadcastJson()));
    }
 
    private <V> void launchConverter(String fromTopic, String serializerFQN, 

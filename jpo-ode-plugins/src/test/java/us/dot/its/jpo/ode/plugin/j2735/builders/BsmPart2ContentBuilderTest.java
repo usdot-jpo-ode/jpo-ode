@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -20,6 +22,7 @@ import mockit.Expectations;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmPart2Content;
 import us.dot.its.jpo.ode.plugin.j2735.builders.BsmPart2ContentBuilder.BsmPart2ContentBuilderException;
 import us.dot.its.jpo.ode.util.JsonUtils;
+
 
 public class BsmPart2ContentBuilderTest {
 
@@ -50,7 +53,7 @@ public class BsmPart2ContentBuilderTest {
             SpecialVehicleExtensionsBuilder.evaluateSpecialVehicleExt((J2735BsmPart2Content) any, (JsonNode) any);
             times = 0;
 
-            SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions((J2735BsmPart2Content) any,
+            SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions((J2735BsmPart2Content) any,
                   (JsonNode) any);
             times = 0;
 
@@ -74,7 +77,7 @@ public class BsmPart2ContentBuilderTest {
             SpecialVehicleExtensionsBuilder.evaluateSpecialVehicleExt((J2735BsmPart2Content) any, (JsonNode) any);
             times = 1;
 
-            SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions((J2735BsmPart2Content) any,
+            SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions((J2735BsmPart2Content) any,
                   (JsonNode) any);
             times = 0;
 
@@ -98,7 +101,7 @@ public class BsmPart2ContentBuilderTest {
             SpecialVehicleExtensionsBuilder.evaluateSpecialVehicleExt((J2735BsmPart2Content) any, (JsonNode) any);
             times = 0;
 
-            SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions((J2735BsmPart2Content) any,
+            SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions((J2735BsmPart2Content) any,
                   (JsonNode) any);
             times = 1;
 
@@ -116,6 +119,48 @@ public class BsmPart2ContentBuilderTest {
    public void testExceptions() {
       new BsmPart2ContentBuilderException("message");
       new BsmPart2ContentBuilderException("message", new IOException("123"));
+   }
+   
+   @Test
+   public void testBuildGenericPart2() throws BsmPart2ContentBuilderException {
+      
+      new Expectations() {
+         {
+            VehicleSafetyExtensionsBuilder.evaluateVehicleSafetyExt((J2735BsmPart2Content) any, (JsonNode) any);
+            times = 0;
+
+            SpecialVehicleExtensionsBuilder.evaluateSpecialVehicleExt((J2735BsmPart2Content) any, (JsonNode) any);
+            times = 0;
+
+            SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions((J2735BsmPart2Content) any,
+                  (JsonNode) any);
+            times = 1;
+
+         }
+      };
+      
+      ObjectNode testInput = JsonUtils.newNode();
+      testInput.put("partII-Id", 2);
+      testInput.put("partII-Value", "something");
+      
+      List<JsonNode> inputList = new ArrayList<>();
+      inputList.add(testInput);
+      
+      List<J2735BsmPart2Content> outputList = new ArrayList<>();
+      
+      BsmPart2ContentBuilder.buildGenericPart2(inputList, outputList);
+      
+      assertEquals(1, outputList.size());
+   }
+   
+   @Test
+   public void testBuildGenericPart2EmptyList() throws BsmPart2ContentBuilderException {
+      
+      List<J2735BsmPart2Content> outputList = new ArrayList<>();
+      
+      BsmPart2ContentBuilder.buildGenericPart2(null, outputList);
+      
+      assertEquals(0, outputList.size());
    }
    
    @Test
