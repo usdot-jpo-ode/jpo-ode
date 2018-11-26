@@ -8,7 +8,8 @@ services:
       - "2181:2181"
 
   kafka:
-    build: ./docker/kafka
+    #build: ./docker/kafka
+    image: wurstmeister/kafka
     ports:
       - "9092:9092"
     environment:
