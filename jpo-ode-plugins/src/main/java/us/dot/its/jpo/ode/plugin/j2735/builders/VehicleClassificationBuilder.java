@@ -27,26 +27,6 @@ public class VehicleClassificationBuilder {
       J2735VehicleClassification gvc = new J2735VehicleClassification();
 
       // All elements of this class are optional
-      JsonNode ft = vc.get("fuelType");
-      if (ft != null) {
-
-         int fuelType = ft.asInt();
-
-         if (fuelType < FUEL_TYPE_LOWER_BOUND || FUEL_TYPE_UPPER_BOUND < fuelType) {
-            throw new IllegalArgumentException(String.format("Fuel type value out of bounds [%d..%d]",
-                  FUEL_TYPE_LOWER_BOUND, FUEL_TYPE_UPPER_BOUND));
-         }
-
-         gvc.setFuelType(J2735FuelType.values()[fuelType]);
-      }
-      JsonNode hpmsType = vc.get("hpmsType");
-      if (hpmsType != null) {
-         gvc.setHpmsType(J2735VehicleType.valueOf(hpmsType.fieldNames().next()));
-      }
-      JsonNode iso3883 = vc.get("iso3883");
-      if (iso3883 != null) {
-         gvc.setIso3883(iso3883.asInt());
-      }
       JsonNode kt = vc.get("keyType");
       if (kt != null) {
 
@@ -59,45 +39,62 @@ public class VehicleClassificationBuilder {
 
          gvc.setKeyType(keyType);
       }
-      JsonNode responderType = vc.get("responderType");
-      if (responderType != null) {
-         gvc.setResponderType(J2735ResponderGroupAffected.valueOf(responderType.fieldNames().next()));
-      }
-      JsonNode responseEquip = vc.get("responseEquip");
-      if (responseEquip != null) {
-         gvc.setResponseEquip(NamedNumberBuilder.genericIncidentResponseEquipment(responseEquip));
-      }
+
       JsonNode role = vc.get("role");
       if (role != null) {
          gvc.setRole(J2735BasicVehicleRole.valueOf(role.fieldNames().next()));
       }
+
+      JsonNode iso3883 = vc.get("iso3883");
+      if (iso3883 != null) {
+         gvc.setIso3883(iso3883.asInt());
+      }
+
+      JsonNode hpmsType = vc.get("hpmsType");
+      if (hpmsType != null) {
+         gvc.setHpmsType(J2735VehicleType.valueOf(hpmsType.fieldNames().next()));
+      }
+
       JsonNode vehicleType = vc.get("vehicleType");
       if (vehicleType != null) {
          gvc.setVehicleType(NamedNumberBuilder.genericVehicleGroupAffected(vehicleType));
       }
-      JsonNode regional = vc.get("regional");
-      if (regional != null) {
-         // while (vc.regional.elements().hasMoreElements()) {
-         // us.dot.its.jpo.ode.j2735.dsrc.VehicleClassification.Regional.Sequence_
-         // element =
-         // (us.dot.its.jpo.ode.j2735.dsrc.VehicleClassification.Regional.Sequence_)
-         // vc.regional
-         // .elements().nextElement();
-         // gvc.getRegional().add(new
-         // J2735RegionalContent().setId(element.regionId.asInt())
-         // .setValue(element.regExtValue.getEncodedValue()));
-         // }
 
-         if (regional.isArray()) {
-            Iterator<JsonNode> elements = regional.elements();
+      JsonNode responseEquip = vc.get("responseEquip");
+      if (responseEquip != null) {
+         gvc.setResponseEquip(NamedNumberBuilder.genericIncidentResponseEquipment(responseEquip));
+      }
 
-            while (elements.hasNext()) {
-               JsonNode element = elements.next();
+      JsonNode responderType = vc.get("responderType");
+      if (responderType != null) {
+         gvc.setResponderType(J2735ResponderGroupAffected
+               .valueOf(responderType.fieldNames().next().toLowerCase().replaceAll("-", "_")));
+      }
 
-               gvc.getRegional().add(new J2735RegionalContent().setId(element.get("regionId").asInt())
-                     .setValue(CodecUtils.fromHex(element.get("regExtValue").asText())));
-            }
+      JsonNode ft = vc.get("fuelType");
+      if (ft != null) {
+
+         int fuelType = ft.asInt();
+
+         if (fuelType < FUEL_TYPE_LOWER_BOUND || FUEL_TYPE_UPPER_BOUND < fuelType) {
+            throw new IllegalArgumentException(String.format("Fuel type value out of bounds [%d..%d]",
+                  FUEL_TYPE_LOWER_BOUND, FUEL_TYPE_UPPER_BOUND));
          }
+
+         gvc.setFuelType(J2735FuelType.values()[fuelType]);
+      }
+
+      JsonNode regional = vc.get("regional");
+      if (regional != null && regional.isArray()) {
+         Iterator<JsonNode> elements = regional.elements();
+
+         while (elements.hasNext()) {
+            JsonNode element = elements.next();
+
+            gvc.getRegional().add(new J2735RegionalContent().setId(element.get("regionId").asInt())
+                  .setValue(CodecUtils.fromHex(element.get("regExtValue").asText())));
+         }
+
       }
 
       return gvc;

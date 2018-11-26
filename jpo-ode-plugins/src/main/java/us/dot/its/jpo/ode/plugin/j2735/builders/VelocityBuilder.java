@@ -8,7 +8,18 @@ public class VelocityBuilder {
       throw new UnsupportedOperationException();
    }
 
+   /**
+    * Converts velocity from human readable decimal to ASN-compliant int.
+    * @param vel
+    * @return
+    */
    public static int velocity(BigDecimal vel) {
-      return vel.multiply(BigDecimal.valueOf(50)).intValue();
+
+      int convertedValue = 8191;
+      if (vel != null) {
+         convertedValue = vel.multiply(BigDecimal.valueOf(50)).intValue();
+      }
+
+      return convertedValue;
    }
 }

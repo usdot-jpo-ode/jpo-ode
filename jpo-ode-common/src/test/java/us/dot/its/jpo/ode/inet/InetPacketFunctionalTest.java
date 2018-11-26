@@ -1,8 +1,13 @@
 package us.dot.its.jpo.ode.inet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -10,10 +15,19 @@ import java.util.Arrays;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import mockit.Capturing;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
-@Ignore // functional test
 public class InetPacketFunctionalTest {
+   
+   @Capturing
+   DatagramSocket capturingDatagramSocket;
+   
+   @Capturing
+   DatagramPacket capturingDatagramPacket;
+   
+   @Capturing
+   Thread capturingThread;
 
 	private static boolean isVerbose = true;
 	
@@ -24,7 +38,7 @@ public class InetPacketFunctionalTest {
 	   assertNull(pkt.getPayload());
 	}
 	
-	@Test
+	@Test @Ignore
 	public void test() throws UnknownHostException {
 		test("127.0.0.1", 12, "01234567890".getBytes());
 		test("::1", 47561, "0123456789001234567890".getBytes());
