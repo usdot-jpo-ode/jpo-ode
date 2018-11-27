@@ -14,12 +14,12 @@ public class BsmLogFileParser extends LogFileParser {
 
    private BsmSource bsmSource; // 0 for EV(Tx), 1 for RV(Rx)
 
-   public BsmLogFileParser(long bundleId) {
-      super(bundleId);
-      setLocationParser(new LocationParser(bundleId));
-      setTimeParser(new TimeParser(bundleId));
-      setSecResCodeParser(new SecurityResultCodeParser(bundleId));
-      setPayloadParser(new PayloadParser(bundleId));
+   public BsmLogFileParser() {
+      super();
+      setLocationParser(new LocationParser());
+      setTimeParser(new TimeParser());
+      setSecResCodeParser(new SecurityResultCodeParser());
+      setPayloadParser(new PayloadParser());
    }
 
    @Override

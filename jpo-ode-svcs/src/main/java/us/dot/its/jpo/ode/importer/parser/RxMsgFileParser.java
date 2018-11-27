@@ -15,12 +15,12 @@ public class RxMsgFileParser extends LogFileParser {
    
    private RxSource rxSource;
 
-   public RxMsgFileParser(long bundleId) {
-      super(bundleId);
-      setLocationParser(new LocationParser(bundleId));
-      setTimeParser(new TimeParser(bundleId));
-      setSecResCodeParser(new SecurityResultCodeParser(bundleId));
-      setPayloadParser(new PayloadParser(bundleId));
+   public RxMsgFileParser() {
+      super();
+      setLocationParser(new LocationParser());
+      setTimeParser(new TimeParser());
+      setSecResCodeParser(new SecurityResultCodeParser());
+      setPayloadParser(new PayloadParser());
    }
 
    @Override
