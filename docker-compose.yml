@@ -29,8 +29,8 @@ services:
                                      # file isn't full to ensure that retention can delete or compact old data.
     depends_on:
       - zookeeper
-    links:
-      - zookeeper
+#    links:
+#      - zookeeper
     volumes:
       - ${DOCKER_SHARED_VOLUME_WINDOWS}/var/run/docker.sock:/var/run/docker.sock
 
@@ -56,9 +56,9 @@ services:
 #      ODE_OUTPUT_SCHEMA_VERSION: ${ODE_OUTPUT_SCHEMA_VERSION}
     depends_on:
       - kafka
-    links:
-      - kafka
-      - zookeeper
+#    links:
+#      - kafka
+#      - zookeeper
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/jpo-ode
 
@@ -70,8 +70,8 @@ services:
       ACM_CONFIG_FILE: adm.properties
     depends_on:
       - kafka
-    links:
-      - kafka
+#    links:
+#      - kafka
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
 
@@ -83,8 +83,8 @@ services:
       ACM_CONFIG_FILE: aem.properties
     depends_on:
       - kafka
-    links:
-      - kafka
+#    links:
+#      - kafka
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
 
@@ -126,8 +126,8 @@ services:
       DEPOSIT_TOPIC: ${CVPEP_BSM_TOPIC}
     depends_on:
      - kafka
-    links:
-     - kafka
+#    links:
+#     - kafka
 
   rde_bsm_depositor:
     build: ./jpo-s3-deposit
@@ -141,8 +141,8 @@ services:
       DEPOSIT_TOPIC: ${RDE_BSM_TOPIC}
     depends_on:
      - kafka
-    links:
-     - kafka
+#    links:
+#     - kafka
 
   cvpep_tim_depositor:
     build: ./jpo-s3-deposit
@@ -156,8 +156,8 @@ services:
       DEPOSIT_TOPIC: ${CVPEP_TIM_TOPIC}
     depends_on:
      - kafka
-    links:
-     - kafka
+#    links:
+#     - kafka
 
   rde_tim_depositor:
     build: ./jpo-s3-deposit
@@ -171,8 +171,8 @@ services:
       DEPOSIT_TOPIC: ${RDE_TIM_TOPIC}
     depends_on:
      - kafka
-    links:
-     - kafka
+#    links:
+#     - kafka
   sec:
     build: ./jpo-security-svcs
     ports:
