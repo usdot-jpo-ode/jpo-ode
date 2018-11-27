@@ -39,8 +39,8 @@ public class VehicleSafetyExtensionsBuilderTest {
 
       ObjectNode testInputNode = JsonUtils.newNode();
       // TODO - the events are backwards if the enums are used with open-source
-      //testInputNode.put("events", "0100100001000");
-      testInputNode.put("events", "0001000010010");
+      testInputNode.put("events", "0100100001000");
+      //testInputNode.put("events", "0001000010010");
 
       VehicleSafetyExtensionsBuilder.evaluateVehicleSafetyExt(outputContent, testInputNode);
 

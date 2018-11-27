@@ -166,11 +166,11 @@ public class TimControllerTest {
                mockOdeTravelerInputData.toJson(true);
                result = anyString;
 
-               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
-               result = mockTravelerInfo;
-
-               mockBuilder.encodeTravelerInformationToHex();
-               result = new Exception("Encoding error.");
+//               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = new Exception("Encoding error.");
             }
          };
       } catch (Exception e) {
@@ -207,11 +207,11 @@ public class TimControllerTest {
                mockOdeTravelerInputData.toJson(true);
                result = anyString;
 
-               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
-               result = mockTravelerInfo;
-
-               mockBuilder.encodeTravelerInformationToHex();
-               result = anyString;
+//               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = anyString;
 
                mockOdeTravelerInputData.getRequest().getRsus();
                result = new RSU[] { mockRsu };
@@ -261,11 +261,11 @@ public class TimControllerTest {
                mockOdeTravelerInputData.toJson(true);
                result = "mockTim";
 
-               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
-               result = mockTravelerInfo;
-
-               mockBuilder.encodeTravelerInformationToHex();
-               result = anyString;
+//               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = anyString;
 
                mockOdeTravelerInputData.getRequest().getRsus();
                result = new RSU[] { mockRsu };
@@ -309,11 +309,11 @@ public class TimControllerTest {
                mockOdeTravelerInputData.toJson(true);
                result = "mockTim";
 
-               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
-               result = mockTravelerInfo;
-
-               mockBuilder.encodeTravelerInformationToHex();
-               result = anyString;
+//               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = anyString;
 
                mockOdeTravelerInputData.getRequest().getRsus();
                result = new RSU[] { mockRsu };
@@ -367,11 +367,11 @@ public class TimControllerTest {
                mockOdeTravelerInputData.toJson(true);
                result = "mockTim";
 
-               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
-               result = mockTravelerInfo;
-
-               mockBuilder.encodeTravelerInformationToHex();
-               result = anyString;
+//               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = anyString;
 
                mockOdeTravelerInputData.getRequest().getRsus();
                result = new RSU[] { mockRsu };
@@ -425,12 +425,12 @@ public class TimControllerTest {
                result = mockOdeTravelerInputData;
                mockOdeTravelerInputData.toJson(true);
                result = "mockTim";
-
-               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
-               result = mockTravelerInfo;
-
-               mockBuilder.encodeTravelerInformationToHex();
-               result = anyString;
+//
+//               mockBuilder.buildTravelerInformation(mockOdeTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = anyString;
 
                mockOdeTravelerInputData.getRequest().getRsus();
                result = new RSU[] { mockRsu };

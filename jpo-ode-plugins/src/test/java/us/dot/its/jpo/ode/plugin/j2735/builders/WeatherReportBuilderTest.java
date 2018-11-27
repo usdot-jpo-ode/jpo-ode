@@ -25,7 +25,7 @@ public class WeatherReportBuilderTest {
    public void testRequiredField() {
       // isRaining is the only required field
 
-      J2735EssPrecipYesNo expectedIsRaining = J2735EssPrecipYesNo.NOPRECIP;
+      J2735EssPrecipYesNo expectedIsRaining = J2735EssPrecipYesNo.PRECIP;
 
       ObjectNode testInputNode = JsonUtils.newNode();
 
@@ -89,7 +89,7 @@ public class WeatherReportBuilderTest {
 
    @Test
    public void testPrecipSituationEnum() {
-      J2735EssPrecipSituation expectedPrecipSituation = J2735EssPrecipSituation.FROZENPRECIPITATIONSLIGHT;
+      J2735EssPrecipSituation expectedPrecipSituation = J2735EssPrecipSituation.RAINHEAVY;
 
       ObjectNode testInputNode = JsonUtils.newNode();
 
