@@ -45,7 +45,7 @@ public class BsmReceiverTest {
             capturingDatagramSocket.receive((DatagramPacket) any);
             result = null;
 
-            capturingLogFileToAsn1CodecPublisher.publish((byte[]) any);
+            testBsmReceiver.publish((byte[]) any);
             times = 0;
          }
       };
@@ -63,7 +63,7 @@ public class BsmReceiverTest {
             mockDatagramPacket.getLength();
             result = 1;
 
-            capturingLogFileToAsn1CodecPublisher.publish((byte[]) any);
+            testBsmReceiver.publish((byte[]) any);
             times = 1;
          }
       };
@@ -81,7 +81,7 @@ public class BsmReceiverTest {
             mockDatagramPacket.getLength();
             result = 1;
 
-            capturingLogFileToAsn1CodecPublisher.publish((byte[]) any);
+            testBsmReceiver.publish((byte[]) any);
             result = new IOException("testException123");
          }
       };

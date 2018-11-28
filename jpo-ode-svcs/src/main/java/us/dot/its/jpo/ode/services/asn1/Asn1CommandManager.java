@@ -24,13 +24,13 @@ import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
+import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsdPayload;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
-import us.dot.its.jpo.ode.model.OdeTravelerInputData;
-import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
-import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.SNMP;
+import us.dot.its.jpo.ode.plugin.ServiceRequest;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
@@ -38,8 +38,8 @@ import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.traveler.TimController;
 import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 import us.dot.its.jpo.ode.util.JsonUtils;
-import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
+import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 public class Asn1CommandManager {
@@ -84,17 +84,17 @@ public class Asn1CommandManager {
       }
    }
 
-   public HashMap<String, String> sendToRsus(OdeTravelerInputData travelerInfo, String encodedMsg) {
+   public HashMap<String, String> sendToRsus(ServiceRequest request, String encodedMsg) {
 
       HashMap<String, String> responseList = new HashMap<>();
-      for (RSU curRsu : travelerInfo.getRsus()) {
+      for (RSU curRsu : request.getRsus()) {
 
          ResponseEvent rsuResponse = null;
 
          String httpResponseStatus;
          try {
-            rsuResponse = SnmpSession.createAndSend(travelerInfo.getSnmp(), curRsu, travelerInfo.getOde().getIndex(),
-                  encodedMsg, travelerInfo.getOde().getVerb());
+            rsuResponse = SnmpSession.createAndSend(request.getSnmp(), curRsu,
+                  encodedMsg, request.getOde().getVerb());
             if (null == rsuResponse || null == rsuResponse.getResponse()) {
                // Timeout
                httpResponseStatus = "Timeout";
@@ -103,7 +103,7 @@ public class Asn1CommandManager {
                httpResponseStatus = "Success";
             } else if (rsuResponse.getResponse().getErrorStatus() == 5) {
                // Error, message already exists
-               httpResponseStatus = "Message already exists at ".concat(Integer.toString(travelerInfo.getOde().getIndex()));
+               httpResponseStatus = "Message already exists at ".concat(Integer.toString(curRsu.getRsuIndex()));
             } else {
                // Misc error
                httpResponseStatus = "Error code " + rsuResponse.getResponse().getErrorStatus() + " "
@@ -125,7 +125,7 @@ public class Asn1CommandManager {
             logger.info("RSU SNMP deposit to {} successful.", curRsu.getRsuTarget());
          } else if (rsuResponse.getResponse().getErrorStatus() == 5) {
             // Error, message already exists
-            Integer destIndex = travelerInfo.getOde().getIndex();
+            Integer destIndex = curRsu.getRsuIndex();
             logger.error("Error on RSU SNMP deposit to {}: message already exists at index {}.", curRsu.getRsuTarget(),
                   destIndex);
          } else {
@@ -155,13 +155,13 @@ public class Asn1CommandManager {
       return respEntity.getBody();
    }
    
-   public String packageSignedTimIntoAsd(OdeTravelerInputData travelerInputData, String signedMsg) {
+   public String packageSignedTimIntoAsd(ServiceRequest request, String signedMsg) {
 
-      SDW sdw = travelerInputData.getSdw();
-      SNMP snmp = travelerInputData.getSnmp();
+      SDW sdw = request.getSdw();
+      SNMP snmp = request.getSnmp();
       DdsAdvisorySituationData asd = null;
 
-      byte sendToRsu = travelerInputData.getRsus() != null ? DdsAdvisorySituationData.RSU
+      byte sendToRsu = request.getRsus() != null ? DdsAdvisorySituationData.RSU
             : DdsAdvisorySituationData.NONE;
       byte distroType = (byte) (DdsAdvisorySituationData.IP | sendToRsu);
       //
@@ -196,7 +196,7 @@ public class Asn1CommandManager {
          OdeMsgMetadata metadata = new OdeMsgMetadata(payload);
          ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());
 
-         ObjectNode requestObj = JsonUtils.toObjectNode(JsonUtils.toJson(travelerInputData, false));
+         ObjectNode requestObj = JsonUtils.toObjectNode(JsonUtils.toJson(request, false));
 
          requestObj.remove("tim");
 
@@ -209,7 +209,7 @@ public class Asn1CommandManager {
          message.set(AppContext.PAYLOAD_STRING, payloadObj);
 
          ObjectNode root = JsonUtils.newNode();
-         root.set("OdeAsn1Data", message);
+         root.set(AppContext.ODE_ASN1_DATA, message);
 
          outputXml = XmlUtils.toXmlS(root);
          

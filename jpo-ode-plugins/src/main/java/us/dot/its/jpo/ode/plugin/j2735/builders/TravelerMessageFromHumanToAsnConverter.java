@@ -33,11 +33,6 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // Cast to ObjectNode to allow manipulation in place
       ObjectNode timDataObjectNode = (ObjectNode) tid.get("tim");
-      JsonNode index = timDataObjectNode.remove("index");
-      ObjectNode ode = (ObjectNode) tid.get("ode");
-      if (null != ode) {
-         ode.set("index", index);
-      }
       
       // timeStamp is optional
       if (timDataObjectNode.get("timeStamp") != null) {
@@ -49,7 +44,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // dataFrames are required
       timDataObjectNode.set("dataFrames", transformDataFrames(timDataObjectNode.get("dataframes")));
-         timDataObjectNode.remove("dataframes");
+      timDataObjectNode.remove("dataframes");
    }
       
    public static JsonNode transformDataFrames(JsonNode dataFrames) throws JsonUtilsException {

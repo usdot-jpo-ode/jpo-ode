@@ -9,12 +9,16 @@ import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 
 public class Position3DBuilder {
    
+   private Position3DBuilder() {
+      throw new UnsupportedOperationException();
+   }
+   
    public static DsrcPosition3D dsrcPosition3D(JsonNode pos) {
       Long latitude = pos.get("lat").asLong();
       Long longitude = pos.get("long").asLong();
       Long elevation = pos.get("elevation").asLong();
 
-      return new DsrcPosition3D(longitude, latitude, elevation);
+      return new DsrcPosition3D(latitude, longitude, elevation);
 
    }
 

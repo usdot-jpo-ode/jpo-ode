@@ -15,8 +15,8 @@ public class TimeParser extends LogFileParser {
    protected long utcTimeInSec;
    protected short mSec;
 
-   public TimeParser(long bundleId) {
-      super(bundleId);
+   public TimeParser() {
+      super();
    }
 
    @Override

@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -15,6 +17,15 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class InetPointTest {
+   
+   @Capturing
+   DatagramSocket capturingDatagramSocket;
+   
+   @Capturing
+   DatagramPacket capturingDatagramPacket;
+   
+   @Capturing
+   Thread capturingThread;
 
    @Capturing
    InetAddress capturingInetAddress;

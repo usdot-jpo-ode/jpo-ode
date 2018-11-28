@@ -3,11 +3,9 @@ package us.dot.its.jpo.ode.dds;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import mockit.Expectations;
 import mockit.Mocked;
-import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.dds.DdsRequest.SystemName;
 import us.dot.its.jpo.ode.model.OdeRequest;
 import us.dot.its.jpo.ode.model.OdeRequest.DataSource;
@@ -17,7 +15,6 @@ import us.dot.its.jpo.ode.model.OdeRequestType;
  * Test set for DdsRequestManager static methods
  *
  */
-@RunWith(JMockit.class)
 public class DdsRequestManagerTest {
 
     /**

@@ -88,8 +88,8 @@ public class ImporterProcessor {
          inputStream = new FileInputStream(filePath.toFile());
          String probeContentType = Files.probeContentType(filePath);
          if (probeContentType != null && gZipPattern.matcher(probeContentType).matches() || filePath.endsWith("gz")) {
-               inputStream = new GZIPInputStream(inputStream);
-               bis = publishFile(filePath, inputStream);
+           inputStream = new GZIPInputStream(inputStream);
+           bis = publishFile(filePath, inputStream);
          } else if (probeContentType != null && zipPattern.matcher(probeContentType).matches() || filePath.endsWith("zip")) {
             inputStream = new ZipInputStream(inputStream);
             ZipInputStream zis = (ZipInputStream)inputStream;
@@ -138,4 +138,5 @@ public class ImporterProcessor {
       codecPublisher.publishFile(filePath, bis, fileType);
       return bis;
    }
+
 }

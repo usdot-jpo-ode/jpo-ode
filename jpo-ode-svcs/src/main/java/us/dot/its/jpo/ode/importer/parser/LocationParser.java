@@ -15,8 +15,8 @@ public class LocationParser extends LogFileParser {
 
    protected LogLocation location;
 
-   public LocationParser(long bundleId) {
-      super(bundleId);
+   public LocationParser() {
+      super();
    }
 
    public ParserStatus parseFile(BufferedInputStream bis, String fileName) throws FileParserException {

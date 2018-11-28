@@ -13,7 +13,7 @@ public abstract class MessagePublisher {
 
    public MessagePublisher(OdeProperties odeProps) {
       this.odeProperties = odeProps;
-      logger.info("Using Brokers: {} of Type: ", odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType());
+      logger.info("Using Brokers: {} of Type: {}", odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType());
    }
 
    public OdeProperties getOdeProperties() {

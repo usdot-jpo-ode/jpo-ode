@@ -1,4 +1,6 @@
-version: '2'
+# DOCKER_SHARED_VOLUME_WINDOWS should be defined for Windows host machine as C: and not defined for Linux hosts
+
+version: '3'
 services:
   zookeeper:
     image: wurstmeister/zookeeper
@@ -6,7 +8,8 @@ services:
       - "2181:2181"
 
   kafka:
-    build: ./docker/kafka
+    #build: ./docker/kafka
+    image: wurstmeister/kafka
     ports:
       - "9092:9092"
     environment:
@@ -29,7 +32,7 @@ services:
     links:
       - zookeeper
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ${DOCKER_SHARED_VOLUME_WINDOWS}/var/run/docker.sock:/var/run/docker.sock
 
   ode:
     build: .
@@ -49,7 +52,8 @@ services:
       ODE_EXTERNAL_IPV4: ${ODE_EXTERNAL_IPV4}
       ODE_EXTERNAL_IPV6: ${ODE_EXTERNAL_IPV6}
       ODE_SECURITY_SVCS_SIGNATURE_URI: ${ODE_SECURITY_SVCS_SIGNATURE_URI}
-      ODE_OUTPUT_SCHEMA_VERSION: ${ODE_OUTPUT_SCHEMA_VERSION}
+# Commented out for latest schemaVersion. Uncomment to set for older schemaVersion
+#      ODE_OUTPUT_SCHEMA_VERSION: ${ODE_OUTPUT_SCHEMA_VERSION}
     depends_on:
       - kafka
     links:
@@ -85,7 +89,9 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
 
   ppm_bsm:
-    build: ./jpo-cvdp
+    build: 
+      context: ./jpo-cvdp
+      dockerfile: Dockerfile
     image: jpoode_ppm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
@@ -96,7 +102,9 @@ services:
       - kafka
 
   ppm_tim:
-    build: ./jpo-cvdp
+    build: 
+      context: ./jpo-cvdp
+      dockerfile: Dockerfile
     image: jpoode_ppm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
@@ -116,7 +124,6 @@ services:
       DEPOSIT_BUCKET_NAME: ${CVPEP_BSM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${CVPEP_BSM_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${CVPEP_BSM_TOPIC}
-      DEPOSIT_DESTINATION: ${CVPEP_BSM_DESTINATION}
     depends_on:
      - kafka
     links:
@@ -132,7 +139,6 @@ services:
       DEPOSIT_BUCKET_NAME: ${RDE_BSM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${RDE_BSM_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${RDE_BSM_TOPIC}
-      DEPOSIT_DESTINATION: ${RDE_BSM_DESTINATION}
     depends_on:
      - kafka
     links:
@@ -148,7 +154,6 @@ services:
       DEPOSIT_BUCKET_NAME: ${CVPEP_TIM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${CVPEP_TIM_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${CVPEP_TIM_TOPIC}
-      DEPOSIT_DESTINATION: ${CVPEP_TIM_DESTINATION}
     depends_on:
      - kafka
     links:
@@ -164,7 +169,6 @@ services:
       DEPOSIT_BUCKET_NAME: ${RDE_TIM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${RDE_TIM_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${RDE_TIM_TOPIC}
-      DEPOSIT_DESTINATION: ${RDE_TIM_DESTINATION}
     depends_on:
      - kafka
     links:

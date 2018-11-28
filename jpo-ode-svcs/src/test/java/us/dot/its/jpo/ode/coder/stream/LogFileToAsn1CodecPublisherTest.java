@@ -33,7 +33,7 @@ public class LogFileToAsn1CodecPublisherTest {
    public void testPublishEOF() throws Exception {
       new Expectations() {
          {
-            LogFileParser.factory(anyString, anyLong);
+            LogFileParser.factory(anyString);
             result = mockTimLogFileParser;
 
             mockTimLogFileParser.parseFile((BufferedInputStream) any, anyString);

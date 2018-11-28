@@ -21,6 +21,7 @@ import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
@@ -158,7 +159,7 @@ public class TimControllerDepositTest {
             TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim((JsonNode) any);
             result = mockObjectNode;
             
-            testTimController.convertToXml((DdsAdvisorySituationData) any, (ObjectNode) any);      
+            testTimController.convertToXml((DdsAdvisorySituationData) any, (ObjectNode) any, (OdeMsgMetadata) any);      
             result = new XmlUtils.XmlUtilsException("testException123");
          }
       };

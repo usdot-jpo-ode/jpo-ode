@@ -6,13 +6,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-//TODO open-ode
-//import gov.usdot.cv.security.msg.IEEE1609p2Message;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.plugin.j2735.builders.BsmBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.BsmPart2ContentBuilder.BsmPart2ContentBuilderException;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -24,7 +21,6 @@ public class OdeBsmDataCreatorHelper {
    private OdeBsmDataCreatorHelper() {
    }
 
-//TODO open-ode
 //   public static OdeBsmData createOdeBsmData(
 //      J2735Bsm rawBsm, 
 //      IEEE1609p2Message message, 
@@ -32,7 +28,7 @@ public class OdeBsmDataCreatorHelper {
 //
 //      OdeBsmPayload payload = new OdeBsmPayload(rawBsm);
 //
-//      OdeBsmMetadata metadata = new OdeBsmMetadata(payload);
+//      OdeLogMetadata metadata = new OdeBsmMetadata(payload);
 //      OdeLogMetadataCreatorHelper.updateLogMetadata(metadata, bsmFileParser);
 //      
 //      // If we have a valid message, override relevant data from the message
@@ -43,7 +39,7 @@ public class OdeBsmDataCreatorHelper {
 //         if (ieeeGenTime != null) {
 //            generatedAt = DateTimeUtils.isoDateTime(ieeeGenTime);
 //         } else if (bsmFileParser != null) {
-//            generatedAt = bsmFileParser.getGeneratedAt();
+//            generatedAt = bsmFileParser.getTimeParser().getGeneratedAt();
 //         } else {
 //            generatedAt = DateTimeUtils.nowZDT();
 //         }
@@ -56,9 +52,9 @@ public class OdeBsmDataCreatorHelper {
 //   }
 //
 //   public static OdeBsmData createOdeBsmData(
-//      J2735Bsm rawBsm, String filename, SerialId serialId) {
-//      BsmLogFileParser bsmFileParser = new BsmLogFileParser(serialId.getBundleId());
-//      bsmFileParser.setFilename(filename).setUtcTimeInSec(0).setSecurityResultCode(SecurityResultCode.unknown);
+//      J2735Bsm rawBsm, String filename) {
+//      BsmLogFileParser bsmFileParser = new BsmLogFileParser();
+//      bsmFileParser.setFilename(filename).getTimeParser().setUtcTimeInSec(0).getSecResCodeParser().setSecurityResultCode(SecurityResultCode.unknown);
 //
 //      return createOdeBsmData(rawBsm, null, bsmFileParser);
 //   }
@@ -80,7 +76,7 @@ public class OdeBsmDataCreatorHelper {
        *  ODE-755 and ODE-765 Starting with schemaVersion=5 receivedMessageDetails 
        *  will be present in BSM metadata. None should be present in prior versions.
        */
-      if (OdeMsgMetadata.getSchemaVersion() <= 4) {
+      if (metadata.getSchemaVersion() <= 4) {
          metadata.setReceivedMessageDetails(null);
       }
       

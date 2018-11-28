@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.coder;
 
+import java.math.BigDecimal;
+
 import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
 import us.dot.its.jpo.ode.importer.parser.LocationParser;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
@@ -53,7 +55,6 @@ public class OdeLogMetadataCreatorHelper {
       }
 
       metadata.setRecordGeneratedBy(GeneratedBy.OBU);
-      metadata.getSerialId().addRecordId(1);
    }
 
    public static ReceivedMessageDetails buildReceivedMessageDetails(LogFileParser parser) {
@@ -61,13 +62,18 @@ public class OdeLogMetadataCreatorHelper {
       ReceivedMessageDetails rxMsgDetails = null;
       if (locationParser != null) {
          LogLocation locationDetails = locationParser.getLocation();
+         BigDecimal genericLatitude = LatitudeBuilder.genericLatitude(locationDetails.getLatitude());
+         BigDecimal genericLongitude = LongitudeBuilder.genericLongitude(locationDetails.getLongitude());
+         BigDecimal genericElevation = ElevationBuilder.genericElevation(locationDetails.getElevation());
+         BigDecimal genericSpeedOrVelocity = SpeedOrVelocityBuilder.genericSpeedOrVelocity(locationDetails.getSpeed());
+         BigDecimal genericHeading = HeadingBuilder.genericHeading(locationDetails.getHeading());
          rxMsgDetails = new ReceivedMessageDetails(
                new OdeLogMsgMetadataLocation(
-                  LatitudeBuilder.genericLatitude(locationDetails.getLatitude()).stripTrailingZeros().toPlainString(),
-                  LongitudeBuilder.genericLongitude(locationDetails.getLongitude()).stripTrailingZeros().toPlainString(),
-                  ElevationBuilder.genericElevation(locationDetails.getElevation()).stripTrailingZeros().toPlainString(),
-                  SpeedOrVelocityBuilder.genericSpeedOrVelocity(locationDetails.getSpeed()).stripTrailingZeros().toPlainString(),
-                  HeadingBuilder.genericHeading(locationDetails.getHeading()).stripTrailingZeros().toPlainString()
+                  genericLatitude == null ? null : genericLatitude.stripTrailingZeros().toPlainString(),
+                  genericLongitude == null ? null : genericLongitude.stripTrailingZeros().toPlainString(),
+                  genericElevation == null ? null : genericElevation.stripTrailingZeros().toPlainString(),
+                  genericSpeedOrVelocity == null ? null : genericSpeedOrVelocity.stripTrailingZeros().toPlainString(),
+                  genericHeading == null ? null : genericHeading.stripTrailingZeros().toPlainString()
                      ), null);
       }
       
