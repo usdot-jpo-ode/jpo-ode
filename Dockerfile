@@ -56,5 +56,5 @@ ENTRYPOINT ["java", \
 	"-Dcom.sun.management.jmxremote.authenticate=false", \
 	"-Dcom.sun.management.jmxremote.ssl=false", \
 	"-Dlogback.configurationFile=/home/logback.xml", \
-  "-jar", \
-  "/home/jpo-ode-svcs-0.0.1-SNAPSHOT.jar"]
+	"-jar", \
+	"/home/jpo-ode-svcs-0.0.1-SNAPSHOT.jar"]
