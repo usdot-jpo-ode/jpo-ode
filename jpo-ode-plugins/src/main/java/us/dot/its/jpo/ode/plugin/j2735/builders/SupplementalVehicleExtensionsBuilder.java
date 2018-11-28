@@ -4,7 +4,9 @@ import java.util.Iterator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import us.dot.its.jpo.ode.plugin.j2735.J2735BsmPart2Content;
 import us.dot.its.jpo.ode.plugin.j2735.J2735RegionalContent;
+import us.dot.its.jpo.ode.plugin.j2735.J2735SpecialVehicleExtensions;
 import us.dot.its.jpo.ode.plugin.j2735.J2735SupplementalVehicleExtensions;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
@@ -14,9 +16,12 @@ public class SupplementalVehicleExtensionsBuilder {
        throw new UnsupportedOperationException();
     }
 
-    public static J2735SupplementalVehicleExtensions genericSupplementalVehicleExtensions(
+    public static J2735SupplementalVehicleExtensions evaluateSupplementalVehicleExtensions(J2735BsmPart2Content part2Content,
             JsonNode sve) {
         J2735SupplementalVehicleExtensions genericSVE = new J2735SupplementalVehicleExtensions();
+        
+        J2735SpecialVehicleExtensions specVeh = new J2735SpecialVehicleExtensions();
+        part2Content.setValue(specVeh);
 
         // All elements of this class are optional
         if (sve.has("classification")) {

@@ -1,49 +1,60 @@
-FROM ubuntu:18.04
-MAINTAINER 572682@bah.com
+FROM maven:3.5.4-jdk-8-alpine as builder
+MAINTAINER 583114@bah.com
 
-#Install necessary software
-RUN apt-get update && \
-    apt-get install -y software-properties-common git
-RUN apt-get update && \
-    apt-get install -y apt-utils
-RUN apt-get update && \
-    apt-get install -y wget supervisor dnsutils curl jq net-tools
-RUN apt-get update && \
-    apt-get install -y openjdk-8-jdk
-RUN apt-get update && \
-    apt-get install -y vim
-RUN apt-get update && \
-    apt-get install -y nano
-RUN apt-get update && \
-   apt-cache search maven && apt-get install -y maven
+# Set up the private repo first
+WORKDIR /home/jpo-ode-private
 	
-RUN apt-get clean
+COPY ./jpo-ode-private/pom.xml ./pom.xml
+COPY ./jpo-ode-private/j2735/pom.xml ./j2735/pom.xml
+COPY ./jpo-ode-private/ieee1609dot2/pom.xml ./ieee1609dot2/pom.xml
+COPY ./jpo-ode-private/lib/*.jar ./lib/
 
-##install docker
-#RUN apt-get install -y apt-transport-https ca-certificates
-#RUN apt-key adv \
-#  --keyserver hkp://ha.pool.sks-keyservers.net:80 \
-#  --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-#RUN echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | tee /etc/apt/sources.list.d/docker.list
-#RUN apt-get update && apt-get install -y docker docker-engine
-#RUN apt-cache policy docker-engine
-##RUN apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual
-#RUN service docker start
+RUN mvn install:install-file -Dfile=./lib/LunaProvider.jar -DgroupId=com.safenet-inc -DartifactId=luna-provider -Dversion=6.2.2-4 -Dpackaging=jar
+RUN mvn install:install-file -Dfile=./lib/jprov_sfnt.jar -DgroupId=com.safenet-inc -DartifactId=safenet-provider -Dversion=5.4 -Dpackaging=jar
+RUN mvn install:install-file -Dfile=./lib/oss.jar -DgroupId=asn_1 -DartifactId=oss_soed -Dversion=6.3 -Dpackaging=jar
+RUN mvn install:install-file -Dfile=./lib/osslean.jar -DgroupId=asn_1 -DartifactId=oss_lean -Dversion=6.3 -Dpackaging=jar
+RUN mvn install:install-file -Dfile=./lib/osstoed.jar -DgroupId=asn_1 -DartifactId=oss_toed -Dversion=6.3 -Dpackaging=jar
 
-#COPY source files
-ADD . /home/jpo-ode
-ADD docker/start-ode.sh /usr/bin/start-ode.sh
-ADD jpo-ode-svcs/src/main/resources/application.properties /home
-ADD jpo-ode-svcs/src/main/resources/logback.xml /home
+RUN mvn dependency:go-offline -B
 
-# Build ODE inside the image
-RUN cd /home/jpo-ode/jpo-ode-private && mvn clean && mvn install
-Run cd /home/jpo-ode && mvn clean install -DskipTests
-RUN cp /home/jpo-ode/jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar /home
+COPY ./jpo-ode-private .
 
-#Change permissions and run scripts
-RUN chmod a+x /usr/bin/start-ode.sh
+RUN mvn clean
+RUN mvn install -DskipTests
 
-# Use "exec" form so that it runs as PID 1 (useful for graceful shutdown)
-#CMD bash -c 'start-kafka.sh & ; start-ode.sh'
-CMD bash -c 'start-ode.sh'
+# Now set up the public repo
+WORKDIR /home
+
+# COPY ./pom.xml ./pom.xml
+# COPY ./jpo-ode-core/pom.xml ./jpo-ode-core/pom.xml
+# COPY ./jpo-ode-svcs/pom.xml ./jpo-ode-svcs/pom.xml
+# COPY ./jpo-ode-plugins/pom.xml ./jpo-ode-plugins/pom.xml
+# COPY ./jpo-ode-common/pom.xml ./jpo-ode-common/pom.xml
+# COPY ./jpo-security/pom.xml ./jpo-security/pom.xml
+# COPY ./jpo-security-svcs/pom.xml ./jpo-security-svcs/pom.xml
+#
+# RUN mvn dependency:go-offline package -B
+
+COPY ./ ./
+
+RUN mvn clean install -DskipTests
+
+FROM openjdk:8u171-jre-alpine
+
+WORKDIR /home
+
+COPY --from=builder /home/jpo-ode-svcs/src/main/resources/application.properties /home
+COPY --from=builder /home/jpo-ode-svcs/src/main/resources/logback.xml /home
+COPY --from=builder /home/jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar /home
+
+ENTRYPOINT ["java", \
+	"-Djava.rmi.server.hostname=$DOCKER_HOST_IP", \
+	"-Dcom.sun.management.jmxremote.port=9090", \
+	"-Dcom.sun.management.jmxremote.rmi.port=9090", \
+	"-Dcom.sun.management.jmxremote", \
+	"-Dcom.sun.management.jmxremote.local.only=true", \
+	"-Dcom.sun.management.jmxremote.authenticate=false", \
+	"-Dcom.sun.management.jmxremote.ssl=false", \
+	"-Dlogback.configurationFile=/home/logback.xml", \
+	"-jar", \
+	"/home/jpo-ode-svcs-0.0.1-SNAPSHOT.jar"]
