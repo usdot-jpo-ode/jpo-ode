@@ -10,7 +10,7 @@ ifeq ("$(wildcard ./jpo-ode-private)", "")
 	$(error "ERROR: Directory `jpo-ode-private` not found in ${PWD}")
 endif
 ifeq ("$(wildcard ./asn1_codec/asn1c_combined/J2735_201603DA.ASN)", "")
-	$(error "ERROR: J2735_201603DA.ASN not found in ${PWD}/asn1_codec/asn1c_combined/")
+	cp ./jpo-ode-private/j2735/J2735_201603DA.ASN ./asn1_codec/asn1c_combined/J2735_201603DA.ASN
 endif
 ifndef DOCKER_HOST_IP
 	$(error ERROR: Environment variable DOCKER_HOST_IP is not set)
