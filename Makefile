@@ -1,8 +1,3 @@
-SERVICE_NAME ?= serverless-go-scheduler
-SERVICE_VERSION ?= $(shell git rev-parse --short HEAD)
-AWS_DEFAULT_REGION ?= us-east-1
-# include env.sh
-
 default:
 	$(info Make target options:)
 	$(info `make start` to build and run the ODE)
