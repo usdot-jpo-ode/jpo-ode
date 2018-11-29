@@ -87,16 +87,19 @@ public class ImporterProcessor {
       try {
          inputStream = new FileInputStream(filePath.toFile());
          String probeContentType = Files.probeContentType(filePath);
-         if (probeContentType != null && gZipPattern.matcher(probeContentType).matches() || filePath.endsWith("gz")) {
+         if ((probeContentType != null && gZipPattern.matcher(probeContentType).matches()) || filePath.toString().toLowerCase().endsWith("gz")) {
+           logger.info("Treating as gzip file");
            inputStream = new GZIPInputStream(inputStream);
            bis = publishFile(filePath, inputStream);
-         } else if (probeContentType != null && zipPattern.matcher(probeContentType).matches() || filePath.endsWith("zip")) {
+         } else if ((probeContentType != null && zipPattern.matcher(probeContentType).matches()) || filePath.toString().endsWith("zip")) {
+            logger.info("Treating as zip file");
             inputStream = new ZipInputStream(inputStream);
             ZipInputStream zis = (ZipInputStream)inputStream;
             while (zis.getNextEntry() != null) {
                bis = publishFile(filePath, inputStream);
             }
          } else {
+        	logger.info("Treating as unknown file");
             bis = publishFile(filePath, inputStream);
          }
       } catch (Exception e) {
