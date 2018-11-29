@@ -25,8 +25,8 @@ import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 public class ImporterProcessor {
 
    private static final Logger logger = LoggerFactory.getLogger(ImporterProcessor.class);
-// Removed for ODE-559
-//   private FileDecoderPublisher decoderPublisherManager;
+   // Removed for ODE-559
+   //   private FileDecoderPublisher decoderPublisherManager;
    private FileAsn1CodecPublisher codecPublisher;
    private OdeProperties odeProperties;
    private ImporterFileType fileType;
@@ -34,8 +34,8 @@ public class ImporterProcessor {
    private Pattern zipPattern = Pattern.compile("application/.*zip.*");
 
    public ImporterProcessor(OdeProperties odeProperties, ImporterFileType fileType) {
-   // Removed for ODE-559
-//   this.decoderPublisherManager = new FileDecoderPublisher(odeProperties);
+      // Removed for ODE-559
+      //   this.decoderPublisherManager = new FileDecoderPublisher(odeProperties);
       this.codecPublisher = new FileAsn1CodecPublisher(odeProperties);
       this.odeProperties = odeProperties;
       this.fileType = fileType;
@@ -70,33 +70,36 @@ public class ImporterProcessor {
        * ODE-559 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
        * removed lines below when asn1_codec was integrated
        */
-//      try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
-//         BufferedInputStream bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
-//         decoderPublisherManager.decodeAndPublishFile(filePath, bis, fileType);
-//         bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
-//      } catch (Exception e) {
-//         logger.error("Unable to open or process file: " + filePath, e);
-//      }
+      //      try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
+      //         BufferedInputStream bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
+      //         decoderPublisherManager.decodeAndPublishFile(filePath, bis, fileType);
+      //         bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
+      //      } catch (Exception e) {
+      //         logger.error("Unable to open or process file: " + filePath, e);
+      //      }
       // ODE-559 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
       // ODE-559
       boolean success = true;
       InputStream inputStream = null;
       BufferedInputStream bis = null;
-      
+
       try {
          inputStream = new FileInputStream(filePath.toFile());
          String probeContentType = Files.probeContentType(filePath);
-         if (probeContentType != null && gZipPattern.matcher(probeContentType).matches() || filePath.endsWith("gz")) {
-           inputStream = new GZIPInputStream(inputStream);
-           bis = publishFile(filePath, inputStream);
-         } else if (probeContentType != null && zipPattern.matcher(probeContentType).matches() || filePath.endsWith("zip")) {
+         if ((probeContentType != null && gZipPattern.matcher(probeContentType).matches()) || filePath.toString().toLowerCase().endsWith("gz")) {
+            logger.info("Treating as gzip file");
+            inputStream = new GZIPInputStream(inputStream);
+            bis = publishFile(filePath, inputStream);
+         } else if ((probeContentType != null && zipPattern.matcher(probeContentType).matches()) || filePath.toString().endsWith("zip")) {
+            logger.info("Treating as zip file");
             inputStream = new ZipInputStream(inputStream);
             ZipInputStream zis = (ZipInputStream)inputStream;
             while (zis.getNextEntry() != null) {
                bis = publishFile(filePath, inputStream);
             }
          } else {
+            logger.info("Treating as unknown file");
             bis = publishFile(filePath, inputStream);
          }
       } catch (Exception e) {
@@ -115,7 +118,7 @@ public class ImporterProcessor {
             logger.error("Failed to close file stream: {}", e);
          }
       }
-      
+
       try {
          if (success) {
             OdeFileUtils.backupFile(filePath, backupDir);
