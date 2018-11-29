@@ -12,7 +12,6 @@ services:
       - "2181:2181"
 
   kafka:
-    #build: ./docker/kafka
     image: wurstmeister/kafka
     ports:
       - "9092:9092"
@@ -40,6 +39,7 @@ services:
 
   ode:
     build: .
+    image: jpoode_ode:latest
     ports:
       - "8080:8080"
       - "9090:9090"
@@ -60,9 +60,6 @@ services:
 #      ODE_OUTPUT_SCHEMA_VERSION: ${ODE_OUTPUT_SCHEMA_VERSION}
     depends_on:
       - kafka
-    links:
-      - kafka
-      - zookeeper
     volumes:
       - ${DOCKER_SHARED_VOLUME}/ode:/jpo-ode
 
@@ -74,8 +71,6 @@ services:
       ACM_CONFIG_FILE: adm.properties
     depends_on:
       - kafka
-    links:
-      - kafka
     volumes:
       - ${DOCKER_SHARED_VOLUME}/adm:/asn1_codec_share
 
@@ -86,8 +81,6 @@ services:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ACM_CONFIG_FILE: aem.properties
     depends_on:
-      - kafka
-    links:
       - kafka
     volumes:
       - ${DOCKER_SHARED_VOLUME}/aem:/asn1_codec_share
@@ -138,8 +131,6 @@ services:
       DEPOSIT_TOPIC: ${CVPEP_BSM_TOPIC}
     depends_on:
      - kafka
-    links:
-     - kafka
 
   rde_bsm_depositor:
     build: ./jpo-s3-deposit
@@ -152,8 +143,6 @@ services:
       DEPOSIT_KEY_NAME: ${RDE_BSM_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${RDE_BSM_TOPIC}
     depends_on:
-     - kafka
-    links:
      - kafka
 
   cvpep_tim_depositor:
@@ -168,8 +157,6 @@ services:
       DEPOSIT_TOPIC: ${CVPEP_TIM_TOPIC}
     depends_on:
      - kafka
-    links:
-     - kafka
 
   rde_tim_depositor:
     build: ./jpo-s3-deposit
@@ -183,10 +170,10 @@ services:
       DEPOSIT_TOPIC: ${RDE_TIM_TOPIC}
     depends_on:
      - kafka
-    links:
-     - kafka
+
   sec:
     build: ./jpo-security-svcs
+    image: jpoode_sec:latest
     ports:
      - "8090:8090"
     environment:
