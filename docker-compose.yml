@@ -58,7 +58,7 @@ services:
 
   adm:
     build: ./asn1_codec
-    image: jpo-ode_acm:latest
+    image: jpoode_acm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ACM_CONFIG_FILE: adm.properties
@@ -69,7 +69,7 @@ services:
 
   aem:
     build: ./asn1_codec
-    image: jpo-ode_acm:latest
+    image: jpoode_acm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ACM_CONFIG_FILE: aem.properties
@@ -82,7 +82,7 @@ services:
     build:
       context: ./jpo-cvdp
       dockerfile: Dockerfile
-    image: jpo-ode_ppm:latest
+    image: jpoode_ppm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       PPM_CONFIG_FILE: ppmBsm.properties
@@ -95,7 +95,7 @@ services:
     build:
       context: ./jpo-cvdp
       dockerfile: Dockerfile
-    image: jpo-ode_ppm:latest
+    image: jpoode_ppm:latest
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       PPM_CONFIG_FILE: ppmTim.properties
@@ -106,7 +106,7 @@ services:
 
   cvpep_bsm_depositor:
     build: ./jpo-s3-deposit
-    image: jpo-ode_s3dep:latest
+    image: jpoode_s3dep:latest
     environment:
       AWS_ACCESS_KEY_ID: ${CVPEP_BSM_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${CVPEP_BSM_SECRET_ACCESS_KEY}
@@ -119,7 +119,7 @@ services:
 
   rde_bsm_depositor:
     build: ./jpo-s3-deposit
-    image: jpo-ode_s3dep:latest
+    image: jpoode_s3dep:latest
     environment:
       AWS_ACCESS_KEY_ID: ${RDE_BSM_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${RDE_BSM_SECRET_ACCESS_KEY}
@@ -132,7 +132,7 @@ services:
 
   cvpep_tim_depositor:
     build: ./jpo-s3-deposit
-    image: jpo-ode_s3dep:latest
+    image: jpoode_s3dep:latest
     environment:
       AWS_ACCESS_KEY_ID: ${CVPEP_TIM_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${CVPEP_TIM_SECRET_ACCESS_KEY}
@@ -145,7 +145,7 @@ services:
 
   rde_tim_depositor:
     build: ./jpo-s3-deposit
-    image: jpo-ode_s3dep:latest
+    image: jpoode_s3dep:latest
     environment:
       AWS_ACCESS_KEY_ID: ${RDE_TIM_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${RDE_TIM_SECRET_ACCESS_KEY}
