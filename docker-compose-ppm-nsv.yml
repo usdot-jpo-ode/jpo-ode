@@ -86,7 +86,7 @@ services:
       - ${DOCKER_SHARED_VOLUME}/aem:/asn1_codec_share
 
   ppm_bsm:
-    build:
+    build: 
       context: ./jpo-cvdp
       dockerfile: Dockerfile-nsv
       args:
@@ -103,7 +103,7 @@ services:
       - kafka
 
   ppm_tim:
-    build:
+    build: 
       context: ./jpo-cvdp
       dockerfile: Dockerfile-nsv
       args:

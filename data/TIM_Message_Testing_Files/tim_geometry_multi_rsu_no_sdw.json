@@ -36,19 +36,6 @@
       "deliverystop": "2018-01-01T17:47:11-05:15",
       "enable": "1",
       "status": "4"
-    },
-    "sdw": {
-      "ttl": "oneweek",
-      "serviceRegion": {
-        "nwCorner": {
-          "latitude": "44.998459",
-          "longitude": "-111.040817"
-        },
-        "seCorner": {
-          "latitude": "41.104674",
-          "longitude": "-104.111312"
-        }
-      }
     }
   },
   "tim": {
@@ -111,7 +98,10 @@
         "sspMsgContent": "3",
         "content": "Advisory",
         "items": [
-          "250"
+          "125",
+          "some text",
+          "250",
+          "'98765"
         ],
         "url": "null"
       }
