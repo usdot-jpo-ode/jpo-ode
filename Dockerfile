@@ -4,20 +4,12 @@ MAINTAINER 583114@bah.com
 # Set up the private repo first
 WORKDIR /home/jpo-ode-private
 	
-COPY ./jpo-ode-private/pom.xml ./pom.xml
-COPY ./jpo-ode-private/j2735/pom.xml ./j2735/pom.xml
-COPY ./jpo-ode-private/ieee1609dot2/pom.xml ./ieee1609dot2/pom.xml
+COPY ./jpo-ode-private/pom.xml ./
+COPY ./jpo-ode-private/j2735/pom.xml ./j2735/
+COPY ./jpo-ode-private/j2735/src ./j2735/src
+COPY ./jpo-ode-private/ieee1609dot2/pom.xml ./ieee1609dot2/
+COPY ./jpo-ode-private/ieee1609dot2/src ./ieee1609dot2/src
 COPY ./jpo-ode-private/lib/*.jar ./lib/
-
-RUN mvn install:install-file -Dfile=./lib/LunaProvider.jar -DgroupId=com.safenet-inc -DartifactId=luna-provider -Dversion=6.2.2-4 -Dpackaging=jar
-RUN mvn install:install-file -Dfile=./lib/jprov_sfnt.jar -DgroupId=com.safenet-inc -DartifactId=safenet-provider -Dversion=5.4 -Dpackaging=jar
-RUN mvn install:install-file -Dfile=./lib/oss.jar -DgroupId=asn_1 -DartifactId=oss_soed -Dversion=6.3 -Dpackaging=jar
-RUN mvn install:install-file -Dfile=./lib/osslean.jar -DgroupId=asn_1 -DartifactId=oss_lean -Dversion=6.3 -Dpackaging=jar
-RUN mvn install:install-file -Dfile=./lib/osstoed.jar -DgroupId=asn_1 -DartifactId=oss_toed -Dversion=6.3 -Dpackaging=jar
-
-RUN mvn dependency:go-offline -B
-
-COPY ./jpo-ode-private .
 
 RUN mvn clean
 RUN mvn install -DskipTests
@@ -25,17 +17,17 @@ RUN mvn install -DskipTests
 # Now set up the public repo
 WORKDIR /home
 
-# COPY ./pom.xml ./pom.xml
-# COPY ./jpo-ode-core/pom.xml ./jpo-ode-core/pom.xml
-# COPY ./jpo-ode-svcs/pom.xml ./jpo-ode-svcs/pom.xml
-# COPY ./jpo-ode-plugins/pom.xml ./jpo-ode-plugins/pom.xml
-# COPY ./jpo-ode-common/pom.xml ./jpo-ode-common/pom.xml
-# COPY ./jpo-security/pom.xml ./jpo-security/pom.xml
-# COPY ./jpo-security-svcs/pom.xml ./jpo-security-svcs/pom.xml
-#
-# RUN mvn dependency:go-offline package -B
-
-COPY ./ ./
+COPY ./pom.xml ./
+COPY ./jpo-ode-core/pom.xml ./jpo-ode-core/
+COPY ./jpo-ode-core/src ./jpo-ode-core/src/
+COPY ./jpo-ode-svcs/pom.xml ./jpo-ode-svcs/
+COPY ./jpo-ode-svcs/src ./jpo-ode-svcs/src
+COPY ./jpo-ode-plugins/pom.xml ./jpo-ode-plugins/
+COPY ./jpo-ode-plugins/src ./jpo-ode-plugins/src
+COPY ./jpo-ode-common/pom.xml ./jpo-ode-common/
+COPY ./jpo-ode-common/src ./jpo-ode-common/src
+COPY ./jpo-security/pom.xml ./jpo-security/
+COPY ./jpo-security/src ./jpo-security/src
 
 RUN mvn clean install -DskipTests
 

@@ -16,14 +16,11 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
-    <module>jpo-ode-private</module>
     <module>jpo-ode-common</module>
     <module>jpo-ode-plugins</module>
     <module>jpo-ode-core</module>
     <module>jpo-ode-svcs</module>
     <module>jpo-security</module>
-    <module>jpo-security-svcs</module>
-    <module>jpo-s3-deposit</module>
   </modules>
 
   <repositories>

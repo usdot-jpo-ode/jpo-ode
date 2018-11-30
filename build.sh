@@ -1,2 +1,2 @@
-mvn clean
+#!/bin/bash
 docker-compose build

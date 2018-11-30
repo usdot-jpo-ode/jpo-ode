@@ -1,1 +1,1 @@
-mvn cleancall docker-compose build
+call docker-compose build

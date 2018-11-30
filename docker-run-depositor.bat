@@ -1,0 +1,1 @@
+docker run -it --env-file=.env jpoode_s3dep:latest %1

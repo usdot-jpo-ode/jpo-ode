@@ -1,3 +1,10 @@
+@echo off
+
+IF "%1"=="" (
+    echo usage: update_branch.sh branch_name
+	goto end
+)
+
 copy asn1_codec\asn1c_combined\J2735_201603DA.ASN .
 
 rem Run the following commands to reset existing branch
@@ -15,4 +22,5 @@ git submodule update --recursive --init
 rem Restore the J2735 ASN file
 copy .\J2735_201603DA.ASN asn1_codec\asn1c_combined
 
-
+:end
+pause
