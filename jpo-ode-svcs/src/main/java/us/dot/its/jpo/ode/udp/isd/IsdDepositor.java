@@ -85,8 +85,11 @@ public class IsdDepositor extends AbstractSubscriberDepositor {
             throw new IOException("Received invalid packet.");
          }
 
-      } catch (IOException | InterruptedException | ExecutionException e) {
+      } catch (IOException | ExecutionException e) {
          logger.error("Error sending ISD Acceptance message to SDC", e);
+      } catch (InterruptedException e) {
+         logger.error("Error caused ISD Depositor thread interruption", e);
+         Thread.currentThread().interrupt();
       } catch (TimeoutException e) {
          logger.error("Did not receive ISD data receipt within alotted "
                + +odeProperties.getDataReceiptExpirationSeconds() + " seconds " + e);

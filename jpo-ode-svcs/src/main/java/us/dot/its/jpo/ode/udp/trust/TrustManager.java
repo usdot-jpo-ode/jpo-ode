@@ -97,10 +97,10 @@ public class TrustManager {
             endTrustSession(requestId);
             logger.error("Did not receive Service Response within alotted "
                   + +odeProperties.getServiceRespExpirationSeconds() + " seconds.", e);
-
          } catch (InterruptedException | ExecutionException | UdpUtilException e) {
             endTrustSession(requestId);
             logger.error("Trust establishment interrupted.", e);
+            Thread.currentThread().interrupt();
          }
          --retriesLeft;
       }
