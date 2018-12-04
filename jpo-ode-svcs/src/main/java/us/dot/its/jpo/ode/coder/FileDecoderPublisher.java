@@ -16,6 +16,7 @@ public class FileDecoderPublisher {
    private static final Logger logger = LoggerFactory.getLogger(FileDecoderPublisher.class);
 
    private JsonDecoderPublisher jsonDecPub;
+
    @Autowired
    public FileDecoderPublisher(OdeProperties odeProperties) {
 
@@ -23,14 +24,12 @@ public class FileDecoderPublisher {
       this.jsonDecPub = new JsonDecoderPublisher(bsmStringMsgPub);
    }
 
-   public void decodeAndPublishFile(
-       Path filePath, 
-       BufferedInputStream fileInputStream,
-       ImporterFileType fileType) {
+   public void decodeAndPublishFile(Path filePath, BufferedInputStream fileInputStream, ImporterFileType fileType) {
+
       String fileName = filePath.toFile().getName();
 
       logger.info("Decoding and publishing file {}", fileName);
-      
+
       try {
          logger.info("Decoding {} as json file.", filePath);
          jsonDecPub.decodeAndPublish(fileInputStream, fileName, fileType);

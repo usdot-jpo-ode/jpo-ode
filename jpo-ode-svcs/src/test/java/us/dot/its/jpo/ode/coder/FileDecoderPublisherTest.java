@@ -1,13 +1,11 @@
 package us.dot.its.jpo.ode.coder;
 
-import static org.junit.Assert.fail;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import mockit.Capturing;
@@ -18,7 +16,6 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.stream.JsonDecoderPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 
-@Ignore
 public class FileDecoderPublisherTest {
 
    @Injectable
@@ -28,48 +25,11 @@ public class FileDecoderPublisherTest {
    @Capturing
    JsonDecoderPublisher capturingJsonDecoderPublisher;
    @Capturing
-   OdeDataPublisher capturedMessagePublisher;
-
-
-   @Test
-   public void hexDecoderShouldDecodeHex() {
-      try {
-         new Expectations() {
-            {
-               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
-               times = 0;
-            }
-         };
-
-         Path testPath = Paths.get("testFile.hex");
-         BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         testedFileDecoderPublisher.decodeAndPublishFile(testPath, bis, ImporterFileType.OBU_LOG_FILE);
-      } catch (Exception e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
-   
-   @Test
-   public void hexDecoderShouldDecodeText() {
-      try {
-         new Expectations() {
-            {
-               capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
-               times = 0;
-            }
-         };
-
-         Path testPath = Paths.get("testFile.txt");
-         BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
-         testedFileDecoderPublisher.decodeAndPublishFile(testPath, bis, ImporterFileType.OBU_LOG_FILE);
-      } catch (Exception e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
+   OdeStringPublisher capturingOdeStringPublisher;
 
    @Test
-   public void jsonDecoderShouldDecodeJson() {
-      try {
+   public void testNoException() {
+
          new Expectations() {
             {
                capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
@@ -77,29 +37,26 @@ public class FileDecoderPublisherTest {
             }
          };
 
-         Path testPath = Paths.get("testFile.json");
+         Path testPath = Paths.get("testFile.hex");
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
          testedFileDecoderPublisher.decodeAndPublishFile(testPath, bis, ImporterFileType.OBU_LOG_FILE);
-      } catch (Exception e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
 
+   }
+   
    @Test
-   public void binaryDecoderShouldDecodeOther() {
-      try {
+   public void testException() {
+
          new Expectations() {
             {
                capturingJsonDecoderPublisher.decodeAndPublish((BufferedInputStream) any, anyString, ImporterFileType.OBU_LOG_FILE);
-               times = 0;
+               result = new IOException("testException123");
+               times = 1;
             }
          };
 
-         Path testPath = Paths.get("testFile.uper");
+         Path testPath = Paths.get("testFile.hex");
          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1 }));
          testedFileDecoderPublisher.decodeAndPublishFile(testPath, bis, ImporterFileType.OBU_LOG_FILE);
-      } catch (Exception e) {
-         fail("Unexpected exception: " + e);
-      }
+
    }
 }
