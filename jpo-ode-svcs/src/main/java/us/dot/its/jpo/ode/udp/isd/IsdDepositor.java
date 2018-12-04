@@ -85,7 +85,7 @@ public class IsdDepositor extends AbstractSubscriberDepositor {
             throw new IOException("Received invalid packet.");
          }
 
-      } catch (IOException | InterruptedException | ExecutionException e) {
+      } catch (IOException | InterruptedException | ExecutionException e) { // NOSONAR
          logger.error("Error sending ISD Acceptance message to SDC", e);
       } catch (TimeoutException e) {
          logger.error("Did not receive ISD data receipt within alotted "
