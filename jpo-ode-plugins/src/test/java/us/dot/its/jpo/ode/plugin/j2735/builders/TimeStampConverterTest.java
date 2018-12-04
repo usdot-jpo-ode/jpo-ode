@@ -2,14 +2,26 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * Test class for TravelerMessageFromHumanToAsnConverter.translateISOTimeStampToMinuteOfYear()
  *
  */
+@Ignore
 public class TimeStampConverterTest {
    
+   @BeforeClass
+   public static void classSetup() {
+   }
+   
+   @Before
+   public void setup() {
+   }
+
    @Test
    public void testKnownTime() {
       String testInput = "2017-11-20T22:16:12.874Z";

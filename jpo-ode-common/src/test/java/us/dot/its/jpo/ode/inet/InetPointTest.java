@@ -30,9 +30,6 @@ public class InetPointTest {
    @Capturing
    InetAddress capturingInetAddress;
 
-   @Mocked
-   UnknownHostException mockUnknownHostException;
-
    @Test
    public void testStringConstructorCreatesAddress() {
       try {
@@ -116,19 +113,9 @@ public class InetPointTest {
 
    @Test
    public void testToStringException() {
-      try {
-         new Expectations() {
-            {
-               InetAddress.getByAddress((byte[]) any).getHostAddress();
-               result = mockUnknownHostException;
-            }
-         };
          assertEquals(
-               "InetPoint { port = 5 (0x5); address = 00000000000000000000000000000000 (IPv6, ?); forward = false }",
+               "InetPoint { port = 5 (0x5); address = 00000000000000000000000000000000 (IPv6, null); forward = false }",
                new InetPoint(new byte[16], 5).toString());
-      } catch (UnknownHostException e) {
-         fail("Unexpected exception: " + e);
-      }
    }
 
    @Test

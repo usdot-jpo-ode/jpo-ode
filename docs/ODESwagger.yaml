@@ -167,7 +167,13 @@ paths:
     get:
       summary: RSU SNMP Query
       operationId: snmp_get
-      description: Check the health and status of RSU devices through SNMP communication. You should receive a detailed plain text response that looks like the following example. If the device is off, a 4 second timeout will occur and the ODE will indicate this with an "[ERROR] Empty response" message. (This specific OID returns the amount of time since the device was last powered on) "[1.3.6.1.2.1.1.3.0 = 0:05:12.59]"
+      description: >-
+        Check the health and status of RSU devices through SNMP communication.
+        You should receive a detailed plain text response that looks like the
+        following example. If the device is off, a 4 second timeout will occur
+        and the ODE will indicate this with an "[ERROR] Empty response" message.
+        (This specific OID returns the amount of time since the device was last
+        powered on) "[1.3.6.1.2.1.1.3.0 = 0:05:12.59]"
       parameters:
         - name: ip
           in: query
@@ -238,7 +244,8 @@ paths:
       summary: File upload interface
       operationId: upload-obulog
       description: >-
-        Uploads an OBU log file to ODE upload folder to be processed and propaged
+        Uploads an OBU log file to ODE upload folder to be processed and
+        propaged
       consumes:
         - multipart/form-data
       parameters:
@@ -250,8 +257,7 @@ paths:
         - log file
       responses:
         '200':
-          description: >-
-            File uploaded successfully
+          description: File uploaded successfully
           schema:
             type: array
             items:
@@ -447,12 +453,13 @@ definitions:
         type: string
       description:
         type: string
+        description: 'Valid values are "path" OR "geometry". oldregion is not supported'
       path:
         $ref: '#/definitions/Path'
-      oldRegion:
-        $ref: '#/definitions/OldRegion'
       geometry:
         $ref: '#/definitions/Geometry'
+      oldRegion:
+        $ref: '#/definitions/OldRegion'
   ComputedLane:
     type: object
     properties:
@@ -490,7 +497,7 @@ definitions:
       nodes:
         type: array
         items:
-          $ref: '#/definitions/NodeXY'
+          $ref: '#/definitions/Node'
       computedLane:
         $ref: '#/definitions/ComputedLane'
   Attribute:
@@ -643,26 +650,27 @@ definitions:
       elevation:
         type: number
         description: 'Elevation in meters [-409.5..6143.9]'
-  NodeXY:
+  Node:
     type: object
     properties:
       delta:
         type: string
         description: >-
-          One of Node-XY-20b, Node-XY-22b, Node-XY-24b, Node-XY-26b,
-          Node-XY-28b, Node-XY-32b, Node-LLmD-64b,
+          Valid values for offset values are offset XY values is node-XY. For this delta, x and y must be defined in meters from achor point.
+          Valid values for offset Lat/Lon values is node-LL. For this delta nodeLat and NodeLong must be defined indegrees from anchor point.
+          Valid values for absolute Lat/Lon is node-LatLon. For this delta nodeLat and nodeLong must be defined for each nodenot relative to anchor point.
       nodeLat:
         type: number
-        description: 'Latitude, used for Node-LLmD-64b'
+        description: 'Latitude in degrees for node-LL (offset) or node-LatLon'
       nodeLong:
         type: number
-        description: 'Longitude, used for Node-LLmD-64b'
+        description: 'Longitude in degrees for Node-LL (offset) or node-LatLon'
       x:
         type: number
-        description: 'Offset-B10 in meters [-5.11..5.11m]'
-      'y':
+        description: 'Offset x axis in meters for node-XY delta'
+      y:
         type: number
-        description: 'Offset-B10 in meters [-5.11..5.11m]'
+        description: 'Offset y axis in meters for node-XY delta'
       attributes:
         $ref: '#/definitions/Attribute'
   SNMP:

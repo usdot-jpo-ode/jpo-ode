@@ -1,9 +1,4 @@
 package us.dot.its.jpo.ode.services.json;
-//TODO
-//Redo this test the class being tested had changed 
-//
-//
-import org.junit.Ignore;
 import org.junit.Test;
 
 import mockit.Capturing;
@@ -23,22 +18,16 @@ public class ToJsonServiceControllerTest {
    @Capturing
    MessageConsumer<?, ?> capturingMessageConsumer;
    
-   @Ignore
    @Test
    public void test() {
       new Expectations() {
          {
             new ToJsonConverter<>((OdeProperties) any, anyBoolean, anyString);
-            times = 3;
+            times = 2;
 
             new MessageConsumer<>(anyString, anyString, (MessageProcessor<?, ?>) any, anyString);
-            times = 3;
+            times = 2;
 
-            capturingMessageConsumer.setName(anyString);
-            times = 3;
-
-            capturingToJsonConverter.start((MessageConsumer) any, anyString);
-            times = 3;
          }
       };
       new ToJsonServiceController(injectableOdeProperties);

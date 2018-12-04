@@ -1,11 +1,13 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -17,6 +19,8 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 
 public class TravelerMessageFromHumanToAsnConverter {
+
+   private static final Logger logger = LoggerFactory.getLogger(TravelerMessageFromHumanToAsnConverter.class);
 
    // JSON cannot have empty fields like XML, so the XML must be modified by
    // removing all flag field values
@@ -149,7 +153,7 @@ public class TravelerMessageFromHumanToAsnConverter {
          startYear = zDateTime.getYear();
          startMinute = (int) Duration.between(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0), zDateTime).toMinutes();
       } catch (Exception e) { // NOSONAR
-         // failed to parse datetime, default back to unknown values
+         logger.warn("Failed to parse datetime {}, defaulting to unknown value {}", isoTime, startMinute);
       }
 
       return startMinute;
@@ -168,13 +172,13 @@ public class TravelerMessageFromHumanToAsnConverter {
       // unknown minuteofyear = 527040
       int startYear = 0;
       int startMinute = 527040;
+      String startDateTime = dataFrame.get("startDateTime").asText();
       try {
-         ZonedDateTime zDateTime = DateTimeUtils.isoDateTime(dataFrame.get("startDateTime").asText());
+         ZonedDateTime zDateTime = DateTimeUtils.isoDateTime(startDateTime);
          startYear = zDateTime.getYear();
-         ZonedDateTime beginningOfYear = ZonedDateTime.of(startYear, 1, 1, 0, 0, 0, 0, zDateTime.getZone());
-         startMinute = (int)ChronoUnit.MINUTES.between(beginningOfYear, zDateTime);
-      } catch (ParseException e) {
-         // failed to parse datetime, default back to unknown values
+         startMinute = (int)ChronoUnit.MINUTES.between(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0), zDateTime);
+      } catch (Exception e) {
+         logger.warn("Failed to startDateTime {}, defaulting to unknown value {}.", startDateTime, startMinute);
       }
 
       dataFrame.put("startYear", startYear);
@@ -567,37 +571,59 @@ public class TravelerMessageFromHumanToAsnConverter {
       Long transformedLat = null;
       Long transformedLong = null;
 
-      if ("node-LL1".equals(delta.asText())) {
-         transformedLat = OffsetLLB12Builder.offsetLLB12(latOffset);
-         transformedLong = OffsetLLB12Builder.offsetLLB12(longOffset);
-      } else if ("node-LL2".equals(delta.asText())) {
-         transformedLat = OffsetLLB14Builder.offsetLLB14(latOffset);
-         transformedLong = OffsetLLB14Builder.offsetLLB14(longOffset);
-      } else if ("node-LL3".equals(delta.asText())) {
-         transformedLat = OffsetLLB16Builder.offsetLLB16(latOffset);
-         transformedLong = OffsetLLB16Builder.offsetLLB16(longOffset);
-      } else if ("node-LL4".equals(delta.asText())) {
-         transformedLat = OffsetLLB18Builder.offsetLLB18(latOffset);
-         transformedLong = OffsetLLB18Builder.offsetLLB18(longOffset);
-      } else if ("node-LL5".equals(delta.asText())) {
-         transformedLat = OffsetLLB22Builder.offsetLLB22(latOffset);
-         transformedLong = OffsetLLB22Builder.offsetLLB22(longOffset);
-      } else if ("node-LL6".equals(delta.asText())) {
-         transformedLat = OffsetLLB24Builder.offsetLLB24(latOffset);
-         transformedLong = OffsetLLB24Builder.offsetLLB24(longOffset);
-      } else if ("node-LatLon".equals(delta.asText())) {
+      ObjectNode innerNode = (ObjectNode) JsonUtils.newNode();
+      ObjectNode deltaNode = (ObjectNode) JsonUtils.newNode().set("delta", innerNode);
+      ObjectNode latLong = JsonUtils.newNode();
+      String deltaText = delta.asText();
+      if (deltaText.startsWith("node-LL")) {
+         transformedLat = OffsetLLBuilder.offsetLL(latOffset);
+         transformedLong = OffsetLLBuilder.offsetLL(longOffset);
+         if (deltaText.equals("node-LL")) {
+            deltaText = nodeOffsetPointLL(transformedLat, transformedLong);
+         }
+      } else if ("node-LatLon".equals(deltaText)) {
          transformedLat = LatitudeBuilder.j2735Latitude(latOffset);
          transformedLong = LongitudeBuilder.j2735Longitude(longOffset);
       }
 
-      ObjectNode latLong = JsonUtils.newNode().put("lat", transformedLat).put("lon", transformedLong);
-
-      ObjectNode innerNode = (ObjectNode) JsonUtils.newNode().set(delta.asText(), latLong);
-      ObjectNode deltaNode = (ObjectNode) JsonUtils.newNode().set("delta", innerNode);
-      // ObjectNode outerNode = (ObjectNode) JsonUtils.newNode().set("NodeLL",
-      // deltaNode);
+      innerNode.set(deltaText, latLong);
+      latLong.put("lat", transformedLat).put("lon", transformedLong);
 
       return deltaNode;
+   }
+
+//   -- Nodes with LL content Span at the equator when using a zoom of one:
+//      node-LL1 Node-LL-24B, -- within +- 22.634554 meters of last node
+//      node-LL2 Node-LL-28B, -- within +- 90.571389 meters of last node
+//      node-LL3 Node-LL-32B, -- within +- 362.31873 meters of last node
+//      node-LL4 Node-LL-36B, -- within +- 01.449308 Kmeters of last node
+//      node-LL5 Node-LL-44B, -- within +- 23.189096 Kmeters of last node
+//      node-LL6 Node-LL-48B, -- within +- 92.756481 Kmeters of last node
+//      node-LatLon Node-LLmD-64b, -- node is a full 32b Lat/Lon range
+   private static String nodeOffsetPointLL(long transformedLat, long transformedLon) {
+      long transformed = Math.abs(transformedLat) | Math.abs(transformedLon);
+      if ((transformed & (-1 << 12)) == 0) {
+         // 12 bit value
+         return "node-LL1";
+      } else if ((transformed & (-1 << 14)) == 0) {
+         // 14 bit value
+         return "node-LL2";
+      } else if ((transformed & (-1 << 16)) == 0) {
+         // 16 bit value
+         return "node-LL3";
+      } else if ((transformed & (-1 << 18)) == 0) {
+         // 18 bit value
+         return "node-LL4";
+      } else if ((transformed & (-1 << 22)) == 0) {
+         // 22 bit value
+         return "node-LL5";
+      } else if ((transformed & (-1 << 24)) == 0) {
+         // 24 bit value
+         return "node-LL6";
+      } else {
+         throw new IllegalArgumentException("Invalid node lat/long offset: " + transformedLat + "/" + transformedLon
+               + ". Values must be between a range of -0.8388608/+0.8388607 degrees.");
+      }
    }
 
    public static void replaceGeometry(ObjectNode geometry) {
@@ -832,7 +858,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
          while (nodeListIter.hasNext()) {
             JsonNode inputNode = nodeListIter.next();
-            outputNodeList.add(replaceNodeOffsetPointXY(inputNode));
+            outputNodeList.add(replaceNodeXY(inputNode));
          }
       }
 
@@ -846,19 +872,16 @@ public class TravelerMessageFromHumanToAsnConverter {
       // delta NodeOffsetPointXY
       // attributes NodeAttributeSetXY (optional)
 
-      ObjectNode updatedNode = (ObjectNode) oldNode;
+      ObjectNode updatedNode = replaceNodeOffsetPointXY(oldNode);
 
-      //replaceNodeOffsetPointXY(updatedNode.get("delta"));
-      updatedNode = replaceNodeOffsetPointXY(updatedNode);
-
-      if (updatedNode.get("attributes") != null) {
+      if (oldNode.get("attributes") != null) {
          replaceNodeAttributeSetXY(updatedNode);
       }
-
+      
       return updatedNode;
    }
 
-   private static ObjectNode replaceNodeAttributeSetXY(JsonNode jsonNode) {
+   private static void replaceNodeAttributeSetXY(JsonNode jsonNode) {
       // localNode NodeAttributeXYList OPTIONAL,
       // disabled SegmentAttributeXYList OPTIONAL,
       // enabled SegmentAttributeXYList OPTIONAL,
@@ -877,18 +900,15 @@ public class TravelerMessageFromHumanToAsnConverter {
          replaceLaneDataAttributeList(updatedNode.get("data"));
       }
       if (updatedNode.get("dWidth") != null) {
-         updatedNode.put("dWidth", OffsetB10Builder.offsetB10(updatedNode.get("dWidth").decimalValue()));
+         updatedNode.put("dWidth", OffsetXyBuilder.offsetXy(updatedNode.get("dWidth").decimalValue()));
       }
 
       if (updatedNode.get("dElevation") != null) {
-         updatedNode.put("dElevation", OffsetB10Builder.offsetB10(updatedNode.get("dElevation").decimalValue()));
+         updatedNode.put("dElevation", OffsetXyBuilder.offsetXy(updatedNode.get("dElevation").decimalValue()));
       }
-
-      return updatedNode;
-
    }
 
-   private static ObjectNode replaceLaneDataAttributeList(JsonNode laneDataAttributeList) {
+   private static void replaceLaneDataAttributeList(JsonNode laneDataAttributeList) {
 
       // iterate and replace
       ObjectNode updatedNode = (ObjectNode) laneDataAttributeList;
@@ -905,8 +925,6 @@ public class TravelerMessageFromHumanToAsnConverter {
       }
 
       updatedNode.set("NodeSetXY", updatedLaneDataAttributeList);
-
-      return updatedNode;
    }
 
    public static ObjectNode replaceLaneDataAttribute(JsonNode oldNode) {
@@ -991,160 +1009,63 @@ public class TravelerMessageFromHumanToAsnConverter {
       // .</delta>
       // </NodeLL>
 
-      BigDecimal latOffset = oldNode.get("nodeLat").decimalValue();
-      BigDecimal longOffset = oldNode.get("nodeLong").decimalValue();
       JsonNode delta = oldNode.get("delta");
-      Long transformedLat = null;
-      Long transformedLong = null;
 
-      if ("node-XY1".equals(delta.asText())) {
-         transformedLat = OffsetB10Builder.offsetB10(latOffset);
-         transformedLong = OffsetB10Builder.offsetB10(longOffset);
-      } else if ("node-XY2".equals(delta.asText())) {
-         transformedLat = OffsetB11Builder.offsetB11(latOffset);
-         transformedLong = OffsetB11Builder.offsetB11(longOffset);
-      } else if ("node-XY3".equals(delta.asText())) {
-         transformedLat = OffsetB12Builder.offsetB12(latOffset);
-         transformedLong = OffsetB12Builder.offsetB12(longOffset);
-      } else if ("node-XY4".equals(delta.asText())) {
-         transformedLat = OffsetB13Builder.offsetB13(latOffset);
-         transformedLong = OffsetB13Builder.offsetB13(longOffset);
-      } else if ("node-XY5".equals(delta.asText())) {
-         transformedLat = OffsetB14Builder.offsetB14(latOffset);
-         transformedLong = OffsetB14Builder.offsetB14(longOffset);
-      } else if ("node-XY6".equals(delta.asText())) {
-         transformedLat = OffsetB16Builder.offsetB16(latOffset);
-         transformedLong = OffsetB16Builder.offsetB16(longOffset);
-      } else if ("node-LatLon".equals(delta.asText())) {
-         transformedLat = LatitudeBuilder.j2735Latitude(latOffset);
-         transformedLong = LongitudeBuilder.j2735Longitude(longOffset);
+      ObjectNode innerNode = (ObjectNode) JsonUtils.newNode();
+      ObjectNode deltaNode = (ObjectNode) JsonUtils.newNode();
+      String deltaText = delta.asText();
+      if (deltaText.startsWith("node-XY")) {
+         BigDecimal xOffset = oldNode.get("x").decimalValue();
+         BigDecimal yOffset = oldNode.get("y").decimalValue();
+         Long transformedX = OffsetXyBuilder.offsetXy(xOffset);
+         Long transformedY = OffsetXyBuilder.offsetXy(yOffset);
+         ObjectNode xy = JsonUtils.newNode().put("x", transformedX).put("y", transformedY);
+         if (deltaText.equals("node-XY")) {
+            innerNode.set(nodeOffsetPointXY(transformedX, transformedY), xy);
+         } else {
+            innerNode.set(deltaText, xy);
+         }
+      } else if ("node-LatLon".equals(deltaText)) {
+         BigDecimal lonOffset = oldNode.get("nodeLong").decimalValue();
+         BigDecimal latOffset = oldNode.get("nodeLat").decimalValue();
+         Long transformedLon = LatitudeBuilder.j2735Latitude(lonOffset);
+         Long transformedLat = LongitudeBuilder.j2735Longitude(latOffset);
+         ObjectNode latLong = JsonUtils.newNode().put("lon", transformedLon).put("lat", transformedLat);
+         innerNode.set(deltaText, latLong);
       }
 
-      ObjectNode latLong = JsonUtils.newNode().put("lat", transformedLat).put("lon", transformedLong);
-
-      ObjectNode innerNode = (ObjectNode) JsonUtils.newNode().set(delta.asText(), latLong);
-      ObjectNode deltaNode = (ObjectNode) JsonUtils.newNode().set("delta", innerNode);
-      // ObjectNode outerNode = (ObjectNode) JsonUtils.newNode().set("NodeLL",
-      // deltaNode);
+      deltaNode.set("delta", innerNode);
 
       return deltaNode;
-      
-      
-      
-      ///////
 
-      // NodeOffsetPointXY contains one of:
-      // node-XY1 Node-XY-20b, -- node is within 5.11m of last node
-      // node-XY2 Node-XY-22b, -- node is within 10.23m of last node
-      // node-XY3 Node-XY-24b, -- node is within 20.47m of last node
-      // node-XY4 Node-XY-26b, -- node is within 40.96m of last node
-      // node-XY5 Node-XY-28b, -- node is within 81.91m of last node
-      // node-XY6 Node-XY-32b, -- node is within 327.67m of last node
-      // node-LatLon Node-LLmD-64b, -- node is a full 32b Lat/Lon range
-
-//      ObjectNode updatedNode = (ObjectNode) node;
-//      String nodeType = node.get("delta").asText();
-//
-//      if (nodeType.equals("node-XY1")) {
-//         updatedNode.set("node-XY1", replaceNode_XY1(node));
-//      } else if (nodeType.equals("node-XY2")) {
-//         updatedNode.set("node-XY2", replaceNode_XY2(node));
-//
-//      } else if (nodeType.equals("node-XY3")) {
-//         updatedNode.set("node-XY3", replaceNode_XY3(node));
-//
-//      } else if (nodeType.equals("node-XY4")) {
-//         updatedNode.set("node-XY4", replaceNode_XY4(node));
-//
-//      } else if (nodeType.equals("node-XY5")) {
-//         updatedNode.set("node-XY5", replaceNode_XY5(node));
-//
-//      } else if (nodeType.equals("node-XY6")) {
-//         updatedNode.set("node-XY6", replaceNode_XY6(node));
-//
-//      } else if (nodeType.equals("node-LatLon")) {
-//         updatedNode.set("node-LatLon", replaceNode_LatLon(node));
-//      }
-//
-//      return updatedNode;
    }
 
-   public static JsonNode replaceNode_XY1(JsonNode jsonNode) {
-      // xy1 = Node-XY-20b = Offset-B10
-
-      ObjectNode updatedNode = (ObjectNode) jsonNode;
-
-      updatedNode.put("x", OffsetB10Builder.offsetB10(updatedNode.get("x").decimalValue()));
-      updatedNode.put("y", OffsetB10Builder.offsetB10(updatedNode.get("y").decimalValue()));
-
-      return updatedNode;
-   }
-
-   public static JsonNode replaceNode_XY2(JsonNode jsonNode) {
-      // xy2 = Node-XY-22b = Offset-B11
-      ObjectNode updatedNode = (ObjectNode) jsonNode;
-
-      updatedNode.put("x", OffsetB11Builder.offsetB11(updatedNode.get("x").decimalValue()));
-      updatedNode.put("y", OffsetB11Builder.offsetB11(updatedNode.get("y").decimalValue()));
-
-      return updatedNode;
-   }
-
-   public static ObjectNode replaceNode_XY3(JsonNode jsonNode) {
-      // XY3 = Node-XY-24b = Offset-B12
-      ObjectNode updatedNode = (ObjectNode) jsonNode;
-
-      updatedNode.put("x", OffsetB12Builder.offsetB12(updatedNode.get("x").decimalValue()));
-      updatedNode.put("y", OffsetB12Builder.offsetB12(updatedNode.get("y").decimalValue()));
-
-      return updatedNode;
-   }
-
-   public static ObjectNode replaceNode_XY4(JsonNode jsonNode) {
-      // XY4 = Node-XY-26b = Offset-B13
-      ObjectNode updatedNode = (ObjectNode) jsonNode;
-
-      updatedNode.put("x", OffsetB13Builder.offsetB13(updatedNode.get("x").decimalValue()));
-      updatedNode.put("y", OffsetB13Builder.offsetB13(updatedNode.get("y").decimalValue()));
-
-      return updatedNode;
-   }
-
-   public static ObjectNode replaceNode_XY5(JsonNode jsonNode) {
-      // XY5 = Node-XY-28b = Offset-B14
-      ObjectNode updatedNode = (ObjectNode) jsonNode;
-
-      updatedNode.put("x", OffsetB14Builder.offsetB14(updatedNode.get("x").decimalValue()));
-      updatedNode.put("y", OffsetB14Builder.offsetB14(updatedNode.get("y").decimalValue()));
-
-      return updatedNode;
-   }
-
-   public static ObjectNode replaceNode_XY6(JsonNode jsonNode) {
-      // XY6 = Node-XY-32b = Offset-B16
-      ObjectNode updatedNode = (ObjectNode) jsonNode;
-
-      updatedNode.put("x", OffsetB16Builder.offsetB16(updatedNode.get("x").decimalValue()));
-      updatedNode.put("y", OffsetB16Builder.offsetB16(updatedNode.get("y").decimalValue()));
-
-      return updatedNode;
-   }
-
-   public static ObjectNode replaceNode_LatLon(JsonNode jsonNode) {
-      // LatLon = Node-LLmD-64b
-      // Node-LLmD-64b ::= SEQUENCE {
-      // lon Longitude,
-      // lat Latitude
-      // }
-
-      ObjectNode updatedNode = (ObjectNode) jsonNode;
-
-      updatedNode.put("lon", LongitudeBuilder.j2735Longitude(updatedNode.get("nodeLong").decimalValue()));
-      updatedNode.put("lat", LatitudeBuilder.j2735Latitude(updatedNode.get("nodeLat").decimalValue()));
-      updatedNode.remove("nodeLong");
-      updatedNode.remove("nodeLat");
-
-      return updatedNode;
+   // NodeOffsetPointXY contains one of:
+   // node-XY1 Node-XY-20b, -- node is within 5.11m of last node
+   // node-XY2 Node-XY-22b, -- node is within 10.23m of last node
+   // node-XY3 Node-XY-24b, -- node is within 20.47m of last node
+   // node-XY4 Node-XY-26b, -- node is within 40.96m of last node
+   // node-XY5 Node-XY-28b, -- node is within 81.91m of last node
+   // node-XY6 Node-XY-32b, -- node is within 327.67m of last node
+   // node-LatLon Node-LLmD-64b, -- node is a full 32b Lat/Lon range
+   private static String nodeOffsetPointXY(long transformedX, long transformedY) {
+      long transformed = Math.abs(transformedX) | Math.abs(transformedY);
+      if ((transformed & (-1 << 10)) == 0) {
+         return "node-XY1";
+      } else if ((transformed & (-1 << 11)) == 0) {
+         return "node-XY2";
+      } else if ((transformed & (-1 << 12)) == 0) {
+         return "node-XY3";
+      } else if ((transformed & (-1 << 13)) == 0) {
+         return "node-XY4";
+      } else if ((transformed & (-1 << 14)) == 0) {
+         return "node-XY5";
+      } else if ((transformed & (-1 << 16)) == 0) {
+         return "node-XY6";
+      } else {
+         throw new IllegalArgumentException("Invalid node X/Y offset: " + transformedX + "/" + transformedY
+               + ". Values must be between a range of -327.68/+327.67 meters.");
+      }
    }
 
 }

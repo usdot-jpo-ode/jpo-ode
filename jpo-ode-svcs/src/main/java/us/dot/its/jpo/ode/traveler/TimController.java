@@ -589,7 +589,8 @@ public class TimController {
       fixedXml = fixedXml.replaceAll("llong>", "long>"); // workaround for
                                                          // "long" being a type
                                                          // in java
-      fixedXml = fixedXml.replaceAll("node_LL3>", "node-LL3>");
+      fixedXml = fixedXml.replaceAll("node_LL", "node-LL");
+      fixedXml = fixedXml.replaceAll("node_XY", "node-XY");
       fixedXml = fixedXml.replaceAll("node_LatLon>", "node-LatLon>");
       fixedXml = fixedXml.replaceAll("nodeLL>", "NodeLL>");
       fixedXml = fixedXml.replaceAll("nodeXY>", "NodeXY>");

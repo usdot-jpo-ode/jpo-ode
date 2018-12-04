@@ -1,9 +1,11 @@
 package us.dot.its.jpo.ode.dds;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
-import mockit.*;
+
+import mockit.Mocked;
 import us.dot.its.jpo.ode.dds.DdsRequest.Dialog;
 import us.dot.its.jpo.ode.model.StatusTag;
 
@@ -19,10 +21,10 @@ public class DdsStatusMessageTest {
 	}
 	
 	@Test
-	   public void testConstructor2(@Mocked StatusTag tag, @Mocked String encoding, @Mocked Dialog dialog) {
-			DdsStatusMessage ddsStatusMessage = new DdsStatusMessage(tag, encoding, dialog);
+	   public void testConstructor2(@Mocked StatusTag tag, @Mocked Dialog dialog) {
+			DdsStatusMessage ddsStatusMessage = new DdsStatusMessage(tag, "UPER", dialog);
 			assertEquals(ddsStatusMessage.getTag(), tag);
-			assertEquals(ddsStatusMessage.getEncoding(), encoding);
+			assertEquals(ddsStatusMessage.getEncoding(), "UPER");
 			assertEquals(ddsStatusMessage.getDialog(), dialog);
 			
 			ddsStatusMessage.setTag(null);

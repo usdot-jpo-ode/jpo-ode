@@ -1,27 +1,36 @@
 package us.dot.its.jpo.ode.udp;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
+import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.asn1.j2735.J2735Util;
+import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher.UdpReceiverException;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class UdpReceiverPublisherTest {
 
-   @Tested
-   AbstractUdpReceiverPublisher testAbstractUdpReceiverPublisher;
-   @Injectable
-   OdeProperties mockOdeProps;
-   @Injectable
-   int port;
-   @Injectable
-   int bufferSize;
-
-   @Mocked
-   LoggerFactory disabledLogger;
-
-   //TODO open-ode
+//   @Tested
+//   AbstractUdpReceiverPublisher testAbstractUdpReceiverPublisher;
+//   @Injectable
+//   OdeProperties mockOdeProps;
+//   @Injectable
+//   int port;
+//   @Injectable
+//   int bufferSize;
+//
+//   @Mocked
+//   LoggerFactory disabledLogger;
+//
 //   @Test
 //   public void testDecodeData(@Mocked final MessageProducer<String, byte[]> mockMessageProducer,
 //         @Mocked final J2735Util mockJ2735Util, @Mocked AbstractData expectedReturn) {
@@ -29,7 +38,6 @@ public class UdpReceiverPublisherTest {
 //      try {
 //         new Expectations() {
 //            {
-//               //TODO open-ode
 //               J2735Util.decode((Coder) any, (byte[]) any);
 //               result = expectedReturn;
 //            }
@@ -47,25 +55,10 @@ public class UdpReceiverPublisherTest {
 //
 //   @Test
 //   public void testDecodedDataError(@Mocked final MessageProducer<String, byte[]> mockMessageProducer,
-//         @Mocked final J2735Util mockJ2735Util, @Mocked final UdpReceiverException mockUdpReceiverException) {
+//         @Mocked final J2735Util mockJ2735Util) throws UdpReceiverException, ValidateFailedException, ValidateNotSupportedException {
 //
-//      try {
-//         new Expectations() {
-//            {
-//               J2735Util.decode((Coder) any, (byte[]) any);
-//               result = mockUdpReceiverException;
-//            }
-//         };
-//      } catch (DecodeFailedException | DecodeNotSupportedException e) {
-//         fail("Unexpected exception in expectations block " + e);
-//      }
-//
-//      try {
-//         testAbstractUdpReceiverPublisher.decodeData(new byte[0]);
-//         fail("Expected exception.");
-//      } catch (UdpReceiverException e) {
-//         assertTrue(e instanceof UdpReceiverException);
-//      }
+//      AbstractData decodedData = testAbstractUdpReceiverPublisher.decodeData(new byte[0]);
+//      assertFalse(decodedData.isValid());
 //   }
 
 }

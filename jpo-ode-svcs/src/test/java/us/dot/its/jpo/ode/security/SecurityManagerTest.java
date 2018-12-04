@@ -1,8 +1,24 @@
 package us.dot.its.jpo.ode.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.Date;
+
+import org.junit.Test;
+
+//import gov.usdot.cv.security.cert.CertificateException;
+//import gov.usdot.cv.security.crypto.CryptoException;
+//import gov.usdot.cv.security.msg.IEEE1609p2Message;
+//import gov.usdot.cv.security.msg.MessageException;
+import mockit.Capturing;
+import mockit.Expectations;
+import mockit.Mocked;
+import us.dot.its.jpo.ode.security.SecurityManager.SecurityManagerException;
+
 public class SecurityManagerTest {
 
- //TODO open-ode
 //   @Mocked
 //   IEEE1609p2Message mockIEEE1609p2Message;
 //
@@ -15,22 +31,6 @@ public class SecurityManagerTest {
 //         {
 //            mockIEEE1609p2Message.getGenerationTime().getTime();
 //            result = (new Date().getTime() + 1000);
-//         }
-//      };
-//
-//      try {
-//          SecurityManager.validateGenerationTime(mockIEEE1609p2Message);
-//          fail("expected exception");
-//      } catch (SecurityManagerException e) {
-//      }
-//   }
-//
-//   @Test
-//   public void isValidFalseExceptionOccured(@Mocked SecurityManagerException mockException) {
-//      new Expectations() {
-//         {
-//            mockIEEE1609p2Message.getGenerationTime().getTime();
-//            result = mockException;
 //         }
 //      };
 //
@@ -92,8 +92,7 @@ public class SecurityManagerTest {
 //   }
 //
 //   @Test
-//   public void getMessagePayloadShouldReturnOriginalMsgIfEncodingExceptionOccured(
-//         @Mocked EncodeFailedException mockEncodeFailedException) {
+//   public void getMessagePayloadShouldReturnOriginalMsgIfEncodingExceptionOccured() {
 //      try {
 //         new Expectations() {
 //            {
@@ -101,12 +100,11 @@ public class SecurityManagerTest {
 //               result = mockIEEE1609p2Message;
 //
 //               mockIEEE1609p2Message.getPayload();
-//               result = mockEncodeFailedException;
 //            }
 //         };
 //
 //         byte[] testBytes = new byte[] { 42 };
-//         assertEquals(testBytes, SecurityManager.getMessagePayload(testBytes));
+//         SecurityManager.getMessagePayload(testBytes);
 //      } catch (SecurityManagerException | EncodeFailedException | MessageException | CertificateException
 //            | CryptoException | EncodeNotSupportedException e) {
 //         fail("Unexpected exception: " + e);
@@ -114,18 +112,15 @@ public class SecurityManagerTest {
 //   }
 //
 //   @Test
-//   public void getMessagePayloadShouldThrowSecurityManagerExceptionIfCertificateExceptionOccured(
-//         @Mocked CertificateException mockCertificateException) {
+//   public void getMessagePayloadShouldThrowSecurityManagerExceptionIfCertificateExceptionOccured() {
 //      try {
 //         new Expectations() {
 //            {
 //               IEEE1609p2Message.parse((byte[]) any);
-//               result = mockCertificateException;
 //            }
 //         };
 //
 //         SecurityManager.getMessagePayload(new byte[] { 0 });
-//         fail("Expected SecurityManagerException");
 //      } catch (EncodeFailedException | MessageException | CertificateException | CryptoException
 //            | EncodeNotSupportedException e) {
 //         fail("Unexpected exception: " + e);
