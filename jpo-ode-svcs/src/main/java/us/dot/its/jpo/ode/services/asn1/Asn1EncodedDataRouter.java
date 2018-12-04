@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.services.asn1;
 import java.util.HashMap;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.plugin.ServiceRequest;
+import us.dot.its.jpo.ode.services.asn1.Asn1CommandManager.Asn1CommandManagerException;
 import us.dot.its.jpo.ode.traveler.TimController;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -64,15 +66,15 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
           */
          JSONObject metadata = consumedObj.getJSONObject(AppContext.METADATA_STRING);
 
-         if (metadata.has(TimController.REQUEST)) {
-            JSONObject request = metadata.getJSONObject(TimController.REQUEST);
+         if (metadata.has(TimController.REQUEST_STRING)) {
+            JSONObject request = metadata.getJSONObject(TimController.REQUEST_STRING);
 
-            if (request.has("rsus")) {
-               Object rsu = request.get("rsus");
+            if (request.has(TimController.RSUS_STRING)) {
+               Object rsu = request.get(TimController.RSUS_STRING);
                if (!(rsu instanceof JSONArray)) {
                   JSONArray rsus = new JSONArray();
                   rsus.put(rsu);
-                  request.put("rsus", rsus);
+                  request.put(TimController.RSUS_STRING, rsus);
                }
             }
 
@@ -93,7 +95,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
    }
 
    public ServiceRequest getServicerequest(JSONObject consumedObj) {
-      String sr = consumedObj.getJSONObject(AppContext.METADATA_STRING).getJSONObject(TimController.REQUEST).toString();
+      String sr = consumedObj.getJSONObject(AppContext.METADATA_STRING).getJSONObject(TimController.REQUEST_STRING).toString();
       logger.debug("ServiceRequest: {}", sr);
 
       // Convert JSON to POJO
@@ -127,7 +129,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       // CASE 3: If SDW in metadata and ASD in body (double encoding complete)
       // - send to DDS
 
-      if (!dataObj.has("AdvisorySituationData")) {
+      if (!dataObj.has(Asn1CommandManager.ADVISORY_SITUATION_DATA_STRING)) {
          logger.debug("Unsigned message received");
          // We don't have ASD, therefore it must be just a MessageFrame that needs to be signed
          // No support for unsecured MessageFrame only payload.
@@ -176,8 +178,12 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             logger.debug("Signed message received. Depositing it to SDW.");
             // We have a ASD with signed MessageFrame
             // Case 3
-            JSONObject asdObj = dataObj.getJSONObject("AdvisorySituationData");
-            asn1CommandManager.depositToDDS(asdObj.getString("bytes"));
+            JSONObject asdObj = dataObj.getJSONObject(Asn1CommandManager.ADVISORY_SITUATION_DATA_STRING);
+            try {
+              asn1CommandManager.depositToDDS(asdObj.getString("bytes"));
+            } catch (JSONException | Asn1CommandManagerException e) {
+              logger.error("Error on DDS deposit.", e);
+            }
          } else {
             logger.debug("Unsigned ASD received. Depositing it to SDW.");
             //We have ASD with UNSECURED MessageFrame
@@ -197,8 +203,8 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       
       if (null != request.getSdw()) {
          JSONObject asdObj = null;
-         if (dataObj.has("AdvisorySituationData")) {
-            asdObj = dataObj.getJSONObject("AdvisorySituationData");
+         if (dataObj.has(Asn1CommandManager.ADVISORY_SITUATION_DATA_STRING)) {
+            asdObj = dataObj.getJSONObject(Asn1CommandManager.ADVISORY_SITUATION_DATA_STRING);
          } else {
             logger.error("ASD structure present in metadata but not in JSONObject!");
          }

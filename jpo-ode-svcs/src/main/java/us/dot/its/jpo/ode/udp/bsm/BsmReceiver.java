@@ -139,7 +139,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
      // publisher.publish(asn1Data.toJson(false),
      // publisher.getOdeProperties().getKafkaTopicAsn1EncodedBsm());
-     publisher.publish(XmlUtils.toXmlS(asn1Data), publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
+     publisher.publish(XmlUtils.toXmlStatic(asn1Data), publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
      serialId.increment();
   }
 

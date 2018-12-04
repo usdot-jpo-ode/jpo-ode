@@ -24,7 +24,7 @@ public class TravelerInformation extends Asn1Object {
    private String urlB;
 
    @JsonProperty("dataFrames")
-   private DataFrame[] dataFrames;
+   private TravelerDataFrame[] dataFrames;
 
    public int getTimeStamp() {
       return timeStamp;
@@ -50,15 +50,15 @@ public class TravelerInformation extends Asn1Object {
       this.packetID = packetID;
    }
 
-   public DataFrame[] getDataFrames() {
-      return dataFrames;
-   }
+   public TravelerDataFrame[] getDataFrames() {
+    return dataFrames;
+  }
 
-   public void setDataFrames(DataFrame[] dataFrames) {
-      this.dataFrames = dataFrames;
-   }
+  public void setDataFrames(TravelerDataFrame[] dataFrames) {
+    this.dataFrames = dataFrames;
+  }
 
-   public String getMsgCnt() {
+  public String getMsgCnt() {
       return msgCnt;
    }
 

@@ -55,7 +55,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       if (dataFrames == null) {
          return JsonUtils.newNode();
-   }
+      }
 
       ArrayNode replacedDataFrames = JsonUtils.newNode().arrayNode();
 
@@ -66,7 +66,7 @@ public class TravelerMessageFromHumanToAsnConverter {
             ObjectNode oldFrame = (ObjectNode) dataFramesIter.next();
             replaceDataFrame(oldFrame);
             // wrap each data frame inside a TravelerDataFrame
-            replacedDataFrames.add(JsonUtils.newObjectNode("TravelerDataFrame", oldFrame));
+            replacedDataFrames.add(oldFrame);
          }
       }
 
@@ -249,6 +249,13 @@ public class TravelerMessageFromHumanToAsnConverter {
       dataFrame.set("tcontent", JsonUtils.newNode().set(replacedContentName, sequence));
       dataFrame.remove("items");
    }
+
+//   public static JsonNode jsonArray2Asn1Array (ArrayNode items) {
+//     ArrayNode newItems = JsonUtils.newNode().arrayNode();
+//     // transform into a sequence array
+//     JsonNode sequence = JsonUtils.newNode().set("SEQUENCE", newItems);
+//     return sequence;
+//   }
 
    private static JsonNode buildItem(String itemStr) {
       JsonNode item = null;
