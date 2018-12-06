@@ -207,7 +207,7 @@ public class Asn1CommandManager {
          metaObject.set("request", requestObj);
 
          ArrayNode encodings = buildEncodings();
-         ObjectNode enc = XmlUtils.createEmbeddedJsonArrayForXmlConversion(AppContext.ENCODING_STRING, encodings);
+         ObjectNode enc = XmlUtils.createEmbeddedJsonArrayForXmlConversion(AppContext.ENCODINGS_STRING, encodings);
          metaObject.set(AppContext.ENCODINGS_STRING, enc);
          
          ObjectNode message = JsonUtils.newNode();

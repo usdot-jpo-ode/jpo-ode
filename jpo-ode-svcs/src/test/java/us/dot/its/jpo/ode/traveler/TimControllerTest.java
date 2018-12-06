@@ -552,21 +552,21 @@ public class TimControllerTest {
    public void testConvertRsusArray() throws JsonUtilsException, XmlUtilsException {
      String single = "{\"ode\":{\"version\":3,\"verb\":\"POST\"},\"rsus\":{\"rsu_\":[{\"rsuTarget\":\"127.0.0.3\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":1,\"rsuTimeout\":1000,\"rsuIndex\":10}]},\"snmp\":{\"rsuid\":\"00000083\",\"msgid\":31,\"mode\":1,\"channel\":178,\"interval\":2,\"deliverystart\":\"2017-06-01T17:47:11-05:00\",\"deliverystop\":\"2018-01-01T17:47:11-05:15\",\"enable\":1,\"status\":4}}";
      String singleXmlExpected = "";
-     assertConvertArray(single, TimController.RSUS_STRING, TimController.RSU_STRING, singleXmlExpected);
+     assertConvertArray(single, TimController.RSUS_STRING, TimController.RSUS_STRING, singleXmlExpected);
 
      String multi = "{\"ode\":{\"version\":3,\"verb\":\"POST\"},\"rsus\":{\"rsu_\":[{\"rsuTarget\":\"127.0.0.1\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":0,\"rsuTimeout\":2000,\"rsuIndex\":10},{\"rsuTarget\":\"127.0.0.2\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":1,\"rsuTimeout\":1000,\"rsuIndex\":10},{\"rsuTarget\":\"127.0.0.3\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":1,\"rsuTimeout\":1000,\"rsuIndex\":10}]},\"snmp\":{\"rsuid\":\"00000083\",\"msgid\":31,\"mode\":1,\"channel\":178,\"interval\":2,\"deliverystart\":\"2017-06-01T17:47:11-05:00\",\"deliverystop\":\"2018-01-01T17:47:11-05:15\",\"enable\":1,\"status\":4}}";
      String multiXmlExpected = "";
-     assertConvertArray(multi, TimController.RSUS_STRING, TimController.RSU_STRING, multiXmlExpected);
+     assertConvertArray(multi, TimController.RSUS_STRING, TimController.RSUS_STRING, multiXmlExpected);
    }
 
    @Test @Ignore
    public void testConvertEncodingsArray() throws JsonUtilsException, XmlUtilsException {
      String single = "{\"payloadType\":\"us.dot.its.jpo.ode.model.OdeTimPayload\",\"serialId\":{\"streamId\":\"edbbf3f2-f559-4bee-ab81-cfdec8ba2701\",\"bundleSize\":1,\"bundleId\":2,\"recordId\":0,\"serialNumber\":2},\"odeReceivedAt\":\"2018-12-04T16:14:28.238Z\",\"schemaVersion\":6,\"recordGeneratedAt\":\"2017-03-13T06:07:11Z\",\"recordGeneratedBy\":\"TMC\",\"sanitized\":false,\"request\":{\"ode\":{\"version\":3,\"verb\":\"POST\"},\"rsus\":{\"rsu_\":[{\"rsuTarget\":\"127.0.0.1\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":0,\"rsuTimeout\":2000,\"rsuIndex\":10},{\"rsuTarget\":\"127.0.0.2\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":1,\"rsuTimeout\":1000,\"rsuIndex\":10},{\"rsuTarget\":\"127.0.0.3\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":1,\"rsuTimeout\":1000,\"rsuIndex\":10}]},\"snmp\":{\"rsuid\":\"00000083\",\"msgid\":31,\"mode\":1,\"channel\":178,\"interval\":2,\"deliverystart\":\"2017-06-01T17:47:11-05:00\",\"deliverystop\":\"2018-01-01T17:47:11-05:15\",\"enable\":1,\"status\":4}},\"encodings\":[{\"elementName\":\"MessageFrame\",\"elementType\":\"MessageFrame\",\"encodingRule\":\"UPER\"}]}";
      String singleXmlExpected = "";
-     assertConvertArray(single, AppContext.ENCODINGS_STRING, AppContext.ENCODING_STRING, singleXmlExpected);
+     assertConvertArray(single, AppContext.ENCODINGS_STRING, AppContext.ENCODINGS_STRING, singleXmlExpected);
 
      String multi = "[{\"geographicalPath\":{\"name\":\"bob\",\"id\":{\"region\":\"23\",\"id\":\"33\"},\"anchor\":{\"lat\":\"416784730\",\"llong\":\"-1087827750\",\"elevation\":\"9171\"},\"laneWidth\":\"700\",\"directionality\":{\"both\":\"EMPTY_TAG\"},\"closedPath\":\"BOOLEAN_OBJECT_FALSE\",\"direction\":\"1010101010101010\",\"description\":{\"geometry\":{\"direction\":\"1010101010101010\",\"extent\":\"1\",\"laneWidth\":\"3300\",\"circle\":{\"center\":{\"lat\":\"416784730\",\"llong\":\"-1087827750\",\"elevation\":\"9171\"},\"radius\":\"15\",\"units\":\"7\"}}}}},{\"geographicalPath\":{\"name\":\"bob\",\"id\":{\"region\":\"23\",\"id\":\"33\"},\"anchor\":{\"lat\":\"416784730\",\"llong\":\"-1087827750\",\"elevation\":\"9171\"},\"laneWidth\":\"700\",\"directionality\":{\"both\":\"EMPTY_TAG\"},\"closedPath\":\"BOOLEAN_OBJECT_FALSE\",\"direction\":\"1010101010101010\",\"description\":{\"geometry\":{\"direction\":\"1010101010101010\",\"extent\":\"1\",\"laneWidth\":\"3300\",\"circle\":{\"center\":{\"lat\":\"416784730\",\"llong\":\"-1087827750\",\"elevation\":\"9171\"},\"radius\":\"15\",\"units\":\"7\"}}}}}]";
      String multiXmlExpected = "";
-     assertConvertArray(multi, AppContext.ENCODINGS_STRING, AppContext.ENCODING_STRING, multiXmlExpected);
+     assertConvertArray(multi, AppContext.ENCODINGS_STRING, AppContext.ENCODINGS_STRING, multiXmlExpected);
    }
 }

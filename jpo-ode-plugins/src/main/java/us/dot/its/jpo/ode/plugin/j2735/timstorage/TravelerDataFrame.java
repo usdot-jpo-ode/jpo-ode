@@ -26,7 +26,7 @@ public class TravelerDataFrame extends Asn1Object {
 
    private String sspLocationRights;
 
-   private Region[] regions;
+   private GeographicalPath[] regions;
 
    private String sspMsgRights1;
 
@@ -45,12 +45,12 @@ public class TravelerDataFrame extends Asn1Object {
       this.sspLocationRights = sspLocationRights;
    }
 
-   public Region[] getRegions() {
-      return regions;
+   public GeographicalPath[] getRegions() {
+     return regions;
    }
 
-   public void setRegions(Region[] regions) {
-      this.regions = regions;
+   public void setRegions(GeographicalPath[] regions) {
+     this.regions = regions;
    }
 
    public String getUrl() {

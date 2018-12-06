@@ -2,7 +2,7 @@ package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-public class SEQUENCE extends Asn1Object {
+public class Sequence extends Asn1Object {
    private static final long serialVersionUID = 1L;
    private Item item;
 

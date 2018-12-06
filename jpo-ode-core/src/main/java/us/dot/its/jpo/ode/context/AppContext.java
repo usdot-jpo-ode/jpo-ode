@@ -32,7 +32,6 @@ public class AppContext {
    public static final String METADATA_STRING = "metadata";
    public static final String ODE_ASN1_DATA = "OdeAsn1Data";
    public static final String DATA_STRING = "data";
-   public static final String ENCODING_STRING = "encodings";
    public static final String ENCODINGS_STRING = "encodings";
    public static final String PAYLOAD_TYPE_STRING = "payloadType";
    public static final String DATA_TYPE_STRING = "dataType";

@@ -20,6 +20,9 @@ import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 
 public class TravelerMessageFromHumanToAsnConverter {
 
+   public static final String SEQUENCE_STRING = "SEQUENCE";
+   public static final String TCONTENT_STRING = "tcontent";
+
    private static final Logger logger = LoggerFactory.getLogger(TravelerMessageFromHumanToAsnConverter.class);
 
    // JSON cannot have empty fields like XML, so the XML must be modified by
@@ -65,7 +68,6 @@ public class TravelerMessageFromHumanToAsnConverter {
          while (dataFramesIter.hasNext()) {
             ObjectNode oldFrame = (ObjectNode) dataFramesIter.next();
             replaceDataFrame(oldFrame);
-            // wrap each data frame inside a TravelerDataFrame
             replacedDataFrames.add(oldFrame);
          }
       }
@@ -240,22 +242,14 @@ public class TravelerMessageFromHumanToAsnConverter {
          }
       }
 
-      // final step, transform into correct format
-      JsonNode sequence = JsonUtils.newNode().set("SEQUENCE", newItems);
+      JsonNode sequence = JsonUtils.newNode().set(SEQUENCE_STRING, newItems);
 
       // TODO the following field is called "content" but this results in a
       // failed conversion to XML
       // see @us.dot.its.jpo.ode.traveler.TimController.publish
-      dataFrame.set("tcontent", JsonUtils.newNode().set(replacedContentName, sequence));
+      dataFrame.set(TCONTENT_STRING, JsonUtils.newNode().set(replacedContentName, sequence));
       dataFrame.remove("items");
    }
-
-//   public static JsonNode jsonArray2Asn1Array (ArrayNode items) {
-//     ArrayNode newItems = JsonUtils.newNode().arrayNode();
-//     // transform into a sequence array
-//     JsonNode sequence = JsonUtils.newNode().set("SEQUENCE", newItems);
-//     return sequence;
-//   }
 
    private static JsonNode buildItem(String itemStr) {
       JsonNode item = null;
@@ -346,10 +340,8 @@ public class TravelerMessageFromHumanToAsnConverter {
          while (regionsIter.hasNext()) {
             JsonNode curRegion = regionsIter.next();
             replaceRegion((ObjectNode) curRegion);
-            replacedRegions.add(JsonUtils.newNode().set("GeographicalPath", curRegion));
+            replacedRegions.add(curRegion);
          }
-      } else {
-         replacedRegions.add(JsonUtils.newNode().put("GeographicalPath", EMPTY_FIELD_FLAG));
       }
 
       return replacedRegions;

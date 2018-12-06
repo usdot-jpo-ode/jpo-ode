@@ -70,21 +70,30 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             JSONObject request = metadata.getJSONObject(TimController.REQUEST_STRING);
 
             if (request.has(TimController.RSUS_STRING)) {
-               Object rsu = request.get(TimController.RSUS_STRING);
-               if (!(rsu instanceof JSONArray)) {
-                  JSONArray rsus = new JSONArray();
-                  rsus.put(rsu);
-                  request.put(TimController.RSUS_STRING, rsus);
+               JSONObject rsusIn = (JSONObject) request.get(TimController.RSUS_STRING);
+               if (rsusIn.has(TimController.RSUS_STRING)) {
+                 Object rsu_ = rsusIn.get(TimController.RSUS_STRING);
+                 JSONArray rsusOut = new JSONArray();
+                 if (rsu_ instanceof JSONArray) {
+                   JSONArray rsusInArray = (JSONArray) rsu_;
+                   for (int i = 0; i < rsusInArray.length(); i++) {
+                     JSONObject rsu = (JSONObject) rsusInArray.get(i);
+                     rsusOut.put(rsu);
+                   }
+                 } else {
+                   rsusOut.put(rsu_);
+                 }
+                 request.put(TimController.RSUS_STRING, rsusOut);
+
+                 // Convert JSON to POJO
+                 ServiceRequest servicerequest = getServicerequest(consumedObj);
+
+                 processEncodedTim(servicerequest, consumedObj);
                }
             }
-
-            // Convert JSON to POJO
-            ServiceRequest servicerequest = getServicerequest(consumedObj);
-
-            processEncodedTim(servicerequest, consumedObj);
-
          } else {
-            throw new Asn1EncodedDataRouterException("Encoder response missing 'request'");
+            throw new Asn1EncodedDataRouterException("Invalid or missing '"
+                + TimController.REQUEST_STRING + "' object in the encoder response");
          }
       } catch (Exception e) {
          String msg = "Error in processing received message from ASN.1 Encoder module: " + consumedData;

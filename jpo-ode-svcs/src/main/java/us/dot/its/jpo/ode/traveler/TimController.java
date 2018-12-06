@@ -80,8 +80,6 @@ public class TimController {
 
   public static final String DATA_FRAMES_STRING = "dataFrames";
 
-  public static final String RSU_STRING = "rsu_";
-
   public static final String RSUS_STRING = "rsus";
 
   public static final String REQUEST_STRING = "request";
@@ -599,8 +597,6 @@ public class TimController {
       fixedXml = fixedXml.replaceAll("node_LatLon>", "node-LatLon>");
       fixedXml = fixedXml.replaceAll("nodeLL>", "NodeLL>");
       fixedXml = fixedXml.replaceAll("nodeXY>", "NodeXY>");
-      fixedXml = fixedXml.replaceAll("sequence>", "SEQUENCE>");
-      fixedXml = fixedXml.replaceAll("geographicalPath>", "GeographicalPath>");
 
       // workarounds for self-closing tags
       fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.EMPTY_FIELD_FLAG, "");
@@ -617,14 +613,14 @@ public class TimController {
 
   private static void convertEncodingsArray(DdsAdvisorySituationData asd, ObjectNode metaObject) throws JsonUtilsException, XmlUtilsException {
     ArrayNode encodings = buildEncodings(asd);
-    ObjectNode enc = XmlUtils.createEmbeddedJsonArrayForXmlConversion(AppContext.ENCODING_STRING, encodings);
+    ObjectNode enc = XmlUtils.createEmbeddedJsonArrayForXmlConversion(AppContext.ENCODINGS_STRING, encodings);
     metaObject.set(AppContext.ENCODINGS_STRING, enc);
   }
 
   private static void convertRsusArray(ObjectNode inOrderTidObj, ObjectNode metaObject) {
     //Convert 'rsus' JSON array to XML array
     ObjectNode request = (ObjectNode) inOrderTidObj.get(REQUEST_STRING);
-    ObjectNode rsus = XmlUtils.createEmbeddedJsonArrayForXmlConversion(RSU_STRING, (ArrayNode) request.get(RSUS_STRING));
+    ObjectNode rsus = XmlUtils.createEmbeddedJsonArrayForXmlConversion(RSUS_STRING, (ArrayNode) request.get(RSUS_STRING));
     request.set(RSUS_STRING, rsus);
     metaObject.set(REQUEST_STRING, request);
   }
@@ -640,8 +636,8 @@ public class TimController {
     ArrayNode dataFrames = (ArrayNode) timObj.get(DATA_FRAMES_STRING);
     for (int j = 0; j < dataFrames.size(); j++) {
       ObjectNode dataFrame = (ObjectNode) dataFrames.get(j);
+
       ArrayNode regionsOld = (ArrayNode) dataFrame.get(REGIONS_STRING);
-      
       ObjectNode regionsNew = XmlUtils.createEmbeddedJsonArrayForXmlConversion(GEOGRAPHICAL_PATH_STRING, regionsOld);
       dataFrame.set(REGIONS_STRING, regionsNew);
     }
