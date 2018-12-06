@@ -1,5 +1,7 @@
 ## ODE Release Notes ##
 -----------------------
+### December 2018
+- ODE-466 serialId element of metadata will now provide a true serial number to help identify missing records.
 ### November 2018
 - ODE-787 Publish J2735 version of Broadcast TIM in addition to the REST request version (see GitHub Issue #262). Please see https://github.com/usdot-jpo-ode/jpo-ode/wiki/Schema-Version-6-Change-Notice for details.
 ### Sprint 38
