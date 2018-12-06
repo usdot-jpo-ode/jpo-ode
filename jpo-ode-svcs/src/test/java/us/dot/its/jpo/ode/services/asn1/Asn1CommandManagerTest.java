@@ -48,11 +48,11 @@ public class Asn1CommandManagerTest {
       testAsn1CommandManager.depositToDDS("message");
    }
    
-   @Test
+   @Test(expected = Asn1CommandManagerException.class)
    public void testDepositToDDSException() throws DdsRequestManagerException, Asn1CommandManagerException {
       new Expectations() {{
          capturingDdsDepositor.deposit(anyString);
-         result = new DdsRequestManagerException(null);
+         result = new Asn1CommandManagerException(anyString, (Exception) any);
       }};
       testAsn1CommandManager.depositToDDS("message");
    }
