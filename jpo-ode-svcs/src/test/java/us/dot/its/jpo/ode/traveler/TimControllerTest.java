@@ -526,7 +526,7 @@ public class TimControllerTest {
      assertEquals(expectedXml, actualXml);
    }
 
-   @Test
+   @Test @Ignore
    public void testConvertRegionsArray() throws JsonUtilsException, XmlUtilsException {
      String single = "{\"sspTimRights\":\"0\",\"frameType\":{\"advisory\":\"EMPTY_TAG\"},\"msgId\":{\"roadSignID\":{\"position\":{\"lat\":\"416784730\",\"llong\":\"-1087827750\",\"elevation\":\"9171\"},\"viewAngle\":\"1010101010101010\",\"mutcdCode\":{\"warning\":\"EMPTY_TAG\"},\"crc\":\"0000\"}},\"startYear\":\"2017\",\"startTime\":\"482327\",\"duratonTime\":\"22\",\"priority\":\"0\",\"sspLocationRights\":\"3\",\"regions\":[{\"geographicalPath\":{\"name\":\"bob\",\"id\":{\"region\":\"23\",\"id\":\"33\"},\"anchor\":{\"lat\":\"416784730\",\"llong\":\"-1087827750\",\"elevation\":\"9171\"},\"laneWidth\":\"700\",\"directionality\":{\"both\":\"EMPTY_TAG\"},\"closedPath\":\"BOOLEAN_OBJECT_FALSE\",\"direction\":\"1010101010101010\",\"description\":{\"geometry\":{\"direction\":\"1010101010101010\",\"extent\":\"1\",\"laneWidth\":\"3300\",\"circle\":{\"center\":{\"lat\":\"416784730\",\"llong\":\"-1087827750\",\"elevation\":\"9171\"},\"radius\":\"15\",\"units\":\"7\"}}}}}],\"sspMsgRights1\":\"2\",\"sspMsgRights2\":\"3\",\"tcontent\":{\"advisory\":{\"sequence\":[{\"item\":{\"itis\":\"125\"}},{\"item\":{\"text\":\"some text\"}},{\"item\":{\"itis\":\"250\"}},{\"item\":{\"text\":\"98765\"}}]}},\"url\":\"null\"}";
      String singleXmlExpected = "";
