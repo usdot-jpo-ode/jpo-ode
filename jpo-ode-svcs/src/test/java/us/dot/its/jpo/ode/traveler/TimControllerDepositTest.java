@@ -116,30 +116,25 @@ public class TimControllerDepositTest {
    }
 
    /**
-    * The controller should send the TIM to the Kafka streams as long as they
-    * pass the JSON parsing, even if the translation step fails.
+    * Incorrect schema version should return bad request
     * 
     * @throws JsonUtilsException
     */
+   @Ignore
    @Test
-   public void testPojosStillGetSentOnEncodingError() throws JsonUtilsException {
+   public void testMismatchedSchemaReturnsBadRequest() throws JsonUtilsException {
       new Expectations() {
          {
             JsonUtils.fromJson(anyString, (Class<?>) any);
             result = mockTravelerInputData;
-
-            mockObjectMessageProducer.send(anyString, null, (OdeObject) any);
-            times = 1;
-
-            TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim((JsonNode) any);
-            result = new JsonUtilsException("expectedException123", null);
          }
       };
 
-      ResponseEntity<String> response = testTimController.postTim("test123");
+      ResponseEntity<String> response = testTimController.postTim("{\"ode\":{\"version\":2,\"index\":\"14\"}}");
       assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-      assertEquals("{\"error\":\"Error converting to encodable TravelerInputData.\"}", response.getBody());
+      assertEquals("{\"error\":\"Invalid REST API Schema Version Specified: 2. Supported Schema Version is 3\"}", response.getBody());
    }
+   
    @Ignore
    @Test
    public void testCatchExceptionOnXmlConversion() throws Exception {
@@ -168,7 +163,7 @@ public class TimControllerDepositTest {
       assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
       assertEquals("{\"error\":\"Error sending data to ASN.1 Encoder module: testException123\"}", response.getBody());
    }
-@Ignore
+   @Ignore
    @Test
    public void testGoodRequest() throws Exception {
       new Expectations() {
@@ -189,9 +184,6 @@ public class TimControllerDepositTest {
 
             JsonUtils.jacksonFromJson(anyString, OdeTravelerInputData.class);
             result = mockTravelerInputData;
-
-            XmlUtils.toXmlS((ObjectNode)any);
-            result = "xmlString";
          }
       };
 

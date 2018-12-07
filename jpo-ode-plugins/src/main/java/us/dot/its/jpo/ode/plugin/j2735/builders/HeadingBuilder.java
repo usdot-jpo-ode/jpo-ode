@@ -12,7 +12,7 @@ public class HeadingBuilder {
    }
 
    public static BigDecimal genericHeading(long heading) {
-      return AngleBuilder.longToDecimal(heading).setScale(1, RoundingMode.HALF_DOWN);
+      return AngleBuilder.longToDecimal(heading).setScale(4, RoundingMode.HALF_DOWN);
    }
 
     public static BigDecimal genericCoarseHeading(JsonNode coarseHeading) {

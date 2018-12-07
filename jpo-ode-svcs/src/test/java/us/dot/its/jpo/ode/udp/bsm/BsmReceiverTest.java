@@ -7,6 +7,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 import org.apache.tomcat.util.buf.HexUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import mockit.Capturing;
@@ -18,6 +19,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher;
 
+@Ignore
 public class BsmReceiverTest {
 
    @Tested
