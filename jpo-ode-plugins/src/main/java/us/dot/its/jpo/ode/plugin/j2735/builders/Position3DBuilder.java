@@ -26,27 +26,15 @@ public class Position3DBuilder {
       OdePosition3D jpos = new OdePosition3D();
 
       if (latitude != null) {
-         if (latitude == 900000001) {
-            jpos.setLatitude(null);
-         } else {
-            jpos.setLatitude(BigDecimal.valueOf(latitude, 7));
-         }
+         jpos.setLatitude(LatitudeBuilder.genericLatitude(latitude));
       }
 
       if (longitude != null) {
-         if (longitude == 1800000001) {
-            jpos.setLongitude(null);
-         } else {
-            jpos.setLongitude(BigDecimal.valueOf(longitude, 7));
-         }
+         jpos.setLongitude(LongitudeBuilder.genericLongitude(longitude));
       }
 
       if (elevation != null) {
-         if (elevation == -4096) {
-            jpos.setElevation(null);
-         } else {
-            jpos.setElevation(BigDecimal.valueOf(elevation, 1));
-         }
+         jpos.setElevation(ElevationBuilder.genericElevation(elevation));
       }
 
       return jpos;
@@ -54,31 +42,37 @@ public class Position3DBuilder {
 
    public static OdePosition3D odePosition3D(JsonNode jpos) {
 
-      JsonNode latitude = jpos.get("latitude");
-      JsonNode longitude = jpos.get("longitude");
-      JsonNode elevation = jpos.get("elevation");
+      BigDecimal latitude = null;
+      if (jpos.get("latitude") != null) {
+         latitude = jpos.get("latitude").decimalValue();
+      }
       
-      OdePosition3D dPos = new OdePosition3D(
-         BigDecimal.valueOf(latitude.asDouble()),
-         BigDecimal.valueOf(longitude.asDouble()),
-         BigDecimal.valueOf(elevation.asDouble()));
+      BigDecimal longitude = null;
+      if (jpos.get("longitude") != null) {
+         longitude = jpos.get("longitude").decimalValue();
+      }
       
-      return dPos;
+      BigDecimal elevation = null;
+      if (jpos.get("elevation") != null) {
+         elevation = jpos.get("elevation").decimalValue();
+      }
+
+      return new OdePosition3D(latitude, longitude, elevation);
    }
 
-   public static DsrcPosition3D dsrcPosition3D(BigDecimal latitude, BigDecimal longitude, BigDecimal elevation) {
+   private static DsrcPosition3D dsrcPosition3D(BigDecimal latitude, BigDecimal longitude, BigDecimal elevation) {
       DsrcPosition3D dPos = new DsrcPosition3D();
 
       if (latitude != null) {
-         dPos.setLatitude(latitude.scaleByPowerOfTen(7).longValue());
+         dPos.setLatitude(LatitudeBuilder.j2735Latitude(latitude));
       }
 
       if (longitude != null) {
-         dPos.setLongitude(longitude.scaleByPowerOfTen(7).longValue());
+         dPos.setLongitude(LongitudeBuilder.j2735Longitude(longitude));
       }
 
       if (elevation != null) {
-         dPos.setElevation(elevation.scaleByPowerOfTen(1).longValue());
+         dPos.setElevation(ElevationBuilder.j2735Elevation(elevation));
       }
 
       return dPos;

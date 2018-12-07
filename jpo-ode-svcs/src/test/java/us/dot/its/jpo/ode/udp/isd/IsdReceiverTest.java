@@ -38,7 +38,8 @@ public class IsdReceiverTest {
    @Injectable
    OdeProperties mockOdeProps;
 
-   @Test(timeout = 2000) // catch runaway while loop
+//   @Test(timeout = 2000) // catch runaway while loop
+   @Test
    public void shouldNotRunWhenStopped(@Capturing DatagramPacket capturingDatagramPacket,
          @Capturing DatagramSocket capturingDatagramSocket, @Capturing MessageProducer<?, ?> capturingMessageProducer) {
       new Expectations() {

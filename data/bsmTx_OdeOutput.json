@@ -1,0 +1,96 @@
+{
+  "metadata": {
+    "logFileName": "bsmTx.bin",
+    "recordType": "bsmTx",
+    "payloadType": "us.dot.its.jpo.ode.model.OdeBsmPayload",
+    "serialId": {
+      "streamId": "fb32ccd5-68c2-4a0c-9915-15e80151dfa9",
+      "bundleSize": 1,
+      "bundleId": 2,
+      "recordId": 2,
+      "serialNumber": 0
+    },
+    "odeReceivedAt": "2017-11-09T12:58:27.755Z[UTC]",
+    "schemaVersion": 3,
+    "recordGeneratedAt": "2017-08-10T20:08:54.300Z[UTC]",
+    "recordGeneratedBy": "OBU",
+    "validSignature": true,
+    "sanitized": false
+  },
+  "payload": {
+    "dataType": "us.dot.its.jpo.ode.plugin.j2735.J2735Bsm",
+    "data": {
+      "coreData": {
+        "msgCnt": 95,
+        "id": "24EF0000",
+        "secMark": 54300,
+        "position": {
+          "latitude": 40.4739628,
+          "longitude": -104.9692086,
+          "elevation": 1494.5
+        },
+        "accelSet": {
+          "accelLong": -0.15,
+          "accelYaw": 0
+        },
+        "accuracy": {
+          "semiMajor": 9.65,
+          "semiMinor": 12.7
+        },
+        "transmission": "NEUTRAL",
+        "speed": 0.04,
+        "heading": 0,
+        "brakes": {
+          "wheelBrakes": {
+            "leftFront": false,
+            "rightFront": false,
+            "unavailable": true,
+            "leftRear": false,
+            "rightRear": false
+          },
+          "traction": "unavailable",
+          "abs": "unavailable",
+          "scs": "unavailable",
+          "brakeBoost": "unavailable",
+          "auxBrakes": "unavailable"
+        },
+        "size": {}
+      },
+      "partII": [
+        {
+          "id": "VehicleSafetyExtensions",
+          "value": {
+            "pathHistory": {
+              "crumbData": [
+                {
+                  "elevationOffset": 0.3,
+                  "latOffset": -0.0000043,
+                  "lonOffset": 0.0000044,
+                  "timeOffset": 9.3
+                }
+              ]
+            },
+            "pathPrediction": {
+              "confidence": 50,
+              "radiusOfCurve": 0
+            }
+          }
+        },
+        {
+          "id": "SupplementalVehicleExtensions",
+          "value": {
+            "classDetails": {
+              "fuelType": "unknownFuel",
+              "hpmsType": "none",
+              "keyType": 0,
+              "regional": [],
+              "role": "basicVehicle"
+            },
+            "weatherProbe": {},
+            "regional": []
+          }
+        }
+      ]
+    }
+  }
+}

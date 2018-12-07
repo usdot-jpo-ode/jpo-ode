@@ -11,9 +11,9 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.j2735.J2735;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse;
+import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2DataTag;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.DdsGeoRegion;
-import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
@@ -27,12 +27,17 @@ public class AsdMessageTest {
     @Injectable
     String stopTime = "12:35";
     @Injectable
-    J2735MessageFrame advisoryMessage;
+    Ieee1609Dot2DataTag advisoryMessage;
     @Injectable
     DdsGeoRegion serviceRegion;
     @Injectable
-    SituationDataWarehouse.SDW.TimeToLive ttl = 
-    SituationDataWarehouse.SDW.TimeToLive.oneminute;
+    SituationDataWarehouse.SDW.TimeToLive ttl = SituationDataWarehouse.SDW.TimeToLive.oneminute;
+    @Injectable
+    String groupID = "01234567";
+    @Injectable
+    byte distroType = DdsAdvisorySituationData.NONE; 
+    @Injectable
+    String recordID = "76543210";
 
     @Mocked
     ZonedDateTime mockZonedDateTimeStart;

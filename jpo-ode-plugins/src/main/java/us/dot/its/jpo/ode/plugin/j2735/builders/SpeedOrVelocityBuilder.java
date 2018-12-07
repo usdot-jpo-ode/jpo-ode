@@ -18,7 +18,7 @@ public class SpeedOrVelocityBuilder {
         return genericSpeedOrVelocity(velocity.asInt());
     }
 
-    private static BigDecimal genericSpeedOrVelocity(int speedOrVelocity) {
+    public static BigDecimal genericSpeedOrVelocity(int speedOrVelocity) {
 
         if (speedOrVelocity < 0 || speedOrVelocity > 8191) {
             throw new IllegalArgumentException("Speed or velocity out of bounds");

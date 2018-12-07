@@ -2,7 +2,13 @@ package us.dot.its.jpo.ode.plugin.j2735;
 
 import java.math.BigDecimal;
 
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage.DataFrame.MsgId;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage.DataFrame.RoadSignID;
+import us.dot.its.jpo.ode.util.CodecUtils;
+
 public class TimFieldValidator {
+   private static final int FURTHER_INFOR_ID_LENGTH = 4;
+
    private TimFieldValidator() {
       throw new UnsupportedOperationException();
    }
@@ -31,15 +37,34 @@ public class TimFieldValidator {
          throw new IllegalArgumentException("Invalid number of dataFrames [1..8]: " + count);
    }
 
-   public static void validateMessageID(String str) {
-      validateString(str);
-      if (!("RoadSignID").equals(str) && !("FurtherInfoID").equals(str))
-         throw new IllegalArgumentException("Invalid messageID \"RoadSignID or FurtherInfoID\"");
+   public static void validateMessageID(MsgId msgId) {
+      if (msgId == null || (msgId.getFurtherInfoID() == null && msgId.getRoadSignID() == null))
+         throw new IllegalArgumentException("Invalid msgID either \"roadSignID or furtherInfoID\" must be valid");
+      
+      if (msgId.getFurtherInfoID() != null)
+         validateFurtherInfoID(msgId.getFurtherInfoID());
+      
+      if (msgId.getRoadSignID() != null)
+         validateRoadSignID(msgId.getRoadSignID());
    }
    
-   public static void validateInfoType(int num) {
-      if (num < 0)
-         throw new IllegalArgumentException("Invalid enumeration [>0]: " + num);
+   private static void validateRoadSignID(RoadSignID roadSignID) {
+      validateShortHexString(roadSignID.getCrc());
+      validatePosition(roadSignID.getPosition());
+      validateShortHexString(roadSignID.getViewAngle());
+   }
+
+   private static void validateFurtherInfoID(String furtherInfoID) {
+      validateString(furtherInfoID);
+      if (furtherInfoID.length() > FURTHER_INFOR_ID_LENGTH) {
+         throw new IllegalArgumentException("furtherInfoID must be or less Hex characters: " + furtherInfoID);
+      }
+      
+      validateShortHexString(furtherInfoID);
+   }
+   
+   public static void validateShortHexString(String shortHexString) {
+      CodecUtils.shortStringToByteArray(shortHexString);
    }
 
    public static void validateStartYear(int year) {
@@ -86,11 +111,6 @@ public class TimFieldValidator {
       if (head.length() != 16) {
          throw new IllegalArgumentException("Invalid BitString length [16]: " + head.length());
       }
-   }
-
-   public static void validateMUTCDCode(int mutc) {
-      if (mutc < 0 || mutc > 6)
-         throw new IllegalArgumentException("Invalid Enumeration [0..6]: " + mutc);
    }
 
    public static void validateSign(int sign) {

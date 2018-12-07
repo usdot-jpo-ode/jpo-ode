@@ -91,10 +91,9 @@ public class DdsRequest extends BaseRequest {
    @Override
    public int hashCode() {
       final int prime = 31;
-      int result = super.hashCode();
+      int result = 1;
       result = prime * result + dialogID;
-      result = prime * result
-            + ((resultEncoding == null) ? 0 : resultEncoding.hashCode());
+      result = prime * result + ((resultEncoding == null) ? 0 : resultEncoding.hashCode());
       return result;
    }
 
@@ -102,7 +101,7 @@ public class DdsRequest extends BaseRequest {
    public boolean equals(Object obj) {
       if (this == obj)
          return true;
-      if (!super.equals(obj))
+      if (obj == null)
          return false;
       if (getClass() != obj.getClass())
          return false;

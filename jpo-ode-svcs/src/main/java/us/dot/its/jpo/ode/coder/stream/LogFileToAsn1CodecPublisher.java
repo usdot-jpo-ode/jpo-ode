@@ -10,20 +10,37 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import us.dot.its.jpo.ode.coder.OdeLogMetadataCreatorHelper;
 import us.dot.its.jpo.ode.coder.StringPublisher;
-import us.dot.its.jpo.ode.coder.TimDecoderHelper;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
+import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
+import us.dot.its.jpo.ode.importer.parser.DriverAlertFileParser;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
-import us.dot.its.jpo.ode.importer.parser.TimLogFileParser;
+import us.dot.its.jpo.ode.importer.parser.RxMsgFileParser;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
-import us.dot.its.jpo.ode.model.OdeAsn1Metadata;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
-import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
+import us.dot.its.jpo.ode.model.OdeBsmMetadata;
+import us.dot.its.jpo.ode.model.OdeData;
+import us.dot.its.jpo.ode.model.OdeDriverAlertData;
+import us.dot.its.jpo.ode.model.OdeDriverAlertPayload;
+import us.dot.its.jpo.ode.model.OdeLogMetadata;
+import us.dot.its.jpo.ode.model.OdeMsgPayload;
+import us.dot.its.jpo.ode.model.RxSource;
+import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
 
 public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
+
+   public class LogFileToAsn1CodecPublisherException extends Exception {
+
+      private static final long serialVersionUID = 1L;
+
+      public LogFileToAsn1CodecPublisherException(String string, Exception e) {
+         super (string, e);
+      }
+
+   }
 
    protected static final Logger logger = LoggerFactory.getLogger(LogFileToAsn1CodecPublisher.class);
 
@@ -36,7 +53,8 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       this.publisher = dataPub;
    }
 
-   public void publish(BufferedInputStream bis, String fileName, ImporterFileType fileType) throws Exception {
+   public void publish(BufferedInputStream bis, String fileName, ImporterFileType fileType) 
+         throws LogFileToAsn1CodecPublisherException {
       XmlUtils xmlUtils = new XmlUtils();
       ParserStatus status = ParserStatus.UNKNOWN;
 
@@ -63,35 +81,57 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
                }
             }
          } catch (Exception e) {
-            logger.error("Error decoding and publishing data.", e);
+            throw new LogFileToAsn1CodecPublisherException("Error parsing or publishing data.", e);
          }
       } while (status == ParserStatus.COMPLETE);
    }
 
    private void publish(XmlUtils xmlUtils) throws JsonProcessingException {
-      OdeAsn1Payload payload = new OdeAsn1Payload(fileParser.getPayload());
-      OdeAsn1Metadata metadata = new OdeAsn1Metadata(payload);
-      metadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
-      OdeLogMetadataCreatorHelper.updateLogMetadata(metadata, fileParser);
-      if (fileParser instanceof TimLogFileParser) {
-         ReceivedMessageDetails receivedMsgDetails = TimDecoderHelper.buildReceivedMessageDetails((TimLogFileParser) fileParser);
-         metadata.setReceivedMessageDetails(receivedMsgDetails);
-      }
-      
-      Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
-      Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",
-            EncodingRule.UPER);
-      metadata.addEncoding(msgEncoding).addEncoding(unsecuredDataEncoding);
-      OdeAsn1Data asn1Data = new OdeAsn1Data(metadata, payload);
 
-      publisher.publish(xmlUtils.toXml(asn1Data),
-         publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
+      OdeMsgPayload msgPayload;
+      OdeLogMetadata msgMetadata;
+      OdeData msgData;
+      
+      if (fileParser instanceof DriverAlertFileParser){
+         logger.debug("Publishing a driverAlert.");
+         msgPayload = new OdeDriverAlertPayload(((DriverAlertFileParser) fileParser).getAlert());
+         msgMetadata = new OdeLogMetadata(msgPayload);
+
+         msgMetadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
+         OdeLogMetadataCreatorHelper.updateLogMetadata(msgMetadata, fileParser);
+         
+         msgData = new OdeDriverAlertData(msgMetadata, msgPayload);
+         publisher.publish(JsonUtils.toJson(msgData, false),
+            publisher.getOdeProperties().getKafkaTopicDriverAlertJson());
+      } else {
+         msgPayload = new OdeAsn1Payload(fileParser.getPayloadParser().getPayload());
+         if (fileParser instanceof BsmLogFileParser || 
+               (fileParser instanceof RxMsgFileParser && ((RxMsgFileParser)fileParser).getRxSource() == RxSource.RV)) {
+            logger.debug("Publishing a BSM");
+            msgMetadata = new OdeBsmMetadata(msgPayload);
+         } else {
+            logger.debug("Publishing a TIM");
+            msgMetadata = new OdeLogMetadata(msgPayload);
+         }
+
+         Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
+         Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",
+                 EncodingRule.UPER);
+         msgMetadata.addEncoding(msgEncoding).addEncoding(unsecuredDataEncoding);
+
+         msgMetadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
+         OdeLogMetadataCreatorHelper.updateLogMetadata(msgMetadata, fileParser);
+         
+         msgData = new OdeAsn1Data(msgMetadata, msgPayload);
+         publisher.publish(xmlUtils.toXml(msgData),
+            publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
+      }
    }
 
    @Override
    public void publish(byte[] payloadBytes) throws Exception {
       OdeAsn1Payload payload = new OdeAsn1Payload(payloadBytes);
-      OdeAsn1Metadata metadata = new OdeAsn1Metadata(payload);
+      OdeLogMetadata metadata = new OdeLogMetadata(payload);
       metadata.getSerialId().setBundleId(bundleId.get()).addRecordId(1);
 
       Asn1Encoding msgEncoding = new Asn1Encoding("root", "MessageFrame", EncodingRule.UPER);

@@ -42,7 +42,7 @@ public class TrailerUnitDescriptionBuilder {
             gtud.setHeight(HeightBuilder.genericHeight(tud.get("height")));
         }
         if (tud.get("mass") != null) {
-            gtud.setMass(MassOrWeightBuilder.genericVehicleMass(tud.get("mass")));
+            gtud.setMass(MassOrWeightBuilder.genericTrailerMass(tud.get("mass")));
         }
         if (tud.get("bumperHeights") != null) {
             gtud.setBumperHeights(BumperHeightsBuilder.genericBumperHeights(tud.get("bumperHeights")));

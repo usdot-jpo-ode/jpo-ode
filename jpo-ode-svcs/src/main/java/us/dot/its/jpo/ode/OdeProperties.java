@@ -1,5 +1,21 @@
 package us.dot.its.jpo.ode;
 
+import groovy.lang.MissingPropertyException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.thymeleaf.util.StringUtils;
+
+import us.dot.its.jpo.ode.context.AppContext;
+import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata;
+import us.dot.its.jpo.ode.plugin.OdePlugin;
+import us.dot.its.jpo.ode.util.CommonUtils;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
@@ -8,24 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
-
-import groovy.lang.MissingPropertyException;
-import us.dot.its.jpo.ode.context.AppContext;
-import us.dot.its.jpo.ode.eventlog.EventLogger;
-import us.dot.its.jpo.ode.plugin.OdePlugin;
+import javax.annotation.PostConstruct;
 
 @ConfigurationProperties("ode")
 @PropertySource("classpath:application.properties")
 public class OdeProperties implements EnvironmentAware {
 
-   private Logger logger = LoggerFactory.getLogger(this.getClass());
+   private static final Logger logger = LoggerFactory.getLogger(OdeProperties.class);
 
    @Autowired
    private Environment env;
@@ -41,20 +46,29 @@ public class OdeProperties implements EnvironmentAware {
    private String externalIpv4 = "";
    private String externalIpv6 = "";
    private int rsuSrmSlots = 100; // number of "store and repeat message" indicies for RSU TIMs
+   private int outputSchemaVersion= 5;
+   
+   /*
+    * Security Services Module Properties
+    */
+   private String securitySvcsSignatureUri;
+   private int securitySvcsPort = 8090;
+   private String securitySvcsSignatureEndpoint = "sign";
 
    // File import properties
    private String uploadLocationRoot = "uploads";
    private String uploadLocationObuLogLog = "bsmlog";
+   private Integer fileWatcherPeriod = 5; // time to wait between processing inbox directory for new files
 
    /*
     * USDOT Situation Data Clearinghouse (SDC)/ Situation Data Warehouse (SDW),
     * a.k.a Data Distribution System (DDS) Properties
     */
    // DDS WebSocket Properties
-   private String ddsCasUrl = "https://cas.connectedvcs.com/accounts/v1/tickets";
+   private String ddsCasUrl = "https://cas.cvmvp.com/accounts/v1/tickets";
    private String ddsCasUsername = "";
    private String ddsCasPass = "";
-   private String ddsWebsocketUrl = "wss://webapp2.connectedvcs.com/whtools23/websocket";
+   private String ddsWebsocketUrl = "wss://webapp.cvmvp.com/whtools/websocket";
 
    // IPv4 address and listening UDP port for SDC
    private String sdcIp = "104.130.170.234";// NOSONAR
@@ -90,6 +104,10 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeTimRxJson= "topic.OdeTimRxJson";
    private String kafkaTopicOdeTimBroadcastPojo= "topic.OdeTimBroadcastPojo";
    private String kafkaTopicOdeTimBroadcastJson= "topic.OdeTimBroadcastJson";
+   private String kafkaTopicFilteredOdeTimJson = "topic.FilteredOdeTimJson";
+
+   // DriverAlerts
+   private String kafkaTopicDriverAlertJson = "topic.OdeDriverAlertJson";
 
    //VSD
    private String kafkaTopicVsdPojo = "AsnVsdPojo";
@@ -125,6 +143,8 @@ public class OdeProperties implements EnvironmentAware {
    private int isdDepositorPort = 6666;
    private int isdTrustPort = 6667;
    private int dataReceiptBufferSize;
+   private int dataReceiptExpirationSeconds;
+
 
    private int importProcessorBufferSize = OdePlugin.INPUT_STREAM_BUFFER_SIZE;
 
@@ -140,17 +160,14 @@ public class OdeProperties implements EnvironmentAware {
    private String selfPrivateKeyReconstructionFilePath;
    private String selfSigningPrivateKeyFilePath;
 
-   private int dataReceiptExpirationSeconds;
-
+   
    private static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
 
-   public OdeProperties() {
-      super();
-      init();
-   }
+   @PostConstruct
+   void initialize() {
 
-   public void init() {
-
+      OdeMsgMetadata.setStaticSchemaVersion(getOutputSchemaVersion());
+      
       uploadLocations.add(Paths.get(uploadLocationRoot));
 
       String hostname;
@@ -166,16 +183,32 @@ public class OdeProperties implements EnvironmentAware {
       EventLogger.logger.info("Initializing services on host {}", hostId);
 
       if (kafkaBrokers == null) {
-         kafkaBrokers = System.getenv("DOCKER_HOST_IP") + ":9092";
 
-         logger.info(
-               "ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP => {}", kafkaBrokers);
+         logger.info("ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP => {}", kafkaBrokers);
+
+         String dockerIp = CommonUtils.getEnvironmentVariable("DOCKER_HOST_IP");
+         
+         if (dockerIp == null) {
+            logger.warn("Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
+            throw new MissingPropertyException(
+                  "Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
+         } else {
+            kafkaBrokers = dockerIp + ":9092";
+         }
+         
+         // URI for the security services /sign endpoint
+         if (securitySvcsSignatureUri == null) {
+            securitySvcsSignatureUri = "http://" + dockerIp + ":" + securitySvcsPort + "/" + securitySvcsSignatureEndpoint;
+         }
       }
-
-      if (kafkaBrokers == null)
-         throw new MissingPropertyException(
-               "Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined");
    }
+
+   public boolean dataSigningEnabled() {
+      return getSecuritySvcsSignatureUri() != null &&
+            !StringUtils.isEmptyOrWhitespace(getSecuritySvcsSignatureUri()) &&
+            !getSecuritySvcsSignatureUri().startsWith("UNSECURE");
+   }
+
 
    public List<Path> getUploadLocations() {
       return this.uploadLocations;
@@ -662,6 +695,46 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setKafkaTopicOdeTimBroadcastJson(String kafkaTopicOdeTimBroadcastJson) {
       this.kafkaTopicOdeTimBroadcastJson = kafkaTopicOdeTimBroadcastJson;
+   }
+
+   public String getKafkaTopicFilteredOdeTimJson() {
+      return kafkaTopicFilteredOdeTimJson;
+   }
+
+   public void setKafkaTopicFilteredOdeTimJson(String kafkaTopicFilteredOdeTimJson) {
+      this.kafkaTopicFilteredOdeTimJson = kafkaTopicFilteredOdeTimJson;
+   }
+
+   public String getKafkaTopicDriverAlertJson() {
+      return kafkaTopicDriverAlertJson;
+   }
+
+   public void setKafkaTopicDriverAlertJson(String kafkaTopicDriverAlertJson) {
+      this.kafkaTopicDriverAlertJson = kafkaTopicDriverAlertJson;
+   }
+
+   public Integer getFileWatcherPeriod() {
+      return fileWatcherPeriod;
+   }
+
+   public void setFileWatcherPeriod(Integer fileWatcherPeriod) {
+      this.fileWatcherPeriod = fileWatcherPeriod;
+   }
+
+   public String getSecuritySvcsSignatureUri() {
+      return securitySvcsSignatureUri;
+   }
+
+   public void setSecuritySvcsSignatureUri(String securitySvcsSignatureUri) {
+      this.securitySvcsSignatureUri = securitySvcsSignatureUri;
+   }
+
+   public int getOutputSchemaVersion() {
+      return outputSchemaVersion;
+   }
+
+   public void setOutputSchemaVersion(int outputSchemaVersion) {
+      this.outputSchemaVersion = outputSchemaVersion;
    }
 
 }

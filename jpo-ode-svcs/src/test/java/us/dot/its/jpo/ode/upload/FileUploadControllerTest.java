@@ -58,7 +58,7 @@ public class FileUploadControllerTest {
             result = mockExecutorService;
 
             mockExecutorService.submit((Runnable) any);
-            times =5;
+            times = 7;
          }
       };
       testFileUploadController = new FileUploadController(mockStorageService, mockOdeProperties,

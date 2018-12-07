@@ -109,6 +109,10 @@ public class JsonUtils {
       return newObjectNode(key, value).toString();
    }
 
+   public static ObjectNode cloneObjectNode(ObjectNode src) {
+      return src.deepCopy();
+   }
+   
    public static ObjectNode newObjectNode(String key, Object value) {
 
       // JsonObject json = new JsonObject();

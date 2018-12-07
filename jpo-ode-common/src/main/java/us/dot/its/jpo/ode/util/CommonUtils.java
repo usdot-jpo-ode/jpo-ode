@@ -9,6 +9,14 @@ import java.util.List;
 public class CommonUtils {
     
     private CommonUtils() {}
+    
+    /**
+     * Wrapper method for System.getenv()
+    * @param name Variable name
+    */
+   public static String getEnvironmentVariable(String name) {
+       return System.getenv(name);
+    }
    
    public static long getPidOfProcess(Process p) {
       long pid = -1;

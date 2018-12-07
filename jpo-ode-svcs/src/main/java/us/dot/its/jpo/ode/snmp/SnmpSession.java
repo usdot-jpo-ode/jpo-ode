@@ -2,14 +2,17 @@ package us.dot.its.jpo.ode.snmp;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
+import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.security.AuthMD5;
+import org.snmp4j.security.AuthSHA;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModels;
 import org.snmp4j.security.SecurityProtocols;
@@ -20,7 +23,11 @@ import org.snmp4j.smi.GenericAddress;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
+import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.traveler.TimPduCreator;
+import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 
 /**
  * This object is used to abstract away the complexities of SNMP calls and allow
@@ -30,6 +37,8 @@ import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
  * over UDP and is actually connection-less.
  */
 public class SnmpSession {
+   
+   private static final Logger logger = LoggerFactory.getLogger(SnmpSession.class);
 
    private Snmp snmp;
    private TransportMapping transport;
@@ -73,7 +82,7 @@ public class SnmpSession {
       USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
       SecurityModels.getInstance().addSecurityModel(usm);
       snmp.getUSM().addUser(new OctetString(rsu.getRsuUsername()), new UsmUser(new OctetString(rsu.getRsuUsername()),
-            AuthMD5.ID, new OctetString(rsu.getRsuPassword()), null, null));
+            AuthSHA.ID, new OctetString(rsu.getRsuPassword()), null, null));
 
       // Assert the ready flag so the user can begin sending messages
       ready = true;
@@ -88,8 +97,7 @@ public class SnmpSession {
     * @return ResponseEvent
     * @throws IOException
     */
-   public ResponseEvent set(PDU pdu, Snmp snmpob, UserTarget targetob, Boolean keepOpen)
-         throws IOException {
+   public ResponseEvent set(PDU pdu, Snmp snmpob, UserTarget targetob, Boolean keepOpen) throws IOException {
 
       // Ensure the object has been instantiated
       if (!ready) {
@@ -122,8 +130,7 @@ public class SnmpSession {
     * @return ResponseEvent
     * @throws IOException
     */
-   public ResponseEvent get(PDU pdu, Snmp snmpob, UserTarget targetob,
-         Boolean keepOpen) throws IOException {
+   public ResponseEvent get(PDU pdu, Snmp snmpob, UserTarget targetob, Boolean keepOpen) throws IOException {
 
       // Ensure the object has been instantiated
       if (!ready) {
@@ -157,6 +164,31 @@ public class SnmpSession {
    public void startListen() throws IOException {
       transport.listen();
       listening = true;
+   }
+
+   /**
+    * Create an SNMP session given the values in
+    * 
+    * @param tim
+    *           - The TIM parameters (payload, channel, mode, etc)
+    * @param props
+    *           - The SNMP properties (ip, username, password, etc)
+    * @return ResponseEvent
+    * @throws TimPduCreatorException
+    * @throws IOException
+    */
+   public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, int index, String payload, int verb)
+         throws IOException, TimPduCreatorException {
+
+      SnmpSession session = new SnmpSession(rsu);
+
+      // Send the PDU
+      ResponseEvent response = null;
+      ScopedPDU pdu = TimPduCreator.createPDU(snmp, payload, index, verb);
+      response = session.set(pdu, session.getSnmp(), session.getTarget(), false);
+      EventLogger.logger.info("Message Sent to {}, index {}: {}", rsu.getRsuTarget(), index, payload);
+      logger.info("Message Sent to {}, index {}: {}", rsu.getRsuTarget(), index, payload);
+      return response;
    }
 
    public Snmp getSnmp() {

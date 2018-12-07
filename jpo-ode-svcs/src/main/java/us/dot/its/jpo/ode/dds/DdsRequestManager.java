@@ -72,11 +72,9 @@ public abstract class DdsRequestManager<T> {
             if (ddsRequest != null) {
                String sDdsRequest = ddsRequest.toString();
 
-               if (odeRequest.getRequestType() != OdeRequestType.Deposit)
-                  logger.info("Sending DDS request: {}", sDdsRequest);
-
-               logger.info("Sending request to DDS: {}", odeRequest);
-               EventLogger.logger.info("Sending request to DDS: {}", odeRequest);
+               String logMsg = "Sending request to DDS: " + sDdsRequest;
+               logger.info(logMsg);
+               EventLogger.logger.info(logMsg);
                wsClient.send(sDdsRequest);
             }
          } else {

@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,7 +23,6 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.FileAsn1CodecPublisher;
-import us.dot.its.jpo.ode.coder.FileDecoderPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 
 public class ImporterProcessorTest {
@@ -53,6 +51,8 @@ public class ImporterProcessorTest {
    Path injectableDir;
    @Injectable
    Path injectableBackupDir;
+   @Injectable
+   Path injectableFailureDir;
    
 
    @Test
@@ -69,7 +69,7 @@ public class ImporterProcessorTest {
          fail("Unexpected exception in expectations block: " + e);
       }
 
-      testImporterProcessor.processDirectory(injectableDir, injectableBackupDir);
+      testImporterProcessor.processDirectory(injectableDir, injectableBackupDir, injectableFailureDir);
    }
  
    @Test
@@ -93,7 +93,7 @@ public class ImporterProcessorTest {
          fail("Unexpected exception in expectations block: " + e);
       }
 
-      testImporterProcessor.processDirectory(injectableDir, injectableBackupDir);
+      testImporterProcessor.processDirectory(injectableDir, injectableBackupDir, injectableFailureDir);
    }
 
    @Test
@@ -109,7 +109,7 @@ public class ImporterProcessorTest {
       } catch (FileNotFoundException e) {
          fail("Unexpected exception in expectations block: " + e);
       }
-      testImporterProcessor.processAndBackupFile(mockFile, injectableBackupDir);
+      testImporterProcessor.processAndBackupFile(mockFile, injectableBackupDir, injectableFailureDir);
    }
 
    @Ignore // TODO - injectable odeProperties returns buffer size 0 causing IllegalArgumentException to be thrown
@@ -127,7 +127,7 @@ public class ImporterProcessorTest {
       } catch (Exception e) {
          fail("Unexpected exception in expectations block: " + e);
       }
-      testImporterProcessor.processAndBackupFile(Paths.get("testFile.txt"), injectableBackupDir);
+      testImporterProcessor.processAndBackupFile(Paths.get("testFile.txt"), injectableBackupDir, injectableFailureDir);
    }
 
 
