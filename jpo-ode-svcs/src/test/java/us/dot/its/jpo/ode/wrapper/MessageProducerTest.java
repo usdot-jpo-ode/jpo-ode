@@ -20,8 +20,7 @@ import mockit.Verifications;
 
 public class MessageProducerTest {
 
-	@Injectable
-	Properties mockProps;
+	Properties mockProps = new Properties();
 	@Mocked
 	KafkaProducer<?, ?> mockKafkaProducer;
 	@Mocked
@@ -82,7 +81,7 @@ public class MessageProducerTest {
 	}
 
 	@Test
-	public void testDefaultStringMessageProducer(@Mocked Properties mockProperties) {
+	public void testDefaultStringMessageProducer() {
 
 		String testBrokers = "bootstrap.servers";
 		String testType = "testType123";
@@ -93,7 +92,7 @@ public class MessageProducerTest {
 
 		new Verifications() {
 			{
-				mockProperties.put("bootstrap.servers", testBrokers);
+				mockProps.put("bootstrap.servers", testBrokers);
 			}
 		};
 	}

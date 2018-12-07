@@ -1,0 +1,1 @@
+docker run -it -v %DOCKER_SHARED_VOLUME%:/ppm_data --env-file=.env jpoode_ppm_tim:latest %1

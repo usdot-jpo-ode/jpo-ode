@@ -6,10 +6,6 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmPart2Content;
-import us.dot.its.jpo.ode.plugin.j2735.J2735ExteriorLights;
-import us.dot.its.jpo.ode.plugin.j2735.J2735SpecialVehicleExtensions;
-import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleEventFlags;
-import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleSafetyExtensions;
 
 public class BsmPart2ContentBuilder {
 
@@ -87,13 +83,13 @@ public class BsmPart2ContentBuilder {
 
       switch (id) {
       case VehicleSafetyExtensions:
-         evaluateVehicleSafetyExt(part2Content, openType.get(id.name()));
+         VehicleSafetyExtensionsBuilder.evaluateVehicleSafetyExt(part2Content, openType.get(id.name()));
          break;
       case SpecialVehicleExtensions:
-         evaluateSpecialVehicleExt(part2Content, openType.get(id.name()));
+         SpecialVehicleExtensionsBuilder.evaluateSpecialVehicleExt(part2Content, openType.get(id.name()));
          break;
       case SupplementalVehicleExtensions:
-         evaluateSupplementalVehicleExt(part2Content, openType.get(id.name()));
+         SupplementalVehicleExtensionsBuilder.evaluateSupplementalVehicleExtensions(part2Content, openType.get(id.name()));
          break;
       }
       return part2Content;
@@ -105,107 +101,6 @@ public class BsmPart2ContentBuilder {
 
    public enum ExteriorLightsNames {
       lowBeamHeadlightsOn, highBeamHeadlightsOn, leftTurnSignalOn, rightTurnSignalOn, hazardSignalOn, automaticLightControlOn, daytimeRunningLightsOn, fogLightOn, parkingLightsOn
-   }
-
-   private static void evaluateVehicleSafetyExt(J2735BsmPart2Content part2Content, JsonNode vehSafetyExt)
-         throws BsmPart2ContentBuilderException {
-      J2735VehicleSafetyExtensions vehSafety = new J2735VehicleSafetyExtensions();
-      part2Content.setValue(vehSafety);
-
-      JsonNode events = vehSafetyExt.get("events");
-      if (events != null) {
-
-         char[] eventBits = events.asText().toCharArray();
-
-         J2735VehicleEventFlags eventFlags = new J2735VehicleEventFlags();
-
-         for (char i = 0; i < eventBits.length; i++) {
-            String eventName = VehicleEventFlagsNames.values()[i].name();
-            Boolean eventStatus = (eventBits[i] == '1' ? true : false);
-            eventFlags.put(eventName, eventStatus);
-         }
-
-         vehSafety.setEvents(eventFlags);
-      }
-
-      JsonNode lights = vehSafetyExt.get("lights");
-      if (lights != null) {
-
-         char[] lightsBits = lights.asText().toCharArray();
-
-         J2735ExteriorLights exteriorLights = new J2735ExteriorLights();
-
-         for (char i = 0; i < lightsBits.length; i++) {
-            String eventName = ExteriorLightsNames.values()[i].name();
-            Boolean eventStatus = (lightsBits[i] == '1' ? true : false);
-            exteriorLights.put(eventName, eventStatus);
-         }
-
-         vehSafety.setLights(exteriorLights);
-      }
-
-      JsonNode pathHistory = vehSafetyExt.get("pathHistory");
-      if (pathHistory != null) {
-         vehSafety.setPathHistory(PathHistoryBuilder.genericPathHistory(pathHistory));
-      }
-      JsonNode pathPrediction = vehSafetyExt.get("pathPrediction");
-      if (pathPrediction != null) {
-         vehSafety.setPathPrediction(PathPredictionBuilder.genericPathPrediction(pathPrediction));
-      }
-
-   }
-
-   private static void evaluateSpecialVehicleExt(J2735BsmPart2Content part2Content, JsonNode specVehExt)
-         throws BsmPart2ContentBuilderException {
-      J2735SpecialVehicleExtensions specVeh = new J2735SpecialVehicleExtensions();
-      part2Content.setValue(specVeh);
-
-      // SpecialVehicleExtensions sp;
-      // if (openType.getDecodedValue() != null) {
-      // sp = (SpecialVehicleExtensions) openType.getDecodedValue();
-      // } else if (openType.getEncodedValueAsStream() != null) {
-      // sp = new SpecialVehicleExtensions();
-      // try {
-      // coder.decode(openType.getEncodedValueAsStream(), sp);
-      // } catch (DecodeFailedException | DecodeNotSupportedException e) {
-      // throw new BsmPart2ContentBuilderException(DECODING_ERROR, e);
-      // }
-      // } else {
-      // throw new BsmPart2ContentBuilderException(NO_OPEN_TYPE);
-      // }
-
-      JsonNode va = specVehExt.get("vehicleAlerts");
-      if (va != null) {
-         specVeh.setVehicleAlerts(EmergencyDetailsBuilder.genericEmergencyDetails(va));
-      }
-      JsonNode desc = specVehExt.get("description");
-      if (desc != null) {
-         specVeh.setDescription(EventDescriptionBuilder.genericEventDescription(desc));
-      }
-      JsonNode tr = specVehExt.get("trailers");
-      if (tr != null) {
-         specVeh.setTrailers(TrailerDataBuilder.genericTrailerData(tr));
-      }
-   }
-
-   private static void evaluateSupplementalVehicleExt(J2735BsmPart2Content part2Content, JsonNode supVehExt)
-         throws BsmPart2ContentBuilderException {
-
-      // SupplementalVehicleExtensions sve;
-      // if (openType.getDecodedValue() != null) {
-      // sve = (SupplementalVehicleExtensions) openType.getDecodedValue();
-      // } else if (openType.getEncodedValueAsStream() != null) {
-      // sve = new SupplementalVehicleExtensions();
-      // try {
-      // coder.decode(openType.getEncodedValueAsStream(), sve);
-      // } catch (DecodeFailedException | DecodeNotSupportedException e) {
-      // throw new BsmPart2ContentBuilderException(DECODING_ERROR, e);
-      // }
-      // } else {
-      // throw new BsmPart2ContentBuilderException(NO_OPEN_TYPE);
-      // }
-      part2Content.setValue(SupplementalVehicleExtensionsBuilder.genericSupplementalVehicleExtensions(supVehExt));
-
    }
 
    public static void buildGenericPart2(List<JsonNode> elements, List<J2735BsmPart2Content> partII)

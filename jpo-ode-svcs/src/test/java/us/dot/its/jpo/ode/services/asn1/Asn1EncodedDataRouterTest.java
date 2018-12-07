@@ -10,6 +10,8 @@ import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.context.AppContext;
+import us.dot.its.jpo.ode.traveler.TimController;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
@@ -100,16 +102,24 @@ public class Asn1EncodedDataRouterTest {
          XmlUtils.toJSONObject(anyString);
          result = mockJSONObject;
          
-         mockJSONObject.has("request");
+         mockJSONObject.getJSONObject(AppContext.METADATA_STRING);
+         result = mockJSONObject;
+         
+         mockJSONObject.has(TimController.REQUEST_STRING);
          result = true;
+
+         mockJSONObject.getJSONObject(TimController.REQUEST_STRING);
+         result = mockJSONObject;
          
-         mockJSONObject.has("rsus");
+         mockJSONObject.has(TimController.RSUS_STRING);
          result = true;
+         times = 2;
          
-         mockJSONObject.get("rsus");
-         result = new JSONArray();
+         mockJSONObject.get(TimController.RSUS_STRING);
+         result = mockJSONObject;
+         times = 2;
          
-         mockJSONObject.has("AdvisorySituationData");
+         mockJSONObject.has(Asn1CommandManager.ADVISORY_SITUATION_DATA_STRING);
          result = true;
       }};
       testAsn1EncodedDataRouter.process("stringthing");

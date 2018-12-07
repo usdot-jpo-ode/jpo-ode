@@ -6,18 +6,16 @@ public class Description extends Asn1Object {
    private static final long serialVersionUID = 1L;
 
    private Path path;
-    
-    private Geometry geometry;
 
-    public Path getPath ()
-    {
-        return path;
-    }
+   private Geometry geometry;
 
-    public void setPath (Path path)
-    {
-        this.path = path;
-    }
+   public Path getPath() {
+      return path;
+   }
+
+   public void setPath(Path path) {
+      this.path = path;
+   }
 
    public Geometry getGeometry() {
       return geometry;

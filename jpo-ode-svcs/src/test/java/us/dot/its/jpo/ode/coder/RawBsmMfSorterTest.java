@@ -5,11 +5,11 @@ import java.io.ByteArrayInputStream;
 
 import org.junit.Test;
 
-import mockit.Capturing;
+import com.oss.asn1.PERUnalignedCoder;
+
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
-import mockit.Tested;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
 import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
@@ -19,8 +19,7 @@ public class RawBsmMfSorterTest {
    OdeObject mockOdeObject;
    @Mocked
    J2735MessageFrame mockJ2735MessageFrame;
-   @Mocked
-   byte[] mockbyteArray;
+   byte[] byteArray = new byte[1];
    @Mocked
    OssJ2735Coder mockOssJ2735Coder;
    @Injectable
@@ -49,26 +48,30 @@ public class RawBsmMfSorterTest {
    }
 
    @Test
-   public void decodeByteArrayBsmNull() {
-     
-      
-      byte[] bytes = null;
+   public void decodeByteArrayBsmNull(@Mocked PERUnalignedCoder coder) {
+      J2735MessageFrame mf = new J2735MessageFrame();
+      new Expectations() {
+         {
+            mockOssJ2735Coder.decodeUPERMessageFrameBytes(byteArray);
+            result = mf;
+         }
+      };
       RawBsmMfSorter rBSMFS = new RawBsmMfSorter(mockOssJ2735Coder);
-      OdeObject OdeOj = rBSMFS.decodeBsm(bytes);
-
+      rBSMFS.decodeBsm(byteArray);
    }
 
    @Test
    public void decodeByteArrayBsmNotNull() {
       
+      J2735MessageFrame mf = new J2735MessageFrame();
       new Expectations() {
          {
-            mockOssJ2735Coder.decodeUPERMessageFrameBytes(mockbyteArray);
-            result = null;
+            mockOssJ2735Coder.decodeUPERMessageFrameBytes(byteArray);
+            result = mf;
          }
       };
       RawBsmMfSorter rBSMFS = new RawBsmMfSorter(mockOssJ2735Coder);
-      OdeObject OdeOj = rBSMFS.decodeBsm(mockbyteArray);
+      OdeObject OdeOj = rBSMFS.decodeBsm(byteArray);
 
    }
 

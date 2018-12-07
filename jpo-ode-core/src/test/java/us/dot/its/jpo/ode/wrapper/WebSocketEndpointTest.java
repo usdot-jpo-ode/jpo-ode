@@ -22,10 +22,6 @@ import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
-import mockit.Mocked;
-import mockit.StrictExpectations;
-import mockit.integration.junit4.JMockit;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -33,6 +29,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
 
 @RunWith(JMockit.class)
@@ -166,7 +165,7 @@ public class WebSocketEndpointTest {
       final WebSocketEndpoint<Integer> wsClient = new WebSocketEndpoint<Integer>(
             "http://host:port/path", null, null, null, handler, null);
       
-      new StrictExpectations() {{
+      new Expectations() {{
          ContainerProvider.getWebSocketContainer(); result = container;
          container.connectToServer(
                wsClient, wsClient.getWsConfig(), wsClient.getUri());
@@ -185,7 +184,7 @@ public class WebSocketEndpointTest {
       final WebSocketEndpoint<Integer> wsClient = new WebSocketEndpoint<Integer>(
             "http://host:port/path", null, null, null, handler, null);
       
-      new StrictExpectations() {{
+      new Expectations() {{
          ContainerProvider.getWebSocketContainer(); result = container;
          container.connectToServer(
                wsClient, wsClient.getWsConfig(), wsClient.getUri());
@@ -215,7 +214,7 @@ public class WebSocketEndpointTest {
 
       final String message = "Test Message";
       
-      new StrictExpectations() {{
+      new Expectations() {{
          ContainerProvider.getWebSocketContainer(); result = container;
          container.connectToServer(
                wsClient, wsClient.getWsConfig(), wsClient.getUri());

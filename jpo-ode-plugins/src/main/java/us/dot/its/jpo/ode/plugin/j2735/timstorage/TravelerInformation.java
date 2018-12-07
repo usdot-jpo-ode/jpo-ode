@@ -22,7 +22,7 @@ public class TravelerInformation extends Asn1Object {
    private String urlB;
 
    @JsonProperty("dataFrames")
-   private DataFrame[] dataFrames;
+   private DataFrames dataFrames;
 
    public int getTimeStamp() {
       return timeStamp;
@@ -48,12 +48,13 @@ public class TravelerInformation extends Asn1Object {
       this.packetID = packetID;
    }
 
-   public DataFrame[] getDataFrames() {
-      return dataFrames;
+
+   public DataFrames getDataFrames() {
+     return dataFrames;
    }
 
-   public void setDataFrames(DataFrame[] dataFrames) {
-      this.dataFrames = dataFrames;
+   public void setDataFrames(DataFrames dataFrames) {
+     this.dataFrames = dataFrames;
    }
 
    public String getMsgCnt() {
@@ -63,4 +64,51 @@ public class TravelerInformation extends Asn1Object {
    public void setMsgCnt(String msgCnt) {
       this.msgCnt = msgCnt;
    }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((dataFrames == null) ? 0 : dataFrames.hashCode());
+    result = prime * result + ((msgCnt == null) ? 0 : msgCnt.hashCode());
+    result = prime * result + ((packetID == null) ? 0 : packetID.hashCode());
+    result = prime * result + timeStamp;
+    result = prime * result + ((urlB == null) ? 0 : urlB.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    TravelerInformation other = (TravelerInformation) obj;
+    if (dataFrames == null) {
+      if (other.dataFrames != null)
+        return false;
+    } else if (!dataFrames.equals(other.dataFrames))
+      return false;
+    if (msgCnt == null) {
+      if (other.msgCnt != null)
+        return false;
+    } else if (!msgCnt.equals(other.msgCnt))
+      return false;
+    if (packetID == null) {
+      if (other.packetID != null)
+        return false;
+    } else if (!packetID.equals(other.packetID))
+      return false;
+    if (timeStamp != other.timeStamp)
+      return false;
+    if (urlB == null) {
+      if (other.urlB != null)
+        return false;
+    } else if (!urlB.equals(other.urlB))
+      return false;
+    return true;
+  }
+
 }

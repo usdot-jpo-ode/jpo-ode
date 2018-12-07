@@ -14,8 +14,6 @@ public class FullPositionVectorBuilder {
     private static final long LAT_UPPER_BOUND = 900000001;
     private static final long ELEV_LOWER_BOUND = -4096;
     private static final long ELEV_UPPER_BOUND = 61439;
-    private static final long TIME_CONF_LOWER_BOUND = 0;
-    private static final long TIME_CONF_UPPER_BOUND = 39;
     
     private FullPositionVectorBuilder() {
        throw new UnsupportedOperationException();
@@ -54,9 +52,7 @@ public class FullPositionVectorBuilder {
             throw new IllegalArgumentException("Elevation value out of bounds [-4096..61439]");
         }
         
-        if (null == timeConfidence 
-              || timeConfidence.longValue() < TIME_CONF_LOWER_BOUND
-              || timeConfidence.longValue() > TIME_CONF_UPPER_BOUND) {
+        if (null == timeConfidence) {
             throw new IllegalArgumentException("Time confidence value out of bounds [0..39]");
         }
         

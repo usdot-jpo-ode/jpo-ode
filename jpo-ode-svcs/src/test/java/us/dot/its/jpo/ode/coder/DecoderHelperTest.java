@@ -20,8 +20,6 @@ import us.dot.its.jpo.ode.plugin.j2735.oss.Oss1609dot2Coder;
 
 public class DecoderHelperTest {
    @Mocked
-   String mockString;
-   @Mocked
    private SerialId mockSerialId;
    @Mocked
    Ieee1609Dot2Data mockIeee1609Dot2Data;
@@ -31,8 +29,6 @@ public class DecoderHelperTest {
    Oss1609dot2Coder capturingOss1609dot2Coder;
    @Capturing
    IEEE1609p2Message capturingIEEE1609p2Message;
-   @Mocked
-   EncodeFailedException mockEncodeFailedException;
    @Mocked
    Ieee1609Dot2Content mockIeee1609Dot2Content;
    @Mocked
@@ -79,9 +75,6 @@ public class DecoderHelperTest {
                capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
                result = mockIeee1609Dot2Data;
 
-               IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
-               result = mockEncodeFailedException;
-
             }
          };
 
@@ -124,12 +117,6 @@ public class DecoderHelperTest {
             {
                capturingOss1609dot2Coder.decodeIeee1609Dot2DataBytes((byte[]) any);
                result = mockIeee1609Dot2Data;
-
-               IEEE1609p2Message.convert((Ieee1609Dot2Data) any);
-               result = mockEncodeFailedException;
-
-               mockIeee1609Dot2Data.getContent();
-               result = mockIeee1609Dot2Content;
 
                Ieee1609ContentValidator.getUnsecuredData((Ieee1609Dot2Content) any);
                result = new byte[0];

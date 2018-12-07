@@ -23,11 +23,11 @@ public class SerialId {
 
    public SerialId(String streamId, int bundleSize, 
          long bundleId, int recordId) {
-      super();
+      this();
       if (streamId != null)
          this.streamId = streamId;
       else
-         this.streamId = "";
+         this.streamId = this.streamId + "_null";
       
       this.bundleSize = bundleSize;
       this.bundleId = bundleId + (recordId / this.bundleSize);

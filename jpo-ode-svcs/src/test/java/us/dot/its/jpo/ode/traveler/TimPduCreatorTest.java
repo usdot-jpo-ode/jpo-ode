@@ -19,13 +19,12 @@ import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 
 import ch.qos.logback.classic.Logger;
-import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
-import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.services.asn1.Asn1EncodedDataRouter;
+import us.dot.its.jpo.ode.plugin.SNMP;
+import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 
@@ -59,7 +58,7 @@ public class TimPduCreatorTest {
       }
 
       try {
-         assertNull(SnmpSession.createAndSend(mockSNMP, mockRSU, 0, "", 0));
+         assertNull(SnmpSession.createAndSend(mockSNMP, mockRSU, "", RequestVerb.POST));
          fail("Should have thrown IOException");
       } catch (IOException e) {
       }
@@ -86,7 +85,7 @@ public class TimPduCreatorTest {
             rsuSRMTxInterval, "2017-12-02T17:47:11-05:00", "2017-12-02T17:47:11-05:00", 
             rsuSRMEnable, rsuSRMStatus);
 
-      ScopedPDU result = TimPduCreator.createPDU(testParams, rsuSRMPayload, 3, 0);
+      ScopedPDU result = TimPduCreator.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.POST);
 
       assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result.getType());
       assertEquals(expectedResult, result.getVariableBindings().toString());
@@ -101,7 +100,7 @@ public class TimPduCreatorTest {
       try {
          new Expectations() {
             {
-               TimPduCreator.createPDU((SNMP) any, anyString, anyInt, anyInt);
+               TimPduCreator.createPDU((SNMP) any, anyString, anyInt, (RequestVerb) any);
                result = mockScopedPDU;
                mockSnmpSession.set(mockScopedPDU, (Snmp) any, (UserTarget) any, false);
                result = mockResponseEvent;
@@ -114,7 +113,7 @@ public class TimPduCreatorTest {
 
       assertEquals(mockResponseEvent,
          SnmpSession.createAndSend(
-                  mockTimParameters, mockSnmpProperties, 0, "", 0));
+                  mockTimParameters, mockSnmpProperties, "", RequestVerb.POST));
    }
 
    @Test @Ignore
@@ -126,7 +125,7 @@ public class TimPduCreatorTest {
       try {
          new Expectations() {
             {
-               TimPduCreator.createPDU((SNMP) any, anyString, anyInt, anyInt);
+               TimPduCreator.createPDU((SNMP) any, anyString, anyInt, (RequestVerb) any);
                result = mockScopedPDU;
                mockSnmpSession.set(mockScopedPDU, (Snmp) any, (UserTarget) any, false);
                result = expectedException;
@@ -137,7 +136,7 @@ public class TimPduCreatorTest {
       }
       System.out.println("test 2");
       assertNull(SnmpSession.createAndSend(
-            mockTimParameters, mockSnmpProperties, 0, "", 0));
+            mockTimParameters, mockSnmpProperties, "", RequestVerb.POST));
 
       new Verifications() {
          {

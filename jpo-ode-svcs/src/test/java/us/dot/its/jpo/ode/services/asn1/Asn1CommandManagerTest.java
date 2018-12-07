@@ -13,9 +13,11 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
+import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
+import us.dot.its.jpo.ode.services.asn1.Asn1CommandManager.Asn1CommandManagerException;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
-import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 public class Asn1CommandManagerTest {
    
    @Tested
@@ -25,7 +27,7 @@ public class Asn1CommandManagerTest {
    OdeProperties injectableOdeProperties;
    
    @Capturing
-   DdsDepositor capturingDdsDepositor;
+   DdsDepositor<?> capturingDdsDepositor;
    @Capturing
    SnmpSession capturingSnmpSession;
    
@@ -34,11 +36,11 @@ public class Asn1CommandManagerTest {
 
    @Test
    public void testPackageSignedTimIntoAsd() {
-      testAsn1CommandManager.packageSignedTimIntoAsd(injectableOdeTravelerInputData, "message");
+      testAsn1CommandManager.packageSignedTimIntoAsd(injectableOdeTravelerInputData.getRequest(), "message");
    }
    
    @Test
-   public void testDepositToDDS() throws DdsRequestManagerException {
+   public void testDepositToDDS() throws DdsRequestManagerException, Asn1CommandManagerException {
       new Expectations() {{
          capturingDdsDepositor.deposit(anyString);
          times = 1;
@@ -46,11 +48,11 @@ public class Asn1CommandManagerTest {
       testAsn1CommandManager.depositToDDS("message");
    }
    
-   @Test
-   public void testDepositToDDSException() throws DdsRequestManagerException {
+   @Test(expected = Asn1CommandManagerException.class)
+   public void testDepositToDDSException() throws DdsRequestManagerException, Asn1CommandManagerException {
       new Expectations() {{
          capturingDdsDepositor.deposit(anyString);
-         result = new DdsRequestManagerException(null);
+         result = new Asn1CommandManagerException(anyString, (Exception) any);
       }};
       testAsn1CommandManager.depositToDDS("message");
    }
@@ -58,25 +60,25 @@ public class Asn1CommandManagerTest {
    @Test
    public void testSendToRsus(@Mocked OdeTravelerInputData mockOdeTravelerInputData) throws DdsRequestManagerException, IOException, TimPduCreatorException {
       new Expectations() {{
-         mockOdeTravelerInputData.getRsus();
+         mockOdeTravelerInputData.getRequest().getRsus();
          result = new RSU[]{new RSU()};
          
-         SnmpSession.createAndSend(null, null, anyInt, anyString, anyInt);
+         SnmpSession.createAndSend(null, null, anyString, (RequestVerb) any);
          times = 1;
       }};
-      testAsn1CommandManager.sendToRsus(mockOdeTravelerInputData, "message");
+      testAsn1CommandManager.sendToRsus(mockOdeTravelerInputData.getRequest(), "message");
    }
    
    @Test
    public void testSendToRsusSnmpException(@Mocked OdeTravelerInputData mockOdeTravelerInputData) throws DdsRequestManagerException, IOException, TimPduCreatorException {
       new Expectations() {{
-         mockOdeTravelerInputData.getRsus();
+         mockOdeTravelerInputData.getRequest().getRsus();
          result = new RSU[]{new RSU()};
          
-         SnmpSession.createAndSend(null, null, anyInt, anyString, anyInt);
+         SnmpSession.createAndSend(null, null, anyString, (RequestVerb) any);
          result = new IOException();
       }};
-      testAsn1CommandManager.sendToRsus(mockOdeTravelerInputData, "message");
+      testAsn1CommandManager.sendToRsus(mockOdeTravelerInputData.getRequest(), "message");
    }
 
 }

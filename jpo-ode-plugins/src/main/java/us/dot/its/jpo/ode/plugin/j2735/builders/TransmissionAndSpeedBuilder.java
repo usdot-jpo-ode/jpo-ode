@@ -24,7 +24,7 @@ public class TransmissionAndSpeedBuilder {
         J2735TransmissionAndSpeed gts = new J2735TransmissionAndSpeed();
 
         gts.setSpeed(SpeedOrVelocityBuilder.genericVelocity(ts.get("speed")));
-        gts.setTransmisson(J2735TransmissionState.valueOf(ts.get("transmisson").asText().toUpperCase()));
+        gts.setTransmisson(J2735TransmissionState.valueOf(ts.get("transmission").asText().toUpperCase()));
 
         return gts;
     }

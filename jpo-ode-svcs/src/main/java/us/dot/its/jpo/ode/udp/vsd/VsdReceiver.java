@@ -33,11 +33,12 @@ public class VsdReceiver extends BsmReceiver {
 
    private static final Logger logger = LoggerFactory.getLogger(VsdReceiver.class);
    protected MessageProducer<String, OdeBsmData> odeBsmDataProducer;
-   private SerialId serialId = new SerialId();
+   private SerialId serialId;
    
    @Autowired
    public VsdReceiver(OdeProperties odeProps) {
       super(odeProps, odeProps.getVsdReceiverPort(), odeProps.getVsdBufferSize());
+      serialId = new SerialId();
       odeBsmDataProducer = new MessageProducer<String, OdeBsmData>(
               odeProperties.getKafkaBrokers(),
               odeProperties.getKafkaProducerType(), 
@@ -128,8 +129,10 @@ public class VsdReceiver extends BsmReceiver {
          serialId.addBundleId(1).addRecordId(1);
          OdeBsmData odeBsmData = OdeBsmDataCreatorHelper.createOdeBsmData(
             (J2735Bsm) j2735Bsm, new IEEE1609p2Message(), null);
+         odeBsmData.getMetadata().setSerialId(serialId);
         
          odeBsmDataProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), null, odeBsmData);
+         serialId.increment();
       }
    }
    

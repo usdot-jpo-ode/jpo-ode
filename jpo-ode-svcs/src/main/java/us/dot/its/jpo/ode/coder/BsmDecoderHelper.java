@@ -95,7 +95,7 @@ public OdeData decode(BufferedInputStream bis, String filename, SerialId serialI
     if (bsm != null) {
        logger.debug("Decoded BSM successfully, creating OdeBsmData object.");
        odeBsmData = OdeBsmDataCreatorHelper.createOdeBsmData(
-          (J2735Bsm) bsm, filename, serialId);
+          (J2735Bsm) bsm, filename);
     } else {
        logger.debug("Failed to decode BSM.");
     }
