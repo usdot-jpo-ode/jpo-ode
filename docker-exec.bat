@@ -1,6 +1,6 @@
 if [%1]==[] goto usage
 
-docker exec -it %1 %2
+docker exec --env-file ./.env -it %1 %2
 
 goto :eof
 

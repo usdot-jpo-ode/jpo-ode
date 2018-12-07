@@ -15,6 +15,7 @@ import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
+import us.dot.its.jpo.ode.services.asn1.Asn1CommandManager.Asn1CommandManagerException;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 public class Asn1CommandManagerTest {
@@ -39,7 +40,7 @@ public class Asn1CommandManagerTest {
    }
    
    @Test
-   public void testDepositToDDS() throws DdsRequestManagerException {
+   public void testDepositToDDS() throws DdsRequestManagerException, Asn1CommandManagerException {
       new Expectations() {{
          capturingDdsDepositor.deposit(anyString);
          times = 1;
@@ -47,11 +48,11 @@ public class Asn1CommandManagerTest {
       testAsn1CommandManager.depositToDDS("message");
    }
    
-   @Test
-   public void testDepositToDDSException() throws DdsRequestManagerException {
+   @Test(expected = Asn1CommandManagerException.class)
+   public void testDepositToDDSException() throws DdsRequestManagerException, Asn1CommandManagerException {
       new Expectations() {{
          capturingDdsDepositor.deposit(anyString);
-         result = new DdsRequestManagerException(null);
+         result = new Asn1CommandManagerException(anyString, (Exception) any);
       }};
       testAsn1CommandManager.depositToDDS("message");
    }

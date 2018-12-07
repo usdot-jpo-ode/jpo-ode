@@ -72,21 +72,31 @@ import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 @Controller
 public class TimController {
 
-   public static final String REQUEST = "request";
+  public static final String GEOGRAPHICAL_PATH_STRING = "GeographicalPath";
 
-   public static class TimControllerException extends Exception {
+  public static final String REGIONS_STRING = "regions";
 
-      private static final long serialVersionUID = 1L;
+  public static final String TRAVELER_DATA_FRAME_STRING = "TravelerDataFrame";
 
-      public TimControllerException(String errMsg) {
-        super(errMsg);
-      }
+  public static final String DATA_FRAMES_STRING = "dataFrames";
 
-      public TimControllerException(String errMsg, Exception e) {
-         super(errMsg, e);
-      }
+  public static final String RSUS_STRING = "rsus";
 
-   }
+  public static final String REQUEST_STRING = "request";
+
+  public static class TimControllerException extends Exception {
+
+    private static final long serialVersionUID = 1L;
+
+    public TimControllerException(String errMsg) {
+      super(errMsg);
+    }
+
+    public TimControllerException(String errMsg, Exception e) {
+      super(errMsg, e);
+    }
+
+  }
 
    private static final Logger logger = LoggerFactory.getLogger(TimController.class);
 
@@ -378,15 +388,14 @@ public class TimController {
             asd = buildASD(odeTID.getRequest());
          }
          xmlMsg = convertToXml(asd, encodableTid, timMetadata);
-         // publish Broadcast TIM to a J2735 compliant topic.
          JSONObject jsonMsg = XmlUtils.toJSONObject(xmlMsg);
          
          String j2735Tim = OdeTimDataCreatorHelper.createOdeTimData(jsonMsg.getJSONObject(AppContext.ODE_ASN1_DATA)).toString();
 
          stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlMsg);
 
-         //Publish JSON version
          String obfuscatedj2735Tim = obfuscateRsuPassword(j2735Tim);
+         // publish Broadcast TIM to a J2735 compliant topic.
          stringMsgProducer.send(odeProperties.getKafkaTopicJ2735TimBroadcastJson(), null, obfuscatedj2735Tim);
          // publish J2735 TIM also to general un-filtered TIM topic
          stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimJson(), null, obfuscatedj2735Tim);
@@ -469,11 +478,6 @@ public class TimController {
       return "{\"" + key + "\":\"" + value + "\"}";
    }
 
-   private JsonNode addEncoding(String name, String type, EncodingRule rule) throws JsonUtilsException {
-      Asn1Encoding mfEnc = new Asn1Encoding(name, type, rule);
-      return JsonUtils.newNode().set("encodings", JsonUtils.toObjectNode(mfEnc.toJson()));
-   }
-
    private DdsAdvisorySituationData buildASD(ServiceRequest travelerInputData) {
       Ieee1609Dot2DataTag ieeeDataTag = new Ieee1609Dot2DataTag();
       Ieee1609Dot2Data ieee = new Ieee1609Dot2Data();
@@ -524,9 +528,13 @@ public class TimController {
       logger.debug("In Order TravelerInputData: {}", inOrderTid);
       ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
 
-      JsonNode timObj = inOrderTidObj.get("tim");
-      JsonNode requestObj = inOrderTidObj.get(REQUEST);
+      ObjectNode timObj = (ObjectNode) inOrderTidObj.get("tim");
 
+      ArrayNode dataFrames = convertRegionsArray(timObj);
+
+      convertDataFramesArrays(timObj, dataFrames);
+      
+      
       //Create valid payload from scratch
       OdeMsgPayload payload = null;
 
@@ -562,11 +570,13 @@ public class TimController {
       metadata.setRecordGeneratedBy(timMetadata.getRecordGeneratedBy());
       metadata.setRecordGeneratedAt(timMetadata.getRecordGeneratedAt());
       ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());
-      metaObject.set(REQUEST, requestObj);
-      
-      //Workaround for XML Array issue. Set a placeholder for the encodings to be added later as a string replacement
-      metaObject.set("encodings_palceholder", null);
 
+      convertRsusArray(inOrderTidObj, metaObject);
+      
+      //Add 'encodings' array to metadata
+      convertEncodingsArray(asd, metaObject);
+
+      
       ObjectNode message = JsonUtils.newNode();
       message.set(AppContext.METADATA_STRING, metaObject);
       message.set(AppContext.PAYLOAD_STRING, payloadObj);
@@ -576,10 +586,8 @@ public class TimController {
 
       // Convert to XML
       logger.debug("pre-xml: {}", root);
-      String outputXml = XmlUtils.toXmlS(root);
-      String encStr = buildEncodings(asd);
-      outputXml = outputXml.replace("<encodings_palceholder/>", encStr);
-      
+      String outputXml = XmlUtils.toXmlStatic(root);
+
       // Fix  tagnames by String replacements
       String fixedXml = outputXml.replaceAll("tcontent>", "content>");// workaround
                                                                       // for the
@@ -594,8 +602,6 @@ public class TimController {
       fixedXml = fixedXml.replaceAll("node_LatLon>", "node-LatLon>");
       fixedXml = fixedXml.replaceAll("nodeLL>", "NodeLL>");
       fixedXml = fixedXml.replaceAll("nodeXY>", "NodeXY>");
-      fixedXml = fixedXml.replaceAll("sequence>", "SEQUENCE>");
-      fixedXml = fixedXml.replaceAll("geographicalPath>", "GeographicalPath>");
 
       // workarounds for self-closing tags
       fixedXml = fixedXml.replaceAll(TravelerMessageFromHumanToAsnConverter.EMPTY_FIELD_FLAG, "");
@@ -610,20 +616,53 @@ public class TimController {
       return fixedXml;
    }
 
-   private String buildEncodings(DdsAdvisorySituationData asd) throws JsonUtilsException, XmlUtilsException {
+  private static void convertEncodingsArray(DdsAdvisorySituationData asd, ObjectNode metaObject) throws JsonUtilsException, XmlUtilsException {
+    ArrayNode encodings = buildEncodings(asd);
+    ObjectNode enc = XmlUtils.createEmbeddedJsonArrayForXmlConversion(AppContext.ENCODINGS_STRING, encodings);
+    metaObject.set(AppContext.ENCODINGS_STRING, enc);
+  }
+
+  private static void convertRsusArray(ObjectNode inOrderTidObj, ObjectNode metaObject) {
+    //Convert 'rsus' JSON array to XML array
+    ObjectNode request = (ObjectNode) inOrderTidObj.get(REQUEST_STRING);
+    ObjectNode rsus = XmlUtils.createEmbeddedJsonArrayForXmlConversion(RSUS_STRING, (ArrayNode) request.get(RSUS_STRING));
+    request.set(RSUS_STRING, rsus);
+    metaObject.set(REQUEST_STRING, request);
+  }
+
+  private static void convertDataFramesArrays(ObjectNode timObj, ArrayNode dataFrames) {
+    //Convert 'dataFrames' Array so that it can be encoded by ASN.1
+    ObjectNode dataFramesNew = XmlUtils.createEmbeddedJsonArrayForXmlConversion(TRAVELER_DATA_FRAME_STRING, dataFrames);
+    timObj.set(DATA_FRAMES_STRING, dataFramesNew);
+  }
+
+  private static ArrayNode convertRegionsArray(ObjectNode timObj) {
+    //Convert 'regions' Array so that it can be encoded by ASN.1
+    ArrayNode dataFrames = (ArrayNode) timObj.get(DATA_FRAMES_STRING);
+    for (int j = 0; j < dataFrames.size(); j++) {
+      ObjectNode dataFrame = (ObjectNode) dataFrames.get(j);
+
+      ArrayNode regionsOld = (ArrayNode) dataFrame.get(REGIONS_STRING);
+      ObjectNode regionsNew = XmlUtils.createEmbeddedJsonArrayForXmlConversion(GEOGRAPHICAL_PATH_STRING, regionsOld);
+      dataFrame.set(REGIONS_STRING, regionsNew);
+    }
+    return dataFrames;
+  }
+
+   private static ArrayNode buildEncodings(DdsAdvisorySituationData asd) throws JsonUtilsException, XmlUtilsException {
       ArrayNode encodings = JsonUtils.newArrayNode();
-      encodings.add(addEncoding("MessageFrame", "MessageFrame", EncodingRule.UPER));
+      encodings.add(buildEncodingNode("MessageFrame", "MessageFrame", EncodingRule.UPER));
       if (null != asd) {
-         encodings.add(addEncoding("Ieee1609Dot2Data", "Ieee1609Dot2Data", EncodingRule.COER));
-         encodings.add(addEncoding("AdvisorySituationData", "AdvisorySituationData", EncodingRule.UPER));
+         encodings.add(buildEncodingNode("Ieee1609Dot2Data", "Ieee1609Dot2Data", EncodingRule.COER));
+         encodings.add(buildEncodingNode("AdvisorySituationData", "AdvisorySituationData", EncodingRule.UPER));
       }
-      ObjectNode encodingWrap = (ObjectNode) JsonUtils.newNode().set("wrap", encodings);
-      String encStr = XmlUtils.toXmlS(encodingWrap)
-            .replace("</wrap><wrap>", "")
-            .replace("<wrap>", "")
-            .replace("</wrap>", "")
-            .replace("<ObjectNode>", "<encodings>")
-            .replace("</ObjectNode>", "</encodings>");
-      return encStr;
+      return encodings;
    }
+   
+   public static JsonNode buildEncodingNode(String name, String type, EncodingRule rule) throws JsonUtilsException {
+     Asn1Encoding mfEnc = new Asn1Encoding(name, type, rule);
+     return JsonUtils.toObjectNode(mfEnc.toJson());
+  }
+
+
 }
