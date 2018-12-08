@@ -20,6 +20,14 @@ import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 
 public class TravelerMessageFromHumanToAsnConverter {
 
+   public static final String GEOGRAPHICAL_PATH_STRING = "GeographicalPath";
+
+   public static final String REGIONS_STRING = "regions";
+
+   public static final String TRAVELER_DATA_FRAME_STRING = "TravelerDataFrame";
+
+   public static final String DATA_FRAMES_STRING = "dataFrames";
+
    public static final String SEQUENCE_STRING = "SEQUENCE";
    public static final String TCONTENT_STRING = "tcontent";
 
@@ -50,29 +58,29 @@ public class TravelerMessageFromHumanToAsnConverter {
       // urlB is optional but does not need replacement
 
       // dataFrames are required
-      timDataObjectNode.set("dataFrames", transformDataFrames(timDataObjectNode.get("dataframes")));
+      timDataObjectNode.set(DATA_FRAMES_STRING, transformDataFrames(timDataObjectNode.get("dataframes")));
       timDataObjectNode.remove("dataframes");
    }
       
-   public static JsonNode transformDataFrames(JsonNode dataFrames) throws JsonUtilsException {
+   public static ObjectNode transformDataFrames(JsonNode dataFrames) throws JsonUtilsException {
 
       if (dataFrames == null) {
          return JsonUtils.newNode();
       }
 
       ArrayNode replacedDataFrames = JsonUtils.newNode().arrayNode();
-
       if (dataFrames.isArray()) {
          Iterator<JsonNode> dataFramesIter = dataFrames.elements();
 
          while (dataFramesIter.hasNext()) {
             ObjectNode oldFrame = (ObjectNode) dataFramesIter.next();
             replaceDataFrame(oldFrame);
+            // wrap each data frame inside a TravelerDataFrame
             replacedDataFrames.add(oldFrame);
          }
       }
 
-      return replacedDataFrames;
+      return JsonUtils.newObjectNode(TRAVELER_DATA_FRAME_STRING, replacedDataFrames);
    }
 
    public static void replaceDataFrame(ObjectNode dataFrame) throws JsonUtilsException {
@@ -139,7 +147,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       replaceDataFrameTimestamp(dataFrame);
 
       // replace the geographical path regions
-      dataFrame.set("regions", transformRegions(dataFrame.get("regions")));
+      dataFrame.set(REGIONS_STRING, transformRegions(dataFrame.get(REGIONS_STRING)));
       // replace content
       replaceContent(dataFrame);
 
@@ -331,7 +339,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       }
    }
 
-   public static JsonNode transformRegions(JsonNode regions) throws JsonUtilsException {
+   public static ObjectNode transformRegions(JsonNode regions) throws JsonUtilsException {
       ArrayNode replacedRegions = JsonUtils.newNode().arrayNode();
 
       if (regions.isArray()) {
@@ -344,7 +352,7 @@ public class TravelerMessageFromHumanToAsnConverter {
          }
       }
 
-      return replacedRegions;
+      return JsonUtils.newObjectNode(GEOGRAPHICAL_PATH_STRING, replacedRegions);
    }
 
    public static void replaceRegion(ObjectNode region) throws JsonUtilsException {

@@ -1,7 +1,5 @@
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
-import java.util.Arrays;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -24,7 +22,7 @@ public class TravelerInformation extends Asn1Object {
    private String urlB;
 
    @JsonProperty("dataFrames")
-   private TravelerDataFrame[] dataFrames;
+   private DataFrames dataFrames;
 
    public int getTimeStamp() {
       return timeStamp;
@@ -50,15 +48,16 @@ public class TravelerInformation extends Asn1Object {
       this.packetID = packetID;
    }
 
-   public TravelerDataFrame[] getDataFrames() {
-    return dataFrames;
-  }
 
-  public void setDataFrames(TravelerDataFrame[] dataFrames) {
-    this.dataFrames = dataFrames;
-  }
+   public DataFrames getDataFrames() {
+     return dataFrames;
+   }
 
-  public String getMsgCnt() {
+   public void setDataFrames(DataFrames dataFrames) {
+     this.dataFrames = dataFrames;
+   }
+
+   public String getMsgCnt() {
       return msgCnt;
    }
 
@@ -70,7 +69,7 @@ public class TravelerInformation extends Asn1Object {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + Arrays.hashCode(dataFrames);
+    result = prime * result + ((dataFrames == null) ? 0 : dataFrames.hashCode());
     result = prime * result + ((msgCnt == null) ? 0 : msgCnt.hashCode());
     result = prime * result + ((packetID == null) ? 0 : packetID.hashCode());
     result = prime * result + timeStamp;
@@ -87,7 +86,10 @@ public class TravelerInformation extends Asn1Object {
     if (getClass() != obj.getClass())
       return false;
     TravelerInformation other = (TravelerInformation) obj;
-    if (!Arrays.equals(dataFrames, other.dataFrames))
+    if (dataFrames == null) {
+      if (other.dataFrames != null)
+        return false;
+    } else if (!dataFrames.equals(other.dataFrames))
       return false;
     if (msgCnt == null) {
       if (other.msgCnt != null)
