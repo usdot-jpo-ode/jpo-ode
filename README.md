@@ -1,4 +1,5 @@
 
+
 Master: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=master)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=usdot.jpo.ode:jpo-ode)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode)
 
 Develop: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=develop)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=usdot.jpo.ode:jpo-ode:develop)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode%3Adevelop)
@@ -62,21 +63,18 @@ All stakeholders are invited to provide input to these documents. Stakeholders s
 - Main repository on GitHub (public)
 	- https://github.com/usdot-jpo-ode/jpo-ode
 	- git@github.com:usdot-jpo-ode/jpo-ode.git
-- Security repository on GitHub (public)
-        - https://github.com/usdot-jpo-ode/jpo-security.git
-	- git@github.com:usdot-jpo-ode/jpo-security.git
-- Private repository on BitBucket
-	- https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
-	- git@bitbucket.org:usdot-jpo-ode/jpo-ode-private.git
 - Data Privacy Module on Github (public)
 	- https://github.com/usdot-jpo-ode/jpo-cvdp
 	- git@github.com/usdot-jpo-ode/jpo-cvdp
 - S3 Depositor Module on Github (public)
 	- https://github.com/usdot-jpo-ode/jpo-s3-deposit
 	- gith@github.com/usdot-jpo-ode/jpo-s3-deposit
+- Security services repository on GitHub (public)
+        - https://github.com/usdot-jpo-ode/jpo-security-svcs.git
+	- git@github.com:usdot-jpo-ode/jpo-security-svcs.git
 
 ### Agile Project Management - Jira
-https://usdotjpoode.atlassian.net/secure/Dashboard.jspa
+https://usdotjpoode.atlassian.net/secure/RapidBoard.jspa?projectKey=ODE
 
 ### Wiki - Confluence
 https://usdotjpoode.atlassian.net/wiki/
@@ -194,14 +192,6 @@ You must rename `sample.env` to `.env` for Docker to automatically read the file
 
 **Note** In order for Docker to automatically read the environment variable file, you must rename it from `sample.env` to `.env`.
 
-Note - if you do not intend on using this feature, edit the docker-compose.yml file and comment out (add a `#` to) the lines including and below `s3dep:`.
-
-Navigate to the root directory of the `jpo-s3-depositor` project:
-
-```bash
-mvn clean compile assembly:single install
-```
-
 #### Step 2: (Optional)
 Familiarize yourself with Docker and follow the instructions in the [README.md](docker/README.md).
 
@@ -209,52 +199,25 @@ If you wish to change the application properties, such as change the location of
 
 #### Step 3: Build and deploy the application.
 
-Copy the fillowing files from jpo-ode directory into your DOCKER_SHARED_VOLUME directory.
+Copy the following files from jpo-ode directory into your DOCKER_SHARED_VOLUME directory.
 - Copy jpo-ode/ppm.properties to ${DOCKER_SHARED_VOLUME}/config.properties. Open the newly copied `config.properties` file in a text editor and update the `metadata.broker.list=your.docker.host.ip:9092` line with your system's DOCKER_HOST_IP in place of the dummy `your.docker.host.ip` string. 
 - Copy jpo-ode/adm.properties to ${DOCKER_SHARED_VOLUME}/adm.properties
 - Copy jpo-ode/aem.properties to ${DOCKER_SHARED_VOLUME}/aem.properties
 
-Navigate to the root directory of the jpo-ode project. The easiest way to build _and_ run the ODE application and all its submodules is using Docker. The script ```clean-build-and-deploy``` executes all the necessary commands to do just that:
-
+Navigate to the root directory of the jpo-ode project and run the following command:
 ```
-#!/bin/bash
-docker-compose stop
-docker-compose rm -f -v
-mvn clean install
 docker-compose up --build -d
 docker-compose ps
 ```
-
-For other build options, see the next section. Otherwise, move on to section [V. Running ODE Application](#running)
-
-[Back to top](#toc)
-
----
-### Other Build/Deploy Options
-
-#### Building ODE without Deploying
-To build the ODE docker container images but not deploy it, run the following commands:
-
+To bring down the services and remove the running containers run the following command:
 ```
- cd jpo-ode (or cd ../jpo-ode if you are in any sub-directory)
- mvn clean install
- docker-compose rm -f -v
- docker-compose build
 ```
-
-Alternatively, you may run the ```clean-build``` script.
-
-#### Deploying ODE Application on a Docker Host
-To deploy the the application on the docker host configured in your DOCKER_HOST_IP machine, run the following:
-
-```bash
-docker-compose up --no-recreate -d
+For a fresh restart, run:
 ```
-
-**NOTE**: It's important to run ```docker-compose up``` with ```no-recreate``` option. Otherwise you may run into [this issue] (https://github.com/wurstmeister/kafka-docker/issues/100).
-
-Alternatively, run ```deploy``` script.
-
+docker-compose down
+docker-compose up --build -d
+docker-compose ps
+```
 Check the deployment by running ```docker-compose ps```. You can start and stop containers using ```docker-compose start``` and ```docker-compose stop``` commands.
 If using the multi-broker docker-compose file, you can change the scaling by running ```docker-compose scale <container>=n``` where container is the container you would like to scale and n is the number of instances. For example, ```docker-compose scale kafka=3```.
 
@@ -262,6 +225,7 @@ If using the multi-broker docker-compose file, you can change the scaling by run
 You can run the application on your local machine while other services are deployed on a host environment. To do so, run the following:
 ```bash
  docker-compose start zookeeper kafka
+ mvn clean install
  java -jar jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar
 ```
 
