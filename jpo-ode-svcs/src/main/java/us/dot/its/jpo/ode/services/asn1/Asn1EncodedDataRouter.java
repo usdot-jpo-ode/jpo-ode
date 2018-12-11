@@ -80,8 +80,8 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
                    for (int i = 0; i < rsusInArray.length(); i++) {
                      JSONObject rsu = (JSONObject) rsusInArray.get(i);
                      rsusOut.put(rsu);
-                     request.put(TimController.RSUS_STRING, rsusOut);
                    }
+                   request.put(TimController.RSUS_STRING, rsusOut);
                  } else if (rsu_ instanceof JSONObject) {
                    logger.debug("Single RSU exists in the request: {}", request);
                    rsusOut.put(rsu_);
