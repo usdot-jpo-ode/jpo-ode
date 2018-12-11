@@ -2,7 +2,6 @@ package us.dot.its.jpo.ode.traveler;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.HashMap;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -127,92 +126,6 @@ public class TimController {
       this.serialIdOde = new SerialId();
    }
 
-   /**
-    * Checks given RSU for all TIMs set
-    * 
-    * @param jsonString
-    *           Request body containing RSU info
-    * @return list of occupied TIM slots on RSU
-    */
-   @ResponseBody
-   @CrossOrigin
-   @RequestMapping(value = "/tim/query", method = RequestMethod.POST)
-   public synchronized ResponseEntity<String> bulkQuery(@RequestBody String jsonString) { // NOSONAR
-
-      if (null == jsonString || jsonString.isEmpty()) {
-         logger.error("Empty request.");
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, "Empty request."));
-      }
-
-      RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
-
-      SnmpSession snmpSession = null;
-      try {
-         snmpSession = new SnmpSession(queryTarget);
-         snmpSession.startListen();
-      } catch (IOException e) {
-         logger.error("Error creating SNMP session.", e);
-         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-               .body(jsonKeyValue(ERRSTR, "Failed to create SNMP session."));
-      }
-
-      PDU pdu0 = new ScopedPDU();
-      pdu0.setType(PDU.GET);
-      PDU pdu1 = new ScopedPDU();
-      pdu1.setType(PDU.GET);
-
-      for (int i = 0; i < odeProperties.getRsuSrmSlots() - 50; i++) {
-         pdu0.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
-      }
-
-      for (int i = 50; i < odeProperties.getRsuSrmSlots(); i++) {
-         pdu1.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
-      }
-
-      ResponseEvent response0 = null;
-      ResponseEvent response1 = null;
-      try {
-         response0 = snmpSession.getSnmp().send(pdu0, snmpSession.getTarget());
-         response1 = snmpSession.getSnmp().send(pdu1, snmpSession.getTarget());
-      } catch (IOException e) {
-         logger.error("Error creating SNMP session.", e);
-         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-               .body(jsonKeyValue(ERRSTR, "Failed to create SNMP session."));
-      }
-
-      // Process response
-      if (response0 == null || response0.getResponse() == null || response1 == null
-            || response1.getResponse() == null) {
-         logger.error("RSU query failed, timeout.");
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-               .body(jsonKeyValue(ERRSTR, "Timeout, no response from RSU."));
-      }
-
-      HashMap<String, Boolean> resultsMap = new HashMap<>();
-      for (Object vbo : response0.getResponse().getVariableBindings().toArray()) {
-         VariableBinding vb = (VariableBinding) vbo;
-         if (vb.getVariable().toInt() == 1) {
-            resultsMap.put(vb.getOid().toString().substring(21), true);
-         }
-      }
-
-      for (Object vbo : response1.getResponse().getVariableBindings().toArray()) {
-         VariableBinding vb = (VariableBinding) vbo;
-         if (vb.getVariable().toInt() == 1) {
-            resultsMap.put(vb.getOid().toString().substring(21), true);
-         }
-      }
-
-      try {
-         snmpSession.endSession();
-      } catch (IOException e) {
-         logger.error("Error closing SNMP session.", e);
-      }
-
-      logger.info("RSU query successful: {}", resultsMap.keySet());
-      return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue("indicies_set", resultsMap.keySet().toString()));
-   }
-
    @ResponseBody
    @CrossOrigin
    @RequestMapping(value = "/tim", method = RequestMethod.DELETE)
@@ -221,7 +134,7 @@ public class TimController {
 
       if (null == jsonString) {
          logger.error("Empty request");
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, "Empty request"));
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, "Empty request"));
       }
 
       RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
@@ -233,10 +146,10 @@ public class TimController {
          ss = new SnmpSession(queryTarget);
       } catch (IOException e) {
          logger.error("Error creating TIM delete SNMP session", e);
-         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(jsonKeyValue(ERRSTR, e.getMessage()));
+         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(JsonUtils.jsonKeyValue(ERRSTR, e.getMessage()));
       } catch (NullPointerException e) {
          logger.error("TIM query error, malformed JSON", e);
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, "Malformed JSON"));
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, "Malformed JSON"));
       }
 
       PDU pdu = new ScopedPDU();
@@ -248,7 +161,7 @@ public class TimController {
          rsuResponse = ss.set(pdu, ss.getSnmp(), ss.getTarget(), false);
       } catch (IOException e) {
          logger.error("Error sending TIM query PDU to RSU", e);
-         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(jsonKeyValue(ERRSTR, e.getMessage()));
+         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(JsonUtils.jsonKeyValue(ERRSTR, e.getMessage()));
       }
 
       // Try to explain common errors
@@ -257,23 +170,23 @@ public class TimController {
       if (null == rsuResponse || null == rsuResponse.getResponse()) {
          // Timeout
          returnCode = HttpStatus.REQUEST_TIMEOUT;
-         bodyMsg = jsonKeyValue(ERRSTR, "Timeout.");
+         bodyMsg = JsonUtils.jsonKeyValue(ERRSTR, "Timeout.");
       } else if (rsuResponse.getResponse().getErrorStatus() == 0) {
          // Success
          returnCode = HttpStatus.OK;
-         bodyMsg = jsonKeyValue("deleted_msg", Integer.toString(index));
+         bodyMsg = JsonUtils.jsonKeyValue("deleted_msg", Integer.toString(index));
       } else if (rsuResponse.getResponse().getErrorStatus() == 12) {
          // Message previously deleted or doesn't exist
          returnCode = HttpStatus.BAD_REQUEST;
-         bodyMsg = jsonKeyValue(ERRSTR, "No message at index ".concat(Integer.toString(index)));
+         bodyMsg = JsonUtils.jsonKeyValue(ERRSTR, "No message at index ".concat(Integer.toString(index)));
       } else if (rsuResponse.getResponse().getErrorStatus() == 10) {
          // Invalid index
          returnCode = HttpStatus.BAD_REQUEST;
-         bodyMsg = jsonKeyValue(ERRSTR, "Invalid index ".concat(Integer.toString(index)));
+         bodyMsg = JsonUtils.jsonKeyValue(ERRSTR, "Invalid index ".concat(Integer.toString(index)));
       } else {
          // Misc error
          returnCode = HttpStatus.BAD_REQUEST;
-         bodyMsg = jsonKeyValue(ERRSTR, rsuResponse.getResponse().getErrorStatusText());
+         bodyMsg = JsonUtils.jsonKeyValue(ERRSTR, rsuResponse.getResponse().getErrorStatusText());
       }
 
       logger.info("Delete call response code: {}, message: {}", returnCode, bodyMsg);
@@ -293,7 +206,7 @@ public class TimController {
       if (null == jsonString || jsonString.isEmpty()) {
          String errMsg = "Empty request.";
          logger.error(errMsg);
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
       }
 
       OdeTravelerInputData odeTID = null;
@@ -322,11 +235,11 @@ public class TimController {
       } catch (TimControllerException e) {
          String errMsg = "Missing or invalid argument: " + e.getMessage();
          logger.error(errMsg, e);
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
       } catch (Exception e) {
          String errMsg = "Malformed or non-compliant JSON.";
          logger.error(errMsg, e);
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
       }
 
       // Add metadata to message and publish to kafka
@@ -344,7 +257,7 @@ public class TimController {
       } catch (ParseException e) {
         String errMsg = "Invalid timestamp in tim record: " + tim.getTimeStamp();
         logger.error(errMsg, e);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
       }
       
       OdeTimData odeTimData = new OdeTimData(timMetadata, timDataPayload);
@@ -362,7 +275,7 @@ public class TimController {
             && request.getSdw() == null) {
          String warningMsg = "Warning: TIM contains no RSU, SNMP, or SDW fields. Message only published to POJO broadcast stream.";
          logger.warn(warningMsg);
-         return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue(WARNING, warningMsg));
+         return ResponseEntity.status(HttpStatus.OK).body(JsonUtils.jsonKeyValue(WARNING, warningMsg));
       }
 
       // Craft ASN-encodable TIM
@@ -376,7 +289,7 @@ public class TimController {
       } catch (JsonUtilsException e) {
          String errMsg = "Error converting to encodable TravelerInputData.";
          logger.error(errMsg, e);
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
       }
 
       try {
@@ -405,14 +318,14 @@ public class TimController {
       } catch (JsonUtilsException | XmlUtilsException | ParseException e) {
          String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
          logger.error(errMsg, e);
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
       } catch (Exception e) {
          String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
          logger.error(errMsg, e);
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonKeyValue(ERRSTR, errMsg));
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
       }
 
-      return ResponseEntity.status(HttpStatus.OK).body(jsonKeyValue(SUCCESS, "true"));
+      return ResponseEntity.status(HttpStatus.OK).body(JsonUtils.jsonKeyValue(SUCCESS, "true"));
    }
 
   public static String obfuscateRsuPassword(String message) {
@@ -464,18 +377,6 @@ public class TimController {
    public ResponseEntity<String> postTim(@RequestBody String jsonString) {
 
       return depositTim(jsonString, ServiceRequest.OdeInternal.RequestVerb.POST);
-   }
-
-   /**
-    * Takes in a key, value pair and returns a valid json string such as
-    * {"error":"message"}
-    * 
-    * @param key
-    * @param value
-    * @return
-    */
-   public static String jsonKeyValue(String key, String value) {
-      return "{\"" + key + "\":\"" + value + "\"}";
    }
 
    private DdsAdvisorySituationData buildASD(ServiceRequest travelerInputData) {
