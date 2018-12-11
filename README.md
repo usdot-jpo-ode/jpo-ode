@@ -1,4 +1,5 @@
 
+
 Master: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=master)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=usdot.jpo.ode:jpo-ode)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode)
 
 Develop: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=develop)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=usdot.jpo.ode:jpo-ode:develop)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode%3Adevelop)
@@ -62,21 +63,18 @@ All stakeholders are invited to provide input to these documents. Stakeholders s
 - Main repository on GitHub (public)
 	- https://github.com/usdot-jpo-ode/jpo-ode
 	- git@github.com:usdot-jpo-ode/jpo-ode.git
-- Security repository on GitHub (public)
-        - https://github.com/usdot-jpo-ode/jpo-security.git
-	- git@github.com:usdot-jpo-ode/jpo-security.git
-- Private repository on BitBucket
-	- https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
-	- git@bitbucket.org:usdot-jpo-ode/jpo-ode-private.git
 - Data Privacy Module on Github (public)
 	- https://github.com/usdot-jpo-ode/jpo-cvdp
 	- git@github.com/usdot-jpo-ode/jpo-cvdp
 - S3 Depositor Module on Github (public)
 	- https://github.com/usdot-jpo-ode/jpo-s3-deposit
 	- gith@github.com/usdot-jpo-ode/jpo-s3-deposit
+- Security services repository on GitHub (public)
+        - https://github.com/usdot-jpo-ode/jpo-security-svcs.git
+	- git@github.com:usdot-jpo-ode/jpo-security-svcs.git
 
 ### Agile Project Management - Jira
-https://usdotjpoode.atlassian.net/secure/Dashboard.jspa
+https://usdotjpoode.atlassian.net/secure/RapidBoard.jspa?projectKey=ODE
 
 ### Wiki - Confluence
 https://usdotjpoode.atlassian.net/wiki/
@@ -152,8 +150,8 @@ Disable `git core.autocrlf` (One Time Only)
 git config --global core.autocrlf false
 ```
 
-#### Step 1 - Clone public repository
-ODE software consists of the following modules:
+#### Step 1 - Download the Source Code
+ODE software consists of the following modules hosted on GitHub:
 
 |Name|Visibility|Description|
 |----|----------|-----------|
@@ -163,7 +161,7 @@ ODE software consists of the following modules:
 |[asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)|public|ASN.1 Encoder/Decoder module|
 |[jpo-security-svcs](https://github.com/usdot-jpo-ode/jpo-security-svcs)|public|Provides cryptographic services.|
 
-Clone the repositories by running these commands:
+To download the stable (default branch) source code for the first time, clone the repositories by running the following commands:
 
 ```bash
 git clone --recurse-submodules https://github.com/usdot-jpo-ode/jpo-ode.git
@@ -176,11 +174,37 @@ git clone --recurse-submodules https://github.com/usdot-jpo-ode/jpo-ode.git
 
 Once you have these repositories obtained, you are ready to build and deploy the application.
 
+##### Downloading the source code from a non-default branch
+The above steps to pull the code from GitHub repository pulls it from the default branch which is the stable branch. If you wish to pull the source code from a branch that is still under development or beta testing, you will need to specify the branch to pull from. The following commands aid you in that action.
+```
+# Backup user provided source or configuration files used by submodules
+cp asn1_codec/asn1c_combined/J2735_201603DA.ASN .
+
+#Run the following commands to reset existing branch
+git reset --hard
+git submodule foreach --recursive git reset --hard
+
+# Pull from the non-default branch
+git checkout <branch_name>
+git pull origin <branch_name>
+
+# The next command wipes out all of the submodules and re-initializes them. 
+git submodule deinit -f . && git submodule update --recursive --init
+
+# Restore user provided source or configuration files used by submodules
+cp ./J2735_201603DA.ASN asn1_codec/asn1c_combined/
+```
+**Note**: *These commands can also be performed using the provided script `update_branch`.*
+
 ---
 ### Build and Deploy the Application
 
+ODE uses Docker for building and running the executable. Familiarize yourself with Docker and follow the instructions in the [README.md](docker/README.md).
 
-ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the *sample.env* file found in the root of the jpo-ode repository.
+#### Step 1: Configuration
+If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the $DOCKER_HOST_IP:9092, or wish to set the CAS username/password, `ODE_EXTERNAL_IPVs`, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
+
+ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the *sample.env* file found in the root of the `jpo-ode` repository.
 
 Instructions for how to use the *sample.env* file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
 
@@ -194,74 +218,36 @@ You must rename `sample.env` to `.env` for Docker to automatically read the file
 
 **Note** In order for Docker to automatically read the environment variable file, you must rename it from `sample.env` to `.env`.
 
-Note - if you do not intend on using this feature, edit the docker-compose.yml file and comment out (add a `#` to) the lines including and below `s3dep:`.
+#### Step 2: Build and deploy the application.
 
-Navigate to the root directory of the `jpo-s3-depositor` project:
-
-```bash
-mvn clean compile assembly:single install
-```
-
-#### Step 2: (Optional)
-Familiarize yourself with Docker and follow the instructions in the [README.md](docker/README.md).
-
-If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the $DOCKER_HOST_IP:9092, or wish to set the CAS username/password, `ODE_EXTERNAL_IPVs`, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
-
-#### Step 3: Build and deploy the application.
-
-Copy the fillowing files from jpo-ode directory into your DOCKER_SHARED_VOLUME directory.
+Copy the following files from `jpo-ode` directory into your DOCKER_SHARED_VOLUME directory.
 - Copy jpo-ode/ppm.properties to ${DOCKER_SHARED_VOLUME}/config.properties. Open the newly copied `config.properties` file in a text editor and update the `metadata.broker.list=your.docker.host.ip:9092` line with your system's DOCKER_HOST_IP in place of the dummy `your.docker.host.ip` string. 
 - Copy jpo-ode/adm.properties to ${DOCKER_SHARED_VOLUME}/adm.properties
 - Copy jpo-ode/aem.properties to ${DOCKER_SHARED_VOLUME}/aem.properties
 
-Navigate to the root directory of the jpo-ode project. The easiest way to build _and_ run the ODE application and all its submodules is using Docker. The script ```clean-build-and-deploy``` executes all the necessary commands to do just that:
-
+Navigate to the root directory of the jpo-ode project and run the following command:
 ```
-#!/bin/bash
-docker-compose stop
-docker-compose rm -f -v
-mvn clean install
 docker-compose up --build -d
 docker-compose ps
 ```
-
-For other build options, see the next section. Otherwise, move on to section [V. Running ODE Application](#running)
-
-[Back to top](#toc)
-
----
-### Other Build/Deploy Options
-
-#### Building ODE without Deploying
-To build the ODE docker container images but not deploy it, run the following commands:
-
+To bring down the services and remove the running containers run the following command:
 ```
- cd jpo-ode (or cd ../jpo-ode if you are in any sub-directory)
- mvn clean install
- docker-compose rm -f -v
- docker-compose build
+docker-compose down
 ```
-
-Alternatively, you may run the ```clean-build``` script.
-
-#### Deploying ODE Application on a Docker Host
-To deploy the the application on the docker host configured in your DOCKER_HOST_IP machine, run the following:
-
-```bash
-docker-compose up --no-recreate -d
+For a fresh restart, run:
 ```
-
-**NOTE**: It's important to run ```docker-compose up``` with ```no-recreate``` option. Otherwise you may run into [this issue] (https://github.com/wurstmeister/kafka-docker/issues/100).
-
-Alternatively, run ```deploy``` script.
-
-Check the deployment by running ```docker-compose ps```. You can start and stop containers using ```docker-compose start``` and ```docker-compose stop``` commands.
-If using the multi-broker docker-compose file, you can change the scaling by running ```docker-compose scale <container>=n``` where container is the container you would like to scale and n is the number of instances. For example, ```docker-compose scale kafka=3```.
+docker-compose down
+docker-compose up --build -d
+docker-compose ps
+```
+Check the deployment by running `docker-compose ps`. You can start and stop containers using `docker-compose start` and `docker-compose stop` commands.
+If using the multi-broker docker-compose file, you can change the scaling by running `docker-compose scale <container>=n` where container is the container you would like to scale and n is the number of instances. For example, `docker-compose scale kafka=3`.
 
 #### Running ODE Application on localhost
 You can run the application on your local machine while other services are deployed on a host environment. To do so, run the following:
 ```bash
  docker-compose start zookeeper kafka
+ mvn clean install
  java -jar jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar
 ```
 
@@ -269,8 +255,8 @@ You can run the application on your local machine while other services are deplo
 
 <a name="running"/>
 
-## V. Running ODE Application
-Once the ODE is running, you should be able to access the jpo-ode web UI at `localhost:8080`.
+## V. Using ODE Application
+Once the ODE is deployed and running, you should be able to access the `jpo-ode` web UI at `localhost:8080`.
 
 1. Press the `Connect` button to connect to the ODE WebSocket service.
 2. Press `Choose File` button to select an OBU log file containing BSMs and/or TIM messages as specified by the WYDOT CV Pilot project. See below documents for details:

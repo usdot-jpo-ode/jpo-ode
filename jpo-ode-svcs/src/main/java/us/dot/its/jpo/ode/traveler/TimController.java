@@ -71,14 +71,6 @@ import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 @Controller
 public class TimController {
 
-  public static final String GEOGRAPHICAL_PATH_STRING = "GeographicalPath";
-
-  public static final String REGIONS_STRING = "regions";
-
-  public static final String TRAVELER_DATA_FRAME_STRING = "TravelerDataFrame";
-
-  public static final String DATA_FRAMES_STRING = "dataFrames";
-
   public static final String RSUS_STRING = "rsus";
 
   public static final String REQUEST_STRING = "request";
@@ -431,11 +423,6 @@ public class TimController {
 
       ObjectNode timObj = (ObjectNode) inOrderTidObj.get("tim");
 
-      ArrayNode dataFrames = convertRegionsArray(timObj);
-
-      convertDataFramesArrays(timObj, dataFrames);
-      
-      
       //Create valid payload from scratch
       OdeMsgPayload payload = null;
 
@@ -517,38 +504,38 @@ public class TimController {
       return fixedXml;
    }
 
-  private static void convertEncodingsArray(DdsAdvisorySituationData asd, ObjectNode metaObject) throws JsonUtilsException, XmlUtilsException {
-    ArrayNode encodings = buildEncodings(asd);
-    ObjectNode enc = XmlUtils.createEmbeddedJsonArrayForXmlConversion(AppContext.ENCODINGS_STRING, encodings);
-    metaObject.set(AppContext.ENCODINGS_STRING, enc);
-  }
+   private static void convertEncodingsArray(DdsAdvisorySituationData asd, ObjectNode metaObject) throws JsonUtilsException, XmlUtilsException {
+     ArrayNode encodings = buildEncodings(asd);
+     ObjectNode enc = XmlUtils.createEmbeddedJsonArrayForXmlConversion(AppContext.ENCODINGS_STRING, encodings);
+     metaObject.set(AppContext.ENCODINGS_STRING, enc);
+   }
 
-  private static void convertRsusArray(ObjectNode inOrderTidObj, ObjectNode metaObject) {
-    //Convert 'rsus' JSON array to XML array
-    ObjectNode request = (ObjectNode) inOrderTidObj.get(REQUEST_STRING);
-    ObjectNode rsus = XmlUtils.createEmbeddedJsonArrayForXmlConversion(RSUS_STRING, (ArrayNode) request.get(RSUS_STRING));
-    request.set(RSUS_STRING, rsus);
-    metaObject.set(REQUEST_STRING, request);
-  }
-
-  private static void convertDataFramesArrays(ObjectNode timObj, ArrayNode dataFrames) {
-    //Convert 'dataFrames' Array so that it can be encoded by ASN.1
-    ObjectNode dataFramesNew = XmlUtils.createEmbeddedJsonArrayForXmlConversion(TRAVELER_DATA_FRAME_STRING, dataFrames);
-    timObj.set(DATA_FRAMES_STRING, dataFramesNew);
-  }
-
-  private static ArrayNode convertRegionsArray(ObjectNode timObj) {
-    //Convert 'regions' Array so that it can be encoded by ASN.1
-    ArrayNode dataFrames = (ArrayNode) timObj.get(DATA_FRAMES_STRING);
-    for (int j = 0; j < dataFrames.size(); j++) {
-      ObjectNode dataFrame = (ObjectNode) dataFrames.get(j);
-
-      ArrayNode regionsOld = (ArrayNode) dataFrame.get(REGIONS_STRING);
-      ObjectNode regionsNew = XmlUtils.createEmbeddedJsonArrayForXmlConversion(GEOGRAPHICAL_PATH_STRING, regionsOld);
-      dataFrame.set(REGIONS_STRING, regionsNew);
+    private static void convertRsusArray(ObjectNode inOrderTidObj, ObjectNode metaObject) {
+      //Convert 'rsus' JSON array to XML array
+      ObjectNode request = (ObjectNode) inOrderTidObj.get(REQUEST_STRING);
+      ObjectNode rsus = XmlUtils.createEmbeddedJsonArrayForXmlConversion(RSUS_STRING, (ArrayNode) request.get(RSUS_STRING));
+      request.set(RSUS_STRING, rsus);
+      metaObject.set(REQUEST_STRING, request);
     }
-    return dataFrames;
-  }
+
+//  private static void convertDataFramesArrays(ObjectNode timObj, ArrayNode dataFrames) {
+//    //Convert 'dataFrames' Array so that it can be encoded by ASN.1
+//    ObjectNode dataFramesNew = XmlUtils.createEmbeddedJsonArrayForXmlConversion(TRAVELER_DATA_FRAME_STRING, dataFrames);
+//    timObj.set(DATA_FRAMES_STRING, dataFramesNew);
+//  }
+
+//  private static ArrayNode convertRegionsArray(ObjectNode timObj) {
+//    //Convert 'regions' Array so that it can be encoded by ASN.1
+//    ArrayNode dataFrames = (ArrayNode) timObj.get(DATA_FRAMES_STRING);
+//    for (int j = 0; j < dataFrames.size(); j++) {
+//      ObjectNode dataFrame = (ObjectNode) dataFrames.get(j);
+//
+//      ArrayNode regionsOld = (ArrayNode) dataFrame.get(REGIONS_STRING);
+//      ObjectNode regionsNew = XmlUtils.createEmbeddedJsonArrayForXmlConversion(GEOGRAPHICAL_PATH_STRING, regionsOld);
+//      dataFrame.set(REGIONS_STRING, regionsNew);
+//    }
+//    return dataFrames;
+//  }
 
    private static ArrayNode buildEncodings(DdsAdvisorySituationData asd) throws JsonUtilsException, XmlUtilsException {
       ArrayNode encodings = JsonUtils.newArrayNode();

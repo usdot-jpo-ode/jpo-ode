@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735ObstacleDetection;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VertEvent;
-import us.dot.its.jpo.ode.plugin.j2735.builders.GNSSstatusBuilder.GNSstatusNames;
 
 public class ObstacleDetectionBuilder {
 
