@@ -75,15 +75,21 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
                  Object rsu_ = rsusIn.get(TimController.RSUS_STRING);
                  JSONArray rsusOut = new JSONArray();
                  if (rsu_ instanceof JSONArray) {
+                   logger.debug("Multiple RSUs exist in the request: {}", request);
                    JSONArray rsusInArray = (JSONArray) rsu_;
                    for (int i = 0; i < rsusInArray.length(); i++) {
                      JSONObject rsu = (JSONObject) rsusInArray.get(i);
                      rsusOut.put(rsu);
+                     request.put(TimController.RSUS_STRING, rsusOut);
                    }
-                 } else {
+                 } else if (rsu_ instanceof JSONObject) {
+                   logger.debug("Single RSU exists in the request: {}", request);
                    rsusOut.put(rsu_);
+                   request.put(TimController.RSUS_STRING, rsusOut);
+                 } else {
+                   logger.debug("No RSUs exist in the request: {}", request);
+                   request.remove(TimController.RSUS_STRING);
                  }
-                 request.put(TimController.RSUS_STRING, rsusOut);
 
                  // Convert JSON to POJO
                  ServiceRequest servicerequest = getServicerequest(consumedObj);
