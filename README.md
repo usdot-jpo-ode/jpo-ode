@@ -132,11 +132,11 @@ Read the following guides to familiarize yourself with ODE's Docker and Kafka mo
 
 **Docker**
 
-[README.md](docker/README.md)
+[README](docker.md)
 
 **Kafka**
 
-[README.md](docker/kafka/README.md)
+[README](kafka.md)
 
 ---
 ### Obtain the Source Code

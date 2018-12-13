@@ -106,7 +106,7 @@ public class TimDepositController {
 
    /**
     * Send a TIM with the appropriate deposit type, ODE.PUT or ODE.POST
-    * 
+    *
     * @param jsonString
     * @param verb
     * @return
@@ -265,7 +265,7 @@ public class TimDepositController {
 
    /**
     * Update an already-deposited TIM
-    * 
+    *
     * @param jsonString TIM in JSON
     * @return list of success/failures
     */
@@ -279,7 +279,7 @@ public class TimDepositController {
 
    /**
     * Deposit a new TIM
-    * 
+    *
     * @param jsonString TIM in JSON
     * @return list of success/failures
     */
@@ -378,9 +378,14 @@ public class TimDepositController {
       metadata.setRecordGeneratedAt(timMetadata.getRecordGeneratedAt());
       ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());
 
-      convertRsusArray(inOrderTidObj, metaObject);
+      ObjectNode request = (ObjectNode) inOrderTidObj.get(REQUEST_STRING);
+      metaObject.set(REQUEST_STRING, request);
 
-      // Add 'encodings' array to metadata
+      if (request.has(RSUS_STRING)) {
+        convertRsusArray(request, metaObject);
+      }
+
+      //Add 'encodings' array to metadata
       convertEncodingsArray(asd, metaObject);
 
       ObjectNode message = JsonUtils.newNode();
@@ -429,14 +434,11 @@ public class TimDepositController {
       metaObject.set(AppContext.ENCODINGS_STRING, enc);
    }
 
-   private static void convertRsusArray(ObjectNode inOrderTidObj, ObjectNode metaObject) {
-      // Convert 'rsus' JSON array to XML array
-      ObjectNode request = (ObjectNode) inOrderTidObj.get(REQUEST_STRING);
-      ObjectNode rsus = XmlUtils.createEmbeddedJsonArrayForXmlConversion(RSUS_STRING,
-            (ArrayNode) request.get(RSUS_STRING));
+    private static void convertRsusArray(ObjectNode request, ObjectNode metaObject) {
+      //Convert 'rsus' JSON array to XML array
+      ObjectNode rsus = XmlUtils.createEmbeddedJsonArrayForXmlConversion(RSUS_STRING, (ArrayNode) request.get(RSUS_STRING));
       request.set(RSUS_STRING, rsus);
-      metaObject.set(REQUEST_STRING, request);
-   }
+    }
 
 //  private static void convertDataFramesArrays(ObjectNode timObj, ArrayNode dataFrames) {
 //    //Convert 'dataFrames' Array so that it can be encoded by ASN.1
