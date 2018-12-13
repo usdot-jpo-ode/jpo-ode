@@ -558,7 +558,12 @@ public class TimController {
       metadata.setRecordGeneratedAt(timMetadata.getRecordGeneratedAt());
       ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());
 
-      convertRsusArray(inOrderTidObj, metaObject);
+      ObjectNode request = (ObjectNode) inOrderTidObj.get(REQUEST_STRING);
+      metaObject.set(REQUEST_STRING, request);
+      
+      if (request.has(RSUS_STRING)) {
+        convertRsusArray(request, metaObject);
+      }
       
       //Add 'encodings' array to metadata
       convertEncodingsArray(asd, metaObject);
@@ -609,12 +614,10 @@ public class TimController {
      metaObject.set(AppContext.ENCODINGS_STRING, enc);
    }
 
-    private static void convertRsusArray(ObjectNode inOrderTidObj, ObjectNode metaObject) {
+    private static void convertRsusArray(ObjectNode request, ObjectNode metaObject) {
       //Convert 'rsus' JSON array to XML array
-      ObjectNode request = (ObjectNode) inOrderTidObj.get(REQUEST_STRING);
       ObjectNode rsus = XmlUtils.createEmbeddedJsonArrayForXmlConversion(RSUS_STRING, (ArrayNode) request.get(RSUS_STRING));
       request.set(RSUS_STRING, rsus);
-      metaObject.set(REQUEST_STRING, request);
     }
 
 //  private static void convertDataFramesArrays(ObjectNode timObj, ArrayNode dataFrames) {

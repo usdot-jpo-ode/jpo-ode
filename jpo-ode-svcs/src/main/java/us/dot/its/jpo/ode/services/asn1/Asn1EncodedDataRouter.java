@@ -90,13 +90,13 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
                    logger.debug("No RSUs exist in the request: {}", request);
                    request.remove(TimController.RSUS_STRING);
                  }
-
-                 // Convert JSON to POJO
-                 ServiceRequest servicerequest = getServicerequest(consumedObj);
-
-                 processEncodedTim(servicerequest, consumedObj);
                }
             }
+
+            // Convert JSON to POJO
+            ServiceRequest servicerequest = getServicerequest(consumedObj);
+
+            processEncodedTim(servicerequest, consumedObj);
          } else {
             throw new Asn1EncodedDataRouterException("Invalid or missing '"
                 + TimController.REQUEST_STRING + "' object in the encoder response");
