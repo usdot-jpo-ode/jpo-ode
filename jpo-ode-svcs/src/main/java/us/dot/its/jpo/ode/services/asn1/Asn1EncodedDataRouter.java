@@ -14,7 +14,7 @@ import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.plugin.ServiceRequest;
 import us.dot.its.jpo.ode.services.asn1.Asn1CommandManager.Asn1CommandManagerException;
-import us.dot.its.jpo.ode.traveler.TimController;
+import us.dot.its.jpo.ode.traveler.TimDepositController;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -66,13 +66,13 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
           */
          JSONObject metadata = consumedObj.getJSONObject(AppContext.METADATA_STRING);
 
-         if (metadata.has(TimController.REQUEST_STRING)) {
-            JSONObject request = metadata.getJSONObject(TimController.REQUEST_STRING);
+         if (metadata.has(TimDepositController.REQUEST_STRING)) {
+            JSONObject request = metadata.getJSONObject(TimDepositController.REQUEST_STRING);
 
-            if (request.has(TimController.RSUS_STRING)) {
-               JSONObject rsusIn = (JSONObject) request.get(TimController.RSUS_STRING);
-               if (rsusIn.has(TimController.RSUS_STRING)) {
-                 Object rsu_ = rsusIn.get(TimController.RSUS_STRING);
+            if (request.has(TimDepositController.RSUS_STRING)) {
+               JSONObject rsusIn = (JSONObject) request.get(TimDepositController.RSUS_STRING);
+               if (rsusIn.has(TimDepositController.RSUS_STRING)) {
+                 Object rsu_ = rsusIn.get(TimDepositController.RSUS_STRING);
                  JSONArray rsusOut = new JSONArray();
                  if (rsu_ instanceof JSONArray) {
                    logger.debug("Multiple RSUs exist in the request: {}", request);
@@ -80,15 +80,15 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
                    for (int i = 0; i < rsusInArray.length(); i++) {
                      JSONObject rsu = (JSONObject) rsusInArray.get(i);
                      rsusOut.put(rsu);
-                     request.put(TimController.RSUS_STRING, rsusOut);
+                     request.put(TimDepositController.RSUS_STRING, rsusOut);
                    }
                  } else if (rsu_ instanceof JSONObject) {
                    logger.debug("Single RSU exists in the request: {}", request);
                    rsusOut.put(rsu_);
-                   request.put(TimController.RSUS_STRING, rsusOut);
+                   request.put(TimDepositController.RSUS_STRING, rsusOut);
                  } else {
                    logger.debug("No RSUs exist in the request: {}", request);
-                   request.remove(TimController.RSUS_STRING);
+                   request.remove(TimDepositController.RSUS_STRING);
                  }
 
                  // Convert JSON to POJO
@@ -99,7 +99,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             }
          } else {
             throw new Asn1EncodedDataRouterException("Invalid or missing '"
-                + TimController.REQUEST_STRING + "' object in the encoder response");
+                + TimDepositController.REQUEST_STRING + "' object in the encoder response");
          }
       } catch (Exception e) {
          String msg = "Error in processing received message from ASN.1 Encoder module: " + consumedData;
@@ -110,7 +110,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
    }
 
    public ServiceRequest getServicerequest(JSONObject consumedObj) {
-      String sr = consumedObj.getJSONObject(AppContext.METADATA_STRING).getJSONObject(TimController.REQUEST_STRING).toString();
+      String sr = consumedObj.getJSONObject(AppContext.METADATA_STRING).getJSONObject(TimDepositController.REQUEST_STRING).toString();
       logger.debug("ServiceRequest: {}", sr);
 
       // Convert JSON to POJO
