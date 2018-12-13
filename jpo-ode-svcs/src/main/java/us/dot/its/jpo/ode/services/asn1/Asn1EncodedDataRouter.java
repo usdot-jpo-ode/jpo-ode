@@ -80,8 +80,8 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
                    for (int i = 0; i < rsusInArray.length(); i++) {
                      JSONObject rsu = (JSONObject) rsusInArray.get(i);
                      rsusOut.put(rsu);
-                     request.put(TimDepositController.RSUS_STRING, rsusOut);
                    }
+                   request.put(TimDepositController.RSUS_STRING, rsusOut);
                  } else if (rsu_ instanceof JSONObject) {
                    logger.debug("Single RSU exists in the request: {}", request);
                    rsusOut.put(rsu_);
@@ -161,7 +161,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             String base64EncodedTim = CodecUtils.toBase64(
                CodecUtils.fromHex(hexEncodedTim));
             String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim );
-   
+
             try {
                hexEncodedTim = CodecUtils.toHex(
                   CodecUtils.fromBase64(
@@ -170,15 +170,15 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
                logger.error("Unable to parse signed message response {}", e1);
             }
          }
-         
+
          logger.debug("Sending message to RSUs...");
          if (null != request.getSnmp() && null != request.getRsus() && null != hexEncodedTim) {
             asn1CommandManager.sendToRsus(request, hexEncodedTim);
          }
-         
+
          if (request.getSdw() != null) {
             // Case 2 only
-             
+
             logger.debug("Publishing message for round 2 encoding!");
             String xmlizedMessage = asn1CommandManager.packageSignedTimIntoAsd(request, hexEncodedTim);
 
@@ -214,7 +214,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       JSONObject dataObj = consumedObj
             .getJSONObject(AppContext.PAYLOAD_STRING)
             .getJSONObject(AppContext.DATA_STRING);
-      
+
       if (null != request.getSdw()) {
          JSONObject asdObj = null;
          if (dataObj.has(Asn1CommandManager.ADVISORY_SITUATION_DATA_STRING)) {
@@ -222,7 +222,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          } else {
             logger.error("ASD structure present in metadata but not in JSONObject!");
          }
-        
+
         if (null != asdObj) {
            String asdBytes = asdObj.getString("bytes");
 
@@ -244,23 +244,23 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
            logger.error(msg, consumedObj.toString());
         }
       }
-      
+
       if (dataObj.has("MessageFrame")) {
          JSONObject mfObj = dataObj.getJSONObject("MessageFrame");
          String encodedTim = mfObj.getString("bytes");
          logger.debug("Encoded message: {}", encodedTim);
-         
+
         // only send message to rsu if snmp, rsus, and message frame fields are present
         if (null != request.getSnmp() && null != request.getRsus() && null != encodedTim) {
            logger.debug("Encoded message: {}", encodedTim);
-           HashMap<String, String> rsuResponseList = 
+           HashMap<String, String> rsuResponseList =
                  asn1CommandManager.sendToRsus(request, encodedTim);
            responseList.putAll(rsuResponseList);
          }
       }
-      
+
       logger.info("TIM deposit response {}", responseList);
-      
+
       return;
    }
 }
