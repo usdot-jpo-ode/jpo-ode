@@ -6,7 +6,6 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Vector;
-import java.util.concurrent.Executors;
 
 import org.junit.Test;
 import org.snmp4j.PDU;
@@ -23,29 +22,19 @@ import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
-import us.dot.its.jpo.ode.util.JsonUtils;
-import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-public class TimControllerQueryTest {
+public class TimQueryControllerTest {
 
    @Tested
-   TimController testTimController;
+   TimQueryController testTimQueryController;
 
    @Injectable
    OdeProperties mockOdeProperties;
 
    @Capturing
-   MessageProducer<String, OdeObject> capturingMessageProducer;
-   @Capturing
-   JsonUtils capturingJsonUtils;
-   @Capturing
    SnmpSession capturingSnmpSession;
-   
-   @Capturing
-   Executors capturingExecutors;
 
    @Mocked
    Snmp mockSnmp;
@@ -56,14 +45,14 @@ public class TimControllerQueryTest {
 
    @Test
    public void nullRequestShouldReturnError() {
-      ResponseEntity<?> result = testTimController.bulkQuery(null);
+      ResponseEntity<?> result = testTimQueryController.bulkQuery(null);
       assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
       assertEquals("{\"error\":\"Empty request.\"}", result.getBody());
    }
 
    @Test
    public void emptyRequestShouldReturnError() {
-      ResponseEntity<?> result = testTimController.bulkQuery("");
+      ResponseEntity<?> result = testTimQueryController.bulkQuery("");
       assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
       assertEquals("{\"error\":\"Empty request.\"}", result.getBody());
    }
@@ -81,7 +70,7 @@ public class TimControllerQueryTest {
          fail("Unexpected exception in expectations block: " + e);
       }
 
-      ResponseEntity<String> actualResponse = testTimController.bulkQuery("testString");
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery("{\"request\":{},\"tim\":{}}");
       assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actualResponse.getStatusCode());
       assertTrue(actualResponse.getBody().contains("Failed to create SNMP session."));
    }
@@ -99,7 +88,7 @@ public class TimControllerQueryTest {
          fail("Unexpected exception in expectations block: " + e);
       }
 
-      ResponseEntity<String> actualResponse = testTimController.bulkQuery("testString");
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery("{\"request\":{},\"tim\":{}}");
       assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actualResponse.getStatusCode());
       assertTrue(actualResponse.getBody().contains("Failed to create SNMP session."));
    }
@@ -119,7 +108,7 @@ public class TimControllerQueryTest {
          }
       };
 
-      ResponseEntity<String> actualResponse = testTimController.bulkQuery("testString");
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery("{\"request\":{},\"tim\":{}}");
       assertEquals(HttpStatus.BAD_REQUEST, actualResponse.getStatusCode());
       assertTrue(actualResponse.getBody().contains("Timeout, no response from RSU."));
    }
@@ -142,11 +131,11 @@ public class TimControllerQueryTest {
          }
       };
 
-      ResponseEntity<String> actualResponse = testTimController.bulkQuery("testString");
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery("{\"request\":{},\"tim\":{}}");
       assertEquals(HttpStatus.BAD_REQUEST, actualResponse.getStatusCode());
       assertTrue(actualResponse.getBody().contains("Timeout, no response from RSU."));
    }
-   
+
    @SuppressWarnings({ "rawtypes", "unchecked" })
    @Test
    public void testSuccessfulQuery() throws IOException {
@@ -163,17 +152,17 @@ public class TimControllerQueryTest {
 
             mockResponseEvent.getResponse();
             result = mockPDU;
-            
+
             mockPDU.getVariableBindings();
             result = new Vector<VariableBinding>();
          }
       };
 
-      ResponseEntity<String> actualResponse = testTimController.bulkQuery("testString");
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery("{\"request\":{},\"tim\":{}}");
       assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
       assertTrue(actualResponse.getBody().contains("indicies_set"));
    }
-   
+
    @Test
    public void testSuccessfulPopulatedQuery() throws IOException {
       new Expectations() {
@@ -189,18 +178,17 @@ public class TimControllerQueryTest {
 
             mockResponseEvent.getResponse();
             result = mockPDU;
-            
+
             Vector<VariableBinding> fakeVector = new Vector<VariableBinding>();
             fakeVector.add(new VariableBinding());
-            
+
             mockPDU.getVariableBindings();
             result = fakeVector;
          }
       };
 
-      ResponseEntity<String> actualResponse = testTimController.bulkQuery("testString");
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery("{\"request\":{},\"tim\":{}}");
       assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
       assertTrue(actualResponse.getBody().contains("indicies_set"));
    }
-
 }

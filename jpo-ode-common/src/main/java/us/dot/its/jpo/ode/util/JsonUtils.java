@@ -65,21 +65,10 @@ public class JsonUtils {
       // convert java object to JSON format,
       // and returned as JSON formatted string
       return verbose ? gsonVerbose.toJson(o) : gsonCompact.toJson(o);
-      // String json = null;
-      // try {
-      // json = mapper.writeValueAsString(o);
-      // } catch (JsonProcessingException e) {
-      // e.printStackTrace();
-      // }
-      // return json;
    }
 
    public static Object fromJson(String s, Class<?> clazz) {
       return gsonCompact.fromJson(s, clazz);
-      /*
-       * Object o = null; try { o = mapper.readValue(s, clazz); } catch
-       * (IOException e) { e.printStackTrace(); } return o;
-       */
    }
    
    public static Object jacksonFromJson(String s, Class<?> clazz) throws JsonUtilsException {
@@ -88,22 +77,7 @@ public class JsonUtils {
       } catch (IOException e) {
          throw new JsonUtilsException("Error deserializing JSON tree to " + clazz.getName(), e);
       }
-      /*
-       * Object o = null; try { o = mapper.readValue(s, clazz); } catch
-       * (IOException e) { e.printStackTrace(); } return o;
-       */
    }
-
-   // This method does not seem to work so commenting it out.
-   // public static Object fromObjectNode(JsonNode s, Class<?> clazz) {
-   // Object o = null;
-   // try {
-   // o = mapper.treeToValue(s, clazz);
-   // } catch (IOException e) {
-   // e.printStackTrace();
-   // }
-   // return o;
-   // }
 
    public static String newJson(String key, Object value) {
       return newObjectNode(key, value).toString();
@@ -114,11 +88,6 @@ public class JsonUtils {
    }
    
    public static ObjectNode newObjectNode(String key, Object value) {
-
-      // JsonObject json = new JsonObject();
-      //
-      // json.add(key, gson.toJsonTree(value));
-
       ObjectNode json = mapper.createObjectNode();
       json.putPOJO(key, value);
       return json;
@@ -185,5 +154,17 @@ public class JsonUtils {
          nodeProps.put(element.getKey(), element.getValue());
       }
       return nodeProps;
+   }
+   
+   /**
+    * Takes in a key, value pair and returns a valid JSON string such as
+    * {"error":"message"}
+    * 
+    * @param key
+    * @param value
+    * @return
+    */
+   public static String jsonKeyValue(String key, String value) {
+      return "{\"" + key + "\":\"" + value + "\"}";
    }
 }
