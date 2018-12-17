@@ -15,7 +15,7 @@ public class OdeTimDataCreatorHelper {
 
       JSONObject metadata = timData.getJSONObject(AppContext.METADATA_STRING);
       metadata.put("payloadType", OdeTimPayload.class.getName());
-      metadata.remove("encodings");
+      metadata.remove(AppContext.ENCODINGS_STRING);
       
       JSONObject payload = timData.getJSONObject(AppContext.PAYLOAD_STRING);
       payload.put(AppContext.DATA_TYPE_STRING, "TravelerInformation");

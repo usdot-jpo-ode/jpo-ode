@@ -147,6 +147,7 @@ public class TimControllerQueryTest {
       assertTrue(actualResponse.getBody().contains("Timeout, no response from RSU."));
    }
    
+   @SuppressWarnings({ "rawtypes", "unchecked" })
    @Test
    public void testSuccessfulQuery() throws IOException {
       new Expectations() {

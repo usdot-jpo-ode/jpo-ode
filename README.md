@@ -21,9 +21,9 @@ The ITS ODE is a real-time virtual data router that ingests and processes operat
 
 [III. Collaboration Tools](#collaboration-tools)
 
-[IV. Getting Started](#getting-started)
+[IV. Quickstart Guide](#quickstart-guide)
 
-[V. Testing the Application](#testing)
+[V. Running the Application](#running)
 
 [VI. ODE Limitation](#dev-tools)
 
@@ -59,24 +59,22 @@ All stakeholders are invited to provide input to these documents. Stakeholders s
 ## III. Collaboration Tools
 
 ### Source Repositories - GitHub
+
 - Main repository on GitHub (public)
 	- https://github.com/usdot-jpo-ode/jpo-ode
 	- git@github.com:usdot-jpo-ode/jpo-ode.git
-- Security repository on GitHub (public)
-        - https://github.com/usdot-jpo-ode/jpo-security.git
-	- git@github.com:usdot-jpo-ode/jpo-security.git
-- Private repository on BitBucket
-	- https://usdot-jpo-ode@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
-	- git@bitbucket.org:usdot-jpo-ode/jpo-ode-private.git
 - Data Privacy Module on Github (public)
 	- https://github.com/usdot-jpo-ode/jpo-cvdp
 	- git@github.com/usdot-jpo-ode/jpo-cvdp
 - S3 Depositor Module on Github (public)
 	- https://github.com/usdot-jpo-ode/jpo-s3-deposit
 	- gith@github.com/usdot-jpo-ode/jpo-s3-deposit
+- Security services repository on GitHub (public)
+        - https://github.com/usdot-jpo-ode/jpo-security-svcs.git
+	- git@github.com:usdot-jpo-ode/jpo-security-svcs.git
 
 ### Agile Project Management - Jira
-https://usdotjpoode.atlassian.net/secure/Dashboard.jspa
+https://usdotjpoode.atlassian.net/secure/RapidBoard.jspa?projectKey=ODE
 
 ### Wiki - Confluence
 https://usdotjpoode.atlassian.net/wiki/
@@ -84,6 +82,8 @@ https://usdotjpoode.atlassian.net/wiki/
 ### Continuous Integration and Delivery
 https://travis-ci.org/usdot-jpo-ode/jpo-ode
 
+<details><summary>Using Travis for your build</summary>
+<br>
 To allow Travis run your build when you push your changes to your public fork of the jpo-ode repository, you must define the following secure environment variable using Travis CLI (https://github.com/travis-ci/travis.rb).
 
 Run:
@@ -91,13 +91,7 @@ Run:
 ```
 travis login --org
 ```
-Enter personal github account credentials and then run this:
-
-```
-travis env set BITBUCKET_UN_APP_PW 'yourbitbucketusername:yourbitbucketpassword' -r yourtravisusername/jpo-ode
-```
-
-The login information will be saved and this needs to be done only once.
+Enter personal github account credentials.
 
 In order to allow Sonar to run, personal key must be added with this command:
 (Key can be obtained from the JPO-ODE development team)
@@ -105,87 +99,112 @@ In order to allow Sonar to run, personal key must be added with this command:
 ```
 travis env set SONAR_SECURITY_TOKEN <key> -pr <user-account>/<repo-name>
 ```
+</details>
+<br>
 
 ### Static Code Analysis
 https://sonarcloud.io/organizations/usdot-jpo-ode/projects
 
 [Back to top](#toc)
 
-<a name="getting-started"/>
+<a name="quickstart-guide"/>
 
-## IV. Getting Started
+## IV. Quickstart Guide
 
-The following instructions describe the procedure to fetch, build, and run the application. If you are installing the ODE in an Ubuntu environment, see this [quick start guide](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Prepare-a-fresh-Ubuntu-instance-for-ODE-installation).
+The following instructions describe the minimal procedure to fetch, build, and run the main ODE application. If you want to use the privacy protection module and/or S3 depositors, see the [extended features](#extended-features) section. Additionally, different build processes are covered in the extended features section.
+
+Some notes before you begin:
+* If you are installing the ODE in an Ubuntu environment, see this [preparation guide](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Prepare-a-fresh-Ubuntu-instance-for-ODE-installation) that covers installing all of the prerequisites.
+* Docker builds may fail if you are on a corporate network due to DNS resolution errors. 
+[See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
+* Additionally *git* commands may fail for similar reasons, you can fix this by running `export GIT_SSL_NO_VERIFY=1`.
+* Windows users may find more information on installing and using Docker [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management).
+* Users interested in Kafka may find more guidance and configuration options [here](docker/kafka/README.md).
 
 ### Prerequisites
 * JDK 1.8: http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html
 * Maven: https://maven.apache.org/install.html
 * Git: https://git-scm.com/
+* Docker: https://docs.docker.com/engine/installation/
+* Docker-Compose: https://docs.docker.com/compose/install/
 
-Additionally, read the following guides to familiarize yourself with Docker and Kafka.
+Read the following guides to familiarize yourself with ODE's Docker and Kafka modules.
 
 **Docker**
 
-[README.md](docker/README.md)
+[README](docker.md)
 
 **Kafka**
 
-[README.md](docker/kafka/README.md)
+[README](kafka.md)
 
 ---
 ### Obtain the Source Code
 
-**NOTE**: The ODE consists of four repositories:
+#### Step 0 - For Windows Users Only
+If running on Windows, please make sure that your global git config is set up to not convert End-of-Line characters during checkout. 
+
+Disable `git core.autocrlf` (One Time Only)
+
+```bash
+git config --global core.autocrlf false
+```
+
+#### Step 1 - Download the Source Code
+ODE software consists of the following modules hosted on GitHub:
 
 |Name|Visibility|Description|
 |----|----------|-----------|
 |[jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode)|public|Contains the public components of the application code.|
 |[jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)|public|Privacy Protection Module|
 |[jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)|public|S3 depositor service. Optional, comment out of `docker-compose.yml` file if not used.|
-|[jpo-security](https://github.com/usdot-jpo-ode/jpo-security)|public|Security dependencies.|
 |[asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)|public|ASN.1 Encoder/Decoder module|
-|jpo-ode-private|private|Proprietary dependencies.|
 |[jpo-security-svcs](https://github.com/usdot-jpo-ode/jpo-security-svcs)|public|Provides cryptographic services.|
 
-Building this application requires all repositories. If you need access to the private repositories, please reach out to a member of the development team.
-
-
-#### Step 1 - Clone public repository
-
-Disable Git core.autocrlf (Only the First Time)
-**NOTE**: If running on Windows, please make sure that your global git config is set up to not convert End-of-Line characters during checkout. This is important for building docker images correctly.
-
-```bash
-git config --global core.autocrlf false
-```
-
-Clone the source code from the GitHub repository using Git command:
+To download the stable (default branch) source code for the first time, clone the repositories by running the following commands:
 
 ```bash
 git clone --recurse-submodules https://github.com/usdot-jpo-ode/jpo-ode.git
 ```
-
 *Note*: Make sure you specify the --recurse-submodules option on the clone command line. This option will cause the cloning of all dependent submodules:
 - Privacy Protection Module (PPM) - [jpo-cvdp](https://github.com/usdot-jpo-ode/jpo-cvdp)
 - S3 Bucket Depositor - [jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)
-- Security - [jpo-security](https://github.com/usdot-jpo-ode/jpo-security)
 - Security Services Module- [jpo-security](https://github.com/usdot-jpo-ode/jpo-security-svcs)
 - ASN.1 CODEC - [asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)
 
-#### Step 2 - Clone private repository
+Once you have these repositories obtained, you are ready to build and deploy the application.
 
-Clone the source code from the BitBucket repository:
-
-```bash
-git clone --recurse-submodules https://yourbitbucketusername:yourbitbucketpassword@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git
+##### Downloading the source code from a non-default branch
+The above steps to pull the code from GitHub repository pulls it from the default branch which is the stable branch. If you wish to pull the source code from a branch that is still under development or beta testing, you will need to specify the branch to pull from. The following commands aid you in that action.
 ```
+# Backup user provided source or configuration files used by submodules
+cp asn1_codec/asn1c_combined/J2735_201603DA.ASN .
+
+#Run the following commands to reset existing branch
+git reset --hard
+git submodule foreach --recursive git reset --hard
+
+# Pull from the non-default branch
+git checkout <branch_name>
+git pull origin <branch_name>
+
+# The next command wipes out all of the submodules and re-initializes them. 
+git submodule deinit -f . && git submodule update --recursive --init
+
+# Restore user provided source or configuration files used by submodules
+cp ./J2735_201603DA.ASN asn1_codec/asn1c_combined/
+```
+**Note**: *These commands can also be performed using the provided script `update_branch`.*
 
 ---
 ### Build and Deploy the Application
 
-#### Environment Variables
+ODE uses Docker for building and running the executable. Familiarize yourself with Docker and follow the instructions in the [README.md](docker/README.md).
 
-ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the *sample.env* file found in the root of the jpo-ode repository.
+#### Step 1: Configuration
+If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the $DOCKER_HOST_IP:9092, or wish to set the CAS username/password, `ODE_EXTERNAL_IPVs`, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
+
+ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the *sample.env* file found in the root of the `jpo-ode` repository.
 
 Instructions for how to use the *sample.env* file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
 
@@ -199,100 +218,45 @@ You must rename `sample.env` to `.env` for Docker to automatically read the file
 
 **Note** In order for Docker to automatically read the environment variable file, you must rename it from `sample.env` to `.env`.
 
-The ODE application uses Maven to manage builds.
+#### Step 2: Build and deploy the application.
 
-**Step 1**: Build the private repository artifacts consisting of J2735 ASN.1 Java API and IEEE1609.2 ASN.1 Java API
+Copy the following files from `jpo-ode` directory into your DOCKER_SHARED_VOLUME directory.
+- Copy jpo-ode/ppm.properties to ${DOCKER_SHARED_VOLUME}/config.properties. Open the newly copied `config.properties` file in a text editor and update the `metadata.broker.list=your.docker.host.ip:9092` line with your system's DOCKER_HOST_IP in place of the dummy `your.docker.host.ip` string. 
+- Copy jpo-ode/adm.properties to ${DOCKER_SHARED_VOLUME}/adm.properties
+- Copy jpo-ode/aem.properties to ${DOCKER_SHARED_VOLUME}/aem.properties
 
-Navigate to the root directory of the `jpo-ode-private` project:
-
-```bash
- cd jpo-ode-private/
- mvn clean install
+Navigate to the root directory of the jpo-ode project and run the following command:
 ```
-
-**Step 2**: Build the public 1609.2 Security Library
-```bash
-cd jpo-security
-mvn clean install -DskipTests
-```
-
-**Step 3**: Build the S3 Bucket Depositor Service
-
-Note - if you do not intend on using this feature, edit the docker-compose.yml file and comment out (add a `#` to) the lines including and below `s3dep:`.
-
-Navigate to the root directory of the `jpo-s3-depositor` project:
-
-```bash
-mvn clean compile assembly:single install
-```
-
-**Step 4** (Optional)
-Familiarize yourself with Docker and follow the instructions in the [README.md](docker/README.md).
-
-If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the $DOCKER_HOST_IP:9092, or wish to set the CAS username/password, `ODE_EXTERNAL_IPVs`, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
-
-**Step 5**: Navigate to the root directory of the jpo-ode project.
-
-**Step 6**: Build and deploy the application.
-
-The easiest way to do this is to run the ```clean-build-and-deploy``` script.
-This script executes the following commands:
-
-```
-#!/bin/bash
-docker-compose stop
-docker-compose rm -f -v
-mvn clean install
 docker-compose up --build -d
 docker-compose ps
 ```
-
-For other build options, see the next section. Otherwise, move on to section [V. Testing ODE Application](#testing)
-
-[Back to top](#toc)
-
----
-### Other Build/Deploy Options
-
-#### Building ODE without Deploying
-To build the ODE docker container images but not deploy it, run the following commands:
-
+To bring down the services and remove the running containers run the following command:
 ```
- cd jpo-ode (or cd ../jpo-ode if you are in any sub-directory)
- mvn clean install
- docker-compose rm -f -v
- docker-compose build
+docker-compose down
 ```
-
-Alternatively, you may run the ```clean-build``` script.
-
-#### Deploying ODE Application on a Docker Host
-To deploy the the application on the docker host configured in your DOCKER_HOST_IP machine, run the following:
-
-```bash
-docker-compose up --no-recreate -d
+For a fresh restart, run:
 ```
-
-**NOTE**: It's important to run ```docker-compose up``` with ```no-recreate``` option. Otherwise you may run into [this issue] (https://github.com/wurstmeister/kafka-docker/issues/100).
-
-Alternatively, run ```deploy``` script.
-
-Check the deployment by running ```docker-compose ps```. You can start and stop containers using ```docker-compose start``` and ```docker-compose stop``` commands.
-If using the multi-broker docker-compose file, you can change the scaling by running ```docker-compose scale <container>=n``` where container is the container you would like to scale and n is the number of instances. For example, ```docker-compose scale kafka=3```.
+docker-compose down
+docker-compose up --build -d
+docker-compose ps
+```
+Check the deployment by running `docker-compose ps`. You can start and stop containers using `docker-compose start` and `docker-compose stop` commands.
+If using the multi-broker docker-compose file, you can change the scaling by running `docker-compose scale <container>=n` where container is the container you would like to scale and n is the number of instances. For example, `docker-compose scale kafka=3`.
 
 #### Running ODE Application on localhost
 You can run the application on your local machine while other services are deployed on a host environment. To do so, run the following:
 ```bash
  docker-compose start zookeeper kafka
+ mvn clean install
  java -jar jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar
 ```
 
 [Back to top](#toc)
 
-<a name="testing"/>
+<a name="running"/>
 
-## V. Testing ODE Application
-Once the ODE is running, you should be able to access the jpo-ode web UI at `localhost:8080`.
+## V. Using ODE Application
+Once the ODE is deployed and running, you should be able to access the `jpo-ode` web UI at `localhost:8080`.
 
 1. Press the `Connect` button to connect to the ODE WebSocket service.
 2. Press `Choose File` button to select an OBU log file containing BSMs and/or TIM messages as specified by the WYDOT CV Pilot project. See below documents for details:
@@ -331,8 +295,8 @@ The only requirement for deploying `asn1_codec` module on Docker is the setup of
 To run the ODE with PPM module, you must install and start the PPM service. PPM service communicates with other services through Kafka Topics. PPM will read from the specified "Raw BSM" topic and publish the result to the specified "Filtered Bsm" topic. These topic names are specified by the following ODE and PPM properties:
 
  - ODE properties for communications with PPM (set in application.properties)
-	 - ode.kafkaTopicBsmRawJson  (default = j2735BsmRawJson)
-	 - ode.kafkaTopicBsmFilteredJson (default = j2735BsmFilteredJson)
+	 - ode.kafkaTopicOdeBsmJson  (default = topic.OdeBsmJson)
+	 - ode.kafkaTopicFilteredOdeBsmJson (default = topic.FilteredOdeBsmJson)
  - PPM properties for communications with ODE (set in yourconfig.properties)
 	 - privacy.topic.consumer (default = j2735BsmRawJson)
 	 - privacy.topic.producer (default = j2735BsmFilteredJson)
@@ -374,9 +338,9 @@ Install the IDE of your choice:
 * STS: [https://spring.io/tools/sts/all](https://spring.io/tools/sts/all)
 * IntelliJ: [https://www.jetbrains.com/idea/](https://www.jetbrains.com/idea/)
 
-### Continuous Integration and Delivery
+### Continuous Integration
 
-To be added.
+* TravisCI: https://travis-ci.org/usdot-jpo-ode/jpo-ode
 
 ### Continous Deployment
 

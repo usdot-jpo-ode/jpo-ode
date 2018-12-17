@@ -30,9 +30,11 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
       this.odeProperties = odeProps;
       this.bsmProducer = new MessageProducer<String, OdeBsmData>(
             odeProps.getKafkaBrokers(), odeProps.getKafkaProducerType(), 
-            null, OdeBsmSerializer.class.getName());
+            null, OdeBsmSerializer.class.getName(), 
+            odeProperties.getKafkaTopicsDisabledSet());
       this.timProducer = MessageProducer.defaultStringMessageProducer(
-            odeProps.getKafkaBrokers(), odeProps.getKafkaProducerType());
+            odeProps.getKafkaBrokers(), odeProps.getKafkaProducerType(), 
+            odeProperties.getKafkaTopicsDisabledSet());
     }
 
     @Override

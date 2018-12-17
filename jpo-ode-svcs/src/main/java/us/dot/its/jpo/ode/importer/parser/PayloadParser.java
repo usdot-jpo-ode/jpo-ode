@@ -13,8 +13,8 @@ public class PayloadParser extends LogFileParser {
    protected short payloadLength;
    protected byte[] payload;
 
-   public PayloadParser(long bundleId) {
-      super(bundleId);
+   public PayloadParser() {
+      super();
    }
 
    @Override

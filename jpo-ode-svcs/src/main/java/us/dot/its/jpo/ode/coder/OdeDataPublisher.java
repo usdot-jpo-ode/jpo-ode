@@ -15,8 +15,10 @@ public class OdeDataPublisher extends MessagePublisher {
 
    public OdeDataPublisher(OdeProperties odeProps, String serializer) {
       super(odeProps);
-      this.objectProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(),
-            null, serializer);
+      this.objectProducer = new MessageProducer<>(odeProperties.getKafkaBrokers(), 
+            odeProperties.getKafkaProducerType(),
+            null, serializer, 
+            odeProperties.getKafkaTopicsDisabledSet());
    }
 
    public void publish(OdeData msg, String topic) {

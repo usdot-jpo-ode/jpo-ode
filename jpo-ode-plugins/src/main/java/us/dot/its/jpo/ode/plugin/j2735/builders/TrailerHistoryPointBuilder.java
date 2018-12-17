@@ -13,7 +13,7 @@ public class TrailerHistoryPointBuilder {
     public static J2735TrailerHistoryPoint genericTrailerHistoryPoint(JsonNode thp) {
         J2735TrailerHistoryPoint gthp = new J2735TrailerHistoryPoint();
 
-        gthp.setElevationOffset(OffsetBuilder.genericOffset_B12(thp.get("elevationOffset")));
+        gthp.setElevationOffset(OffsetBuilder.genericVertOffset_B07(thp.get("elevationOffset")));
         gthp.setHeading(HeadingBuilder.genericHeading(thp.get("heading")));
         gthp.setPivotAngle(AngleBuilder.genericAngle(thp.get("pivotAngle")));
         gthp.setPositionOffset(Node_XYBuilder.genericNode_XY(thp.get("positionOffset")));

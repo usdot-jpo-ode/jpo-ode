@@ -15,8 +15,8 @@ public class SecurityResultCodeParser extends LogFileParser {
 
    protected SecurityResultCode securityResultCode;
 
-   public SecurityResultCodeParser(long bundleId) {
-      super(bundleId);
+   public SecurityResultCodeParser() {
+      super();
    }
 
    @Override

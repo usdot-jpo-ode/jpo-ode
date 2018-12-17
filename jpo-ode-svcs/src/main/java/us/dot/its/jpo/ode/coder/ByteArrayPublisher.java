@@ -14,7 +14,8 @@ public class ByteArrayPublisher extends MessagePublisher {
    public ByteArrayPublisher(OdeProperties odeProps) {
       super(odeProps);
       this.bytesProducer = MessageProducer.defaultByteArrayMessageProducer(
-         odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType());
+         odeProperties.getKafkaBrokers(), odeProperties.getKafkaProducerType(), 
+         odeProperties.getKafkaTopicsDisabledSet());
 
    }
 

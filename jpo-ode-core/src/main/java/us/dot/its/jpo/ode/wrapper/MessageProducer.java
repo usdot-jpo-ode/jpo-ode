@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.wrapper;
 
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -28,13 +29,16 @@ public class MessageProducer<K, V> {
 
     private static Logger logger = LoggerFactory.getLogger(MessageProducer.class);
 
-    Producer<K, V> producer;
+    private Producer<K, V> producer;
+    private Set<String> enabledTopicsSet;
+
 
     public MessageProducer(
         String brokers, 
         String type, 
         String partitionerClass, 
-        String valueSerializerFQN) {
+        String valueSerializerFQN,
+        Set<String> enabledTopics) {
         Properties props = setDefaultProperties();
         
         props.put("bootstrap.servers", brokers);
@@ -45,26 +49,34 @@ public class MessageProducer<K, V> {
             props.put("partitioner.class", partitionerClass);
 
         producer = new KafkaProducer<>(props);
+        
+        this.enabledTopicsSet = enabledTopics;
 
-        logger.info("Producer Created");
+        logger.info("Producer Created with default properties");
     }
 
-    public MessageProducer(String brokers, String type, String partitionerClass, Properties props) {
+    public MessageProducer(
+       String brokers, String type, String partitionerClass, Properties props,
+       Set<String> enabledTopics) {
         props.put("bootstrap.servers", brokers);
         if (partitionerClass != null)
             props.put("partitioner.class", partitionerClass);
 
         producer = new KafkaProducer<>(props);
 
+        this.enabledTopicsSet = enabledTopics;
+
         logger.info("Producer Created");
     }
 
-    public static MessageProducer<String, byte[]> defaultByteArrayMessageProducer(String brokers, String type) {
-        return new MessageProducer<String, byte[]>(brokers, type, null, SERIALIZATION_BYTE_ARRAY_SERIALIZER);
+    public static MessageProducer<String, byte[]> defaultByteArrayMessageProducer(String brokers, String type,
+       Set<String> enabledTopics) {
+        return new MessageProducer<String, byte[]>(brokers, type, null, SERIALIZATION_BYTE_ARRAY_SERIALIZER, enabledTopics);
     }
 
-    public static MessageProducer<String, String> defaultStringMessageProducer(String brokers, String type) {
-        return new MessageProducer<String, String>(brokers, type, null, SERIALIZATION_STRING_SERIALIZER);
+    public static MessageProducer<String, String> defaultStringMessageProducer(String brokers, String type,
+       Set<String> enabledTopics) {
+        return new MessageProducer<String, String>(brokers, type, null, SERIALIZATION_STRING_SERIALIZER, enabledTopics);
     }
 
     private static Properties setDefaultProperties() {
@@ -86,25 +98,27 @@ public class MessageProducer<K, V> {
     }
 
     public void send(String topic, K key, V value) {
-        ProducerRecord<K, V> data;
-        if (key == null)
-            data = new ProducerRecord<>(topic, value);
-        else
-            data = new ProducerRecord<>(topic, key, value);
+       if (!enabledTopicsSet.contains(topic)) {
+          ProducerRecord<K, V> data;
+          if (key == null)
+              data = new ProducerRecord<>(topic, value);
+          else
+              data = new ProducerRecord<>(topic, key, value);
 
-        producer.send(data, new Callback() {
+          producer.send(data, new Callback() {
 
-           @Override
-           public void onCompletion(RecordMetadata returnMetadata, Exception e) {
-              if (null != e) {
-                 logger.debug("Error sending record.", e);
-              } else {
-                 logger.debug("Completed publish to topic: {}, offset: {}, partition: {}", returnMetadata.topic(), returnMetadata.offset(), returnMetadata.partition());
-              }
-              
-           }
-             
-          });
+             @Override
+             public void onCompletion(RecordMetadata returnMetadata, Exception e) {
+                if (null != e) {
+                   logger.error("Error sending record.", e);
+                } else {
+                   logger.debug("Completed publish to topic: {}, offset: {}, partition: {}", returnMetadata.topic(), returnMetadata.offset(), returnMetadata.partition());
+                }
+                
+             }
+               
+            });
+       }
     }
 
     public void close() {
@@ -121,13 +135,13 @@ public class MessageProducer<K, V> {
         return this;
     }
 
-    public void send(ProducerRecord<K, V> producerRecord) {
+   public void send(ProducerRecord<K, V> producerRecord) {
         producer.send(producerRecord, new Callback() {
 
          @Override
          public void onCompletion(RecordMetadata returnMetadata, Exception e) {
             if (null != e) {
-               logger.debug("Error sending record.", e);
+               logger.error("Error sending record.", e);
             } else {
                logger.debug("Record metadata: {}", returnMetadata);
             }

@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -15,12 +17,18 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class InetPointTest {
+   
+   @Capturing
+   DatagramSocket capturingDatagramSocket;
+   
+   @Capturing
+   DatagramPacket capturingDatagramPacket;
+   
+   @Capturing
+   Thread capturingThread;
 
    @Capturing
    InetAddress capturingInetAddress;
-
-   @Mocked
-   UnknownHostException mockUnknownHostException;
 
    @Test
    public void testStringConstructorCreatesAddress() {
@@ -105,19 +113,9 @@ public class InetPointTest {
 
    @Test
    public void testToStringException() {
-      try {
-         new Expectations() {
-            {
-               InetAddress.getByAddress((byte[]) any).getHostAddress();
-               result = mockUnknownHostException;
-            }
-         };
          assertEquals(
-               "InetPoint { port = 5 (0x5); address = 00000000000000000000000000000000 (IPv6, ?); forward = false }",
+               "InetPoint { port = 5 (0x5); address = 00000000000000000000000000000000 (IPv6, null); forward = false }",
                new InetPoint(new byte[16], 5).toString());
-      } catch (UnknownHostException e) {
-         fail("Unexpected exception: " + e);
-      }
    }
 
    @Test

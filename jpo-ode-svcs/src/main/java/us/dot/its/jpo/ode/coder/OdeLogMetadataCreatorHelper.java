@@ -19,6 +19,7 @@ import us.dot.its.jpo.ode.plugin.j2735.builders.HeadingBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.LatitudeBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.LongitudeBuilder;
 import us.dot.its.jpo.ode.plugin.j2735.builders.SpeedOrVelocityBuilder;
+import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class OdeLogMetadataCreatorHelper {
 
@@ -30,7 +31,7 @@ public class OdeLogMetadataCreatorHelper {
       if (logFileParser != null) {
          metadata.setLogFileName(logFileParser.getFilename());
          metadata.setRecordType(logFileParser.getRecordType());
-         metadata.setRecordGeneratedAt(logFileParser.getTimeParser().getGeneratedAt().toString());
+         metadata.setRecordGeneratedAt(DateTimeUtils.isoDateTime(logFileParser.getTimeParser().getGeneratedAt()));
          
          if (logFileParser.getSecResCodeParser() != null) {
             metadata.setSecurityResultCode(logFileParser.getSecResCodeParser().getSecurityResultCode());
@@ -55,7 +56,6 @@ public class OdeLogMetadataCreatorHelper {
       }
 
       metadata.setRecordGeneratedBy(GeneratedBy.OBU);
-      metadata.getSerialId().addRecordId(1);
    }
 
    public static ReceivedMessageDetails buildReceivedMessageDetails(LogFileParser parser) {

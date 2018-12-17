@@ -36,7 +36,7 @@ public class OdeObject implements Serializable {
    }
 
    public String toXml() throws XmlUtilsException, JsonProcessingException {
-      return XmlUtils.toXmlS(this);
+      return XmlUtils.toXmlStatic(this);
    }
 
    @Override

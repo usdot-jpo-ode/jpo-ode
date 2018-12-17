@@ -45,7 +45,7 @@ public class ServiceManagerTest {
 
    }
 @Test
-   public void depositorCallsSubscribe(@Mocked AbstractSubscriberDepositor mockAbstractSubscriberDepositor, @Mocked String mockString) {
+   public void depositorCallsSubscribe(@Mocked AbstractSubscriberDepositor mockAbstractSubscriberDepositor) {
 
       new Expectations() {
          {
@@ -54,7 +54,7 @@ public class ServiceManagerTest {
          }
       };
 
-      testServiceManager.submit(mockAbstractSubscriberDepositor, mockString);
+      testServiceManager.submit(mockAbstractSubscriberDepositor, "Test");
    }
 
 }

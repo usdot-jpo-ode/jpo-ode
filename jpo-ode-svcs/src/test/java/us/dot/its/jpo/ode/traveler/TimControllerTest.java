@@ -15,6 +15,8 @@ import org.snmp4j.event.ResponseEvent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import mockit.Capturing;
@@ -28,7 +30,6 @@ import us.dot.its.jpo.ode.dds.DdsDepositor;
 import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.http.InternalServerErrorException;
-import us.dot.its.jpo.ode.j2735.dsrc.TravelerInformation;
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.model.OdeTimData;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
@@ -36,10 +37,14 @@ import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
-import us.dot.its.jpo.ode.plugin.j2735.oss.OssTravelerMessageBuilder;
+import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.TravelerInformation;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
+import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
+import us.dot.its.jpo.ode.util.XmlUtils;
+import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class TimControllerTest {
@@ -52,7 +57,7 @@ public class TimControllerTest {
    DdsDepositor<DdsStatusMessage> mockDepositor;
 
    @Mocked
-   OdeTravelerInputData mockTravelerInputData;
+   OdeTravelerInputData mockOdeTravelerInputData;
    @Mocked
    OdeTravelerInformationMessage mockTim;
    @Mocked
@@ -63,8 +68,9 @@ public class TimControllerTest {
    ObjectNode mockEncodableTid;
    @Mocked
    TravelerInformation mockTravelerInfo;
-   @Mocked
-   OssTravelerMessageBuilder mockBuilder;
+//TODO open-ode   
+//   @Mocked
+//   OssTravelerMessageBuilder mockBuilder;
    @Mocked
    RSU mockRsu;
    @Mocked
@@ -75,8 +81,6 @@ public class TimControllerTest {
    PDU mockPdu;
    @Mocked
    ScopedPDU mockScopedPdu;
-   @Mocked
-   DdsAdvisorySituationData mockAsdMsg;
    
    @Capturing
    MessageProducer<?,?> capturingMessageProducer;
@@ -158,20 +162,21 @@ public class TimControllerTest {
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
-               mockTravelerInputData.toString();
+               mockOdeTravelerInputData.toString();
                result = "something";
                minTimes = 0;
 
                JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
-               result = mockTravelerInputData;
-               mockTravelerInputData.toJson(true);
+               result = mockOdeTravelerInputData;
+               mockOdeTravelerInputData.toJson(true);
                result = anyString;
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
-               result = mockTravelerInfo;
-
-               mockBuilder.encodeTravelerInformationToHex();
-               result = new Exception("Encoding error.");
+             //TODO open-ode   
+//               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = new Exception("Encoding error.");
             }
          };
       } catch (Exception e) {
@@ -199,25 +204,26 @@ public class TimControllerTest {
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
-               mockTravelerInputData.toString();
+               mockOdeTravelerInputData.toString();
                result = "something";
                minTimes = 0;
 
                JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
-               result = mockTravelerInputData;
-               mockTravelerInputData.toJson(true);
+               result = mockOdeTravelerInputData;
+               mockOdeTravelerInputData.toJson(true);
                result = anyString;
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
-               result = mockTravelerInfo;
+             //TODO open-ode   
+//               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = anyString;
 
-               mockBuilder.encodeTravelerInformationToHex();
-               result = anyString;
-
-               mockTravelerInputData.getRsus();
+               mockOdeTravelerInputData.getRequest().getRsus();
                result = new RSU[] { mockRsu };
 
-               mockTravelerInputData.getSnmp();
+               mockOdeTravelerInputData.getRequest().getSnmp();
                result = mockSnmp;
 
                mockRsu.getRsuTarget();
@@ -226,7 +232,7 @@ public class TimControllerTest {
                //Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString, anyInt);
                result = new Exception("SNMP Error");
 
-               mockTravelerInputData.getSdw();
+               mockOdeTravelerInputData.getRequest().getSdw();
                result = null;
             }
          };
@@ -253,25 +259,26 @@ public class TimControllerTest {
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
-               mockTravelerInputData.toString();
+               mockOdeTravelerInputData.toString();
                result = "something";
                minTimes = 0;
 
                JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
-               result = mockTravelerInputData;
-               mockTravelerInputData.toJson(true);
+               result = mockOdeTravelerInputData;
+               mockOdeTravelerInputData.toJson(true);
                result = "mockTim";
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
-               result = mockTravelerInfo;
+             //TODO open-ode   
+//               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = anyString;
 
-               mockBuilder.encodeTravelerInformationToHex();
-               result = anyString;
-
-               mockTravelerInputData.getRsus();
+               mockOdeTravelerInputData.getRequest().getRsus();
                result = new RSU[] { mockRsu };
 
-               mockTravelerInputData.getSnmp();
+               mockOdeTravelerInputData.getRequest().getSnmp();
                result = mockSnmp;
 
                mockRsu.getRsuTarget();
@@ -280,7 +287,7 @@ public class TimControllerTest {
                //Asn1EncodedDataRouter.createAndSend(mockSnmp, mockRsu, anyInt, anyString, anyInt);
                result = null;
 
-               mockTravelerInputData.getSdw();
+               mockOdeTravelerInputData.getRequest().getSdw();
                result = null;
             }
          };
@@ -301,25 +308,26 @@ public class TimControllerTest {
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
-               mockTravelerInputData.toString();
+               mockOdeTravelerInputData.toString();
                result = "something";
                minTimes = 0;
 
                JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
-               result = mockTravelerInputData;
-               mockTravelerInputData.toJson(true);
+               result = mockOdeTravelerInputData;
+               mockOdeTravelerInputData.toJson(true);
                result = "mockTim";
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
-               result = mockTravelerInfo;
+             //TODO open-ode   
+//               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = anyString;
 
-               mockBuilder.encodeTravelerInformationToHex();
-               result = anyString;
-
-               mockTravelerInputData.getRsus();
+               mockOdeTravelerInputData.getRequest().getRsus();
                result = new RSU[] { mockRsu };
 
-               mockTravelerInputData.getSnmp();
+               mockOdeTravelerInputData.getRequest().getSnmp();
                result = mockSnmp;
 
                mockRsu.getRsuTarget();
@@ -332,7 +340,7 @@ public class TimControllerTest {
                mockPdu.getErrorStatus();
                result = -1;
 
-               mockTravelerInputData.getSdw();
+               mockOdeTravelerInputData.getRequest().getSdw();
                result = null;
             }
          };
@@ -359,25 +367,26 @@ public class TimControllerTest {
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
-               mockTravelerInputData.toString();
+               mockOdeTravelerInputData.toString();
                result = "something";
                minTimes = 0;
 
                JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
-               result = mockTravelerInputData;
-               mockTravelerInputData.toJson(true);
+               result = mockOdeTravelerInputData;
+               mockOdeTravelerInputData.toJson(true);
                result = "mockTim";
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
-               result = mockTravelerInfo;
+             //TODO open-ode   
+//               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = anyString;
 
-               mockBuilder.encodeTravelerInformationToHex();
-               result = anyString;
-
-               mockTravelerInputData.getRsus();
+               mockOdeTravelerInputData.getRequest().getRsus();
                result = new RSU[] { mockRsu };
 
-               mockTravelerInputData.getSnmp();
+               mockOdeTravelerInputData.getRequest().getSnmp();
                result = mockSnmp;
 
                mockRsu.getRsuTarget();
@@ -390,7 +399,7 @@ public class TimControllerTest {
                mockPdu.getErrorStatus();
                result = 0;
 
-               mockTravelerInputData.getSdw();
+               mockOdeTravelerInputData.getRequest().getSdw();
                result = new InternalServerErrorException("Deposit to SDW Failed");
 
             }
@@ -418,25 +427,26 @@ public class TimControllerTest {
       try {
          new Expectations(JsonUtils.class, DateTimeUtils.class, EventLogger.class, TimController.class) {
             {
-               mockTravelerInputData.toString();
+               mockOdeTravelerInputData.toString();
                result = "something";
                minTimes = 0;
 
                JsonUtils.fromJson(anyString, OdeTravelerInputData.class);
-               result = mockTravelerInputData;
-               mockTravelerInputData.toJson(true);
+               result = mockOdeTravelerInputData;
+               mockOdeTravelerInputData.toJson(true);
                result = "mockTim";
 
-               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
-               result = mockTravelerInfo;
+             //TODO open-ode   
+//               mockBuilder.buildTravelerInformation(mockTravelerInputData.getTim());
+//               result = mockTravelerInfo;
+//
+//               mockBuilder.encodeTravelerInformationToHex();
+//               result = anyString;
 
-               mockBuilder.encodeTravelerInformationToHex();
-               result = anyString;
-
-               mockTravelerInputData.getRsus();
+               mockOdeTravelerInputData.getRequest().getRsus();
                result = new RSU[] { mockRsu };
 
-               mockTravelerInputData.getSnmp();
+               mockOdeTravelerInputData.getRequest().getSnmp();
                result = mockSnmp;
 
                mockRsu.getRsuTarget();
@@ -449,7 +459,7 @@ public class TimControllerTest {
                mockPdu.getErrorStatus();
                result = 0;
 
-               mockTravelerInputData.getSdw();
+               mockOdeTravelerInputData.getRequest().getSdw();
                result = null;
             }
          };
@@ -502,6 +512,33 @@ public class TimControllerTest {
          fail("Unexpected Exception in expectations block: " + e);
       }
       assertEquals(HttpStatus.BAD_REQUEST, testTimController.deleteTim("testJsonString", 42).getStatusCode());
+   }
+
+   @Test 
+   public void testObfuscateRsuPassword() {
+     String actual = TimController.obfuscateRsuPassword("{\"metadata\":{\"request\":{\"ode\":{\"version\":3,\"verb\":\"POST\"},\"sdw\":null,\"rsus\":[{\"rsuTarget\":\"127.0.0.1\",\"rsuUsername\":\"v3user\",\"rsuPassword\": \"password\",\"rsuRetries\":0,\"rsuTimeout\":2000,\"rsuIndex\":10},{\"rsuTarget\":\"127.0.0.2\",\"rsuUsername\":\"v3user\",\"rsuPassword\": \"password\",\"rsuRetries\":1,\"rsuTimeout\":1000,\"rsuIndex\":10},{\"rsuTarget\":\"127.0.0.3\",\"rsuUsername\":\"v3user\",\"rsuPassword\": \"password\",\"rsuRetries\":1,\"rsuTimeout\":1000,\"rsuIndex\":10}],\"snmp\":{\"rsuid\":\"00000083\",\"msgid\":31,\"mode\":1,\"channel\":178,\"interval\":2,\"deliverystart\":\"2017-06-01T17:47:11-05:00\",\"deliverystop\":\"2018-01-01T17:47:11-05:15\",\"enable\":1,\"status\":4}},\"payloadType\":\"us.dot.its.jpo.ode.model.OdeMsgPayload\",\"serialId\":{\"streamId\":\"59651ecc-240c-4440-9011-4a43c926817b\",\"bundleSize\":1,\"bundleId\":0,\"recordId\":0,\"serialNumber\":0},\"odeReceivedAt\":\"2018-11-16T19:21:22.568Z\",\"schemaVersion\":6,\"recordGeneratedAt\":\"2017-03-13T06:07:11Z\",\"recordGeneratedBy\":\"TMC\",\"sanitized\":false},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage\",\"data\":{\"msgCnt\":13,\"timeStamp\":\"2017-03-13T01:07:11-05:00\",\"packetID\":\"EC9C236B0000000000\",\"urlB\":\"null\",\"dataframes\":[{\"sspTimRights\":0,\"frameType\":\"advisory\",\"msgId\":{\"roadSignID\":{\"position\":{\"latitude\":41.678473,\"longitude\":-108.782775,\"elevation\":917.1432},\"viewAngle\":\"1010101010101010\",\"mutcdCode\":\"warning\",\"crc\":\"0000000000000000\"},\"furtherInfoID\":null},\"startDateTime\":\"2017-12-01T17:47:11-05:00\",\"durationTime\":22,\"priority\":0,\"sspLocationRights\":3,\"regions\":[{\"name\":\"bob\",\"regulatorID\":23,\"segmentID\":33,\"anchorPosition\":{\"latitude\":41.678473,\"longitude\":-108.782775,\"elevation\":917.1432},\"laneWidth\":7,\"directionality\":3,\"closedPath\":false,\"direction\":\"1010101010101010\",\"description\":\"geometry\",\"path\":null,\"geometry\":{\"direction\":\"1010101010101010\",\"extent\":1,\"laneWidth\":33,\"circle\":{\"position\":{\"latitude\":41.678473,\"longitude\":-108.782775,\"elevation\":917.1432},\"radius\":15,\"units\":7}},\"oldRegion\":null}],\"sspMsgTypes\":2,\"sspMsgContent\":3,\"content\":\"Advisory\",\"items\":[\"125\",\"some text\",\"250\",\"\\u002798765\"],\"url\":\"null\"}],\"asnDataFrames\":null}}}");
+     assertEquals("{\"metadata\":{\"request\":{\"ode\":{\"version\":3,\"verb\":\"POST\"},\"sdw\":null,\"rsus\":[{\"rsuTarget\":\"127.0.0.1\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"*\",\"rsuRetries\":0,\"rsuTimeout\":2000,\"rsuIndex\":10},{\"rsuTarget\":\"127.0.0.2\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"*\",\"rsuRetries\":1,\"rsuTimeout\":1000,\"rsuIndex\":10},{\"rsuTarget\":\"127.0.0.3\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"*\",\"rsuRetries\":1,\"rsuTimeout\":1000,\"rsuIndex\":10}],\"snmp\":{\"rsuid\":\"00000083\",\"msgid\":31,\"mode\":1,\"channel\":178,\"interval\":2,\"deliverystart\":\"2017-06-01T17:47:11-05:00\",\"deliverystop\":\"2018-01-01T17:47:11-05:15\",\"enable\":1,\"status\":4}},\"payloadType\":\"us.dot.its.jpo.ode.model.OdeMsgPayload\",\"serialId\":{\"streamId\":\"59651ecc-240c-4440-9011-4a43c926817b\",\"bundleSize\":1,\"bundleId\":0,\"recordId\":0,\"serialNumber\":0},\"odeReceivedAt\":\"2018-11-16T19:21:22.568Z\",\"schemaVersion\":6,\"recordGeneratedAt\":\"2017-03-13T06:07:11Z\",\"recordGeneratedBy\":\"TMC\",\"sanitized\":false},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage\",\"data\":{\"msgCnt\":13,\"timeStamp\":\"2017-03-13T01:07:11-05:00\",\"packetID\":\"EC9C236B0000000000\",\"urlB\":\"null\",\"dataframes\":[{\"sspTimRights\":0,\"frameType\":\"advisory\",\"msgId\":{\"roadSignID\":{\"position\":{\"latitude\":41.678473,\"longitude\":-108.782775,\"elevation\":917.1432},\"viewAngle\":\"1010101010101010\",\"mutcdCode\":\"warning\",\"crc\":\"0000000000000000\"},\"furtherInfoID\":null},\"startDateTime\":\"2017-12-01T17:47:11-05:00\",\"durationTime\":22,\"priority\":0,\"sspLocationRights\":3,\"regions\":[{\"name\":\"bob\",\"regulatorID\":23,\"segmentID\":33,\"anchorPosition\":{\"latitude\":41.678473,\"longitude\":-108.782775,\"elevation\":917.1432},\"laneWidth\":7,\"directionality\":3,\"closedPath\":false,\"direction\":\"1010101010101010\",\"description\":\"geometry\",\"path\":null,\"geometry\":{\"direction\":\"1010101010101010\",\"extent\":1,\"laneWidth\":33,\"circle\":{\"position\":{\"latitude\":41.678473,\"longitude\":-108.782775,\"elevation\":917.1432},\"radius\":15,\"units\":7}},\"oldRegion\":null}],\"sspMsgTypes\":2,\"sspMsgContent\":3,\"content\":\"Advisory\",\"items\":[\"125\",\"some text\",\"250\",\"\\u002798765\"],\"url\":\"null\"}],\"asnDataFrames\":null}}}", actual);
+   }
+   
+   public void assertConvertArray(String array, String arrayKey, String elementKey, Object expectedXml) throws JsonUtilsException, XmlUtilsException {
+     JsonNode obj = JsonUtils.toObjectNode(array);
+     JsonNode oldObj =  obj.get(arrayKey);
+
+     JsonNode newObj = XmlUtils.createEmbeddedJsonArrayForXmlConversion(elementKey, (ArrayNode)oldObj);
+     String actualXml = XmlUtils.toXmlStatic(newObj);
+
+     assertEquals(expectedXml, actualXml);
+   }
+
+   @Test @Ignore
+   public void testConvertRsusArray() throws JsonUtilsException, XmlUtilsException {
+     String single = "{\"ode\":{\"version\":3,\"verb\":\"POST\"},\"rsus\":{\"rsu_\":[{\"rsuTarget\":\"127.0.0.3\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":1,\"rsuTimeout\":1000,\"rsuIndex\":10}]},\"snmp\":{\"rsuid\":\"00000083\",\"msgid\":31,\"mode\":1,\"channel\":178,\"interval\":2,\"deliverystart\":\"2017-06-01T17:47:11-05:00\",\"deliverystop\":\"2018-01-01T17:47:11-05:15\",\"enable\":1,\"status\":4}}";
+     String singleXmlExpected = "";
+     assertConvertArray(single, TimController.RSUS_STRING, TimController.RSUS_STRING, singleXmlExpected);
+
+     String multi = "{\"ode\":{\"version\":3,\"verb\":\"POST\"},\"rsus\":{\"rsu_\":[{\"rsuTarget\":\"127.0.0.1\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":0,\"rsuTimeout\":2000,\"rsuIndex\":10},{\"rsuTarget\":\"127.0.0.2\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":1,\"rsuTimeout\":1000,\"rsuIndex\":10},{\"rsuTarget\":\"127.0.0.3\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":1,\"rsuTimeout\":1000,\"rsuIndex\":10}]},\"snmp\":{\"rsuid\":\"00000083\",\"msgid\":31,\"mode\":1,\"channel\":178,\"interval\":2,\"deliverystart\":\"2017-06-01T17:47:11-05:00\",\"deliverystop\":\"2018-01-01T17:47:11-05:15\",\"enable\":1,\"status\":4}}";
+     String multiXmlExpected = "";
+     assertConvertArray(multi, TimController.RSUS_STRING, TimController.RSUS_STRING, multiXmlExpected);
    }
 
 }

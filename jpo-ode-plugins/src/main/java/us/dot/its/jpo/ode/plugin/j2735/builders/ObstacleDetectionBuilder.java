@@ -4,12 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735ObstacleDetection;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VertEvent;
-import us.dot.its.jpo.ode.plugin.j2735.builders.GNSSstatusBuilder.GNSstatusNames;
 
 public class ObstacleDetectionBuilder {
 
    public enum J2735VertEventNames {
-      notEquipped, leftFront, leftRear, rightFront, rightRear
+      rightRear , rightFront, leftRear, leftFront, notEquipped
    }
 
    private static final Integer DIST_LOWER_BOUND = 0;
@@ -51,7 +50,7 @@ public class ObstacleDetectionBuilder {
       char[] vertEventBits = obstacleDetection.get("vertEvent").asText().toCharArray();
 
       for (int i = 0; i < vertEventBits.length; i++) {
-         String statusName = GNSstatusNames.values()[i].name();
+         String statusName = J2735VertEventNames.values()[i].name();
          Boolean statusValue = (vertEventBits[i] == '1' ? true : false);
          vertEvent.put(statusName, statusValue);
 
