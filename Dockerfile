@@ -22,7 +22,7 @@ WORKDIR /home
 
 COPY --from=builder /home/jpo-ode-svcs/src/main/resources/application.properties /home
 COPY --from=builder /home/jpo-ode-svcs/src/main/resources/logback.xml /home
-COPY --from=builder /home/jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar /home
+COPY --from=builder /home/jpo-ode-svcs/target/jpo-ode-svcs.jar /home
 
 ENTRYPOINT ["java", \
 	"-Djava.rmi.server.hostname=$DOCKER_HOST_IP", \
@@ -34,4 +34,4 @@ ENTRYPOINT ["java", \
 	"-Dcom.sun.management.jmxremote.ssl=false", \
 	"-Dlogback.configurationFile=/home/logback.xml", \
 	"-jar", \
-	"/home/jpo-ode-svcs-0.0.1-SNAPSHOT.jar"]
+	"/home/jpo-ode-svcs.jar"]
