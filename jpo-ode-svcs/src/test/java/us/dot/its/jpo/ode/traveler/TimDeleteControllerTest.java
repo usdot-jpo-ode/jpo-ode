@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.util.concurrent.Executors;
 
 import org.junit.Test;
 import org.snmp4j.PDU;
@@ -21,34 +20,24 @@ import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
-import us.dot.its.jpo.ode.util.JsonUtils;
-import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-public class TimControllerDeleteTest {
+public class TimDeleteControllerTest {
    
    @Tested
-   TimController testTimController;
+   TimDeleteController testTimDeleteController;
    
    @Injectable
    OdeProperties injectableOdeProperties;
    
    @Capturing
-   MessageProducer<?,?> capturingMessageProducer;
-   
-   @Capturing
-   Executors capturingExecutors;
-   
-   @Capturing
    SnmpSession capturingSnmpSession;
-   @Capturing
-   JsonUtils capturingJsonUtils;
    
    @Mocked
    ResponseEvent mockResponseEvent;
    
    @Test
    public void deleteShouldReturnBadRequestWhenNull() {
-      assertEquals(HttpStatus.BAD_REQUEST, testTimController.deleteTim(null, 42).getStatusCode());
+      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim(null, 42).getStatusCode());
    }
 
    @Test
@@ -58,15 +47,12 @@ public class TimControllerDeleteTest {
             {
                new SnmpSession((RSU) any);
                result = new IOException("testException123");
-               
-               JsonUtils.fromJson(anyString, (Class<?>) any);
-               result = null;
             }
          };
       } catch (IOException e) {
          fail("Unexpected Exception in expectations block: " + e);
       }
-      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, testTimController.deleteTim("testJsonString", 42).getStatusCode());
+      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
    }
 
    @Test
@@ -76,15 +62,12 @@ public class TimControllerDeleteTest {
             {
                new SnmpSession((RSU) any);
                result = new NullPointerException("testException123");
-               
-               JsonUtils.fromJson(anyString, (Class<?>) any);
-               result = null;
             }
          };
       } catch (IOException e) {
          fail("Unexpected Exception in expectations block: " + e);
       }
-      assertEquals(HttpStatus.BAD_REQUEST, testTimController.deleteTim("testJsonString", 42).getStatusCode());
+      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
    }
    
    @Test
@@ -94,7 +77,7 @@ public class TimControllerDeleteTest {
          result = new IOException("testSnmpException123");
       }};
       
-      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, testTimController.deleteTim("testJsonString", 42).getStatusCode());
+      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
    }
    
    @Test
@@ -104,7 +87,7 @@ public class TimControllerDeleteTest {
          result = null;
       }};
       
-      assertEquals(HttpStatus.REQUEST_TIMEOUT, testTimController.deleteTim("testJsonString", 42).getStatusCode());
+      assertEquals(HttpStatus.REQUEST_TIMEOUT, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
    }
    
    @Test
@@ -117,7 +100,7 @@ public class TimControllerDeleteTest {
          result = null;
       }};
       
-      assertEquals(HttpStatus.REQUEST_TIMEOUT, testTimController.deleteTim("testJsonString", 42).getStatusCode());
+      assertEquals(HttpStatus.REQUEST_TIMEOUT, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
    }
    
    @Test
@@ -130,7 +113,7 @@ public class TimControllerDeleteTest {
          result = 0;
       }};
       
-      assertEquals(HttpStatus.OK, testTimController.deleteTim("testJsonString", 42).getStatusCode());
+      assertEquals(HttpStatus.OK, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
    }
    
    @Test
@@ -143,7 +126,7 @@ public class TimControllerDeleteTest {
          result = 12;
       }};
       
-      assertEquals(HttpStatus.BAD_REQUEST, testTimController.deleteTim("testJsonString", 42).getStatusCode());
+      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
    }
    
    @Test
@@ -156,7 +139,7 @@ public class TimControllerDeleteTest {
          result = 10;
       }};
       
-      assertEquals(HttpStatus.BAD_REQUEST, testTimController.deleteTim("testJsonString", 42).getStatusCode());
+      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
    }
    
    @Test
@@ -169,7 +152,6 @@ public class TimControllerDeleteTest {
          result = 5;
       }};
       
-      assertEquals(HttpStatus.BAD_REQUEST, testTimController.deleteTim("testJsonString", 42).getStatusCode());
+      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
    }
-
 }
