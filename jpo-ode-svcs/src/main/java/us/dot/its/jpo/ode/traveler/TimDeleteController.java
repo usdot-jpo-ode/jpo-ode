@@ -10,6 +10,7 @@ import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -30,6 +32,14 @@ public class TimDeleteController {
    private static final Logger logger = LoggerFactory.getLogger(TimDeleteController.class);
 
    private static final String ERRSTR = "error";
+
+   private OdeProperties odeProperties;
+   
+   @Autowired
+   public TimDeleteController(OdeProperties odeProperties) {
+      super();
+      this.odeProperties = odeProperties;
+   }
 
    @ResponseBody
    @CrossOrigin
@@ -43,6 +53,14 @@ public class TimDeleteController {
       }
 
       RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
+      
+      if (queryTarget.getRsuUsername() == null || queryTarget.getRsuUsername().isEmpty()) {
+         queryTarget.setRsuUsername(odeProperties.getRsuUsername());
+      }
+      
+      if (queryTarget.getRsuPassword() == null || queryTarget.getRsuPassword().isEmpty()) {
+         queryTarget.setRsuPassword(odeProperties.getRsuPassword());
+      }
 
       logger.info("TIM delete call, RSU info {}", queryTarget);
 
