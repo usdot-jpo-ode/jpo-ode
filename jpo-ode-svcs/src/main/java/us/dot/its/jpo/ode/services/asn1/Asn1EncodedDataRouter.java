@@ -15,6 +15,7 @@ import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.plugin.ServiceRequest;
 import us.dot.its.jpo.ode.services.asn1.Asn1CommandManager.Asn1CommandManagerException;
 import us.dot.its.jpo.ode.traveler.TimDepositController;
+import us.dot.its.jpo.ode.traveler.TimMessageManipulator;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -40,10 +41,13 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
    private MessageProducer<String, String> stringMsgProducer;
    private Asn1CommandManager asn1CommandManager;
 
-   public Asn1EncodedDataRouter(OdeProperties odeProperties) {
+   private TimMessageManipulator timMessageManipulator;
+
+   public Asn1EncodedDataRouter(OdeProperties odeProperties, TimMessageManipulator timMessageManipulator) {
       super();
 
       this.odeProperties = odeProperties;
+      this.timMessageManipulator = timMessageManipulator;
 
       this.stringMsgProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
             odeProperties.getKafkaProducerType(), this.odeProperties.getKafkaTopicsDisabledSet());

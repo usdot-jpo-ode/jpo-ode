@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.traveler.TimMessageManipulator;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 /**
@@ -18,7 +19,7 @@ public class AsnCodecRouterServiceController {
    org.apache.kafka.common.serialization.Serdes bas;
 
    @Autowired
-   public AsnCodecRouterServiceController(OdeProperties odeProps) {
+   public AsnCodecRouterServiceController(OdeProperties odeProps, TimMessageManipulator timMessageManipulator) {
       super();
 
       logger.info("Starting {}", this.getClass().getSimpleName());
@@ -37,7 +38,7 @@ public class AsnCodecRouterServiceController {
       // asn1_codec Encoder Routing
       logger.info("Routing ENCODED data received ASN.1 Encoder");
 
-      Asn1EncodedDataRouter enocderRouter = new Asn1EncodedDataRouter(odeProps);
+      Asn1EncodedDataRouter enocderRouter = new Asn1EncodedDataRouter(odeProps, timMessageManipulator);
 
       MessageConsumer<String, String> encoderConsumer = MessageConsumer.defaultStringMessageConsumer(
          odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), enocderRouter);
