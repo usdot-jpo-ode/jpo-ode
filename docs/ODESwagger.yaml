@@ -14,6 +14,17 @@ basePath: /
 produces:
   - application/json
 paths:
+  /version:
+    get:
+      summary: Get ODE version info
+      operationId: getVersion
+      description: Get ODE Version info
+      responses:
+        '200':
+          description: ODE version information returned
+          schema:
+            $ref: '#/definitions/versionResponse'
+      
   /tim/query:
     post:
       summary: Query an RSU for set TIMs
@@ -167,13 +178,7 @@ paths:
     get:
       summary: RSU SNMP Query
       operationId: snmp_get
-      description: >-
-        Check the health and status of RSU devices through SNMP communication.
-        You should receive a detailed plain text response that looks like the
-        following example. If the device is off, a 4 second timeout will occur
-        and the ODE will indicate this with an "[ERROR] Empty response" message.
-        (This specific OID returns the amount of time since the device was last
-        powered on) "[1.3.6.1.2.1.1.3.0 = 0:05:12.59]"
+      description: Check the health and status of RSU devices through SNMP communication. You should receive a detailed plain text response that looks like the following example. If the device is off, a 4 second timeout will occur and the ODE will indicate this with an "[ERROR] Empty response" message. (This specific OID returns the amount of time since the device was last powered on) "[1.3.6.1.2.1.1.3.0 = 0:05:12.59]"
       parameters:
         - name: ip
           in: query
@@ -244,8 +249,7 @@ paths:
       summary: File upload interface
       operationId: upload-obulog
       description: >-
-        Uploads an OBU log file to ODE upload folder to be processed and
-        propaged
+        Uploads an OBU log file to ODE upload folder to be processed and propaged
       consumes:
         - multipart/form-data
       parameters:
@@ -257,7 +261,8 @@ paths:
         - log file
       responses:
         '200':
-          description: File uploaded successfully
+          description: >-
+            File uploaded successfully
           schema:
             type: array
             items:
@@ -279,6 +284,12 @@ paths:
             items:
               $ref: '#/definitions/Status'
 definitions:
+  versionResponse:
+    type: object
+    properties:
+      version:
+        type: string
+        description: Runnign version in the form of `M.m.p[-SNAPSHOT]` where M is the Major version, m is the minor version and p is the patch or fix and square brackets signify optional component. If the software is from a nightly build, there will be an optional -SNAPSHOT postfix.
   tim:
     type: object
     properties:
@@ -453,13 +464,12 @@ definitions:
         type: string
       description:
         type: string
-        description: 'Valid values are "path" OR "geometry". oldregion is not supported'
       path:
         $ref: '#/definitions/Path'
-      geometry:
-        $ref: '#/definitions/Geometry'
       oldRegion:
         $ref: '#/definitions/OldRegion'
+      geometry:
+        $ref: '#/definitions/Geometry'
   ComputedLane:
     type: object
     properties:
@@ -497,7 +507,7 @@ definitions:
       nodes:
         type: array
         items:
-          $ref: '#/definitions/Node'
+          $ref: '#/definitions/NodeXY'
       computedLane:
         $ref: '#/definitions/ComputedLane'
   Attribute:
@@ -650,27 +660,26 @@ definitions:
       elevation:
         type: number
         description: 'Elevation in meters [-409.5..6143.9]'
-  Node:
+  NodeXY:
     type: object
     properties:
       delta:
         type: string
         description: >-
-          Valid values for offset values are offset XY values is node-XY. For this delta, x and y must be defined in meters from achor point.
-          Valid values for offset Lat/Lon values is node-LL. For this delta nodeLat and NodeLong must be defined indegrees from anchor point.
-          Valid values for absolute Lat/Lon is node-LatLon. For this delta nodeLat and nodeLong must be defined for each nodenot relative to anchor point.
+          One of Node-XY-20b, Node-XY-22b, Node-XY-24b, Node-XY-26b,
+          Node-XY-28b, Node-XY-32b, Node-LLmD-64b,
       nodeLat:
         type: number
-        description: 'Latitude in degrees for node-LL (offset) or node-LatLon'
+        description: 'Latitude, used for Node-LLmD-64b'
       nodeLong:
         type: number
-        description: 'Longitude in degrees for Node-LL (offset) or node-LatLon'
+        description: 'Longitude, used for Node-LLmD-64b'
       x:
         type: number
-        description: 'Offset x axis in meters for node-XY delta'
-      y:
+        description: 'Offset-B10 in meters [-5.11..5.11m]'
+      'y':
         type: number
-        description: 'Offset y axis in meters for node-XY delta'
+        description: 'Offset-B10 in meters [-5.11..5.11m]'
       attributes:
         $ref: '#/definitions/Attribute'
   SNMP:

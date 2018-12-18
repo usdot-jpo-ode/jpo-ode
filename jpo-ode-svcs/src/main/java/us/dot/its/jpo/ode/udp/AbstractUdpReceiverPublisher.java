@@ -6,6 +6,7 @@ import java.net.SocketException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.SocketUtils;
 
 import us.dot.its.jpo.ode.OdeProperties;
 
@@ -52,7 +53,16 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
          socket = new DatagramSocket(this.port);
          logger.info("Created UDP socket bound to port {}", this.port);
       } catch (SocketException e) {
-         logger.error("Error creating socket with port " + this.port, e);
+         logger.error("Error creating socket with port " + this.port 
+             + " Will use the next availabel port.", e);
+         this.port = SocketUtils.findAvailableUdpPort();
+         logger.info("Using alternate port {}", this.port);
+         try {
+           socket = new DatagramSocket(this.port);
+           logger.info("Created UDP socket bound to port {}", this.port);
+         } catch (SocketException e2) {
+           logger.error("Error creating socket with port " + this.port, e);
+         }
       }
    }
 
