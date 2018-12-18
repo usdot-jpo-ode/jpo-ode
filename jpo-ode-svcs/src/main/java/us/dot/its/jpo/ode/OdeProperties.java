@@ -180,10 +180,10 @@ public class OdeProperties implements EnvironmentAware {
    @PostConstruct
    void initialize() {
 
-      String pomPropsFile = "/META-INF/maven/usdot.jpo.ode/jpo-ode-svcs/pom.properties";
-      InputStream resourceAsStream = this.getClass().getResourceAsStream(pomPropsFile);
-      Properties properties = new Properties();
+     String pomPropsFile = "/META-INF/maven/usdot.jpo.ode/jpo-ode-svcs/pom.properties";
       try {
+        InputStream resourceAsStream = this.getClass().getResourceAsStream(pomPropsFile);
+        Properties properties = new Properties();
         properties.load(resourceAsStream);
         setVersion(properties.getProperty("version"));
         logger.info("groupId: {}", properties.getProperty("groupId"));
