@@ -3,6 +3,7 @@
 ### December 2018
 - ODE-466 serialId element of metadata will now provide a true serial number to help identify missing records.
 - ODE-964 Added ode.rsuUsername/ode.rsuPassword application properties or alternatively ODE_RSU_USERNAME and ODE_RSU_PASSWORD environment variables to authenticate communications with RSU instead of using the REST API parameters.
+- ODE-992 Added `/version` endpoint to get the version information of a running ODE.
 ### November 2018
 - ODE-787 Publish J2735 version of Broadcast TIM in addition to the REST request version (see GitHub Issue #262). Please see https://github.com/usdot-jpo-ode/jpo-ode/wiki/Schema-Version-6-Change-Notice for details.
 ### Sprint 38
