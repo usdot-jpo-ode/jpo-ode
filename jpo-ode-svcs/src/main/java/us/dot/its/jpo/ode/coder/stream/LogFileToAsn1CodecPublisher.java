@@ -74,16 +74,10 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
                parsePayload(payloadList);
             } else if (status == ParserStatus.EOF) {
                publish(xmlUtils, payloadList);
-               
-               // if parser returns PARTIAL record, we will go back and continue
-               // parsing
-               // but if it's UNKNOWN, it means that we could not parse the
-               // header bytes
-               if (status == ParserStatus.INIT) {
-                  logger.error("Failed to parse the header bytes.");
-               } else {
-                  logger.error("Failed to decode ASN.1 data");
-               }
+            } else if (status == ParserStatus.INIT) {
+               logger.error("Failed to parse the header bytes.");
+            } else {
+               logger.error("Failed to decode ASN.1 data");
             }
          } catch (Exception e) {
             throw new LogFileToAsn1CodecPublisherException("Error parsing or publishing data.", e);

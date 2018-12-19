@@ -57,6 +57,14 @@ public class TimQueryController {
       }
 
       RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
+      
+      if (queryTarget.getRsuUsername() == null || queryTarget.getRsuUsername().isEmpty()) {
+         queryTarget.setRsuUsername(odeProperties.getRsuUsername());
+      }
+      
+      if (queryTarget.getRsuPassword() == null || queryTarget.getRsuPassword().isEmpty()) {
+         queryTarget.setRsuPassword(odeProperties.getRsuPassword());
+      }
 
       SnmpSession snmpSession = null;
       try {
