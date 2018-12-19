@@ -27,6 +27,7 @@ git fetch --recurse-submodules=yes
 
 #Set the new version which should basically be removing -SNAPSHOT from `dev` branch
 mvn versions:set -DnewVersion=$currentVersion
+mvn versions:commit
 git add --update .
 git commit -m "Promoted dev branch from $currentVersion-SNAPSHOT to version $currentVersion"
 
