@@ -36,7 +36,7 @@ git fetch --recurse-submodules=yes
 
 #Merge `dev` to `stage`
 git merge dev 
-git commit -m "merged `dev` to `stage` after promotion to version $currentVersion" 
+git commit -m "merged 'dev' to 'stage' after promotion to version $currentVersion" 
 
 #Checkout and fetch the `dev` branch
 git checkout dev
