@@ -10,7 +10,6 @@
 /SNMP_Error.log
 /Events.log
 /uploads
-.idea
 *.iml
 *.DS_Store
 SNMP_Error.log

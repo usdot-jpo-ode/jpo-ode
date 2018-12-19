@@ -17,9 +17,9 @@ if [ "_$3_" = "__" ]
 fi
 
 currentVersion=$1
-nextVersion=$2
+nextVersion=$2-SNAPSHOT
 
-echo updating to from $currentVersion to $nextVersion for remote $remote
+echo Promoting versions on stage branch to $currentVersion and creating $nextVersion on dev branch
 
 #Checkout and fetch the `dev` branch
 git checkout -b dev $remote/dev
@@ -28,23 +28,24 @@ git fetch --recurse-submodules=yes
 #Set the new version which should basically be removing -SNAPSHOT from `dev` branch
 mvn versions:set -DnewVersion=$currentVersion
 git add --update .
-git commit -m "updated to version $currentVersion"
+git commit -m "Promoted dev branch from $currentVersion-SNAPSHOT to version $currentVersion"
 
 #Checkout and fetch the `stage` branch
 git checkout -b stage $remote/stage
 git fetch --recurse-submodules=yes
 
 #Merge `dev` to `stage`
-git merge --commit -m "merged `dev` to `stage`" dev
+git merge dev 
+git commit -m "merged `dev` to `stage` after promotion to version $currentVersion" 
 
 #Checkout and fetch the `dev` branch
 git checkout -b dev
 git fetch --recurse-submodules=yes
 
 #Set the new SNAPSHOT version
-mvn versions:set -DnewVersion=$nextVersion-SNAPSHOT
+mvn versions:set -DnewVersion=$nextVersion
 git add --update .
-git commit -m "updated to version $nextVersion"
+git commit -m "Promoted dev branch to version $nextVersion"
 
 #Push to SCM
 #git push dev
