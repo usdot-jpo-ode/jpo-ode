@@ -33,6 +33,7 @@ git commit -m "Promoted dev branch from $currentVersion-SNAPSHOT to version $cur
 
 #Checkout and fetch the `stage` branch
 git checkout -B stage $remote/stage
+git clean --force
 git fetch --recurse-submodules=yes
 
 #Merge `dev` to `stage`
