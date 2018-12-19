@@ -713,10 +713,10 @@ definitions:
         description: IPv4 address of RSU
       rsuUsername:
         type: string
-        description: SNMP username (Not required if value is set in application.properties or .env file)
+        description: SNMP username (Not required if value is pre-configured in ODE properties)
       rsuPassword:
         type: string
-        description: SNMP password (Not required if value is set in application.properties or .env file)
+        description: SNMP password (Not required if value is pre-configured in ODE properties)
       rsuRetries:
         type: integer
         description: Number of retries upon message send failure

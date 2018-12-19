@@ -2,7 +2,7 @@
 -----------------------
 ### December 2018
 - ODE-466 serialId element of metadata will now provide a true serial number to help identify missing records.
-- ODE-964 Added rsuUsername/rsuPassword to application.properties and ODE_RSU_USERNAME and ODE_RSU_PASSWORD values to sample.env
+- ODE-964 Added ode.rsuUsername/ode.rsuPassword application properties or alternatively ODE_RSU_USERNAME and ODE_RSU_PASSWORD environment variables to authenticate communications with RSU instead of using the REST API parameters.
 ### November 2018
 - ODE-787 Publish J2735 version of Broadcast TIM in addition to the REST request version (see GitHub Issue #262). Please see https://github.com/usdot-jpo-ode/jpo-ode/wiki/Schema-Version-6-Change-Notice for details.
 ### Sprint 38
@@ -37,8 +37,8 @@
 - ODE-670 J2735TravelerInformationMessage.packetID needs to be BigInteger
 see https://github.com/usdot-jpo-ode/jpo-ode/wiki/TIM-REST-Endpoint-Changes for interface changes.
 ### Sprint 27
-- ODE-661 CVPEP Data Inconsistency for TIM Files 
-- ODE-657 Continue Supporting WyDOT issues 
+- ODE-661 CVPEP Data Inconsistency for TIM Files
+- ODE-657 Continue Supporting WyDOT issues
 - ODE-591 ORNL - Further generalize encoding and decoding capability of asn1_codec module
 ### Sprint 26
 - ODE-646 Sirius XM Requires ASD messages to be wrapped in IEEE 1698.2 Data
@@ -69,7 +69,7 @@ see https://github.com/usdot-jpo-ode/jpo-ode/wiki/TIM-REST-Endpoint-Changes for 
 ### Sprint 21
 - ODE-483 Implementing generatedAt field in the metadata for TIM
 - ODE-512	Support receiving WYDOT BSM Log files
-- 
+-
 ### Sprint 20
 - ODE-476 Change TIM schema to use real unit values
 - ODE-485 TIM S3 depositor service
@@ -89,7 +89,7 @@ see https://github.com/usdot-jpo-ode/jpo-ode/wiki/TIM-REST-Endpoint-Changes for 
 
 ### Sprint 15
 - ODE-381 Leidos Security Library Integration implementing 1609.2
--- As part of this new feature, the build process was updated in the [ODE README file](README.md) with additional steps for obtaining the source code and building the application. Please review the [Getting Started](https://github.com/usdot-jpo-ode/jpo-ode#getting-started) section for details. 
+-- As part of this new feature, the build process was updated in the [ODE README file](README.md) with additional steps for obtaining the source code and building the application. Please review the [Getting Started](https://github.com/usdot-jpo-ode/jpo-ode#getting-started) section for details.
 
 ### Sprint 14
 - ODE-312 Receiving Raw BSMs over UDP/IP (Phase 2)
