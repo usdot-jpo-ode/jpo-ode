@@ -22,7 +22,7 @@ nextVersion=$2
 echo updating to from $currentVersion to $nextVersion for remote $remote
 
 #Checkout and fetch the `dev` branch
-git checkout -B dev $remote/dev
+git checkout -b dev $remote/dev
 git fetch --recurse-submodules=yes
 
 #Set the new version which should basically be removing -SNAPSHOT from `dev` branch
@@ -31,14 +31,14 @@ git add --update .
 git commit -m "updated to version $currentVersion"
 
 #Checkout and fetch the `stage` branch
-git checkout -B stage $remote/stage
+git checkout -b stage $remote/stage
 git fetch --recurse-submodules=yes
 
 #Merge `dev` to `stage`
 git merge --commit -m "merged `dev` to `stage`" dev
 
 #Checkout and fetch the `dev` branch
-git checkout -B dev
+git checkout -b dev
 git fetch --recurse-submodules=yes
 
 #Set the new SNAPSHOT version
