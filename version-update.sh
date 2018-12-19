@@ -49,5 +49,7 @@ git add --update .
 git commit -m "Promoted dev branch to version $nextVersion"
 
 #Push to SCM
-#git push dev
-#git push stage
+git push dev
+git push stage
+
+echo "Version Promotion Complete"
