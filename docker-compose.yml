@@ -28,8 +28,6 @@ services:
                                      # file isn't full to ensure that retention can delete or compact old data.
     depends_on:
       - zookeeper
-    links:
-      - zookeeper
     volumes:
       - ${DOCKER_SHARED_VOLUME_WINDOWS}/var/run/docker.sock:/var/run/docker.sock
 
@@ -49,6 +47,8 @@ services:
       ODE_DDS_CAS_USERNAME: ${ODE_DDS_CAS_USERNAME}
       ODE_DDS_CAS_PASSWORD: ${ODE_DDS_CAS_PASSWORD}
       ODE_SECURITY_SVCS_SIGNATURE_URI: ${ODE_SECURITY_SVCS_SIGNATURE_URI}
+      ODE_RSU_USERNAME: ${ODE_RSU_USERNAME}
+      ODE_RSU_PASSWORD: ${ODE_RSU_PASSWORD}
 # Commented out for latest schemaVersion. Uncomment to set for older schemaVersion
 #      ODE_OUTPUT_SCHEMA_VERSION: ${ODE_OUTPUT_SCHEMA_VERSION}
     depends_on:

@@ -53,7 +53,13 @@ public class OdeProperties implements EnvironmentAware {
    private Boolean verboseJson = false;
    private String externalIpv4 = "";
    private String externalIpv6 = "";
+   
+   /*
+    * RSU Properties
+    */
    private int rsuSrmSlots = 100; // number of "store and repeat message" indicies for RSU TIMs
+   private String rsuUsername = "";
+   private String rsuPassword = "";
    
    /*
     * Security Services Module Properties
@@ -786,4 +792,20 @@ public class OdeProperties implements EnvironmentAware {
       this.securitySvcsSignatureUri = securitySvcsSignatureUri;
    }
 
+   public String getRsuUsername() {
+      return rsuUsername;
 }
+
+   public void setRsuUsername(String rsuUsername) {
+      this.rsuUsername = rsuUsername;
+   }
+
+   public String getRsuPassword() {
+      return rsuPassword;
+   }
+
+   public void setRsuPassword(String rsuPassword) {
+      this.rsuPassword = rsuPassword;
+   }
+
+   }

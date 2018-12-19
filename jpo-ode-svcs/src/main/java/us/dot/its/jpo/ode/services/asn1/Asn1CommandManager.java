@@ -61,8 +61,11 @@ public class Asn1CommandManager {
 
    private String signatureUri;
    private DdsDepositor<DdsStatusMessage> depositor;
+   private OdeProperties odeProperties;
 
    public Asn1CommandManager(OdeProperties odeProperties) {
+      
+      this.odeProperties = odeProperties;
 
       this.signatureUri = odeProperties.getSecuritySvcsSignatureUri();
 
@@ -92,6 +95,14 @@ public class Asn1CommandManager {
 
       HashMap<String, String> responseList = new HashMap<>();
       for (RSU curRsu : request.getRsus()) {
+         
+         if (curRsu.getRsuUsername() == null || curRsu.getRsuUsername().isEmpty()) {
+            curRsu.setRsuUsername(odeProperties.getRsuUsername());
+         }
+         
+         if (curRsu.getRsuPassword() == null || curRsu.getRsuPassword().isEmpty()) {
+            curRsu.setRsuPassword(odeProperties.getRsuPassword());
+         }
 
          ResponseEvent rsuResponse = null;
 
