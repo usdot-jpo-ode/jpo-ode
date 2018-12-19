@@ -37,7 +37,7 @@ git clean --force
 git fetch --recurse-submodules=yes
 
 #Merge `dev` to `stage`
-git merge dev 
+git merge --strategy=theirs --quiet dev 
 git commit -m "merged 'dev' to 'stage' after promotion to version $currentVersion" 
 
 #Checkout and fetch the `dev` branch
