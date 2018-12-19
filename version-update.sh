@@ -22,7 +22,7 @@ nextVersion=$2-SNAPSHOT
 echo Promoting versions on stage branch to $currentVersion and creating $nextVersion on dev branch
 
 #Checkout and fetch the `dev` branch
-git checkout -b dev $remote/dev
+git checkout -B dev $remote/dev
 git fetch --recurse-submodules=yes
 
 #Set the new version which should basically be removing -SNAPSHOT from `dev` branch
@@ -31,7 +31,7 @@ git add --update .
 git commit -m "Promoted dev branch from $currentVersion-SNAPSHOT to version $currentVersion"
 
 #Checkout and fetch the `stage` branch
-git checkout -b stage $remote/stage
+git checkout -B stage $remote/stage
 git fetch --recurse-submodules=yes
 
 #Merge `dev` to `stage`
@@ -39,7 +39,7 @@ git merge dev
 git commit -m "merged `dev` to `stage` after promotion to version $currentVersion" 
 
 #Checkout and fetch the `dev` branch
-git checkout -b dev
+git checkout dev
 git fetch --recurse-submodules=yes
 
 #Set the new SNAPSHOT version
