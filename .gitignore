@@ -1,6 +1,15 @@
 ####################
 ### root         ###
-.project
+/.project
+*.versionsBackup
+/ode.log
+/jpo-ode-consumer-example/target/
+/.idea
+*.iml
+*.DS_Store
+/SNMP_Error.log
+/Events.log
+/uploads
 .idea
 *.iml
 *.DS_Store
@@ -8,6 +17,7 @@ SNMP_Error.log
 Events.log
 uploads
 *.versionsBackup
+
 
 ####################
 ### jpo-ode-svcs ###
@@ -18,6 +28,10 @@ uploads
 !/jpo-ode-svcs/.mvn/wrapper/maven-wrapper.jar
 /jpo-ode-svcs/ode.log
 /jpo-ode-svcs/logback-out.xml
+/jpo-ode-svcs/*.versionsBackup
+/jpo-ode-svcs/SNMP_Error.log
+/jpo-ode-svcs/src/main/main.iml
+/jpo-ode-svcs/src/test/test.iml
 
 ### STS ###
 /jpo-ode-svcs/.apt_generated
@@ -101,10 +115,6 @@ uploads
 /jpo-ode-plugins/sign.prv
 /jpo-ode-plugins/*.versionsBackup
 
-ode.log
-jpo-ode-consumer-example/target/
-
-/.idea
 
 #########################
 ### jpo-security-svcs ###

@@ -13,10 +13,12 @@ if [ "_$3_" = "__" ]
   then
     remote=origin
   else
-    remote=$2
+    remote=$3
 fi
 
 currentVersion=$1
+nextVersion=$2
+
 echo updating to from $currentVersion to $nextVersion for remote $remote
 
 #Checkout and fetch the `dev` branch
