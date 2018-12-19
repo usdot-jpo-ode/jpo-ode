@@ -91,7 +91,6 @@ public class OdePropertiesTest {
    @Test
    public void testSettersAndGetters() {
 
-      String testAsn1CoderClassName = "testAsn1CoderClassName123456";
       String testDdsCasPassword = "testDdsCasPassword123456";
       String testDdsCasUrl = "testDdsCasUrl123456";
       String testDdsCasUsername = "testDdsCasUsername123456";
@@ -133,6 +132,7 @@ public class OdePropertiesTest {
       String testKafkaTopicEncodedVsd = "testKafkaTopicEncodedVsd";
       String testKafkaTopicOdeBsmPojo = "testKafkaTopicOdeBsmPojo";
       String testKafkaTopicOdeBsmJson = "testKafkaTopicOdeBsmJson";
+      String testVersion = "1.1.0-SNAPSHOT";
 
       testOdeProperties.setDdsCasPassword(testDdsCasPassword);
       testOdeProperties.setDdsCasUrl(testDdsCasUrl);
@@ -177,6 +177,7 @@ public class OdePropertiesTest {
       testOdeProperties.setKafkaTopicVsdPojo(testKafkaTopicEncodedVsd);
       testOdeProperties.setKafkaTopicOdeBsmPojo(testKafkaTopicOdeBsmPojo);
       testOdeProperties.setKafkaTopicOdeBsmJson(testKafkaTopicOdeBsmJson);
+      testOdeProperties.setVersion(testVersion);
 
       assertEquals("Incorrect testDdsCasPassword", testDdsCasPassword, testOdeProperties.getDdsCasPassword());
       assertEquals("Incorrect testDdsCasUrl", testDdsCasUrl, testOdeProperties.getDdsCasUrl());
@@ -234,6 +235,8 @@ public class OdePropertiesTest {
             testOdeProperties.getKafkaTopicOdeBsmPojo());
       assertEquals("Incorrect testKafkaTopicOdeBsmJson", testKafkaTopicOdeBsmJson,
             testOdeProperties.getKafkaTopicOdeBsmJson());
+      assertEquals("Incorrect testVersion", testVersion,
+          testOdeProperties.getVersion());
 
       OdeProperties.getJpoOdeGroupId();
       testOdeProperties.getHostId();

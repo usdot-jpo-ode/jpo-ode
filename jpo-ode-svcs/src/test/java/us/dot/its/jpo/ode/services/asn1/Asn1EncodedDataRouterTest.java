@@ -11,7 +11,7 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
-import us.dot.its.jpo.ode.traveler.TimController;
+import us.dot.its.jpo.ode.traveler.TimDepositController;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
@@ -105,17 +105,17 @@ public class Asn1EncodedDataRouterTest {
          mockJSONObject.getJSONObject(AppContext.METADATA_STRING);
          result = mockJSONObject;
          
-         mockJSONObject.has(TimController.REQUEST_STRING);
+         mockJSONObject.has(TimDepositController.REQUEST_STRING);
          result = true;
 
-         mockJSONObject.getJSONObject(TimController.REQUEST_STRING);
+         mockJSONObject.getJSONObject(TimDepositController.REQUEST_STRING);
          result = mockJSONObject;
          
-         mockJSONObject.has(TimController.RSUS_STRING);
+         mockJSONObject.has(TimDepositController.RSUS_STRING);
          result = true;
          times = 2;
          
-         mockJSONObject.get(TimController.RSUS_STRING);
+         mockJSONObject.get(TimDepositController.RSUS_STRING);
          result = mockJSONObject;
          times = 2;
          

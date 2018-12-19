@@ -33,7 +33,7 @@ import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
-import us.dot.its.jpo.ode.traveler.TimController;
+import us.dot.its.jpo.ode.traveler.TimDepositController;
 import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -61,8 +61,11 @@ public class Asn1CommandManager {
 
    private String signatureUri;
    private DdsDepositor<DdsStatusMessage> depositor;
+   private OdeProperties odeProperties;
 
    public Asn1CommandManager(OdeProperties odeProperties) {
+      
+      this.odeProperties = odeProperties;
 
       this.signatureUri = odeProperties.getSecuritySvcsSignatureUri();
 
@@ -92,6 +95,14 @@ public class Asn1CommandManager {
 
       HashMap<String, String> responseList = new HashMap<>();
       for (RSU curRsu : request.getRsus()) {
+         
+         if (curRsu.getRsuUsername() == null || curRsu.getRsuUsername().isEmpty()) {
+            curRsu.setRsuUsername(odeProperties.getRsuUsername());
+         }
+         
+         if (curRsu.getRsuPassword() == null || curRsu.getRsuPassword().isEmpty()) {
+            curRsu.setRsuPassword(odeProperties.getRsuPassword());
+         }
 
          ResponseEvent rsuResponse = null;
 
@@ -146,7 +157,7 @@ public class Asn1CommandManager {
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_JSON);
 
-      HttpEntity<String> entity = new HttpEntity<>(TimController.jsonKeyValue("message", message), headers);
+      HttpEntity<String> entity = new HttpEntity<>(JsonUtils.jsonKeyValue("message", message), headers);
 
       RestTemplate template = new RestTemplate();
 
@@ -235,7 +246,7 @@ public class Asn1CommandManager {
    
    public static ArrayNode buildEncodings() throws JsonUtilsException, XmlUtilsException {
       ArrayNode encodings = JsonUtils.newArrayNode();
-      encodings.add(TimController.buildEncodingNode(ADVISORY_SITUATION_DATA_STRING, ADVISORY_SITUATION_DATA_STRING, EncodingRule.UPER));
+      encodings.add(TimDepositController.buildEncodingNode(ADVISORY_SITUATION_DATA_STRING, ADVISORY_SITUATION_DATA_STRING, EncodingRule.UPER));
       return encodings;
    }
 

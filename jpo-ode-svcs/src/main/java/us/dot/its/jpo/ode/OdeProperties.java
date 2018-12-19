@@ -1,15 +1,7 @@
 package us.dot.its.jpo.ode;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import javax.annotation.PostConstruct;
-
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
@@ -18,8 +10,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
+
+import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +44,7 @@ public class OdeProperties implements EnvironmentAware {
    /*
     * General Properties
     */
+   private String version;
    private static final int OUTPUT_SCHEMA_VERSION = 6;
    private String pluginsLocations = "plugins";
    private String kafkaBrokers = null;
@@ -57,7 +53,13 @@ public class OdeProperties implements EnvironmentAware {
    private Boolean verboseJson = false;
    private String externalIpv4 = "";
    private String externalIpv6 = "";
+   
+   /*
+    * RSU Properties
+    */
    private int rsuSrmSlots = 100; // number of "store and repeat message" indicies for RSU TIMs
+   private String rsuUsername = "";
+   private String rsuPassword = "";
    
    /*
     * Security Services Module Properties
@@ -184,6 +186,20 @@ public class OdeProperties implements EnvironmentAware {
    @PostConstruct
    void initialize() {
 
+     String pomPropsFile = "/META-INF/maven/usdot.jpo.ode/jpo-ode-svcs/pom.properties";
+      try {
+        InputStream resourceAsStream = this.getClass().getResourceAsStream(pomPropsFile);
+        Properties properties = new Properties();
+        properties.load(resourceAsStream);
+        setVersion(properties.getProperty("version"));
+        logger.info("groupId: {}", properties.getProperty("groupId"));
+        logger.info("artifactId: {}", properties.getProperty("artifactId"));
+        logger.info("version: {}", version);
+        
+      } catch (IOException e) {
+        logger.error("Error loading properties file " + pomPropsFile, e);
+      }
+      
       OdeMsgMetadata.setStaticSchemaVersion(OUTPUT_SCHEMA_VERSION);
       
       uploadLocations.add(Paths.get(uploadLocationRoot));
@@ -222,8 +238,18 @@ public class OdeProperties implements EnvironmentAware {
       logger.info("Disabled Topics: {}", asList);
       kafkaTopicsDisabledSet.addAll(asList);
    }
+   
+   
 
-   public boolean dataSigningEnabled() {
+   public String getVersion() {
+     return version;
+   }
+
+   public void setVersion(String version) {
+     this.version = version;
+   }
+
+  public boolean dataSigningEnabled() {
       return getSecuritySvcsSignatureUri() != null &&
             !StringUtils.isEmptyOrWhitespace(getSecuritySvcsSignatureUri()) &&
             !getSecuritySvcsSignatureUri().startsWith("UNSECURE");
@@ -764,6 +790,22 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setSecuritySvcsSignatureUri(String securitySvcsSignatureUri) {
       this.securitySvcsSignatureUri = securitySvcsSignatureUri;
+   }
+
+   public String getRsuUsername() {
+      return rsuUsername;
+}
+
+   public void setRsuUsername(String rsuUsername) {
+      this.rsuUsername = rsuUsername;
+   }
+
+   public String getRsuPassword() {
+      return rsuPassword;
+   }
+
+   public void setRsuPassword(String rsuPassword) {
+      this.rsuPassword = rsuPassword;
    }
 
    }
