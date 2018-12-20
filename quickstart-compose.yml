@@ -1,4 +1,6 @@
-version: '2'
+# DOCKER_SHARED_VOLUME_WINDOWS should be defined for Windows host machine as C: and not defined for Linux hosts
+
+version: '3'
 services:
   zookeeper:
     image: wurstmeister/zookeeper
@@ -6,7 +8,7 @@ services:
       - "2181:2181"
 
   kafka:
-    build: ./docker/kafka
+    image: wurstmeister/kafka
     ports:
       - "9092:9092"
     environment:
@@ -18,6 +20,7 @@ services:
       KAFKA_DELETE_TOPIC_ENABLED: "true"
       KAFKA_CLEANUP_POLICY: "delete" # delete old logs
       KAFKA_LOG_RETENTION_HOURS: 2
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 3000
       KAFKA_RETENTION_MS: 7200000    # delete old logs after 2 hours
       KAFKA_SEGMENT_MS:   7200000    # roll segment logs every 2 hours.
                                      # This configuration controls the period of time after
@@ -25,13 +28,12 @@ services:
                                      # file isn't full to ensure that retention can delete or compact old data.
     depends_on:
       - zookeeper
-    links:
-      - zookeeper
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ${DOCKER_SHARED_VOLUME_WINDOWS}/var/run/docker.sock:/var/run/docker.sock
 
   ode:
     build: .
+    image: jpoode_ode:latest
     ports:
       - "8080:8080"
       - "9090:9090"
@@ -42,16 +44,15 @@ services:
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ZK: ${DOCKER_HOST_IP}:2181
-      SPRING_CONFIG_LOCATION: /host_share/config/
       ODE_DDS_CAS_USERNAME: ${ODE_DDS_CAS_USERNAME}
       ODE_DDS_CAS_PASSWORD: ${ODE_DDS_CAS_PASSWORD}
-      ODE_EXTERNAL_IPV4: ${ODE_EXTERNAL_IPV4}
-      ODE_EXTERNAL_IPV6: ${ODE_EXTERNAL_IPV6}
+      ODE_SECURITY_SVCS_SIGNATURE_URI: ${ODE_SECURITY_SVCS_SIGNATURE_URI}
+      ODE_RSU_USERNAME: ${ODE_RSU_USERNAME}
+      ODE_RSU_PASSWORD: ${ODE_RSU_PASSWORD}
+# Commented out for latest schemaVersion. Uncomment to set for older schemaVersion
+#      ODE_OUTPUT_SCHEMA_VERSION: ${ODE_OUTPUT_SCHEMA_VERSION}
     depends_on:
       - kafka
-    links:
-      - kafka
-      - zookeeper
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/jpo-ode
 
@@ -63,10 +64,8 @@ services:
       ACM_CONFIG_FILE: adm.properties
     depends_on:
       - kafka
-    links:
-      - kafka
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/asn1_codec
+      - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
 
   aem:
     build: ./asn1_codec
@@ -76,75 +75,13 @@ services:
       ACM_CONFIG_FILE: aem.properties
     depends_on:
       - kafka
-    links:
-      - kafka
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/asn1_codec
+      - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
 
-#  ppm:
-#    build: ./jpo-cvdp
-#    image: jpoode_ppm:latest
-#    environment:
-#      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-#    volumes:
-#      - ${DOCKER_SHARED_VOLUME}:/ppm_data
-
-#  cvpep_bsm_s3dep:
-#    build: ./jpo-s3-deposit
-#    image: jpoode_s3dep:latest
-#    environment:
-#      AWS_ACCESS_KEY_ID: ${CVPEP_BSM_S3_ACCESS_KEY_ID}
-#      AWS_SECRET_ACCESS_KEY: ${CVPEP_BSM_S3_SECRET_ACCESS_KEY}
-#      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-#      DEPOSIT_BUCKET_NAME: ${CVPEP_BSM_S3_BUCKET_NAME}
-#      DEPOSIT_KEY_NAME: ${CVPEP_BSM_S3_DEPOSIT_KEY}
-#      DEPOSIT_TOPIC: ${CVPEP_BSM_S3_TOPIC}
-#    depends_on:
-#     - kafka
-#    links:
-#     - kafka
-
-#  rde_bsm_s3dep:
-#    build: ./jpo-s3-deposit
-#    image: jpoode_s3dep:latest
-#    environment:
-#      AWS_ACCESS_KEY_ID: ${RDE_BSM_S3_ACCESS_KEY_ID}
-#      AWS_SECRET_ACCESS_KEY: ${RDE_BSM_S3_SECRET_ACCESS_KEY}
-#      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-#      DEPOSIT_BUCKET_NAME: ${RDE_BSM_S3_BUCKET_NAME}
-#      DEPOSIT_KEY_NAME: ${RDE_BSM_S3_DEPOSIT_KEY}
-#      DEPOSIT_TOPIC: ${RDE_BSM_S3_TOPIC}
-#    depends_on:
-#     - kafka
-#    links:
-#     - kafka
-
-#  cvpep_tim_s3dep:
-#    build: ./jpo-s3-deposit
-#    image: jpoode_s3dep:latest
-#    environment:
-#      AWS_ACCESS_KEY_ID: ${CVPEP_TIM_S3_ACCESS_KEY_ID}
-#      AWS_SECRET_ACCESS_KEY: ${CVPEP_TIM_S3_SECRET_ACCESS_KEY}
-#      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-#      DEPOSIT_BUCKET_NAME: ${CVPEP_TIM_S3_BUCKET_NAME}
-#      DEPOSIT_KEY_NAME: ${CVPEP_TIM_S3_DEPOSIT_KEY}
-#      DEPOSIT_TOPIC: ${CVPEP_TIM_S3_TOPIC}
-#    depends_on:
-#     - kafka
-#    links:
-#     - kafka
-
-#  rde_tim_s3dep:
-#    build: ./jpo-s3-deposit
-#    image: jpoode_s3dep:latest
-#    environment:
-#      AWS_ACCESS_KEY_ID: ${RDE_TIM_S3_ACCESS_KEY_ID}
-#      AWS_SECRET_ACCESS_KEY: ${RDE_TIM_S3_SECRET_ACCESS_KEY}
-#      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-#      DEPOSIT_BUCKET_NAME: ${RDE_TIM_S3_BUCKET_NAME}
-#      DEPOSIT_KEY_NAME: ${RDE_TIM_S3_DEPOSIT_KEY}
-#      DEPOSIT_TOPIC: ${RDE_TIM_S3_TOPIC}
-#    depends_on:
-#     - kafka
-#    links:
-#     - kafka
+  sec:
+    build: ./jpo-security-svcs
+    image: jpoode_sec:latest
+    ports:
+     - "8090:8090"
+    environment:
+      SEC_CRYPTO_SERVICE_BASE_URI: ${SEC_CRYPTO_SERVICE_BASE_URI}

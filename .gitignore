@@ -16,7 +16,7 @@ Events.log
 uploads
 /*.versionsBackup
 /*.releaseBackup
-
+/.env
 
 ####################
 ### jpo-ode-svcs ###
