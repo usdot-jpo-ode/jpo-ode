@@ -1,10 +1,9 @@
 ####################
 ### root         ###
 /.project
-*.versionsBackup
 /ode.log
 /jpo-ode-consumer-example/target/
-/.idea
+.idea
 *.iml
 *.DS_Store
 /SNMP_Error.log
@@ -15,7 +14,8 @@
 SNMP_Error.log
 Events.log
 uploads
-*.versionsBackup
+/*.versionsBackup
+/*.releaseBackup
 
 
 ####################
@@ -31,6 +31,7 @@ uploads
 /jpo-ode-svcs/SNMP_Error.log
 /jpo-ode-svcs/src/main/main.iml
 /jpo-ode-svcs/src/test/test.iml
+/jpo-ode-svcs/*.releaseBackup
 
 ### STS ###
 /jpo-ode-svcs/.apt_generated
@@ -68,6 +69,7 @@ uploads
 /jpo-ode-common/.settings
 /jpo-ode-common/bin
 /jpo-ode-common/*.versionsBackup
+/jpo-ode-common/*.releaseBackup
 
 ####################
 ### jpo-ode-core ###
@@ -76,6 +78,7 @@ uploads
 !/jpo-ode-core/.mvn/wrapper/maven-wrapper.jar
 /jpo-ode-core/src/test/resources/CVMessages/VehicleSituationDataServiceResponse.uper
 /jpo-ode-core/*.versionsBackup
+/jpo-ode-core/*.releaseBackup
 
 ### STS ###
 /jpo-ode-core/.apt_generated
@@ -113,6 +116,7 @@ uploads
 /jpo-ode-plugins/self.s
 /jpo-ode-plugins/sign.prv
 /jpo-ode-plugins/*.versionsBackup
+/jpo-ode-plugins/*.releaseBackup
 
 
 #########################
