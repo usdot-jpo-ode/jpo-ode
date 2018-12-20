@@ -26,7 +26,7 @@ git checkout -B dev $remote/dev
 git clean --force
 git fetch --recurse-submodules=yes
 
-mvn -DautoVersionSubmodules -DpushChanges=false -dreleaseVersion=$releaseVersion release:prepare
+mvn -DautoVersionSubmodules -DpushChanges=false -DreleaseVersion=$releaseVersion release:prepare
 
 #Checkout and fetch the `stage` branch
 git checkout -B stage $remote/stage
