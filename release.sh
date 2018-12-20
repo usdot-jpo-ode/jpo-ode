@@ -20,6 +20,12 @@ fi
 releaseVersion=$1
 
 echo Releasing version $releaseVersion and preparing for next development iteration
+
+#Checkout and fetch the `dev` branch
+git checkout -B dev $remote/dev
+git clean --force
+git fetch --recurse-submodules=yes
+
 mvn -DautoVersionSubmodules -DpushChanges=false -dreleaseVersion=$releaseVersion release:prepare
 
 #Checkout and fetch the `stage` branch
@@ -31,7 +37,7 @@ git fetch --recurse-submodules=yes
 git merge --strategy=recursive -Xtheirs --quiet -m "merged $releaseVersion to 'stage'" jpo-ode-$releaseVersion
 
 #Push to SCM
-git push $remote dev
-git push $remote stage
+#git push $remote dev
+#git push $remote stage
 
 echo "Release $releaseVersion Complete"
