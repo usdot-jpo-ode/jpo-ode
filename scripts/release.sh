@@ -23,8 +23,7 @@ echo Releasing version $releaseVersion and preparing for next development iterat
 
 #Checkout and fetch the `dev` branch
 git checkout -B dev $remote/dev
-git clean --force
-git fetch --recurse-submodules=yes
+git pull --recurse-submodules=yes
 
 #Prepare the release
 mvn -DautoVersionSubmodules -DreleaseVersion=$releaseVersion release:prepare
@@ -37,7 +36,7 @@ git push $remote dev
 #Checkout and fetch the `stage` branch
 git checkout -B stage $remote/stage
 git clean --force
-git fetch --recurse-submodules=yes
+git pull --recurse-submodules=yes
 
 #Merge from release tag to `stage`
 git merge --strategy=recursive -Xtheirs --quiet -m "merged $releaseVersion to 'stage'" jpo-ode-$releaseVersion

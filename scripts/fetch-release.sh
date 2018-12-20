@@ -8,5 +8,5 @@ if [ $# -eq 0 ]
 fi
 
 git checkout -B dev origin/dev
-git fetch --recurse-submodules=yes
+git pull --recurse-submodules=yes
 git checkout tags/jpo-ode-$1
