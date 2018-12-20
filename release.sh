@@ -26,7 +26,13 @@ git checkout -B dev $remote/dev
 git clean --force
 git fetch --recurse-submodules=yes
 
+#Prepare the release
 mvn -DautoVersionSubmodules -DreleaseVersion=$releaseVersion release:prepare
+
+#Commit and push updated files
+git add --update .
+git commit -m "Updated release files"
+git push $remote dev
 
 #Checkout and fetch the `stage` branch
 git checkout -B stage $remote/stage
