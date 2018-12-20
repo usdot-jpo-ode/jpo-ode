@@ -11,7 +11,7 @@
   <parent>
     <groupId>usdot.jpo.ode</groupId>
     <artifactId>jpo-ode</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
   </parent>
   <properties>
     <!-- SonarQube Properties -->
@@ -26,7 +26,7 @@
     <dependency>
       <groupId>usdot.jpo.ode</groupId>
       <artifactId>jpo-ode-common</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3-SNAPSHOT</version>
     </dependency>
     <!-- TODO open-ode
     <dependency>
