@@ -10,3 +10,4 @@ fi
 git checkout -B dev origin/dev
 git pull --recurse-submodules=yes
 git checkout tags/jpo-ode-$1
+git submodule update --recursive
