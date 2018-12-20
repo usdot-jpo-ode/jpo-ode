@@ -26,7 +26,7 @@ git checkout -B dev $remote/dev
 git clean --force
 git fetch --recurse-submodules=yes
 
-mvn -DautoVersionSubmodules -DpushChanges=false -DreleaseVersion=$releaseVersion release:prepare
+mvn -DautoVersionSubmodules -DreleaseVersion=$releaseVersion release:prepare
 
 #Checkout and fetch the `stage` branch
 git checkout -B stage $remote/stage
@@ -37,7 +37,6 @@ git fetch --recurse-submodules=yes
 git merge --strategy=recursive -Xtheirs --quiet -m "merged $releaseVersion to 'stage'" jpo-ode-$releaseVersion
 
 #Push to SCM
-#git push $remote dev
-#git push $remote stage
+git push $remote stage
 
 echo "Release $releaseVersion Complete"
