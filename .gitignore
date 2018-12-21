@@ -1,6 +1,22 @@
 ####################
 ### root         ###
-.project
+/.project
+/ode.log
+/jpo-ode-consumer-example/target/
+.idea
+*.iml
+*.DS_Store
+/SNMP_Error.log
+/Events.log
+/uploads
+*.iml
+*.DS_Store
+SNMP_Error.log
+Events.log
+uploads
+/*.versionsBackup
+/*.releaseBackup
+/.env
 
 ####################
 ### jpo-ode-svcs ###
@@ -11,6 +27,11 @@
 !/jpo-ode-svcs/.mvn/wrapper/maven-wrapper.jar
 /jpo-ode-svcs/ode.log
 /jpo-ode-svcs/logback-out.xml
+/jpo-ode-svcs/*.versionsBackup
+/jpo-ode-svcs/SNMP_Error.log
+/jpo-ode-svcs/src/main/main.iml
+/jpo-ode-svcs/src/test/test.iml
+/jpo-ode-svcs/*.releaseBackup
 
 ### STS ###
 /jpo-ode-svcs/.apt_generated
@@ -35,6 +56,10 @@
 /jpo-ode-svcs/.nb-gradle/
 /jpo-ode-svcs/ode.log
 /jpo-ode-svcs/Events.log
+/jpo-ode-svcs/SNMP_Error.log
+/jpo-ode-svcs/src/main/main.iml
+/jpo-ode-svcs/src/test/test.iml
+/jpo-ode-svcs/*.versionsBackup
 
 ######################
 ### jpo-ode-common ###
@@ -43,6 +68,8 @@
 /jpo-ode-common/.project
 /jpo-ode-common/.settings
 /jpo-ode-common/bin
+/jpo-ode-common/*.versionsBackup
+/jpo-ode-common/*.releaseBackup
 
 ####################
 ### jpo-ode-core ###
@@ -50,6 +77,8 @@
 /jpo-ode-core/target/
 !/jpo-ode-core/.mvn/wrapper/maven-wrapper.jar
 /jpo-ode-core/src/test/resources/CVMessages/VehicleSituationDataServiceResponse.uper
+/jpo-ode-core/*.versionsBackup
+/jpo-ode-core/*.releaseBackup
 
 ### STS ###
 /jpo-ode-core/.apt_generated
@@ -72,7 +101,6 @@
 /jpo-ode-core/dist/
 /jpo-ode-core/nbdist/
 /jpo-ode-core/.nb-gradle/
-
 /jpo-ode-core/src/main/java/rebel.xml
 
 #######################
@@ -87,23 +115,9 @@
 /jpo-ode-plugins/self.cert
 /jpo-ode-plugins/self.s
 /jpo-ode-plugins/sign.prv
+/jpo-ode-plugins/*.versionsBackup
+/jpo-ode-plugins/*.releaseBackup
 
-ode.log
-jpo-ode-consumer-example/target/
-
-/.idea
-/jpo-ode-svcs/SNMP_Error.log
-/jpo-ode-svcs/src/main/main.iml
-/jpo-ode-svcs/src/test/test.iml
-
-.idea
-*.iml
-/jpo-ode-svcs/SNMP_Error.log
-
-*.DS_Store
-/SNMP_Error.log
-/Events.log
-/uploads
 
 #########################
 ### jpo-security-svcs ###
