@@ -24,6 +24,10 @@ import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 
 public class Position3DBuilder {
    
+   private static final String LATITUDE = "latitude";
+   private static final String LONGITUDE = "longitude";
+   private static final String ELEVATION = "elevation";
+
    private Position3DBuilder() {
       throw new UnsupportedOperationException();
    }
@@ -31,7 +35,7 @@ public class Position3DBuilder {
    public static DsrcPosition3D dsrcPosition3D(JsonNode pos) {
       Long latitude = pos.get("lat").asLong();
       Long longitude = pos.get("long").asLong();
-      Long elevation = pos.get("elevation").asLong();
+      Long elevation = pos.get(ELEVATION).asLong();
 
       return new DsrcPosition3D(latitude, longitude, elevation);
 
@@ -62,18 +66,18 @@ public class Position3DBuilder {
    public static OdePosition3D odePosition3D(JsonNode jpos) {
 
       BigDecimal latitude = null;
-      if (jpos.get("latitude") != null) {
-         latitude = jpos.get("latitude").decimalValue();
+      if (jpos.get(LATITUDE) != null) {
+         latitude = jpos.get(LATITUDE).decimalValue();
       }
       
       BigDecimal longitude = null;
-      if (jpos.get("longitude") != null) {
-         longitude = jpos.get("longitude").decimalValue();
+      if (jpos.get(LONGITUDE) != null) {
+         longitude = jpos.get(LONGITUDE).decimalValue();
       }
       
       BigDecimal elevation = null;
-      if (jpos.get("elevation") != null) {
-         elevation = jpos.get("elevation").decimalValue();
+      if (jpos.get(ELEVATION) != null) {
+         elevation = jpos.get(ELEVATION).decimalValue();
       }
 
       return new OdePosition3D(latitude, longitude, elevation);

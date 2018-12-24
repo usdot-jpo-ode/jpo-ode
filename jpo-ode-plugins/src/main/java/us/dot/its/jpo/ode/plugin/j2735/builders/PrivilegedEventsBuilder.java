@@ -22,7 +22,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735PrivilegedEvents;
 
 public class PrivilegedEventsBuilder {
    
-   public enum J2735PrivilegedEventFlagsNames {
+   private static final String SSP_RIGHTS = "sspRights";
+
+  public enum J2735PrivilegedEventFlagsNames {
       peUnavailable,
       peEmergencyResponse,
       peEmergencyLightsActive,
@@ -40,7 +42,7 @@ public class PrivilegedEventsBuilder {
 
     public static J2735PrivilegedEvents genericPrivilegedEvents(JsonNode events) {
 
-        if (events.get("sspRights").asInt() < SSP_LOWER_BOUND || events.get("sspRights").asInt() > SSP_UPPER_BOUND) {
+        if (events.get(SSP_RIGHTS).asInt() < SSP_LOWER_BOUND || events.get(SSP_RIGHTS).asInt() > SSP_UPPER_BOUND) {
             throw new IllegalArgumentException("SSPindex value out of bounds [0..31]");
         }
 
@@ -57,7 +59,7 @@ public class PrivilegedEventsBuilder {
         }
 
         pe.setEvent(flags);
-        pe.setSspRights(events.get("sspRights").asInt());
+        pe.setSspRights(events.get(SSP_RIGHTS).asInt());
 
         return pe;
     }

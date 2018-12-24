@@ -35,7 +35,30 @@ import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 
 public class TravelerMessageFromHumanToAsnConverter {
 
-   public static final String GEOGRAPHICAL_PATH_STRING = "GeographicalPath";
+   private static final String TEXT = "text";
+
+  private static final String ITIS = "itis";
+
+  private static final String ITEM = "item";
+
+  private static final String START_DATE_TIME = "startDateTime";
+
+  private static final String DURATION_TIME = "durationTime";
+
+    // I know, it's misspelled and it has to stay that way. J2735 spec misspelled it
+    private static final String DURATON_TIME_MISSPELLED = "duratonTime";
+  
+    private static final String SSP_TIM_RIGHTS = "sspTimRights";
+  
+    private static final String SSP_MSG_TYPES = "sspMsgTypes";
+  
+    private static final String SSP_MSG_CONTENT = "sspMsgContent";
+  
+    private static final String DATAFRAMES = "dataframes";
+  
+    private static final String TIME_STAMP = "timeStamp";
+  
+    public static final String GEOGRAPHICAL_PATH_STRING = "GeographicalPath";
 
    public static final String REGIONS_STRING = "regions";
 
@@ -65,16 +88,16 @@ public class TravelerMessageFromHumanToAsnConverter {
       ObjectNode timDataObjectNode = (ObjectNode) tid.get("tim");
       
       // timeStamp is optional
-      if (timDataObjectNode.get("timeStamp") != null) {
-         timDataObjectNode.put("timeStamp",
-               translateISOTimeStampToMinuteOfYear(timDataObjectNode.get("timeStamp").asText()));
+      if (timDataObjectNode.get(TIME_STAMP) != null) {
+         timDataObjectNode.put(TIME_STAMP,
+               translateISOTimeStampToMinuteOfYear(timDataObjectNode.get(TIME_STAMP).asText()));
       }
 
       // urlB is optional but does not need replacement
 
       // dataFrames are required
-      timDataObjectNode.set(DATA_FRAMES_STRING, transformDataFrames(timDataObjectNode.get("dataframes")));
-      timDataObjectNode.remove("dataframes");
+      timDataObjectNode.set(DATA_FRAMES_STRING, transformDataFrames(timDataObjectNode.get(DATAFRAMES)));
+      timDataObjectNode.remove(DATAFRAMES);
    }
       
    public static ObjectNode transformDataFrames(JsonNode dataFrames) throws JsonUtilsException {
@@ -142,20 +165,20 @@ public class TravelerMessageFromHumanToAsnConverter {
       // sspTimRights does not need replacement
 
       // replace sspMsgContent with sspMsgRights2
-      dataFrame.put("sspMsgRights2", dataFrame.get("sspMsgContent").asInt());
-      dataFrame.remove("sspMsgContent");
+      dataFrame.put("sspMsgRights2", dataFrame.get(SSP_MSG_CONTENT).asInt());
+      dataFrame.remove(SSP_MSG_CONTENT);
 
       // replace sspMsgTypes with sspMsgRights1
-      dataFrame.put("sspMsgRights1", dataFrame.get("sspMsgTypes").asInt());
-      dataFrame.remove("sspMsgTypes");
+      dataFrame.put("sspMsgRights1", dataFrame.get(SSP_MSG_TYPES).asInt());
+      dataFrame.remove(SSP_MSG_TYPES);
 
-      dataFrame.put("sspTimRights", dataFrame.get("sspTimRights").asText());
+      dataFrame.put(SSP_TIM_RIGHTS, dataFrame.get(SSP_TIM_RIGHTS).asText());
 
       // priority does not need replacement
 
       // replace durationTime with duratonTime - j2735 schema misspelling
-      dataFrame.put("duratonTime", dataFrame.get("durationTime").asInt());
-      dataFrame.remove("durationTime");
+      dataFrame.put(DURATON_TIME_MISSPELLED, dataFrame.get(DURATION_TIME).asInt());
+      dataFrame.remove(DURATION_TIME);
 
       // url does not need replacement
 
@@ -197,7 +220,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       // unknown minuteofyear = 527040
       int startYear = 0;
       int startMinute = 527040;
-      String startDateTime = dataFrame.get("startDateTime").asText();
+      String startDateTime = dataFrame.get(START_DATE_TIME).asText();
       try {
          ZonedDateTime zDateTime = DateTimeUtils.isoDateTime(startDateTime);
          startYear = zDateTime.getYear();
@@ -208,7 +231,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       dataFrame.put("startYear", startYear);
       dataFrame.put("startTime", startMinute);
-      dataFrame.remove("startDateTime");
+      dataFrame.remove(START_DATE_TIME);
    }
 
    public static void replaceContent(ObjectNode dataFrame) {
@@ -278,14 +301,14 @@ public class TravelerMessageFromHumanToAsnConverter {
       JsonNode item = null;
       // check to see if it is a itis code or text
       try {
-         item = JsonUtils.newNode().set("item", JsonUtils.newNode().put("itis", Integer.valueOf(itemStr)));
+         item = JsonUtils.newNode().set(ITEM, JsonUtils.newNode().put(ITIS, Integer.valueOf(itemStr)));
          // it's a number, so create "itis" code
       } catch (NumberFormatException e) {
          // it's a number, so create "text"
          if (itemStr.startsWith("'")) {
-            item = JsonUtils.newNode().set("item", JsonUtils.newNode().put("text", itemStr.substring(1)));
+            item = JsonUtils.newNode().set(ITEM, JsonUtils.newNode().put(TEXT, itemStr.substring(1)));
          } else {
-            item = JsonUtils.newNode().set("item", JsonUtils.newNode().put("text", itemStr));
+            item = JsonUtils.newNode().set(ITEM, JsonUtils.newNode().put(TEXT, itemStr));
          }
       }
 

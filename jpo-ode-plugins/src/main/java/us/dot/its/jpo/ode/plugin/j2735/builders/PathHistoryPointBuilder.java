@@ -23,7 +23,11 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistoryPoint;
 
 public class PathHistoryPointBuilder {
 
-   private PathHistoryPointBuilder() {
+   private static final String HEADING = "heading";
+  private static final String POS_ACCURACY = "posAccuracy";
+  private static final String SPEED = "speed";
+
+  private PathHistoryPointBuilder() {
       throw new UnsupportedOperationException();
    }
 
@@ -82,24 +86,24 @@ public class PathHistoryPointBuilder {
 
       
       // Optional elements
-      if (pathHistoryPoint.get("speed") != null) {
-         php.setSpeed(SpeedOrVelocityBuilder.genericSpeed(pathHistoryPoint.get("speed")));
+      if (pathHistoryPoint.get(SPEED) != null) {
+         php.setSpeed(SpeedOrVelocityBuilder.genericSpeed(pathHistoryPoint.get(SPEED)));
       }
-      if (pathHistoryPoint.get("posAccuracy") != null) {
-         php.setPosAccuracy(PositionalAccuracyBuilder.genericPositionalAccuracy(pathHistoryPoint.get("posAccuracy")));
+      if (pathHistoryPoint.get(POS_ACCURACY) != null) {
+         php.setPosAccuracy(PositionalAccuracyBuilder.genericPositionalAccuracy(pathHistoryPoint.get(POS_ACCURACY)));
       }
       
       
       
-      if (pathHistoryPoint.get("heading") != null) {
-         if (pathHistoryPoint.get("heading").asLong() == 240) {
+      if (pathHistoryPoint.get(HEADING) != null) {
+         if (pathHistoryPoint.get(HEADING).asLong() == 240) {
             php.setHeading(null);
-      } else if (pathHistoryPoint.get("heading").asLong() < 0) {
+      } else if (pathHistoryPoint.get(HEADING).asLong() < 0) {
          throw new IllegalArgumentException("heading value out of bounds [below 0]");
-      } else if (pathHistoryPoint.get("heading").asLong() > 240) {
+      } else if (pathHistoryPoint.get(HEADING).asLong() > 240) {
          throw new IllegalArgumentException("heading value out of bounds [above 240]");
       } else {
-         php.setHeading(BigDecimal.valueOf((pathHistoryPoint.get("heading").asDouble() * 1.5)).setScale(1));
+         php.setHeading(BigDecimal.valueOf((pathHistoryPoint.get(HEADING).asDouble() * 1.5)).setScale(1));
       }
       
       }
