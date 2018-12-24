@@ -14,6 +14,17 @@ basePath: /
 produces:
   - application/json
 paths:
+  /version:
+    get:
+      summary: Get ODE version info
+      operationId: getVersion
+      description: Get ODE Version info
+      responses:
+        '200':
+          description: ODE version information returned
+          schema:
+            $ref: '#/definitions/versionResponse'
+      
   /tim/query:
     post:
       summary: Query an RSU for set TIMs
@@ -279,6 +290,12 @@ paths:
             items:
               $ref: '#/definitions/Status'
 definitions:
+  versionResponse:
+    type: object
+    properties:
+      version:
+        type: string
+        description: Runnign version in the form of `M.m.p[-SNAPSHOT]` where M is the Major version, m is the minor version and p is the patch or fix and square brackets signify optional component. If the software is from a nightly build, there will be an optional -SNAPSHOT postfix.
   tim:
     type: object
     properties:
