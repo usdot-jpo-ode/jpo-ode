@@ -194,11 +194,11 @@ public class Asn1CommandManager {
       try {
          if (null != snmp) {
 
-            asd = new DdsAdvisorySituationData(snmp.getDeliverystart(), snmp.getDeliverystop(), null,
+            asd = DdsAdvisorySituationData.create(snmp.getDeliverystart(), snmp.getDeliverystop(), null,
                   GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(),
                   sdw.getRecordId(), distroType);
          } else {
-            asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), null,
+            asd = DdsAdvisorySituationData.create(sdw.getDeliverystart(), sdw.getDeliverystop(), null,
                   GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(),
                   sdw.getRecordId(), distroType);
          }

@@ -39,7 +39,7 @@ public class OdeTravelerInformationMessage extends OdeObject {
    @Expose
    private DataFrame[] dataframes;
    @Expose(serialize = false, deserialize = true)
-   private JsonNode asnDataFrames;
+   private transient JsonNode asnDataFrames;
 
    public int getMsgCnt() {
       return msgCnt;

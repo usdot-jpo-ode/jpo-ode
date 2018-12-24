@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractSubscriberProcessor<K, S> extends MessageProcessor<K, S> {
 
-   protected Logger logger = LoggerFactory.getLogger(this.getClass());
+   private Logger logger = LoggerFactory.getLogger(this.getClass());
    protected int messagesConsumed = 0;
 
    /**

@@ -19,14 +19,13 @@ import org.json.JSONObject;
 
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.OdeTimPayload;
-import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 public class OdeTimDataCreatorHelper {
 
    private OdeTimDataCreatorHelper() {
    }
 
-   public static JSONObject createOdeTimData(JSONObject timData) throws XmlUtilsException { 
+   public static JSONObject createOdeTimData(JSONObject timData) { 
 
       JSONObject metadata = timData.getJSONObject(AppContext.METADATA_STRING);
       metadata.put("payloadType", OdeTimPayload.class.getName());

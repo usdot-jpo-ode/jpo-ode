@@ -18,12 +18,17 @@ package us.dot.its.jpo.ode.inet;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class InetPoint {
-	final public byte[] address;
-	final public int port;
-	final public boolean forward;
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	public final byte[] address;
+	public final int port;
+	public boolean forward;
 	
 	public InetPoint(String host, int port, boolean forward) throws UnknownHostException {
 		this(InetAddress.getByName(host).getAddress(), port, forward);
@@ -54,6 +59,7 @@ public class InetPoint {
 		try {
 			host = InetAddress.getByAddress(address).getHostAddress();
 		} catch (UnknownHostException e) {
+		  logger.error("Error", e);
 		}
 		return String.format("%s { port = %d (0x%x); address = %s (%s, %s); forward = %s }",
 				getClass().getSimpleName(),

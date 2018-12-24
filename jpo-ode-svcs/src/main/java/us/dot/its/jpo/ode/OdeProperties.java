@@ -63,7 +63,7 @@ public class OdeProperties implements EnvironmentAware {
    private static final int OUTPUT_SCHEMA_VERSION = 6;
    private String pluginsLocations = "plugins";
    private String kafkaBrokers = null;
-   private String DEFAULT_KAFKA_PORT = "9092";
+   private static final String DEFAULT_KAFKA_PORT = "9092";
    private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
    private Boolean verboseJson = false;
    private String externalIpv4 = "";
@@ -119,7 +119,7 @@ public class OdeProperties implements EnvironmentAware {
     */
    @Value("ode.topics.disabled")
    private String[] kafkaTopicsDisabled = {"topic.OdeBsmRxPojo", "topic.OdeBsmTxPojo", "topic.OdeBsmDuringEventPojo", "topic.OdeTimRxJson"};
-   private Set<String> kafkaTopicsDisabledSet = new HashSet<String>();
+   private Set<String> kafkaTopicsDisabledSet = new HashSet<>();
    
    //BSM
    private String kafkaTopicOdeBsmPojo = "topic.OdeBsmPojo";

@@ -27,7 +27,9 @@ import org.apache.log4j.Logger;
  */
 public class InetPacketSender {
 	
-	private static final Logger log = Logger.getLogger(InetPacketSender.class);
+	private static final String INVALID_PARAMETERS_MSG = "Invalid Parameters. Parameters destination point and payload can not be null";
+
+  private static final Logger log = Logger.getLogger(InetPacketSender.class);
 
 	/**
 	 * Inet address and port to forward packets to
@@ -90,7 +92,7 @@ public class InetPacketSender {
 	 */
 	public void forward(InetPoint dstPoint, byte[] payload) throws InetPacketException {
 		if ( dstPoint == null || payload == null )
-			throw new InetPacketException("Invalid Parameters. Parameters destination point and payload can not be null");
+			throw new InetPacketException(INVALID_PARAMETERS_MSG);
 		if ( frwdPoint == null )
 			log.warn("Couldn't forward packet. Reason: Forwarding destination is not defined.");
 		if ( frwdPoint != null && (dstPoint.isIPv6Address() || isForwardAll()) ) {
@@ -110,7 +112,7 @@ public class InetPacketSender {
 	 */
 	public void forward(InetPoint dstPoint, byte[] payload, boolean fromForwarder) throws InetPacketException {
 		if ( dstPoint == null || payload == null )
-			throw new InetPacketException("Invalid Parameters. Parameters destination point and payload can not be null");
+			throw new InetPacketException(INVALID_PARAMETERS_MSG);
 		if ( frwdPoint != null && (dstPoint.isIPv6Address() || isForwardAll() || fromForwarder) ) {
 			send(frwdPoint, new InetPacket(dstPoint, payload).getBundle());
 		} else {
@@ -127,20 +129,14 @@ public class InetPacketSender {
 	 */
 	public void send(InetPoint dstPoint, byte[] payload) throws InetPacketException {
 		if ( dstPoint == null || payload == null )
-			throw new InetPacketException("Invalid Parameters. Parameters destination point and payload can not be null");
-		DatagramSocket sock = null;
-	    try {
+			throw new InetPacketException(INVALID_PARAMETERS_MSG);
+	    try(DatagramSocket sock = new DatagramSocket()) {
 	        DatagramPacket packet = new DatagramPacket(payload, payload.length, dstPoint.getInetAddress(), dstPoint.port);
-	        sock = new DatagramSocket();
 	        sock.send(packet);
 	    } catch (SocketException ex) {
 	    	throw new InetPacketException("Couldn't send packet because socket closed.", ex);
 	    } catch (IOException ex) {
 	    	throw new InetPacketException("Couldn't send packet due to IO exception.", ex);
-	    } finally {
-			if ( sock != null ) {
-				sock.close();
-			}
 	    }
 	}
 	

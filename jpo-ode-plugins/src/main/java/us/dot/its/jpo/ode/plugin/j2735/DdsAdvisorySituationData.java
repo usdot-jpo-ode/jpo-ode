@@ -53,38 +53,41 @@ public class DdsAdvisorySituationData extends Asn1Object {
       groupID = CodecUtils.toHex(gid);
    }
 
-   public DdsAdvisorySituationData(String startTime, String stopTime, Ieee1609Dot2DataTag advisoryMessage,
+   // This is a factory method instead of a constrcutor in order to avoid having a constructor with too many parameters
+   public static DdsAdvisorySituationData create(String startTime, String stopTime, Ieee1609Dot2DataTag advisoryMessage,
          DdsGeoRegion serviceRegion, SituationDataWarehouse.SDW.TimeToLive ttl, String groupID, String recordID, byte distroType) throws ParseException {
-      this();
+      DdsAdvisorySituationData asd = new DdsAdvisorySituationData();
 
-      J2735DFullTime dStartTime = dFullTimeFromIsoTimeString(startTime);
+      J2735DFullTime dStartTime = asd.dFullTimeFromIsoTimeString(startTime);
 
-      J2735DFullTime dStopTime = dFullTimeFromIsoTimeString(stopTime);
+      J2735DFullTime dStopTime = asd.dFullTimeFromIsoTimeString(stopTime);
 
       byte[] fourRandomBytes = new byte[4];
       new Random(System.currentTimeMillis()).nextBytes(fourRandomBytes);
       String id = CodecUtils.toHex(fourRandomBytes);
       String stringDistroType = CodecUtils.toHex(distroType);
-      this.setAsdmDetails(
+      asd.setAsdmDetails(
             new DdsAdvisoryDetails(id, AdvisoryBroadcastType.tim, stringDistroType, dStartTime, dStopTime, advisoryMessage));
 
-      this.setRequestID(id);
-      this.setServiceRegion(serviceRegion);
+      asd.setRequestID(id);
+      asd.setServiceRegion(serviceRegion);
       if (ttl != null) {
-         this.setTimeToLive(ttl.ordinal());
+        asd.setTimeToLive(ttl.ordinal());
       } else {
-         this.setTimeToLive(SituationDataWarehouse.SDW.TimeToLive.thirtyminutes.ordinal());
+        asd.setTimeToLive(SituationDataWarehouse.SDW.TimeToLive.thirtyminutes.ordinal());
       }
       if (groupID != null) {
-         this.setGroupID(groupID);
+        asd.setGroupID(groupID);
       } else {
-         this.setGroupID(CodecUtils.toHex(new byte[] { 0, 0, 0, 0 }));
+        asd.setGroupID(CodecUtils.toHex(new byte[] { 0, 0, 0, 0 }));
       }
       if (recordID != null) {
-         this.setRecordID(recordID);
+        asd.setRecordID(recordID);
       } else {
-         this.setRecordID(CodecUtils.toHex(new byte[] { 0, 0, 0, 0 }));
+        asd.setRecordID(CodecUtils.toHex(new byte[] { 0, 0, 0, 0 }));
       }
+      
+      return asd;
    }
 
    public J2735DFullTime dFullTimeFromIsoTimeString(String isoTime) throws ParseException {

@@ -79,8 +79,7 @@ public class DdsClient<MessageType> {	//NOSONAR
          String websocketURL,
          String keystoreFile,
          String keystorePass
-         ) throws URISyntaxException,
-         SSLException, CASException {
+         ) throws URISyntaxException, SSLException {
       if (uri == null) {
          uri = new URI(websocketURL);
       }
