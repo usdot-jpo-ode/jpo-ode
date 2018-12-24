@@ -328,13 +328,19 @@ public class TimDepositController {
          try {
             if (null != snmp) {
 
-               asd = DdsAdvisorySituationData.create(snmp.getDeliverystart(), snmp.getDeliverystop(), ieeeDataTag,
-                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(),
-                     sdw.getRecordId(), distroType);
+               asd = new DdsAdvisorySituationData()
+                   .setAsdmDetails(snmp.getDeliverystart(), snmp.getDeliverystop(), distroType, ieeeDataTag)
+                   .setServiceRegion(GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()))
+                   .setTimeToLive(sdw.getTtl())
+                   .setGroupID(sdw.getGroupID())
+                   .setRecordID(sdw.getRecordId());
             } else {
-               asd = DdsAdvisorySituationData.create(sdw.getDeliverystart(), sdw.getDeliverystop(), ieeeDataTag,
-                     GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(),
-                     sdw.getRecordId(), distroType);
+               asd = new DdsAdvisorySituationData()
+                   .setAsdmDetails(sdw.getDeliverystart(), sdw.getDeliverystop(), distroType, ieeeDataTag)
+                   .setServiceRegion(GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()))
+                   .setTimeToLive(sdw.getTtl())
+                   .setGroupID(sdw.getGroupID())
+                   .setRecordID(sdw.getRecordId());
             }
 
          } catch (Exception e) {

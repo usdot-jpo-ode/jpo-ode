@@ -28,7 +28,6 @@ import javax.net.ssl.SSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.dds.CASClient.CASException;
 import us.dot.its.jpo.ode.wrapper.SSLBuilder;
 import us.dot.its.jpo.ode.wrapper.SSLBuilder.SSLException;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint;

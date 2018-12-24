@@ -28,7 +28,7 @@ public class InetPoint {
 
 	public final byte[] address;
 	public final int port;
-	public boolean forward;
+	public final boolean forward;
 	
 	public InetPoint(String host, int port, boolean forward) throws UnknownHostException {
 		this(InetAddress.getByName(host).getAddress(), port, forward);

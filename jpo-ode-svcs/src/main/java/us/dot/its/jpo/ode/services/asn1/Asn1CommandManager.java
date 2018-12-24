@@ -192,16 +192,22 @@ public class Asn1CommandManager {
       //
       String outputXml = null;
       try {
-         if (null != snmp) {
+        if (null != snmp) {
 
-            asd = DdsAdvisorySituationData.create(snmp.getDeliverystart(), snmp.getDeliverystop(), null,
-                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(),
-                  sdw.getRecordId(), distroType);
-         } else {
-            asd = DdsAdvisorySituationData.create(sdw.getDeliverystart(), sdw.getDeliverystop(), null,
-                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(),
-                  sdw.getRecordId(), distroType);
-         }
+          asd = new DdsAdvisorySituationData()
+              .setAsdmDetails(snmp.getDeliverystart(), snmp.getDeliverystop(), distroType, null)
+              .setServiceRegion(GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()))
+              .setTimeToLive(sdw.getTtl())
+              .setGroupID(sdw.getGroupID())
+              .setRecordID(sdw.getRecordId());
+        } else {
+          asd = new DdsAdvisorySituationData()
+              .setAsdmDetails(sdw.getDeliverystart(), sdw.getDeliverystop(), distroType, null)
+              .setServiceRegion(GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()))
+              .setTimeToLive(sdw.getTtl())
+              .setGroupID(sdw.getGroupID())
+              .setRecordID(sdw.getRecordId());
+        }
 
          OdeMsgPayload payload = null;
 
