@@ -84,6 +84,7 @@ public class TimPduCreatorTest {
    public void shouldCreatePDU() throws ParseException, TimPduCreatorException {
 
       String expectedResult = "[1.0.15628.4.1.4.1.2.3 = 11, 1.0.15628.4.1.4.1.3.3 = 2, 1.0.15628.4.1.4.1.4.3 = 3, 1.0.15628.4.1.4.1.5.3 = 4, 1.0.15628.4.1.4.1.6.3 = 5, 1.0.15628.4.1.4.1.7.3 = 0c:02:14:11:11:2f, 1.0.15628.4.1.4.1.8.3 = 0c:02:14:11:11:2f, 1.0.15628.4.1.4.1.9.3 = 88, 1.0.15628.4.1.4.1.10.3 = 9, 1.0.15628.4.1.4.1.11.3 = 10]";
+      String expectedResult2 = "[1.0.15628.4.1.4.1.2.3 = 11, 1.0.15628.4.1.4.1.3.3 = 2, 1.0.15628.4.1.4.1.4.3 = 3, 1.0.15628.4.1.4.1.5.3 = 4, 1.0.15628.4.1.4.1.6.3 = 5, 1.0.15628.4.1.4.1.7.3 = 0c:02:14:11:11:2f, 1.0.15628.4.1.4.1.8.3 = 0c:02:14:11:11:2f, 1.0.15628.4.1.4.1.9.3 = 88, 1.0.15628.4.1.4.1.10.3 = 9]";
 
       
       String rsuSRMPsid = "11";
@@ -104,6 +105,11 @@ public class TimPduCreatorTest {
 
       assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result.getType());
       assertEquals(expectedResult, result.getVariableBindings().toString());
+
+      ScopedPDU result2 = TimPduCreator.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.GET);
+
+      assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result2.getType());
+      assertEquals(expectedResult2, result2.getVariableBindings().toString());
    }
    @Ignore
    @Test

@@ -48,6 +48,7 @@ import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
+import us.dot.its.jpo.ode.traveler.TimControllerHelper;
 import us.dot.its.jpo.ode.traveler.TimDepositController;
 import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -111,13 +112,7 @@ public class Asn1CommandManager {
       HashMap<String, String> responseList = new HashMap<>();
       for (RSU curRsu : request.getRsus()) {
          
-         if (curRsu.getRsuUsername() == null || curRsu.getRsuUsername().isEmpty()) {
-            curRsu.setRsuUsername(odeProperties.getRsuUsername());
-         }
-         
-         if (curRsu.getRsuPassword() == null || curRsu.getRsuPassword().isEmpty()) {
-            curRsu.setRsuPassword(odeProperties.getRsuPassword());
-         }
+         TimControllerHelper.updateRsuCreds(curRsu, odeProperties);
 
          ResponseEvent rsuResponse = null;
 

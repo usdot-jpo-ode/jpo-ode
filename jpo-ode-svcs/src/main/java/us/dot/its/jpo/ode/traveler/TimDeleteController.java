@@ -28,20 +28,18 @@ import org.snmp4j.smi.VariableBinding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
-@Controller
+@RestController
 public class TimDeleteController {
 
    private static final Logger logger = LoggerFactory.getLogger(TimDeleteController.class);
@@ -56,26 +54,18 @@ public class TimDeleteController {
       this.odeProperties = odeProperties;
    }
 
-   @ResponseBody
    @CrossOrigin
-   @RequestMapping(value = "/tim", method = RequestMethod.DELETE)
+   @DeleteMapping(value = "/tim")
    public ResponseEntity<String> deleteTim(@RequestBody String jsonString,
          @RequestParam(value = "index", required = true) Integer index) { // NOSONAR
 
       if (null == jsonString) {
-         logger.error("Empty request");
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, "Empty request"));
+        logger.error("Empty request");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, "Empty request"));
       }
 
       RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
-      
-      if (queryTarget.getRsuUsername() == null || queryTarget.getRsuUsername().isEmpty()) {
-         queryTarget.setRsuUsername(odeProperties.getRsuUsername());
-      }
-      
-      if (queryTarget.getRsuPassword() == null || queryTarget.getRsuPassword().isEmpty()) {
-         queryTarget.setRsuPassword(odeProperties.getRsuPassword());
-      }
+      TimControllerHelper.updateRsuCreds(queryTarget, odeProperties);
 
       logger.info("TIM delete call, RSU info {}", queryTarget);
 

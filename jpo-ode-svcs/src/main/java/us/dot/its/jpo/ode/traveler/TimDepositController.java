@@ -23,12 +23,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -73,7 +72,7 @@ import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 
-@Controller
+@RestController
 public class TimDepositController {
 
    public static final String RSUS_STRING = "rsus";
@@ -284,8 +283,7 @@ public class TimDepositController {
     * @param jsonString TIM in JSON
     * @return list of success/failures
     */
-   @ResponseBody
-   @RequestMapping(value = "/tim", method = RequestMethod.PUT, produces = "application/json")
+   @PutMapping(value = "/tim", produces = "application/json")
    @CrossOrigin
    public ResponseEntity<String> updateTim(@RequestBody String jsonString) {
 
@@ -298,8 +296,7 @@ public class TimDepositController {
     * @param jsonString TIM in JSON
     * @return list of success/failures
     */
-   @ResponseBody
-   @RequestMapping(value = "/tim", method = RequestMethod.POST, produces = "application/json")
+   @PostMapping(value = "/tim", produces = "application/json")
    @CrossOrigin
    public ResponseEntity<String> postTim(@RequestBody String jsonString) {
 
