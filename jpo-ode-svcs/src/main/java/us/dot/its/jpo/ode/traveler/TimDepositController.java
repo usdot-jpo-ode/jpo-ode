@@ -424,7 +424,7 @@ public class TimDepositController {
    }
 
    private static void convertEncodingsArray(DdsAdvisorySituationData asd, ObjectNode metaObject)
-         throws JsonUtilsException, XmlUtilsException {
+         throws JsonUtilsException {
       ArrayNode encodings = buildEncodings(asd);
       ObjectNode enc = XmlUtils.createEmbeddedJsonArrayForXmlConversion(AppContext.ENCODINGS_STRING, encodings);
       metaObject.set(AppContext.ENCODINGS_STRING, enc);

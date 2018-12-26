@@ -39,7 +39,9 @@ public class InetPoint {
 	}
 	
 	public InetPoint(byte[] address, int port, boolean forward ) {
-		assert(address != null);
+		if (address == null) {
+		  throw new IllegalArgumentException("IP Address is required");
+		}
 		this.address = address;
 		this.port = port;
 		this.forward = forward;

@@ -33,6 +33,7 @@ import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.util.XmlUtils;
+import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
@@ -117,7 +118,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
       return HexUtils.fromHexString(hexPacket);
    }
    
-   public void publish(byte[] payloadBytes) throws Exception {
+   public void publish(byte[] payloadBytes) throws XmlUtilsException {
      OdeAsn1Payload payload = new OdeAsn1Payload(payloadBytes);
      
      OdeLogMetadata msgMetadata = new OdeLogMetadata(payload);

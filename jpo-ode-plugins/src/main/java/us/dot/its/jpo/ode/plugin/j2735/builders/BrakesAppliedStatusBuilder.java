@@ -37,7 +37,7 @@ public class BrakesAppliedStatusBuilder {
 
       for (char i = 0; i < wb.length; i++) {
          String eventName = BrakeAppliedStatusNames.values()[i].name();
-         Boolean eventStatus = (wb[i] == '1' ? true : false);
+         Boolean eventStatus = (wb[i] == '1');
          returnValue.put(eventName, eventStatus);
       }
 

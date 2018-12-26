@@ -56,8 +56,7 @@ public class BsmPart2ContentBuilder {
       }
    }
 
-   private static J2735BsmPart2Content buildContent(J2735BsmPart2Content.J2735BsmPart2Id id, JsonNode openType)
-         throws BsmPart2ContentBuilderException {
+   private static J2735BsmPart2Content buildContent(J2735BsmPart2Content.J2735BsmPart2Id id, JsonNode openType) {
 
       J2735BsmPart2Content part2Content = new J2735BsmPart2Content();
       part2Content.setId(id);

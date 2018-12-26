@@ -148,8 +148,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       return serviceRequest;
    }
 
-   public void processEncodedTim(ServiceRequest request, JSONObject consumedObj)
-         throws Asn1EncodedDataRouterException {
+   public void processEncodedTim(ServiceRequest request, JSONObject consumedObj) {
 
       JSONObject dataObj = consumedObj.getJSONObject(AppContext.PAYLOAD_STRING).getJSONObject(AppContext.DATA_STRING);
 
