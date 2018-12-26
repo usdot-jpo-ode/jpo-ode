@@ -78,7 +78,6 @@ public class SnmpSessionTest {
 
 		PDU mockPDU = Mockito.mock(PDU.class);
 		Snmp mockSnmp = Mockito.mock(Snmp.class);
-		TransportMapping mockTransport = Mockito.mock(TransportMapping.class);
 		UserTarget mockTarget = Mockito.mock(UserTarget.class);
 
 		try {

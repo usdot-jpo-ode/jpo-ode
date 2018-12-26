@@ -22,7 +22,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class HeadingBuilder {
     
-   public static BigDecimal genericHeading(JsonNode heading) {
+   
+  private HeadingBuilder() {
+    super();
+  }
+
+  public static BigDecimal genericHeading(JsonNode heading) {
       return genericHeading(heading.asLong());
    }
 

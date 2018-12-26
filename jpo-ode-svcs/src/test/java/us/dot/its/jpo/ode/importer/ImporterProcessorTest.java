@@ -17,7 +17,6 @@ package us.dot.its.jpo.ode.importer;
 
 import static org.junit.Assert.fail;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,10 +24,8 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Iterator;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import mockit.Capturing;
@@ -126,24 +123,5 @@ public class ImporterProcessorTest {
       }
       testImporterProcessor.processAndBackupFile(mockFile, injectableBackupDir, injectableFailureDir);
    }
-
-   @Ignore // TODO - injectable odeProperties returns buffer size 0 causing IllegalArgumentException to be thrown
-   // TODO - filestreams should not be mocked
-   @Test
-   public void processAndBackupFileShouldOdeFileUtilsException() {
-
-      try {
-         new Expectations() {
-            {
-               capturingFileAsn1CodecPublisher.publishFile((Path) any, (BufferedInputStream) any, (ImporterFileType) any);
-               times = 1;
-            }
-         };
-      } catch (Exception e) {
-         fail("Unexpected exception in expectations block: " + e);
-      }
-      testImporterProcessor.processAndBackupFile(Paths.get("testFile.txt"), injectableBackupDir, injectableFailureDir);
-   }
-
 
 }

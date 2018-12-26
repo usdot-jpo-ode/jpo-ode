@@ -75,7 +75,11 @@ import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 @RestController
 public class TimDepositController {
 
-   public static final String RSUS_STRING = "rsus";
+   private static final String ADVISORY_SITUATION_DATA = "AdvisorySituationData";
+
+  private static final String MESSAGE_FRAME = "MessageFrame";
+
+  public static final String RSUS_STRING = "rsus";
 
    public static final String REQUEST_STRING = "request";
 
@@ -144,11 +148,6 @@ public class TimDepositController {
          }
          if (request.getOde() != null) {
             throw new TimDepositControllerException("Request.getOde() == "+ request.getOde().getVersion() + ", verb == " + request.getOde().getVerb());
-//            if (request.getOde().getVersion() != ServiceRequest.OdeInternal.LATEST_VERSION) {
-//               throw new TimDepositControllerException(
-//                     "Invalid REST API Schema Version Specified: " + request.getOde().getVersion()
-//                           + ". Supported Schema Version is " + ServiceRequest.OdeInternal.LATEST_VERSION);
-//            }
          } else {
             request.setOde(new OdeInternal());
          }
@@ -198,7 +197,7 @@ public class TimDepositController {
 
       // Short circuit
       // If the TIM has no RSU/SNMP or SDW structures, we are done
-      if (request != null && (request.getRsus() == null || request.getSnmp() == null) && request.getSdw() == null) {
+      if ((request.getRsus() == null || request.getSnmp() == null) && request.getSdw() == null) {
          String warningMsg = "Warning: TIM contains no RSU, SNMP, or SDW fields. Message only published to POJO broadcast stream.";
          logger.warn(warningMsg);
          return ResponseEntity.status(HttpStatus.OK).body(JsonUtils.jsonKeyValue(WARNING, warningMsg));
@@ -243,10 +242,6 @@ public class TimDepositController {
 
          serialIdOde.increment();
          serialIdJ2735.increment();
-      } catch (JsonUtilsException | XmlUtilsException | ParseException e) {
-         String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
-         logger.error(errMsg, e);
-         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
       } catch (Exception e) {
          String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
          logger.error(errMsg, e);
@@ -259,23 +254,6 @@ public class TimDepositController {
    public static String obfuscateRsuPassword(String message) {
       return message.replaceAll("\"rsuPassword\": *\".*?\"", "\"rsuPassword\":\"*\"");
    }
-
-//  public static void obfuscateRsuPassword(JSONObject jsonMsg) {
-//    try {
-//       JSONObject req = jsonMsg.getJSONObject(AppContext.METADATA_STRING).getJSONObject(REQUEST);
-//       JSONArray rsus = req.optJSONArray("rsus");
-//       if (rsus != null) {
-//         for (int index = 0; index < rsus.length(); index++) {
-//           JSONObject rsu = rsus.getJSONObject(index);
-//           if (rsu.has("rsuPassword")) {
-//             rsu.put("rsuPassword", "*");
-//           }
-//         }
-//       }
-//     } catch (JSONException e) {
-//       logger.info("No RSUs found in the metadata/request/rsus");
-//     }
-//  }
 
    /**
     * Update an already-deposited TIM
@@ -352,7 +330,7 @@ public class TimDepositController {
    }
 
    public String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj, OdeMsgMetadata timMetadata)
-         throws JsonUtilsException, XmlUtilsException, ParseException {
+         throws JsonUtilsException, XmlUtilsException {
 
       TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(),
             TravelerInputData.class);
@@ -368,22 +346,22 @@ public class TimDepositController {
       if (null != asd) {
          logger.debug("Converting request to ASD/Ieee1609Dot2Data/MessageFrame!");
          ObjectNode asdObj = JsonUtils.toObjectNode(asd.toJson());
-         ObjectNode mfBodyObj = (ObjectNode) asdObj.findValue("MessageFrame");
+         ObjectNode mfBodyObj = (ObjectNode) asdObj.findValue(MESSAGE_FRAME);
          mfBodyObj.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
          mfBodyObj.set("value", (ObjectNode) JsonUtils.newNode().set("TravelerInformation", timObj));
 
-         dataBodyObj.set("AdvisorySituationData", asdObj);
+         dataBodyObj.set(ADVISORY_SITUATION_DATA, asdObj);
 
          payload = new OdeAsdPayload(asd);
       } else {
          logger.debug("Converting request to Ieee1609Dot2Data/MessageFrame!");
          // Build a MessageFrame
-         ObjectNode mfBodyObj = (ObjectNode) JsonUtils.newNode();
+         ObjectNode mfBodyObj = JsonUtils.newNode();
          mfBodyObj.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
          mfBodyObj.set("value", (ObjectNode) JsonUtils.newNode().set("TravelerInformation", timObj));
-         dataBodyObj = (ObjectNode) JsonUtils.newNode().set("MessageFrame", mfBodyObj);
+         dataBodyObj = (ObjectNode) JsonUtils.newNode().set(MESSAGE_FRAME, mfBodyObj);
          payload = new OdeTimPayload();
-         payload.setDataType("MessageFrame");
+         payload.setDataType(MESSAGE_FRAME);
       }
 
       ObjectNode payloadObj = JsonUtils.toObjectNode(payload.toJson());
@@ -400,7 +378,7 @@ public class TimDepositController {
       metaObject.set(REQUEST_STRING, request);
 
       if (request.has(RSUS_STRING)) {
-        convertRsusArray(request, metaObject);
+        convertRsusArray(request);
       }
 
       //Add 'encodings' array to metadata
@@ -452,37 +430,18 @@ public class TimDepositController {
       metaObject.set(AppContext.ENCODINGS_STRING, enc);
    }
 
-    private static void convertRsusArray(ObjectNode request, ObjectNode metaObject) {
+    private static void convertRsusArray(ObjectNode request) {
       //Convert 'rsus' JSON array to XML array
       ObjectNode rsus = XmlUtils.createEmbeddedJsonArrayForXmlConversion(RSUS_STRING, (ArrayNode) request.get(RSUS_STRING));
       request.set(RSUS_STRING, rsus);
     }
 
-//  private static void convertDataFramesArrays(ObjectNode timObj, ArrayNode dataFrames) {
-//    //Convert 'dataFrames' Array so that it can be encoded by ASN.1
-//    ObjectNode dataFramesNew = XmlUtils.createEmbeddedJsonArrayForXmlConversion(TRAVELER_DATA_FRAME_STRING, dataFrames);
-//    timObj.set(DATA_FRAMES_STRING, dataFramesNew);
-//  }
-
-//  private static ArrayNode convertRegionsArray(ObjectNode timObj) {
-//    //Convert 'regions' Array so that it can be encoded by ASN.1
-//    ArrayNode dataFrames = (ArrayNode) timObj.get(DATA_FRAMES_STRING);
-//    for (int j = 0; j < dataFrames.size(); j++) {
-//      ObjectNode dataFrame = (ObjectNode) dataFrames.get(j);
-//
-//      ArrayNode regionsOld = (ArrayNode) dataFrame.get(REGIONS_STRING);
-//      ObjectNode regionsNew = XmlUtils.createEmbeddedJsonArrayForXmlConversion(GEOGRAPHICAL_PATH_STRING, regionsOld);
-//      dataFrame.set(REGIONS_STRING, regionsNew);
-//    }
-//    return dataFrames;
-//  }
-
-   private static ArrayNode buildEncodings(DdsAdvisorySituationData asd) throws JsonUtilsException, XmlUtilsException {
+   private static ArrayNode buildEncodings(DdsAdvisorySituationData asd) throws JsonUtilsException {
       ArrayNode encodings = JsonUtils.newArrayNode();
-      encodings.add(buildEncodingNode("MessageFrame", "MessageFrame", EncodingRule.UPER));
+      encodings.add(buildEncodingNode(MESSAGE_FRAME, MESSAGE_FRAME, EncodingRule.UPER));
       if (null != asd) {
          encodings.add(buildEncodingNode("Ieee1609Dot2Data", "Ieee1609Dot2Data", EncodingRule.COER));
-         encodings.add(buildEncodingNode("AdvisorySituationData", "AdvisorySituationData", EncodingRule.UPER));
+         encodings.add(buildEncodingNode(ADVISORY_SITUATION_DATA, ADVISORY_SITUATION_DATA, EncodingRule.UPER));
       }
       return encodings;
    }

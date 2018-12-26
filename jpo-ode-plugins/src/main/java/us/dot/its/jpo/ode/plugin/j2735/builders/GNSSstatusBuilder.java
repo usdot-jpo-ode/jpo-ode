@@ -36,7 +36,7 @@ public class GNSSstatusBuilder {
 
       for (int i = 0; i < gnsStatusBits.length; i++) {
          String statusName = GNSstatusNames.values()[i].name();
-         Boolean statusValue = (gnsStatusBits[i] == '1' ? true : false);
+         Boolean statusValue = (gnsStatusBits[i] == '1');
          status.put(statusName, statusValue);
 
       }

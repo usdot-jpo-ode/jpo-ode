@@ -56,7 +56,6 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
    public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
       super(odeProps, port, bufferSize);
 
-//ODE-581      this.publisher = new OdeDataPublisher(odeProperties, OdeBsmSerializer.class.getName());
       this.serialId = new SerialId();
       this.publisher = new StringPublisher(odeProperties);
    }
@@ -128,8 +127,6 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
      msgMetadata.addEncoding(msgEncoding);
      OdeAsn1Data asn1Data = new OdeAsn1Data(msgMetadata, payload);
 
-     // publisher.publish(asn1Data.toJson(false),
-     // publisher.getOdeProperties().getKafkaTopicAsn1EncodedBsm());
      publisher.publish(XmlUtils.toXmlStatic(asn1Data), publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
      serialId.increment();
   }

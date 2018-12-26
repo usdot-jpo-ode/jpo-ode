@@ -63,7 +63,7 @@ public class EventDescriptionBuilder {
          for (int i = 0; i < headingSliceBits.length; i++) {
 
             String eventName = J2735HeadingSliceNames.values()[i].name();
-            Boolean eventStatus = (headingSliceBits[i] == '1' ? true : false);
+            Boolean eventStatus = (headingSliceBits[i] == '1');
             headingSlice.put(eventName, eventStatus);
 
          }
@@ -77,18 +77,15 @@ public class EventDescriptionBuilder {
       }
 
       JsonNode regional = description.get("regional");
-      if (regional != null) {
+      if (regional != null && regional.isArray()) {
+          Iterator<JsonNode> elements = regional.elements();
 
-         if (regional.isArray()) {
-            Iterator<JsonNode> elements = regional.elements();
+          while (elements.hasNext()) {
+             JsonNode element = elements.next();
 
-            while (elements.hasNext()) {
-               JsonNode element = elements.next();
-
-               desc.getRegional().add(new J2735RegionalContent().setId(element.get("regionId").asInt())
-                     .setValue(CodecUtils.fromHex(element.get("regExtValue").asText())));
-            }
-         }
+             desc.getRegional().add(new J2735RegionalContent().setId(element.get("regionId").asInt())
+                   .setValue(CodecUtils.fromHex(element.get("regExtValue").asText())));
+          }
       }
 
       return desc;

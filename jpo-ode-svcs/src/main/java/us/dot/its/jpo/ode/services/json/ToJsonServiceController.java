@@ -55,10 +55,10 @@ public class ToJsonServiceController {
       logger.info("Starting JSON converter, converting records from topic {} and publishing to topic {} ", fromTopic,
             jsonConverter.getOutputTopic());
 
-      MessageConsumer<String, V> consumer = new MessageConsumer<String, V>(odeProperties.getKafkaBrokers(),
+      MessageConsumer<String, V> consumer = new MessageConsumer<>(odeProperties.getKafkaBrokers(),
             this.getClass().getSimpleName(), jsonConverter, serializerFQN);
 
-      consumer.setName(this.getClass().getName().toString() + fromTopic + "Consumer");
+      consumer.setName(this.getClass().getName() + fromTopic + "Consumer");
       jsonConverter.start(consumer, fromTopic);
    }
 }

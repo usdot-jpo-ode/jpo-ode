@@ -27,6 +27,7 @@ public class RegistrationMessageTest {
     public void testConstructor() {
 
         RegistrationMessage testRegistrationMessage = new RegistrationMessage("testMessage");
+        assertEquals("testMessage", testRegistrationMessage.getName());
     }
 
     @Test

@@ -25,11 +25,11 @@ public class NamedNumberBuilder {
        throw new UnsupportedOperationException();
     }
     
-    // TODO - values may no longer be needed for ASN1c encoder
     public static J2735NamedNumber genericNamedNumber(String name) {
        J2735NamedNumber gnn = new J2735NamedNumber();
 
        gnn.setName(name);
+       // value not needed for ASN1c encoder
        gnn.setValue(null);
        return gnn;
    }
@@ -38,6 +38,7 @@ public class NamedNumberBuilder {
         J2735NamedNumber gnn = new J2735NamedNumber();
 
         gnn.setName(genericLocations.fieldNames().next());
+        // value not needed for ASN1c encoder
         gnn.setValue(null);
         return gnn;
     }
@@ -46,6 +47,7 @@ public class NamedNumberBuilder {
         J2735NamedNumber gnn = new J2735NamedNumber();
 
         gnn.setName(incidentResponseEquipment.fieldNames().next());
+        // value not needed for ASN1c encoder
         gnn.setValue(null);
         return gnn;
     }
@@ -54,6 +56,7 @@ public class NamedNumberBuilder {
         J2735NamedNumber gnn = new J2735NamedNumber();
 
         gnn.setName(vehicleGroupAffected.fieldNames().next());
+        // value not needed for ASN1c encoder
         gnn.setValue(null);
         return gnn;
     }

@@ -43,7 +43,7 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
     public Asn1DecodedDataRouter(OdeProperties odeProps) {
       super();
       this.odeProperties = odeProps;
-      this.bsmProducer = new MessageProducer<String, OdeBsmData>(
+      this.bsmProducer = new MessageProducer<>(
             odeProps.getKafkaBrokers(), odeProps.getKafkaProducerType(), 
             null, OdeBsmSerializer.class.getName(), 
             odeProperties.getKafkaTopicsDisabledSet());

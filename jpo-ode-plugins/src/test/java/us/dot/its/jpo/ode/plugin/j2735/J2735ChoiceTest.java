@@ -43,17 +43,17 @@ public class J2735ChoiceTest {
 	public void testChosenFieldName() {
 		DerivedClass derivedClass = new DerivedClass();
 		derivedClass.setChosenFieldName("childField");
-		assertEquals(derivedClass.getChosenFieldName(), "childField");
+		assertEquals("childField", derivedClass.getChosenFieldName());
 	}
 
 	@Test
 	public void testSetChosenField() {
 		DerivedClass derivedClass = new DerivedClass();
 		derivedClass.setChosenFieldName("childField");
-		assertEquals(derivedClass.getChosenFieldName(), "childField");
+		assertEquals("childField", derivedClass.getChosenFieldName());
 
 		derivedClass.setChosenField("childField", "childFieldValue");
-		assertEquals(derivedClass.getChildField(), "childFieldValue");
+		assertEquals("childFieldValue", derivedClass.getChildField());
 	}
 
 	@Tested
@@ -72,7 +72,7 @@ public class J2735ChoiceTest {
 			}
 		};
 		j2735Choice.setChosenFieldName("childField");
-		assertEquals(j2735Choice.getChosenFieldName(), "childField");
+		assertEquals("childField", j2735Choice.getChosenFieldName());
 
 		j2735Choice.setChosenField("wrongField", "childFieldValue");
 	}

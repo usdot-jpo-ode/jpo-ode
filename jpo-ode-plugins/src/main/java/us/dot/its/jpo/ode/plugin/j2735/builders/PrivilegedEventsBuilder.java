@@ -54,7 +54,7 @@ public class PrivilegedEventsBuilder {
         for (int i = 0; i < eventBits.length; i++) {
 
             String eventName = J2735PrivilegedEventFlagsNames.values()[i].name();
-            Boolean eventStatus = (eventBits[i] == '1' ? true : false);
+            Boolean eventStatus = (eventBits[i] == '1');
             flags.put(eventName, eventStatus);
         }
 

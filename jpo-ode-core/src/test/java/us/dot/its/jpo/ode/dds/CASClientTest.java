@@ -40,13 +40,13 @@ import us.dot.its.jpo.ode.wrapper.HttpClientFactory.HttpResponse;
 
 @RunWith(JMockit.class)
 public class CASClientTest {
-	@Mocked HttpClientFactory mockHttpClientFactory;
+   @Mocked HttpClientFactory mockHttpClientFactory;
    @Mocked SSLContext sslContext;
    @Mocked private HttpResponse mockResponse;
    
    /* 
     * For some very odd reason, just having mocked objects of Pattern and Matcher causes
-    * surefile plug-in to report the followig very odd and strange errors on all
+    * surefile plug-in to report the following very odd and strange errors on all
     * subsequest test cases. Hence, we have to use real values so we don't have to mock
     * which is a better approach anyway.
     * 
@@ -366,8 +366,8 @@ Tests run: 26, Failures: 0, Errors: 17, Skipped: 0
       try {
          casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
          sessionId = casClient.login(websocketURL);
-         assertEquals(sessionId, casClient.getSessionID());
-         assertEquals(sessionId, "1bif45f-testSessionId");
+         assertEquals(casClient.getSessionID(), sessionId);
+         assertEquals("1bif45f-testSessionId", sessionId);
       } catch (CASException e) {
          fail("Unexpected exception: " + e.toString());
       }

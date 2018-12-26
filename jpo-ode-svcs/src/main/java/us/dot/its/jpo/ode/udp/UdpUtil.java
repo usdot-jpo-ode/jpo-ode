@@ -34,34 +34,6 @@ public class UdpUtil {
       }
    }
 
-   //TODO open-ode
-//   public static ServiceResponse createServiceResponse(ServiceRequest request, int expirationSeconds) {
-//      ServiceResponse response = new ServiceResponse();
-//      response.setDialogID(request.getDialogID());
-//
-//      ZonedDateTime expiresAt = ZonedDateTime.now().plusSeconds(expirationSeconds);
-//      response.setExpiration(new DDateTime(new DYear(expiresAt.getYear()), new DMonth(expiresAt.getMonthValue()),
-//            new DDay(expiresAt.getDayOfMonth()), new DHour(expiresAt.getHour()), new DMinute(expiresAt.getMinute()),
-//            new DSecond(expiresAt.getSecond()), new DOffset(0)));
-//
-//      response.setGroupID(request.getGroupID());
-//      response.setRequestID(request.getRequestID());
-//      response.setSeqID(SemiSequenceID.svcResp);
-//
-//      response.setHash(new Sha256Hash(ByteBuffer.allocate(32).putInt(1).array()));
-//      return response;
-//   }
-//
-//   public static void send(DatagramSocket sock, AbstractData message, String ip, int port)
-//         throws UdpUtilException {
-//      try {
-//         byte[] messageBytes = J2735.getPERUnalignedCoder().encode(message).array();
-//         UdpUtil.send(sock, messageBytes, ip, port);
-//      } catch (EncodeFailedException | EncodeNotSupportedException e) {
-//         throw new UdpUtilException("Failed to encode and send message.", e);
-//      }
-//   }
-
    public static void send(DatagramSocket sock, byte[] msgBytes, String ip, int port)
          throws UdpUtilException {
       try {

@@ -37,8 +37,7 @@ public class RoadwayCrownAngleBuilder {
 
             return 0;
          } else {
-            int returnAngle = angle.divide(BigDecimal.valueOf(0.3)).intValue();
-            return returnAngle;
+            return angle.divide(BigDecimal.valueOf(0.3)).intValue();
          }
       } else {
          throw new IllegalArgumentException("RoadwayCrownAngle is out of bounds");

@@ -56,7 +56,6 @@ public class FullPositionVectorBuilder {
           timeConfidence = initialPosition.get(TIME_CONFIDENCE).asLong();
        }
        
-       // TODO these bound checks should be lower down in the hierarchy
         // Bounds checks
         if (longitude < LONG_LOWER_BOUND 
                 || longitude > LONG_UPPER_BOUND) {

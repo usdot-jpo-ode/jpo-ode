@@ -18,6 +18,7 @@ package us.dot.its.jpo.ode.services.asn1;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,12 +103,11 @@ public class Asn1CommandManager {
          logger.info("Message deposited to SDW: {}", asdBytes);
       } catch (DdsRequestManagerException e) {
          String msg = "Failed to deposit message to SDW";
-         EventLogger.logger.error(msg, e);
          throw new Asn1CommandManagerException(msg, e); 
       }
    }
 
-   public HashMap<String, String> sendToRsus(ServiceRequest request, String encodedMsg) {
+   public Map<String, String> sendToRsus(ServiceRequest request, String encodedMsg) {
 
       HashMap<String, String> responseList = new HashMap<>();
       for (RSU curRsu : request.getRsus()) {
@@ -260,7 +260,7 @@ public class Asn1CommandManager {
       return outputXml;
    }
    
-   public static ArrayNode buildEncodings() throws JsonUtilsException, XmlUtilsException {
+   public static ArrayNode buildEncodings() throws JsonUtilsException {
       ArrayNode encodings = JsonUtils.newArrayNode();
       encodings.add(TimDepositController.buildEncodingNode(ADVISORY_SITUATION_DATA_STRING, ADVISORY_SITUATION_DATA_STRING, EncodingRule.UPER));
       return encodings;

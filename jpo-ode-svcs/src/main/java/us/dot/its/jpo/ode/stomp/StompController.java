@@ -19,14 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
-@Controller
+@RestController
 public class StompController {
 
     @Autowired
@@ -39,8 +37,7 @@ public class StompController {
         return new StompContent(message.getName());
     }
 
-    @RequestMapping(value="/newMessage", method=RequestMethod.POST)
-    @ResponseBody
+    @PostMapping(value="/newMessage")
     public String messages() {
         template.convertAndSend("/topic/messages", new StompContent("test"));
         return "{\"success\": true}" ;

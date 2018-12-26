@@ -41,15 +41,15 @@ public class DdsRequestTest {
 	public void testDialogEnum() {
 		Dialog dialog = Dialog.ASD;
 		
-		assertEquals(Dialog.getById(162), Dialog.ISD);
-		assertEquals(dialog.getId(), 156);
+		assertEquals(Dialog.ISD, Dialog.getById(162));
+		assertEquals(156, dialog.getId());
 		assertNull(Dialog.getById(999));
 	}
 	
 	@Test
 	public void testSystemNameEnum() {
 		SystemName systemName = SystemName.SDC;
-		assertEquals(systemName.getName(), "SDC 2.3");
+		assertEquals("SDC 2.3", systemName.getName());
 	}
 	
 	@Test

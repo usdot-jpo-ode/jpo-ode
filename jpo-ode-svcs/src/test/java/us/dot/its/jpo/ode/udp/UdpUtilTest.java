@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package us.dot.its.jpo.ode.udp.trust;
+package us.dot.its.jpo.ode.udp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -57,52 +57,5 @@ public class UdpUtilTest {
                e.getCause().getMessage());
       }
    }
-
-   //TODO open-ode
-//   @Test
-//   public void testCreateServiceResponse(@Injectable ServiceRequest mockServiceRequest) {
-//      assertNotNull(UdpUtil.createServiceResponse(mockServiceRequest, 5));
-//   }
-//
-//   @Test
-//   public void testEncodeAndSend(@Mocked DatagramSocket mockDatagramSocket, @Injectable AbstractData mockAbstractData,
-//         @Capturing J2735 capturingJ2735, @Capturing PERUnalignedCoder capturingPERUnalignedCoder,
-//         @Capturing DatagramPacket capturingDatagramPacket) {
-//      try {
-//         new Expectations() {
-//            {
-//               mockDatagramSocket.send((DatagramPacket) any);
-//            }
-//         };
-//      } catch (IOException e) {
-//         fail("Unexpected exception in expectations block: " + e);
-//      }
-//      try {
-//         UdpUtil.send(mockDatagramSocket, mockAbstractData, "testIp", 1);
-//      } catch (UdpUtilException e) {
-//         fail("Unexpected exception: " + e);
-//      }
-//   }
-//
-//   @Test @Ignore // TODO
-//   public void testEncodeAndSendException(@Injectable DatagramSocket mockDatagramSocket,
-//         @Injectable byte[] mockAbstractData, @Capturing J2735 mockJ2735) {
-//
-//      String expectedExceptionText = "testException123";
-//      new Expectations() {
-//         {
-//            J2735.getPERUnalignedCoder();
-//            result = new IOException(expectedExceptionText);
-//         }
-//      };
-//
-//      try {
-//         UdpUtil.send(mockDatagramSocket, mockAbstractData, "testIp", 1);
-//         fail("Expected " + UdpUtil.UdpUtilException.class);
-//      } catch (Exception e) {
-//         assertTrue("Incorrect exception thrown: " + e, e instanceof UdpUtilException);
-//         assertEquals("Incorrect exception message returned", expectedExceptionText, e.getCause().getMessage());
-//      }
-//   }
 
 }

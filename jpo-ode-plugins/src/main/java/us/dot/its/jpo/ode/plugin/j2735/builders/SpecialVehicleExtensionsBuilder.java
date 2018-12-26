@@ -26,8 +26,7 @@ public class SpecialVehicleExtensionsBuilder {
       throw new UnsupportedOperationException();
    }
 
-   public static void evaluateSpecialVehicleExt(J2735BsmPart2Content part2Content, JsonNode specVehExt)
-         throws BsmPart2ContentBuilder.BsmPart2ContentBuilderException {
+   public static void evaluateSpecialVehicleExt(J2735BsmPart2Content part2Content, JsonNode specVehExt) {
       J2735SpecialVehicleExtensions specVeh = new J2735SpecialVehicleExtensions();
       part2Content.setValue(specVeh);
 

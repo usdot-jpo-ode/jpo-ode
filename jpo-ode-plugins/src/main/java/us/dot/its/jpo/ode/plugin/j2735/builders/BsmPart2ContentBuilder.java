@@ -76,15 +76,6 @@ public class BsmPart2ContentBuilder {
       return part2Content;
    }
 
-   // TODO - this is backwards?
-   // public enum VehicleEventFlagsNames {
-   // eventWipersCeventAirBagDeploymenthanged, eventDisabledVehicle,
-   // eventFlatTire, eventWipersChanged, eventLightsChanged, eventHardBraking,
-   // eventReserved1, eventHazardousMaterials, eventStabilityControlactivated,
-   // eventTractionControlLoss, eventABSactivated, eventStopLineViolation,
-   // eventHazardLights
-   // }
-
    public enum VehicleEventFlagsNames {
       eventHazardLights, eventStopLineViolation, eventABSactivated, eventTractionControlLoss, eventStabilityControlactivated, eventHazardousMaterials, eventReserved1, eventHardBraking, eventLightsChanged, eventWipersChanged, eventFlatTire, eventDisabledVehicle, eventAirBagDeployment
    }

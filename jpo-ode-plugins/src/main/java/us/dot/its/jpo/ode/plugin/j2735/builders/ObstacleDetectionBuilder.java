@@ -66,7 +66,7 @@ public class ObstacleDetectionBuilder {
 
       for (int i = 0; i < vertEventBits.length; i++) {
          String statusName = J2735VertEventNames.values()[i].name();
-         Boolean statusValue = (vertEventBits[i] == '1' ? true : false);
+         Boolean statusValue = (vertEventBits[i] == '1');
          vertEvent.put(statusName, statusValue);
 
       }

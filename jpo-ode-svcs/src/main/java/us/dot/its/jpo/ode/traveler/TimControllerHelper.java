@@ -19,6 +19,10 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 
 public class TimControllerHelper {
+  
+  private TimControllerHelper() {
+    super();
+  }
 
   public static void updateRsuCreds(RSU rsu, OdeProperties odeProperties) {
 

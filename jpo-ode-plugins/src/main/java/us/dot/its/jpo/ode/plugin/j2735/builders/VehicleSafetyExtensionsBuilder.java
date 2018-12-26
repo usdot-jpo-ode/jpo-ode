@@ -28,8 +28,7 @@ public class VehicleSafetyExtensionsBuilder {
       throw new UnsupportedOperationException();
    }
 
-   public static void evaluateVehicleSafetyExt(J2735BsmPart2Content part2Content, JsonNode vehSafetyExt)
-         throws BsmPart2ContentBuilder.BsmPart2ContentBuilderException {
+   public static void evaluateVehicleSafetyExt(J2735BsmPart2Content part2Content, JsonNode vehSafetyExt) {
       J2735VehicleSafetyExtensions vehSafety = new J2735VehicleSafetyExtensions();
       part2Content.setValue(vehSafety);
    
@@ -42,7 +41,7 @@ public class VehicleSafetyExtensionsBuilder {
    
          for (char i = 0; i < eventBits.length; i++) {
             String eventName = BsmPart2ContentBuilder.VehicleEventFlagsNames.values()[i].name();
-            Boolean eventStatus = (eventBits[i] == '1' ? true : false);
+            Boolean eventStatus = (eventBits[i] == '1');
             eventFlags.put(eventName, eventStatus);
          }
    
@@ -58,7 +57,7 @@ public class VehicleSafetyExtensionsBuilder {
    
          for (char i = 0; i < lightsBits.length; i++) {
             String eventName = BsmPart2ContentBuilder.ExteriorLightsNames.values()[i].name();
-            Boolean eventStatus = (lightsBits[i] == '1' ? true : false);
+            Boolean eventStatus = (lightsBits[i] == '1');
             exteriorLights.put(eventName, eventStatus);
          }
    
