@@ -22,7 +22,6 @@ import static org.junit.Assert.fail;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
 
 import org.junit.Test;
 
@@ -1116,12 +1115,6 @@ public class TrailerUnitDescriptionBuilderTest {
      */
     @Test
     public void shouldCreateMockCrumbData() {
-        
- 
-        BigDecimal expectedHeading = BigDecimal.valueOf(22.5);
-        
-   
-        
         Boolean isDolly = false;
         int width = 0;
         int length = 0;

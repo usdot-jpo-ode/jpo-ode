@@ -29,10 +29,10 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735GNSSstatus;
-import us.dot.its.jpo.ode.util.XmlUtils;
-import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 /**
  * -- Summary --
@@ -70,15 +70,7 @@ public class GNSSstatusBuilderTest {
     @Test
     public void shouldReturnAllOffGNSSstatus() {
         
-        String testInput = "0b00000000";
-        
-        JsonNode testGNSSstatus = null;
-        try {
-           testGNSSstatus = (JsonNode) XmlUtils.fromXmlS("<gnssStatus>" + testInput + "</gnssStatus>"
-                 , JsonNode.class);
-        } catch (XmlUtilsException e) {
-           fail("XML parsing error:" + e);
-        }
+        JsonNode testGNSSstatus = buildTestGNSSstatus("00000000");
         
         J2735GNSSstatus actualGNSSstatus = GNSSstatusBuilder.genericGNSSstatus(testGNSSstatus);
         
@@ -87,6 +79,12 @@ public class GNSSstatusBuilderTest {
         }
         
     }
+
+    public static ObjectNode buildTestGNSSstatus(String testInput) {
+      ObjectNode testGNSSstatus = JsonUtils.newNode()
+          .put(GNSSstatusBuilder.GNSS_STATUS, testInput);
+      return testGNSSstatus;
+    }
     
     /**
      * Test input bit string "11111111" returns "true" for all flag values
@@ -94,17 +92,8 @@ public class GNSSstatusBuilderTest {
     @Test
     public void shouldReturnAllOnGNSSstatus() {
         
+        JsonNode testGNSSstatus = buildTestGNSSstatus("11111111");
        
-       String testInput = "0b11111111";
-     
-        
-        JsonNode testGNSSstatus = null;
-        try {
-           testGNSSstatus = (JsonNode) XmlUtils.fromXmlS("<gnssStatus>" + testInput + "</gnssStatus>"
-                 , JsonNode.class);
-        } catch (XmlUtilsException e) {
-           fail("XML parsing error:" + e);
-        }
         J2735GNSSstatus actualGNSSstatus = GNSSstatusBuilder.genericGNSSstatus(testGNSSstatus);
         
         for (Map.Entry<String, Boolean> curVal : actualGNSSstatus.entrySet()) {
@@ -118,16 +107,8 @@ public class GNSSstatusBuilderTest {
     @Test
     public void shouldReturnGNSSstatusUnavailable() {
         
+        JsonNode testGNSSstatus = buildTestGNSSstatus("10000000");
         String elementTested = "unavailable";
-        String testInput = "0b10000000";
-        
-        JsonNode testGNSSstatus = null;
-        try {
-           testGNSSstatus = (JsonNode) XmlUtils.fromXmlS("<gnssStatus>" + testInput + "</gnssStatus>"
-                 , JsonNode.class);
-        } catch (XmlUtilsException e) {
-           fail("XML parsing error:" + e);
-        }
         
         J2735GNSSstatus actualGNSSstatus = GNSSstatusBuilder.genericGNSSstatus(testGNSSstatus);
         
@@ -146,18 +127,8 @@ public class GNSSstatusBuilderTest {
     @Test
     public void shouldReturnGNSSstatusIsHealthy() {
         
+        JsonNode testGNSSstatus = buildTestGNSSstatus("01000000");
         String elementTested = "isHealthy";
-        
-        String testInput = "0b01000000";
-                
-        JsonNode testGNSSstatus = null;
-        try {
-           testGNSSstatus = (JsonNode) XmlUtils.fromXmlS("<gnssStatus>" + testInput + "</gnssStatus>"
-                 , JsonNode.class);
-        } catch (XmlUtilsException e) {
-           fail("XML parsing error:" + e);
-        }
-        
         
         J2735GNSSstatus actualGNSSstatus = GNSSstatusBuilder.genericGNSSstatus(testGNSSstatus);
         
@@ -176,17 +147,8 @@ public class GNSSstatusBuilderTest {
     @Test
     public void shouldReturnGNSSstatusLocalCorrectionsPresent() {
         
+        JsonNode testGNSSstatus = buildTestGNSSstatus("00000010");
         String elementTested = "localCorrectionsPresent";
-        String testInput = "0b00000010";
-        
-        JsonNode testGNSSstatus = null;
-        try {
-           testGNSSstatus = (JsonNode) XmlUtils.fromXmlS("<gnssStatus>" + testInput + "</gnssStatus>"
-                 , JsonNode.class);
-        } catch (XmlUtilsException e) {
-           fail("XML parsing error:" + e);
-        }
-        
         
         J2735GNSSstatus actualGNSSstatus = GNSSstatusBuilder.genericGNSSstatus(testGNSSstatus);
         
@@ -205,16 +167,8 @@ public class GNSSstatusBuilderTest {
     @Test
     public void shouldReturnGNSSstatusNetworkCorrectionsPresent() {
         
+        JsonNode testGNSSstatus = buildTestGNSSstatus("00000001");
         String elementTested = "networkCorrectionsPresent";
-        String testInput = "0b00000001";
-        
-        JsonNode testGNSSstatus = null;
-        try {
-           testGNSSstatus = (JsonNode) XmlUtils.fromXmlS("<gnssStatus>" + testInput + "</gnssStatus>"
-                 , JsonNode.class);
-        } catch (XmlUtilsException e) {
-           fail("XML parsing error:" + e);
-        }
         
         J2735GNSSstatus actualGNSSstatus = GNSSstatusBuilder.genericGNSSstatus(testGNSSstatus);
         
@@ -233,17 +187,9 @@ public class GNSSstatusBuilderTest {
     @Test
     public void shouldReturnTwoGNSSstatus() {
         
+        JsonNode testGNSSstatus = buildTestGNSSstatus("01000010");
         String elementTested1 = "isHealthy";
         String elementTested2 = "localCorrectionsPresent";
-        String testInput = "0b01000010";
-        
-        JsonNode testGNSSstatus = null;
-        try {
-           testGNSSstatus = (JsonNode) XmlUtils.fromXmlS("<gnssStatus>" + testInput + "</gnssStatus>"
-                 , JsonNode.class);
-        } catch (XmlUtilsException e) {
-           fail("XML parsing error:" + e);
-        }
         
         J2735GNSSstatus actualGNSSstatus = GNSSstatusBuilder.genericGNSSstatus(testGNSSstatus);
         

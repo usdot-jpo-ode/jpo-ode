@@ -26,7 +26,6 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735AccelerationSet4Way;
 import us.dot.its.jpo.ode.util.XmlUtils;
@@ -143,8 +142,8 @@ public class AccelerationSet4WayBuilderTest {
 
 
       try {
-    	  J2735AccelerationSet4Way actualAccelSet = AccelerationSet4WayBuilder.genericAccelerationSet4Way(jsonAccelSet);
-         fail("Expected IllegalArgumentException");
+        AccelerationSet4WayBuilder.genericAccelerationSet4Way(jsonAccelSet);
+        fail("Expected IllegalArgumentException");
       } catch (Exception e) {
          assertTrue(e.getClass().equals(IllegalArgumentException.class));
       }
@@ -163,8 +162,8 @@ public class AccelerationSet4WayBuilderTest {
 
 
       try {
-    	  J2735AccelerationSet4Way actualAccelSet = AccelerationSet4WayBuilder.genericAccelerationSet4Way(jsonAccelSet);
-         fail("Expected IllegalArgumentException");
+        AccelerationSet4WayBuilder.genericAccelerationSet4Way(jsonAccelSet);
+        fail("Expected IllegalArgumentException");
       } catch (Exception e) {
          assertTrue(e.getClass().equals(IllegalArgumentException.class));
       }
