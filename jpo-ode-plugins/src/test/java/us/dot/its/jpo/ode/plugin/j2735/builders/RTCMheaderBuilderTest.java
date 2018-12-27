@@ -17,13 +17,16 @@ public class RTCMheaderBuilderTest {
 
   @Test
   public void testGenericRTCMheader() {
-     ObjectNode rtcmHeader = JsonUtils.newNode();
-     rtcmHeader.set(RTCMheaderBuilder.OFFSET_SET, AntennaOffsetSetBuilderTest.buildTestJ2735AntennaOffsetSet());
-     rtcmHeader.set(RTCMheaderBuilder.STATUS, GNSSstatusBuilderTest.buildTestGNSSstatus("10101010"));
+     ObjectNode rtcmHeader = buildTestRtcmHeader();
      
      J2735RTCMheader actualRTCMheader = RTCMheaderBuilder.genericRTCMheader(rtcmHeader);
      
-     J2735AntennaOffsetSet expectedOffset = new J2735AntennaOffsetSet()
+     J2735RTCMheader expectedRTCMHeader = buildExpecteRtcMheader();
+     assertEquals(expectedRTCMHeader, actualRTCMheader);
+  }
+
+  public static J2735RTCMheader buildExpecteRtcMheader() {
+    J2735AntennaOffsetSet expectedOffset = new J2735AntennaOffsetSet()
          .setAntOffsetX(BigDecimal.valueOf(12.34))
          .setAntOffsetY(BigDecimal.valueOf(2.34))
          .setAntOffsetZ(BigDecimal.valueOf(3.21));
@@ -37,7 +40,14 @@ public class RTCMheaderBuilderTest {
      expectedStatus.put("isHealthy", false);
      expectedStatus.put("networkCorrectionsPresent", false);
      J2735RTCMheader expectedRTCMHeader = new J2735RTCMheader().setOffsetSet(expectedOffset).setStatus(expectedStatus);
-     assertEquals(expectedRTCMHeader, actualRTCMheader);
+    return expectedRTCMHeader;
+  }
+
+  public static ObjectNode buildTestRtcmHeader() {
+    ObjectNode rtcmHeader = JsonUtils.newNode();
+     rtcmHeader.set(RTCMheaderBuilder.OFFSET_SET, AntennaOffsetSetBuilderTest.buildTestJ2735AntennaOffsetSet());
+     rtcmHeader.set(RTCMheaderBuilder.STATUS, GNSSstatusBuilderTest.buildTestGNSSstatus("10101010"));
+    return rtcmHeader;
   }
 
 }

@@ -35,138 +35,76 @@ import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 
 public class TravelerMessageFromHumanToAsnConverter {
 
-   private static final String NODE_LAT = "nodeLat";
-
+  private static final String NODE_LAT = "nodeLat";
   private static final String NODE_LONG = "nodeLong";
-
   private static final String Y = "y";
-
   private static final String X = "x";
-
   private static final String NODE_LAT_LON = "node-LatLon";
-
   private static final String LON = "lon";
-
   private static final String LAT = "lat";
-
   private static final String NODE_XY = "node-XY";
-
   private static final String SPEED_LIMITS = "speedLimits";
-
   private static final String LANE_ANGLE = "laneAngle";
-
   private static final String LANE_CROWN_POINT_RIGHT = "laneCrownPointRight";
-
   private static final String LANE_CROWN_POINT_LEFT = "laneCrownPointLeft";
-
   private static final String LANE_CROWN_POINT_CENTER = "laneCrownPointCenter";
-
   private static final String D_ELEVATION = "dElevation";
-
   private static final String D_WIDTH = "dWidth";
-
   private static final String DATA = "data";
-
   private static final String Y_SCALE = "yScale";
-
   private static final String X_SCALE = "xScale";
-
   private static final String ANGLE = "angle";
-
   private static final String OFFSET_LARGE_Y = "offsetLargeY";
-
   private static final String OFFSET_SMALL_Y = "offsetSmallY";
-
   private static final String OFFSET_LARGE_X = "offsetLargeX";
-
   private static final String OFFSET_SMALL_X = "offsetSmallX";
-
   private static final String NODE_LIST = "nodeList";
-
   private static final String REGION_POINT_SET = "regionPointSet";
-
   private static final String CIRCLE = "circle";
-
   private static final String SHAPE_POINT_SET = "shapePointSet";
-
   private static final String DELTA = "delta";
-
   private static final String OFFSET = "offset";
-
   private static final String NODES = "nodes";
-
   private static final String XY = "xy";
-
   private static final String LL = "ll";
-
   private static final String OLD_REGION = "oldRegion";
-
   private static final String GEOMETRY = "geometry";
-
   private static final String PATH = "path";
-
   private static final String DESCRIPTION = "description";
-
   private static final String CLOSED_PATH = "closedPath";
-
   private static final String ANCHOR = "anchor";
-
   private static final String ID = "id";
-
   private static final String REGION = "region";
-
   private static final String LANE_WIDTH = "laneWidth";
-
   private static final String ANCHOR_POSITION = "anchorPosition";
-
   private static final String REGULATOR_ID = "regulatorID";
-
   private static final String SEGMENT_ID = "segmentID";
-
   private static final String POSITION = "position";
-
   private static final String TEXT = "text";
-
   private static final String ITIS = "itis";
-
   private static final String ITEM = "item";
-
   private static final String START_DATE_TIME = "startDateTime";
-
   private static final String DURATION_TIME = "durationTime";
+  // I know, it's misspelled and it has to stay that way. J2735 spec misspelled it
+  private static final String DURATON_TIME_MISSPELLED = "duratonTime";
+  private static final String SSP_TIM_RIGHTS = "sspTimRights";
+  private static final String SSP_MSG_TYPES = "sspMsgTypes";
+  private static final String SSP_MSG_CONTENT = "sspMsgContent";
+  private static final String DATAFRAMES = "dataframes";
+  private static final String TIME_STAMP = "timeStamp";
+  public static final String GEOGRAPHICAL_PATH_STRING = "GeographicalPath";
+  public static final String REGIONS_STRING = "regions";
+  public static final String TRAVELER_DATA_FRAME_STRING = "TravelerDataFrame";
+  public static final String DATA_FRAMES_STRING = "dataFrames";
+  public static final String SEQUENCE_STRING = "SEQUENCE";
+  public static final String TCONTENT_STRING = "tcontent";
+  // JSON cannot have empty fields like XML, so the XML must be modified by
+  // removing all flag field values
+  public static final String EMPTY_FIELD_FLAG = "EMPTY_TAG";
+  public static final String BOOLEAN_OBJECT_TRUE = "BOOLEAN_OBJECT_TRUE";
+  public static final String BOOLEAN_OBJECT_FALSE = "BOOLEAN_OBJECT_FALSE";
 
-    // I know, it's misspelled and it has to stay that way. J2735 spec misspelled it
-    private static final String DURATON_TIME_MISSPELLED = "duratonTime";
-  
-    private static final String SSP_TIM_RIGHTS = "sspTimRights";
-  
-    private static final String SSP_MSG_TYPES = "sspMsgTypes";
-  
-    private static final String SSP_MSG_CONTENT = "sspMsgContent";
-  
-    private static final String DATAFRAMES = "dataframes";
-  
-    private static final String TIME_STAMP = "timeStamp";
-  
-    public static final String GEOGRAPHICAL_PATH_STRING = "GeographicalPath";
-
-   public static final String REGIONS_STRING = "regions";
-
-   public static final String TRAVELER_DATA_FRAME_STRING = "TravelerDataFrame";
-
-   public static final String DATA_FRAMES_STRING = "dataFrames";
-
-   public static final String SEQUENCE_STRING = "SEQUENCE";
-   public static final String TCONTENT_STRING = "tcontent";
-
-   private static final Logger logger = LoggerFactory.getLogger(TravelerMessageFromHumanToAsnConverter.class);
-
-   // JSON cannot have empty fields like XML, so the XML must be modified by
-   // removing all flag field values
-   public static final String EMPTY_FIELD_FLAG = "EMPTY_TAG";
-   public static final String BOOLEAN_OBJECT_TRUE = "BOOLEAN_OBJECT_TRUE";
-   public static final String BOOLEAN_OBJECT_FALSE = "BOOLEAN_OBJECT_FALSE";
-
+  private static final Logger logger = LoggerFactory.getLogger(TravelerMessageFromHumanToAsnConverter.class);
    
   private TravelerMessageFromHumanToAsnConverter() {
       super();

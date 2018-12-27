@@ -23,6 +23,9 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735RTCMPackage;
 
 public class RTCMPackageBuilder {
 
+    static final String RTCM_HEADER = "rtcmHeader";
+    static final String MSGS = "msgs";
+
     private RTCMPackageBuilder() {
        throw new UnsupportedOperationException();
     }
@@ -30,14 +33,14 @@ public class RTCMPackageBuilder {
     public static J2735RTCMPackage genericRTCMPackage(JsonNode rtcmPackage) {
         J2735RTCMPackage rtcm = new J2735RTCMPackage();
 
-        Iterator<JsonNode> iter = rtcmPackage.get("msgs").elements();
+        Iterator<JsonNode> iter = rtcmPackage.get(MSGS).elements();
 
         while (iter.hasNext()) {
             rtcm.getMsgs().add(iter.next().asText());
         }
         // Optional element
-        if (rtcmPackage.get("rtcmHeader") != null) {
-            rtcm.setRtcmHeader(RTCMheaderBuilder.genericRTCMheader(rtcmPackage.get("rtcmHeader")));
+        if (rtcmPackage.get(RTCM_HEADER) != null) {
+            rtcm.setRtcmHeader(RTCMheaderBuilder.genericRTCMheader(rtcmPackage.get(RTCM_HEADER)));
         }
 
         return rtcm;
