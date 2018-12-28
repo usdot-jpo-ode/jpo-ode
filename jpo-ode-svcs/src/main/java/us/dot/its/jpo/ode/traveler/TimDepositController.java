@@ -15,7 +15,9 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.traveler;
 
+import java.io.IOException;
 import java.text.ParseException;
+import java.time.format.DateTimeParseException;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.JsonSyntaxException;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
@@ -55,7 +58,7 @@ import us.dot.its.jpo.ode.wrapper.serdes.OdeTimSerializer;
 
 @RestController
 public class TimDepositController {
-   
+
    private static final Logger logger = LoggerFactory.getLogger(TimDepositController.class);
 
    private static final String ERRSTR = "error";
@@ -63,11 +66,10 @@ public class TimDepositController {
    private static final String SUCCESS = "success";
 
    private OdeProperties odeProperties;
-   private TimTransmogrifier timTransmogrifier;
-   
+
    private SerialId serialIdJ2735;
    private SerialId serialIdOde;
-   
+
    private MessageProducer<String, String> stringMsgProducer;
    private MessageProducer<String, OdeObject> timProducer;
 
@@ -78,20 +80,15 @@ public class TimDepositController {
       public TimDepositControllerException(String errMsg) {
          super(errMsg);
       }
-
-      public TimDepositControllerException(String errMsg, Exception e) {
-         super(errMsg, e);
-      }
-
+      
    }
 
    @Autowired
-   public TimDepositController(OdeProperties odeProperties, TimTransmogrifier timTransmogrifier) {
+   public TimDepositController(OdeProperties odeProperties) {
       super();
-      
+
       this.odeProperties = odeProperties;
-      this.timTransmogrifier = timTransmogrifier;
-      
+
       this.serialIdJ2735 = new SerialId();
       this.serialIdOde = new SerialId();
 
@@ -110,7 +107,7 @@ public class TimDepositController {
     * @return
     */
    public ResponseEntity<String> depositTim(String jsonString, RequestVerb verb) {
-      // Check empty
+
       if (null == jsonString || jsonString.isEmpty()) {
          String errMsg = "Empty request.";
          logger.error(errMsg);
@@ -123,25 +120,23 @@ public class TimDepositController {
          // Convert JSON to POJO
          odeTID = (OdeTravelerInputData) JsonUtils.fromJson(jsonString, OdeTravelerInputData.class);
          request = odeTID.getRequest();
+
          if (request == null) {
-            throw new TimDepositControllerException("request element is required as of version 3");
+            throw new TimDepositControllerException("Request element is required as of version 3.");
          }
-         if (request.getOde() != null) {
-            throw new TimDepositControllerException("Request.getOde() == "+ request.getOde().getVersion() + ", verb == " + request.getOde().getVerb());
-         } else {
+
+         if (request.getOde() == null) {
             request.setOde(new OdeInternal());
          }
 
          request.getOde().setVerb(verb);
 
-         logger.debug("OdeTravelerInputData: {}", jsonString);
-
       } catch (TimDepositControllerException e) {
          String errMsg = "Missing or invalid argument: " + e.getMessage();
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
-      } catch (Exception e) {
-         String errMsg = "Malformed or non-compliant JSON.";
+      } catch (JsonSyntaxException e) {
+         String errMsg = "Malformed or non-compliant JSON syntax.";
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
       }
@@ -159,7 +154,7 @@ public class TimDepositController {
 
       try {
          timMetadata.setRecordGeneratedAt(DateTimeUtils.isoDateTime(DateTimeUtils.isoDateTime(tim.getTimeStamp())));
-      } catch (ParseException e) {
+      } catch (ParseException | DateTimeParseException e) {
          String errMsg = "Invalid timestamp in tim record: " + tim.getTimeStamp();
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
@@ -168,7 +163,7 @@ public class TimDepositController {
       OdeTimData odeTimData = new OdeTimData(timMetadata, timDataPayload);
       timProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastPojo(), null, odeTimData);
 
-      String obfuscatedTimData = timTransmogrifier.obfuscateRsuPassword(odeTimData.toJson());
+      String obfuscatedTimData = TimTransmogrifier.obfuscateRsuPassword(odeTimData.toJson());
       stringMsgProducer.send(odeProperties.getKafkaTopicOdeTimBroadcastJson(), null, obfuscatedTimData);
 
       // Now that the message gas been published to OdeBradcastTim topic, it should be
@@ -178,7 +173,7 @@ public class TimDepositController {
       // Short circuit
       // If the TIM has no RSU/SNMP or SDW structures, we are done
       if ((request.getRsus() == null || request.getSnmp() == null) && request.getSdw() == null) {
-         String warningMsg = "Warning: TIM contains no RSU, SNMP, or SDW fields. Message only published to POJO broadcast stream.";
+         String warningMsg = "Warning: TIM contains no RSU, SNMP, or SDW fields. Message only published to broadcast streams.";
          logger.warn(warningMsg);
          return ResponseEntity.status(HttpStatus.OK).body(JsonUtils.jsonKeyValue(WARNING, warningMsg));
       }
@@ -204,12 +199,12 @@ public class TimDepositController {
          if (!odeProperties.dataSigningEnabled()) {
             // We need to send data UNSECURED, so we should try to build the ASD as well as
             // MessageFrame
-            asd = timTransmogrifier.buildASD(odeTID.getRequest());
+            asd = TimTransmogrifier.buildASD(odeTID.getRequest());
          }
-         xmlMsg = timTransmogrifier.convertToXml(asd, encodableTid, timMetadata, serialIdJ2735);
+         xmlMsg = TimTransmogrifier.convertToXml(asd, encodableTid, timMetadata, serialIdJ2735);
 
          logger.debug("XML representation: {}", xmlMsg);
-         
+
          JSONObject jsonMsg = XmlUtils.toJSONObject(xmlMsg);
 
          String j2735Tim = TimTransmogrifier.createOdeTimData(jsonMsg.getJSONObject(AppContext.ODE_ASN1_DATA))
@@ -217,7 +212,7 @@ public class TimDepositController {
 
          stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlMsg);
 
-         String obfuscatedj2735Tim = timTransmogrifier.obfuscateRsuPassword(j2735Tim);
+         String obfuscatedj2735Tim = TimTransmogrifier.obfuscateRsuPassword(j2735Tim);
          // publish Broadcast TIM to a J2735 compliant topic.
          stringMsgProducer.send(odeProperties.getKafkaTopicJ2735TimBroadcastJson(), null, obfuscatedj2735Tim);
          // publish J2735 TIM also to general un-filtered TIM topic
@@ -225,7 +220,7 @@ public class TimDepositController {
 
          serialIdOde.increment();
          serialIdJ2735.increment();
-      } catch (Exception e) {
+      } catch (JsonUtils.JsonUtilsException | XmlUtils.XmlUtilsException | IOException e) {
          String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
@@ -242,7 +237,7 @@ public class TimDepositController {
     */
    @PutMapping(value = "/tim", produces = "application/json")
    @CrossOrigin
-   public ResponseEntity<String> updateTim(@RequestBody String jsonString) {
+   public ResponseEntity<String> putTim(@RequestBody String jsonString) {
 
       return depositTim(jsonString, ServiceRequest.OdeInternal.RequestVerb.PUT);
    }
@@ -259,7 +254,5 @@ public class TimDepositController {
 
       return depositTim(jsonString, ServiceRequest.OdeInternal.RequestVerb.POST);
    }
-
-
 
 }

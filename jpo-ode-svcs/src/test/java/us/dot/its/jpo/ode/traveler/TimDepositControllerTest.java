@@ -16,100 +16,137 @@
 package us.dot.its.jpo.ode.traveler;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import mockit.Capturing;
+import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
-import mockit.Verifications;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.eventlog.EventLogger;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata;
+import us.dot.its.jpo.ode.model.SerialId;
+import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
+import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
+import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
+import us.dot.its.jpo.ode.util.XmlUtils;
+import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class TimDepositControllerTest {
 
    @Tested
    TimDepositController testTimDepositController;
-   
+
    @Injectable
    OdeProperties injectableOdeProperties;
-   @Injectable
-   TimTransmogrifier injectableTimTransmogrifier;
-   
+
    @Capturing
-   MessageProducer capturingMessageProducer;
-   
+   MessageProducer<?, ?> capturingMessageProducer;
+   @Capturing
+   TimTransmogrifier capturingTimTransmogrifier;
 
    @Test
-   public void emptyRequestShouldReturnError() {
-
-      try {
-         ResponseEntity<String> response = testTimDepositController.postTim(null);
-         assertEquals("{\"error\":\"Empty request.\"}", response.getBody());
-      } catch (Exception e) {
-         fail("Unexpected exception " + e);
-      }
-
-      try {
-         ResponseEntity<String> response = testTimDepositController.postTim("");
-         assertEquals("{\"error\":\"Empty request.\"}", response.getBody());
-      } catch (Exception e) {
-         fail("Unexpected exception " + e);
-      }
+   public void nullRequestShouldReturnEmptyError() {
+      ResponseEntity<String> actualResponse = testTimDepositController.postTim(null);
+      assertEquals("{\"error\":\"Empty request.\"}", actualResponse.getBody());
    }
 
    @Test
-   public void badRequestShouldThrowException() {
+   public void emptyRequestShouldReturnEmptyError() {
+      ResponseEntity<String> actualResponse = testTimDepositController.postTim("");
+      assertEquals("{\"error\":\"Empty request.\"}", actualResponse.getBody());
+   }
 
-      try {
-         ResponseEntity<String> response = testTimDepositController.postTim("test123");
-         assertEquals("{\"error\":\"Malformed or non-compliant JSON.\"}", response.getBody());
-      } catch (Exception e) {
-         fail("Unexpected exception " + e);
-      }
+   @Test
+   public void invalidJsonSyntaxShouldReturnJsonSyntaxError() {
+      ResponseEntity<String> actualResponse = testTimDepositController.postTim("{\"invalid\":\"json\"}}");
+      assertEquals("{\"error\":\"Malformed or non-compliant JSON syntax.\"}", actualResponse.getBody());
+   }
 
-      new Verifications() {
+   @Test
+   public void missingRequestElementShouldReturnMissingRequestError() {
+      ResponseEntity<String> actualResponse = testTimDepositController.postTim("{\"tim\":{}}");
+      assertEquals("{\"error\":\"Missing or invalid argument: Request element is required as of version 3.\"}",
+            actualResponse.getBody());
+   }
+
+   @Test
+   public void invalidTimestampShouldReturnInvalidTimestampError() {
+      ResponseEntity<String> actualResponse = testTimDepositController
+            .postTim("{\"request\":{},\"tim\":{\"timeStamp\":\"201-03-13T01:07:11-05:00\"}}");
+      assertEquals("{\"error\":\"Invalid timestamp in tim record: 201-03-13T01:07:11-05:00\"}",
+            actualResponse.getBody());
+   }
+
+   @Test
+   public void messageWithNoRSUsOrSDWShouldReturnWarning() {
+      ResponseEntity<String> actualResponse = testTimDepositController
+            .postTim("{\"request\":{},\"tim\":{\"timeStamp\":\"2018-03-13T01:07:11-05:00\"}}");
+      assertEquals(
+            "{\"warning\":\"Warning: TIM contains no RSU, SNMP, or SDW fields. Message only published to broadcast streams.\"}",
+            actualResponse.getBody());
+   }
+
+   @Test
+   public void failedObjectNodeConversionShouldReturnConvertingError(
+         @Capturing TravelerMessageFromHumanToAsnConverter capturingTravelerMessageFromHumanToAsnConverter)
+         throws JsonUtilsException {
+
+      new Expectations() {
+
          {
-            EventLogger.logger.info(anyString);
+            TravelerMessageFromHumanToAsnConverter.convertTravelerInputDataToEncodableTim((JsonNode) any);
+            result = new JsonUtilsException("testException123", null);
          }
       };
+
+      ResponseEntity<String> actualResponse = testTimDepositController.postTim(
+            "{\"request\":{\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}");
+      assertEquals("{\"error\":\"Error converting to encodable TravelerInputData.\"}", actualResponse.getBody());
+   }
+
+   @Test
+   public void failedXmlConversionShouldReturnConversionError(@Capturing TimTransmogrifier capturingTimTransmogrifier)
+         throws XmlUtilsException, JsonUtilsException {
+
+      new Expectations() {
+         {
+            TimTransmogrifier.convertToXml((DdsAdvisorySituationData) any, (ObjectNode) any, (OdeMsgMetadata) any,
+                  (SerialId) any);
+            result = new  XmlUtilsException("testException123", null);
+         }
+      };
+
+      ResponseEntity<String> actualResponse = testTimDepositController.postTim(
+            "{\"request\":{\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}");
+      assertEquals("{\"error\":\"Error sending data to ASN.1 Encoder module: testException123\"}", actualResponse.getBody());
+
    }
    
-   /**
-    * Verify null and "" empty response are immediately caught
-    */
    @Test
-   public void testEmptyRequestsShouldReturnError() {
-
-      try {
-         ResponseEntity<String> response = testTimDepositController.postTim(null);
-         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-         assertEquals("{\"error\":\"Empty request.\"}", response.getBody());
-      } catch (Exception e) {
-         fail("Unexpected exception " + e);
-      }
-
-      try {
-         ResponseEntity<String> response = testTimDepositController.postTim("");
-         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-         assertEquals("{\"error\":\"Empty request.\"}", response.getBody());
-      } catch (Exception e) {
-         fail("Unexpected exception " + e);
-      }
+   public void testSuccessfulMessageReturnsSuccessMessagePost(@Capturing XmlUtils capturingXmlUtils) {
+      ResponseEntity<String> actualResponse = testTimDepositController.postTim(
+            "{\"request\":{\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}");
+      assertEquals("{\"success\":\"true\"}", actualResponse.getBody());
    }
-
-   /**
-    * Throw and catch an exception in parsing the JSON.
-    */
+   
    @Test
-   public void testMalformedJSONShouldReturnError() {
-      ResponseEntity<String> response = testTimDepositController.postTim("test123");
-      assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-      assertEquals("{\"error\":\"Malformed or non-compliant JSON.\"}", response.getBody());
+   public void testSuccessfulMessageReturnsSuccessMessagePostWithOde(@Capturing XmlUtils capturingXmlUtils) {
+      ResponseEntity<String> actualResponse = testTimDepositController.postTim(
+            "{\"request\":{\"ode\":{},\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}");
+      assertEquals("{\"success\":\"true\"}", actualResponse.getBody());
+   }
+   
+   @Test
+   public void testSuccessfulMessageReturnsSuccessMessagePut(@Capturing XmlUtils capturingXmlUtils) {
+      ResponseEntity<String> actualResponse = testTimDepositController.putTim(
+            "{\"request\":{\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}");
+      assertEquals("{\"success\":\"true\"}", actualResponse.getBody());
    }
 
 }

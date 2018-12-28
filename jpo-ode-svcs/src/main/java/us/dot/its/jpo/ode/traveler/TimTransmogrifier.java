@@ -44,11 +44,11 @@ public class TimTransmogrifier {
    public static final String RSUS_STRING = "rsus";
    public static final String REQUEST_STRING = "request";
    
-   public String obfuscateRsuPassword(String message) {
+   public static String obfuscateRsuPassword(String message) {
       return message.replaceAll("\"rsuPassword\": *\".*?\"", "\"rsuPassword\":\"*\"");
    }
    
-   public DdsAdvisorySituationData buildASD(ServiceRequest travelerInputData) throws IOException {
+   public static DdsAdvisorySituationData buildASD(ServiceRequest travelerInputData) throws IOException {
       Ieee1609Dot2DataTag ieeeDataTag = new Ieee1609Dot2DataTag();
       Ieee1609Dot2Data ieee = new Ieee1609Dot2Data();
       Ieee1609Dot2Content ieeeContent = new Ieee1609Dot2Content();
@@ -95,7 +95,7 @@ public class TimTransmogrifier {
       return asd;
    }
 
-   public String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj, OdeMsgMetadata timMetadata, SerialId serialIdJ2735) throws JsonUtilsException, XmlUtilsException
+   public static String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj, OdeMsgMetadata timMetadata, SerialId serialIdJ2735) throws JsonUtilsException, XmlUtilsException
          {
 
       TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(),
@@ -185,20 +185,20 @@ public class TimTransmogrifier {
       return fixedXml;
    }
 
-   private void convertEncodingsArray(DdsAdvisorySituationData asd, ObjectNode metaObject)
+   private static void convertEncodingsArray(DdsAdvisorySituationData asd, ObjectNode metaObject)
          throws JsonUtilsException {
       ArrayNode encodings = buildEncodings(asd);
       ObjectNode enc = XmlUtils.createEmbeddedJsonArrayForXmlConversion(AppContext.ENCODINGS_STRING, encodings);
       metaObject.set(AppContext.ENCODINGS_STRING, enc);
    }
 
-    private void convertRsusArray(ObjectNode request) {
+    private static void convertRsusArray(ObjectNode request) {
       //Convert 'rsus' JSON array to XML array
       ObjectNode rsus = XmlUtils.createEmbeddedJsonArrayForXmlConversion(RSUS_STRING, (ArrayNode) request.get(RSUS_STRING));
       request.set(RSUS_STRING, rsus);
     }
 
-   private ArrayNode buildEncodings(DdsAdvisorySituationData asd) throws JsonUtilsException {
+   private static ArrayNode buildEncodings(DdsAdvisorySituationData asd) throws JsonUtilsException {
       ArrayNode encodings = JsonUtils.newArrayNode();
       encodings.add(buildEncodingNode(MESSAGE_FRAME, MESSAGE_FRAME, EncodingRule.UPER));
       if (null != asd) {
