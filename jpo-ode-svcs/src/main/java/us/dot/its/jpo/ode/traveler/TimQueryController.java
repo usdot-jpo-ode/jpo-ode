@@ -70,7 +70,7 @@ public class TimQueryController {
 
       RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
       
-      TimControllerHelper.updateRsuCreds(queryTarget, odeProperties);
+      TimTransmogrifier.updateRsuCreds(queryTarget, odeProperties);
 
       SnmpSession snmpSession = null;
       try {

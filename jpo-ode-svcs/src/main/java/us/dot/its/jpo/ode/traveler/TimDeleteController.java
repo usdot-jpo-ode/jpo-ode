@@ -65,7 +65,7 @@ public class TimDeleteController {
       }
 
       RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
-      TimControllerHelper.updateRsuCreds(queryTarget, odeProperties);
+      TimTransmogrifier.updateRsuCreds(queryTarget, odeProperties);
 
       logger.info("TIM delete call, RSU info {}", queryTarget);
 

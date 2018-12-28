@@ -97,7 +97,7 @@ public class XmlUtils {
     * @param arrayNode: The array node to be embedded in a ObjectNode
     * @return OBjectNode representation of the given arrayNode redy to be converted to XML
     */
-   public static ObjectNode createEmbeddedJsonArrayForXmlConversion(String childKey, ArrayNode arrayNode) {
+   public static ObjectNode createEmbeddedJsonArrayForXmlConversion(String childKey, JsonNode arrayNode) {
        ObjectNode childNode = staticXmlMapper.createObjectNode();
        childNode.set(childKey, arrayNode);
        return childNode;

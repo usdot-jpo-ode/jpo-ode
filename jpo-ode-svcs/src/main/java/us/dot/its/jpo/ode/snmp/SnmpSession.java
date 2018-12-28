@@ -16,6 +16,7 @@
 package us.dot.its.jpo.ode.snmp;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -198,9 +199,9 @@ public class SnmpSession {
     * @return ResponseEvent
     * @throws TimPduCreatorException
     * @throws IOException
+    * @throws ParseException 
     */
-   public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, String payload, RequestVerb requestVerb)
-         throws IOException, TimPduCreatorException {
+   public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, String payload, RequestVerb requestVerb) throws ParseException, IOException {
 
       SnmpSession session = new SnmpSession(rsu);
 

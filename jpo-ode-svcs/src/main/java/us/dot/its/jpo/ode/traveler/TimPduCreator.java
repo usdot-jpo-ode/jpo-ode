@@ -15,6 +15,8 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.traveler;
 
+import java.text.ParseException;
+
 import javax.xml.bind.DatatypeConverter;
 
 import org.snmp4j.PDU;
@@ -57,10 +59,10 @@ public class TimPduCreator {
     * @param params
     *           TimParameters POJO that stores status, channel, payload, etc.
     * @return PDU
-    * @throws TimPduCreatorException
+    * @throws ParseException
     */
-    public static ScopedPDU createPDU(SNMP snmp, String payload, int index, RequestVerb verb) throws TimPduCreatorException {
-      try {  
+    public static ScopedPDU createPDU(SNMP snmp, String payload, int index, RequestVerb verb) throws ParseException  {
+
         //////////////////////////////
         // - OID examples         - //
         //////////////////////////////
@@ -113,8 +115,5 @@ public class TimPduCreator {
         pdu.setType(PDU.SET);
         
         return pdu;
-      } catch (Exception e) {
-         throw new TimPduCreatorException("Error creating PDU", e);
-      }
     }
 }

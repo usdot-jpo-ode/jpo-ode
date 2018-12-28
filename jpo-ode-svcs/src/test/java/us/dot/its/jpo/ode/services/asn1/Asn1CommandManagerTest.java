@@ -16,6 +16,7 @@
 package us.dot.its.jpo.ode.services.asn1;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 import org.junit.Test;
 
@@ -32,7 +33,6 @@ import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
 import us.dot.its.jpo.ode.services.asn1.Asn1CommandManager.Asn1CommandManagerException;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
-import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
 public class Asn1CommandManagerTest {
    
    @Tested
@@ -73,7 +73,7 @@ public class Asn1CommandManagerTest {
    }
    
    @Test
-   public void testSendToRsus(@Mocked OdeTravelerInputData mockOdeTravelerInputData) throws DdsRequestManagerException, IOException, TimPduCreatorException {
+   public void testSendToRsus(@Mocked OdeTravelerInputData mockOdeTravelerInputData) throws DdsRequestManagerException, IOException, ParseException {
       new Expectations() {{
          mockOdeTravelerInputData.getRequest().getRsus();
          result = new RSU[]{new RSU()};
@@ -85,7 +85,7 @@ public class Asn1CommandManagerTest {
    }
    
    @Test
-   public void testSendToRsusSnmpException(@Mocked OdeTravelerInputData mockOdeTravelerInputData) throws DdsRequestManagerException, IOException, TimPduCreatorException {
+   public void testSendToRsusSnmpException(@Mocked OdeTravelerInputData mockOdeTravelerInputData) throws DdsRequestManagerException, IOException, ParseException {
       new Expectations() {{
          mockOdeTravelerInputData.getRequest().getRsus();
          result = new RSU[]{new RSU()};
