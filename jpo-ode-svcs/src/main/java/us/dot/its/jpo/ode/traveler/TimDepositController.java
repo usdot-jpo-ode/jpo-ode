@@ -15,7 +15,6 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.traveler;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.time.format.DateTimeParseException;
 
@@ -49,6 +48,7 @@ import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
+import us.dot.its.jpo.ode.traveler.TimTransmogrifier.TimTransmogrifierException;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
@@ -220,7 +220,7 @@ public class TimDepositController {
 
          serialIdOde.increment();
          serialIdJ2735.increment();
-      } catch (JsonUtils.JsonUtilsException | XmlUtils.XmlUtilsException | IOException e) {
+      } catch (JsonUtils.JsonUtilsException | XmlUtils.XmlUtilsException | TimTransmogrifierException e) {
          String errMsg = "Error sending data to ASN.1 Encoder module: " + e.getMessage();
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));

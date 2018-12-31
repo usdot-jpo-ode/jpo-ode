@@ -1,7 +1,5 @@
 package us.dot.its.jpo.ode.traveler;
 
-import java.io.IOException;
-
 import org.json.JSONObject;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -37,18 +35,32 @@ import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 public class TimTransmogrifier {
-   
+
    private static final String ADVISORY_SITUATION_DATA = "AdvisorySituationData";
    private static final String MESSAGE_FRAME = "MessageFrame";
-   
+
    public static final String RSUS_STRING = "rsus";
    public static final String REQUEST_STRING = "request";
-   
+
+   public static class TimTransmogrifierException extends Exception {
+
+      private static final long serialVersionUID = -923627369025468080L;
+
+      public TimTransmogrifierException(String message) {
+         super(message);
+      }
+
+   }
+
+   private TimTransmogrifier() {
+      throw new UnsupportedOperationException();
+   }
+
    public static String obfuscateRsuPassword(String message) {
       return message.replaceAll("\"rsuPassword\": *\".*?\"", "\"rsuPassword\":\"*\"");
    }
-   
-   public static DdsAdvisorySituationData buildASD(ServiceRequest travelerInputData) throws IOException {
+
+   public static DdsAdvisorySituationData buildASD(ServiceRequest serviceRequest) throws TimTransmogrifierException {
       Ieee1609Dot2DataTag ieeeDataTag = new Ieee1609Dot2DataTag();
       Ieee1609Dot2Data ieee = new Ieee1609Dot2Data();
       Ieee1609Dot2Content ieeeContent = new Ieee1609Dot2Content();
@@ -59,48 +71,43 @@ public class TimTransmogrifier {
       ieee.setContent(ieeeContent);
       ieeeDataTag.setIeee1609Dot2Data(ieee);
 
-      byte sendToRsu = travelerInputData.getRsus() != null ? DdsAdvisorySituationData.RSU
-            : DdsAdvisorySituationData.NONE;
+      byte sendToRsu = serviceRequest.getRsus() != null ? DdsAdvisorySituationData.RSU : DdsAdvisorySituationData.NONE;
       byte distroType = (byte) (DdsAdvisorySituationData.IP | sendToRsu);
 
-      // take deliverystart and stop times from SNMP object, if present
-      // else take from SDW object
-      SNMP snmp = travelerInputData.getSnmp();
-
-      SDW sdw = travelerInputData.getSdw();
+      SNMP snmp = serviceRequest.getSnmp();
+      SDW sdw = serviceRequest.getSdw();
       DdsAdvisorySituationData asd = null;
+
       if (null != sdw) {
          try {
+            // take deliverystart and stop times from SNMP object, if present
+            // else take from SDW object
             if (null != snmp) {
 
                asd = new DdsAdvisorySituationData()
-                   .setAsdmDetails(snmp.getDeliverystart(), snmp.getDeliverystop(), distroType, ieeeDataTag)
-                   .setServiceRegion(GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()))
-                   .setTimeToLive(sdw.getTtl())
-                   .setGroupID(sdw.getGroupID())
-                   .setRecordID(sdw.getRecordId());
+                     .setAsdmDetails(snmp.getDeliverystart(), snmp.getDeliverystop(), distroType, ieeeDataTag)
+                     .setServiceRegion(GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()))
+                     .setTimeToLive(sdw.getTtl()).setGroupID(sdw.getGroupID()).setRecordID(sdw.getRecordId());
             } else {
                asd = new DdsAdvisorySituationData()
-                   .setAsdmDetails(sdw.getDeliverystart(), sdw.getDeliverystop(), distroType, ieeeDataTag)
-                   .setServiceRegion(GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()))
-                   .setTimeToLive(sdw.getTtl())
-                   .setGroupID(sdw.getGroupID())
-                   .setRecordID(sdw.getRecordId());
+                     .setAsdmDetails(sdw.getDeliverystart(), sdw.getDeliverystop(), distroType, ieeeDataTag)
+                     .setServiceRegion(GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()))
+                     .setTimeToLive(sdw.getTtl()).setGroupID(sdw.getGroupID()).setRecordID(sdw.getRecordId());
             }
 
          } catch (Exception e) {
-            throw new IOException("Failed to build AdvisorySituationData: " + e.getMessage());
+            throw new TimTransmogrifierException("Failed to build AdvisorySituationData: " + e.getMessage());
          }
       }
       return asd;
    }
 
-   public static String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj, OdeMsgMetadata timMetadata, SerialId serialIdJ2735) throws JsonUtilsException, XmlUtilsException
-         {
+   public static String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj,
+         OdeMsgMetadata timMetadata, SerialId serialIdJ2735) throws JsonUtilsException, XmlUtilsException {
 
       TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(),
             TravelerInputData.class);
-      
+
       ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
 
       ObjectNode timObj = (ObjectNode) inOrderTidObj.get("tim");
@@ -136,16 +143,17 @@ public class TimTransmogrifier {
       metadata.setSerialId(serialIdJ2735);
       metadata.setRecordGeneratedBy(timMetadata.getRecordGeneratedBy());
       metadata.setRecordGeneratedAt(timMetadata.getRecordGeneratedAt());
+      metadata.setSchemaVersion(timMetadata.getSchemaVersion());
       ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());
 
       ObjectNode request = (ObjectNode) inOrderTidObj.get(REQUEST_STRING);
       metaObject.set(REQUEST_STRING, request);
 
       if (request.has(RSUS_STRING)) {
-        convertRsusArray(request);
+         convertRsusArray(request);
       }
 
-      //Add 'encodings' array to metadata
+      // Add 'encodings' array to metadata
       convertEncodingsArray(asd, metaObject);
 
       ObjectNode message = JsonUtils.newNode();
@@ -192,11 +200,12 @@ public class TimTransmogrifier {
       metaObject.set(AppContext.ENCODINGS_STRING, enc);
    }
 
-    private static void convertRsusArray(ObjectNode request) {
-      //Convert 'rsus' JSON array to XML array
-      ObjectNode rsus = XmlUtils.createEmbeddedJsonArrayForXmlConversion(RSUS_STRING, (ArrayNode) request.get(RSUS_STRING));
+   private static void convertRsusArray(ObjectNode request) {
+      // Convert 'rsus' JSON array to XML array
+      ObjectNode rsus = XmlUtils.createEmbeddedJsonArrayForXmlConversion(RSUS_STRING,
+            (ArrayNode) request.get(RSUS_STRING));
       request.set(RSUS_STRING, rsus);
-    }
+   }
 
    private static ArrayNode buildEncodings(DdsAdvisorySituationData asd) throws JsonUtilsException {
       ArrayNode encodings = JsonUtils.newArrayNode();
@@ -209,30 +218,30 @@ public class TimTransmogrifier {
    }
 
    public static void updateRsuCreds(RSU rsu, OdeProperties odeProperties) {
-   
-       if (rsu.getRsuUsername() == null || rsu.getRsuUsername().isEmpty()) {
+
+      if (rsu.getRsuUsername() == null || rsu.getRsuUsername().isEmpty()) {
          rsu.setRsuUsername(odeProperties.getRsuUsername());
-       }
-   
-       if (rsu.getRsuPassword() == null || rsu.getRsuPassword().isEmpty()) {
+      }
+
+      if (rsu.getRsuPassword() == null || rsu.getRsuPassword().isEmpty()) {
          rsu.setRsuPassword(odeProperties.getRsuPassword());
-       }
-     }
+      }
+   }
 
    public static JsonNode buildEncodingNode(String name, String type, EncodingRule rule) throws JsonUtilsException {
       Asn1Encoding mfEnc = new Asn1Encoding(name, type, rule);
       return JsonUtils.toObjectNode(mfEnc.toJson());
    }
-   
-   public static JSONObject createOdeTimData(JSONObject timData) { 
-      
+
+   public static JSONObject createOdeTimData(JSONObject timData) {
+
       JSONObject metadata = timData.getJSONObject(AppContext.METADATA_STRING);
       metadata.put("payloadType", OdeTimPayload.class.getName());
       metadata.remove(AppContext.ENCODINGS_STRING);
-      
+
       JSONObject payload = timData.getJSONObject(AppContext.PAYLOAD_STRING);
       payload.put(AppContext.DATA_TYPE_STRING, "TravelerInformation");
       return timData;
    }
-   
+
 }
