@@ -16,6 +16,7 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -55,11 +56,11 @@ public class AngleBuilder {
     
     public static JsonNode angle(long ang) {
        return JsonUtils.newObjectNode("angle", 
-          BigDecimal.valueOf(ang).divide(BigDecimal.valueOf(0.0125)).intValue());
+          BigDecimal.valueOf(ang).divide(BigDecimal.valueOf(0.0125), 0, RoundingMode.HALF_UP).intValue());
     }
     
     public static int angle(BigDecimal ang) {
-       return ang.divide(BigDecimal.valueOf(0.0125)).intValue();
+       return ang.divide(BigDecimal.valueOf(0.0125), 0, RoundingMode.HALF_UP).intValue();
     }
 
 }

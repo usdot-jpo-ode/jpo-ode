@@ -16,6 +16,7 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class OffsetLLBuilder {
 
@@ -24,6 +25,6 @@ public class OffsetLLBuilder {
    }
 
    public static Long offsetLL(BigDecimal offset) {
-      return offset.scaleByPowerOfTen(7).longValue();
+      return offset.scaleByPowerOfTen(7).setScale(0, RoundingMode.HALF_UP).longValue();
    }
 }
