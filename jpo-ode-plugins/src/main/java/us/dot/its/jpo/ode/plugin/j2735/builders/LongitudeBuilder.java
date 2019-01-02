@@ -16,6 +16,7 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -26,11 +27,11 @@ public class LongitudeBuilder {
    }
 
    public static long j2735Longitude(BigDecimal longitude) {
-      return longitude.scaleByPowerOfTen(7).intValue();
+      return longitude.scaleByPowerOfTen(7).setScale(0, RoundingMode.HALF_UP).intValue();
    }
 
    public static long j2735Longitude(JsonNode longitude) {
-      return j2735Longitude(longitude.decimalValue());
+      return j2735Longitude(new BigDecimal(longitude.textValue()));
    }
 
    public static BigDecimal genericLongitude(JsonNode longitude) {

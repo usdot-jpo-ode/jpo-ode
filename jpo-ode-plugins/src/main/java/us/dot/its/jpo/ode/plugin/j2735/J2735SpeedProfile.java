@@ -29,8 +29,34 @@ public class J2735SpeedProfile extends Asn1Object {
         return speedReports;
     }
 
-    public void setSpeedReports(List<Integer> speedReports) {
+    public J2735SpeedProfile setSpeedReports(List<Integer> speedReports) {
         this.speedReports = speedReports;
+        return this;
+    }
+
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((speedReports == null) ? 0 : speedReports.hashCode());
+      return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj)
+        return true;
+      if (obj == null)
+        return false;
+      if (getClass() != obj.getClass())
+        return false;
+      J2735SpeedProfile other = (J2735SpeedProfile) obj;
+      if (speedReports == null) {
+        if (other.speedReports != null)
+          return false;
+      } else if (!speedReports.equals(other.speedReports))
+        return false;
+      return true;
     }
 
 }

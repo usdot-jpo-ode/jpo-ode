@@ -44,9 +44,9 @@ public class InetPacketFunctionalTest {
    @Capturing
    Thread capturingThread;
 
-	private static boolean isVerbose = true;
+	private static boolean isVerbose = false;
 	
-	@Test
+  @Test
 	public void testConstrcutor() throws UnknownHostException {
 	   InetPacket pkt = new InetPacket("bah.com", 1111, null);
 	   

@@ -16,6 +16,7 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class RoadwayCrownAngleBuilder {
 
@@ -37,7 +38,7 @@ public class RoadwayCrownAngleBuilder {
 
             return 0;
          } else {
-            return angle.divide(BigDecimal.valueOf(0.3)).intValue();
+            return angle.divide(BigDecimal.valueOf(0.3), 0, RoundingMode.HALF_UP).intValue();
          }
       } else {
          throw new IllegalArgumentException("RoadwayCrownAngle is out of bounds");

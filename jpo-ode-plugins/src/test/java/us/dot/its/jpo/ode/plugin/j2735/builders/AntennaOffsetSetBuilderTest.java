@@ -33,25 +33,32 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class AntennaOffsetSetBuilderTest {
 
+  public static ObjectNode buildTestJ2735AntennaOffsetSet() {
+    int antOffsetX = 1234;
+    int antOffsetY = 234;
+    int antOffsetZ = 321;
+
+    ObjectNode testInput = JsonUtils.newNode();
+    testInput.put("antOffsetX", antOffsetX);
+    testInput.put("antOffsetY", antOffsetY);
+    testInput.put("antOffsetZ", antOffsetZ);
+
+    return testInput;
+  }
+
    @Test
    public void testPopulate3Elements() {
-      int antOffsetX = 1234;
-      int antOffsetY = 234;
-      int antOffsetZ = 321;
 
-      BigDecimal expectedX = BigDecimal.valueOf(12.34);
-      BigDecimal expectedY = BigDecimal.valueOf(2.34);
-      BigDecimal expectedZ = BigDecimal.valueOf(3.21);
+     BigDecimal expectedX = BigDecimal.valueOf(12.34);
+     BigDecimal expectedY = BigDecimal.valueOf(2.34);
+     BigDecimal expectedZ = BigDecimal.valueOf(3.21);
 
-      ObjectNode testInput = JsonUtils.newNode();
-      testInput.put("antOffsetX", antOffsetX);
-      testInput.put("antOffsetY", antOffsetY);
-      testInput.put("antOffsetZ", antOffsetZ);
-
-      J2735AntennaOffsetSet actualValue = AntennaOffsetSetBuilder.genericAntennaOffsetSet(testInput);
-      assertEquals(expectedX, actualValue.getAntOffsetX());
-      assertEquals(expectedY, actualValue.getAntOffsetY());
-      assertEquals(expectedZ, actualValue.getAntOffsetZ());
+     ObjectNode testInput = buildTestJ2735AntennaOffsetSet();
+     J2735AntennaOffsetSet actualValue = AntennaOffsetSetBuilder.genericAntennaOffsetSet(testInput);
+     
+     assertEquals(expectedX, actualValue.getAntOffsetX());
+     assertEquals(expectedY, actualValue.getAntOffsetY());
+     assertEquals(expectedZ, actualValue.getAntOffsetZ());
    }
 
    @Test

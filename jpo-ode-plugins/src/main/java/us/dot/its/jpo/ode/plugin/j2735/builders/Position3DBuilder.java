@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.DsrcPosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class Position3DBuilder {
    
@@ -66,18 +67,18 @@ public class Position3DBuilder {
    public static OdePosition3D odePosition3D(JsonNode jpos) {
 
       BigDecimal latitude = null;
-      if (jpos.get(LATITUDE) != null) {
-         latitude = jpos.get(LATITUDE).decimalValue();
+      if (jpos.has(LATITUDE)) {
+        latitude = JsonUtils.decimalValue(jpos.get(LATITUDE));
       }
       
       BigDecimal longitude = null;
-      if (jpos.get(LONGITUDE) != null) {
-         longitude = jpos.get(LONGITUDE).decimalValue();
+      if (jpos.has(LONGITUDE)) {
+        longitude = JsonUtils.decimalValue(jpos.get(LONGITUDE));
       }
       
       BigDecimal elevation = null;
-      if (jpos.get(ELEVATION) != null) {
-         elevation = jpos.get(ELEVATION).decimalValue();
+      if (jpos.has(ELEVATION)) {
+        elevation = JsonUtils.decimalValue(jpos.get(ELEVATION));
       }
 
       return new OdePosition3D(latitude, longitude, elevation);

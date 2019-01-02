@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.Vector;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.snmp4j.PDU;
@@ -40,7 +39,6 @@ public class RsuSnmpTest {
     
     @Mock private Snmp mockSnmp;
 
-    @Ignore
     @Before
     public void setUpSnmp() throws IOException {
         
@@ -49,7 +47,6 @@ public class RsuSnmpTest {
         mockSnmp = mock(Snmp.class);    
     }
 
-    @Ignore
     @Test
     public void shouldCreateSnmpV3Request() throws IOException {
         

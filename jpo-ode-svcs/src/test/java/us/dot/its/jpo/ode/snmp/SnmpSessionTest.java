@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.text.ParseException;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.snmp4j.PDU;
@@ -105,8 +104,7 @@ public class SnmpSessionTest {
 		assertEquals(mockUserTarget, snmpSession.getTarget());
 	}
 
-	@Ignore // TODO update this test
-	@Test(expected = IOException.class)
+  @Test(expected = IOException.class)
 	public void testResponseEventUDPException(@Mocked Snmp mockSnmp, @Mocked TransportMapping mockTransportMapping,
 			@Mocked UserTarget mockUserTarget, @Mocked PDU mockPDU) throws IOException {
 
@@ -116,11 +114,12 @@ public class SnmpSessionTest {
 				result = new IOException();
 			}
 		};
+		snmpSession.setTransport(mockTransportMapping);
 		snmpSession.set(mockPDU, mockSnmp, mockUserTarget, false);
 	}
 
 	@Test(expected = IOException.class)
-	public void testResponseEventSNMPException(@Mocked Snmp mockSnmp, @Mocked TransportMapping mockTransportMapping,
+	public void testResponseEventSNMPException(@Mocked Snmp mockSnmp,
 			@Mocked UserTarget mockUserTarget, @Mocked PDU mockPDU) throws IOException {
 
 		new Expectations() {

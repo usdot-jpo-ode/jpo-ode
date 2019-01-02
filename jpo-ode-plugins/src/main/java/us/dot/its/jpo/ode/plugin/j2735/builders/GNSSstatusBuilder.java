@@ -16,12 +16,15 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735GNSSstatus;
 
 public class GNSSstatusBuilder {
 
-   public enum GNSstatusNames {
+   public static final String GNSS_STATUS = "gnssStatus";
+
+  public enum GNSstatusNames {
       unavailable, isHealthy, isMonitored, baseStationType, aPDOPofUnder5, inViewOfUnder5, localCorrectionsPresent, networkCorrectionsPresent
    }
 
@@ -32,7 +35,15 @@ public class GNSSstatusBuilder {
    public static J2735GNSSstatus genericGNSSstatus(JsonNode gnssStatus) {
       J2735GNSSstatus status = new J2735GNSSstatus();
 
-      char[] gnsStatusBits = gnssStatus.asText().toCharArray();
+      String gnsStatusValue = "";
+      if (gnssStatus .isObject()) {
+        ObjectNode o = (ObjectNode) gnssStatus;
+        gnsStatusValue = o.get(GNSS_STATUS).asText();
+      } else if (gnssStatus.isValueNode()) {
+        gnsStatusValue = gnssStatus.asText();
+      }
+      
+      char[] gnsStatusBits = gnsStatusValue.toCharArray();
 
       for (int i = 0; i < gnsStatusBits.length; i++) {
          String statusName = GNSstatusNames.values()[i].name();

@@ -27,16 +27,49 @@ public class J2735RTCMheader extends Asn1Object {
 		return offsetSet;
 	}
 
-	public void setOffsetSet(J2735AntennaOffsetSet offsetSet) {
+	public J2735RTCMheader setOffsetSet(J2735AntennaOffsetSet offsetSet) {
 		this.offsetSet = offsetSet;
+		return this;
 	}
 
 	public J2735BitString getStatus() {
 		return status;
 	}
 
-	public void setStatus(J2735BitString status) {
+	public J2735RTCMheader setStatus(J2735BitString status) {
 		this.status = status;
+		return this;
 	}
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((offsetSet == null) ? 0 : offsetSet.hashCode());
+    result = prime * result + ((status == null) ? 0 : status.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    J2735RTCMheader other = (J2735RTCMheader) obj;
+    if (offsetSet == null) {
+      if (other.offsetSet != null)
+        return false;
+    } else if (!offsetSet.equals(other.offsetSet))
+      return false;
+    if (status == null) {
+      if (other.status != null)
+        return false;
+    } else if (!status.equals(other.status))
+      return false;
+    return true;
+  }
 
 }
