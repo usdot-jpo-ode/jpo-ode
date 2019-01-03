@@ -483,27 +483,21 @@ definitions:
       laneID:
         type: integer
         description: 'LaneID [0..255]'
-      offsetSmallX:
-        type: number
-        description: 'Reference lane offset measured in meters [-20.47..20.47m].'
-      offsetLargeX:
+      offsetXaxis:
         type: number
         description: 'Reference lane offset measured in meters [-327.67..327.67m].'
-      offsetSmallY:
+      offsetYaxis:
         type: number
-        description: 'Reference lane offset measured in meters [-20.47..20.47m].'
-      offsetLargeY:
+        description: 'Reference lane offset measured in meters [-327.67..327.67m].'
+      rotateXY:
         type: number
-        description: 'Reference lane offset measured in meters [-32767..327.67m].'
-      angle:
+        description: 'Lane rotation measured in degrees [0..359.9875].'
+      scaleXaxis:
         type: number
-        description: 'Lane rotation measured in degrees [0..359.9875] in steps of 0.0125.'
-      xScale:
+        description: 'Scale factor in percent [0..202.35%].'
+      scaleYaxis:
         type: number
-        description: 'Scale factor in percent [0..202.35%] in steps of 0.05.'
-      yScale:
-        type: number
-        description: 'Scale factor in percent [0..202.35%] in steps of 0.05.'
+        description: 'Scale factor in percent [0..202.35%].'
   Path:
     type: object
     properties:
@@ -601,12 +595,12 @@ definitions:
         type: integer
       area:
         type: string
-      regionPoint:
-        $ref: '#/definitions/RegionPoint'
+      regionPointSet:
+        $ref: '#/definitions/RegionPointSet'
       circle:
         $ref: '#/definitions/Circle'
-      shapePoint:
-        $ref: '#/definitions/ShapePoint'
+      shapePointSet:
+        $ref: '#/definitions/ShapePointSet'
   Circle:
     type: object
     properties:
@@ -616,22 +610,32 @@ definitions:
         type: integer
       units:
         type: integer
-  ShapePoint:
+  ShapePointSet:
     type: object
     properties:
-      position:
+      anchor:
         $ref: '#/definitions/OdePosition3D'
-      directionality:
+      laneWidth:
         type: integer
-      nodeType:
+      directionality:
         type: string
-      computedLane:
-        $ref: '#/definitions/ComputedLane'
-      nodexy:
+        description: one of ENUMERATED {
+          unavailable (0), -- unknown or NA, not typically used in valid expressions 
+          forward (1), -- direction of travel follows node ordering 
+          reverse (2), -- direction of travel is the reverse of node ordering 
+          both (3) -- direction of travel allowed in both directions
+      nodeList:
+        $ref: '#/definitions/NodeListXY'
+  NodeListXY:
+    type: object
+    properties:
+      nodes:
         type: array
         items:
-          $ref: '#/definitions/NodeXY'
-  RegionPoint:
+          $ref: '#/definitions/Node'
+      computed:
+        $ref: '#/definitions/ComputedLane'
+  RegionPointSet:
     type: object
     properties:
       position:
