@@ -21,6 +21,8 @@ import static org.junit.Assert.fail;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,22 +42,26 @@ public class OdePropertiesTest {
    OdeProperties testOdeProperties;
    @Injectable
    Environment mockEnv;
-   
-   @Capturing CommonUtils capturingCommonUtils;
-   
+
+   @Capturing
+   CommonUtils capturingCommonUtils;
 
    @Before
    public void setup() {
       new Expectations() {
          {
-         CommonUtils.getEnvironmentVariable("DOCKER_HOST_IP");
-         result = "testKafkaBrokers";
-      }};
+            CommonUtils.getEnvironmentVariable("DOCKER_HOST_IP");
+            result = "testKafkaBrokers";
+         }
+      };
    }
 
    @Test
    public void testInit() {
-      new Expectations() {{}};
+      new Expectations() {
+         {
+         }
+      };
       try {
          new OdeProperties();
       } catch (Exception e) {
@@ -82,7 +88,7 @@ public class OdePropertiesTest {
          fail("Unexpected exception in init: " + e);
       }
    }
-   
+
    @Test
    public void missingDockerHostIpShouldThrowException(@Mocked final InetAddress mockInetAddress) {
       try {
@@ -148,6 +154,34 @@ public class OdePropertiesTest {
       String testKafkaTopicOdeBsmPojo = "testKafkaTopicOdeBsmPojo";
       String testKafkaTopicOdeBsmJson = "testKafkaTopicOdeBsmJson";
       String testVersion = "1.1.0-SNAPSHOT";
+      int testImportProcessorBufferSize = 83;
+
+      String[] testKafkaTopicsDisabled = new String[] { "testKafkaTopicsDisabled0" };
+      Set<String> testKafkaTopicsDisabledSet = new HashSet<>();
+      testKafkaTopicsDisabledSet.add("testKafkaTopicsDisabledSet0");
+
+      String testKafkaTopicAsn1DecoderInput = "testKafkaTopicAsn1DecoderInput";
+      String testKafkaTopicAsn1DecoderOutput = "testKafkaTopicAsn1DecoderOutput";
+      String testKafkaTopicAsn1EncoderInput = "testKafkaTopicAsn1EncoderInput";
+      String testKafkaTopicAsn1EncoderOutput = "testKafkaTopicAsn1EncoderOutput";
+      String testKafkaTopicOdeTimPojo = "testKafkaTopicOdeTimPojo";
+      String testKafkaTopicOdeDNMsgPojo = "testKafkaTopicOdeDNMsgPojo";
+      String testKafkaTopicOdeDNMsgJson = "testKafkaTopicOdeDNMsgJson";
+      String testKafkaTopicOdeTimJson = "testKafkaTopicOdeTimJson";
+      String testKafkaTopicOdeBsmDuringEventPojo = "testKafkaTopicOdeBsmDuringEventPojo";
+      String testKafkaTopicOdeBsmRxPojo = "testKafkaTopicOdeBsmRxPojo";
+      String testKafkaTopicOdeBsmTxPojo = "testKafkaTopicOdeBsmTxPojo";
+      String testKafkaTopicOdeTimRxJson = "testKafkaTopicOdeTimRxJson";
+      String testKafkaTopicOdeTimBroadcastPojo = "testKafkaTopicOdeTimBroadcastPojo";
+      String testKafkaTopicOdeTimBroadcastJson = "testKafkaTopicOdeTimBroadcastJson";
+      String testKafkaTopicJ2735TimBroadcastJson = "testKafkaTopicJ2735TimBroadcastJson";
+      String testKafkaTopicFilteredOdeTimJson = "testKafkaTopicFilteredOdeTimJson";
+      String testKafkaTopicDriverAlertJson = "testKafkaTopicDriverAlertJson";
+
+      Integer testFileWatcherPeriod = 5;
+      String testSecuritySvcsSignatureUri = "testSecuritySvcsSignatureUri";
+      String testRsuUsername = "testRsuUsername";
+      String testRsuPassword = "testRsuPassword";
 
       testOdeProperties.setDdsCasPassword(testDdsCasPassword);
       testOdeProperties.setDdsCasUrl(testDdsCasUrl);
@@ -193,6 +227,32 @@ public class OdePropertiesTest {
       testOdeProperties.setKafkaTopicOdeBsmPojo(testKafkaTopicOdeBsmPojo);
       testOdeProperties.setKafkaTopicOdeBsmJson(testKafkaTopicOdeBsmJson);
       testOdeProperties.setVersion(testVersion);
+      testOdeProperties.setImportProcessorBufferSize(testImportProcessorBufferSize);
+      testOdeProperties.setKafkaTopicsDisabled(testKafkaTopicsDisabled);
+      testOdeProperties.setKafkaTopicsDisabledSet(testKafkaTopicsDisabledSet);
+
+      testOdeProperties.setKafkaTopicAsn1DecoderInput(testKafkaTopicAsn1DecoderInput);
+      testOdeProperties.setKafkaTopicAsn1DecoderOutput(testKafkaTopicAsn1DecoderOutput);
+      testOdeProperties.setKafkaTopicAsn1EncoderInput(testKafkaTopicAsn1EncoderInput);
+      testOdeProperties.setKafkaTopicAsn1EncoderOutput(testKafkaTopicAsn1EncoderOutput);
+      testOdeProperties.setKafkaTopicOdeTimPojo(testKafkaTopicOdeTimPojo);
+      testOdeProperties.setKafkaTopicOdeDNMsgPojo(testKafkaTopicOdeDNMsgPojo);
+      testOdeProperties.setKafkaTopicOdeDNMsgJson(testKafkaTopicOdeDNMsgJson);
+      testOdeProperties.setKafkaTopicOdeTimJson(testKafkaTopicOdeTimJson);
+      testOdeProperties.setKafkaTopicOdeBsmDuringEventPojo(testKafkaTopicOdeBsmDuringEventPojo);
+      testOdeProperties.setKafkaTopicOdeBsmRxPojo(testKafkaTopicOdeBsmRxPojo);
+      testOdeProperties.setKafkaTopicOdeBsmTxPojo(testKafkaTopicOdeBsmTxPojo);
+      testOdeProperties.setKafkaTopicOdeTimRxJson(testKafkaTopicOdeTimRxJson);
+      testOdeProperties.setKafkaTopicOdeTimBroadcastPojo(testKafkaTopicOdeTimBroadcastPojo);
+      testOdeProperties.setKafkaTopicOdeTimBroadcastJson(testKafkaTopicOdeTimBroadcastJson);
+      testOdeProperties.setKafkaTopicJ2735TimBroadcastJson(testKafkaTopicJ2735TimBroadcastJson);
+      testOdeProperties.setKafkaTopicFilteredOdeTimJson(testKafkaTopicFilteredOdeTimJson);
+      testOdeProperties.setKafkaTopicDriverAlertJson(testKafkaTopicDriverAlertJson);
+
+      testOdeProperties.setFileWatcherPeriod(testFileWatcherPeriod);
+      testOdeProperties.setSecuritySvcsSignatureUri(testSecuritySvcsSignatureUri);
+      testOdeProperties.setRsuUsername(testRsuUsername);
+      testOdeProperties.setRsuPassword(testRsuPassword);
 
       assertEquals("Incorrect testDdsCasPassword", testDdsCasPassword, testOdeProperties.getDdsCasPassword());
       assertEquals("Incorrect testDdsCasUrl", testDdsCasUrl, testOdeProperties.getDdsCasUrl());
@@ -202,7 +262,8 @@ public class OdePropertiesTest {
       assertEquals("Incorrect testKafkaBrokers", testKafkaBrokers, testOdeProperties.getKafkaBrokers());
       assertEquals("Incorrect testKafkaProducerType", testKafkaProducerType, testOdeProperties.getKafkaProducerType());
       assertEquals("Incorrect testpluginsLocations", testPluginsLocations, testOdeProperties.getPluginsLocations());
-      assertEquals("Incorrect testUploadLocationObuLog", testUploadLocationObuLog, testOdeProperties.getUploadLocationObuLog());
+      assertEquals("Incorrect testUploadLocationObuLog", testUploadLocationObuLog,
+            testOdeProperties.getUploadLocationObuLog());
       assertEquals("Incorrect testUploadLocationRoot", testUploadLocationRoot,
             testOdeProperties.getUploadLocationRoot());
       assertEquals("Incorrect testSdcIp", testSdcIp, testOdeProperties.getSdcIp());
@@ -250,8 +311,54 @@ public class OdePropertiesTest {
             testOdeProperties.getKafkaTopicOdeBsmPojo());
       assertEquals("Incorrect testKafkaTopicOdeBsmJson", testKafkaTopicOdeBsmJson,
             testOdeProperties.getKafkaTopicOdeBsmJson());
-      assertEquals("Incorrect testVersion", testVersion,
-          testOdeProperties.getVersion());
+      assertEquals("Incorrect testVersion", testVersion, testOdeProperties.getVersion());
+      assertEquals("Incorrect testImportProcessorBufferSize", testImportProcessorBufferSize,
+            testOdeProperties.getImportProcessorBufferSize());
+      assertEquals("Incorrect testKafkaTopicsDisabled", testKafkaTopicsDisabled[0],
+            testOdeProperties.getKafkaTopicsDisabled()[0]);
+      assertTrue("Incorrect testKafkaTopicsDisabledSet",
+            testOdeProperties.getKafkaTopicsDisabledSet().contains("testKafkaTopicsDisabledSet0"));
+
+      assertEquals("Incorrect testKafkaTopicAsn1DecoderInput", testKafkaTopicAsn1DecoderInput,
+            testOdeProperties.getKafkaTopicAsn1DecoderInput());
+      assertEquals("Incorrect testKafkaTopicAsn1DecoderOutput", testKafkaTopicAsn1DecoderOutput,
+            testOdeProperties.getKafkaTopicAsn1DecoderOutput());
+      assertEquals("Incorrect testKafkaTopicAsn1EncoderInput", testKafkaTopicAsn1EncoderInput,
+            testOdeProperties.getKafkaTopicAsn1EncoderInput());
+      assertEquals("Incorrect testKafkaTopicAsn1EncoderOutput", testKafkaTopicAsn1EncoderOutput,
+            testOdeProperties.getKafkaTopicAsn1EncoderOutput());
+      assertEquals("Incorrect testKafkaTopicOdeTimPojo", testKafkaTopicOdeTimPojo,
+            testOdeProperties.getKafkaTopicOdeTimPojo());
+      assertEquals("Incorrect testKafkaTopicOdeDNMsgPojo", testKafkaTopicOdeDNMsgPojo,
+            testOdeProperties.getKafkaTopicOdeDNMsgPojo());
+      assertEquals("Incorrect testKafkaTopicOdeDNMsgJson", testKafkaTopicOdeDNMsgJson,
+            testOdeProperties.getKafkaTopicOdeDNMsgJson());
+      assertEquals("Incorrect testKafkaTopicOdeTimJson", testKafkaTopicOdeTimJson,
+            testOdeProperties.getKafkaTopicOdeTimJson());
+      assertEquals("Incorrect testKafkaTopicOdeBsmDuringEventPojo", testKafkaTopicOdeBsmDuringEventPojo,
+            testOdeProperties.getKafkaTopicOdeBsmDuringEventPojo());
+      assertEquals("Incorrect testKafkaTopicOdeBsmRxPojo", testKafkaTopicOdeBsmRxPojo,
+            testOdeProperties.getKafkaTopicOdeBsmRxPojo());
+      assertEquals("Incorrect testKafkaTopicOdeBsmTxPojo", testKafkaTopicOdeBsmTxPojo,
+            testOdeProperties.getKafkaTopicOdeBsmTxPojo());
+      assertEquals("Incorrect testKafkaTopicOdeTimRxJson", testKafkaTopicOdeTimRxJson,
+            testOdeProperties.getKafkaTopicOdeTimRxJson());
+      assertEquals("Incorrect testKafkaTopicOdeTimBroadcastPojo", testKafkaTopicOdeTimBroadcastPojo,
+            testOdeProperties.getKafkaTopicOdeTimBroadcastPojo());
+      assertEquals("Incorrect testKafkaTopicOdeTimBroadcastJson", testKafkaTopicOdeTimBroadcastJson,
+            testOdeProperties.getKafkaTopicOdeTimBroadcastJson());
+      assertEquals("Incorrect testKafkaTopicJ2735TimBroadcastJson", testKafkaTopicJ2735TimBroadcastJson,
+            testOdeProperties.getKafkaTopicJ2735TimBroadcastJson());
+      assertEquals("Incorrect testKafkaTopicFilteredOdeTimJson", testKafkaTopicFilteredOdeTimJson,
+            testOdeProperties.getKafkaTopicFilteredOdeTimJson());
+      assertEquals("Incorrect testKafkaTopicDriverAlertJson", testKafkaTopicDriverAlertJson,
+            testOdeProperties.getKafkaTopicDriverAlertJson());
+
+      assertEquals("Incorrect testFileWatcherPeriod", testFileWatcherPeriod, testOdeProperties.getFileWatcherPeriod());
+      assertEquals("Incorrect testSecuritySvcsSignatureUri", testSecuritySvcsSignatureUri,
+            testOdeProperties.getSecuritySvcsSignatureUri());
+      assertEquals("Incorrect testRsuUsername", testRsuUsername, testOdeProperties.getRsuUsername());
+      assertEquals("Incorrect RsuPassword", testRsuPassword, testOdeProperties.getRsuPassword());
 
       OdeProperties.getJpoOdeGroupId();
       testOdeProperties.getHostId();
