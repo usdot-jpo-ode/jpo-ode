@@ -18,23 +18,24 @@ package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 public class Offset extends Asn1Object {
-   private static final long serialVersionUID = 1L;
-   private Ll ll;
-   private Xy xy;
+  private static final long serialVersionUID = 1L;
+  private NodeListLL ll;
+  private NodeListXY xy;
 
-   public Ll getLl() {
-      return ll;
-   }
+  public NodeListLL getLl() {
+    return ll;
+  }
 
-   public void setLl(Ll ll) {
-      this.ll = ll;
-   }
+  public void setLl(NodeListLL ll) {
+    this.ll = ll;
+  }
 
-   public Xy getXy() {
-      return xy;
-   }
+  public NodeListXY getXy() {
+    return xy;
+  }
 
-   public void setXy(Xy xy) {
-      this.xy = xy;
-   }
+  public void setXy(NodeListXY xy) {
+    this.xy = xy;
+  }
+
 }

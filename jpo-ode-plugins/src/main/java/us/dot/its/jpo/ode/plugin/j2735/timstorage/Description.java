@@ -20,23 +20,34 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 public class Description extends Asn1Object {
    private static final long serialVersionUID = 1L;
 
-   private Path path;
+   private OffsetSystem path;
 
-   private Geometry geometry;
+   private GeometricProjection geometry;
 
-   public Path getPath() {
+   private ValidRegion oldRegion;
+   
+   public OffsetSystem getPath() {
       return path;
    }
 
-   public void setPath(Path path) {
+   public void setPath(OffsetSystem path) {
       this.path = path;
    }
 
-   public Geometry getGeometry() {
+   public GeometricProjection getGeometry() {
       return geometry;
    }
 
-   public void setGeometry(Geometry geometry) {
+   public void setGeometry(GeometricProjection geometry) {
       this.geometry = geometry;
    }
+
+  public ValidRegion getOldRegion() {
+    return oldRegion;
+  }
+
+  public void setOldRegion(ValidRegion oldRegion) {
+    this.oldRegion = oldRegion;
+  }
+
 }

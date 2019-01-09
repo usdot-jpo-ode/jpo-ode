@@ -17,15 +17,27 @@ package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-public class Directionality extends Asn1Object {
-   private static final long serialVersionUID = 1L;
-   private String both;
+public class OffsetAxis extends Asn1Object {
+   private static final long serialVersionUID = 7703530986729802700L;
 
-   public String getBoth() {
-      return both;
+   private Integer small;
+   
+   private Integer large;
+
+   public Integer getSmall() {
+      return small;
    }
 
-   public void setBoth(String both) {
-      this.both = both;
+   public void setSmall(Integer small) {
+      this.small = small;
    }
+
+   public Integer getLarge() {
+      return large;
+   }
+
+   public void setLarge(Integer large) {
+      this.large = large;
+   }
+
 }

@@ -37,7 +37,7 @@ public class GeographicalPath extends Asn1Object {
    private String laneWidth;
 
    @JsonProperty("directionality")
-   private Directionality directionality;
+   private DirectionOfUse directionality;
 
    @JsonProperty("closedPath")
    private String closedPath;
@@ -56,13 +56,22 @@ public class GeographicalPath extends Asn1Object {
       this.id = id;
    }
 
-   public String isClosedPath() {
-      return closedPath;
+   public String getClosedPath() {
+     return closedPath;
    }
 
    public void setClosedPath(String closedPath) {
-      this.closedPath = closedPath;
+     this.closedPath = closedPath;
    }
+
+
+  public DirectionOfUse getDirectionality() {
+    return directionality;
+  }
+
+  public void setDirectionality(DirectionOfUse directionality) {
+    this.directionality = directionality;
+  }
 
    public String getDirection() {
       return direction;
@@ -86,14 +95,6 @@ public class GeographicalPath extends Asn1Object {
 
    public void setName(String name) {
       this.name = name;
-   }
-
-   public Directionality getDirectionality() {
-      return directionality;
-   }
-
-   public void setDirectionality(Directionality directionality) {
-      this.directionality = directionality;
    }
 
    public String getLaneWidth() {

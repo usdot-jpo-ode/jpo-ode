@@ -19,13 +19,13 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 public class NodeXY extends Asn1Object {
    private static final long serialVersionUID = 1L;
-   private Delta delta;
+   private NodeOffsetPointXY delta;
 
-   public Delta getDelta() {
+   public NodeOffsetPointXY getDelta() {
       return delta;
    }
 
-   public void setDelta(Delta delta) {
+   public void setDelta(NodeOffsetPointXY delta) {
       this.delta = delta;
    }
 }

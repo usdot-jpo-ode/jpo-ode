@@ -29,13 +29,20 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.DsrcPosition3D;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.DirectionOfUse.DirectionOfUseEnum;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.DistanceUnits.DistanceUnitsEnum;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.Extent;
+import us.dot.its.jpo.ode.util.CommonUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 
 public class TravelerMessageFromHumanToAsnConverter {
 
-  static final String CENTER = "center";
+  private static final String EXTENT = "extent";
+  private static final String UNITS = "units";
+  private static final String DIRECTIONALITY = "directionality";
+  private static final String CENTER = "center";
   private static final String NODE_LAT = "nodeLat";
   private static final String NODE_LONG = "nodeLong";
   private static final String Y = "y";
@@ -506,25 +513,14 @@ public class TravelerMessageFromHumanToAsnConverter {
       }
 
       // directionality (optional)
-      JsonNode directionality = region.get("directionality");
-      if (directionality != null) {
-         String directionName;
-         switch (directionality.asInt()) {
-         case 1:
-            directionName = "forward";
-            break;
-         case 2:
-            directionName = "reverse";
-            break;
-         case 3:
-            directionName = "both";
-            break;
-         default:
-            directionName = "unavailable";
-         }
-         region.set("directionality", JsonUtils.newNode().put(directionName, EMPTY_FIELD_FLAG));
+      if (region.has(DIRECTIONALITY)) {
+        JsonNode directionality = region.get(DIRECTIONALITY);
+        String enumString = CommonUtils.enumToString(DirectionOfUseEnum.class, directionality.asText());
+        if (enumString != null) {
+          region.set(DIRECTIONALITY, JsonUtils.newNode().put(enumString, EMPTY_FIELD_FLAG));
+        }
       }
-
+      
       // closed path (optional)
       JsonNode closedPath = region.get(CLOSED_PATH);
       if (closedPath != null) {
@@ -575,29 +571,20 @@ public class TravelerMessageFromHumanToAsnConverter {
       // zoom does not need to be replaced
       String nodeType = pathNode.get("type").asText();
       JsonNode nodes = pathNode.get(NODES);
+      JsonNode nodeList;
       if (LL.equals(nodeType)) {
-         JsonNode nodeList = JsonUtils.newNode().set("NodeLL", transformNodeListLL(nodes));
+         nodeList = JsonUtils.newNode().set("NodeLL", transformNodeSetLL(nodes));
          pathNode.set(OFFSET, JsonUtils.newNode().set(LL, JsonUtils.newNode().set(NODES, nodeList)));
-         pathNode.remove(NODES);
       } else if (XY.equals(nodeType)) {
-         transformNodeSetXY(nodes);
-         JsonNode nodeList = JsonUtils.newNode().set(NODE_XY2, nodes);
+         nodeList = JsonUtils.newNode().set(NODE_XY2, transformNodeSetXY(nodes));
          pathNode.set(OFFSET, JsonUtils.newNode().set(XY, JsonUtils.newNode().set(NODES, nodeList)));
-         pathNode.remove(NODES);
       }
-
+      pathNode.remove(NODES);
       pathNode.remove("type");
 
    }
 
-   private static ArrayNode transformNodeListLL(JsonNode jsonNode) {
-
-      // technically this can have more options in the future
-
-      return transformNodeSetLL((ArrayNode) jsonNode);
-   }
-
-   private static ArrayNode transformNodeSetLL(ArrayNode inputNodeList) {
+   private static ArrayNode transformNodeSetLL(JsonNode nodes) {
 
       //// EXPECTED INPUT:
       // "nodes": []
@@ -612,8 +599,8 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       ArrayNode outputNodeList = JsonUtils.newNode().arrayNode();
 
-      if (inputNodeList.isArray()) {
-         Iterator<JsonNode> nodeListIter = inputNodeList.elements();
+      if (nodes.isArray()) {
+         Iterator<JsonNode> nodeListIter = nodes.elements();
 
          while (nodeListIter.hasNext()) {
             JsonNode inputNode = nodeListIter.next();
@@ -730,9 +717,13 @@ public class TravelerMessageFromHumanToAsnConverter {
       // old region == ValidRegion
       // elements:
       // direction - no changes
+     
       // extent - no changes
+      JsonNode extentNode = oldRegion.get(EXTENT);
+      String extent = CommonUtils.enumToString(Extent.ExtentEnum.class, extentNode.asText());
+      oldRegion.set(EXTENT, JsonUtils.newNode().put(extent, EMPTY_FIELD_FLAG));
+      
       // area - needs changes
-
       replaceArea(oldRegion.get("area"));
    }
 
@@ -747,10 +738,8 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       if (updatedNode.has(SHAPE_POINT_SET)) {
          updatedNode.set(SHAPE_POINT_SET, replaceShapePointSet(updatedNode.get(SHAPE_POINT_SET)));
-
       } else if (updatedNode.has(CIRCLE)) {
          replaceCircle(updatedNode.get(CIRCLE));
-
       } else if (updatedNode.has(REGION_POINT_SET)) {
          replaceRegionPointSet(updatedNode.get(REGION_POINT_SET));
       }
@@ -802,8 +791,14 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // radius does not need replacement
 
-      // units do not need replacement
-
+      // replace units
+      if (updatedNode.has(UNITS)) {
+        JsonNode units = updatedNode.get(UNITS);
+        String enumString = CommonUtils.enumToString(DistanceUnitsEnum.class, units.asText());
+        if (enumString != null) {
+          updatedNode.set(UNITS, JsonUtils.newNode().put(enumString, EMPTY_FIELD_FLAG));
+        }
+      }
    }
 
    public static ObjectNode replaceShapePointSet(JsonNode shapePointSet) {
@@ -827,8 +822,15 @@ public class TravelerMessageFromHumanToAsnConverter {
          updatedNode.put(LANE_WIDTH, LaneWidthBuilder.laneWidth(JsonUtils.decimalValue(updatedNode.get(LANE_WIDTH))));
       }
 
-      // directionality does not need replacement
-
+      // replace directionality
+      if (updatedNode.has(DIRECTIONALITY)) {
+        JsonNode directionality = updatedNode.get(DIRECTIONALITY);
+        String enumString = CommonUtils.enumToString(DirectionOfUseEnum.class, directionality.asText());
+        if (enumString != null) {
+          updatedNode.set(DIRECTIONALITY, JsonUtils.newNode().put(enumString, EMPTY_FIELD_FLAG));
+        }
+      }
+      
       // replace node list
       if (updatedNode.has(NODE_LIST)) {
         JsonNode nodeList = updatedNode.get(NODE_LIST);
@@ -1070,13 +1072,17 @@ public class TravelerMessageFromHumanToAsnConverter {
          } else {
             innerNode.set(deltaText, xy);
          }
-      } else if (NODE_LAT_LON.equals(deltaText)) {
+      } else if (deltaText.startsWith(NODE_LAT_LON)) {
          BigDecimal lonOffset = JsonUtils.decimalValue(oldNode.get(NODE_LONG));
          BigDecimal latOffset = JsonUtils.decimalValue(oldNode.get(NODE_LAT));
          Long transformedLon = LatitudeBuilder.j2735Latitude(lonOffset);
          Long transformedLat = LongitudeBuilder.j2735Longitude(latOffset);
          ObjectNode latLong = JsonUtils.newNode().put(LON, transformedLon).put(LAT, transformedLat);
-         innerNode.set(deltaText, latLong);
+         if (deltaText.equals(NODE_XY)) {
+           innerNode.set(nodeOffsetPointLL(transformedLat, transformedLon), latLong);
+         } else {
+           innerNode.set(deltaText, latLong);
+         }
       }
 
       deltaNode.set(DELTA, innerNode);

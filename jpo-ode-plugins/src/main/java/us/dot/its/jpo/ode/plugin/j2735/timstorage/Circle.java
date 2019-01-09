@@ -30,7 +30,7 @@ public class Circle extends Asn1Object {
    private String radius;
 
    @JsonProperty("units")
-   private String units;
+   private DistanceUnits units;
 
    @JsonProperty("position")
    public Position getPosition() {
@@ -50,11 +50,20 @@ public class Circle extends Asn1Object {
       this.radius = radius;
    }
 
-   public String getUnits() {
-      return units;
-   }
+  public Position getCenter() {
+    return center;
+  }
 
-   public void setUnits(String units) {
-      this.units = units;
-   }
+  public void setCenter(Position center) {
+    this.center = center;
+  }
+
+  public DistanceUnits getUnits() {
+    return units;
+  }
+
+  public void setUnits(DistanceUnits units) {
+    this.units = units;
+  }
+
 }

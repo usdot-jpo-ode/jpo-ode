@@ -17,27 +17,19 @@ package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-public class OffsetYaxis extends Asn1Object {
-   private static final long serialVersionUID = 7703530986729802700L;
+public class NodeListLL extends Asn1Object
+{
+   private static final long serialVersionUID = 1L;
+   private Nodes nodes;
 
-   private Integer small;
-   
-   private Integer large;
+    public Nodes getNodes ()
+    {
+        return nodes;
+    }
 
-   public Integer getSmall() {
-      return small;
-   }
-
-   public void setSmall(Integer small) {
-      this.small = small;
-   }
-
-   public Integer getLarge() {
-      return large;
-   }
-
-   public void setLarge(Integer large) {
-      this.large = large;
-   }
+    public void setNodes (Nodes nodes)
+    {
+        this.nodes = nodes;
+    }
 
 }
