@@ -32,6 +32,7 @@ import us.dot.its.jpo.ode.plugin.j2735.DsrcPosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.DirectionOfUse.DirectionOfUseEnum;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.DistanceUnits.DistanceUnitsEnum;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.Extent;
+import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.CommonUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -396,12 +397,12 @@ public class TravelerMessageFromHumanToAsnConverter {
       if (msgId != null) {
          ObjectNode roadSignID = (ObjectNode) msgId.get("roadSignID");
          if (roadSignID != null) {
-            
-            DsrcPosition3D position = Position3DBuilder.dsrcPosition3D(
-                  Position3DBuilder.odePosition3D(roadSignID.get(POSITION)));
-            
+
+            DsrcPosition3D position = Position3DBuilder
+                  .dsrcPosition3D(Position3DBuilder.odePosition3D(roadSignID.get(POSITION)));
+
             roadSignID.putPOJO(POSITION, position);
-            
+
             // mutcdCode is optional
             JsonNode mutcdNode = roadSignID.get("mutcdCode");
             if (mutcdNode != null) {
@@ -411,7 +412,7 @@ public class TravelerMessageFromHumanToAsnConverter {
             // crc is optional
             JsonNode crcNode = roadSignID.get("crc");
             if (crcNode != null) {
-               roadSignID.put("crc", String.format("%04X", crcNode.asInt()));
+               roadSignID.put("crc", CodecUtils.toHex(CodecUtils.shortStringToByteArray(crcNode.asText())));
             }
          }
       }
