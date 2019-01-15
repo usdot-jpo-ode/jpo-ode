@@ -422,7 +422,7 @@ definitions:
         description: >-
           A link to any other incident information data that may be available in
           the normal ATIS incident description or other messages, a 4-digit hex
-          string..
+          string.
   RoadSignID:
     type: object
     properties:
