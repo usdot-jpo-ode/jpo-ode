@@ -32,7 +32,6 @@ import us.dot.its.jpo.ode.plugin.j2735.DsrcPosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.DirectionOfUse.DirectionOfUseEnum;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.DistanceUnits.DistanceUnitsEnum;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.Extent;
-import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.CommonUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -407,12 +406,6 @@ public class TravelerMessageFromHumanToAsnConverter {
             JsonNode mutcdNode = roadSignID.get("mutcdCode");
             if (mutcdNode != null) {
                roadSignID.set("mutcdCode", JsonUtils.newNode().put(mutcdNode.asText(), EMPTY_FIELD_FLAG));
-            }
-
-            // crc is optional
-            JsonNode crcNode = roadSignID.get("crc");
-            if (crcNode != null) {
-               roadSignID.put("crc", CodecUtils.toHex(CodecUtils.shortStringToByteArray(crcNode.asText())));
             }
          }
       }
