@@ -21,9 +21,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import us.dot.its.jpo.ode.plugin.j2735.J2735BitString;
 import us.dot.its.jpo.ode.plugin.j2735.J2735EventDescription;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Extent;
-import us.dot.its.jpo.ode.plugin.j2735.J2735HeadingSlice;
 import us.dot.its.jpo.ode.plugin.j2735.J2735RegionalContent;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
@@ -49,28 +49,18 @@ public class EventDescriptionBuilder {
       if (d != null) {
          desc.setDescription(buildDescription(d));
       }
+      
       JsonNode p = description.get("priority");
       if (p != null) {
          desc.setPriority(p.asText());
       }
+      
       JsonNode h = description.get("heading");
       if (h != null) {
-
-         J2735HeadingSlice headingSlice = new J2735HeadingSlice();
-
-         char[] headingSliceBits = h.asText().toCharArray();
-
-         for (int i = 0; i < headingSliceBits.length; i++) {
-
-            String eventName = J2735HeadingSliceNames.values()[i].name();
-            Boolean eventStatus = (headingSliceBits[i] == '1');
-            headingSlice.put(eventName, eventStatus);
-
-         }
-
+         J2735BitString headingSlice = BitStringBuilder.genericBitString(h, J2735HeadingSliceNames.values());
          desc.setHeading(headingSlice);
-
       }
+      
       JsonNode e = description.get("extent");
       if (e != null) {
          desc.setExtent(J2735Extent.valueOf(e.asText().replaceAll("-", "_").toUpperCase()));

@@ -21,20 +21,21 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735RTCMheader;
 
 public class RTCMheaderBuilder {
 
-    static final String STATUS = "status";
-    static final String OFFSET_SET = "offsetSet";
+   static final String STATUS = "status";
+   static final String OFFSET_SET = "offsetSet";
 
-    private RTCMheaderBuilder() {
-       throw new UnsupportedOperationException();
-    }
+   private RTCMheaderBuilder() {
+      throw new UnsupportedOperationException();
+   }
 
-    public static J2735RTCMheader genericRTCMheader(JsonNode rtcmHeader) {
-        J2735RTCMheader header = new J2735RTCMheader();
+   public static J2735RTCMheader genericRTCMheader(JsonNode rtcmHeader) {
+      J2735RTCMheader header = new J2735RTCMheader();
 
-        header.setOffsetSet(AntennaOffsetSetBuilder.genericAntennaOffsetSet(rtcmHeader.get(OFFSET_SET)));
-        header.setStatus(GNSSstatusBuilder.genericGNSSstatus(rtcmHeader.get(STATUS)));
+      header.setOffsetSet(AntennaOffsetSetBuilder.genericAntennaOffsetSet(rtcmHeader.get(OFFSET_SET)));
+      header.setStatus(
+            BitStringBuilder.genericBitString(rtcmHeader.get(STATUS), BitStringBuilder.GNSstatusNames.values()));
 
-        return header;
-    }
+      return header;
+   }
 
 }

@@ -28,8 +28,8 @@ public class BrakeSystemStatusBuilder {
    public static J2735BrakeSystemStatus genericBrakeSystemStatus(JsonNode brakesStatus) {
       J2735BrakeSystemStatus genericBrakesStatus = new J2735BrakeSystemStatus();
 
-      genericBrakesStatus
-            .setWheelBrakes(BrakesAppliedStatusBuilder.genericBrakeAppliedStatus(brakesStatus.get("wheelBrakes")));
+      genericBrakesStatus.setWheelBrakes(BitStringBuilder.genericBitString(brakesStatus.get("wheelBrakes"),
+            BitStringBuilder.BrakeAppliedStatusNames.values()));
       genericBrakesStatus.setTraction(brakesStatus.get("traction").fieldNames().next());
       genericBrakesStatus.setAbs(brakesStatus.get("abs").fieldNames().next());
       genericBrakesStatus.setScs(brakesStatus.get("scs").fieldNames().next());

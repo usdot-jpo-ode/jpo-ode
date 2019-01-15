@@ -18,12 +18,11 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735ObstacleDetection;
-import us.dot.its.jpo.ode.plugin.j2735.J2735VertEvent;
 
 public class ObstacleDetectionBuilder {
 
    public enum J2735VertEventNames {
-      rightRear , rightFront, leftRear, leftFront, notEquipped
+      rightRear, rightFront, leftRear, leftFront, notEquipped
    }
 
    private static final Integer DIST_LOWER_BOUND = 0;
@@ -60,18 +59,8 @@ public class ObstacleDetectionBuilder {
          ob.setLocationDetails(NamedNumberBuilder.genericGenericLocations(locationDetails));
       }
 
-      J2735VertEvent vertEvent = new J2735VertEvent();
-
-      char[] vertEventBits = obstacleDetection.get("vertEvent").asText().toCharArray();
-
-      for (int i = 0; i < vertEventBits.length; i++) {
-         String statusName = J2735VertEventNames.values()[i].name();
-         Boolean statusValue = (vertEventBits[i] == '1');
-         vertEvent.put(statusName, statusValue);
-
-      }
-
-      ob.setVertEvent(vertEvent);
+      ob.setVertEvent(
+            BitStringBuilder.genericBitString(obstacleDetection.get("vertEvent"), J2735VertEventNames.values()));
 
       return ob;
    }

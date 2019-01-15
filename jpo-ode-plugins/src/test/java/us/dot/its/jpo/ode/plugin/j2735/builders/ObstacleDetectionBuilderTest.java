@@ -29,7 +29,7 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import us.dot.its.jpo.ode.plugin.j2735.J2735VertEvent;
+import us.dot.its.jpo.ode.plugin.j2735.J2735BitString;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
@@ -396,7 +396,7 @@ public class ObstacleDetectionBuilderTest {
            }
            
         
-        J2735VertEvent actualVertEvent = ObstacleDetectionBuilder
+           J2735BitString actualVertEvent = ObstacleDetectionBuilder
                 .genericObstacleDetection(testObstacleDetection)
                 .getVertEvent();
         
@@ -434,7 +434,7 @@ public class ObstacleDetectionBuilderTest {
         }
         
         
-        J2735VertEvent actualVertEvent = ObstacleDetectionBuilder
+        J2735BitString actualVertEvent = ObstacleDetectionBuilder
                 .genericObstacleDetection(testObstacleDetection)
                 .getVertEvent();
         
@@ -476,7 +476,7 @@ public class ObstacleDetectionBuilderTest {
         }
         
         
-        J2735VertEvent actualVertEvent = ObstacleDetectionBuilder
+        J2735BitString actualVertEvent = ObstacleDetectionBuilder
                 .genericObstacleDetection(testObstacleDetection)
                 .getVertEvent();
         
@@ -519,7 +519,7 @@ public class ObstacleDetectionBuilderTest {
            fail("XML parsing error:" + e);
         }
         
-        J2735VertEvent actualVertEvent = ObstacleDetectionBuilder
+        J2735BitString actualVertEvent = ObstacleDetectionBuilder
                 .genericObstacleDetection(testObstacleDetection)
                 .getVertEvent();
         
@@ -567,7 +567,7 @@ public class ObstacleDetectionBuilderTest {
         }
         
         
-        J2735VertEvent actualVertEvent = ObstacleDetectionBuilder
+        J2735BitString actualVertEvent = ObstacleDetectionBuilder
                 .genericObstacleDetection(testObstacleDetection)
                 .getVertEvent();
         
@@ -612,7 +612,7 @@ public class ObstacleDetectionBuilderTest {
            fail("XML parsing error:" + e);
         }
         
-        J2735VertEvent actualVertEvent = ObstacleDetectionBuilder
+        J2735BitString actualVertEvent = ObstacleDetectionBuilder
                 .genericObstacleDetection(testObstacleDetection)
                 .getVertEvent();
         
@@ -658,7 +658,7 @@ public class ObstacleDetectionBuilderTest {
            fail("XML parsing error:" + e);
         }
         
-        J2735VertEvent actualVertEvent = ObstacleDetectionBuilder
+        J2735BitString actualVertEvent = ObstacleDetectionBuilder
                 .genericObstacleDetection(testObstacleDetection)
                 .getVertEvent();
         

@@ -21,13 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import mockit.Tested;
-import mockit.integration.junit4.JMockit;
 
-@RunWith(JMockit.class)
 public class J2735EventDescriptionTest {
+
    @Tested
    J2735EventDescription ed;
 
@@ -39,7 +37,7 @@ public class J2735EventDescriptionTest {
       J2735Extent extent = null;
       ed.setExtent(extent);
       assertEquals(extent, ed.getExtent());
-      J2735HeadingSlice heading = new J2735HeadingSlice();
+      J2735BitString heading = new J2735BitString();
       ed.setHeading(heading);
       assertEquals(heading, ed.getHeading());
       String priority = "";
