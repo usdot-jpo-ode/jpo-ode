@@ -24,7 +24,7 @@ paths:
           description: ODE version information returned
           schema:
             $ref: '#/definitions/versionResponse'
-      
+
   /tim/query:
     post:
       summary: Query an RSU for set TIMs
@@ -311,7 +311,7 @@ definitions:
           "2017-08-03T22:25:36.297Z".
       packetId:
         type: string
-        description: Provides a unique message ID to given in a 9 byte hex string
+        description: Provides a unique message ID, in a 9-digit hex string.
       urlB:
         type: string
         description: Standard URL link to designated resource.
@@ -422,7 +422,7 @@ definitions:
         description: >-
           A link to any other incident information data that may be available in
           the normal ATIS incident description or other messages, a 4-digit hex
-          string or 16-digit binary string.
+          string..
   RoadSignID:
     type: object
     properties:
@@ -442,8 +442,7 @@ definitions:
       crc:
         type: string
         description: >-
-          Message cyclic-redundancy-check code in 4-digit hex string or 16-digit
-          binary string.
+          Message cyclic-redundancy-check code in 4-digit hex string.
   Region:
     type: object
     properties:
@@ -620,9 +619,9 @@ definitions:
       directionality:
         type: string
         description: one of ENUMERATED {
-          unavailable (0), -- unknown or NA, not typically used in valid expressions 
-          forward (1), -- direction of travel follows node ordering 
-          reverse (2), -- direction of travel is the reverse of node ordering 
+          unavailable (0), -- unknown or NA, not typically used in valid expressions
+          forward (1), -- direction of travel follows node ordering
+          reverse (2), -- direction of travel is the reverse of node ordering
           both (3) -- direction of travel allowed in both directions
       nodeList:
         $ref: '#/definitions/NodeListXY'
