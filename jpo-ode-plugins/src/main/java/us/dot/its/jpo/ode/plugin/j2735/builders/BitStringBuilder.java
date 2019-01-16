@@ -6,15 +6,6 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735BitString;
 
 public class BitStringBuilder {
 
-   public enum BrakeAppliedStatusNames {
-      unavailable, leftFront, leftRear, rightFront, rightRear
-   }
-
-   public enum GNSstatusNames {
-      unavailable, isHealthy, isMonitored, baseStationType, aPDOPofUnder5, inViewOfUnder5, localCorrectionsPresent,
-      networkCorrectionsPresent
-   }
-
    private BitStringBuilder() {
       throw new UnsupportedOperationException();
    }

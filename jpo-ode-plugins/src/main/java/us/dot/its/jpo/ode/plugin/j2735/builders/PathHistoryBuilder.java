@@ -18,6 +18,7 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735BitString;
+import us.dot.its.jpo.ode.plugin.j2735.J2735GNSSstatusNames;
 import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistory;
 
 public class PathHistoryBuilder {
@@ -35,7 +36,7 @@ public class PathHistoryBuilder {
       // Optional elements
       JsonNode currGNSSstatus = pathHistory.get("currGNSSstatus");
       if (currGNSSstatus != null) {
-         J2735BitString gnssStatus = BitStringBuilder.genericBitString(currGNSSstatus, BitStringBuilder.GNSstatusNames.values());
+         J2735BitString gnssStatus = BitStringBuilder.genericBitString(currGNSSstatus, J2735GNSSstatusNames.values());
          ph.setCurrGNSSstatus(gnssStatus);
       }
       JsonNode initialPosition = pathHistory.get("initialPosition");

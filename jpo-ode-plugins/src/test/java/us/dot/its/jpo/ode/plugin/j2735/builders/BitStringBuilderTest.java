@@ -30,6 +30,7 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735BitString;
+import us.dot.its.jpo.ode.plugin.j2735.J2735GNSSstatusNames;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class BitStringBuilderTest {
@@ -43,7 +44,7 @@ public class BitStringBuilderTest {
       JsonNode testBitString = JsonUtils.newNode().put("status", "00000000");
 
       J2735BitString actualBitString = BitStringBuilder.genericBitString(testBitString.get("status"),
-            BitStringBuilder.GNSstatusNames.values());
+            J2735GNSSstatusNames.values());
 
       for (Map.Entry<String, Boolean> curVal : actualBitString.entrySet()) {
          assertFalse("Expected " + curVal.getKey() + " to be false", curVal.getValue());
@@ -60,7 +61,7 @@ public class BitStringBuilderTest {
       JsonNode testBitString = JsonUtils.newNode().put("status", "11111111");
 
       J2735BitString actualBitString = BitStringBuilder.genericBitString(testBitString.get("status"),
-            BitStringBuilder.GNSstatusNames.values());
+            J2735GNSSstatusNames.values());
 
       for (Map.Entry<String, Boolean> curVal : actualBitString.entrySet()) {
          assertTrue("Expected " + curVal.getKey() + " to be true", curVal.getValue());
@@ -77,7 +78,7 @@ public class BitStringBuilderTest {
       String elementTested = "unavailable";
 
       J2735BitString actualBitString = BitStringBuilder.genericBitString(testBitString.get("status"),
-            BitStringBuilder.GNSstatusNames.values());
+            J2735GNSSstatusNames.values());
 
       for (Map.Entry<String, Boolean> curVal : actualBitString.entrySet()) {
          if (curVal.getKey() == elementTested) {
@@ -98,7 +99,7 @@ public class BitStringBuilderTest {
       String elementTested = "isHealthy";
 
       J2735BitString actualBitString = BitStringBuilder.genericBitString(testBitString.get("status"),
-            BitStringBuilder.GNSstatusNames.values());
+            J2735GNSSstatusNames.values());
 
       for (Map.Entry<String, Boolean> curVal : actualBitString.entrySet()) {
          if (curVal.getKey() == elementTested) {
@@ -120,7 +121,7 @@ public class BitStringBuilderTest {
       String elementTested = "localCorrectionsPresent";
 
       J2735BitString actualBitString = BitStringBuilder.genericBitString(testBitString.get("status"),
-            BitStringBuilder.GNSstatusNames.values());
+            J2735GNSSstatusNames.values());
 
       for (Map.Entry<String, Boolean> curVal : actualBitString.entrySet()) {
          if (curVal.getKey() == elementTested) {
@@ -142,7 +143,7 @@ public class BitStringBuilderTest {
       String elementTested = "networkCorrectionsPresent";
 
       J2735BitString actualBitString = BitStringBuilder.genericBitString(testBitString.get("status"),
-            BitStringBuilder.GNSstatusNames.values());
+            J2735GNSSstatusNames.values());
 
       for (Map.Entry<String, Boolean> curVal : actualBitString.entrySet()) {
          if (curVal.getKey() == elementTested) {
@@ -165,7 +166,7 @@ public class BitStringBuilderTest {
       String elementTested2 = "localCorrectionsPresent";
 
       J2735BitString actualBitString = BitStringBuilder.genericBitString(testBitString.get("status"),
-            BitStringBuilder.GNSstatusNames.values());
+            J2735GNSSstatusNames.values());
 
       for (Map.Entry<String, Boolean> curVal : actualBitString.entrySet()) {
          if (curVal.getKey() == elementTested1 || curVal.getKey() == elementTested2) {

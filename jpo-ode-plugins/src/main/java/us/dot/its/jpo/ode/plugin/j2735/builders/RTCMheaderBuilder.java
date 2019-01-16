@@ -17,6 +17,7 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import us.dot.its.jpo.ode.plugin.j2735.J2735GNSSstatusNames;
 import us.dot.its.jpo.ode.plugin.j2735.J2735RTCMheader;
 
 public class RTCMheaderBuilder {
@@ -33,7 +34,7 @@ public class RTCMheaderBuilder {
 
       header.setOffsetSet(AntennaOffsetSetBuilder.genericAntennaOffsetSet(rtcmHeader.get(OFFSET_SET)));
       header.setStatus(
-            BitStringBuilder.genericBitString(rtcmHeader.get(STATUS), BitStringBuilder.GNSstatusNames.values()));
+            BitStringBuilder.genericBitString(rtcmHeader.get(STATUS), J2735GNSSstatusNames.values()));
 
       return header;
    }
