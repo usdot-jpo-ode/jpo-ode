@@ -396,22 +396,16 @@ public class TravelerMessageFromHumanToAsnConverter {
       if (msgId != null) {
          ObjectNode roadSignID = (ObjectNode) msgId.get("roadSignID");
          if (roadSignID != null) {
-            
-            DsrcPosition3D position = Position3DBuilder.dsrcPosition3D(
-                  Position3DBuilder.odePosition3D(roadSignID.get(POSITION)));
-            
+
+            DsrcPosition3D position = Position3DBuilder
+                  .dsrcPosition3D(Position3DBuilder.odePosition3D(roadSignID.get(POSITION)));
+
             roadSignID.putPOJO(POSITION, position);
-            
+
             // mutcdCode is optional
             JsonNode mutcdNode = roadSignID.get("mutcdCode");
             if (mutcdNode != null) {
                roadSignID.set("mutcdCode", JsonUtils.newNode().put(mutcdNode.asText(), EMPTY_FIELD_FLAG));
-            }
-
-            // crc is optional
-            JsonNode crcNode = roadSignID.get("crc");
-            if (crcNode != null) {
-               roadSignID.put("crc", String.format("%04X", crcNode.asInt()));
             }
          }
       }
