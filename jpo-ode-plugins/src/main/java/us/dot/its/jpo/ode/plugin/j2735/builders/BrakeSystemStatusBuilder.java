@@ -17,6 +17,7 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import us.dot.its.jpo.ode.plugin.j2735.J2735BrakeAppliedStatusNames;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BrakeSystemStatus;
 
 public class BrakeSystemStatusBuilder {
@@ -28,8 +29,8 @@ public class BrakeSystemStatusBuilder {
    public static J2735BrakeSystemStatus genericBrakeSystemStatus(JsonNode brakesStatus) {
       J2735BrakeSystemStatus genericBrakesStatus = new J2735BrakeSystemStatus();
 
-      genericBrakesStatus
-            .setWheelBrakes(BrakesAppliedStatusBuilder.genericBrakeAppliedStatus(brakesStatus.get("wheelBrakes")));
+      genericBrakesStatus.setWheelBrakes(BitStringBuilder.genericBitString(brakesStatus.get("wheelBrakes"),
+            J2735BrakeAppliedStatusNames.values()));
       genericBrakesStatus.setTraction(brakesStatus.get("traction").fieldNames().next());
       genericBrakesStatus.setAbs(brakesStatus.get("abs").fieldNames().next());
       genericBrakesStatus.setScs(brakesStatus.get("scs").fieldNames().next());

@@ -25,7 +25,7 @@ public class J2735EventDescription extends Asn1Object {
 
    private List<Integer> description;
    private J2735Extent extent;
-   private J2735HeadingSlice heading;
+   private J2735BitString heading;
    private String priority;
    private List<J2735RegionalContent> regional = new ArrayList<>();
    private Integer typeEvent;
@@ -46,11 +46,11 @@ public class J2735EventDescription extends Asn1Object {
       this.extent = extent;
    }
 
-   public J2735HeadingSlice getHeading() {
+   public J2735BitString getHeading() {
       return heading;
    }
 
-   public void setHeading(J2735HeadingSlice heading) {
+   public void setHeading(J2735BitString heading) {
       this.heading = heading;
    }
 

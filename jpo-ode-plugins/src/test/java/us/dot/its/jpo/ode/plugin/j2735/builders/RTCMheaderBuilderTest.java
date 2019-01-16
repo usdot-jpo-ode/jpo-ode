@@ -46,7 +46,7 @@ public class RTCMheaderBuilderTest {
   public static ObjectNode buildTestRtcmHeader() {
     ObjectNode rtcmHeader = JsonUtils.newNode();
      rtcmHeader.set(RTCMheaderBuilder.OFFSET_SET, AntennaOffsetSetBuilderTest.buildTestJ2735AntennaOffsetSet());
-     rtcmHeader.set(RTCMheaderBuilder.STATUS, GNSSstatusBuilderTest.buildTestGNSSstatus("10101010"));
+     rtcmHeader.put(RTCMheaderBuilder.STATUS, "10101010");
     return rtcmHeader;
   }
 
