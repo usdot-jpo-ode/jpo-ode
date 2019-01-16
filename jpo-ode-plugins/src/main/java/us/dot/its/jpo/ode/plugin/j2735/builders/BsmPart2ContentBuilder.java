@@ -42,8 +42,7 @@ public class BsmPart2ContentBuilder {
 
    }
 
-   public static J2735BsmPart2Content genericPart2Content(JsonNode part2Content)
-         throws BsmPart2ContentBuilderException {
+   public static J2735BsmPart2Content genericPart2Content(JsonNode part2Content) {
 
       JsonNode partII_Id = part2Content.get("partII-Id");
 

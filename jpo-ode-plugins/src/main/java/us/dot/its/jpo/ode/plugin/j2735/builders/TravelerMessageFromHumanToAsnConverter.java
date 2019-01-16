@@ -32,6 +32,7 @@ import us.dot.its.jpo.ode.plugin.j2735.DsrcPosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.DirectionOfUse.DirectionOfUseEnum;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.DistanceUnits.DistanceUnitsEnum;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.Extent;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.SpeedLimitType.SpeedLimitTypeEnum;
 import us.dot.its.jpo.ode.util.CommonUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -39,6 +40,10 @@ import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 
 public class TravelerMessageFromHumanToAsnConverter {
 
+  private static final String SPEED = "speed";
+  private static final String TYPE = "type";
+  private static final String ATTRIBUTES = "attributes";
+  public static final String TRAVELER_INFORMATION = "TravelerInformation";
   private static final String EXTENT = "extent";
   private static final String UNITS = "units";
   private static final String DIRECTIONALITY = "directionality";
@@ -167,7 +172,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       // INPUT
       //////
       // "dataframes": [
-      // {
+      // 
       // "startDateTime": "2017-08-02T22:25:00.000Z",
       // "durationTime": 1,
       // "frameType": "1",
@@ -191,7 +196,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       // "513"
       // ],
       // "url": "null"
-      // }
+      // 
       // ]
 
       /// OUTPUT:
@@ -355,26 +360,6 @@ public class TravelerMessageFromHumanToAsnConverter {
       return item;
    }
 
-//   public static ObjectNode replaceFrameType(JsonNode oldFrameType) {
-//
-//      String frameType;
-//      switch (oldFrameType.asInt()) {
-//      case 1:
-//         frameType = "advisory";
-//         break;
-//      case 2:
-//         frameType = "roadSignage";
-//         break;
-//      case 3:
-//         frameType = "commercialSignage";
-//         break;
-//      default:
-//         frameType = "unknown";
-//      }
-//
-//      return JsonUtils.newNode().put(frameType, EMPTY_FIELD_FLAG);
-//   }
-
    public static void replaceMsgId(ObjectNode dataFrame) {
 
       // <msgId>
@@ -439,18 +424,18 @@ public class TravelerMessageFromHumanToAsnConverter {
       // "name": "Testing TIM",
       // "regulatorID": "0",
       // "segmentID": "33",
-      // "anchorPosition": {
+      // "anchorPosition": 
       // "latitude": "41.2500807",
       // "longitude": "-111.0093847",
       // "elevation": "2020.6969900289998"
-      // },
+      // ,
       // "laneWidth": "7",
       // "directionality": "3",
       // "closedPath": "false",
       // "description": "path",
       // "path": {},
       // "direction": "0000000000001010"
-      // }
+      // 
 
       //// EXPECTED OUTPUT:
       // <GeographicalPath>
@@ -551,11 +536,11 @@ public class TravelerMessageFromHumanToAsnConverter {
    private static void replacePath(ObjectNode pathNode) {
 
       //// EXPECTED INPUT:
-      // "path": {
+      // "path": 
       // "scale": "0",
       // "type": "ll",
       // "nodes": []
-      // }
+      // 
 
       //// EXPECTED OUTPUT:
       // <path>
@@ -569,7 +554,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       // </path>
 
       // zoom does not need to be replaced
-      String nodeType = pathNode.get("type").asText();
+      String nodeType = pathNode.get(TYPE).asText();
       JsonNode nodes = pathNode.get(NODES);
       JsonNode nodeList;
       if (LL.equals(nodeType)) {
@@ -580,7 +565,7 @@ public class TravelerMessageFromHumanToAsnConverter {
          pathNode.set(OFFSET, JsonUtils.newNode().set(XY, JsonUtils.newNode().set(NODES, nodeList)));
       }
       pathNode.remove(NODES);
-      pathNode.remove("type");
+      pathNode.remove(TYPE);
 
    }
 
@@ -614,11 +599,11 @@ public class TravelerMessageFromHumanToAsnConverter {
    private static ObjectNode transformNodeLL(JsonNode oldNode) {
 
       //// EXPECTED INPUT:
-      // {
+      // 
       // "nodeLong": "0.0031024",
       // "nodeLat": "0.0014506",
       // "delta": "node-LL3"
-      // }
+      // 
 
       //// EXPECTED OUTPUT:
       // <NodeLL>
@@ -737,7 +722,9 @@ public class TravelerMessageFromHumanToAsnConverter {
       ObjectNode updatedNode = (ObjectNode) area;
 
       if (updatedNode.has(SHAPE_POINT_SET)) {
-         updatedNode.set(SHAPE_POINT_SET, replaceShapePointSet(updatedNode.get(SHAPE_POINT_SET)));
+         JsonNode shapePointSet = updatedNode.get(SHAPE_POINT_SET);
+         replaceShapePointSet(shapePointSet);
+         updatedNode.set(SHAPE_POINT_SET, shapePointSet);
       } else if (updatedNode.has(CIRCLE)) {
          replaceCircle(updatedNode.get(CIRCLE));
       } else if (updatedNode.has(REGION_POINT_SET)) {
@@ -767,11 +754,11 @@ public class TravelerMessageFromHumanToAsnConverter {
 
    public static void replaceCircle(JsonNode circle) {
 
-      // Circle ::= SEQUENCE {
+      // Circle ::= SEQUENCE 
       // center Position3D,
       // radius Radius-B12,
       // units DistanceUnits
-      // }
+      // 
 
       ObjectNode updatedNode = (ObjectNode) circle;
       
@@ -801,7 +788,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       }
    }
 
-   public static ObjectNode replaceShapePointSet(JsonNode shapePointSet) {
+   public static void replaceShapePointSet(JsonNode shapePointSet) {
       // shape point set contains:
       // anchor
       // lane width
@@ -833,17 +820,15 @@ public class TravelerMessageFromHumanToAsnConverter {
       
       // replace node list
       if (updatedNode.has(NODE_LIST)) {
-        JsonNode nodeList = updatedNode.get(NODE_LIST);
+        ObjectNode nodeList = (ObjectNode) updatedNode.get(NODE_LIST);
         if (nodeList.has(NODES)) {
-          JsonNode nodes = nodeList.get(NODES);
-          transformNodeSetXY(nodes);
+          ArrayNode nodes = transformNodeSetXY(nodeList.get(NODES));
+          nodeList.set(NODES, nodes);
         } else if (nodeList.has(COMPUTED)) {
-          JsonNode ComputedLane = nodeList.get(COMPUTED);
-          replaceComputedLane(ComputedLane);
+          JsonNode computedLane = nodeList.get(COMPUTED);
+          replaceComputedLane(computedLane);
         }
       }
-      
-      return updatedNode;
    }
 
    public static void replaceComputedLane(JsonNode jsonNode) {
@@ -851,16 +836,16 @@ public class TravelerMessageFromHumanToAsnConverter {
       
       // Nothing to do for referenceLaneId LaneID
       
-      // offsetXaxis CHOICE {
-      // small DrivenLineOffsetSm,
-      // large DrivenLineOffsetLg
-      // }
+      // offsetXaxis CHOICE 
+      //   small DrivenLineOffsetSm,
+      //   large DrivenLineOffsetLg
+      // 
       replaceScale(updatedNode, OFFSET_X_AXIS);
       
-      // offsetYaxis CHOICE {
-      // small DrivenLineOffsetSm,
-      // large DrivenLineOffsetLg
-      // }
+      // offsetYaxis CHOICE 
+      //   small DrivenLineOffsetSm,
+      //   large DrivenLineOffsetLg
+      // 
       replaceScale(updatedNode, OFFSET_Y_AXIS);
       
       // rotateXY Angle OPTIONAL
@@ -925,16 +910,16 @@ public class TravelerMessageFromHumanToAsnConverter {
       // delta NodeOffsetPointXY
       // attributes NodeAttributeSetXY (optional)
 
-      ObjectNode deltaNode = transformNodeOffsetPointXY(oldNode);
+      ObjectNode nodexy = transformNodeOffsetPointXY(oldNode);
 
-      if (oldNode.has("attributes")) {
-         replaceNodeAttributeSetXY(oldNode.get("attributes"));
+      if (oldNode.has(ATTRIBUTES)) {
+        nodexy.set(ATTRIBUTES, transformNodeAttributeSetXY(oldNode.get(ATTRIBUTES)));
       }
       
-      return deltaNode;
+      return nodexy;
    }
 
-   private static void replaceNodeAttributeSetXY(JsonNode jsonNode) {
+   private static ObjectNode transformNodeAttributeSetXY(JsonNode jsonNode) {
       // localNode NodeAttributeXYList OPTIONAL,
       // disabled SegmentAttributeXYList OPTIONAL,
       // enabled SegmentAttributeXYList OPTIONAL,
@@ -942,31 +927,32 @@ public class TravelerMessageFromHumanToAsnConverter {
       // dWidth Offset-B10 OPTIONAL,
       // dElevation Offset-B10 OPTIONAL,
 
-      ObjectNode updatedNode = (ObjectNode) jsonNode;
+      ObjectNode updatedNode = JsonUtils.newNode();
 
       // localNode NodeAttributeXYList does not need to be replaced
 
       // disabled SegmentAttributeXYList does not need to be replaced
       // enabled SegmentAttributeXYList does not need to be replaced
 
-      if (updatedNode.has(DATA)) {
-         replaceLaneDataAttributeList((ArrayNode) updatedNode.get(DATA));
+      if (jsonNode.has(DATA)) {
+         updatedNode.set(DATA, transformLaneDataAttributeList(jsonNode.get(DATA)));
       }
-      if (updatedNode.has(D_WIDTH)) {
-         updatedNode.put(D_WIDTH, OffsetXyBuilder.offsetXy(JsonUtils.decimalValue(updatedNode.get(D_WIDTH))));
+      if (jsonNode.has(D_WIDTH)) {
+        updatedNode.put(D_WIDTH, OffsetXyBuilder.offsetXy(JsonUtils.decimalValue(jsonNode.get(D_WIDTH))));
       }
 
-      if (updatedNode.has(D_ELEVATION)) {
-         updatedNode.put(D_ELEVATION, OffsetXyBuilder.offsetXy(JsonUtils.decimalValue(updatedNode.get(D_ELEVATION))));
+      if (jsonNode.has(D_ELEVATION)) {
+        updatedNode.put(D_ELEVATION, OffsetXyBuilder.offsetXy(JsonUtils.decimalValue(jsonNode.get(D_ELEVATION))));
       }
+      return updatedNode;
    }
 
-   private static void replaceLaneDataAttributeList(ArrayNode laneDataAttributeList) {
+   private static ArrayNode transformLaneDataAttributeList(JsonNode laneDataAttribute) {
 
       ArrayNode updatedLaneDataAttributeList = JsonUtils.newNode().arrayNode();
 
-      if (laneDataAttributeList.isArray()) {
-         Iterator<JsonNode> laneDataAttributeListIter = laneDataAttributeList.elements();
+      if (laneDataAttribute.isArray()) {
+         Iterator<JsonNode> laneDataAttributeListIter = laneDataAttribute.elements();
 
          while (laneDataAttributeListIter.hasNext()) {
             JsonNode oldNode = laneDataAttributeListIter.next();
@@ -974,6 +960,7 @@ public class TravelerMessageFromHumanToAsnConverter {
             updatedLaneDataAttributeList.add(oldNode);
          }
       }
+      return updatedLaneDataAttributeList;
    }
 
    public static void replaceLaneDataAttribute(JsonNode oldNode) {
@@ -1003,14 +990,11 @@ public class TravelerMessageFromHumanToAsnConverter {
          updatedNode.put(LANE_ANGLE,
                MergeDivergeNodeAngleBuilder.mergeDivergeNodeAngle(JsonUtils.decimalValue(updatedNode.get(LANE_ANGLE))));
       } else if (oldNode.has(SPEED_LIMITS)) {
-         updatedNode.set(SPEED_LIMITS, replaceSpeedLimitList(updatedNode.get(SPEED_LIMITS)));
+         replaceSpeedLimitList(updatedNode.get(SPEED_LIMITS));
       }
    }
 
-   private static ArrayNode replaceSpeedLimitList(JsonNode speedLimitList) {
-
-      // iterate and replace
-      ArrayNode updatedLaneDataAttributeList = JsonUtils.newNode().arrayNode();
+   private static void replaceSpeedLimitList(JsonNode speedLimitList) {
 
       if (speedLimitList.isArray()) {
          Iterator<JsonNode> speedLimitListIter = speedLimitList.elements();
@@ -1018,11 +1002,8 @@ public class TravelerMessageFromHumanToAsnConverter {
          while (speedLimitListIter.hasNext()) {
             JsonNode oldNode = speedLimitListIter.next();
             replaceRegulatorySpeedLimit(oldNode);
-            updatedLaneDataAttributeList.add(oldNode);
          }
       }
-
-      return updatedLaneDataAttributeList;
    }
 
    private static void replaceRegulatorySpeedLimit(JsonNode regulatorySpeedLimitNode) {
@@ -1031,20 +1012,26 @@ public class TravelerMessageFromHumanToAsnConverter {
       // speed Velocity
 
       ObjectNode updatedNode = (ObjectNode) regulatorySpeedLimitNode;
-      // type does not need to be replaced
-
+      
+      // type
+      JsonNode typeNode = regulatorySpeedLimitNode.get(TYPE);
+      String type = CommonUtils.enumToString(SpeedLimitTypeEnum.class, typeNode.asText());
+      if (type != null) {
+        updatedNode.set(TYPE, JsonUtils.newNode().put(type, EMPTY_FIELD_FLAG));
+      }
+      
       // replace velocity
-      updatedNode.put("speed", VelocityBuilder.velocity(JsonUtils.decimalValue(updatedNode.get("speed"))));
+      updatedNode.put(SPEED, VelocityBuilder.velocity(JsonUtils.decimalValue(updatedNode.get(SPEED))));
 
    }
 
    public static ObjectNode transformNodeOffsetPointXY(JsonNode oldNode) {
       //// EXPECTED INPUT:
-      // {
-      // "nodeLong": "0.0031024",
-      // "nodeLat": "0.0014506",
-      // "delta": "node-LL3"
-      // }
+      // 
+      //    "nodeLong": "0.0031024",
+      //    "nodeLat": "0.0014506",
+      //    "delta": "node-LL3"
+      // 
 
       //// EXPECTED OUTPUT:
       // <NodeLL>

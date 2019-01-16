@@ -120,7 +120,7 @@ public class TimTransmogrifier {
          ObjectNode asdObj = JsonUtils.toObjectNode(asd.toJson());
          ObjectNode mfBodyObj = (ObjectNode) asdObj.findValue(MESSAGE_FRAME);
          mfBodyObj.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
-         mfBodyObj.set("value", (ObjectNode) JsonUtils.newNode().set("TravelerInformation", timObj));
+         mfBodyObj.set("value", (ObjectNode) JsonUtils.newNode().set(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, timObj));
 
          dataBodyObj.set(ADVISORY_SITUATION_DATA, asdObj);
 
@@ -129,7 +129,7 @@ public class TimTransmogrifier {
          // Build a MessageFrame
          ObjectNode mfBodyObj = JsonUtils.newNode();
          mfBodyObj.put("messageId", J2735DSRCmsgID.TravelerInformation.getMsgID());
-         mfBodyObj.set("value", (ObjectNode) JsonUtils.newNode().set("TravelerInformation", timObj));
+         mfBodyObj.set("value", (ObjectNode) JsonUtils.newNode().set(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, timObj));
          dataBodyObj = (ObjectNode) JsonUtils.newNode().set(MESSAGE_FRAME, mfBodyObj);
          payload = new OdeTimPayload();
          payload.setDataType(MESSAGE_FRAME);
@@ -240,7 +240,7 @@ public class TimTransmogrifier {
       metadata.remove(AppContext.ENCODINGS_STRING);
 
       JSONObject payload = timData.getJSONObject(AppContext.PAYLOAD_STRING);
-      payload.put(AppContext.DATA_TYPE_STRING, "TravelerInformation");
+      payload.put(AppContext.DATA_TYPE_STRING, TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION);
       return timData;
    }
 

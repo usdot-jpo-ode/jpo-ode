@@ -164,8 +164,6 @@ public class OdePropertiesTest {
       String testKafkaTopicAsn1DecoderOutput = "testKafkaTopicAsn1DecoderOutput";
       String testKafkaTopicAsn1EncoderInput = "testKafkaTopicAsn1EncoderInput";
       String testKafkaTopicAsn1EncoderOutput = "testKafkaTopicAsn1EncoderOutput";
-      String testKafkaTopicOdeTimPojo = "testKafkaTopicOdeTimPojo";
-      String testKafkaTopicOdeDNMsgPojo = "testKafkaTopicOdeDNMsgPojo";
       String testKafkaTopicOdeDNMsgJson = "testKafkaTopicOdeDNMsgJson";
       String testKafkaTopicOdeTimJson = "testKafkaTopicOdeTimJson";
       String testKafkaTopicOdeBsmDuringEventPojo = "testKafkaTopicOdeBsmDuringEventPojo";
@@ -235,8 +233,6 @@ public class OdePropertiesTest {
       testOdeProperties.setKafkaTopicAsn1DecoderOutput(testKafkaTopicAsn1DecoderOutput);
       testOdeProperties.setKafkaTopicAsn1EncoderInput(testKafkaTopicAsn1EncoderInput);
       testOdeProperties.setKafkaTopicAsn1EncoderOutput(testKafkaTopicAsn1EncoderOutput);
-      testOdeProperties.setKafkaTopicOdeTimPojo(testKafkaTopicOdeTimPojo);
-      testOdeProperties.setKafkaTopicOdeDNMsgPojo(testKafkaTopicOdeDNMsgPojo);
       testOdeProperties.setKafkaTopicOdeDNMsgJson(testKafkaTopicOdeDNMsgJson);
       testOdeProperties.setKafkaTopicOdeTimJson(testKafkaTopicOdeTimJson);
       testOdeProperties.setKafkaTopicOdeBsmDuringEventPojo(testKafkaTopicOdeBsmDuringEventPojo);
@@ -327,10 +323,6 @@ public class OdePropertiesTest {
             testOdeProperties.getKafkaTopicAsn1EncoderInput());
       assertEquals("Incorrect testKafkaTopicAsn1EncoderOutput", testKafkaTopicAsn1EncoderOutput,
             testOdeProperties.getKafkaTopicAsn1EncoderOutput());
-      assertEquals("Incorrect testKafkaTopicOdeTimPojo", testKafkaTopicOdeTimPojo,
-            testOdeProperties.getKafkaTopicOdeTimPojo());
-      assertEquals("Incorrect testKafkaTopicOdeDNMsgPojo", testKafkaTopicOdeDNMsgPojo,
-            testOdeProperties.getKafkaTopicOdeDNMsgPojo());
       assertEquals("Incorrect testKafkaTopicOdeDNMsgJson", testKafkaTopicOdeDNMsgJson,
             testOdeProperties.getKafkaTopicOdeDNMsgJson());
       assertEquals("Incorrect testKafkaTopicOdeTimJson", testKafkaTopicOdeTimJson,

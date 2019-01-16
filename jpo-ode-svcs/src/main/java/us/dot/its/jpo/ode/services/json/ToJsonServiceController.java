@@ -23,7 +23,6 @@ import org.springframework.stereotype.Controller;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 import us.dot.its.jpo.ode.wrapper.serdes.OdeBsmDeserializer;
-import us.dot.its.jpo.ode.wrapper.serdes.OdeTimDeserializer;
 
 /**
  * Launches ToJsonConverter service
@@ -44,11 +43,6 @@ public class ToJsonServiceController {
       // BSM POJO --> JSON converter
       launchConverter(odeProps.getKafkaTopicOdeBsmPojo(), OdeBsmDeserializer.class.getName(),
             new ToJsonConverter<>(odeProps, false, odeProps.getKafkaTopicOdeBsmJson()));
-
-      // TIM POJO --> JSON converter
-      launchConverter(odeProps.getKafkaTopicOdeTimPojo(), OdeTimDeserializer.class.getName(),
-            new ToJsonConverter<>(odeProps, false, odeProps.getKafkaTopicOdeTimJson()));
-
    }
 
    private <V> void launchConverter(String fromTopic, String serializerFQN, ToJsonConverter<V> jsonConverter) {
