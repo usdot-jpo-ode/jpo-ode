@@ -27,7 +27,7 @@ public class J2735ObstacleDetection extends Asn1Object {
 	private J2735NamedNumber locationDetails;
 	private BigDecimal obDirect;
 	private Integer obDist;
-	private J2735VertEvent vertEvent;
+	private J2735BitString vertEvent;
 
 	public J2735DDateTime getDateTime() {
 		return dateTime;
@@ -69,11 +69,11 @@ public class J2735ObstacleDetection extends Asn1Object {
 		this.obDist = obDist;
 	}
 
-	public J2735VertEvent getVertEvent() {
+	public J2735BitString getVertEvent() {
 		return vertEvent;
 	}
 
-	public void setVertEvent(J2735VertEvent vertEvent) {
+	public void setVertEvent(J2735BitString vertEvent) {
 		this.vertEvent = vertEvent;
 	}
 
