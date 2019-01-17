@@ -82,8 +82,7 @@ public class BsmPart2ContentBuilder {
       lowBeamHeadlightsOn, highBeamHeadlightsOn, leftTurnSignalOn, rightTurnSignalOn, hazardSignalOn, automaticLightControlOn, daytimeRunningLightsOn, fogLightOn, parkingLightsOn
    }
 
-   public static void buildGenericPart2(List<JsonNode> elements, List<J2735BsmPart2Content> partII)
-         throws BsmPart2ContentBuilderException {
+   public static void buildGenericPart2(List<JsonNode> elements, List<J2735BsmPart2Content> partII) {
       if (elements != null) {
          Iterator<JsonNode> iter = elements.iterator();
 
