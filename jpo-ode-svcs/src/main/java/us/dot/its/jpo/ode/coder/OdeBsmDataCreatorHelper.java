@@ -23,7 +23,6 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeBsmPayload;
 import us.dot.its.jpo.ode.plugin.j2735.builders.BsmBuilder;
-import us.dot.its.jpo.ode.plugin.j2735.builders.BsmPart2ContentBuilder.BsmPart2ContentBuilderException;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
@@ -34,7 +33,7 @@ public class OdeBsmDataCreatorHelper {
    }
 
 
-   public static OdeBsmData createOdeBsmData(String consumedData) throws XmlUtilsException, BsmPart2ContentBuilderException 
+   public static OdeBsmData createOdeBsmData(String consumedData) throws XmlUtilsException 
           {
       ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 
