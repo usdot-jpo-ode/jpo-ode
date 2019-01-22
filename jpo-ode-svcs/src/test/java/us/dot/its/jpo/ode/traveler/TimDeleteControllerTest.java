@@ -127,8 +127,13 @@ public class TimDeleteControllerTest {
          mockResponseEvent.getResponse().getErrorStatus();
          result = 0;
       }};
-      
+
+      //rsuUsername and rsuPassword are null
       assertEquals(HttpStatus.OK, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
+      //rsuUsername and rsuPassword are not-null
+      assertEquals(HttpStatus.OK, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\", \"rsuUsername\": \"v3user\", \"rsuPassword\": \"password\"}", 42).getStatusCode());
+      //rsuUsername and rsuPassword are blank
+      assertEquals(HttpStatus.OK, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\", \"rsuUsername\": \"\", \"rsuPassword\": \"\"}", 42).getStatusCode());
    }
    
    @Test
@@ -169,4 +174,5 @@ public class TimDeleteControllerTest {
       
       assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
    }
+
 }

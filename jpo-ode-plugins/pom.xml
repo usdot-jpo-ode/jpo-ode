@@ -19,6 +19,7 @@
       src/main/java/us/dot/its/jpo/ode/plugin/*.java,
       src/main/java/us/dot/its/jpo/ode/plugin/ieee1609dot2/*.java,
       src/main/java/us/dot/its/jpo/ode/plugin/j2735/J2735*.java,
+      src/main/java/us/dot/its/jpo/ode/plugin/j2735/OdeTravelerInformationMessage.java,
       src/main/java/us/dot/its/jpo/ode/plugin/j2735/timstorage/*.java
     </sonar.exclusions>
   </properties>

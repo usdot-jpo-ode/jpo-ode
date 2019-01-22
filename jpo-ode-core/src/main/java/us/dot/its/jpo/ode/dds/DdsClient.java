@@ -28,7 +28,6 @@ import javax.net.ssl.SSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.dds.CASClient.CASException;
 import us.dot.its.jpo.ode.wrapper.SSLBuilder;
 import us.dot.its.jpo.ode.wrapper.SSLBuilder.SSLException;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint;
@@ -79,8 +78,7 @@ public class DdsClient<MessageType> {	//NOSONAR
          String websocketURL,
          String keystoreFile,
          String keystorePass
-         ) throws URISyntaxException,
-         SSLException, CASException {
+         ) throws URISyntaxException, SSLException {
       if (uri == null) {
          uri = new URI(websocketURL);
       }

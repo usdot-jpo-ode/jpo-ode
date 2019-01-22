@@ -16,6 +16,7 @@
 package us.dot.its.jpo.ode.util;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -165,5 +166,15 @@ public class JsonUtils {
     */
    public static String jsonKeyValue(String key, String value) {
       return "{\"" + key + "\":\"" + value + "\"}";
+   }
+   
+   public static BigDecimal decimalValue(JsonNode v) {
+     BigDecimal result;
+     if (v.isTextual()) {
+       result = new BigDecimal(v.textValue());
+     } else {
+       result = v.decimalValue();
+     }
+     return result;
    }
 }

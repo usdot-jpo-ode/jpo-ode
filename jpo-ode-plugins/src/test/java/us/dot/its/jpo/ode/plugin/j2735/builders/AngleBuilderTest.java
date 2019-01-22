@@ -24,6 +24,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.junit.Test;
 
@@ -177,7 +178,7 @@ public class AngleBuilderTest {
       
 
       JsonNode expectedValue = JsonUtils.newObjectNode("angle", 
-              BigDecimal.valueOf(25).divide(BigDecimal.valueOf(0.0125)).intValue());
+              BigDecimal.valueOf(25).divide(BigDecimal.valueOf(0.0125), 0, RoundingMode.HALF_UP).intValue());
 
       JsonNode actualValue = AngleBuilder.angle(25);
 

@@ -28,19 +28,17 @@ import org.snmp4j.smi.VariableBinding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
-@Controller
+@RestController
 public class TimQueryController {
    
    private static final Logger logger = LoggerFactory.getLogger(TimQueryController.class);
@@ -61,9 +59,8 @@ public class TimQueryController {
     *           Request body containing RSU info
     * @return list of occupied TIM slots on RSU
     */
-   @ResponseBody
    @CrossOrigin
-   @RequestMapping(value = "/tim/query", method = RequestMethod.POST)
+   @PostMapping(value = "/tim/query")
    public synchronized ResponseEntity<String> bulkQuery(@RequestBody String jsonString) { // NOSONAR
 
       if (null == jsonString || jsonString.isEmpty()) {
@@ -73,13 +70,7 @@ public class TimQueryController {
 
       RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
       
-      if (queryTarget.getRsuUsername() == null || queryTarget.getRsuUsername().isEmpty()) {
-         queryTarget.setRsuUsername(odeProperties.getRsuUsername());
-      }
-      
-      if (queryTarget.getRsuPassword() == null || queryTarget.getRsuPassword().isEmpty()) {
-         queryTarget.setRsuPassword(odeProperties.getRsuPassword());
-      }
+      TimTransmogrifier.updateRsuCreds(queryTarget, odeProperties);
 
       SnmpSession snmpSession = null;
       try {

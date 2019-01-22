@@ -27,22 +27,21 @@ import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import us.dot.its.jpo.ode.util.CodecUtils;
 
-@Controller
+@RestController
 public class RsuHealthController {
 
     private RsuHealthController() {
     }
 
-    @RequestMapping(value = "/rsuHeartbeat", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/rsuHeartbeat", produces = "application/json")
     @ResponseBody
     public static String heartBeat(@RequestHeader("Authorization") String auth, @RequestParam("ip") String ip, @RequestParam("oid") String oid) throws IOException {
 

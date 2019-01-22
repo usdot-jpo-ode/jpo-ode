@@ -22,9 +22,11 @@ import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 
 public class ServiceRequest extends OdeObject {
 
-   public static class OdeInternal {
+   public static class OdeInternal extends OdeObject {
      
-     public enum RequestVerb {
+    private static final long serialVersionUID = 1L;
+
+    public enum RequestVerb {
        POST, PUT, DELETE, GET
      }
 

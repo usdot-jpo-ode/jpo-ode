@@ -63,19 +63,19 @@ public class OdeProperties implements EnvironmentAware {
    private static final int OUTPUT_SCHEMA_VERSION = 6;
    private String pluginsLocations = "plugins";
    private String kafkaBrokers = null;
-   private String DEFAULT_KAFKA_PORT = "9092";
+   private static final String DEFAULT_KAFKA_PORT = "9092";
    private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
    private Boolean verboseJson = false;
    private String externalIpv4 = "";
    private String externalIpv6 = "";
-   
+
    /*
     * RSU Properties
     */
    private int rsuSrmSlots = 100; // number of "store and repeat message" indicies for RSU TIMs
    private String rsuUsername = "";
    private String rsuPassword = "";
-   
+
    /*
     * Security Services Module Properties
     */
@@ -106,50 +106,49 @@ public class OdeProperties implements EnvironmentAware {
    private boolean depositSanitizedBsmToSdc = false;
    private int serviceRespExpirationSeconds = 10;
    private int serviceResponseBufferSize = 500;
-   
+
    /*
     * UDP Properties
     */
    private int trustRetries = 2; // if trust handshake fails, how many times to retry
    private int messagesUntilTrustReestablished = 10; // renew trust session every x messages
-   
+
    /*
     * Kafka Topics
     * 
     */
    @Value("ode.topics.disabled")
-   private String[] kafkaTopicsDisabled = {"topic.OdeBsmRxPojo", "topic.OdeBsmTxPojo", "topic.OdeBsmDuringEventPojo", "topic.OdeTimRxJson"};
-   private Set<String> kafkaTopicsDisabledSet = new HashSet<String>();
-   
-   //BSM
+   private String[] kafkaTopicsDisabled = { "topic.OdeBsmRxPojo", "topic.OdeBsmTxPojo", "topic.OdeBsmDuringEventPojo",
+         "topic.OdeTimRxJson" };
+   private Set<String> kafkaTopicsDisabledSet = new HashSet<>();
+
+   // BSM
    private String kafkaTopicOdeBsmPojo = "topic.OdeBsmPojo";
    private String kafkaTopicOdeBsmJson = "topic.OdeBsmJson";
-   private String kafkaTopicOdeBsmRxPojo= "topic.OdeBsmRxPojo";
-   private String kafkaTopicOdeBsmTxPojo= "topic.OdeBsmTxPojo";
-   private String kafkaTopicOdeBsmDuringEventPojo= "topic.OdeBsmDuringEventPojo";
+   private String kafkaTopicOdeBsmRxPojo = "topic.OdeBsmRxPojo";
+   private String kafkaTopicOdeBsmTxPojo = "topic.OdeBsmTxPojo";
+   private String kafkaTopicOdeBsmDuringEventPojo = "topic.OdeBsmDuringEventPojo";
    private String kafkaTopicFilteredOdeBsmJson = "topic.FilteredOdeBsmJson";
 
-   //TIM
-   private String kafkaTopicOdeTimPojo = "topic.OdeTimPojo";
+   // TIM
    private String kafkaTopicOdeTimJson = "topic.OdeTimJson";
-   private String kafkaTopicOdeDNMsgJson= "topic.OdeDNMsgJson";
-   private String kafkaTopicOdeDNMsgPojo= "topic.OdeDNMsgPojo";
-   private String kafkaTopicOdeTimRxJson= "topic.OdeTimRxJson";
-   private String kafkaTopicOdeTimBroadcastPojo= "topic.OdeTimBroadcastPojo";
-   private String kafkaTopicOdeTimBroadcastJson= "topic.OdeTimBroadcastJson";
-   private String kafkaTopicJ2735TimBroadcastJson= "topic.J2735TimBroadcastJson";
+   private String kafkaTopicOdeDNMsgJson = "topic.OdeDNMsgJson";
+   private String kafkaTopicOdeTimRxJson = "topic.OdeTimRxJson";
+   private String kafkaTopicOdeTimBroadcastPojo = "topic.OdeTimBroadcastPojo";
+   private String kafkaTopicOdeTimBroadcastJson = "topic.OdeTimBroadcastJson";
+   private String kafkaTopicJ2735TimBroadcastJson = "topic.J2735TimBroadcastJson";
    private String kafkaTopicFilteredOdeTimJson = "topic.FilteredOdeTimJson";
 
    // DriverAlerts
    private String kafkaTopicDriverAlertJson = "topic.OdeDriverAlertJson";
 
-   //VSD
+   // VSD
    private String kafkaTopicVsdPojo = "topic.AsnVsdPojo";
 
-   //ISD
+   // ISD
    private String kafkaTopicIsdPojo = "topic.AsnIsdPojo";
 
-   //ASN.1 CODEC
+   // ASN.1 CODEC
    private String kafkaTopicAsn1DecoderInput = "topic.Asn1DecoderInput";
    private String kafkaTopicAsn1DecoderOutput = "topic.Asn1DecoderOutput";
    private String kafkaTopicAsn1EncoderInput = "topic.Asn1EncoderInput";
@@ -179,9 +178,7 @@ public class OdeProperties implements EnvironmentAware {
    private int dataReceiptBufferSize;
    private int dataReceiptExpirationSeconds;
 
-
    private int importProcessorBufferSize = OdePlugin.INPUT_STREAM_BUFFER_SIZE;
-
 
    private String hostId;
    private List<Path> uploadLocations = new ArrayList<>();
@@ -194,29 +191,27 @@ public class OdeProperties implements EnvironmentAware {
    private String selfPrivateKeyReconstructionFilePath;
    private String selfSigningPrivateKeyFilePath;
 
-   
    private static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
-
 
    @PostConstruct
    void initialize() {
 
-     String pomPropsFile = "/META-INF/maven/usdot.jpo.ode/jpo-ode-svcs/pom.properties";
+      String pomPropsFile = "/META-INF/maven/usdot.jpo.ode/jpo-ode-svcs/pom.properties";
       try {
-        InputStream resourceAsStream = this.getClass().getResourceAsStream(pomPropsFile);
-        Properties properties = new Properties();
-        properties.load(resourceAsStream);
-        setVersion(properties.getProperty("version"));
-        logger.info("groupId: {}", properties.getProperty("groupId"));
-        logger.info("artifactId: {}", properties.getProperty("artifactId"));
-        logger.info("version: {}", version);
-        
+         InputStream resourceAsStream = this.getClass().getResourceAsStream(pomPropsFile);
+         Properties properties = new Properties();
+         properties.load(resourceAsStream);
+         setVersion(properties.getProperty("version"));
+         logger.info("groupId: {}", properties.getProperty("groupId"));
+         logger.info("artifactId: {}", properties.getProperty("artifactId"));
+         logger.info("version: {}", version);
+
       } catch (IOException e) {
-        logger.error("Error loading properties file " + pomPropsFile, e);
+         logger.error("Error loading properties file " + pomPropsFile, e);
       }
-      
+
       OdeMsgMetadata.setStaticSchemaVersion(OUTPUT_SCHEMA_VERSION);
-      
+
       uploadLocations.add(Paths.get(uploadLocationRoot));
 
       String hostname;
@@ -236,40 +231,38 @@ public class OdeProperties implements EnvironmentAware {
          logger.info("ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP => {}", kafkaBrokers);
 
          String dockerIp = CommonUtils.getEnvironmentVariable("DOCKER_HOST_IP");
-         
+
          if (dockerIp == null) {
-            logger.warn("Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined. Defaulting to localhost.");
+            logger.warn(
+                  "Neither ode.kafkaBrokers ode property nor DOCKER_HOST_IP environment variable are defined. Defaulting to localhost.");
             dockerIp = "localhost";
          }
          kafkaBrokers = dockerIp + ":" + DEFAULT_KAFKA_PORT;
-         
+
          // URI for the security services /sign endpoint
          if (securitySvcsSignatureUri == null) {
-            securitySvcsSignatureUri = "http://" + dockerIp + ":" + securitySvcsPort + "/" + securitySvcsSignatureEndpoint;
+            securitySvcsSignatureUri = "http://" + dockerIp + ":" + securitySvcsPort + "/"
+                  + securitySvcsSignatureEndpoint;
          }
       }
-      
+
       List<String> asList = Arrays.asList(this.getKafkaTopicsDisabled());
       logger.info("Disabled Topics: {}", asList);
       kafkaTopicsDisabledSet.addAll(asList);
    }
-   
-   
 
    public String getVersion() {
-     return version;
+      return version;
    }
 
    public void setVersion(String version) {
-     this.version = version;
+      this.version = version;
    }
 
-  public boolean dataSigningEnabled() {
-      return getSecuritySvcsSignatureUri() != null &&
-            !StringUtils.isEmptyOrWhitespace(getSecuritySvcsSignatureUri()) &&
-            !getSecuritySvcsSignatureUri().startsWith("UNSECURE");
+   public boolean dataSigningEnabled() {
+      return getSecuritySvcsSignatureUri() != null && !StringUtils.isEmptyOrWhitespace(getSecuritySvcsSignatureUri())
+            && !getSecuritySvcsSignatureUri().startsWith("UNSECURE");
    }
-
 
    public List<Path> getUploadLocations() {
       return this.uploadLocations;
@@ -335,7 +328,7 @@ public class OdeProperties implements EnvironmentAware {
    public void setSdcIp(String sdcIp) {
       this.sdcIp = sdcIp;
    }
-   
+
    public String getSdcIp() {
       return sdcIp;
    }
@@ -471,7 +464,7 @@ public class OdeProperties implements EnvironmentAware {
    public int getDataReceiptBufferSize() {
       return dataReceiptBufferSize;
    }
-   
+
    public void setDataReceiptBufferSize(int dataReceiptBufferSize) {
       this.dataReceiptBufferSize = dataReceiptBufferSize;
    }
@@ -516,9 +509,9 @@ public class OdeProperties implements EnvironmentAware {
       this.isdBufferSize = isdBufferSize;
    }
 
-    public int getVsdBufferSize() {
-        return vsdBufferSize;
-    }
+   public int getVsdBufferSize() {
+      return vsdBufferSize;
+   }
 
    public void setVsdBufferSize(int vsdBufferSize) {
       this.vsdBufferSize = vsdBufferSize;
@@ -589,115 +582,104 @@ public class OdeProperties implements EnvironmentAware {
    }
 
    public int getImportProcessorBufferSize() {
-        return importProcessorBufferSize;
-    }
+      return importProcessorBufferSize;
+   }
 
-    public void setImportProcessorBufferSize(int importProcessorBufferSize) {
-        this.importProcessorBufferSize = importProcessorBufferSize;
-    }
+   public void setImportProcessorBufferSize(int importProcessorBufferSize) {
+      this.importProcessorBufferSize = importProcessorBufferSize;
+   }
 
-    
-    public String[] getKafkaTopicsDisabled() {
+   public String[] getKafkaTopicsDisabled() {
       return kafkaTopicsDisabled;
    }
 
    public void setKafkaTopicsDisabled(String[] kafkaTopicsDisabled) {
       this.kafkaTopicsDisabled = kafkaTopicsDisabled;
    }
-   
+
    public Set<String> getKafkaTopicsDisabledSet() {
       return kafkaTopicsDisabledSet;
    }
 
-   public void setKafkaTopicsOutputEnabledSet(Set<String> kafkaTopicsOutputEnabledSet) {
-      this.kafkaTopicsDisabledSet = kafkaTopicsOutputEnabledSet;
+   public void setKafkaTopicsDisabledSet(Set<String> kafkaTopicsDisabledSet) {
+      this.kafkaTopicsDisabledSet = kafkaTopicsDisabledSet;
    }
 
    public String getKafkaTopicIsdPojo() {
-       return kafkaTopicIsdPojo;
+      return kafkaTopicIsdPojo;
    }
 
-    public void setKafkaTopicIsdPojo(String kafkaTopicIsdPojo) {
-       this.kafkaTopicIsdPojo = kafkaTopicIsdPojo;
-    }
-
-    public String getKafkaTopicVsdPojo() {
-       return kafkaTopicVsdPojo;
-    }
-
-    public void setKafkaTopicVsdPojo(String kafkaTopicVsdPojo) {
-       this.kafkaTopicVsdPojo = kafkaTopicVsdPojo;
-    }
-
-     public String getKafkaTopicFilteredOdeBsmJson() {
-        return kafkaTopicFilteredOdeBsmJson;
-     }
-
-     public void setKafkaTopicFilteredOdeBsmJson(String kafkaTopicFilteredOdeBsmJson) {
-        this.kafkaTopicFilteredOdeBsmJson = kafkaTopicFilteredOdeBsmJson;
-     }
-
-     public String getKafkaTopicOdeBsmPojo() {
-        return kafkaTopicOdeBsmPojo;
-     }
-
-     public void setKafkaTopicOdeBsmPojo(String kafkaTopicOdeBsmPojo) {
-        this.kafkaTopicOdeBsmPojo = kafkaTopicOdeBsmPojo;
-     }
-
-     public String getKafkaTopicOdeBsmJson() {
-        return kafkaTopicOdeBsmJson;
-     }
-
-     public void setKafkaTopicOdeBsmJson(String kafkaTopicOdeBsmJson) {
-        this.kafkaTopicOdeBsmJson = kafkaTopicOdeBsmJson;
-     }
-
-    public String getKafkaTopicAsn1DecoderInput() {
-       return kafkaTopicAsn1DecoderInput;
-    }
-
-    public void setKafkaTopicAsn1DecoderInput(String kafkaTopicAsn1DecoderInput) {
-       this.kafkaTopicAsn1DecoderInput = kafkaTopicAsn1DecoderInput;
-    }
-
-    public String getKafkaTopicAsn1DecoderOutput() {
-       return kafkaTopicAsn1DecoderOutput;
-    }
-
-    public void setKafkaTopicAsn1DecoderOutput(String kafkaTopicAsn1DecoderOutput) {
-       this.kafkaTopicAsn1DecoderOutput = kafkaTopicAsn1DecoderOutput;
-    }
-
-    public String getKafkaTopicAsn1EncoderInput() {
-       return kafkaTopicAsn1EncoderInput;
-    }
-
-    public void setKafkaTopicAsn1EncoderInput(String kafkaTopicAsn1EncoderInput) {
-       this.kafkaTopicAsn1EncoderInput = kafkaTopicAsn1EncoderInput;
-    }
-
-    public String getKafkaTopicAsn1EncoderOutput() {
-       return kafkaTopicAsn1EncoderOutput;
-    }
-
-    public void setKafkaTopicAsn1EncoderOutput(String kafkaTopicAsn1EncoderOutput) {
-       this.kafkaTopicAsn1EncoderOutput = kafkaTopicAsn1EncoderOutput;
-    }
-
-   public String getKafkaTopicOdeTimPojo() {
-      return kafkaTopicOdeTimPojo;
+   public void setKafkaTopicIsdPojo(String kafkaTopicIsdPojo) {
+      this.kafkaTopicIsdPojo = kafkaTopicIsdPojo;
    }
 
-   public void setKafkaTopicOdeTimPojo(String kafkaTopicOdeTimPojo) {
-      this.kafkaTopicOdeTimPojo = kafkaTopicOdeTimPojo;
+   public String getKafkaTopicVsdPojo() {
+      return kafkaTopicVsdPojo;
    }
-   public String getKafkaTopicOdeDNMsgPojo() {return kafkaTopicOdeDNMsgPojo; }
 
-   public void setKafkaTopicOdeDNMsgPojo(String kafkaTopicOdeDNMsgPojo) {
-      this.kafkaTopicOdeDNMsgPojo = kafkaTopicOdeDNMsgPojo;
+   public void setKafkaTopicVsdPojo(String kafkaTopicVsdPojo) {
+      this.kafkaTopicVsdPojo = kafkaTopicVsdPojo;
    }
-   public String getKafkaTopicOdeDNMsgJson() {return kafkaTopicOdeDNMsgJson; }
+
+   public String getKafkaTopicFilteredOdeBsmJson() {
+      return kafkaTopicFilteredOdeBsmJson;
+   }
+
+   public void setKafkaTopicFilteredOdeBsmJson(String kafkaTopicFilteredOdeBsmJson) {
+      this.kafkaTopicFilteredOdeBsmJson = kafkaTopicFilteredOdeBsmJson;
+   }
+
+   public String getKafkaTopicOdeBsmPojo() {
+      return kafkaTopicOdeBsmPojo;
+   }
+
+   public void setKafkaTopicOdeBsmPojo(String kafkaTopicOdeBsmPojo) {
+      this.kafkaTopicOdeBsmPojo = kafkaTopicOdeBsmPojo;
+   }
+
+   public String getKafkaTopicOdeBsmJson() {
+      return kafkaTopicOdeBsmJson;
+   }
+
+   public void setKafkaTopicOdeBsmJson(String kafkaTopicOdeBsmJson) {
+      this.kafkaTopicOdeBsmJson = kafkaTopicOdeBsmJson;
+   }
+
+   public String getKafkaTopicAsn1DecoderInput() {
+      return kafkaTopicAsn1DecoderInput;
+   }
+
+   public void setKafkaTopicAsn1DecoderInput(String kafkaTopicAsn1DecoderInput) {
+      this.kafkaTopicAsn1DecoderInput = kafkaTopicAsn1DecoderInput;
+   }
+
+   public String getKafkaTopicAsn1DecoderOutput() {
+      return kafkaTopicAsn1DecoderOutput;
+   }
+
+   public void setKafkaTopicAsn1DecoderOutput(String kafkaTopicAsn1DecoderOutput) {
+      this.kafkaTopicAsn1DecoderOutput = kafkaTopicAsn1DecoderOutput;
+   }
+
+   public String getKafkaTopicAsn1EncoderInput() {
+      return kafkaTopicAsn1EncoderInput;
+   }
+
+   public void setKafkaTopicAsn1EncoderInput(String kafkaTopicAsn1EncoderInput) {
+      this.kafkaTopicAsn1EncoderInput = kafkaTopicAsn1EncoderInput;
+   }
+
+   public String getKafkaTopicAsn1EncoderOutput() {
+      return kafkaTopicAsn1EncoderOutput;
+   }
+
+   public void setKafkaTopicAsn1EncoderOutput(String kafkaTopicAsn1EncoderOutput) {
+      this.kafkaTopicAsn1EncoderOutput = kafkaTopicAsn1EncoderOutput;
+   }
+
+   public String getKafkaTopicOdeDNMsgJson() {
+      return kafkaTopicOdeDNMsgJson;
+   }
 
    public void setKafkaTopicOdeDNMsgJson(String kafkaTopicOdeDNMsgJson) {
       this.kafkaTopicOdeDNMsgJson = kafkaTopicOdeDNMsgJson;
@@ -809,7 +791,7 @@ public class OdeProperties implements EnvironmentAware {
 
    public String getRsuUsername() {
       return rsuUsername;
-}
+   }
 
    public void setRsuUsername(String rsuUsername) {
       this.rsuUsername = rsuUsername;
@@ -823,4 +805,4 @@ public class OdeProperties implements EnvironmentAware {
       this.rsuPassword = rsuPassword;
    }
 
-   }
+}

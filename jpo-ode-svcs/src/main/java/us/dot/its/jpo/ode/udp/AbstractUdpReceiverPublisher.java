@@ -36,8 +36,6 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
    }
 
    private static Logger logger = LoggerFactory.getLogger(AbstractUdpReceiverPublisher.class);
-   //TODO open-ode
-//   private static Coder coder = J2735.getPERUnalignedCoder();
 
    protected DatagramSocket socket;
 
@@ -81,14 +79,4 @@ public abstract class AbstractUdpReceiverPublisher implements Runnable {
       }
    }
 
-   //TODO open-ode
-//   protected AbstractData decodeData(byte[] msg) throws UdpReceiverException {
-//      AbstractData decoded = null;
-//      try {
-//         decoded = J2735Util.decode(coder, msg);
-//      } catch (DecodeFailedException | DecodeNotSupportedException e) {
-//         throw new UdpReceiverException("Unable to decode UDP message", e);
-//      }
-//      return decoded;
-//   }
 }

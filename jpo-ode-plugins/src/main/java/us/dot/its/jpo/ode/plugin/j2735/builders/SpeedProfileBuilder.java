@@ -23,6 +23,8 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735SpeedProfile;
 
 public class SpeedProfileBuilder {
 
+    static final String SPEED_REPORTS = "speedReports";
+
     private SpeedProfileBuilder() {
        throw new UnsupportedOperationException();
     }
@@ -30,7 +32,7 @@ public class SpeedProfileBuilder {
     public static J2735SpeedProfile genericSpeedProfile(JsonNode speedProfile) {
         J2735SpeedProfile sp = new J2735SpeedProfile();
 
-        Iterator<JsonNode> iter = speedProfile.get("speedReports").elements();
+        Iterator<JsonNode> iter = speedProfile.get(SPEED_REPORTS).elements();
 
         while (iter.hasNext()) {
             sp.getSpeedReports().add(iter.next().asInt());

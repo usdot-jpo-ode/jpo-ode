@@ -17,21 +17,26 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import us.dot.its.jpo.ode.plugin.j2735.J2735GNSSstatusNames;
 import us.dot.its.jpo.ode.plugin.j2735.J2735RTCMheader;
 
 public class RTCMheaderBuilder {
 
-    private RTCMheaderBuilder() {
-       throw new UnsupportedOperationException();
-    }
+   static final String STATUS = "status";
+   static final String OFFSET_SET = "offsetSet";
 
-    public static J2735RTCMheader genericRTCMheader(JsonNode rtcmHeader) {
-        J2735RTCMheader header = new J2735RTCMheader();
+   private RTCMheaderBuilder() {
+      throw new UnsupportedOperationException();
+   }
 
-        header.setOffsetSet(AntennaOffsetSetBuilder.genericAntennaOffsetSet(rtcmHeader.get("offsetSet")));
-        header.setStatus(GNSSstatusBuilder.genericGNSSstatus(rtcmHeader.get("status")));
+   public static J2735RTCMheader genericRTCMheader(JsonNode rtcmHeader) {
+      J2735RTCMheader header = new J2735RTCMheader();
 
-        return header;
-    }
+      header.setOffsetSet(AntennaOffsetSetBuilder.genericAntennaOffsetSet(rtcmHeader.get(OFFSET_SET)));
+      header.setStatus(
+            BitStringBuilder.genericBitString(rtcmHeader.get(STATUS), J2735GNSSstatusNames.values()));
+
+      return header;
+   }
 
 }

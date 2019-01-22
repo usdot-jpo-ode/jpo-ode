@@ -29,7 +29,7 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import us.dot.its.jpo.ode.plugin.j2735.J2735VertEvent;
+import us.dot.its.jpo.ode.plugin.j2735.J2735BitString;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
@@ -113,8 +113,6 @@ public class ObstacleDetectionBuilderTest {
         int obDirect = 0;
         String dateTime = "<year>0</year><month>0</month><day>0</day><hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>";
         int description = 523;
-        String locationDetails = "7937";
-        String vertEvent = "0b00000";
         
         JsonNode testObstacleDetection = null;
         try {
@@ -152,7 +150,6 @@ public class ObstacleDetectionBuilderTest {
         int obDirect = 0;
         String dateTime = "<year>0</year><month>0</month><day>0</day><hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>";
         int description = 523;
-        String locationDetails = "7937";
         String vertEvent = "00000";
         
         JsonNode testObstacleDetection = null;
@@ -189,7 +186,6 @@ public class ObstacleDetectionBuilderTest {
         int obDirect = 0;
         String dateTime = "<year>0</year><month>0</month><day>0</day><hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>";
         int description = 523;
-        String locationDetails = "7937";
         String vertEvent = "00000";
         
         JsonNode testObstacleDetection = null;
@@ -228,7 +224,6 @@ public class ObstacleDetectionBuilderTest {
         int obDirect = 0;
         String dateTime = "<year>0</year><month>0</month><day>0</day><hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>";
         int description = 523;
-        String locationDetails = "7937";
         String vertEvent = "00000";
         
         JsonNode testObstacleDetection = null;
@@ -267,7 +262,6 @@ public class ObstacleDetectionBuilderTest {
         int obDirect = 0;
         String dateTime = "<year>0</year><month>0</month><day>0</day><hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>";
         int description = 523;
-        String locationDetails = "7937";
         String vertEvent = "00000";
         
         JsonNode testObstacleDetection = null;
@@ -305,7 +299,6 @@ public class ObstacleDetectionBuilderTest {
         int obDirect = 0;
         String dateTime = "<year>0</year><month>0</month><day>0</day><hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>";
         int description = 523;
-        String locationDetails = "7937";
         String vertEvent = "0b00000";
         
         JsonNode testObstacleDetection = null;
@@ -344,7 +337,6 @@ public class ObstacleDetectionBuilderTest {
         int obDirect = 0;
         String dateTime = "<year>0</year><month>0</month><day>0</day><hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>";
         int description = 523;
-        String locationDetails = "7937";
         String vertEvent = "0b00000";
         
         JsonNode testObstacleDetection = null;
@@ -386,7 +378,6 @@ public class ObstacleDetectionBuilderTest {
            int obDirect = 0;
            String dateTime = "<year>0</year><month>0</month><day>0</day><hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>";
            int description = 523;
-           String locationDetails = "7937";
            String vertEvent = "00000";
            
            JsonNode testObstacleDetection = null;
@@ -405,7 +396,7 @@ public class ObstacleDetectionBuilderTest {
            }
            
         
-        J2735VertEvent actualVertEvent = ObstacleDetectionBuilder
+           J2735BitString actualVertEvent = ObstacleDetectionBuilder
                 .genericObstacleDetection(testObstacleDetection)
                 .getVertEvent();
         
@@ -421,16 +412,10 @@ public class ObstacleDetectionBuilderTest {
     @Test
     public void shouldCreateAllOnVertEvent() {
         
-        Integer testInput = 0b11111;
-        
-        byte[] testVertEventBytes = {testInput.byteValue()};
-        
-
         int obDist = 0;
         int obDirect = 0;
         String dateTime = "<year>0</year><month>0</month><day>0</day><hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>";
         int description = 523;
-        String locationDetails = "7937";
         String vertEvent = "11111";
         
         JsonNode testObstacleDetection = null;
@@ -449,7 +434,7 @@ public class ObstacleDetectionBuilderTest {
         }
         
         
-        J2735VertEvent actualVertEvent = ObstacleDetectionBuilder
+        J2735BitString actualVertEvent = ObstacleDetectionBuilder
                 .genericObstacleDetection(testObstacleDetection)
                 .getVertEvent();
         
@@ -473,7 +458,6 @@ public class ObstacleDetectionBuilderTest {
         int obDirect = 0;
         String dateTime = "<year>0</year><month>0</month><day>0</day><hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>";
         int description = 523;
-        String locationDetails = "7937";
         String vertEvent = "00001";
         
         JsonNode testObstacleDetection = null;
@@ -492,7 +476,7 @@ public class ObstacleDetectionBuilderTest {
         }
         
         
-        J2735VertEvent actualVertEvent = ObstacleDetectionBuilder
+        J2735BitString actualVertEvent = ObstacleDetectionBuilder
                 .genericObstacleDetection(testObstacleDetection)
                 .getVertEvent();
         
@@ -511,15 +495,12 @@ public class ObstacleDetectionBuilderTest {
     @Test
     public void shouldCreateLeftFrontVertEvent() {
         
-       String testInput = "0b00010";
         String elementTested = "leftFront";
 
-        
         int obDist = 0;
         int obDirect = 0;
         String dateTime = "<year>0</year><month>0</month><day>0</day><hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>";
         int description = 523;
-        String locationDetails = "7937";
         String vertEvent = "00010";
 
         
@@ -538,7 +519,7 @@ public class ObstacleDetectionBuilderTest {
            fail("XML parsing error:" + e);
         }
         
-        J2735VertEvent actualVertEvent = ObstacleDetectionBuilder
+        J2735BitString actualVertEvent = ObstacleDetectionBuilder
                 .genericObstacleDetection(testObstacleDetection)
                 .getVertEvent();
         
@@ -567,7 +548,6 @@ public class ObstacleDetectionBuilderTest {
         int obDirect = 0;
         String dateTime = "<year>0</year><month>0</month><day>0</day><hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>";
         int description = 523;
-        String locationDetails = "7937";
         String vertEvent = "01000";
 
         
@@ -587,7 +567,7 @@ public class ObstacleDetectionBuilderTest {
         }
         
         
-        J2735VertEvent actualVertEvent = ObstacleDetectionBuilder
+        J2735BitString actualVertEvent = ObstacleDetectionBuilder
                 .genericObstacleDetection(testObstacleDetection)
                 .getVertEvent();
         
@@ -613,7 +593,6 @@ public class ObstacleDetectionBuilderTest {
         int obDist = 0;
         int obDirect = 0;
         String dateTime = "<year>0</year><month>0</month><day>0</day><hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>";
-        int description = 523;
         String locationDetails = "<name>on-bridges</name><value>7937</value>";
         String vertEvent = "10000";
 
@@ -633,7 +612,7 @@ public class ObstacleDetectionBuilderTest {
            fail("XML parsing error:" + e);
         }
         
-        J2735VertEvent actualVertEvent = ObstacleDetectionBuilder
+        J2735BitString actualVertEvent = ObstacleDetectionBuilder
                 .genericObstacleDetection(testObstacleDetection)
                 .getVertEvent();
         
@@ -661,7 +640,6 @@ public class ObstacleDetectionBuilderTest {
         int obDirect = 0;
         String dateTime = "<year>0</year><month>0</month><day>0</day><hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>";
         int description = 523;
-        String locationDetails = "7937";
         String vertEvent = "01010";
 
         
@@ -680,7 +658,7 @@ public class ObstacleDetectionBuilderTest {
            fail("XML parsing error:" + e);
         }
         
-        J2735VertEvent actualVertEvent = ObstacleDetectionBuilder
+        J2735BitString actualVertEvent = ObstacleDetectionBuilder
                 .genericObstacleDetection(testObstacleDetection)
                 .getVertEvent();
         

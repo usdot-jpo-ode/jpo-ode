@@ -62,4 +62,19 @@ public class CommonUtils {
        
        return classpath;
    }
+   
+   public static String enumToString(Class<?> clazz, String enumNameOrOrdinal) {
+     
+     String enumName = null;
+     try {
+       Object[] enumConstants = clazz.getEnumConstants();
+       if (enumConstants != null) {
+         int enumOrdinal = Integer.parseInt(enumNameOrOrdinal);
+         enumName = enumConstants[enumOrdinal].toString();
+       }
+     } catch (NumberFormatException e) {
+       enumName = enumNameOrOrdinal;
+     }
+     return enumName;
+   }
 }

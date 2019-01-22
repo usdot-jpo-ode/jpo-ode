@@ -73,15 +73,13 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
    public void publish(BufferedInputStream bis, String fileName, ImporterFileType fileType) 
          throws LogFileToAsn1CodecPublisherException {
       XmlUtils xmlUtils = new XmlUtils();
-      ParserStatus status = ParserStatus.UNKNOWN;
+      ParserStatus status;
 
       if (fileType == ImporterFileType.OBU_LOG_FILE) {
          fileParser = LogFileParser.factory(fileName);
-      } else {
-         status = ParserStatus.NA;
       }
 
-      List<OdeMsgPayload> payloadList = new ArrayList<OdeMsgPayload>();
+      List<OdeMsgPayload> payloadList = new ArrayList<>();
       do {
          try {
             status = fileParser.parseFile(bis, fileName);

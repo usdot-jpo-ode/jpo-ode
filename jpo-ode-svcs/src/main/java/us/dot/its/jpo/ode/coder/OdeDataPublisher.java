@@ -37,15 +37,6 @@ public class OdeDataPublisher extends MessagePublisher {
    }
 
    public void publish(OdeData msg, String topic) {
-//      if (msg.getMetadata() != null && msg.getMetadata().getReceivedAt() != null)
-//         try {
-//            long latency = DateTimeUtils.difference(DateTimeUtils.isoDateTime(msg.getMetadata().getReceivedAt()),
-//                  ZonedDateTime.now());
-//            odeBsm.getMetadata().setLatency(latency);
-//         } catch (ParseException e) {
-//            logger.error("Error converting ISO timestamp", e);
-//         }
-      
       logger.debug("Publishing to {}: {}", topic, msg);
       objectProducer.send(topic, null, msg);
    }

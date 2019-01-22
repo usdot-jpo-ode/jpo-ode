@@ -34,6 +34,7 @@ public class LocationParser extends LogFileParser {
       super();
    }
 
+   @Override
    public ParserStatus parseFile(BufferedInputStream bis, String fileName) throws FileParserException {
 
       ParserStatus status = ParserStatus.INIT;

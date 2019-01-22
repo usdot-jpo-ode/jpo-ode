@@ -204,17 +204,14 @@ public class InetPacketSenderTest {
                      String.format("Caught socket timeout exception while recieving message on port %d. Max size is %d",
                            listenPort, DEFAULT_MAX_PACKET_SIZE),
                      ex);
-               assertTrue(false);
             } catch (SocketException ex) {
                log.error(String.format("Caught socket exception while recieving message on port %d. Max size is %d",
                      listenPort, DEFAULT_MAX_PACKET_SIZE), ex);
-               assertTrue(false);
             } catch (IOException ex) {
                log.error(
                      String.format("Caught IO exception exception while recieving message on port %d. Max size is %d",
                            listenPort, DEFAULT_MAX_PACKET_SIZE),
                      ex);
-               assertTrue(false);
             } finally {
                if (socket != null && !socket.isClosed()) {
                   socket.close();
@@ -284,18 +281,18 @@ public class InetPacketSenderTest {
             assertNotNull(p);
             if (isDebugOutput)
                print("ForwardPacketInbound", p);
-            assertEquals(listenPort, TRANSPORT_PORT);
+            assertEquals(TRANSPORT_PORT, listenPort);
             InetPoint point = p.getPoint();
             assertNotNull(point);
             byte[] srcAddress = point.address;
             assertNotNull(srcAddress);
             if (point.isIPv6Address())
-               assertArrayEquals(point.address, getAddressBytes(CLIENT_HOST_IPV6));
+               assertArrayEquals(getAddressBytes(CLIENT_HOST_IPV6), point.address);
             else
-               assertArrayEquals(point.address, getAddressBytes(CLIENT_HOST_IPV4));
-            assertEquals(point.port, CLIENT_PORT);
-            assertEquals(point.forward, true);
-            assertArrayEquals(p.getPayload(), PAYLOAD);
+               assertArrayEquals(getAddressBytes(CLIENT_HOST_IPV4), point.address);
+            assertEquals(CLIENT_PORT, point.port);
+            assertTrue(point.forward);
+            assertArrayEquals(PAYLOAD, p.getPayload());
          }
 
          private void validateSendPacketOutbound(byte[] payload) throws UnknownHostException {
@@ -303,7 +300,7 @@ public class InetPacketSenderTest {
             assertNotNull(p);
             if (isDebugOutput)
                print("SendPacketOutbound Payload", p);
-            assertEquals(listenPort, CLIENT_PORT);
+            assertEquals(CLIENT_PORT, listenPort);
             InetPoint point = p.getPoint();
             assertNull(point);
             assertArrayEquals(p.getPayload(), PAYLOAD);
@@ -314,7 +311,7 @@ public class InetPacketSenderTest {
             assertNotNull(p);
             if (isDebugOutput)
                print("SendPacketOutbound Packet", p);
-            assertEquals(listenPort, CLIENT_PORT);
+            assertEquals(CLIENT_PORT, listenPort);
             InetPoint point = p.getPoint();
             assertNotNull(point);
             byte[] srcAddress = point.address;
@@ -339,15 +336,15 @@ public class InetPacketSenderTest {
             assertNotNull(p);
             if (isDebugOutput)
                print("IPv6ForwardOutbound " + tail, p);
-            assertEquals(listenPort, FORWARDER_PORT);
+            assertEquals(FORWARDER_PORT, listenPort);
             InetPoint point = p.getPoint();
             assertNotNull(point);
             byte[] srcAddress = point.address;
             assertNotNull(srcAddress);
             assertTrue(point.isIPv6Address());
             assertArrayEquals(point.address, getAddressBytes(CLIENT_HOST_IPV6));
-            assertEquals(point.port, CLIENT_PORT);
-            assertEquals(point.forward, true);
+            assertEquals(CLIENT_PORT, point.port);
+            assertTrue(point.forward);
             assertArrayEquals(p.getPayload(), PAYLOAD);
          }
 
@@ -363,15 +360,15 @@ public class InetPacketSenderTest {
             assertNotNull(p);
             if (isDebugOutput)
                print("IPv4ForwardOutboundForward " + tail, p);
-            assertEquals(listenPort, FORWARDER_PORT);
+            assertEquals(FORWARDER_PORT, listenPort);
             InetPoint point = p.getPoint();
             assertNotNull(point);
             byte[] srcAddress = point.address;
             assertNotNull(srcAddress);
             assertFalse(point.isIPv6Address());
             assertArrayEquals(point.address, getAddressBytes(CLIENT_HOST_IPV4));
-            assertEquals(point.port, CLIENT_PORT);
-            assertEquals(point.forward, true);
+            assertEquals(CLIENT_PORT, point.port);
+            assertTrue(point.forward);
             assertArrayEquals(p.getPayload(), PAYLOAD);
          }
 
@@ -380,7 +377,7 @@ public class InetPacketSenderTest {
             assertNotNull(p);
             if (isDebugOutput)
                print("IPv4ForwardOutboundSend Payload", p);
-            assertEquals(listenPort, CLIENT_PORT);
+            assertEquals(CLIENT_PORT, listenPort);
             InetPoint point = p.getPoint();
             assertNull(point);
             assertArrayEquals(p.getPayload(), PAYLOAD);
@@ -391,7 +388,7 @@ public class InetPacketSenderTest {
             assertNotNull(p);
             if (isDebugOutput)
                print("IPv4ForwardOutboundSend Packet", p);
-            assertEquals(listenPort, CLIENT_PORT);
+            assertEquals(CLIENT_PORT, listenPort);
             InetPoint point = p.getPoint();
             assertNotNull(point);
             byte[] srcAddress = point.address;
@@ -424,7 +421,7 @@ public class InetPacketSenderTest {
             assertNotNull(p);
             if (isDebugOutput)
                print("IPvXSendOutbound Payload", p);
-            assertEquals(listenPort, CLIENT_PORT);
+            assertEquals(CLIENT_PORT, listenPort);
             InetPoint point = p.getPoint();
             assertNull(point);
             assertArrayEquals(p.getPayload(), PAYLOAD);
@@ -434,7 +431,7 @@ public class InetPacketSenderTest {
             assertNotNull(p);
             if (isDebugOutput)
                print("IPvXSendOutbound Packet", p);
-            assertEquals(listenPort, CLIENT_PORT);
+            assertEquals(CLIENT_PORT, listenPort);
             InetPoint point = p.getPoint();
             assertNotNull(point);
             byte[] srcAddress = point.address;

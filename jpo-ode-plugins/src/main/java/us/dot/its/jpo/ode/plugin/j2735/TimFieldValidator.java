@@ -141,23 +141,9 @@ public class TimFieldValidator {
             throw new IllegalArgumentException("Invalid ITIS code [0..65535]: " + cd);
       } catch (NumberFormatException e) {
          if (code.isEmpty())
-            throw new IllegalArgumentException("Invalid empty string");
+            throw new IllegalArgumentException("Empty ITIS Code or Text");
          if (code.length() > 500)
-            throw new IllegalArgumentException("Invalid test phrase length [1..500]: " + code.length());
-      }
-   }
-
-   public static void validateContentCodes(String code) {
-      int cd;
-      try {
-         cd = Integer.parseInt(code);
-         if (cd < 0 || cd > 65535)
-            throw new IllegalArgumentException("Invalid ITIS code [0..65535]: " + cd);
-      } catch (NumberFormatException e) {
-         if (code.isEmpty())
-            throw new IllegalArgumentException("Invalid empty string");
-         if (code.length() > 16)
-            throw new IllegalArgumentException("Invalid test Phrase length [1..16]: " + code.length());
+            throw new IllegalArgumentException("Invalid text phrase length [1..500]: " + code.length());
       }
    }
 
@@ -309,9 +295,7 @@ public class TimFieldValidator {
    public static void validateNodeAttribute(String str) {
       String myString = "reserved stopLine roundedCapStyleA roundedCapStyleB mergePoint divergePoint downstreamStopLine donwstreamStartNode closedToTraffic safeIsland curbPresentAtStepOff hydrantPresent";
       CharSequence cs = str;
-      if (myString.contains(cs)) {
-         return;
-      } else {
+      if (!myString.contains(cs)) {
          throw new IllegalArgumentException("Invalid NodeAttribute Enumeration");
       }
    }
@@ -319,9 +303,7 @@ public class TimFieldValidator {
    public static void validateSegmentAttribute(String str) {
       String myString = "reserved doNotBlock whiteLine mergingLaneLeft mergingLaneRight curbOnLeft curbOnRight loadingzoneOnLeft loadingzoneOnRight turnOutPointOnLeft turnOutPointOnRight adjacentParkingOnLeft adjacentParkingOnRight sharedBikeLane bikeBoxInFront transitStopOnLeft transitStopOnRight transitStopInLane sharedWithTrackedVehicle safeIsland lowCurbsPresent rumbleStripPresent audibleSignalingPresent adaptiveTimingPresent rfSignalRequestPresent partialCurbIntrusion taperToLeft taperToRight taperToCenterLine parallelParking headInParking freeParking timeRestrictionsOnParking costToPark midBlockCurbPresent unEvenPavementPresent";
       CharSequence cs = str;
-      if (myString.contains(cs)) {
-         return;
-      } else {
+      if (!myString.contains(cs)) {
          throw new IllegalArgumentException("Invalid SegmentAttribute Enumeration");
       }
    }
@@ -329,9 +311,7 @@ public class TimFieldValidator {
    public static void validateSpeedLimitType(String str) {
       String myString = "unknown maxSpeedInSchoolZone maxSpeedInSchoolZoneWhenChildrenArePresent maxSpeedInConstructionZone vehicleMinSpeed vehicleMaxSpeed vehicleNightMaxSpeed truckMinSpeed truckMaxSpeed truckNightMaxSpeed vehiclesWithTrailerMinSpeed vehiclesWithTrailersMaxSpeed vehiclesWithTrailersNightMaxSpeed";
       CharSequence cs = str;
-      if (myString.contains(cs)) {
-         return;
-      } else {
+      if (!myString.contains(cs)) {
          throw new IllegalArgumentException("Invalid SpeedLimitAttribute Enumeration");
       }
    }

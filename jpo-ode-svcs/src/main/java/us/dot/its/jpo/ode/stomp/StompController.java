@@ -21,8 +21,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
@@ -39,7 +38,7 @@ public class StompController {
         return new StompContent(message.getName());
     }
 
-    @RequestMapping(value="/newMessage", method=RequestMethod.POST)
+    @PostMapping(value="/newMessage")
     @ResponseBody
     public String messages() {
         template.convertAndSend("/topic/messages", new StompContent("test"));

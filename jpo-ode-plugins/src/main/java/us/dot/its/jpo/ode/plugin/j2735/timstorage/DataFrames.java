@@ -33,7 +33,7 @@ public class DataFrames extends OdeObject {
   }
 
   public void setTravelerDataFrame(TravelerDataFrame[] travelerDataFrame) {
-    TravelerDataFrame = travelerDataFrame;
+    this.TravelerDataFrame = travelerDataFrame;
   }
 
   @Override

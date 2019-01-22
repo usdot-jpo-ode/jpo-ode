@@ -26,7 +26,12 @@ public class VehicleSizeBuilder {
    private static final Integer LENGTH_LOWER_BOUND = 0;
    private static final Integer LENGTH_UPPER_BOUND = 4095;
 
-   public static J2735VehicleSize genericVehicleSize(JsonNode vehicleSize) {
+   
+  private VehicleSizeBuilder() {
+    super();
+  }
+
+  public static J2735VehicleSize genericVehicleSize(JsonNode vehicleSize) {
        int size = vehicleSize.get("width").asInt();
        
         if (size < WIDTH_LOWER_BOUND || size > WIDTH_UPPER_BOUND) {

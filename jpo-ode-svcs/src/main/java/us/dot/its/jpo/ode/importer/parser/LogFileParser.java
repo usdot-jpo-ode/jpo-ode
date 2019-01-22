@@ -28,7 +28,7 @@ public abstract class LogFileParser implements FileParser {
 
    public static final int BUFFER_SIZE = 4096;
 
-   protected transient byte[] readBuffer = new byte[BUFFER_SIZE];
+   protected byte[] readBuffer = new byte[BUFFER_SIZE];
    protected int step = 0;
 
    protected String filename;

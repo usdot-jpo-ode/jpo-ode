@@ -207,8 +207,8 @@ public class VehicleSizeBuilderTest {
       }
 
       try {
-         J2735VehicleSize actualVehicleSize = VehicleSizeBuilder.genericVehicleSize(testVehicleSize);
-         fail("Expected IllegalArgumentException");
+        VehicleSizeBuilder.genericVehicleSize(testVehicleSize);
+        fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
       }
@@ -234,8 +234,8 @@ public class VehicleSizeBuilderTest {
       }
 
       try {
-         J2735VehicleSize actualVehicleSize = VehicleSizeBuilder.genericVehicleSize(testVehicleSize);
-         fail("Expected IllegalArgumentException");
+        VehicleSizeBuilder.genericVehicleSize(testVehicleSize);
+        fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
       }
@@ -399,7 +399,7 @@ public class VehicleSizeBuilderTest {
       }
 
       try {
-         J2735VehicleSize actualVehicleSize = VehicleSizeBuilder.genericVehicleSize(testVehicleSize);
+         VehicleSizeBuilder.genericVehicleSize(testVehicleSize);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());
@@ -427,7 +427,7 @@ public class VehicleSizeBuilderTest {
       }
 
       try {
-         J2735VehicleSize actualVehicleSize = VehicleSizeBuilder.genericVehicleSize(testVehicleSize);
+         VehicleSizeBuilder.genericVehicleSize(testVehicleSize);
          fail("Expected IllegalArgumentException");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());

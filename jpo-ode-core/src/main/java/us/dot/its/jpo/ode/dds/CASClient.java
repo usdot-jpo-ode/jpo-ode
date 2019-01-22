@@ -15,7 +15,6 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.dds;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
@@ -182,7 +181,7 @@ public class CASClient {
    }
 
    private String getServiceCall(String service, String serviceTicket)
-         throws IOException, CASException {
+         throws CASException {
 
       HttpClient httpClient = httpClientFactory.createHttpClient();
 

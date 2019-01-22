@@ -24,7 +24,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class LaneWidthBuilderTest {

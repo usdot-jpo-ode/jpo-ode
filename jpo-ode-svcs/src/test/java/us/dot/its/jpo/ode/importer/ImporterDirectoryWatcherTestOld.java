@@ -19,13 +19,10 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -125,114 +122,6 @@ public class ImporterDirectoryWatcherTestOld {
          fail("Unexpected exception in expectations block: " + e);
       }
       testImporterDirectoryWatcher.run();
-   }
-
-   @Test @Ignore
-   public void pollDirectoryShouldInterruptThreadOnWatcherError() {
-      try {
-         new Expectations(Thread.class) {
-            {
-               mockWatchService.take();
-               result = new InterruptedException("testException123");
-               Thread.currentThread().interrupt();
-               times = 1;
-            }
-         };
-      } catch (InterruptedException e) {
-         fail("Unexpected exception in expectations block: " + e);
-      }
-
-      testImporterDirectoryWatcher.pollDirectory(mockWatchService);
-   }
-
-   @Test @Ignore
-   public void pollDirectoryOverflowShouldContinue() {
-      List<WatchEvent<Path>> pollEventsList = new ArrayList<WatchEvent<Path>>();
-      pollEventsList.add(mockWatchEvent);
-      try {
-         new Expectations() {
-            {
-               mockWatchService.take();
-               result = mockWatchKey;
-
-               mockWatchKey.pollEvents();
-               result = pollEventsList;
-
-               mockWatchKey.reset();
-               result = true;
-
-               mockWatchEvent.kind();
-               result = StandardWatchEventKinds.OVERFLOW;
-               
-               capturingImporterProcessor.processAndBackupFile((Path) any, (Path) any, (Path) any);
-               times = 0;
-            }
-         };
-      } catch (InterruptedException e) {
-         fail("Unexpected exception in expectations block: " + e);
-      }
-
-      testImporterDirectoryWatcher.pollDirectory(mockWatchService);
-   }
-
-   @Test @Ignore
-   public void pollDirectoryEntryModifyShouldProcessFile() {
-      List<WatchEvent<Path>> pollEventsList = new ArrayList<WatchEvent<Path>>();
-      pollEventsList.add(mockWatchEvent);
-      try {
-         new Expectations() {
-            {
-               mockWatchService.take();
-               result = mockWatchKey;
-
-               mockWatchKey.pollEvents();
-               result = pollEventsList;
-
-               mockWatchKey.reset();
-               result = false;
-
-               mockWatchEvent.kind();
-               result = StandardWatchEventKinds.ENTRY_MODIFY;
-
-               capturingImporterProcessor.processAndBackupFile((Path) any, (Path) any, (Path) any);
-               times = 1;
-            }
-         };
-      } catch (InterruptedException e) {
-         fail("Unexpected exception in expectations block: " + e);
-      }
-
-      testImporterDirectoryWatcher.pollDirectory(mockWatchService);
-   }
-   
-   @Test @Ignore
-   public void pollDirectoryUnknownKindShouldThrowError() {
-      List<WatchEvent<Path>> pollEventsList = new ArrayList<WatchEvent<Path>>();
-      pollEventsList.add(mockWatchEvent);
-      try {
-         new Expectations() {
-            {
-               mockWatchService.take();
-               result = mockWatchKey;
-
-               mockWatchKey.pollEvents();
-               result = pollEventsList;
-
-               mockWatchKey.reset();
-               result = false;
-
-               mockWatchEvent.kind();
-               result = StandardWatchEventKinds.ENTRY_DELETE;
-
-               capturingImporterProcessor.processAndBackupFile((Path) any, (Path) any, (Path) any);
-               times = 0;
-            }
-         };
-      } catch (InterruptedException e) {
-         fail("Unexpected exception in expectations block: " + e);
-      }
-
-      testImporterDirectoryWatcher.pollDirectory(mockWatchService);
    }
 
 }

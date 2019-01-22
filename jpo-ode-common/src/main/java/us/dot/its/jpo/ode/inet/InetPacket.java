@@ -71,19 +71,19 @@ public class InetPacket {
 		if ( point == null )
 			return payload;
 		int payloadLength = payload != null ? payload.length : 0;
-		int HEADER_LENGTH = MIN_BUNDLE_LENGTH - 4 + point.address.length;
-		byte [] bundle = new byte[HEADER_LENGTH + payloadLength];
-		ByteBuffer buffer = ByteBuffer.allocate(HEADER_LENGTH).order(ByteOrder.BIG_ENDIAN);
+		int headerLength = MIN_BUNDLE_LENGTH - 4 + point.address.length;
+		byte [] bundle = new byte[headerLength + payloadLength];
+		ByteBuffer buffer = ByteBuffer.allocate(headerLength).order(ByteOrder.BIG_ENDIAN);
 		buffer.putInt(MAGIC_NUMBER);
 		buffer.putInt(point.port);
 		buffer.put((byte)(point.address.length == 16 ? 1 : 0));
 		buffer.put(point.address);
 		byte[] header = buffer.array();
-		assert(header.length == HEADER_LENGTH);
+		assert(header.length == headerLength);
 		CrcCccitt.setMsgCRC(header);
-		System.arraycopy(header, 0, bundle, 0, HEADER_LENGTH);
+		System.arraycopy(header, 0, bundle, 0, headerLength);
 		if ( payload != null )
-			System.arraycopy(payload, 0, bundle, HEADER_LENGTH, payloadLength);
+			System.arraycopy(payload, 0, bundle, headerLength, payloadLength);
 		return bundle;
 	}
 	

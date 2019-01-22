@@ -30,16 +30,49 @@ public class J2735RTCMPackage extends Asn1Object {
         return msgs;
     }
 
-    public void setMsgs(List<String> msgs) {
+    public J2735RTCMPackage setMsgs(List<String> msgs) {
         this.msgs = msgs;
+        return this;
     }
 
     public J2735RTCMheader getRtcmHeader() {
         return rtcmHeader;
     }
 
-    public void setRtcmHeader(J2735RTCMheader rtcmHeader) {
+    public J2735RTCMPackage setRtcmHeader(J2735RTCMheader rtcmHeader) {
         this.rtcmHeader = rtcmHeader;
+        return this;
+    }
+
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((msgs == null) ? 0 : msgs.hashCode());
+      result = prime * result + ((rtcmHeader == null) ? 0 : rtcmHeader.hashCode());
+      return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj)
+        return true;
+      if (obj == null)
+        return false;
+      if (getClass() != obj.getClass())
+        return false;
+      J2735RTCMPackage other = (J2735RTCMPackage) obj;
+      if (msgs == null) {
+        if (other.msgs != null)
+          return false;
+      } else if (!msgs.equals(other.msgs))
+        return false;
+      if (rtcmHeader == null) {
+        if (other.rtcmHeader != null)
+          return false;
+      } else if (!rtcmHeader.equals(other.rtcmHeader))
+        return false;
+      return true;
     }
 
 }

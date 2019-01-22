@@ -19,22 +19,35 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Mocked;
 
 /**
  * Test class for TravelerMessageFromHumanToAsnConverter.translateISOTimeStampToMinuteOfYear()
  *
  */
-@Ignore
 public class TimeStampConverterTest {
    
+  @Mocked
+  private Logger logger;
+  
    @BeforeClass
    public static void classSetup() {
    }
    
    @Before
    public void setup() {
+     new MockUp<LoggerFactory>() {
+       @Mock
+       public Logger getLogger(String value) {
+           return logger;
+       }
+     };
    }
 
    @Test

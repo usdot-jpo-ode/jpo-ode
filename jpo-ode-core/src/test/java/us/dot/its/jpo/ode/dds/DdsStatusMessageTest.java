@@ -26,7 +26,9 @@ import us.dot.its.jpo.ode.model.StatusTag;
 
 public class DdsStatusMessageTest {
 	
-	@Test
+	private static final String UPER = "UPER";
+
+  @Test
 	   public void testConstructor1() {
 			DdsStatusMessage ddsStatusMessage = new DdsStatusMessage();
 			
@@ -37,9 +39,9 @@ public class DdsStatusMessageTest {
 	
 	@Test
 	   public void testConstructor2(@Mocked StatusTag tag, @Mocked Dialog dialog) {
-			DdsStatusMessage ddsStatusMessage = new DdsStatusMessage(tag, "UPER", dialog);
+			DdsStatusMessage ddsStatusMessage = new DdsStatusMessage(tag, UPER, dialog);
 			assertEquals(ddsStatusMessage.getTag(), tag);
-			assertEquals(ddsStatusMessage.getEncoding(), "UPER");
+			assertEquals(UPER, ddsStatusMessage.getEncoding());
 			assertEquals(ddsStatusMessage.getDialog(), dialog);
 			
 			ddsStatusMessage.setTag(null);

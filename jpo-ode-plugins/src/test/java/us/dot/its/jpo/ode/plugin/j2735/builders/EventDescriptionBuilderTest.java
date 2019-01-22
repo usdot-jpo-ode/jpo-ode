@@ -30,8 +30,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import mockit.Capturing;
+import us.dot.its.jpo.ode.plugin.j2735.J2735BitString;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Extent;
-import us.dot.its.jpo.ode.plugin.j2735.J2735HeadingSlice;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
@@ -83,7 +83,7 @@ public class EventDescriptionBuilderTest {
       testNode.put("typeEvent", 3);
       testNode.put("heading", "0100000001000001");
 
-      J2735HeadingSlice actualValue = EventDescriptionBuilder.genericEventDescription(testNode).getHeading();
+      J2735BitString actualValue = EventDescriptionBuilder.genericEventDescription(testNode).getHeading();
 
       // bit 0 = false
       assertFalse("Incorrect bit 0", actualValue.get("FROM000_0TO022_5DEGREES"));

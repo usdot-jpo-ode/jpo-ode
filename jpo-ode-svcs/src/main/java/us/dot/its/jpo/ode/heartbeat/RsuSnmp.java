@@ -68,7 +68,7 @@ public class RsuSnmp {
             snmp.close();
         } catch (Exception e) {
             responseEvent = null;
-            logger.debug("SNMP4J library exception: " + e);
+            logger.debug("SNMP4J library exception", e);
         }
 
         // Interpret snmp response

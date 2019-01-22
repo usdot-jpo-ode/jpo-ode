@@ -26,9 +26,7 @@ public class BsmComparator implements Comparator<J2735Bsm> {
 
    @Override
    public int compare(J2735Bsm x, J2735Bsm y) {
-      // TODO - determine message arrival time
       // for now we are using the BSM's time offset property
-
       int xt = x.getCoreData().getSecMark();
       int yt = y.getCoreData().getSecMark();
 

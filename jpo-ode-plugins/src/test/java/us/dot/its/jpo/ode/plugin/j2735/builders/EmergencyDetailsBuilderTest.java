@@ -86,10 +86,41 @@ public class EmergencyDetailsBuilderTest {
       assertEquals(J2735ResponseType.SLOWMOVING, actualValue.getResponseType());
    }
 
+   @Test(expected = IllegalArgumentException.class)
+   public void testOptionalFieldsWithInvalidSSPRights() {
+      
+      ObjectNode testInput = JsonUtils.newNode();
+      testInput.put("sspRights", 8);
+      testInput.set("sirenUse", JsonUtils.newNode().put("notInUse", true));
+      testInput.set("lightsUse", JsonUtils.newNode().put("arrowSignsActive", true));
+      testInput.set("multi", JsonUtils.newNode().put("singleVehicle", true));
+      
+      // optional fields
+      testInput.set("events", JsonUtils.newNode().put("sspRights", 32).put("event", "001000"));
+      testInput.set("responseType", JsonUtils.newNode().put("slowMoving", true));
+
+      EmergencyDetailsBuilder.genericEmergencyDetails(testInput);
+
+   }
+
    @Test
    public void testConstructorIsPrivate()
          throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
       Constructor<EmergencyDetailsBuilder> constructor = EmergencyDetailsBuilder.class.getDeclaredConstructor();
+      assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+      constructor.setAccessible(true);
+      try {
+         constructor.newInstance();
+         fail("Expected IllegalAccessException.class");
+      } catch (Exception e) {
+         assertEquals(InvocationTargetException.class, e.getClass());
+      }
+   }
+
+   @Test
+   public void testPrivilegedEventsBuilderConstructorIsPrivate()
+         throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+      Constructor<PrivilegedEventsBuilder> constructor = PrivilegedEventsBuilder.class.getDeclaredConstructor();
       assertTrue(Modifier.isPrivate(constructor.getModifiers()));
       constructor.setAccessible(true);
       try {

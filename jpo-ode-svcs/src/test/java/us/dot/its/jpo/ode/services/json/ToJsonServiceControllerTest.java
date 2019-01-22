@@ -38,10 +38,10 @@ public class ToJsonServiceControllerTest {
       new Expectations() {
          {
             new ToJsonConverter<>((OdeProperties) any, anyBoolean, anyString);
-            times = 2;
+            times = 1;
 
             new MessageConsumer<>(anyString, anyString, (MessageProcessor<?, ?>) any, anyString);
-            times = 2;
+            times = 1;
 
          }
       };

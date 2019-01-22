@@ -29,7 +29,6 @@ import org.junit.Test;
 
 import mockit.Capturing;
 import mockit.Expectations;
-import mockit.Mocked;
 
 public class InetPointTest {
    
@@ -60,7 +59,7 @@ public class InetPointTest {
       }
    }
 
-   @Test(expected = AssertionError.class)
+   @Test(expected = IllegalArgumentException.class)
    public void testStringConstructorFailsNullAddress() {
       try {
          new Expectations() {
@@ -80,7 +79,7 @@ public class InetPointTest {
       new InetPoint(new byte[] { 1, 2, 3 }, 5, true);
    }
 
-   @Test(expected = AssertionError.class)
+   @Test(expected = IllegalArgumentException.class)
    public void testByteConstructorFailsNullAddress() {
       new InetPoint((byte[]) null, 5, true);
    }
@@ -90,7 +89,7 @@ public class InetPointTest {
       new InetPoint(new byte[] { 1, 2, 3 }, 5);
    }
 
-   @Test(expected = AssertionError.class)
+   @Test(expected = IllegalArgumentException.class)
    public void testBytePortConstructorFailsNullAddress() {
       new InetPoint((byte[]) null, 5);
    }

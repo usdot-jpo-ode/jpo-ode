@@ -16,6 +16,7 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class MergeDivergeNodeAngleBuilder {
 
@@ -24,6 +25,6 @@ public class MergeDivergeNodeAngleBuilder {
    }
 
    public static int mergeDivergeNodeAngle(BigDecimal angle) {
-      return angle.divide(BigDecimal.valueOf(1.5)).intValue();
+      return angle.divide(BigDecimal.valueOf(1.5), 0, RoundingMode.HALF_UP).intValue();
    }
 }

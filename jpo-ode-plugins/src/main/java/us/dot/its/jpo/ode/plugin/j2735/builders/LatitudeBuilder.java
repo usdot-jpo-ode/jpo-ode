@@ -16,8 +16,11 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class LatitudeBuilder {
 
@@ -26,11 +29,11 @@ public class LatitudeBuilder {
    }
 
    public static long j2735Latitude(BigDecimal latitude) {
-      return latitude.scaleByPowerOfTen(7).intValue();
+      return latitude.scaleByPowerOfTen(7).setScale(0, RoundingMode.HALF_UP).intValue();
    }
 
    public static long j2735Latitude(JsonNode latitude) {
-      return j2735Latitude(latitude.decimalValue());
+      return j2735Latitude(JsonUtils.decimalValue(latitude));
    }
 
    public static BigDecimal genericLatitude(JsonNode latitude) {

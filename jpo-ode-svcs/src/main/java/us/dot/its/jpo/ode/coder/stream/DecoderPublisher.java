@@ -21,5 +21,5 @@ import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 
 public interface DecoderPublisher {
    
-   public void decodeAndPublish(BufferedInputStream is, String fileName, ImporterFileType fileType) throws Exception;
+   public void decodeAndPublish(BufferedInputStream is, String fileName, ImporterFileType fileType);
 }

@@ -20,7 +20,6 @@ import java.util.Iterator;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-import us.dot.its.jpo.ode.plugin.j2735.builders.BsmPart2ContentBuilder.BsmPart2ContentBuilderException;
 
 public class BsmBuilder {
     
@@ -28,7 +27,7 @@ public class BsmBuilder {
         throw new UnsupportedOperationException();
     }
 
-    public static J2735Bsm genericBsm(JsonNode basicSafetyMessage) throws BsmPart2ContentBuilderException {
+    public static J2735Bsm genericBsm(JsonNode basicSafetyMessage) {
         J2735Bsm genericBsm = new J2735Bsm();
         JsonNode coreData = basicSafetyMessage.get("coreData");
         if (coreData != null) {

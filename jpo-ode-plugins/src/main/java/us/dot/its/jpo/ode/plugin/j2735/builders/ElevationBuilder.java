@@ -16,8 +16,11 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class ElevationBuilder {
 
@@ -26,11 +29,11 @@ public class ElevationBuilder {
    }
 
    public static long j2735Elevation(BigDecimal elevation) {
-      return elevation.scaleByPowerOfTen(1).intValue();
+      return elevation.scaleByPowerOfTen(1).setScale(0, RoundingMode.HALF_UP).intValue();
    }
 
    public static long j2735Elevation(JsonNode elevation) {
-      return j2735Elevation(elevation.decimalValue());
+      return j2735Elevation(JsonUtils.decimalValue(elevation));
    }
 
    public static BigDecimal genericElevation(JsonNode elevation) {

@@ -16,6 +16,7 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class LaneWidthBuilder {
 
@@ -24,7 +25,7 @@ public class LaneWidthBuilder {
    }
 
    public static int laneWidth(BigDecimal jlw) {
-      return (jlw.scaleByPowerOfTen(2).intValue());
+      return (jlw.scaleByPowerOfTen(2).setScale(0, RoundingMode.HALF_UP).intValue());
    }
 
 }
