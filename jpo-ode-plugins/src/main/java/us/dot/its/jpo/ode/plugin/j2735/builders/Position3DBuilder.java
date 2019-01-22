@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
@@ -6,9 +21,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.DsrcPosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class Position3DBuilder {
    
+   private static final String LATITUDE = "latitude";
+   private static final String LONGITUDE = "longitude";
+   private static final String ELEVATION = "elevation";
+
    private Position3DBuilder() {
       throw new UnsupportedOperationException();
    }
@@ -16,7 +36,7 @@ public class Position3DBuilder {
    public static DsrcPosition3D dsrcPosition3D(JsonNode pos) {
       Long latitude = pos.get("lat").asLong();
       Long longitude = pos.get("long").asLong();
-      Long elevation = pos.get("elevation").asLong();
+      Long elevation = pos.get(ELEVATION).asLong();
 
       return new DsrcPosition3D(latitude, longitude, elevation);
 
@@ -47,18 +67,18 @@ public class Position3DBuilder {
    public static OdePosition3D odePosition3D(JsonNode jpos) {
 
       BigDecimal latitude = null;
-      if (jpos.get("latitude") != null) {
-         latitude = jpos.get("latitude").decimalValue();
+      if (jpos.has(LATITUDE)) {
+        latitude = JsonUtils.decimalValue(jpos.get(LATITUDE));
       }
       
       BigDecimal longitude = null;
-      if (jpos.get("longitude") != null) {
-         longitude = jpos.get("longitude").decimalValue();
+      if (jpos.has(LONGITUDE)) {
+        longitude = JsonUtils.decimalValue(jpos.get(LONGITUDE));
       }
       
       BigDecimal elevation = null;
-      if (jpos.get("elevation") != null) {
-         elevation = jpos.get("elevation").decimalValue();
+      if (jpos.has(ELEVATION)) {
+        elevation = JsonUtils.decimalValue(jpos.get(ELEVATION));
       }
 
       return new OdePosition3D(latitude, longitude, elevation);

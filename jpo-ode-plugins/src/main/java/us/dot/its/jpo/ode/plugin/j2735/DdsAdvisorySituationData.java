@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735;
 
 import java.text.ParseException;
@@ -38,40 +53,6 @@ public class DdsAdvisorySituationData extends Asn1Object {
       groupID = CodecUtils.toHex(gid);
    }
 
-   public DdsAdvisorySituationData(String startTime, String stopTime, Ieee1609Dot2DataTag advisoryMessage,
-         DdsGeoRegion serviceRegion, SituationDataWarehouse.SDW.TimeToLive ttl, String groupID, String recordID, byte distroType) throws ParseException {
-      this();
-
-      J2735DFullTime dStartTime = dFullTimeFromIsoTimeString(startTime);
-
-      J2735DFullTime dStopTime = dFullTimeFromIsoTimeString(stopTime);
-
-      byte[] fourRandomBytes = new byte[4];
-      new Random(System.currentTimeMillis()).nextBytes(fourRandomBytes);
-      String id = CodecUtils.toHex(fourRandomBytes);
-      String stringDistroType = CodecUtils.toHex(distroType);
-      this.setAsdmDetails(
-            new DdsAdvisoryDetails(id, AdvisoryBroadcastType.tim, stringDistroType, dStartTime, dStopTime, advisoryMessage));
-
-      this.setRequestID(id);
-      this.setServiceRegion(serviceRegion);
-      if (ttl != null) {
-         this.setTimeToLive(ttl.ordinal());
-      } else {
-         this.setTimeToLive(SituationDataWarehouse.SDW.TimeToLive.thirtyminutes.ordinal());
-      }
-      if (groupID != null) {
-         this.setGroupID(groupID);
-      } else {
-         this.setGroupID(CodecUtils.toHex(new byte[] { 0, 0, 0, 0 }));
-      }
-      if (recordID != null) {
-         this.setRecordID(recordID);
-      } else {
-         this.setRecordID(CodecUtils.toHex(new byte[] { 0, 0, 0, 0 }));
-      }
-   }
-
    public J2735DFullTime dFullTimeFromIsoTimeString(String isoTime) throws ParseException {
 
       J2735DFullTime dStartTime = new J2735DFullTime();
@@ -98,64 +79,106 @@ public class DdsAdvisorySituationData extends Asn1Object {
       return dialogID;
    }
 
-   public void setDialogID(int dialogID) {
+   public DdsAdvisorySituationData setDialogID(int dialogID) {
       this.dialogID = dialogID;
+      return this;
    }
 
    public int getSeqID() {
       return seqID;
    }
 
-   public void setSeqID(int seqID) {
+   public DdsAdvisorySituationData setSeqID(int seqID) {
       this.seqID = seqID;
+      return this;
    }
 
    public String getGroupID() {
       return groupID;
    }
 
-   public void setGroupID(String groupID) {
-      this.groupID = groupID;
+   public DdsAdvisorySituationData setGroupID(String groupID) {
+     if (groupID != null) {
+       this.groupID = groupID;
+     } else {
+       this.groupID = CodecUtils.toHex(new byte[] { 0, 0, 0, 0 });
+     }
+     return this;
    }
 
    public String getRequestID() {
       return requestID;
    }
 
-   public void setRequestID(String requestID) {
+   public DdsAdvisorySituationData setRequestID(String requestID) {
       this.requestID = requestID;
+      return this;
    }
 
    public String getRecordID() {
       return recordID;
    }
 
-   public void setRecordID(String recordID) {
-      this.recordID = recordID;
+   public DdsAdvisorySituationData setRecordID(String recordID) {
+     if (recordID != null) {
+       this.recordID = recordID;
+     } else {
+       this.recordID = CodecUtils.toHex(new byte[] { 0, 0, 0, 0 });
+     }
+     return this;
    }
 
    public int getTimeToLive() {
       return timeToLive;
    }
 
-   public void setTimeToLive(int timeToLive) {
+   public DdsAdvisorySituationData setTimeToLive(int timeToLive) {
       this.timeToLive = timeToLive;
+      return this;
+   }
+
+   public DdsAdvisorySituationData setTimeToLive(SituationDataWarehouse.SDW.TimeToLive timeToLive) {
+     if (timeToLive != null) {
+       this.setTimeToLive(timeToLive.ordinal());
+     } else {
+       this.setTimeToLive(SituationDataWarehouse.SDW.TimeToLive.thirtyminutes.ordinal());
+     }
+     return this;
    }
 
    public DdsGeoRegion getServiceRegion() {
       return serviceRegion;
    }
 
-   public void setServiceRegion(DdsGeoRegion serviceRegion) {
+   public DdsAdvisorySituationData setServiceRegion(DdsGeoRegion serviceRegion) {
       this.serviceRegion = serviceRegion;
+      return this;
    }
 
    public DdsAdvisoryDetails getAsdmDetails() {
       return asdmDetails;
    }
 
-   public void setAsdmDetails(DdsAdvisoryDetails asdmDetails) {
-      this.asdmDetails = asdmDetails;
+   public DdsAdvisorySituationData setAsdmDetails(DdsAdvisoryDetails asdmDetails) {
+     this.asdmDetails = asdmDetails;
+     return this;
+   }
+
+   public DdsAdvisorySituationData setAsdmDetails(String startTime, String stopTime, byte distroType, Ieee1609Dot2DataTag advisoryMessage) throws ParseException {
+     J2735DFullTime dStartTime = dFullTimeFromIsoTimeString(startTime);
+
+     J2735DFullTime dStopTime = dFullTimeFromIsoTimeString(stopTime);
+     String stringDistroType = CodecUtils.toHex(distroType);
+
+     byte[] fourRandomBytes = new byte[4];
+     new Random(System.currentTimeMillis()).nextBytes(fourRandomBytes);
+
+     String id = CodecUtils.toHex(fourRandomBytes);
+     this.setRequestID(id);
+
+     this.setAsdmDetails(
+         new DdsAdvisoryDetails(id, AdvisoryBroadcastType.tim, stringDistroType, dStartTime, dStopTime, advisoryMessage));
+     return this;
    }
 
    @Override

@@ -11,7 +11,7 @@
   <parent>
     <groupId>usdot.jpo.ode</groupId>
     <artifactId>jpo-ode</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
   </parent>
   <properties>
     <!-- SonarQube Properties -->
@@ -19,6 +19,7 @@
       src/main/java/us/dot/its/jpo/ode/plugin/*.java,
       src/main/java/us/dot/its/jpo/ode/plugin/ieee1609dot2/*.java,
       src/main/java/us/dot/its/jpo/ode/plugin/j2735/J2735*.java,
+      src/main/java/us/dot/its/jpo/ode/plugin/j2735/OdeTravelerInformationMessage.java,
       src/main/java/us/dot/its/jpo/ode/plugin/j2735/timstorage/*.java
     </sonar.exclusions>
   </properties>
@@ -26,7 +27,7 @@
     <dependency>
       <groupId>usdot.jpo.ode</groupId>
       <artifactId>jpo-ode-common</artifactId>
-      <version>1.0.1</version>
+      <version>1.0.2</version>
     </dependency>
     <!-- TODO open-ode
     <dependency>

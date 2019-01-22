@@ -1,4 +1,24 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.upload;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,9 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.exporter.StompStringExporter;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher;
@@ -16,12 +40,7 @@ import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
 import us.dot.its.jpo.ode.storage.StorageService;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-@Controller
+@RestController
 public class FileUploadController {
    private static final String FILTERED_OUTPUT_TOPIC = "/topic/filtered_messages";
    private static final String UNFILTERED_OUTPUT_TOPIC = "/topic/unfiltered_messages";
@@ -62,14 +81,13 @@ public class FileUploadController {
    }
 
    @PostMapping("/upload/{type}")
-   @ResponseBody
    public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable("type") String type) {
 
       logger.debug("File received at endpoint: /upload/{}, name={}", type, file.getOriginalFilename());
       try {
          storageService.store(file, type);
       } catch (Exception e) {
-         logger.error("File storage error: " + e);
+         logger.error("File storage error", e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"Error\": \"File storage error.\"}");
          // do not return exception, XSS vulnerable
       }
@@ -78,7 +96,7 @@ public class FileUploadController {
    }
 
    @ExceptionHandler(StorageFileNotFoundException.class)
-   public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
+   public ResponseEntity<Void> handleStorageFileNotFound(StorageFileNotFoundException exc) {
       return ResponseEntity.notFound().build();
    }
 

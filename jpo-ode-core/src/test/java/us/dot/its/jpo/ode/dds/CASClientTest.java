@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.dds;
 
 import static org.junit.Assert.assertEquals;
@@ -25,13 +40,13 @@ import us.dot.its.jpo.ode.wrapper.HttpClientFactory.HttpResponse;
 
 @RunWith(JMockit.class)
 public class CASClientTest {
-	@Mocked HttpClientFactory mockHttpClientFactory;
+   @Mocked HttpClientFactory mockHttpClientFactory;
    @Mocked SSLContext sslContext;
    @Mocked private HttpResponse mockResponse;
    
    /* 
     * For some very odd reason, just having mocked objects of Pattern and Matcher causes
-    * surefile plug-in to report the followig very odd and strange errors on all
+    * surefile plug-in to report the following very odd and strange errors on all
     * subsequest test cases. Hence, we have to use real values so we don't have to mock
     * which is a better approach anyway.
     * 
@@ -351,8 +366,8 @@ Tests run: 26, Failures: 0, Errors: 17, Skipped: 0
       try {
          casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
          sessionId = casClient.login(websocketURL);
-         assertEquals(sessionId, casClient.getSessionID());
-         assertEquals(sessionId, "1bif45f-testSessionId");
+         assertEquals(casClient.getSessionID(), sessionId);
+         assertEquals("1bif45f-testSessionId", sessionId);
       } catch (CASException e) {
          fail("Unexpected exception: " + e.toString());
       }

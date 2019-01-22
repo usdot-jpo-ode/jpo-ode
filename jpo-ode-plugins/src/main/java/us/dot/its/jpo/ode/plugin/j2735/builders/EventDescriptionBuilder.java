@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.util.ArrayList;
@@ -6,9 +21,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import us.dot.its.jpo.ode.plugin.j2735.J2735BitString;
 import us.dot.its.jpo.ode.plugin.j2735.J2735EventDescription;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Extent;
-import us.dot.its.jpo.ode.plugin.j2735.J2735HeadingSlice;
 import us.dot.its.jpo.ode.plugin.j2735.J2735RegionalContent;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
@@ -34,46 +49,33 @@ public class EventDescriptionBuilder {
       if (d != null) {
          desc.setDescription(buildDescription(d));
       }
+      
       JsonNode p = description.get("priority");
       if (p != null) {
          desc.setPriority(p.asText());
       }
+      
       JsonNode h = description.get("heading");
       if (h != null) {
-
-         J2735HeadingSlice headingSlice = new J2735HeadingSlice();
-
-         char[] headingSliceBits = h.asText().toCharArray();
-
-         for (int i = 0; i < headingSliceBits.length; i++) {
-
-            String eventName = J2735HeadingSliceNames.values()[i].name();
-            Boolean eventStatus = (headingSliceBits[i] == '1' ? true : false);
-            headingSlice.put(eventName, eventStatus);
-
-         }
-
+         J2735BitString headingSlice = BitStringBuilder.genericBitString(h, J2735HeadingSliceNames.values());
          desc.setHeading(headingSlice);
-
       }
+      
       JsonNode e = description.get("extent");
       if (e != null) {
          desc.setExtent(J2735Extent.valueOf(e.asText().replaceAll("-", "_").toUpperCase()));
       }
 
       JsonNode regional = description.get("regional");
-      if (regional != null) {
+      if (regional != null && regional.isArray()) {
+          Iterator<JsonNode> elements = regional.elements();
 
-         if (regional.isArray()) {
-            Iterator<JsonNode> elements = regional.elements();
+          while (elements.hasNext()) {
+             JsonNode element = elements.next();
 
-            while (elements.hasNext()) {
-               JsonNode element = elements.next();
-
-               desc.getRegional().add(new J2735RegionalContent().setId(element.get("regionId").asInt())
-                     .setValue(CodecUtils.fromHex(element.get("regExtValue").asText())));
-            }
-         }
+             desc.getRegional().add(new J2735RegionalContent().setId(element.get("regionId").asInt())
+                   .setValue(CodecUtils.fromHex(element.get("regExtValue").asText())));
+          }
       }
 
       return desc;

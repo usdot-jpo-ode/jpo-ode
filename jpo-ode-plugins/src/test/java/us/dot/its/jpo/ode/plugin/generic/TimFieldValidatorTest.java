@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.generic;
 
 import static org.junit.Assert.assertEquals;
@@ -666,90 +681,6 @@ public class TimFieldValidatorTest {
       String code = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
       try {
          TimFieldValidator.validateITISCodes(code);
-         fail("Unexpected Exception");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkUpperBoundContentCodes() {
-      String code = "65536";
-      try {
-         TimFieldValidator.validateContentCodes(code);
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerBoundContentCodes() {
-      String code = "-1";
-      try {
-         TimFieldValidator.validateContentCodes(code);
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerContentCodes() {
-      String code = "0";
-      try {
-         TimFieldValidator.validateContentCodes(code);
-      } catch (RuntimeException e) {
-         fail("Unexpected Exception");
-      }
-   }
-
-   @Test
-   public void checkUpperContentCodes() {
-      String code = "65535";
-      try {
-         TimFieldValidator.validateContentCodes(code);
-      } catch (RuntimeException e) {
-         fail("Unexpected Exception");
-      }
-   }
-
-   @Test
-   public void checkEmptyContentCodesString() {
-      String code = "";
-      try {
-         TimFieldValidator.validateContentCodes(code);
-         fail("Expected IllegalArgumentException");
-      } catch (RuntimeException e) {
-         assertEquals(IllegalArgumentException.class, e.getClass());
-      }
-   }
-
-   @Test
-   public void checkLowerContentCodesString() {
-      String code = "a";
-      try {
-         TimFieldValidator.validateContentCodes(code);
-      } catch (RuntimeException e) {
-         fail("Unexpected Exception");
-      }
-   }
-
-   @Test
-   public void checkUpperContentCodesString() {
-      String code = "aaaaaaaaaaaaaaaa";
-      try {
-         TimFieldValidator.validateITISCodes(code);
-      } catch (RuntimeException e) {
-         fail("Unexpected Exception");
-      }
-   }
-
-   @Test
-   public void checkUpperBoundContentCodesString() {
-      String code = "aaaaaaaaaaaaaaaaa";
-      try {
-         TimFieldValidator.validateContentCodes(code);
          fail("Unexpected Exception");
       } catch (RuntimeException e) {
          assertEquals(IllegalArgumentException.class, e.getClass());

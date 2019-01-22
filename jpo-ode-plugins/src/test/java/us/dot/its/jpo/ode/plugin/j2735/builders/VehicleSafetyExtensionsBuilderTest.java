@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import static org.junit.Assert.assertEquals;
@@ -17,11 +32,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import mockit.Capturing;
 import mockit.Expectations;
+import us.dot.its.jpo.ode.plugin.j2735.J2735BitString;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmPart2Content;
-import us.dot.its.jpo.ode.plugin.j2735.J2735ExteriorLights;
 import us.dot.its.jpo.ode.plugin.j2735.J2735PathHistory;
 import us.dot.its.jpo.ode.plugin.j2735.J2735PathPrediction;
-import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleEventFlags;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleSafetyExtensions;
 import us.dot.its.jpo.ode.plugin.j2735.builders.BsmPart2ContentBuilder.BsmPart2ContentBuilderException;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -42,7 +56,7 @@ public class VehicleSafetyExtensionsBuilderTest {
 
       VehicleSafetyExtensionsBuilder.evaluateVehicleSafetyExt(outputContent, testInputNode);
 
-      J2735VehicleEventFlags actualEvents = ((J2735VehicleSafetyExtensions) outputContent.getValue()).getEvents();
+      J2735BitString actualEvents = ((J2735VehicleSafetyExtensions) outputContent.getValue()).getEvents();
 
       // bit 0
       assertFalse("Incorrect eventHazardLights", actualEvents.get("eventHazardLights"));
@@ -78,7 +92,7 @@ public class VehicleSafetyExtensionsBuilderTest {
 
       VehicleSafetyExtensionsBuilder.evaluateVehicleSafetyExt(outputContent, testInputNode);
 
-      J2735ExteriorLights actualLights = ((J2735VehicleSafetyExtensions) outputContent.getValue()).getLights();
+      J2735BitString actualLights = ((J2735VehicleSafetyExtensions) outputContent.getValue()).getLights();
 
       // bit 0
       assertFalse("Incorrect lowBeamHeadlightsOn", actualLights.get("lowBeamHeadlightsOn"));

@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.importer;
 
 import java.io.BufferedInputStream;
@@ -18,15 +33,11 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.FileAsn1CodecPublisher;
 import us.dot.its.jpo.ode.coder.FileAsn1CodecPublisher.FileAsn1CodecPublisherException;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
-// Removed for ODE-559
-//import us.dot.its.jpo.ode.coder.FileDecoderPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 
 public class ImporterProcessor {
 
    private static final Logger logger = LoggerFactory.getLogger(ImporterProcessor.class);
-   // Removed for ODE-559
-   //   private FileDecoderPublisher decoderPublisherManager;
    private FileAsn1CodecPublisher codecPublisher;
    private OdeProperties odeProperties;
    private ImporterFileType fileType;
@@ -34,8 +45,6 @@ public class ImporterProcessor {
    private Pattern zipPattern = Pattern.compile("application/.*zip.*");
 
    public ImporterProcessor(OdeProperties odeProperties, ImporterFileType fileType) {
-      // Removed for ODE-559
-      //   this.decoderPublisherManager = new FileDecoderPublisher(odeProperties);
       this.codecPublisher = new FileAsn1CodecPublisher(odeProperties);
       this.odeProperties = odeProperties;
       this.fileType = fileType;
@@ -44,7 +53,6 @@ public class ImporterProcessor {
    public int processDirectory(Path dir, Path backupDir, Path failureDir) {
       int count = 0;
       // Process files already in the directory
-      //logger.debug("Started processing files at location: {}", dir);
       try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
 
          for (Path entry : stream) {
@@ -57,7 +65,6 @@ public class ImporterProcessor {
             }
          }
 
-         //logger.debug("Finished processing {} files at location: {}", count, dir);
       } catch (Exception e) {
          logger.error("Error processing files.", e);
       }
@@ -65,19 +72,6 @@ public class ImporterProcessor {
    }
 
    public void processAndBackupFile(Path filePath, Path backupDir, Path failureDir) {
-
-      /*
-       * ODE-559 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-       * removed lines below when asn1_codec was integrated
-       */
-      //      try (InputStream inputStream = new FileInputStream(filePath.toFile())) {
-      //         BufferedInputStream bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
-      //         decoderPublisherManager.decodeAndPublishFile(filePath, bis, fileType);
-      //         bis = new BufferedInputStream(inputStream, odeProperties.getImportProcessorBufferSize());
-      //      } catch (Exception e) {
-      //         logger.error("Unable to open or process file: " + filePath, e);
-      //      }
-      // ODE-559 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
       // ODE-559
       boolean success = true;
