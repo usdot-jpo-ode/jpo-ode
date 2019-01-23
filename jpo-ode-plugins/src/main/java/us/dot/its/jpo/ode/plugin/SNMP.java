@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.plugin;
 
 import java.text.ParseException;
@@ -120,6 +135,61 @@ public class SNMP extends OdeObject {
       bdt[4] = (byte) zdt.getHour();
       bdt[5] = (byte) zdt.getMinute();
       return CodecUtils.toHex(bdt);
+   }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + channel;
+      result = prime * result + ((deliverystart == null) ? 0 : deliverystart.hashCode());
+      result = prime * result + ((deliverystop == null) ? 0 : deliverystop.hashCode());
+      result = prime * result + enable;
+      result = prime * result + interval;
+      result = prime * result + mode;
+      result = prime * result + msgid;
+      result = prime * result + ((rsuid == null) ? 0 : rsuid.hashCode());
+      result = prime * result + status;
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      SNMP other = (SNMP) obj;
+      if (channel != other.channel)
+         return false;
+      if (deliverystart == null) {
+         if (other.deliverystart != null)
+            return false;
+      } else if (!deliverystart.equals(other.deliverystart))
+         return false;
+      if (deliverystop == null) {
+         if (other.deliverystop != null)
+            return false;
+      } else if (!deliverystop.equals(other.deliverystop))
+         return false;
+      if (enable != other.enable)
+         return false;
+      if (interval != other.interval)
+         return false;
+      if (mode != other.mode)
+         return false;
+      if (msgid != other.msgid)
+         return false;
+      if (rsuid == null) {
+         if (other.rsuid != null)
+            return false;
+      } else if (!rsuid.equals(other.rsuid))
+         return false;
+      if (status != other.status)
+         return false;
+      return true;
    }
 
 }

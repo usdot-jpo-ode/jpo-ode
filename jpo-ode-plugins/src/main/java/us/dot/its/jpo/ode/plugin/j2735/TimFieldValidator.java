@@ -1,8 +1,29 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735;
 
 import java.math.BigDecimal;
 
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage.DataFrame.MsgId;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage.DataFrame.RoadSignID;
+import us.dot.its.jpo.ode.util.CodecUtils;
+
 public class TimFieldValidator {
+   private static final int FURTHER_INFOR_ID_LENGTH = 4;
+
    private TimFieldValidator() {
       throw new UnsupportedOperationException();
    }
@@ -31,15 +52,34 @@ public class TimFieldValidator {
          throw new IllegalArgumentException("Invalid number of dataFrames [1..8]: " + count);
    }
 
-   public static void validateMessageID(String str) {
-      validateString(str);
-      if (!("RoadSignID").equals(str) && !("FurtherInfoID").equals(str))
-         throw new IllegalArgumentException("Invalid messageID \"RoadSignID or FurtherInfoID\"");
+   public static void validateMessageID(MsgId msgId) {
+      if (msgId == null || (msgId.getFurtherInfoID() == null && msgId.getRoadSignID() == null))
+         throw new IllegalArgumentException("Invalid msgID either \"roadSignID or furtherInfoID\" must be valid");
+      
+      if (msgId.getFurtherInfoID() != null)
+         validateFurtherInfoID(msgId.getFurtherInfoID());
+      
+      if (msgId.getRoadSignID() != null)
+         validateRoadSignID(msgId.getRoadSignID());
    }
    
-   public static void validateInfoType(int num) {
-      if (num < 0)
-         throw new IllegalArgumentException("Invalid enumeration [>0]: " + num);
+   private static void validateRoadSignID(RoadSignID roadSignID) {
+      validateShortHexString(roadSignID.getCrc());
+      validatePosition(roadSignID.getPosition());
+      validateShortHexString(roadSignID.getViewAngle());
+   }
+
+   private static void validateFurtherInfoID(String furtherInfoID) {
+      validateString(furtherInfoID);
+      if (furtherInfoID.length() > FURTHER_INFOR_ID_LENGTH) {
+         throw new IllegalArgumentException("furtherInfoID must be or less Hex characters: " + furtherInfoID);
+      }
+      
+      validateShortHexString(furtherInfoID);
+   }
+   
+   public static void validateShortHexString(String shortHexString) {
+      CodecUtils.shortStringToByteArray(shortHexString);
    }
 
    public static void validateStartYear(int year) {
@@ -88,11 +128,6 @@ public class TimFieldValidator {
       }
    }
 
-   public static void validateMUTCDCode(int mutc) {
-      if (mutc < 0 || mutc > 6)
-         throw new IllegalArgumentException("Invalid Enumeration [0..6]: " + mutc);
-   }
-
    public static void validateSign(int sign) {
       if (sign < 0 || sign > 7)
          throw new IllegalArgumentException("Invalid Sign Priority [0..7]: " + sign);
@@ -106,23 +141,9 @@ public class TimFieldValidator {
             throw new IllegalArgumentException("Invalid ITIS code [0..65535]: " + cd);
       } catch (NumberFormatException e) {
          if (code.isEmpty())
-            throw new IllegalArgumentException("Invalid empty string");
+            throw new IllegalArgumentException("Empty ITIS Code or Text");
          if (code.length() > 500)
-            throw new IllegalArgumentException("Invalid test phrase length [1..500]: " + code.length());
-      }
-   }
-
-   public static void validateContentCodes(String code) {
-      int cd;
-      try {
-         cd = Integer.parseInt(code);
-         if (cd < 0 || cd > 65535)
-            throw new IllegalArgumentException("Invalid ITIS code [0..65535]: " + cd);
-      } catch (NumberFormatException e) {
-         if (code.isEmpty())
-            throw new IllegalArgumentException("Invalid empty string");
-         if (code.length() > 16)
-            throw new IllegalArgumentException("Invalid test Phrase length [1..16]: " + code.length());
+            throw new IllegalArgumentException("Invalid text phrase length [1..500]: " + code.length());
       }
    }
 
@@ -274,9 +295,7 @@ public class TimFieldValidator {
    public static void validateNodeAttribute(String str) {
       String myString = "reserved stopLine roundedCapStyleA roundedCapStyleB mergePoint divergePoint downstreamStopLine donwstreamStartNode closedToTraffic safeIsland curbPresentAtStepOff hydrantPresent";
       CharSequence cs = str;
-      if (myString.contains(cs)) {
-         return;
-      } else {
+      if (!myString.contains(cs)) {
          throw new IllegalArgumentException("Invalid NodeAttribute Enumeration");
       }
    }
@@ -284,9 +303,7 @@ public class TimFieldValidator {
    public static void validateSegmentAttribute(String str) {
       String myString = "reserved doNotBlock whiteLine mergingLaneLeft mergingLaneRight curbOnLeft curbOnRight loadingzoneOnLeft loadingzoneOnRight turnOutPointOnLeft turnOutPointOnRight adjacentParkingOnLeft adjacentParkingOnRight sharedBikeLane bikeBoxInFront transitStopOnLeft transitStopOnRight transitStopInLane sharedWithTrackedVehicle safeIsland lowCurbsPresent rumbleStripPresent audibleSignalingPresent adaptiveTimingPresent rfSignalRequestPresent partialCurbIntrusion taperToLeft taperToRight taperToCenterLine parallelParking headInParking freeParking timeRestrictionsOnParking costToPark midBlockCurbPresent unEvenPavementPresent";
       CharSequence cs = str;
-      if (myString.contains(cs)) {
-         return;
-      } else {
+      if (!myString.contains(cs)) {
          throw new IllegalArgumentException("Invalid SegmentAttribute Enumeration");
       }
    }
@@ -294,9 +311,7 @@ public class TimFieldValidator {
    public static void validateSpeedLimitType(String str) {
       String myString = "unknown maxSpeedInSchoolZone maxSpeedInSchoolZoneWhenChildrenArePresent maxSpeedInConstructionZone vehicleMinSpeed vehicleMaxSpeed vehicleNightMaxSpeed truckMinSpeed truckMaxSpeed truckNightMaxSpeed vehiclesWithTrailerMinSpeed vehiclesWithTrailersMaxSpeed vehiclesWithTrailersNightMaxSpeed";
       CharSequence cs = str;
-      if (myString.contains(cs)) {
-         return;
-      } else {
+      if (!myString.contains(cs)) {
          throw new IllegalArgumentException("Invalid SpeedLimitAttribute Enumeration");
       }
    }

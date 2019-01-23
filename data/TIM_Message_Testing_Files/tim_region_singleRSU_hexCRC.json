@@ -1,0 +1,104 @@
+{
+  "request": {
+    "rsus": [
+      {
+        "rsuIndex": "10",
+        "rsuTarget": "127.0.0.3",
+        "rsuUsername": "v3user",
+        "rsuPassword": "password",
+        "rsuRetries": "1",
+        "rsuTimeout": "1000"
+      }
+    ],
+    "snmp": {
+      "rsuid": "00000083",
+      "msgid": "31",
+      "mode": "1",
+      "channel": "178",
+      "interval": "2",
+      "deliverystart": "2017-06-01T17:47:11-05:00",
+      "deliverystop": "2018-01-01T17:47:11-05:15",
+      "enable": "1",
+      "status": "4"
+    },
+    "sdw": {
+      "ttl": "oneweek",
+      "serviceRegion": {
+        "nwCorner": {
+          "latitude": "44.998459",
+          "longitude": "-111.040817"
+        },
+        "seCorner": {
+          "latitude": "41.104674",
+          "longitude": "-104.111312"
+        }
+      }
+    }
+  },
+  "tim": {
+    "msgCnt": "13",
+    "timeStamp": "2017-03-13T01:07:11-05:00",
+    "packetID": "EC9C236B0000000000",
+    "urlB": "null",
+    "dataframes": [
+      {
+        "sspTimRights": "0",
+        "frameType": "advisory",
+        "msgId": {
+          "roadSignID": {
+            "position": {
+              "latitude": "41.678473",
+              "longitude": "-108.782775",
+              "elevation": "917.1432"
+            },
+            "viewAngle": "1010101010101010",
+            "mutcdCode": "warning",
+            "crc": "ABCD"
+          }
+        },
+        "startDateTime": "2017-12-01T17:47:11-05:00",
+        "durationTime": "22",
+        "priority": "0",
+        "sspLocationRights": "3",
+        "regions": [
+          {
+            "name": "bob",
+            "regulatorID": "23",
+            "segmentID": "33",
+            "anchorPosition": {
+              "latitude": "41.678473",
+              "longitude": "-108.782775",
+              "elevation": "917.1432"
+            },
+            "laneWidth": "7",
+            "directionality": "3",
+            "closedPath": "false",
+            "direction": "1010101010101010",
+            "description": "geometry",
+            "geometry": {
+              "direction": "1010101010101010",
+              "extent": "1",
+              "laneWidth": "33",
+              "circle": {
+                "position": {
+                  "latitude": "41.678473",
+                  "longitude": "-108.782775",
+                  "elevation": "917.1432"
+                },
+                "radius": "15",
+                "units": "7"
+              }
+            }
+          }
+        ],
+        "sspMsgTypes": "2",
+        "sspMsgContent": "3",
+        "content": "Advisory",
+        "items": [
+          "250"
+        ],
+        "url": "null"
+      }
+    ]
+  }
+}

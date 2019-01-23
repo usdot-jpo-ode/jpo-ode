@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.math.BigDecimal;
@@ -6,15 +21,24 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.DsrcPosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class Position3DBuilder {
+   
+   private static final String LATITUDE = "latitude";
+   private static final String LONGITUDE = "longitude";
+   private static final String ELEVATION = "elevation";
+
+   private Position3DBuilder() {
+      throw new UnsupportedOperationException();
+   }
    
    public static DsrcPosition3D dsrcPosition3D(JsonNode pos) {
       Long latitude = pos.get("lat").asLong();
       Long longitude = pos.get("long").asLong();
-      Long elevation = pos.get("elevation").asLong();
+      Long elevation = pos.get(ELEVATION).asLong();
 
-      return new DsrcPosition3D(longitude, latitude, elevation);
+      return new DsrcPosition3D(latitude, longitude, elevation);
 
    }
 
@@ -26,27 +50,15 @@ public class Position3DBuilder {
       OdePosition3D jpos = new OdePosition3D();
 
       if (latitude != null) {
-         if (latitude == 900000001) {
-            jpos.setLatitude(null);
-         } else {
-            jpos.setLatitude(BigDecimal.valueOf(latitude, 7));
-         }
+         jpos.setLatitude(LatitudeBuilder.genericLatitude(latitude));
       }
 
       if (longitude != null) {
-         if (longitude == 1800000001) {
-            jpos.setLongitude(null);
-         } else {
-            jpos.setLongitude(BigDecimal.valueOf(longitude, 7));
-         }
+         jpos.setLongitude(LongitudeBuilder.genericLongitude(longitude));
       }
 
       if (elevation != null) {
-         if (elevation == -4096) {
-            jpos.setElevation(null);
-         } else {
-            jpos.setElevation(BigDecimal.valueOf(elevation, 1));
-         }
+         jpos.setElevation(ElevationBuilder.genericElevation(elevation));
       }
 
       return jpos;
@@ -54,31 +66,37 @@ public class Position3DBuilder {
 
    public static OdePosition3D odePosition3D(JsonNode jpos) {
 
-      JsonNode latitude = jpos.get("latitude");
-      JsonNode longitude = jpos.get("longitude");
-      JsonNode elevation = jpos.get("elevation");
+      BigDecimal latitude = null;
+      if (jpos.has(LATITUDE)) {
+        latitude = JsonUtils.decimalValue(jpos.get(LATITUDE));
+      }
       
-      OdePosition3D dPos = new OdePosition3D(
-         BigDecimal.valueOf(latitude.asDouble()),
-         BigDecimal.valueOf(longitude.asDouble()),
-         BigDecimal.valueOf(elevation.asDouble()));
+      BigDecimal longitude = null;
+      if (jpos.has(LONGITUDE)) {
+        longitude = JsonUtils.decimalValue(jpos.get(LONGITUDE));
+      }
       
-      return dPos;
+      BigDecimal elevation = null;
+      if (jpos.has(ELEVATION)) {
+        elevation = JsonUtils.decimalValue(jpos.get(ELEVATION));
+      }
+
+      return new OdePosition3D(latitude, longitude, elevation);
    }
 
-   public static DsrcPosition3D dsrcPosition3D(BigDecimal latitude, BigDecimal longitude, BigDecimal elevation) {
+   private static DsrcPosition3D dsrcPosition3D(BigDecimal latitude, BigDecimal longitude, BigDecimal elevation) {
       DsrcPosition3D dPos = new DsrcPosition3D();
 
       if (latitude != null) {
-         dPos.setLatitude(latitude.scaleByPowerOfTen(7).longValue());
+         dPos.setLatitude(LatitudeBuilder.j2735Latitude(latitude));
       }
 
       if (longitude != null) {
-         dPos.setLongitude(longitude.scaleByPowerOfTen(7).longValue());
+         dPos.setLongitude(LongitudeBuilder.j2735Longitude(longitude));
       }
 
       if (elevation != null) {
-         dPos.setElevation(elevation.scaleByPowerOfTen(1).longValue());
+         dPos.setElevation(ElevationBuilder.j2735Elevation(elevation));
       }
 
       return dPos;

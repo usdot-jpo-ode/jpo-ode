@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.util;
 
 import org.json.JSONObject;
@@ -6,6 +21,7 @@ import org.json.XML;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
@@ -67,14 +83,34 @@ public class XmlUtils {
       }
    }
 
-   public static String toXmlS(Object o) throws XmlUtilsException {
-      String xml;
-      try {
-         xml = staticXmlMapper.writeValueAsString(o);
-      } catch (Exception e) {
-         throw new XmlUtilsException("Error encoding object to XML", e);
-      }
-      return xml;
+   /**
+    * Embeds the arrayNode into an ObjectNode with the given childKey. By default a JSON array
+    * such as {"parent":[1, 2, 3,]} will be converted to:
+    *     <ObjectNode><parent>1</parent><parent>2</parent><parent>3</parent></ObjectNode>.
+    * This is not often desired as there is no paren object to encompass the array. By calling
+    * this method given childKey = "child" and arrayNode = [1, 2, 3,], method will return 
+    * {"parent":{"child":[1, 2, 3,]}} which as a result will be encoded to
+    *     <ObjectNode><parent><child>1</child><child>2</child><child>3</child></parent></ObjectNode>.
+    * Which is a more representative of the JSON ObjectNode.
+    *  
+    * @param childKey: The key to be given to the child array object
+    * @param arrayNode: The array node to be embedded in a ObjectNode
+    * @return OBjectNode representation of the given arrayNode redy to be converted to XML
+    */
+   public static ObjectNode createEmbeddedJsonArrayForXmlConversion(String childKey, JsonNode arrayNode) {
+       ObjectNode childNode = staticXmlMapper.createObjectNode();
+       childNode.set(childKey, arrayNode);
+       return childNode;
+   }
+
+   public static String toXmlStatic(Object o) throws XmlUtilsException {
+     String xml;
+     try {
+        xml = staticXmlMapper.writeValueAsString(o);
+     } catch (Exception e) {
+        throw new XmlUtilsException("Error encoding object to XML", e);
+     }
+     return xml;
    }
 
    public static Object fromXmlS(String xml, Class<?> clazz) throws XmlUtilsException {

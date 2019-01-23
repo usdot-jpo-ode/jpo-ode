@@ -1,0 +1,87 @@
+# DOCKER_SHARED_VOLUME_WINDOWS should be defined for Windows host machine as C: and not defined for Linux hosts
+
+version: '3'
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - "9092:9092"
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      ZK: ${DOCKER_HOST_IP}:2181
+      KAFKA_ADVERTISED_HOST_NAME: ${DOCKER_HOST_IP}
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_DELETE_TOPIC_ENABLED: "true"
+      KAFKA_CLEANUP_POLICY: "delete" # delete old logs
+      KAFKA_LOG_RETENTION_HOURS: 2
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 3000
+      KAFKA_RETENTION_MS: 7200000    # delete old logs after 2 hours
+      KAFKA_SEGMENT_MS:   7200000    # roll segment logs every 2 hours.
+                                     # This configuration controls the period of time after
+                                     # which Kafka will force the log to roll even if the segment
+                                     # file isn't full to ensure that retention can delete or compact old data.
+    depends_on:
+      - zookeeper
+    volumes:
+      - ${DOCKER_SHARED_VOLUME_WINDOWS}/var/run/docker.sock:/var/run/docker.sock
+
+  ode:
+    build: .
+    image: jpoode_ode:latest
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+      - "46753:46753/udp"
+      - "46800:46800/udp"
+      - "5555:5555/udp"
+      - "6666:6666/udp"
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      ZK: ${DOCKER_HOST_IP}:2181
+      ODE_DDS_CAS_USERNAME: ${ODE_DDS_CAS_USERNAME}
+      ODE_DDS_CAS_PASSWORD: ${ODE_DDS_CAS_PASSWORD}
+      ODE_SECURITY_SVCS_SIGNATURE_URI: ${ODE_SECURITY_SVCS_SIGNATURE_URI}
+      ODE_RSU_USERNAME: ${ODE_RSU_USERNAME}
+      ODE_RSU_PASSWORD: ${ODE_RSU_PASSWORD}
+# Commented out for latest schemaVersion. Uncomment to set for older schemaVersion
+#      ODE_OUTPUT_SCHEMA_VERSION: ${ODE_OUTPUT_SCHEMA_VERSION}
+    depends_on:
+      - kafka
+    volumes:
+      - ${DOCKER_SHARED_VOLUME}:/jpo-ode
+
+  adm:
+    build: ./asn1_codec
+    image: jpoode_acm:latest
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      ACM_CONFIG_FILE: adm.properties
+    depends_on:
+      - kafka
+    volumes:
+      - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
+
+  aem:
+    build: ./asn1_codec
+    image: jpoode_acm:latest
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      ACM_CONFIG_FILE: aem.properties
+    depends_on:
+      - kafka
+    volumes:
+      - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
+
+  sec:
+    build: ./jpo-security-svcs
+    image: jpoode_sec:latest
+    ports:
+     - "8090:8090"
+    environment:
+      SEC_CRYPTO_SERVICE_BASE_URI: ${SEC_CRYPTO_SERVICE_BASE_URI}

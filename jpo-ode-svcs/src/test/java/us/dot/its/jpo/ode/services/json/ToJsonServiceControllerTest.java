@@ -1,9 +1,19 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.services.json;
-//TODO
-//Redo this test the class being tested had changed 
-//
-//
-import org.junit.Ignore;
 import org.junit.Test;
 
 import mockit.Capturing;
@@ -23,22 +33,16 @@ public class ToJsonServiceControllerTest {
    @Capturing
    MessageConsumer<?, ?> capturingMessageConsumer;
    
-   @Ignore
    @Test
    public void test() {
       new Expectations() {
          {
             new ToJsonConverter<>((OdeProperties) any, anyBoolean, anyString);
-            times = 3;
+            times = 1;
 
             new MessageConsumer<>(anyString, anyString, (MessageProcessor<?, ?>) any, anyString);
-            times = 3;
+            times = 1;
 
-            capturingMessageConsumer.setName(anyString);
-            times = 3;
-
-            capturingToJsonConverter.start((MessageConsumer) any, anyString);
-            times = 3;
          }
       };
       new ToJsonServiceController(injectableOdeProperties);

@@ -1,22 +1,22 @@
 /*******************************************************************************
- * Copyright (c) 2015 US DOT - Joint Program Office
- *
- * The Government has unlimited rights to all documents/material produced under 
- * this task order. All documents and materials, to include the source code of 
- * any software produced under this contract, shall be Government owned and the 
- * property of the Government with all rights and privileges of ownership/copyright 
- * belonging exclusively to the Government. These documents and materials may 
- * not be used or sold by the Contractor without written permission from the CO.
- * All materials supplied to the Government shall be the sole property of the 
- * Government and may not be used for any other purpose. This right does not 
- * abrogate any other Government rights.
- *
- * Contributors:
- *     Booz | Allen | Hamilton - initial API and implementation
- *******************************************************************************/
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.util;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -65,21 +65,10 @@ public class JsonUtils {
       // convert java object to JSON format,
       // and returned as JSON formatted string
       return verbose ? gsonVerbose.toJson(o) : gsonCompact.toJson(o);
-      // String json = null;
-      // try {
-      // json = mapper.writeValueAsString(o);
-      // } catch (JsonProcessingException e) {
-      // e.printStackTrace();
-      // }
-      // return json;
    }
 
    public static Object fromJson(String s, Class<?> clazz) {
       return gsonCompact.fromJson(s, clazz);
-      /*
-       * Object o = null; try { o = mapper.readValue(s, clazz); } catch
-       * (IOException e) { e.printStackTrace(); } return o;
-       */
    }
    
    public static Object jacksonFromJson(String s, Class<?> clazz) throws JsonUtilsException {
@@ -88,33 +77,17 @@ public class JsonUtils {
       } catch (IOException e) {
          throw new JsonUtilsException("Error deserializing JSON tree to " + clazz.getName(), e);
       }
-      /*
-       * Object o = null; try { o = mapper.readValue(s, clazz); } catch
-       * (IOException e) { e.printStackTrace(); } return o;
-       */
    }
-
-   // This method does not seem to work so commenting it out.
-   // public static Object fromObjectNode(JsonNode s, Class<?> clazz) {
-   // Object o = null;
-   // try {
-   // o = mapper.treeToValue(s, clazz);
-   // } catch (IOException e) {
-   // e.printStackTrace();
-   // }
-   // return o;
-   // }
 
    public static String newJson(String key, Object value) {
       return newObjectNode(key, value).toString();
    }
 
+   public static ObjectNode cloneObjectNode(ObjectNode src) {
+      return src.deepCopy();
+   }
+   
    public static ObjectNode newObjectNode(String key, Object value) {
-
-      // JsonObject json = new JsonObject();
-      //
-      // json.add(key, gson.toJsonTree(value));
-
       ObjectNode json = mapper.createObjectNode();
       json.putPOJO(key, value);
       return json;
@@ -181,5 +154,27 @@ public class JsonUtils {
          nodeProps.put(element.getKey(), element.getValue());
       }
       return nodeProps;
+   }
+   
+   /**
+    * Takes in a key, value pair and returns a valid JSON string such as
+    * {"error":"message"}
+    * 
+    * @param key
+    * @param value
+    * @return
+    */
+   public static String jsonKeyValue(String key, String value) {
+      return "{\"" + key + "\":\"" + value + "\"}";
+   }
+   
+   public static BigDecimal decimalValue(JsonNode v) {
+     BigDecimal result;
+     if (v.isTextual()) {
+       result = new BigDecimal(v.textValue());
+     } else {
+       result = v.decimalValue();
+     }
+     return result;
    }
 }

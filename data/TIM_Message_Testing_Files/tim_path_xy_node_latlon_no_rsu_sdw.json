@@ -1,0 +1,117 @@
+{
+  "request": {
+    "sdw": {
+      "ttl": "oneweek",
+      "serviceRegion": {
+        "nwCorner": {
+          "latitude": "44.998459",
+          "longitude": "-111.040817"
+        },
+        "seCorner": {
+          "latitude": "41.104674",
+          "longitude": "-104.111312"
+        }
+      }
+    }
+  },
+  "tim": {
+    "msgCnt": "1",
+    "timeStamp": "2018-04-18T18:38:52.914Z",
+    "packetID": "0000002316f1b0eed3",
+    "urlB": "null",
+    "dataframes": [
+      {
+        "startDateTime": "2018-04-18T11:20-06:00",
+        "durationTime": 2000,
+        "frameType": "advisory",
+        "sspTimRights": "1",
+        "msgId": {
+          "roadSignID": {
+            "mutcdCode": "warning",
+            "viewAngle": "1111111111111111",
+            "position": {
+              "latitude": "41.113933",
+              "longitude": "-104.850772"
+            }
+          }
+        },
+        "priority": "5",
+        "sspLocationRights": "1",
+        "regions": [
+          {
+            "name": "southbound_Timberline_20_30_RSU-192.168.0.100",
+            "anchorPosition": {
+              "latitude": "40.573068",
+              "longitude": "-105.049016"
+            },
+            "laneWidth": "327",
+            "directionality": "3",
+            "closedPath": "false",
+            "description": "path",
+            "path": {
+              "type": "xy",
+              "nodes": [
+                {
+                  "nodeLong": "-105.047355",
+                  "nodeLat": "40.572429",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.046844",
+                  "nodeLat": "40.572228",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.04659",
+                  "nodeLat": "40.572113",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.046243",
+                  "nodeLat": "40.57191",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.045936",
+                  "nodeLat": "40.571675",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.045674",
+                  "nodeLat": "40.571422",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.04545",
+                  "nodeLat": "40.571131",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.045235",
+                  "nodeLat": "40.570724",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.045113",
+                  "nodeLat": "40.570293",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.045087",
+                  "nodeLat": "40.569848",
+                  "delta": "node-LatLon"
+                }
+              ]
+            },
+            "direction": "1111111111111111"
+          }
+        ],
+        "sspMsgTypes": "1",
+        "sspMsgContent": "1",
+        "content": "Advisory",
+        "items": ["125","some text", "250", "'98765"],
+        "url": "null"
+      }
+    ]
+  }
+}

@@ -1,6 +1,19 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.dds;
-
-import java.text.ParseException;
 
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
@@ -8,11 +21,7 @@ import javax.websocket.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oss.asn1.EncodeFailedException;
-import com.oss.asn1.EncodeNotSupportedException;
-
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.dds.DdsClient.DdsClientException;
 import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.model.AbstractWebSocketClient;
 import us.dot.its.jpo.ode.model.OdeDataType;
@@ -21,7 +30,6 @@ import us.dot.its.jpo.ode.model.OdeMessage;
 import us.dot.its.jpo.ode.model.OdeRequest.DataSource;
 import us.dot.its.jpo.ode.model.OdeRequestType;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
-import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
 import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
 
 public class DdsDepositor<T> extends AbstractWebSocketClient { // NOSONAR
@@ -43,18 +51,11 @@ public class DdsDepositor<T> extends AbstractWebSocketClient { // NOSONAR
       depRequest.setRequestType(OdeRequestType.Deposit);
    }
 
-   public void deposit(DdsAdvisorySituationData asdMsg) throws DdsRequestManagerException, DdsClientException,
-         WebSocketException, ParseException, EncodeFailedException, EncodeNotSupportedException {
-
-      setUpReqMgr();
-
-      depRequest.setData(asdMsg.getAsdmDetails().getAdvisoryMessageBytes());
-
-      this.requestManager.sendRequest(depRequest);
+   public void deposit(DdsAdvisorySituationData asdMsg) throws DdsRequestManagerException {
+      deposit(asdMsg.getAsdmDetails().getAdvisoryMessageBytes());
    }
 
-   public void deposit(String encodedAsdMsg) throws DdsRequestManagerException, DdsClientException,
-         WebSocketException, ParseException, EncodeFailedException, EncodeNotSupportedException {
+   public void deposit(String encodedAsdMsg) throws DdsRequestManagerException {
 
       setUpReqMgr();
 

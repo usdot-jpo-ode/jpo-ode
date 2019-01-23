@@ -1,0 +1,141 @@
+{
+  "request": {
+    "rsus": [
+      {
+        "rsuIndex": "10",
+        "rsuTarget": "127.0.0.1",
+        "rsuUsername": "v3user",
+        "rsuPassword": "password",
+        "rsuRetries": "0",
+        "rsuTimeout": "2000"
+      },
+      {
+        "rsuIndex": "10",
+        "rsuTarget": "127.0.0.2",
+        "rsuUsername": "v3user",
+        "rsuPassword": "password",
+        "rsuRetries": "1",
+        "rsuTimeout": "1000"
+      },
+      {
+        "rsuIndex": "10",
+        "rsuTarget": "127.0.0.3",
+        "rsuUsername": "v3user",
+        "rsuPassword": "password",
+        "rsuRetries": "1",
+        "rsuTimeout": "1000"
+      }
+    ],
+    "snmp": {
+      "rsuid": "00000083",
+      "msgid": "31",
+      "mode": "1",
+      "channel": "178",
+      "interval": "2",
+      "deliverystart": "2017-06-01T17:47:11-05:00",
+      "deliverystop": "2018-01-01T17:47:11-05:15",
+      "enable": "1",
+      "status": "4"
+    }
+  },
+  "tim": {
+    "msgCnt": "1",
+    "timeStamp": "2018-04-18T18:38:52.914Z",
+    "packetID": "0000002316f1b0eed3",
+    "urlB": "null",
+    "dataframes": [
+      {
+        "startDateTime": "2018-06-11T10:00-06:00",
+        "durationTime": 2000,
+        "frameType": "advisory",
+        "sspTimRights": "1",
+        "msgId": {
+          "roadSignID": {
+            "mutcdCode": "warning",
+            "viewAngle": "1111111111111111",
+            "position": {
+              "latitude": "40.573068",
+              "longitude": "-105.049016"
+            }
+          }
+        },
+        "priority": "5",
+        "sspLocationRights": "1",
+        "regions": [
+          {
+            "name": "southbound_Timberline_20_30_RSU-192.168.0.100",
+            "anchorPosition": {
+              "latitude": "40.573068",
+              "longitude": "-105.049016"
+            },
+            "laneWidth": "327",
+            "directionality": "3",
+            "closedPath": "false",
+            "description": "path",
+            "path": {
+              "type": "xy",
+              "nodes": [
+                {
+                  "nodeLong": "-105.047355",
+                  "nodeLat": "40.572429",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.046844",
+                  "nodeLat": "40.572228",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.04659",
+                  "nodeLat": "40.572113",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.046243",
+                  "nodeLat": "40.57191",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.045936",
+                  "nodeLat": "40.571675",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.045674",
+                  "nodeLat": "40.571422",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.04545",
+                  "nodeLat": "40.571131",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.045235",
+                  "nodeLat": "40.570724",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.045113",
+                  "nodeLat": "40.570293",
+                  "delta": "node-LatLon"
+                },
+                {
+                  "nodeLong": "-105.045087",
+                  "nodeLat": "40.569848",
+                  "delta": "node-LatLon"
+                }
+              ]
+            },
+            "direction": "1111111111111111"
+          }
+        ],
+        "sspMsgTypes": "1",
+        "sspMsgContent": "1",
+        "content": "Advisory",
+        "items": ["125","some text", "250", "'98765"],
+        "url": "null"
+      }
+    ]
+  }
+}

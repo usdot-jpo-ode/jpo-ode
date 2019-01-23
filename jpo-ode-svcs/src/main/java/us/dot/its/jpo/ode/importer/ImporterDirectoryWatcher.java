@@ -1,14 +1,25 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.importer;
-
-import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
-import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchEvent.Kind;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,87 +39,54 @@ public class ImporterDirectoryWatcher implements Runnable {
    private ImporterProcessor importerProcessor;
 
    private Path inbox;
-
    private Path backup;
+   private Path failed;
 
-   public ImporterDirectoryWatcher(OdeProperties odeProperties, Path dir, Path backupDir, ImporterFileType fileType) {
+   private ScheduledExecutorService executor;
+
+   private Integer timePeriod;
+
+   public ImporterDirectoryWatcher(OdeProperties odeProperties, Path dir, Path backupDir, Path failureDir, ImporterFileType fileType, Integer timePeriod) {
       this.inbox = dir;
       this.backup = backupDir;
+      this.failed = failureDir;
       this.watching = true;
+      this.timePeriod = timePeriod;
 
       try {
          OdeFileUtils.createDirectoryRecursively(inbox);
-         logger.debug("Created directory {}", inbox);
+         String msg = "Created directory {}";
+         logger.debug(msg, inbox);
+         OdeFileUtils.createDirectoryRecursively(failed);
+         logger.debug(msg, failed);
          OdeFileUtils.createDirectoryRecursively(backup);
-         logger.debug("Created directory {}", backup);
+         logger.debug(msg, backup);
       } catch (IOException e) {
          logger.error("Error creating directory: " + inbox, e);
       }
 
       this.importerProcessor = new ImporterProcessor(odeProperties, fileType);
+      
+      executor = Executors.newScheduledThreadPool(1);
    }
 
    @Override
    public void run() {
 
-      // Begin by processing all files already in the inbox
-      logger.info("Processing existing files in {}", inbox);
-      importerProcessor.processDirectory(inbox, backup);
+      logger.info("Processing inbox directory {} every {} seconds.", inbox, timePeriod);
 
-      // Create a generic watch service
-      WatchService watcher = null;
-      try {
-         watcher = inbox.getFileSystem().newWatchService();
-
-         WatchKey keyForTrackedDir = inbox.register(watcher, ENTRY_MODIFY);
-         if (keyForTrackedDir == null) {
-            throw new IOException("Watch key null");
-         }
-      } catch (IOException e) {
-         logger.error("Watch service failed to create: {}", e);
-         return;
-      }
-
-      logger.info("Watch service active on {}", inbox);
-
+      // ODE-646: the old method of watching the directory used file
+      // event notifications and was unreliable for large quantities of files
       // Watch directory for file events
-      while (isWatching()) {
-         pollDirectory(watcher);
-      }
-   }
-
-   public void pollDirectory(WatchService watcher) {
-      // wait for key to be signaled
-      WatchKey wk;
+      executor.scheduleWithFixedDelay(() -> importerProcessor.processDirectory(inbox, backup, failed),
+          0, timePeriod, TimeUnit.SECONDS);
+      
       try {
-         wk = watcher.take();
+         // This line will only execute in the event that .scheduleWithFixedDelay() throws an error
+         executor.awaitTermination(timePeriod, TimeUnit.SECONDS);
       } catch (InterruptedException e) {
          Thread.currentThread().interrupt();
-         logger.error("[CRITICAL] Watch service interrupted: {}", e);
-         return;
-      }
-
-      for (WatchEvent<?> event : wk.pollEvents()) {
-         Kind<?> kind = event.kind();
-
-         if (ENTRY_MODIFY == kind) {
-            logger.debug("Notable watch event kind: {}", event.kind());
-
-            @SuppressWarnings("unchecked")
-            WatchEvent<Path> ev = (WatchEvent<Path>) event;
-            Path filename = inbox.resolve(ev.context());
-            logger.debug("File event on {}", filename);
-
-            importerProcessor.processAndBackupFile(filename, backup);
-         } else if (OVERFLOW == kind) {
-            continue;
-         } else {
-            logger.error("Unhandled watch event kind: {}", event.kind());
-         }
-      }
-
-      if (!wk.reset()) {
-         logger.error("Failed to reset directory watcher.");
+         logger.error("Directory watcher polling loop interrupted!", e);
       }
    }
 

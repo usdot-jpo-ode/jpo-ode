@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
 import java.util.UUID;
@@ -17,17 +32,16 @@ public class SerialId {
 
    
    public SerialId() {
-      super();
       streamId = UUID.randomUUID().toString();
    }
 
    public SerialId(String streamId, int bundleSize, 
          long bundleId, int recordId) {
-      super();
+      this();
       if (streamId != null)
          this.streamId = streamId;
       else
-         this.streamId = "";
+         this.streamId = this.streamId + "_null";
       
       this.bundleSize = bundleSize;
       this.bundleId = bundleId + (recordId / this.bundleSize);
@@ -35,41 +49,26 @@ public class SerialId {
       this.serialNumber = calculateSerialNumber();
    }
 
-   public SerialId (String serialId) {
+   public SerialId (String serialId) throws Exception {
       
       String[] splitId  = serialId.split(
-            "[" + UUID_DELIMITER + SERIAL_NUMBER_DELIMITER +"]+");
-      if (splitId.length >= 1)
-         this.streamId     = splitId[0];
-      else
-         this.streamId     = serialId;
-
-      if (splitId.length >= 3)
-         this.serialNumber = Integer.parseInt(splitId[2]);
-      else
-         this.serialNumber = -1;
+            "[" + UUID_DELIMITER + SERIAL_NUMBER_DELIMITER + BUNDLE_RECORD_DELIMITER +"]+");
       
-      if (splitId.length >= 2)
-         splitId  = splitId[1].split(
-            "[" + BUNDLE_RECORD_DELIMITER +"]+");
+      if (splitId.length != 5) {
+         throw new Exception("Invalid serialId! Expected length 5 but was " + splitId.length);
+      }
       
-      if (splitId.length >= 1)
-         this.bundleSize   = Integer.parseInt(splitId[0]);
-      
-      if (splitId.length >= 2)
-         this.bundleId     = Long.parseLong(splitId[1]);
-      
-      if (splitId.length >= 3)
-         this.recordId     = Integer.parseInt(splitId[2]);
-
-      if (this.serialNumber == -1)
-         this.serialNumber = calculateSerialNumber();
+      this.streamId = splitId[0];
+      this.bundleSize = Integer.parseInt(splitId[1]);
+      this.bundleId = Integer.parseInt(splitId[2]);
+      this.recordId = Integer.parseInt(splitId[3]);
+      this.serialNumber = Integer.parseInt(splitId[4]);
    }
    
    public SerialId(String streamId, 
          int bundleSize, long bundleId, int recordId,
          long serialNumber) {
-      super();
+      
       this.streamId = streamId;
       this.bundleSize = bundleSize;
       this.bundleId = bundleId;
@@ -86,68 +85,7 @@ public class SerialId {
    }
 
    private long calculateSerialNumber() {
-      return this.bundleId * this.bundleSize + this.recordId;
-   }
-
-   public static SerialId create(String serialIdStr) throws Exception {
-      int bundleSize;
-      long bundleId;
-      int recordId;
-      try {
-         if (serialIdStr != null && !serialIdStr.equals("")) {
-            String[] splitId  = serialIdStr.split(
-                  "[" + UUID_DELIMITER + SERIAL_NUMBER_DELIMITER +"]+");
-            
-            if (splitId.length == 3) {
-               String streamId = splitId[0];
-               long serialNumber;
-               try {
-                  serialNumber = Integer.parseInt(splitId[2]);
-               } catch (Exception e) {
-                  throw new Exception("SerialId has Non-Numeric Serial Number: "
-                        + splitId[2], e);
-               }
-               splitId  = splitId[1].split(
-                     "[" + BUNDLE_RECORD_DELIMITER +"]+");
-               
-               if (splitId.length == 3) {
-                  try {
-                     bundleSize = Integer.parseInt(splitId[0]);
-                  } catch (Exception e) {
-                     throw new Exception("SerialId has Non-Numeric Bundle Size: "
-                           + splitId[0], e);
-                  }
-                  try {
-                     bundleId = Long.parseLong(splitId[1]);
-                  } catch (Exception e) {
-                     throw new Exception("SerialId has Non-Numeric Bundle ID: "
-                           + splitId[1], e);
-                  }
-                  try {
-                     recordId = Integer.parseInt(splitId[2]);
-                  } catch (Exception e) {
-                     throw new Exception("SerialId has Non-Numeric Record ID: "
-                           + splitId[2], e);
-                  }
-               } else {
-                  throw new Exception("Serial ID missing BundleSize.BundleId.RecordId");
-               }
-               
-               return new SerialId(streamId, 
-                     bundleSize, bundleId, recordId, 
-                     serialNumber);
-            } else {
-               throw new Exception("Serial ID missing StreamId, BundleSize.BundleId.RecordId and SerialNumber components");
-            }
-         } else {
-            throw new Exception("SerialId cannot be null or blank");
-         }
-      } catch (Exception e) {
-         throw new Exception("Serial ID Format Must be "
-               + "StreamId_BundleSize.BundleId.RecordId#SerialNumber"
-               + "where BundleSize, BundleId, RecordId and SerialNumber components"
-               + "are integer values", e);
-      }
+      return (this.bundleId * this.bundleSize) + this.recordId;
    }
 
    public int nextRecordId() {

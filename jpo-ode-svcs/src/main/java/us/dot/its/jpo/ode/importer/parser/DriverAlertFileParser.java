@@ -1,76 +1,77 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.importer.parser;
 
 import java.io.BufferedInputStream;
-import java.nio.ByteOrder;
-import java.util.Arrays;
 
-import us.dot.its.jpo.ode.util.CodecUtils;
+public class DriverAlertFileParser extends LogFileParser {
 
-public class DriverAlertFileParser extends TimLogFileParser {
+   private String alert;
 
-   private byte[] alert;
-
-   public DriverAlertFileParser(long bundleId) {
-      super(bundleId);
+   public DriverAlertFileParser() {
+      super();
+      setLocationParser(new LocationParser());
+      setTimeParser(new TimeParser());
+      setPayloadParser(new PayloadParser());
    }
 
    @Override
    public ParserStatus parseFile(BufferedInputStream bis, String fileName) throws FileParserException {
 
+      ParserStatus status;
       try {
          status = super.parseFile(bis, fileName);
-
          if (status != ParserStatus.COMPLETE)
             return status;
 
-         // Step 6 - parse utcTimeInSec
-         if (getStep() == 6) {
-            status = parseStep(bis, UTC_TIME_IN_SEC_LENGTH);
+         if (getStep() == 1) {
+            status = nextStep(bis, fileName, locationParser);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setUtcTimeInSec(CodecUtils.bytesToInt(readBuffer, 0, UTC_TIME_IN_SEC_LENGTH, ByteOrder.LITTLE_ENDIAN));
+         }
+         
+         if (getStep() == 2) {
+            status = nextStep(bis, fileName, timeParser);
+            if (status != ParserStatus.COMPLETE)
+               return status;
          }
 
-         // Step 7 - parse mSec
-         if (getStep() == 7) {
-            status = parseStep(bis, MSEC_LENGTH);
+         if (getStep() == 3) {
+            status = nextStep(bis, fileName, payloadParser);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setmSec(CodecUtils.bytesToShort(readBuffer, 0, MSEC_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            setAlert(payloadParser.getPayload());
          }
 
-         // Step 8 - parse alert length
-         if (getStep() == 8) {
-            status = parseStep(bis, LENGTH_LENGTH);
-            if (status != ParserStatus.COMPLETE)
-               return status;
-            setLength(CodecUtils.bytesToShort(readBuffer, 0, LENGTH_LENGTH, ByteOrder.LITTLE_ENDIAN));
-         }
-
-         // Step 9 - copy alert
-         if (getStep() == 9) {
-            status = parseStep(bis, getLength());
-            if (status != ParserStatus.COMPLETE)
-               return status;
-            setAlert(Arrays.copyOf(readBuffer, getLength()));
-         }
+         resetStep();
+         status = ParserStatus.COMPLETE;
 
       } catch (Exception e) {
          throw new FileParserException(String.format("Error parsing %s on step %d", fileName, getStep()), e);
       }
 
-      setStep(0);
-      status = ParserStatus.COMPLETE;
-
       return status;
    }
 
-   public byte[] getAlert() {
+   public String getAlert() {
       return alert;
    }
 
    public void setAlert(byte[] alert) {
-      this.alert = alert;
+      this.alert = new String(alert);
    }
 
 }

@@ -1,0 +1,1 @@
+docker run -it --env-file=.env -v %DOCKER_SHARED_VOLUME%:/ode_data -p "8080:8080" -p "9090:9090" -p "46753:46753/udp" jpoode_ode:latest %1

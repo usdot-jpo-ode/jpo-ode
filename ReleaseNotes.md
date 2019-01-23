@@ -1,5 +1,58 @@
 ## ODE Release Notes ##
-----------
+-----------------------
+### December 2018
+- ODE-466 serialId element of metadata will now provide a true serial number to help identify missing records.
+- ODE-964 Added ode.rsuUsername/ode.rsuPassword application properties or alternatively ODE_RSU_USERNAME and ODE_RSU_PASSWORD environment variables to authenticate communications with RSU instead of using the REST API parameters.
+- ODE-992 Added `/version` endpoint to get the version information of a running ODE.
+### November 2018
+- ODE-787 Publish J2735 version of Broadcast TIM in addition to the REST request version (see GitHub Issue #262). Please see https://github.com/usdot-jpo-ode/jpo-ode/wiki/Schema-Version-6-Change-Notice for details.
+### Sprint 38
+- ODE-769 Initiated output schema change SOP. See https://github.com/usdot-jpo-ode/jpo-ode/wiki/SchemaVersion-5-Change-Notice for details
+- ODE-771 Fixed PPM crash bug
+### Sprint 37
+- ODE-745	Updated ODE documentation to reflect actual implementation of the ODE output interface schema
+- ODE-763	Added support for TIMs with ITIS custom text
+- ODE-764	Fixed how Trailer Mass was calculated
+- ODE-768 Created a repository of ASN.1 schema files on usdot-jpo-ode GitHub organization based on scms-asn to eliminate dependency on CAMP SCMS and avoid build failures due to scms-asn site outages. All references to CAMP SCMS repository was changed to point to usdot-jpo-ode/scms-asn1 repository.
+### Sprint 36
+- ODE-741 Added capability to load Explicit Enrollment Certificates
+### Sprint 35
+- ODE-736 Added capability to configure Record ID of SDW TIMs
+### Sprint 34
+- ODE-733 Fixed a bug where single-byte OCTET STRINGs were being encoded incorrectly
+### Sprint 33
+- ODE-560 Added capability to Receive Compressed Log Files
+- ODE-707 Fixed a bug resulting in first TIM deposit after startup not propagating
+- ODE-725 Registered ODE in Code.gov
+### Sprint 32
+### Sprint 31
+- ODE-685 Added metadata field `bsmSource` to identify the source of the BSM as host (EV) or remote (RV). See https://github.com/usdot-jpo-ode/jpo-ode/wiki/Log-File-Changes-(schemaVersion=4) for details.
+- ODE-688 Deploed firehose into production for CVPEP and RDE
+- ODE-689 and ODE-690: Replaced boolean metadata field `validSignature` with integer `securityResultCode` to better convey the status of security validation. See https://github.com/usdot-jpo-ode/jpo-ode/wiki/Log-File-Changes-(schemaVersion=4) for details.
+- ODE-692 Improved AEM/ADM error handling for when connection with Kafka broker is interrupted
+### Sprint 30
+- ODE-680 Migrated SDW/SDC calls to new production endpoints
+### Sprint 29
+- ODE-675 CHanged jpo-S3-deposit module to send CVPEP data through AWS Firehose
+### Sprint 28
+- ODE-670 J2735TravelerInformationMessage.packetID needs to be BigInteger
+see https://github.com/usdot-jpo-ode/jpo-ode/wiki/TIM-REST-Endpoint-Changes for interface changes.
+### Sprint 27
+- ODE-661 CVPEP Data Inconsistency for TIM Files
+- ODE-657 Continue Supporting WyDOT issues
+- ODE-591 ORNL - Further generalize encoding and decoding capability of asn1_codec module
+### Sprint 26
+- ODE-646 Sirius XM Requires ASD messages to be wrapped in IEEE 1698.2 Data
+- ODE-645 Update Documentation for Metadata
+- ODE-642 Address SDW and RSU flexibility
+- ODE-632 ODE Error out on log files
+### Sprint 25
+- ODE-588 Free and Open Source ODE Minimum Viable Product
+- ODE-615 ORNL Implement SDW TIM encoding
+- ODE-587 Implement TIM data encoding through ASN.1 Encoder Module (AEM)
+- ODE-596 Support receiving and publishing of Driver Alert Messages
+- ODE-613 SDW Sending of TIM Messages using asn1_codec
+- ODE-631 Add capability to disable output topics
 ### Sprint 24
 - ODE-537 ASN1 CODEC Module development
 - ODE-543 Publish a defined v3 for metadata	Story	Medule
@@ -17,7 +70,7 @@
 ### Sprint 21
 - ODE-483 Implementing generatedAt field in the metadata for TIM
 - ODE-512	Support receiving WYDOT BSM Log files
-- 
+-
 ### Sprint 20
 - ODE-476 Change TIM schema to use real unit values
 - ODE-485 TIM S3 depositor service
@@ -37,7 +90,7 @@
 
 ### Sprint 15
 - ODE-381 Leidos Security Library Integration implementing 1609.2
--- As part of this new feature, the build process was updated in the [ODE README file](README.md) with additional steps for obtaining the source code and building the application. Please review the [Getting Started](https://github.com/usdot-jpo-ode/jpo-ode#getting-started) section for details. 
+-- As part of this new feature, the build process was updated in the [ODE README file](README.md) with additional steps for obtaining the source code and building the application. Please review the [Getting Started](https://github.com/usdot-jpo-ode/jpo-ode#getting-started) section for details.
 
 ### Sprint 14
 - ODE-312 Receiving Raw BSMs over UDP/IP (Phase 2)

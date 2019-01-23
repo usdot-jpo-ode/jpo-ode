@@ -1,95 +1,108 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.importer.parser;
 
 import java.io.BufferedInputStream;
-import java.nio.ByteOrder;
-import java.util.Arrays;
 
-import us.dot.its.jpo.ode.util.CodecUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import us.dot.its.jpo.ode.model.OdeBsmMetadata.BsmSource;
 
 public class BsmLogFileParser extends LogFileParser {
-   public enum BsmSource {
-      EV_TX, RV_RX
-   }
+   private static final Logger logger = LoggerFactory.getLogger(BsmLogFileParser.class);
 
    private static final int DIRECTION_LENGTH = 1;
 
-   private BsmSource direction; // 0 for EV(Tx), 1 for RV(Rx)
+   private BsmSource bsmSource; // 0 for EV(Tx), 1 for RV(Rx)
 
-   public BsmLogFileParser(long bundleId) {
-      super(bundleId);
+   public BsmLogFileParser() {
+      super();
+      setLocationParser(new LocationParser());
+      setTimeParser(new TimeParser());
+      setSecResCodeParser(new SecurityResultCodeParser());
+      setPayloadParser(new PayloadParser());
    }
 
    @Override
    public ParserStatus parseFile(BufferedInputStream bis, String fileName) throws FileParserException {
 
+      ParserStatus status;
       try {
-         super.parseFile(bis, fileName);
-         status = ParserStatus.INIT;
+         status = super.parseFile(bis, fileName);
+         if (status != ParserStatus.COMPLETE)
+            return status;
 
-         // Step 1
-         if (step == 1) {
+         if (getStep() == 1) {
             status = parseStep(bis, DIRECTION_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setDirection(BsmSource.values()[readBuffer[0]]);
+            setBsmSource(readBuffer);
          }
-         // Step 2
-         if (step == 2) {
-            status = parseStep(bis, UTC_TIME_IN_SEC_LENGTH);
+         
+         
+         if (getStep() == 2) {
+            status = nextStep(bis, fileName, locationParser);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setUtcTimeInSec(CodecUtils.bytesToInt(readBuffer, 0, UTC_TIME_IN_SEC_LENGTH, ByteOrder.LITTLE_ENDIAN));
          }
-         // Step 3
-         if (step == 3) {
-            status = parseStep(bis, MSEC_LENGTH);
+         
+         if (getStep() == 3) {
+            status = nextStep(bis, fileName, timeParser);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setmSec(CodecUtils.bytesToShort(readBuffer, 0, MSEC_LENGTH, ByteOrder.LITTLE_ENDIAN));
          }
-         // Step 4
-         if (step == 4) {
-            if (getDirection() == BsmSource.EV_TX) {
-               setValidSignature(true);
-               step++;
-            } else {
-               status = parseStep(bis, VERIFICATION_STATUS_LENGTH);
-               if (status != ParserStatus.COMPLETE)
-                  return status;
-               setValidSignature(readBuffer[0] == 0 ? false : true);
-            }
-         }
-         // Step 5
-         if (step == 5) {
-            status = parseStep(bis, LENGTH_LENGTH);
+
+         if (getStep() == 4) {
+            status = nextStep(bis, fileName, secResCodeParser);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setLength(CodecUtils.bytesToShort(readBuffer, 0, LENGTH_LENGTH, ByteOrder.LITTLE_ENDIAN));
          }
-         // Step 6
-         if (step == 6) {
-            status = parseStep(bis, getLength());
+
+         if (getStep() == 5) {
+            status = nextStep(bis, fileName, payloadParser);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setPayload(Arrays.copyOf(readBuffer, getLength()));
          }
+         
+         resetStep();
+         status = ParserStatus.COMPLETE;
+
       } catch (Exception e) {
          throw new FileParserException("Error parsing " + fileName, e);
       }
 
-      step = 0;
-      status = ParserStatus.COMPLETE;
-
       return status;
    }
 
-   public BsmSource getDirection() {
-      return direction;
+   public BsmSource getBsmSource() {
+      return bsmSource;
    }
 
-   public BsmLogFileParser setDirection(BsmSource direction) {
-      this.direction = direction;
-      return this;
+   public void setBsmSource(BsmSource bsmSource) {
+      this.bsmSource = bsmSource;
    }
 
+   public void setBsmSource(byte[] code) {
+      try {
+         setBsmSource(BsmSource.values()[code[0]]);
+      } catch (Exception e) {
+         logger.error("Invalid BsmSource: {}. Valid values are {}-{} inclusive", 
+            code, 0, BsmSource.values());
+         setBsmSource(BsmSource.unknown);
+      }
+   }
 }

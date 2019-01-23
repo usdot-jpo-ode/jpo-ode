@@ -1,26 +1,34 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import us.dot.its.jpo.ode.j2735.dsrc.DDateTime;
-import us.dot.its.jpo.ode.j2735.dsrc.DDay;
-import us.dot.its.jpo.ode.j2735.dsrc.DHour;
-import us.dot.its.jpo.ode.j2735.dsrc.DMinute;
-import us.dot.its.jpo.ode.j2735.dsrc.DMonth;
-import us.dot.its.jpo.ode.j2735.dsrc.DOffset;
-import us.dot.its.jpo.ode.j2735.dsrc.DSecond;
-import us.dot.its.jpo.ode.j2735.dsrc.DYear;
 import us.dot.its.jpo.ode.plugin.j2735.J2735DDateTime;
-import us.dot.its.jpo.ode.plugin.j2735.builders.DDateTimeBuilder;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
@@ -90,22 +98,14 @@ public class DDateTimeBuilderTest {
    @Test
    public void shouldReturnUndefinedDDateTimeYear() {
 
-      DYear testYear = new DYear(0);
-      DMonth testMonth = new DMonth(0);
-      DDay testDay = new DDay(0);
-      DHour testHour = new DHour(31);
-      DMinute testMinute = new DMinute(60);
-      DSecond testSecond = new DSecond(65535);
-      DOffset testOffset = new DOffset(0);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>0</year><month>0</month><day>0</day>"
+                     + "<hour>31</hour><minute>60</minute><second>65535</second><offset>0</offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -141,22 +141,14 @@ public class DDateTimeBuilderTest {
       Integer expectedSecond = 0;
       Integer expectedOffset = -840;
 
-      DYear testYear = new DYear(1);
-      DMonth testMonth = new DMonth(1);
-      DDay testDay = new DDay(1);
-      DHour testHour = new DHour(0);
-      DMinute testMinute = new DMinute(0);
-      DSecond testSecond = new DSecond(0);
-      DOffset testOffset = new DOffset(-840);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>1</year><month>1</month><day>1</day>"
+                     + "<hour>0</hour><minute>0</minute><second>0</second><offset>-840</offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -189,22 +181,14 @@ public class DDateTimeBuilderTest {
       Integer expectedSecond = 879;
       Integer expectedOffset = 45;
 
-      DYear testYear = new DYear(2016);
-      DMonth testMonth = new DMonth(7);
-      DDay testDay = new DDay(16);
-      DHour testHour = new DHour(11);
-      DMinute testMinute = new DMinute(2);
-      DSecond testSecond = new DSecond(879);
-      DOffset testOffset = new DOffset(45);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>2016</year><month>7</month><day>16</day>"
+                     + "<hour>11</hour><minute>2</minute><second>879</second><offset>45</offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -240,22 +224,14 @@ public class DDateTimeBuilderTest {
       Integer expectedSecond = 65534;
       Integer expectedOffset = 840;
 
-      DYear testYear = new DYear(4095);
-      DMonth testMonth = new DMonth(12);
-      DDay testDay = new DDay(31);
-      DHour testHour = new DHour(30);
-      DMinute testMinute = new DMinute(59);
-      DSecond testSecond = new DSecond(65534);
-      DOffset testOffset = new DOffset(840);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>4095</year><month>12</month><day>31</day>"
+                     + "<hour>30</hour><minute>59</minute><second>65534</second><offset>840</offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -279,23 +255,14 @@ public class DDateTimeBuilderTest {
     */
    @Test
    public void shouldThrowExceptionYearBelowLowerBound() {
-
-      DYear testYear = new DYear(-1);
-      DMonth testMonth = new DMonth(0);
-      DDay testDay = new DDay(0);
-      DHour testHour = new DHour(0);
-      DMinute testMinute = new DMinute(0);
-      DSecond testSecond = new DSecond(0);
-      DOffset testOffset = new DOffset(0);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>-1</year><month>0</month><day>0</day>"
+                     + "<hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -315,23 +282,14 @@ public class DDateTimeBuilderTest {
     */
    @Test
    public void shouldThrowExceptionYearAboveUpperBound() {
-
-      DYear testYear = new DYear(4096);
-      DMonth testMonth = new DMonth(0);
-      DDay testDay = new DDay(0);
-      DHour testHour = new DHour(0);
-      DMinute testMinute = new DMinute(0);
-      DSecond testSecond = new DSecond(0);
-      DOffset testOffset = new DOffset(0);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>4096</year><month>0</month><day>0</day>"
+                     + "<hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -350,23 +308,14 @@ public class DDateTimeBuilderTest {
     */
    @Test
    public void shouldThrowExceptionMonthBelowLowerBound() {
-
-      DYear testYear = new DYear(0);
-      DMonth testMonth = new DMonth(-1);
-      DDay testDay = new DDay(0);
-      DHour testHour = new DHour(0);
-      DMinute testMinute = new DMinute(0);
-      DSecond testSecond = new DSecond(0);
-      DOffset testOffset = new DOffset(0);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>0</year><month>-1</month><day>0</day>"
+                     + "<hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -385,23 +334,14 @@ public class DDateTimeBuilderTest {
     */
    @Test
    public void shouldThrowExceptionMonthAboveUpperBound() {
-
-      DYear testYear = new DYear(0);
-      DMonth testMonth = new DMonth(13);
-      DDay testDay = new DDay(0);
-      DHour testHour = new DHour(0);
-      DMinute testMinute = new DMinute(0);
-      DSecond testSecond = new DSecond(0);
-      DOffset testOffset = new DOffset(0);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>0</year><month>13</month><day>0</day>"
+                     + "<hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -420,23 +360,14 @@ public class DDateTimeBuilderTest {
     */
    @Test
    public void shouldThrowExceptionDayBelowLowerBound() {
-
-      DYear testYear = new DYear(0);
-      DMonth testMonth = new DMonth(0);
-      DDay testDay = new DDay(-1);
-      DHour testHour = new DHour(0);
-      DMinute testMinute = new DMinute(0);
-      DSecond testSecond = new DSecond(0);
-      DOffset testOffset = new DOffset(0);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>0</year><month>0</month><day>-1</day>"
+                     + "<hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -455,23 +386,14 @@ public class DDateTimeBuilderTest {
     */
    @Test
    public void shouldThrowExceptionDayAboveUpperBound() {
-
-      DYear testYear = new DYear(0);
-      DMonth testMonth = new DMonth(0);
-      DDay testDay = new DDay(32);
-      DHour testHour = new DHour(0);
-      DMinute testMinute = new DMinute(0);
-      DSecond testSecond = new DSecond(0);
-      DOffset testOffset = new DOffset(0);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>0</year><month>0</month><day>32</day>"
+                     + "<hour>0</hour><minute>0</minute><second>0</second><offset>0</offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -490,23 +412,14 @@ public class DDateTimeBuilderTest {
     */
    @Test
    public void shouldThrowExceptionHourBelowLowerBound() {
-
-      DYear testYear = new DYear(0);
-      DMonth testMonth = new DMonth(0);
-      DDay testDay = new DDay(0);
-      DHour testHour = new DHour(-1);
-      DMinute testMinute = new DMinute(0);
-      DSecond testSecond = new DSecond(0);
-      DOffset testOffset = new DOffset(0);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>0</year><month>0</month><day>0</day>"
+                     + "<hour>-1</hour><minute>0</minute><second>0</second><offset>0</offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -525,23 +438,14 @@ public class DDateTimeBuilderTest {
     */
    @Test
    public void shouldThrowExceptionHourAboveUpperBound() {
-
-      DYear testYear = new DYear(0);
-      DMonth testMonth = new DMonth(0);
-      DDay testDay = new DDay(0);
-      DHour testHour = new DHour(32);
-      DMinute testMinute = new DMinute(0);
-      DSecond testSecond = new DSecond(0);
-      DOffset testOffset = new DOffset(0);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>0</year><month>0</month><day>0</day>"
+                     + "<hour>32</hour><minute>0</minute><second>0</second><offset>0</offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -560,23 +464,14 @@ public class DDateTimeBuilderTest {
     */
    @Test
    public void shouldThrowExceptionMinuteBelowLowerBound() {
-
-      DYear testYear = new DYear(0);
-      DMonth testMonth = new DMonth(0);
-      DDay testDay = new DDay(0);
-      DHour testHour = new DHour(0);
-      DMinute testMinute = new DMinute(-1);
-      DSecond testSecond = new DSecond(0);
-      DOffset testOffset = new DOffset(0);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>0</year><month>0</month><day>0</day>"
+                     + "<hour>0</hour><minute>-1</minute><second>65536</second>0<offset></offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -595,23 +490,14 @@ public class DDateTimeBuilderTest {
     */
    @Test
    public void shouldThrowExceptionMinuteAboveUpperBound() {
-
-      DYear testYear = new DYear(0);
-      DMonth testMonth = new DMonth(0);
-      DDay testDay = new DDay(0);
-      DHour testHour = new DHour(0);
-      DMinute testMinute = new DMinute(61);
-      DSecond testSecond = new DSecond(0);
-      DOffset testOffset = new DOffset(0);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>0</year><month>0</month><day>0</day>"
+                     + "<hour>0</hour><minute>61</minute><second>0</second><offset>0</offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -630,23 +516,14 @@ public class DDateTimeBuilderTest {
     */
    @Test
    public void shouldThrowExceptionSecondBelowLowerBound() {
-
-      DYear testYear = new DYear(0);
-      DMonth testMonth = new DMonth(0);
-      DDay testDay = new DDay(0);
-      DHour testHour = new DHour(0);
-      DMinute testMinute = new DMinute(0);
-      DSecond testSecond = new DSecond(-1);
-      DOffset testOffset = new DOffset(0);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>0</year><month>0</month><day>0</day>"
+                     + "<hour>0</hour><minute>0</minute><second>-1</second><offset>0</offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -665,23 +542,14 @@ public class DDateTimeBuilderTest {
     */
    @Test
    public void shouldThrowExceptionSecondAboveUpperBound() {
-
-      DYear testYear = new DYear(0);
-      DMonth testMonth = new DMonth(0);
-      DDay testDay = new DDay(0);
-      DHour testHour = new DHour(0);
-      DMinute testMinute = new DMinute(0);
-      DSecond testSecond = new DSecond(65536);
-      DOffset testOffset = new DOffset(0);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>0</year><month>0</month><day>0</day>"
+                     + "<hour>0</hour><minute>0</minute><second>65536</second><offset></offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -700,23 +568,14 @@ public class DDateTimeBuilderTest {
     */
    @Test
    public void shouldThrowExceptionOffsetBelowLowerBound() {
-
-      DYear testYear = new DYear(0);
-      DMonth testMonth = new DMonth(0);
-      DDay testDay = new DDay(0);
-      DHour testHour = new DHour(0);
-      DMinute testMinute = new DMinute(0);
-      DSecond testSecond = new DSecond(0);
-      DOffset testOffset = new DOffset(-841);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>0</year><month>0</month><day>0</day>"
+                     + "<hour>0</hour><minute>0</minute><second>0</second><offset>-841</offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -736,22 +595,14 @@ public class DDateTimeBuilderTest {
    @Test
    public void shouldThrowExceptionOffsetAboveUpperBound() {
 
-      DYear testYear = new DYear(-1);
-      DMonth testMonth = new DMonth(0);
-      DDay testDay = new DDay(0);
-      DHour testHour = new DHour(0);
-      DMinute testMinute = new DMinute(0);
-      DSecond testSecond = new DSecond(0);
-      DOffset testOffset = new DOffset(840);
-
       JsonNode testDDateTime = null;
 
       try {
          testDDateTime = (JsonNode) XmlUtils
-               .fromXmlS("<DDateTime>" + "<year>" + testYear.intValue() + "</year>" + "<month>" + testMonth.intValue()
-                     + "</month>" + "<day>" + testDay.intValue() + "</day>" + "<hour>" + testHour.intValue() + "</hour>"
-                     + "<minute>" + testMinute.intValue() + "</minute>" + "<second>" + testSecond.intValue()
-                     + "</second>" + "<offset>" + testOffset.intValue() + "</offset>" + "</DDateTime>", JsonNode.class);
+               .fromXmlS("<DDateTime>"
+                     + "<year>-1</year><month>0</month><day>0</day>"
+                     + "<hour>0</hour><minute>0</minute><second>0</second><offset>840</offset>"
+                     + "</DDateTime>", JsonNode.class);
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }

@@ -1,8 +1,21 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.importer.parser;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
@@ -13,14 +26,15 @@ import org.junit.Test;
 
 import mockit.Injectable;
 import mockit.Tested;
-import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser.BsmSource;
 import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
+import us.dot.its.jpo.ode.model.OdeBsmMetadata.BsmSource;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
 
 public class BsmFileParserTest {
 
    @Tested
-   BsmLogFileParser testBsmFileParser;
+   BsmLogFileParser bsmFileParser;
    @Injectable long bundleId;
    
 
@@ -35,12 +49,58 @@ public class BsmFileParserTest {
       BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
 
       try {
-         testBsmFileParser.setStep(7);
-         assertEquals(expectedStatus, testBsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         bsmFileParser.setStep(7);
+         assertEquals(expectedStatus, bsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
 
+   }
+
+   /**
+    * Step 1 test. Should extract the "location->latitude" value, length 4
+    * bytes, then return EOF.
+    */
+   @Test
+   public void testAll() {
+
+      ParserStatus expectedStatus = ParserStatus.COMPLETE;
+      byte[] expectedPayload = new byte[] { (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 };
+      int expectedStep = 0;
+
+      BufferedInputStream testInputStream = new BufferedInputStream(
+         new ByteArrayInputStream(new byte[] { 
+               (byte)0x00,                                     //1. direction 
+               (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //2.0 latitude
+               (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //2.1 longitude
+               (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //2.3 elevation
+               (byte)0x04, (byte)0x00,                         //2.3 speed
+               (byte)0x09, (byte)0x27,                         //2.4 heading
+               (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //3. utcTimeInSec
+               (byte)0x8f, (byte)0x01,                         //4. mSec
+               (byte)0x00,                                     //5. securityResultCode
+               (byte)0x06, (byte)0x00,                         //6.0 payloadLength
+                                                               //6.1 payload
+               (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
+               }));
+
+      try {
+         assertEquals(expectedStatus, bsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         assertEquals(BsmSource.EV, bsmFileParser.getBsmSource());
+         assertEquals(424506735L, bsmFileParser.getLocationParser().getLocation().getLatitude());
+         assertEquals(-832790108L, bsmFileParser.getLocationParser().getLocation().getLongitude());
+         assertEquals(1639L, bsmFileParser.getLocationParser().getLocation().getElevation());
+         assertEquals(4, bsmFileParser.getLocationParser().getLocation().getSpeed());
+         assertEquals(9993, bsmFileParser.getLocationParser().getLocation().getHeading());
+         assertEquals(1524772009, bsmFileParser.getTimeParser().getUtcTimeInSec());
+         assertEquals(399, bsmFileParser.getTimeParser().getmSec());
+         assertEquals(SecurityResultCode.success, bsmFileParser.getSecResCodeParser().getSecurityResultCode());
+         assertEquals(6, bsmFileParser.getPayloadParser().getPayloadLength());
+         assertEquals(HexUtils.toHexString(expectedPayload), HexUtils.toHexString(bsmFileParser.getPayloadParser().getPayload()));
+         assertEquals(expectedStep, bsmFileParser.getStep());
+      } catch (FileParserException e) {
+         fail("Unexpected exception: " + e);
+      }
    }
 
    /**
@@ -57,251 +117,81 @@ public class BsmFileParserTest {
       BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
 
       try {
-         assertEquals(expectedStatus, testBsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(testFileName, testBsmFileParser.getFilename());
-         assertEquals(expectedStep, testBsmFileParser.getStep());
+         assertEquals(expectedStatus, bsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         assertEquals(testFileName, bsmFileParser.getFilename());
+         assertEquals(expectedStep, bsmFileParser.getStep());
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
 
    /**
-    * Step 1 test. Should extract the "direction" value, length 1 byte, then
-    * return EOF.
+    * Step 1 test. Should extract BsmSource.RV and return EOF.
     */
    @Test
-   public void testStep1() {
+   public void testDirectionEV() {
 
-      int testDirection = 1;
+      int testDirection = 0;
       ParserStatus expectedStatus = ParserStatus.EOF;
-      BsmSource expectedDirection = BsmSource.RV_RX;
+      BsmSource expectedDirection = BsmSource.EV;
       int expectedStep = 2;
 
       BufferedInputStream testInputStream = new BufferedInputStream(
             new ByteArrayInputStream(new byte[] { (byte) testDirection }));
 
       try {
-         assertEquals(expectedStatus, testBsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedDirection, testBsmFileParser.getDirection());
-         assertEquals(expectedStep, testBsmFileParser.getStep());
+         assertEquals(expectedStatus, bsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedDirection, bsmFileParser.getBsmSource());
+         assertEquals(expectedStep, bsmFileParser.getStep());
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
 
    /**
-    * Step 2 test. Should extract UTC time, 4 byte value, then return EOF.
+    * Step 1 test. Should extract BsmSource.RV and return EOF.
     */
    @Test
-   public void testStep2() {
+   public void testDirectionRV() {
+
+      int testDirection = 1;
       ParserStatus expectedStatus = ParserStatus.EOF;
-      long expectedUtcTime = 33752069L; // 5,4,3,2 backwards as bytes
-      int expectedStep = 3;
-
-      BufferedInputStream testInputStream = new BufferedInputStream(
-            new ByteArrayInputStream(new byte[] { 0, 5, 4, 3, 2 }));
-
-      try {
-         assertEquals(expectedStatus, testBsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedUtcTime, testBsmFileParser.getUtcTimeInSec());
-         assertEquals(expectedStep, testBsmFileParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
-
-   /**
-    * Step 2 test without enough bytes, should return PARTIAL
-    */
-   @Test
-   public void testStep2Partial() {
-      ParserStatus expectedStatus = ParserStatus.PARTIAL;
+      BsmSource expectedDirection = BsmSource.RV;
       int expectedStep = 2;
 
       BufferedInputStream testInputStream = new BufferedInputStream(
-            new ByteArrayInputStream(new byte[] { 0, 5, 4, 3 }));
+            new ByteArrayInputStream(new byte[] { (byte) testDirection }));
 
       try {
-         assertEquals(expectedStatus, testBsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals("Wrong step", expectedStep, testBsmFileParser.getStep());
+         assertEquals(expectedStatus, bsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedDirection, bsmFileParser.getBsmSource());
+         assertEquals(expectedStep, bsmFileParser.getStep());
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
 
    /**
-    * Step 3 test. Should extract millisecond offset
+    * Step 1 test. Should extract BsmSource.unknown and return EOF.
     */
    @Test
-   public void testStep3() {
+   public void testDirectionUnknown() {
+
+      int testDirection = 111;
       ParserStatus expectedStatus = ParserStatus.EOF;
-      short expectedMsec = 0x0C0F; // 15, 12 backwards as bytes
-      int expectedStep = 4;
+      BsmSource expectedDirection = BsmSource.unknown;
+      int expectedStep = 2;
 
       BufferedInputStream testInputStream = new BufferedInputStream(
-            new ByteArrayInputStream(new byte[] { 1, 5, 4, 3, 2, 0xF, 0xC }));
+            new ByteArrayInputStream(new byte[] { (byte) testDirection }));
 
       try {
-         assertEquals(expectedStatus, testBsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedMsec, testBsmFileParser.getmSec());
-         assertEquals("Wrong step", expectedStep, testBsmFileParser.getStep());
+         assertEquals(expectedStatus, bsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
+         assertEquals(expectedDirection, bsmFileParser.getBsmSource());
+         assertEquals(expectedStep, bsmFileParser.getStep());
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
    }
 
-   /**
-    * Step 3 partial test
-    */
-   @Test
-   public void testStep3Partial() {
-      ParserStatus expectedStatus = ParserStatus.PARTIAL;
-      int expectedStep = 3;
-
-      BufferedInputStream testInputStream = new BufferedInputStream(
-            new ByteArrayInputStream(new byte[] { 1, 5, 4, 3, 2, 0xF }));
-
-      try {
-         assertEquals(expectedStatus, testBsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals("Wrong step", expectedStep, testBsmFileParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
-
-   /**
-    * Step 4 test. Test EV_TX defaults to valid signature.
-    */
-   @Test
-   public void testStep4EV_TX() {
-
-      BufferedInputStream testInputStream = new BufferedInputStream(
-            new ByteArrayInputStream(new byte[] { 0, 5, 4, 3, 2, 15, 12, 1 }));
-
-      try {
-         testBsmFileParser.parseFile(testInputStream, "testLogFile.bin");
-         assertTrue(testBsmFileParser.isValidSignature());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
-
-   /**
-    * Step 4 test. Test EV_RX contains valid signature
-    */
-   @Test
-   public void testStep4RXValid() {
-      ParserStatus expectedStatus = ParserStatus.EOF;
-
-      BufferedInputStream testInputStream = new BufferedInputStream(
-            new ByteArrayInputStream(new byte[] { 1, 5, 4, 3, 2, 15, 12, 1 }));
-
-      try {
-         assertEquals(expectedStatus, testBsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertTrue(testBsmFileParser.isValidSignature());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
-
-   /**
-    * Step 4 test. Test EV_RX contains invalid signature
-    */
-   @Test
-   public void testStep4RXInvalid() {
-      ParserStatus expectedStatus = ParserStatus.EOF;
-
-      BufferedInputStream testInputStream = new BufferedInputStream(
-            new ByteArrayInputStream(new byte[] { 1, 5, 4, 3, 2, 15, 12, 0 }));
-
-      try {
-         assertEquals(expectedStatus, testBsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertFalse(testBsmFileParser.isValidSignature());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
-      }
-   }
-
-   /**
-    * Step 5 test. Should extract length field
-    */
-   @Test
-   public void testStep5() {
-
-      ParserStatus expectedStatus = ParserStatus.EOF;
-      short expectedLength = 0x0100;
-      int expectedStep = 6;
-
-      BufferedInputStream testInputStream = new BufferedInputStream(
-            new ByteArrayInputStream(new byte[] { 0, 5, 4, 3, 2, 15, 12, 0x0, 0x1 }));
-
-      try {
-         assertEquals(expectedStatus, testBsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedLength, testBsmFileParser.getLength());
-         assertEquals("Wrong step", expectedStep, testBsmFileParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e.getCause());
-      }
-   }
-
-   /**
-    * Step 5 partial test.
-    */
-   @Test
-   public void testStep5Partial() {
-      ParserStatus expectedStatus = ParserStatus.PARTIAL;
-      int expectedStep = 5;
-
-      BufferedInputStream testInputStream = new BufferedInputStream(
-            new ByteArrayInputStream(new byte[] { 0, 5, 4, 3, 2, 15, 12, 0x0 }));
-
-      try {
-         assertEquals(expectedStatus, testBsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals("Wrong step", expectedStep, testBsmFileParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e.getCause());
-      }
-   }
-
-   /**
-    * Step 6 test. Should extract payload field
-    */
-   @Test
-   public void testStep6() {
-
-      ParserStatus expectedStatus = ParserStatus.COMPLETE;
-      short expectedLength = 2;
-      byte[] expectedPayload = new byte[] { 0xF, 0xA };
-      int expectedStep = 0;
-
-      BufferedInputStream testInputStream = new BufferedInputStream(
-            new ByteArrayInputStream(new byte[] { 0, 5, 4, 3, 2, 15, 12, 2, 0, 0xF, 0xA }));
-
-      try {
-         assertEquals(expectedStatus, testBsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(expectedLength, testBsmFileParser.getLength());
-         assertEquals(HexUtils.toHexString(expectedPayload), HexUtils.toHexString(testBsmFileParser.getPayload()));
-         assertEquals("Wrong step", expectedStep, testBsmFileParser.getStep());
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e.getCause());
-      }
-   }
-
-   /**
-    * Step 6 partial test
-    */
-   @Test
-   public void testStep6Partial() {
-
-      ParserStatus expectedStatus = ParserStatus.PARTIAL;
-
-      BufferedInputStream testInputStream = new BufferedInputStream(
-            new ByteArrayInputStream(new byte[] { 0, 5, 4, 3, 2, 15, 12, 2, 0, 0xF }));
-
-      try {
-         assertEquals(expectedStatus, testBsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e.getCause());
-      }
-   }
 }

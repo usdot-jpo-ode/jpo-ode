@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.heartbeat;
 
 import org.slf4j.Logger;
@@ -8,9 +23,7 @@ import org.snmp4j.Snmp;
 import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.SecurityLevel;
-import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
 import org.snmp4j.smi.OID;
@@ -19,14 +32,12 @@ import org.snmp4j.smi.VariableBinding;
 
 public class RsuSnmp {
 
-    private static final String SNMP_USER = "v3user";
-    private static final String SNMP_PASS = "password";
     private static Logger logger = LoggerFactory.getLogger(RsuSnmp.class);
 
     private RsuSnmp() {
     }
 
-    public static String sendSnmpV3Request(String ip, String oid, Snmp snmp) {
+    public static String sendSnmpV3Request(String ip, String oid, Snmp snmp, String username) {
 
         if (ip == null || oid == null || snmp == null) {
             logger.debug("Invalid SNMP request parameter");
@@ -35,16 +46,16 @@ public class RsuSnmp {
         
         // Setup snmp request
         Address targetAddress = GenericAddress.parse(ip + "/161");
-        snmp.getUSM().addUser(new OctetString(SNMP_USER),
-                new UsmUser(new OctetString(SNMP_USER), AuthMD5.ID, new OctetString(SNMP_PASS), null, null));
 
         UserTarget target = new UserTarget();
         target.setAddress(targetAddress);
         target.setRetries(1);
         target.setTimeout(2000);
         target.setVersion(SnmpConstants.version3);
-        target.setSecurityLevel(SecurityLevel.AUTH_NOPRIV);
-        target.setSecurityName(new OctetString(SNMP_USER));
+        if (username != null) {
+            target.setSecurityLevel(SecurityLevel.AUTH_NOPRIV);
+            target.setSecurityName(new OctetString(username));
+        }
 
         PDU pdu = new ScopedPDU();
         pdu.add(new VariableBinding(new OID(oid)));
@@ -57,7 +68,7 @@ public class RsuSnmp {
             snmp.close();
         } catch (Exception e) {
             responseEvent = null;
-            logger.debug("SNMP4J library exception: " + e);
+            logger.debug("SNMP4J library exception", e);
         }
 
         // Interpret snmp response

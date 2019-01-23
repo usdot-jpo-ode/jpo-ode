@@ -1,8 +1,28 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.inet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -10,21 +30,30 @@ import java.util.Arrays;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import mockit.Capturing;
 import us.dot.its.jpo.ode.util.CodecUtils;
 
-@Ignore // functional test
 public class InetPacketFunctionalTest {
+   
+   @Capturing
+   DatagramSocket capturingDatagramSocket;
+   
+   @Capturing
+   DatagramPacket capturingDatagramPacket;
+   
+   @Capturing
+   Thread capturingThread;
 
-	private static boolean isVerbose = true;
+	private static boolean isVerbose = false;
 	
-	@Test
+  @Test
 	public void testConstrcutor() throws UnknownHostException {
 	   InetPacket pkt = new InetPacket("bah.com", 1111, null);
 	   
 	   assertNull(pkt.getPayload());
 	}
 	
-	@Test
+	@Test @Ignore
 	public void test() throws UnknownHostException {
 		test("127.0.0.1", 12, "01234567890".getBytes());
 		test("::1", 47561, "0123456789001234567890".getBytes());
