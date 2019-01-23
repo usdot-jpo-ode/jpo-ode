@@ -17,6 +17,8 @@ uploads
 /*.versionsBackup
 /*.releaseBackup
 /.env
+settings.xml
+/.settings
 
 ####################
 ### jpo-ode-svcs ###
