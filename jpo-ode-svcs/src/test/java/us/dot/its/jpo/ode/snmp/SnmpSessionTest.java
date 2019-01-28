@@ -1,15 +1,31 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.snmp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.snmp4j.PDU;
+import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.UserTarget;
@@ -20,6 +36,8 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.SNMP;
+import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
 
 public class SnmpSessionTest {
 	RSU testProps;
@@ -63,7 +81,6 @@ public class SnmpSessionTest {
 
 		PDU mockPDU = Mockito.mock(PDU.class);
 		Snmp mockSnmp = Mockito.mock(Snmp.class);
-		TransportMapping mockTransport = Mockito.mock(TransportMapping.class);
 		UserTarget mockTarget = Mockito.mock(UserTarget.class);
 
 		try {
@@ -87,8 +104,7 @@ public class SnmpSessionTest {
 		assertEquals(mockUserTarget, snmpSession.getTarget());
 	}
 
-	@Ignore // TODO update this test
-	@Test(expected = IOException.class)
+  @Test(expected = IOException.class)
 	public void testResponseEventUDPException(@Mocked Snmp mockSnmp, @Mocked TransportMapping mockTransportMapping,
 			@Mocked UserTarget mockUserTarget, @Mocked PDU mockPDU) throws IOException {
 
@@ -98,11 +114,12 @@ public class SnmpSessionTest {
 				result = new IOException();
 			}
 		};
+		snmpSession.setTransport(mockTransportMapping);
 		snmpSession.set(mockPDU, mockSnmp, mockUserTarget, false);
 	}
 
 	@Test(expected = IOException.class)
-	public void testResponseEventSNMPException(@Mocked Snmp mockSnmp, @Mocked TransportMapping mockTransportMapping,
+	public void testResponseEventSNMPException(@Mocked Snmp mockSnmp,
 			@Mocked UserTarget mockUserTarget, @Mocked PDU mockPDU) throws IOException {
 
 		new Expectations() {
@@ -113,4 +130,36 @@ public class SnmpSessionTest {
 		};
 		snmpSession.set(mockPDU, mockSnmp, mockUserTarget, false);
 	}
+
+   @Test
+   public void shouldCreatePDU() throws ParseException {
+
+      String expectedResult = "[1.0.15628.4.1.4.1.2.3 = 11, 1.0.15628.4.1.4.1.3.3 = 2, 1.0.15628.4.1.4.1.4.3 = 3, 1.0.15628.4.1.4.1.5.3 = 4, 1.0.15628.4.1.4.1.6.3 = 5, 1.0.15628.4.1.4.1.7.3 = 0c:02:14:11:11:2f, 1.0.15628.4.1.4.1.8.3 = 0c:02:14:11:11:2f, 1.0.15628.4.1.4.1.9.3 = 88, 1.0.15628.4.1.4.1.10.3 = 9, 1.0.15628.4.1.4.1.11.3 = 10]";
+      String expectedResult2 = "[1.0.15628.4.1.4.1.2.3 = 11, 1.0.15628.4.1.4.1.3.3 = 2, 1.0.15628.4.1.4.1.4.3 = 3, 1.0.15628.4.1.4.1.5.3 = 4, 1.0.15628.4.1.4.1.6.3 = 5, 1.0.15628.4.1.4.1.7.3 = 0c:02:14:11:11:2f, 1.0.15628.4.1.4.1.8.3 = 0c:02:14:11:11:2f, 1.0.15628.4.1.4.1.9.3 = 88, 1.0.15628.4.1.4.1.10.3 = 9]";
+
+      
+      String rsuSRMPsid = "11";
+      int rsuSRMDsrcMsgId = 2;
+      int rsuSRMTxMode = 3;
+      int rsuSRMTxChannel = 4;
+      int rsuSRMTxInterval = 5;
+      String rsuSRMPayload = "88";
+      int rsuSRMEnable = 9;
+      int rsuSRMStatus = 10;
+
+      SNMP testParams = new SNMP(
+            rsuSRMPsid, rsuSRMDsrcMsgId, rsuSRMTxMode, rsuSRMTxChannel,
+            rsuSRMTxInterval, "2017-12-02T17:47:11-05:00", "2017-12-02T17:47:11-05:00", 
+            rsuSRMEnable, rsuSRMStatus);
+
+      ScopedPDU result = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.POST);
+
+      assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result.getType());
+      assertEquals(expectedResult, result.getVariableBindings().toString());
+
+      ScopedPDU result2 = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.GET);
+
+      assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result2.getType());
+      assertEquals(expectedResult2, result2.getVariableBindings().toString());
+   }
 }

@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -8,6 +23,13 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735TimeConfidence;
 
 public class FullPositionVectorBuilder {
     
+    private static final String UTC_TIME = "utcTime";
+    private static final String TIME_CONFIDENCE = "timeConfidence";
+    private static final String SPEED_CONFIDENCE = "speedConfidence";
+    private static final String SPEED = "speed";
+    private static final String POS_CONFIDENCE = "posConfidence";
+    private static final String POS_ACCURACY = "posAccuracy";
+    private static final String HEADING = "heading";
     private static final long LONG_LOWER_BOUND = -1799999999L;
     private static final long LONG_UPPER_BOUND = 1800000001L;
     private static final long LAT_LOWER_BOUND = -900000000;
@@ -30,11 +52,10 @@ public class FullPositionVectorBuilder {
        }
        
        Long timeConfidence = null;
-       if (initialPosition.get("timeConfidence") != null) {
-          timeConfidence = initialPosition.get("timeConfidence").asLong();
+       if (initialPosition.get(TIME_CONFIDENCE) != null) {
+          timeConfidence = initialPosition.get(TIME_CONFIDENCE).asLong();
        }
        
-       // TODO these bound checks should be lower down in the hierarchy
         // Bounds checks
         if (longitude < LONG_LOWER_BOUND 
                 || longitude > LONG_UPPER_BOUND) {
@@ -63,33 +84,33 @@ public class FullPositionVectorBuilder {
               new DsrcPosition3D(latitude, longitude, elevation)));
         
         // Optional elements
-        if (initialPosition.get("heading") != null) {
-            fpv.setHeading(HeadingBuilder.genericHeading(initialPosition.get("heading")));
+        if (initialPosition.get(HEADING) != null) {
+            fpv.setHeading(HeadingBuilder.genericHeading(initialPosition.get(HEADING)));
         }
 
-        if (initialPosition.get("posAccuracy") != null) {
-            fpv.setPosAccuracy(PositionalAccuracyBuilder.genericPositionalAccuracy(initialPosition.get("posAccuracy")));
+        if (initialPosition.get(POS_ACCURACY) != null) {
+            fpv.setPosAccuracy(PositionalAccuracyBuilder.genericPositionalAccuracy(initialPosition.get(POS_ACCURACY)));
         }
 
-        if (initialPosition.get("posConfidence") != null) {
-            fpv.setPosConfidence(PositionConfidenceSetBuilder.genericPositionConfidenceSet(initialPosition.get("posConfidence")));
+        if (initialPosition.get(POS_CONFIDENCE) != null) {
+            fpv.setPosConfidence(PositionConfidenceSetBuilder.genericPositionConfidenceSet(initialPosition.get(POS_CONFIDENCE)));
         }
 
-        if (initialPosition.get("speed") != null) {
-            fpv.setSpeed(TransmissionAndSpeedBuilder.genericTransmissionAndSpeed(initialPosition.get("speed")));
+        if (initialPosition.get(SPEED) != null) {
+            fpv.setSpeed(TransmissionAndSpeedBuilder.genericTransmissionAndSpeed(initialPosition.get(SPEED)));
         }
 
-        if (initialPosition.get("speedConfidence") != null) {
+        if (initialPosition.get(SPEED_CONFIDENCE) != null) {
             fpv.setSpeedConfidence(SpeedandHeadingandThrottleConfidenceBuilder
-                    .genericSpeedandHeadingandThrottleConfidence(initialPosition.get("speedConfidence")));
+                    .genericSpeedandHeadingandThrottleConfidence(initialPosition.get(SPEED_CONFIDENCE)));
         }
 
-        if (initialPosition.get("timeConfidence") != null) {
-            fpv.setTimeConfidence(J2735TimeConfidence.valueOf(initialPosition.get("timeConfidence").asText().replaceAll("-", "_").toUpperCase()));
+        if (initialPosition.get(TIME_CONFIDENCE) != null) {
+            fpv.setTimeConfidence(J2735TimeConfidence.valueOf(initialPosition.get(TIME_CONFIDENCE).asText().replaceAll("-", "_").toUpperCase()));
         }
 
-        if (initialPosition.get("utcTime") != null) {
-            fpv.setUtcTime(DDateTimeBuilder.genericDDateTime(initialPosition.get("utcTime")));
+        if (initialPosition.get(UTC_TIME) != null) {
+            fpv.setUtcTime(DDateTimeBuilder.genericDDateTime(initialPosition.get(UTC_TIME)));
         }
 
         return fpv;

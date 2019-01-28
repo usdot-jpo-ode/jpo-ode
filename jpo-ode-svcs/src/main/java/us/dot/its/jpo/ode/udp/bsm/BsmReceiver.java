@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.udp.bsm;
 
 import java.net.DatagramPacket;
@@ -18,6 +33,7 @@ import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 import us.dot.its.jpo.ode.util.XmlUtils;
+import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
@@ -41,7 +57,6 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
    public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
       super(odeProps, port, bufferSize);
 
-//ODE-581      this.publisher = new OdeDataPublisher(odeProperties, OdeBsmSerializer.class.getName());
       this.serialId = new SerialId();
       this.publisher = new StringPublisher(odeProperties);
    }
@@ -103,7 +118,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
       return HexUtils.fromHexString(hexPacket);
    }
    
-   public void publish(byte[] payloadBytes) throws Exception {
+   public void publish(byte[] payloadBytes) throws XmlUtilsException {
      OdeAsn1Payload payload = new OdeAsn1Payload(payloadBytes);
      
      OdeLogMetadata msgMetadata = new OdeLogMetadata(payload);
@@ -113,8 +128,6 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
      msgMetadata.addEncoding(msgEncoding);
      OdeAsn1Data asn1Data = new OdeAsn1Data(msgMetadata, payload);
 
-     // publisher.publish(asn1Data.toJson(false),
-     // publisher.getOdeProperties().getKafkaTopicAsn1EncodedBsm());
      publisher.publish(XmlUtils.toXmlStatic(asn1Data), publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
      serialId.increment();
   }

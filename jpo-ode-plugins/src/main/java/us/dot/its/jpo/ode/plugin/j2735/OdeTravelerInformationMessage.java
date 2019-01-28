@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735;
 
 import java.math.BigDecimal;
@@ -7,11 +22,18 @@ import com.google.gson.annotations.Expose;
 
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage.DataFrame.Region.Circle;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage.DataFrame.Region.OldRegion.RegionPointSet;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage.DataFrame.Region.OldRegion.ShapePointSet;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.DirectionOfUse.DirectionOfUseEnum;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.DistanceUnits.DistanceUnitsEnum;
+import us.dot.its.jpo.ode.plugin.j2735.timstorage.Extent.ExtentEnum;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.FrameType;
 import us.dot.its.jpo.ode.plugin.j2735.timstorage.MutcdCode;
 
 public class OdeTravelerInformationMessage extends OdeObject {
-   private static final long serialVersionUID = -200529140190872305L;
+  
+  private static final long serialVersionUID = -200529140190872305L;
 
    @Expose
    private int msgCnt;
@@ -24,7 +46,7 @@ public class OdeTravelerInformationMessage extends OdeObject {
    @Expose
    private DataFrame[] dataframes;
    @Expose(serialize = false, deserialize = true)
-   private JsonNode asnDataFrames;
+   private transient JsonNode asnDataFrames;
 
    public int getMsgCnt() {
       return msgCnt;
@@ -74,81 +96,104 @@ public class OdeTravelerInformationMessage extends OdeObject {
       this.asnDataFrames = stringDataFrames;
    }
 
+   public static class NodeListXY extends OdeObject {
+     private static final long serialVersionUID = 1L;
+     private ComputedLane computedLane;
+     private NodeXY[] nodexy;
+
+     public ComputedLane getComputedLane() {
+       return computedLane;
+     }
+     public void setComputedLane(ComputedLane computedLane) {
+       this.computedLane = computedLane;
+     }
+     public NodeXY[] getNodexy() {
+       return nodexy;
+     }
+     public void setNodexy(NodeXY[] nodexy) {
+       this.nodexy = nodexy;
+     }
+   }
+
+  public static class Area extends OdeObject {
+    private static final long serialVersionUID = 1L;
+    
+    private ShapePointSet shapepoint;
+    private Circle circle;
+    private RegionPointSet regionPoint;
+
+    public ShapePointSet getShapepoint() {
+      return shapepoint;
+    }
+
+    public void setShapepoint(ShapePointSet shapepoint) {
+      this.shapepoint = shapepoint;
+    }
+
+    public Circle getCircle() {
+      return circle;
+    }
+
+    public void setCircle(Circle circle) {
+      this.circle = circle;
+    }
+
+    public RegionPointSet getRegionPoint() {
+      return regionPoint;
+    }
+
+    public void setRegionPoint(RegionPointSet regionPoint) {
+      this.regionPoint = regionPoint;
+    }
+
+  }
+
    public static class ComputedLane extends OdeObject {
 
       private static final long serialVersionUID = 7337344402648755924L;
-      private int laneID;
-      private BigDecimal offsetSmallX;
-      private BigDecimal offsetLargeX;
-      private BigDecimal offsetSmallY;
-      private BigDecimal offsetLargeY;
-      private int angle;
-      private BigDecimal xScale;
-      private BigDecimal yScale;
-
-      public int getLaneID() {
-         return laneID;
+      private int referenceLaneId;
+      private BigDecimal offsetXaxis;
+      private BigDecimal offsetYaxis;
+      private BigDecimal rotateXY;
+      private BigDecimal scaleXaxis;
+      private BigDecimal scaleYaxis;
+      public int getReferenceLaneId() {
+        return referenceLaneId;
+      }
+      public void setReferenceLaneId(int referenceLaneId) {
+        this.referenceLaneId = referenceLaneId;
+      }
+      public BigDecimal getOffsetXaxis() {
+        return offsetXaxis;
+      }
+      public void setOffsetXaxis(BigDecimal offsetXaxis) {
+        this.offsetXaxis = offsetXaxis;
+      }
+      public BigDecimal getOffsetYaxis() {
+        return offsetYaxis;
+      }
+      public void setOffsetYaxis(BigDecimal offsetYaxis) {
+        this.offsetYaxis = offsetYaxis;
+      }
+      public BigDecimal getRotateXY() {
+        return rotateXY;
+      }
+      public void setRotateXY(BigDecimal rotateXY) {
+        this.rotateXY = rotateXY;
+      }
+      public BigDecimal getScaleXaxis() {
+        return scaleXaxis;
+      }
+      public void setScaleXaxis(BigDecimal scaleXaxis) {
+        this.scaleXaxis = scaleXaxis;
+      }
+      public BigDecimal getScaleYaxis() {
+        return scaleYaxis;
+      }
+      public void setScaleYaxis(BigDecimal scaleYaxis) {
+        this.scaleYaxis = scaleYaxis;
       }
 
-      public void setLaneID(int laneID) {
-         this.laneID = laneID;
-      }
-
-      public BigDecimal getOffsetSmallX() {
-         return offsetSmallX;
-      }
-
-      public void setOffsetSmallX(BigDecimal offsetSmallX) {
-         this.offsetSmallX = offsetSmallX;
-      }
-
-      public BigDecimal getOffsetLargeX() {
-         return offsetLargeX;
-      }
-
-      public void setOffsetLargeX(BigDecimal offsetLargeX) {
-         this.offsetLargeX = offsetLargeX;
-      }
-
-      public BigDecimal getOffsetSmallY() {
-         return offsetSmallY;
-      }
-
-      public void setOffsetSmallY(BigDecimal offsetSmallY) {
-         this.offsetSmallY = offsetSmallY;
-      }
-
-      public BigDecimal getOffsetLargeY() {
-         return offsetLargeY;
-      }
-
-      public void setOffsetLargeY(BigDecimal offsetLargeY) {
-         this.offsetLargeY = offsetLargeY;
-      }
-
-      public int getAngle() {
-         return angle;
-      }
-
-      public void setAngle(int angle) {
-         this.angle = angle;
-      }
-
-      public BigDecimal getxScale() {
-         return xScale;
-      }
-
-      public void setxScale(BigDecimal xScale) {
-         this.xScale = xScale;
-      }
-
-      public BigDecimal getyScale() {
-         return yScale;
-      }
-
-      public void setyScale(BigDecimal yScale) {
-         this.yScale = yScale;
-      }
    }
 
    public static class NodeXY extends OdeObject {
@@ -419,7 +464,7 @@ public class OdeTravelerInformationMessage extends OdeObject {
          private int segmentID;
          private OdePosition3D anchorPosition;
          private BigDecimal laneWidth;
-         private long directionality;
+         private String directionality;
          private boolean closedPath;
          private String direction;
          private String description;
@@ -429,76 +474,61 @@ public class OdeTravelerInformationMessage extends OdeObject {
 
          public static class OldRegion extends OdeObject {
 
-            private static final long serialVersionUID = 1650366042178220073L;
+            private static final long serialVersionUID = 1L;
             private String direction;
-            private int extent;
-            private String area;
-            private ShapePoint shapepoint;
-            private Circle circle;
-            private RegionPoint regionPoint;
+            private String extent;
+            private Area area;
 
-            public static class ShapePoint extends OdeObject {
+            public static class ShapePointSet extends OdeObject {
 
-               private static final long serialVersionUID = -209874574767391032L;
-               private OdePosition3D position;
+               private static final long serialVersionUID = 1L;
+               private OdePosition3D anchor;
                private BigDecimal laneWidth;
                private int directionality;
-               private String nodeType;
-               private ComputedLane computedLane;
-               private NodeXY[] nodexy;
+               private NodeListXY nodeList;
 
-               public NodeXY[] getNodexy() {
-                  return nodexy;
+               public OdePosition3D getAnchor() {
+                return anchor;
                }
 
-               public void setNodexy(NodeXY[] nodexy) {
-                  this.nodexy = nodexy;
-               }
+              public void setAnchor(OdePosition3D anchor) {
+                this.anchor = anchor;
+              }
 
-               public ComputedLane getComputedLane() {
-                  return computedLane;
-               }
 
-               public void setComputedLane(ComputedLane computedLane) {
-                  this.computedLane = computedLane;
-               }
-
-               public String getNodeType() {
-                  return nodeType;
-               }
-
-               public void setNodeType(String nodeType) {
-                  this.nodeType = nodeType;
-               }
-
-               public int getDirectionality() {
-                  return directionality;
-               }
-
-               public void setDirectionality(int directionality) {
-                  this.directionality = directionality;
-               }
-
-               public BigDecimal getLaneWidth() {
+              public BigDecimal getLaneWidth() {
                   return laneWidth;
-               }
+              }
 
-               public void setLaneWidth(BigDecimal laneWidth) {
-                  this.laneWidth = laneWidth;
-               }
+              public void setLaneWidth(BigDecimal laneWidth) {
+                this.laneWidth = laneWidth;
+              }
 
-               public OdePosition3D getPosition() {
-                  return position;
-               }
+              public int getDirectionality() {
+                return directionality;
+              }
 
-               public void setPosition(OdePosition3D position) {
-                  this.position = position;
-               }
+              public void setDirectionality(int directionality) {
+                this.directionality = directionality;
+              }
+
+              public void setDirectionalityEnum(DirectionOfUseEnum directionalityEnum) {
+                this.directionality = directionalityEnum.ordinal();
+              }
+
+              public NodeListXY getNodeList() {
+                return nodeList;
+              }
+
+              public void setNodeList(NodeListXY nodeList) {
+                this.nodeList = nodeList;
+              }
+
             }
 
-            public static class RegionPoint extends OdeObject {
+            public static class RegionPointSet extends OdeObject {
 
-               private static final long serialVersionUID = -3978458353968571032L;
+               private static final long serialVersionUID = 1L;
                private OdePosition3D position;
                private int scale;
                private RegionList[] regionList;
@@ -560,44 +590,24 @@ public class OdeTravelerInformationMessage extends OdeObject {
                }
             }
 
-            public RegionPoint getRegionPoint() {
-               return regionPoint;
+            public Area getArea() {
+              return area;
             }
 
-            public void setRegionPoint(RegionPoint regionPoint) {
-               this.regionPoint = regionPoint;
+            public void setArea(Area area) {
+              this.area = area;
             }
 
-            public Circle getCircle() {
-               return circle;
+            public String getExtent() {
+              return extent;
             }
 
-            public void setCircle(Circle circle) {
-               this.circle = circle;
+            public void setExtent(String extent) {
+              this.extent = extent;
             }
 
-            public ShapePoint getShapepoint() {
-               return shapepoint;
-            }
-
-            public void setShapepoint(ShapePoint shapepoint) {
-               this.shapepoint = shapepoint;
-            }
-
-            public String getArea() {
-               return area;
-            }
-
-            public void setArea(String area) {
-               this.area = area;
-            }
-
-            public int getExtent() {
-               return extent;
-            }
-
-            public void setExtent(int extent) {
-               this.extent = extent;
+            public void setExtent(ExtentEnum extent) {
+              this.extent = extent.name();
             }
 
             public String getDirection() {
@@ -654,15 +664,20 @@ public class OdeTravelerInformationMessage extends OdeObject {
 
             private static final long serialVersionUID = -8156052898034497978L;
             private OdePosition3D position;
+            private OdePosition3D center;
             private int radius;
-            private int units;
+            private String units;
 
-            public int getUnits() {
-               return units;
+            public String getUnits() {
+              return units;
             }
 
-            public void setUnits(int units) {
-               this.units = units;
+            public void setUnits(String units) {
+              this.units = units;
+            }
+
+            public void setUnits(DistanceUnitsEnum units) {
+              this.units = units.name();
             }
 
             public int getRadius() {
@@ -679,6 +694,14 @@ public class OdeTravelerInformationMessage extends OdeObject {
 
             public void setPosition(OdePosition3D position) {
                this.position = position;
+            }
+
+            public OdePosition3D getCenter() {
+              return center;
+            }
+
+            public void setCenter(OdePosition3D center) {
+              this.center = center;
             }
          }
 
@@ -772,15 +795,16 @@ public class OdeTravelerInformationMessage extends OdeObject {
             this.closedPath = closedPath;
          }
 
-         public long getDirectionality() {
-            return directionality;
-         }
 
-         public void setDirectionality(long directionality) {
-            this.directionality = directionality;
-         }
+        public String getDirectionality() {
+          return directionality;
+        }
 
-         public BigDecimal getLaneWidth() {
+        public void setDirectionality(String directionality) {
+          this.directionality = directionality;
+        }
+
+        public BigDecimal getLaneWidth() {
             return laneWidth;
          }
 

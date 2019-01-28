@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.services.asn1;
 
 import org.json.JSONArray;
@@ -11,7 +26,7 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
-import us.dot.its.jpo.ode.traveler.TimDepositController;
+import us.dot.its.jpo.ode.traveler.TimTransmogrifier;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
@@ -105,17 +120,17 @@ public class Asn1EncodedDataRouterTest {
          mockJSONObject.getJSONObject(AppContext.METADATA_STRING);
          result = mockJSONObject;
          
-         mockJSONObject.has(TimDepositController.REQUEST_STRING);
+         mockJSONObject.has(TimTransmogrifier.REQUEST_STRING);
          result = true;
 
-         mockJSONObject.getJSONObject(TimDepositController.REQUEST_STRING);
+         mockJSONObject.getJSONObject(TimTransmogrifier.REQUEST_STRING);
          result = mockJSONObject;
          
-         mockJSONObject.has(TimDepositController.RSUS_STRING);
+         mockJSONObject.has(TimTransmogrifier.RSUS_STRING);
          result = true;
          times = 2;
          
-         mockJSONObject.get(TimDepositController.RSUS_STRING);
+         mockJSONObject.get(TimTransmogrifier.RSUS_STRING);
          result = mockJSONObject;
          times = 2;
          

@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.util.Iterator;
@@ -27,8 +42,7 @@ public class BsmPart2ContentBuilder {
 
    }
 
-   public static J2735BsmPart2Content genericPart2Content(JsonNode part2Content)
-         throws BsmPart2ContentBuilderException {
+   public static J2735BsmPart2Content genericPart2Content(JsonNode part2Content) {
 
       JsonNode partII_Id = part2Content.get("partII-Id");
 
@@ -41,8 +55,7 @@ public class BsmPart2ContentBuilder {
       }
    }
 
-   private static J2735BsmPart2Content buildContent(J2735BsmPart2Content.J2735BsmPart2Id id, JsonNode openType)
-         throws BsmPart2ContentBuilderException {
+   private static J2735BsmPart2Content buildContent(J2735BsmPart2Content.J2735BsmPart2Id id, JsonNode openType) {
 
       J2735BsmPart2Content part2Content = new J2735BsmPart2Content();
       part2Content.setId(id);
@@ -61,15 +74,6 @@ public class BsmPart2ContentBuilder {
       return part2Content;
    }
 
-   // TODO - this is backwards?
-   // public enum VehicleEventFlagsNames {
-   // eventWipersCeventAirBagDeploymenthanged, eventDisabledVehicle,
-   // eventFlatTire, eventWipersChanged, eventLightsChanged, eventHardBraking,
-   // eventReserved1, eventHazardousMaterials, eventStabilityControlactivated,
-   // eventTractionControlLoss, eventABSactivated, eventStopLineViolation,
-   // eventHazardLights
-   // }
-
    public enum VehicleEventFlagsNames {
       eventHazardLights, eventStopLineViolation, eventABSactivated, eventTractionControlLoss, eventStabilityControlactivated, eventHazardousMaterials, eventReserved1, eventHardBraking, eventLightsChanged, eventWipersChanged, eventFlatTire, eventDisabledVehicle, eventAirBagDeployment
    }
@@ -78,8 +82,7 @@ public class BsmPart2ContentBuilder {
       lowBeamHeadlightsOn, highBeamHeadlightsOn, leftTurnSignalOn, rightTurnSignalOn, hazardSignalOn, automaticLightControlOn, daytimeRunningLightsOn, fogLightOn, parkingLightsOn
    }
 
-   public static void buildGenericPart2(List<JsonNode> elements, List<J2735BsmPart2Content> partII)
-         throws BsmPart2ContentBuilderException {
+   public static void buildGenericPart2(List<JsonNode> elements, List<J2735BsmPart2Content> partII) {
       if (elements != null) {
          Iterator<JsonNode> iter = elements.iterator();
 

@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735;
 
 import static org.junit.Assert.assertEquals;
@@ -38,8 +53,12 @@ public class DdsAdvisorySituationDataTest {
       String isoStopTime = "2012-05-15T15:53:00+00:00";
 
       byte distroType = (byte) (DdsAdvisorySituationData.IP | DdsAdvisorySituationData.RSU);
-      DdsAdvisorySituationData testDdsAdvisorySituationData = new DdsAdvisorySituationData(isoStartTime, isoStopTime,
-            new Ieee1609Dot2DataTag(), new DdsGeoRegion(), SituationDataWarehouse.SDW.TimeToLive.onemonth, "1234", "ABCDEF", distroType);
+      DdsAdvisorySituationData testDdsAdvisorySituationData = new DdsAdvisorySituationData()
+          .setAsdmDetails(isoStartTime, isoStopTime, distroType, new Ieee1609Dot2DataTag())
+          .setServiceRegion(new DdsGeoRegion())
+          .setTimeToLive(SituationDataWarehouse.SDW.TimeToLive.onemonth)
+          .setGroupID("1234")
+          .setRecordID("ABCDEF");
 
       // verify time parsing
       assertEquals(Integer.valueOf(2008), testDdsAdvisorySituationData.getAsdmDetails().getStartTime().getYear());
@@ -63,8 +82,12 @@ public class DdsAdvisorySituationDataTest {
       // Null group ID should default to 00 00 00 00
 
       byte distroType = (byte) (DdsAdvisorySituationData.IP | DdsAdvisorySituationData.RSU);
-      DdsAdvisorySituationData testDdsAdvisorySituationData = new DdsAdvisorySituationData(null, null,
-            new Ieee1609Dot2DataTag(), new DdsGeoRegion(), null, null,"ABCDEF", distroType);
+      DdsAdvisorySituationData testDdsAdvisorySituationData = new DdsAdvisorySituationData()
+          .setAsdmDetails(null, null, distroType, new Ieee1609Dot2DataTag())
+          .setServiceRegion(new DdsGeoRegion())
+          .setTimeToLive(null)
+          .setGroupID(null)
+          .setRecordID("ABCDEF");
 
       // verify time parsing
       assertEquals(Integer.valueOf(0), testDdsAdvisorySituationData.getAsdmDetails().getStartTime().getYear());
@@ -86,8 +109,12 @@ public class DdsAdvisorySituationDataTest {
 
       DdsAdvisorySituationData ddsasd1 = new DdsAdvisorySituationData();
       DdsAdvisorySituationData ddsasd2 = new DdsAdvisorySituationData();
-      DdsAdvisorySituationData ddsasd3 = new DdsAdvisorySituationData(isoStartTime, isoStopTime,
-            new Ieee1609Dot2DataTag(), new DdsGeoRegion(), SituationDataWarehouse.SDW.TimeToLive.onemonth, "1234", "ABCDEF", distroType);
+      DdsAdvisorySituationData ddsasd3 = new DdsAdvisorySituationData()
+          .setAsdmDetails(isoStartTime, isoStopTime, distroType, new Ieee1609Dot2DataTag())
+          .setServiceRegion(new DdsGeoRegion())
+          .setTimeToLive(SituationDataWarehouse.SDW.TimeToLive.onemonth)
+          .setGroupID("1234")
+          .setRecordID("ABCDEF");
 
       assertEquals("Expected identical hashcodes", ddsasd1.hashCode(), ddsasd2.hashCode());
       assertNotEquals("Expected different hashcodes", ddsasd2.hashCode(), ddsasd3.hashCode());

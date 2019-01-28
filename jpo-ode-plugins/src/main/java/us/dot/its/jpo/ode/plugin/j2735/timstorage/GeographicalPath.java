@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -22,7 +37,7 @@ public class GeographicalPath extends Asn1Object {
    private String laneWidth;
 
    @JsonProperty("directionality")
-   private Directionality directionality;
+   private DirectionOfUse directionality;
 
    @JsonProperty("closedPath")
    private String closedPath;
@@ -41,13 +56,22 @@ public class GeographicalPath extends Asn1Object {
       this.id = id;
    }
 
-   public String isClosedPath() {
-      return closedPath;
+   public String getClosedPath() {
+     return closedPath;
    }
 
    public void setClosedPath(String closedPath) {
-      this.closedPath = closedPath;
+     this.closedPath = closedPath;
    }
+
+
+  public DirectionOfUse getDirectionality() {
+    return directionality;
+  }
+
+  public void setDirectionality(DirectionOfUse directionality) {
+    this.directionality = directionality;
+  }
 
    public String getDirection() {
       return direction;
@@ -71,14 +95,6 @@ public class GeographicalPath extends Asn1Object {
 
    public void setName(String name) {
       this.name = name;
-   }
-
-   public Directionality getDirectionality() {
-      return directionality;
-   }
-
-   public void setDirectionality(Directionality directionality) {
-      this.directionality = directionality;
    }
 
    public String getLaneWidth() {

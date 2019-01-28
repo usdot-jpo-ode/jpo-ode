@@ -1,8 +1,24 @@
+/*******************************************************************************
+ * Copyright 2018 572682
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package us.dot.its.jpo.ode.services.asn1;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +49,7 @@ import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
-import us.dot.its.jpo.ode.traveler.TimDepositController;
-import us.dot.its.jpo.ode.traveler.TimPduCreator.TimPduCreatorException;
+import us.dot.its.jpo.ode.traveler.TimTransmogrifier;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
@@ -54,7 +69,7 @@ public class Asn1CommandManager {
       }
 
       public Asn1CommandManagerException(String msg, Exception e) {
-        super(msg, e);
+         super(msg, e);
       }
 
    }
@@ -64,7 +79,7 @@ public class Asn1CommandManager {
    private OdeProperties odeProperties;
 
    public Asn1CommandManager(OdeProperties odeProperties) {
-      
+
       this.odeProperties = odeProperties;
 
       this.signatureUri = odeProperties.getSecuritySvcsSignatureUri();
@@ -86,30 +101,22 @@ public class Asn1CommandManager {
          logger.info("Message deposited to SDW: {}", asdBytes);
       } catch (DdsRequestManagerException e) {
          String msg = "Failed to deposit message to SDW";
-         EventLogger.logger.error(msg, e);
-         throw new Asn1CommandManagerException(msg, e); 
+         throw new Asn1CommandManagerException(msg, e);
       }
    }
 
-   public HashMap<String, String> sendToRsus(ServiceRequest request, String encodedMsg) {
+   public Map<String, String> sendToRsus(ServiceRequest request, String encodedMsg) {
 
       HashMap<String, String> responseList = new HashMap<>();
       for (RSU curRsu : request.getRsus()) {
-         
-         if (curRsu.getRsuUsername() == null || curRsu.getRsuUsername().isEmpty()) {
-            curRsu.setRsuUsername(odeProperties.getRsuUsername());
-         }
-         
-         if (curRsu.getRsuPassword() == null || curRsu.getRsuPassword().isEmpty()) {
-            curRsu.setRsuPassword(odeProperties.getRsuPassword());
-         }
+
+         TimTransmogrifier.updateRsuCreds(curRsu, odeProperties);
 
          ResponseEvent rsuResponse = null;
 
          String httpResponseStatus;
          try {
-            rsuResponse = SnmpSession.createAndSend(request.getSnmp(), curRsu,
-                  encodedMsg, request.getOde().getVerb());
+            rsuResponse = SnmpSession.createAndSend(request.getSnmp(), curRsu, encodedMsg, request.getOde().getVerb());
             if (null == rsuResponse || null == rsuResponse.getResponse()) {
                // Timeout
                httpResponseStatus = "Timeout";
@@ -122,9 +129,9 @@ public class Asn1CommandManager {
             } else {
                // Misc error
                httpResponseStatus = "Error code " + rsuResponse.getResponse().getErrorStatus() + " "
-                           + rsuResponse.getResponse().getErrorStatusText();
+                     + rsuResponse.getResponse().getErrorStatusText();
             }
-         } catch (IOException | TimPduCreatorException e) {
+         } catch (IOException | ParseException e) {
             String msg = "Exception caught in TIM RSU deposit loop.";
             EventLogger.logger.error(msg, e);
             logger.error(msg, e);
@@ -169,28 +176,29 @@ public class Asn1CommandManager {
 
       return respEntity.getBody();
    }
-   
+
    public String packageSignedTimIntoAsd(ServiceRequest request, String signedMsg) {
 
       SDW sdw = request.getSdw();
       SNMP snmp = request.getSnmp();
       DdsAdvisorySituationData asd = null;
 
-      byte sendToRsu = request.getRsus() != null ? DdsAdvisorySituationData.RSU
-            : DdsAdvisorySituationData.NONE;
+      byte sendToRsu = request.getRsus() != null ? DdsAdvisorySituationData.RSU : DdsAdvisorySituationData.NONE;
       byte distroType = (byte) (DdsAdvisorySituationData.IP | sendToRsu);
       //
       String outputXml = null;
       try {
          if (null != snmp) {
 
-            asd = new DdsAdvisorySituationData(snmp.getDeliverystart(), snmp.getDeliverystop(), null,
-                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(),
-                  sdw.getRecordId(), distroType);
+            asd = new DdsAdvisorySituationData()
+                  .setAsdmDetails(snmp.getDeliverystart(), snmp.getDeliverystop(), distroType, null)
+                  .setServiceRegion(GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion())).setTimeToLive(sdw.getTtl())
+                  .setGroupID(sdw.getGroupID()).setRecordID(sdw.getRecordId());
          } else {
-            asd = new DdsAdvisorySituationData(sdw.getDeliverystart(), sdw.getDeliverystop(), null,
-                  GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion()), sdw.getTtl(), sdw.getGroupID(),
-                  sdw.getRecordId(), distroType);
+            asd = new DdsAdvisorySituationData()
+                  .setAsdmDetails(sdw.getDeliverystart(), sdw.getDeliverystop(), distroType, null)
+                  .setServiceRegion(GeoRegionBuilder.ddsGeoRegion(sdw.getServiceRegion())).setTimeToLive(sdw.getTtl())
+                  .setGroupID(sdw.getGroupID()).setRecordID(sdw.getRecordId());
          }
 
          OdeMsgPayload payload = null;
@@ -220,7 +228,7 @@ public class Asn1CommandManager {
          ArrayNode encodings = buildEncodings();
          ObjectNode enc = XmlUtils.createEmbeddedJsonArrayForXmlConversion(AppContext.ENCODINGS_STRING, encodings);
          metaObject.set(AppContext.ENCODINGS_STRING, enc);
-         
+
          ObjectNode message = JsonUtils.newNode();
          message.set(AppContext.METADATA_STRING, metaObject);
          message.set(AppContext.PAYLOAD_STRING, payloadObj);
@@ -229,7 +237,6 @@ public class Asn1CommandManager {
          root.set(AppContext.ODE_ASN1_DATA, message);
 
          outputXml = XmlUtils.toXmlStatic(root);
-         
 
          // remove the surrounding <ObjectNode></ObjectNode>
          outputXml = outputXml.replace("<ObjectNode>", "");
@@ -243,10 +250,11 @@ public class Asn1CommandManager {
 
       return outputXml;
    }
-   
-   public static ArrayNode buildEncodings() throws JsonUtilsException, XmlUtilsException {
+
+   public static ArrayNode buildEncodings() throws JsonUtilsException {
       ArrayNode encodings = JsonUtils.newArrayNode();
-      encodings.add(TimDepositController.buildEncodingNode(ADVISORY_SITUATION_DATA_STRING, ADVISORY_SITUATION_DATA_STRING, EncodingRule.UPER));
+      encodings.add(TimTransmogrifier.buildEncodingNode(ADVISORY_SITUATION_DATA_STRING, ADVISORY_SITUATION_DATA_STRING,
+            EncodingRule.UPER));
       return encodings;
    }
 
