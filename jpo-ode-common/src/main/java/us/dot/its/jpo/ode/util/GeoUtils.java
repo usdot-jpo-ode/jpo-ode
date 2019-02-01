@@ -46,6 +46,30 @@ public class GeoUtils {
 			this.dEccentricity = dEccentricity;
 		}
 
+    public double getdEqRadius() {
+      return dEqRadius;
+    }
+
+    public void setdEqRadius(double dEqRadius) {
+      this.dEqRadius = dEqRadius;
+    }
+
+    public double getdPolRadius() {
+      return dPolRadius;
+    }
+
+    public void setdPolRadius(double dPolRadius) {
+      this.dPolRadius = dPolRadius;
+    }
+
+    public double getdEccentricity() {
+      return dEccentricity;
+    }
+
+    public void setdEccentricity(double dEccentricity) {
+      this.dEccentricity = dEccentricity;
+    }
+
 	}
 
 	public static class ProjParams {

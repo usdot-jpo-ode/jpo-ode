@@ -118,8 +118,11 @@ public class OdeProperties implements EnvironmentAware {
     * 
     */
    @Value("ode.topics.disabled")
-   private String[] kafkaTopicsDisabled = { "topic.OdeBsmRxPojo", "topic.OdeBsmTxPojo", "topic.OdeBsmDuringEventPojo",
-         "topic.OdeTimRxJson" };
+   private String[] kafkaTopicsDisabled = {
+       // disable all POJO topics by default
+       "topic.OdeBsmPojo", "topic.OdeBsmRxPojo", "topic.OdeBsmTxPojo", "topic.OdeBsmDuringEventPojo",
+       "topic.OdeTimBroadcastPojo" 
+       };
    private Set<String> kafkaTopicsDisabledSet = new HashSet<>();
 
    // BSM
@@ -141,12 +144,6 @@ public class OdeProperties implements EnvironmentAware {
 
    // DriverAlerts
    private String kafkaTopicDriverAlertJson = "topic.OdeDriverAlertJson";
-
-   // VSD
-   private String kafkaTopicVsdPojo = "topic.AsnVsdPojo";
-
-   // ISD
-   private String kafkaTopicIsdPojo = "topic.AsnIsdPojo";
 
    // ASN.1 CODEC
    private String kafkaTopicAsn1DecoderInput = "topic.Asn1DecoderInput";
@@ -603,22 +600,6 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setKafkaTopicsDisabledSet(Set<String> kafkaTopicsDisabledSet) {
       this.kafkaTopicsDisabledSet = kafkaTopicsDisabledSet;
-   }
-
-   public String getKafkaTopicIsdPojo() {
-      return kafkaTopicIsdPojo;
-   }
-
-   public void setKafkaTopicIsdPojo(String kafkaTopicIsdPojo) {
-      this.kafkaTopicIsdPojo = kafkaTopicIsdPojo;
-   }
-
-   public String getKafkaTopicVsdPojo() {
-      return kafkaTopicVsdPojo;
-   }
-
-   public void setKafkaTopicVsdPojo(String kafkaTopicVsdPojo) {
-      this.kafkaTopicVsdPojo = kafkaTopicVsdPojo;
    }
 
    public String getKafkaTopicFilteredOdeBsmJson() {

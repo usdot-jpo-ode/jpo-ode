@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import mockit.Capturing;
 import mockit.Expectations;
-import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
