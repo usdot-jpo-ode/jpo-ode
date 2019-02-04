@@ -125,27 +125,15 @@ public class OdePropertiesTest {
       int testSdcPort = 123;
       String testExternalIpv4 = "testExternalIpv4";
       String testExternalIpv6 = "testExternalIpv6";
-      int testVsdDepositorPort = 321;
-      int testIsdDepositorPort = 322;
-      int testIsdReceiverPort = 323;
-      int testBsmReceiverPort = 324;
-      int testBsmBufferSize = 10;
       boolean testDepositSanitizedBsmToSdc = true;
       int testServiceRespExpirationSeconds = 12;
       int testServiceResponseBufferSize = 13;
-      int testVsdTrustport = 14;
-      int testIsdTrustPort = 15;
-      int testDataReceiptExpirationSeconds = 16;
       int testMessagesUntilTrustReestablished = 17;
-      int testDataReceiptBufferSize = 18;
       String testCaCertPath = "testCaCertPath";
       String testSelfCertPath = "testSelfCertPath";
       String testSelfPrivateKeyReconstructionFilePath = "testSelfPrivateKeyReconstructionFilePath";
       String testSelfSigningPrivateKeyFilePath = "testSelfSigningPrivateKeyFilePath";
-      int testIsdBufferSize = 19;
       String testKafkaTopicBsmFilteredJson = "testKafkaTopicBsmFilteredJson";
-      int testVsdBufferSize = 20;
-      int testVsdReceiverPort = 21;
       boolean testVerboseJson = true;
       int testRsuSrmSlots = 22;
       int testTrustRetries = 23;
@@ -194,27 +182,15 @@ public class OdePropertiesTest {
       testOdeProperties.setSdcPort(testSdcPort);
       testOdeProperties.setExternalIpv4(testExternalIpv4);
       testOdeProperties.setExternalIpv6(testExternalIpv6);
-      testOdeProperties.setVsdDepositorPort(testVsdDepositorPort);
-      testOdeProperties.setIsdDepositorPort(testIsdDepositorPort);
-      testOdeProperties.setIsdReceiverPort(testIsdReceiverPort);
-      testOdeProperties.setBsmReceiverPort(testBsmReceiverPort);
-      testOdeProperties.setBsmBufferSize(testBsmBufferSize);
       testOdeProperties.setDepositSanitizedBsmToSdc(testDepositSanitizedBsmToSdc);
       testOdeProperties.setServiceRespExpirationSeconds(testServiceRespExpirationSeconds);
       testOdeProperties.setServiceResponseBufferSize(testServiceResponseBufferSize);
-      testOdeProperties.setVsdTrustport(testVsdTrustport);
-      testOdeProperties.setIsdTrustPort(testIsdTrustPort);
-      testOdeProperties.setDataReceiptExpirationSeconds(testDataReceiptExpirationSeconds);
       testOdeProperties.setMessagesUntilTrustReestablished(testMessagesUntilTrustReestablished);
-      testOdeProperties.setDataReceiptBufferSize(testDataReceiptBufferSize);
       testOdeProperties.setCaCertPath(testCaCertPath);
       testOdeProperties.setSelfCertPath(testSelfCertPath);
       testOdeProperties.setSelfPrivateKeyReconstructionFilePath(testSelfPrivateKeyReconstructionFilePath);
       testOdeProperties.setSelfSigningPrivateKeyFilePath(testSelfSigningPrivateKeyFilePath);
-      testOdeProperties.setIsdBufferSize(testIsdBufferSize);
       testOdeProperties.setKafkaTopicFilteredOdeBsmJson(testKafkaTopicBsmFilteredJson);
-      testOdeProperties.setVsdBufferSize(testVsdBufferSize);
-      testOdeProperties.setVsdReceiverPort(testVsdReceiverPort);
       testOdeProperties.setVerboseJson(testVerboseJson);
       testOdeProperties.setRsuSrmSlots(testRsuSrmSlots);
       testOdeProperties.setTrustRetries(testTrustRetries);
@@ -262,36 +238,22 @@ public class OdePropertiesTest {
       assertEquals("Incorrect testSdcPort", testSdcPort, testOdeProperties.getSdcPort());
       assertEquals("Incorrect testExternalIpv4", testExternalIpv4, testOdeProperties.getExternalIpv4());
       assertEquals("Incorrect testExternalIpv6", testExternalIpv6, testOdeProperties.getExternalIpv6());
-      assertEquals("Incorrect testVsdDepositorPort", testVsdDepositorPort, testOdeProperties.getVsdDepositorPort());
-      assertEquals("Incorrect testIsdDepositorPort", testIsdDepositorPort, testOdeProperties.getIsdDepositorPort());
-      assertEquals("Incorrect testIsdReceiverPort", testIsdReceiverPort, testOdeProperties.getIsdReceiverPort());
-      assertEquals("Incorrect testBsmReceiverPort", testBsmReceiverPort, testOdeProperties.getBsmReceiverPort());
-      assertEquals("Incorrect testBsmBufferSize", testBsmBufferSize, testOdeProperties.getBsmBufferSize());
       assertEquals("Incorrect testDepositSanitizedBsmToSdc", testDepositSanitizedBsmToSdc,
             testOdeProperties.getDepositSanitizedBsmToSdc());
       assertEquals("Incorrect testServiceRespExpirationSeconds", testServiceRespExpirationSeconds,
             testOdeProperties.getServiceRespExpirationSeconds());
       assertEquals("Incorrect testServiceResponseBufferSize", testServiceResponseBufferSize,
             testOdeProperties.getServiceResponseBufferSize());
-      assertEquals("Incorrect testVsdTrustport", testVsdTrustport, testOdeProperties.getVsdTrustport());
-      assertEquals("Incorrect testIsdTrustPort", testIsdTrustPort, testOdeProperties.getIsdTrustPort());
-      assertEquals("Incorrect testDataReceiptExpirationSeconds", testDataReceiptExpirationSeconds,
-            testOdeProperties.getDataReceiptExpirationSeconds());
       assertEquals("Incorrect testMessagesUntilTrustReestablished", testMessagesUntilTrustReestablished,
             testOdeProperties.getMessagesUntilTrustReestablished());
-      assertEquals("Incorrect testDataReceiptBufferSize", testDataReceiptBufferSize,
-            testOdeProperties.getDataReceiptBufferSize());
       assertEquals("Incorrect testCaCertPath", testCaCertPath, testOdeProperties.getCaCertPath());
       assertEquals("Incorrect testSelfCertPath", testSelfCertPath, testOdeProperties.getSelfCertPath());
       assertEquals("Incorrect testSelfPrivateKeyReconstructionFilePath", testSelfPrivateKeyReconstructionFilePath,
             testOdeProperties.getSelfPrivateKeyReconstructionFilePath());
       assertEquals("Incorrect testSelfSigningPrivateKeyFilePath", testSelfSigningPrivateKeyFilePath,
             testOdeProperties.getSelfSigningPrivateKeyFilePath());
-      assertEquals("Incorrect testIsdBufferSize", testIsdBufferSize, testOdeProperties.getIsdBufferSize());
       assertEquals("Incorrect testKafkaTopicBsmFilteredJson", testKafkaTopicBsmFilteredJson,
             testOdeProperties.getKafkaTopicFilteredOdeBsmJson());
-      assertEquals("Incorrect testVsdBufferSize", testVsdBufferSize, testOdeProperties.getVsdBufferSize());
-      assertEquals("Incorrect testVsdReceiverPort", testVsdReceiverPort, testOdeProperties.getVsdReceiverPort());
       assertEquals("Incorrect testVerboseJson", testVerboseJson, testOdeProperties.getVerboseJson());
       assertEquals("Incorrect testRsuSrmSlots", testRsuSrmSlots, testOdeProperties.getRsuSrmSlots());
       assertEquals("Incorrect testTrustRetries", testTrustRetries, testOdeProperties.getTrustRetries());

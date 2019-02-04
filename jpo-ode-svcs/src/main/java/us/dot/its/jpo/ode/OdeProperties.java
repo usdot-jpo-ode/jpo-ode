@@ -34,7 +34,6 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.PropertySource;
@@ -117,10 +116,9 @@ public class OdeProperties implements EnvironmentAware {
     * Kafka Topics
     * 
     */
-   @Value("ode.topics.disabled")
    private String[] kafkaTopicsDisabled = {
-       // disable all POJO topics by default
-       "topic.OdeBsmPojo", "topic.OdeBsmRxPojo", "topic.OdeBsmTxPojo", "topic.OdeBsmDuringEventPojo",
+       // disable all POJO topics by default except "topic.OdeBsmPojo". Never "topic.OdeBsmPojo because that's the only way to get data into "topic.OdeBsmJson
+       "topic.OdeBsmRxPojo", "topic.OdeBsmTxPojo", "topic.OdeBsmDuringEventPojo",
        "topic.OdeTimBroadcastPojo" 
        };
    private Set<String> kafkaTopicsDisabledSet = new HashSet<>();
@@ -150,30 +148,6 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicAsn1DecoderOutput = "topic.Asn1DecoderOutput";
    private String kafkaTopicAsn1EncoderInput = "topic.Asn1EncoderInput";
    private String kafkaTopicAsn1EncoderOutput = "topic.Asn1EncoderOutput";
-
-   /*
-    * BSM Properties
-    */
-   private int bsmReceiverPort = 46800;
-   private int bsmBufferSize = 500;
-
-   /*
-    * Vehicle Situation Data (VSD) Properties
-    */
-   private int vsdBufferSize = 500;
-   private int vsdReceiverPort = 46753;
-   private int vsdDepositorPort = 5555;
-   private int vsdTrustport = 5556;
-
-   /*
-    * Intersection Situation Data (ISD) Properties
-    */
-   private int isdBufferSize = 500;
-   private int isdReceiverPort = 46801;
-   private int isdDepositorPort = 6666;
-   private int isdTrustPort = 6667;
-   private int dataReceiptBufferSize;
-   private int dataReceiptExpirationSeconds;
 
    private int importProcessorBufferSize = OdePlugin.INPUT_STREAM_BUFFER_SIZE;
 
@@ -354,52 +328,12 @@ public class OdeProperties implements EnvironmentAware {
       this.externalIpv6 = externalIpv6;
    }
 
-   public int getVsdDepositorPort() {
-      return vsdDepositorPort;
-   }
-
-   public void setVsdDepositorPort(int vsdSenderPort) {
-      this.vsdDepositorPort = vsdSenderPort;
-   }
-
-   public int getIsdReceiverPort() {
-      return isdReceiverPort;
-   }
-
-   public void setIsdReceiverPort(int isdReceiverPort) {
-      this.isdReceiverPort = isdReceiverPort;
-   }
-
-   public int getIsdDepositorPort() {
-      return isdDepositorPort;
-   }
-
-   public void setIsdDepositorPort(int isdDepositorPort) {
-      this.isdDepositorPort = isdDepositorPort;
-   }
-
    public String getDdsCasPassword() {
       return ddsCasPass;
    }
 
    public void setDdsCasPassword(String ddsCasPass) {
       this.ddsCasPass = ddsCasPass;
-   }
-
-   public int getBsmReceiverPort() {
-      return bsmReceiverPort;
-   }
-
-   public void setBsmReceiverPort(int bsmReceiverPort) {
-      this.bsmReceiverPort = bsmReceiverPort;
-   }
-
-   public int getBsmBufferSize() {
-      return bsmBufferSize;
-   }
-
-   public void setBsmBufferSize(int bsmBufferSize) {
-      this.bsmBufferSize = bsmBufferSize;
    }
 
    public boolean getDepositSanitizedBsmToSdc() {
@@ -426,44 +360,12 @@ public class OdeProperties implements EnvironmentAware {
       this.serviceResponseBufferSize = serviceResponseBufferSize;
    }
 
-   public int getVsdTrustport() {
-      return vsdTrustport;
-   }
-
-   public void setVsdTrustport(int vsdTrustport) {
-      this.vsdTrustport = vsdTrustport;
-   }
-
-   public int getIsdTrustPort() {
-      return isdTrustPort;
-   }
-
-   public void setIsdTrustPort(int isdTrustPort) {
-      this.isdTrustPort = isdTrustPort;
-   }
-
-   public int getDataReceiptExpirationSeconds() {
-      return dataReceiptExpirationSeconds;
-   }
-
-   public void setDataReceiptExpirationSeconds(int dataReceiptExpirationSeconds) {
-      this.dataReceiptExpirationSeconds = dataReceiptExpirationSeconds;
-   }
-
    public int getMessagesUntilTrustReestablished() {
       return messagesUntilTrustReestablished;
    }
 
    public void setMessagesUntilTrustReestablished(int messagesUntilTrustReestablished) {
       this.messagesUntilTrustReestablished = messagesUntilTrustReestablished;
-   }
-
-   public int getDataReceiptBufferSize() {
-      return dataReceiptBufferSize;
-   }
-
-   public void setDataReceiptBufferSize(int dataReceiptBufferSize) {
-      this.dataReceiptBufferSize = dataReceiptBufferSize;
    }
 
    public String getCaCertPath() {
@@ -496,30 +398,6 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setSelfSigningPrivateKeyFilePath(String selfSigningPrivateKeyFilePath) {
       this.selfSigningPrivateKeyFilePath = selfSigningPrivateKeyFilePath;
-   }
-
-   public int getIsdBufferSize() {
-      return isdBufferSize;
-   }
-
-   public void setIsdBufferSize(int isdBufferSize) {
-      this.isdBufferSize = isdBufferSize;
-   }
-
-   public int getVsdBufferSize() {
-      return vsdBufferSize;
-   }
-
-   public void setVsdBufferSize(int vsdBufferSize) {
-      this.vsdBufferSize = vsdBufferSize;
-   }
-
-   public int getVsdReceiverPort() {
-      return vsdReceiverPort;
-   }
-
-   public void setVsdReceiverPort(int vsdReceiverPort) {
-      this.vsdReceiverPort = vsdReceiverPort;
    }
 
    public Boolean getVerboseJson() {

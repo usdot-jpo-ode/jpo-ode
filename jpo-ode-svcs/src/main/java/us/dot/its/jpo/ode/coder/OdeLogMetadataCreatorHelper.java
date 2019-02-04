@@ -77,6 +77,8 @@ public class OdeLogMetadataCreatorHelper {
              case SNMP: metadata.setRecordGeneratedBy(GeneratedBy.TMC_VIA_SNMP); break;
              default:break;
            }
+         } else {
+           metadata.setRecordGeneratedBy(GeneratedBy.OBU);
          }
       }
 
