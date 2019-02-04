@@ -54,6 +54,7 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
+import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
 public class Asn1CommandManager {
 
@@ -77,6 +78,10 @@ public class Asn1CommandManager {
    private String signatureUri;
    private DdsDepositor<DdsStatusMessage> depositor;
    private OdeProperties odeProperties;
+   
+   private MessageProducer<String, String> stringMessageProducer;
+   
+   private String depositTopic;
 
    public Asn1CommandManager(OdeProperties odeProperties) {
 
@@ -85,7 +90,10 @@ public class Asn1CommandManager {
       this.signatureUri = odeProperties.getSecuritySvcsSignatureUri();
 
       try {
-         depositor = new DdsDepositor<>(odeProperties);
+         //depositor = new DdsDepositor<>(odeProperties);
+         this.stringMessageProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
+               odeProperties.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
+         this.setDepositTopic(odeProperties.getKafkaTopicSdwDepositorInput());
       } catch (Exception e) {
          String msg = "Error starting SDW depositor";
          EventLogger.logger.error(msg, e);
@@ -95,14 +103,18 @@ public class Asn1CommandManager {
    }
 
    public void depositToDDS(String asdBytes) throws Asn1CommandManagerException {
-      try {
-         depositor.deposit(asdBytes);
-         EventLogger.logger.info("Message Deposited to SDW: {}", asdBytes);
-         logger.info("Message deposited to SDW: {}", asdBytes);
-      } catch (DdsRequestManagerException e) {
-         String msg = "Failed to deposit message to SDW";
-         throw new Asn1CommandManagerException(msg, e);
-      }
+      
+      stringMessageProducer.send(this.getDepositTopic(), null, asdBytes);
+      logger.info("Message deposited to SDW: {}", asdBytes);
+      
+//      try {
+//         depositor.deposit(asdBytes);
+//         EventLogger.logger.info("Message Deposited to SDW: {}", asdBytes);
+//         logger.info("Message deposited to SDW: {}", asdBytes);
+//      } catch (DdsRequestManagerException e) {
+//         String msg = "Failed to deposit message to SDW";
+//         throw new Asn1CommandManagerException(msg, e);
+//      }
    }
 
    public Map<String, String> sendToRsus(ServiceRequest request, String encodedMsg) {
@@ -256,6 +268,14 @@ public class Asn1CommandManager {
       encodings.add(TimTransmogrifier.buildEncodingNode(ADVISORY_SITUATION_DATA_STRING, ADVISORY_SITUATION_DATA_STRING,
             EncodingRule.UPER));
       return encodings;
+   }
+
+   public String getDepositTopic() {
+      return depositTopic;
+   }
+
+   public void setDepositTopic(String depositTopic) {
+      this.depositTopic = depositTopic;
    }
 
 }

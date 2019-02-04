@@ -97,6 +97,7 @@ public class OdeProperties implements EnvironmentAware {
    private String ddsCasUsername = "";
    private String ddsCasPass = "";
    private String ddsWebsocketUrl = "wss://webapp.cvmvp.com/whtools/websocket";
+   private String kafkaTopicSdwDepositorInput = "topic.SDWDepositorInput";
 
    // IPv4 address and listening UDP port for SDC
    private String sdcIp = "104.130.170.234";// NOSONAR
@@ -803,6 +804,14 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setRsuPassword(String rsuPassword) {
       this.rsuPassword = rsuPassword;
+   }
+
+   public String getKafkaTopicSdwDepositorInput() {
+      return kafkaTopicSdwDepositorInput;
+   }
+
+   public void setKafkaTopicSdwDepositorInput(String kafkaTopicSdwDepositorInput) {
+      this.kafkaTopicSdwDepositorInput = kafkaTopicSdwDepositorInput;
    }
 
 }
