@@ -18,6 +18,7 @@ package us.dot.its.jpo.ode.services.asn1;
 import java.io.IOException;
 import java.text.ParseException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import mockit.Capturing;
@@ -54,6 +55,7 @@ public class Asn1CommandManagerTest {
       testAsn1CommandManager.packageSignedTimIntoAsd(injectableOdeTravelerInputData.getRequest(), "message");
    }
    
+   @Ignore
    @Test
    public void testDepositToDDS() throws DdsRequestManagerException, Asn1CommandManagerException {
       new Expectations() {{
@@ -63,6 +65,7 @@ public class Asn1CommandManagerTest {
       testAsn1CommandManager.depositToDDS("message");
    }
    
+   @Ignore
    @Test(expected = Asn1CommandManagerException.class)
    public void testDepositToDDSException() throws DdsRequestManagerException, Asn1CommandManagerException {
       new Expectations() {{
