@@ -97,7 +97,8 @@ public class DdsClientTest {
 		new DdsClient<String>(ddsCasUrl, ddsCasUsername, ddsCasPassword, websocketURL, keystoreFile, keystorePass);
 	}
 
-   @Ignore
+  @SuppressWarnings("unchecked")
+  @Ignore
 	@Test
 	public void testLogin() {
 		try {
