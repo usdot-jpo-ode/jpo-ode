@@ -30,6 +30,7 @@ import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
+import us.dot.its.jpo.ode.services.asn1.Asn1CommandManager.Asn1CommandManagerException;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
@@ -58,7 +59,7 @@ public class Asn1CommandManagerTest {
    }
 
    @Test
-   public void depositToSDWShouldCallMessageProducer() {
+   public void depositToSDWShouldCallMessageProducer() throws Asn1CommandManagerException {
       testAsn1CommandManager.depositToSdw("message");
    }
 
