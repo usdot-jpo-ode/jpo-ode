@@ -45,7 +45,7 @@ public class MessageProducer<K, V> {
     private static Logger logger = LoggerFactory.getLogger(MessageProducer.class);
 
     private Producer<K, V> producer;
-    private Set<String> enabledTopicsSet;
+    private Set<String> disabledTopicsSet;
 
 
     public MessageProducer(
@@ -53,7 +53,7 @@ public class MessageProducer<K, V> {
         String type, 
         String partitionerClass, 
         String valueSerializerFQN,
-        Set<String> enabledTopics) {
+        Set<String> disabledTopics) {
         Properties props = setDefaultProperties();
         
         props.put("bootstrap.servers", brokers);
@@ -65,7 +65,7 @@ public class MessageProducer<K, V> {
 
         producer = new KafkaProducer<>(props);
         
-        this.enabledTopicsSet = enabledTopics;
+        this.disabledTopicsSet = disabledTopics;
 
         logger.info("Producer Created with default properties");
     }
@@ -79,19 +79,19 @@ public class MessageProducer<K, V> {
 
         producer = new KafkaProducer<>(props);
 
-        this.enabledTopicsSet = enabledTopics;
+        this.disabledTopicsSet = enabledTopics;
 
         logger.info("Producer Created");
     }
 
     public static MessageProducer<String, byte[]> defaultByteArrayMessageProducer(String brokers, String type,
-       Set<String> enabledTopics) {
-        return new MessageProducer<String, byte[]>(brokers, type, null, SERIALIZATION_BYTE_ARRAY_SERIALIZER, enabledTopics);
+       Set<String> disabledTopics) {
+        return new MessageProducer<String, byte[]>(brokers, type, null, SERIALIZATION_BYTE_ARRAY_SERIALIZER, disabledTopics);
     }
 
     public static MessageProducer<String, String> defaultStringMessageProducer(String brokers, String type,
-       Set<String> enabledTopics) {
-        return new MessageProducer<String, String>(brokers, type, null, SERIALIZATION_STRING_SERIALIZER, enabledTopics);
+       Set<String> disabledTopics) {
+        return new MessageProducer<String, String>(brokers, type, null, SERIALIZATION_STRING_SERIALIZER, disabledTopics);
     }
 
     private static Properties setDefaultProperties() {
@@ -113,7 +113,7 @@ public class MessageProducer<K, V> {
     }
 
     public void send(String topic, K key, V value) {
-       if (!enabledTopicsSet.contains(topic)) {
+       if (!disabledTopicsSet.contains(topic)) {
           ProducerRecord<K, V> data;
           if (key == null)
               data = new ProducerRecord<>(topic, value);

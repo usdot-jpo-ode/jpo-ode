@@ -204,7 +204,6 @@ public class SerialIdTest {
 
       assertTrue(testSerialId0.equals(testSerialId0));
       assertFalse(testSerialId0.equals(null));
-      assertFalse(testSerialId0.equals(new Integer(4)));
 
       assertTrue(testSerialId0.equals(testSerialId1));
       testSerialId1.setBundleId(7L);
