@@ -19,17 +19,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
-import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.plugin.ServiceRequest;
-import us.dot.its.jpo.ode.services.asn1.Asn1CommandManager.Asn1CommandManagerException;
 import us.dot.its.jpo.ode.traveler.TimTransmogrifier;
 import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -43,8 +40,6 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
    private static final String BYTES = "bytes";
 
   private static final String MESSAGE_FRAME = "MessageFrame";
-
-  private static final String ERROR_ON_DDS_DEPOSIT = "Error on DDS deposit.";
 
   public static class Asn1EncodedDataRouterException extends Exception {
 
@@ -124,7 +119,6 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          }
       } catch (Exception e) {
          String msg = "Error in processing received message from ASN.1 Encoder module: " + consumedData;
-         EventLogger.logger.error(msg, e);
          logger.error(msg, e);
       }
       return null;
@@ -141,7 +135,6 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
       } catch (Exception e) {
          String errMsg = "Malformed JSON.";
-         EventLogger.logger.error(errMsg, e);
          logger.error(errMsg, e);
       }
 
@@ -214,13 +207,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             // We have a ASD with signed MessageFrame
             // Case 3
             JSONObject asdObj = dataObj.getJSONObject(Asn1CommandManager.ADVISORY_SITUATION_DATA_STRING);
-            try {
-              asn1CommandManager.depositToDDS(asdObj.getString(BYTES));
-            } catch (JSONException | Asn1CommandManagerException e) {
-              String msg = ERROR_ON_DDS_DEPOSIT;
-              logger.error(msg, e);
-              EventLogger.logger.error(msg, e);
-            }
+              asn1CommandManager.depositToSdw(asdObj.getString(BYTES));
          } else {
             logger.debug("Unsigned ASD received. Depositing it to SDW.");
             //We have ASD with UNSECURED MessageFrame
@@ -246,26 +233,12 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          }
 
         if (null != asdObj) {
+           // Deposit to SDW
            String asdBytes = asdObj.getString(BYTES);
-
-           // Deposit to DDS
-           String ddsMessage = "";
-           try {
-              asn1CommandManager.depositToDDS(asdBytes);
-              ddsMessage = "\"dds_deposit\":{\"success\":\"true\"}";
-              logger.info("DDS deposit successful.");
-           } catch (Exception e) {
-              ddsMessage = "\"dds_deposit\":{\"success\":\"false\"}";
-              String msg = ERROR_ON_DDS_DEPOSIT;
-              logger.error(msg, e);
-              EventLogger.logger.error(msg, e);
-           }
-
-           responseList.put("ddsMessage", ddsMessage);
-        } else if (logger.isErrorEnabled()) { // Added to avoid Sonar's "Invoke method(s) only conditionally." code smell
-          String msg = "ASN.1 Encoder did not return ASD encoding {}";
-          EventLogger.logger.error(msg, consumedObj.toString());
-          logger.error(msg, consumedObj.toString());
+           asn1CommandManager.depositToSdw(asdBytes);
+           logger.info("Message published to SDW deposit topic: {}", asdBytes);
+        } else {
+          logger.warn("WARNING! ASN.1 Encoder did not return ASD encoding {}", consumedObj.toString());
         }
       }
 

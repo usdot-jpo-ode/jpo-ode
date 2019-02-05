@@ -34,9 +34,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.context.AppContext;
-import us.dot.its.jpo.ode.dds.DdsDepositor;
-import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
-import us.dot.its.jpo.ode.dds.DdsStatusMessage;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsdPayload;
@@ -76,11 +73,10 @@ public class Asn1CommandManager {
    }
 
    private String signatureUri;
-   private DdsDepositor<DdsStatusMessage> depositor;
    private OdeProperties odeProperties;
-   
+
    private MessageProducer<String, String> stringMessageProducer;
-   
+
    private String depositTopic;
 
    public Asn1CommandManager(OdeProperties odeProperties) {
@@ -90,7 +86,6 @@ public class Asn1CommandManager {
       this.signatureUri = odeProperties.getSecuritySvcsSignatureUri();
 
       try {
-         //depositor = new DdsDepositor<>(odeProperties);
          this.stringMessageProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
                odeProperties.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
          this.setDepositTopic(odeProperties.getKafkaTopicSdwDepositorInput());
@@ -102,19 +97,9 @@ public class Asn1CommandManager {
 
    }
 
-   public void depositToDDS(String asdBytes) throws Asn1CommandManagerException {
-      
+   public void depositToSdw(String asdBytes) {
+      logger.info("Publishing message to SDW deposit topic: {}", asdBytes);
       stringMessageProducer.send(this.getDepositTopic(), null, asdBytes);
-      logger.info("Message deposited to SDW: {}", asdBytes);
-      
-//      try {
-//         depositor.deposit(asdBytes);
-//         EventLogger.logger.info("Message Deposited to SDW: {}", asdBytes);
-//         logger.info("Message deposited to SDW: {}", asdBytes);
-//      } catch (DdsRequestManagerException e) {
-//         String msg = "Failed to deposit message to SDW";
-//         throw new Asn1CommandManagerException(msg, e);
-//      }
    }
 
    public Map<String, String> sendToRsus(ServiceRequest request, String encodedMsg) {
