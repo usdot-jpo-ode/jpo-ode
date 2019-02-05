@@ -67,6 +67,9 @@ public class OdeProperties implements EnvironmentAware {
    private Boolean verboseJson = false;
    private String externalIpv4 = "";
    private String externalIpv6 = "";
+   private int importProcessorBufferSize = OdePlugin.INPUT_STREAM_BUFFER_SIZE;
+   private String hostId;
+   private List<Path> uploadLocations = new ArrayList<>();
 
    /*
     * RSU Properties
@@ -96,7 +99,6 @@ public class OdeProperties implements EnvironmentAware {
    private String ddsCasUsername = "";
    private String ddsCasPass = "";
    private String ddsWebsocketUrl = "wss://webapp.cvmvp.com/whtools/websocket";
-   private String kafkaTopicSdwDepositorInput = "topic.SDWDepositorInput";
 
    // IPv4 address and listening UDP port for SDC
    private String sdcIp = "104.130.170.234";// NOSONAR
@@ -106,6 +108,9 @@ public class OdeProperties implements EnvironmentAware {
    private boolean depositSanitizedBsmToSdc = false;
    private int serviceRespExpirationSeconds = 10;
    private int serviceResponseBufferSize = 500;
+   
+   // Enable/disable depositing SDW messages over Websocket(true) or REST(false)
+   private boolean depositSdwMessagesOverWebsocket = false;
 
    /*
     * UDP Properties
@@ -149,11 +154,9 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicAsn1DecoderOutput = "topic.Asn1DecoderOutput";
    private String kafkaTopicAsn1EncoderInput = "topic.Asn1EncoderInput";
    private String kafkaTopicAsn1EncoderOutput = "topic.Asn1EncoderOutput";
-
-   private int importProcessorBufferSize = OdePlugin.INPUT_STREAM_BUFFER_SIZE;
-
-   private String hostId;
-   private List<Path> uploadLocations = new ArrayList<>();
+   
+   // SDW Depositor Module
+   private String kafkaTopicSdwDepositorInput = "topic.SDWDepositorInput";
 
    /*
     * Security Properties
@@ -671,6 +674,14 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setKafkaTopicSdwDepositorInput(String kafkaTopicSdwDepositorInput) {
       this.kafkaTopicSdwDepositorInput = kafkaTopicSdwDepositorInput;
+   }
+
+   public boolean shouldDepositSdwMessagesOverWebsocket() {
+      return depositSdwMessagesOverWebsocket;
+   }
+
+   public void setDepositSdwMessagesOverWebsocket(boolean depositSdwMessagesOverWebsocket) {
+      this.depositSdwMessagesOverWebsocket = depositSdwMessagesOverWebsocket;
    }
 
 }
