@@ -1,6 +1,7 @@
 ## ODE Release Notes ##
 -----------------------
 ### Sprint 40
+- ODE-944 Added Situation Data Warehouse depositor submodule to the ODE
 - ODE-1076 New values for metadata.recordGeneratedBy: RSU, TMC_VIA_SAT, TMC_VIA_SNMP
 ### December 2018
 - ODE-466 serialId element of metadata will now provide a true serial number to help identify missing records.
