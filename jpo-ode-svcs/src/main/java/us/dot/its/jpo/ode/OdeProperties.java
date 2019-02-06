@@ -65,8 +65,6 @@ public class OdeProperties implements EnvironmentAware {
    private static final String DEFAULT_KAFKA_PORT = "9092";
    private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
    private Boolean verboseJson = false;
-   private String externalIpv4 = "";
-   private String externalIpv6 = "";
    private int importProcessorBufferSize = OdePlugin.INPUT_STREAM_BUFFER_SIZE;
    private String hostId;
    private List<Path> uploadLocations = new ArrayList<>();
@@ -100,15 +98,6 @@ public class OdeProperties implements EnvironmentAware {
    private String ddsCasPass = "";
    private String ddsWebsocketUrl = "wss://webapp.cvmvp.com/whtools/websocket";
 
-   // IPv4 address and listening UDP port for SDC
-   private String sdcIp = "104.130.170.234";// NOSONAR
-   private int sdcPort = 46753;
-
-   // Enable/disable depositing sanitized BSMs to SDC
-   private boolean depositSanitizedBsmToSdc = false;
-   private int serviceRespExpirationSeconds = 10;
-   private int serviceResponseBufferSize = 500;
-   
    // Enable/disable depositing SDW messages over Websocket(true) or REST(false)
    private boolean depositSdwMessagesOverWebsocket = false;
 
@@ -300,68 +289,12 @@ public class OdeProperties implements EnvironmentAware {
       return uploadLocationRoot;
    }
 
-   public void setSdcIp(String sdcIp) {
-      this.sdcIp = sdcIp;
-   }
-
-   public String getSdcIp() {
-      return sdcIp;
-   }
-
-   public int getSdcPort() {
-      return sdcPort;
-   }
-
-   public void setSdcPort(int sdcPort) {
-      this.sdcPort = sdcPort;
-   }
-
-   public String getExternalIpv4() {
-      return externalIpv4;
-   }
-
-   public void setExternalIpv4(String externalIpv4) {
-      this.externalIpv4 = externalIpv4;
-   }
-
-   public String getExternalIpv6() {
-      return externalIpv6;
-   }
-
-   public void setExternalIpv6(String externalIpv6) {
-      this.externalIpv6 = externalIpv6;
-   }
-
    public String getDdsCasPassword() {
       return ddsCasPass;
    }
 
    public void setDdsCasPassword(String ddsCasPass) {
       this.ddsCasPass = ddsCasPass;
-   }
-
-   public boolean getDepositSanitizedBsmToSdc() {
-      return depositSanitizedBsmToSdc;
-   }
-
-   public void setDepositSanitizedBsmToSdc(boolean depositSanitizedBsmToSdc) {
-      this.depositSanitizedBsmToSdc = depositSanitizedBsmToSdc;
-   }
-
-   public int getServiceRespExpirationSeconds() {
-      return serviceRespExpirationSeconds;
-   }
-
-   public void setServiceRespExpirationSeconds(int serviceRespExpirationSeconds) {
-      this.serviceRespExpirationSeconds = serviceRespExpirationSeconds;
-   }
-
-   public int getServiceResponseBufferSize() {
-      return serviceResponseBufferSize;
-   }
-
-   public void setServiceResponseBufferSize(int serviceResponseBufferSize) {
-      this.serviceResponseBufferSize = serviceResponseBufferSize;
    }
 
    public int getMessagesUntilTrustReestablished() {

@@ -121,13 +121,6 @@ public class OdePropertiesTest {
       String testPluginsLocations = "testpluginsLocations123456";
       String testUploadLocationObuLog = "testuploadLocationObuLog123456";
       String testUploadLocationRoot = "testUploadLocationRoot123456";
-      String testSdcIp = "testSdcIp";
-      int testSdcPort = 123;
-      String testExternalIpv4 = "testExternalIpv4";
-      String testExternalIpv6 = "testExternalIpv6";
-      boolean testDepositSanitizedBsmToSdc = true;
-      int testServiceRespExpirationSeconds = 12;
-      int testServiceResponseBufferSize = 13;
       int testMessagesUntilTrustReestablished = 17;
       String testCaCertPath = "testCaCertPath";
       String testSelfCertPath = "testSelfCertPath";
@@ -178,13 +171,6 @@ public class OdePropertiesTest {
       testOdeProperties.setPluginsLocations(testPluginsLocations);
       testOdeProperties.setUploadLocationObuLog(testUploadLocationObuLog);
       testOdeProperties.setUploadLocationRoot(testUploadLocationRoot);
-      testOdeProperties.setSdcIp(testSdcIp);
-      testOdeProperties.setSdcPort(testSdcPort);
-      testOdeProperties.setExternalIpv4(testExternalIpv4);
-      testOdeProperties.setExternalIpv6(testExternalIpv6);
-      testOdeProperties.setDepositSanitizedBsmToSdc(testDepositSanitizedBsmToSdc);
-      testOdeProperties.setServiceRespExpirationSeconds(testServiceRespExpirationSeconds);
-      testOdeProperties.setServiceResponseBufferSize(testServiceResponseBufferSize);
       testOdeProperties.setMessagesUntilTrustReestablished(testMessagesUntilTrustReestablished);
       testOdeProperties.setCaCertPath(testCaCertPath);
       testOdeProperties.setSelfCertPath(testSelfCertPath);
@@ -234,16 +220,6 @@ public class OdePropertiesTest {
             testOdeProperties.getUploadLocationObuLog());
       assertEquals("Incorrect testUploadLocationRoot", testUploadLocationRoot,
             testOdeProperties.getUploadLocationRoot());
-      assertEquals("Incorrect testSdcIp", testSdcIp, testOdeProperties.getSdcIp());
-      assertEquals("Incorrect testSdcPort", testSdcPort, testOdeProperties.getSdcPort());
-      assertEquals("Incorrect testExternalIpv4", testExternalIpv4, testOdeProperties.getExternalIpv4());
-      assertEquals("Incorrect testExternalIpv6", testExternalIpv6, testOdeProperties.getExternalIpv6());
-      assertEquals("Incorrect testDepositSanitizedBsmToSdc", testDepositSanitizedBsmToSdc,
-            testOdeProperties.getDepositSanitizedBsmToSdc());
-      assertEquals("Incorrect testServiceRespExpirationSeconds", testServiceRespExpirationSeconds,
-            testOdeProperties.getServiceRespExpirationSeconds());
-      assertEquals("Incorrect testServiceResponseBufferSize", testServiceResponseBufferSize,
-            testOdeProperties.getServiceResponseBufferSize());
       assertEquals("Incorrect testMessagesUntilTrustReestablished", testMessagesUntilTrustReestablished,
             testOdeProperties.getMessagesUntilTrustReestablished());
       assertEquals("Incorrect testCaCertPath", testCaCertPath, testOdeProperties.getCaCertPath());
