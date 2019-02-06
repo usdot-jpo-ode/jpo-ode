@@ -202,7 +202,7 @@ git clone --recurse-submodules https://github.com/usdot-jpo-ode/jpo-ode.git
 - S3 Bucket Depositor - [jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)
 - Security Services Module- [jpo-security](https://github.com/usdot-jpo-ode/jpo-security-svcs)
 - ASN.1 CODEC - [asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)
-- SDW Bucket Depositor - [jpo-sdw-depositor](https://github.com/usdot-jpo-ode/jpo-sdw-depositor)
+- SDW Depositor Module - [jpo-sdw-depositor](https://github.com/usdot-jpo-ode/jpo-sdw-depositor)
 
 Once you have these repositories obtained, you are ready to build and deploy the application.
 
