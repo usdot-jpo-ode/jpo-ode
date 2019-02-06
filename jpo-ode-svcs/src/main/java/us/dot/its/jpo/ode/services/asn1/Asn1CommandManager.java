@@ -107,16 +107,20 @@ public class Asn1CommandManager {
       if (this.odeProperties.shouldDepositSdwMessagesOverWebsocket()) {
          try {
             depositor.deposit(asdBytes);
-            logger.info("Deposited message to SDW directly via websocket {}", asdBytes);
-            EventLogger.logger.info("Deposited message to SDW directly via websocket {}", asdBytes);
+
+            String websocketDepositMessage = "Deposited message to SDW directly via websocket {}";
+            logger.info(websocketDepositMessage, asdBytes);
+            EventLogger.logger.info(websocketDepositMessage, asdBytes);
          } catch (DdsRequestManagerException e) {
             String msg = "Failed to deposit message to SDW";
             throw new Asn1CommandManagerException(msg, e);
          }
       } else {
          stringMessageProducer.send(this.getDepositTopic(), null, asdBytes);
-         logger.info("Published message to SDW deposit Kafka topic {}", asdBytes);
-         EventLogger.logger.info("Published message to SDW deposit Kafka topic {}", asdBytes);
+
+         String sdwKafkaDepositMessage = "Published message to SDW deposit Kafka topic {}";
+         logger.info(sdwKafkaDepositMessage, asdBytes);
+         EventLogger.logger.info(sdwKafkaDepositMessage, asdBytes);
       }
    }
 
