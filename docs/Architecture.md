@@ -226,7 +226,7 @@ pattern. The micro-services architecture pattern is a highly scalable
 design pattern and a viable alternative to monolithic applications<sup>1</sup>
 and service-oriented architectures.
 
-_<sup>1</sup>In software engineering, a **monolithic application** describes a single-tiered software **application** in which the user interface and data access code are combined into a single program from a single platform. A **monolithic application** is self-contained, and independent from other computing **applications**._
+<sup>1</sup> _In software engineering, a **monolithic application** describes a single-tiered software **application** in which the user interface and data access code are combined into a single program from a single platform. A **monolithic application** is self-contained, and independent from other computing **applications**._
 
 <a name="pattern-description">
 
@@ -259,7 +259,7 @@ _Figure 3 - Basic Micro-services architecture pattern_
 
 <a name="pattern-topology">
 
-### 4.2 Pattern Topology
+### 4.2 - Pattern Topology
 
 For JPO ODE, a *centralized messaging* topology is being envisioned.
 This topology (illustrated In Figure 3) uses a lightweight centralized
