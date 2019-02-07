@@ -49,9 +49,10 @@ services:
       ODE_RSU_PASSWORD: ${ODE_RSU_PASSWORD}
       ODE_DDS_CAS_USERNAME: ${ODE_DDS_CAS_USERNAME}
       ODE_DDS_CAS_PASSWORD: ${ODE_DDS_CAS_PASSWORD}
-      ODE_DEPOSIT_SDW_MESSAGES_OVER_WEBSOCKET: ${ODE_DEPOSIT_SDW_MESSAGES_OVER_WEBSOCKET}
-# Commented out for latest schemaVersion. Uncomment to set for older schemaVersion
-#      ODE_OUTPUT_SCHEMA_VERSION: ${ODE_OUTPUT_SCHEMA_VERSION}
+      # Commented out, will use SDW depositor module by default
+      #        ODE_DEPOSIT_SDW_MESSAGES_OVER_WEBSOCKET: ${ODE_DEPOSIT_SDW_MESSAGES_OVER_WEBSOCKET}
+      # Commented out for latest schemaVersion. Uncomment to set for older schemaVersion
+      #        ODE_OUTPUT_SCHEMA_VERSION: ${ODE_OUTPUT_SCHEMA_VERSION}
     depends_on:
       - kafka
     volumes:
@@ -180,3 +181,6 @@ services:
      - "8090:8090"
     environment:
       SEC_CRYPTO_SERVICE_BASE_URI: ${SEC_CRYPTO_SERVICE_BASE_URI}
+
+volumes:
+  maven:
