@@ -215,11 +215,10 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             // Case 3
             JSONObject asdObj = dataObj.getJSONObject(Asn1CommandManager.ADVISORY_SITUATION_DATA_STRING);
             try {
-              asn1CommandManager.depositToDDS(asdObj.getString(BYTES));
+              asn1CommandManager.depositToSdw(asdObj.getString(BYTES));
             } catch (JSONException | Asn1CommandManagerException e) {
               String msg = ERROR_ON_DDS_DEPOSIT;
               logger.error(msg, e);
-              EventLogger.logger.error(msg, e);
             }
          } else {
             logger.debug("Unsigned ASD received. Depositing it to SDW.");
@@ -251,7 +250,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
            // Deposit to DDS
            String ddsMessage = "";
            try {
-              asn1CommandManager.depositToDDS(asdBytes);
+              asn1CommandManager.depositToSdw(asdBytes);
               ddsMessage = "\"dds_deposit\":{\"success\":\"true\"}";
               logger.info("DDS deposit successful.");
            } catch (Exception e) {

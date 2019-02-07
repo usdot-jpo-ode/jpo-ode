@@ -27,10 +27,10 @@ Minimum memory: 16 GB
 Minimum Storage Space: 100 GB
 Operating systems supported: Ubuntu Linux
 
-The ODE software can run on most standard Window or Linux based computers with 
+The ODE software can run on most standard Window or Linux based computers with
 Pentium core processors, with at least 16 gigabytes of RAM and at least 100 GB of drive space.
-Performance of the software will be based on the computing power and available RAM in 
-the system.  Larger data flows can require much larger space requirements depending on the 
+Performance of the software will be based on the computing power and available RAM in
+the system.  Larger data flows can require much larger space requirements depending on the
 amount of data being processed by the software. The ODE software application was developed using the open source programming language Java.  The application requires Java 8 or higher to run. The application can be run on Windows, Linux, or Mac operating systems.  
 
 ### Web sites
@@ -145,7 +145,7 @@ The following instructions describe the minimal procedure to fetch, build, and r
 
 Some notes before you begin:
 * If you are installing the ODE in an Ubuntu environment, see this [preparation guide](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Prepare-a-fresh-Ubuntu-instance-for-ODE-installation) that covers installing all of the prerequisites.
-* Docker builds may fail if you are on a corporate network due to DNS resolution errors. 
+* Docker builds may fail if you are on a corporate network due to DNS resolution errors.
 [See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
 * Additionally *git* commands may fail for similar reasons, you can fix this by running `export GIT_SSL_NO_VERIFY=1`.
 * Windows users may find more information on installing and using Docker [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management).
@@ -172,7 +172,7 @@ Read the following guides to familiarize yourself with ODE's Docker and Kafka mo
 ### Obtain the Source Code
 
 #### Step 0 - For Windows Users Only
-If running on Windows, please make sure that your global git config is set up to not convert End-of-Line characters during checkout. 
+If running on Windows, please make sure that your global git config is set up to not convert End-of-Line characters during checkout.
 
 Disable `git core.autocrlf` (One Time Only)
 
@@ -190,6 +190,7 @@ ODE software consists of the following modules hosted on GitHub:
 |[jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)|public|S3 depositor service. Optional, comment out of `docker-compose.yml` file if not used.|
 |[asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)|public|ASN.1 Encoder/Decoder module|
 |[jpo-security-svcs](https://github.com/usdot-jpo-ode/jpo-security-svcs)|public|Provides cryptographic services.|
+|[jpo-sdw-depositor](https://github.com/usdot-jpo-ode/jpo-sdw-depositor)|public|SDW depositor service. Optional, comment out of `docker-compose.yml` file if not used.|
 
 To download the stable (default branch) source code for the first time, clone the repositories by running the following commands:
 
@@ -201,6 +202,7 @@ git clone --recurse-submodules https://github.com/usdot-jpo-ode/jpo-ode.git
 - S3 Bucket Depositor - [jpo-s3-deposit](https://github.com/usdot-jpo-ode/jpo-s3-deposit)
 - Security Services Module- [jpo-security](https://github.com/usdot-jpo-ode/jpo-security-svcs)
 - ASN.1 CODEC - [asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec)
+- SDW Depositor Module - [jpo-sdw-depositor](https://github.com/usdot-jpo-ode/jpo-sdw-depositor)
 
 Once you have these repositories obtained, you are ready to build and deploy the application.
 
@@ -218,7 +220,7 @@ git submodule foreach --recursive git reset --hard
 git checkout <branch_name>
 git pull origin <branch_name>
 
-# The next command wipes out all of the submodules and re-initializes them. 
+# The next command wipes out all of the submodules and re-initializes them.
 git submodule deinit -f . && git submodule update --recursive --init
 
 # Restore user provided source or configuration files used by submodules
@@ -238,12 +240,12 @@ ODE configuration can be customized for every deployment environment using envir
 
 Instructions for how to use the *sample.env* file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
 
-**Important!** 
+**Important!**
 You must rename `sample.env` to `.env` for Docker to automatically read the file. This file will contain AWS access keys and other private information. Do not push this file to source control.
 
 #### Build Process
 
-**Note** Docker builds may fail if you are on a corporate network due to DNS resolution errors. 
+**Note** Docker builds may fail if you are on a corporate network due to DNS resolution errors.
 [See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
 
 **Note** In order for Docker to automatically read the environment variable file, you must rename it from `sample.env` to `.env`.
@@ -251,7 +253,7 @@ You must rename `sample.env` to `.env` for Docker to automatically read the file
 #### Step 2: Build and deploy the application.
 
 Copy the following files from `jpo-ode` directory into your DOCKER_SHARED_VOLUME directory.
-- Copy jpo-ode/ppm.properties to ${DOCKER_SHARED_VOLUME}/config.properties. Open the newly copied `config.properties` file in a text editor and update the `metadata.broker.list=your.docker.host.ip:9092` line with your system's DOCKER_HOST_IP in place of the dummy `your.docker.host.ip` string. 
+- Copy jpo-ode/ppm.properties to ${DOCKER_SHARED_VOLUME}/config.properties. Open the newly copied `config.properties` file in a text editor and update the `metadata.broker.list=your.docker.host.ip:9092` line with your system's DOCKER_HOST_IP in place of the dummy `your.docker.host.ip` string.
 - Copy jpo-ode/adm.properties to ${DOCKER_SHARED_VOLUME}/adm.properties
 - Copy jpo-ode/aem.properties to ${DOCKER_SHARED_VOLUME}/aem.properties
 
@@ -290,8 +292,8 @@ Once the ODE is deployed and running, you should be able to access the `jpo-ode`
 
 1. Press the `Connect` button to connect to the ODE WebSocket service.
 2. Press `Choose File` button to select an OBU log file containing BSMs and/or TIM messages as specified by the WYDOT CV Pilot project. See below documents for details:
-a. [Wyoming CV Pilot Log File Design](data/Wyoming_CV_Pilot_Log_File_Design.docx) 
-b. [WYDOT Log Records](data/wydotLogRecords.h) 
+a. [Wyoming CV Pilot Log File Design](data/Wyoming_CV_Pilot_Log_File_Design.docx)
+b. [WYDOT Log Records](data/wydotLogRecords.h)
 3. Press `Upload` button to upload the file to ODE.
 
 Upload records within the files must be embedding BSM and/or TIM messages wrapped in J2735 MessageFrame and ASN.1 UPER encoded, wrapped in IEEE 1609.2 envelope and ASN.1 COER encoded binary format. The following files are a samples of each supported type. Uploading any of the files below will you will observe the decoded messages returned to the web UI page while connected to the WebSocket interface:
