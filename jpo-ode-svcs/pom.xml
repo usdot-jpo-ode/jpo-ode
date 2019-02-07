@@ -5,7 +5,7 @@
   <parent>
     <groupId>usdot.jpo.ode</groupId>
     <artifactId>jpo-ode</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4-SNAPSHOT</version>
   </parent>
 
   <artifactId>jpo-ode-svcs</artifactId>
@@ -94,7 +94,7 @@
     <dependency>
       <groupId>usdot.jpo.ode</groupId>
       <artifactId>jpo-ode-core</artifactId>
-      <version>1.0.3</version>
+      <version>1.0.4-SNAPSHOT</version>
     </dependency>
     <!--
     <dependency>
@@ -106,7 +106,7 @@
     <dependency>
       <groupId>usdot.jpo.ode</groupId>
       <artifactId>jpo-ode-plugins</artifactId>
-      <version>1.0.3</version>
+      <version>1.0.4-SNAPSHOT</version>
     </dependency>
     <!-- TODO open-ode
     <dependency>
