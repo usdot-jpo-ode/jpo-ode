@@ -66,6 +66,7 @@ public class DdsDepositorTest {
      * When the DdsRequestManager.isConnected() returns false, should try
      * connecting (Verify that DdsRequestManager.connect() is called)
      */
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldTryConnectingWhenConnectedFalse(@Mocked OdeProperties mockOdeProperties,
             @Mocked DdsRequestManager<Object> mockRequestManager, @Mocked Logger mockLogger,
@@ -104,6 +105,7 @@ public class DdsDepositorTest {
      * When the DdsRequestManager.isConnected() returns true, should not try
      * connecting (Verify that DdsRequestManager.connect() is NOT called)
      */
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldNotTryConnectingWhenConnectedTrue(@Mocked OdeProperties mockOdeProperties,
             @Mocked DdsRequestManager<Object> mockRequestManager, @Mocked Logger mockLogger,
