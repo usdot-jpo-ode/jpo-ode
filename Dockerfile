@@ -1,20 +1,11 @@
 FROM maven:3.5.4-jdk-8-alpine as builder
 MAINTAINER 583114@bah.com
 
-# Now set up the public repo
+VOLUME /root/.m2
+
 WORKDIR /home
-
-COPY ./pom.xml ./
-COPY ./jpo-ode-common/pom.xml ./jpo-ode-common/
-COPY ./jpo-ode-common/src ./jpo-ode-common/src
-COPY ./jpo-ode-plugins/pom.xml ./jpo-ode-plugins/
-COPY ./jpo-ode-plugins/src ./jpo-ode-plugins/src
-COPY ./jpo-ode-core/pom.xml ./jpo-ode-core/
-COPY ./jpo-ode-core/src ./jpo-ode-core/src/
-COPY ./jpo-ode-svcs/pom.xml ./jpo-ode-svcs/
-COPY ./jpo-ode-svcs/src ./jpo-ode-svcs/src
-
-RUN mvn clean install -DskipTests
+COPY . .
+RUN mvn clean package -DskipTests
 
 FROM openjdk:8u171-jre-alpine
 
