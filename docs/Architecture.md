@@ -16,35 +16,21 @@ _Last updated February 7, 2019_
 
 # Contents
 
-[Version History](#version-history)
-
-[1 - Introduction](#introduction)
-
-[2 - Project Overview](#project-overview)
-
-[3 - System Overview](#system-overview)
-
-[3.1 - ODE Technology Stack](#ode-technology-stack)
-
-[3.2 - Producer Mechanisms](#producer-mechanisms)
-
-[3.3 - Comsumer Mechanisms](#comsumer-mechanisms)
-
-[3.4 - ODE Management Console](#ode-management-console)
-
-[4 - Architecture Pattern](#architecture-pattern)
-
-[4.1 - Pattern Description](#pattern-description)
-
-[4.2 - Pattern Topology](#pattern-topology)
-
-[5 - JPO ODE Micro-services Topology](#jpo-ode-micro-services-topology)
-
-[5.1 - Deployments](#deployments)
-
-[6 - Appendix](#appendix)
-
-[6.1 - Glossary](#glossary)
+- [Version History](#version-history)
+- [1 - Introduction](#introduction)
+- [2 - Project Overview](#project-overview)
+- [3 - System Overview](#system-overview)
+  - [3.1 - ODE Technology Stack](#ode-technology-stack)
+  - [3.2 - Producer Mechanisms](#producer-mechanisms)
+  - [3.3 - Comsumer Mechanisms](#comsumer-mechanisms)
+  - [3.4 - ODE Management Console](#ode-management-console)
+- [4 - Architecture Pattern](#architecture-pattern)
+  - [4.1 - Pattern Description](#pattern-description)
+  - [4.2 - Pattern Topology](#pattern-topology)
+- [5 - JPO ODE Micro-services Topology](#jpo-ode-micro-services-topology)
+  - [5.1 - Deployments](#deployments)
+- [6 - Appendix](#appendix)
+  - [6.1 - Glossary](#glossary)
 
 <a name="version-history">
 
@@ -237,14 +223,10 @@ can be included in a future management console.
 
 JPO ODE architecture is loosely based on a micro-services architecture
 pattern. The micro-services architecture pattern is a highly scalable
-design pattern and a viable alternative to monolithic applications[^1]
+design pattern and a viable alternative to monolithic applications<sup>1</sup>
 and service-oriented architectures.
 
-[^1]: In software engineering, a **monolithic application** describes a
-    single-tiered software **application** in which the user interface
-    and data access code are combined into a single program from a
-    single platform. A **monolithic application** is self-contained, and
-    independent from other computing **applications**.
+_<sup>1</sup>In software engineering, a **monolithic application** describes a single-tiered software **application** in which the user interface and data access code are combined into a single program from a single platform. A **monolithic application** is self-contained, and independent from other computing **applications**._
 
 <a name="pattern-description">
 
@@ -273,7 +255,7 @@ The micro-services pattern consists of three major concepts:
 
 ![](images/architecture/figure3.png)
 
-Figure 3 - Basic Micro-services architecture pattern
+_Figure 3 - Basic Micro-services architecture pattern_
 
 <a name="pattern-topology">
 
@@ -290,7 +272,7 @@ addressed through broker clustering.
 
 ![](images/architecture/figure4.png)
 
-Figure 4 - Centralized Messaging Topology
+_Figure 4 - Centralized Messaging Topology_
 
 Broker clustering refers to the ability of the message broker to scale
 horizontally and proportionally with the demands of the connected
@@ -323,7 +305,7 @@ Kafka has three key capabilities:
 
 ![](images/architecture/figure5.png)
 
-Figure 5 - Kafka Concepts
+_Figure 5 - Kafka Concepts_
 
 In order to connect to Kafka, there are 4 core API's that systems can
 use to communicate with the broker.
@@ -367,7 +349,7 @@ designed as depicted in Figure 6.
 
 ![](images/architecture/figure6.png)
 
-Figure 6 - Kafka Publish/Subscribe Model
+_Figure 6 - Kafka Publish/Subscribe Model_
 
 <a name="jpo-ode-micro-services-topology">
 
@@ -379,7 +361,7 @@ the major architectural components with which these services interact.
 
 ![](images/architecture/figure7.png)
 
-Figure 7 - JPO ODE Micro-services Topology
+_Figure 7 - JPO ODE Micro-services Topology_
 
 <a name="deployments">
 
