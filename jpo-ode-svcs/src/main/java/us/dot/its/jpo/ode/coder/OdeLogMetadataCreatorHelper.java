@@ -68,9 +68,20 @@ public class OdeLogMetadataCreatorHelper {
             }
             odeBsmMetadata.setBsmSource(bsmSource);
          }
+
+         if (metadata.getReceivedMessageDetails() != null && metadata.getReceivedMessageDetails().getRxSource() != null) {
+           switch (metadata.getReceivedMessageDetails().getRxSource()) {
+             case RSU: metadata.setRecordGeneratedBy(GeneratedBy.RSU); break;
+             case RV: metadata.setRecordGeneratedBy(GeneratedBy.OBU); break;
+             case SAT: metadata.setRecordGeneratedBy(GeneratedBy.TMC_VIA_SAT); break;
+             case SNMP: metadata.setRecordGeneratedBy(GeneratedBy.TMC_VIA_SNMP); break;
+             default:break;
+           }
+         } else {
+           metadata.setRecordGeneratedBy(GeneratedBy.OBU);
+         }
       }
 
-      metadata.setRecordGeneratedBy(GeneratedBy.OBU);
    }
 
    public static ReceivedMessageDetails buildReceivedMessageDetails(LogFileParser parser) {

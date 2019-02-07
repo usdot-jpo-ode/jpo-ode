@@ -1,5 +1,7 @@
 ## ODE Release Notes ##
 -----------------------
+### Sprint 40
+- ODE-1076 New values for metadata.recordGeneratedBy: RSU, TMC_VIA_SAT, TMC_VIA_SNMP
 ### December 2018
 - ODE-466 serialId element of metadata will now provide a true serial number to help identify missing records.
 - ODE-964 Added ode.rsuUsername/ode.rsuPassword application properties or alternatively ODE_RSU_USERNAME and ODE_RSU_PASSWORD environment variables to authenticate communications with RSU instead of using the REST API parameters.
