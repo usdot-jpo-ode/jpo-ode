@@ -1,20 +1,17 @@
 # JPO Operational Data Environment User Guide
 
-_Last updated February 4, 2019_
-
-**Submitted to**
-
-U.S. Department of Transportation (USDOT)
-
+**Submitted to**\
+U.S. Department of Transportation (USDOT)\
 Federal Highway Administration ITS JPO
 
-**Prepared by**
-
-Booz Allen Hamilton
-8283 Greensboro Drive
+**Prepared by**\
+Booz Allen Hamilton\
+8283 Greensboro Drive\
 McLean, VA 22102
 
-# Table of Contents=
+_Last updated February 7, 2019_
+
+# Table of Contents
 
 - [Version History](#version-history)
 - [1 - Introduction](#introduction)
@@ -211,8 +208,7 @@ This document is intended for use by the ODE client applications.
 | Kafka     | Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.                                                                                                                                                                                                                                                                   |
 | POJO      | Plain Old Java Object                                                                                                                                                                                                                                                                                                                                |
 | SAE       | SAE International is a global association of more than 128,000 engineers and related technical experts in the aerospace, automotive and commercial-vehicle industries.                                                                                                                                                                               |
-| J2735     | This SAE Standard specifies a message set, and its data frames and data elements specifically for use by applications intended to utilize the 5.9 GHz Dedicated Short Range Communications for Wireless Access in Vehicular Environments (DSRC/WAVE, referenced in this document simply as “DSRC”), communications systems. (SAE International 2016) |
-|           |                                                                                                                                                                                                                                                                                                                                                      
+| J2735     | This SAE Standard specifies a message set, and its data frames and data elements specifically for use by applications intended to utilize the 5.9 GHz Dedicated Short Range Communications for Wireless Access in Vehicular Environments (DSRC/WAVE, referenced in this document simply as “DSRC”), communications systems. (SAE International 2016) |                                                                                                          
 | SCP       | Secure Copy                                                                                                                                                                                                                                                                                                                                          |
 | SDW       | Situation Data Warehouse                                                                                                                                                                                                                                                                                                                             |
 | TIM       | Traveler Information Message                                                                                                                                                                                                                                                                                                                         |
@@ -972,91 +968,11 @@ alerts.
 
 Table 1 -- VSD Deposit Service Messages and Alerts
 
-|-----------------|-----------------|-----------------|-----------------|
-| Message or      | Communication   | Description     | Criteria        |
-| Alert           | Method          |                 |                 |
-|-----------------|-----------------|-----------------|-----------------|
-| -   \"Error     | Application log | When a VSD      | If the port is  |
-|     creating    | file            | arrives over    | already bound   |
-|     VSD         |                 | UDP, the VSD    | to some other   |
-|     depositor   |                 | depositor       | program or if   |
-|     socket with |                 | service tries   | the socket      |
-|     port {}\"   |                 | to create a new | creation fails  |
-|                 |                 | datagram socket | for some other  |
-| -   SocketExcep |                 | with a given    | reason, this    |
-| tion            |                 | port. This      | message is      |
-|                 |                 | error message   | logged in the   |
-|                 |                 | is logged when  | application log |
-|                 |                 | ODE fails to    | file.           |
-|                 |                 | create a new    |                 |
-|                 |                 | datagram socket |                 |
-|                 |                 | due to port     |                 |
-|                 |                 | being bound to  |                 |
-|                 |                 | some other      |                 |
-|                 |                 | program.        |                 |
-|-----------------|-----------------|-----------------|-----------------|
-| -   Error       | Application log | When a datagram | If the datagram |
-|     Sending VSD | file            | socket tries to | socket fails to |
-|     to SDC      |                 | send VSD to     | send the VSD to |
-|                 |                 | SDC, this error | SD due to       |
-| -   IOException |                 | maybe logged if | IOException,    |
-|                 |                 | the socket      | this message is |
-|                 |                 | fails to send   | logged in the   |
-|                 |                 | VSD due Input   | application log |
-|                 |                 | Output          | file.           |
-|                 |                 | Exception.      |                 |
-|-----------------|-----------------|-----------------|-----------------|
-| -   Error       | Application log | When the        | If ODE fails to |
-|     Encoding    | file            | depositor       | encode the      |
-|     VSD         |                 | service         | modified        |
-|     ServiceRequ |                 | modifies the    | service request |
-| est             |                 | received        | properly, this  |
-|                 |                 | service         | message is      |
-| -   EncodeFaile |                 | request, it     | logged in the   |
-| dException      |                 | tries to encode | application log |
-|                 |                 | the request     | file.           |
-| -   EncodeNotSu |                 | before sending  |                 |
-| pportedExceptio |                 | to SDC. This    |                 |
-| n               |                 | message is      |                 |
-|                 |                 | logged when the |                 |
-|                 |                 | ODE fails to    |                 |
-|                 |                 | encode the      |                 |
-|                 |                 | service request |                 |
-|                 |                 | properly.       |                 |
-|-----------------|-----------------|-----------------|-----------------|
-| -   Error       | Application log | When the ODE    | If the          |
-|     Receiving   | file            | waits for       | listening       |
-|     VSD Deposit |                 | service         | datagram socket |
-|     ServiceResp |                 | response from   | fails to        |
-| onse            |                 | SDC, this error | receive the     |
-|                 |                 | message may be  | incoming        |
-| -   IOException |                 | logged if the   | service         |
-|                 |                 | datagram socket | response from   |
-|                 |                 | fails to        | SDC, this       |
-|                 |                 | receive service | message is      |
-|                 |                 | response from   | logged in the   |
-|                 |                 | SDC due to      | application log |
-|                 |                 | IOException     | file.           |
-|                 |                 | with the        |                 |
-|                 |                 | socket.         |                 |
-|-----------------|-----------------|-----------------|-----------------|
-| -   Error       | Application log | When the ODE    | If the          |
-|     Decoding    | file            | receives        | depositor       |
-|     VSD Deposit |                 | service         | service fails   |
-|     ServiceResp |                 | response from   | to properly     |
-| onse            |                 | SDC, the        | decode the      |
-|                 |                 | depositor       | incoming        |
-| -   DecodeFaile |                 | service tries   | service         |
-| dException      |                 | to decode the   | response, this  |
-|                 |                 | service         | message is      |
-| -   DecodeNotSu |                 | response first. | logged in the   |
-| pportedExceptio |                 | This message is | application log |
-| n               |                 | logged if the   | file.           |
-|                 |                 | decoder fails   |                 |
-|                 |                 | to properly     |                 |
-|                 |                 | decode the      |                 |
-|                 |                 | response.       |                 |
-|-----------------|-----------------|-----------------|-----------------|
+| Message or Alert                                                        | Communication Method | Description                                                                                                                                                                                                                                | Criteria                                                                                                                                                      |
+|-------------------------------------------------------------------------|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| · "Error creating VSD depositor socket with port {}" · SocketException  | Application log file | When a VSD arrives over UDP, the VSD depositor service tries to create a new datagram socket with a given port. This error message is logged when ODE fails to create a new datagram socket due to port being bound to some other program. | If the port is already bound to some other program or if the socket creation fails for some other reason, this message is logged in the application log file. |
+| · Error Sending VSD to SDC · SocketException                            | Application log file | When a datagram socket tries to send VSD to SDC, this error maybe logged if the socket fails to send VSD due Input Output Exception.                                                                                                       | If the datagram socket fails to send the VSD to SD due to IOException, this message is logged in the application log file.                                    |
+| · Error Encoding VSD ServiceRequest · SocketException · SocketException | Application log file | When the depositor service modifies the received service request, it tries to encode the request before sending to SDC. This message is logged when the ODE fails to encode the service request properly.                                  | If ODE fails to encode the modified service request properly, this message is logged in the application log file.                                             |
 
 <a name="vsd-receiver-service">
 
@@ -1106,109 +1022,14 @@ and alerts.
 
 Table 1 -- VSD Receiver Service Messages and Alerts
 
-+-----------------+-----------------+-----------------+-----------------+
-| Message or      | Communication   | Description     | Criteria        |
-| Alert           | Method          |                 |                 |
-+=================+=================+=================+=================+
-| -   \"Error     | Application log | When the VSDM   | If the port is  |
-|     creating    | file            | receiver is     | already bound   |
-|     socket with |                 | initialized, a  | to some other   |
-|     port {}\"   |                 | datagram socket | program or if   |
-|                 |                 | is created to   | the socket      |
-| -   SocketExcep |                 | listen for      | creation fails  |
-| tion            |                 | incoming        | for some other  |
-|                 |                 | messages from   | reason, this    |
-|                 |                 | black box. This | message is      |
-|                 |                 | error message   | logged in the   |
-|                 |                 | is logged when  | application log |
-|                 |                 | ODE fails to    | file.           |
-|                 |                 | create a new    |                 |
-|                 |                 | datagram socket |                 |
-|                 |                 | due to port     |                 |
-|                 |                 | being bound to  |                 |
-|                 |                 | some other      |                 |
-|                 |                 | program or some |                 |
-|                 |                 | other reasons.  |                 |
-+-----------------+-----------------+-----------------+-----------------+
-| -   Error       | Application log | When the ODE    | If the          |
-|     receiving   | file            | waits for       | listening       |
-|     packet      |                 | packets from    | datagram socket |
-|                 |                 | black box, this | fails to        |
-| -   IOException |                 | error message   | receive         |
-|                 |                 | may be logged   | incoming        |
-|                 |                 | if the datagram | packets from    |
-|                 |                 | socket fails to | black box, this |
-|                 |                 | receive any     | message is      |
-|                 |                 | packets due to  | logged in the   |
-|                 |                 | IOException     | application log |
-|                 |                 | with the        | file.           |
-|                 |                 | socket.         |                 |
-+-----------------+-----------------+-----------------+-----------------+
-| -   Unknown     | Application log | When the VSDM   | If the packet   |
-|     message     | file            | receiver        | received from   |
-|     type        |                 | receives a      | black box and   |
-|     received {} |                 | packet from     | decoded on the  |
-|                 |                 | black box, it   | receiver end is |
-|                 |                 | decodes the     | of unknown      |
-|                 |                 | packet first.   | message type,   |
-|                 |                 | This message is | then this       |
-|                 |                 | logged if the   | message is      |
-|                 |                 | decoded packet  | logged in the   |
-|                 |                 | is of type      | application log |
-|                 |                 | other than      | file.           |
-|                 |                 | ServiceRequest  |                 |
-|                 |                 | or              |                 |
-|                 |                 | VehSitDataMessa |                 |
-|                 |                 | ge.             |                 |
-+-----------------+-----------------+-----------------+-----------------+
-| -   Unable to   | Application log | When ODE        | If the receiver |
-|     decode UDP  | file            | receives any    | service fails   |
-|     message {}  |                 | packet from     | to properly     |
-|                 |                 | black box, the  | decode the      |
-| -   DecodeFaile |                 | receiver        | incoming        |
-| dException      |                 | service tries   | packets from    |
-|                 |                 | to decode the   | black box, this |
-| -   DecodeNotSu |                 | packet first.   | message is      |
-| pportedExceptio |                 | This message is | logged in the   |
-| n               |                 | logged if the   | application log |
-|                 |                 | decoder fails   | file.           |
-|                 |                 | to properly     |                 |
-|                 |                 | decode the      |                 |
-|                 |                 | packet.         |                 |
-+-----------------+-----------------+-----------------+-----------------+
-| -   Unable to   | Application log | When the        | If the VSDM     |
-|     convert     | file            | receiver        | receiver        |
-|     VehSitDataM |                 | receives VSD,   | receives a VSD  |
-| essage          |                 | it tries to     | that doesn't    |
-|     bundle to   |                 | extract BSMs    | contain any BSM |
-|     BSM list.   |                 | out of the VSD. | records, this   |
-|                 |                 | This error      | message is      |
-| -   IllegalArgu |                 | message is      | logged in the   |
-| mentException   |                 | logged if the   | application log |
-|                 |                 | VSD bundle      | file.           |
-|                 |                 | doesn't have    |                 |
-|                 |                 | any BSM         |                 |
-|                 |                 | records.        |                 |
-+-----------------+-----------------+-----------------+-----------------+
-| -   Unable to   | Application log | When the VSDM   | If the VSDM     |
-|     convert BSM | file            | receiver        | receiver fails  |
-|                 |                 | extracts BSMs   | to convert      |
-| -   OssBsmPart2 |                 | from VSD, it    | generic BSM to  |
-| Exception       |                 | tries to        | J2735BSM, this  |
-|                 |                 | convert the     | message is      |
-|                 |                 | generic BSM     | logged in the   |
-|                 |                 | into J2735BSM   | application log |
-|                 |                 | format. This    | file.           |
-|                 |                 | error message   |                 |
-|                 |                 | is logged if    |                 |
-|                 |                 | the receiver    |                 |
-|                 |                 | fails to        |                 |
-|                 |                 | properly        |                 |
-|                 |                 | perform         |                 |
-|                 |                 | conversion to   |                 |
-|                 |                 | J2735BSM        |                 |
-|                 |                 | format.         |                 |
-+-----------------+-----------------+-----------------+-----------------+
+| Message or Alert                                                                            | Communication Method | Description                                                                                                                                                                                                                                                          | Criteria                                                                                                                                                      |
+|---------------------------------------------------------------------------------------------|----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| · "Error creating socket with port {}" · SocketException                                    | Application log file | When the VSDM receiver is initialized, a datagram socket is created to listen for incoming messages from black box. This error message is logged when ODE fails to create a new datagram socket due to port being bound to some other program or some other reasons. | If the port is already bound to some other program or if the socket creation fails for some other reason, this message is logged in the application log file. |
+| · Error receiving packet · IOException                                                      | Application log file | When the ODE waits for packets from black box, this error message may be logged if the datagram socket fails to receive any packets due to IOException with the socket.                                                                                              | If the listening datagram socket fails to receive incoming packets from black box, this message is logged in the application log file.                        |
+| ·       Unknown message type received {}                                                    | Application log file | When the VSDM receiver receives a packet from black box, it decodes the packet first. This message is logged if the decoded packet is of type other than ServiceRequest or VehSitDataMessage.                                                                        | If the packet received from black box and decoded on the receiver end is of unknown message type, then this message is logged in the application log file.    |
+| ·       Unable to decode UDP message {} ·DecodeFailedException ·DecodeNotSupportedException | Application log file | When ODE receives any packet from black box, the receiver service tries to decode the packet first. This message is logged if the decoder fails to properly decode the packet.                                                                                       | If the receiver service fails to properly decode the incoming packets from black box, this message is logged in the application log file.                     |
+| · Unable to convert VehSitDataMessage bundle to BSM list. · IllegalArgumentException        | Application log file | When the receiver receives VSD, it tries to extract BSMs out of the VSD. This error message is logged if the VSD bundle doesn’t have any BSM records.                                                                                                                | If the VSDM receiver receives a VSD that doesn’t contain any BSM records, this message is logged in the application log file.                                 |
+| · Unable to convert BSM · OssBsmPart2Exception                                              | Application log file | When the VSDM receiver extracts BSMs from VSD, it tries to convert the generic BSM into J2735BSM format. This error message is logged if the receiver fails to properly perform conversion to J2735BSM format.                                                       | If the VSDM receiver fails to convert generic BSM to J2735BSM, this message is logged in the application log file.                                            |
 
 <a name="bsm-receive-service-via-udp">
 
@@ -1236,58 +1057,11 @@ and alerts.
 
 Table 1 -- BSM Receiver Service Messages and Alerts
 
-+-----------------+-----------------+-----------------+-----------------+
-| Message or      | Communication   | Description     | Criteria        |
-| Alert           | Method          |                 |                 |
-+=================+=================+=================+=================+
-| -   \"Error     | Application log | When the BSM    | If the port is  |
-|     creating    | file            | receiver is     | already bound   |
-|     socket with |                 | initialized, a  | to some other   |
-|     port {}\"   |                 | datagram socket | program or if   |
-|                 |                 | is created to   | the socket      |
-| -   SocketExcep |                 | listen for      | creation fails  |
-| tion            |                 | incoming        | for some other  |
-|                 |                 | messages from   | reason, this    |
-|                 |                 | OBU. This error | message is      |
-|                 |                 | message is      | logged in the   |
-|                 |                 | logged when ODE | application log |
-|                 |                 | fails to create | file.           |
-|                 |                 | a new datagram  |                 |
-|                 |                 | socket due to   |                 |
-|                 |                 | port being      |                 |
-|                 |                 | bound to some   |                 |
-|                 |                 | other program   |                 |
-|                 |                 | or some other   |                 |
-|                 |                 | reasons.        |                 |
-+-----------------+-----------------+-----------------+-----------------+
-| -   Error       | Application log | When the ODE    | If the          |
-|     receiving   | file            | waits for       | listening       |
-|     packet      |                 | packets from    | datagram socket |
-|                 |                 | OBU, this error | fails to        |
-| -   IOException |                 | message may be  | receive         |
-|                 |                 | logged if the   | incoming        |
-|                 |                 | datagram socket | packets from    |
-|                 |                 | fails to        | OBU, this       |
-|                 |                 | receive any     | message is      |
-|                 |                 | packets due to  | logged in the   |
-|                 |                 | IOException     | application log |
-|                 |                 | with the        | file.           |
-|                 |                 | socket.         |                 |
-+-----------------+-----------------+-----------------+-----------------+
-| -   Unknown     | Application log | When the BSM    | If the packet   |
-|     message     | file            | receiver        | received from   |
-|     type        |                 | receives a      | OBU and decoded |
-|     received {} |                 | packet from     | on the receiver |
-|                 |                 | OBU, it decodes | end is of       |
-|                 |                 | the packet      | unknown message |
-|                 |                 | first. This     | type, then this |
-|                 |                 | message is      | message is      |
-|                 |                 | logged if the   | logged in the   |
-|                 |                 | decoded packet  | application log |
-|                 |                 | is of type      | file.           |
-|                 |                 | other than      |                 |
-|                 |                 | J2735Bsm.       |                 |
-+-----------------+-----------------+-----------------+-----------------+
+| Message or Alert                                   | Communication Method | Description                                                                                                                                                                                                                                                   | Criteria                                                                                                                                                      |
+|----------------------------------------------------|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Error creating socket with port {} SocketException | Application log file | When the BSM receiver is initialized, a datagram socket is created to listen for incoming messages from OBU. This error message is logged when ODE fails to create a new datagram socket due to port being bound to some other program or some other reasons. | If the port is already bound to some other program or if the socket creation fails for some other reason, this message is logged in the application log file. |
+| Error receiving packet IOException                 | Application log file | When the ODE waits for packets from OBU, this error message may be logged if the datagram socket fails to receive any packets due to IOException with the socket.                                                                                             | If the listening datagram socket fails to receive incoming packets from OBU, this message is logged in the application log file.                              |
+| Unknown message type received {}                   | Application log file | When the BSM receiver receives a packet from OBU, it decodes the packet first. This message is logged if the decoded packet is of type other than J2735Bsm.                                                                                                   | If the packet received from OBU and decoded on the receiver end is of unknown message type, then this message is logged in the application log file.          |
 
 <a name="security-services-module">
 
@@ -1358,283 +1132,87 @@ capable of accepting individual files compressed with GZIP. Note that
 while the ODE will automatically detect and process GZIP files, it is
 not capable of importing GZIP-TAR archives containing multiple files.
 
-+-----------------------+-----------------------+-----------------------+
-| Field Name            | Field Length (bytes)  | Description           |
-+=======================+=======================+=======================+
-| logRecordType         | 1                     | Represents the type   |
-|                       |                       | of log record as      |
-|                       |                       | defined below:        |
-|                       |                       |                       |
-|                       |                       | typedef enum          |
-|                       |                       | \_logRecordType {     |
-|                       |                       |                       |
-|                       |                       | DN\_MSG = 0,          |
-|                       |                       |                       |
-|                       |                       | ENVIRONMENT\_MSG = 1, |
-|                       |                       |                       |
-|                       |                       | DRIVER\_ALERT = 2,    |
-|                       |                       |                       |
-|                       |                       | UPGRADES = 3,         |
-|                       |                       |                       |
-|                       |                       | SYSTEM\_LOG = 4,      |
-|                       |                       |                       |
-|                       |                       | RX\_MSG = 5,          |
-|                       |                       |                       |
-|                       |                       | SCMS = 6,             |
-|                       |                       |                       |
-|                       |                       | BSM\_TX = 7,          |
-|                       |                       |                       |
-|                       |                       | BSM\_RX = 8           |
-|                       |                       |                       |
-|                       |                       | } logRecordType;      |
-+-----------------------+-----------------------+-----------------------+
-| direction             | 1                     | Represents the source |
-|                       |                       | of the BSM. 0 for     |
-|                       |                       | EV(Tx), 1 for RV(Rx)  |
-+-----------------------+-----------------------+-----------------------+
-| utctimeInSec          | 4                     | UTC time in seconds   |
-|                       |                       | from Epoc 1/1/1970    |
-+-----------------------+-----------------------+-----------------------+
-| mSec                  | 2                     | milliseconds part of  |
-|                       |                       | UTC time              |
-+-----------------------+-----------------------+-----------------------+
-| verificationStatus    | 1                     | contains a            |
-|                       |                       | SecurtyStatusCode as  |
-|                       |                       | defined below:        |
-|                       |                       |                       |
-|                       |                       | typedef enum          |
-|                       |                       | \_securityResultCode  |
-|                       |                       | { /\* from dot3 \*/   |
-|                       |                       |                       |
-|                       |                       | success = 0,          |
-|                       |                       |                       |
-|                       |                       | inconsistentInputPara |
-|                       |                       | meters                |
-|                       |                       | = 2,                  |
-|                       |                       |                       |
-|                       |                       | spduParsingInvalidInp |
-|                       |                       | ut                    |
-|                       |                       | = 3,                  |
-|                       |                       |                       |
-|                       |                       | spduParsingUnsupporte |
-|                       |                       | dCriticalInformationF |
-|                       |                       | ield                  |
-|                       |                       | = 4,                  |
-|                       |                       |                       |
-|                       |                       | spduParsingCertificat |
-|                       |                       | eNotFound             |
-|                       |                       | = 5,                  |
-|                       |                       |                       |
-|                       |                       | spduParsingGeneration |
-|                       |                       | TimeNotAvailable      |
-|                       |                       | = 6,                  |
-|                       |                       |                       |
-|                       |                       | spduParsingGeneration |
-|                       |                       | LocationNotAvailable  |
-|                       |                       | = 7,                  |
-|                       |                       |                       |
-|                       |                       | spduCertificateChainN |
-|                       |                       | otEnoughInformationTo |
-|                       |                       | ConstructChain        |
-|                       |                       | = 8,                  |
-|                       |                       |                       |
-|                       |                       | spduCertificateChainC |
-|                       |                       | hainEndedAtUntrustedR |
-|                       |                       | oot                   |
-|                       |                       | = 9,                  |
-|                       |                       |                       |
-|                       |                       | spduCertificateChainC |
-|                       |                       | hainWasTooLongForImpl |
-|                       |                       | ementation            |
-|                       |                       | = 10,                 |
-|                       |                       |                       |
-|                       |                       | spduCertificateChainC |
-|                       |                       | ertificateRevoked     |
-|                       |                       | = 11,                 |
-|                       |                       |                       |
-|                       |                       | spduCertificateChainO |
-|                       |                       | verdueCRL             |
-|                       |                       | = 12,                 |
-|                       |                       |                       |
-|                       |                       | spduCertificateChainI |
-|                       |                       | nconsistentExpiryTime |
-|                       |                       | s                     |
-|                       |                       | = 13,                 |
-|                       |                       |                       |
-|                       |                       | spduCertificateChainI |
-|                       |                       | nconsistentStartTimes |
-|                       |                       | = 14,                 |
-|                       |                       |                       |
-|                       |                       | spduCertificateChainI |
-|                       |                       | nconsistentChainPermi |
-|                       |                       | ssions                |
-|                       |                       | = 15,                 |
-|                       |                       |                       |
-|                       |                       | spduCryptoVerificatio |
-|                       |                       | nFailure              |
-|                       |                       | = 16,                 |
-|                       |                       |                       |
-|                       |                       | spduConsistencyFuture |
-|                       |                       | CertificateAtGenerati |
-|                       |                       | onTime                |
-|                       |                       | = 17,                 |
-|                       |                       |                       |
-|                       |                       | spduConsistencyExpire |
-|                       |                       | dCertificateAtGenerat |
-|                       |                       | ionTime               |
-|                       |                       | = 18,                 |
-|                       |                       |                       |
-|                       |                       | spduConsistencyExpiry |
-|                       |                       | DateTooEarly          |
-|                       |                       | = 19,                 |
-|                       |                       |                       |
-|                       |                       | spduConsistencyExpiry |
-|                       |                       | DateTooLate           |
-|                       |                       | = 20,                 |
-|                       |                       |                       |
-|                       |                       | spduConsistencyGenera |
-|                       |                       | tionLocationOutsideVa |
-|                       |                       | lidityRegion          |
-|                       |                       | = 21,                 |
-|                       |                       |                       |
-|                       |                       | spduConsistencyNoGene |
-|                       |                       | rationLocation        |
-|                       |                       | = 22,                 |
-|                       |                       |                       |
-|                       |                       | spduConsistencyUnauth |
-|                       |                       | orizedPSID            |
-|                       |                       | = 23,                 |
-|                       |                       |                       |
-|                       |                       | spduInternalConsisten |
-|                       |                       | cyExpiryTimeBeforeGen |
-|                       |                       | erationTime           |
-|                       |                       | = 24,                 |
-|                       |                       |                       |
-|                       |                       | spduInternalConsisten |
-|                       |                       | cyextDataHashDoesntMa |
-|                       |                       | tch                   |
-|                       |                       | = 25,                 |
-|                       |                       |                       |
-|                       |                       | spduInternalConsisten |
-|                       |                       | cynoExtDataHashProvid |
-|                       |                       | ed                    |
-|                       |                       | = 26,                 |
-|                       |                       |                       |
-|                       |                       | spduInternalConsisten |
-|                       |                       | cynoExtDataHashPresen |
-|                       |                       | t                     |
-|                       |                       | = 27,                 |
-|                       |                       |                       |
-|                       |                       | spduLocalConsistencyP |
-|                       |                       | SIDsDontMatch         |
-|                       |                       | = 28,                 |
-|                       |                       |                       |
-|                       |                       | spduLocalConsistencyC |
-|                       |                       | hainWasTooLongForSDEE |
-|                       |                       | = 29,                 |
-|                       |                       |                       |
-|                       |                       | spduRelevanceGenerati |
-|                       |                       | onTimeTooFarInPast    |
-|                       |                       | = 30,                 |
-|                       |                       |                       |
-|                       |                       | spduRelevanceGenerati |
-|                       |                       | onTimeTooFarInFuture  |
-|                       |                       | = 31,                 |
-|                       |                       |                       |
-|                       |                       | spduRelevanceExpiryTi |
-|                       |                       | meInPast              |
-|                       |                       | = 32,                 |
-|                       |                       |                       |
-|                       |                       | spduRelevanceGenerati |
-|                       |                       | onLocationTooDistant  |
-|                       |                       | = 33,                 |
-|                       |                       |                       |
-|                       |                       | spduRelevanceReplayed |
-|                       |                       | Spdu                  |
-|                       |                       | = 34,                 |
-|                       |                       |                       |
-|                       |                       | spduCertificateExpire |
-|                       |                       | d                     |
-|                       |                       | = 35                  |
-|                       |                       |                       |
-|                       |                       | } securityResultCode; |
-+-----------------------+-----------------------+-----------------------+
-| curLocation           | location              | The location and      |
-|                       |                       | speed of the vehicle  |
-|                       |                       | receiving and         |
-|                       |                       | reporting the event.  |
-|                       |                       |                       |
-|                       |                       | /\* below elements    |
-|                       |                       | units are as per      |
-|                       |                       | SAE-2735 \*/          |
-|                       |                       |                       |
-|                       |                       | typedef struct        |
-|                       |                       | \_location {          |
-|                       |                       |                       |
-|                       |                       | uint32\_t latitude;   |
-|                       |                       |                       |
-|                       |                       | uint32\_t longitude;  |
-|                       |                       |                       |
-|                       |                       | uint32\_t elevation;  |
-|                       |                       |                       |
-|                       |                       | uint16\_t speed;      |
-|                       |                       |                       |
-|                       |                       | uint16\_t heading;    |
-|                       |                       |                       |
-|                       |                       | }                     |
-|                       |                       | \_\_attribute\_\_((\_ |
-|                       |                       | \_packed\_\_))        |
-|                       |                       | location;             |
-+-----------------------+-----------------------+-----------------------+
-| rxFrom                | rxSource              | The source of the     |
-|                       |                       | message received:     |
-|                       |                       |                       |
-|                       |                       | typedef enum          |
-|                       |                       | \_rxSource {          |
-|                       |                       |                       |
-|                       |                       | RSU = 0,              |
-|                       |                       |                       |
-|                       |                       | SAT, //XM satelite    |
-|                       |                       |                       |
-|                       |                       | RV, /\* for BSM rx    |
-|                       |                       | \*/                   |
-|                       |                       |                       |
-|                       |                       | SNMP /\* for SRM      |
-|                       |                       | payload from          |
-|                       |                       | backend/ODE\*/        |
-|                       |                       |                       |
-|                       |                       | } rxSource;           |
-+-----------------------+-----------------------+-----------------------+
-| latitude              | 4                     | The latitude of the   |
-|                       |                       | vehicle receiving and |
-|                       |                       | reporting the event.  |
-+-----------------------+-----------------------+-----------------------+
-| longitude             | 4                     | The longitude of the  |
-|                       |                       | vehicle receiving and |
-|                       |                       | reporting the event.  |
-+-----------------------+-----------------------+-----------------------+
-| elevation             | 4                     | The elevation of the  |
-|                       |                       | vehicle receiving and |
-|                       |                       | reporting the event.  |
-+-----------------------+-----------------------+-----------------------+
-| speed                 | 2                     | The speed of the      |
-|                       |                       | vehicle receiving and |
-|                       |                       | reporting the event.  |
-+-----------------------+-----------------------+-----------------------+
-| heading               | 2                     | The heading of the    |
-|                       |                       | vehicle receiving and |
-|                       |                       | reporting the event.  |
-+-----------------------+-----------------------+-----------------------+
-| length                | 2                     | Length of data        |
-|                       |                       | contained in the      |
-|                       |                       | following payload     |
-+-----------------------+-----------------------+-----------------------+
-| payload               | 2302                  | RAW encoded data in   |
-|                       |                       | 1609.2 format         |
-|                       |                       | containing a          |
-|                       |                       | MessageFrame header   |
-|                       |                       | plus BSM or raw BSM   |
-+-----------------------+-----------------------+-----------------------+
+| Field Name         | Field Length (bytes) | Description                                                                            |
+|--------------------|----------------------|----------------------------------------------------------------------------------------|
+| logRecordType      | 1                    | Represents the type of log record as defined below:                                    |
+|                    |                      | typedef enum _logRecordType {                                                          |
+|                    |                      | DN_MSG = 0,                                                                            |
+|                    |                      | ENVIRONMENT_MSG = 1,                                                                   |
+|                    |                      | DRIVER_ALERT = 2,                                                                      |
+|                    |                      | UPGRADES = 3,                                                                          |
+|                    |                      | SYSTEM_LOG = 4,                                                                        |
+|                    |                      | RX_MSG = 5,                                                                            |
+|                    |                      | SCMS = 6,                                                                              |
+|                    |                      | BSM_TX = 7,                                                                            |
+|                    |                      | BSM_RX = 8                                                                             |
+|                    |                      | } logRecordType;                                                                       |
+|                    |                      |                                                                                        |
+| direction          | 1                    | Represents the source of the BSM. 0 for EV(Tx), 1 for RV(Rx)                           |
+| utctimeInSec       | 4                    | UTC time in seconds from Epoc 1/1/1970                                                 |
+| mSec               | 2                    | milliseconds part of UTC time                                                          |
+| verificationStatus | 1                    | contains a SecurtyStatusCode as defined below:                                         |
+|                    |                      |                                                                                        |
+|                    |                      | typedef enum _securityResultCode {             /* from dot3 */                         |
+|                    |                      | success = 0,                                                                           |
+|                    |                      | inconsistentInputParameters = 2,                                                       |
+|                    |                      | spduParsingInvalidInput = 3,                                                           |
+|                    |                      | spduParsingUnsupportedCriticalInformationField = 4,                                    |
+|                    |                      | spduParsingCertificateNotFound = 5,                                                    |
+|                    |                      | spduParsingGenerationTimeNotAvailable = 6,                                             |
+|                    |                      | spduParsingGenerationLocationNotAvailable = 7,                                         |
+|                    |                      | spduCertificateChainNotEnoughInformationToConstructChain = 8,                          |
+|                    |                      | spduCertificateChainChainEndedAtUntrustedRoot = 9,                                     |
+|                    |                      | spduCertificateChainChainWasTooLongForImplementation = 10,                             |
+|                    |                      | spduCertificateChainCertificateRevoked = 11,                                           |
+|                    |                      | spduCertificateChainOverdueCRL = 12,                                                   |
+|                    |                      | spduCertificateChainInconsistentExpiryTimes = 13,                                      |
+|                    |                      | spduCertificateChainInconsistentStartTimes = 14,                                       |
+|                    |                      | spduCertificateChainInconsistentChainPermissions = 15,                                 |
+|                    |                      | spduCryptoVerificationFailure = 16,                                                    |
+|                    |                      | spduConsistencyFutureCertificateAtGenerationTime = 17,                                 |
+|                    |                      | spduConsistencyExpiredCertificateAtGenerationTime = 18,                                |
+|                    |                      | spduConsistencyExpiryDateTooEarly = 19,                                                |
+|                    |                      | spduConsistencyExpiryDateTooLate = 20,                                                 |
+|                    |                      | spduConsistencyGenerationLocationOutsideValidityRegion = 21,                           |
+|                    |                      | spduConsistencyNoGenerationLocation = 22,                                              |
+|                    |                      | spduConsistencyUnauthorizedPSID = 23,                                                  |
+|                    |                      | spduInternalConsistencyExpiryTimeBeforeGenerationTime = 24,                            |
+|                    |                      | spduInternalConsistencyextDataHashDoesntMatch = 25,                                    |
+|                    |                      | spduInternalConsistencynoExtDataHashProvided = 26,                                     |
+|                    |                      | spduInternalConsistencynoExtDataHashPresent = 27,                                      |
+|                    |                      | spduLocalConsistencyPSIDsDontMatch = 28,                                               |
+|                    |                      | spduLocalConsistencyChainWasTooLongForSDEE = 29,                                       |
+|                    |                      | spduRelevanceGenerationTimeTooFarInPast = 30,                                          |
+|                    |                      | spduRelevanceGenerationTimeTooFarInFuture = 31,                                        |
+|                    |                      | spduRelevanceExpiryTimeInPast = 32,                                                    |
+|                    |                      | spduRelevanceGenerationLocationTooDistant = 33,                                        |
+|                    |                      | spduRelevanceReplayedSpdu = 34,                                                        |
+|                    |                      | spduCertificateExpired = 35                                                            |
+|                    |                      | } securityResultCode;                                                                  |
+| curLocation        | location             | The location and speed of the vehicle receiving and reporting the event.               |
+|                    |                      |                                                                                        |
+|                    |                      | /* below elements units are as per SAE-2735 */                                         |
+|                    |                      | typedef struct _location {                                                             |
+|                    |                      | uint32_t latitude;                                                                     |
+|                    |                      | uint32_t longitude;                                                                    |
+|                    |                      | uint32_t elevation;                                                                    |
+|                    |                      | uint16_t speed;                                                                        |
+|                    |                      | uint16_t heading;                                                                      |
+|                    |                      | } __attribute__((__packed__)) location;                                                |
+| rxFrom             | rxSource             | The source of the message received:                                                    |
+|                    |                      | typedef enum _rxSource {                                                               |
+|                    |                      | RSU = 0,                                                                               |
+|                    |                      | SAT, //XM satelite                                                                     |
+|                    |                      | RV, /* for BSM rx */                                                                   |
+|                    |                      | SNMP /* for SRM payload from backend/ODE*/                                             |
+|                    |                      | } rxSource;                                                                            |
+| latitude           | 4                    | The latitude of the vehicle receiving and reporting the event.                         |
+| longitude          | 4                    | The longitude of the vehicle receiving and reporting the event.                        |
+| elevation          | 4                    | The elevation of the vehicle receiving and reporting the event.                        |
+| speed              | 2                    | The speed of the vehicle receiving and reporting the event.                            |
+| heading            | 2                    | The heading of the vehicle receiving and reporting the event.                          |
+| length             | 2                    | Length of data contained in the following payload                                      |
+| payload            | 2302                 | RAW encoded data in 1609.2 format containing a MessageFrame header plus BSM or raw BSM |
 
 ODE will use utctimeInSec plus mSec fields to populate the generatedAt
 field of the output messages if and only if the payload is not signed
