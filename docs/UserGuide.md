@@ -99,6 +99,7 @@ _Last updated February 7, 2019_
 | 0.14      | ODE Team       | 2/14/2018     | Added GZIP documentation                                                  |
 | 0.15      | ODE Team       | 12/18/2018    | Added rsuUsername and rsuPassword properties                              |
 | 0.16      | ODE Team       | 2/4/2019      | Removed deprecated properties. Added ode.kafkaDisabledTopics              |
+| 0.17      | ODE Team       | 2/6/2019      | Added SDW depositor submodule instructions. Removed deprecated properties and capabilities (VSD deposit to SDC).              |
 
 <a name="introduction">
 
@@ -783,29 +784,34 @@ details of a TIM REST interface.
 
 <a name="outbound-tim-to-sdw-websocket-setup">
 
-#### 7.7.1 - Outbound TIM to SDW Websocket Setup
+#### 7.7.1 Outbound TIM to SDW Setup
 
-1.  ODE **Configuration**: Update the
-    effective application.properties file with username and password for
-    Webapp2/sdw. Substitute your username and password
-    for \<SDWUSERNAME\> and \<SDWPASSWORD\>, respectively.
+**Option 1: Websocket Interface**
+
+ODE **Configuration**: Update the effective application.properties file
+with username and password for Webapp2/sdw. Substitute your username and
+password for \<SDWUSERNAME\> and \<SDWPASSWORD\>, respectively.
 
 ode.ddsCasUsername=\<SDWUSERNAME\>
 
-ode.ddsCasPassword=\<SDWPASSWORD\>
+ode.ddsCasPassword=\<SDWPASSWORD\>\
+ode.depositSdwMessagesOverWebsocket=true
 
 OR defined the following command line arguments while launching
 jpo-ode-svcs
 
 \--ode.ddsCasUsername=\<SDWUSERNAME\>, \\
 
-\--ode.ddsCasPassword=\<SDWPASSWORD\>
+\--ode.ddsCasPassword=\<SDWPASSWORD\>, \\\
+\--ode. depositSdwMessagesOverWebsocket=true, \\
 
 Or define the following system properties / environment variables
 
 ode.ddsCasUsername=\<SDWUSERNAME\>
 
 ode.ddsCasPassword=\<SDWPASSWORD\>
+
+ode.depositSdwMessagesOverWebsocket=true
 
 -   **RSU Enablement**: /tim REST service sends the TIM messages to RSUs
     if both "rsus" and "snmp" elements of the request body are defined
@@ -815,6 +821,35 @@ ode.ddsCasPassword=\<SDWPASSWORD\>
 -   **SDW Enablement**: /tim REST service sends the TIM messages to SDW
     if the "sdw" element of the request body is defined and valid. If
     "sdw" element is missing, the request will not be sent to the SDW.
+
+**Note**: This option uses the ODE's built-in SDW depositor and does not
+require a SDW service to be running. Therefore, jpo-sdw-depositor
+service should be removed from docker-compose.yml.
+
+**Option 2 (Recommended): SDW Depositor Submodule**
+
+Depositing a TIM message to the Situation Data Warehouse can be done
+using the pre-built jpo-sdw-depositor repository. To set this service
+up:
+
+1.  Follow the steps in the ODE README.md to clone and compile the SDW
+    depositor service.
+
+2.  Set the following environment variable to false OR comment it out
+
+    -   ode.depositSdwMessagesOverWebsocket
+
+3.  Set the following environment variables
+
+    -   sdw.username
+
+    -   sdw.password
+
+4.  Follow the rest of the ODE setup steps. The SDW depositor service
+    containers will be automatically created by docker-compose.
+
+5.  Verify arrival of messages in SDW by verifying response status
+    messages in the logs.
 
 <a name="outbound-tim-to-s3-bucket-setup">
 
