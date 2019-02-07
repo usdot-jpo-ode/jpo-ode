@@ -1,7 +1,7 @@
 # JPO Operational Data Environment Interim Design Document
 
-**Contract: DTFH6116D00035**\
-**TOPR: HOIT212116217**
+**Contract:** DTFH6116D00035\
+**TOPR:** HOIT212116217
 
 **Submitted to**\
 U.S. Department of Transportation (USDOT)\
