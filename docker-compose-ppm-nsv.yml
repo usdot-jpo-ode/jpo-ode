@@ -58,8 +58,6 @@ services:
       ODE_DDS_CAS_PASSWORD: ${ODE_DDS_CAS_PASSWORD}
       # Commented out, will use SDW depositor module by default
       #        ODE_DEPOSIT_SDW_MESSAGES_OVER_WEBSOCKET: ${ODE_DEPOSIT_SDW_MESSAGES_OVER_WEBSOCKET}
-      # Commented out for latest schemaVersion. Uncomment to set for older schemaVersion
-      #        ODE_OUTPUT_SCHEMA_VERSION: ${ODE_OUTPUT_SCHEMA_VERSION}
     depends_on:
       - kafka
     volumes:
