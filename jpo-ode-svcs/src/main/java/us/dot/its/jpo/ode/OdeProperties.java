@@ -34,6 +34,7 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.PropertySource;
@@ -99,6 +100,7 @@ public class OdeProperties implements EnvironmentAware {
    private String ddsWebsocketUrl = "wss://webapp.cvmvp.com/whtools/websocket";
 
    // Enable/disable depositing SDW messages over Websocket(true) or REST(false)
+   @Value("${ode.depositSdwMessagesOverWebsocket:false}")
    private boolean depositSdwMessagesOverWebsocket = false;
 
    /*
@@ -112,10 +114,10 @@ public class OdeProperties implements EnvironmentAware {
     * 
     */
    private String[] kafkaTopicsDisabled = {
-       // disable all POJO topics by default except "topic.OdeBsmPojo". Never "topic.OdeBsmPojo because that's the only way to get data into "topic.OdeBsmJson
-       "topic.OdeBsmRxPojo", "topic.OdeBsmTxPojo", "topic.OdeBsmDuringEventPojo",
-       "topic.OdeTimBroadcastPojo" 
-       };
+         // disable all POJO topics by default except "topic.OdeBsmPojo". Never
+         // "topic.OdeBsmPojo because that's the only way to get data into
+         // "topic.OdeBsmJson
+         "topic.OdeBsmRxPojo", "topic.OdeBsmTxPojo", "topic.OdeBsmDuringEventPojo", "topic.OdeTimBroadcastPojo" };
    private Set<String> kafkaTopicsDisabledSet = new HashSet<>();
 
    // BSM
@@ -143,7 +145,7 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicAsn1DecoderOutput = "topic.Asn1DecoderOutput";
    private String kafkaTopicAsn1EncoderInput = "topic.Asn1EncoderInput";
    private String kafkaTopicAsn1EncoderOutput = "topic.Asn1EncoderOutput";
-   
+
    // SDW Depositor Module
    private String kafkaTopicSdwDepositorInput = "topic.SDWDepositorInput";
 
