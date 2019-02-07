@@ -182,7 +182,7 @@ for the identified interfaces will depend on the needs of the JPO ODE
 customers (Wyoming CV Pilot site, initially) and the priority of these
 capabilities to the JPO-ODE product owner.***
 
-![](media/image2.png){width="6.5in" height="2.7631944444444443in"}
+![](images/figure1.png)
 
 Figure 1 - ODE System Data Producers and Consumers
 
@@ -753,15 +753,17 @@ instructions.
 4.  The REST interface will return a response indicating the request was
     executed successfully: {success: true}. If the request fails, you
     will receive an error message such as:\
-    {\
-    \"timestamp\": 1489415494755,\
-    \"status\": 400,\
-    \"error\": \"Bad Request\",\
-    \"exception\": \"us.dot.its.jpo.ode.traveler.TimMessageException\",\
-    \"message\": \"us.dot.its.jpo.ode.traveler.TimMessageException:
-    Empty response from RSU 127.0.0.1\",\
-    \"path\": \"/tim\"\
-    }
+
+```json
+{
+	"timestamp": 1489415494755,
+	"status": 400,
+	"error": "Bad Request",
+	"exception": "us.dot.its.jpo.ode.traveler.TimMessageException",
+	"message": "us.dot.its.jpo.ode.traveler.TimMessageException: Empty response from RSU 127.0 .0 .1",
+	"path": "/tim"
+}
+```
 
 <a name="outbound-tim-broadcast">
 
@@ -868,29 +870,18 @@ instructions:
     success ("success":"true") or failure ("success":"false") for each
     RSU and the SDW deposit:
 
-    {
-
-    \"rsu\_responses\": \[
-
-    {
-
-    \"target\": \"192.168.1.100\",
-
-    \"success\": \"true\",
-
-    \"message\": \"Success.\"
-
-    }
-
-    \],
-
-    \"dds\_deposit\": {
-
-    \"success\": \"true\"
-
-    }
-
-    }
+```json
+{
+	"rsu_responses": [{
+		"target": "192.168.1.100",
+		"success": "true",
+		"message": "Success."
+	}],
+	"dds_deposit": {
+		"success": "true"
+	}
+}
+```
 
 <a name="privacy-protection-module-ppm">
 
@@ -992,7 +983,7 @@ them to the appropriate BSM Kafka topics.
 Configuration options (set in application.properties) can be found in
 Table 1 - ODE Application Properties.
 
-![](media/image3.png){width="8.43125in" height="2.791550743657043in"}
+![](images/figure2.png)
 
 Figure 2 - VSD Dialog Flow Diagram
 
@@ -1290,7 +1281,7 @@ The REST API is documented using Swagger and can be found at
 <https://usdot-jpo-ode.github.io/> - this document is also located in
 the repository at docs/ODESwagger.yml.
 
-![](media/image4.png){width="9.0in" height="5.509722222222222in"}
+![](images/figure3.png)
 
 Figure 3 - ODE REST API Editor Tool
 
@@ -1317,8 +1308,7 @@ ODE Demo UI provides a section for RSU SNMP Query that can be used to
 enter the IP and OID information and send it to RSU through a REST
 endpoint.
 
-![../../Desktop/Screen%20Shot%202017-01-31%20at%208.29.01%20AM.png](media/image5.png){width="5.946527777777778in"
-height="4.39375in"}
+![](images/figure4.png)
 
 **8.2.2.2 MANAGE SNMP API -- REST Interface**
 
