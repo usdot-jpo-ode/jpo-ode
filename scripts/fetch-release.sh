@@ -7,7 +7,7 @@ if [ $# -eq 0 ]
 	exit -1
 fi
 
-git checkout -B dev origin/dev
+git checkout -B stage origin/stage
 git pull --recurse-submodules=yes
 git checkout tags/jpo-ode-$1
-git submodule update --recursive
+git submodule update --recursive --init
