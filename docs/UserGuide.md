@@ -183,7 +183,7 @@ for the identified interfaces will depend on the needs of the JPO ODE
 customers (Wyoming CV Pilot site, initially) and the priority of these
 capabilities to the JPO-ODE product owner.***
 
-![](images/figure1.png)
+![](images/userguide/figure1.png)
 
 Figure 1 - ODE System Data Producers and Consumers
 
@@ -1018,7 +1018,7 @@ them to the appropriate BSM Kafka topics.
 Configuration options (set in application.properties) can be found in
 Table 1 - ODE Application Properties.
 
-![](images/figure2.png)
+![](images/userguide/figure2.png)
 
 Figure 2 - VSD Dialog Flow Diagram
 
@@ -1316,7 +1316,7 @@ The REST API is documented using Swagger and can be found at
 <https://usdot-jpo-ode.github.io/> - this document is also located in
 the repository at docs/ODESwagger.yml.
 
-![](images/figure3.png)
+![](images/userguide/figure3.png)
 
 Figure 3 - ODE REST API Editor Tool
 
@@ -1343,7 +1343,7 @@ ODE Demo UI provides a section for RSU SNMP Query that can be used to
 enter the IP and OID information and send it to RSU through a REST
 endpoint.
 
-![](images/figure4.png)
+![](images/userguide/figure4.png)
 
 **8.2.2.2 MANAGE SNMP API -- REST Interface**
 
