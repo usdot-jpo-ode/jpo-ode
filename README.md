@@ -7,8 +7,10 @@ Dev: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=dev
 
 # jpo-ode
 
-**US Department of Transportation (USDOT) Intelligent Transportation Systems (ITS) Joint Program Office (JPO)**
+**US Department of Transportation (USDOT) Intelligent Transportation Systems (ITS) Joint Program Office (JPO) Operational Data Environemnt (ODE)**
+
 ## Open Source Overview
+
 The ITS ODE is a real-time virtual data router that ingests and processes operational data from various connected devices - including vehicles, infrastructure, and traffic management centers - and distributes it to other devices and subscribing transportation management applications. Using the ITS ODE within intelligent transportation deployments increases data fluidity and interoperability while meeting operational needs and protecting user privacy. The software’s microservices architecture makes it easy to add new capabilities to meet local needs.
 
 ![ODE Dataflows](images/data_flow_v2.png)
@@ -17,12 +19,13 @@ The ITS ODE is a real-time virtual data router that ingests and processes operat
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
 file except in compliance with the License.
-You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+You may obtain a copy of the License at <http://www.apache.org/licenses/LICENSE-2.0>
 Unless required by applicable law or agreed to in writing, software distributed under
 the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied. See the License for the specific language governing
 permissions and limitations under the [License](http://www.apache.org/licenses/LICENSE-2.0).
 
 ### System Requirements
+
 Minimum memory: 16 GB
 Minimum Storage Space: 100 GB
 Operating systems supported: Ubuntu Linux
@@ -34,11 +37,10 @@ the system.  Larger data flows can require much larger space requirements depend
 amount of data being processed by the software. The ODE software application was developed using the open source programming language Java.  The application requires Java 8 or higher to run. The application can be run on Windows, Linux, or Mac operating systems.  
 
 ### Web sites
-https://www.its.dot.gov/factsheets/pdf/ITSJPO_ODE.pdf
-Application Support: ODE application support is currently manage via GitHub issue tracking: https://github.com/usdot-jpo-ode/jpo-ode/issues
+<https://www.its.dot.gov/factsheets/pdf/ITSJPO_ODE.pdf>
+Application Support: ODE application support is currently manage via GitHub issue tracking: <https://github.com/usdot-jpo-ode/jpo-ode/issues>
 
 ### [Attribution](ATTRIBUTION.md)
-
 
 <a name="toc"/>
 
