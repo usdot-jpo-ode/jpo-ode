@@ -12,7 +12,6 @@ McLean, VA 22102
 _Last updated February 7, 2019_
 
 # Table of Contents
-
 - [Version History](#version-history)
 - [1 - Introduction](#introduction)
 - [2 - Project Overview](#project-overview)
@@ -79,27 +78,27 @@ _Last updated February 7, 2019_
 
 <a name="version-history">
 
-# 0 - Version History
+# Version History
 
-| Version # | Implemented By | Revision Date | What Changed?                                                             |
-|-----------|----------------|---------------|---------------------------------------------------------------------------|
-| 0.1       | Hamid Musavi   |               | Initial draft                                                             |
-| 0.2       | Hamid Musavi   | 3/6/2017      | Updated document for ODE-146                                              |
-| 0.3       | ODE Team       | 3/14/2017     | Added outbound TIM documentation                                          |
-| 0.4       | ODE Team       | 3/28/2017     | Added PDM documentation                                                   |
-| 0.5       | Hamid Musavi   | 5/9/207       | Added support for System Design Documentation                             |
-| 0.6       | ODE Team       | 5/23/2017     | Added PPM Documentation                                                   |
-| 0.7       | ODE Team       | 5/30/2017     | Added VSD documentation                                                   |
-| 0.8       | ODE Team       | 6/02/2017     | Added BSM documentation                                                   |
-| 0.9       | ODE Team       | 8/28/2017     | Updated properties table. TIM/PDM REST details moved to Swagger document. |
-| 0.10      | ODE Team       | 9/1/2017      | Added BSM log file handling                                               |
-| 0.11      | ODE Team       | 10/31/2017    | Updated for open-ode                                                      |
-| 0.12      | ODE Team       | 1/10/2018     | Updated SDC/SDW WebSockets end-point                                      |
-| 0.13      | ODE Team       | 1/23/2018     | Documented changes related to schemaVersion 4                             |
-| 0.14      | ODE Team       | 2/14/2018     | Added GZIP documentation                                                  |
-| 0.15      | ODE Team       | 12/18/2018    | Added rsuUsername and rsuPassword properties                              |
-| 0.16      | ODE Team       | 2/4/2019      | Removed deprecated properties. Added ode.kafkaDisabledTopics              |
-| 0.17      | ODE Team       | 2/6/2019      | Added SDW depositor submodule instructions. Removed deprecated properties and capabilities (VSD deposit to SDC).              |
+| Version # | Implemented By | Revision Date | What Changed?                                                                                                    |
+| --------- | -------------- | ------------- | ---------------------------------------------------------------------------------------------------------------- |
+| 0.1       | Hamid Musavi   |               | Initial draft                                                                                                    |
+| 0.2       | Hamid Musavi   | 3/6/2017      | Updated document for ODE-146                                                                                     |
+| 0.3       | ODE Team       | 3/14/2017     | Added outbound TIM documentation                                                                                 |
+| 0.4       | ODE Team       | 3/28/2017     | Added PDM documentation                                                                                          |
+| 0.5       | Hamid Musavi   | 5/9/207       | Added support for System Design Documentation                                                                    |
+| 0.6       | ODE Team       | 5/23/2017     | Added PPM Documentation                                                                                          |
+| 0.7       | ODE Team       | 5/30/2017     | Added VSD documentation                                                                                          |
+| 0.8       | ODE Team       | 6/02/2017     | Added BSM documentation                                                                                          |
+| 0.9       | ODE Team       | 8/28/2017     | Updated properties table. TIM/PDM REST details moved to Swagger document.                                        |
+| 0.10      | ODE Team       | 9/1/2017      | Added BSM log file handling                                                                                      |
+| 0.11      | ODE Team       | 10/31/2017    | Updated for open-ode                                                                                             |
+| 0.12      | ODE Team       | 1/10/2018     | Updated SDC/SDW WebSockets end-point                                                                             |
+| 0.13      | ODE Team       | 1/23/2018     | Documented changes related to schemaVersion 4                                                                    |
+| 0.14      | ODE Team       | 2/14/2018     | Added GZIP documentation                                                                                         |
+| 0.15      | ODE Team       | 12/18/2018    | Added rsuUsername and rsuPassword properties                                                                     |
+| 0.16      | ODE Team       | 2/4/2019      | Removed deprecated properties. Added ode.kafkaDisabledTopics                                                     |
+| 0.17      | ODE Team       | 2/6/2019      | Added SDW depositor submodule instructions. Removed deprecated properties and capabilities (VSD deposit to SDC). |
 
 <a name="introduction">
 
@@ -178,10 +177,10 @@ infrastructure, technical resources, and applications available to an
 ODE environment.
 
 The JPO-ODE will be designed to support the producers and consumers of
-CV data as illustrated in Figure 1 below. ***The implementation timeline
+CV data as illustrated in Figure 1 below. _The implementation timeline
 for the identified interfaces will depend on the needs of the JPO ODE
 customers (Wyoming CV Pilot site, initially) and the priority of these
-capabilities to the JPO-ODE product owner.***
+capabilities to the JPO-ODE product owner._
 
 ![](images/userguide/figure1.png)
 
@@ -198,10 +197,10 @@ This document is intended for use by the ODE client applications.
 # 5 - Glossary
 
 | Term      | Description                                                                                                                                                                                                                                                                                                                                          |
-|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | API       | Application Program Interface                                                                                                                                                                                                                                                                                                                        |
 | ASN.1     | Abstract Syntax Notation One (ASN.1) is a standard and notation that describes rules and structures for representing, encoding, transmitting, and decoding data in telecommunications and computer networking                                                                                                                                        |
-| Git       | Git is a free and open source distributed version control system designed to handle everything from small to very large projects with speed and efficiency.  https://git-scm.com/                                                                                                                                                                    |                                                                                                                                                                                                                                                                                                                                                   
+| Git       | Git is a free and open source distributed version control system designed to handle everything from small to very large projects with speed and efficiency. <https://git-scm.com>                                                                                                                                                                    |
 | JDK       | Java Development Kit                                                                                                                                                                                                                                                                                                                                 |
 | JPO       | Joint Program Office                                                                                                                                                                                                                                                                                                                                 |
 | JRE       | Java Runtime Environment                                                                                                                                                                                                                                                                                                                             |
@@ -209,7 +208,7 @@ This document is intended for use by the ODE client applications.
 | Kafka     | Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.                                                                                                                                                                                                                                                                   |
 | POJO      | Plain Old Java Object                                                                                                                                                                                                                                                                                                                                |
 | SAE       | SAE International is a global association of more than 128,000 engineers and related technical experts in the aerospace, automotive and commercial-vehicle industries.                                                                                                                                                                               |
-| J2735     | This SAE Standard specifies a message set, and its data frames and data elements specifically for use by applications intended to utilize the 5.9 GHz Dedicated Short Range Communications for Wireless Access in Vehicular Environments (DSRC/WAVE, referenced in this document simply as “DSRC”), communications systems. (SAE International 2016) |                                                                                                          
+| J2735     | This SAE Standard specifies a message set, and its data frames and data elements specifically for use by applications intended to utilize the 5.9 GHz Dedicated Short Range Communications for Wireless Access in Vehicular Environments (DSRC/WAVE, referenced in this document simply as “DSRC”), communications systems. (SAE International 2016) |
 | SCP       | Secure Copy                                                                                                                                                                                                                                                                                                                                          |
 | SDW       | Situation Data Warehouse                                                                                                                                                                                                                                                                                                                             |
 | TIM       | Traveler Information Message                                                                                                                                                                                                                                                                                                                         |
@@ -276,11 +275,8 @@ control system.
 Recommend clients:
 
 - Tortoise Git
-
 - Source Tree
-
 - GitHub Windows Desktop Application
-
 - Git Extensions
 
 It is recommended that GIT plug-ins are installed with your IDE so that
@@ -318,8 +314,8 @@ physical or virtual server as well as within a Docker container.
 The following components make up the JPO ODE software:
 
 - jpo-ode-common: this component contains all the common classes used
-  by other jpo-ode components. *This component is the lowest common
-  denominator and never depends on any other jpo-ode component.*
+  by other jpo-ode components. _This component is the lowest common
+  denominator and never depends on any other jpo-ode component._
 
 - jpo-ode-core: this component contains the core functions carried out
   by the jpo-ode.
@@ -365,18 +361,26 @@ and deploying the JPO-ODE services.
 JPO ODE configuration can be modified in a number of ways.
 
 1. You can specify the configuration parameters in a file named
-   *application.properties* located in the same directory from which
+   _application.properties_ located in the same directory from which
    the application is launched.
 
 2. You may specify properties as command line options in the form of
-   *\--ode.propertyName=propertyValue. For example, add
-   ode.DdsCasUsername=fred.flintstone\@stone.age*
 
-3. *You may* specify properties as system environment variables in the
-   form of *ode.DdsCasUsername=fred.flintstone\@stone.age.*
+```bash
+--ode.propertyName=propertyValue
+```
+
+For example, add
+
+```bash
+--ode.DdsCasUsername=fred.flintstone@stone.age
+```
+
+3. _You may_ specify properties as system environment variables in the
+   form of _ode.DdsCasUsername=fred.flintstone\@stone.age._
 
 Other properties not specific to the ODE can also be defined in a
-similar way but without the *ode* prefix.
+similar way but without the _ode_ prefix.
 
 Current ODE properties and their default are defined in OdeProperties
 class. The property name is the name of the OdeProperties class instance
@@ -385,7 +389,7 @@ parameter.
 The following table describes all the ODE properties currently
 available.
 
-*Table 1 - ODE Application Properties*
+_Table 1 - ODE Application Properties_
 
 | Name                                     | Default Value                                                                                 | Required               | Description                                                                                                                                                                                                                                                                                                                               |
 |------------------------------------------|-----------------------------------------------------------------------------------------------|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -396,7 +400,7 @@ available.
 | ode.kafkaProducerType                    | async                                                                                         |                        | Specifies whether publishing to Kafka will be synchronous (i.e. blocking until the data has been persisted) or asynchronous (i.e. publish and forget). Valid values are: sync or async. Sync will generally be slower but more reliable, async is faster with the risk of losing data if kafka crashes during the write operation.        |
 | ode.ddsCasUsername                       | null                                                                                          | X                      | Username to be used for authentication when interfacing with Situation Data Warehouse                                                                                                                                                                                                                                                     |
 | ode.ddsCasPassword                       | null                                                                                          | X                      | Password to be used for authentication when interfacing with Situation Data Warehouse (SDW)                                                                                                                                                                                                                                               |
-| ode.ddsCasUrl                            | https://cas.cvmvp.com/accounts/v1/tickets                                                     |                        | URL of the US DOT security server.                                                                                                                                                                                                                                                                                                        |
+| ode.ddsCasUrl                            | <https://cas.cvmvp.com/accounts/v1/tickets>                                                     |                        | URL of the US DOT security server.                                                                                                                                                                                                                                                                                                        |
 | ode.ddsWebsocketUrl                      | wss://webapp.cvmvp.com/whtools/websocket                                                      |                        | URL of the US DOT SDW WebSockets API                                                                                                                                                                                                                                                                                                      |
 | ode.sdcIp                                | 104.130.170.234                                                                               |                        | IPv4 address of SDC                                                                                                                                                                                                                                                                                                                       |
 | ode.sdcPort                              | 46753                                                                                         |                        | Destination port of SDC                                                                                                                                                                                                                                                                                                                   |
@@ -420,7 +424,7 @@ available.
 | ode.depositSanitizedBsmToSdc             | false                                                                                         |                        | Enable/disable packaging of BSMs into VSDs and depositing VSDs to SDC                                                                                                                                                                                                                                                                     |
 | ode.serviceRespExpirationSeconds         | 10                                                                                            |                        | Number of seconds the trust manager will wait to receive service request response before timing out.                                                                                                                                                                                                                                      |
 | Kafka Topics                             | See Section 8.3.1.1                                                                           |                        | See Section 8.3.1.1                                                                                                                                                                                                                                                                                                                       |
-| ode.securitySvcsSignatureUri             | null                                                                                          |                        | The URI for signing data using the jpo-security-svcs module. Normally doesn't need to be set because ODE will calculate it based on DOCKER_HOST_IP. If the service is deployed outside Docker, it should be set to http://host:ip/sign of the server it's running on. If you do not want to sign the data set this property to UNSECURED. |
+| ode.securitySvcsSignatureUri             | null                                                                                          |                        | The URI for signing data using the jpo-security-svcs module. Normally doesn't need to be set because ODE will calculate it based on DOCKER_HOST_IP. If the service is deployed outside Docker, it should be set to <http://host:ip/sign> of the server it's running on. If you do not want to sign the data set this property to UNSECURED. |
 | ode.rsuUsername                          | null                                                                                          | If not present in JSON | The SNMP username used to authenticate with an RSU when depositing, deleting, or querying TIMs.                                                                                                                                                                                                                                           |
 | ode.rsuPassword                          | null                                                                                          | If not present in JSON | The SNMP password used to authenticate with an RSU when depositing, deleting, or querying TIMs.                                                                                                                                                                                                                                           |
 | ode.kafkaTopicsDisabled                  | topic.OdeBsmRxPojo, topic.OdeBsmTxPojo, topic.OdeBsmDuringEventPojo,topic.OdeTimBroadcastPojo |                        | List of topics to be disabled from publishing.                                                                                                                                                                                                                                                                                            |
@@ -436,12 +440,12 @@ ODE produces two log files:
 2.  Events log file: for tracking and monitoring major data events such
     as the flow of data files through the system
 
-The configuration of the loggers is done via *logback.xm*l file. The
-default logback.xml is located in the *src/main/resources* directory of
-the source code as well as in the *BOOT-INF\\classes\\* directory of the
+The configuration of the loggers is done via _logback.xml_ file. The
+default logback.xml is located in the _src/main/resources_ directory of
+the source code as well as in the _BOOT-INF\\classes\\_ directory of the
 executable jar file. To modify the default values, you can modify the
-source *src/main/resources/logback.xml* file before building the
-software or place a different *logback.xml* file with the modified
+source _src/main/resources/logback.xml_ file before building the
+software or place a different _logback.xml_ file with the modified
 values in the working directory of the application.
 
 <a name="ode-features">
@@ -494,9 +498,9 @@ capture.
 
 **SNMP OID Value:** The numeric OID of the desired information.
 
-*The OIDs for the RSUs are specified in the DSRC Roadside Unit (RSU)
+_The OIDs for the RSUs are specified in the DSRC Roadside Unit (RSU)
 Specifications Document v4.1. The units also respond to ISO standard
-OIDs, as demonstrated in the screenshot below.*
+OIDs, as demonstrated in the screenshot below._
 
 <a name="api-details">
 
@@ -625,7 +629,7 @@ received via file upload and UDP interfaces. To enable this
 functionality, CA certificates must be installed and configured using
 below properties or environment variables as described in section 6.6.3.
 
-```
+```bash
 ode.caCertPath
 ode.selfCertPath
 ode.selfPrivateKeyReconstructionFilePath
@@ -743,7 +747,7 @@ instructions.
 
 2.  Reference the Swagger documentation located in the /docs folder of
     the repo to view the specifications for the API call. If needed,
-    paste the YAML file into http://editor.swagger.io to see a rendered
+    paste the YAML file into <http://editor.swagger.io> to see a rendered
     webpage for the documentation.
 
 3.  Use a web based REST tool such as Postman to send the PDM broadcast
@@ -892,7 +896,7 @@ instructions:
     in the effective application.properties file.
 
 2.  Reference the Swagger documentation located in the /docs folder of
-    the repo or at https://usdot-jpo-ode.github.io/ to view the
+    the repo or at <https://usdot-jpo-ode.github.io> to view the
     specifications for the API call.
 
 3.  Copy the curl command, run the python script, or use a web based
@@ -978,8 +982,8 @@ upon request from <https://cvcs.samanage.com> and summarized below.
 7.  ODE \-\-\-\-\-\-\--VsdMessage\-\-\-\-\-\--\> SDC // ODE sends the
     actual VSD message to SDC
 
-[Requirements for sending VSD message to SDC over UDP are the
-following:]{.underline}
+Requirements for sending VSD message to SDC over UDP are the
+following:
 
 1.  IP address or Domain Name of the SDC server
 
@@ -1100,14 +1104,14 @@ and decryption. ODE sends TIM messages to JSS module to be signed before
 broadcasting the message to RSUs and SDW. No new configuration
 properties need to be set if the module and ODE run in Docker containers
 on the same server. However, if they are running o different host
-machines the property *ode.securitySvcsSignatureUri* must be set to
+machines the property _ode.securitySvcsSignatureUri_ must be set to
 point to the JSS domain name or IP:Port number. The JSS module must,
 however, be configured with the DNS name or IP:Port of the Green Hills
 HSM security service URI. This property can be defined using the
-environment variable *SEC\_CRYPTO\_SERVICE\_BASE\_URI*. It must be set
+environment variable _SEC\_CRYPTO\_SERVICE\_BASE\_URI_. It must be set
 to [http://ip:port](http://ip:port) of the Green Hills appliance. If you
 do not want to sign the data set
-*SEC\_CRYPTO\_SERVICE\_BASE\_URI=UNSECURED*
+_SEC\_CRYPTO\_SERVICE\_BASE\_URI=UNSECURED_
 
 <a name="appendix-a-ode-interface-specification">
 
@@ -1160,78 +1164,14 @@ not capable of importing GZIP-TAR archives containing multiple files.
 
 | Field Name         | Field Length (bytes) | Description                                                                            |
 |--------------------|----------------------|----------------------------------------------------------------------------------------|
-| logRecordType      | 1                    | Represents the type of log record as defined below:                                    |
-|                    |                      | typedef enum _logRecordType {                                                          |
-|                    |                      | DN_MSG = 0,                                                                            |
-|                    |                      | ENVIRONMENT_MSG = 1,                                                                   |
-|                    |                      | DRIVER_ALERT = 2,                                                                      |
-|                    |                      | UPGRADES = 3,                                                                          |
-|                    |                      | SYSTEM_LOG = 4,                                                                        |
-|                    |                      | RX_MSG = 5,                                                                            |
-|                    |                      | SCMS = 6,                                                                              |
-|                    |                      | BSM_TX = 7,                                                                            |
-|                    |                      | BSM_RX = 8                                                                             |
-|                    |                      | } logRecordType;                                                                       |
-|                    |                      |                                                                                        |
+| logRecordType     |  1                 |    Represents the type of log record as defined below: <br> typedef enum _logRecordType { <br> DN_MSG = 0, <br> ENVIRONMENT_MSG = 1, <br> DRIVER_ALERT = 2, <br> UPGRADES = 3, <br> SYSTEM_LOG = 4, <br> RX_MSG = 5, <br> SCMS = 6, <br> BSM_TX = 7, <br> BSM_RX = 8 <br> } logRecordType; |
 | direction          | 1                    | Represents the source of the BSM. 0 for EV(Tx), 1 for RV(Rx)                           |
 | utctimeInSec       | 4                    | UTC time in seconds from Epoc 1/1/1970                                                 |
 | mSec               | 2                    | milliseconds part of UTC time                                                          |
-| verificationStatus | 1                    | contains a SecurtyStatusCode as defined below:                                         |
-|                    |                      |                                                                                        |
-|                    |                      | typedef enum _securityResultCode {             /* from dot3 */                         |
-|                    |                      | success = 0,                                                                           |
-|                    |                      | inconsistentInputParameters = 2,                                                       |
-|                    |                      | spduParsingInvalidInput = 3,                                                           |
-|                    |                      | spduParsingUnsupportedCriticalInformationField = 4,                                    |
-|                    |                      | spduParsingCertificateNotFound = 5,                                                    |
-|                    |                      | spduParsingGenerationTimeNotAvailable = 6,                                             |
-|                    |                      | spduParsingGenerationLocationNotAvailable = 7,                                         |
-|                    |                      | spduCertificateChainNotEnoughInformationToConstructChain = 8,                          |
-|                    |                      | spduCertificateChainChainEndedAtUntrustedRoot = 9,                                     |
-|                    |                      | spduCertificateChainChainWasTooLongForImplementation = 10,                             |
-|                    |                      | spduCertificateChainCertificateRevoked = 11,                                           |
-|                    |                      | spduCertificateChainOverdueCRL = 12,                                                   |
-|                    |                      | spduCertificateChainInconsistentExpiryTimes = 13,                                      |
-|                    |                      | spduCertificateChainInconsistentStartTimes = 14,                                       |
-|                    |                      | spduCertificateChainInconsistentChainPermissions = 15,                                 |
-|                    |                      | spduCryptoVerificationFailure = 16,                                                    |
-|                    |                      | spduConsistencyFutureCertificateAtGenerationTime = 17,                                 |
-|                    |                      | spduConsistencyExpiredCertificateAtGenerationTime = 18,                                |
-|                    |                      | spduConsistencyExpiryDateTooEarly = 19,                                                |
-|                    |                      | spduConsistencyExpiryDateTooLate = 20,                                                 |
-|                    |                      | spduConsistencyGenerationLocationOutsideValidityRegion = 21,                           |
-|                    |                      | spduConsistencyNoGenerationLocation = 22,                                              |
-|                    |                      | spduConsistencyUnauthorizedPSID = 23,                                                  |
-|                    |                      | spduInternalConsistencyExpiryTimeBeforeGenerationTime = 24,                            |
-|                    |                      | spduInternalConsistencyextDataHashDoesntMatch = 25,                                    |
-|                    |                      | spduInternalConsistencynoExtDataHashProvided = 26,                                     |
-|                    |                      | spduInternalConsistencynoExtDataHashPresent = 27,                                      |
-|                    |                      | spduLocalConsistencyPSIDsDontMatch = 28,                                               |
-|                    |                      | spduLocalConsistencyChainWasTooLongForSDEE = 29,                                       |
-|                    |                      | spduRelevanceGenerationTimeTooFarInPast = 30,                                          |
-|                    |                      | spduRelevanceGenerationTimeTooFarInFuture = 31,                                        |
-|                    |                      | spduRelevanceExpiryTimeInPast = 32,                                                    |
-|                    |                      | spduRelevanceGenerationLocationTooDistant = 33,                                        |
-|                    |                      | spduRelevanceReplayedSpdu = 34,                                                        |
-|                    |                      | spduCertificateExpired = 35                                                            |
-|                    |                      | } securityResultCode;                                                                  |
+| verificationStatus | 1                    | contains a SecurtyStatusCode as defined below:<br> typedef enum _securityResultCode { /* from dot3 */ <br> success = 0, <br> inconsistentInputParameters = 2, <br> spduParsingInvalidInput = 3, <br> spduParsingUnsupportedCriticalInformationField = 4,  <br> spduParsingCertificateNotFound = 5,  <br> spduParsingGenerationTimeNotAvailable = 6, <br> spduParsingGenerationLocationNotAvailable = 7, <br> spduCertificateChainNotEnoughInformationToConstructChain = 8,  <br> spduCertificateChainChainEndedAtUntrustedRoot = 9, <br> spduCertificateChainChainWasTooLongForImplementation = 10, <br> spduCertificateChainCertificateRevoked = 11, <br> spduCertificateChainOverdueCRL = 12, <br> spduCertificateChainInconsistentExpiryTimes = 13,  <br> spduCertificateChainInconsistentStartTimes = 14, <br> spduCertificateChainInconsistentChainPermissions = 15, <br> spduCryptoVerificationFailure = 16,  <br> spduConsistencyFutureCertificateAtGenerationTime = 17, <br> spduConsistencyExpiredCertificateAtGenerationTime = 18,  <br> spduConsistencyExpiryDateTooEarly = 19,  <br> spduConsistencyExpiryDateTooLate = 20, <br> spduConsistencyGenerationLocationOutsideValidityRegion = 21, <br> spduConsistencyNoGenerationLocation = 22,  <br> spduConsistencyUnauthorizedPSID = 23,  <br> spduInternalConsistencyExpiryTimeBeforeGenerationTime = 24,  <br> spduInternalConsistencyextDataHashDoesntMatch = 25,  <br> spduInternalConsistencynoExtDataHashProvided = 26, <br> spduInternalConsistencynoExtDataHashPresent = 27,  <br> spduLocalConsistencyPSIDsDontMatch = 28, <br> spduLocalConsistencyChainWasTooLongForSDEE = 29, <br> spduRelevanceGenerationTimeTooFarInPast = 30,  <br> spduRelevanceGenerationTimeTooFarInFuture = 31,  <br> spduRelevanceExpiryTimeInPast = 32,  <br> spduRelevanceGenerationLocationTooDistant = 33,  <br> spduRelevanceReplayedSpdu = 34,  <br> spduCertificateExpired = 35  <br> } securityResultCode;                                         |
 | curLocation        | location             | The location and speed of the vehicle receiving and reporting the event.               |
-|                    |                      |                                                                                        |
-|                    |                      | /* below elements units are as per SAE-2735 */                                         |
-|                    |                      | typedef struct _location {                                                             |
-|                    |                      | uint32_t latitude;                                                                     |
-|                    |                      | uint32_t longitude;                                                                    |
-|                    |                      | uint32_t elevation;                                                                    |
-|                    |                      | uint16_t speed;                                                                        |
-|                    |                      | uint16_t heading;                                                                      |
-|                    |                      | } __attribute__((__packed__)) location;                                                |
-| rxFrom             | rxSource             | The source of the message received:                                                    |
-|                    |                      | typedef enum _rxSource {                                                               |
-|                    |                      | RSU = 0,                                                                               |
-|                    |                      | SAT, //XM satelite                                                                     |
-|                    |                      | RV, /* for BSM rx */                                                                   |
-|                    |                      | SNMP /* for SRM payload from backend/ODE*/                                             |
-|                    |                      | } rxSource;                                                                            |
+|                    |                      | /* below elements units are as per SAE-2735 */ typedef struct _location {<br>uint32_t latitude;<br>uint32_t longitude;<br>uint32_t elevation;<br>uint16_t speed;<br>uint16_t heading;<br>} __attribute__((__packed__)) location; |
+| rxFrom             | rxSource             | The source of the message received: typedef enum _rxSource {<br>RSU = 0,<br>SAT, //XM satelite<br>RV, /* for BSM rx */<br>SNMP /* for SRM payload from backend/ODE*/<br>} rxSource; |
 | latitude           | 4                    | The latitude of the vehicle receiving and reporting the event.                         |
 | longitude          | 4                    | The longitude of the vehicle receiving and reporting the event.                        |
 | elevation          | 4                    | The elevation of the vehicle receiving and reporting the event.                        |
@@ -1421,4 +1361,4 @@ Output Schema Reference Document](#references). (Booz Allen Hamilton
 # 9 - References
 
 - Booz Allen Hamilton. 2018. "ODE Output Schema Reference."
-- SAE International. 2016. 03 30. https://www.sae.org/standards/content/j2735_201603
+- SAE International. 2016. 03 30. <https://www.sae.org/standards/content/j2735_201603>
