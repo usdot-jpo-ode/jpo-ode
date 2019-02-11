@@ -92,7 +92,6 @@ function sendSnmp() {
 }
 
 $(function () {
-
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
@@ -101,4 +100,18 @@ $(function () {
     $( "#send" ).click(function() { sendName(); });
     $( "#upload" ).click( function() { upload() } );
     $( "#snmp-submit").click( function() { sendSnmp() })
+
+    // Query ODE version and put it on the UI
+    $.ajax({
+        url: "/version",
+        type: "get",
+        dataType: "json",
+        success: function (response) {
+            console.log("[SUCCESS] Loaded ODE version: " + response.version);
+            $("#version").html("ODE Version: " + response.version);
+        },
+        error: function (error) {
+            console.log("[ERROR] Failed to load ODE version: " + error.responseText);
+        }
+    });
 });

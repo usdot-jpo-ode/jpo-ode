@@ -18,13 +18,13 @@
     <sonar.exclusions>src/main/**/OdeSvcsApplication.java</sonar.exclusions>
   </properties>
   <dependencies>
-    <!-- <dependency> <groupId>org.springframework.cloud</groupId> <artifactId>spring-cloud-starter-stream-kafka</artifactId> 
-      </dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-data-jpa</artifactId> 
-      </dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-data-redis</artifactId> 
-      </dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-integration</artifactId> 
-      </dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-mail</artifactId> 
-      </dependency> <dependency> <groupId>mysql</groupId> <artifactId>mysql-connector-java</artifactId> 
-      <scope>runtime</scope> </dependency> <dependency> <groupId>org.springframework.boot</groupId> 
+    <!-- <dependency> <groupId>org.springframework.cloud</groupId> <artifactId>spring-cloud-starter-stream-kafka</artifactId>
+      </dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-data-jpa</artifactId>
+      </dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-data-redis</artifactId>
+      </dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-integration</artifactId>
+      </dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-mail</artifactId>
+      </dependency> <dependency> <groupId>mysql</groupId> <artifactId>mysql-connector-java</artifactId>
+      <scope>runtime</scope> </dependency> <dependency> <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId> </dependency> -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -90,6 +90,12 @@
       <groupId>org.webjars</groupId>
       <artifactId>jquery</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>materializecss</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+
 
     <dependency>
       <groupId>usdot.jpo.ode</groupId>
