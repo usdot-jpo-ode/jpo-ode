@@ -1,8 +1,6 @@
 FROM maven:3.5.4-jdk-8-alpine as builder
 MAINTAINER 583114@bah.com
 
-VOLUME /root/.m2
-
 WORKDIR /home
 
 # Copy only the files needed to avoid putting all sorts of junk from your local env on to the image
