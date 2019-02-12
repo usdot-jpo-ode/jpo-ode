@@ -82,9 +82,9 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
          try {
             status = fileParser.parseFile(bis, fileName);
             if (status == ParserStatus.COMPLETE) {
-               parsePayload(dataListList);
+               addDataToList(dataListList);
             } else if (status == ParserStatus.EOF) {
-               publish(xmlUtils, dataListList);
+               publishList(xmlUtils, dataListList);
             } else if (status == ParserStatus.INIT) {
                logger.error("Failed to parse the header bytes.");
             } else {
@@ -96,7 +96,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       } while (status == ParserStatus.COMPLETE);
    }
 
-   public void parsePayload(List<OdeData> dataList) {
+   public void addDataToList(List<OdeData> dataList) {
 
       OdeData odeData;
       
@@ -116,19 +116,17 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       dataList.add(odeData);
    }
 
-   public void publish(XmlUtils xmlUtils, List<OdeData> dataList) throws JsonProcessingException {
+   public void publishList(XmlUtils xmlUtils, List<OdeData> dataList) throws JsonProcessingException {
      serialId.setBundleSize(dataList.size());
      for (OdeData odeData : dataList) {
        OdeLogMetadata msgMetadata = (OdeLogMetadata) odeData.getMetadata();
+       msgMetadata.setSerialId(serialId);
        
        if (fileParser instanceof DriverAlertFileParser){
           logger.debug("Publishing a driverAlert.");
 
-          msgMetadata.setSerialId(serialId);
-
           publisher.publish(JsonUtils.toJson(odeData, false),
              publisher.getOdeProperties().getKafkaTopicDriverAlertJson());
-          serialId.increment();
        } else {
           if (fileParser instanceof BsmLogFileParser || 
                 (fileParser instanceof RxMsgFileParser && ((RxMsgFileParser)fileParser).getRxSource() == RxSource.RV)) {
@@ -136,7 +134,6 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
           } else {
              logger.debug("Publishing a TIM");
           }
-          msgMetadata.setSerialId(serialId);
 
           Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
           Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",
@@ -145,8 +142,8 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
           publisher.publish(xmlUtils.toXml(odeData),
              publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
-          serialId.increment();
        }
+       serialId.increment();
      }
    }
 
