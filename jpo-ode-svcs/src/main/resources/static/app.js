@@ -99,7 +99,7 @@ $(function () {
     $( "#disconnect" ).click(function() { disconnect(); });
     $( "#send" ).click(function() { sendName(); });
     $( "#upload" ).click( function() { upload() } );
-    $( "#snmp-submit").click( function() { sendSnmp() })
+    $( "#snmp-submit").click( function() { sendSnmp() });
 
     // Query ODE version and put it on the UI
     $.ajax({
@@ -114,4 +114,7 @@ $(function () {
             console.log("[ERROR] Failed to load ODE version: " + error.responseText);
         }
     });
+
+    // Connect the websocket on page load
+    connect();
 });
