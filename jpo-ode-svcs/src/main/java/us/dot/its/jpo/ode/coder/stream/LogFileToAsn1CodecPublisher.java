@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import us.dot.its.jpo.ode.coder.OdeLogMetadataCreatorHelper;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.importer.parser.BsmLogFileParser;
@@ -36,7 +35,6 @@ import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
-import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeDriverAlertData;
 import us.dot.its.jpo.ode.model.OdeDriverAlertPayload;
@@ -79,14 +77,14 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
          fileParser = LogFileParser.factory(fileName);
       }
 
-      List<OdeMsgPayload> payloadList = new ArrayList<>();
+      List<OdeData> dataListList = new ArrayList<>();
       do {
          try {
             status = fileParser.parseFile(bis, fileName);
             if (status == ParserStatus.COMPLETE) {
-               parsePayload(payloadList);
+               parsePayload(dataListList);
             } else if (status == ParserStatus.EOF) {
-               publish(xmlUtils, payloadList);
+               publish(xmlUtils, dataListList);
             } else if (status == ParserStatus.INIT) {
                logger.error("Failed to parse the header bytes.");
             } else {
@@ -98,45 +96,45 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       } while (status == ParserStatus.COMPLETE);
    }
 
-   public void parsePayload(List<OdeMsgPayload> payloadList) {
+   public void parsePayload(List<OdeData> dataList) {
 
-      OdeMsgPayload msgPayload;
+      OdeData odeData;
       
+      OdeMsgPayload payload;
+      OdeLogMetadata metadata;
       if (fileParser instanceof DriverAlertFileParser){
-         msgPayload = new OdeDriverAlertPayload(((DriverAlertFileParser) fileParser).getAlert());
+        payload = new OdeDriverAlertPayload(((DriverAlertFileParser) fileParser).getAlert());
+        metadata = new OdeLogMetadata(payload);
+        odeData = new OdeDriverAlertData(metadata, payload);
       } else {
-         msgPayload = new OdeAsn1Payload(fileParser.getPayloadParser().getPayload());
+        payload = new OdeAsn1Payload(fileParser.getPayloadParser().getPayload());
+        metadata = new OdeLogMetadata(payload);
+        odeData = new OdeAsn1Data(metadata, payload);
       }
+      fileParser.updateMetadata(metadata);
 
-      payloadList.add(msgPayload);
+      dataList.add(odeData);
    }
 
-   public void publish(XmlUtils xmlUtils, List<OdeMsgPayload> payloadList) throws JsonProcessingException {
-     serialId.setBundleSize(payloadList.size());
-     for (OdeMsgPayload msgPayload : payloadList) {
-       OdeLogMetadata msgMetadata;
-       OdeData msgData;
+   public void publish(XmlUtils xmlUtils, List<OdeData> dataList) throws JsonProcessingException {
+     serialId.setBundleSize(dataList.size());
+     for (OdeData odeData : dataList) {
+       OdeLogMetadata msgMetadata = (OdeLogMetadata) odeData.getMetadata();
        
        if (fileParser instanceof DriverAlertFileParser){
           logger.debug("Publishing a driverAlert.");
 
-          msgMetadata = new OdeLogMetadata(msgPayload);
           msgMetadata.setSerialId(serialId);
 
-          OdeLogMetadataCreatorHelper.updateLogMetadata(msgMetadata, fileParser);
-          
-          msgData = new OdeDriverAlertData(msgMetadata, msgPayload);
-          publisher.publish(JsonUtils.toJson(msgData, false),
+          publisher.publish(JsonUtils.toJson(odeData, false),
              publisher.getOdeProperties().getKafkaTopicDriverAlertJson());
           serialId.increment();
        } else {
           if (fileParser instanceof BsmLogFileParser || 
                 (fileParser instanceof RxMsgFileParser && ((RxMsgFileParser)fileParser).getRxSource() == RxSource.RV)) {
              logger.debug("Publishing a BSM");
-             msgMetadata = new OdeBsmMetadata(msgPayload);
           } else {
              logger.debug("Publishing a TIM");
-             msgMetadata = new OdeLogMetadata(msgPayload);
           }
           msgMetadata.setSerialId(serialId);
 
@@ -145,10 +143,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
                   EncodingRule.UPER);
           msgMetadata.addEncoding(msgEncoding).addEncoding(unsecuredDataEncoding);
 
-          OdeLogMetadataCreatorHelper.updateLogMetadata(msgMetadata, fileParser);
-          
-          msgData = new OdeAsn1Data(msgMetadata, msgPayload);
-          publisher.publish(xmlUtils.toXml(msgData),
+          publisher.publish(xmlUtils.toXml(odeData),
              publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
           serialId.increment();
        }
