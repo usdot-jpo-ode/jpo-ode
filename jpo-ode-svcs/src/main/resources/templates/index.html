@@ -101,19 +101,16 @@
     <div class="divider"></div>
     <div class="row">
       <h6 class="center light-blue-text"><i class="material-icons">message</i> Listen for Kafka Messages</h6>
-      <p class="center light">When the websocket is connected, Kafka messages published by the ODE will appear here.</p>
-      <div class="col s12" style="overflow-y:scroll; height:500px;">
-        <table id="conversation" class="table table-striped">
-          <thead>
-            <tr>
-              <th>Messages</th>
-            </tr>
-          </thead>
-          <tbody id="messages" style="font-family: monospace;"> </tbody>
-        </table>
+      <p class="center light">
+        When the websocket is connected, Kafka messages published by the ODE will appear here.
+      </p>
+      <p class="center">
+        <button id="clear" class="btn btn-default waves-effect waves-light orange" type="submit">Clear Messages</button>
+      </p>
+      <div class="col s12">
+        <textarea id="messages" style="overflow-y:scroll; height:500px;" readonly="readonly"></textarea>
       </div>
     </div>
-    <br></br>
   </div>
   <footer class="page-footer orange">
     <div class="container">
