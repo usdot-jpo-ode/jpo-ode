@@ -17,11 +17,25 @@ package us.dot.its.jpo.ode.importer.parser;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import us.dot.its.jpo.ode.model.OdeBsmMetadata;
+import us.dot.its.jpo.ode.model.OdeBsmMetadata.BsmSource;
+import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
+import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
+import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
+import us.dot.its.jpo.ode.model.RxSource;
+import us.dot.its.jpo.ode.plugin.j2735.builders.ElevationBuilder;
+import us.dot.its.jpo.ode.plugin.j2735.builders.HeadingBuilder;
+import us.dot.its.jpo.ode.plugin.j2735.builders.LatitudeBuilder;
+import us.dot.its.jpo.ode.plugin.j2735.builders.LongitudeBuilder;
+import us.dot.its.jpo.ode.plugin.j2735.builders.SpeedOrVelocityBuilder;
+import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public abstract class LogFileParser implements FileParser {
    private static final Logger logger = LoggerFactory.getLogger(LogFileParser.class);
@@ -183,5 +197,80 @@ public abstract class LogFileParser implements FileParser {
    public void setPayloadParser(PayloadParser payloadParser) {
       this.payloadParser = payloadParser;
    }
+
+  public void updateMetadata(OdeLogMetadata metadata) {
+      metadata.setLogFileName(getFilename());
+      metadata.setRecordType(getRecordType());
+      metadata.setRecordGeneratedAt(DateTimeUtils.isoDateTime(getTimeParser().getGeneratedAt()));
+
+      if (getSecResCodeParser() != null) {
+        metadata.setSecurityResultCode(getSecResCodeParser().getSecurityResultCode());
+      }
+
+      metadata.setReceivedMessageDetails(buildReceivedMessageDetails(this));
+
+      if (metadata instanceof OdeBsmMetadata) {
+        OdeBsmMetadata odeBsmMetadata = (OdeBsmMetadata) metadata;
+        BsmSource bsmSource = BsmSource.unknown;
+        if (this instanceof BsmLogFileParser) {
+          BsmLogFileParser bsmLogFileParser = (BsmLogFileParser) this;
+          bsmSource = bsmLogFileParser.getBsmSource();
+        } else if (this instanceof RxMsgFileParser) {
+          RxMsgFileParser rxMsgFileParser = (RxMsgFileParser) this;
+          if (rxMsgFileParser.getRxSource() == RxSource.RV) {
+            bsmSource = BsmSource.RV;
+          }
+        }
+        odeBsmMetadata.setBsmSource(bsmSource);
+      }
+
+      if (metadata.getReceivedMessageDetails() != null && metadata.getReceivedMessageDetails().getRxSource() != null) {
+        switch (metadata.getReceivedMessageDetails().getRxSource()) {
+        case RSU:
+          metadata.setRecordGeneratedBy(GeneratedBy.RSU);
+          break;
+        case RV:
+          metadata.setRecordGeneratedBy(GeneratedBy.OBU);
+          break;
+        case SAT:
+          metadata.setRecordGeneratedBy(GeneratedBy.TMC_VIA_SAT);
+          break;
+        case SNMP:
+          metadata.setRecordGeneratedBy(GeneratedBy.TMC_VIA_SNMP);
+          break;
+        default:
+          break;
+        }
+      } else {
+        metadata.setRecordGeneratedBy(GeneratedBy.OBU);
+      }
+  }
+  
+  public static ReceivedMessageDetails buildReceivedMessageDetails(LogFileParser parser) {
+    LocationParser locationParser = parser.getLocationParser();
+    ReceivedMessageDetails rxMsgDetails = null;
+    if (locationParser != null) {
+       LogLocation locationDetails = locationParser.getLocation();
+       BigDecimal genericLatitude = LatitudeBuilder.genericLatitude(locationDetails.getLatitude());
+       BigDecimal genericLongitude = LongitudeBuilder.genericLongitude(locationDetails.getLongitude());
+       BigDecimal genericElevation = ElevationBuilder.genericElevation(locationDetails.getElevation());
+       BigDecimal genericSpeedOrVelocity = SpeedOrVelocityBuilder.genericSpeedOrVelocity(locationDetails.getSpeed());
+       BigDecimal genericHeading = HeadingBuilder.genericHeading(locationDetails.getHeading());
+       rxMsgDetails = new ReceivedMessageDetails(
+             new OdeLogMsgMetadataLocation(
+                genericLatitude == null ? null : genericLatitude.stripTrailingZeros().toPlainString(),
+                genericLongitude == null ? null : genericLongitude.stripTrailingZeros().toPlainString(),
+                genericElevation == null ? null : genericElevation.stripTrailingZeros().toPlainString(),
+                genericSpeedOrVelocity == null ? null : genericSpeedOrVelocity.stripTrailingZeros().toPlainString(),
+                genericHeading == null ? null : genericHeading.stripTrailingZeros().toPlainString()
+                   ), null);
+    }
+    
+    if (parser instanceof RxMsgFileParser && rxMsgDetails != null) {
+       RxMsgFileParser rxMsgFileParser = (RxMsgFileParser) parser;
+       rxMsgDetails.setRxSource(rxMsgFileParser.getRxSource());
+    }
+    return rxMsgDetails; 
+  }
 
 }
