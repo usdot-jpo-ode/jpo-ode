@@ -398,8 +398,7 @@ definitions:
       content:
         type: string
         description: >-
-          Part III content type, one of "Advisory", "Work Zone", "Generic
-          Signage", "Speed Limit", or "Exit Service".
+          Part III content type, one of "advisory", "workZone", "genericSign", "speedLimit", or "exitService".
       items:
         type: array
         items:

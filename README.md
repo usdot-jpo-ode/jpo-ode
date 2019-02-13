@@ -295,18 +295,7 @@ a. [Wyoming CV Pilot Log File Design](data/Wyoming_CV_Pilot_Log_File_Design.docx
 b. [WYDOT Log Records](data/wydotLogRecords.h)
 3. Press `Upload` button to upload the file to ODE.
 
-Upload records within the files must be embedding BSM and/or TIM messages wrapped in J2735 MessageFrame and ASN.1 UPER encoded, wrapped in IEEE 1609.2 envelope and ASN.1 COER encoded binary format. The following files are a samples of each supported type. Uploading any of the files below will you will observe the decoded messages returned to the web UI page while connected to the WebSocket interface:
-
- - [data/bsmLogDuringEvent.bin](data/bsmLogDuringEvent.bin)
- - [data/bsmLogDuringEvent.gz](data/bsmLogDuringEvent.gz)
- - [data/bsmTx.bin](data/bsmTx.bin)
- - [data/bsmTx.gz](data/bsmTx.gz)
- - [data/dnMsg.bin](data/dnMsg.bin)
- - [data/dnMsg.gz](data/dnMsg.gz)
- - [data/rxMsg_BSM.bin](data/rxMsg_BSM.bin)
- - [data/rxMsg_BSM.gz](data/rxMsg_BSM.gz)
- - [data/rxMsg_TIM.bin](data/rxMsg_TIM.bin)
- - [data/rxMsg_TIM.gz](data/rxMsg_TIM.gz)
+Upload records within the files must be embedding BSM and/or TIM messages wrapped in J2735 MessageFrame and ASN.1 UPER encoded, wrapped in IEEE 1609.2 envelope and ASN.1 COER encoded binary format. Please review the files in the [data](data) folder for samples of each supported type. By uploading a valid data file, you will be able to observe the decoded messages contained within the file appear in the web UI page while connected to the WebSocket interface.
 
 Another way data can be uploaded to the ODE is through copying the file to the location specified by the `ode.uploadLocationRoot/ode.uploadLocationObuLog`property. If not specified,  Default locations would be `uploads/bsmlog`sub-directory off of the location where ODE is launched.
 

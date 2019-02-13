@@ -191,7 +191,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       // "regions": []
       // "sspMsgTypes": "2",
       // "sspMsgContent": "3",
-      // "content": "Advisory",
+      // "content": "advisory",
       // "items": [
       // "513"
       // ],
@@ -210,6 +210,10 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // sspTimRights does not need replacement
 
+      // set frameType value
+      dataFrame.set("frameType", 
+          JsonUtils.newNode().put(dataFrame.get("frameType").asText(), EMPTY_FIELD_FLAG));
+      
       // replace sspMsgContent with sspMsgRights2
       dataFrame.put("sspMsgRights2", dataFrame.get(SSP_MSG_CONTENT).asInt());
       dataFrame.remove(SSP_MSG_CONTENT);
@@ -296,29 +300,10 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // EXPECTED INPUT:
       ////////
-      // "content": "Advisory",
+      // "content": "advisory",
       // "items":["513", "Text you need to send", "'1234567'", "255"]},
       
-      // step 1, figure out the name of the content
-      String contentName = dataFrame.get("content").asText();
-      String replacedContentName;
-      if ("Work Zone".equalsIgnoreCase(contentName) || "workZone".equalsIgnoreCase(contentName)) {
-         replacedContentName = "workZone";
-      } else if ("Speed Limit".equalsIgnoreCase(contentName) || "speedLimit".equalsIgnoreCase(contentName)) {
-         replacedContentName = "speedLimit";
-      } else if ("Exit Service".equalsIgnoreCase(contentName) || "exitService".equalsIgnoreCase(contentName)) {
-         replacedContentName = "exitService";
-      } else if ("Generic Signage".equalsIgnoreCase(contentName) || "genericSign".equalsIgnoreCase(contentName)) {
-         replacedContentName = "genericSign";
-      } else {
-         // default
-         replacedContentName = "advisory";
-      }
-      dataFrame.remove("content");
-      dataFrame.set("frameType", 
-         JsonUtils.newNode().put(dataFrame.get("frameType").asText(), EMPTY_FIELD_FLAG));
-      
-      // step 2, reformat item list
+      // step 1, reformat item list
       ArrayNode items = (ArrayNode) dataFrame.get("items");
       ArrayNode newItems = JsonUtils.newNode().arrayNode();
       if (items.isArray()) {
@@ -335,12 +320,19 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       JsonNode sequence = JsonUtils.newNode().set(SEQUENCE_STRING, newItems);
 
+      dataFrame.remove("items");
+
+      // step 2, set the content CHOICE
+      String replacedContentName = dataFrame.get("content").asText();
+      if (replacedContentName.equals("Advisory"))
+        replacedContentName = "advisory";
+      
       // The following field is called "content" but this results in a
       // failed conversion to XML
       // see @us.dot.its.jpo.ode.traveler.TimController.publish
       dataFrame.set(TCONTENT_STRING, JsonUtils.newNode().set(replacedContentName, sequence));
-      dataFrame.remove("items");
-   }
+      dataFrame.remove("content");
+}
 
    public static JsonNode buildItem(String itemStr) {
       JsonNode item = null;
