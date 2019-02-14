@@ -326,11 +326,11 @@ This section outlines the software technology stacks of the ODE.
 
 - [Kafka](https://kafka.apache.org/)
 
-#### Continuous Integration
+#### Code Quality
 
 - [SonarCloud](https://sonarcloud.io)
 
-#### Code Quality
+#### Continuous Integration
 
 - [TravisCI](https://travis-ci.org/)
 
