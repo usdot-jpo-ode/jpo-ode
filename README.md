@@ -12,15 +12,15 @@ The ITS ODE is a real-time virtual data router that ingests and processes operat
 
 _Figure 1: ODE Dataflows_
 
-Documentation:
+**Documentation:**
 
-1. [ODE Architecture](docs/JPO%20ODE%20Architecture.docx)
-2. [ODE User Guide](docs/JPO_ODE_UserGuide.docx)
+1. [ODE Architecture](docs/Architecture.md)
+2. [ODE User Guide](docs/UserGuide.md)
 3. [ODE Output Schema Reference Guide](docs/ODE_Output_Schema_Reference.docx)
 4. [ODE REST API Guide](https://usdot-jpo-ode.github.io/)
 5. [ODE Smoke Tests](https://github.com/usdot-jpo-ode/jpo-ode/wiki/JPO-ODE-QA-Documents)
 
-All stakeholders are invited to provide input to these documents. Stakeholders should direct all input on this document to the JPO Product Owner at DOT, FHWA, and JPO. To provide feedback, we recommend that you create an "issue" in this repository (<https://github.com/usdot-jpo-ode/jpo-ode/issues>). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
+All stakeholders are invited to provide input to these documents. To provide feedback, we recommend that you create an "issue" in this repository (<https://github.com/usdot-jpo-ode/jpo-ode/issues>). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
 
 ---
 
@@ -50,7 +50,7 @@ All stakeholders are invited to provide input to these documents. Stakeholders s
 
 ## 1. Usage Example
 
-Once the ODE is deployed and running, you may access the ODE's demonstration console by opening your browser and navigating to  `http://localhost:8080`.
+Once the ODE is deployed and running locally, you may access the ODE's demonstration console by opening your browser and navigating to  `http://localhost:8080`.
 
 1.  Press the `Connect` button to connect to the ODE WebSocket service.
 2.  Press `Choose File` button to select an OBU log file containing BSMs and/or TIM messages as specified by the WYDOT CV Pilot project. See below documents for details:
@@ -101,28 +101,20 @@ amount of data being processed by the software. The ODE software application was
 
 ### Software Prerequisites
 
-If running the ODE inside of Docker (recommended):
+The ODE is bundled as a series of submodules running in Docker containers and managed by Docker-Compose. All other required dependencies will automatically be downloaded and installed as part of the Docker build process.
+
 - Docker: <https://docs.docker.com/engine/installation/>
 - Docker-Compose: <https://docs.docker.com/compose/install/>
 
-If running the ODE outside of Docker:
--  Docker: <https://docs.docker.com/engine/installation/>
--  Docker-Compose: <https://docs.docker.com/compose/install/>
--  JDK 1.8: <http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html>
--  Maven: <https://maven.apache.org/install.html>
--  Git: <https://git-scm.com.>
+### Tips and Advice
 
 Read the following guides to familiarize yourself with ODE's Docker and Kafka modules.
 
-**Docker**
+- [Docker README](docker.md)
+- [Kafka README](kafka.md)
 
-[README](docker.md)
+**Installation and Deployment:**
 
-**Kafka**
-
-[README](kafka.md)
-
-Some notes before you begin:
 - If you are installing the ODE in an Ubuntu 18.04 environment, see this [preparation guide](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Prepare-a-fresh-Ubuntu-instance-for-ODE-installation) that covers installing all of the prerequisites.
 - Docker builds may fail if you are on a corporate network due to DNS resolution errors.
 [See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
@@ -130,8 +122,9 @@ Some notes before you begin:
 - Windows users may find more information on installing and using Docker [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management).
 - Users interested in Kafka may find more guidance and configuration options [here](docker/kafka/README.md).
 
+**Configuration:**
 
-If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the `$DOCKER_HOST_IP:9092`, or wish to set the CAS websocket deposit username/password, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
+If you wish to change the application properties, such as change the location of the upload service via `ode.uploadLocation.*` properties or set the `ode.kafkaBrokers` to something other than the `$DOCKER_HOST_IP:9092`, or wish to change the log file upload folder, etc. instead of setting the environment variables, modify `jpo-ode-svcs\src\main\resources\application.properties` file as desired.
 
 ODE configuration can be customized for every deployment environment using environment variables. These variables can either be set locally or using the [sample.env](sample.env) file. Instructions for how to use this file can be found [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-.env-configuration-file).
 
@@ -258,22 +251,6 @@ docker-compose ps
 Check the deployment by running `docker-compose ps`. You can start and stop containers using `docker-compose start` and `docker-compose stop` commands.
 If using the multi-broker docker-compose file, you can change the scaling by running `docker-compose scale <container>=n` where container is the container you would like to scale and n is the number of instances. For example, `docker-compose scale kafka=3`.
 
-#### Running ODE Application outside of Docker
-
-<details><summary>(Advanced) Running ODE Application outside of Docker</summary>
-<p>
-
-You can run the application on your local machine while other services are deployed on a host environment. To do so, run the following:
-
-```bash
- docker-compose start zookeeper kafka
- mvn clean install
- java -jar jpo-ode-svcs/target/jpo-ode-svcs-0.0.1-SNAPSHOT.jar
-```
-
-</p>
-</details>
-
 
 #### asn1_codec Module (ASN.1 Encoder and Decoder)
 ODE requires the deployment of asn1_codec module. ODE's `docker-compose.yml` file is set up to build and deploy the module in a Docker container. If you wish to run `asn1_codec` module outside Docker (i.e. directly on the host machine), please refer to the documentation of `asn1_codec` module.
@@ -317,24 +294,24 @@ $ ./bsmjson_privacy -c ../config/ppm.properties
 
 This section outlines the software technology stacks of the ODE.
 
-#### Containerization and Management
+### Containerization and Management
 
 - [Docker](https://www.docker.com/)
 - [Docker-Compose](https://docs.docker.com/compose/)
 
-#### Messaging
+### Messaging
 
 - [Kafka](https://kafka.apache.org/)
 
-#### Code Quality
+### Code Quality
 
 - [SonarCloud](https://sonarcloud.io)
 
-#### Continuous Integration
+### Continuous Integration
 
 - [TravisCI](https://travis-ci.org/)
 
-#### ODE Code
+### ODE Code
 
 - [Java 8](https://openjdk.java.net/)
 - [Maven](https://maven.apache.org/)
@@ -345,7 +322,7 @@ This section outlines the software technology stacks of the ODE.
 - [JMockit](http://jmockit.github.io/)
 - [Stomp Websocket](http://jmesnil.net/stomp-websocket)
 
-#### Web UI
+### Web UI
 
 - [MaterializeCSS](https://materializecss.com)
 - [jQuery](https://jquery.com/)
@@ -441,7 +418,7 @@ Please read our [contributing guide](docs/contributing_guide.md) to learn about 
 	- <https://github.com/usdot-jpo-ode/jpo-s3-deposit>
 	- gith@github.com/usdot-jpo-ode/jpo-s3-deposit
 - Security services repository on GitHub (public)
-        - <https://github.com/usdot-jpo-ode/jpo-security-svcs>
+  - <https://github.com/usdot-jpo-ode/jpo-security-svcs>
 	- git@github.com:usdot-jpo-ode/jpo-security-svcs.git
 
 ### Agile Project Management - Jira
