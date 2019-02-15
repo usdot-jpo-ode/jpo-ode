@@ -11,12 +11,12 @@
 
   <scm>
     <developerConnection>scm:git:https://github.com/usdot-jpo-ode/jpo-ode.git</developerConnection>
-    <tag>jpo-ode-1.0.3</tag>
+    <tag>jpo-ode-1.0.4</tag>
   </scm>
 
   <groupId>usdot.jpo.ode</groupId>
   <artifactId>jpo-ode</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.4</version>
   <packaging>pom</packaging>
   <modules>
     <module>jpo-ode-common</module>
