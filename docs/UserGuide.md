@@ -40,37 +40,28 @@ _Last updated February 7, 2019_
     - [7.2.1 - Log Levels](#log-levels)
     - [7.2.2 - Logging Setup](#logging-setup)
     - [7.2.3 - Steps to turn on/off logging during application runtime](#steps-to-turn-on-off-logging-during-application-runtime)
-  - [7.3 - IEEE 1609.2 Compliance](#ieee-1609-2-compliance)
-  - [7.4 - SCMS Certificate Management](#scms-certificate-management)
-  - [7.5 - Inbound Data Distribution](#inbound-data-distribution)
-    - [7.5.1 - Inbound BSM Log File Processing and Distribution](#inbound-bsm-log-file-processing-and-distribution)
-    - [7.5.2 - Inbound TIM Log File Processing and Distribution](#inbound-tim-log-file-processing-and-distribution)
-    - [7.5.3 - Inbound Other Log File Processing and Distribution](#inbound-other-log-file-processing-and-distribution)
-    - [7.5.4 - Inbound BSM - Test File Processing (HEX and JSON)](#inbound-bsm---test-file-processing-hex-and-json)
-  - [7.6 - Probe Data Management](#probe-data-management)
-    - [7.6.1 - PDM Broadcast Request Quick Start Guide](#pdm-broadcast-request-quick-start-guide)
-  - [7.7 - Outbound TIM Broadcast](#outbound-tim-broadcast)
-    - [7.7.1 - Outbound TIM to SDW Websocket Setup](#outbound-tim-to-sdw-websocket-setup)
-    - [7.7.2 - Outbound TIM to S3 Bucket Setup](#outbound-tim-to-s3-bucket-setup)
-    - [7.7.3 - TIM Broadcast Request Quick Start Guide](#tim-broadcast-request-quick-start-guide)
-  - [7.8 - Privacy Protection Module (PPM)](#privacy-protection-module-ppm)
-  - [7.9 - Data validation](#data-validation)
-  - [7.10 - String S3 Depositor](#string-s3-depositor)
-  - [7.11 - VSD to SDC UDP Deposit Service](#vsd-to-sdc-udp-deposit-service)
-    - [7.11.1 - VSD Deposit Service Messages and Alerts](#vsd-deposit-service-messages-and-alerts)
-  - [7.12 - VSD Receiver Service](#vsd-receiver-service)
-    - [7.12.1 - VSD Receiver Service Messages and Alerts](#vsd-receiver-service-messages-and-alerts)
-  - [7.13 - BSM Receive Service via UDP](#bsm-receive-service-via-udp)
-    - [7.13.1 - BSM Receiver Service Messages and Alerts](#bsm-receiver-service-messages-and-alerts)
-  - [7.14 - Security Services Module](#security-services-module)
+  - [7.3 - Inbound Data Distribution](#inbound-data-distribution)
+    - [7.3.1 - Inbound BSM Log File Processing and Distribution](#inbound-bsm-log-file-processing-and-distribution)
+    - [7.3.2 - Inbound TIM Log File Processing and Distribution](#inbound-tim-log-file-processing-and-distribution)
+    - [7.3.3 - Inbound Other Log File Processing and Distribution](#inbound-other-log-file-processing-and-distribution)
+    - [7.3.4 - Inbound BSM - Test File Processing (HEX and JSON)](#inbound-bsm---test-file-processing-hex-and-json)
+  - [7.4 - Probe Data Management](#probe-data-management)
+    - [7.4.1 - PDM Broadcast Request Quick Start Guide](#pdm-broadcast-request-quick-start-guide)
+  - [7.5 - Outbound TIM Broadcast](#outbound-tim-broadcast)
+    - [7.5.1 - Outbound TIM to SDW Websocket Setup](#outbound-tim-to-sdw-websocket-setup)
+    - [7.5.2 - Outbound TIM to S3 Bucket Setup](#outbound-tim-to-s3-bucket-setup)
+    - [7.5.3 - TIM Broadcast Request Quick Start Guide](#tim-broadcast-request-quick-start-guide)
+  - [7.6 - Privacy Protection Module (PPM)](#privacy-protection-module-ppm)
+  - [7.7 - Data validation](#data-validation)
+  - [7.8 - String S3 Depositor](#string-s3-depositor)
+  - [7.9 - Security Services Module](#security-services-module)
 - [8 - Appendix A: ODE Interface Specification](#appendix-a-ode-interface-specification)
   - [8.1 - File Copy Data Deposit](#file-copy-data-deposit)
     - [8.1.1 - Messages and Alerts](#messages-and-alerts)
   - [8.2 - ODE REST API](#ode-rest-api)
     - [8.2.1 - Upload BSM File](#upload-bsm-file)
-    - [8.2.2 - MANAGE SNMP API](#manage-snmp-api)
-    - [8.2.3 - Traveler Information Message (TIM) Interface](#traveler-information-message-tim-interface)
-    - [8.2.4 - Probe Data Management Messages (PDM) Interface](#probe-data-management-messages-pdm-interface)
+    - [8.2.2 - Traveler Information Message (TIM) Interface](#traveler-information-message-tim-interface)
+    - [8.2.3 - Probe Data Management Messages (PDM) Interface](#probe-data-management-messages-pdm-interface)
   - [8.3 - ODE Streaming API](#ode-streaming-api)
     - [8.3.1 - Direct Kafka Interface](#direct-kafka-interface)
     - [8.3.2 - ODE Output Schema Reference](#ode-output-schema-reference)
@@ -373,7 +364,7 @@ JPO ODE configuration can be modified in a number of ways.
 For example, add
 
 ```bash
---ode.DdsCasUsername=fred.flintstone@stone.age
+--ode.uploadLocation=myUploadFolder
 ```
 
 3. _You may_ specify properties as system environment variables in the
@@ -620,35 +611,9 @@ ODE uses Logback logging framework to log application and data events.
 13. Save the file and go back to the jconsole and click the button
     reloadbyfilename to submit changes.
 
-<a name="ieee-1609-2-compliance">
-
-### 7.3 - IEEE 1609.2 Compliance
-
-As of this release, ODE supports signature validation of BSM data
-received via file upload and UDP interfaces. To enable this
-functionality, CA certificates must be installed and configured using
-below properties or environment variables as described in section 6.6.3.
-
-```bash
-ode.caCertPath
-ode.selfCertPath
-ode.selfPrivateKeyReconstructionFilePath
-ode.selfSigningPrivateKeyFilePath
-```
-
-Upon validation, the Boolean field variable validSignature in the
-metadata field of OdeBsmData message will be set to true or false
-according to the validation result.
-
-<a name="scms-certificate-management">
-
-### 7.4 - SCMS Certificate Management
-
-TBD
-
 <a name="inbound-data-distribution">
 
-### 7.5 Inbound Data Distribution
+### 7.3 Inbound Data Distribution
 
 ODE accepts Inbound BSMs, TIMs and other data types via File Copy Data
 Deposit mechanism as described in section 8.1. Note that after files are
@@ -668,68 +633,68 @@ can subscribe.
 
 <a name="inbound-bsm-log-file-processing-and-distribution">
 
-#### 7.5.1 - Inbound BSM Log File Processing and Distribution
+#### 7.3.1 - Inbound BSM Log File Processing and Distribution
 
 1. bsmLogDuringEvent
-  1. BSMs for event (10 seconds before, event, 10 seconds after all at 10 Hz) (purge first)
-    1. Driver alert
-    2. Received BSMs from remote vehicle(s), also record host vehicle BSMs
-    3. If event is longer than 1-minute drop to 1 Hz for host and remove vehicles
-    4. Add time to each record for all BSMs (from 1609.2 header)
+    1. BSMs for event (10 seconds before, event, 10 seconds after all at 10 Hz) (purge first)
+        1. Driver alert
+        2. Received BSMs from remote vehicle(s), also record host vehicle BSMs
+        3. If event is longer than 1-minute drop to 1 Hz for host and remove vehicles
+        4. Add time to each record for all BSMs (from 1609.2 header)
 2. bsmTx
-  1. BSM once every 30 seconds (purge second)
-    1. Add time to each record for all BSMs (from 1609.2 header)
+    1. BSM once every 30 seconds (purge second)
+      1. Add time to each record for all BSMs (from 1609.2 header)
 3. rxMsg
-  1. Received messages (purge third)
-    1. Received BSMs from nearby OBUs are logged and deposited to the ODE via the file copy interface.
+    1. Received messages (purge third)
+        1. Received BSMs from nearby OBUs are logged and deposited to the ODE via the file copy interface.
 
 <a name="inbound-tim-log-file-processing-and-distribution">
 
-#### 7.5.2 - Inbound TIM Log File Processing and Distribution
+#### 7.3.2 - Inbound TIM Log File Processing and Distribution
 
 1. rxMsg
-  1. Received messages (purge third)
-    1. TIMs from RSU and Satellite, message, location, method of reception (Sat/RSU) and time, only log messages within 20-mile radius and only log first time message is received
+    1.  Received messages (purge third)
+        1.  TIMs from RSU and Satellite, message, location, method of reception (Sat/RSU) and time, only log messages within 20-mile radius and only log first time message is received
 2. dnMsg
-  1. DNM (purge eight)
-    1. Location, time, DNM (log first unique DNM for Distressed vehicle and for each relay/received vehicle)
-    2. Top priority for sending this log
+    1. DNM (purge eight)
+        1. Location, time, DNM (log first unique DNM for Distressed vehicle and for each relay/received vehicle)
+        2. Top priority for sending this log
 3. driverAlert
-  1. We have a log for driver's alerts, it will need to flag alerts that were not given because of a higher priority alert (purge ninth)
-    1. Location, time, alert (FCW, TIM, not DNM)
+    1. We have a log for driver's alerts, it will need to flag alerts that were not given because of a higher priority alert (purge ninth)
+        1. Location, time, alert (FCW, TIM, not DNM)
 
 <a name="inbound-other-log-file-processing-and-distribution">
 
-#### 7.5.3 Inbound Other Log File Processing and Distribution
+#### 7.3.3 Inbound Other Log File Processing and Distribution
 
 **STATUS: These log messages have not yet been implemented.**
 
 1. environmentMsg
-  1. Environmental Log (purge seventh)
-    1. Location, time, environmental log
-    1. Second priority for sending this log
+    1. Environmental Log (purge seventh)
+        1. Location, time, environmental log
+            1. Second priority for sending this log
 2. scms
-  1. SCMS (purge fifth)
-    1. Log connections to SCMS
+    1. SCMS (purge fifth)
+        1. Log connections to SCMS
 3. systemLog
-  1. System log (very PII sensitive, just for internal use and will have to be locked down and encrypted, may want to exclude collection of this once the pilot is working well) (purge sixth)
-    1. Boot and shutdown location/time
-    2. Application errors and re-starts
-    3. OBU unique identifier
+    1. System log (very PII sensitive, just for internal use and will have to be locked down and encrypted, may want to exclude collection of this once the pilot is working well) (purge sixth)
+        1. Boot and shutdown location/time
+        2. Application errors and re-starts
+        3. OBU unique identifier
 4. upgrades
-  1. OBU upgrades (purge fourth)
-    1. Log success/fail of firmware updates
-    2. Log availability of firmware updates
+    1. OBU upgrades (purge fourth)
+        1. Log success/fail of firmware updates
+        2. Log availability of firmware updates
 
 <a name="inbound-bsm-text-file-processing-hex-and-json">
 
-#### 7.5.4 - Inbound BSM - Text File Processing (HEX and JSON)
+#### 7.3.4 - Inbound BSM - Text File Processing (HEX and JSON)
 
 HEX and JSON file processing is no longer supported
 
 <a name="probe-data-management">
 
-### 7.6 - Probe Data Management
+### 7.4 - Probe Data Management
 
 ODE accepts PDM messages and other metadata parameters for broadcasting
 PDM messages via the REST API interface. The ODE accepts data elements
@@ -738,7 +703,7 @@ in JSON which are then sent via SNMP to an array of Roadside Units
 
 <a name="pdm-broadcast-request-quick-start-guide">
 
-#### 7.6.1 - PDM Broadcast Request Quick Start Guide
+#### 7.4.1 - PDM Broadcast Request Quick Start Guide
 
 To run a local test of the PDM message API, please follow these
 instructions.
@@ -772,7 +737,7 @@ instructions.
 
 <a name="outbound-tim-broadcast">
 
-### 7.7 - Outbound TIM Broadcast
+### 7.5 - Outbound TIM Broadcast
 
 ODE accepts TIM messages and other metadata parameters for broadcasting
 TIM messages via the REST API interface. The ODE accepts data elements
@@ -788,36 +753,11 @@ details of a TIM REST interface.
 
 <a name="outbound-tim-to-sdw-websocket-setup">
 
-#### 7.7.1 Outbound TIM to SDW Setup
+#### 7.5.1 Outbound TIM to SDW Setup
 
-**Option 1: Websocket Interface**
+Traveler Information Messages may be distributed to RSUs, the SDW, or both by including certain objects in the JSON message sent to the `/tim` endpoint:
 
-ODE **Configuration**: Update the effective application.properties file
-with username and password for Webapp2/sdw. Substitute your username and
-password for \<SDWUSERNAME\> and \<SDWPASSWORD\>, respectively.
-
-ode.ddsCasUsername=\<SDWUSERNAME\>
-
-ode.ddsCasPassword=\<SDWPASSWORD\>\
-ode.depositSdwMessagesOverWebsocket=true
-
-OR defined the following command line arguments while launching
-jpo-ode-svcs
-
-\--ode.ddsCasUsername=\<SDWUSERNAME\>, \\
-
-\--ode.ddsCasPassword=\<SDWPASSWORD\>, \\\
-\--ode. depositSdwMessagesOverWebsocket=true, \\
-
-Or define the following system properties / environment variables
-
-ode.ddsCasUsername=\<SDWUSERNAME\>
-
-ode.ddsCasPassword=\<SDWPASSWORD\>
-
-ode.depositSdwMessagesOverWebsocket=true
-
--   **RSU Enablement**: /tim REST service sends the TIM messages to RSUs
+-   **RSU Distribution**: The /tim REST service will send the TIM messages to RSUs
     if both "rsus" and "snmp" elements of the request body are defined
     and valid. If either "rsus" or "snmp" are missing, the request will
     not be sent to the RSUs.
@@ -825,6 +765,38 @@ ode.depositSdwMessagesOverWebsocket=true
 -   **SDW Enablement**: /tim REST service sends the TIM messages to SDW
     if the "sdw" element of the request body is defined and valid. If
     "sdw" element is missing, the request will not be sent to the SDW.
+
+**Option 1: Websocket Interface**
+
+ODE **Configuration**: Update the effective application.properties file
+with username and password for Webapp2/sdw. Substitute your username and
+password for `<SDWUSERNAME>` and `<SDWPASSWORD>`, respectively.
+
+```bash
+ode.ddsCasUsername=<SDWUSERNAME>
+ode.ddsCasPassword=<SDWPASSWORD>
+ode.depositSdwMessagesOverWebsocket=true
+```
+
+(OR)
+
+Define the following command line arguments while launching the ODE through the jpo-ode-svcs JAR:
+
+```bash
+--ode.ddsCasUsername=<SDWUSERNAME>,
+--ode.ddsCasPassword=<SDWPASSWORD>,
+--ode.depositSdwMessagesOverWebsocket=true
+```
+
+(OR)
+
+Define the following environment variables in the environment file:
+
+```bash
+SDW_USERNAME=<SDWUSERNAME>
+SDWPASSWORD=<SDWPASSWORD>
+ODE_DEPOSIT_SDW_MESSAGES_OVER_WEBSOCKET=true
+```
 
 **Note**: This option uses the ODE's built-in SDW depositor and does not
 require a SDW service to be running. Therefore, jpo-sdw-depositor
@@ -837,17 +809,21 @@ using the pre-built jpo-sdw-depositor repository. To set this service
 up:
 
 1.  Follow the steps in the ODE README.md to clone and compile the SDW
-    depositor service.
+    depositor service. If you used the `--recurse-submodules` option to clone, it will automatically be cloned.
 
-2.  Set the following environment variable to false OR comment it out
+2.  Set the following environment variable to false OR comment it out using the \# symbol:
 
-    -   ode.depositSdwMessagesOverWebsocket
+```
+ode.depositSdwMessagesOverWebsocket=false
+#ode.depositSdwMessagesOverWebsocket
+```
 
-3.  Set the following environment variables
+3.  Set the following environment variables in the _.env_ file:
 
-    -   sdw.username
-
-    -   sdw.password
+```bash
+SDW_USERNAME=myUsername
+SDW_PASSWORD=myPassword
+```
 
 4.  Follow the rest of the ODE setup steps. The SDW depositor service
     containers will be automatically created by docker-compose.
@@ -857,7 +833,7 @@ up:
 
 <a name="outbound-tim-to-s3-bucket-setup">
 
-#### 7.7.2 - Outbound TIM to S3 Bucket Setup
+#### 7.5.2 - Outbound TIM to S3 Bucket Setup
 
 Depositing a TIM message to an S3 bucket can be done using the pre-built
 jpo-s3-depositor repository. To set this service up:
@@ -887,7 +863,7 @@ jpo-s3-depositor repository. To set this service up:
 
 <a name="tim-broadcast-request-quick-start-guide">
 
-#### 7.7.3 - TIM Broadcast Request Quick Start Guide
+#### 7.5.3 - TIM Broadcast Request Quick Start Guide
 
 To run a local test of the TIM Message API, please follow these
 instructions:
@@ -924,7 +900,7 @@ instructions:
 
 <a name="privacy-protection-module-ppm">
 
-### 7.8 Privacy Protection Module (PPM)
+### 7.6 Privacy Protection Module (PPM)
 
 PPM is a separate repository within the GitHub
 [usdot-jpo-ode](https://github.com/usdot-jpo-ode) organization. ODE
@@ -936,13 +912,13 @@ page <https://github.com/usdot-jpo-ode/jpo-ode> .
 
 <a name="data-validation">
 
-### 7.9 - Data validation
+### 7.7 - Data validation
 
 TBD
 
 <a name="string-s3-depositor">
 
-### 7.10 - String S3 Depositor
+### 7.8 - String S3 Depositor
 
 The ODE has the capability to deposit any string messages to any S3
 buckets using the application in the jpo-s3-depositor repository. To
@@ -959,143 +935,9 @@ templates are provided for convenience and guidance but may be
 removed/commented out by adding a \# symbol to the front of each line,
 or copied to create new a new S3 depositor.
 
-<a name="vsd-to-sdc-udp-deposit-service">
-
-### 7.11 - VSD to SDC UDP Deposit Service
-
-ODE sends VSD message to SDC using UDP protocol. Unlike TCP, UDP is a
-best effort delivery service which means that the protocol does not wait
-for an acknowledgement from the receiver. The VSD depositor is
-implemented as a module in the ODE and follows the VSD dialog for
-depositing VSD message to US DOT Situation Data Clearinghouse (SDC)
-specified by the Southeast Michigan Test Bed documentation available
-upon request from <https://cvcs.samanage.com> and summarized below.
-
-**VSD Deposit Dialog**
-
-5.  ODE \-\-\-\-\--ServiceRequest\-\-\-\--\> SDC // ODE sends service
-    request to SDC
-
-6.  ODE \<\-\-\--ServiceResponse\-\-\-\-- SDC // ODE receives service
-    response from SDC
-
-7.  ODE \-\-\-\-\-\-\--VsdMessage\-\-\-\-\-\--\> SDC // ODE sends the
-    actual VSD message to SDC
-
-Requirements for sending VSD message to SDC over UDP are the
-following:
-
-1.  IP address or Domain Name of the SDC server
-
-2.  Port number of the SDC server
-
-<a name="vsd-deposit-service-messages-and-alerts">
-
-#### 7.11.1 - VSD Deposit Service Messages and Alerts
-
-Table 1 provides a detailed list of the ODE Deposit Service messages and
-alerts.
-
-Table 1 -- VSD Deposit Service Messages and Alerts
-
-| Message or Alert                                                        | Communication Method | Description                                                                                                                                                                                                                                | Criteria                                                                                                                                                      |
-|-------------------------------------------------------------------------|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| · "Error creating VSD depositor socket with port {}" · SocketException  | Application log file | When a VSD arrives over UDP, the VSD depositor service tries to create a new datagram socket with a given port. This error message is logged when ODE fails to create a new datagram socket due to port being bound to some other program. | If the port is already bound to some other program or if the socket creation fails for some other reason, this message is logged in the application log file. |
-| · Error Sending VSD to SDC · SocketException                            | Application log file | When a datagram socket tries to send VSD to SDC, this error maybe logged if the socket fails to send VSD due Input Output Exception.                                                                                                       | If the datagram socket fails to send the VSD to SD due to IOException, this message is logged in the application log file.                                    |
-| · Error Encoding VSD ServiceRequest · SocketException · SocketException | Application log file | When the depositor service modifies the received service request, it tries to encode the request before sending to SDC. This message is logged when the ODE fails to encode the service request properly.                                  | If ODE fails to encode the modified service request properly, this message is logged in the application log file.                                             |
-
-<a name="vsd-receiver-service">
-
-### 7.12 - VSD Receiver Service
-
-The ODE receives VSD messages via UDP/IP at its VSD Receiver service.
-This service will accept ServiceRequest and VehSitDataMessage datagrams.
-Upon receipt of a ServiceRequest, the receiver works with the VSD
-depositor service to forward the ServiceRequest to the SDC and await a
-ServiceResponse. When the matching ServiceResponse is returned the ODE
-forwards the response back to the sender. This completes the trust
-establishment process. Once trust is established, the sender starts
-sending VSD messages to ODE which then will be forwarded to the SDC.
-Upon arrival of VSDs, the ODE also extracts BSMs from VSDs and publishes
-them to the appropriate BSM Kafka topics.
-
-Configuration options (set in application.properties) can be found in
-Table 1 - ODE Application Properties.
-
-![](images/userguide/figure2.png)
-
-Figure 2 - VSD Dialog Flow Diagram
-
-Notes for Figure 2:
-
--   Random Ports: These ports could have a range of values.
-
--   Port A: Can be configured in application.properties
-
--   Port B: Can be configured in application.properties
-
--   Service Request 1: Original request whose destination field contains
-    Port D
-
--   Service Request 2: Modified request whose destination field contains
-    Port A
-
--   Firewall rules should be configured to allow inbound and outbound
-    ports for ODE.
-
-<a name="vsd-receiver-service-messages-and-alerts">
-
-#### 7.12.1 - VSD Receiver Service Messages and Alerts
-
-Table 1 provides a detailed list of the VSD Receiver Service messages
-and alerts.
-
-Table 1 -- VSD Receiver Service Messages and Alerts
-
-| Message or Alert                                                                            | Communication Method | Description                                                                                                                                                                                                                                                          | Criteria                                                                                                                                                      |
-|---------------------------------------------------------------------------------------------|----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| · "Error creating socket with port {}" · SocketException                                    | Application log file | When the VSDM receiver is initialized, a datagram socket is created to listen for incoming messages from black box. This error message is logged when ODE fails to create a new datagram socket due to port being bound to some other program or some other reasons. | If the port is already bound to some other program or if the socket creation fails for some other reason, this message is logged in the application log file. |
-| · Error receiving packet · IOException                                                      | Application log file | When the ODE waits for packets from black box, this error message may be logged if the datagram socket fails to receive any packets due to IOException with the socket.                                                                                              | If the listening datagram socket fails to receive incoming packets from black box, this message is logged in the application log file.                        |
-| ·       Unknown message type received {}                                                    | Application log file | When the VSDM receiver receives a packet from black box, it decodes the packet first. This message is logged if the decoded packet is of type other than ServiceRequest or VehSitDataMessage.                                                                        | If the packet received from black box and decoded on the receiver end is of unknown message type, then this message is logged in the application log file.    |
-| ·       Unable to decode UDP message {} ·DecodeFailedException ·DecodeNotSupportedException | Application log file | When ODE receives any packet from black box, the receiver service tries to decode the packet first. This message is logged if the decoder fails to properly decode the packet.                                                                                       | If the receiver service fails to properly decode the incoming packets from black box, this message is logged in the application log file.                     |
-| · Unable to convert VehSitDataMessage bundle to BSM list. · IllegalArgumentException        | Application log file | When the receiver receives VSD, it tries to extract BSMs out of the VSD. This error message is logged if the VSD bundle doesn’t have any BSM records.                                                                                                                | If the VSDM receiver receives a VSD that doesn’t contain any BSM records, this message is logged in the application log file.                                 |
-| · Unable to convert BSM · OssBsmPart2Exception                                              | Application log file | When the VSDM receiver extracts BSMs from VSD, it tries to convert the generic BSM into J2735BSM format. This error message is logged if the receiver fails to properly perform conversion to J2735BSM format.                                                       | If the VSDM receiver fails to convert generic BSM to J2735BSM, this message is logged in the application log file.                                            |
-
-<a name="bsm-receive-service-via-udp">
-
-### 7.13 - BSM Receive Service via UDP
-
-The ODE receives BSM messages via UDP/IP at its BSM Receiver service on
-the default port 46800 which can be changed through ode properties. BSM
-dialog does not include trust establishment phase, hence the BSMs are
-directly sent to ODE. Once BSMs are received, they will be published to
-the BSM kafka topics. \[ODE-314\] BSM Process then consumes the BSMs
-from the corresponding kafka topics. The consumed BSMs will then be
-inserted into a hash map where the keys will be the temp ID of the BSM
-and the value will be a queue of corresponding BSMs with the particular
-tempID. When a BSM is inserted to the queue, it will check if the queue
-has 10 BSMs. In the case that the queue has 10 BSMs, it will package
-them into VSD and publish it to the VSD kafka topic. Else, it will wait
-for more incoming BSMs.
-
-<a name="bsm-receiver-service-messages-and-alerts">
-
-#### 7.13.1 - BSM Receiver Service Messages and Alerts
-
-Table 1 provides a detailed list of the BSM Receiver Service messages
-and alerts.
-
-Table 1 -- BSM Receiver Service Messages and Alerts
-
-| Message or Alert                                   | Communication Method | Description                                                                                                                                                                                                                                                   | Criteria                                                                                                                                                      |
-|----------------------------------------------------|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Error creating socket with port {} SocketException | Application log file | When the BSM receiver is initialized, a datagram socket is created to listen for incoming messages from OBU. This error message is logged when ODE fails to create a new datagram socket due to port being bound to some other program or some other reasons. | If the port is already bound to some other program or if the socket creation fails for some other reason, this message is logged in the application log file. |
-| Error receiving packet IOException                 | Application log file | When the ODE waits for packets from OBU, this error message may be logged if the datagram socket fails to receive any packets due to IOException with the socket.                                                                                             | If the listening datagram socket fails to receive incoming packets from OBU, this message is logged in the application log file.                              |
-| Unknown message type received {}                   | Application log file | When the BSM receiver receives a packet from OBU, it decodes the packet first. This message is logged if the decoded packet is of type other than J2735Bsm.                                                                                                   | If the packet received from OBU and decoded on the receiver end is of unknown message type, then this message is logged in the application log file.          |
-
 <a name="security-services-module">
 
-### 7.14 - Security Services Module
+### 7.9 - Security Services Module
 
 ODE integrates with the
 [jpo-security-svcs](https://github.com/usdot-jpo-ode/jpo-security-svcs)
@@ -1157,7 +999,7 @@ sub-directory.
 The files copied to "ode.uploadLocationObuLog" are treated as binary
 data of variable length records conforming to the specification in
 "data/wydotLogRecords.h" file. No header information is expected to
-precede each record. As mentioned in section 7.5, the ODE is also
+precede each record. As mentioned in section 7.3, the ODE is also
 capable of accepting individual files compressed with GZIP. Note that
 while the ODE will automatically detect and process GZIP files, it is
 not capable of importing GZIP-TAR archives containing multiple files.
@@ -1243,14 +1085,10 @@ administrative and data functions. Standard HTTP/HTTPS verbs such as
 GET, POST, PUT, DELETE, etc., will be deployed for various functions.
 
 1.  host: ip:port
-
 2.  root context path: ode/api/rest
-
-3.  schemes:
-
-4.  \- http
-
-5.  \- https
+3.  protocols:
+    - http
+    - https
 
 The REST API is documented using Swagger and can be found at
 <https://usdot-jpo-ode.github.io/> - this document is also located in
@@ -1268,32 +1106,9 @@ ODE provides a REST API interface to upload a file to the ODE. Refer to
 [ODE REST API](https://usdot-jpo-ode.github.io/) online documentation
 (<https://usdot-jpo-ode.github.io>) for details.
 
-<a name="manage-snmp-api">
-
-#### 8.2.2 - MANAGE SNMP API
-
-Over an SNMP Protocol, the ODE can ping and assess the health of an
-existing Road Side Unit to ensure the system is up and running. To
-trigger a specific heartbeat call, the ODE provides two separate
-interfaces to deploy a message to an RSU.
-
-**8.2.2.1 MANAGE SNMP API - Web Based View**
-
-ODE Demo UI provides a section for RSU SNMP Query that can be used to
-enter the IP and OID information and send it to RSU through a REST
-endpoint.
-
-![](images/userguide/figure4.png)
-
-**8.2.2.2 MANAGE SNMP API -- REST Interface**
-
-ODE provides a REST API interface to query the health of SNMP devices.
-Refer to [ODE REST API](https://usdot-jpo-ode.github.io/) online
-documentation (<https://usdot-jpo-ode.github.io>) for details.
-
 <a name="traveler-information-message-tim-interface">
 
-#### 8.2.3 - Traveler Information Message (TIM) Interface
+#### 8.2.2 - Traveler Information Message (TIM) Interface
 
 Refer to the
 [ODESwagger.yaml](https://github.com/usdot-jpo-ode/jpo-ode/blob/develop/docs/ODESwagger.yaml)
@@ -1301,7 +1116,7 @@ for details of the TIM interface.
 
 <a name="probe-data-management-messages-pdm-interface">
 
-#### 8.2.4 - Probe Data Management Messages (PDM) Interface
+#### 8.2.3 - Probe Data Management Messages (PDM) Interface
 
 Refer to the
 [ODESwagger.yaml](https://github.com/usdot-jpo-ode/jpo-ode/blob/develop/docs/ODESwagger.yaml)
