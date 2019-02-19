@@ -115,7 +115,6 @@ Read the following guides to familiarize yourself with ODE's Docker and Kafka mo
 
 **Installation and Deployment:**
 
-- If you are installing the ODE in an Ubuntu 18.04 environment, see this [preparation guide](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Prepare-a-fresh-Ubuntu-instance-for-ODE-installation) that covers installing all of the prerequisites.
 - Docker builds may fail if you are on a corporate network due to DNS resolution errors.
 [See here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-fix-for-SSL-issues-due-to-corporate-network) for instructions to fix this.
 - Additionally `git` commands may fail for similar reasons, you can fix this by running `export GIT_SSL_NO_VERIFY=1`.
