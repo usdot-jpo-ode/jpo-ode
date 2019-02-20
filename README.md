@@ -1,9 +1,6 @@
-
-
-
-Master: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=master)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=usdot.jpo.ode:jpo-ode)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode)
-
-Develop: [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=develop)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=usdot.jpo.ode:jpo-ode:develop)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode%3Adevelop)
+| Travis Build Status | Sonar Code Quality |
+|---------------------|---------------------|
+ [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=master)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) | [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=usdot.jpo.ode%3Ajpo-ode&metric=alert_status)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode) |
 
 # jpo-ode
 

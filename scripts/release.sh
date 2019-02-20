@@ -26,7 +26,7 @@ git checkout -B dev $remote/dev
 git pull --recurse-submodules=yes
 
 #Prepare the release
-mvn -DautoVersionSubmodules -DreleaseVersion=$releaseVersion release:prepare
+mvn -DautoVersionSubmodules -DreleaseVersion=$releaseVersion -Dresume=false release:prepare
 
 #Commit and push updated files
 git add --update .

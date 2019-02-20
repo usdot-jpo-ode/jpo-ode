@@ -16,5 +16,9 @@
 package us.dot.its.jpo.ode.model;
 
 public enum RxSource {
-   RSU, SAT, RV, SNMP, NA, unknown
+  RSU,
+  SAT, // XM satelite
+  RV,  // for BSM rx
+  SNMP,// for SRM payload from backend/ODE
+  NA, unknown
 }

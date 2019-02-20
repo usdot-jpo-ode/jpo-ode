@@ -61,8 +61,8 @@ public class PluginPolicy extends Policy {
 		Permissions p = new Permissions();
 		Certificate[] certificates = codeSource.getCertificates();
 		
-		for (Certificate cert : certificates) {
-			//TODO -- Validate certificates asociated with the jar file
+		for (@SuppressWarnings("unused") Certificate cert : certificates) {
+			//TODO -- Validate certificates associated with the jar file
 		}
 		
 		// For now permit every plugin
