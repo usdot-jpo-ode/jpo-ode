@@ -27,6 +27,8 @@ import java.util.Map.Entry;
 
 import org.junit.Test;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -204,4 +206,22 @@ public class JsonUtilsTest {
         assertEquals("{\"metadata\":{},\"payload\":{\"key1\":value1}}", dm.toString());
     }
 
+    class Foo {
+      @JsonProperty(required = true)
+      Bar bar;
+      @JsonProperty(required = true)
+      boolean b;
+    }
+    class Bar {
+      @JsonProperty(required = true)
+      String s;
+      @JsonProperty(required = true)
+      int[] intArray;
+    }
+    
+    @Test
+    public void testGetJsonSchema() throws JsonProcessingException {
+      String schema = JsonUtils.getJsonSchema(Foo.class);
+      assertEquals("{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"title\":\"Foo\",\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"bar\":{\"$ref\":\"#/definitions/Bar\"},\"b\":{\"type\":\"boolean\"}},\"required\":[\"bar\",\"b\"],\"definitions\":{\"Bar\":{\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"s\":{\"type\":\"string\"},\"intArray\":{\"type\":\"array\",\"items\":{\"type\":\"integer\"}}},\"required\":[\"s\",\"intArray\"]}}}", schema);
+    }
 }

@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.kjetland.jackson.jsonSchema.JsonSchemaGenerator;
 
 public class JsonUtils {
    
@@ -48,6 +49,7 @@ public class JsonUtils {
    private static Gson gsonCompact;
    private static Gson gsonVerbose;
    private static ObjectMapper mapper;
+   private static JsonSchemaGenerator jsonSchemaGenerator;
    private static Logger logger;
 
    private JsonUtils() {
@@ -58,6 +60,7 @@ public class JsonUtils {
       gsonCompact = new GsonBuilder().create();
       gsonVerbose = new GsonBuilder().serializeNulls().create();
       mapper = new ObjectMapper();
+      jsonSchemaGenerator = new JsonSchemaGenerator(mapper);
    }
 
    public static String toJson(Object o, boolean verbose) {
@@ -176,5 +179,12 @@ public class JsonUtils {
        result = v.decimalValue();
      }
      return result;
+   }
+   
+   public static String getJsonSchema(Class<?> clazz) throws JsonProcessingException {
+     JsonNode jsonSchema = jsonSchemaGenerator.generateJsonSchema(clazz);
+
+     String jsonSchemaAsString = mapper.writeValueAsString(jsonSchema);
+     return jsonSchemaAsString;
    }
 }

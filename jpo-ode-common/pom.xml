@@ -49,5 +49,10 @@
       <artifactId>kryo</artifactId>
       <version>4.0.0</version>
     </dependency>
+    <dependency>
+      <groupId>com.kjetland</groupId>
+      <artifactId>mbknor-jackson-jsonschema_2.12</artifactId>
+      <version>1.0.33</version>
+    </dependency>
   </dependencies>
 </project>
