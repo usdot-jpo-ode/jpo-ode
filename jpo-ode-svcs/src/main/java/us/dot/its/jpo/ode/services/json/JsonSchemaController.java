@@ -15,8 +15,6 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.services.json;
 
-import javax.ws.rs.Path;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
