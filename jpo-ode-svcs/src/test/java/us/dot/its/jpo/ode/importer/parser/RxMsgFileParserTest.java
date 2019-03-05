@@ -20,6 +20,8 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.Test;
@@ -29,6 +31,7 @@ import mockit.Tested;
 import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
+import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.model.RxSource;
 
 public class RxMsgFileParserTest {
@@ -59,29 +62,30 @@ public class RxMsgFileParserTest {
    /**
     * Step 1 test. Should extract the "location->latitude" value, length 4
     * bytes, then return EOF.
+   * @throws IOException 
     */
    @Test
-   public void testAll() {
+   public void testAll() throws IOException {
 
       ParserStatus expectedStatus = ParserStatus.COMPLETE;
       byte[] expectedPayload = new byte[] { (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 };
       int expectedStep = 0;
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x02,                                     //1. RxSource = RV 
-               (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //2.0 latitude
-               (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //2.1 longitude
-               (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //2.3 elevation
-               (byte)0x04, (byte)0x00,                         //2.3 speed
-               (byte)0x09, (byte)0x27,                         //2.4 heading
-               (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //3. utcTimeInSec
-               (byte)0x8f, (byte)0x01,                         //4. mSec
-               (byte)0x00,                                     //5. securityResultCode
-               (byte)0x06, (byte)0x00,                         //6.0 payloadLength
-                                                               //6.1 payload
-               (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
-               }));
+      byte[] buf = new byte[] { 
+             (byte)0x02,                                     //1. RxSource = RV 
+             (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //2.0 latitude
+             (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //2.1 longitude
+             (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //2.3 elevation
+             (byte)0x04, (byte)0x00,                         //2.3 speed
+             (byte)0x09, (byte)0x27,                         //2.4 heading
+             (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //3. utcTimeInSec
+             (byte)0x8f, (byte)0x01,                         //4. mSec
+             (byte)0x00,                                     //5. securityResultCode
+             (byte)0x06, (byte)0x00,                         //6.0 payloadLength
+                                                             //6.1 payload
+             (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
+             };
+      BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(buf));
 
       try {
          assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
@@ -97,6 +101,10 @@ public class RxMsgFileParserTest {
          assertEquals(6, testRxMsgFileParser.getPayloadParser().getPayloadLength());
          assertEquals(HexUtils.toHexString(expectedPayload), HexUtils.toHexString(testRxMsgFileParser.getPayloadParser().getPayload()));
          assertEquals(expectedStep, testRxMsgFileParser.getStep());
+         
+         ByteArrayOutputStream os = new ByteArrayOutputStream();
+         testRxMsgFileParser.writeTo(os);
+         assertEquals(CodecUtils.toHex(buf), CodecUtils.toHex(os.toByteArray()));
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }

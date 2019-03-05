@@ -68,23 +68,23 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       this.serialId = new SerialId();
    }
 
-   public void publish(BufferedInputStream bis, String fileName, ImporterFileType fileType) 
+   public List<OdeData> publish(BufferedInputStream bis, String fileName, ImporterFileType fileType) 
          throws LogFileToAsn1CodecPublisherException {
       XmlUtils xmlUtils = new XmlUtils();
       ParserStatus status;
 
-      if (fileType == ImporterFileType.OBU_LOG_FILE) {
+      if (fileType == ImporterFileType.LEAR_LOG_FILE) {
          fileParser = LogFileParser.factory(fileName);
       }
 
-      List<OdeData> dataListList = new ArrayList<>();
+      List<OdeData> dataList = new ArrayList<>();
       do {
          try {
             status = fileParser.parseFile(bis, fileName);
             if (status == ParserStatus.COMPLETE) {
-               addDataToList(dataListList);
+               addDataToList(dataList);
             } else if (status == ParserStatus.EOF) {
-               publishList(xmlUtils, dataListList);
+               publishList(xmlUtils, dataList);
             } else if (status == ParserStatus.INIT) {
                logger.error("Failed to parse the header bytes.");
             } else {
@@ -94,9 +94,10 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
             throw new LogFileToAsn1CodecPublisherException("Error parsing or publishing data.", e);
          }
       } while (status == ParserStatus.COMPLETE);
+      return dataList;
    }
 
-   public void addDataToList(List<OdeData> dataList) {
+   private void addDataToList(List<OdeData> dataList) {
 
       OdeData odeData;
       
@@ -116,7 +117,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       dataList.add(odeData);
    }
 
-   public void publishList(XmlUtils xmlUtils, List<OdeData> dataList) throws JsonProcessingException {
+   private void publishList(XmlUtils xmlUtils, List<OdeData> dataList) throws JsonProcessingException {
      serialId.setBundleSize(dataList.size());
      for (OdeData odeData : dataList) {
        OdeLogMetadata msgMetadata = (OdeLogMetadata) odeData.getMetadata();

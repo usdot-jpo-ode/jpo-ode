@@ -20,6 +20,8 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.Test;
@@ -29,6 +31,7 @@ import mockit.Tested;
 import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
+import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class DistressMsgFileParserTest {
    
@@ -61,28 +64,29 @@ public class DistressMsgFileParserTest {
    /**
     * Step 1 test. Should extract the "location->latitude" value, length 4
     * bytes, then return EOF.
+   * @throws IOException 
     */
    @Test
-   public void testAll() {
+   public void testAll() throws IOException {
 
       ParserStatus expectedStatus = ParserStatus.COMPLETE;
       byte[] expectedPayload = new byte[] { (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 };
       int expectedStep = 0;
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //1.1 latitude
-               (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //1.2 longitude
-               (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //1.3 elevation
-               (byte)0x04, (byte)0x00,                         //1.4 speed
-               (byte)0x09, (byte)0x27,                         //1.5 heading
-               (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
-               (byte)0x8f, (byte)0x01,                         //3. mSec
-               (byte)0x00,                                     //4. securityResultCode
-               (byte)0x06, (byte)0x00,                         //5.1 payloadLength
-                                                               //5.2 payload
-               (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
-               }));
+      byte[] buf = new byte[] { 
+             (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //1.1 latitude
+             (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //1.2 longitude
+             (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //1.3 elevation
+             (byte)0x04, (byte)0x00,                         //1.4 speed
+             (byte)0x09, (byte)0x27,                         //1.5 heading
+             (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
+             (byte)0x8f, (byte)0x01,                         //3. mSec
+             (byte)0x00,                                     //4. securityResultCode
+             (byte)0x06, (byte)0x00,                         //5.1 payloadLength
+                                                             //5.2 payload
+             (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
+             };
+      BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(buf));
 
       try {
          assertEquals(expectedStatus, testDistressMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
@@ -97,6 +101,10 @@ public class DistressMsgFileParserTest {
          assertEquals(6, testDistressMsgFileParser.getPayloadParser().getPayloadLength());
          assertEquals(HexUtils.toHexString(expectedPayload), HexUtils.toHexString(testDistressMsgFileParser.getPayloadParser().getPayload()));
          assertEquals(expectedStep, testDistressMsgFileParser.getStep());
+         
+         ByteArrayOutputStream os = new ByteArrayOutputStream();
+         testDistressMsgFileParser.writeTo(os);
+         assertEquals(CodecUtils.toHex(buf), CodecUtils.toHex(os.toByteArray()));
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }

@@ -20,6 +20,8 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import org.junit.Test;
 
@@ -27,6 +29,7 @@ import mockit.Injectable;
 import mockit.Tested;
 import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
+import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class DriverAlertFileParserTest {
 
@@ -59,25 +62,25 @@ public class DriverAlertFileParserTest {
    }
 
    @Test
-   public void testAll() {
+   public void testAll() throws IOException {
 
       ParserStatus expectedStatus = ParserStatus.COMPLETE;
       String expectedPayload = "Test Driver Alert";
       int expectedStep = 0;
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //1.0 latitude
-               (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //1.1 longitude
-               (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //1.2 elevation
-               (byte)0x04, (byte)0x00,                         //1.3 speed
-               (byte)0x09, (byte)0x27,                         //1.4 heading
-               (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
-               (byte)0x8f, (byte)0x01,                         //3. mSec
-               (byte)0x11, (byte)0x00,                         //4.0 payloadLength
-                                                               //4.1 payload
-               'T', 'e', 's', 't', ' ', 'D', 'r', 'i', 'v', 'e', 'r', ' ', 'A', 'l', 'e', 'r', 't' 
-               }));
+      byte[] buf = new byte[] { 
+             (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //1.0 latitude
+             (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //1.1 longitude
+             (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //1.2 elevation
+             (byte)0x04, (byte)0x00,                         //1.3 speed
+             (byte)0x09, (byte)0x27,                         //1.4 heading
+             (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //2. utcTimeInSec
+             (byte)0x8f, (byte)0x01,                         //3. mSec
+             (byte)0x11, (byte)0x00,                         //4.0 payloadLength
+                                                             //4.1 payload
+             'T', 'e', 's', 't', ' ', 'D', 'r', 'i', 'v', 'e', 'r', ' ', 'A', 'l', 'e', 'r', 't' 
+             };
+      BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(buf));
 
       try {
          assertEquals(expectedStatus, testDriverAlertFileParser.parseFile(testInputStream, "testLogFile.bin"));
@@ -91,6 +94,10 @@ public class DriverAlertFileParserTest {
          assertEquals(17, testDriverAlertFileParser.getPayloadParser().getPayloadLength());
          assertEquals(expectedPayload, testDriverAlertFileParser.getAlert());
          assertEquals(expectedStep, testDriverAlertFileParser.getStep());
+         
+         ByteArrayOutputStream os = new ByteArrayOutputStream();
+         testDriverAlertFileParser.writeTo(os);
+         assertEquals(CodecUtils.toHex(buf), CodecUtils.toHex(os.toByteArray()));
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }

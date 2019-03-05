@@ -17,6 +17,7 @@ package us.dot.its.jpo.ode.importer.parser;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 
 import org.slf4j.Logger;
@@ -273,4 +274,10 @@ public abstract class LogFileParser implements FileParser {
     return rxMsgDetails; 
   }
 
+  public void writeTo(OutputStream os) throws IOException {
+    locationParser.writeTo(os);
+    timeParser.writeTo(os);
+    secResCodeParser.writeTo(os);
+    payloadParser.writeTo(os);
+  }
 }
