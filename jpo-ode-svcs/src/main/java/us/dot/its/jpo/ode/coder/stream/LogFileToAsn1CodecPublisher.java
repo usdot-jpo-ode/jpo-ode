@@ -35,6 +35,7 @@ import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
+import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeDriverAlertData;
 import us.dot.its.jpo.ode.model.OdeDriverAlertPayload;
@@ -107,6 +108,10 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
         payload = new OdeDriverAlertPayload(((DriverAlertFileParser) fileParser).getAlert());
         metadata = new OdeLogMetadata(payload);
         odeData = new OdeDriverAlertData(metadata, payload);
+      } else if (fileParser instanceof BsmLogFileParser){
+        payload = new OdeAsn1Payload(fileParser.getPayloadParser().getPayload());
+        metadata = new OdeBsmMetadata(payload);
+        odeData = new OdeAsn1Data(metadata, payload);
       } else {
         payload = new OdeAsn1Payload(fileParser.getPayloadParser().getPayload());
         metadata = new OdeLogMetadata(payload);
