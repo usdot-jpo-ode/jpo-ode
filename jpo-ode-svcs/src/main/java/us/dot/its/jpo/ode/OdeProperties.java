@@ -60,7 +60,7 @@ public class OdeProperties implements EnvironmentAware {
     * General Properties
     */
    private String version;
-   private static final int OUTPUT_SCHEMA_VERSION = 6;
+   public static final int OUTPUT_SCHEMA_VERSION = 6;
    private String pluginsLocations = "plugins";
    private String kafkaBrokers = null;
    private static final String DEFAULT_KAFKA_PORT = "9092";
@@ -217,6 +217,7 @@ public class OdeProperties implements EnvironmentAware {
       kafkaTopicsDisabledSet.addAll(asList);
    }
 
+   
    public String getVersion() {
       return version;
    }
