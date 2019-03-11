@@ -47,7 +47,7 @@ public class BsmFileParserTest {
    @Test
    public void testStepsAlreadyDone() {
 
-      ParserStatus expectedStatus = ParserStatus.COMPLETE;
+      ParserStatus expectedStatus = ParserStatus.INIT;
 
       BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
 

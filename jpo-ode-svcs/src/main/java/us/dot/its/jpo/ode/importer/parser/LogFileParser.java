@@ -227,22 +227,28 @@ public abstract class LogFileParser implements FileParser {
         odeBsmMetadata.setBsmSource(bsmSource);
       }
 
-      if (metadata.getReceivedMessageDetails() != null && metadata.getReceivedMessageDetails().getRxSource() != null) {
-        switch (metadata.getReceivedMessageDetails().getRxSource()) {
-        case RSU:
-          metadata.setRecordGeneratedBy(GeneratedBy.RSU);
-          break;
-        case RV:
-          metadata.setRecordGeneratedBy(GeneratedBy.OBU);
-          break;
-        case SAT:
-          metadata.setRecordGeneratedBy(GeneratedBy.TMC_VIA_SAT);
-          break;
-        case SNMP:
-          metadata.setRecordGeneratedBy(GeneratedBy.TMC_VIA_SNMP);
-          break;
-        default:
-          break;
+      ReceivedMessageDetails receivedMessageDetails = metadata.getReceivedMessageDetails();
+      if (receivedMessageDetails != null) {
+        if (receivedMessageDetails.getRxSource() != null) {
+          switch (receivedMessageDetails.getRxSource()) {
+          case RSU:
+            metadata.setRecordGeneratedBy(GeneratedBy.RSU);
+            break;
+          case RV:
+            metadata.setRecordGeneratedBy(GeneratedBy.OBU);
+            break;
+          case SAT:
+            metadata.setRecordGeneratedBy(GeneratedBy.TMC_VIA_SAT);
+            break;
+          case SNMP:
+            metadata.setRecordGeneratedBy(GeneratedBy.TMC_VIA_SNMP);
+            break;
+          default:
+            metadata.setRecordGeneratedBy(GeneratedBy.OBU);
+            break;
+          }
+        } else {
+          receivedMessageDetails.setRxSource(RxSource.unknown);
         }
       } else {
         metadata.setRecordGeneratedBy(GeneratedBy.OBU);
@@ -269,10 +275,15 @@ public abstract class LogFileParser implements FileParser {
                    ), null);
     }
     
-    if (parser instanceof RxMsgFileParser && rxMsgDetails != null) {
-       RxMsgFileParser rxMsgFileParser = (RxMsgFileParser) parser;
-       rxMsgDetails.setRxSource(rxMsgFileParser.getRxSource());
+    if (rxMsgDetails != null) {
+      if (parser instanceof RxMsgFileParser) {
+        RxMsgFileParser rxMsgFileParser = (RxMsgFileParser) parser;
+        rxMsgDetails.setRxSource(rxMsgFileParser.getRxSource());
+      } else {
+        rxMsgDetails.setRxSource(RxSource.NA);
+      }
     }
+    
     return rxMsgDetails; 
   }
 
