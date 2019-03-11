@@ -74,27 +74,28 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       XmlUtils xmlUtils = new XmlUtils();
       ParserStatus status;
 
+      List<OdeData> dataList = new ArrayList<>();
       if (fileType == ImporterFileType.LEAR_LOG_FILE) {
          fileParser = LogFileParser.factory(fileName);
+
+         do {
+            try {
+               status = fileParser.parseFile(bis, fileName);
+               if (status == ParserStatus.COMPLETE) {
+                  addDataToList(dataList);
+               } else if (status == ParserStatus.EOF) {
+                  publishList(xmlUtils, dataList);
+               } else if (status == ParserStatus.INIT) {
+                  logger.error("Failed to parse the header bytes.");
+               } else {
+                  logger.error("Failed to decode ASN.1 data");
+               }
+            } catch (Exception e) {
+               throw new LogFileToAsn1CodecPublisherException("Error parsing or publishing data.", e);
+            }
+         } while (status == ParserStatus.COMPLETE);
       }
 
-      List<OdeData> dataList = new ArrayList<>();
-      do {
-         try {
-            status = fileParser.parseFile(bis, fileName);
-            if (status == ParserStatus.COMPLETE) {
-               addDataToList(dataList);
-            } else if (status == ParserStatus.EOF) {
-               publishList(xmlUtils, dataList);
-            } else if (status == ParserStatus.INIT) {
-               logger.error("Failed to parse the header bytes.");
-            } else {
-               logger.error("Failed to decode ASN.1 data");
-            }
-         } catch (Exception e) {
-            throw new LogFileToAsn1CodecPublisherException("Error parsing or publishing data.", e);
-         }
-      } while (status == ParserStatus.COMPLETE);
       return dataList;
    }
 
@@ -152,6 +153,30 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
        serialId.increment();
      }
    }
+
+  public StringPublisher getPublisher() {
+    return publisher;
+  }
+
+  public void setPublisher(StringPublisher publisher) {
+    this.publisher = publisher;
+  }
+
+  public LogFileParser getFileParser() {
+    return fileParser;
+  }
+
+  public void setFileParser(LogFileParser fileParser) {
+    this.fileParser = fileParser;
+  }
+
+  public SerialId getSerialId() {
+    return serialId;
+  }
+
+  public void setSerialId(SerialId serialId) {
+    this.serialId = serialId;
+  }
 
 
 }

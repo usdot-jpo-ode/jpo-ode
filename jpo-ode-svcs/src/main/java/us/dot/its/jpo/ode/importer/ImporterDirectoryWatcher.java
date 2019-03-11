@@ -29,7 +29,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 public class ImporterDirectoryWatcher implements Runnable {
    
    public enum ImporterFileType {
-      LEAR_LOG_FILE
+      LEAR_LOG_FILE, JSON_FILE
    }
 
    private static final Logger logger = LoggerFactory.getLogger(ImporterDirectoryWatcher.class);

@@ -55,6 +55,24 @@ public class LogFileToAsn1CodecPublisherTest {
    }
    
    @Test
+   public void testPublishInit(@Mocked LogFileParser mockLogFileParser) throws Exception {
+      new Expectations() {
+         {
+            LogFileParser.factory(anyString);
+            result = mockLogFileParser;
+
+            mockLogFileParser.parseFile((BufferedInputStream) any, anyString);
+            result = ParserStatus.INIT;
+         }
+      };
+
+      List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
+            "fileName", ImporterFileType.LEAR_LOG_FILE);
+
+      assertTrue(dataList.isEmpty());
+   }
+   
+   @Test
    public void testPublishEOF(@Mocked LogFileParser mockLogFileParser) throws Exception {
       new Expectations() {
          {
@@ -66,13 +84,32 @@ public class LogFileToAsn1CodecPublisherTest {
          }
       };
 
-      testLogFileToAsn1CodecPublisher.publish(new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
+      List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
             "fileName", ImporterFileType.LEAR_LOG_FILE);
 
+      assertTrue(dataList.isEmpty());
    }
    
    @Test
-   public void testPublichBsmTxLogFile() throws Exception {
+   public void testPublishDecodeFailure(@Mocked LogFileParser mockLogFileParser) throws Exception {
+      new Expectations() {
+         {
+            LogFileParser.factory(anyString);
+            result = mockLogFileParser;
+
+            mockLogFileParser.parseFile((BufferedInputStream) any, anyString);
+            result = ParserStatus.ERROR;
+         }
+      };
+
+      List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
+            "fileName", ImporterFileType.LEAR_LOG_FILE);
+
+      assertTrue(dataList.isEmpty());
+   }
+   
+   @Test
+   public void testPublishBsmTxLogFile() throws Exception {
     
      byte[] buf = new byte[] { 
          (byte)0x00,                                     //1. direction 
@@ -104,7 +141,7 @@ public class LogFileToAsn1CodecPublisherTest {
    }
 
    @Test
-   public void testPublichDistressNotificationLogFile() throws Exception {
+   public void testPublishDistressNotificationLogFile() throws Exception {
     
      byte[] buf = new byte[] { 
          (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //1.1 latitude
@@ -135,7 +172,7 @@ public class LogFileToAsn1CodecPublisherTest {
    }
 
    @Test
-   public void testPublichDriverAlertLogFile() throws Exception {
+   public void testPublishDriverAlertLogFile() throws Exception {
     
      byte[] buf = new byte[] { 
          (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //1.0 latitude
@@ -165,7 +202,39 @@ public class LogFileToAsn1CodecPublisherTest {
    }
 
    @Test
-   public void testPublichRxMsgLogFile() throws Exception {
+   public void testPublishRxMsgTIMLogFile() throws Exception {
+    
+     byte[] buf = new byte[] { 
+         (byte)0x01,                                     //1. RxSource = SAT
+         (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //2.0 latitude
+         (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //2.1 longitude
+         (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //2.3 elevation
+         (byte)0x04, (byte)0x00,                         //2.3 speed
+         (byte)0x09, (byte)0x27,                         //2.4 heading
+         (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //3. utcTimeInSec
+         (byte)0x8f, (byte)0x01,                         //4. mSec
+         (byte)0x00,                                     //5. securityResultCode
+         (byte)0x06, (byte)0x00,                         //6.0 payloadLength
+                                                         //6.1 payload
+         (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
+         };
+
+     String filename = RecordType.rxMsg.name() + GZ;
+
+     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
+
+     List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LEAR_LOG_FILE);
+     
+     for (OdeData data : dataList) {
+       assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getOdeReceivedAt()), DateTimeUtils.nowZDT()) > 0);
+       data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
+       data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
+       assertEquals("{\"metadata\":{\"logFileName\":\"rxMsg.gz\",\"recordType\":\"rxMsg\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"SAT\"},\"encodings\":[{\"elementName\":\"root\",\"elementType\":\"Ieee1609Dot2Data\",\"encodingRule\":\"COER\"},{\"elementName\":\"unsecuredData\",\"elementType\":\"MessageFrame\",\"encodingRule\":\"UPER\"}],\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":6,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"TMC_VIA_SAT\",\"sanitized\":false},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"038100400380\"}}}", data.toJson());
+     }
+   }
+
+   @Test
+   public void testPublishRxMsgBSMLogFile() throws Exception {
     
      byte[] buf = new byte[] { 
          (byte)0x02,                                     //1. RxSource = RV 
@@ -195,5 +264,65 @@ public class LogFileToAsn1CodecPublisherTest {
        assertEquals("{\"metadata\":{\"logFileName\":\"rxMsg.gz\",\"recordType\":\"rxMsg\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"RV\"},\"encodings\":[{\"elementName\":\"root\",\"elementType\":\"Ieee1609Dot2Data\",\"encodingRule\":\"COER\"},{\"elementName\":\"unsecuredData\",\"elementType\":\"MessageFrame\",\"encodingRule\":\"UPER\"}],\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":6,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"OBU\",\"sanitized\":false},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"038100400380\"}}}", data.toJson());
      }
    }
+
+   @Test
+   public void testPublishNonLearLogFile() throws Exception {
+    
+     byte[] buf = new byte[] { 
+         (byte)0x02,                                     //1. RxSource = RV 
+         (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //2.0 latitude
+         (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //2.1 longitude
+         (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //2.3 elevation
+         (byte)0x04, (byte)0x00,                         //2.3 speed
+         (byte)0x09, (byte)0x27,                         //2.4 heading
+         (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //3. utcTimeInSec
+         (byte)0x8f, (byte)0x01,                         //4. mSec
+         (byte)0x00,                                     //5. securityResultCode
+         (byte)0x06, (byte)0x00,                         //6.0 payloadLength
+                                                         //6.1 payload
+         (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
+         };
+
+     String filename = RecordType.rxMsg.name() + GZ;
+
+     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
+
+     List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.JSON_FILE);
+
+     assertTrue(dataList.isEmpty());
+   }
+
+//   @Test
+//   public void testPublishTruncatedLogFile() throws Exception {
+//    
+//     byte[] buf = new byte[] { 
+//         (byte)0x02
+//         };
+//
+//     String filename = RecordType.rxMsg.name() + GZ;
+//
+//     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
+//
+//     List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.JSON_FILE);
+//
+//     assertTrue(dataList.isEmpty());
+//   }
+//
+//   @Test
+//   public void testPublishEmptyLogFile() throws Exception {
+//    
+//     byte[] buf = new byte[] { 
+//         (byte)0x02
+//         };
+//
+//     String filename = RecordType.rxMsg.name() + GZ;
+//
+//     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
+//
+//     testLogFileToAsn1CodecPublisher.getFileParser().setStep(99);
+//     List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.JSON_FILE);
+//
+//     assertTrue(dataList.isEmpty());
+//   }
 
 }

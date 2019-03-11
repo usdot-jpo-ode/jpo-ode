@@ -84,12 +84,14 @@ public abstract class LogFileParser implements FileParser {
    public ParserStatus parseFile(BufferedInputStream bis, String fileName) 
          throws FileParserException {
 
+      ParserStatus status = ParserStatus.INIT;
       if (getStep() == 0) {
          setFilename(fileName);
          setStep(getStep() + 1);
+         status = ParserStatus.COMPLETE;
       }
 
-      return ParserStatus.COMPLETE;
+      return status;
    }
 
    public ParserStatus parseStep(BufferedInputStream bis, int length) throws FileParserException {
