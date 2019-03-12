@@ -54,7 +54,11 @@ public class RxMsgFileParser extends LogFileParser {
             status = parseStep(bis, RX_SOURCE_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setRxSource(RxSource.values()[readBuffer[0]]);
+            try {
+              setRxSource(RxSource.values()[readBuffer[0]]);
+            } catch (Exception e) {
+              setRxSource(RxSource.UNKNOWN);
+            }
          }
 
          if (getStep() == 2) {

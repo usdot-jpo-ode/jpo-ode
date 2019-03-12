@@ -136,4 +136,23 @@ public class RxMsgFileParserTest {
       }
    }
 
+   @Test
+   public void testSetRxSource() {
+     RxMsgFileParser parser = new RxMsgFileParser();
+     
+     parser.setRxSource(0);
+     assertEquals(RxSource.RSU, parser.getRxSource());
+     parser.setRxSource(1);
+     assertEquals(RxSource.SAT, parser.getRxSource());
+     parser.setRxSource(2);
+     assertEquals(RxSource.RV, parser.getRxSource());
+     parser.setRxSource(3);
+     assertEquals(RxSource.SNMP, parser.getRxSource());
+     parser.setRxSource(4);
+     assertEquals(RxSource.NA, parser.getRxSource());
+     parser.setRxSource(5);
+     assertEquals(RxSource.UNKNOWN, parser.getRxSource());
+     parser.setRxSource(6);
+     assertEquals(RxSource.UNKNOWN, parser.getRxSource());
+   }
 }

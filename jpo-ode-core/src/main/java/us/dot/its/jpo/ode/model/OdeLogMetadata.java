@@ -83,6 +83,34 @@ public class OdeLogMetadata extends OdeMsgMetadata {
       super(payloadType, serialId, receivedAt);
    }
 
+   public void calculateGeneratedBy() {
+     ReceivedMessageDetails receivedMessageDetails = getReceivedMessageDetails();
+     if (receivedMessageDetails != null) {
+       if (receivedMessageDetails.getRxSource() != null) {
+         switch (receivedMessageDetails.getRxSource()) {
+         case RSU:
+           setRecordGeneratedBy(GeneratedBy.RSU);
+           break;
+         case RV:
+         case NA:
+           setRecordGeneratedBy(GeneratedBy.OBU);
+           break;
+         case SAT:
+           setRecordGeneratedBy(GeneratedBy.TMC_VIA_SAT);
+           break;
+         case SNMP:
+           setRecordGeneratedBy(GeneratedBy.TMC_VIA_SNMP);
+           break;
+         default:
+           setRecordGeneratedBy(GeneratedBy.UNKNOWN);
+           break;
+         }
+       }
+     } else {
+       setRecordGeneratedBy(GeneratedBy.OBU);
+     }
+   }
+   
    public String getLogFileName() {
       return logFileName;
    }

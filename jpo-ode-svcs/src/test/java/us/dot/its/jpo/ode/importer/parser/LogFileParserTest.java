@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.importer.parser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -237,6 +238,38 @@ public class LogFileParserTest {
   }
   
   @Test
+  public void testUpdateMetadata_rxMsgTimRSU() throws FileParserException {
+    byte[] buf = new byte[] { 
+        (byte)0x00,                                     //1. RxSource = RSU
+        (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //2.0 latitude
+        (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //2.1 longitude
+        (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //2.3 elevation
+        (byte)0x04, (byte)0x00,                         //2.3 speed
+        (byte)0x09, (byte)0x27,                         //2.4 heading
+        (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //3. utcTimeInSec
+        (byte)0x8f, (byte)0x01,                         //4. mSec
+        (byte)0x00,                                     //5. securityResultCode
+        (byte)0x06, (byte)0x00,                         //6.0 payloadLength
+                                                        //6.1 payload
+        (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
+        };
+
+    BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
+
+    RecordType recordType = RecordType.rxMsg;
+    String filename = recordType.name() + GZ;
+    RxMsgFileParser parser = (RxMsgFileParser) LogFileParser.factory(filename);
+    ParserStatus status = parser.parseFile(bis, filename);
+    
+    OdeLogMetadata metadata = new OdeLogMetadata();
+    parser.updateMetadata(metadata);
+    
+    assertEquals(ParserStatus.COMPLETE, status);
+    assertEquals(GeneratedBy.RSU, metadata.getRecordGeneratedBy());
+    assertEquals(RxSource.RSU, metadata.getReceivedMessageDetails().getRxSource());
+  }
+
+  @Test
   public void testUpdateMetadata_rxMsgTimSAT() throws FileParserException {
     byte[] buf = new byte[] { 
         (byte)0x01,                                     //1. RxSource = SAT
@@ -303,7 +336,7 @@ public class LogFileParserTest {
   @Test
   public void testUpdateMetadata_rxMsgTimUnknownRxSource() throws FileParserException {
     byte[] buf = new byte[] { 
-        (byte)0x04,                                     //1. RxSource = unknown value
+        (byte)0x09,                                     //1. RxSource = unknown value
         (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //2.0 latitude
         (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //2.1 longitude
         (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //2.3 elevation
@@ -328,8 +361,77 @@ public class LogFileParserTest {
     parser.updateMetadata(metadata);
     
     assertEquals(ParserStatus.COMPLETE, status);
-    assertEquals(GeneratedBy.OBU, metadata.getRecordGeneratedBy());
-    assertEquals(RxSource.NA, metadata.getReceivedMessageDetails().getRxSource());
+    assertEquals(GeneratedBy.UNKNOWN, metadata.getRecordGeneratedBy());
+    assertEquals(RxSource.UNKNOWN, metadata.getReceivedMessageDetails().getRxSource());
   }
 
+  @Test
+  public void testUpdateMetadata_rxMsgTimNullLocations() throws FileParserException {
+    byte[] buf = new byte[] { 
+        (byte)0x09,                                     //1. RxSource = unknown value
+        (byte)0x01, (byte)0xE9, (byte)0xA4, (byte)0x35, //2.0 latitude unavailable
+        (byte)0x01, (byte)0xD2, (byte)0x49, (byte)0x6B, //2.1 longitude unavailable
+        (byte)0x00, (byte)0xF0, (byte)0xFF, (byte)0xFF, //2.3 elevation unavailable
+        (byte)0xFF, (byte)0x1F,                         //2.3 speed unavailable
+        (byte)0x80, (byte)0x70,                         //2.4 heading unavailable
+        (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //3. utcTimeInSec
+        (byte)0x8f, (byte)0x01,                         //4. mSec
+        (byte)0x00,                                     //5. securityResultCode
+        (byte)0x06, (byte)0x00,                         //6.0 payloadLength
+                                                        //6.1 payload
+        (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
+        };
+
+    BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
+
+    RecordType recordType = RecordType.rxMsg;
+    String filename = recordType.name() + GZ;
+    RxMsgFileParser parser = (RxMsgFileParser) LogFileParser.factory(filename);
+    ParserStatus status = parser.parseFile(bis, filename);
+    
+    OdeLogMetadata metadata = new OdeLogMetadata();
+    parser.updateMetadata(metadata);
+    
+    assertEquals(ParserStatus.COMPLETE, status);
+    assertEquals(GeneratedBy.UNKNOWN, metadata.getRecordGeneratedBy());
+    assertEquals(RxSource.UNKNOWN, metadata.getReceivedMessageDetails().getRxSource());
+    assertNull(metadata.getReceivedMessageDetails().getLocationData().getElevation());
+    assertNull(metadata.getReceivedMessageDetails().getLocationData().getHeading());
+    assertNull(metadata.getReceivedMessageDetails().getLocationData().getLatitude());
+    assertNull(metadata.getReceivedMessageDetails().getLocationData().getLongitude());
+    assertNull(metadata.getReceivedMessageDetails().getLocationData().getSpeed());
+  }
+
+  @Test
+  public void testUpdateMetadata_rxMsgNullReceivedMessageDetails() throws FileParserException {
+    byte[] buf = new byte[] { 
+        (byte)0x09,                                     //1. RxSource = unknown value
+        (byte)0x01, (byte)0xE9, (byte)0xA4, (byte)0x35, //2.0 latitude unavailable
+        (byte)0x01, (byte)0xD2, (byte)0x49, (byte)0x6B, //2.1 longitude unavailable
+        (byte)0x00, (byte)0xF0, (byte)0xFF, (byte)0xFF, //2.3 elevation unavailable
+        (byte)0xFF, (byte)0x1F,                         //2.3 speed unavailable
+        (byte)0x80, (byte)0x70,                         //2.4 heading unavailable
+        (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //3. utcTimeInSec
+        (byte)0x8f, (byte)0x01,                         //4. mSec
+        (byte)0x00,                                     //5. securityResultCode
+        (byte)0x06, (byte)0x00,                         //6.0 payloadLength
+                                                        //6.1 payload
+        (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
+        };
+
+    BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
+
+    RecordType recordType = RecordType.rxMsg;
+    String filename = recordType.name() + GZ;
+    RxMsgFileParser parser = (RxMsgFileParser) LogFileParser.factory(filename);
+    ParserStatus status = parser.parseFile(bis, filename);
+    parser.setLocationParser(null);
+    
+    OdeLogMetadata metadata = new OdeLogMetadata();
+    parser.updateMetadata(metadata);
+    
+    assertEquals(ParserStatus.COMPLETE, status);
+    assertEquals(GeneratedBy.OBU, metadata.getRecordGeneratedBy());
+    assertNull(metadata.getReceivedMessageDetails());
+  }
 }

@@ -28,7 +28,6 @@ import us.dot.its.jpo.ode.model.OdeBsmMetadata.BsmSource;
 import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
 import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
 import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.plugin.j2735.builders.ElevationBuilder;
@@ -227,35 +226,9 @@ public abstract class LogFileParser implements FileParser {
         odeBsmMetadata.setBsmSource(bsmSource);
       }
 
-      ReceivedMessageDetails receivedMessageDetails = metadata.getReceivedMessageDetails();
-      if (receivedMessageDetails != null) {
-        if (receivedMessageDetails.getRxSource() != null) {
-          switch (receivedMessageDetails.getRxSource()) {
-          case RSU:
-            metadata.setRecordGeneratedBy(GeneratedBy.RSU);
-            break;
-          case RV:
-          case NA:
-            metadata.setRecordGeneratedBy(GeneratedBy.OBU);
-            break;
-          case SAT:
-            metadata.setRecordGeneratedBy(GeneratedBy.TMC_VIA_SAT);
-            break;
-          case SNMP:
-            metadata.setRecordGeneratedBy(GeneratedBy.TMC_VIA_SNMP);
-            break;
-          default:
-            metadata.setRecordGeneratedBy(GeneratedBy.UNKNOWN);
-            break;
-          }
-        } else {
-          receivedMessageDetails.setRxSource(RxSource.UNKNOWN);
-        }
-      } else {
-        metadata.setRecordGeneratedBy(GeneratedBy.OBU);
-      }
+      metadata.calculateGeneratedBy();
   }
-  
+
   private static ReceivedMessageDetails buildReceivedMessageDetails(LogFileParser parser) {
     LocationParser locationParser = parser.getLocationParser();
     ReceivedMessageDetails rxMsgDetails = null;

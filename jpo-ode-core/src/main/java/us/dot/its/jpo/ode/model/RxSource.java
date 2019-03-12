@@ -20,5 +20,6 @@ public enum RxSource {
   SAT, // XM satelite
   RV,  // for BSM rx
   SNMP,// for SRM payload from backend/ODE
-  NA, UNKNOWN
+  NA,  // Not applicable (for example, Distress Notification or Driver Allert 
+  UNKNOWN
 }
