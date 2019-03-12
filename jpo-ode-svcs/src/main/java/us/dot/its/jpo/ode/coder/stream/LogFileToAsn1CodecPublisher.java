@@ -154,29 +154,4 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
      }
    }
 
-  public StringPublisher getPublisher() {
-    return publisher;
-  }
-
-  public void setPublisher(StringPublisher publisher) {
-    this.publisher = publisher;
-  }
-
-  public LogFileParser getFileParser() {
-    return fileParser;
-  }
-
-  public void setFileParser(LogFileParser fileParser) {
-    this.fileParser = fileParser;
-  }
-
-  public SerialId getSerialId() {
-    return serialId;
-  }
-
-  public void setSerialId(SerialId serialId) {
-    this.serialId = serialId;
-  }
-
-
 }

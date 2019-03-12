@@ -106,7 +106,7 @@ public class RxMsgFileParser extends LogFileParser {
       } catch (Exception e) {
          logger.error("Invalid RxSource: {}. Valid values are {}: ", 
             rxSourceOrdinal, RxSource.values());
-         setRxSource(RxSource.unknown);
+         setRxSource(RxSource.UNKNOWN);
       }
    }
 

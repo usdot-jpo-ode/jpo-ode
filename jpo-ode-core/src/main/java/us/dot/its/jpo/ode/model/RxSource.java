@@ -20,5 +20,5 @@ public enum RxSource {
   SAT, // XM satelite
   RV,  // for BSM rx
   SNMP,// for SRM payload from backend/ODE
-  NA, unknown
+  NA, UNKNOWN
 }

@@ -235,6 +235,7 @@ public abstract class LogFileParser implements FileParser {
             metadata.setRecordGeneratedBy(GeneratedBy.RSU);
             break;
           case RV:
+          case NA:
             metadata.setRecordGeneratedBy(GeneratedBy.OBU);
             break;
           case SAT:
@@ -244,18 +245,18 @@ public abstract class LogFileParser implements FileParser {
             metadata.setRecordGeneratedBy(GeneratedBy.TMC_VIA_SNMP);
             break;
           default:
-            metadata.setRecordGeneratedBy(GeneratedBy.OBU);
+            metadata.setRecordGeneratedBy(GeneratedBy.UNKNOWN);
             break;
           }
         } else {
-          receivedMessageDetails.setRxSource(RxSource.unknown);
+          receivedMessageDetails.setRxSource(RxSource.UNKNOWN);
         }
       } else {
         metadata.setRecordGeneratedBy(GeneratedBy.OBU);
       }
   }
   
-  public static ReceivedMessageDetails buildReceivedMessageDetails(LogFileParser parser) {
+  private static ReceivedMessageDetails buildReceivedMessageDetails(LogFileParser parser) {
     LocationParser locationParser = parser.getLocationParser();
     ReceivedMessageDetails rxMsgDetails = null;
     if (locationParser != null) {

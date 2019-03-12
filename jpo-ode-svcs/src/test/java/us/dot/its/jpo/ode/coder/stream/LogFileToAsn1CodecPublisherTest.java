@@ -17,6 +17,7 @@ package us.dot.its.jpo.ode.coder.stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -88,6 +89,23 @@ public class LogFileToAsn1CodecPublisherTest {
             "fileName", ImporterFileType.LEAR_LOG_FILE);
 
       assertTrue(dataList.isEmpty());
+   }
+   
+   @Test(expected = Exception.class)
+   public void testPublishThrowsException(@Mocked LogFileParser mockLogFileParser) throws Exception {
+      new Expectations() {
+         {
+            LogFileParser.factory(anyString);
+            result = mockLogFileParser;
+
+            mockLogFileParser.parseFile((BufferedInputStream) any, anyString);
+            result = new Exception();
+         }
+      };
+
+      testLogFileToAsn1CodecPublisher.publish(new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
+            "fileName", ImporterFileType.LEAR_LOG_FILE);
+      fail("Expected an Exception to be thrown");
    }
    
    @Test
