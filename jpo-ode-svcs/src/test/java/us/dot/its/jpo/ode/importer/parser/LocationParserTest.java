@@ -40,10 +40,9 @@ public class LocationParserTest {
    /**
     * Step 1 test. Should extract the "location->latitude" value, length 4
     * bytes, then return EOF.
-   * @throws IOException 
     */
    @Test
-   public void testAll() throws IOException {
+   public void testAll() {
 
       ParserStatus expectedStatus = ParserStatus.COMPLETE;
       int expectedStep = 0;
@@ -69,7 +68,7 @@ public class LocationParserTest {
          ByteArrayOutputStream os = new ByteArrayOutputStream();
          locationParser.writeTo(os);
          assertEquals(CodecUtils.toHex(buf), CodecUtils.toHex(os.toByteArray()));
-      } catch (FileParserException e) {
+      } catch (FileParserException | IOException e) {
          fail("Unexpected exception: " + e);
       }
    }

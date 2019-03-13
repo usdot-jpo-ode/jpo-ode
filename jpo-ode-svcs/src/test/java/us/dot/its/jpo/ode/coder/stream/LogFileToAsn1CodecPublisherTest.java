@@ -32,6 +32,7 @@ import mockit.Mocked;
 import mockit.Tested;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.StringPublisher;
+import us.dot.its.jpo.ode.coder.stream.LogFileToAsn1CodecPublisher.LogFileToAsn1CodecPublisherException;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.importer.parser.LogFileParser;
@@ -44,7 +45,7 @@ public class LogFileToAsn1CodecPublisherTest {
 
    private static final String GZ = ".gz";
 
-  @Tested
+   @Tested
    LogFileToAsn1CodecPublisher testLogFileToAsn1CodecPublisher;
 
    @Injectable
@@ -91,21 +92,34 @@ public class LogFileToAsn1CodecPublisherTest {
       assertTrue(dataList.isEmpty());
    }
    
-   @Test(expected = Exception.class)
-   public void testPublishThrowsException(@Mocked LogFileParser mockLogFileParser) throws Exception {
+   @Test(expected = IllegalArgumentException.class)
+   public void testPublishThrowsIllegalArgumentException() throws Exception {
+     //If the filename does not follow expected filename pattern, IllegalArgumentException should be thrown
+      testLogFileToAsn1CodecPublisher.publish(new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
+            "fileName", ImporterFileType.LEAR_LOG_FILE);
+      fail("Expected an IllegalArgumentException to be thrown");
+   }
+   
+   @Test(expected = LogFileToAsn1CodecPublisherException.class)
+   public void testPublishThrowsLogFileToAsn1CodecPublisherException(@Mocked LogFileParser mockLogFileParser) throws Exception {
       new Expectations() {
          {
-            LogFileParser.factory(anyString);
-            result = mockLogFileParser;
+           LogFileParser.factory(anyString);
+           result = mockLogFileParser;
 
+            /*
+             *  If the embedded parser fails to parse a log file header, it may throw an exception
+             *  which is then caught by the parser and re-thrown as LogFileToAsn1CodecPublisherException.
+             *  This mocked object will simulate that eventuality.
+             */
             mockLogFileParser.parseFile((BufferedInputStream) any, anyString);
-            result = new Exception();
+            result = new LogFileToAsn1CodecPublisherException(anyString, (Exception) any);
          }
       };
 
       testLogFileToAsn1CodecPublisher.publish(new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
             "fileName", ImporterFileType.LEAR_LOG_FILE);
-      fail("Expected an Exception to be thrown");
+      fail("Expected an LogFileToAsn1CodecPublisherException to be thrown");
    }
    
    @Test
@@ -279,68 +293,27 @@ public class LogFileToAsn1CodecPublisherTest {
        assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getOdeReceivedAt()), DateTimeUtils.nowZDT()) > 0);
        data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
        data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
-       assertEquals("{\"metadata\":{\"logFileName\":\"rxMsg.gz\",\"recordType\":\"rxMsg\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"RV\"},\"encodings\":[{\"elementName\":\"root\",\"elementType\":\"Ieee1609Dot2Data\",\"encodingRule\":\"COER\"},{\"elementName\":\"unsecuredData\",\"elementType\":\"MessageFrame\",\"encodingRule\":\"UPER\"}],\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":6,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"OBU\",\"sanitized\":false},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"038100400380\"}}}", data.toJson());
+       assertEquals("{\"metadata\":{\"bsmSource\":\"RV\",\"logFileName\":\"rxMsg.gz\",\"recordType\":\"rxMsg\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"RV\"},\"encodings\":[{\"elementName\":\"root\",\"elementType\":\"Ieee1609Dot2Data\",\"encodingRule\":\"COER\"},{\"elementName\":\"unsecuredData\",\"elementType\":\"MessageFrame\",\"encodingRule\":\"UPER\"}],\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":6,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"OBU\",\"sanitized\":false},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"038100400380\"}}}", data.toJson());
      }
    }
 
    @Test
    public void testPublishNonLearLogFile() throws Exception {
     
-     byte[] buf = new byte[] { 
-         (byte)0x02,                                     //1. RxSource = RV 
-         (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //2.0 latitude
-         (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //2.1 longitude
-         (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //2.3 elevation
-         (byte)0x04, (byte)0x00,                         //2.3 speed
-         (byte)0x09, (byte)0x27,                         //2.4 heading
-         (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //3. utcTimeInSec
-         (byte)0x8f, (byte)0x01,                         //4. mSec
-         (byte)0x00,                                     //5. securityResultCode
-         (byte)0x06, (byte)0x00,                         //6.0 payloadLength
-                                                         //6.1 payload
-         (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
-         };
-
      String filename = RecordType.rxMsg.name() + GZ;
 
-     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
+     String jsonData = "{\"fakeJsonKey\":\"fakeJsonValue\"";
+     byte[] buf = jsonData.getBytes();
+     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf ));
 
+     /*
+      *  This call to publish method does not actually try to parse the data. It short-circuits the parsing because
+      *  currently we dont' support JSON input records. We may in the future.
+      */
+     
      List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.JSON_FILE);
 
      assertTrue(dataList.isEmpty());
    }
-
-//   @Test
-//   public void testPublishTruncatedLogFile() throws Exception {
-//    
-//     byte[] buf = new byte[] { 
-//         (byte)0x02
-//         };
-//
-//     String filename = RecordType.rxMsg.name() + GZ;
-//
-//     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
-//
-//     List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.JSON_FILE);
-//
-//     assertTrue(dataList.isEmpty());
-//   }
-//
-//   @Test
-//   public void testPublishEmptyLogFile() throws Exception {
-//    
-//     byte[] buf = new byte[] { 
-//         (byte)0x02
-//         };
-//
-//     String filename = RecordType.rxMsg.name() + GZ;
-//
-//     BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
-//
-//     testLogFileToAsn1CodecPublisher.getFileParser().setStep(99);
-//     List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.JSON_FILE);
-//
-//     assertTrue(dataList.isEmpty());
-//   }
 
 }

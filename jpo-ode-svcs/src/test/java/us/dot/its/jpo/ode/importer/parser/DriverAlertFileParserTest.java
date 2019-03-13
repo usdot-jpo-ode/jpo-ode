@@ -62,7 +62,7 @@ public class DriverAlertFileParserTest {
    }
 
    @Test
-   public void testAll() throws IOException {
+   public void testAll() {
 
       ParserStatus expectedStatus = ParserStatus.COMPLETE;
       String expectedPayload = "Test Driver Alert";
@@ -98,7 +98,7 @@ public class DriverAlertFileParserTest {
          ByteArrayOutputStream os = new ByteArrayOutputStream();
          testDriverAlertFileParser.writeTo(os);
          assertEquals(CodecUtils.toHex(buf), CodecUtils.toHex(os.toByteArray()));
-      } catch (FileParserException e) {
+      } catch (FileParserException | IOException e) {
          fail("Unexpected exception: " + e);
       }
    }

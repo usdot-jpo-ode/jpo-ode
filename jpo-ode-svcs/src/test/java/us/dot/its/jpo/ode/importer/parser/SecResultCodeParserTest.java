@@ -40,10 +40,9 @@ public class SecResultCodeParserTest {
 
    /**
     * Should extract securityResultCode and return ParserStatus.COMPLETE
-   * @throws IOException 
     */
    @Test
-   public void testAll() throws IOException {
+   public void testAll() {
 
       ParserStatus expectedStatus = ParserStatus.COMPLETE;
       int expectedStep = 0;
@@ -61,7 +60,7 @@ public class SecResultCodeParserTest {
          ByteArrayOutputStream os = new ByteArrayOutputStream();
          secResultCodeParser.writeTo(os);
          assertEquals(CodecUtils.toHex(buf), CodecUtils.toHex(os.toByteArray()));
-      } catch (FileParserException e) {
+      } catch (FileParserException | IOException e) {
          fail("Unexpected exception: " + e);
       }
    }

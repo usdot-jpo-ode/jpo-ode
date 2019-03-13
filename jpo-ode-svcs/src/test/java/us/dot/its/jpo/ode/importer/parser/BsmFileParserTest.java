@@ -47,7 +47,7 @@ public class BsmFileParserTest {
    @Test
    public void testStepsAlreadyDone() {
 
-      ParserStatus expectedStatus = ParserStatus.INIT;
+      ParserStatus expectedStatus = ParserStatus.COMPLETE;
 
       BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
 
@@ -63,51 +63,50 @@ public class BsmFileParserTest {
    /**
     * Step 1 test. Should extract the "location->latitude" value, length 4
     * bytes, then return EOF.
-   * @throws IOException 
     */
    @Test
-   public void testAll() throws IOException {
-
-      ParserStatus expectedStatus = ParserStatus.COMPLETE;
-      byte[] expectedPayload = new byte[] { (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 };
-      int expectedStep = 0;
-
-      byte[] buf = new byte[] { 
-             (byte)0x00,                                     //1. direction 
-             (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //2.0 latitude
-             (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //2.1 longitude
-             (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //2.3 elevation
-             (byte)0x04, (byte)0x00,                         //2.3 speed
-             (byte)0x09, (byte)0x27,                         //2.4 heading
-             (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //3. utcTimeInSec
-             (byte)0x8f, (byte)0x01,                         //4. mSec
-             (byte)0x00,                                     //5. securityResultCode
-             (byte)0x06, (byte)0x00,                         //6.0 payloadLength
-                                                             //6.1 payload
-             (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
-             };
-      BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(buf));
+   public void testAll() {
 
       try {
-         assertEquals(expectedStatus, bsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
-         assertEquals(BsmSource.EV, bsmFileParser.getBsmSource());
-         assertEquals(424506735L, bsmFileParser.getLocationParser().getLocation().getLatitude());
-         assertEquals(-832790108L, bsmFileParser.getLocationParser().getLocation().getLongitude());
-         assertEquals(1639L, bsmFileParser.getLocationParser().getLocation().getElevation());
-         assertEquals(4, bsmFileParser.getLocationParser().getLocation().getSpeed());
-         assertEquals(9993, bsmFileParser.getLocationParser().getLocation().getHeading());
-         assertEquals(1524772009, bsmFileParser.getTimeParser().getUtcTimeInSec());
-         assertEquals(399, bsmFileParser.getTimeParser().getmSec());
-         assertEquals(SecurityResultCode.success, bsmFileParser.getSecResCodeParser().getSecurityResultCode());
-         assertEquals(6, bsmFileParser.getPayloadParser().getPayloadLength());
-         assertEquals(HexUtils.toHexString(expectedPayload), HexUtils.toHexString(bsmFileParser.getPayloadParser().getPayload()));
-         assertEquals(expectedStep, bsmFileParser.getStep());
+        ParserStatus expectedStatus = ParserStatus.COMPLETE;
+        byte[] expectedPayload = new byte[] { (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 };
+        int expectedStep = 0;
+
+        byte[] buf = new byte[] { 
+               (byte)0x00,                                     //1. direction 
+               (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //2.0 latitude
+               (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //2.1 longitude
+               (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //2.3 elevation
+               (byte)0x04, (byte)0x00,                         //2.3 speed
+               (byte)0x09, (byte)0x27,                         //2.4 heading
+               (byte)0xa9, (byte)0x2c, (byte)0xe2, (byte)0x5a, //3. utcTimeInSec
+               (byte)0x8f, (byte)0x01,                         //4. mSec
+               (byte)0x00,                                     //5. securityResultCode
+               (byte)0x06, (byte)0x00,                         //6.0 payloadLength
+                                                               //6.1 payload
+               (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
+               };
+        BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(buf));
+
+        assertEquals(expectedStatus, bsmFileParser.parseFile(testInputStream, "testLogFile.bin"));
+        assertEquals(BsmSource.EV, bsmFileParser.getBsmSource());
+        assertEquals(424506735L, bsmFileParser.getLocationParser().getLocation().getLatitude());
+        assertEquals(-832790108L, bsmFileParser.getLocationParser().getLocation().getLongitude());
+        assertEquals(1639L, bsmFileParser.getLocationParser().getLocation().getElevation());
+        assertEquals(4, bsmFileParser.getLocationParser().getLocation().getSpeed());
+        assertEquals(9993, bsmFileParser.getLocationParser().getLocation().getHeading());
+        assertEquals(1524772009, bsmFileParser.getTimeParser().getUtcTimeInSec());
+        assertEquals(399, bsmFileParser.getTimeParser().getmSec());
+        assertEquals(SecurityResultCode.success, bsmFileParser.getSecResCodeParser().getSecurityResultCode());
+        assertEquals(6, bsmFileParser.getPayloadParser().getPayloadLength());
+        assertEquals(HexUtils.toHexString(expectedPayload), HexUtils.toHexString(bsmFileParser.getPayloadParser().getPayload()));
+        assertEquals(expectedStep, bsmFileParser.getStep());
          
-         ByteArrayOutputStream os = new ByteArrayOutputStream();
-         bsmFileParser.writeTo(os);
-         assertEquals(CodecUtils.toHex(buf), CodecUtils.toHex(os.toByteArray()));
-      } catch (FileParserException e) {
-         fail("Unexpected exception: " + e);
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        bsmFileParser.writeTo(os);
+        assertEquals(CodecUtils.toHex(buf), CodecUtils.toHex(os.toByteArray()));
+      } catch (FileParserException | IOException e) {
+        fail("Unexpected exception: " + e);
       }
    }
 

@@ -48,7 +48,7 @@ import us.dot.its.jpo.ode.util.XmlUtils;
 
 public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
-   public class LogFileToAsn1CodecPublisherException extends Exception {
+   public static class LogFileToAsn1CodecPublisherException extends Exception {
 
       private static final long serialVersionUID = 1L;
 
@@ -105,11 +105,11 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       
       OdeMsgPayload payload;
       OdeLogMetadata metadata;
-      if (fileParser instanceof DriverAlertFileParser){
+      if (isDriverAlertRecord()){
         payload = new OdeDriverAlertPayload(((DriverAlertFileParser) fileParser).getAlert());
         metadata = new OdeLogMetadata(payload);
         odeData = new OdeDriverAlertData(metadata, payload);
-      } else if (fileParser instanceof BsmLogFileParser){
+      } else if (isBsmRecord()){
         payload = new OdeAsn1Payload(fileParser.getPayloadParser().getPayload());
         metadata = new OdeBsmMetadata(payload);
         odeData = new OdeAsn1Data(metadata, payload);
@@ -123,20 +123,28 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
       dataList.add(odeData);
    }
 
+   public boolean isDriverAlertRecord() {
+      return fileParser instanceof DriverAlertFileParser;
+   }
+
+   public boolean isBsmRecord() {
+      return fileParser instanceof BsmLogFileParser || 
+         (fileParser instanceof RxMsgFileParser && ((RxMsgFileParser)fileParser).getRxSource() == RxSource.RV);
+   }
+
    private void publishList(XmlUtils xmlUtils, List<OdeData> dataList) throws JsonProcessingException {
      serialId.setBundleSize(dataList.size());
      for (OdeData odeData : dataList) {
        OdeLogMetadata msgMetadata = (OdeLogMetadata) odeData.getMetadata();
        msgMetadata.setSerialId(serialId);
        
-       if (fileParser instanceof DriverAlertFileParser){
+       if (isDriverAlertRecord()){
           logger.debug("Publishing a driverAlert.");
 
           publisher.publish(JsonUtils.toJson(odeData, false),
              publisher.getOdeProperties().getKafkaTopicDriverAlertJson());
        } else {
-          if (fileParser instanceof BsmLogFileParser || 
-                (fileParser instanceof RxMsgFileParser && ((RxMsgFileParser)fileParser).getRxSource() == RxSource.RV)) {
+          if (isBsmRecord()) {
              logger.debug("Publishing a BSM");
           } else {
              logger.debug("Publishing a TIM");

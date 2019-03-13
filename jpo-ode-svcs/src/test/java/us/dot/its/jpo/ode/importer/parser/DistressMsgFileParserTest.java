@@ -64,10 +64,9 @@ public class DistressMsgFileParserTest {
    /**
     * Step 1 test. Should extract the "location->latitude" value, length 4
     * bytes, then return EOF.
-   * @throws IOException 
     */
    @Test
-   public void testAll() throws IOException {
+   public void testAll() {
 
       ParserStatus expectedStatus = ParserStatus.COMPLETE;
       byte[] expectedPayload = new byte[] { (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 };
@@ -105,7 +104,7 @@ public class DistressMsgFileParserTest {
          ByteArrayOutputStream os = new ByteArrayOutputStream();
          testDistressMsgFileParser.writeTo(os);
          assertEquals(CodecUtils.toHex(buf), CodecUtils.toHex(os.toByteArray()));
-      } catch (FileParserException e) {
+      } catch (FileParserException | IOException e) {
          fail("Unexpected exception: " + e);
       }
    }

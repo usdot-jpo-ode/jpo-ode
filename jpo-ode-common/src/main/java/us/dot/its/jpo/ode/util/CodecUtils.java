@@ -190,7 +190,7 @@ public class CodecUtils {
     * @param bo Byte order ByteOrder.BIG_ENDIAN or ByteOrder.LITTLE_ENDIAN
     * @return byte array equivalent of the given 64 bit integer number
     */
-   public static byte[] longToBytes(int number, ByteOrder bo) {
+   public static byte[] longToBytes(long number, ByteOrder bo) {
       long[] longs = new long[] { number };
       return longsToBytes(longs, bo);
    }

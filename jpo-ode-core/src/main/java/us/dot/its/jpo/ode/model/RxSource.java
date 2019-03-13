@@ -17,9 +17,9 @@ package us.dot.its.jpo.ode.model;
 
 public enum RxSource {
   RSU,
-  SAT, // XM satelite
+  SAT, // XM satellite
   RV,  // for BSM rx
-  SNMP,// for SRM payload from backend/ODE
-  NA,  // Not applicable (for example, Distress Notification or Driver Allert 
+  SNMP,// for SRM payload from back-end/ODE
+  NA,  // Not applicable (for example, Distress Notification or Driver Alert 
   UNKNOWN
 }

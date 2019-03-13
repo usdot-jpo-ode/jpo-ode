@@ -46,13 +46,13 @@ public class RxMsgFileParserTest {
    @Test
    public void testStepsAlreadyDone() {
 
-      ParserStatus expectedStatus = ParserStatus.INIT;
+      ParserStatus expectedStatus = ParserStatus.COMPLETE;
 
       BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(new byte[0]));
 
       try {
         testRxMsgFileParser.setStep(6);
-         assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
+        assertEquals(expectedStatus, testRxMsgFileParser.parseFile(testInputStream, "testLogFile.bin"));
       } catch (FileParserException e) {
          fail("Unexpected exception: " + e);
       }
@@ -62,10 +62,9 @@ public class RxMsgFileParserTest {
    /**
     * Step 1 test. Should extract the "location->latitude" value, length 4
     * bytes, then return EOF.
-   * @throws IOException 
     */
    @Test
-   public void testAll() throws IOException {
+   public void testAll() {
 
       ParserStatus expectedStatus = ParserStatus.COMPLETE;
       byte[] expectedPayload = new byte[] { (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 };
@@ -105,7 +104,7 @@ public class RxMsgFileParserTest {
          ByteArrayOutputStream os = new ByteArrayOutputStream();
          testRxMsgFileParser.writeTo(os);
          assertEquals(CodecUtils.toHex(buf), CodecUtils.toHex(os.toByteArray()));
-      } catch (FileParserException e) {
+      } catch (FileParserException | IOException e) {
          fail("Unexpected exception: " + e);
       }
    }

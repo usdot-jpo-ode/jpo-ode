@@ -87,8 +87,8 @@ public abstract class LogFileParser implements FileParser {
       if (getStep() == 0) {
          setFilename(fileName);
          setStep(getStep() + 1);
-         status = ParserStatus.COMPLETE;
       }
+      status = ParserStatus.COMPLETE;
 
       return status;
    }
