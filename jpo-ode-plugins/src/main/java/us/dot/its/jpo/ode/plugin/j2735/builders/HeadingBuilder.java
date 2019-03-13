@@ -32,7 +32,8 @@ public class HeadingBuilder {
    }
 
    public static BigDecimal genericHeading(long heading) {
-      return AngleBuilder.longToDecimal(heading).setScale(4, RoundingMode.HALF_DOWN);
+      BigDecimal angle = AngleBuilder.longToDecimal(heading);
+      return (angle == null ? null : angle.setScale(4, RoundingMode.HALF_DOWN));
    }
 
     public static BigDecimal genericCoarseHeading(JsonNode coarseHeading) {

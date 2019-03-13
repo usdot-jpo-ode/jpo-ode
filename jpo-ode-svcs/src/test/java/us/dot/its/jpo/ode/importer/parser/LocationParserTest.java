@@ -20,6 +20,8 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import org.junit.Test;
 
@@ -27,6 +29,7 @@ import mockit.Injectable;
 import mockit.Tested;
 import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
+import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class LocationParserTest {
    
@@ -44,14 +47,14 @@ public class LocationParserTest {
       ParserStatus expectedStatus = ParserStatus.COMPLETE;
       int expectedStep = 0;
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //0 latitude
-               (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //1 longitude
-               (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //2 elevation
-               (byte)0x04, (byte)0x00,                         //3 speed
-               (byte)0x09, (byte)0x27,                         //4 heading
-               }));
+      byte[] buf = new byte[] { 
+             (byte)0x6f, (byte)0x75, (byte)0x4d, (byte)0x19, //0 latitude
+             (byte)0xa4, (byte)0xa1, (byte)0x5c, (byte)0xce, //1 longitude
+             (byte)0x67, (byte)0x06, (byte)0x00, (byte)0x00, //2 elevation
+             (byte)0x04, (byte)0x00,                         //3 speed
+             (byte)0x09, (byte)0x27,                         //4 heading
+             };
+      BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(buf));
 
       try {
          assertEquals(expectedStatus, locationParser.parseFile(testInputStream, "testLogFile.bin"));
@@ -61,7 +64,11 @@ public class LocationParserTest {
          assertEquals(4, locationParser.getLocation().getSpeed());
          assertEquals(9993, locationParser.getLocation().getHeading());
          assertEquals(expectedStep, locationParser.getStep());
-      } catch (FileParserException e) {
+         
+         ByteArrayOutputStream os = new ByteArrayOutputStream();
+         locationParser.writeTo(os);
+         assertEquals(CodecUtils.toHex(buf), CodecUtils.toHex(os.toByteArray()));
+      } catch (FileParserException | IOException e) {
          fail("Unexpected exception: " + e);
       }
    }

@@ -17,6 +17,7 @@ package us.dot.its.jpo.ode.importer.parser;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 
 import org.slf4j.Logger;
@@ -27,7 +28,6 @@ import us.dot.its.jpo.ode.model.OdeBsmMetadata.BsmSource;
 import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
 import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
 import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.plugin.j2735.builders.ElevationBuilder;
@@ -83,12 +83,14 @@ public abstract class LogFileParser implements FileParser {
    public ParserStatus parseFile(BufferedInputStream bis, String fileName) 
          throws FileParserException {
 
+      ParserStatus status = ParserStatus.INIT;
       if (getStep() == 0) {
          setFilename(fileName);
          setStep(getStep() + 1);
       }
+      status = ParserStatus.COMPLETE;
 
-      return ParserStatus.COMPLETE;
+      return status;
    }
 
    public ParserStatus parseStep(BufferedInputStream bis, int length) throws FileParserException {
@@ -224,29 +226,10 @@ public abstract class LogFileParser implements FileParser {
         odeBsmMetadata.setBsmSource(bsmSource);
       }
 
-      if (metadata.getReceivedMessageDetails() != null && metadata.getReceivedMessageDetails().getRxSource() != null) {
-        switch (metadata.getReceivedMessageDetails().getRxSource()) {
-        case RSU:
-          metadata.setRecordGeneratedBy(GeneratedBy.RSU);
-          break;
-        case RV:
-          metadata.setRecordGeneratedBy(GeneratedBy.OBU);
-          break;
-        case SAT:
-          metadata.setRecordGeneratedBy(GeneratedBy.TMC_VIA_SAT);
-          break;
-        case SNMP:
-          metadata.setRecordGeneratedBy(GeneratedBy.TMC_VIA_SNMP);
-          break;
-        default:
-          break;
-        }
-      } else {
-        metadata.setRecordGeneratedBy(GeneratedBy.OBU);
-      }
+      metadata.calculateGeneratedBy();
   }
-  
-  public static ReceivedMessageDetails buildReceivedMessageDetails(LogFileParser parser) {
+
+  private static ReceivedMessageDetails buildReceivedMessageDetails(LogFileParser parser) {
     LocationParser locationParser = parser.getLocationParser();
     ReceivedMessageDetails rxMsgDetails = null;
     if (locationParser != null) {
@@ -266,11 +249,22 @@ public abstract class LogFileParser implements FileParser {
                    ), null);
     }
     
-    if (parser instanceof RxMsgFileParser && rxMsgDetails != null) {
-       RxMsgFileParser rxMsgFileParser = (RxMsgFileParser) parser;
-       rxMsgDetails.setRxSource(rxMsgFileParser.getRxSource());
+    if (rxMsgDetails != null) {
+      if (parser instanceof RxMsgFileParser) {
+        RxMsgFileParser rxMsgFileParser = (RxMsgFileParser) parser;
+        rxMsgDetails.setRxSource(rxMsgFileParser.getRxSource());
+      } else {
+        rxMsgDetails.setRxSource(RxSource.NA);
+      }
     }
+    
     return rxMsgDetails; 
   }
 
+  public void writeTo(OutputStream os) throws IOException {
+    locationParser.writeTo(os);
+    timeParser.writeTo(os);
+    secResCodeParser.writeTo(os);
+    payloadParser.writeTo(os);
+  }
 }

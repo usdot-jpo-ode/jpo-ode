@@ -20,6 +20,8 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import org.junit.Test;
 
@@ -28,6 +30,7 @@ import mockit.Tested;
 import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
+import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class SecResultCodeParserTest {
    
@@ -44,16 +47,20 @@ public class SecResultCodeParserTest {
       ParserStatus expectedStatus = ParserStatus.COMPLETE;
       int expectedStep = 0;
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x00,                                     //0. securityResultCode
-               }));
+      byte[] buf = new byte[] { 
+             (byte)0x00,                                     //0. securityResultCode
+             };
+      BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(buf));
 
       try {
          assertEquals(expectedStatus, secResultCodeParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(SecurityResultCode.success, secResultCodeParser.getSecurityResultCode());
          assertEquals(expectedStep, secResultCodeParser.getStep());
-      } catch (FileParserException e) {
+         
+         ByteArrayOutputStream os = new ByteArrayOutputStream();
+         secResultCodeParser.writeTo(os);
+         assertEquals(CodecUtils.toHex(buf), CodecUtils.toHex(os.toByteArray()));
+      } catch (FileParserException | IOException e) {
          fail("Unexpected exception: " + e);
       }
    }

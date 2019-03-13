@@ -16,6 +16,8 @@
 package us.dot.its.jpo.ode.importer.parser;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class DriverAlertFileParser extends LogFileParser {
 
@@ -74,4 +76,10 @@ public class DriverAlertFileParser extends LogFileParser {
       this.alert = new String(alert);
    }
 
+  @Override
+  public void writeTo(OutputStream os) throws IOException {
+    locationParser.writeTo(os);
+    timeParser.writeTo(os);
+    payloadParser.writeTo(os);
+  }
 }
