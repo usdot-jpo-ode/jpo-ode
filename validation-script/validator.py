@@ -8,7 +8,6 @@ TYPE_ENUM = 'enum'
 TYPE_TIMESTAMP = 'timestamp'
 TYPE_STRING = 'string'
 
-
 class ValidationResult:
     def __init__(self, valid, error):
         self.valid = valid
@@ -55,19 +54,14 @@ class Field:
     def validate(self, data):
         field_value = self._get_field_value(data)
         if field_value is None:
-            # field is missing
             return ValidationResult(False, "Field '%s' missing" % self.path)
         if field_value == "":
-            # field is empty
             return ValidationResult(False, "Field '%s' empty" % self.path)
         if hasattr(self, 'upper_limit') and Decimal(field_value) > self.upper_limit:
-            # field is greater than upper limit
             return ValidationResult(False, "Field '%s' value '%d' is greater than upper limit '%d'" % (self.path, Decimal(field_value), self.upper_limit))
         if hasattr(self, 'lower_limit') and Decimal(field_value) < self.lower_limit:
-            # field is less than lower limit
             return ValidationResult(False, "Field '%s' value '%d' is less than lower limit '%d'" % (self.path, Decimal(field_value), self.lower_limit))
         if hasattr(self, 'values') and str(field_value) not in self.values:
-            # field not in known enum list
             return ValidationResult(False, "Field '%s' value '%s' not in list of known values: [%s]" % (self.path, str(field_value), ', '.join(map(str, self.values))))
         if hasattr(self, 'equals_value') and str(field_value) != str(self.equals_value):
             return ValidationResult(False, "Field '%s' value '%s' did not equal expected value '%s'" % (self.path, field_value, self.equals_value))
@@ -86,29 +80,27 @@ class Field:
                 return ValidationResult(False, "Field '%s' value could not be parsed as a timestamp, error: %s" % (self.path, str(e)))
         return ValidationResult(True, "")
 
-class Configurator:
+class TestCase:
     def __init__(self, filepath):
         config = configparser.ConfigParser()
         config.read(filepath)
+        if not config.has_section('_settings'):
+            print("[ERROR] Configuration file missing required section '_settings'!")
+            raise SystemExit
+
+        self.kafka_topic = config['_settings']['KafkaTopic']
+        self.input_file_path = config['_settings']['InputFilePath']
+        self.expected_messages = int(config['_settings']['ExpectedMessages'])
         self.field_list = []
         for key in config.sections():
             if key == "_settings":
-                self.kafka_topic = config[key]['KafkaTopic']
-                self.input_file_path = config[key]['InputFilePath']
-                self.expected_messages = int(config[key]['ExpectedMessages'])
+                continue
             else:
                 self.field_list.append(Field(config[key]))
+
     def validate(self, data):
         for field in self.field_list:
             result = field.validate(data)
             if not result.valid:
                 return result.error
         return ""
-
-def main():
-    test_field = {"Path":"a.b.c", "Type":"decimal", "EqualsValue":5}
-    field = Field(test_field)
-    print("Validation result: %s" % field.validate(json.loads('{"a":{"b":{"c":5}}}')).error)
-
-if __name__ == '__main__':
-    main()
