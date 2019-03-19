@@ -14,6 +14,11 @@ class ValidationResult:
         self.valid = valid
         self.error = error
 
+class RecordValidationSummary:
+    def __init__(self, num_errors, num_validations):
+        self.num_errors = num_errors
+        self.num_validations = num_validations
+
 class Field:
     def __init__(self, field):
         # extract required settings
@@ -101,9 +106,12 @@ class TestCase:
                 self.field_list.append(Field(config[key]))
 
     def validate(self, data, logger):
+        validations_failed = 0
         for field in self.field_list:
             result = field.validate(data)
             if result.valid == True:
-                logger.info('VALID! Field: %s' % field.path)
+                logger.info('[PASSED] Field: %s' % field.path)
             else:
-                logger.info('ERROR! Field: %s; Failure: %s' % (field.path, result.error))
+                validations_failed += 1
+                logger.info('[-FAILED-] Field: %s; Failure: %s' % (field.path, result.error))
+        return RecordValidationSummary(validations_failed, len(self.field_list))

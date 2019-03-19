@@ -38,6 +38,8 @@ def main():
     # Parse test config and create test case
     validator = TestCase(args.filepath)
 
+    print("[START] Beginning test routine referencing configuration file '%s'." % args.filepath)
+
     # Create file logger for printing results
     fileh = logging.FileHandler(validator.output_file_path, 'w')
     logger = logging.getLogger('test-harness')
@@ -75,14 +77,25 @@ def main():
         return
 
     # After all messages were received, iterate and validate them
+    num_errors = 0
+    num_validations = 0
     while not msg_queue.empty():
         current_msg = json.loads(msg_queue.get())
         logger.info("======")
         logger.info("RECORD_ID: %s" % str(current_msg['metadata']['serialId']['recordId']))
-        validator.validate(current_msg, logger)
+        validation_results = validator.validate(current_msg, logger)
+        num_errors += validation_results.num_errors
+        num_validations += validation_results.num_validations
 
-    # End
-    print("[END] File validation complete. Results logged to %s" % validator.output_file_path)
+    if num_errors > 0:
+        print('[FAILED] ============================================================================')
+        print('[FAILED] Validation has failed! Detected %d errors out of %d total validation checks.' % (num_errors, num_validations))
+        print('[FAILED] ============================================================================')
+    else:
+        print('[SUCCESS] ===========================================================================')
+        print('[SUCCESS] Validation has passed. Detected 0 errors out of %d total validation checks.' % (num_validations))
+        print('[SUCCESS] ===========================================================================')
+    print("[END] File validation complete. Results logged to '%s'." % validator.output_file_path)
 
 if __name__ == '__main__':
     main()
