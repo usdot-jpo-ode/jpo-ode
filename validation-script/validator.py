@@ -1,6 +1,7 @@
 import configparser
 import dateutil.parser
 import json
+import logging
 from decimal import Decimal
 
 TYPE_DECIMAL = 'decimal'
@@ -90,6 +91,7 @@ class TestCase:
 
         self.kafka_topic = config['_settings']['KafkaTopic']
         self.input_file_path = config['_settings']['InputFilePath']
+        self.output_file_path = config['_settings']['OutputFilePath']
         self.expected_messages = int(config['_settings']['ExpectedMessages'])
         self.field_list = []
         for key in config.sections():
@@ -98,9 +100,10 @@ class TestCase:
             else:
                 self.field_list.append(Field(config[key]))
 
-    def validate(self, data):
+    def validate(self, data, logger):
         for field in self.field_list:
             result = field.validate(data)
-            if not result.valid:
-                return result.error
-        return ""
+            if result.valid == True:
+                logger.info('VALID! Field: %s' % field.path)
+            else:
+                logger.info('ERROR! Field: %s; Failure: %s' % (field.path, result.error))

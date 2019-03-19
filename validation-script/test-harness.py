@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import queue
 import requests
@@ -37,6 +38,12 @@ def main():
     # Parse test config and create test case
     validator = TestCase(args.filepath)
 
+    # Create file logger for printing results
+    fileh = logging.FileHandler(validator.output_file_path, 'w')
+    logger = logging.getLogger('test-harness')
+    logger.setLevel(logging.INFO)
+    logger.addHandler(fileh)
+
     # Create a kafka consumer and wait for it to connect
     print("[INFO] Creating Kafka consumer...")
     msg_queue = queue.Queue()
@@ -68,14 +75,14 @@ def main():
         return
 
     # After all messages were received, iterate and validate them
-    msgs_analyzed = 0
     while not msg_queue.empty():
-        msgs_analyzed += 1
-        validation_result = validator.validate(json.loads(msg_queue.get()))
-        if validation_result != "":
-            print("[FAILED] Validation check failed with error: %s" % validation_result)
-            return
-    print("[SUCCESS] File validation complete with no errors, messages analyzed: %d." % msgs_analyzed)
+        current_msg = json.loads(msg_queue.get())
+        logger.info("======")
+        logger.info("RECORD_ID: %s" % str(current_msg['metadata']['serialId']['recordId']))
+        validator.validate(current_msg, logger)
+
+    # End
+    print("[END] File validation complete. Results logged to %s" % validator.output_file_path)
 
 if __name__ == '__main__':
     main()
