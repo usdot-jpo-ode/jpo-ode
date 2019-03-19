@@ -125,3 +125,15 @@ def error(errored, field_name, err_msg):
     print("======")
     errored.put(True)
     raise SystemExit
+
+def self_test(validator):
+    self_test_data = '{"metadata":{"securityResultCode":"success","recordGeneratedBy":"TMC_VIA_SNMP","receivedMessageDetails":{"locationData":{"elevation":1818.7,"heading":0,"latitude":41.1553613,"speed":0.02,"longitude":-104.6599478},"rxSource":"SNMP"},"schemaVersion":6,"payloadType":"us.dot.its.jpo.ode.model.OdeTimPayload","serialId":{"recordId":254,"serialNumber":1644,"streamId":"8f02ae49-da48-4a8f-b21d-68bd1da649d1","bundleSize":393,"bundleId":8},"sanitized":false,"recordGeneratedAt":"2018-12-05T20:23:41.297Z","recordType":"rxMsg","logFileName":"rxMsg_BSM&TIM.gz","odeReceivedAt":"2019-03-11T13:51:42.361Z"},"payload":{"data":{"MessageFrame":{"messageId":31,"value":{"TravelerInformation":{"timeStamp":440100,"packetID":300000000000000015,"urlB":null,"dataFrames":{"TravelerDataFrame":{"regions":{"GeographicalPath":{"closedPath":{"false":""},"anchor":{"lat":263041699,"long":-801463230},"name":"sirius_sirius_1_2_SAT-7EFD0225","laneWidth":15000,"directionality":{"both":""},"description":{"path":{"offset":{"xy":{"nodes":{"NodeXY":[{"delta":{"node-LatLon":{"lon":-801458685,"lat":263041564}}},{"delta":{"node-LatLon":{"lon":-801443410,"lat":263041226}}}]}}},"scale":0}},"id":{"id":0,"region":0},"direction":1111111111111111}},"duratonTime":32000,"sspMsgRights1":1,"sspMsgRights2":1,"startYear":2018,"msgId":{"roadSignID":{"viewAngle":1111111111111111,"mutcdCode":{"warning":""},"position":{"lat":263041699,"long":-801463230}}},"priority":5,"content":{"advisory":{"SEQUENCE":{"item":{"itis":7169}}}},"url":null,"sspTimRights":1,"sspLocationRights":1,"frameType":{"advisory":""},"startTime":440100}},"msgCnt":1}}}},"dataType":"TravelerInformation"}}'
+    print("[INFO] Running self-test of validation routine...")
+    MetadataValidator.validate_metadata(json.loads(self_test_data)['metadata'])
+
+# main function using old functionality
+def main():
+    self_test()
+
+if __name__ == '__main__':
+    main()
