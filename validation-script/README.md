@@ -10,10 +10,10 @@ This folder contains the automated regression test harness application built for
 python test-harness.py -f <PATH_TO_CONFIG_FILE>
 ```
 
-There are several _.ini_ configuration files provided for testing. For example to test the ODE's _bsmLogDuringEvent_ functionality, pass the configuration file as a runtime argument:
+There are several _.ini_ configuration files provided in the `/config` folder for testing. For example to test the ODE's _bsmLogDuringEvent_ functionality, pass the configuration file as a runtime argument:
 
 ```
-python test-harness.py -f bsmLogDuringEvent.ini
+python test-harness.py -f config/bsmLogDuringEvent.ini
 ```
 
 ## Configuration
