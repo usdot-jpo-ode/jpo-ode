@@ -49,15 +49,13 @@ services:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ZK: ${DOCKER_HOST_IP}:2181
       SPRING_CONFIG_LOCATION: /host_share/config/
-      ODE_DDS_CAS_USERNAME: ${ODE_DDS_CAS_USERNAME}
-      ODE_DDS_CAS_PASSWORD: ${ODE_DDS_CAS_PASSWORD}
-      ODE_EXTERNAL_IPV4: ${ODE_EXTERNAL_IPV4}
-      ODE_EXTERNAL_IPV6: ${ODE_EXTERNAL_IPV6}
       ODE_SECURITY_SVCS_SIGNATURE_URI: ${ODE_SECURITY_SVCS_SIGNATURE_URI}
       ODE_RSU_USERNAME: ${ODE_RSU_USERNAME}
       ODE_RSU_PASSWORD: ${ODE_RSU_PASSWORD}
-# Commented out for latest schemaVersion. Uncomment to set for older schemaVersion
-#      ODE_OUTPUT_SCHEMA_VERSION: ${ODE_OUTPUT_SCHEMA_VERSION}
+      # Commented out, will use SDW depositor module by default
+      #ODE_DEPOSIT_SDW_MESSAGES_OVER_WEBSOCKET: ${ODE_DEPOSIT_SDW_MESSAGES_OVER_WEBSOCKET}
+      #ODE_DDS_CAS_USERNAME: ${ODE_DDS_CAS_USERNAME}
+      #ODE_DDS_CAS_PASSWORD: ${ODE_DDS_CAS_PASSWORD}
     depends_on:
       - kafka
     volumes:
@@ -170,6 +168,22 @@ services:
       DEPOSIT_TOPIC: ${RDE_TIM_TOPIC}
     depends_on:
      - kafka
+
+  sdw_depositor:
+    build: ./jpo-sdw-depositor
+    image: jpoode_sdwdep:latest
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      #SDW_GROUP_ID: ${SDW_GROUP_ID}
+      #SDW_KAFKA_PORT: ${SDW_KAFKA_PORT}
+      #SDW_DESTINATION_URL: ${SDW_DESTINATION_URL}
+      SDW_SUBSCRIPTION_TOPICS: topic.SDWDepositorInput
+      SDW_USERNAME: ${SDW_USERNAME}
+      SDW_PASSWORD: ${SDW_PASSWORD}
+    depends_on:
+     - kafka
+     - zookeeper
+     - ode
 
   sec:
     build: ./jpo-security-svcs

@@ -20,6 +20,8 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.Test;
@@ -28,6 +30,7 @@ import mockit.Injectable;
 import mockit.Tested;
 import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
+import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class PayloadParserTest {
    
@@ -45,19 +48,23 @@ public class PayloadParserTest {
       byte[] expectedPayload = new byte[] { (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 };
       int expectedStep = 0;
 
-      BufferedInputStream testInputStream = new BufferedInputStream(
-         new ByteArrayInputStream(new byte[] { 
-               (byte)0x06, (byte)0x00,                         //0 payloadLength
-                                                               //1 payload
-               (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
-               }));
+      byte[] buf = new byte[] { 
+             (byte)0x06, (byte)0x00,                         //0 payloadLength
+                                                             //1 payload
+             (byte)0x03, (byte)0x81, (byte)0x00, (byte)0x40, (byte)0x03, (byte)0x80 
+             };
+      BufferedInputStream testInputStream = new BufferedInputStream(new ByteArrayInputStream(buf));
 
       try {
          assertEquals(expectedStatus, payloadParser.parseFile(testInputStream, "testLogFile.bin"));
          assertEquals(6, payloadParser.getPayloadLength());
          assertEquals(HexUtils.toHexString(expectedPayload), HexUtils.toHexString(payloadParser.getPayload()));
          assertEquals(expectedStep, payloadParser.getStep());
-      } catch (FileParserException e) {
+         
+         ByteArrayOutputStream os = new ByteArrayOutputStream();
+         payloadParser.writeTo(os);
+         assertEquals(CodecUtils.toHex(buf), CodecUtils.toHex(os.toByteArray()));
+      } catch (FileParserException | IOException e) {
          fail("Unexpected exception: " + e);
       }
    }

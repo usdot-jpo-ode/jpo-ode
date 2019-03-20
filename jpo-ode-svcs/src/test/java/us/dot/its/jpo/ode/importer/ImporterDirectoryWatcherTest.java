@@ -46,7 +46,7 @@ public class ImporterDirectoryWatcherTest {
    @Injectable
    Path backupDir;
    @Injectable
-   ImporterFileType injectableImporterFileType = ImporterFileType.OBU_LOG_FILE;
+   ImporterFileType injectableImporterFileType = ImporterFileType.LEAR_LOG_FILE;
    @Injectable
    Integer timePeriod = 5;
 

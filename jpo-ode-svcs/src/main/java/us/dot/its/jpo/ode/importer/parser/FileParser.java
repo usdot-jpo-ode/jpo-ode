@@ -16,6 +16,8 @@
 package us.dot.its.jpo.ode.importer.parser;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public interface FileParser {
 
@@ -37,4 +39,5 @@ public interface FileParser {
    }
 
    public ParserStatus parseFile(BufferedInputStream bis, String fileName) throws FileParserException;
+   public void writeTo(OutputStream os) throws IOException;
 }

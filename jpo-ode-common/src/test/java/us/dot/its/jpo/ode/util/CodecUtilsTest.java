@@ -31,7 +31,7 @@ public class CodecUtilsTest {
 
       byte[] expectedValue = new byte[] { 0, 5, 0, -2, 1, 1 };
 
-      byte[] actualValue = CodecUtils.shortsToBytes(new short[] { (short) 5, (short) 254, (short) 257 });
+      byte[] actualValue = CodecUtils.shortsToBytes(new short[] { (short) 5, (short) 254, (short) 257 }, ByteOrder.BIG_ENDIAN);
 
       assertEquals(Arrays.toString(expectedValue), Arrays.toString(actualValue));
    }
@@ -40,7 +40,7 @@ public class CodecUtilsTest {
    public void testShortToBytes() {
       byte[] expectedValue = new byte[] { 1, 37 };
 
-      byte[] actualValue = CodecUtils.shortToBytes((short) 293);
+      byte[] actualValue = CodecUtils.shortToBytes((short) 293, ByteOrder.BIG_ENDIAN);
 
       assertEquals(Arrays.toString(expectedValue), Arrays.toString(actualValue));
    }

@@ -16,6 +16,8 @@
 package us.dot.its.jpo.ode.importer.parser;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
@@ -81,5 +83,11 @@ public class PayloadParser extends LogFileParser {
       this.payload = payload;
       return this;
    }
+
+  @Override
+  public void writeTo(OutputStream os) throws IOException {
+    os.write(CodecUtils.shortToBytes(payloadLength, ByteOrder.LITTLE_ENDIAN));
+    os.write(payload, 0, payloadLength);
+  }
 
 }

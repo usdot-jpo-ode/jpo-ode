@@ -19,6 +19,7 @@ uploads
 /.env
 settings.xml
 /.settings
+.metadata
 
 ####################
 ### jpo-ode-svcs ###
