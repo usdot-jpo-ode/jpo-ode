@@ -93,7 +93,7 @@ def main():
         print('[FAILED] ============================================================================')
     else:
         print('[SUCCESS] ===========================================================================')
-        print('[SUCCESS] Validation has passed. Detected 0 errors out of %d total validation checks.' % (num_validations))
+        print('[SUCCESS] Validation has passed. Detected no errors out of %d total validation checks.' % (num_validations))
         print('[SUCCESS] ===========================================================================')
     print("[END] File validation complete. Results logged to '%s'." % validator.output_file_path)
 
