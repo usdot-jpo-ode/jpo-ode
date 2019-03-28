@@ -8,7 +8,7 @@ import time
 from argparse import ArgumentParser
 from kafka import KafkaConsumer
 from pathlib import Path
-from validator import TestCase
+from odevalidator import TestCase
 
 KAFKA_CONSUMER_TIMEOUT = 10000
 KAFKA_PORT = '9092'
@@ -83,7 +83,7 @@ def main():
         current_msg = json.loads(msg_queue.get())
         logger.info("======")
         logger.info("RECORD_ID: %s" % str(current_msg['metadata']['serialId']['recordId']))
-        validation_results = validator.validate(current_msg, logger)
+        validation_results = validator._validate(current_msg)
         num_errors += validation_results.num_errors
         num_validations += validation_results.num_validations
 
