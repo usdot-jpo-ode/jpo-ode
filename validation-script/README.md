@@ -6,62 +6,42 @@ This folder contains the automated regression test harness application built for
 
 ## Usage
 
-```
-python test-harness.py -f <PATH_TO_CONFIG_FILE>
-```
+### Using the Full Test Script (Recommended)
 
-There are several _.ini_ configuration files provided in the `/config` folder for testing. For example to test the ODE's _bsmLogDuringEvent_ functionality, pass the configuration file as a runtime argument:
+You may perform a complete test of all of the ODE input file types by running the `full-test.sh` script.
 
-```
-python test-harness.py -f config/bsmLogDuringEvent.ini
-```
+1. Set the [DOCKER_HOST_IP](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management#obtaining-docker_host_ip) environment variable.
+2. Run `./full-test.sh`
 
-## Configuration
 
-Configuration is managed through .ini files passed as parameters during runtime.
+### Using Custom Test Cases
 
-#### \_settings
+Otherwise you may run individual, customized
 
-At a high level, the `_settings` section outlines the following properties:
+Run using Python at the command line.
+
+`python test-harness.py --config-file <CONFIGFILEPATH> --data-file <DATAFILEPATH> --kafka-topic <KAFKATOPIC> --output-file <LOGFILEPATH>`
 
 ```
-KafkaTopic = topic.OdeBsmJson                   # Kafka topic to listen to for output messages
-InputFilePath = ../data/bsmLogDuringEvent.gz    # Source data file for input
-OutputFilePath = bsmLogDuringEvent_results.log  # Output file path for validation results
-ExpectedMessages = 222                          # Number of messages in the source data file
+usage: test-harness.py [-h] --data-file DATAFILEPATH --config-file
+                       CONFIGFILEPATH --kafka-topic KAFKATOPIC
+                       [--output-file LOGFILEPATH]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --data-file DATAFILEPATH
+                        Path to log data file that will be sent to the ODE for
+                        validation.
+  --config-file CONFIGFILEPATH
+                        Path to ini configuration file used for testing.
+  --kafka-topic KAFKATOPIC
+                        Kafka topic to which to the test harness should listen
+                        for output messages.
+  --output-file LOGFILEPATH
+                        Output file to which detailed validation results will
+                        be printed.
 ```
 
-Then each field to be validated should be created.
+## Test Case Configuration
 
-- `Path`
-  - Required: Yes
-  - Summary: Identifies the field location within the message
-  - Value: JSON path to the field, separated using periods
-- `Type`
-  - Required: Yes
-  - Summary: Identifies the type of the field
-  - Value: One of `enum`, `decimal`, `string`, or `timestamp`
-    - enum
-      - Specifies that the field must be one of a certain set of values
-    - decimal
-      - Specifies that the field is a number
-    - string
-      - Specifies that the field is a string
-    - timestamp
-      - Values of this type will be validated by testing for parsability
-- `EqualsValue`
-  - Required: Optional
-  - Summary: Sets the expected value of this field, will fail if the value does not match this
-  - Value: Expected value: `EqualsValue = us.dot.its.jpo.ode.model.OdeBsmPayload`
-- `Values`
-  - Required: Optional
-  - Summary: Used with enum types to specify the list of possible values that this field must be
-  - Value: JSON array with values in quotes: `Values = ["OptionA", "OptionB", ]`
-- `LowerLimit`
-  - Required: Optional
-  - Summary: Used with decimal types to specify the lowest acceptable value for this field
-  - Value: decimal number: `LowerLimit = 2`
-- `UpperLimit`
-  - Required: Optional
-  - Summary: Used with decimal types to specify the highest acceptable value for this field
-  - Value: decimal number: `UpperLimit = 150.43`
+See the [odevalidator library](https://github.com/usdot-jpo-ode/ode-output-validator-library) for more information on how to create your own test case configurations.
