@@ -6,7 +6,7 @@ This folder contains the automated regression test harness application built for
 
 ## Usage
 
-### Using the Full Test Script (Recommended)
+### Option 1: Using the Full Test Script (Recommended)
 
 You may perform a complete test of all of the ODE input file types by running the `full-test.sh` script.
 
@@ -14,7 +14,7 @@ You may perform a complete test of all of the ODE input file types by running th
 2. Run `./full-test.sh`
 
 
-### Using Custom Test Cases
+### Option 2: Using Custom Test Cases
 
 Otherwise you may run individual, customized
 
