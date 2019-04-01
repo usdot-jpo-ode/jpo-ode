@@ -6,19 +6,19 @@ This folder contains the automated regression test harness application built for
 
 ## Usage
 
-### Option 1: Using the Full Test Script (Recommended)
+**Important Note**: Before you begin either of the options below, you must set the [DOCKER_HOST_IP](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management#obtaining-docker_host_ip) environment variable.
 
-You may perform a complete test of all of the ODE input file types by running the `full-test.sh` script.
+### Option 1:  (Recommended) Using the pre-configured test script
 
-1. Set the [DOCKER_HOST_IP](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management#obtaining-docker_host_ip) environment variable.
-2. Run `./full-test.sh`
+You may perform a complete test of all of the ODE input file types by running the pre-configured full-test script.
 
+Run `./full-test.sh`
 
-### Option 2: Using Custom Test Cases
+### Option 2: Using custom test cases
 
-Otherwise you may run individual, customized
+See the [odevalidator library](https://github.com/usdot-jpo-ode/ode-output-validator-library) for more information on how to create your own test case configurations.
 
-Run using Python at the command line.
+You may run custom test cases by creating your own configuration file by setting the following command-line arguments:
 
 `python test-harness.py --config-file <CONFIGFILEPATH> --data-file <DATAFILEPATH> --kafka-topic <KAFKATOPIC> --output-file <LOGFILEPATH>`
 
@@ -41,7 +41,3 @@ optional arguments:
                         Output file to which detailed validation results will
                         be printed.
 ```
-
-## Test Case Configuration
-
-See the [odevalidator library](https://github.com/usdot-jpo-ode/ode-output-validator-library) for more information on how to create your own test case configurations.
