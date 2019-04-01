@@ -1,2 +1,2 @@
 #!/bin/bash
-pip install -r requirements.txt
+pip install --user --upgrade -r requirements.txt
