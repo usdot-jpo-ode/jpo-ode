@@ -75,6 +75,10 @@ def main():
     kafkaListenerThread.join()
     print("[INFO] Received %d messages from Kafka consumer." % msg_queue.qsize())
 
+    if msg_queue.qsize() == 0:
+        print("[ERROR] Aborting test routine! Received no messages from the Kafka consumer.")
+        return
+
     # After all messages were received, log them to a file
     validation_results = validator.validate_queue(msg_queue)
 
