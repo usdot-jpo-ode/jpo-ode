@@ -31,25 +31,28 @@ def listen_to_kafka_topic(topic, msg_queue):
 # main function using old functionality
 def main():
     parser = ArgumentParser()
-    parser.add_argument("-f", "--file", dest="filepath", help="Path to ini configuration file used for testing.", metavar="FILEPATH", required=True)
+    parser.add_argument("--data-file", dest="data_file_path", help="Path to log data file that will be sent to the ODE for validation.", metavar="DATAFILEPATH", required=True)
+    parser.add_argument("--config-file", dest="config_file_path", help="Path to ini configuration file used for testing.", metavar="CONFIGFILEPATH", required=True)
+    parser.add_argument("--kafka-topic", dest="kafka_topic", help="Kafka topic to which to the test harness should listen for output messages.", metavar="KAFKATOPIC", required=True)
+    parser.add_argument("--output-file", dest="output_file_path", help="Output file to which detailed validation results will be printed.", metavar="LOGFILEPATH", required=False)
     args = parser.parse_args()
-    assert Path(args.filepath).is_file(), "File '%s' could not be found" % args.filepath
+    assert Path(args.config_file_path).is_file(), "Configuration file '%s' could not be found" % args.config_file_path
 
     # Parse test config and create test case
-    validator = TestCase(args.filepath)
+    validator = TestCase(args.config_file_path)
 
-    print("[START] Beginning test routine referencing configuration file '%s'." % args.filepath)
+    print("[START] Beginning test routine referencing configuration file '%s'." % args.config_file_path)
 
-    # Create file logger for printing results
-    fileh = logging.FileHandler(validator.output_file_path, 'w')
+    # Setup logger and set output to file if specified
     logger = logging.getLogger('test-harness')
     logger.setLevel(logging.INFO)
-    logger.addHandler(fileh)
+    if args.output_file_path is not None:
+        logger.addHandler(logging.FileHandler(args.output_file_path, 'w'))
 
     # Create a kafka consumer and wait for it to connect
     print("[INFO] Creating Kafka consumer...")
     msg_queue = queue.Queue()
-    kafkaListenerThread=threading.Thread(target=listen_to_kafka_topic,args=(validator.kafka_topic, msg_queue,))
+    kafkaListenerThread=threading.Thread(target=listen_to_kafka_topic,args=(args.kafka_topic, msg_queue,))
     kafkaListenerThread.start()
     time.sleep(3)
     print("[INFO] Kafka consumer preparation complete.")
@@ -57,35 +60,32 @@ def main():
     # Upload the test file with known data to the ODE
     print("[INFO] Uploading test file to ODE...")
     try:
-        upload_response = upload_file(validator.input_file_path)
+        upload_response = upload_file(args.data_file_path)
         if upload_response.status_code == 200:
             print("[INFO] Test file uploaded successfully.")
         else:
             print("[ERROR] Aborting test routine! Test file failed to upload, response code %d" % upload_response.status_code)
-            raise SystemExit
+            return
     except requests.exceptions.ConnectTimeout as e:
         print("[ERROR] Aborting test routine! Test file upload failed (unable to reach to ODE). Error: '%s'" % str(e))
         return
 
-    # Wait for as many messages as possible to be collected and verify it matches expected count
+    # Wait for as many messages as possible to be collected
     print("[INFO] Waiting for all messages to be received...")
     kafkaListenerThread.join()
-    msgs_received = msg_queue.qsize()
-    print("[INFO] Found %d messages in file (expected %d)." % (msgs_received, validator.expected_messages))
-    if validator.expected_messages != msgs_received:
-        print("[FAILED] Expected %d messages but received %d." % (validator.expected_messages, msgs_received))
-        return
+    print("[INFO] Received %d messages from Kafka consumer." % msg_queue.qsize())
 
-    # After all messages were received, iterate and validate them
+    # After all messages were received, log them to a file
+    validation_results = validator.validate_queue(msg_queue)
+
+    # Count the number of validations and failed validations
     num_errors = 0
     num_validations = 0
-    while not msg_queue.empty():
-        current_msg = json.loads(msg_queue.get())
-        logger.info("======")
-        logger.info("RECORD_ID: %s" % str(current_msg['metadata']['serialId']['recordId']))
-        validation_results = validator._validate(current_msg)
-        num_errors += validation_results.num_errors
-        num_validations += validation_results.num_validations
+    for result in validation_results['Results']:
+        num_validations += len(result['Validations'])
+        for validation in result['Validations']:
+            if validation['Valid'] == False:
+                num_errors += 1
 
     if num_errors > 0:
         print('[FAILED] ============================================================================')
@@ -95,7 +95,15 @@ def main():
         print('[SUCCESS] ===========================================================================')
         print('[SUCCESS] Validation has passed. Detected no errors out of %d total validation checks.' % (num_validations))
         print('[SUCCESS] ===========================================================================')
-    print("[END] File validation complete. Results logged to '%s'." % validator.output_file_path)
+
+    # Print the validation results to a file if the user has specified one
+    if args.output_file_path is not None:
+        logger.info(json.dumps(validation_results))
+        print("[END] Results logged to '%s'." % args.output_file_path)
+    else:
+        print("[END] Output file not specified, detailed results not logged.")
+
+    print("[END] File validation complete.")
 
 if __name__ == '__main__':
     main()
