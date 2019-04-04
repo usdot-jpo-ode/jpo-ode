@@ -6,11 +6,11 @@ This folder contains the automated regression test harness application built for
 
 ## Requirements
 
-- Python 3.6+ (_preferred_) or Python 2.7
+- Python 3.6+
 
 ## Installation
 
-This test harness is a python script that should work with both Python 2.7 and Python 3.6+. Using virtualenv with Python 3.7 will give the most consistent experience.
+This test harness is a python script designed for Python 3.6+. Using virtualenv with Python 3.7 will give the most consistent experience.
 
 #### Option 1: (Recommended) Using python3 with virtualenv
 
@@ -36,7 +36,7 @@ deactivate
 
 #### Option 2: Using system python
 
-1. Install the required python modules using `pip install -r requirements.txt` or `pip3 install -r requirements.txt`
+1. Install the required python modules using `pip install -r requirements.txt`.
 2.  _Run the test script using the **Usage** instructions below._
 
 ## Usage
