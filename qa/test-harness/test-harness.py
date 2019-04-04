@@ -8,7 +8,7 @@ import time
 from argparse import ArgumentParser
 from kafka import KafkaConsumer
 from pathlib import Path
-from odevalidator.validator import TestCase
+from odevalidator import TestCase
 
 KAFKA_CONSUMER_TIMEOUT = 10000
 KAFKA_PORT = '9092'
