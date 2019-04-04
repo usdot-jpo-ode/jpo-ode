@@ -1,1 +1,4 @@
 git+https://github.com/usdot-jpo-ode/ode-output-validator-library@master#egg=odevalidator
+python-dateutil
+kafka-python
+requests
