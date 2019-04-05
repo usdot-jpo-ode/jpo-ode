@@ -9,6 +9,7 @@ from argparse import ArgumentParser
 from kafka import KafkaConsumer
 from pathlib import Path
 from odevalidator.validator import TestCase
+import os 
 
 KAFKA_CONSUMER_TIMEOUT = 10000
 KAFKA_PORT = '9092'
@@ -30,16 +31,21 @@ def listen_to_kafka_topic(topic, msg_queue):
 
 # main function using old functionality
 def main():
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    print("CWD: %s" % dir_path)
+
     parser = ArgumentParser()
     parser.add_argument("--data-file", dest="data_file_path", help="Path to log data file that will be sent to the ODE for validation.", metavar="DATAFILEPATH", required=True)
-    parser.add_argument("--config-file", dest="config_file_path", help="Path to ini configuration file used for testing.", metavar="CONFIGFILEPATH", required=True)
+    parser.add_argument("--config-file", dest="config_file_path", help="Path to ini configuration file used for testing.", metavar="CONFIGFILEPATH", required=False)
     parser.add_argument("--kafka-topic", dest="kafka_topic", help="Kafka topic to which to the test harness should listen for output messages.", metavar="KAFKATOPIC", required=True)
     parser.add_argument("--output-file", dest="output_file_path", help="Output file to which detailed validation results will be printed.", metavar="LOGFILEPATH", required=False)
     args = parser.parse_args()
-    assert Path(args.config_file_path).is_file(), "Configuration file '%s' could not be found" % args.config_file_path
 
     # Parse test config and create test case
-    validator = TestCase(args.config_file_path)
+    if args.config_file_path:
+        validator = TestCase(args.config_file_path)
+    else:
+        validator = TestCase("ode-output-validator-library/odevalidator/config.ini")
 
     print("[START] Beginning test routine referencing configuration file '%s'." % args.config_file_path)
 
