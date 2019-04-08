@@ -1,5 +1,8 @@
 ## ODE Release Notes ##
 -----------------------
+### Sprint 44
+- ODE-1234 Updated the odevalidator library with conditional configurability.
+- Release of jpo-ode-1.0.6
 ### Sprint 43
 - ODE-1209 Fixed missing bsmSource metadata field
 - ODE-944 Creates SDW Depositor microservice using the new SDW REST API
