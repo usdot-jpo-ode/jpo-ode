@@ -8,8 +8,8 @@ import time
 from argparse import ArgumentParser
 from kafka import KafkaConsumer
 from pathlib import Path
-from odevalidator.validator import TestCase
-import os 
+from odevalidator import TestCase
+import os
 
 KAFKA_CONSUMER_TIMEOUT = 10000
 KAFKA_PORT = '9092'
@@ -25,14 +25,13 @@ def upload_file(filepath):
         return requests.post(destination_url, files={'name':'file', 'file':file}, timeout=2)
 
 def listen_to_kafka_topic(topic, msg_queue):
-   consumer=KafkaConsumer(topic, bootstrap_servers=DOCKER_HOST_IP+':'+KAFKA_PORT, consumer_timeout_ms=KAFKA_CONSUMER_TIMEOUT)
-   for msg in consumer:
-       msg_queue.put(msg.value)
+    consumer=KafkaConsumer(topic, bootstrap_servers=DOCKER_HOST_IP+':'+KAFKA_PORT, consumer_timeout_ms=KAFKA_CONSUMER_TIMEOUT)
+    for msg in consumer:
+        msg_queue.put(str(msg.value, 'utf-8'))
 
 # main function using old functionality
 def main():
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    print("CWD: %s" % dir_path)
 
     parser = ArgumentParser()
     parser.add_argument("--data-file", dest="data_file_path", help="Path to log data file that will be sent to the ODE for validation.", metavar="DATAFILEPATH", required=True)
@@ -42,12 +41,7 @@ def main():
     args = parser.parse_args()
 
     # Parse test config and create test case
-    if args.config_file_path:
-        validator = TestCase(args.config_file_path)
-    else:
-        validator = TestCase("ode-output-validator-library/odevalidator/config.ini")
-
-    print("[START] Beginning test routine referencing configuration file '%s'." % args.config_file_path)
+    validator = TestCase(args.config_file_path)
 
     # Setup logger and set output to file if specified
     logger = logging.getLogger('test-harness')
@@ -72,7 +66,7 @@ def main():
         else:
             print("[ERROR] Aborting test routine! Test file failed to upload, response code %d" % upload_response.status_code)
             return
-    except requests.exceptions.ConnectTimeout as e:
+    except (requests.exceptions.ConnectionError, requests.exceptions.ConnectTimeout) as e:
         print("[ERROR] Aborting test routine! Test file upload failed (unable to reach to ODE). Error: '%s'" % str(e))
         return
 
