@@ -52,14 +52,18 @@ Run `./full-test.sh`
 ### Option 2: Using custom test cases
 
 See the [odevalidator library](https://github.com/usdot-jpo-ode/ode-output-validator-library) for more information on how to create your own test case configurations.
+[odevalidator library](https://github.com/usdot-jpo-ode/ode-output-validator-library) is a submodule of `test-harness`. Even though, it can be
+pull from GitHub, the `test-harness` will not be able to use the included config file. 
+it is recommended to update the submodule to allow the `test-harness` to use the latest config file, not to mention
+the latest [odevalidator library](https://github.com/usdot-jpo-ode/ode-output-validator-library) code if local changes are present.
 
 You may run custom test cases by creating your own configuration file by setting the following command-line arguments:
 
 `python test-harness.py --config-file <CONFIGFILEPATH> --data-file <DATAFILEPATH> --kafka-topic <KAFKATOPIC> --output-file <LOGFILEPATH>`
 
 ```
-usage: test-harness.py [-h] --data-file DATAFILEPATH --config-file
-                       CONFIGFILEPATH --kafka-topic KAFKATOPIC
+usage: test-harness.py [-h] --data-file DATAFILEPATH --kafka-topic KAFKATOPIC
+                       [--config-file CONFIGFILEPATH]
                        [--output-file LOGFILEPATH]
 
 optional arguments:
@@ -67,12 +71,13 @@ optional arguments:
   --data-file DATAFILEPATH
                         Path to log data file that will be sent to the ODE for
                         validation.
-  --config-file CONFIGFILEPATH
-                        Path to ini configuration file used for testing.
   --kafka-topic KAFKATOPIC
                         Kafka topic to which to the test harness should listen
                         for output messages.
+  --config-file CONFIGFILEPATH
+                        [Optional] Path to ini configuration file used for testing.
+						If not specified, the test-harness will use the default config file included in odevalidator package
   --output-file LOGFILEPATH
-                        Output file to which detailed validation results will
+                        [Optional] Output file to which detailed validation results will
                         be printed.
 ```

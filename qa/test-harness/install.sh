@@ -1,2 +1,5 @@
 #!/bin/bash
-pip install --user --upgrade -r requirements.txt
+cd ode-output-validator-library
+. ./install.sh
+cd ..
+pip install --upgrade -r requirements.txt

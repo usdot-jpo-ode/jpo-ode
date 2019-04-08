@@ -13,3 +13,6 @@
 [submodule "jpo-sdw-depositor"]
 	path = jpo-sdw-depositor
 	url = https://github.com/usdot-jpo-ode/jpo-sdw-depositor.git
+[submodule "qa/test-harness/ode-output-validator-library"]
+	path = qa/test-harness/ode-output-validator-library
+	url = https://github.com/usdot-jpo-ode/ode-output-validator-library.git
