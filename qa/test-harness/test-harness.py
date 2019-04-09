@@ -24,19 +24,17 @@ def upload_file(filepath):
     with open(filepath, 'rb') as file:
         return requests.post(destination_url, files={'name':'file', 'file':file}, timeout=2)
 
-def listen_to_kafka_topic(topic, msg_queue):
-    consumer=KafkaConsumer(topic, bootstrap_servers=DOCKER_HOST_IP+':'+KAFKA_PORT, consumer_timeout_ms=KAFKA_CONSUMER_TIMEOUT)
+def listen_to_kafka_topics(msg_queue, *topics):
+    consumer=KafkaConsumer(*topics, bootstrap_servers=DOCKER_HOST_IP+':'+KAFKA_PORT, consumer_timeout_ms=KAFKA_CONSUMER_TIMEOUT)
     for msg in consumer:
         msg_queue.put(str(msg.value, 'utf-8'))
 
 # main function using old functionality
 def main():
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-
     parser = ArgumentParser()
     parser.add_argument("--data-file", dest="data_file_path", help="Path to log data file that will be sent to the ODE for validation.", metavar="DATAFILEPATH", required=True)
     parser.add_argument("--config-file", dest="config_file_path", help="Path to ini configuration file used for testing.", metavar="CONFIGFILEPATH", required=False)
-    parser.add_argument("--kafka-topic", dest="kafka_topic", help="Kafka topic to which to the test harness should listen for output messages.", metavar="KAFKATOPIC", required=True)
+    parser.add_argument("--kafka-topics", dest="kafka_topics", help="Kafka topics on which the harness will listen and validate messages.", metavar="KAFKATOPICS", required=True)
     parser.add_argument("--output-file", dest="output_file_path", help="Output file to which detailed validation results will be printed.", metavar="LOGFILEPATH", required=False)
     args = parser.parse_args()
 
@@ -50,9 +48,11 @@ def main():
         logger.addHandler(logging.FileHandler(args.output_file_path, 'w'))
 
     # Create a kafka consumer and wait for it to connect
-    print("[INFO] Creating Kafka consumer...")
     msg_queue = queue.Queue()
-    kafkaListenerThread=threading.Thread(target=listen_to_kafka_topic,args=(args.kafka_topic, msg_queue,))
+    list_of_kafka_topics = args.kafka_topics.split(",")
+    for topic in list_of_kafka_topics: topic.strip()
+    print("[INFO] Creating Kafka consumer listenting on %s ..." % list_of_kafka_topics)
+    kafkaListenerThread=threading.Thread(target=listen_to_kafka_topics, args=(msg_queue, *list_of_kafka_topics))
     kafkaListenerThread.start()
     time.sleep(3)
     print("[INFO] Kafka consumer preparation complete.")
