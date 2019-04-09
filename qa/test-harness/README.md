@@ -59,10 +59,10 @@ the latest [odevalidator library](https://github.com/usdot-jpo-ode/ode-output-va
 
 You may run custom test cases by creating your own configuration file by setting the following command-line arguments:
 
-`python test-harness.py --config-file <CONFIGFILEPATH> --data-file <DATAFILEPATH> --kafka-topic <KAFKATOPIC> --output-file <LOGFILEPATH>`
+`python test-harness.py --config-file <CONFIGFILEPATH> --data-file <DATAFILEPATH> --kafka-topics <KAFKATOPICS> --output-file <LOGFILEPATH>`
 
 ```
-usage: test-harness.py [-h] --data-file DATAFILEPATH --kafka-topic KAFKATOPIC
+usage: test-harness.py [-h] --data-file DATAFILEPATH --kafka-topics KAFKATOPICS
                        [--config-file CONFIGFILEPATH]
                        [--output-file LOGFILEPATH]
 
@@ -71,8 +71,8 @@ optional arguments:
   --data-file DATAFILEPATH
                         Path to log data file that will be sent to the ODE for
                         validation.
-  --kafka-topic KAFKATOPIC
-                        Kafka topic to which to the test harness should listen
+  --kafka-topics KAFKATOPICS
+                        Comma-separated list of Kafka topics to which to the test harness should listen
                         for output messages.
   --config-file CONFIGFILEPATH
                         [Optional] Path to ini configuration file used for testing.
