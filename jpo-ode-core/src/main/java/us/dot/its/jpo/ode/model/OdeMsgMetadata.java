@@ -20,7 +20,7 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 public class OdeMsgMetadata extends OdeObject {
 
    public enum GeneratedBy {
-      TMC, OBU, RSU, TMC_VIA_SAT, TMC_VIA_SNMP
+      TMC, OBU, RSU, TMC_VIA_SAT, TMC_VIA_SNMP, UNKNOWN
    }
 
    private static final long serialVersionUID = 3979762143291085955L;

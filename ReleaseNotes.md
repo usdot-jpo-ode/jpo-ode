@@ -1,7 +1,15 @@
 ## ODE Release Notes ##
 -----------------------
+### Sprint 43
+- ODE-1209 Fixed missing bsmSource metadata field
+- ODE-944 Creates SDW Depositor microservice using the new SDW REST API
+- ODE-1056 Modifying ODE to support both WebSocket interface or SDW Depositor microservice by configurable properties
+### Sprint 41
+- ODE-844 Fixed GitHub issue 264: New Content Type for TIMs desired by WYDOT
+- ODE-994 Add the ODE version number to the Demo UI
 ### Sprint 40
-- ODE-1076 New values for metadata.recordGeneratedBy: RSU, TMC_VIA_SAT, TMC_VIA_SNMP
+- ODE-944 Added Situation Data Warehouse depositor submodule to the ODE
+- ODE-1076 New values added for metadata.recordGeneratedBy: RSU, TMC_VIA_SAT, TMC_VIA_SNMP
 ### December 2018
 - ODE-466 serialId element of metadata will now provide a true serial number to help identify missing records.
 - ODE-964 Added ode.rsuUsername/ode.rsuPassword application properties or alternatively ODE_RSU_USERNAME and ODE_RSU_PASSWORD environment variables to authenticate communications with RSU instead of using the REST API parameters.

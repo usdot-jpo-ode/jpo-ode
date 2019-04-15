@@ -16,6 +16,8 @@
 package us.dot.its.jpo.ode.importer.parser;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +54,11 @@ public class RxMsgFileParser extends LogFileParser {
             status = parseStep(bis, RX_SOURCE_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setRxSource(RxSource.values()[readBuffer[0]]);
+            try {
+              setRxSource(RxSource.values()[readBuffer[0]]);
+            } catch (Exception e) {
+              setRxSource(RxSource.UNKNOWN);
+            }
          }
 
          if (getStep() == 2) {
@@ -104,7 +110,13 @@ public class RxMsgFileParser extends LogFileParser {
       } catch (Exception e) {
          logger.error("Invalid RxSource: {}. Valid values are {}: ", 
             rxSourceOrdinal, RxSource.values());
-         setRxSource(RxSource.unknown);
+         setRxSource(RxSource.UNKNOWN);
       }
    }
+
+  @Override
+  public void writeTo(OutputStream os) throws IOException {
+    os.write((byte)rxSource.ordinal());
+    super.writeTo(os);
+  }
 }

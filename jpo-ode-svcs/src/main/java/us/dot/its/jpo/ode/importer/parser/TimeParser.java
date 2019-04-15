@@ -16,6 +16,8 @@
 package us.dot.its.jpo.ode.importer.parser;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteOrder;
 import java.time.ZonedDateTime;
 
@@ -27,7 +29,7 @@ public class TimeParser extends LogFileParser {
    public static final int UTC_TIME_IN_SEC_LENGTH = 4;
    public static final int MSEC_LENGTH = 2;
 
-   protected long utcTimeInSec;
+   protected int utcTimeInSec;
    protected short mSec;
 
    public TimeParser() {
@@ -69,7 +71,7 @@ public class TimeParser extends LogFileParser {
       return utcTimeInSec;
    }
 
-   public LogFileParser setUtcTimeInSec(long utcTimeInSec) {
+   public LogFileParser setUtcTimeInSec(int utcTimeInSec) {
       this.utcTimeInSec = utcTimeInSec;
       return this;
    }
@@ -86,4 +88,11 @@ public class TimeParser extends LogFileParser {
    public ZonedDateTime getGeneratedAt() {
       return DateTimeUtils.isoDateTime(getUtcTimeInSec() * 1000 + getmSec());
    }
+
+  @Override
+  public void writeTo(OutputStream os) throws IOException {
+    os.write(CodecUtils.intToBytes(utcTimeInSec, ByteOrder.LITTLE_ENDIAN));
+    os.write(CodecUtils.shortToBytes(mSec, ByteOrder.LITTLE_ENDIAN));
+  }
+
 }

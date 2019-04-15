@@ -16,6 +16,8 @@
 package us.dot.its.jpo.ode.importer.parser;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteOrder;
 
 import us.dot.its.jpo.ode.util.CodecUtils;
@@ -100,5 +102,14 @@ public class LocationParser extends LogFileParser {
       this.location = location;
       return this;
    }
+
+  @Override
+  public void writeTo(OutputStream os) throws IOException {
+    os.write(CodecUtils.intToBytes(location.getLatitude(), ByteOrder.LITTLE_ENDIAN));
+    os.write(CodecUtils.intToBytes(location.getLongitude(), ByteOrder.LITTLE_ENDIAN));
+    os.write(CodecUtils.intToBytes(location.getElevation(), ByteOrder.LITTLE_ENDIAN));
+    os.write(CodecUtils.shortToBytes(location.getSpeed(), ByteOrder.LITTLE_ENDIAN));
+    os.write(CodecUtils.shortToBytes(location.getHeading(), ByteOrder.LITTLE_ENDIAN));
+  }
 
 }

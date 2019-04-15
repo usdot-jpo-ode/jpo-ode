@@ -16,6 +16,8 @@
 package us.dot.its.jpo.ode.importer.parser;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,5 +77,10 @@ public class SecurityResultCodeParser extends LogFileParser {
          setSecurityResultCode(SecurityResultCode.unknown);
       }
    }
+
+  @Override
+  public void writeTo(OutputStream os) throws IOException {
+    os.write((byte)securityResultCode.ordinal());
+  }
 
 }

@@ -58,7 +58,7 @@
             },
             "viewAngle": "1010101010101010",
             "mutcdCode": "warning",
-            "crc": "0000000000000000"
+            "crc": "0000"
           }
         },
         "priority": "0",
