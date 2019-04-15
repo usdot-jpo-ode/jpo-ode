@@ -59,10 +59,10 @@ the latest [odevalidator library](https://github.com/usdot-jpo-ode/ode-output-va
 
 You may run custom test cases by creating your own configuration file by setting the following command-line arguments:
 
-`python test-harness.py --config-file <CONFIGFILEPATH> --data-file <DATAFILEPATH> --kafka-topics <KAFKATOPICS> --output-file <LOGFILEPATH>`
+`python test-harness.py --config-file <CONFIGFILEPATH> --data-file <DATAFILEPATH> --ode-upload-url <ODEUPLOADURL> --kafka-topics <KAFKATOPICS> --output-file <LOGFILEPATH>`
 
 ```
-usage: test-harness.py [-h] --data-file DATAFILEPATH --kafka-topics KAFKATOPICS
+usage: test-harness.py [-h] --data-file DATAFILEPATH --ode-upload-url <ODEUPLOADURL> --kafka-topics KAFKATOPICS
                        [--config-file CONFIGFILEPATH]
                        [--output-file LOGFILEPATH]
 
@@ -71,6 +71,9 @@ optional arguments:
   --data-file DATAFILEPATH
                         Path to log data file that will be sent to the ODE for
                         validation.
+  --ode-upload-url ODEUPLOADURL
+						Full URL of the ODE upload directory to which the data-file will be sent, 
+						e.g. https://ode.io:8443/upload/bsmlog.
   --kafka-topics KAFKATOPICS
                         Comma-separated list of Kafka topics to which to the test harness should listen
                         for output messages.
@@ -81,3 +84,9 @@ optional arguments:
                         [Optional] Output file to which detailed validation results will
                         be printed.
 ```
+
+## Release History
+- **2019-04-15 v0.0.4:** Added ode-upload-url command line argument so the test harness no longer relies on DOCKER_HOST_IP environment variable to reach the ODE. Renamed `full-test.sh` to `full-test-sample.sh`. The users must create their own `full-test.sh` according to the provided sample script.
+- **2019-04-09 v0.0.3:** Provided conditional checks specified in `config.ini`
+- **2019-04-05 v0.0.2:** Various updates
+- **2019-04-01 v0.0.1:** Initial release of the validator library
