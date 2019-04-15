@@ -45,9 +45,13 @@ deactivate
 
 ### Option 1:  (Recommended) Using the pre-configured test script
 
-You may perform a complete test of all of the ODE input file types by running the pre-configured full-test script.
+You may perform a complete test of all of the ODE input file types by running the pre-configured `full-test-sample` script.
+However, you may need to modify the `--ode-upload-url` to match your specific ODE deployment. It is also strongly recommended
+to use your own test files and add additional tests to ensure a better a fuller coverage. To do so, copy the provided
+`full-test-sample` into a new file name such as `fulle-test.sh` and make all necessary and recommended modification to the new file.
+You may then run your specific and customized tests by running the following command.
 
-Run `./full-test.sh`
+`source ./full-test.sh`
 
 ### Option 2: Using custom test cases
 
