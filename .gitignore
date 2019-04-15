@@ -20,6 +20,7 @@ uploads
 settings.xml
 /.settings
 .metadata
+*.pyc
 
 ####################
 ### jpo-ode-svcs ###
@@ -125,3 +126,5 @@ settings.xml
 #########################
 ### jpo-security-svcs ###
 /jpo-security-svcs/*.log
+/qa/test-harness/*.log
+/qa/test-harness/.vscode

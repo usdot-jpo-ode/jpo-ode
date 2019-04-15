@@ -409,16 +409,14 @@ Please read our [contributing guide](docs/contributing_guide.md) to learn about 
 
 - Main repository on GitHub (public)
 	- <https://github.com/usdot-jpo-ode/jpo-ode>
-	- git@github.com:usdot-jpo-ode/jpo-ode.git
 - Data Privacy Module on Github (public)
 	- <https://github.com/usdot-jpo-ode/jpo-cvdp>
-	- git@github.com/usdot-jpo-ode/jpo-cvdp
 - S3 Depositor Module on Github (public)
 	- <https://github.com/usdot-jpo-ode/jpo-s3-deposit>
-	- gith@github.com/usdot-jpo-ode/jpo-s3-deposit
 - Security services repository on GitHub (public)
   - <https://github.com/usdot-jpo-ode/jpo-security-svcs>
-	- git@github.com:usdot-jpo-ode/jpo-security-svcs.git
+- ODE Output Validatory Library (public)
+  - https://github.com/usdot-jpo-ode/ode-output-validator-library
 
 ### Agile Project Management - Jira
 <https://usdotjpoode.atlassian.net/secure/RapidBoard.jspa?projectKey=ODE>
@@ -462,8 +460,14 @@ travis env set SONAR_SECURITY_TOKEN <key> -pr <user-account>/<repo-name>
 ######################################
  -->
 
-<a name="known-bugs"/>
+## Quality Assurance
+ODE provides an automated test harness that can be used for regression and user acceptance testing. 
+The test harness is pprovided in the [qa/test-harness](ga/test-harness) directory under jpo-ode root folder. 
+The test harness uses the ODE [Validator Library](https://github.com/usdot-jpo-ode/ode-output-validator-library) repository as a submodule.
 
+For more information, please see: https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-ODE-test-harness
+
+<a name="known-bugs"/>
 ## 9. Known Bugs
 
 Date: 07/2017
