@@ -65,7 +65,7 @@ def main():
             print("[ERROR] Aborting test routine! Test file (%s) failed to upload to (%s), response code %d" % (args.data_file_path, args.ode_upload_url, upload_response.status_code))
             return
     except (requests.exceptions.ConnectionError, requests.exceptions.ConnectTimeout) as e:
-        print("[ERROR] Aborting test routine! Test file upload failed (unable to reach to ODE). Error: '%s'" % str(e))
+        print("[ERROR] Aborting test routine! Test file upload failed (unable to reach ODE). Error: '%s'" % str(e))
         return
 
     # Wait for as many messages as possible to be collected
