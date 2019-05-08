@@ -56,7 +56,7 @@ def main():
     print("[INFO] Kafka consumer preparation complete.")
 
     # Upload the test file with known data to the ODE
-    print("[INFO] Uploading test file to ODE...")
+    print("[INFO] Uploading test file to ODE: %s ..." % args.data_file_path)
     try:
         upload_response = upload_file(args.data_file_path, args.ode_upload_url)
         if upload_response.status_code == 200:
@@ -101,7 +101,9 @@ def main():
 
     # Print the validation results to a file if the user has specified one
     if args.output_file_path is not None:
-        logger.info(validation_results)
+        logger.info("Validation Results for data file: %s" % args.data_file_path)
+        for result in validation_results:
+            logger.info(result)
         print("[END] Results logged to '%s'." % args.output_file_path)
     else:
         print("[END] Output file not specified, detailed results not logged.")
