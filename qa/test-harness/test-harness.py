@@ -83,10 +83,11 @@ def main():
     # Count the number of validations and failed validations
     num_errors = 0
     num_validations = 0
-    for result in validation_results['Results']:
-        num_validations += len(result['Validations'])
-        for validation in result['Validations']:
-            if validation['Valid'] == False:
+    for result in validation_results:
+        validations = result.field_validations
+        num_validations += len(validations)
+        for validation in validations:
+            if validation.valid == False:
                 num_errors += 1
 
     if num_errors > 0:
@@ -100,7 +101,7 @@ def main():
 
     # Print the validation results to a file if the user has specified one
     if args.output_file_path is not None:
-        logger.info(json.dumps(validation_results))
+        logger.info(validation_results)
         print("[END] Results logged to '%s'." % args.output_file_path)
     else:
         print("[END] Output file not specified, detailed results not logged.")
