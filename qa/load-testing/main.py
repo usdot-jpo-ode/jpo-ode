@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 import glob
 import os
 import requests
+import sys
 import time
 
 DOCKER_HOST_IP=os.getenv('DOCKER_HOST_IP')
@@ -22,7 +23,18 @@ def upload_file(filepath):
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument("--dir", dest="dir", help="Directory containing files to upload.", metavar="DIR", required=True)
+    deposit_method_group = parser.add_mutually_exclusive_group(required=True)
+    deposit_method_group.add_argument("--deposit-rest", dest="deposit_rest", action='store_true', help="Deposit files to the ODE directly using the REST upload endpoint.")
+    deposit_method_group.add_argument("--deposit-copy", dest="deposit_copy", action='store_true', help="Deposit files to the ODE indirectly by copying them into the uploads directory.")
+
+    source_files_group = parser.add_mutually_exclusive_group(required=True)
+    source_files_group.add_argument("--generate-files", dest="genfiles", action='store_true', help="If provided, the script will create duplicate temporary files from specified source file.")
+    parser.add_argument("--source", dest="source", help="Required if --generate-files-from-source, specifies the reference file for temporary duplication.", required="--generate-files" in sys.argv)
+
+    source_files_group.add_argument("--existing-files", dest="existingfiles", action='store_true', help="If provided, the script will deposit existing files in .")
+
+
+    parser.add_argument("--dir", dest="dir", help="Directory containing files to upload.", required="--deposit-copy" in sys.argv)
     args = parser.parse_args()
 
     file_list = get_list_of_files_in_directory(args.dir)
