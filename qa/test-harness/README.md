@@ -90,6 +90,7 @@ optional arguments:
 ```
 
 ## Release History
+
 ### 2019-05-09
 * Integrated [odevalidator v0.0.4](https://github.com/usdot-jpo-ode/ode-output-validator-library/releases/tag/odevalidator-0.0.4)
 
