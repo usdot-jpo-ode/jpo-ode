@@ -9,6 +9,7 @@ import time
 import yaml
 from kafka import KafkaConsumer
 from odevalidator import TestCase
+from resultprinter import ValidationResultPrinter
 
 KAFKA_CONSUMER_TIMEOUT = 15000
 KAFKA_PORT = '9092'
@@ -69,8 +70,7 @@ class TestHarnessIteration:
         print("[INFO] Received %d messages from Kafka consumer." % msg_queue.qsize())
 
         if msg_queue.qsize() == 0:
-            print("[ERROR] Aborting test routine! Received no messages from the Kafka consumer.")
-            return
+            raise TestHarnessException("[ERROR] Aborting test routine! Received no messages from the Kafka consumer.")
 
         # After all messages were received, log them to a file
         self.validation_results = self.validator.validate_queue(msg_queue)
@@ -105,10 +105,12 @@ class TestHarnessIteration:
         print("[END] File validation complete.")
 
     def print_results_to_file(self):
-        logger = logging.getLogger('test-harness')
-        logger.setLevel(logging.INFO)
-        logger.addHandler(logging.FileHandler(self.output_file_path, 'w'))
-        logger.info(yaml.dump(self.validation_results))
+        printer = ValidationResultPrinter()
+        printer.print_list(self.validation_results)
+        # logger = logging.getLogger('test-harness')
+        # logger.setLevel(logging.INFO)
+        # logger.addHandler(logging.FileHandler(self.output_file_path, 'w'))
+        # logger.info(yaml.dump(self.validation_results))
 
 class TestHarness:
     def __init__(self, config_file_path):
