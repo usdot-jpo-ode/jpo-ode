@@ -90,7 +90,20 @@ optional arguments:
 ```
 
 ## Release History
-- **2019-04-15 v0.0.4:** Added ode-upload-url command line argument so the test harness no longer relies on DOCKER_HOST_IP environment variable to reach the ODE. Renamed `full-test.sh` to `full-test-sample.sh`. The users must create their own `full-test.sh` according to the provided sample script.
-- **2019-04-09 v0.0.3:** Provided conditional checks specified in `config.ini`
-- **2019-04-05 v0.0.2:** Various updates
-- **2019-04-01 v0.0.1:** Initial release of the validator library
+
+### 2019-05-09
+* Integrated [odevalidator v0.0.4](https://github.com/usdot-jpo-ode/ode-output-validator-library/releases/tag/odevalidator-0.0.4)
+
+### 2019-04-15
+* Added ode-upload-url command line argument so the test harness no longer 
+relies on DOCKER_HOST_IP environment variable to reach the ODE. 
+* Renamed `full-test.sh` to `full-test-sample.sh`. The users must create their own `full-test.sh` according to the provided sample script.
+
+### 2019-04-09
+* Integrated [odevalidator-0.0.3](https://github.com/usdot-jpo-ode/ode-output-validator-library/releases/tag/odevalidator-0.0.3)
+
+### 2019-04-05
+* Integrated [odevalidator-0.0.2](https://github.com/usdot-jpo-ode/ode-output-validator-library/releases/tag/odevalidator-0.0.2)
+
+### 2019-04-01
+* Integrated initial release of the validator library [odevalidator-v0.0.1](https://github.com/usdot-jpo-ode/ode-output-validator-library/releases/tag/odevalidator-0.0.1)
