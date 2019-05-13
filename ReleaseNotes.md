@@ -1,23 +1,29 @@
 ## ODE Release Notes ##
 -----------------------
-### Sprint 44
-- ODE-1234 Updated the odevalidator library with conditional configurability.
-- Release of jpo-ode-1.0.6
-### Sprint 43
+### Release 1.0.8 (May 13, 2019)
+- Integrated odevalidator v0.0.4
+### Release 1.0.7 (Apr 15, 2019)
+- Integrated odevalidator v0.0.3
+### Release 1.0.6 (Apr 8, 2019)
+- Integrated odevalidator v0.0.1
+  - ODE-1234 Updated the odevalidator library with conditional configurability.
+### Release 1.0.5 (Mar 20, 2019)
 - ODE-1209 Fixed missing bsmSource metadata field
 - ODE-944 Creates SDW Depositor microservice using the new SDW REST API
 - ODE-1056 Modifying ODE to support both WebSocket interface or SDW Depositor microservice by configurable properties
-### Sprint 41
+### Release 1.0.4 (Feb 12, 2019)
+- ODE-1136 Fixed metadata bug causing duplicate or invalid metadata elements (locationData, odeReceivedAt, recordGeneratedAt)
 - ODE-844 Fixed GitHub issue 264: New Content Type for TIMs desired by WYDOT
 - ODE-994 Add the ODE version number to the Demo UI
-### Sprint 40
+### Release 1.0.3 (Feb 7, 2019)
 - ODE-944 Added Situation Data Warehouse depositor submodule to the ODE
+### Release 1.0.2 (Jan 22, 2019)
 - ODE-1076 New values added for metadata.recordGeneratedBy: RSU, TMC_VIA_SAT, TMC_VIA_SNMP
-### December 2018
+### Release 1.0.1 (Dec 20, 2019)
 - ODE-466 serialId element of metadata will now provide a true serial number to help identify missing records.
 - ODE-964 Added ode.rsuUsername/ode.rsuPassword application properties or alternatively ODE_RSU_USERNAME and ODE_RSU_PASSWORD environment variables to authenticate communications with RSU instead of using the REST API parameters.
 - ODE-992 Added `/version` endpoint to get the version information of a running ODE.
-### November 2018
+### Release 1.0.0
 - ODE-787 Publish J2735 version of Broadcast TIM in addition to the REST request version (see GitHub Issue #262). Please see https://github.com/usdot-jpo-ode/jpo-ode/wiki/Schema-Version-6-Change-Notice for details.
 ### Sprint 38
 - ODE-769 Initiated output schema change SOP. See https://github.com/usdot-jpo-ode/jpo-ode/wiki/SchemaVersion-5-Change-Notice for details
