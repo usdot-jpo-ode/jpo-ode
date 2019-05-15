@@ -105,12 +105,12 @@ class TestHarnessIteration:
         print("[END] File validation complete.")
 
     def print_results_to_file(self):
+        logger = logging.getLogger('test-harness')
+        logger.setLevel(logging.INFO)
+        logger.addHandler(logging.FileHandler(self.output_file_path, 'w'))
         printer = ValidationResultPrinter()
-        printer.print_list(self.validation_results)
-        # logger = logging.getLogger('test-harness')
-        # logger.setLevel(logging.INFO)
-        # logger.addHandler(logging.FileHandler(self.output_file_path, 'w'))
-        # logger.info(yaml.dump(self.validation_results))
+        printer.print_list(self.validation_results, True, logger)
+
 
 class TestHarness:
     def __init__(self, config_file_path):
