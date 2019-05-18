@@ -191,9 +191,10 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             }
          }
 
-         logger.debug("Sending message to RSUs...");
          if (null != request.getSnmp() && null != request.getRsus() && null != hexEncodedTim) {
-            asn1CommandManager.sendToRsus(request, hexEncodedTim);
+            logger.info("Sending message to RSUs...");
+            Map<String, String> rsuResponseList = asn1CommandManager.sendToRsus(request, hexEncodedTim);
+            logger.info("TIM deposit response {}", rsuResponseList);
          }
 
          if (request.getSdw() != null) {
