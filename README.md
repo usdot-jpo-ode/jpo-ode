@@ -461,13 +461,14 @@ travis env set SONAR_SECURITY_TOKEN <key> -pr <user-account>/<repo-name>
  -->
 
 ## Quality Assurance
-ODE provides an automated test harness that can be used for regression and user acceptance testing. 
-The test harness is pprovided in the [qa/test-harness](ga/test-harness) directory under jpo-ode root folder. 
+ODE provides an automated test harness that can be used for regression and user acceptance testing.
+The test harness is pprovided in the [qa/test-harness](ga/test-harness) directory under jpo-ode root folder.
 The test harness uses the ODE [Validator Library](https://github.com/usdot-jpo-ode/ode-output-validator-library) repository as a submodule.
 
 For more information, please see: https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-ODE-test-harness
 
 <a name="known-bugs"/>
+
 ## 9. Known Bugs
 
 Date: 07/2017
