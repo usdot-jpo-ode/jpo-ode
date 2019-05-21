@@ -25,6 +25,8 @@ class TestHarnessIteration:
         self.test_name = config
         self.validator = TestCase(config.get('ConfigFile'))
         self.output_file_path = config.get('OutputFile')
+        self.upload_format = config.get('UploadFormat')
+        self.bundleStream = config.get('BundleStream')
         try:
             self.upload_url = config['UploadUrl']
             self.data_file_path = config['DataFile']
@@ -34,8 +36,17 @@ class TestHarnessIteration:
             raise TestHarnessException("Failed to parse configuration section '%s', missing required field. Error: %s" % (self.test_name, str(e)))
 
     def _upload_file(self, filepath, ode_upload_url):
-        with open(filepath, 'rb') as file:
-            return requests.post(ode_upload_url, files={'name':'file', 'file':file}, timeout=2)
+        if self.upload_format == 'FILE':
+            with open(filepath, 'rb') as file:
+                return requests.post(ode_upload_url, files={'name':'file', 'file':file}, timeout=2)
+        elif self.upload_format == 'BODY':
+            with open(filepath, 'rb') as file:
+                return requests.post(ode_upload_url,
+                    headers={'Content-type': 'application/json', 'Accept': 'application/json'},
+                    data=open(filepath, 'rb'),
+                    timeout=2)
+        else:
+            raise TestHarnessException("Failed to parse configuration section '%s', unknown UploadFormat '%s', expected FILE or BODY." % (self.test_name, self.upload_format))
 
     def _listen_to_kafka_topics(self, msg_queue, *topics):
         consumer=KafkaConsumer(*topics, bootstrap_servers=DOCKER_HOST_IP+':'+KAFKA_PORT, consumer_timeout_ms=KAFKA_CONSUMER_TIMEOUT)
@@ -74,15 +85,16 @@ class TestHarnessIteration:
 
         # After all messages were received, log them to a file
         self.validation_results = self.validator.validate_queue(msg_queue)
-        self.bundle_id = self.validation_results['Results'][0]['Record']['metadata']['serialId']['bundleId']
+        self.bundle_id = self.validation_results[0].record['metadata']['serialId']['bundleId']
+        self.serial_number = self.validation_results[0].record['metadata']['serialId']['serialNumber']
 
         # Count the number of validations and failed validations
         self.num_errors = 0
         self.num_validations = 0
-        for result in self.validation_results['Results']:
-            self.num_validations += len(result['Validations'])
-            for validation in result['Validations']:
-                if validation['Valid'] == False:
+        for result in self.validation_results:
+            self.num_validations += len(result.field_validations)
+            for validation in result.field_validations:
+                if validation.valid == False:
                     self.num_errors += 1
 
 
@@ -125,20 +137,23 @@ class TestHarness:
                 self.test_harness_iterations.append(TestHarnessIteration(config[key]))
 
     def run(self):
-        bundle_ids = []
+        bundle_streams = {}
         for iteration in self.test_harness_iterations:
             iteration.run()
             if self.perform_bundle_id_check:
-                bundle_ids.append(iteration.bundle_id)
+                if iteration.bundleStream not in bundle_streams:
+                    bundle_streams[iteration.bundleStream] = []
+                bundle_streams[iteration.bundleStream].append(iteration.bundle_id)
 
         if self.perform_bundle_id_check:
-            print("[INFO] Performing bundleId validation...")
-            old_id = bundle_ids[0]
-            bundle_ids_error = False
-            for cur_id in bundle_ids[1:]:
-                if cur_id <= old_id or cur_id != old_id + 1:
-                    print("[ERROR] BundleID not incremented correctly between test iterations! Expected %d but got %d" % (old_id+1, cur_id))
-                    bundle_ids_error = True
-                old_id = cur_id
-            if not bundle_ids_error:
-                print("[SUCCESS] BundleID validations passed.")
+            for stream_id in bundle_streams:
+                print("[INFO] Performing bundleId validation on stream %d" % int(stream_id))
+                old_id = bundle_streams[stream_id][0]
+                bundle_ids_error = False
+                for cur_id in bundle_streams[stream_id][1:]:
+                    if cur_id <= old_id or cur_id != old_id + 1:
+                        print("[ERROR] BundleID not incremented correctly between test iterations! Expected %d but got %d. Bundle ID list: %s" % (old_id+1, cur_id, bundle_ids))
+                        bundle_ids_error = True
+                    old_id = cur_id
+                if not bundle_ids_error:
+                    print("[SUCCESS] BundleID validation passed for BundleStream %d." % int(stream_id))
