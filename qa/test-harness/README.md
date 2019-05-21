@@ -80,15 +80,15 @@ PerformBundleIdCheck = True
 
 All other sections define test cases. You may provide as few or as many as you wish.
 
-| Property     | Required | Description                                                                                            |
-|--------------|----------|--------------------------------------------------------------------------------------------------------|
-| DataFile     | Yes      | Log file or REST JSON file containing data to be uploaded to the ODE                                   |
-| UploadUrl    | Yes      | REST endpoint to which data files are sent                                                             |
-| UploadFormat | Yes      | FILE or BODY to specify if the data should be sent as an attachment or in the request body             |
-| KafkaTopics  | Yes      | List of topics, separated by commas, to which the test harness should expect messages out from the ODE |
-| BundleStream | Yes      | Used in conjunction with BundleID validation for grouping                                              |
-| OutputFile   | No       | (Optional) Log file path to which detailed test results will be logged                                 |
-| ConfigFile   | No       | (Optional) Path to ODE validator library custom configuration file                                     |
+| Property     | Required    | Description                                                                                            |
+| ------------ | ----------- | ------------------------------------------------------------------------------------------------------ |
+| DataFile     | Yes         | Log file or REST JSON file containing data to be uploaded to the ODE                                   |
+| UploadUrl    | Yes         | REST endpoint to which data files are sent                                                             |
+| UploadFormat | Yes         | FILE or BODY to specify if the data should be sent as an attachment or in the request body             |
+| KafkaTopics  | Yes         | List of topics, separated by commas, to which the test harness should expect messages out from the ODE |
+| StreamId     | Conditional | (Required if PerformBundleIdCheck = True) if Used in conjunction with BundleID validation for grouping |
+| OutputFile   | No          | (Optional) Log file path to which detailed test results will be logged                                 |
+| ConfigFile   | No          | (Optional) Path to ODE validator library custom configuration file                                     |
 
 ## Release History
 

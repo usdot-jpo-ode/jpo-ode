@@ -26,7 +26,7 @@ class TestHarnessIteration:
         self.validator = TestCase(config.get('ConfigFile'))
         self.output_file_path = config.get('OutputFile')
         self.upload_format = config.get('UploadFormat')
-        self.bundleStream = config.get('BundleStream')
+        self.stream_id = config.get('StreamId')
         try:
             self.upload_url = config['UploadUrl']
             self.data_file_path = config['DataFile']
@@ -141,13 +141,13 @@ class TestHarness:
         for iteration in self.test_harness_iterations:
             iteration.run()
             if self.perform_bundle_id_check:
-                if iteration.bundleStream not in bundle_streams:
-                    bundle_streams[iteration.bundleStream] = []
-                bundle_streams[iteration.bundleStream].append(iteration.bundle_id)
+                if iteration.stream_id not in bundle_streams:
+                    bundle_streams[iteration.stream_id] = []
+                bundle_streams[iteration.stream_id].append(iteration.bundle_id)
 
         if self.perform_bundle_id_check:
             for stream_id in bundle_streams:
-                print("[INFO] Performing bundleId validation on stream %d" % int(stream_id))
+                print("[INFO] Performing bundleId validation on StreamId %d" % int(stream_id))
                 old_id = bundle_streams[stream_id][0]
                 bundle_ids_error = False
                 for cur_id in bundle_streams[stream_id][1:]:
@@ -156,4 +156,4 @@ class TestHarness:
                         bundle_ids_error = True
                     old_id = cur_id
                 if not bundle_ids_error:
-                    print("[SUCCESS] BundleID validation passed for BundleStream %d." % int(stream_id))
+                    print("[SUCCESS] BundleID validation passed for StreamId %d." % int(stream_id))
