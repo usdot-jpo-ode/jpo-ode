@@ -1,6 +1,6 @@
-| Travis Build Status | Sonar Code Quality |
-|---------------------|---------------------|
- [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=master)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) | [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=usdot.jpo.ode%3Ajpo-ode&metric=alert_status)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode) |
+| Travis Build Status | Sonar Code Quality | Sonar Code Coverage |
+|---------------------|---------------------|---------------------|
+ [![Build Status](https://travis-ci.org/usdot-jpo-ode/jpo-ode.svg?branch=master)](https://travis-ci.org/usdot-jpo-ode/jpo-ode) | [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=usdot.jpo.ode%3Ajpo-ode&metric=alert_status)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode) | [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=usdot.jpo.ode%3Ajpo-ode&metric=coverage)](https://sonarcloud.io/dashboard?id=usdot.jpo.ode%3Ajpo-ode) |
 
 # jpo-ode
 
@@ -461,13 +461,14 @@ travis env set SONAR_SECURITY_TOKEN <key> -pr <user-account>/<repo-name>
  -->
 
 ## Quality Assurance
-ODE provides an automated test harness that can be used for regression and user acceptance testing. 
-The test harness is pprovided in the [qa/test-harness](ga/test-harness) directory under jpo-ode root folder. 
+ODE provides an automated test harness that can be used for regression and user acceptance testing.
+The test harness is pprovided in the [qa/test-harness](ga/test-harness) directory under jpo-ode root folder.
 The test harness uses the ODE [Validator Library](https://github.com/usdot-jpo-ode/ode-output-validator-library) repository as a submodule.
 
 For more information, please see: https://github.com/usdot-jpo-ode/jpo-ode/wiki/Using-the-ODE-test-harness
 
 <a name="known-bugs"/>
+
 ## 9. Known Bugs
 
 Date: 07/2017
