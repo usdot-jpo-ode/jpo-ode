@@ -55,7 +55,7 @@ the latest [odevalidator library](https://github.com/usdot-jpo-ode/ode-output-va
 
 You may run custom test cases by creating your own configuration file by setting the following command-line arguments:
 
-`python test-harness.py --config-file <CONFIGFILEPATH>`
+`python main.py --config-file <CONFIGFILEPATH>`
 
 ```
 usage: main.py [-h] [--config-file CONFIGFILEPATH]
@@ -95,17 +95,17 @@ All other sections define test cases. You may provide as few or as many as you w
 ### 2019-05-21
 - Added bundleId validation
 - Added formatted printing to make output log files easier to read
-  - Added ResultPrinter.py
+  - Added resultprinter.py
 - Added support for multiple tests (and multiple files)
 - Changed configuration from command-line arguments to .ini config file format
   - Changed example run script into example config file
-  - Coalesced command-line arguments into one: a config file
+  - Replaced command-line arguments into config file
   - Added _meta configuration section with PerformBundleIdCheck property
   - Added ConfigFile property for custom validator configuration
   - Added UploadFormat configuration property
   - Added BundleStream configuration property
-- Removed necessary command-line arguments, now can run simply by using `python main.py`
-- Refactored test harness into TestHarness and TestHarness iteration classes
+- Removed required command-line arguments, now can run simply by using `python main.py`
+- Refactored test harness into TestHarness and TestHarnessIteration classes
 - Updated ode-output-validator-library submodule
 - Cleanup
 - Documentation
