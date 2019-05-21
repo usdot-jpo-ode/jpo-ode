@@ -427,6 +427,18 @@ Please read our [contributing guide](docs/contributing_guide.md) to learn about 
 ### Continuous Integration and Delivery
 <https://travis-ci.org/usdot-jpo-ode/jpo-ode>
 
+
+<details><summary>Continuous Integration Flow</summary>
+
+```
+1. Travis CI kicks off a Maven build.
+2. Maven runs the test suite.
+3. JaCoCo builds the code coverage report.
+4. Sonar Cloud hosts the code coverage report on the web along with static analysis.
+```
+</details>
+
+
 <details><summary>Using Travis for your build</summary>
 
 
