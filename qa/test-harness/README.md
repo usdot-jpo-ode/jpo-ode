@@ -115,6 +115,7 @@ UploadFormat = FILE
 KafkaTopics = topic.OdeBsmJson
 OutputFile = bsmLogDuringEvent.log
 ConfigFile = ./path/to/my/customconfig.ini
+ExpectedMessages = 400
 ```
 
 ## Troubleshooting
