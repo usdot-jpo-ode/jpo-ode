@@ -121,7 +121,7 @@ ExpectedMessages = 400
 ## Troubleshooting
 
 - `testharness.TestHarnessException: [ERROR] Aborting test routine! Received no messages from the Kafka consumer.`
-  1. Try increasing the Kafka consumer timeout: [testharness.py#L14](./testharness.py#L14)
+  1. Try increasing the Kafka consumer timeout using the `KafkaTimeout` property in the _meta section of the configuration file
   2. Verify that the ODE is publishing messages to the Kafka topics specified in the configuration file
 
 ## Release History
