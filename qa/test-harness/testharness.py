@@ -11,7 +11,7 @@ from kafka import KafkaConsumer
 from odevalidator import TestCase
 from resultprinter import ValidationResultPrinter
 
-KAFKA_CONSUMER_TIMEOUT = 15000
+DEFAULT_KAFKA_TIMEOUT = 15000
 KAFKA_PORT = '9092'
 
 DOCKER_HOST_IP=os.getenv('DOCKER_HOST_IP')
@@ -21,15 +21,15 @@ class TestHarnessException(Exception):
     pass
 
 class TestHarnessIteration:
-    def __init__(self, config):
-        self.test_name = config
+    def __init__(self, config, kafka_timeout):
+        self.data_file_path = config.name
+        self.kafka_timeout = kafka_timeout
         self.validator = TestCase(config.get('ConfigFile'))
         self.output_file_path = config.get('OutputFile')
-        self.upload_format = config.get('UploadFormat')
-        self.stream_id = config.get('StreamId')
+        self.expected_messages = int(config.get('ExpectedMessages')) if config.get('ExpectedMessages') else None # must handle optional + conversion from string to int
         try:
+            self.upload_format = config.get('UploadFormat')
             self.upload_url = config['UploadUrl']
-            self.data_file_path = config['DataFile']
             self.list_of_kafka_topics = config['KafkaTopics'].split(",")
             for topic in self.list_of_kafka_topics: topic.strip()
         except KeyError as e:
@@ -49,12 +49,17 @@ class TestHarnessIteration:
             raise TestHarnessException("Failed to parse configuration section '%s', unknown UploadFormat '%s', expected FILE or BODY." % (self.test_name, self.upload_format))
 
     def _listen_to_kafka_topics(self, msg_queue, *topics):
-        consumer=KafkaConsumer(*topics, bootstrap_servers=DOCKER_HOST_IP+':'+KAFKA_PORT, consumer_timeout_ms=KAFKA_CONSUMER_TIMEOUT)
+        consumer=KafkaConsumer(*topics, bootstrap_servers=DOCKER_HOST_IP+':'+KAFKA_PORT, consumer_timeout_ms=self.kafka_timeout)
+        msgs_received = 0
         for msg in consumer:
             msg_queue.put(str(msg.value, 'utf-8'))
+            msgs_received += 1
+            if self.expected_messages != None and msgs_received >= self.expected_messages:
+                return
 
     def run(self):
         msg_queue = queue.Queue()
+        print("[START] Beginning test routine for test file %s" % self.data_file_path)
         print("[INFO] Creating Kafka consumer listenting on topic(s): %s ..." % self.list_of_kafka_topics)
         kafkaListenerThread=threading.Thread(target=self._listen_to_kafka_topics, args=(msg_queue, *self.list_of_kafka_topics))
         kafkaListenerThread.start()
@@ -82,11 +87,13 @@ class TestHarnessIteration:
 
         if msg_queue.qsize() == 0:
             raise TestHarnessException("[ERROR] Aborting test routine! Received no messages from the Kafka consumer.")
+        if self.expected_messages != None and self.expected_messages != msg_queue.qsize():
+            raise TestHarnessException("[ERROR] Aborting test routine! Did not receive expected number of messages, expected %d but got %d." % (self.expected_messages, msg_queue.qsize()))
 
         # After all messages were received, log them to a file
         self.validation_results = self.validator.validate_queue(msg_queue)
         self.bundle_id = self.validation_results[0].record['metadata']['serialId']['bundleId']
-        self.serial_number = self.validation_results[0].record['metadata']['serialId']['serialNumber']
+        self.stream_id = self.validation_results[0].record['metadata']['serialId']['streamId']
 
         # Count the number of validations and failed validations
         self.num_errors = 0
@@ -133,8 +140,9 @@ class TestHarness:
         for key in config.sections():
             if key == "_meta":
                 self.perform_bundle_id_check = True if config[key]['PerformBundleIdCheck'] == 'True' else False
+                self.kafka_timeout = int(config[key]['KafkaTimeout']) if config[key].get('KafkaTimeout') != None else DEFAULT_KAFKA_TIMEOUT
             else:
-                self.test_harness_iterations.append(TestHarnessIteration(config[key]))
+                self.test_harness_iterations.append(TestHarnessIteration(config[key], self.kafka_timeout))
 
     def run(self):
         bundle_streams = {}
@@ -147,13 +155,13 @@ class TestHarness:
 
         if self.perform_bundle_id_check:
             for stream_id in bundle_streams:
-                print("[INFO] Performing bundleId validation on StreamId %d" % int(stream_id))
+                print("[INFO] Performing bundleId validation on StreamId %s" % stream_id)
                 old_id = bundle_streams[stream_id][0]
                 bundle_ids_error = False
                 for cur_id in bundle_streams[stream_id][1:]:
                     if cur_id <= old_id or cur_id != old_id + 1:
-                        print("[ERROR] BundleID not incremented correctly between test iterations! Expected %d but got %d. Bundle ID list: %s" % (old_id+1, cur_id, bundle_ids))
+                        print("[ERROR] BundleID not incremented correctly between test iterations! Expected %d but got %d. Bundle ID list: %s" % (old_id+1, cur_id, bundle_streams[stream_id]))
                         bundle_ids_error = True
                     old_id = cur_id
                 if not bundle_ids_error:
-                    print("[SUCCESS] BundleID validation passed for StreamId %d." % int(stream_id))
+                    print("[SUCCESS] BundleID validation passed for StreamId %s." % stream_id)

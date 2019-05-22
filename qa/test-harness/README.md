@@ -45,6 +45,8 @@ deactivate
 
 You may perform a complete test of all of the ODE input file types by running `python main.py`.
 
+A typical test run takes about 2 minutes to complete.
+
 ### Option 2: Using custom test cases
 
 See the [odevalidator library](https://github.com/usdot-jpo-ode/ode-output-validator-library) for more information on how to create your own test case configurations.
@@ -69,26 +71,57 @@ optional arguments:
 
 ## Configuration
 
-Test case configuration is done using a .ini file. Provided in this repository is the default configuration in full-test-sample.ini.
+Test case configuration is done using a .ini file. Provided in this repository is the default configuration in full-test-sample.ini. The configuration file must start with a `[_meta]` section and then as many or as few test case sections as you wish.
 
-The `[_meta]` section contains one property: `PerformBundleIdCheck`. Set this to True if you want to perform bundle ID validations or False if you do not.
+**The _meta section**
+
+This section is used to define high-level settings.
+
+| Property             | Required | Description                                                                                                         |
+| -------------------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
+| PerformBundleIdCheck | Yes      | Used to specify if the test harness should run bundleId validations across test cases                               |
+| KafkaTimeout         | No       | (Optional) Used to override the default timeout, default value is 15000 miliseconds; set/increase this value if you are experiencing timeout exceptions |
+
+Example:
 
 ```
 [_meta]
 PerformBundleIdCheck = True
+KafkaTimeout = 7500
 ```
 
-All other sections define test cases. You may provide as few or as many as you wish.
+**Test case sections**
 
-| Property     | Required    | Description                                                                                            |
-| ------------ | ----------- | ------------------------------------------------------------------------------------------------------ |
-| DataFile     | Yes         | Log file or REST JSON file containing data to be uploaded to the ODE                                   |
-| UploadUrl    | Yes         | REST endpoint to which data files are sent                                                             |
-| UploadFormat | Yes         | FILE or BODY to specify if the data should be sent as an attachment or in the request body             |
-| KafkaTopics  | Yes         | List of topics, separated by commas, to which the test harness should expect messages out from the ODE |
-| StreamId     | Conditional | (Required if PerformBundleIdCheck = True) if Used in conjunction with BundleID validation for grouping |
-| OutputFile   | No          | (Optional) Log file path to which detailed test results will be logged                                 |
-| ConfigFile   | No          | (Optional) Path to ODE validator library custom configuration file                                     |
+All other sections define test cases.
+
+| Property         | Required | Description                                                                                                                                                                                        |
+| ---------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [FilePath]       | Yes      | The name of your test case section (in [brackets]) defines the log file or REST JSON file path containing data to be uploaded to the ODE.                                                          |
+| UploadUrl        | Yes      | REST endpoint to which data files are sent; note that DOCKER_HOST_IP is automatically interpolated                                                                                                 |
+| UploadFormat     | Yes      | FILE or BODY to specify if the data should be sent as an attachment or in the request body; TIM REST API uploads must be set as BODY, log file uploads must be set as File                         |
+| KafkaTopics      | Yes      | List of topics, separated by commas, to which the test harness should expect messages out from the ODE                                                                                             |
+| OutputFile       | No       | (Optional) Log file path to which detailed test results will be logged                                                                                                                             |
+| ConfigFile       | No       | (Optional) Path to ODE validator library custom configuration file                                                                                                                                 |
+| ExpectedMessages | No       | (Optional) Used if you know how many messages to expect in the data file; if not used the test-harness will wait KafkaTimeout amount of time to receive all messages; useful for skipping excess timeout time|
+
+_**Note:** When using the `ExpectedMessages` property, the test harness will stop listening for messages once that count has been reached. If the file contains more messages than that, they will be ignored._
+
+Example:
+
+```
+[../../data/bsmLogDuringEvent.gz]
+UploadUrl = http://%(DOCKER_HOST_IP)s:8080/upload/bsmlog
+UploadFormat = FILE
+KafkaTopics = topic.OdeBsmJson
+OutputFile = bsmLogDuringEvent.log
+ConfigFile = ./path/to/my/customconfig.ini
+```
+
+## Troubleshooting
+
+- `testharness.TestHarnessException: [ERROR] Aborting test routine! Received no messages from the Kafka consumer.`
+  1. Try increasing the Kafka consumer timeout: [testharness.py#L14](./testharness.py#L14)
+  2. Verify that the ODE is publishing messages to the Kafka topics specified in the configuration file
 
 ## Release History
 
@@ -103,7 +136,7 @@ All other sections define test cases. You may provide as few or as many as you w
   - Added _meta configuration section with PerformBundleIdCheck property
   - Added ConfigFile property for custom validator configuration
   - Added UploadFormat configuration property
-  - Added BundleStream configuration property
+  - Added ExpectedMessages configuration property
 - Removed required command-line arguments, now can run simply by using `python main.py`
 - Refactored test harness into TestHarness and TestHarnessIteration classes
 - Updated ode-output-validator-library submodule
