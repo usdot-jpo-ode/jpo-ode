@@ -17,13 +17,16 @@ package us.dot.its.jpo.ode.plugin;
 
 import java.text.ParseException;
 import java.time.ZonedDateTime;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import us.dot.its.jpo.ode.model.OdeObject;
-import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class SNMP extends OdeObject {
    private static final long serialVersionUID = 6622977652181526235L;
+
+   private static final Logger logger = LoggerFactory.getLogger(SNMP.class);
 
    private String rsuid;
    private int msgid;
@@ -127,14 +130,15 @@ public class SNMP extends OdeObject {
 
    public static String snmpTimestampFromIso(String isoTimestamp) throws ParseException {
       ZonedDateTime zdt = DateTimeUtils.isoDateTime(isoTimestamp);
-      byte[] bdt = new byte[6];
-      bdt[0] = (byte) zdt.getMonthValue();
-      bdt[1] = (byte) zdt.getDayOfMonth();
-      bdt[2] = (byte) (zdt.getYear() / 100);
-      bdt[3] = (byte) (zdt.getYear() % 100);
-      bdt[4] = (byte) zdt.getHour();
-      bdt[5] = (byte) zdt.getMinute();
-      return CodecUtils.toHex(bdt);
+
+      StringBuilder sb = new StringBuilder();
+
+      sb.append(String.format("%04X", zdt.getYear()));
+      sb.append(String.format("%02X", zdt.getMonthValue()));
+      sb.append(String.format("%02X", zdt.getDayOfMonth()));
+      sb.append(String.format("%02X", zdt.getHour()));
+      sb.append(String.format("%02X", zdt.getMinute()));
+      return sb.toString();
    }
 
    @Override
