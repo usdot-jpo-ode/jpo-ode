@@ -17,16 +17,12 @@ package us.dot.its.jpo.ode.plugin;
 
 import java.text.ParseException;
 import java.time.ZonedDateTime;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 
 import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
 
 public class SNMP extends OdeObject {
    private static final long serialVersionUID = 6622977652181526235L;
-
-   private static final Logger logger = LoggerFactory.getLogger(SNMP.class);
 
    private String rsuid;
    private int msgid;
