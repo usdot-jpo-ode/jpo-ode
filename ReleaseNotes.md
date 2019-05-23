@@ -1,5 +1,8 @@
 ## ODE Release Notes ##
 -----------------------
+### Release 1.0.9 (TBD)
+- Integrated odevalidator v0.0.5
+- Updated test-harness (see [release notes](./qa/test-harness/README.md#release-history))
 ### Release 1.0.8 (May 17, 2019)
 - Integrated odevalidator v0.0.4
 ### Release 1.0.7 (Apr 15, 2019)
