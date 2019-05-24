@@ -1,36 +1,18 @@
 language: java
+
 jdk: oraclejdk8
-#branches:
-#  only:
-#    - master
-#    - develop
-sudo: false 
-#before_install:
-#  - echo "installing private repository"
-#  - git clone https://${BITBUCKET_UN_APP_PW}@bitbucket.org/usdot-jpo-ode/jpo-ode-private.git jpo-ode-private 
-#  - cd jpo-ode-private
-#  - mvn clean
-#  - mvn install
-#  - cd ..
-#  - echo "installing 1609.2 security library repository"
-#  - git clone https://github.com/usdot-jpo-ode/jpo-security.git fedgov-cv-security-2016 
-#  - cd fedgov-cv-security-2016
-#  - mvn clean
-#  - mvn -DskipTests install
-#  - cd ..
-#install: true #must disable pre-installation of dependencies because it fails due to missing oss.runtime dependency install 
+
+sudo: false
+
 addons:
   sonarcloud:
     organization: "usdot-jpo-ode"
     token:
       secure: $SONAR_SECURITY_TOKEN_NEW
     branches:
-      - .* 
+      - .*
+
 script:
   - mvn -e clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
-  
+
 cache: false
-#cache:
-#  directories:
-#    - "$HOME/.m2/repository"
-#    - "$HOME/.sonar/cache"
