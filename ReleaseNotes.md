@@ -1,10 +1,9 @@
 ## ODE Release Notes ##
 -----------------------
-### Release 1.0.9 (TBD)
-- Integrated odevalidator v0.0.5
+### Release 1.0.8 (May 24, 2019)
+- Integrated odevalidator v0.0.6
 - Updated test-harness (see [release notes](./qa/test-harness/README.md#release-history))
-### Release 1.0.8 (May 17, 2019)
-- Integrated odevalidator v0.0.4
+- Changed SNMP deposit timestamp format from MM/DD/YYYY to YYYY/MM/DD
 ### Release 1.0.7 (Apr 15, 2019)
 - Integrated odevalidator v0.0.3
 ### Release 1.0.6 (Apr 8, 2019)
