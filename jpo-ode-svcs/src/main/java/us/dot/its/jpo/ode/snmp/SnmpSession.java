@@ -20,6 +20,7 @@ import java.text.ParseException;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.ietf.jgss.Oid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
@@ -58,7 +59,7 @@ import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
  * over UDP and is actually connection-less.
  */
 public class SnmpSession {
-   
+
    private static final Logger logger = LoggerFactory.getLogger(SnmpSession.class);
 
    private Snmp snmp;
@@ -71,9 +72,8 @@ public class SnmpSession {
    /**
     * Constructor for SnmpSession
     * 
-    * @param props
-    *           SnmpProperties for the session (target address, retries,
-    *           timeout, etc)
+    * @param props SnmpProperties for the session (target address, retries,
+    *              timeout, etc)
     * @throws IOException
     */
    public SnmpSession(RSU rsu) throws IOException {
@@ -86,12 +86,12 @@ public class SnmpSession {
       target.setTimeout(rsu.getRsuTimeout());
       target.setVersion(SnmpConstants.version3);
       if (rsu.getRsuUsername() != null) {
-        target.setSecurityLevel(SecurityLevel.AUTH_NOPRIV);
-        target.setSecurityName(new OctetString(rsu.getRsuUsername()));
+         target.setSecurityLevel(SecurityLevel.AUTH_NOPRIV);
+         target.setSecurityName(new OctetString(rsu.getRsuUsername()));
       } else {
-        target.setSecurityLevel(SecurityLevel.NOAUTH_NOPRIV);
+         target.setSecurityLevel(SecurityLevel.NOAUTH_NOPRIV);
       }
-      
+
       // Set up the UDP transport mapping over which requests are sent
       transport = null;
       try {
@@ -107,10 +107,10 @@ public class SnmpSession {
       USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
       SecurityModels.getInstance().addSecurityModel(usm);
       if (rsu.getRsuUsername() != null) {
-        snmp.getUSM().addUser(new OctetString(rsu.getRsuUsername()), new UsmUser(new OctetString(rsu.getRsuUsername()),
-              AuthSHA.ID, new OctetString(rsu.getRsuPassword()), null, null));
+         snmp.getUSM().addUser(new OctetString(rsu.getRsuUsername()), new UsmUser(new OctetString(rsu.getRsuUsername()),
+               AuthSHA.ID, new OctetString(rsu.getRsuPassword()), null, null));
       }
-      
+
       // Assert the ready flag so the user can begin sending messages
       ready = true;
 
@@ -119,8 +119,7 @@ public class SnmpSession {
    /**
     * Sends a SET-type PDU to the target specified by the constructor.
     * 
-    * @param pdu
-    *           The message content to be sent to the target
+    * @param pdu The message content to be sent to the target
     * @return ResponseEvent
     * @throws IOException
     */
@@ -152,8 +151,7 @@ public class SnmpSession {
    /**
     * Sends a SET-type PDU to the target specified by the constructor.
     * 
-    * @param pdu
-    *           The message content to be sent to the target
+    * @param pdu The message content to be sent to the target
     * @return ResponseEvent
     * @throws IOException
     */
@@ -196,16 +194,15 @@ public class SnmpSession {
    /**
     * Create an SNMP session given the values in
     * 
-    * @param tim
-    *           - The TIM parameters (payload, channel, mode, etc)
-    * @param props
-    *           - The SNMP properties (ip, username, password, etc)
+    * @param tim   - The TIM parameters (payload, channel, mode, etc)
+    * @param props - The SNMP properties (ip, username, password, etc)
     * @return ResponseEvent
     * @throws TimPduCreatorException
     * @throws IOException
-    * @throws ParseException 
+    * @throws ParseException
     */
-   public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, String payload, RequestVerb requestVerb) throws ParseException, IOException {
+   public static ResponseEvent createAndSend(SNMP snmp, RSU rsu, String payload, RequestVerb requestVerb)
+         throws ParseException, IOException {
 
       SnmpSession session = new SnmpSession(rsu);
 
@@ -251,66 +248,104 @@ public class SnmpSession {
     * Assembles the various RSU elements of a TimParameters object into a usable
     * PDU.
     * 
-    * @param index
-    *           Storage index on the RSU
-    * @param params
-    *           TimParameters POJO that stores status, channel, payload, etc.
+    * @param index  Storage index on the RSU
+    * @param params TimParameters POJO that stores status, channel, payload, etc.
     * @return PDU
     * @throws ParseException
     */
-    public static ScopedPDU createPDU(SNMP snmp, String payload, int index, RequestVerb verb) throws ParseException  {
-   
-        //////////////////////////////
-        // - OID examples         - //
-        //////////////////////////////
-        // rsuSRMStatus.3 = 4 
-        //     --> 1.4.1.11.3 = 4
-        // rsuSRMTxChannel.3 = 3 
-        //     --> 1.4.1.5.3 = 178
-        // rsuSRMTxMode.3 = 1    
-        //     --> 1.4.1.4.3 = 1
-        // rsuSRMPsid.3 x "8300" 
-        //     --> 1.4.1.2.3 x "8300"
-        // rsuSRMDsrcMsgId.3 = 31
-        //      --> 1.4.1.3.3 = 31
-        // rsuSRMTxInterval.3 = 1
-        //      --> 1.4.1.6.3 = 1
-        // rsuSRMDeliveryStart.3 x "010114111530"
-        //      --> 1.4.1.7.3 = "010114111530"
-        // rsuSRMDeliveryStop.3 x "010114130000"
-        //      --> 1.4.1.8.3 = "010114130000"
-        // rsuSRMPayload.3 x "0EFF82445566778899000000AABBCCDDEEFF00E00EA0C12A00"
-        //      --> 1.4.1.9.3 = "0EFF82445566778899000000AABBCCDDEEFF00E00EA0C12A00"
-        // rsuSRMEnable.3 = 1
-        //      --> 1.4.1.10.3 = 1
-        //////////////////////////////
-        
-        VariableBinding rsuSRMPsid = new VariableBinding(new OID("1.0.15628.4.1.4.1.2.".concat(Integer.toString(index))), new OctetString(DatatypeConverter.parseHexBinary(snmp.getRsuid())));
-        VariableBinding rsuSRMDsrcMsgId = new VariableBinding(new OID("1.0.15628.4.1.4.1.3.".concat(Integer.toString(index))), new Integer32(snmp.getMsgid()));
-        VariableBinding rsuSRMTxMode = new VariableBinding(new OID("1.0.15628.4.1.4.1.4.".concat(Integer.toString(index))), new Integer32(snmp.getMode()));
-        VariableBinding rsuSRMTxChannel = new VariableBinding(new OID("1.0.15628.4.1.4.1.5.".concat(Integer.toString(index))), new Integer32(snmp.getChannel()));
-        VariableBinding rsuSRMTxInterval = new VariableBinding(new OID("1.0.15628.4.1.4.1.6.".concat(Integer.toString(index))), new Integer32(snmp.getInterval()));
-        VariableBinding rsuSRMDeliveryStart = new VariableBinding(new OID("1.0.15628.4.1.4.1.7.".concat(Integer.toString(index))), new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystart()))));
-        VariableBinding rsuSRMDeliveryStop = new VariableBinding(new OID("1.0.15628.4.1.4.1.8.".concat(Integer.toString(index))), new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystop()))));
-        VariableBinding rsuSRMPayload = new VariableBinding(new OID("1.0.15628.4.1.4.1.9.".concat(Integer.toString(index))), new OctetString(DatatypeConverter.parseHexBinary(payload)));
-        VariableBinding rsuSRMEnable = new VariableBinding(new OID("1.0.15628.4.1.4.1.10.".concat(Integer.toString(index))), new Integer32(snmp.getEnable()));
-        VariableBinding rsuSRMStatus = new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(index))), new Integer32(snmp.getStatus()));
-        
-        ScopedPDU pdu = new ScopedPDU();
-        pdu.add(rsuSRMPsid);
-        pdu.add(rsuSRMDsrcMsgId);
-        pdu.add(rsuSRMTxMode);
-        pdu.add(rsuSRMTxChannel);
-        pdu.add(rsuSRMTxInterval);
-        pdu.add(rsuSRMDeliveryStart);
-        pdu.add(rsuSRMDeliveryStop);
-        pdu.add(rsuSRMPayload);
-        pdu.add(rsuSRMEnable);
-        if (verb == ServiceRequest.OdeInternal.RequestVerb.POST) {
-           pdu.add(rsuSRMStatus);
-        }
-        pdu.setType(PDU.SET);
-        
-        return pdu;
-    }
+   public static ScopedPDU createPDU(SNMP snmp, String payload, int index, RequestVerb verb) throws ParseException {
+
+      //////////////////////////////
+      // - OID examples - //
+      //////////////////////////////
+      // rsuSRMStatus.3 = 4
+      // --> 1.4.1.11.3 = 4
+      // rsuSRMTxChannel.3 = 3
+      // --> 1.4.1.5.3 = 178
+      // rsuSRMTxMode.3 = 1
+      // --> 1.4.1.4.3 = 1
+      // rsuSRMPsid.3 x "8300"
+      // --> 1.4.1.2.3 x "8300"
+      // rsuSRMDsrcMsgId.3 = 31
+      // --> 1.4.1.3.3 = 31
+      // rsuSRMTxInterval.3 = 1
+      // --> 1.4.1.6.3 = 1
+      // rsuSRMDeliveryStart.3 x "010114111530"
+      // --> 1.4.1.7.3 = "010114111530"
+      // rsuSRMDeliveryStop.3 x "010114130000"
+      // --> 1.4.1.8.3 = "010114130000"
+      // rsuSRMPayload.3 x "0EFF82445566778899000000AABBCCDDEEFF00E00EA0C12A00"
+      // --> 1.4.1.9.3 = "0EFF82445566778899000000AABBCCDDEEFF00E00EA0C12A00"
+      // rsuSRMEnable.3 = 1
+      // --> 1.4.1.10.3 = 1
+      //////////////////////////////
+
+      VariableBinding rsuSRMPsid = SnmpSession.getPEncodedVariableBinding("1.0.15628.4.1.4.1.2.".concat(Integer.toString(index)),
+            snmp.getRsuid());
+      VariableBinding rsuSRMDsrcMsgId = new VariableBinding(
+            new OID("1.0.15628.4.1.4.1.3.".concat(Integer.toString(index))), new Integer32(snmp.getMsgid()));
+      VariableBinding rsuSRMTxMode = new VariableBinding(
+            new OID("1.0.15628.4.1.4.1.4.".concat(Integer.toString(index))), new Integer32(snmp.getMode()));
+      VariableBinding rsuSRMTxChannel = new VariableBinding(
+            new OID("1.0.15628.4.1.4.1.5.".concat(Integer.toString(index))), new Integer32(snmp.getChannel()));
+      VariableBinding rsuSRMTxInterval = new VariableBinding(
+            new OID("1.0.15628.4.1.4.1.6.".concat(Integer.toString(index))), new Integer32(snmp.getInterval()));
+      VariableBinding rsuSRMDeliveryStart = new VariableBinding(
+            new OID("1.0.15628.4.1.4.1.7.".concat(Integer.toString(index))),
+            new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystart()))));
+      VariableBinding rsuSRMDeliveryStop = new VariableBinding(
+            new OID("1.0.15628.4.1.4.1.8.".concat(Integer.toString(index))),
+            new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystop()))));
+      VariableBinding rsuSRMPayload = new VariableBinding(
+            new OID("1.0.15628.4.1.4.1.9.".concat(Integer.toString(index))),
+            new OctetString(DatatypeConverter.parseHexBinary(payload)));
+      VariableBinding rsuSRMEnable = new VariableBinding(
+            new OID("1.0.15628.4.1.4.1.10.".concat(Integer.toString(index))), new Integer32(snmp.getEnable()));
+      VariableBinding rsuSRMStatus = new VariableBinding(
+            new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(index))), new Integer32(snmp.getStatus()));
+
+      ScopedPDU pdu = new ScopedPDU();
+      pdu.add(rsuSRMPsid);
+      pdu.add(rsuSRMDsrcMsgId);
+      pdu.add(rsuSRMTxMode);
+      pdu.add(rsuSRMTxChannel);
+      pdu.add(rsuSRMTxInterval);
+      pdu.add(rsuSRMDeliveryStart);
+      pdu.add(rsuSRMDeliveryStop);
+      pdu.add(rsuSRMPayload);
+      pdu.add(rsuSRMEnable);
+      if (verb == ServiceRequest.OdeInternal.RequestVerb.POST) {
+         pdu.add(rsuSRMStatus);
+      }
+      pdu.setType(PDU.SET);
+
+      return pdu;
+   }
+
+   public static VariableBinding getPEncodedVariableBinding(String oid, String val) {
+      Integer intVal = Integer.parseInt(val, 16);
+      Integer additionValue = null;
+
+      if (intVal >= 0 && intVal <= 127) {
+         // P = V
+         // here we must instantiate the OctetString directly with the hex string to avoid inadvertently creating the ASCII character codes
+         // for instance OctetString.fromString("20", 16) produces the space character (" ") rather than hex 20
+         return new VariableBinding(new OID(oid), new OctetString(Integer.toHexString(intVal)));
+      } else if (intVal >= 128 && intVal <= 16511) {
+         // P = V + 0x7F80
+         additionValue = 0x7F80;
+      } else if (intVal >= 016512 && intVal <= 2113663) {
+         // P = V + 0xBFBF80
+         additionValue = 0xBFBF80;
+      } else if (intVal >= 2113664 && intVal <= 270549119) {
+         // P = V + 0xDFDFBF80
+         additionValue = 0xDFDFBF80;
+      }
+
+      if (additionValue != null) {
+         return new VariableBinding(new OID(oid),
+               OctetString.fromString(Integer.toHexString(intVal + additionValue), 16));
+      }
+      return null;
+   }
 }

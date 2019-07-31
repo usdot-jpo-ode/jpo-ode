@@ -30,6 +30,7 @@ import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.UserTarget;
 import org.snmp4j.security.USM;
+import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 import mockit.Expectations;
@@ -43,8 +44,9 @@ public class SnmpSessionTest {
 	RSU testProps;
 	SnmpSession snmpSession;
 
-	@Injectable USM mockUSM;
-	
+	@Injectable
+	USM mockUSM;
+
 	@Before
 	public void setUp() throws Exception {
 		String testUsername = "testUser";
@@ -104,7 +106,7 @@ public class SnmpSessionTest {
 		assertEquals(mockUserTarget, snmpSession.getTarget());
 	}
 
-  @Test(expected = IOException.class)
+	@Test(expected = IOException.class)
 	public void testResponseEventUDPException(@Mocked Snmp mockSnmp, @Mocked TransportMapping mockTransportMapping,
 			@Mocked UserTarget mockUserTarget, @Mocked PDU mockPDU) throws IOException {
 
@@ -119,8 +121,8 @@ public class SnmpSessionTest {
 	}
 
 	@Test(expected = IOException.class)
-	public void testResponseEventSNMPException(@Mocked Snmp mockSnmp,
-			@Mocked UserTarget mockUserTarget, @Mocked PDU mockPDU) throws IOException {
+	public void testResponseEventSNMPException(@Mocked Snmp mockSnmp, @Mocked UserTarget mockUserTarget,
+			@Mocked PDU mockPDU) throws IOException {
 
 		new Expectations() {
 			{
@@ -131,35 +133,51 @@ public class SnmpSessionTest {
 		snmpSession.set(mockPDU, mockSnmp, mockUserTarget, false);
 	}
 
-   @Test
-   public void shouldCreatePDU() throws ParseException {
+	@Test
+	public void shouldCreatePDU() throws ParseException {
 
-      String expectedResult = "[1.0.15628.4.1.4.1.2.3 = 11, 1.0.15628.4.1.4.1.3.3 = 2, 1.0.15628.4.1.4.1.4.3 = 3, 1.0.15628.4.1.4.1.5.3 = 4, 1.0.15628.4.1.4.1.6.3 = 5, 1.0.15628.4.1.4.1.7.3 = 07:e1:0c:02:11:2f, 1.0.15628.4.1.4.1.8.3 = 07:e1:0c:02:11:2f, 1.0.15628.4.1.4.1.9.3 = 88, 1.0.15628.4.1.4.1.10.3 = 9, 1.0.15628.4.1.4.1.11.3 = 10]";
-      String expectedResult2 = "[1.0.15628.4.1.4.1.2.3 = 11, 1.0.15628.4.1.4.1.3.3 = 2, 1.0.15628.4.1.4.1.4.3 = 3, 1.0.15628.4.1.4.1.5.3 = 4, 1.0.15628.4.1.4.1.6.3 = 5, 1.0.15628.4.1.4.1.7.3 = 07:e1:0c:02:11:2f, 1.0.15628.4.1.4.1.8.3 = 07:e1:0c:02:11:2f, 1.0.15628.4.1.4.1.9.3 = 88, 1.0.15628.4.1.4.1.10.3 = 9]";
+		String expectedResult = "[1.0.15628.4.1.4.1.2.3 = 80:03, 1.0.15628.4.1.4.1.3.3 = 2, 1.0.15628.4.1.4.1.4.3 = 3, 1.0.15628.4.1.4.1.5.3 = 4, 1.0.15628.4.1.4.1.6.3 = 5, 1.0.15628.4.1.4.1.7.3 = 07:e1:0c:02:11:2f, 1.0.15628.4.1.4.1.8.3 = 07:e1:0c:02:11:2f, 1.0.15628.4.1.4.1.9.3 = 88, 1.0.15628.4.1.4.1.10.3 = 9, 1.0.15628.4.1.4.1.11.3 = 10]";
+		String expectedResult2 = "[1.0.15628.4.1.4.1.2.3 = 80:03, 1.0.15628.4.1.4.1.3.3 = 2, 1.0.15628.4.1.4.1.4.3 = 3, 1.0.15628.4.1.4.1.5.3 = 4, 1.0.15628.4.1.4.1.6.3 = 5, 1.0.15628.4.1.4.1.7.3 = 07:e1:0c:02:11:2f, 1.0.15628.4.1.4.1.8.3 = 07:e1:0c:02:11:2f, 1.0.15628.4.1.4.1.9.3 = 88, 1.0.15628.4.1.4.1.10.3 = 9]";
 
-      
-      String rsuSRMPsid = "11";
-      int rsuSRMDsrcMsgId = 2;
-      int rsuSRMTxMode = 3;
-      int rsuSRMTxChannel = 4;
-      int rsuSRMTxInterval = 5;
-      String rsuSRMPayload = "88";
-      int rsuSRMEnable = 9;
-      int rsuSRMStatus = 10;
+		String rsuSRMPsid = "00000083";
+		int rsuSRMDsrcMsgId = 2;
+		int rsuSRMTxMode = 3;
+		int rsuSRMTxChannel = 4;
+		int rsuSRMTxInterval = 5;
+		String rsuSRMPayload = "88";
+		int rsuSRMEnable = 9;
+		int rsuSRMStatus = 10;
 
-      SNMP testParams = new SNMP(
-            rsuSRMPsid, rsuSRMDsrcMsgId, rsuSRMTxMode, rsuSRMTxChannel,
-            rsuSRMTxInterval, "2017-12-02T17:47:11-05:00", "2017-12-02T17:47:11-05:00", 
-            rsuSRMEnable, rsuSRMStatus);
+		SNMP testParams = new SNMP(rsuSRMPsid, rsuSRMDsrcMsgId, rsuSRMTxMode, rsuSRMTxChannel, rsuSRMTxInterval,
+				"2017-12-02T17:47:11-05:00", "2017-12-02T17:47:11-05:00", rsuSRMEnable, rsuSRMStatus);
 
-      ScopedPDU result = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.POST);
+		ScopedPDU result = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.POST);
 
-      assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result.getType());
-      assertEquals(expectedResult, result.getVariableBindings().toString());
+		assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result.getType());
+		assertEquals(expectedResult, result.getVariableBindings().toString());
 
-      ScopedPDU result2 = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.GET);
+		ScopedPDU result2 = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.GET);
 
-      assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result2.getType());
-      assertEquals(expectedResult2, result2.getVariableBindings().toString());
-   }
+		assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result2.getType());
+		assertEquals(expectedResult2, result2.getVariableBindings().toString());
+	}
+
+	@Test
+	public void shouldProperlyPEncode(){
+		String oid = "1.0.15628.4.1.4.1.2.3";
+		String hex1="00000083";
+		String hex2="00000020";
+		String hex3="0020408E";
+		String hex4 = "0020408F";
+		
+		VariableBinding vb1 = SnmpSession.getPEncodedVariableBinding(oid, hex1);
+		VariableBinding vb2 = SnmpSession.getPEncodedVariableBinding(oid, hex2);
+		VariableBinding vb3 = SnmpSession.getPEncodedVariableBinding(oid, hex3);
+		VariableBinding vb4 = SnmpSession.getPEncodedVariableBinding(oid, hex4);
+		
+		assertEquals("P-Encoding failed for " + hex1,"80:03", vb1.toValueString());
+		assertEquals("P-Encoding failed for " + hex2,"20", vb2.toValueString());
+		assertEquals("P-Encoding failed for " + hex3,"e0:00:00:0e", vb3.toValueString());
+		assertEquals("P-Encoding failed for " + hex4,"e0:00:00:0f", vb4.toValueString());
+	}
 }
