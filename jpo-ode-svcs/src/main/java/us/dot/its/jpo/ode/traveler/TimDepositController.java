@@ -106,7 +106,7 @@ public class TimDepositController {
     * @param verb
     * @return
     */
-   public ResponseEntity<String> depositTim(String jsonString, RequestVerb verb) {
+   public synchronized ResponseEntity<String> depositTim(String jsonString, RequestVerb verb) {
 
       if (null == jsonString || jsonString.isEmpty()) {
          String errMsg = "Empty request.";
