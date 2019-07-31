@@ -165,19 +165,19 @@ public class SnmpSessionTest {
 	@Test
 	public void shouldProperlyPEncode(){
 		String oid = "1.0.15628.4.1.4.1.2.3";
-		String hex1="00000083";
-		String hex2="00000020";
-		String hex3="0020408E";
-		String hex4 = "0020408F";
+		String tim_hex="00000083";
+		String bsm_hex="00000020";
+		String data_log_transfer_hex="0020408E";
+		String ota_update_hex = "0020408F";
 		
-		VariableBinding vb1 = SnmpSession.getPEncodedVariableBinding(oid, hex1);
-		VariableBinding vb2 = SnmpSession.getPEncodedVariableBinding(oid, hex2);
-		VariableBinding vb3 = SnmpSession.getPEncodedVariableBinding(oid, hex3);
-		VariableBinding vb4 = SnmpSession.getPEncodedVariableBinding(oid, hex4);
+		VariableBinding vb1 = SnmpSession.getPEncodedVariableBinding(oid, tim_hex);
+		VariableBinding vb2 = SnmpSession.getPEncodedVariableBinding(oid, bsm_hex);
+		VariableBinding vb3 = SnmpSession.getPEncodedVariableBinding(oid, data_log_transfer_hex);
+		VariableBinding vb4 = SnmpSession.getPEncodedVariableBinding(oid, ota_update_hex);
 		
-		assertEquals("P-Encoding failed for " + hex1,"80:03", vb1.toValueString());
-		assertEquals("P-Encoding failed for " + hex2,"20", vb2.toValueString());
-		assertEquals("P-Encoding failed for " + hex3,"e0:00:00:0e", vb3.toValueString());
-		assertEquals("P-Encoding failed for " + hex4,"e0:00:00:0f", vb4.toValueString());
+		assertEquals("P-Encoding failed for " + tim_hex,"80:03", vb1.toValueString());
+		assertEquals("P-Encoding failed for " + bsm_hex,"20", vb2.toValueString());
+		assertEquals("P-Encoding failed for " + data_log_transfer_hex,"e0:00:00:0e", vb3.toValueString());
+		assertEquals("P-Encoding failed for " + ota_update_hex,"e0:00:00:0f", vb4.toValueString());
 	}
 }
