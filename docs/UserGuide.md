@@ -821,8 +821,7 @@ ode.depositSdwMessagesOverWebsocket=false
 3.  Set the following environment variables in the _.env_ file:
 
 ```bash
-SDW_USERNAME=myUsername
-SDW_PASSWORD=myPassword
+SDW_API_KEY=myApiKey
 ```
 
 4.  Follow the rest of the ODE setup steps. The SDW depositor service
