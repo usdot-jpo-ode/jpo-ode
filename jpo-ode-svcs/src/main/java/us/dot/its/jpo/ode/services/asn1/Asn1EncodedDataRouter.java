@@ -193,8 +193,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
          if (null != request.getSnmp() && null != request.getRsus() && null != hexEncodedTim) {
             logger.info("Sending message to RSUs...");
-            Map<String, String> rsuResponseList = asn1CommandManager.sendToRsus(request, hexEncodedTim);
-            logger.info("TIM deposit response {}", rsuResponseList);
+            asn1CommandManager.sendToRsus(request, hexEncodedTim);           
          }
 
          if (request.getSdw() != null) {
@@ -277,9 +276,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
         // only send message to rsu if snmp, rsus, and message frame fields are present
         if (null != request.getSnmp() && null != request.getRsus() && null != encodedTim) {
            logger.debug("Encoded message phase 3: {}", encodedTim);
-           Map<String, String> rsuResponseList =
-                 asn1CommandManager.sendToRsus(request, encodedTim);
-           responseList.putAll(rsuResponseList);
+           asn1CommandManager.sendToRsus(request, encodedTim);           
          }
       }
 
