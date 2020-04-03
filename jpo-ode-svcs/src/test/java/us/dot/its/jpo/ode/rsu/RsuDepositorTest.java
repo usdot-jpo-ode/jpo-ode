@@ -25,17 +25,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import mockit.Capturing;
-import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.dds.Logger;
 import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.model.OdeTravelerInputData;
-import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
-import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
@@ -77,10 +73,9 @@ public class RsuDepositorTest  {
 	@Test
 	public void testDeposit(@Mocked OdeTravelerInputData mockOdeTravelerInputData)
 			throws DdsRequestManagerException, IOException, ParseException {
-
-		testRsuDepositor.deposit(mockOdeTravelerInputData.getRequest(), "message");
-		//TODO: how do we verify and run is mocked
-
+			      
+	      testRsuDepositor.deposit(mockOdeTravelerInputData.getRequest(), "message");
+	
 	}
 
 
