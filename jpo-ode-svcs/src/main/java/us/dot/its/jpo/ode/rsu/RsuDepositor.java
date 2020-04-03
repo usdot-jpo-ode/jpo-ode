@@ -135,7 +135,7 @@ public class RsuDepositor extends Thread {
 					}
 					logger.info("TIM deposit response {}", responseList);					
 				}
-				sleep(100);
+				Thread.sleep(100);
 			}
 		}
 		catch (InterruptedException e) {
