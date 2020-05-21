@@ -66,30 +66,14 @@ public class Asn1CommandManagerTest {
    @Test
    public void testSendToRsus(@Mocked OdeTravelerInputData mockOdeTravelerInputData)
          throws DdsRequestManagerException, IOException, ParseException {
-      new Expectations() {
-         {
-            mockOdeTravelerInputData.getRequest().getRsus();
-            result = new RSU[] { new RSU() };
-
-            SnmpSession.createAndSend(null, null, anyString, (RequestVerb) any);
-            times = 1;
-         }
-      };
+      
       testAsn1CommandManager.sendToRsus(mockOdeTravelerInputData.getRequest(), "message");
    }
 
    @Test
    public void testSendToRsusSnmpException(@Mocked OdeTravelerInputData mockOdeTravelerInputData)
          throws DdsRequestManagerException, IOException, ParseException {
-      new Expectations() {
-         {
-            mockOdeTravelerInputData.getRequest().getRsus();
-            result = new RSU[] { new RSU() };
-
-            SnmpSession.createAndSend(null, null, anyString, (RequestVerb) any);
-            result = new IOException();
-         }
-      };
+     
       testAsn1CommandManager.sendToRsus(mockOdeTravelerInputData.getRequest(), "message");
    }
 
