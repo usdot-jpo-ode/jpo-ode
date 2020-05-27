@@ -87,6 +87,11 @@
             <artifactId>sonar-maven-plugin</artifactId>
             <version>3.2</version>
         </plugin>
+        <properties>
+          <sonar.projectKey>usdot-jpo-ode_jpo-ode</sonar.projectKey>
+          <sonar.organization>usdot-jpo-ode-1</sonar.organization>
+          <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        </properties>
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
