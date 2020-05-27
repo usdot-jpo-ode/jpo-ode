@@ -17,6 +17,12 @@ jobs:
           docker_layer_caching: false
       # Checkout PR branch
       - checkout:
+      - run:
+          name: Initialize Submodules
+          command: |
+            pwd
+            ls
+            ls jpo-ode
       - run: 
           name: Run Maven Clean Package with Jacoco
           command: |
