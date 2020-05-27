@@ -3,7 +3,9 @@ version: 2.1
 orbs:
   maven: circleci/maven@0.0.12
 
-workflows:
-  maven_test:
-    jobs:
-      - maven/test # checkout, build, test, and upload test results
+jobs:
+  steps:
+    - run:
+      name: Jacoco Tests
+      command: |
+        mvn -e clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
