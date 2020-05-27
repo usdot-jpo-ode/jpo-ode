@@ -20,9 +20,11 @@ jobs:
       - run:
           name: Initialize Submodules
           command: |
+            set -x
             pwd
             ls
-            ls jpo-ode
+            ls jpo-cvdp
+            cd jpo-cvdp
       - run: 
           name: Run Maven Clean Package with Jacoco
           command: |
