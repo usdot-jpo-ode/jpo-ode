@@ -3,7 +3,7 @@ jobs:
     # Pull docker image 
     # XTERM used for better make output
     docker:
-      - image: circleci/openjdk:9.0.4-jdk-sid
+      - image: circleci/openjdk:8u252-jdk
         environment:
           TERM: xterm
           
