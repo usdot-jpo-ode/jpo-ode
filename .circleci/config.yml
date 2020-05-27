@@ -8,7 +8,7 @@ jobs:
           TERM: xterm
           
     # Set working directory
-    working_directory: "/home/jpo-ode"
+    # working_directory: "/home/jpo-ode"
     # Pull code and execute tests |
     # Name of each run command defines purpose use
     steps:
