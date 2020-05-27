@@ -26,4 +26,4 @@ jobs:
       - run: 
           name: Run Maven Clean Package with Jacoco
           command: |
-            mvn -eX clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
+            mvn -e -X clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
