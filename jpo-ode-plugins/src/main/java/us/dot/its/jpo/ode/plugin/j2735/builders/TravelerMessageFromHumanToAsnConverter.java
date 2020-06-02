@@ -637,29 +637,37 @@ public class TravelerMessageFromHumanToAsnConverter {
 //      node-LL6 Node-LL-48B, -- within +- 92.756481 Kmeters of last node
 //      node-LatLon Node-LLmD-64b, -- node is a full 32b Lat/Lon range
    private static String nodeOffsetPointLL(long transformedLat, long transformedLon) {
-      long transformed = Math.abs(transformedLat) | Math.abs(transformedLon);
-      if ((transformed & (-1 << 12)) == 0) {
-         // 12 bit value
-         return "node-LL1";
-      } else if ((transformed & (-1 << 14)) == 0) {
-         // 14 bit value
-         return "node-LL2";
-      } else if ((transformed & (-1 << 16)) == 0) {
-         // 16 bit value
-         return "node-LL3";
-      } else if ((transformed & (-1 << 18)) == 0) {
-         // 18 bit value
-         return "node-LL4";
-      } else if ((transformed & (-1 << 22)) == 0) {
-         // 22 bit value
-         return "node-LL5";
-      } else if ((transformed & (-1 << 24)) == 0) {
-         // 24 bit value
-         return "node-LL6";
-      } else {
-         throw new IllegalArgumentException("Invalid node lat/long offset: " + transformedLat + "/" + transformedLon
-               + ". Values must be between a range of -0.8388608/+0.8388607 degrees.");
-      }
+	  long transformedLatabs = Math.abs(transformedLat);
+	  long transformedLonabs = Math.abs(transformedLon);
+      if (((transformedLatabs & (-1 << 11)) == 0 || (transformedLat<0 && (transformedLatabs ^ (1 << 11)) == 0))
+    	  && (transformedLonabs & (-1 << 11)) == 0 || (transformedLon<0 && ((transformedLonabs ^ (1 << 11)) == 0))) {
+          // 11 bit value
+          return "node-LL1";
+       } else if (((transformedLatabs & (-1 << 13)) == 0 || (transformedLat<0 && (transformedLatabs ^ (1 << 13)) == 0))
+    	    	  && (transformedLonabs & (-1 << 13)) == 0 || (transformedLon<0 && ((transformedLonabs ^ (1 << 13)) == 0))){
+          // 13 bit value
+          return "node-LL2";
+       } else if (((transformedLatabs & (-1 << 15)) == 0 || (transformedLat<0 && (transformedLatabs ^ (1 << 15)) == 0))
+ 	    	  && (transformedLonabs & (-1 << 15)) == 0 || (transformedLon<0 && ((transformedLonabs ^ (1 << 15)) == 0))) {
+          // 15 bit value
+          return "node-LL3";
+       } else if (((transformedLatabs & (-1 << 17)) == 0 || (transformedLat<0 && (transformedLatabs ^ (1 << 17)) == 0))
+ 	    	  && (transformedLonabs & (-1 << 17)) == 0 || (transformedLon<0 && ((transformedLonabs ^ (1 << 17)) == 0))) {
+          // 17 bit value
+          return "node-LL4";
+       } else if (((transformedLatabs & (-1 << 21)) == 0 || (transformedLat<0 && (transformedLatabs ^ (1 << 21)) == 0))
+ 	    	  && (transformedLonabs & (-1 << 21)) == 0 || (transformedLon<0 && ((transformedLonabs ^ (1 << 21)) == 0))) {
+          // 21 bit value
+          return "node-LL5";
+       } else if (((transformedLatabs & (-1 << 23)) == 0 || (transformedLat<0 && (transformedLatabs ^ (1 << 23)) == 0))
+ 	    	  && (transformedLonabs & (-1 << 23)) == 0 || (transformedLon<0 && ((transformedLonabs ^ (1 << 23)) == 0))){
+          // 23 bit value
+          return "node-LL6";
+       } else {
+          throw new IllegalArgumentException("Invalid node lat/long offset: " + transformedLat + "/" + transformedLon
+                + ". Values must be between a range of -0.8388608/+0.8388607 degrees.");
+       }
+      
    }
 
    public static void replaceGeometry(ObjectNode geometry) {
