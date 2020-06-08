@@ -25,6 +25,7 @@ jobs:
           command: |
             set -x
             pwd
+            ls
             git submodule init
             git submodule update
             cd asn1_codec
