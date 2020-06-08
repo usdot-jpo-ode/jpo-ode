@@ -24,6 +24,7 @@ jobs:
           name: Initialize Submodules
           command: |
             set -x
+            pwd
             git submodule init
             git submodule update
             cd asn1_codec
