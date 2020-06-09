@@ -33,8 +33,19 @@ jobs:
             git submodule update
       - run:
           name: Analyze on SonarCloud
-          command: mvn -e -X clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
-
+          command: |
+            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
+              mvn -e -X clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
+            fi
+            echo "PR branch ${CIRCLE_BRANCH}"
+            echo "Repo name ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
+            echo "URL ${CIRCLE_PULL_REQUEST}"
+            export PR_NUM=`echo ${CIRCLE_PULL_REQUEST} | cut -d'/' -f7`
+            echo "PR number ${PR_NUM}"
+            export BASE_BRANCH_URL="https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pulls/${PR_NUM}"
+            export TARGET_BRANCH=$(curl "$BASE_BRANCH_URL" | jq '.base.ref' | tr -d '"') 
+            echo "Target Branch = ${TARGET_BRANCH}"
+            mvn -e -X clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar -Dsonar.pullrequest.base=${TARGET_BRANCH} -Dsonar.pullrequest.branch=${CIRCLE_BRANCH} -Dsonar.pullrequest.key=${PR_NUM}
 workflows:
   main:
     jobs:
