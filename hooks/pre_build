@@ -1,0 +1,8 @@
+#!/bin/bash
+
+ls
+git submodule init
+git submodule update
+cd asn1_codec
+git submodule init
+git submodule update
