@@ -175,19 +175,27 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
          String hexEncodedTim = mfObj.getString(BYTES);
          logger.debug("Encoded message - phase 1: {}", hexEncodedTim);
+         //use Asnc1 library to decode the encoded tim returned from ASNC1; another class two blockers: decode the tim and decode the message-sign
 
          if (odeProperties.dataSigningEnabled()) {
-            logger.debug("Sending message for signature!");
+            logger.debug("Sending message for signature! ");
             String base64EncodedTim = CodecUtils.toBase64(
                CodecUtils.fromHex(hexEncodedTim));
-            String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim );
-
+            JSONObject matadataObjs = consumedObj.getJSONObject(AppContext.METADATA_STRING);
+            //get max duration time from metadata 
+            int maxDurationTime =Integer.valueOf(matadataObjs.get("maxDurationTime").toString());
+            String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim,maxDurationTime);
             try {
                hexEncodedTim = CodecUtils.toHex(
                   CodecUtils.fromBase64(
                      JsonUtils.toJSONObject(signedResponse).getString("result")));
+               logger.debug("Publishing Encoded Signed Tim with Expiration Date time!");
+               JSONObject TimWithExpiration = new JSONObject();
+               TimWithExpiration.put("expirationDate", JsonUtils.toJSONObject(signedResponse).getString("expiration")); 
+               TimWithExpiration.put("TimAsn1Encoded", consumedObj);
+               stringMsgProducer.send(odeProperties.getKafkaTopicSignedOdeTimJsonExpiration(), null, TimWithExpiration.toString());
             } catch (JsonUtilsException e1) {
-               logger.error("Unable to parse signed message response {}", e1);
+               logger.error("Unable to parse signed messages response {}", e1);
             }
          }
 

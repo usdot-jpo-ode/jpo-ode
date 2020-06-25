@@ -31,6 +31,7 @@ public class OdeMsgMetadata extends OdeObject {
    private SerialId serialId;
    private String odeReceivedAt;
    private int schemaVersion;
+   private int maxDurationTime;
    private String recordGeneratedAt;
    private GeneratedBy recordGeneratedBy;
    private boolean sanitized = false;
@@ -93,7 +94,15 @@ public class OdeMsgMetadata extends OdeObject {
       schemaVersion = aSchemaVersion;
    }
 
-   public String getRecordGeneratedAt() {
+   public int getMaxDurationTime() {
+	return maxDurationTime;
+}
+
+public void setMaxDurationTime(int maxDurationTime) {
+	this.maxDurationTime = maxDurationTime;
+}
+
+public String getRecordGeneratedAt() {
       return recordGeneratedAt;
    }
 

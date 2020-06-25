@@ -47,6 +47,7 @@ import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal;
 import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage;
+import us.dot.its.jpo.ode.plugin.j2735.OdeTravelerInformationMessage.DataFrame;
 import us.dot.its.jpo.ode.plugin.j2735.builders.TravelerMessageFromHumanToAsnConverter;
 import us.dot.its.jpo.ode.traveler.TimTransmogrifier.TimTransmogrifierException;
 import us.dot.its.jpo.ode.util.DateTimeUtils;
@@ -145,7 +146,15 @@ public class TimDepositController {
       OdeTravelerInformationMessage tim = odeTID.getTim();
       OdeMsgPayload timDataPayload = new OdeMsgPayload(tim);
       OdeRequestMsgMetadata timMetadata = new OdeRequestMsgMetadata(timDataPayload, request);
-
+      
+      //set maxDurationTime in tim Metadata
+      if(null != tim.getDataframes() && tim.getDataframes().length > 0) {
+    	  int maxDurationTime=0;
+    	  for(DataFrame dataFrameItem: tim.getDataframes()) {
+    			  	maxDurationTime = maxDurationTime > dataFrameItem.getDurationTime()? maxDurationTime : dataFrameItem.getDurationTime();
+    	  }
+          timMetadata.setMaxDurationTime(maxDurationTime);
+      }      
       // Setting the SerialId to OdeBradcastTim serialId to be changed to
       // J2735BroadcastTim serialId after the message has been published to
       // OdeTimBrodcast topic
@@ -169,6 +178,7 @@ public class TimDepositController {
       // Now that the message gas been published to OdeBradcastTim topic, it should be
       // changed to J2735BroadcastTim serialId
       timMetadata.setSerialId(serialIdJ2735);
+    
 
       // Short circuit
       // If the TIM has no RSU/SNMP or SDW structures, we are done
@@ -202,7 +212,6 @@ public class TimDepositController {
             asd = TimTransmogrifier.buildASD(odeTID.getRequest());
          }
          xmlMsg = TimTransmogrifier.convertToXml(asd, encodableTid, timMetadata, serialIdJ2735);
-
          logger.debug("XML representation: {}", xmlMsg);
 
          JSONObject jsonMsg = XmlUtils.toJSONObject(xmlMsg);
