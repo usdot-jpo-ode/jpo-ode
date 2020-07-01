@@ -202,7 +202,6 @@ public class Asn1CommandManager {
 	      map.put("message",message);
 	      map.put("sigValidityOverride",Integer.toString(sigValidityOverride));
 
-	      //HttpEntity<String> entity = new HttpEntity<>(JsonUtils.jsonKeyValue("message", message), headers);
 	      HttpEntity<Map<String,String>> entity = new HttpEntity<>(map, headers);
 	      RestTemplate template = new RestTemplate();
 

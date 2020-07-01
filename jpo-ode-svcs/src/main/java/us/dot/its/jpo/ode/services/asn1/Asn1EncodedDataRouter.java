@@ -182,7 +182,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             String base64EncodedTim = CodecUtils.toBase64(
                CodecUtils.fromHex(hexEncodedTim));
             JSONObject matadataObjs = consumedObj.getJSONObject(AppContext.METADATA_STRING);
-            //get max duration time from metadata 
+            //get max duration time (unsigned integer valid 0 to 2^32-1 in units of milliseconds.) from metadata. 
             int maxDurationTime =Integer.valueOf(matadataObjs.get("maxDurationTime").toString());
             String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim,maxDurationTime);
             try {
