@@ -151,6 +151,24 @@ public class Asn1CommandManager {
 
       return respEntity.getBody();
    }
+   public String sendForSignature(String message,int sigValidityOverride) {
+	      HttpHeaders headers = new HttpHeaders();
+	      headers.setContentType(MediaType.APPLICATION_JSON);
+	      Map<String,String> map = new HashMap<>();
+	      map.put("message",message);
+	      map.put("sigValidityOverride",Integer.toString(sigValidityOverride));
+
+	      HttpEntity<Map<String,String>> entity = new HttpEntity<>(map, headers);
+	      RestTemplate template = new RestTemplate();
+
+	      logger.info("Sending data to security services module  with validity override at {} to be signed: {}", signatureUri, entity);
+
+	      ResponseEntity<String> respEntity = template.postForEntity(signatureUri, entity, String.class);
+
+	      logger.info("Security services module response: {}", respEntity);
+
+	      return respEntity.getBody();
+	   }
 
    public String packageSignedTimIntoAsd(ServiceRequest request, String signedMsg) {
 

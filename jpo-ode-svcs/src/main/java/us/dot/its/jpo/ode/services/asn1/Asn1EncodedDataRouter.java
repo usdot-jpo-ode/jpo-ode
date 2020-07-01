@@ -175,13 +175,16 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
          String hexEncodedTim = mfObj.getString(BYTES);
          logger.debug("Encoded message - phase 1: {}", hexEncodedTim);
+         //use Asnc1 library to decode the encoded tim returned from ASNC1; another class two blockers: decode the tim and decode the message-sign
 
          if (odeProperties.dataSigningEnabled()) {
-            logger.debug("Sending message for signature!");
+            logger.debug("Sending message for signature! ");
             String base64EncodedTim = CodecUtils.toBase64(
                CodecUtils.fromHex(hexEncodedTim));
-            String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim );
-
+            JSONObject matadataObjs = consumedObj.getJSONObject(AppContext.METADATA_STRING);
+            //get max duration time (unsigned integer valid 0 to 2^32-1 in units of milliseconds.) from metadata. 
+            int maxDurationTime =Integer.valueOf(matadataObjs.get("maxDurationTime").toString());
+            String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim,maxDurationTime);
             try {
                hexEncodedTim = CodecUtils.toHex(
                   CodecUtils.fromBase64(
