@@ -37,7 +37,7 @@ jobs:
             set -x
             echo "Printing circle pull request:"
             echo "${CIRCLE_PULL_REQUEST}"
-            ECHO ""
+            echo ""
             if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
               mvn -e -X clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
             fi
