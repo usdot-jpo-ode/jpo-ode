@@ -109,8 +109,6 @@ services:
     build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest
     environment:
-      AWS_ACCESS_KEY_ID: ${CVPEP_BSM_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${CVPEP_BSM_SECRET_ACCESS_KEY}
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       DEPOSIT_BUCKET_NAME: ${CVPEP_BSM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${CVPEP_BSM_DEPOSIT_KEY}
@@ -129,8 +127,6 @@ services:
     build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest
     environment:
-      AWS_ACCESS_KEY_ID: ${RDE_BSM_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${RDE_BSM_SECRET_ACCESS_KEY}
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       DEPOSIT_BUCKET_NAME: ${RDE_BSM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${RDE_BSM_DEPOSIT_KEY}
@@ -149,8 +145,6 @@ services:
     build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest
     environment:
-      AWS_ACCESS_KEY_ID: ${CVPEP_TIM_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${CVPEP_TIM_SECRET_ACCESS_KEY}
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       DEPOSIT_BUCKET_NAME: ${CVPEP_TIM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${CVPEP_TIM_DEPOSIT_KEY}
@@ -169,8 +163,6 @@ services:
     build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest
     environment:
-      AWS_ACCESS_KEY_ID: ${RDE_TIM_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${RDE_TIM_SECRET_ACCESS_KEY}
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       DEPOSIT_BUCKET_NAME: ${RDE_TIM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${RDE_TIM_DEPOSIT_KEY}
