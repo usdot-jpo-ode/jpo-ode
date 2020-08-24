@@ -209,6 +209,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 						TimWithExpiration.put("expirationDate", dateFormat.format(new Date(messageExpiry * 1000)));
 					} catch (Exception e) {
 						logger.error("Unable to get expiration date from signed messages response {}", e);
+            TimWithExpiration.put("expirationDate", "null");
 					}
 
 					try {
@@ -216,8 +217,9 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 						Date requiredExpirationDate = new Date();
 						requiredExpirationDate.setTime(parsedtimTimeStamp.getTime() + maxDurationTime);
 						TimWithExpiration.put("requiredExpirationDate", dateFormat.format(requiredExpirationDate));
-					} catch (ParseException e) {
+					} catch (Exception e) {
 						logger.error("Unable to parse requiredExpirationDate {}", e);
+            TimWithExpiration.put("requiredExpirationDate", "null");
 					}
 					//publish to Tim expiration kafka 
 					stringMsgProducer.send(odeProperties.getKafkaTopicSignedOdeTimJsonExpiration(), null,
