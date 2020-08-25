@@ -188,7 +188,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             // get max duration time and convert from minutes to milliseconds (unsigned
 				// integer valid 0 to 2^32-1 in units of
 				// milliseconds.) from metadata
-				long maxDurationTime = Long.valueOf(matadataObjs.get("maxDurationTime").toString()) * 60 * 1000;
+            int maxDurationTime = Integer.valueOf(matadataObjs.get("maxDurationTime").toString()) * 60 * 1000;
 				String timpacketID = matadataObjs.getString("odePacketID");
 				String timStartDateTime = matadataObjs.getString("odeTimStartDateTime");
             String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim,maxDurationTime);
