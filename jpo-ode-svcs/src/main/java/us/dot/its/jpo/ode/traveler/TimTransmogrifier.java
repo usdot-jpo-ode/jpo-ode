@@ -144,6 +144,9 @@ public class TimTransmogrifier {
       metadata.setRecordGeneratedBy(timMetadata.getRecordGeneratedBy());
       metadata.setRecordGeneratedAt(timMetadata.getRecordGeneratedAt());
       metadata.setSchemaVersion(timMetadata.getSchemaVersion());
+      metadata.setMaxDurationTime(timMetadata.getMaxDurationTime());
+      metadata.setOdePacketID(timMetadata.getOdePacketID());
+      metadata.setOdeTimStartDateTime(timMetadata.getOdeTimStartDateTime());
       ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());
 
       ObjectNode request = (ObjectNode) inOrderTidObj.get(REQUEST_STRING);

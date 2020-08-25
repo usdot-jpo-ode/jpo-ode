@@ -149,6 +149,8 @@ public class OdeProperties implements EnvironmentAware {
    // SDW Depositor Module
    private String kafkaTopicSdwDepositorInput = "topic.SDWDepositorInput";
 
+   //Signed Tim with expiration
+   private String kafkaTopicSignedOdeTimJsonExpiration = "topic.OdeTIMCertExpirationTimeJson";
    /*
     * Security Properties
     */
@@ -619,5 +621,10 @@ public class OdeProperties implements EnvironmentAware {
    public void setDepositSdwMessagesOverWebsocket(boolean depositSdwMessagesOverWebsocket) {
       this.depositSdwMessagesOverWebsocket = depositSdwMessagesOverWebsocket;
    }
-
+    public String getKafkaTopicSignedOdeTimJsonExpiration() {
+	   return kafkaTopicSignedOdeTimJsonExpiration;
+   }
+   public void setKafkaTopicSignedOdeTimJsonExpiration(String kafkaTopicSignedOdeTimJsonExpiration) {
+		this.kafkaTopicSignedOdeTimJsonExpiration = kafkaTopicSignedOdeTimJsonExpiration;
+	}
 }

@@ -16,7 +16,9 @@
 package us.dot.its.jpo.ode.traveler;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeParseException;
+import java.util.Date;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -147,14 +149,29 @@ public class TimDepositController {
       OdeMsgPayload timDataPayload = new OdeMsgPayload(tim);
       OdeRequestMsgMetadata timMetadata = new OdeRequestMsgMetadata(timDataPayload, request);
       
-      //set maxDurationTime in tim Metadata
-      if(null != tim.getDataframes() && tim.getDataframes().length > 0) {
-    	  int maxDurationTime=0;
-    	  for(DataFrame dataFrameItem: tim.getDataframes()) {
-    			  	maxDurationTime = maxDurationTime > dataFrameItem.getDurationTime()? maxDurationTime : dataFrameItem.getDurationTime();
-    	  }
-          timMetadata.setMaxDurationTime(maxDurationTime);
-      }      
+      // set packetID in tim Metadata
+		timMetadata.setOdePacketID(tim.getPacketID());
+		// set maxDurationTime in tim Metadata and set latest startDatetime in tim
+		// metadata
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+		if (null != tim.getDataframes() && tim.getDataframes().length > 0) {
+			int maxDurationTime = 0;
+			Date latestStartDateTime = null;
+			for (DataFrame dataFrameItem : tim.getDataframes()) {
+				maxDurationTime = maxDurationTime > dataFrameItem.getDurationTime() ? maxDurationTime
+						: dataFrameItem.getDurationTime();
+				try {
+					latestStartDateTime = (latestStartDateTime == null || (latestStartDateTime != null
+							&& latestStartDateTime.before(dateFormat.parse(dataFrameItem.getStartDateTime())))
+									? dateFormat.parse(dataFrameItem.getStartDateTime())
+									: latestStartDateTime);
+				} catch (ParseException e) {
+					logger.error("Invalid dateTime parse: " + e);
+				}
+			}
+			timMetadata.setMaxDurationTime(maxDurationTime);
+			timMetadata.setOdeTimStartDateTime(dateFormat.format(latestStartDateTime));
+		}     
       // Setting the SerialId to OdeBradcastTim serialId to be changed to
       // J2735BroadcastTim serialId after the message has been published to
       // OdeTimBrodcast topic
