@@ -195,7 +195,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             try {
                hexEncodedTim = CodecUtils.toHex(
                   CodecUtils.fromBase64(
-                     JsonUtils.toJSONObject(signedResponse).getString("result")));
+                     JsonUtils.toJSONObject(JsonUtils.toJSONObject(signedResponse).getString("result")).getString("message-signed")));
                      
                JSONObject TimWithExpiration = new JSONObject();
 					TimWithExpiration.put("packetID", timpacketID);
