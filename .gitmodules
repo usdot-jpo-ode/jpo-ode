@@ -7,6 +7,7 @@
 [submodule "jpo-s3-deposit"]
 	path = jpo-s3-deposit
 	url = https://github.com/usdot-jpo-ode/jpo-s3-deposit.git
+	branch = jpo-s3-deposit-1.0.0
 [submodule "jpo-security-svcs"]
 	path = jpo-security-svcs
 	url = https://github.com/usdot-jpo-ode/jpo-security-svcs
