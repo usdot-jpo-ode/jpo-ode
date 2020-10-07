@@ -15,6 +15,9 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.services.asn1;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -175,17 +178,53 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
          String hexEncodedTim = mfObj.getString(BYTES);
          logger.debug("Encoded message - phase 1: {}", hexEncodedTim);
+         //use Asnc1 library to decode the encoded tim returned from ASNC1; another class two blockers: decode the tim and decode the message-sign
 
          if (odeProperties.dataSigningEnabled()) {
-            logger.debug("Sending message for signature!");
+            logger.debug("Sending message for signature! ");
             String base64EncodedTim = CodecUtils.toBase64(
                CodecUtils.fromHex(hexEncodedTim));
-            String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim );
-
+            JSONObject matadataObjs = consumedObj.getJSONObject(AppContext.METADATA_STRING);
+            // get max duration time and convert from minutes to milliseconds (unsigned
+				// integer valid 0 to 2^32-1 in units of
+				// milliseconds.) from metadata
+            int maxDurationTime = Integer.valueOf(matadataObjs.get("maxDurationTime").toString()) * 60 * 1000;
+				String timpacketID = matadataObjs.getString("odePacketID");
+				String timStartDateTime = matadataObjs.getString("odeTimStartDateTime");
+            String signedResponse = asn1CommandManager.sendForSignature(base64EncodedTim,maxDurationTime);
             try {
                hexEncodedTim = CodecUtils.toHex(
                   CodecUtils.fromBase64(
-                     JsonUtils.toJSONObject(signedResponse).getString("result")));
+                     JsonUtils.toJSONObject(JsonUtils.toJSONObject(signedResponse).getString("result")).getString("message-signed")));
+                     
+               JSONObject TimWithExpiration = new JSONObject();
+					TimWithExpiration.put("packetID", timpacketID);
+					TimWithExpiration.put("startDateTime", timStartDateTime);
+					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+					try {
+						JSONObject jsonResult = JsonUtils
+								.toJSONObject((JsonUtils.toJSONObject(signedResponse).getString("result")));
+						// messageExpiry uses unit of seconds
+						long messageExpiry = Long.valueOf(jsonResult.getString("message-expiry"));
+						TimWithExpiration.put("expirationDate", dateFormat.format(new Date(messageExpiry * 1000)));
+					} catch (Exception e) {
+						logger.error("Unable to get expiration date from signed messages response {}", e);
+            TimWithExpiration.put("expirationDate", "null");
+					}
+
+					try {
+						Date parsedtimTimeStamp = dateFormat.parse(timStartDateTime);
+						Date requiredExpirationDate = new Date();
+						requiredExpirationDate.setTime(parsedtimTimeStamp.getTime() + maxDurationTime);
+						TimWithExpiration.put("requiredExpirationDate", dateFormat.format(requiredExpirationDate));
+					} catch (Exception e) {
+						logger.error("Unable to parse requiredExpirationDate {}", e);
+            TimWithExpiration.put("requiredExpirationDate", "null");
+					}
+					//publish to Tim expiration kafka 
+					stringMsgProducer.send(odeProperties.getKafkaTopicSignedOdeTimJsonExpiration(), null,
+							TimWithExpiration.toString());
+
             } catch (JsonUtilsException e1) {
                logger.error("Unable to parse signed message response {}", e1);
             }
@@ -193,8 +232,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
          if (null != request.getSnmp() && null != request.getRsus() && null != hexEncodedTim) {
             logger.info("Sending message to RSUs...");
-            Map<String, String> rsuResponseList = asn1CommandManager.sendToRsus(request, hexEncodedTim);
-            logger.info("TIM deposit response {}", rsuResponseList);
+            asn1CommandManager.sendToRsus(request, hexEncodedTim);           
          }
 
          if (request.getSdw() != null) {
@@ -277,9 +315,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
         // only send message to rsu if snmp, rsus, and message frame fields are present
         if (null != request.getSnmp() && null != request.getRsus() && null != encodedTim) {
            logger.debug("Encoded message phase 3: {}", encodedTim);
-           Map<String, String> rsuResponseList =
-                 asn1CommandManager.sendToRsus(request, encodedTim);
-           responseList.putAll(rsuResponseList);
+           asn1CommandManager.sendToRsus(request, encodedTim);           
          }
       }
 

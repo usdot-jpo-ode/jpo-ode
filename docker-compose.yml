@@ -17,7 +17,7 @@ services:
       KAFKA_ADVERTISED_HOST_NAME: ${DOCKER_HOST_IP}
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_CREATE_TOPICS: "topic.OdeBsmPojo:1:1,topic.OdeBsmJson:1:1,topic.FilteredOdeBsmJson:1:1,topic.OdeTimJson:1:1,topic.OdeTimBroadcastJson:1:1,topic.J2735TimBroadcastJson:1:1,topic.OdeDriverAlertJson:1:1,topic.Asn1DecoderInput:1:1,topic.Asn1DecoderOutput:1:1,topic.Asn1EncoderInput:1:1,topic.Asn1EncoderOutput:1:1,topic.SDWDepositorInput:1:1"
+      KAFKA_CREATE_TOPICS: "topic.OdeBsmPojo:1:1,topic.OdeBsmJson:1:1,topic.FilteredOdeBsmJson:1:1,topic.OdeTimJson:1:1,topic.OdeTimBroadcastJson:1:1,topic.J2735TimBroadcastJson:1:1,topic.OdeDriverAlertJson:1:1,topic.Asn1DecoderInput:1:1,topic.Asn1DecoderOutput:1:1,topic.Asn1EncoderInput:1:1,topic.Asn1EncoderOutput:1:1,topic.SDWDepositorInput:1:1,topic.OdeTIMCertExpirationTimeJson:1:1"
       KAFKA_DELETE_TOPIC_ENABLED: "true"
       KAFKA_CLEANUP_POLICY: "delete" # delete old logs
       KAFKA_LOG_RETENTION_HOURS: 2
@@ -109,12 +109,17 @@ services:
     build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest
     environment:
-      AWS_ACCESS_KEY_ID: ${CVPEP_BSM_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${CVPEP_BSM_SECRET_ACCESS_KEY}
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       DEPOSIT_BUCKET_NAME: ${CVPEP_BSM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${CVPEP_BSM_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${CVPEP_BSM_TOPIC}
+      K_AWS_ACCESS_KEY_ID: ${CVPEP_BSM_K_AWS_ACCESS_KEY_ID}
+      K_AWS_SECRET_ACCESS_SECRET: ${CVPEP_BSM_K_AWS_SECRET_ACCESS_SECRET}
+      K_AWS_SESSION_TOKEN: ${CVPEP_BSM_K_AWS_SESSION_TOKEN}
+      K_AWS_EXPIRATION: ${CVPEP_BSM_K_AWS_EXPIRATION}
+      API_ENDPOINT: ${CVPEP_BSM_API_ENDPOINT}
+      HEADER_ACCEPT: ${CVPEP_BSM_HEADER_ACCEPT}
+      HEADER_X_API_KEY: ${CVPEP_BSM_HEADER_X_API_KEY}
     depends_on:
      - kafka
 
@@ -122,12 +127,17 @@ services:
     build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest
     environment:
-      AWS_ACCESS_KEY_ID: ${RDE_BSM_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${RDE_BSM_SECRET_ACCESS_KEY}
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       DEPOSIT_BUCKET_NAME: ${RDE_BSM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${RDE_BSM_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${RDE_BSM_TOPIC}
+      K_AWS_ACCESS_KEY_ID: ${RDE_BSM_K_AWS_ACCESS_KEY_ID}
+      K_AWS_SECRET_ACCESS_SECRET: ${RDE_BSM_K_AWS_SECRET_ACCESS_SECRET}
+      K_AWS_SESSION_TOKEN: ${RDE_BSM_K_AWS_SESSION_TOKEN}
+      K_AWS_EXPIRATION: ${RDE_BSM_K_AWS_EXPIRATION}
+      API_ENDPOINT: ${RDE_BSM_API_ENDPOINT}
+      HEADER_ACCEPT: ${RDE_BSM_HEADER_ACCEPT}
+      HEADER_X_API_KEY: ${RDE_BSM_HEADER_X_API_KEY}
     depends_on:
      - kafka
 
@@ -135,12 +145,17 @@ services:
     build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest
     environment:
-      AWS_ACCESS_KEY_ID: ${CVPEP_TIM_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${CVPEP_TIM_SECRET_ACCESS_KEY}
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       DEPOSIT_BUCKET_NAME: ${CVPEP_TIM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${CVPEP_TIM_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${CVPEP_TIM_TOPIC}
+      K_AWS_ACCESS_KEY_ID: ${CVPEP_BSM_K_AWS_ACCESS_KEY_ID}
+      K_AWS_SECRET_ACCESS_SECRET: ${CVPEP_BSM_K_AWS_SECRET_ACCESS_SECRET}
+      K_AWS_SESSION_TOKEN: ${CVPEP_BSM_K_AWS_SESSION_TOKEN}
+      K_AWS_EXPIRATION: ${CVPEP_BSM_K_AWS_EXPIRATION}
+      API_ENDPOINT: ${CVPEP_BSM_API_ENDPOINT}
+      HEADER_ACCEPT: ${CVPEP_BSM_HEADER_ACCEPT}
+      HEADER_X_API_KEY: ${CVPEP_BSM_HEADER_X_API_KEY}
     depends_on:
      - kafka
 
@@ -148,12 +163,17 @@ services:
     build: ./jpo-s3-deposit
     image: jpoode_s3dep:latest
     environment:
-      AWS_ACCESS_KEY_ID: ${RDE_TIM_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${RDE_TIM_SECRET_ACCESS_KEY}
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       DEPOSIT_BUCKET_NAME: ${RDE_TIM_BUCKET_NAME}
       DEPOSIT_KEY_NAME: ${RDE_TIM_DEPOSIT_KEY}
       DEPOSIT_TOPIC: ${RDE_TIM_TOPIC}
+      K_AWS_ACCESS_KEY_ID: ${CVPEP_BSM_K_AWS_ACCESS_KEY_ID}
+      K_AWS_SECRET_ACCESS_SECRET: ${RDE_TIM_K_AWS_SECRET_ACCESS_SECRET}
+      K_AWS_SESSION_TOKEN: ${RDE_TIM_K_AWS_SESSION_TOKEN}
+      K_AWS_EXPIRATION: ${RDE_TIM_K_AWS_EXPIRATION}
+      API_ENDPOINT: ${RDE_TIM_API_ENDPOINT}
+      HEADER_ACCEPT: ${RDE_TIM_HEADER_ACCEPT}
+      HEADER_X_API_KEY: ${RDE_TIM_HEADER_X_API_KEY}
     depends_on:
      - kafka
 
