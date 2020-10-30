@@ -48,6 +48,7 @@ import us.dot.its.jpo.ode.plugin.ServiceRequest;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.plugin.j2735.builders.GeoRegionBuilder;
+import us.dot.its.jpo.ode.rsu.RsuDepositor;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.traveler.TimTransmogrifier;
 import us.dot.its.jpo.ode.util.JsonUtils;
@@ -82,6 +83,8 @@ public class Asn1CommandManager {
 
    private String depositTopic;
    private DdsDepositor<DdsStatusMessage> depositor;
+   private RsuDepositor rsuDepositor;
+      
 
    public Asn1CommandManager(OdeProperties odeProperties) {
 
@@ -91,6 +94,8 @@ public class Asn1CommandManager {
 
       try {
          this.depositor = new DdsDepositor<>(odeProperties);
+         this.rsuDepositor = new RsuDepositor(odeProperties);
+         this.rsuDepositor.start();
          this.stringMessageProducer = MessageProducer.defaultStringMessageProducer(odeProperties.getKafkaBrokers(),
                odeProperties.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
          this.setDepositTopic(odeProperties.getKafkaTopicSdwDepositorInput());
@@ -124,59 +129,10 @@ public class Asn1CommandManager {
       }
    }
 
-   public Map<String, String> sendToRsus(ServiceRequest request, String encodedMsg) {
+   public void sendToRsus(ServiceRequest request, String encodedMsg) {
 
-      HashMap<String, String> responseList = new HashMap<>();
-      for (RSU curRsu : request.getRsus()) {
-
-         TimTransmogrifier.updateRsuCreds(curRsu, odeProperties);
-
-         ResponseEvent rsuResponse = null;
-
-         String httpResponseStatus;
-         try {
-            rsuResponse = SnmpSession.createAndSend(request.getSnmp(), curRsu, encodedMsg, request.getOde().getVerb());
-            if (null == rsuResponse || null == rsuResponse.getResponse()) {
-               // Timeout
-               httpResponseStatus = "Timeout";
-            } else if (rsuResponse.getResponse().getErrorStatus() == 0) {
-               // Success
-               httpResponseStatus = "Success";
-            } else if (rsuResponse.getResponse().getErrorStatus() == 5) {
-               // Error, message already exists
-               httpResponseStatus = "Message already exists at ".concat(Integer.toString(curRsu.getRsuIndex()));
-            } else {
-               // Misc error
-               httpResponseStatus = "Error code " + rsuResponse.getResponse().getErrorStatus() + " "
-                     + rsuResponse.getResponse().getErrorStatusText();
-            }
-         } catch (IOException | ParseException e) {
-            String msg = "Exception caught in TIM RSU deposit loop.";
-            EventLogger.logger.error(msg, e);
-            logger.error(msg, e);
-            httpResponseStatus = e.getClass().getName() + ": " + e.getMessage();
-         }
-         responseList.put(curRsu.getRsuTarget(), httpResponseStatus);
-
-         if (null == rsuResponse || null == rsuResponse.getResponse()) {
-            // Timeout
-            logger.error("Error on RSU SNMP deposit to {}: timed out.", curRsu.getRsuTarget());
-         } else if (rsuResponse.getResponse().getErrorStatus() == 0) {
-            // Success
-            logger.info("RSU SNMP deposit to {} successful.", curRsu.getRsuTarget());
-         } else if (rsuResponse.getResponse().getErrorStatus() == 5) {
-            // Error, message already exists
-            Integer destIndex = curRsu.getRsuIndex();
-            logger.error("Error on RSU SNMP deposit to {}: message already exists at index {}.", curRsu.getRsuTarget(),
-                  destIndex);
-         } else {
-            // Misc error
-            logger.error("Error on RSU SNMP deposit to {}: {}", curRsu.getRsuTarget(), "Error code "
-                  + rsuResponse.getResponse().getErrorStatus() + " " + rsuResponse.getResponse().getErrorStatusText());
-         }
-
-      }
-      return responseList;
+      rsuDepositor.deposit(request, encodedMsg);
+      return;
    }
 
    public String sendForSignature(String message) {
@@ -195,6 +151,24 @@ public class Asn1CommandManager {
 
       return respEntity.getBody();
    }
+   public String sendForSignature(String message,int sigValidityOverride) {
+	      HttpHeaders headers = new HttpHeaders();
+	      headers.setContentType(MediaType.APPLICATION_JSON);
+	      Map<String,String> map = new HashMap<>();
+	      map.put("message",message);
+	      map.put("sigValidityOverride",Integer.toString(sigValidityOverride));
+
+	      HttpEntity<Map<String,String>> entity = new HttpEntity<>(map, headers);
+	      RestTemplate template = new RestTemplate();
+
+	      logger.info("Sending data to security services module  with validity override at {} to be signed: {}", signatureUri, entity);
+
+	      ResponseEntity<String> respEntity = template.postForEntity(signatureUri, entity, String.class);
+
+	      logger.info("Security services module response: {}", respEntity);
+
+	      return respEntity.getBody();
+	   }
 
    public String packageSignedTimIntoAsd(ServiceRequest request, String signedMsg) {
 
