@@ -33,7 +33,7 @@ services:
       - ${DOCKER_SHARED_VOLUME_WINDOWS}/var/run/docker.sock:/var/run/docker.sock
 
   ode:
-    image: usdotjpoode/jpo-ode
+    image: usdotjpoode/jpo-ode:1.0
     ports:
       - "8080:8080"
       - "9090:9090"
@@ -57,7 +57,7 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/jpo-ode
 
   adm:
-    image: usdotjpoode/asn1_codec
+    image: usdotjpoode/asn1_codec:1.0
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ACM_CONFIG_FILE: adm.properties
@@ -67,7 +67,7 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
 
   aem:
-    image: usdotjpoode/asn1_codec
+    image: usdotjpoode/asn1_codec:1.0
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ACM_CONFIG_FILE: aem.properties
@@ -77,7 +77,7 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
 
   ppm_bsm:
-    image: usdotjpoode/jpo-cvdp
+    image: usdotjpoode/jpo-cvdp:1.0
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       PPM_CONFIG_FILE: ppmBsm.properties
@@ -87,7 +87,7 @@ services:
       - kafka
 
   ppm_tim:
-    image: usdotjpoode/jpo-cvdp
+    image: usdotjpoode/jpo-cvdp:1.0
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       PPM_CONFIG_FILE: ppmTim.properties
@@ -97,7 +97,7 @@ services:
       - kafka
 
   cvpep_bsm_depositor:
-    image: usdotjpoode/jpo-s3-deposit
+    image: usdotjpoode/jpo-s3-deposit:1.0
     environment:
       AWS_ACCESS_KEY_ID: ${CVPEP_BSM_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${CVPEP_BSM_SECRET_ACCESS_KEY}
@@ -109,7 +109,7 @@ services:
      - kafka
 
   rde_bsm_depositor:
-    image: usdotjpoode/jpo-s3-deposit
+    image: usdotjpoode/jpo-s3-deposit:1.0
     environment:
       AWS_ACCESS_KEY_ID: ${RDE_BSM_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${RDE_BSM_SECRET_ACCESS_KEY}
@@ -121,7 +121,7 @@ services:
      - kafka
 
   cvpep_tim_depositor:
-    image: usdotjpoode/jpo-s3-deposit
+    image: usdotjpoode/jpo-s3-deposit:1.0
     environment:
       AWS_ACCESS_KEY_ID: ${CVPEP_TIM_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${CVPEP_TIM_SECRET_ACCESS_KEY}
@@ -133,7 +133,7 @@ services:
      - kafka
 
   rde_tim_depositor:
-    image: usdotjpoode/jpo-s3-deposit
+    image: usdotjpoode/jpo-s3-deposit:1.0
     environment:
       AWS_ACCESS_KEY_ID: ${RDE_TIM_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${RDE_TIM_SECRET_ACCESS_KEY}
@@ -145,7 +145,7 @@ services:
      - kafka
 
   sdw_depositor:
-    image: usdotjpoode/jpo-sdw-depositor
+    image: usdotjpoode/jpo-sdw-depositor:1.0
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       #SDW_GROUP_ID: ${SDW_GROUP_ID}
@@ -159,7 +159,7 @@ services:
      - ode
 
   sec:
-    image: usdotjpoode/jpo-security-svcs
+    image: usdotjpoode/jpo-security-svcs:1.0
     ports:
      - "8090:8090"
     environment:
