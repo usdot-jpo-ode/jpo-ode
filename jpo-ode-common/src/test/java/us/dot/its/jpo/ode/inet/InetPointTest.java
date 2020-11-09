@@ -94,7 +94,7 @@ public class InetPointTest {
       new InetPoint((byte[]) null, 5);
    }
 
-   @Test//(expected = AssertionError.class)
+   @Test
    public void getInetAddressCallsGetAddress() {
       try {
          new Expectations() {
