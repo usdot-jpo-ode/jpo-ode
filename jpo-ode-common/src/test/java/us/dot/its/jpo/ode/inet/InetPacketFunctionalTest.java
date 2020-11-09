@@ -35,14 +35,14 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class InetPacketFunctionalTest {
    
-   @Capturing
-   DatagramSocket capturingDatagramSocket;
-   
-   @Capturing
-   DatagramPacket capturingDatagramPacket;
-   
-   @Capturing
-   Thread capturingThread;
+//   @Capturing
+//   DatagramSocket capturingDatagramSocket;
+//   
+//   @Capturing
+//   DatagramPacket capturingDatagramPacket;
+//   
+//   @Capturing
+//   Thread capturingThread;
 
 	private static boolean isVerbose = false;
 	

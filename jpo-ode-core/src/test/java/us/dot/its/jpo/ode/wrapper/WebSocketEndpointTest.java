@@ -46,10 +46,10 @@ import org.junit.runner.RunWith;
 
 import mockit.Expectations;
 import mockit.Mocked;
-import mockit.integration.junit4.JMockit;
+//import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint.WebSocketException;
 
-@RunWith(JMockit.class)
+//@RunWith(JMockit.class)
 public class WebSocketEndpointTest {
    
    @Mocked

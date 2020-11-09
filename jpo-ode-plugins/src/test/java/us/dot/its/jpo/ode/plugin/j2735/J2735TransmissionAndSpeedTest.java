@@ -22,11 +22,11 @@ import java.math.BigDecimal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import mockit.integration.junit4.JMockit;
+//import mockit.integration.junit4.JMockit;
 
 import mockit.Tested;
 
-@RunWith(JMockit.class)
+//@RunWith(JMockit.class)
 public class J2735TransmissionAndSpeedTest {
    @Tested
    J2735TransmissionAndSpeed tas;
