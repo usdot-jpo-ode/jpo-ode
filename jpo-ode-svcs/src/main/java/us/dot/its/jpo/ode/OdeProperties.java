@@ -622,19 +622,19 @@ public class OdeProperties implements EnvironmentAware {
    public void setDepositSdwMessagesOverWebsocket(boolean depositSdwMessagesOverWebsocket) {
       this.depositSdwMessagesOverWebsocket = depositSdwMessagesOverWebsocket;
    }
-    public String getKafkaTopicSignedOdeTimJsonExpiration() {
-	   return kafkaTopicSignedOdeTimJsonExpiration;
+   public String getKafkaTopicSignedOdeTimJsonExpiration() {
+      return kafkaTopicSignedOdeTimJsonExpiration;
    }
    public void setKafkaTopicSignedOdeTimJsonExpiration(String kafkaTopicSignedOdeTimJsonExpiration) {
-		this.kafkaTopicSignedOdeTimJsonExpiration = kafkaTopicSignedOdeTimJsonExpiration;
+      this.kafkaTopicSignedOdeTimJsonExpiration = kafkaTopicSignedOdeTimJsonExpiration;
    }
 
    public String getKafkaTopicOdeRawEncodedMessageJson() {
-		return kafkaTopicOdeRawEncodedMessageJson;
+      return kafkaTopicOdeRawEncodedMessageJson;
    }
 
    public void setKafkaTopicOdeRawEncodedMessageJson(String kafkaTopicOdeRawEncodedMessageJson) {
-		this.kafkaTopicOdeRawEncodedMessageJson = kafkaTopicOdeRawEncodedMessageJson;
+      this.kafkaTopicOdeRawEncodedMessageJson = kafkaTopicOdeRawEncodedMessageJson;
    }
    
 }
