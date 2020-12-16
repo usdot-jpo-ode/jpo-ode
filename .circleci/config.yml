@@ -35,7 +35,9 @@ jobs:
           name: Analyze on SonarCloud
           command: |
             if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
+              echo "Non-PR Build Detected. Running analysis on ${CIRCLE_BRANCH}"
               mvn -e -X clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
+              exit 0;
             fi
             echo "PR branch ${CIRCLE_BRANCH}"
             echo "Repo name ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
