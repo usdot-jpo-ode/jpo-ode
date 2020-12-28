@@ -127,6 +127,7 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeBsmTxPojo = "topic.OdeBsmTxPojo";
    private String kafkaTopicOdeBsmDuringEventPojo = "topic.OdeBsmDuringEventPojo";
    private String kafkaTopicFilteredOdeBsmJson = "topic.FilteredOdeBsmJson";
+   private String kafkaTopicOdeRawEncodedMessageJson = "topic.OdeRawEncodedMessageJson";
    private int bsmReceiverPort = 46800;
    private int bsmBufferSize = 500;
 
@@ -639,10 +640,19 @@ public class OdeProperties implements EnvironmentAware {
    public void setDepositSdwMessagesOverWebsocket(boolean depositSdwMessagesOverWebsocket) {
       this.depositSdwMessagesOverWebsocket = depositSdwMessagesOverWebsocket;
    }
-    public String getKafkaTopicSignedOdeTimJsonExpiration() {
-	   return kafkaTopicSignedOdeTimJsonExpiration;
+   public String getKafkaTopicSignedOdeTimJsonExpiration() {
+      return kafkaTopicSignedOdeTimJsonExpiration;
    }
    public void setKafkaTopicSignedOdeTimJsonExpiration(String kafkaTopicSignedOdeTimJsonExpiration) {
-		this.kafkaTopicSignedOdeTimJsonExpiration = kafkaTopicSignedOdeTimJsonExpiration;
-	}
+      this.kafkaTopicSignedOdeTimJsonExpiration = kafkaTopicSignedOdeTimJsonExpiration;
+   }
+
+   public String getKafkaTopicOdeRawEncodedMessageJson() {
+      return kafkaTopicOdeRawEncodedMessageJson;
+   }
+
+   public void setKafkaTopicOdeRawEncodedMessageJson(String kafkaTopicOdeRawEncodedMessageJson) {
+      this.kafkaTopicOdeRawEncodedMessageJson = kafkaTopicOdeRawEncodedMessageJson;
+   }
+   
 }
