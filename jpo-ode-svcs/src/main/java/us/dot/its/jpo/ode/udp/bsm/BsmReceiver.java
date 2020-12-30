@@ -31,12 +31,6 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
    private StringPublisher bsmPublisher;
 
-   public OdeBsmData metadata;
-
-   private SerialId serialId;
-   
-   protected static AtomicInteger bundleId = new AtomicInteger(1);
-
    @Autowired
    public BsmReceiver(OdeProperties odeProps) {
       this(odeProps, odeProps.getBsmReceiverPort(), odeProps.getBsmBufferSize());
@@ -46,9 +40,6 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
    public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
       super(odeProps, port, bufferSize);
-      
-      this.serialId = new SerialId();
-      this.serialId.setBundleId(bundleId.incrementAndGet());
    }
 
    @Override
