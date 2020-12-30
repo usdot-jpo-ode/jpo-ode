@@ -40,6 +40,8 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
    public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
       super(odeProps, port, bufferSize);
+
+      this.bsmPublisher = new StringPublisher(odeProps);
    }
 
    @Override
