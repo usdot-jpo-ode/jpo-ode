@@ -3,6 +3,10 @@ package us.dot.its.jpo.ode.udp.bsm;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -70,8 +74,11 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                logger.debug("Creating Decoded BSM JSON Object...");
 
                // Add header data for the decoding process
+               ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
+               String timestamp = utc.format(DateTimeFormatter.ISO_INSTANT);
+
                JSONObject metadataObject = new JSONObject();
-               metadataObject.put("utctimestamp", "2020-11-30T23:45:24.913657Z");
+               metadataObject.put("utctimestamp", timestamp);
 
                JSONObject messageObject = new JSONObject();
                messageObject.put("metadata", metadataObject);
