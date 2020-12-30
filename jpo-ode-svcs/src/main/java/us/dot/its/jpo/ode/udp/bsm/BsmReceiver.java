@@ -3,21 +3,21 @@ package us.dot.its.jpo.ode.udp.bsm;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.MessagePublisher;
 import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.SerialId;
-//import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
-//import us.dot.its.jpo.ode.plugin.j2735.J2735MessageFrame;
-//import us.dot.its.jpo.ode.plugin.j2735.oss.OssJ2735Coder;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
@@ -29,29 +29,26 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
    private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
                                                       // least 20 bytes long
 
-   //private OssJ2735Coder j2735coder;
+   private StringPublisher bsmPublisher;
 
    public OdeBsmData metadata;
 
    private SerialId serialId;
-
-   private MessagePublisher messagePub;
    
    protected static AtomicInteger bundleId = new AtomicInteger(1);
 
    @Autowired
    public BsmReceiver(OdeProperties odeProps) {
       this(odeProps, odeProps.getBsmReceiverPort(), odeProps.getBsmBufferSize());
+
+      this.bsmPublisher = new StringPublisher(odeProps);
    }
 
    public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
       super(odeProps, port, bufferSize);
-      //this.j2735coder = new OssJ2735Coder();
       
       this.serialId = new SerialId();
       this.serialId.setBundleId(bundleId.incrementAndGet());
-      
-      //this.messagePub = new MessagePublisher(odeProperties);
    }
 
    @Override
@@ -77,15 +74,28 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                String payloadHexString = HexUtils.toHexString(payload);
                logger.debug("Packet: {}", payloadHexString);
                
-               // try decoding as a message frame
+               logger.debug("Creating Decoded BSM JSON Object...");
 
-               // if that failed, try decoding as a bsm
-               
-               // if that failed, throw an io exception
+               // Add header data for the decoding process
+               JSONObject metadataObject = new JSONObject();
+               metadataObject.put("utctimestamp", "2020-11-30T23:45:24.913657Z");
 
-               // Publish decoded message
-               //OdeData msgWithMetadata = metadataHelper.createOdeBsmData(decodedBsm, null, this.serialId.setBundleId(bundleId.incrementAndGet()));
-               //messagePub.publish(msgWithMetadata);
+               JSONObject messageObject = new JSONObject();
+               messageObject.put("metadata", metadataObject);
+               messageObject.put("payload", payloadHexString);
+
+               JSONArray messageList = new JSONArray();
+               messageList.put(messageObject);
+
+               JSONObject jsonObject = new JSONObject();
+               jsonObject.put("BsmMessageContent", messageList);
+
+               logger.debug("BSM JSON Object: {}", jsonObject.toString());
+
+               // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
+               logger.debug("Publishing JSON BSM...");
+
+               this.bsmPublisher.publish(jsonObject.toString(), this.bsmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedMessageJson());
             }
          } catch (Exception e) {
             logger.error("Error receiving packet", e);
