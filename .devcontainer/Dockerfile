@@ -28,7 +28,7 @@ RUN apt-get update \
     && chmod 0440 /etc/sudoers.d/$USERNAME \
     #
     # Verify git, needed tools installed
-    && apt-get -y install git openssh-client less iproute2 procps curl lsb-release zip unzip sed
+    && apt-get -y install git openssh-client less iproute2 procps curl lsb-release zip unzip sed kafkacat telnet
 
 #-------------------Install SDKMan and Java 8----------------------------------
 RUN curl -s https://get.sdkman.io | bash
@@ -43,6 +43,14 @@ RUN /bin/bash -c "source $HOME/.sdkman/bin/sdkman-init.sh && sdk install maven $
 
 # Install snmp (rsu-data-controller dependency)
 RUN apt-get -y install snmp
+
+#-------------------Install Kafka----------------------------------
+RUN mkdir ~/Downloads
+RUN curl "https://archive.apache.org/dist/kafka/2.1.1/kafka_2.11-2.1.1.tgz" -o ~/Downloads/kafka.tgz
+RUN mkdir ~/kafka \
+    && cd ~/kafka \
+    && tar -xvzf ~/Downloads/kafka.tgz --strip 1
+#-------------------------------------------------------------------------------------------------------------
 
 # Clean up
 RUN apt-get autoremove -y \
