@@ -3,6 +3,8 @@
 {
 	"name": "Java 8",
 	"dockerFile": "Dockerfile",
+	"overrideCommand": false,
+	"shutdownAction": "stopContainer",
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash",
 		"java.configuration.runtimes": [
