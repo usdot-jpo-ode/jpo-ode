@@ -8,7 +8,6 @@ services:
       - "2181:2181"
     logging:
       options:
-        driver: "json-file"
         max-size: "10m"
         max-file: "5"
 
@@ -38,7 +37,6 @@ services:
       - ${DOCKER_SHARED_VOLUME_WINDOWS}/var/run/docker.sock:/var/run/docker.sock
     logging:
       options:
-        driver: "json-file"
         max-size: "10m"
         max-file: "5"
 
@@ -68,7 +66,6 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/jpo-ode
     logging:
       options:
-        driver: "json-file"
         max-size: "10m"
         max-file: "5"
 
@@ -84,7 +81,6 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
     logging:
       options:
-        driver: "json-file"
         max-size: "10m"
         max-file: "5"
 
@@ -100,7 +96,6 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
     logging:
       options:
-        driver: "json-file"
         max-size: "10m"
         max-file: "5"
 
@@ -118,7 +113,6 @@ services:
       - kafka
     logging:
       options:
-        driver: "json-file"
         max-size: "10m"
         max-file: "5"
 
@@ -136,7 +130,6 @@ services:
       - kafka
     logging:
       options:
-        driver: "json-file"
         max-size: "10m"
         max-file: "5"
 
@@ -159,7 +152,6 @@ services:
      - kafka
     logging:
       options:
-        driver: "json-file"
         max-size: "10m"
         max-file: "5"
 
@@ -182,7 +174,6 @@ services:
      - kafka
     logging:
       options:
-        driver: "json-file"
         max-size: "10m"
         max-file: "5"
 
@@ -205,7 +196,6 @@ services:
      - kafka
     logging:
       options:
-        driver: "json-file"
         max-size: "10m"
         max-file: "5"
 
@@ -228,7 +218,6 @@ services:
      - kafka
     logging:
       options:
-        driver: "json-file"
         max-size: "10m"
         max-file: "5"
 
@@ -248,7 +237,6 @@ services:
      - ode
     logging:
       options:
-        driver: "json-file"
         max-size: "10m" 
         max-file: "5"
 
@@ -261,6 +249,5 @@ services:
       SEC_CRYPTO_SERVICE_BASE_URI: ${SEC_CRYPTO_SERVICE_BASE_URI}
     logging:
       options:
-        driver: "json-file"
         max-size: "10m"  
         max-file: "5"
