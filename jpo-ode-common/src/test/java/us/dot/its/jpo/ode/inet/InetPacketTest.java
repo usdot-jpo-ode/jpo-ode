@@ -36,14 +36,6 @@ import us.dot.its.jpo.ode.util.CrcCccitt;
 
 public class InetPacketTest {
 
-//  @Capturing
-//  DatagramSocket capturingDatagramSocket;
-//
-//  @Capturing
-//  DatagramPacket capturingDatagramPacket;
-//
-//  @Capturing
-//  Thread capturingThread;
 
   @Mocked
   DatagramPacket mockDatagramPacket;

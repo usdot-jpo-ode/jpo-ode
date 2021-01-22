@@ -32,17 +32,6 @@ import mockit.Expectations;
 
 public class InetPointTest {
    
-//   @Capturing
-//   DatagramSocket capturingDatagramSocket;
-//   
-//   @Capturing
-//   DatagramPacket capturingDatagramPacket;
-//   
-//   @Capturing
-//   Thread capturingThread;
-//
-//   @Capturing
-//   InetAddress capturingInetAddress;
 
    @Test
    public void testStringConstructorCreatesAddress() {

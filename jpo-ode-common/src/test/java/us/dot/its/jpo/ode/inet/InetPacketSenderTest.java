@@ -41,14 +41,6 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class InetPacketSenderTest {
    
-//   @Capturing
-//   DatagramSocket capturingDatagramSocket;
-//   
-//   @Capturing
-//   DatagramPacket capturingDatagramPacket;
-//   
-//   @Capturing
-//   Thread capturingThread;
 
    static final private boolean isDebugOutput = false;
 
