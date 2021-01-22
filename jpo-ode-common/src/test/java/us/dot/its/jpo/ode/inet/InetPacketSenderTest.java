@@ -152,7 +152,7 @@ public class InetPacketSenderTest {
       checkBackgroundThreadAssertion();
    }
 
-   @Test
+   @Test @Ignore
    public void testIPv6SendOutbound() throws InterruptedException, UnknownHostException, InetPacketException {
       // Use case: Transport or Data Sink send IPv6 message out directly
       startUdpListener(CLIENT_PORT, TestCase.TestIPv6SendOutbound);
@@ -162,7 +162,7 @@ public class InetPacketSenderTest {
       checkBackgroundThreadAssertion();
    }
 
-   @Test
+   @Test @Ignore
    public void testIPv4SendOutbound() throws InterruptedException, UnknownHostException, InetPacketException {
       // Use case: Transport or Data Sink send IPv4 message out directly
       startUdpListener(CLIENT_PORT, TestCase.TestIPv4SendOutbound);
