@@ -6,6 +6,10 @@ services:
     image: wurstmeister/zookeeper
     ports:
       - "2181:2181"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   kafka:
     image: wurstmeister/kafka
@@ -17,7 +21,7 @@ services:
       KAFKA_ADVERTISED_HOST_NAME: ${DOCKER_HOST_IP}
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_CREATE_TOPICS: "topic.OdeBsmPojo:1:1,topic.OdeBsmJson:1:1,topic.FilteredOdeBsmJson:1:1,topic.OdeTimJson:1:1,topic.OdeTimBroadcastJson:1:1,topic.J2735TimBroadcastJson:1:1,topic.OdeDriverAlertJson:1:1,topic.Asn1DecoderInput:1:1,topic.Asn1DecoderOutput:1:1,topic.Asn1EncoderInput:1:1,topic.Asn1EncoderOutput:1:1,topic.SDWDepositorInput:1:1,topic.OdeTIMCertExpirationTimeJson:1:1"
+      KAFKA_CREATE_TOPICS: "topic.OdeBsmPojo:1:1,topic.OdeBsmJson:1:1,topic.FilteredOdeBsmJson:1:1,topic.OdeTimJson:1:1,topic.OdeTimBroadcastJson:1:1,topic.J2735TimBroadcastJson:1:1,topic.OdeDriverAlertJson:1:1,topic.Asn1DecoderInput:1:1,topic.Asn1DecoderOutput:1:1,topic.Asn1EncoderInput:1:1,topic.Asn1EncoderOutput:1:1,topic.SDWDepositorInput:1:1,topic.OdeTIMCertExpirationTimeJson:1:1,topic.OdeRawEncodedMessageJson:1:1"
       KAFKA_DELETE_TOPIC_ENABLED: "true"
       KAFKA_CLEANUP_POLICY: "delete" # delete old logs
       KAFKA_LOG_RETENTION_HOURS: 2
@@ -31,6 +35,10 @@ services:
       - zookeeper
     volumes:
       - ${DOCKER_SHARED_VOLUME_WINDOWS}/var/run/docker.sock:/var/run/docker.sock
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   ode:
     build: .
@@ -56,6 +64,10 @@ services:
       - kafka
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/jpo-ode
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   adm:
     build: ./asn1_codec
@@ -67,6 +79,10 @@ services:
       - kafka
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   aem:
     build: ./asn1_codec
@@ -78,6 +94,10 @@ services:
       - kafka
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   ppm_bsm:
     build:
@@ -91,6 +111,10 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
     depends_on:
       - kafka
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   ppm_tim:
     build:
@@ -104,6 +128,10 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
     depends_on:
       - kafka
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   cvpep_bsm_depositor:
     build: ./jpo-s3-deposit
@@ -122,6 +150,10 @@ services:
       HEADER_X_API_KEY: ${CVPEP_BSM_HEADER_X_API_KEY}
     depends_on:
      - kafka
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   rde_bsm_depositor:
     build: ./jpo-s3-deposit
@@ -140,6 +172,10 @@ services:
       HEADER_X_API_KEY: ${RDE_BSM_HEADER_X_API_KEY}
     depends_on:
      - kafka
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   cvpep_tim_depositor:
     build: ./jpo-s3-deposit
@@ -158,6 +194,10 @@ services:
       HEADER_X_API_KEY: ${CVPEP_BSM_HEADER_X_API_KEY}
     depends_on:
      - kafka
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   rde_tim_depositor:
     build: ./jpo-s3-deposit
@@ -176,6 +216,10 @@ services:
       HEADER_X_API_KEY: ${RDE_TIM_HEADER_X_API_KEY}
     depends_on:
      - kafka
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   sdw_depositor:
     build: ./jpo-sdw-depositor
@@ -191,6 +235,10 @@ services:
      - kafka
      - zookeeper
      - ode
+    logging:
+      options:
+        max-size: "10m" 
+        max-file: "5"
 
   sec:
     build: ./jpo-security-svcs
@@ -199,3 +247,7 @@ services:
      - "8090:8090"
     environment:
       SEC_CRYPTO_SERVICE_BASE_URI: ${SEC_CRYPTO_SERVICE_BASE_URI}
+    logging:
+      options:
+        max-size: "10m"  
+        max-file: "5"
