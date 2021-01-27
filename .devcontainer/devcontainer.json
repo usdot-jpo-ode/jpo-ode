@@ -23,9 +23,10 @@
 		"tabnine.tabnine-vscode"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [8080, 9090, 46753, 46800, 5555, 6666, 8090, 2181, 9092],
+	// "forwardPorts": [8080, 9090, 46753, 46800, 5555, 6666, 8090, 2181, 9092],
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "bash .devcontainer/post-create.sh",
 	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	// "remoteUser": "vscode"
+	"runArgs": ["--network=host"]
 }

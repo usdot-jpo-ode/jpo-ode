@@ -50,6 +50,7 @@ RUN curl "https://archive.apache.org/dist/kafka/2.1.1/kafka_2.11-2.1.1.tgz" -o ~
 RUN mkdir ~/kafka \
     && cd ~/kafka \
     && tar -xvzf ~/Downloads/kafka.tgz --strip 1
+RUN echo "\nadvertised.listeners=PLAINTEXT://localhost:9092" >> ~/kafka/config/server.properties    
 #-------------------------------------------------------------------------------------------------------------
 
 # Clean up
