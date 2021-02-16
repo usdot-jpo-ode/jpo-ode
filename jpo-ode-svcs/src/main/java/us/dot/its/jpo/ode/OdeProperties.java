@@ -139,6 +139,8 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeTimBroadcastJson = "topic.OdeTimBroadcastJson";
    private String kafkaTopicJ2735TimBroadcastJson = "topic.J2735TimBroadcastJson";
    private String kafkaTopicFilteredOdeTimJson = "topic.FilteredOdeTimJson";
+   private int timReceiverPort = 47900;
+   private int timBufferSize = 500;
 
    // DriverAlerts
    private String kafkaTopicDriverAlertJson = "topic.OdeDriverAlertJson";
@@ -367,6 +369,22 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setBsmBufferSize(int bsmBufferSize) {
       this.bsmBufferSize = bsmBufferSize;
+   }
+
+   public int getTimReceiverPort() {
+      return timReceiverPort;
+   }
+
+   public void setTimReceiverPort(int timReceiverPort) {
+      this.timReceiverPort = timReceiverPort;
+   }
+
+   public int getTimBufferSize() {
+      return timBufferSize;
+   }
+
+   public void setTimBufferSize(int timBufferSize) {
+      this.timBufferSize = timBufferSize;
    }
 
    public String getDdsCasUrl() {
