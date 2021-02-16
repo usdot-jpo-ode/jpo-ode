@@ -15,8 +15,6 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
@@ -25,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -166,23 +164,15 @@ public class OdeProperties implements EnvironmentAware {
 
    private static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
 
+   @Autowired
+   BuildProperties buildProperties;
+
    @PostConstruct
    void initialize() {
-
-      String pomPropsFile = "/META-INF/maven/usdot.jpo.ode/jpo-ode-svcs/pom.properties";
-      try {
-         InputStream resourceAsStream = this.getClass().getResourceAsStream(pomPropsFile);
-         Properties properties = new Properties();
-         properties.load(resourceAsStream);
-         setVersion(properties.getProperty("version"));
-         logger.info("groupId: {}", properties.getProperty("groupId"));
-         logger.info("artifactId: {}", properties.getProperty("artifactId"));
-         logger.info("version: {}", version);
-
-      } catch (IOException e) {
-         logger.error("Error loading properties file " + pomPropsFile, e);
-      }
-
+      setVersion(buildProperties.getVersion());
+      logger.info("groupId: {}", buildProperties.getGroup());
+      logger.info("artifactId: {}", buildProperties.getArtifact());
+      logger.info("version: {}", version);
       OdeMsgMetadata.setStaticSchemaVersion(OUTPUT_SCHEMA_VERSION);
 
       uploadLocations.add(Paths.get(uploadLocationRoot));
