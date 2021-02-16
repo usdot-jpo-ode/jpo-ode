@@ -116,30 +116,23 @@ public class Asn1DecodeMessageJSON extends AbstractSubscriberProcessor<String, S
 						JSONObject rawTIMJsonContent = (JSONObject) rawTIMJsonContentArray.get(i);
 						String encodedPayload = rawTIMJsonContent.get("payload").toString();
 						JSONObject rawmetadata = (JSONObject) rawTIMJsonContent.get("metadata");
+
+						logger.info("RAW TIM: {}", encodedPayload);
 						
 						//construct payload
 						payload = new OdeAsn1Payload(new OdeHexByteArray(encodedPayload));
 
 						//construct metadata
-						metadata = new OdeLogMetadata(payload);
+						metadata = new OdeBsmMetadata(payload);
 						metadata.setOdeReceivedAt(rawmetadata.getString("utctimestamp"));
 						metadata.setRecordGeneratedAt(rawmetadata.getString("originRsu"));
-
-						//construct metadata: receivedMessageDetails
-						ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
-						receivedMessageDetails.setRxSource(RxSource.RV);
-
-						//construct metadata: locationData
-						OdeLogMsgMetadataLocation locationData = new OdeLogMsgMetadataLocation();
-						receivedMessageDetails.setLocationData(locationData);
-
-						metadata.setReceivedMessageDetails(receivedMessageDetails);
+						metadata.setRecordType(RecordType.unsupported);
 						
 						Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",EncodingRule.UPER);
 						metadata.addEncoding(unsecuredDataEncoding);
 						
 						//construct odeData
-						odeTimData = new OdeData(metadata, payload);
+						odeTimData = new OdeAsn1Data(metadata, payload);
 						
 						publishEncodedMessageToAsn1Decoder(odeTimData);
 					}
