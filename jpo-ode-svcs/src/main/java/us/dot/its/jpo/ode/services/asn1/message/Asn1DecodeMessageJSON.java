@@ -55,12 +55,10 @@ public class Asn1DecodeMessageJSON extends AbstractSubscriberProcessor<String, S
 			Set<?> keys = rawJSONObject.keySet();
 			for (Object key : keys) {
 				
-				// Send encoded BSM content to Codec service to decode BSM
+				//Send encoded BSM content to Codec service to decode BSM
 				if (key != null && key.toString().equals(BSMContentType)) {
-
 					OdeBsmMetadata metadata = null;
-					/**
-					 * process consumed data { "BsmMessageContent": [{ "metadata": { "utctimestamp:
+					/**process consumed data { "BsmMessageContent": [{ "metadata": { "utctimestamp:
 					 * "2020-11-30T23:45:24.913657Z" }
 					 * "payload":"001480CF4B950C400022D2666E923D1EA6D4E28957BD55FFFFF001C758FD7E67D07F7FFF8000000002020218E1C1004A40196FBC042210115C030EF1408801021D4074CE7E1848101C5C0806E8E1A50101A84056EE8A1AB4102B840A9ADA21B9010259C08DEE1C1C560FFDDBFC070C0222210018BFCE309623120FFE9BFBB10C8238A0FFDC3F987114241610009BFB7113024780FFAC3F95F13A26800FED93FDD51202C5E0FE17BF9B31202FBAFFFEC87FC011650090019C70808440C83207873800000000001095084081C903447E31C12FC0"}]}
 					 */
