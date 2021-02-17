@@ -25,7 +25,6 @@ import us.dot.its.jpo.ode.model.OdeMsgPayload;
 import us.dot.its.jpo.ode.model.OdeLogMetadata;
 import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
 import us.dot.its.jpo.ode.model.RxSource;
-import us.dot.its.jpo.ode.model.OdeTimData;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.wrapper.AbstractSubscriberProcessor;
