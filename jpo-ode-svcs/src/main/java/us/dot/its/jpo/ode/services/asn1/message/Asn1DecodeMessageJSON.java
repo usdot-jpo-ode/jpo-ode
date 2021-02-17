@@ -175,7 +175,7 @@ public class Asn1DecodeMessageJSON extends AbstractSubscriberProcessor<String, S
 						//construct odeData
 						odeData = new OdeAsn1Data(metadata, payload);
 						
-						publishEncodedMessageToAsn1Decoder(odeTimData);
+						publishEncodedMessageToAsn1Decoder(odeData);
 					}
 				} 
 				else {
