@@ -1,0 +1,35 @@
+package us.dot.its.jpo.ode.model;
+
+public class OdeSpatMetadata extends OdeLogMetadata {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5361008186032548625L;
+
+	public enum SpatSource {
+		EV, RV, unknown
+	}
+
+	private SpatSource spatSource;
+
+	public OdeSpatMetadata() {
+		super();
+	}
+
+	public OdeSpatMetadata(OdeMsgPayload payload) {
+		super(payload);
+	}
+
+	public OdeSpatMetadata(OdeMsgPayload payload, SerialId serialId, String receivedAt) {
+
+	}
+
+	public SpatSource getSpatSource() {
+		return spatSource;
+	}
+
+	public void setSpatSource(SpatSource spatSource) {
+		this.spatSource = spatSource;
+	}
+
+}
