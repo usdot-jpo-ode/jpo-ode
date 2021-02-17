@@ -7,7 +7,7 @@ public class OdeSpatMetadata extends OdeLogMetadata {
 	private static final long serialVersionUID = -5361008186032548625L;
 
 	public enum SpatSource {
-		EV, RV, unknown
+		RSU, V2X, MMITSS, unknown
 	}
 
 	private SpatSource spatSource;

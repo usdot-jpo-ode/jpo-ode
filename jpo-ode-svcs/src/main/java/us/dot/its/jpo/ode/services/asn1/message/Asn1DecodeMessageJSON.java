@@ -128,7 +128,7 @@ public class Asn1DecodeMessageJSON extends AbstractSubscriberProcessor<String, S
 						receivedMessageDetails.setLocationData(locationData);
 
 						metadata.setReceivedMessageDetails(receivedMessageDetails);
-						metadata.setSpatSource(SpatSource.RV);
+						metadata.setSpatSource(SpatSource.V2X);
 
 						Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",
 								EncodingRule.UPER);
