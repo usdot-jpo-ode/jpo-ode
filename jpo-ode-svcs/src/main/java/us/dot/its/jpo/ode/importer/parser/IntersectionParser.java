@@ -67,7 +67,7 @@ public class IntersectionParser extends LogFileParser {
 	      try {
 	    	  this.intersection.setIntersectionStatus(code);
 	      } catch (Exception e) {
-	         logger.error("Farse Intersection status value error, Invalid value {}: ", 
+	         logger.error("Intersection status value error, Invalid value {}: ", 
 	            code);
 	      }
 	   }
