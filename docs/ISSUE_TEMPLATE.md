@@ -10,7 +10,7 @@
 <!--- Provide a detailed description of the problem or suggested new functionality. -->
 <!--- Be sure to include contextual info, as readers may not be aware of what you are doing. -->
 
-### Carma version where this issue was discovered
+### ODE version where this issue was discovered
 <!--- What version are you running that you noticed this problem or deficiency? -->
 <!--- If this is an enhancement request, record the latest available version. -->
 
