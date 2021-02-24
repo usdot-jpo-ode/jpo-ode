@@ -22,7 +22,10 @@ import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
 import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.OdeLogMetadata;
+import us.dot.its.jpo.ode.model.OdeTimMetadata;
 import us.dot.its.jpo.ode.model.OdeSpatMetadata;
 import us.dot.its.jpo.ode.model.OdeSpatMetadata.SpatSource;
 import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
@@ -149,7 +152,7 @@ public class Asn1DecodeMessageJSON extends AbstractSubscriberProcessor<String, S
 					/**process consumed data
 					 *  {"TimMessageContent":[{"metadata":{"utctimestamp":"2020-11-30T23:45:24.913657Z", "originRsu":"172.250.250.77"},"payload":"001f5520100000000000564fb69082709b898aac59717eadfffe4fca1bf0a9d828407e137131558b2e2fd581f46ffff00118b2e3b3ee6e2702c18b2e34f4e6e269ec18b2e285426e2580598b2e23b6e6e254c80420005c48"}]}
 					 */
-					OdeLogMetadata metadata = null;
+					OdeTimMetadata metadata = null;
 					
 					JSONArray rawTIMJsonContentArray = rawJSONObject.getJSONArray(TIMContentType);
 					for(int i=0;i<rawTIMJsonContentArray.length();i++)
@@ -164,10 +167,11 @@ public class Asn1DecodeMessageJSON extends AbstractSubscriberProcessor<String, S
 						payload = new OdeAsn1Payload(new OdeHexByteArray(encodedPayload));
 
 						//construct metadata
-						metadata = new OdeBsmMetadata(payload);
+						metadata = new OdeTimMetadata(payload);
 						metadata.setOdeReceivedAt(rawmetadata.getString("utctimestamp"));
-						metadata.setRecordGeneratedAt(rawmetadata.getString("originRsu"));
-						metadata.setRecordType(RecordType.unsupported);
+						metadata.setOriginIp(rawmetadata.getString("originRsu"));
+						metadata.setRecordType(RecordType.timMsg);
+						metadata.setRecordGeneratedBy(GeneratedBy.RSU);
 						
 						Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",EncodingRule.UPER);
 						metadata.addEncoding(unsecuredDataEncoding);
