@@ -61,6 +61,11 @@ typedef struct _location {
     uint16_t heading;
 } __attribute__((__packed__)) location;
 
+typedef struct _intersection {
+    int8_t intersectionStatus;
+    int32_t intersectionId;
+} __attribute__((__packed__)) intersection;
+
 typedef struct _driverAlertRecord {
     location  curLocation;
     uint32_t  utcTimeInSec;
@@ -97,6 +102,16 @@ typedef struct _dnmMsgRecord {
     uint16_t  length;
     /* payload of length size*/
 } __attribute__((__packed__)) dnmMsgRecord;
+
+typedef struct _SPaTMsgRecord {
+    uint8_t   rxFrom; /* refer rxSource for values */
+    intersection  curIntersection;
+    uint32_t  utcTimeInSec;
+    uint16_t  msec;
+    int8_t    verificationStatus;
+    uint16_t  length;
+    /* payload of length size*/
+} __attribute__((__packed__)) SPaTMsgRecord;
 
 /*
  * FW upgrade, SCMS, System Logs will be logged to
