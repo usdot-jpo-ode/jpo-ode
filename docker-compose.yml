@@ -64,7 +64,7 @@ services:
     depends_on:
       - kafka
     volumes:
-      - ${DOCKER_SHARED_VOLUME}:/jpo-ode
+      - ${DOCKER_SHARED_VOLUME}/uploads:/home/uploads
     logging:
       options:
         max-size: "10m"
