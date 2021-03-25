@@ -1,15 +1,7 @@
 ## ODE Release Notes ##
 -----------------------
 ### Release 1.2.1  (2021-03-09)
-- Updated docker logging and jpo-ode logger setting to mitigate unexpected large log file growth
-- Added functionality to process encoded BSM hex string sent to Kafka topic
-- Added functionality to process encoded TIM hex string sent to Kafka topic
-- Added functionality to process encoded SPAT hex string sent to Kafka topic
-- Added functionality to process uploaded SPAT binary file
-- Updated docker-compose shared volumes setting to allow users to upload binary files via scp command from host machine
-- Updated CircleCI base image to circleci/openjdk:14.0.2-jdk-buster-node
-- Update submodules refereneces
-- Added a standard development environment for the ODE, refer to docs/ODE_Development_SOP.docx
+- ODE message support for SPAT and TIM. Release details see [release notes](https://github.com/usdot-jpo-ode/jpo-ode/releases/tag/jpo-ode-1.2.1)
 
 ### Release 1.0.8 (May 24, 2019)
 - Integrated odevalidator v0.0.6
