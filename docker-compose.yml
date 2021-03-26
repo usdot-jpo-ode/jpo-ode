@@ -150,6 +150,7 @@ services:
       API_ENDPOINT: ${CVPEP_BSM_API_ENDPOINT}
       HEADER_ACCEPT: ${CVPEP_BSM_HEADER_ACCEPT}
       HEADER_X_API_KEY: ${CVPEP_BSM_HEADER_X_API_KEY}
+      DEPOSIT_GROUP: ${CVPEP_BSM_GROUP}
     depends_on:
      - kafka
     logging:
@@ -172,6 +173,7 @@ services:
       API_ENDPOINT: ${RDE_BSM_API_ENDPOINT}
       HEADER_ACCEPT: ${RDE_BSM_HEADER_ACCEPT}
       HEADER_X_API_KEY: ${RDE_BSM_HEADER_X_API_KEY}
+      DEPOSIT_GROUP: ${RDE_BSM_GROUP}
     depends_on:
      - kafka
     logging:
@@ -194,6 +196,7 @@ services:
       API_ENDPOINT: ${CVPEP_BSM_API_ENDPOINT}
       HEADER_ACCEPT: ${CVPEP_BSM_HEADER_ACCEPT}
       HEADER_X_API_KEY: ${CVPEP_BSM_HEADER_X_API_KEY}
+      DEPOSIT_GROUP: ${CVPEP_TIM_GROUP}
     depends_on:
      - kafka
     logging:
@@ -216,6 +219,7 @@ services:
       API_ENDPOINT: ${RDE_TIM_API_ENDPOINT}
       HEADER_ACCEPT: ${RDE_TIM_HEADER_ACCEPT}
       HEADER_X_API_KEY: ${RDE_TIM_HEADER_X_API_KEY}
+      DEPOSIT_GROUP: ${RDE_TIM_GROUP}
     depends_on:
      - kafka
     logging:
