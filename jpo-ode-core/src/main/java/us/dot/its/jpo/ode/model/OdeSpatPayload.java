@@ -1,3 +1,7 @@
+package us.dot.its.jpo.ode.model;
+
+import us.dot.its.jpo.ode.plugin.j2735.J2735SPAT;
+
 /*******************************************************************************
  * Copyright 2018 572682
  * 
@@ -13,40 +17,28 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package us.dot.its.jpo.ode.plugin.j2735;
 
-import java.util.HashMap;
-import java.util.Map;
+public class OdeSpatPayload extends OdeMsgPayload {
 
-public enum J2735DSRCmsgID {
+	   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-   BasicSafetyMessage(20), TravelerInformation(31), SPATMessage(19);
+	public OdeSpatPayload() {
+	        this(new J2735SPAT());
+	    }
 
-    private int msgID;
+	    public OdeSpatPayload(J2735SPAT spat) {
+	        super(spat);
+	        this.setData(spat);
+	    }
 
-    private static Map<Integer, J2735DSRCmsgID> map = new HashMap<>();
+	    public J2735SPAT getSpat() {
+	        return (J2735SPAT) getData();
+	    }
 
-    static {
-        for (J2735DSRCmsgID cur : J2735DSRCmsgID.values()) {
-            map.put(cur.msgID, cur);
-        }
-    }
-
-    private J2735DSRCmsgID(int id) {
-        msgID = id;
-    }
-
-    public static J2735DSRCmsgID valueOf(int id) {
-        return map.get(id);
-    }
-
-    public int getMsgID() {
-        return msgID;
-    }
-
-    public void setMsgID(int msgID) {
-        this.msgID = msgID;
-    }
-
-    
+	    public void setBsm(J2735SPAT spat) {
+	        setData(spat);
+	    }
 }
