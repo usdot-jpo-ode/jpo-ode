@@ -25,8 +25,6 @@ public class MovementEventBuilder {
 			String eventStateKey = eventStateJson.keys().hasNext()
 					? eventStateJson.keys().next().toString().toLowerCase().replace("-", "_")
 					: "";
-			System.out.print(J2735MovementPhaseState.STOP_AND_REMAIN.name().toLowerCase());
-			System.out.print(eventStateKey);
 			if (J2735MovementPhaseState.STOP_AND_REMAIN.name().toLowerCase().equals(eventStateKey)) {
 				event.setEventState(J2735MovementPhaseState.STOP_AND_REMAIN);
 

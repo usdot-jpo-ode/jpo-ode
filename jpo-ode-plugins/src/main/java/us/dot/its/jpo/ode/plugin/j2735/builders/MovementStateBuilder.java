@@ -21,8 +21,8 @@ public class MovementStateBuilder {
 		if (movementStatesJson.get("signalGroup") != null)
 			state.setSignalGroup(movementStatesJson.get("signalGroup").asInt());
 
-		if (movementStatesJson.get("state-time-speed").isArray()) {
-			Iterator<JsonNode> nestElements = movementStatesJson.get("state-time-speed").elements();
+		if (movementStatesJson.get("state-time-speed")!= null && movementStatesJson.get("state-time-speed").get("MovementEvent").isArray()) {
+			Iterator<JsonNode> nestElements = movementStatesJson.get("state-time-speed").get("MovementEvent").elements();
 			J2735MovementEventList state_time_speed = new J2735MovementEventList();
 			while (nestElements.hasNext()) {
 				state_time_speed.getMovementEventList()
@@ -37,11 +37,12 @@ public class MovementStateBuilder {
 			state.setState_time_speed(state_time_speed);
 		}
 		
-		if(movementStatesJson.get("maneuverAssistList") != null)
+		if(movementStatesJson.get("maneuverAssistList") != null
+				&& movementStatesJson.get("maneuverAssistList").get("ConnectionManueverAssist") != null)
 		{
 			J2735ManeuverAssistList maneuverAssistList = new J2735ManeuverAssistList();
-			if (movementStatesJson.get("maneuverAssistList").isArray()) {
-				Iterator<JsonNode> elements = movementStatesJson.get("maneuverAssistList").elements();
+			if (movementStatesJson.get("maneuverAssistList").get("ConnectionManueverAssist").isArray()) {
+				Iterator<JsonNode> elements = movementStatesJson.get("maneuverAssistList").get("ConnectionManueverAssist").elements();
 				while (elements.hasNext()) {
 					maneuverAssistList.getManeuverAssistList()
 							.add(ManeuverAssistBuilder.genericManeuverAssist(elements.next()));
