@@ -80,10 +80,11 @@ public class MovementEventBuilder {
 			event.setTiming(timing);
 		}
 
-		if (movementEventJson.get("speeds") != null) {
+		if (movementEventJson.get("speeds") != null 
+				&& movementEventJson.get("speeds").get("AdvisorySpeed") != null) {
 			J2735AdvisorySpeedList speeds = new J2735AdvisorySpeedList();
-			if (movementEventJson.get("speeds").isArray()) {
-				Iterator<JsonNode> elements = movementEventJson.get("speeds").elements();
+			if (movementEventJson.get("speeds").get("AdvisorySpeed").isArray()) {
+				Iterator<JsonNode> elements = movementEventJson.get("speeds").get("AdvisorySpeed").elements();
 				while (elements.hasNext()) {
 					speeds.getAdvisorySpeedList().add(AdvisorySpeedBuilder.genericAdvisorySpeed(elements.next()));
 				}
