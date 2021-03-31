@@ -1,7 +1,6 @@
 ## ODE Release Notes ##
 -----------------------
-### Release 1.2.1  (2021-03-09)
-- ODE message support for SPAT and TIM. Release details see [release notes](https://github.com/usdot-jpo-ode/jpo-ode/releases/tag/jpo-ode-1.2.1)
+NOTE: For release details for latest releases, please see [release notes](https://github.com/usdot-jpo-ode/jpo-ode/releases)
 
 ### Release 1.0.8 (May 24, 2019)
 - Integrated odevalidator v0.0.6
