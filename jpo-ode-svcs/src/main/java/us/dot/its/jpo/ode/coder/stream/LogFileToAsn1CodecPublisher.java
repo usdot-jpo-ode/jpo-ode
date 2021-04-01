@@ -153,7 +153,9 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
 				publisher.publish(JsonUtils.toJson(odeData, false),
 						publisher.getOdeProperties().getKafkaTopicDriverAlertJson());
-			} else {
+			} 
+			else 
+			{
 				if (isBsmRecord()) {
 					logger.debug("Publishing a BSM");
 				} else if(isSpatRecord()) {
@@ -161,11 +163,21 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 				}else {
 					logger.debug("Publishing a TIM");
 				}
-
-				Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
-				Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",
-						EncodingRule.UPER);
-				msgMetadata.addEncoding(msgEncoding).addEncoding(unsecuredDataEncoding);
+				
+				if(isSpatRecord() && msgMetadata instanceof OdeSpatMetadata 
+						&& !((OdeSpatMetadata)msgMetadata).isCertPresent() )
+				{
+					//Nothing: If Spat log file and IEEE1609Cert is not present, Skip the Ieee1609Dot2Data encoding					
+				}
+				else 
+				{
+					Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
+					msgMetadata.addEncoding(msgEncoding);
+				}
+				
+				Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",EncodingRule.UPER);
+				msgMetadata.addEncoding(unsecuredDataEncoding);
+				
 
 				publisher.publish(xmlUtils.toXml(odeData),
 						publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
