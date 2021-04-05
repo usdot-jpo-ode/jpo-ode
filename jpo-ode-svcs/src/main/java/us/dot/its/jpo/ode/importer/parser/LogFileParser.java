@@ -240,11 +240,14 @@ public abstract class LogFileParser implements FileParser {
 		if (metadata instanceof OdeSpatMetadata) {
 			OdeSpatMetadata odeSpatMetadata = (OdeSpatMetadata) metadata;
 			SpatSource spatSource = SpatSource.unknown;
+			boolean isCertPresent = true; /*ieee 1609 (acceptable values 0 = no,1 =yes by default the Cert shall be present)*/
 			if (this instanceof SpatLogFileParser) {
 				SpatLogFileParser spatLogFileParser = (SpatLogFileParser) this;
 				spatSource = spatLogFileParser.getSpatSource();
+				isCertPresent = spatLogFileParser.isCertPresent(); //update
 			}
 			odeSpatMetadata.setSpatSource(spatSource);
+			odeSpatMetadata.setCertPresent(isCertPresent);
 		}
 
 		metadata.calculateGeneratedBy();

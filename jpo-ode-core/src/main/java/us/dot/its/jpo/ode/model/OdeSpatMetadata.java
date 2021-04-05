@@ -11,6 +11,15 @@ public class OdeSpatMetadata extends OdeLogMetadata {
 	}
 
 	private SpatSource spatSource;
+	private boolean isCertPresent;
+
+	public boolean isCertPresent() {
+		return isCertPresent;
+	}
+
+	public void setCertPresent(boolean isCertPresent) {
+		this.isCertPresent = isCertPresent;
+	}
 
 	public OdeSpatMetadata() {
 		super();

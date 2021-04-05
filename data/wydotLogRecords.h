@@ -62,8 +62,8 @@ typedef struct _location {
 } __attribute__((__packed__)) location;
 
 typedef struct _intersection {
+    int16_t intersectionId;
     int8_t intersectionStatus;
-    int32_t intersectionId;
 } __attribute__((__packed__)) intersection;
 
 typedef struct _driverAlertRecord {
@@ -90,6 +90,7 @@ typedef struct _receivedMsgRecord {
     uint32_t  utcTimeInSec;
     uint16_t  msec;
     int8_t    verificationStatus;
+    int8_t    is_cert_present; /*ieee 1609 (acceptable values 0 = no,1 =yes)*/
     uint16_t  length;
     /* payload of length size*/
 } __attribute__((__packed__)) receivedMsgRecord;
