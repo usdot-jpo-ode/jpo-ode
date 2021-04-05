@@ -79,6 +79,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
                JSONObject metadataObject = new JSONObject();
                metadataObject.put("utctimestamp", timestamp);
+               metadataObject.put("originRsu", senderIp);
 
                JSONObject messageObject = new JSONObject();
                messageObject.put("metadata", metadataObject);

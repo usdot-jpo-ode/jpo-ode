@@ -83,6 +83,8 @@ public class Asn1DecodeMessageJSON extends AbstractSubscriberProcessor<String, S
 						metadata.setOdeReceivedAt(rawmetadata.getString("utctimestamp"));
 						metadata.setRecordType(RecordType.bsmTx);
 						metadata.setSecurityResultCode(SecurityResultCode.success);
+						if (rawmetadata.has("originRsu"))
+							metadata.setOriginIp(rawmetadata.getString("originRsu"));
 
 						// construct metadata: receivedMessageDetails
 						ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
