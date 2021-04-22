@@ -47,6 +47,11 @@ public class OdeSpatDataCreatorHelper {
 		}
 		
 		OdeSpatMetadata metadata = (OdeSpatMetadata) JsonUtils.fromJson(metadataNode.toString(), OdeSpatMetadata.class);
+		
+		if(metadataNode.findValue("certPresent") != null) {
+			boolean isCertPresent = metadataNode.findValue("certPresent").asBoolean();
+			metadata.setCertPresent(isCertPresent);
+		}
 
 		if (metadata.getSchemaVersion() <= 4) {
 			metadata.setReceivedMessageDetails(null);

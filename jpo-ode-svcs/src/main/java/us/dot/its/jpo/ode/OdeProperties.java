@@ -125,7 +125,7 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeBsmTxPojo = "topic.OdeBsmTxPojo";
    private String kafkaTopicOdeBsmDuringEventPojo = "topic.OdeBsmDuringEventPojo";
    private String kafkaTopicFilteredOdeBsmJson = "topic.FilteredOdeBsmJson";
-   private String kafkaTopicOdeRawEncodedMessageJson = "topic.OdeRawEncodedMessageJson";
+   private String kafkaTopicOdeRawEncodedBSMJson = "topic.OdeRawEncodedBSMJson";
    private int bsmReceiverPort = 46800;
    private int bsmBufferSize = 500;
 
@@ -137,6 +137,7 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeTimBroadcastJson = "topic.OdeTimBroadcastJson";
    private String kafkaTopicJ2735TimBroadcastJson = "topic.J2735TimBroadcastJson";
    private String kafkaTopicFilteredOdeTimJson = "topic.FilteredOdeTimJson";
+   private String kafkaTopicOdeRawEncodedTIMJson = "topic.OdeRawEncodedTIMJson";
    private int timReceiverPort = 47900;
    private int timBufferSize = 500;
    
@@ -147,6 +148,7 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeSpatRxPojo = "topic.OdeSpatRxPojo";
    private String kafkaTopicOdeSpatRxJson = "topic.OdeSpatRxJson";
    private String kafkaTopicFilteredOdeSpatJson = "topic.FilteredOdeSpatJson";
+   private String kafkaTopicOdeRawEncodedSPATJson = "topic.OdeRawEncodedSPATJson";
    
    // DriverAlerts
    private String kafkaTopicDriverAlertJson = "topic.OdeDriverAlertJson";
@@ -662,15 +664,6 @@ public class OdeProperties implements EnvironmentAware {
    public void setKafkaTopicSignedOdeTimJsonExpiration(String kafkaTopicSignedOdeTimJsonExpiration) {
       this.kafkaTopicSignedOdeTimJsonExpiration = kafkaTopicSignedOdeTimJsonExpiration;
    }
-
-   public String getKafkaTopicOdeRawEncodedMessageJson() {
-      return kafkaTopicOdeRawEncodedMessageJson;
-   }
-
-   public void setKafkaTopicOdeRawEncodedMessageJson(String kafkaTopicOdeRawEncodedMessageJson) {
-      this.kafkaTopicOdeRawEncodedMessageJson = kafkaTopicOdeRawEncodedMessageJson;
-   }
-
 	
 	public String getKafkaTopicOdeSpatTxPojo() {
 		return kafkaTopicOdeSpatTxPojo;
@@ -730,5 +723,37 @@ public class OdeProperties implements EnvironmentAware {
 	public void setKafkaTopicFilteredOdeSpatJson(String kafkaTopicFilteredOdeSpatJson) {
 		this.kafkaTopicFilteredOdeSpatJson = kafkaTopicFilteredOdeSpatJson;
 	}
+
+
+	public String getKafkaTopicOdeRawEncodedBSMJson() {
+		return kafkaTopicOdeRawEncodedBSMJson;
+	}
+
+
+	public void setKafkaTopicOdeRawEncodedBSMJson(String kafkaTopicOdeRawEncodedBSMJson) {
+		this.kafkaTopicOdeRawEncodedBSMJson = kafkaTopicOdeRawEncodedBSMJson;
+	}
+
+
+	public String getKafkaTopicOdeRawEncodedTIMJson() {
+		return kafkaTopicOdeRawEncodedTIMJson;
+	}
+
+
+	public void setKafkaTopicOdeRawEncodedTIMJson(String kafkaTopicOdeRawEncodedTIMJson) {
+		this.kafkaTopicOdeRawEncodedTIMJson = kafkaTopicOdeRawEncodedTIMJson;
+	}
+
+
+	public String getKafkaTopicOdeRawEncodedSPATJson() {
+		return kafkaTopicOdeRawEncodedSPATJson;
+	}
+
+
+	public void setKafkaTopicOdeRawEncodedSPATJson(String kafkaTopicOdeRawEncodedSPATJson) {
+		this.kafkaTopicOdeRawEncodedSPATJson = kafkaTopicOdeRawEncodedSPATJson;
+	}
+	
+	
 	   
 }
