@@ -16,6 +16,7 @@
 package us.dot.its.jpo.ode.services.asn1;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 
@@ -76,7 +77,7 @@ public class Asn1EncodedDataRouterTest {
    }
    
    @Test
-   public void testSingleRsu(@Mocked JSONObject mockJSONObject) throws XmlUtilsException {
+   public void testSingleRsu(@Mocked JSONObject mockJSONObject) throws XmlUtilsException, JSONException {
       new Expectations() {{
          XmlUtils.toJSONObject(anyString);
          result = mockJSONObject;
@@ -94,7 +95,7 @@ public class Asn1EncodedDataRouterTest {
    }
    
    @Test
-   public void testRsuArray(@Mocked JSONObject mockJSONObject) throws XmlUtilsException {
+   public void testRsuArray(@Mocked JSONObject mockJSONObject) throws XmlUtilsException, JSONException {
       new Expectations() {{
          XmlUtils.toJSONObject(anyString);
          result = mockJSONObject;
@@ -112,7 +113,7 @@ public class Asn1EncodedDataRouterTest {
    }
    
    @Test
-   public void testWithASD(@Mocked JSONObject mockJSONObject) throws XmlUtilsException {
+   public void testWithASD(@Mocked JSONObject mockJSONObject) throws XmlUtilsException, JSONException {
       new Expectations() {{
          XmlUtils.toJSONObject(anyString);
          result = mockJSONObject;

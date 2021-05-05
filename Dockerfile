@@ -1,6 +1,7 @@
-FROM maven:3.5.4-jdk-8-alpine as builder
+FROM maven:3.8-openjdk-11 as builder
 MAINTAINER 583114@bah.com
 
+# FROM maven:3.5.4-jdk-8-alpine as builder
 WORKDIR /home
 
 # Copy only the files needed to avoid putting all sorts of junk from your local env on to the image
@@ -16,7 +17,7 @@ COPY ./jpo-ode-svcs/src ./jpo-ode-svcs/src
 
 RUN mvn clean package -DskipTests
 
-FROM openjdk:8u171-jre-alpine
+FROM openjdk:11-jre-slim
 
 WORKDIR /home
 

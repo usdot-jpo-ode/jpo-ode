@@ -18,6 +18,7 @@ package us.dot.its.jpo.ode.services.asn1;
 import java.util.Set;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,7 +81,7 @@ public class Asn1DecodedDataRouterTest {
    }
 
    @Test
-   public void testProcessBsmLogDuringEvent() throws XmlUtilsException {
+   public void testProcessBsmLogDuringEvent() throws XmlUtilsException, JSONException {
       new Expectations() {
 
          {
@@ -114,7 +115,7 @@ public class Asn1DecodedDataRouterTest {
    }
 
    @Test
-   public void testProcessRxMsgBsm() throws XmlUtilsException {
+   public void testProcessRxMsgBsm() throws XmlUtilsException, JSONException {
       new Expectations() {
 
          {
@@ -148,7 +149,7 @@ public class Asn1DecodedDataRouterTest {
    }
 
    @Test
-   public void testProcessTxMsgBsm() throws XmlUtilsException {
+   public void testProcessTxMsgBsm() throws XmlUtilsException, JSONException {
       new Expectations() {
 
          {
@@ -182,7 +183,7 @@ public class Asn1DecodedDataRouterTest {
    }
 
    @Test
-   public void testProcessDnsTim() throws XmlUtilsException {
+   public void testProcessDnsTim() throws XmlUtilsException, JSONException {
       new Expectations() {
 
          {
@@ -216,7 +217,7 @@ public class Asn1DecodedDataRouterTest {
    }
 
    @Test
-   public void testProcessRxTim() throws XmlUtilsException {
+   public void testProcessRxTim() throws XmlUtilsException, JSONException {
       new Expectations() {
 
          {
@@ -250,7 +251,7 @@ public class Asn1DecodedDataRouterTest {
    }
 
    @Test
-   public void testProcessUnsupportedTim() throws XmlUtilsException {
+   public void testProcessUnsupportedTim() throws XmlUtilsException, JSONException {
       new Expectations() {
 
          {
@@ -284,7 +285,7 @@ public class Asn1DecodedDataRouterTest {
    }
 
    @Test
-   public void testProcessUnsupportedBsm() throws XmlUtilsException {
+   public void testProcessUnsupportedBsm() throws XmlUtilsException, JSONException {
       new Expectations() {
 
          {
