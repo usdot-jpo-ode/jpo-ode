@@ -96,7 +96,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
                logger.debug("Publishing JSON BSM...");
 
-               this.bsmPublisher.publish(jsonObject.toString(), this.bsmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedMessageJson());
+               this.bsmPublisher.publish(jsonObject.toString(), this.bsmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedBSMJson());
             }
          } catch (Exception e) {
             logger.error("Error receiving packet", e);

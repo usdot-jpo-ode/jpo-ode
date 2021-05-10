@@ -12,8 +12,10 @@ import us.dot.its.jpo.ode.model.OdeSpatMetadata.SpatSource;
 public class SpatLogFileParser extends LogFileParser {
 	private static final Logger logger = LoggerFactory.getLogger(SpatLogFileParser.class.getName());
 	private static final int RX_FROM_LENGTH = 1;
+	private static final int IS_CERT_PRESENT_LENGTH= 1; ; /*ieee 1609 (acceptable values 0 = no,1 =yes by default the Cert shall be present)*/
 
 	private SpatSource spatSource;
+	private boolean isCertPresent;
 
 	public SpatLogFileParser() {
 		super();
@@ -55,8 +57,15 @@ public class SpatLogFileParser extends LogFileParser {
 				if (status != ParserStatus.COMPLETE)
 					return status;
 			}
-
+			
 			if (getStep() == 5) {
+				status = parseStep(bis, IS_CERT_PRESENT_LENGTH);
+				if (status != ParserStatus.COMPLETE)
+					return status; 
+				setCertPresent(readBuffer);
+			}
+
+			if (getStep() == 6) {
 				status = nextStep(bis, fileName, payloadParser);
 				if (status != ParserStatus.COMPLETE)
 					return status;
@@ -79,6 +88,23 @@ public class SpatLogFileParser extends LogFileParser {
 
 	public void setSpatSource(SpatSource spatSource) {
 		this.spatSource = spatSource;
+	}
+
+	public boolean isCertPresent() {
+		return isCertPresent;
+	}
+
+	public void setCertPresent(boolean isCertPresent) {
+		this.isCertPresent = isCertPresent;
+	}
+	
+	public void setCertPresent(byte[] code) {
+		try {
+			setCertPresent(code[0] == 0? false: true);
+		} catch (Exception e) {
+			logger.error("Invalid Certificate Presence indicator: {}. Valid values are {}-{} inclusive", code, 0, SpatSource.values());
+			setSpatSource(SpatSource.unknown);
+		}
 	}
 
 	public void setSpatSource(byte[] code) {

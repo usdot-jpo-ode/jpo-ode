@@ -13,40 +13,18 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package us.dot.its.jpo.ode.plugin.j2735;
+package us.dot.its.jpo.ode.model;
 
-import java.util.HashMap;
-import java.util.Map;
+public class OdeSpatData extends OdeData {
 
-public enum J2735DSRCmsgID {
+   private static final long serialVersionUID = 4944935387116447760L;
 
-   BasicSafetyMessage(20), TravelerInformation(31), SPATMessage(19);
+   public OdeSpatData() {
+      super();
+   }
 
-    private int msgID;
+   public OdeSpatData(OdeMsgMetadata metadata, OdeMsgPayload payload) {
+      super(metadata, payload);
+   }
 
-    private static Map<Integer, J2735DSRCmsgID> map = new HashMap<>();
-
-    static {
-        for (J2735DSRCmsgID cur : J2735DSRCmsgID.values()) {
-            map.put(cur.msgID, cur);
-        }
-    }
-
-    private J2735DSRCmsgID(int id) {
-        msgID = id;
-    }
-
-    public static J2735DSRCmsgID valueOf(int id) {
-        return map.get(id);
-    }
-
-    public int getMsgID() {
-        return msgID;
-    }
-
-    public void setMsgID(int msgID) {
-        this.msgID = msgID;
-    }
-
-    
 }
