@@ -69,6 +69,8 @@ public class Asn1DecodeBSMJSON extends AbstractAsn1DecodeMessageJSON {
 						metadata.setOdeReceivedAt(rawmetadata.getString("utctimestamp"));
 						metadata.setRecordType(RecordType.bsmTx);
 						metadata.setSecurityResultCode(SecurityResultCode.success);
+						if (rawmetadata.has("originRsu"))
+							metadata.setOriginIp(rawmetadata.getString("originRsu"));
 
 						// construct metadata: receivedMessageDetails
 						ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
