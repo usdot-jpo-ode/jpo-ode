@@ -22,10 +22,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import mockit.Tested;
-import mockit.integration.junit4.JMockit;
+//import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ProbeDataManagment;
 
-@RunWith(JMockit.class)
+//@RunWith(JMockit.class)
 public class J2735ProbeDataManagmentTest {
 
     @Tested

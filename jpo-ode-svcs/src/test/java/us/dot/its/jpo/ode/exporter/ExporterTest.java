@@ -18,7 +18,7 @@ package us.dot.its.jpo.ode.exporter;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
-import mockit.integration.junit4.JMockit;
+//import mockit.integration.junit4.JMockit;
 
 import static org.junit.Assert.*;
 
@@ -28,7 +28,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
-@RunWith(JMockit.class)
+//@RunWith(JMockit.class)
 public class ExporterTest {
 
     

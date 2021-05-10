@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
+//import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.dds.CASClient.CASException;
 import us.dot.its.jpo.ode.dds.DdsClient.DdsClientException;
 import us.dot.its.jpo.ode.wrapper.SSLBuilder;
@@ -37,7 +37,7 @@ import us.dot.its.jpo.ode.wrapper.WebSocketEndpoint;
 import us.dot.its.jpo.ode.wrapper.WebSocketMessageDecoder;
 import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
 
-@RunWith(JMockit.class)
+//@RunWith(JMockit.class)
 public class DdsClientTest {
    @Mocked private WebSocketMessageHandler<String> mockMessageHandler;
    @Mocked private CASClient mockCasClient;

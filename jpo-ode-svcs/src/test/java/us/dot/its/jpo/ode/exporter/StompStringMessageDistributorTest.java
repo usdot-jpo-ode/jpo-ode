@@ -25,10 +25,10 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import mockit.Expectations;
 import mockit.Injectable;
-import mockit.integration.junit4.JMockit;
+//import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.stomp.StompContent;
 
-@RunWith(JMockit.class)
+//@RunWith(JMockit.class)
 public class StompStringMessageDistributorTest {
 
     @Test

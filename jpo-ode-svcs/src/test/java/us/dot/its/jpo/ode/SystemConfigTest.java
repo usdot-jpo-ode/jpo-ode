@@ -20,9 +20,9 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import mockit.integration.junit4.JMockit;
+//import mockit.integration.junit4.JMockit;
 
-@RunWith(JMockit.class)
+//@RunWith(JMockit.class)
 public class SystemConfigTest {
 
     @Test

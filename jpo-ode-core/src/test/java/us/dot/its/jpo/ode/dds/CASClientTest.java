@@ -31,14 +31,14 @@ import org.junit.runner.RunWith;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
+//import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.dds.CASClient.CASException;
 import us.dot.its.jpo.ode.wrapper.HttpClientFactory;
 import us.dot.its.jpo.ode.wrapper.HttpClientFactory.HttpClient;
 import us.dot.its.jpo.ode.wrapper.HttpClientFactory.HttpException;
 import us.dot.its.jpo.ode.wrapper.HttpClientFactory.HttpResponse;
 
-@RunWith(JMockit.class)
+//@RunWith(JMockit.class)
 public class CASClientTest {
    @Mocked HttpClientFactory mockHttpClientFactory;
    @Mocked SSLContext sslContext;

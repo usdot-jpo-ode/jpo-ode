@@ -27,11 +27,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import mockit.Tested;
-import mockit.integration.junit4.JMockit;
+//import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 
-@RunWith(JMockit.class)
+//@RunWith(JMockit.class)
 public class RoadSideUnitTest {
    @Tested
    RSU testRSU;

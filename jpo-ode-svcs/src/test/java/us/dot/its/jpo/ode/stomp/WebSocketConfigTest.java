@@ -23,17 +23,18 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import mockit.Mocked;
 import mockit.Tested;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
+//import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.stomp.WebSocketConfig;
 
-@RunWith(JMockit.class)
+//@RunWith(JMockit.class)
 public class WebSocketConfigTest {
 
-    @Tested
-    WebSocketConfig testWebSocketConfig;
+//    @Mocked
+//    WebSocketConfig testWebSocketConfig;
 
     @Test
     public void test(@Mocked MessageBrokerRegistry mockMessageBrokerRegistry) {
+    	WebSocketConfig testWebSocketConfig = new WebSocketConfig();
         testWebSocketConfig.configureMessageBroker(mockMessageBrokerRegistry);
 
         new Verifications() {
@@ -48,6 +49,7 @@ public class WebSocketConfigTest {
 
     @Test
     public void testRegisterStompEndpoints(@Mocked StompEndpointRegistry mockStompEndpointRegistry) {
+    	WebSocketConfig testWebSocketConfig = new WebSocketConfig();
         testWebSocketConfig.registerStompEndpoints(mockStompEndpointRegistry);
 
         new Verifications() {

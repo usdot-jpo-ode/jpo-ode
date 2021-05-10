@@ -23,12 +23,14 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import mockit.integration.junit4.JMockit;
+import mockit.Mocked;
+
+//import mockit.integration.junit4.JMockit;
 
 import mockit.Tested;
-@RunWith(JMockit.class)
+//@RunWith(JMockit.class)
 public class J2735BsmTest {
-   @Tested
+   @Mocked
    J2735Bsm b;
    @Test
    public void testGettersAndSetters() {

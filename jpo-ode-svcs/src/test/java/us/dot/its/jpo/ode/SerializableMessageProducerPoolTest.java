@@ -33,10 +33,10 @@ import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
+//import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.wrapper.MessageProducer;
 
-@RunWith(JMockit.class)
+//@RunWith(JMockit.class)
 public class SerializableMessageProducerPoolTest {
 
     @Tested

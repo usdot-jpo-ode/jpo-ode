@@ -28,13 +28,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import mockit.Tested;
-import mockit.integration.junit4.JMockit;
+//import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW.TimeToLive;
 import us.dot.its.jpo.ode.plugin.j2735.OdeGeoRegion;
 
-@RunWith(JMockit.class)
+//@RunWith(JMockit.class)
 public class SituationDataWarehouseTest {
    @Tested
    SDW testSDW;
