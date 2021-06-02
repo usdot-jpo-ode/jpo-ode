@@ -16,6 +16,7 @@
 package us.dot.its.jpo.ode.services.asn1;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 
@@ -77,66 +78,90 @@ public class Asn1EncodedDataRouterTest {
    
    @Test
    public void testSingleRsu(@Mocked JSONObject mockJSONObject) throws XmlUtilsException {
-      new Expectations() {{
-         XmlUtils.toJSONObject(anyString);
-         result = mockJSONObject;
-         
-         mockJSONObject.has("request");
-         result = true;
-         
-         mockJSONObject.has("rsus");
-         result = true;
-         
-         mockJSONObject.get("rsus");
-         //result = new JSONObject();
-      }};
+      try {
+		new Expectations() {{
+		     XmlUtils.toJSONObject(anyString);
+		     result = mockJSONObject;
+		     
+		     mockJSONObject.has("request");
+		     result = true;
+		     
+		     mockJSONObject.has("rsus");
+		     result = true;
+		     
+		     mockJSONObject.get("rsus");
+		     //result = new JSONObject();
+		  }};
+	} catch (XmlUtilsException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (JSONException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
       testAsn1EncodedDataRouter.process("stringthing");
    }
    
    @Test
    public void testRsuArray(@Mocked JSONObject mockJSONObject) throws XmlUtilsException {
-      new Expectations() {{
-         XmlUtils.toJSONObject(anyString);
-         result = mockJSONObject;
-         
-         mockJSONObject.has("request");
-         result = true;
-         
-         mockJSONObject.has("rsus");
-         result = true;
-         
-         mockJSONObject.get("rsus");
-         result = new JSONArray();
-      }};
+      try {
+		new Expectations() {{
+		     XmlUtils.toJSONObject(anyString);
+		     result = mockJSONObject;
+		     
+		     mockJSONObject.has("request");
+		     result = true;
+		     
+		     mockJSONObject.has("rsus");
+		     result = true;
+		     
+		     mockJSONObject.get("rsus");
+		     result = new JSONArray();
+		  }};
+	} catch (XmlUtilsException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (JSONException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
       testAsn1EncodedDataRouter.process("stringthing");
    }
    
    @Test
    public void testWithASD(@Mocked JSONObject mockJSONObject) throws XmlUtilsException {
-      new Expectations() {{
-         XmlUtils.toJSONObject(anyString);
-         result = mockJSONObject;
-         
-         mockJSONObject.getJSONObject(AppContext.METADATA_STRING);
-         result = mockJSONObject;
-         
-         mockJSONObject.has(TimTransmogrifier.REQUEST_STRING);
-         result = true;
+      try {
+		new Expectations() {{
+		     XmlUtils.toJSONObject(anyString);
+		     result = mockJSONObject;
+		     
+		     mockJSONObject.getJSONObject(AppContext.METADATA_STRING);
+		     result = mockJSONObject;
+		     
+		     mockJSONObject.has(TimTransmogrifier.REQUEST_STRING);
+		     result = true;
 
-         mockJSONObject.getJSONObject(TimTransmogrifier.REQUEST_STRING);
-         result = mockJSONObject;
-         
-         mockJSONObject.has(TimTransmogrifier.RSUS_STRING);
-         result = true;
-         times = 2;
-         
-         mockJSONObject.get(TimTransmogrifier.RSUS_STRING);
-         result = mockJSONObject;
-         times = 2;
-         
-         mockJSONObject.has(Asn1CommandManager.ADVISORY_SITUATION_DATA_STRING);
-         result = true;
-      }};
+		     mockJSONObject.getJSONObject(TimTransmogrifier.REQUEST_STRING);
+		     result = mockJSONObject;
+		     
+		     mockJSONObject.has(TimTransmogrifier.RSUS_STRING);
+		     result = true;
+		     times = 2;
+		     
+		     mockJSONObject.get(TimTransmogrifier.RSUS_STRING);
+		     result = mockJSONObject;
+		     times = 2;
+		     
+		     mockJSONObject.has(Asn1CommandManager.ADVISORY_SITUATION_DATA_STRING);
+		     result = true;
+		  }};
+	} catch (XmlUtilsException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (JSONException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
       testAsn1EncodedDataRouter.process("stringthing");
    }
 
