@@ -7,14 +7,14 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 public class J2735LaneList extends Asn1Object {
 	private static final long serialVersionUID = 1L;
-	private List<J2735GenericLane> laneSet = new ArrayList<>();
+	private List<J2735GenericLane> GenericLane = new ArrayList<>();
 
 	public List<J2735GenericLane> getLaneSet() {
-		return laneSet;
+		return GenericLane;
 	}
 
-	public void setLaneSet(List<J2735GenericLane> laneSet) {
-		this.laneSet = laneSet;
+	public void setLaneSet(List<J2735GenericLane> GenericLane) {
+		this.GenericLane = GenericLane;
 	}
 
 }

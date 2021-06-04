@@ -152,6 +152,8 @@ public class OdeProperties implements EnvironmentAware {
    
    //MAP
    private String kafkaTopicOdeRawEncodedMAPJson = "topic.OdeRawEncodedMAPJson";
+   private String kafkaTopicOdeMapTxPojo = "topic.OdeMapTxPojo";
+   private String kafkaTopicOdeMapJson = "topic.OdeMapJson";
    
 // DriverAlerts
    private String kafkaTopicDriverAlertJson = "topic.OdeDriverAlertJson";
@@ -763,6 +765,26 @@ public class OdeProperties implements EnvironmentAware {
 
 	public void setKafkaTopicOdeRawEncodedMAPJson(String kafkaTopicOdeRawEncodedMAPJson) {
 		this.kafkaTopicOdeRawEncodedMAPJson = kafkaTopicOdeRawEncodedMAPJson;
+	}
+
+
+	public String getKafkaTopicOdeMapTxPojo() {
+		return kafkaTopicOdeMapTxPojo;
+	}
+
+
+	public void setKafkaTopicOdeMapTxPojo(String kafkaTopicOdeMapTxPojo) {
+		this.kafkaTopicOdeMapTxPojo = kafkaTopicOdeMapTxPojo;
+	}
+
+
+	public String getKafkaTopicOdeMapJson() {
+		return kafkaTopicOdeMapJson;
+	}
+
+
+	public void setKafkaTopicOdeMapJson(String kafkaTopicOdeMapJson) {
+		this.kafkaTopicOdeMapJson = kafkaTopicOdeMapJson;
 	}
 	   
 }

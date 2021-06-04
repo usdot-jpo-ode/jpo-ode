@@ -10,14 +10,14 @@ public class J2735OverlayLaneList extends Asn1Object {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private List<J2735Connection> connectsTo = new ArrayList<>();
+	private List<Integer> laneIds = new ArrayList<>();
 
-	public List<J2735Connection> getConnectsTo() {
-		return connectsTo;
+	public List<Integer> getLaneIds() {
+		return laneIds;
 	}
 
-	public void setConnectsTo(List<J2735Connection> connectsTo) {
-		this.connectsTo = connectsTo;
+	public void setLaneIds(List<Integer> laneIds) {
+		this.laneIds = laneIds;
 	}
 
 }

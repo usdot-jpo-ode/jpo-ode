@@ -18,11 +18,11 @@ public class IntersectionGeometryListBuilder {
 			Iterator<JsonNode> elements = intersections.elements();
 			while (elements.hasNext()) {
 				genericIntersectionGeometryList.getIntersections()
-						.add(IntersectionGeometryBuilder.genericIntersectionGeometry(elements.next()));
+						.add(IntersectionGeometryBuilder.genericIntersectionGeometry(elements.next().get("IntersectionGeometry")));
 			}
 		} else {
 			genericIntersectionGeometryList.getIntersections()
-					.add(IntersectionGeometryBuilder.genericIntersectionGeometry(intersections));
+					.add(IntersectionGeometryBuilder.genericIntersectionGeometry(intersections.get("IntersectionGeometry")));
 
 		}
 		return genericIntersectionGeometryList;

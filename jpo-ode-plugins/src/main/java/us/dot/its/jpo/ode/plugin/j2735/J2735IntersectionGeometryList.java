@@ -11,12 +11,12 @@ public class J2735IntersectionGeometryList extends Asn1Object {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private List<J2735IntersectionGeometry> intersections = new ArrayList<>();
+	private List<J2735IntersectionGeometry> intersectionGeometry = new ArrayList<>();
 	public List<J2735IntersectionGeometry> getIntersections() {
-		return intersections;
+		return intersectionGeometry;
 	}
-	public void setIntersections(List<J2735IntersectionGeometry> intersections) {
-		this.intersections = intersections;
+	public void setIntersections(List<J2735IntersectionGeometry> intersectionGeometry) {
+		this.intersectionGeometry = intersectionGeometry;
 	}
 	
 }

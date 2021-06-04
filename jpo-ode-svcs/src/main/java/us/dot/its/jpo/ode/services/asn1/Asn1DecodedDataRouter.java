@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
+import us.dot.its.jpo.ode.coder.OdeMapDataCreatorHelper;
 import us.dot.its.jpo.ode.coder.OdeSpatDataCreatorHelper;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
@@ -41,6 +42,7 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 	private MessageProducer<String, OdeBsmData> bsmProducer;
 	private MessageProducer<String, String> timProducer;
 	private MessageProducer<String, String> spatProducer;
+	private MessageProducer<String, String> mapProducer;
 
 	public Asn1DecodedDataRouter(OdeProperties odeProps) {
 		super();
@@ -50,6 +52,8 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 		this.timProducer = MessageProducer.defaultStringMessageProducer(odeProps.getKafkaBrokers(),
 				odeProps.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
 		this.spatProducer = MessageProducer.defaultStringMessageProducer(odeProps.getKafkaBrokers(),
+				odeProps.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
+		this.mapProducer = MessageProducer.defaultStringMessageProducer(odeProps.getKafkaBrokers(),
 				odeProps.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
 	}
 
@@ -96,6 +100,14 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 				}
 				// Send all SPATs also to OdeSpatJson
 				spatProducer.send(odeProperties.getKafkaTopicOdeSpatJson(), getRecord().key(), odeSpatData);
+			}
+			else if (messageId == J2735DSRCmsgID.MAPMessage.getMsgID()) {
+				String odeMapData = OdeMapDataCreatorHelper.createOdeMapData(consumedData).toString();
+				if (recordType == RecordType.spatTx) {
+					mapProducer.send(odeProperties.getKafkaTopicOdeMapTxPojo(), getRecord().key(), odeMapData);
+				}
+				// Send all Map also to OdeMapJson
+				mapProducer.send(odeProperties.getKafkaTopicOdeMapJson(), getRecord().key(), odeMapData);
 			}
 		} catch (Exception e) {
 			logger.error("Failed to route received data: " + consumedData, e);

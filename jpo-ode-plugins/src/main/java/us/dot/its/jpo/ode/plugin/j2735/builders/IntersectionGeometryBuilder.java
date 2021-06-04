@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735IntersectionGeometry;
 import us.dot.its.jpo.ode.plugin.j2735.J2735IntersectionReferenceID;
-import us.dot.its.jpo.ode.plugin.j2735.J2735LaneList;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
-import us.dot.its.jpo.ode.plugin.j2735.J2735SpeedLimitList;
 
 public class IntersectionGeometryBuilder {
 	private IntersectionGeometryBuilder() {
@@ -30,8 +28,8 @@ public class IntersectionGeometryBuilder {
 				idObj.setRegion(region.asInt());
 			}
 			
-			JsonNode id = RefID.get("region");
-			if (region != null)
+			JsonNode id = RefID.get("id");
+			if (id != null)
 			{
 				idObj.setId(id.asInt());
 			}
@@ -52,9 +50,9 @@ public class IntersectionGeometryBuilder {
 				refPointObj.setLat(refPoint.get("lat").asInt());
 			}
 			
-			if(refPoint.get("lon") != null)
+			if(refPoint.get("long") != null)
 			{
-				refPointObj.setLat(refPoint.get("lon").asInt());
+				refPointObj.setLon(refPoint.get("long").asInt());
 			}
 			
 			if(refPoint.get("elevation") != null)
@@ -72,13 +70,16 @@ public class IntersectionGeometryBuilder {
 		
 		JsonNode speedLimits = intersectionNode.get("speedLimits");
 		if (speedLimits != null) {
-			intersection.setSpeedLimits(SpeedLimitListBuilder.genericSpeedLimitList(speedLimits));			
+			//TODO
+//			intersection.setSpeedLimits(SpeedLimitListBuilder.genericSpeedLimitList(speedLimits));			
 		}
 		
 		JsonNode laneSet = intersectionNode.get("laneSet");
 		if (laneSet != null) {
 			intersection.setLaneSet(LaneSetBuilder.genericLaneSet(laneSet));			
 		}
+		
+		//TODO preemptionPriorityData
 		
 		
 		return intersection;

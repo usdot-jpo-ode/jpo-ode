@@ -8,14 +8,14 @@ public class J2735NodeListXY extends Asn1Object {
 	 */
 	private static final long serialVersionUID = 1L;
 	private J2735NodeSetXY nodes;
-	//ToDo add J2735ComputedLane optional
+	//TODO add J2735ComputedLane optional
 
 	public J2735NodeSetXY getNodes() {
 		return nodes;
 	}
 
-	public void setNodes(J2735NodeSetXY nodes) {
-		this.nodes = nodes;
+	public void setNodes(J2735NodeSetXY nodeList) {
+		this.nodes = nodeList;
 	}
 
 

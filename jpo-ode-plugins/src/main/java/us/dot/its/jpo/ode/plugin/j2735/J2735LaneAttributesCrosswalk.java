@@ -1,37 +1,37 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum J2735LaneAttributesCrosswalk {
-	 //With bits as defined:
-		   //MUTCD provides no suitable "types" to use here
-		   crosswalkRevocableLane ,
-		                           //this lane may be activated or not based
-		                           //on the current SPAT message contents
-		                           //if not asserted, the lane is ALWAYS present
-		   bicyleUseAllowed       ,
-		                           //The path allows bicycle traffic, 
-		                           //if not set, this mode is prohibited
-		   isXwalkFlyOverLane     ,
-		                           //path of lane is not at grade
-		   fixedCycleTime         ,
-		                           //ped walk phases use preset times
-		                           //i.e. there is not a 'push to cross' button
-		   biDirectionalCycleTimes ,
-		                           //ped walk phases use different SignalGroupID
-		                           //for each direction. The first SignalGroupID
-		                           //in the first Connection represents 'inbound'
-		                           //flow (the direction of travel towards the first 
-		                           //node point) while second SignalGroupID in the 
-		                           //next Connection entry represents the 'outbound'
-		                           //flow. And use of RestrictionClassID entries
-		                           //in the Connect follow this same pattern in pairs.
-		   hasPushToWalkButton     ,
-		                           //Has a demand input
-		   audioSupport            ,
-		                           //audio crossing cues present
-		   rfSignalRequestPresent  ,
-		                           //Supports RF push to walk technologies
-		   unsignalizedSegmentsPresent  
-		                           //The lane path consists of one of more segments
-		                           //which are not part of a signal group ID
-		   //Bits 9~15 reserved and set to zero
+	crosswalkRevocableLane(0), bicyleUseAllowed(1), isXwalkFlyOverLane(2), fixedCycleTime(3),
+	biDirectionalCycleTimes(4), hasPushToWalkButton(5), audioSupport(6), rfSignalRequestPresent(7),
+	unsignalizedSegmentsPresent(8);
+
+	private int laneAttributesCrosswalkID;
+
+	private static Map<Integer, J2735LaneAttributesCrosswalk> map = new HashMap<>();
+
+	static {
+		for (J2735LaneAttributesCrosswalk cur : J2735LaneAttributesCrosswalk.values()) {
+			map.put(cur.laneAttributesCrosswalkID, cur);
+		}
+	}
+
+	private J2735LaneAttributesCrosswalk(int id) {
+		laneAttributesCrosswalkID = id;
+	}
+
+	public static J2735LaneAttributesCrosswalk valueOf(int id) {
+		return map.get(id);
+	}
+
+	public int getLaneAttributesCrosswalkID() {
+		return laneAttributesCrosswalkID;
+	}
+
+	public void setLaneAttributesCrosswalkID(int laneAttributesCrosswalkID) {
+		this.laneAttributesCrosswalkID = laneAttributesCrosswalkID;
+	}
+
 }

@@ -4,12 +4,8 @@ import org.json.JSONObject;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import us.dot.its.jpo.ode.plugin.j2735.J2735IntersectionGeometryList;
-import us.dot.its.jpo.ode.plugin.j2735.J2735DataParameters;
 import us.dot.its.jpo.ode.plugin.j2735.J2735LayerType;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MAP;
-import us.dot.its.jpo.ode.plugin.j2735.J2735RestrictionClassList;
-import us.dot.its.jpo.ode.plugin.j2735.J2735RoadSegmentList;
 
 public class MAPBuilder {
 	private MAPBuilder() {
@@ -30,56 +26,56 @@ public class MAPBuilder {
 
 		JsonNode layerType = MAPMessage.get("layerType");
 		if (layerType != null) {
-			JSONObject layerTypeJson = new JSONObject(layerType);
+			JSONObject layerTypeJson = new JSONObject(layerType.toString());
 			String layerTypeKey = layerTypeJson.keys().hasNext()
 					? layerTypeJson.keys().next().toString().toLowerCase().replace("-", "_")
 					: "";
-			if (layerTypeKey == J2735LayerType.curveData.name().toLowerCase()) {
+			if (layerTypeKey.equals(J2735LayerType.curveData.name().toLowerCase())) {
 				genericMAP.setLayerType(J2735LayerType.curveData);
-			} else if (layerTypeKey == J2735LayerType.generalMapData.name().toLowerCase()) {
+			} else if (layerTypeKey.equals(J2735LayerType.generalMapData.name().toLowerCase())) {
 				genericMAP.setLayerType(J2735LayerType.generalMapData);
-			} else if (layerTypeKey == J2735LayerType.mixedContent.name().toLowerCase()) {
+			} else if (layerTypeKey.equals(J2735LayerType.mixedContent.name().toLowerCase())) {
 				genericMAP.setLayerType(J2735LayerType.mixedContent);
-			} else if (layerTypeKey == J2735LayerType.none.name().toLowerCase()) {
+			} else if (layerTypeKey.equals(J2735LayerType.none.name().toLowerCase())) {
 				genericMAP.setLayerType(J2735LayerType.none);
-			} else if (layerTypeKey == J2735LayerType.intersectionData.name().toLowerCase()) {
+			} else if (layerTypeKey.equals(J2735LayerType.intersectionData.name().toLowerCase())) {
 				genericMAP.setLayerType(J2735LayerType.intersectionData);
-			} else if (layerTypeKey == J2735LayerType.roadwaySectionData.name().toLowerCase()) {
+			} else if (layerTypeKey.equals(J2735LayerType.roadwaySectionData.name().toLowerCase())) {
 				genericMAP.setLayerType(J2735LayerType.roadwaySectionData);
-			} else if (layerTypeKey == J2735LayerType.parkingAreaData.name().toLowerCase()) {
+			} else if (layerTypeKey.equals(J2735LayerType.parkingAreaData.name().toLowerCase())) {
 				genericMAP.setLayerType(J2735LayerType.parkingAreaData);
-			} else if (layerTypeKey == J2735LayerType.sharedLaneData.name().toLowerCase()) {
+			} else if (layerTypeKey.equals(J2735LayerType.sharedLaneData.name().toLowerCase())) {
 				genericMAP.setLayerType(J2735LayerType.sharedLaneData);
 			}
 		}
-		
+
 		JsonNode layerID = MAPMessage.get("layerID");
 		if (layerID != null) {
 			genericMAP.setLayerID(layerID.asInt());
 		}
-	
+
 		JsonNode intersections = MAPMessage.get("intersections");
 		if (intersections != null) {
-			genericMAP
-					.setIntersectionGeometryList(IntersectionGeometryListBuilder.genericIntersectionGeometryList(intersections));
+			genericMAP.setIntersections(IntersectionGeometryListBuilder.genericIntersectionGeometryList(intersections));
 		}
 		
+		//TODO
 		JsonNode roadSegments = MAPMessage.get("intersections");
 		if (roadSegments != null) {
-			genericMAP
-					.setJ2735RoadSegmentList(J2735RoadSegmentListBuilder.genericJ2735RoadSegmentList(roadSegments));
+			//genericMAP.setJ2735RoadSegmentList(J2735RoadSegmentListBuilder.genericJ2735RoadSegmentList(roadSegments));
 		}
 		
+		//TODO
 		JsonNode dataParameters = MAPMessage.get("intersections");
 		if (dataParameters != null) {
-			genericMAP
-					.setJ2735DataParameters(J2735DataParametersBuilder.genericJ2735DataParameters(dataParameters));
+			//genericMAP.setJ2735DataParameters(J2735DataParametersBuilder.genericJ2735DataParameters(dataParameters));
 		}
-		
+
+		//TODO
 		JsonNode restrictionList = MAPMessage.get("intersections");
 		if (restrictionList != null) {
-			genericMAP
-					.setJ2735RestrictionClassList(J2735RestrictionClassListBuilder.genericJ2735RestrictionClassList(restrictionList));
+//			genericMAP.setJ2735RestrictionClassList(
+//					J2735RestrictionClassListBuilder.genericJ2735RestrictionClassList(restrictionList));
 		}
 		return genericMAP;
 	}

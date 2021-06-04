@@ -10,12 +10,12 @@ public class J2735NodeSetXY  extends Asn1Object {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private List<J2735NodeXY> nodes = new ArrayList<>();
+	private List<J2735NodeXY> NodeXY = new ArrayList<>();
 	public List<J2735NodeXY> getNodes() {
-		return nodes;
+		return NodeXY;
 	}
-	public void setNodes(List<J2735NodeXY> nodes) {
-		this.nodes = nodes;
+	public void setNodes(List<J2735NodeXY> NodeXY) {
+		this.NodeXY = NodeXY;
 	}
 
 }

@@ -53,7 +53,7 @@ public class OdeMapDataCreatorHelper {
 			metadata.setReceivedMessageDetails(null);
 		}
 
-		OdeMapPayload payload = new OdeMapPayload(MAPBuilder.genericMAP(consumed.findValue("MAP")));
+		OdeMapPayload payload = new OdeMapPayload(MAPBuilder.genericMAP(consumed.findValue("MapData")));
 		return new OdeMapData(metadata, payload);
 	}
 }
