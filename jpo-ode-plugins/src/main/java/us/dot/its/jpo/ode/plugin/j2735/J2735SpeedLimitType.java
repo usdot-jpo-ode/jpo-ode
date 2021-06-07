@@ -13,5 +13,5 @@ public enum J2735SpeedLimitType {
     truckNightMaxSpeed,
     vehiclesWithTrailersMinSpeed,
     vehiclesWithTrailersMaxSpeed,
-    vehiclesWithTrailersNightMaxSpeed,
+    vehiclesWithTrailersNightMaxSpeed
 }

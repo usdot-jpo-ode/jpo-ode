@@ -14,5 +14,5 @@ public enum J2735RestrictionAppliesTo {
     wheelchairUsers,
     visualDisabilities,
     audioDisabilities, 
-    otherUnknownDisabilities,
+    otherUnknownDisabilities
 }

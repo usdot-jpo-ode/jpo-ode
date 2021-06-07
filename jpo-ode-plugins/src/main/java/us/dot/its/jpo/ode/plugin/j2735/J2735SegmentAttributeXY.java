@@ -37,5 +37,5 @@ public enum J2735SegmentAttributeXY {
 	   timeRestrictionsOnParking ,                                
 	   costToPark                , 
 	   midBlockCurbPresent       , 
-	   unEvenPavementPresent     , 
+	   unEvenPavementPresent     
 }
