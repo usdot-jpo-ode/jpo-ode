@@ -59,20 +59,20 @@ public class MAPBuilder {
 			genericMAP.setIntersections(IntersectionGeometryListBuilder.genericIntersectionGeometryList(intersections));
 		}
 		
-		//TODO
-		JsonNode roadSegments = MAPMessage.get("intersections");
+		//TODO: Not in use currently
+		JsonNode roadSegments = MAPMessage.get("roadSegments");
 		if (roadSegments != null) {
 			//genericMAP.setJ2735RoadSegmentList(J2735RoadSegmentListBuilder.genericJ2735RoadSegmentList(roadSegments));
 		}
 		
-		//TODO
-		JsonNode dataParameters = MAPMessage.get("intersections");
+		//TODO: Not in use currently
+		JsonNode dataParameters = MAPMessage.get("dataParameters");
 		if (dataParameters != null) {
 			//genericMAP.setJ2735DataParameters(J2735DataParametersBuilder.genericJ2735DataParameters(dataParameters));
 		}
 
-		//TODO
-		JsonNode restrictionList = MAPMessage.get("intersections");
+		//TODO: Not in use currently
+		JsonNode restrictionList = MAPMessage.get("restrictionList");
 		if (restrictionList != null) {
 //			genericMAP.setJ2735RestrictionClassList(
 //					J2735RestrictionClassListBuilder.genericJ2735RestrictionClassList(restrictionList));
