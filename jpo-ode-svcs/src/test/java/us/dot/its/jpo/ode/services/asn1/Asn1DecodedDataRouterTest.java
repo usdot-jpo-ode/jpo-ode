@@ -111,10 +111,10 @@ public class Asn1DecodedDataRouterTest {
 		     }
 		  };
 	} catch (XmlUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
 
@@ -153,10 +153,10 @@ public class Asn1DecodedDataRouterTest {
 		     }
 		  };
 	} catch (XmlUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
 
@@ -195,10 +195,10 @@ public class Asn1DecodedDataRouterTest {
 		     }
 		  };
 	} catch (XmlUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
 
@@ -237,10 +237,10 @@ public class Asn1DecodedDataRouterTest {
 		     }
 		  };
 	} catch (XmlUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
 
@@ -279,10 +279,10 @@ public class Asn1DecodedDataRouterTest {
 		     }
 		  };
 	} catch (XmlUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
 
@@ -321,10 +321,10 @@ public class Asn1DecodedDataRouterTest {
 		     }
 		  };
 	} catch (XmlUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
 
@@ -363,10 +363,10 @@ public class Asn1DecodedDataRouterTest {
 		     }
 		  };
 	} catch (XmlUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
 

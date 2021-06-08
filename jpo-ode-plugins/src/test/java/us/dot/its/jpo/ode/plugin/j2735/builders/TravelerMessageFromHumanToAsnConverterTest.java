@@ -67,16 +67,13 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     try {
 		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
 	} catch (JSONException e1) {
-		// TODO Auto-generated catch block
 		e1.printStackTrace();
 	} catch (JsonUtilsException e1) {
-		// TODO Auto-generated catch block
 		e1.printStackTrace();
 	}
     try {
 		assertNotNull(XML.toString(timObject));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
     // assertEquals("string", XML.toString(timObject));
@@ -96,16 +93,13 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     try {
 		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	} catch (JsonUtilsException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
     try {
 		assertNotNull(XML.toString(timObject));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
   }
@@ -124,16 +118,14 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     try {
 		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
-	} catch (JsonUtilsException e) {
-		// TODO Auto-generated catch block
+	} catch (JsonUtilsException e) {		
 		e.printStackTrace();
 	}
     try {
 		assertNotNull(XML.toString(timObject));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
   }
@@ -152,16 +144,16 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     try {
 		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JsonUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
     try {
 		assertNotNull(XML.toString(timObject));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
 
@@ -181,16 +173,16 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     try {
 		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JsonUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
     try {
 		assertNotNull(XML.toString(timObject));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
 
@@ -210,16 +202,16 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     try {
 		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JsonUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
     try {
 		assertNotNull(XML.toString(timObject));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
 
@@ -238,16 +230,16 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     try {
 		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JsonUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
     try {
 		assertNotNull(XML.toString(timObject));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
   }
@@ -266,16 +258,16 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     try {
 		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JsonUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
     try {
 		assertNotNull(XML.toString(timObject));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
 
@@ -294,16 +286,16 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     try {
 		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JsonUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
     try {
 		assertNotNull(XML.toString(timObject));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
   }
@@ -383,16 +375,16 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     try {
 		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JsonUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
     try {
 		assertNotNull(XML.toString(timObject));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
 
@@ -412,16 +404,16 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     try {
 		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JsonUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
     try {
 		assertNotNull(XML.toString(timObject));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
 
@@ -441,16 +433,16 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     try {
 		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JsonUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
     try {
 		assertNotNull(XML.toString(timObject));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
 
@@ -470,16 +462,16 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     try {
 		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JsonUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
     try {
 		assertNotNull(XML.toString(timObject));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
 
@@ -499,16 +491,16 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     try {
 		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JsonUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
     try {
 		assertNotNull(XML.toString(timObject));
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
 

@@ -93,10 +93,10 @@ public class Asn1EncodedDataRouterTest {
 		     //result = new JSONObject();
 		  }};
 	} catch (XmlUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
       testAsn1EncodedDataRouter.process("stringthing");
@@ -119,10 +119,10 @@ public class Asn1EncodedDataRouterTest {
 		     result = new JSONArray();
 		  }};
 	} catch (XmlUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
       testAsn1EncodedDataRouter.process("stringthing");
@@ -156,10 +156,10 @@ public class Asn1EncodedDataRouterTest {
 		     result = true;
 		  }};
 	} catch (XmlUtilsException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	} catch (JSONException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
       testAsn1EncodedDataRouter.process("stringthing");
