@@ -38,7 +38,7 @@ public class OdeSpatPayload extends OdeMsgPayload {
 	        return (J2735SPAT) getData();
 	    }
 
-	    public void setBsm(J2735SPAT spat) {
+	    public void setSpat(J2735SPAT spat) {
 	        setData(spat);
 	    }
 }

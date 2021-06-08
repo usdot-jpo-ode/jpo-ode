@@ -150,7 +150,12 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicFilteredOdeSpatJson = "topic.FilteredOdeSpatJson";
    private String kafkaTopicOdeRawEncodedSPATJson = "topic.OdeRawEncodedSPATJson";
    
-   // DriverAlerts
+   //MAP
+   private String kafkaTopicOdeRawEncodedMAPJson = "topic.OdeRawEncodedMAPJson";
+   private String kafkaTopicOdeMapTxPojo = "topic.OdeMapTxPojo";
+   private String kafkaTopicOdeMapJson = "topic.OdeMapJson";
+   
+// DriverAlerts
    private String kafkaTopicDriverAlertJson = "topic.OdeDriverAlertJson";
 
    // ASN.1 CODEC
@@ -754,6 +759,32 @@ public class OdeProperties implements EnvironmentAware {
 		this.kafkaTopicOdeRawEncodedSPATJson = kafkaTopicOdeRawEncodedSPATJson;
 	}
 	
-	
+	public String getKafkaTopicOdeRawEncodedMAPJson() {
+		return kafkaTopicOdeRawEncodedMAPJson;
+	}
+
+	public void setKafkaTopicOdeRawEncodedMAPJson(String kafkaTopicOdeRawEncodedMAPJson) {
+		this.kafkaTopicOdeRawEncodedMAPJson = kafkaTopicOdeRawEncodedMAPJson;
+	}
+
+
+	public String getKafkaTopicOdeMapTxPojo() {
+		return kafkaTopicOdeMapTxPojo;
+	}
+
+
+	public void setKafkaTopicOdeMapTxPojo(String kafkaTopicOdeMapTxPojo) {
+		this.kafkaTopicOdeMapTxPojo = kafkaTopicOdeMapTxPojo;
+	}
+
+
+	public String getKafkaTopicOdeMapJson() {
+		return kafkaTopicOdeMapJson;
+	}
+
+
+	public void setKafkaTopicOdeMapJson(String kafkaTopicOdeMapJson) {
+		this.kafkaTopicOdeMapJson = kafkaTopicOdeMapJson;
+	}
 	   
 }
