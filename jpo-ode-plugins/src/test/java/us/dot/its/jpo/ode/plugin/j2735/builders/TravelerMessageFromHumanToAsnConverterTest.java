@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 import org.junit.Before;
@@ -63,8 +64,18 @@ public class TravelerMessageFromHumanToAsnConverterTest {
         "{\"request\":{\"rsus\":[{\"rsuIndex\":\"10\",\"rsuTarget\":\"127.0.0.2\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"1000\"}],\"snmp\":{\"rsuid\":\"00000083\",\"msgid\":\"31\",\"mode\":\"1\",\"channel\":\"178\",\"interval\":\"2\",\"deliverystart\":\"2017-06-01T17:47:11-05:00\",\"deliverystop\":\"2018-01-01T17:47:11-05:15\",\"enable\":\"1\",\"status\":\"4\"}},\"tim\":{\"msgCnt\":\"1\",\"timeStamp\":309505,\"urlB\":\"null\",\"packetID\":\"EC9C236B0000000000\",\"dataFrames\":{\"TravelerDataFrame\":[{\"sspTimRights\":\"0\",\"frameType\":{\"advisory\":\"EMPTY_TAG\"},\"msgId\":{\"roadSignID\":{\"position\":{\"lat\":416784730,\"long\":-1087827750,\"elevation\":9171},\"viewAngle\":\"1010101010101010\",\"mutcdCode\":{\"warning\":\"EMPTY_TAG\"},\"crc\":\"0000\"}},\"priority\":\"0\",\"sspLocationRights\":\"3\",\"regions\":{\"GeographicalPath\":[{\"name\":\"Testing TIM\",\"laneWidth\":700,\"directionality\":{\"both\":\"EMPTY_TAG\"},\"closedPath\":\"BOOLEAN_OBJECT_FALSE\",\"description\":{\"path\":{\"scale\":\"0\",\"offset\":{\"ll\":{\"nodes\":{\"NodeLL\":[{\"delta\":{\"node-LL1\":{\"lat\":-2048,\"lon\":2047}}},{\"delta\":{\"node-LL2\":{\"lat\":-8192,\"lon\":8191}}},{\"delta\":{\"node-LL3\":{\"lat\":-32768,\"lon\":32767}}},{\"delta\":{\"node-LL4\":{\"lat\":-131072,\"lon\":131071}}},{\"delta\":{\"node-LL5\":{\"lat\":-2097152,\"lon\":2097151}}},{\"delta\":{\"node-LL6\":{\"lat\":-8388608,\"lon\":8388607}}},{\"delta\":{\"node-LL1\":{\"lat\":-2048,\"lon\":2047}}},{\"delta\":{\"node-LL2\":{\"lat\":-8192,\"lon\":8191}}},{\"delta\":{\"node-LL3\":{\"lat\":-32768,\"lon\":32767}}},{\"delta\":{\"node-LL4\":{\"lat\":-131072,\"lon\":131071}}},{\"delta\":{\"node-LL5\":{\"lat\":-2097152,\"lon\":2097151}}},{\"delta\":{\"node-LL6\":{\"lat\":-8388608,\"lon\":8388607}}},{\"delta\":{\"node-LatLon\":{\"lat\":412500807,\"lon\":-1110093847}}}]}}}}},\"direction\":\"0000000000001010\",\"id\":{\"region\":0,\"id\":33},\"anchor\":{\"lat\":412500807,\"long\":-1110093847,\"elevation\":20207}}]},\"url\":\"null\",\"sspMsgRights2\":3,\"sspMsgRights1\":2,\"duratonTime\":1,\"startYear\":2017,\"startTime\":308065,\"tcontent\":{\"advisory\":{\"SEQUENCE\":[{\"item\":{\"itis\":125}},{\"item\":{\"text\":\"some text\"}},{\"item\":{\"itis\":250}},{\"item\":{\"text\":\"98765\"}}]}}}]}}}");
     assertEquals(expectedTID.toString(), inputTID.toString());
     JSONObject timObject = new JSONObject();
-    timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-    assertNotNull(XML.toString(timObject));
+    try {
+		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
+	} catch (JSONException e1) {
+		e1.printStackTrace();
+	} catch (JsonUtilsException e1) {
+		e1.printStackTrace();
+	}
+    try {
+		assertNotNull(XML.toString(timObject));
+	} catch (JSONException e) {
+		e.printStackTrace();
+	}
     // assertEquals("string", XML.toString(timObject));
   }
 
@@ -79,8 +90,18 @@ public class TravelerMessageFromHumanToAsnConverterTest {
         "{\"request\":{\"rsus\":[{\"rsuIndex\":\"10\",\"rsuTarget\":\"127.0.0.3\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"1000\"}],\"snmp\":{\"rsuid\":\"00000083\",\"msgid\":\"31\",\"mode\":\"1\",\"channel\":\"178\",\"interval\":\"2\",\"deliverystart\":\"2017-06-01T17:47:11-05:00\",\"deliverystop\":\"2018-01-01T17:47:11-05:15\",\"enable\":\"1\",\"status\":\"4\"},\"sdw\":{\"ttl\":\"oneweek\",\"serviceRegion\":{\"nwCorner\":{\"latitude\":\"44.998459\",\"longitude\":\"-111.040817\"},\"seCorner\":{\"latitude\":\"41.104674\",\"longitude\":\"-104.111312\"}}}},\"tim\":{\"msgCnt\":\"1\",\"timeStamp\":431644,\"packetID\":\"3\",\"urlB\":\"null\",\"dataFrames\":{\"TravelerDataFrame\":[{\"frameType\":{\"1\":\"EMPTY_TAG\"},\"sspTimRights\":\"1\",\"msgId\":\"roadSignID\",\"position\":{\"latitude\":\"40.573068\",\"longitude\":\"-105.049016\",\"elevation\":\"1500.8999999999999\"},\"viewAngle\":\"1111111111111111\",\"mutcd\":\"2\",\"crc\":\"0000\",\"priority\":\"5\",\"sspLocationRights\":\"1\",\"regions\":{\"GeographicalPath\":[{\"name\":\"Testing TIM\",\"laneWidth\":32700,\"directionality\":{\"both\":\"EMPTY_TAG\"},\"closedPath\":\"BOOLEAN_OBJECT_FALSE\",\"description\":{\"path\":{\"scale\":\"0\",\"offset\":{\"xy\":{\"nodes\":{\"NodeXY\":[{\"delta\":{\"node-LatLon\":{\"lon\":-1050473550,\"lat\":405724290}},\"attributes\":{\"data\":[{\"pathEndPointAngle\":123},{\"laneCrownPointCenter\":41},{\"laneCrownPointLeft\":78},{\"laneCrownPointRight\":115},{\"laneAngle\":1},{\"speedLimits\":[{\"type\":{\"maxSpeedInSchoolZoneWhenChildrenArePresent\":\"EMPTY_TAG\"},\"speed\":615},{\"type\":{\"maxSpeedInSchoolZone\":\"EMPTY_TAG\"},\"speed\":1170},{\"type\":{\"maxSpeedInConstructionZone\":\"EMPTY_TAG\"},\"speed\":615},{\"type\":{\"vehicleMinSpeed\":\"EMPTY_TAG\"},\"speed\":1170}]}],\"dWidth\":123,\"dElevation\":234}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050468440,\"lat\":405722280}}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050465900,\"lat\":405721130}}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050462430,\"lat\":405719100}}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050459360,\"lat\":405716750}}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050456740,\"lat\":405714220}}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050454500,\"lat\":405711310}}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050452350,\"lat\":405707240}}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050451130,\"lat\":405702930}}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050450870,\"lat\":405698480}}}]}}}}},\"direction\":\"1111111111111111\",\"id\":{\"region\":0,\"id\":33},\"anchor\":{\"lat\":405730680,\"long\":-1050490160,\"elevation\":15009}}]},\"url\":\"null\",\"sspMsgRights2\":1,\"sspMsgRights1\":1,\"duratonTime\":100,\"startYear\":2017,\"startTime\":420802,\"tcontent\":{\"workZone\":{\"SEQUENCE\":[{\"item\":{\"itis\":7425}}]}}}]}}}");
     assertEquals(expectedTID.toString(), inputTID.toString());
     JSONObject timObject = new JSONObject();
-    timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-    assertNotNull(XML.toString(timObject));
+    try {
+		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
+	} catch (JSONException e) {
+		e.printStackTrace();
+	} catch (JsonUtilsException e) {
+		e.printStackTrace();
+	}
+    try {
+		assertNotNull(XML.toString(timObject));
+	} catch (JSONException e) {
+		e.printStackTrace();
+	}
   }
 
   @Test
@@ -94,8 +115,19 @@ public class TravelerMessageFromHumanToAsnConverterTest {
         "{\"request\":{\"rsus\":[{\"rsuIndex\":\"10\",\"rsuTarget\":\"127.0.0.3\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"1000\"}],\"snmp\":{\"rsuid\":\"00000083\",\"msgid\":\"31\",\"mode\":\"1\",\"channel\":\"178\",\"interval\":\"2\",\"deliverystart\":\"2017-06-01T17:47:11-05:00\",\"deliverystop\":\"2018-01-01T17:47:11-05:15\",\"enable\":\"1\",\"status\":\"4\"},\"sdw\":{\"ttl\":\"oneweek\",\"serviceRegion\":{\"nwCorner\":{\"latitude\":44.998459,\"longitude\":-111.040817},\"seCorner\":{\"latitude\":41.104674,\"longitude\":-104.111312}}}},\"tim\":{\"msgCnt\":\"1\",\"timeStamp\":431644,\"packetID\":\"3\",\"urlB\":\"null\",\"dataFrames\":{\"TravelerDataFrame\":[{\"frameType\":{\"advisory\":\"EMPTY_TAG\"},\"sspTimRights\":\"1\",\"msgId\":\"roadSignID\",\"position\":{\"latitude\":40.573068,\"longitude\":-105.049016,\"elevation\":1500.8999999999999},\"viewAngle\":\"1111111111111111\",\"mutcd\":\"2\",\"crc\":\"0000\",\"priority\":\"5\",\"sspLocationRights\":\"1\",\"regions\":{\"GeographicalPath\":[{\"name\":\"Testing TIM\",\"laneWidth\":32700,\"directionality\":{\"both\":\"EMPTY_TAG\"},\"closedPath\":\"BOOLEAN_OBJECT_FALSE\",\"description\":{\"path\":{\"scale\":\"0\",\"offset\":{\"xy\":{\"nodes\":{\"NodeXY\":[{\"delta\":{\"node-LatLon\":{\"lon\":-1050473550,\"lat\":405724290}},\"attributes\":{\"data\":[{\"pathEndPointAngle\":123},{\"laneCrownPointCenter\":41},{\"laneCrownPointLeft\":78},{\"laneCrownPointRight\":115},{\"laneAngle\":1},{\"speedLimits\":[{\"type\":{\"maxSpeedInSchoolZoneWhenChildrenArePresent\":\"EMPTY_TAG\"},\"speed\":615},{\"type\":{\"maxSpeedInSchoolZone\":\"EMPTY_TAG\"},\"speed\":1170},{\"type\":{\"maxSpeedInConstructionZone\":\"EMPTY_TAG\"},\"speed\":615},{\"type\":{\"vehicleMinSpeed\":\"EMPTY_TAG\"},\"speed\":1170}]}],\"dWidth\":123,\"dElevation\":234}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050468440,\"lat\":405722280}}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050465900,\"lat\":405721130}}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050462430,\"lat\":405719100}}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050459360,\"lat\":405716750}}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050456740,\"lat\":405714220}}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050454500,\"lat\":405711310}}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050452350,\"lat\":405707240}}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050451130,\"lat\":405702930}}},{\"delta\":{\"node-LatLon\":{\"lon\":-1050450870,\"lat\":405698480}}}]}}}}},\"direction\":\"1111111111111111\",\"id\":{\"region\":0,\"id\":33},\"anchor\":{\"lat\":405730680,\"long\":-1050490160,\"elevation\":15009}}]},\"url\":\"null\",\"sspMsgRights2\":1,\"sspMsgRights1\":1,\"duratonTime\":100,\"startYear\":2017,\"startTime\":420802,\"tcontent\":{\"genericSign\":{\"SEQUENCE\":[{\"item\":{\"itis\":7425}}]}}}]}}}");
     assertEquals(expectedTID.toString(), inputTID.toString());
     JSONObject timObject = new JSONObject();
-    timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-    assertNotNull(XML.toString(timObject));
+    try {
+		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
+	} catch (JSONException e) {
+		e.printStackTrace();
+	} catch (JsonUtilsException e) {		
+		e.printStackTrace();
+	}
+    try {
+		assertNotNull(XML.toString(timObject));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	}
   }
 
   @Test
@@ -109,8 +141,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     assertEquals(expectedTID.toString(), inputTID.toString());
 
     JSONObject timObject = new JSONObject();
-    timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-    assertNotNull(XML.toString(timObject));
+    try {
+		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	} catch (JsonUtilsException e) {
+		
+		e.printStackTrace();
+	}
+    try {
+		assertNotNull(XML.toString(timObject));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	}
 
   }
 
@@ -125,8 +170,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     assertEquals(expectedTID.toString(), inputTID.toString());
 
     JSONObject timObject = new JSONObject();
-    timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-    assertNotNull(XML.toString(timObject));
+    try {
+		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	} catch (JsonUtilsException e) {
+		
+		e.printStackTrace();
+	}
+    try {
+		assertNotNull(XML.toString(timObject));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	}
 
   }
 
@@ -141,8 +199,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     assertEquals(expectedTID.toString(), inputTID.toString());
 
     JSONObject timObject = new JSONObject();
-    timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-    assertNotNull(XML.toString(timObject));
+    try {
+		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	} catch (JsonUtilsException e) {
+		
+		e.printStackTrace();
+	}
+    try {
+		assertNotNull(XML.toString(timObject));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	}
 
   }
 
@@ -156,8 +227,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
         "{\"request\":{\"rsus\":[{\"rsuIndex\":\"10\",\"rsuTarget\":\"127.0.0.3\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"1000\"}],\"snmp\":{\"rsuid\":\"00000083\",\"msgid\":\"31\",\"mode\":\"1\",\"channel\":\"178\",\"interval\":\"2\",\"deliverystart\":\"2017-06-01T17:47:11-05:00\",\"deliverystop\":\"2018-01-01T17:47:11-05:15\",\"enable\":\"1\",\"status\":\"4\"},\"sdw\":{\"ttl\":\"oneweek\",\"serviceRegion\":{\"nwCorner\":{\"latitude\":\"44.998459\",\"longitude\":\"-111.040817\"},\"seCorner\":{\"latitude\":\"41.104674\",\"longitude\":\"-104.111312\"}}}},\"tim\":{\"msgCnt\":\"2\",\"timeStamp\":309505,\"urlB\":\"null\",\"packetID\":\"EC9C236B0000000000\",\"dataFrames\":{\"TravelerDataFrame\":[{\"sspTimRights\":\"0\",\"frameType\":{\"commercialSignage\":\"EMPTY_TAG\"},\"msgId\":{\"roadSignID\":{\"position\":{\"lat\":416784730,\"long\":-1087827750,\"elevation\":9171},\"viewAngle\":\"1010101010101010\",\"mutcdCode\":{\"warning\":\"EMPTY_TAG\"},\"crc\":\"0000\"}},\"priority\":\"0\",\"sspLocationRights\":\"3\",\"regions\":{\"GeographicalPath\":[{\"name\":\"Testing TIM\",\"laneWidth\":700,\"directionality\":{\"both\":\"EMPTY_TAG\"},\"closedPath\":\"BOOLEAN_OBJECT_FALSE\",\"description\":{\"path\":{\"scale\":\"0\",\"offset\":{\"ll\":{\"nodes\":{\"NodeLL\":[{\"delta\":{\"node-LL1\":{\"lat\":-2048,\"lon\":2047}}},{\"delta\":{\"node-LL3\":{\"lat\":14568,\"lon\":30974}}},{\"delta\":{\"node-LL3\":{\"lat\":14559,\"lon\":30983}}},{\"delta\":{\"node-LL3\":{\"lat\":14563,\"lon\":30980}}},{\"delta\":{\"node-LL3\":{\"lat\":14562,\"lon\":30982}}}]}}}}},\"direction\":\"0000000000001010\",\"id\":{\"region\":0,\"id\":33},\"anchor\":{\"lat\":412500807,\"long\":-1110093847,\"elevation\":20207}}]},\"url\":\"null\",\"sspMsgRights2\":3,\"sspMsgRights1\":2,\"duratonTime\":1,\"startYear\":2017,\"startTime\":308065,\"tcontent\":{\"workZone\":{\"SEQUENCE\":[{\"item\":{\"itis\":513}}]}}}]}}}");
     assertEquals(expectedTID.toString(), inputTID.toString());
     JSONObject timObject = new JSONObject();
-    timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-    assertNotNull(XML.toString(timObject));
+    try {
+		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	} catch (JsonUtilsException e) {
+		
+		e.printStackTrace();
+	}
+    try {
+		assertNotNull(XML.toString(timObject));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	}
   }
 
   @Test
@@ -171,8 +255,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     assertEquals(expectedTID.toString(), inputTID.toString());
 
     JSONObject timObject = new JSONObject();
-    timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-    assertNotNull(XML.toString(timObject));
+    try {
+		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	} catch (JsonUtilsException e) {
+		
+		e.printStackTrace();
+	}
+    try {
+		assertNotNull(XML.toString(timObject));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	}
 
   }
 
@@ -186,8 +283,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
         "{\"request\":{\"rsus\":[{\"rsuIndex\":\"10\",\"rsuTarget\":\"127.0.0.3\",\"rsuUsername\":\"v3user\",\"rsuPassword\":\"password\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"1000\"}],\"snmp\":{\"rsuid\":\"00000083\",\"msgid\":\"31\",\"mode\":\"1\",\"channel\":\"178\",\"interval\":\"2\",\"deliverystart\":\"2017-06-01T17:47:11-05:00\",\"deliverystop\":\"2018-01-01T17:47:11-05:15\",\"enable\":\"1\",\"status\":\"4\"},\"sdw\":{\"ttl\":\"oneweek\",\"serviceRegion\":{\"nwCorner\":{\"latitude\":\"44.998459\",\"longitude\":\"-111.040817\"},\"seCorner\":{\"latitude\":\"41.104674\",\"longitude\":\"-104.111312\"}}}},\"tim\":{\"msgCnt\":\"1\",\"timeStamp\":309505,\"urlB\":\"null\",\"packetID\":\"EC9C236B0000000000\",\"dataFrames\":{\"TravelerDataFrame\":[{\"sspTimRights\":\"0\",\"frameType\":{\"advisory\":\"EMPTY_TAG\"},\"msgId\":{\"roadSignID\":{\"position\":{\"lat\":416784730,\"long\":-1087827750,\"elevation\":9171},\"viewAngle\":\"1010101010101010\",\"mutcdCode\":{\"warning\":\"EMPTY_TAG\"},\"crc\":\"0000\"}},\"priority\":\"0\",\"sspLocationRights\":\"3\",\"regions\":{\"GeographicalPath\":[{\"name\":\"Testing TIM\",\"laneWidth\":700,\"directionality\":{\"both\":\"EMPTY_TAG\"},\"closedPath\":\"BOOLEAN_OBJECT_FALSE\",\"description\":{\"path\":{\"scale\":\"0\",\"offset\":{\"ll\":{\"nodes\":{\"NodeLL\":[{\"delta\":{\"node-LL3\":{\"lat\":14506,\"lon\":31024}}},{\"delta\":{\"node-LL3\":{\"lat\":14568,\"lon\":30974}}},{\"delta\":{\"node-LL3\":{\"lat\":14559,\"lon\":30983}}},{\"delta\":{\"node-LL3\":{\"lat\":14563,\"lon\":30980}}},{\"delta\":{\"node-LL3\":{\"lat\":14562,\"lon\":30982}}}]}}}}},\"direction\":\"0000000000001010\",\"id\":{\"region\":0,\"id\":33},\"anchor\":{\"lat\":412500807,\"long\":-1110093847,\"elevation\":20207}}]},\"url\":\"null\",\"sspMsgRights2\":3,\"sspMsgRights1\":2,\"duratonTime\":1,\"startYear\":2017,\"startTime\":308065,\"tcontent\":{\"speedLimit\":{\"SEQUENCE\":[{\"item\":{\"itis\":513}}]}}}]}}}");
     assertEquals(expectedTID.toString(), inputTID.toString());
     JSONObject timObject = new JSONObject();
-    timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-    assertNotNull(XML.toString(timObject));
+    try {
+		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	} catch (JsonUtilsException e) {
+		
+		e.printStackTrace();
+	}
+    try {
+		assertNotNull(XML.toString(timObject));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	}
   }
 
   @Test
@@ -262,8 +372,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     assertEquals(expectedTID.toString(), inputTID.toString());
 
     JSONObject timObject = new JSONObject();
-    timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-    assertNotNull(XML.toString(timObject));
+    try {
+		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	} catch (JsonUtilsException e) {
+		
+		e.printStackTrace();
+	}
+    try {
+		assertNotNull(XML.toString(timObject));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	}
 
   }
 
@@ -278,8 +401,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     assertEquals(expectedTID.toString(), inputTID.toString());
 
     JSONObject timObject = new JSONObject();
-    timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-    assertNotNull(XML.toString(timObject));
+    try {
+		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	} catch (JsonUtilsException e) {
+		
+		e.printStackTrace();
+	}
+    try {
+		assertNotNull(XML.toString(timObject));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	}
 
   }
 
@@ -294,8 +430,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     assertEquals(expectedTID.toString(), inputTID.toString());
 
     JSONObject timObject = new JSONObject();
-    timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-    assertNotNull(XML.toString(timObject));
+    try {
+		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	} catch (JsonUtilsException e) {
+		
+		e.printStackTrace();
+	}
+    try {
+		assertNotNull(XML.toString(timObject));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	}
 
   }
 
@@ -310,8 +459,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     assertEquals(expectedTID.toString(), inputTID.toString());
 
     JSONObject timObject = new JSONObject();
-    timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-    assertNotNull(XML.toString(timObject));
+    try {
+		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	} catch (JsonUtilsException e) {
+		
+		e.printStackTrace();
+	}
+    try {
+		assertNotNull(XML.toString(timObject));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	}
 
   }
 
@@ -326,8 +488,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     assertEquals(expectedTID.toString(), inputTID.toString());
 
     JSONObject timObject = new JSONObject();
-    timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-    assertNotNull(XML.toString(timObject));
+    try {
+		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	} catch (JsonUtilsException e) {
+		
+		e.printStackTrace();
+	}
+    try {
+		assertNotNull(XML.toString(timObject));
+	} catch (JSONException e) {
+		
+		e.printStackTrace();
+	}
 
   }
 }
