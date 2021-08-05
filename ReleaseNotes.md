@@ -1,5 +1,7 @@
 ## ODE Release Notes ##
 -----------------------
+NOTE: For release details for latest releases, please see [release notes](https://github.com/usdot-jpo-ode/jpo-ode/releases)
+
 ### Release 1.0.8 (May 24, 2019)
 - Integrated odevalidator v0.0.6
 - Updated test-harness (see [release notes](./qa/test-harness/README.md#release-history))

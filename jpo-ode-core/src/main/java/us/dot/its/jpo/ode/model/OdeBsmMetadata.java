@@ -19,6 +19,8 @@ public class OdeBsmMetadata extends OdeLogMetadata {
 
     private static final long serialVersionUID = -8601265839394150140L;
 
+    private String originIp;
+
     public enum BsmSource {
        EV, RV, unknown
     }
@@ -43,5 +45,13 @@ public class OdeBsmMetadata extends OdeLogMetadata {
 
     public void setBsmSource(BsmSource bsmSource) {
        this.bsmSource = bsmSource;
+    }
+
+    public String getOriginIp() {
+       return originIp;
+    }
+
+    public void setOriginIp(String originIp) {
+       this.originIp = originIp;
     }
 }

@@ -94,7 +94,7 @@ public class TimReceiver extends AbstractUdpReceiverPublisher {
                // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
                logger.debug("Publishing JSON TIM...");
 
-               this.timPublisher.publish(jsonObject.toString(), this.timPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedMessageJson());
+               this.timPublisher.publish(jsonObject.toString(), this.timPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedTIMJson());
             }
          } catch (Exception e) {
             logger.error("Error receiving packet", e);
