@@ -1,19 +1,16 @@
 # Running the ODE in K8s
 ## Intro to Kubernetes
-Kubernetes, also known as K8s, is a container orchestration tool that allows for the deployment of services and ensures their uptime through high availability, scalability, and disaster recovery.
-With this tool, there is less to worry about concerning the management of containers.
-Since the ODE is needs to be always available, it makes sense to use K8s to ensure as little downtime as possible.
-Further, since K8s is scalable, it will be easier to expand services as the demand for access to the ODE increases.
+Kubernetes, also known as K8s, is a container orchestration tool that allows for the deployment of services and ensures their uptime through high availability, scalability, and disaster recovery. Kubernetes effectively abstracts away the difficulties with managing individual containers, making production deployments much more simple. Production deployments of the ODE are required to be consistently available. Therefore, using K8s to ensure as little downtime as possible is a viable solution.
+Additional benefits for use with the ODE include the scalability of K8s, allowing implementations to expand services as the demand for access to the ODE increases.
 
 ## K8s Management
-Several technologies exist which allow for the abstraction of the management of the environment that the K8s clusters will be living on.
-They include Google Kubernetes Engine (GKE), AWS Elastic Container Service for Kubernetes (Amazon EKS), and OpenShift.
-The CDOT project will be using GKE to manage its environment.
+Rather than force management of the k8s cluster on the developer, several technologies exist which allow for the abstraction of the management of the environment that the K8s clusters will be living on. These technologies live in various cloud environments and allow for massively scalable systems to be built. [[ @dmccoystephenson maybe more in here? ]] Some of the more common instances include Google Kubernetes Engine (GKE), AWS Elastic Container Service for Kubernetes (Amazon EKS), and OpenShift among others.
 
-## CDOT Implementation
-CDOT is expanding on the existing ODE deployments to run within a Kubernetes environment.
+## Colorado Department Of Transportation Implementation
+CDOT is expanding on the existing ODE deployments to run within a Kubernetes environment. [[ @dmccoystephenson let's add some more in this section, something along the lines of "the existing implementation was on a single sytem...we're expanding to handle massive amounts of data traffic...yada yada" ]] The CDOT project will be using GKE to manage its environment.
 
 ### Helm
+[[ @dmccoystephenson let's explain what helm is here, and link to the Helm documentation/project]]
 To spin up the clusters, Helm will be utilized, which will manage all of our YAML files as a unit.
 With just Kubernetes, one has to run a command every time they want to deploy a YAML file.
 With Helm, all the YAML files can be deployed with just one command.
@@ -23,6 +20,7 @@ With Helm, all the YAML files can be deployed with just one command.
 - helm upgrade --install (name) (name) -n (namespace) -f (values file)
 
 ### Autopilot
+[[@dmccoystephenson I think this section can be removed, we don't need to get too specific about our implementation]]
 The CDOT project is also using clusters in autopilot mode, which means that resources will be allocated based on necessity.
 This will make it easier to scale up the deployments and will result in less overhead.
 
@@ -38,6 +36,7 @@ appVersion: 1.0.0
 ```
 
 ## YAML Files
+[[@dmccoystephenson let's add these as actual yaml files in a directory then just link to them from here and explain what each does]]
 ### ACM Template
 ```
 {{- range .Values.acm }}
