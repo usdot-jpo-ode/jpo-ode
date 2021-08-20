@@ -44,32 +44,32 @@ appVersion: 1.0.0
 ### ACM Template
 [TODO: add description]
 <br>
-[Link](./k8s-yaml-files/jpoode_acm_template.yaml)
+[Link](k8s-demo/templates/jpoode_acm_template.yaml)
 
 ### Kafka
 [TODO: add description]
 <br>
-[Link](./k8s-yaml-files/jpoode_kafka.yaml)
+[Link](k8s-demo/templates/jpoode_kafka.yaml)
 
 ### ODE
 [TODO: add description]
 <br>
-[Link](./k8s-yaml-files/jpoode_ode.yaml)
+[Link](k8s-demo/templates/jpoode_ode.yaml)
 
 ### PPM
 [TODO: add description]
 <br>
-[Link](./k8s-yaml-files/jpoode_ppm_template.yaml)
+[Link](k8s-demo/templates/jpoode_ppm_template.yaml)
 
 ### SEC
 [TODO: add description]
 <br>
-[Link](./k8s-yaml-files/jpoode_sec.yaml)
+[Link](k8s-demo/templates/jpoode_sec.yaml)
 
 ### Zookeeper
 [TODO: add description]
 <br>
-[Link](./k8s-yaml-files/jpoode_zookeeper.yaml)
+[Link](k8s-demo/templates/jpoode_zookeeper.yaml)
 
 ## Values File Example
 ```
