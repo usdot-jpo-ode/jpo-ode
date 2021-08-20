@@ -1,0 +1,32 @@
+{{- range .Values.ppm }}
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: {{ .NAME | quote }}
+spec:
+  replicas: {{ $.Values.replicas.jpoode_ppm }}
+  selector:
+    matchLabels:
+      app: {{ .NAME | quote }}
+  template:
+    metadata:
+      labels:
+        app: {{ .NAME | quote }}
+    spec:
+      containers:
+        - name: "jpoode-ppm-image-sha256-1"
+          imagePullPolicy: Always
+          image: "{{ $.Values.images.jpoode_ppm.repository }}:{{ $.Values.images.jpoode_ppm.tag }}"
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "0.5"
+          tty: true
+          stdin: true
+          env:
+          - name: PPM_CONFIG_FILE
+            value: {{ .PPM_CONFIG_FILE }}
+          - name: DOCKER_HOST_IP
+            value: {{ $.Values.resources.services.kafka }}
+{{- end }}          
