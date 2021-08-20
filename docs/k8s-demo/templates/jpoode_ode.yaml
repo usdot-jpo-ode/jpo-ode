@@ -55,11 +55,9 @@ spec:
   ports:
   - name: ode-rsu-bsm
     protocol: UDP
-    # targetPort: 46800
     port: 46801
   - name: ode-rsu-tim
     protocol: UDP
-    # targetPort: 47900
     port: 47901
   externalTrafficPolicy: Local
   loadBalancerSourceRanges:
@@ -86,27 +84,6 @@ spec:
       labels:
         app: "jpoode-ode"
     spec:
-      # affinity:
-      #   podAntiAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #       - labelSelector:
-      #           matchExpressions:
-      #             - key: "app"
-      #               operator: In
-      #               values:
-      #               - jpoode-ode
-      #         topologyKey: "kubernetes.io/hostname"
-      #   podAffinity:
-      #     preferredDuringSchedulingIgnoredDuringExecution:
-      #        - weight: 1
-      #          podAffinityTerm:
-      #            labelSelector:
-      #               matchExpressions:
-      #                 - key: "app"
-      #                   operator: In
-      #                   values:
-      #                   - jpoode-kafka
-      #            topologyKey: "kubernetes.io/hostname"
       containers:
         - name: "jpoode-ode-image-sha256-1"
           image: "{{ .Values.images.jpoode_ode.repository }}:{{ .Values.images.jpoode_ode.tag }}" 
