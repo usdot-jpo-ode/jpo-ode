@@ -14,16 +14,6 @@ spec:
       labels:
         app: {{ .NAME | quote }}
     spec:
-      # affinity:
-      #   podAntiAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #       - labelSelector:
-      #           matchExpressions:
-      #             - key: "app"
-      #               operator: In
-      #               values:
-      #               - {{ .NAME }}
-      #         topologyKey: "kubernetes.io/hostname"
       containers:
         - name: "jpoode-acm-image-sha256-1"
           image: "{{ $.Values.images.jpoode_acm.repository }}:{{ $.Values.images.jpoode_acm.tag }}"

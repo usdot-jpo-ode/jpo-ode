@@ -88,8 +88,6 @@ spec:
             value: "3"
           - name : ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL
             value: "24"
-          # - name: ZOOKEEPER_SERVERS
-          #   value: "{{ .Values.replicas.jpoode_zookeeper }}"
           - name: ZOOKEEPER_DATA_DIR
             value: "/var/lib/zookeeper/data"
           - name: ZOOKEEPER_DATA_LOG_DIR
