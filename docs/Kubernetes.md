@@ -13,32 +13,21 @@ In some cases, greater control of resource allocation can be taken advantage of.
 Some of the more common instances include Google Kubernetes Engine (GKE), AWS Elastic Container Service for Kubernetes (Amazon EKS), and OpenShift among others.
 
 ## Colorado Department Of Transportation Implementation
-CDOT is expanding on the existing ODE deployments to run within a Kubernetes environment.
-The existing implementation was on a single system.
-An expanded implementation would be more capable of handling massive amounts of data traffic.
-The CDOT project will be using GKE to manage its environment.
+CDOT is expanding on existing ODE deployments to run within a Kubernetes environment.
+Current implementations of the ODE are running on a single system.
+An expanded implementation would be more capable of handling the massive amounts of data traffic CDOT is expecting.
+The new system is being designed to be massively scalable while allowing a single endpoint exposure for RSUs to direct traffic. 
+This will allow for ease of RSU configurations, while maintaining the security and integrity of the system.
+Because several systems already exist within the Google Cloud Platform, the CDOT project will rely on GKE to manage this new ODE environment.
 
 ### Helm
-To spin up the clusters, Helm will be utilized.
 Helm is essentially a package manager for Kubernetes, the purpose of which is to package YAML files and make them easy to manage with simple commands.
 The documentation for Helm can be found [here](https://helm.sh/docs/).
-With just Kubernetes, one has to run a command every time they want to deploy a YAML file.
-With Helm, all the YAML files can be deployed or updated with just one command.
-
-#### Helm Commands
-- helm install (name) (name) -n (namespace) -f (values file)
-- helm upgrade --install (name) (name) -n (namespace) -f (values file)
+When running standard kubectl commands with Kubernetes, each individual YAML file must be deployed manually.
+With Helm, all the YAML files can be deployed or updated with a single command.
 
 ## Helm Chart
-```
-apiVersion: v2
-name: jpoode
-description: ODE Kubernetes Cluster
-
-type: application
-version: 0.1.2
-appVersion: 1.0.0
-```
+Helm uses a packaging format called charts. A chart is a collection of files that describe a related set of Kubernetes resources. An example helm chart can be found [here](k8s-demo/).
 
 ## YAML Files
 ### ACM Template
