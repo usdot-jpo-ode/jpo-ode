@@ -1,0 +1,69 @@
+# Declare variables to be passed into your templates.
+project_name: "PROJECT_NAME"
+
+images:
+  jpoode_acm:
+    repository: REPOSITORY_NAME
+    tag: "TAG"
+  gcp_connector:
+    repository: REPOSITORY_NAME
+    tag: "TAG"
+  jpoode_ode:
+    repository: REPOSITORY_NAME
+    tag: "TAG"
+  jpoode_sec:
+    repository: REPOSITORY_NAME
+    tag: "TAG"
+  jpode_tim_dedup:
+    repository: REPOSITORY_NAME
+    tag: "TAG"
+  jpoode_ppm:
+    repository: REPOSITORY_NAME
+    tag: "TAG"
+  jpode_count:
+    repository: REPOSITORY_NAME
+    tag: "TAG"
+
+resources:
+  services:
+    kafka: "jpoode-kafka-svc"
+    zookeeper: "jpoode-zookeeper-svc"
+    security: "jpoode-sec-svc"
+
+replicas:
+  jpoode_acm: 4
+  jpoode_gcp_connector: 3
+  jpoode_kafka: 4
+  jpoode_ode: 4
+  jpoode_sec: 4
+  jpoode_zookeeper: 1
+  jpoode_ppm: 1
+
+# Uses jpoode_acm_template.yaml
+acm:
+  - NAME: jpoode-adm
+    CONFIG_FILE: adm.properties
+  - NAME: jpoode-aem
+    CONFIG_FILE: aem.properties
+
+# Uses jpoode_ppm_template.yaml  
+ppm:
+  - NAME: jpoode-ppm-bsm
+    PPM_CONFIG_FILE: cdot_ppmBsm.properties
+  - NAME: jpoode-ppm-tim
+    PPM_CONFIG_FILE: cdot_ppmTim.properties  
+
+config:
+  kafka:
+    KAFKA_HEAP_OPTS: -Xmx2G -Xms2G
+    KAFKA_OPTS: -Dlogging.level=INFO
+  adm:
+    ADM_CONFIG_FILE: adm.properties
+  aem:
+    AEM_CONFIG_FILE: aem.properties
+  ode:
+    sourceRanges:
+      - 0.0.0.0/0
+    udp_service:
+      ipAddress: 0.0.0.0
+      exposeExternally: true
