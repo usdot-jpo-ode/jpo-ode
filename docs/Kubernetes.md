@@ -61,65 +61,6 @@ This module utilizes Zookeeper for service synchronization.
 [Link](k8s-demo/templates/jpoode_zookeeper.yaml)
 
 ## Values File Example
-```
-# Declare variables to be passed into your templates.
-
-#Project name variable is overridden by Terraform
-project_name: (project name goes here)
-
-images:
-  jpoode_acm:
-    repository: (repository goes here)
-    tag: "dev"
-  gcp_connector:
-    repository: (repository goes here)
-    tag: "oim-dev"
-  jpoode_ode:
-    repository: (repository goes here)
-    tag: "dev"
-  jpoode_sec:
-    repository: (repository goes here)
-    tag: "dev"
-  jpode_tim_dedup:
-    repository: (repository goes here)
-    tag: "oim-dev"
-
-resources:
-  services:
-    kafka: (kafka service name)
-    zookeeper: (zookeeper service name)
-    security: (security service name)
-
-replicas:
-  jpoode_acm: (number)
-  jpoode_gcp_connector: (number)
-  jpoode_kafka: (number)
-  jpoode_ode: (number)
-  jpoode_sec: (number)
-  jpoode_zookeeper: (number)
-
-# Uses jpoode_acm_template.yaml
-acm:
-  - NAME: (name goes here)
-    CONFIG_FILE: adm.properties
-  - NAME: (name goes here)
-    CONFIG_FILE: aem.properties
-
-config:
-  kafka:
-    KAFKA_HEAP_OPTS: -Xmx2G -Xms2G
-    KAFKA_OPTS: -Dlogging.level=INFO
-  adm:
-    ADM_CONFIG_FILE: adm.properties
-  aem:
-    AEM_CONFIG_FILE: aem.properties
-  ode:
-    sourceRanges:
-      - (Subnet)
-      - (Subnet)
-      - (Subnet)
-      - (Subnet)
-    udp_service:
-      ipAddress: (IP goes here)
-      exposeExternally: true
-```
+This is an example values file for the implementation.
+<br>
+[Link](k8s-demo/values.yaml)
