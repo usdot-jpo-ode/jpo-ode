@@ -98,7 +98,8 @@ Helm uses a packaging format called charts. A chart is a collection of files tha
 
 ## Values File Example
 - This is an example values file for the implementation.
-- It contains the following sections:
+- It contains the following top-level variables:
+  - project_name
   - images
   - resources
   - replicas
