@@ -27,7 +27,9 @@ When running standard kubectl commands with Kubernetes, each individual YAML fil
 With Helm, all the YAML files can be deployed or updated with a single command.
 
 ## Helm Chart
-Helm uses a packaging format called charts. A chart is a collection of files that describe a related set of Kubernetes resources. An example helm chart can be found [here](k8s-demo/).
+- Helm uses a packaging format called charts.
+- A chart is a collection of files that describe a related set of Kubernetes resources.
+- An example helm chart can be found [here](k8s-demo/).
 
 ## YAML Files
 ### ACM Template
