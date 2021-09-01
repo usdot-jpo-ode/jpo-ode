@@ -98,7 +98,7 @@ With Helm, all the YAML files can be deployed or updated with a single command.
 
 [Link](k8s-demo/templates/jpoode_zookeeper.yaml)
 
-## Values File Example
+## Values File
 - This is an example values file for the implementation.
 - It contains the following top-level variables:
   - project_name
