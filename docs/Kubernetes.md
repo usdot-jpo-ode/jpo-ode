@@ -20,13 +20,13 @@ The new system is being designed to be massively scalable while allowing a singl
 This will allow for ease of RSU configurations, while maintaining the security and integrity of the system.
 Because several systems already exist within the Google Cloud Platform, the CDOT project will rely on GKE to manage this new ODE environment.
 
-### Helm
+## Helm
 Helm is essentially a package manager for Kubernetes, the purpose of which is to package YAML files and make them easy to manage with simple commands.
 The documentation for Helm can be found [here](https://helm.sh/docs/).
 When running standard kubectl commands with Kubernetes, each individual YAML file must be deployed manually.
 With Helm, all the YAML files can be deployed or updated with a single command.
 
-## Helm Chart
+### Helm Chart
 - Helm uses a packaging format called charts.
 - A chart is a collection of files that describe a related set of Kubernetes resources.
 - An example helm chart can be found [here](k8s-demo/).
