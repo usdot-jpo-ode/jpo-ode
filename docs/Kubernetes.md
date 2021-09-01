@@ -105,6 +105,5 @@ Helm uses a packaging format called charts. A chart is a collection of files tha
   - acm
   - ppm
   - config
-
-<br>
+    
 [Link](k8s-demo/values.yaml)
