@@ -35,8 +35,8 @@ Helm uses a packaging format called charts. A chart is a collection of files tha
 - It contains a configuration for a single deployment.
 - This file contains a helm tag defining the iteration over the "acm" variable in values.yaml.
 - This file also makes use of the following values from values.yaml:
-  - Values.replicas.jpoode_acm
-  - Values.resources.services.kafka
+  - replicas.jpoode_acm
+  - resources.services.kafka
 
 [Link](k8s-demo/templates/jpoode_acm_template.yaml)
 
@@ -44,8 +44,8 @@ Helm uses a packaging format called charts. A chart is a collection of files tha
 - This module utilizes Kafka for message streaming.
 - It contains configurations for a service, a pod disruption budget and a stateful set.
 - This file makes use of the following values from values.yaml:
-  - Values.resources.services.kafka
-  - Values.resources.services.zookeeper
+  - resources.services.kafka
+  - resources.services.zookeeper
 
 [Link](k8s-demo/templates/jpoode_kafka.yaml)
 
@@ -53,15 +53,15 @@ Helm uses a packaging format called charts. A chart is a collection of files tha
 - The ODE is a virtual data router that takes and processes operational data from connected devices and distributes it to other devices.
 - It contains configurations for three services and a deployment.
 - This file makes use of the following values from values.yaml:
-  - Values.config.ode.sourceRanges
-  - Values.config.ode.udp_service.ipAddress
-  - Values.config.ode.udp_service.exposeExternally
-  - Values.replicas.jpoode_ode
-  - Values.images.jpoode_ode.repository
-  - Values.images.jpoode_ode.tag
-  - Values.resources.services.kafka
-  - Values.resources.services.zookeeper
-  - Values.resources.services.security
+  - config.ode.sourceRanges
+  - config.ode.udp_service.ipAddress
+  - config.ode.udp_service.exposeExternally
+  - replicas.jpoode_ode
+  - images.jpoode_ode.repository
+  - images.jpoode_ode.tag
+  - resources.services.kafka
+  - resources.services.zookeeper
+  - resources.services.security
 
 [Link](k8s-demo/templates/jpoode_ode.yaml)
 
@@ -70,10 +70,10 @@ Helm uses a packaging format called charts. A chart is a collection of files tha
 - It contains a configuration for a single deployment.
 - This file contains a helm tag defining the iteration over the "ppm" variable in values.yaml.
 - This file also makes use of the following values from values.yaml:
-  - Values.replicas.jpoode_ppm
-  - Values.images.jpoode_ppm.repository
-  - Values.images.jpoode_ppm.tag
-  - Values.resources.services.kafka
+  - replicas.jpoode_ppm
+  - images.jpoode_ppm.repository
+  - images.jpoode_ppm.tag
+  - resources.services.kafka
 
 [Link](k8s-demo/templates/jpoode_ppm_template.yaml)
 
@@ -81,9 +81,9 @@ Helm uses a packaging format called charts. A chart is a collection of files tha
 - The purpose of this module is to expose a RESTful API for performing cryptographic functions.
 - It contains configurations for a service and a deployment.
 - This file makes use of the following values from values.yaml:
-  - Values.replicas.jpoode_sec
-  - Values.images.jpoode_sec.repository
-  - Values.images.jpoode_sec.tag
+  - replicas.jpoode_sec
+  - images.jpoode_sec.repository
+  - images.jpoode_sec.tag
 
 [Link](k8s-demo/templates/jpoode_sec.yaml)
 
@@ -91,12 +91,20 @@ Helm uses a packaging format called charts. A chart is a collection of files tha
 - This module utilizes Zookeeper for service synchronization.
 - It contains configurations for a service, a pod disruption budget and a stateful set.
 - This file makes use of the following values from values.yaml:
-  - Values.resources.services.zookeeper
-  - Values.replicas.jpoode_zookeeper
+  - resources.services.zookeeper
+  - replicas.jpoode_zookeeper
 
 [Link](k8s-demo/templates/jpoode_zookeeper.yaml)
 
 ## Values File Example
-This is an example values file for the implementation.
+- This is an example values file for the implementation.
+- It contains the following sections:
+  - images
+  - resources
+  - replicas
+  - acm
+  - ppm
+  - config
+
 <br>
 [Link](k8s-demo/values.yaml)
