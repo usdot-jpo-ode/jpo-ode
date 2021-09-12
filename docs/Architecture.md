@@ -12,7 +12,7 @@ Booz Allen Hamilton\
 8283 Greensboro Drive\
 McLean, VA 22102
 
-_Last updated February 7, 2019_
+_Last updated June 11, 2021_
 
 # Contents
 
@@ -22,7 +22,7 @@ _Last updated February 7, 2019_
 - [3 - System Overview](#system-overview)
   - [3.1 - ODE Technology Stack](#ode-technology-stack)
   - [3.2 - Producer Mechanisms](#producer-mechanisms)
-  - [3.3 - Comsumer Mechanisms](#comsumer-mechanisms)
+  - [3.3 - Consumer Mechanisms](#consumer-mechanisms)
   - [3.4 - ODE Management Console](#ode-management-console)
 - [4 - Architecture Pattern](#architecture-pattern)
   - [4.1 - Pattern Description](#pattern-description)
@@ -176,7 +176,7 @@ Notation (JSON), environmental and various other system logs.
 
 <a name="consumer-mechanisms">
 
-### 3.3 - Comsumer Mechanisms
+### 3.3 - Consumer Mechanisms
 
 The JPO-ODE is designed to support the following mechanisms for
 outputting decoded BSM, Map and Signal Phase and Timing (SPaT) data as
@@ -249,7 +249,7 @@ The micro-services pattern consists of three major concepts:
 
 3.  *Distributed architecture*: All the components within the
     architecture are fully decoupled from one other and accessed through
-    a messaging service. This concept is what allows mircoservices
+    a messaging service. This concept is what allows microservices
     architecture pattern achieve some of its superior scalability and
     deployment characteristics.
 
