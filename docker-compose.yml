@@ -51,6 +51,7 @@ services:
       - "47900:47900/udp"
       - "5555:5555/udp"
       - "6666:6666/udp"
+      - "44910:44910/udp"
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ZK: ${DOCKER_HOST_IP}:2181

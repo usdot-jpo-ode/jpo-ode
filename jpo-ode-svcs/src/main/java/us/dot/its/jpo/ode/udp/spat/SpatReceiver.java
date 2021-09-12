@@ -60,6 +60,8 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
 
                // extract the actualPacket from the buffer
                byte[] payload = removeHeader(packet.getData());
+               if (payload == null)
+                  continue;
                String payloadHexString = HexUtils.toHexString(payload);
                logger.debug("Packet: {}", payloadHexString);
                
@@ -97,9 +99,9 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
    }
 
    /**
-    * Attempts to strip WSMP header bytes. If message starts with "001F",
-    * message is raw TIM. Otherwise, headers are >= 20 bytes, so look past that
-    * for start of payload TIM.
+    * Attempts to strip WSMP header bytes. If message starts with "0013",
+    * message is raw SPAT. Otherwise, headers are >= 20 bytes, so look past that
+    * for start of payload SPAT.
     * 
     * @param packet
     */
@@ -113,6 +115,7 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
          logger.info("Message is raw SPAT with no headers.");
       } else if (startIndex == -1) {
          logger.error("Message contains no SPAT start flag.");
+         return null;
       } else {
          // We likely found a message with a header, look past the first 20
          // bytes for the start of the SPAT
