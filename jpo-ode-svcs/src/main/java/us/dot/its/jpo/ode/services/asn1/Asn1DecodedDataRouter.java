@@ -67,9 +67,6 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 				// ODE-518/ODE-604 Demultiplex the messages to appropriate topics based on the
 				// "recordType"
 				OdeBsmData odeBsmData = OdeBsmDataCreatorHelper.createOdeBsmData(consumedData);
-				bsmProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), getRecord().key(), odeBsmData);
-
-				logger.info("Submitted to BSM Pojo topic");
 
 				if (recordType == RecordType.bsmLogDuringEvent) {
 					bsmProducer.send(odeProperties.getKafkaTopicOdeBsmDuringEventPojo(), getRecord().key(), odeBsmData);
@@ -78,22 +75,24 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 				} else if (recordType == RecordType.bsmTx) {
 					bsmProducer.send(odeProperties.getKafkaTopicOdeBsmTxPojo(), getRecord().key(), odeBsmData);
 				}
+
+				bsmProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), getRecord().key(), odeBsmData);
+				logger.info("Submitted to BSM Pojo topic");
+
 			} else if (messageId == J2735DSRCmsgID.TravelerInformation.getMsgID()) {
 				String odeTimData = TimTransmogrifier.createOdeTimData(consumed).toString();
-				timProducer.send(odeProperties.getKafkaTopicOdeTimJson(), getRecord().key(), odeTimData);
-
-				logger.info("Submitted to TIM Pojo topic");
 
 				if (recordType == RecordType.dnMsg) {
 					timProducer.send(odeProperties.getKafkaTopicOdeDNMsgJson(), getRecord().key(), odeTimData);
 				} else if (recordType == RecordType.rxMsg) {
 					timProducer.send(odeProperties.getKafkaTopicOdeTimRxJson(), getRecord().key(), odeTimData);
 				}
+
+				timProducer.send(odeProperties.getKafkaTopicOdeTimJson(), getRecord().key(), odeTimData);
+				logger.info("Submitted to TIM Pojo topic");
+
 			} else if (messageId == J2735DSRCmsgID.SPATMessage.getMsgID()) {
 				String odeSpatData = OdeSpatDataCreatorHelper.createOdeSpatData(consumedData).toString();
-				spatProducer.send(odeProperties.getKafkaTopicOdeSpatJson(), getRecord().key(), odeSpatData);
-
-				logger.info("Submitted to SPAT Pojo topic");
 
 				if (recordType == RecordType.dnMsg) {
 					spatProducer.send(odeProperties.getKafkaTopicOdeDNMsgJson(), getRecord().key(), odeSpatData);
@@ -102,6 +101,9 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 				} else if (recordType == RecordType.spatTx) {
 					spatProducer.send(odeProperties.getKafkaTopicOdeSpatTxPojo(), getRecord().key(), odeSpatData);
 				}
+
+				spatProducer.send(odeProperties.getKafkaTopicOdeSpatJson(), getRecord().key(), odeSpatData);
+				logger.info("Submitted to SPAT Pojo topic");
 			}
 		} catch (Exception e) {
 			logger.error("Failed to route received data: " + consumedData, e);
