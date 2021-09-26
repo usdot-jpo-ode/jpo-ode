@@ -96,7 +96,7 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 				} else if (recordType == RecordType.spatTx) {
 					spatProducer.send(odeProperties.getKafkaTopicOdeSpatTxPojo(), getRecord().key(), odeSpatData);
 				}
-				// Send all SPATs also to OdeTimJson
+				// Send all SPATs also to OdeSpatJson
 				spatProducer.send(odeProperties.getKafkaTopicOdeSpatJson(), getRecord().key(), odeSpatData);
 				logger.debug("Submitted to SPAT Pojo topic");
 			}
