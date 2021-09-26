@@ -29,7 +29,7 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
 
    @Autowired
    public SpatReceiver(OdeProperties odeProps) {
-      this(odeProps, odeProps.getSpatReceiverPort(), odeProps.getTimBufferSize());
+      this(odeProps, odeProps.getSpatReceiverPort(), odeProps.getSpatBufferSize());
 
       this.spatPublisher = new StringPublisher(odeProps);
    }

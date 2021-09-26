@@ -381,6 +381,14 @@ public class OdeProperties implements EnvironmentAware {
       this.timReceiverPort = timReceiverPort;
    }
 
+   public int getTimBufferSize() {
+      return timBufferSize;
+   }
+
+   public void setTimBufferSize(int timBufferSize) {
+      this.timBufferSize = timBufferSize;
+   }
+
    public int getSpatReceiverPort() {
       return spatReceiverPort;
    }
@@ -389,12 +397,12 @@ public class OdeProperties implements EnvironmentAware {
       this.spatReceiverPort = spatReceiverPort;
    }
 
-   public int getTimBufferSize() {
-      return timBufferSize;
+   public int getSpatBufferSize() {
+      return spatBufferSize;
    }
 
-   public void setTimBufferSize(int timBufferSize) {
-      this.timBufferSize = timBufferSize;
+   public void setSpatBufferSize(int spatBufferSize) {
+      this.spatBufferSize = spatBufferSize;
    }
 
    public String getDdsCasUrl() {

@@ -27,9 +27,18 @@ public class UdpServicesController {
       ServiceManager rm = new ServiceManager(new UdpServiceThreadFactory("UdpReceiverManager"));
 
       logger.debug("Starting UDP receiver services...");
+
+      // BSM internal and external port
       rm.submit(new BsmReceiver(odeProps));
+      rm.submit(new BsmReceiver(odeProps, 46801, 500));
+
+      // TIM internal and external port
       rm.submit(new TimReceiver(odeProps));
+      rm.submit(new TimReceiver(odeProps, 47901, 500));
+
+      // SPAT internal port
       rm.submit(new SpatReceiver(odeProps));
+
       logger.debug("UDP receiver services started.");
    }
 }
