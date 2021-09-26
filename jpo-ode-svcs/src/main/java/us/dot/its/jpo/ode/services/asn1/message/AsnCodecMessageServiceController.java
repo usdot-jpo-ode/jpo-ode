@@ -10,45 +10,44 @@ import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 /***
  * Launch sending encoded message service
- * */
+ */
 @Controller
 public class AsnCodecMessageServiceController {
 
-	   private static final Logger logger = LoggerFactory.getLogger(AsnCodecMessageServiceController.class);
-	   
-	   @Autowired
-	   public AsnCodecMessageServiceController(OdeProperties odeProps)
-	   {
-		   super();
-		   logger.info("Starting {} ",this.getClass().getSimpleName());
+	private static final Logger logger = LoggerFactory.getLogger(AsnCodecMessageServiceController.class);
 
-		      // asn1_codec Decoder Routing
-			  
-			  //BSM
-		      logger.info("Send encoded BSM to ASN.1 Decoder");
-		      Asn1DecodeBSMJSON asn1DecodeBSMJSON = new Asn1DecodeBSMJSON(odeProps);
+	@Autowired
+	public AsnCodecMessageServiceController(OdeProperties odeProps) {
+		super();
+		logger.info("Starting {} ", this.getClass().getSimpleName());
 
-		      MessageConsumer<String, String> asn1RawBSMJSONConsumer = MessageConsumer.defaultStringMessageConsumer(
-		         odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), asn1DecodeBSMJSON);
-		      asn1RawBSMJSONConsumer.setName("asn1DecodeBSMJSON");     
-		      asn1DecodeBSMJSON.start(asn1RawBSMJSONConsumer, odeProps.getKafkaTopicOdeRawEncodedBSMJson());
+		// asn1_codec Decoder Routing
 
-			  //SPAT
-		      logger.info("Send encoded SPAT to ASN.1 Decoder");
-		      Asn1DecodeSPATJSON asn1DecodeSPATJSON = new Asn1DecodeSPATJSON(odeProps);
-		      
-		      MessageConsumer<String, String> asn1RawSPATJSONConsumer = MessageConsumer.defaultStringMessageConsumer(
-				         odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), asn1DecodeSPATJSON);
-		      asn1RawSPATJSONConsumer.setName("asn1DecodeSPATJSON");			      
-		      asn1DecodeSPATJSON.start(asn1RawSPATJSONConsumer, odeProps.getKafkaTopicOdeRawEncodedSPATJson());
-		      
-			  //TIM
-		      logger.info("Send encoded TIM to ASN.1 Decoder");
-		      Asn1DecodeTIMJSON asn1DecodeTIMJSON = new Asn1DecodeTIMJSON(odeProps);
-		      
-		      MessageConsumer<String, String> asn1RawTIMJSONConsumer = MessageConsumer.defaultStringMessageConsumer(
-				         odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), asn1DecodeTIMJSON);
-		      asn1RawTIMJSONConsumer.setName("asn1DecodeTIMJSON");				      
-		      asn1DecodeTIMJSON.start(asn1RawTIMJSONConsumer, odeProps.getKafkaTopicOdeRawEncodedTIMJson());
-	   }
+		// BSM
+		logger.info("Send encoded BSM to ASN.1 Decoder");
+		Asn1DecodeBSMJSON asn1DecodeBSMJSON = new Asn1DecodeBSMJSON(odeProps);
+
+		MessageConsumer<String, String> asn1RawBSMJSONConsumer = MessageConsumer.defaultStringMessageConsumer(
+				odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), asn1DecodeBSMJSON);
+		asn1RawBSMJSONConsumer.setName("asn1DecodeBSMJSON");
+		asn1DecodeBSMJSON.start(asn1RawBSMJSONConsumer, odeProps.getKafkaTopicOdeRawEncodedBSMJson());
+
+		// SPAT
+		logger.info("Send encoded SPAT to ASN.1 Decoder");
+		Asn1DecodeSPATJSON asn1DecodeSPATJSON = new Asn1DecodeSPATJSON(odeProps);
+
+		MessageConsumer<String, String> asn1RawSPATJSONConsumer = MessageConsumer.defaultStringMessageConsumer(
+				odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), asn1DecodeSPATJSON);
+		asn1RawSPATJSONConsumer.setName("asn1DecodeSPATJSON");
+		asn1DecodeSPATJSON.start(asn1RawSPATJSONConsumer, odeProps.getKafkaTopicOdeRawEncodedSPATJson());
+
+		// TIM
+		logger.info("Send encoded TIM to ASN.1 Decoder");
+		Asn1DecodeTIMJSON asn1DecodeTIMJSON = new Asn1DecodeTIMJSON(odeProps);
+
+		MessageConsumer<String, String> asn1RawTIMJSONConsumer = MessageConsumer.defaultStringMessageConsumer(
+				odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), asn1DecodeTIMJSON);
+		asn1RawTIMJSONConsumer.setName("asn1DecodeTIMJSON");
+		asn1DecodeTIMJSON.start(asn1RawTIMJSONConsumer, odeProps.getKafkaTopicOdeRawEncodedTIMJson());
+	}
 }
