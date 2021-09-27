@@ -149,6 +149,28 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeSpatRxJson = "topic.OdeSpatRxJson";
    private String kafkaTopicFilteredOdeSpatJson = "topic.FilteredOdeSpatJson";
    private String kafkaTopicOdeRawEncodedSPATJson = "topic.OdeRawEncodedSPATJson";
+
+   //SSM
+   private String kafkaTopicOdeSsmTxPojo = "topic.OdeSsmTxPojo";
+   private String kafkaTopicOdeSsmPojo = "topic.OdeSsmPojo";
+   private String kafkaTopicOdeSsmJson = "topic.OdeSsmJson";
+   private String kafkaTopicOdeSsmRxPojo = "topic.OdeSsmRxPojo";
+   private String kafkaTopicOdeSsmRxJson = "topic.OdeSsmRxJson";
+   private String kafkaTopicFilteredOdeSsmJson = "topic.FilteredOdeSsmJson";
+   private String kafkaTopicOdeRawEncodedSSMJson = "OdeRawEncodedSSMJson";
+   private int ssmReceiverPort = 44900;
+   private int ssmBufferSize = 500;
+
+   //SRM
+   private String kafkaTopicOdeSrmTxPojo = "topic.OdeSrmTxPojo";
+   private String kafkaTopicOdeSrmPojo = "topic.OdeSrmPojo";
+   private String kafkaTopicOdeSrmJson = "topic.OdeSrmJson";
+   private String kafkaTopicOdeSrmRxPojo = "topic.OdeSrmRxPojo";
+   private String kafkaTopicOdeSrmRxJson = "topic.OdeSrmRxJson";
+   private String kafkaTopicFilteredOdeSrmJson = "topic.FilteredOdeSrmJson";
+   private String kafkaTopicOdeRawEncodedSRMJson = "OdeRawEncodedSRMJson";
+   private int srmReceiverPort = 44930;
+   private int srmBufferSize = 500;
    
    // DriverAlerts
    private String kafkaTopicDriverAlertJson = "topic.OdeDriverAlertJson";
@@ -385,6 +407,38 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setTimBufferSize(int timBufferSize) {
       this.timBufferSize = timBufferSize;
+   }
+
+   public int getSsmReceiverPort() {
+      return ssmReceiverPort;
+   }
+
+   public void setSsmReceiverPort(int ssmReceiverPort) {
+      this.ssmReceiverPort = ssmReceiverPort;
+   }
+
+   public int getSsmBufferSize() {
+      return ssmBufferSize;
+   }
+
+   public void setSsmBufferSize(int ssmBufferSize) {
+      this.ssmBufferSize = ssmBufferSize;
+   }
+
+   public int getSrmReceiverPort() {
+      return srmReceiverPort;
+   }
+
+   public void setSrmReceiverPort(int srmReceiverPort) {
+      this.srmReceiverPort = srmReceiverPort;
+   }
+
+   public int getSrmBufferSize() {
+      return srmBufferSize;
+   }
+
+   public void setSrmBufferSize(int srmBufferSize) {
+      this.srmBufferSize = srmBufferSize;
    }
 
    public String getDdsCasUrl() {
