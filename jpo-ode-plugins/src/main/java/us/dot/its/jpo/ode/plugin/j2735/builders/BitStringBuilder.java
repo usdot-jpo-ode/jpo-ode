@@ -17,6 +17,9 @@ public class BitStringBuilder {
       char[] chars = jsonNode.asText().trim().toCharArray();
 
       for (char i = 0; i < chars.length; i++) {
+         if (i >= enumValues.length) {
+            break;
+         }
          String bitName = enumValues[i].name();
          Boolean bitStatus = (chars[i] == '1');
          bitString.put(bitName, bitStatus);
