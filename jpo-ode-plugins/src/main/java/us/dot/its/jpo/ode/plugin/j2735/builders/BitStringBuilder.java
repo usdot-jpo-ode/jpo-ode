@@ -3,8 +3,12 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735BitString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BitStringBuilder {
+
+   private static final Logger logger = LoggerFactory.getLogger(BitStringBuilder.class);
 
    private BitStringBuilder() {
       throw new UnsupportedOperationException();
@@ -18,6 +22,7 @@ public class BitStringBuilder {
 
       for (char i = 0; i < chars.length; i++) {
          if (i >= enumValues.length) {
+            logger.warn("Invalid genericBitString. Provided bit string is longer than known enum values");
             break;
          }
          String bitName = enumValues[i].name();
