@@ -68,6 +68,7 @@ public class Asn1DecodeSPATJSON extends AbstractAsn1DecodeMessageJSON {
 						// construct metadata
 						metadata = new OdeSpatMetadata(payload);
 						metadata.setOdeReceivedAt(rawmetadata.getString("utctimestamp"));
+						metadata.setOriginIp(rawmetadata.getString("originRsu"));
 						metadata.setRecordType(RecordType.spatTx);
 						metadata.setSecurityResultCode(SecurityResultCode.success);
 

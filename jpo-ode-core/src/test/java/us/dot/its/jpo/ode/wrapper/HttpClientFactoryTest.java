@@ -21,7 +21,7 @@ import javax.net.ssl.SSLContext;
 
 import mockit.Mocked;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
+//import mockit.integration.junit4.JMockit;
 
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.junit.Test;
@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
 
 import us.dot.its.jpo.ode.wrapper.HttpClientFactory.HttpException;
 
-@RunWith(JMockit.class)
+//@RunWith(JMockit.class)
 public class HttpClientFactoryTest {
 
    @Mocked
