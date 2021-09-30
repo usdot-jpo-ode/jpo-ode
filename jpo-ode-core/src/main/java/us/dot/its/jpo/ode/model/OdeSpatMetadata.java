@@ -12,6 +12,7 @@ public class OdeSpatMetadata extends OdeLogMetadata {
 
 	private SpatSource spatSource;
 	private boolean isCertPresent;
+	private String originIp;
 
 	public boolean isCertPresent() {
 		return isCertPresent;
@@ -40,5 +41,13 @@ public class OdeSpatMetadata extends OdeLogMetadata {
 	public void setSpatSource(SpatSource spatSource) {
 		this.spatSource = spatSource;
 	}
+
+	public String getOriginIp() {
+		return originIp;
+    }
+ 
+    public void setOriginIp(String originIp) {
+		this.originIp = originIp;
+    }
 
 }

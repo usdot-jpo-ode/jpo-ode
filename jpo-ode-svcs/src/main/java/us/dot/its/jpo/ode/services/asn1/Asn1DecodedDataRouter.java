@@ -76,6 +76,7 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 				}
 				// Send all BSMs also to OdeBsmPojo
 				bsmProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), getRecord().key(), odeBsmData);
+				logger.debug("Submitted to BSM Pojo topic");
 			} else if (messageId == J2735DSRCmsgID.TravelerInformation.getMsgID()) {
 				String odeTimData = TimTransmogrifier.createOdeTimData(consumed).toString();
 				if (recordType == RecordType.dnMsg) {
@@ -85,6 +86,7 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 				}
 				// Send all TIMs also to OdeTimJson
 				timProducer.send(odeProperties.getKafkaTopicOdeTimJson(), getRecord().key(), odeTimData);
+				logger.debug("Submitted to TIM Pojo topic");
 			} else if (messageId == J2735DSRCmsgID.SPATMessage.getMsgID()) {
 				String odeSpatData = OdeSpatDataCreatorHelper.createOdeSpatData(consumedData).toString();
 				if (recordType == RecordType.dnMsg) {
@@ -96,6 +98,7 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 				}
 				// Send all SPATs also to OdeSpatJson
 				spatProducer.send(odeProperties.getKafkaTopicOdeSpatJson(), getRecord().key(), odeSpatData);
+				logger.debug("Submitted to SPAT Pojo topic");
 			}
 		} catch (Exception e) {
 			logger.error("Failed to route received data: " + consumedData, e);
