@@ -150,7 +150,7 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicFilteredOdeSpatJson = "topic.FilteredOdeSpatJson";
    private String kafkaTopicOdeRawEncodedSPATJson = "topic.OdeRawEncodedSPATJson";
    private int spatReceiverPort = 44910;
-   private int spatBufferSize = 500;
+   private int spatBufferSize = 1000;
    
    // DriverAlerts
    private String kafkaTopicDriverAlertJson = "topic.OdeDriverAlertJson";
