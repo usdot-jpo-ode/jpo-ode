@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
+import us.dot.its.jpo.ode.udp.tim.TimReceiver;
 
 /**
  * Centralized UDP service dispatcher.
@@ -26,6 +27,7 @@ public class UdpServicesController {
 
       logger.debug("Starting UDP receiver services...");
       rm.submit(new BsmReceiver(odeProps));
+      rm.submit(new TimReceiver(odeProps));
       logger.debug("UDP receiver services started.");
    }
 }
