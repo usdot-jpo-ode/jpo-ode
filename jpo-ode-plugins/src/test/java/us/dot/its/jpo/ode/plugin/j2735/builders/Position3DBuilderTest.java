@@ -25,7 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -45,7 +45,6 @@ public class Position3DBuilderTest {
       node.put("elevation", 14843);
 
       DsrcPosition3D result = Position3DBuilder.dsrcPosition3D(node);
-
       assertEquals(Long.valueOf(604739946), result.getLatitude());
       assertEquals(Long.valueOf(-1009691905), result.getLongitude());
       assertEquals(Long.valueOf(14843), result.getElevation());
