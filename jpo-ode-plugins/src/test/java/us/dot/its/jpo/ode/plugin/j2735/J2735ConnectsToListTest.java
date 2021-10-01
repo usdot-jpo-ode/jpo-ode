@@ -1,27 +1,21 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
-@RunWith(MockitoJUnitRunner.class)
 public class J2735ConnectsToListTest {
-	@Mock
-	J2735ConnectsToList connectionToList;
 	
-	@Mock
-	J2735Connection connection;
-
 	@Test
 	public void testGettersSetters() {
+		J2735ConnectsToList connectionToList = new J2735ConnectsToList();
+		J2735Connection connection = new J2735Connection();
 		List<J2735Connection> connects = new ArrayList<J2735Connection>();
 		connects.add(connection);
 		connectionToList.setConnectsTo(connects);
-		Mockito.when(connectionToList.getConnectsTo()).thenReturn(connects);
+		assertEquals(connectionToList.getConnectsTo(),connects);
 	}
 }

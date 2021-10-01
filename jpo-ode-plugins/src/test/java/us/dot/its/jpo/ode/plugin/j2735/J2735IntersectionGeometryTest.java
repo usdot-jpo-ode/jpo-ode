@@ -1,42 +1,27 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
-@RunWith(MockitoJUnitRunner.class)
 public class J2735IntersectionGeometryTest {
-	@Mock
-	J2735IntersectionGeometry intersectionGeometry;
-	
-	@Mock
-	J2735IntersectionReferenceID id;
-	
-	@Mock
-	J2735Position3D refPoint;
-	
-	@Mock
-	J2735SpeedLimitList speedLimits;
-	
-	@Mock
-	J2735LaneList laneSet;
 
 	@Test
 	public void testGettersSetters() {
+		J2735IntersectionGeometry intersectionGeometry = new J2735IntersectionGeometry();
+		J2735IntersectionReferenceID id = new J2735IntersectionReferenceID();
+		J2735Position3D refPoint = new J2735Position3D();
+		J2735SpeedLimitList speedLimits = new J2735SpeedLimitList();
+		J2735LaneList laneSet = new J2735LaneList();
 		intersectionGeometry.setId(id);
 		intersectionGeometry.setLaneSet(laneSet);
 		intersectionGeometry.setRefPoint(refPoint);
 		intersectionGeometry.setSpeedLimits(speedLimits);
 		
-		Mockito.when(intersectionGeometry.getId()).thenReturn(id);
-		Mockito.when(intersectionGeometry.getLaneSet()).thenReturn(laneSet);
-		Mockito.when(intersectionGeometry.getSpeedLimits()).thenReturn(speedLimits);
-		Mockito.when(intersectionGeometry.getRefPoint()).thenReturn(refPoint);
+		assertEquals(intersectionGeometry.getId(),id);
+		assertEquals(intersectionGeometry.getLaneSet(),laneSet);
+		assertEquals(intersectionGeometry.getSpeedLimits(),speedLimits);
+		assertEquals(intersectionGeometry.getRefPoint(),refPoint);
 	}
 }
 

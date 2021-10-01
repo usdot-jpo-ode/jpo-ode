@@ -1,28 +1,22 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
-@RunWith(MockitoJUnitRunner.class)
 public class J2735IntersectionGeometryListTest {
-	@Mock
-	J2735IntersectionGeometryList intersectionGeometryList;
-	
-	@Mock
-	J2735IntersectionGeometry intersectionGeometry;
 
 	@Test
 	public void testGettersSetters() {
+		J2735IntersectionGeometryList intersectionGeometryList = new J2735IntersectionGeometryList();
+		J2735IntersectionGeometry intersectionGeometry = new J2735IntersectionGeometry();
 		List<J2735IntersectionGeometry> geometryList = new ArrayList<J2735IntersectionGeometry>();
 		geometryList.add(intersectionGeometry);
 		intersectionGeometryList.setIntersections(geometryList);
-		Mockito.when(intersectionGeometryList.getIntersections()).thenReturn(geometryList);
+		assertEquals(intersectionGeometryList.getIntersections(),geometryList);
 	}
 }
 

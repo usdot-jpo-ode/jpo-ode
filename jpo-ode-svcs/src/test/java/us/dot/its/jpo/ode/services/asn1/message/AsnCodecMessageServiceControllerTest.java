@@ -2,20 +2,17 @@ package us.dot.its.jpo.ode.services.asn1.message;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
-@RunWith(MockitoJUnitRunner.class)
+import us.dot.its.jpo.ode.OdeProperties;
+	
 public class AsnCodecMessageServiceControllerTest {
-
-	@Mock
-	AsnCodecMessageServiceController asnCodecMessageServiceController;
 
 	@Test
 	public void shouldStartTwoConsumers() {
-
+		OdeProperties odeProps = new OdeProperties();
+		odeProps.setKafkaBrokers("localhost:9092");
+		AsnCodecMessageServiceController asnCodecMessageServiceController = new AsnCodecMessageServiceController(odeProps);
 		assertNotNull(asnCodecMessageServiceController);
 	}
 

@@ -2,7 +2,7 @@ package us.dot.its.jpo.ode.plugin.j2735;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class J2735ConnectionTest {
 
