@@ -24,10 +24,10 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 public class Position extends Asn1Object {
    private static final long serialVersionUID = 1L;
 
-   @JsonProperty("lat")
+   @JsonProperty("latitude")
    private String lat;
 
-   @JsonProperty("long")
+   @JsonProperty("longitude")
    private String llong; // TODO needs to be "long"
 
    @JsonProperty("elevation")

@@ -10,7 +10,7 @@ import us.dot.its.jpo.ode.wrapper.MessageConsumer;
 
 /***
  * Launch sending encoded message service
- * */
+ */
 @Controller
 public class AsnCodecMessageServiceController {
 

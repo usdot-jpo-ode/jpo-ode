@@ -59,7 +59,7 @@ public class J2735ChoiceTest {
 	@Tested
 	@Mocked
 	J2735Choice j2735Choice;
-	@Mocked(stubOutClassInitialization = true)
+	@Mocked//(stubOutClassInitialization = true)
 	final LoggerFactory unused = null;
 
 	@Test(expected = NoSuchFieldException.class)

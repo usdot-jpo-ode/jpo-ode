@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.udp.bsm;
+package us.dot.its.jpo.ode.udp.spat;
 
 import java.net.DatagramPacket;
 import java.time.ZoneOffset;
@@ -16,34 +16,34 @@ import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 
-public class BsmReceiver extends AbstractUdpReceiverPublisher {
+public class SpatReceiver extends AbstractUdpReceiverPublisher {
 
-   private static Logger logger = LoggerFactory.getLogger(BsmReceiver.class);
+   private static Logger logger = LoggerFactory.getLogger(SpatReceiver.class);
 
-   private static final String BSM_START_FLAG = "0014"; // these bytes indicate
-                                                        // start of BSM payload
+   private static final String SPAT_START_FLAG = "0013"; // these bytes indicate
+                                                        // start of SPAT payload
    private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
                                                       // least 20 bytes long
 
-   private StringPublisher bsmPublisher;
+   private StringPublisher spatPublisher;
 
    @Autowired
-   public BsmReceiver(OdeProperties odeProps) {
-      this(odeProps, odeProps.getBsmReceiverPort(), odeProps.getBsmBufferSize());
+   public SpatReceiver(OdeProperties odeProps) {
+      this(odeProps, odeProps.getSpatReceiverPort(), odeProps.getSpatBufferSize());
 
-      this.bsmPublisher = new StringPublisher(odeProps);
+      this.spatPublisher = new StringPublisher(odeProps);
    }
 
-   public BsmReceiver(OdeProperties odeProps, int port, int bufferSize) {
+   public SpatReceiver(OdeProperties odeProps, int port, int bufferSize) {
       super(odeProps, port, bufferSize);
 
-      this.bsmPublisher = new StringPublisher(odeProps);
+      this.spatPublisher = new StringPublisher(odeProps);
    }
 
    @Override
    public void run() {
 
-      logger.debug("UDP Receiver Service started.");
+      logger.debug("SPAT UDP Receiver Service started.");
 
       byte[] buffer = new byte[bufferSize];
 
@@ -51,7 +51,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
       do {
          try {
-            logger.debug("Waiting for UDP packets...");
+            logger.debug("Waiting for UDP SPAT packets...");
             socket.receive(packet);
             if (packet.getLength() > 0) {
                senderIp = packet.getAddress().getHostAddress();
@@ -65,7 +65,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                String payloadHexString = HexUtils.toHexString(payload);
                logger.debug("Packet: {}", payloadHexString);
                
-               logger.debug("Creating Decoded BSM JSON Object...");
+               logger.debug("Creating Decoded SPAT JSON Object...");
 
                // Add header data for the decoding process
                ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
@@ -83,14 +83,14 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                messageList.put(messageObject);
 
                JSONObject jsonObject = new JSONObject();
-               jsonObject.put("BsmMessageContent", messageList);
+               jsonObject.put("SpatMessageContent", messageList);
 
-               logger.debug("BSM JSON Object: {}", jsonObject.toString());
+               logger.debug("SPAT JSON Object: {}", jsonObject.toString());
 
                // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
-               logger.debug("Publishing JSON BSM...");
+               logger.debug("Publishing JSON SPAT...");
 
-               this.bsmPublisher.publish(jsonObject.toString(), this.bsmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedBSMJson());
+               this.spatPublisher.publish(jsonObject.toString(), this.spatPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
             }
          } catch (Exception e) {
             logger.error("Error receiving packet", e);
@@ -99,29 +99,28 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
    }
 
    /**
-    * Attempts to strip WSMP header bytes. If message starts with "0014",
-    * message is raw BSM. Otherwise, headers are >= 20 bytes, so look past that
-    * for start of payload BSM.
+    * Attempts to strip WSMP header bytes. If message starts with "0013",
+    * message is raw SPAT. Otherwise, headers are >= 20 bytes, so look past that
+    * for start of payload SPAT.
     * 
     * @param packet
     */
    public byte[] removeHeader(byte[] packet) {
       String hexPacket = HexUtils.toHexString(packet);
 
-      // logger.debug("BSM packet length: {}, start index: {}",
-      // hexPacket.length(), startIndex);
+      //logger.debug("SPAT packet: {}", hexPacket);
 
-      int startIndex = hexPacket.indexOf(BSM_START_FLAG);
+      int startIndex = hexPacket.indexOf(SPAT_START_FLAG);
       if (startIndex == 0) {
-         logger.info("Message is raw BSM with no headers.");
+         logger.info("Message is raw SPAT with no headers.");
       } else if (startIndex == -1) {
-         logger.error("Message contains no BSM start flag.");
+         logger.error("Message contains no SPAT start flag.");
          return null;
       } else {
          // We likely found a message with a header, look past the first 20
-         // bytes for the start of the BSM
+         // bytes for the start of the SPAT
          int trueStartIndex = HEADER_MINIMUM_SIZE
-               + hexPacket.substring(HEADER_MINIMUM_SIZE, hexPacket.length()).indexOf(BSM_START_FLAG);
+               + hexPacket.substring(HEADER_MINIMUM_SIZE, hexPacket.length()).indexOf(SPAT_START_FLAG);
          hexPacket = hexPacket.substring(trueStartIndex, hexPacket.length());
       }
 

@@ -28,7 +28,7 @@ import ch.qos.logback.classic.Logger;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
+//import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.dds.DdsRequestManager.DdsRequestManagerException;
 import us.dot.its.jpo.ode.model.OdeDataType;
@@ -40,7 +40,7 @@ import us.dot.its.jpo.ode.model.OdeRequestType;
 import us.dot.its.jpo.ode.plugin.j2735.DdsAdvisorySituationData;
 import us.dot.its.jpo.ode.wrapper.WebSocketMessageHandler;
 
-@RunWith(JMockit.class)
+//@RunWith(JMockit.class)
 public class DdsDepositorTest {
 
     /**
