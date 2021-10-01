@@ -90,7 +90,6 @@ typedef struct _receivedMsgRecord {
     uint32_t  utcTimeInSec;
     uint16_t  msec;
     int8_t    verificationStatus;
-    int8_t    is_cert_present; /*ieee 1609 (acceptable values 0 = no,1 =yes)*/
     uint16_t  length;
     /* payload of length size*/
 } __attribute__((__packed__)) receivedMsgRecord;
@@ -110,6 +109,7 @@ typedef struct _SPaTMsgRecord {
     uint32_t  utcTimeInSec;
     uint16_t  msec;
     int8_t    verificationStatus;
+    int8_t    is_cert_present; /*ieee 1609 (acceptable values 0 = no,1 =yes)*/
     uint16_t  length;
     /* payload of length size*/
 } __attribute__((__packed__)) SPaTMsgRecord;
