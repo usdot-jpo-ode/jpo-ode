@@ -91,7 +91,7 @@ public class SsmReceiver extends AbstractUdpReceiverPublisher {
                // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
                logger.debug("Publishing JSON SSM...");
 
-               //this.ssmPublisher.publish(jsonObject.toString(), this.ssmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSSMJson());
+               this.ssmPublisher.publish(jsonObject.toString(), this.ssmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSSMJson());
             }
          } catch (Exception e) {
             logger.error("Error receiving packet", e);
