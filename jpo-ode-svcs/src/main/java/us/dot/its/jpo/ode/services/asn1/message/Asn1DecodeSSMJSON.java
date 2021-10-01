@@ -11,14 +11,13 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
+import us.dot.its.jpo.ode.model.OdeSsmMetadata.SsmSource;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdeData;
 import us.dot.its.jpo.ode.model.OdeHexByteArray;
-import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.OdeMsgPayload;
-import us.dot.its.jpo.ode.model.OdeTimMetadata;
+import us.dot.its.jpo.ode.model.OdeSsmMetadata;
 
 public class Asn1DecodeSSMJSON extends AbstractAsn1DecodeMessageJSON {
     private static final String SSMContentType = "SsmMessageContent";
@@ -66,6 +65,9 @@ public class Asn1DecodeSSMJSON extends AbstractAsn1DecodeMessageJSON {
 						metadata = new OdeSsmMetadata(payload);
 						metadata.setOdeReceivedAt(rawmetadata.getString("utctimestamp"));
 						metadata.setOriginIp(rawmetadata.getString("originRsu"));
+						
+						if (rawmetadata.getString("source").equals("RSU"))
+							metadata.setSsmSource(SsmSource.RSU);
 						
 						Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",EncodingRule.UPER);
 						metadata.addEncoding(unsecuredDataEncoding);

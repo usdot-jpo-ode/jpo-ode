@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
 import us.dot.its.jpo.ode.coder.OdeSpatDataCreatorHelper;
+import us.dot.its.jpo.ode.coder.OdeSsmDataCreatorHelper;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeBsmData;
@@ -41,6 +42,7 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 	private MessageProducer<String, OdeBsmData> bsmProducer;
 	private MessageProducer<String, String> timProducer;
 	private MessageProducer<String, String> spatProducer;
+	private MessageProducer<String, String> ssmProducer;
 
 	public Asn1DecodedDataRouter(OdeProperties odeProps) {
 		super();
@@ -50,6 +52,8 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 		this.timProducer = MessageProducer.defaultStringMessageProducer(odeProps.getKafkaBrokers(),
 				odeProps.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
 		this.spatProducer = MessageProducer.defaultStringMessageProducer(odeProps.getKafkaBrokers(),
+				odeProps.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
+		this.ssmProducer = MessageProducer.defaultStringMessageProducer(odeProps.getKafkaBrokers(),
 				odeProps.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
 	}
 
@@ -96,6 +100,13 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 				}
 				// Send all SPATs also to OdeSpatJson
 				spatProducer.send(odeProperties.getKafkaTopicOdeSpatJson(), getRecord().key(), odeSpatData);
+			} else if (messageId == J2735DSRCmsgID.SSMMessage.getMsgID()) {
+				String odeSsmData = OdeSsmDataCreatorHelper.createOdeSsmData(consumedData).toString();
+				if (recordType == RecordType.ssmTx) {
+					ssmProducer.send(odeProperties.getKafkaTopicOdeSsmPojo(), getRecord().key(), odeSsmData);
+				}
+				// Send all SSMs also to OdeSsmJson
+				ssmProducer.send(odeProperties.getKafkaTopicOdeSsmJson(), getRecord().key(), odeSsmData);
 			}
 		} catch (Exception e) {
 			logger.error("Failed to route received data: " + consumedData, e);

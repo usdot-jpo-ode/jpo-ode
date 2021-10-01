@@ -74,6 +74,7 @@ public class SsmReceiver extends AbstractUdpReceiverPublisher {
                JSONObject metadataObject = new JSONObject();
                metadataObject.put("utctimestamp", timestamp);
                metadataObject.put("originRsu", senderIp);
+               metadataObject.put("source", "RSU");
 
                JSONObject messageObject = new JSONObject();
                messageObject.put("metadata", metadataObject);
