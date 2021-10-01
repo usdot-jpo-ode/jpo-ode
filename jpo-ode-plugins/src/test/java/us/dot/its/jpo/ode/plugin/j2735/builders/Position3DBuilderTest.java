@@ -26,6 +26,8 @@ import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -35,6 +37,7 @@ import us.dot.its.jpo.ode.plugin.j2735.DsrcPosition3D;
 import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
+@RunWith(MockitoJUnitRunner.class)
 public class Position3DBuilderTest {
 
    @Test
@@ -45,7 +48,6 @@ public class Position3DBuilderTest {
       node.put("elevation", 14843);
 
       DsrcPosition3D result = Position3DBuilder.dsrcPosition3D(node);
-
       assertEquals(Long.valueOf(604739946), result.getLatitude());
       assertEquals(Long.valueOf(-1009691905), result.getLongitude());
       assertEquals(Long.valueOf(14843), result.getElevation());

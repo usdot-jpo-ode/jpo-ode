@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -13,7 +11,6 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735MAP;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
-@RunWith(MockitoJUnitRunner.class)
 public class MAPBuilderTest {
 	@Test
 	public void shouldTranslateMap() {

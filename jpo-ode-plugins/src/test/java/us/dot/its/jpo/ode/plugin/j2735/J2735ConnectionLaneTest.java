@@ -1,22 +1,18 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(MockitoJUnitRunner.class)
+import org.junit.Test;
+
 public class J2735ConnectionLaneTest {
-	@Mock
-	J2735ConnectingLane connectionLane;
 
 	@Test
 	public void testGettersSetters() {
+		J2735ConnectingLane connectionLane = new J2735ConnectingLane();
 		connectionLane.setLane(10);
 		connectionLane.setManeuver(J2735AllowedManeuvers.caution);
-
-		Mockito.when(connectionLane.getLane()).thenReturn(10);
-		Mockito.when(connectionLane.getManeuver()).thenReturn(J2735AllowedManeuvers.caution);
+		
+		assertEquals(connectionLane.getLane(), 10);
+		assertEquals(connectionLane.getManeuver(), J2735AllowedManeuvers.caution);
 	}
 }
