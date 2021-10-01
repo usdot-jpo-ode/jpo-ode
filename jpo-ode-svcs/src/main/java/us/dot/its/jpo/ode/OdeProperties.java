@@ -153,7 +153,7 @@ public class OdeProperties implements EnvironmentAware {
    //SSM
    private String kafkaTopicOdeSsmPojo = "topic.OdeSsmPojo";
    private String kafkaTopicOdeSsmJson = "topic.OdeSsmJson";
-   private String kafkaTopicOdeRawEncodedSSMJson = "OdeRawEncodedSSMJson";
+   private String kafkaTopicOdeRawEncodedSSMJson = "topic.OdeRawEncodedSSMJson";
    private int ssmReceiverPort = 44900;
    private int ssmBufferSize = 500;
 

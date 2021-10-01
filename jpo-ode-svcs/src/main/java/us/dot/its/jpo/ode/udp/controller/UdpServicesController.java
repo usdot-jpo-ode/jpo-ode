@@ -39,7 +39,7 @@ public class UdpServicesController {
       rm.submit(new SsmReceiver(odeProps));
       
       // SRM internal port
-      rm.submit(new SrmReceiver(odeProps));
+      //rm.submit(new SrmReceiver(odeProps));
 
       logger.debug("UDP receiver services started.");
    }
