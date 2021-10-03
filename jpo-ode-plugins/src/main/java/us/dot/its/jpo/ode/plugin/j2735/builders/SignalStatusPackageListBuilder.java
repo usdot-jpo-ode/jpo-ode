@@ -22,8 +22,12 @@ public class SignalStatusPackageListBuilder {
                     .add(SignalStatusPackageBuilder.genericSignalStatusPackage(elements.next()));
 			}
 		} else {
-			signalStatusPackageList.getSigStatus()
-                .add(SignalStatusPackageBuilder.genericSignalStatusPackage(sigStatus));
+			JsonNode signalStatusPackage = sigStatus.get("SignalStatusPackage");
+			if(signalStatusPackage != null)
+			{
+				signalStatusPackageList.getSigStatus()
+                	.add(SignalStatusPackageBuilder.genericSignalStatusPackage(signalStatusPackage));
+			}
 
 		}
 

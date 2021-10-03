@@ -8,13 +8,13 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 public class J2735SignalStatusList extends Asn1Object {
 
     private static final long serialVersionUID = 1L;
-    private List<J2735SignalStatus> status = new ArrayList<>();
+    private List<J2735SignalStatus> signalStatus = new ArrayList<>();
 
     public List<J2735SignalStatus> getStatus() {
-        return status;
+        return signalStatus;
     }
 
-    public void setStatus(List<J2735SignalStatus> status) {
-        this.status = status;
+    public void setStatus(List<J2735SignalStatus> signalStatus) {
+        this.signalStatus = signalStatus;
     }
 }

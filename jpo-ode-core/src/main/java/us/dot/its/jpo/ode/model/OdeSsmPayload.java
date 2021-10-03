@@ -13,11 +13,11 @@ public class OdeSsmPayload extends OdeMsgPayload {
         this.setData(ssm);
     }
 
-    public J2735SSM getSpat() {
+    public J2735SSM getSsm() {
         return (J2735SSM) getData();
     }
 
-    public void setBsm(J2735SSM ssm) {
+    public void setSsm(J2735SSM ssm) {
         setData(ssm);
     }
 }

@@ -22,9 +22,12 @@ public class SignalStatusListBuilder {
                     .add(SignalStatusBuilder.genericSignalStatus(elements.next()));
 			}
 		} else {
-			signalStatusList.getStatus()
-                .add(SignalStatusBuilder.genericSignalStatus(status));
-
+			JsonNode signalStatus = status.get("SignalStatus");
+			if(signalStatus != null)
+			{
+				signalStatusList.getStatus()
+					.add(SignalStatusBuilder.genericSignalStatus(signalStatus));
+			}
 		}
 		
 		return signalStatusList;
