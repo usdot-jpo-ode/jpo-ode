@@ -28,25 +28,25 @@ public class OdeSsmDataCreatorHelper {
         ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 
         JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
-        // if (metadataNode instanceof ObjectNode) {
-        //     ObjectNode object = (ObjectNode) metadataNode;
-        //     object.remove(AppContext.ENCODINGS_STRING);
+        if (metadataNode instanceof ObjectNode) {
+            ObjectNode object = (ObjectNode) metadataNode;
+            object.remove(AppContext.ENCODINGS_STRING);
 
-        //     // Ssm header file does not have a location and use predefined set required
-        //     // RxSource
-        //     ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
-        //     receivedMessageDetails.setRxSource(RxSource.NA);
-        //     ObjectMapper objectMapper = new ObjectMapper();
-        //     JsonNode jsonNode;
-        //     try {
-        //         jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
-        //         object.set(AppContext.RECEIVEDMSGDETAILS_STRING, jsonNode);
-        //     } catch (JsonProcessingException e) {
-        //         e.printStackTrace();
-        //     } catch (IOException e) {
-        //         e.printStackTrace();
-        //     }
-        // }
+            // Ssm header file does not have a location and use predefined set required
+            // RxSource
+            ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
+            receivedMessageDetails.setRxSource(RxSource.NA);
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode;
+            try {
+                jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
+                object.set(AppContext.RECEIVEDMSGDETAILS_STRING, jsonNode);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         
         OdeSsmMetadata metadata = (OdeSsmMetadata) JsonUtils.fromJson(metadataNode.toString(), OdeSsmMetadata.class);
 
