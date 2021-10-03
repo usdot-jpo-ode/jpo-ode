@@ -46,7 +46,7 @@ public class RequestorTypeBuilder {
         JsonNode hpmsType = typeData.get("hpmsType");
 		if(hpmsType != null)
 		{
-            J2735VehicleType enumVehicleType = J2735VehicleType.valueOf(hpmsType.asText());
+            J2735VehicleType enumVehicleType = J2735VehicleType.valueOf(hpmsType.fieldNames().next());
 			requestorType.setHpmsType(enumVehicleType);
 		}
 
