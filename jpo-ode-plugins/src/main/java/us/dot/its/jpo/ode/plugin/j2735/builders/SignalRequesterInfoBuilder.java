@@ -49,7 +49,7 @@ public class SignalRequesterInfoBuilder {
 		JsonNode role = requester.get("role");
 		if(role != null)
 		{
-            J2735BasicVehicleRole enumRole = J2735BasicVehicleRole.valueOf(role.asText());
+            J2735BasicVehicleRole enumRole = J2735BasicVehicleRole.valueOf(role.fieldNames().next());
 			signalRequesterInfo.setRole(enumRole);
 		}
 

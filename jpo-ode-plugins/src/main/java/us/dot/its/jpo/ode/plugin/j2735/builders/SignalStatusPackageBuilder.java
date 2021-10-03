@@ -93,7 +93,7 @@ public class SignalStatusPackageBuilder {
         JsonNode status = sigStatusNode.get("status");
 		if(status != null)
 		{
-            J2735PrioritizationResponseStatus enumStatus = J2735PrioritizationResponseStatus.valueOf(status.asText());
+            J2735PrioritizationResponseStatus enumStatus = J2735PrioritizationResponseStatus.valueOf(status.fieldNames().next());
 			signalStatusPackage.setStatus(enumStatus);
 		}
 
