@@ -28,7 +28,7 @@ public class SignalRequesterInfoBuilder {
 			JsonNode stationID = id.get("stationID");
 			if(stationID != null)
 			{
-				objVehicleId.setStationID(stationID.asInt());
+				objVehicleId.setStationID(stationID.asLong());
 			}
 
 			signalRequesterInfo.setId(objVehicleId);
