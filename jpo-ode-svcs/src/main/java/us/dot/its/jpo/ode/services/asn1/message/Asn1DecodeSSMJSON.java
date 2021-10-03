@@ -11,6 +11,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
 import us.dot.its.jpo.ode.model.OdeSsmMetadata.SsmSource;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
@@ -68,6 +69,7 @@ public class Asn1DecodeSSMJSON extends AbstractAsn1DecodeMessageJSON {
 						
 						if (rawmetadata.getString("source").equals("RSU"))
 							metadata.setSsmSource(SsmSource.RSU);
+							metadata.setRecordType(RecordType.ssmTx);
 						
 						Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",EncodingRule.UPER);
 						metadata.addEncoding(unsecuredDataEncoding);

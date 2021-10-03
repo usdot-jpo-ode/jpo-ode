@@ -102,9 +102,9 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 				spatProducer.send(odeProperties.getKafkaTopicOdeSpatJson(), getRecord().key(), odeSpatData);
 			} else if (messageId == J2735DSRCmsgID.SSMMessage.getMsgID()) {
 				String odeSsmData = OdeSsmDataCreatorHelper.createOdeSsmData(consumedData).toString();
-				if (recordType == RecordType.ssmTx) {
-					ssmProducer.send(odeProperties.getKafkaTopicOdeSsmPojo(), getRecord().key(), odeSsmData);
-				}
+				// if (recordType == RecordType.ssmTx) {
+				// 	ssmProducer.send(odeProperties.getKafkaTopicOdeSsmPojo(), getRecord().key(), odeSsmData);
+				// }
 				// Send all SSMs also to OdeSsmJson
 				ssmProducer.send(odeProperties.getKafkaTopicOdeSsmJson(), getRecord().key(), odeSsmData);
 			}
