@@ -2,9 +2,6 @@ package us.dot.its.jpo.ode.coder;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,32 +25,28 @@ public class OdeSsmDataCreatorHelper {
     }
 
     public static OdeSsmData createOdeSsmData(String consumedData) throws XmlUtilsException {
-        Logger logger = LoggerFactory.getLogger(OdeSsmDataCreatorHelper.class);
         ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 
         JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
-        if (metadataNode instanceof ObjectNode) {
-            logger.info("Early Metadata: " + metadataNode.toString());
-            ObjectNode object = (ObjectNode) metadataNode;
-            object.remove(AppContext.ENCODINGS_STRING);
+        // if (metadataNode instanceof ObjectNode) {
+        //     ObjectNode object = (ObjectNode) metadataNode;
+        //     object.remove(AppContext.ENCODINGS_STRING);
 
-            // Ssm header file does not have a location and use predefined set required
-            // RxSource
-            ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
-            receivedMessageDetails.setRxSource(RxSource.NA);
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode;
-            try {
-                jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
-                object.set(AppContext.RECEIVEDMSGDETAILS_STRING, jsonNode);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        logger.info("Metadata: " + metadataNode.toString());
+        //     // Ssm header file does not have a location and use predefined set required
+        //     // RxSource
+        //     ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
+        //     receivedMessageDetails.setRxSource(RxSource.NA);
+        //     ObjectMapper objectMapper = new ObjectMapper();
+        //     JsonNode jsonNode;
+        //     try {
+        //         jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
+        //         object.set(AppContext.RECEIVEDMSGDETAILS_STRING, jsonNode);
+        //     } catch (JsonProcessingException e) {
+        //         e.printStackTrace();
+        //     } catch (IOException e) {
+        //         e.printStackTrace();
+        //     }
+        // }
         
         OdeSsmMetadata metadata = (OdeSsmMetadata) JsonUtils.fromJson(metadataNode.toString(), OdeSsmMetadata.class);
 
