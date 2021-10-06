@@ -458,6 +458,7 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setSpatBufferSize(int spatBufferSize) {
       this.spatBufferSize = spatBufferSize;
+   }
 
    public String getDdsCasUrl() {
       return ddsCasUrl;
