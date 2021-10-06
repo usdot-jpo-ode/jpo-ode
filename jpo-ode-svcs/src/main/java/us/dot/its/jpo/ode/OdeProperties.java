@@ -174,6 +174,8 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeRawEncodedMAPJson = "topic.OdeRawEncodedMAPJson";
    private String kafkaTopicOdeMapTxPojo = "topic.OdeMapTxPojo";
    private String kafkaTopicOdeMapJson = "topic.OdeMapJson";
+   private int mapReceiverPort = 44920;
+   private int mapBufferSize = 500;
    
 // DriverAlerts
    private String kafkaTopicDriverAlertJson = "topic.OdeDriverAlertJson";
@@ -458,6 +460,22 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setSpatBufferSize(int spatBufferSize) {
       this.spatBufferSize = spatBufferSize;
+   }
+
+   public int getMapReceiverPort() {
+      return mapReceiverPort;
+   }
+
+   public void setMapReceiverPort(int mapReceiverPort) {
+      this.mapReceiverPort = mapReceiverPort;
+   }
+
+   public int getMapBufferSize() {
+      return mapBufferSize;
+   }
+
+   public void setMapBufferSize(int mapBufferSize) {
+      this.mapBufferSize = mapBufferSize;
    }
 
    public String getDdsCasUrl() {

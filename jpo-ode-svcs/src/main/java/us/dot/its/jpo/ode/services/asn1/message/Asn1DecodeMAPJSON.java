@@ -64,10 +64,14 @@ public class Asn1DecodeMAPJSON extends AbstractAsn1DecodeMessageJSON {
 						// construct metadata
 						metadata = new OdeMapMetadata(payload);
 						metadata.setOdeReceivedAt(rawmetadata.getString("utctimestamp"));
+						metadata.setOriginIp(rawmetadata.getString("originRsu"));
 						metadata.setRecordType(RecordType.mapTx);
 						metadata.setSecurityResultCode(SecurityResultCode.success);
 
-						metadata.setMapSource(MapSource.V2X);
+						if (rawmetadata.getString("source").equals("RSU"))
+							metadata.setMapSource(MapSource.RSU);
+						else
+							metadata.setMapSource(MapSource.V2X);
 
 						Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",
 								EncodingRule.UPER);
