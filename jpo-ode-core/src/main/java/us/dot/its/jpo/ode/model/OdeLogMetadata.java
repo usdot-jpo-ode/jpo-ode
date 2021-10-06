@@ -23,7 +23,7 @@ public class OdeLogMetadata extends OdeMsgMetadata {
    private static final long serialVersionUID = -8601265839394150140L;
 
    public enum RecordType {
-      bsmLogDuringEvent, rxMsg, dnMsg, bsmTx, driverAlert, spatTx, ssmTx, timMsg, unsupported
+      bsmLogDuringEvent, rxMsg, dnMsg, bsmTx, driverAlert, mapTx, spatTx, ssmTx, timMsg, unsupported
    }
 
    public enum SecurityResultCode {

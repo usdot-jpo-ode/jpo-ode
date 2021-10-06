@@ -149,6 +149,8 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeSpatRxJson = "topic.OdeSpatRxJson";
    private String kafkaTopicFilteredOdeSpatJson = "topic.FilteredOdeSpatJson";
    private String kafkaTopicOdeRawEncodedSPATJson = "topic.OdeRawEncodedSPATJson";
+   private int spatReceiverPort = 44910;
+   private int spatBufferSize = 1000;
 
    //SSM
    private String kafkaTopicOdeSsmPojo = "topic.OdeSsmPojo";
@@ -168,7 +170,12 @@ public class OdeProperties implements EnvironmentAware {
    private int srmReceiverPort = 44930;
    private int srmBufferSize = 500;
    
-   // DriverAlerts
+   //MAP
+   private String kafkaTopicOdeRawEncodedMAPJson = "topic.OdeRawEncodedMAPJson";
+   private String kafkaTopicOdeMapTxPojo = "topic.OdeMapTxPojo";
+   private String kafkaTopicOdeMapJson = "topic.OdeMapJson";
+   
+// DriverAlerts
    private String kafkaTopicDriverAlertJson = "topic.OdeDriverAlertJson";
 
    // ASN.1 CODEC
@@ -436,6 +443,21 @@ public class OdeProperties implements EnvironmentAware {
    public void setSrmBufferSize(int srmBufferSize) {
       this.srmBufferSize = srmBufferSize;
    }
+
+   public int getSpatReceiverPort() {
+      return spatReceiverPort;
+   }
+
+   public void setSpatReceiverPort(int spatReceiverPort) {
+      this.spatReceiverPort = spatReceiverPort;
+   }
+
+   public int getSpatBufferSize() {
+      return spatBufferSize;
+   }
+
+   public void setSpatBufferSize(int spatBufferSize) {
+      this.spatBufferSize = spatBufferSize;
 
    public String getDdsCasUrl() {
       return ddsCasUrl;
@@ -832,6 +854,32 @@ public class OdeProperties implements EnvironmentAware {
 		this.kafkaTopicOdeRawEncodedSPATJson = kafkaTopicOdeRawEncodedSPATJson;
 	}
 	
-	
+	public String getKafkaTopicOdeRawEncodedMAPJson() {
+		return kafkaTopicOdeRawEncodedMAPJson;
+	}
+
+	public void setKafkaTopicOdeRawEncodedMAPJson(String kafkaTopicOdeRawEncodedMAPJson) {
+		this.kafkaTopicOdeRawEncodedMAPJson = kafkaTopicOdeRawEncodedMAPJson;
+	}
+
+
+	public String getKafkaTopicOdeMapTxPojo() {
+		return kafkaTopicOdeMapTxPojo;
+	}
+
+
+	public void setKafkaTopicOdeMapTxPojo(String kafkaTopicOdeMapTxPojo) {
+		this.kafkaTopicOdeMapTxPojo = kafkaTopicOdeMapTxPojo;
+	}
+
+
+	public String getKafkaTopicOdeMapJson() {
+		return kafkaTopicOdeMapJson;
+	}
+
+
+	public void setKafkaTopicOdeMapJson(String kafkaTopicOdeMapJson) {
+		this.kafkaTopicOdeMapJson = kafkaTopicOdeMapJson;
+	}
 	   
 }

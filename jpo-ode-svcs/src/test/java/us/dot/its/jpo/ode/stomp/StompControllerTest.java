@@ -26,12 +26,12 @@ import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
+//import mockit.integration.junit4.JMockit;
 import us.dot.its.jpo.ode.stomp.RegistrationMessage;
 import us.dot.its.jpo.ode.stomp.StompContent;
 import us.dot.its.jpo.ode.stomp.StompController;
 
-@RunWith(JMockit.class)
+//@RunWith(JMockit.class)
 public class StompControllerTest {
     
     @Tested
@@ -40,7 +40,7 @@ public class StompControllerTest {
     SimpMessagingTemplate template;
 
     @Test
-    public void testGreeting(@Mocked Thread unused, @Mocked RegistrationMessage mockRegistrationMessage) {
+    public void testGreeting(@Mocked RegistrationMessage mockRegistrationMessage) {
         try {
             testStompController.greeting(mockRegistrationMessage);
         } catch (InterruptedException e) {

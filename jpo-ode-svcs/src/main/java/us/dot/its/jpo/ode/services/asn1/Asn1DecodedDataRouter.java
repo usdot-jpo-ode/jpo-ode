@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
+import us.dot.its.jpo.ode.coder.OdeMapDataCreatorHelper;
 import us.dot.its.jpo.ode.coder.OdeSpatDataCreatorHelper;
 import us.dot.its.jpo.ode.coder.OdeSsmDataCreatorHelper;
 import us.dot.its.jpo.ode.context.AppContext;
@@ -42,6 +43,7 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 	private MessageProducer<String, OdeBsmData> bsmProducer;
 	private MessageProducer<String, String> timProducer;
 	private MessageProducer<String, String> spatProducer;
+	private MessageProducer<String, String> mapProducer;
 	private MessageProducer<String, String> ssmProducer;
 
 	public Asn1DecodedDataRouter(OdeProperties odeProps) {
@@ -52,6 +54,8 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 		this.timProducer = MessageProducer.defaultStringMessageProducer(odeProps.getKafkaBrokers(),
 				odeProps.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
 		this.spatProducer = MessageProducer.defaultStringMessageProducer(odeProps.getKafkaBrokers(),
+				odeProps.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
+		this.mapProducer = MessageProducer.defaultStringMessageProducer(odeProps.getKafkaBrokers(),
 				odeProps.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
 		this.ssmProducer = MessageProducer.defaultStringMessageProducer(odeProps.getKafkaBrokers(),
 				odeProps.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
@@ -80,6 +84,7 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 				}
 				// Send all BSMs also to OdeBsmPojo
 				bsmProducer.send(odeProperties.getKafkaTopicOdeBsmPojo(), getRecord().key(), odeBsmData);
+				logger.debug("Submitted to BSM Pojo topic");
 			} else if (messageId == J2735DSRCmsgID.TravelerInformation.getMsgID()) {
 				String odeTimData = TimTransmogrifier.createOdeTimData(consumed).toString();
 				if (recordType == RecordType.dnMsg) {
@@ -89,6 +94,7 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 				}
 				// Send all TIMs also to OdeTimJson
 				timProducer.send(odeProperties.getKafkaTopicOdeTimJson(), getRecord().key(), odeTimData);
+				logger.debug("Submitted to TIM Pojo topic");
 			} else if (messageId == J2735DSRCmsgID.SPATMessage.getMsgID()) {
 				String odeSpatData = OdeSpatDataCreatorHelper.createOdeSpatData(consumedData).toString();
 				if (recordType == RecordType.dnMsg) {
@@ -100,13 +106,23 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 				}
 				// Send all SPATs also to OdeSpatJson
 				spatProducer.send(odeProperties.getKafkaTopicOdeSpatJson(), getRecord().key(), odeSpatData);
+				logger.debug("Submitted to SPAT Pojo topic");
+			} else if (messageId == J2735DSRCmsgID.MAPMessage.getMsgID()) {
+				String odeMapData = OdeMapDataCreatorHelper.createOdeMapData(consumedData).toString();
+				if (recordType == RecordType.spatTx) {
+					mapProducer.send(odeProperties.getKafkaTopicOdeMapTxPojo(), getRecord().key(), odeMapData);
+				}
+				// Send all Map also to OdeMapJson
+				mapProducer.send(odeProperties.getKafkaTopicOdeMapJson(), getRecord().key(), odeMapData);
+				logger.debug("Submitted to MAP Pojo topic");
 			} else if (messageId == J2735DSRCmsgID.SSMMessage.getMsgID()) {
 				String odeSsmData = OdeSsmDataCreatorHelper.createOdeSsmData(consumedData).toString();
-				// if (recordType == RecordType.ssmTx) {
-				// 	ssmProducer.send(odeProperties.getKafkaTopicOdeSsmPojo(), getRecord().key(), odeSsmData);
-				// }
+				if (recordType == RecordType.ssmTx) {
+					ssmProducer.send(odeProperties.getKafkaTopicOdeSsmPojo(), getRecord().key(), odeSsmData);
+				}
 				// Send all SSMs also to OdeSsmJson
 				ssmProducer.send(odeProperties.getKafkaTopicOdeSsmJson(), getRecord().key(), odeSsmData);
+				logger.debug("Submitted to SSM Pojo topic");
 			}
 		} catch (Exception e) {
 			logger.error("Failed to route received data: " + consumedData, e);
