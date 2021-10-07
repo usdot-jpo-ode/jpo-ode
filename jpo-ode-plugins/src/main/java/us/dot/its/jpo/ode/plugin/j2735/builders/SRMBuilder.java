@@ -28,7 +28,7 @@ public class SRMBuilder {
         JsonNode sequenceNumber = SRMMessage.get("sequenceNumber");
 		if(sequenceNumber != null)
 		{
-			genericSRM.setSecond(sequenceNumber.asInt());
+			genericSRM.setSequenceNumber(sequenceNumber.asInt());
 		}
 		
 		JsonNode requests = SRMMessage.get("requests");

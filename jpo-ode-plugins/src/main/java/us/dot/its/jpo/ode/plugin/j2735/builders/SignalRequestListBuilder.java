@@ -22,7 +22,7 @@ public class SignalRequestListBuilder {
                     .add(SignalRequestPackageBuilder.genericSignalRequestPackage(elements.next()));
 			}
 		} else {
-			JsonNode signalRequest = requests.get("SignalRequest");
+			JsonNode signalRequest = requests.get("SignalRequestPackage");
 			if(signalRequest != null)
 			{
 				signalRequestList.getRequests()

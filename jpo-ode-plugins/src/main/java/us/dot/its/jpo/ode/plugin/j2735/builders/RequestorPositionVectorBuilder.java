@@ -31,7 +31,7 @@ public class RequestorPositionVectorBuilder {
 			
 			if(position.get("elevation") != null)
 			{
-				positionObj.setLat(position.get("elevation").asInt());
+				positionObj.setElevation(position.get("elevation").asInt());
 			}
 
 			requestorPositionVector.setPosition(positionObj);
