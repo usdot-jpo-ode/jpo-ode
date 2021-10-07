@@ -13,7 +13,7 @@ import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 public class SRMBuilderTest {
     @Test
-	public void shouldTranslateMap() {
+	public void shouldTranslateSrm() {
 
 		JsonNode jsonMap = null;
 		try {
