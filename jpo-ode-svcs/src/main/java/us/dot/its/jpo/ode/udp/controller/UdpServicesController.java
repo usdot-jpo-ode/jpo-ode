@@ -11,6 +11,7 @@ import us.dot.its.jpo.ode.udp.tim.TimReceiver;
 import us.dot.its.jpo.ode.udp.ssm.SsmReceiver;
 import us.dot.its.jpo.ode.udp.srm.SrmReceiver;
 import us.dot.its.jpo.ode.udp.spat.SpatReceiver;
+import us.dot.its.jpo.ode.udp.map.MapReceiver;
 
 /**
  * Centralized UDP service dispatcher.
@@ -40,10 +41,13 @@ public class UdpServicesController {
       rm.submit(new SsmReceiver(odeProps));
       
       // SRM internal port
-      //rm.submit(new SrmReceiver(odeProps));
+      rm.submit(new SrmReceiver(odeProps));
 
       // SPAT internal port
       rm.submit(new SpatReceiver(odeProps));
+
+      // MAP internal port
+      rm.submit(new MapReceiver(odeProps));
 
       logger.debug("UDP receiver services started.");
    }
