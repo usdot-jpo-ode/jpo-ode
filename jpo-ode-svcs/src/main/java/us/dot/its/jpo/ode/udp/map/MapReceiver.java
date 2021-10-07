@@ -91,7 +91,7 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
                     logger.debug("Publishing JSON MAP...");
 
                     this.mapPublisher.publish(jsonObject.toString(),
-                            this.mapPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
+                            this.mapPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedMAPJson());
                 }
             } catch (Exception e) {
                 logger.error("Error receiving packet", e);
