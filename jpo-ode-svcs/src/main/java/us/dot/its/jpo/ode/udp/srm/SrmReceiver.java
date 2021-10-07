@@ -74,6 +74,7 @@ public class SrmReceiver extends AbstractUdpReceiverPublisher {
                JSONObject metadataObject = new JSONObject();
                metadataObject.put("utctimestamp", timestamp);
                metadataObject.put("originRsu", senderIp);
+               metadataObject.put("source", "RSU");
 
                JSONObject messageObject = new JSONObject();
                messageObject.put("metadata", metadataObject);
@@ -90,7 +91,7 @@ public class SrmReceiver extends AbstractUdpReceiverPublisher {
                // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
                logger.debug("Publishing JSON SRM...");
 
-               //this.srmPublisher.publish(jsonObject.toString(), this.srmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSRMJson());
+               this.srmPublisher.publish(jsonObject.toString(), this.srmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSRMJson());
             }
          } catch (Exception e) {
             logger.error("Error receiving packet", e);

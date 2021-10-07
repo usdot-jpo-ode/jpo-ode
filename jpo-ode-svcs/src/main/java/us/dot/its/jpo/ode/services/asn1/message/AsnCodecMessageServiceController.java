@@ -49,6 +49,15 @@ public class AsnCodecMessageServiceController {
 		asn1RawSSMJSONConsumer.setName("asn1DecodeSSMJSON");
 		asn1DecodeSSMJSON.start(asn1RawSSMJSONConsumer, odeProps.getKafkaTopicOdeRawEncodedSSMJson());
 
+		// SRM
+		logger.info("Send encoded SRM to ASN.1 Decoder");
+		Asn1DecodeSRMJSON asn1DecodeSRMJSON = new Asn1DecodeSRMJSON(odeProps);
+
+		MessageConsumer<String, String> asn1RawSRMJSONConsumer = MessageConsumer.defaultStringMessageConsumer(
+				odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), asn1DecodeSRMJSON);
+		asn1RawSRMJSONConsumer.setName("asn1DecodeSRMJSON");
+		asn1DecodeSRMJSON.start(asn1RawSRMJSONConsumer, odeProps.getKafkaTopicOdeRawEncodedSRMJson());
+
 		// TIM
 		logger.info("Send encoded TIM to ASN.1 Decoder");
 		Asn1DecodeTIMJSON asn1DecodeTIMJSON = new Asn1DecodeTIMJSON(odeProps);
