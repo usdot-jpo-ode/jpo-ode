@@ -13,6 +13,10 @@ public class OdeSsmMetadata extends OdeLogMetadata {
         super(payload);
     }
 
+    public OdeSsmMetadata() {
+        super();
+    }
+
     public String getOriginIp() {
         return originIp;
     }
