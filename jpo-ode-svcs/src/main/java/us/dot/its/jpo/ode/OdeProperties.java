@@ -171,7 +171,7 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeMapTxPojo = "topic.OdeMapTxPojo";
    private String kafkaTopicOdeMapJson = "topic.OdeMapJson";
    private int mapReceiverPort = 44920;
-   private int mapBufferSize = 500;
+   private int mapBufferSize = 2048;
    
 // DriverAlerts
    private String kafkaTopicDriverAlertJson = "topic.OdeDriverAlertJson";
