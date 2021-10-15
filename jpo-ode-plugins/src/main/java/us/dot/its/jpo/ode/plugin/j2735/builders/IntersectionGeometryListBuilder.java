@@ -12,17 +12,19 @@ public class IntersectionGeometryListBuilder {
 	}
 
 	public static J2735IntersectionGeometryList genericIntersectionGeometryList(JsonNode intersections) {
-		
 		J2735IntersectionGeometryList genericIntersectionGeometryList = new J2735IntersectionGeometryList();
-		if (intersections.isArray()) {
-			Iterator<JsonNode> elements = intersections.elements();
+		
+		JsonNode intersectionGeometry = intersections.get("IntersectionGeometry");
+		if (intersectionGeometry != null && intersectionGeometry.isArray()) {
+			Iterator<JsonNode> elements = intersectionGeometry.elements();
+
 			while (elements.hasNext()) {
 				genericIntersectionGeometryList.getIntersections()
-						.add(IntersectionGeometryBuilder.genericIntersectionGeometry(elements.next().get("IntersectionGeometry")));
+					.add(IntersectionGeometryBuilder.genericIntersectionGeometry(elements.next()));
 			}
-		} else {
+		} else if (intersectionGeometry != null) {
 			genericIntersectionGeometryList.getIntersections()
-					.add(IntersectionGeometryBuilder.genericIntersectionGeometry(intersections.get("IntersectionGeometry")));
+				.add(IntersectionGeometryBuilder.genericIntersectionGeometry(intersectionGeometry));
 
 		}
 		return genericIntersectionGeometryList;
