@@ -14,25 +14,19 @@ public class LaneSetBuilder {
 	public static J2735LaneList genericLaneSet(JsonNode laneSetNode) {
 		J2735LaneList laneList = new J2735LaneList();
 
-		System.out.println(laneSetNode.toString());
-
-		if (laneSetNode.get("GenericLane").isArray()) {
-			Iterator<JsonNode> elements = laneSetNode.get("GenericLane").elements();
+		JsonNode genericLane = laneSetNode.get("GenericLane");
+		if (genericLane != null && genericLane.isArray()) {
+			Iterator<JsonNode> elements = genericLane.elements();
 
 			while (elements.hasNext()) {
-				System.out.println("Trying to make GenericLane from a list");
 				laneList.getLaneSet()
                     .add(GenericLaneBuilder.genericGenericLane(elements.next()));
 			}
-		} else {
-			JsonNode genericLane = laneSetNode.get("GenericLane");
-			if(genericLane != null)
-			{
-				System.out.println("Trying to make GenericLane from a non-list");
-				laneList.getLaneSet()
-                	.add(GenericLaneBuilder.genericGenericLane(genericLane));
-			}
+		} else if (genericLane != null) {
+			laneList.getLaneSet()
+				.add(GenericLaneBuilder.genericGenericLane(genericLane));
 		}
+
 		return laneList;
 	}
 }
