@@ -113,8 +113,7 @@ public class GenericLaneBuilder {
 
 		JsonNode connectsTo = laneSetNode.get("connectsTo");
 		if (connectsTo != null) {
-			// TODO
-//			genericLane.setConnectsTo(ConnectsToListBuilder.genericConnectsToList(connectsTo));
+			genericLane.setConnectsTo(ConnectsToListBuilder.genericConnectsToList(connectsTo));
 		}
 
 		JsonNode overlays = laneSetNode.get("overlays");
