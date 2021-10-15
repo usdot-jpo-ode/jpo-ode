@@ -12,7 +12,7 @@ public class J2735GenericLane extends Asn1Object {
 	private Integer ingressApproach;
 	private Integer egressApproach;
 	private J2735LaneAttributes laneAttributes;
-	private J2735AllowedManeuvers maneuvers;
+	private J2735BitString maneuvers;
 	private J2735NodeListXY nodeList;
 	private J2735ConnectsToList connectsTo;
 	private J2735OverlayLaneList overlays;
@@ -57,11 +57,11 @@ public class J2735GenericLane extends Asn1Object {
 		this.laneAttributes = laneAttributes;
 	}
 
-	public J2735AllowedManeuvers getManeuvers() {
+	public J2735BitString getManeuvers() {
 		return maneuvers;
 	}
 
-	public void setManeuvers(J2735AllowedManeuvers maneuvers) {
+	public void setManeuvers(J2735BitString maneuvers) {
 		this.maneuvers = maneuvers;
 	}
 

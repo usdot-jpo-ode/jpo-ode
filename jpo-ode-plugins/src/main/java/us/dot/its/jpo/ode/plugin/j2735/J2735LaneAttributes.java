@@ -8,23 +8,23 @@ public class J2735LaneAttributes extends Asn1Object {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private J2735LaneDirection directionalUse;
-	private J2735LaneSharing shareWith;
+	private J2735BitString directionalUse;
+	private J2735BitString shareWith;
 	private J2735LaneTypeAttributes laneType;
 
-	public J2735LaneDirection getDirectionalUse() {
+	public J2735BitString getDirectionalUse() {
 		return directionalUse;
 	}
 
-	public void setDirectionalUse(J2735LaneDirection directionalUse) {
+	public void setDirectionalUse(J2735BitString directionalUse) {
 		this.directionalUse = directionalUse;
 	}
 
-	public J2735LaneSharing getShareWith() {
+	public J2735BitString getShareWith() {
 		return shareWith;
 	}
 
-	public void setShareWith(J2735LaneSharing shareWith) {
+	public void setShareWith(J2735BitString shareWith) {
 		this.shareWith = shareWith;
 	}
 
