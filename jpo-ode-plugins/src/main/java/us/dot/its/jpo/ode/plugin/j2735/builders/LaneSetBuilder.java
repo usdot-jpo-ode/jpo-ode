@@ -13,16 +13,21 @@ public class LaneSetBuilder {
 	
 	public static J2735LaneList genericLaneSet(JsonNode laneSetNode) {
 		J2735LaneList laneList = new J2735LaneList();
+
 		if (laneSetNode.isArray()) {
 			Iterator<JsonNode> elements = laneSetNode.elements();
+
 			while (elements.hasNext()) {
 				laneList.getLaneSet()
-						.add(GenericLaneBuilder.genericGenericLane(elements.next().get("GenericLane")));
+                    .add(GenericLaneBuilder.genericGenericLane(elements.next()));
 			}
 		} else {
-			laneList.getLaneSet()
-					.add(GenericLaneBuilder.genericGenericLane(laneSetNode.get("GenericLane")));
-
+			JsonNode genericLane = laneSetNode.get("GenericLane");
+			if(genericLane != null)
+			{
+				laneList.getLaneSet()
+                	.add(GenericLaneBuilder.genericGenericLane(genericLane));
+			}
 		}
 		return laneList;
 	}
