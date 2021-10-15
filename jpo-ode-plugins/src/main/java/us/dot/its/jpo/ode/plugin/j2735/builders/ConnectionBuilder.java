@@ -51,17 +51,17 @@ public class ConnectionBuilder {
             connection.setRemoteIntersection(intersectionReferenceIDObj);
 		}
 
-        JsonNode signalGroupNode = remoteIntersectionNode.get("signalGroup");
+        JsonNode signalGroupNode = connectionNode.get("signalGroup");
         if (signalGroupNode != null) {
             connection.setSignalGroup(signalGroupNode.asInt());
         }
 
-        JsonNode userClassNode = remoteIntersectionNode.get("userClass");
+        JsonNode userClassNode = connectionNode.get("userClass");
         if (userClassNode != null) {
             connection.setUserClass(userClassNode.asInt());
         }
 
-        JsonNode connectionIDNode = remoteIntersectionNode.get("connectionID");
+        JsonNode connectionIDNode = connectionNode.get("connectionID");
         if (connectionIDNode != null) {
             connection.setConnectionID(connectionIDNode.asInt());
         }
