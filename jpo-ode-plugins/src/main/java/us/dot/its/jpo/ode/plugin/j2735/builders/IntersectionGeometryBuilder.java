@@ -62,7 +62,6 @@ public class IntersectionGeometryBuilder {
 			intersection.setRefPoint(refPointObj);
 		}
 		
-		
 		JsonNode laneWidth = intersectionNode.get("laneWidth");
 		if (laneWidth != null) {
 			intersection.setLaneWidth(laneWidth.asInt());
@@ -70,17 +69,13 @@ public class IntersectionGeometryBuilder {
 		
 		JsonNode speedLimits = intersectionNode.get("speedLimits");
 		if (speedLimits != null) {
-			//TODO
-//			intersection.setSpeedLimits(SpeedLimitListBuilder.genericSpeedLimitList(speedLimits));			
+			intersection.setSpeedLimits(SpeedLimitListBuilder.genericSpeedLimitList(speedLimits));			
 		}
 		
 		JsonNode laneSet = intersectionNode.get("laneSet");
 		if (laneSet != null) {
 			intersection.setLaneSet(LaneSetBuilder.genericLaneSet(laneSet));			
 		}
-		
-		//TODO preemptionPriorityData
-		
 		
 		return intersection;
 	}

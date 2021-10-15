@@ -12,17 +12,19 @@ public class SpeedLimitListBuilder {
 	}
 
     public static J2735SpeedLimitList genericSpeedLimitList(JsonNode speedLimits) {
-		
 		J2735SpeedLimitList genericSpeedLimitList = new J2735SpeedLimitList();
-		if (speedLimits.isArray()) {
-			Iterator<JsonNode> elements = speedLimits.elements();
+
+		JsonNode regulatorySpeedLimit = speedLimits.get("RegulatorySpeedLimit");
+		if (regulatorySpeedLimit != null && regulatorySpeedLimit.isArray()) {
+			Iterator<JsonNode> elements = regulatorySpeedLimit.elements();
+
 			while (elements.hasNext()) {
 				genericSpeedLimitList.getSpeedLimits()
-						.add(RegulatorySpeedLimitBuilder.genericRegulatorySpeedLimit(elements.next().get("RegulatorySpeedLimit")));
+					.add(RegulatorySpeedLimitBuilder.genericRegulatorySpeedLimit(elements.next()));
 			}
-		} else {
+		} else if (regulatorySpeedLimit != null) {
 			genericSpeedLimitList.getSpeedLimits()
-					.add(RegulatorySpeedLimitBuilder.genericRegulatorySpeedLimit(speedLimits.get("RegulatorySpeedLimit")));
+				.add(RegulatorySpeedLimitBuilder.genericRegulatorySpeedLimit(regulatorySpeedLimit));
 
 		}
 		return genericSpeedLimitList;

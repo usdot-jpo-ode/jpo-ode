@@ -2,8 +2,6 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.util.Iterator;
 
-import org.json.JSONObject;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735AllowedManeuvers;
@@ -126,7 +124,6 @@ public class GenericLaneBuilder {
 				}
 			} else {
 				overlayList.getLaneIds().add(overlays.asInt());
-
 			}
 		}
 

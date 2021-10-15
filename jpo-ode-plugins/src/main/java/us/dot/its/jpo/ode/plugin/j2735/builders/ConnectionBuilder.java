@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735Connection;
+import us.dot.its.jpo.ode.plugin.j2735.J2735IntersectionReferenceID;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ConnectingLane;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BitString;
 import us.dot.its.jpo.ode.plugin.j2735.J2735AllowedManeuvers;
@@ -32,6 +33,38 @@ public class ConnectionBuilder {
 
             connection.setConnectingLane(connectingLaneObj);
 		}
+
+        JsonNode remoteIntersectionNode = connectionNode.get("remoteIntersection");
+		if (remoteIntersectionNode != null) {
+            J2735IntersectionReferenceID intersectionReferenceIDObj = new J2735IntersectionReferenceID();
+
+            JsonNode region = remoteIntersectionNode.get("region");
+		    if (region != null) {
+                intersectionReferenceIDObj.setRegion(region.asInt());
+            }
+
+            JsonNode id = remoteIntersectionNode.get("id");
+		    if (id != null) {
+                intersectionReferenceIDObj.setRegion(id.asInt());
+            }
+
+            connection.setRemoteIntersection(intersectionReferenceIDObj);
+		}
+
+        JsonNode signalGroupNode = remoteIntersectionNode.get("signalGroup");
+        if (signalGroupNode != null) {
+            connection.setSignalGroup(signalGroupNode.asInt());
+        }
+
+        JsonNode userClassNode = remoteIntersectionNode.get("userClass");
+        if (userClassNode != null) {
+            connection.setUserClass(userClassNode.asInt());
+        }
+
+        JsonNode connectionIDNode = remoteIntersectionNode.get("connectionID");
+        if (connectionIDNode != null) {
+            connection.setConnectionID(connectionIDNode.asInt());
+        }
  
         return connection;
     }
