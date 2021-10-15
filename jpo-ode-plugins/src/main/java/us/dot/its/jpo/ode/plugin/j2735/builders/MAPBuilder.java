@@ -94,8 +94,8 @@ public class MAPBuilder {
 
 		JsonNode restrictionList = MAPMessage.get("restrictionList");
 		if (restrictionList != null) {
-//			genericMAP.setJ2735RestrictionClassList(
-//					J2735RestrictionClassListBuilder.genericJ2735RestrictionClassList(restrictionList));
+			genericMAP.setRestrictionList(
+					RestrictionClassListBuilder.genericRestrictionClassList(restrictionList));
 		}
 		return genericMAP;
 	}
