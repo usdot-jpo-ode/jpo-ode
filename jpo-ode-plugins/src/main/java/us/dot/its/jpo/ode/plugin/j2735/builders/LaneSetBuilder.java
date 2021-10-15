@@ -16,13 +16,13 @@ public class LaneSetBuilder {
 
 		System.out.println(laneSetNode.toString());
 
-		if (laneSetNode.isArray()) {
-			Iterator<JsonNode> elements = laneSetNode.elements();
+		if (laneSetNode.get("GenericLane").isArray()) {
+			Iterator<JsonNode> elements = laneSetNode.get("GenericLane").elements();
 
 			while (elements.hasNext()) {
 				System.out.println("Trying to make GenericLane from a list");
 				laneList.getLaneSet()
-                    .add(GenericLaneBuilder.genericGenericLane(elements.next().get("GenericLane")));
+                    .add(GenericLaneBuilder.genericGenericLane(elements.next()));
 			}
 		} else {
 			JsonNode genericLane = laneSetNode.get("GenericLane");
