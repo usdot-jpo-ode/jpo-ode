@@ -8,7 +8,7 @@ public class J2735ConnectingLane extends Asn1Object {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Integer lane;
-	private J2735AllowedManeuvers maneuver;
+	private J2735BitString maneuver;
 
 	public Integer getLane() {
 		return lane;
@@ -18,11 +18,11 @@ public class J2735ConnectingLane extends Asn1Object {
 		this.lane = lane;
 	}
 
-	public J2735AllowedManeuvers getManeuver() {
+	public J2735BitString getManeuver() {
 		return maneuver;
 	}
 
-	public void setManeuver(J2735AllowedManeuvers maneuver) {
+	public void setManeuver(J2735BitString maneuver) {
 		this.maneuver = maneuver;
 	}
 

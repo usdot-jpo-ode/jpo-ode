@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735LayerType;
 import us.dot.its.jpo.ode.plugin.j2735.J2735MAP;
+import us.dot.its.jpo.ode.plugin.j2735.J2735DataParameters;
 
 public class MAPBuilder {
 	private MAPBuilder() {
@@ -59,23 +60,42 @@ public class MAPBuilder {
 			genericMAP.setIntersections(IntersectionGeometryListBuilder.genericIntersectionGeometryList(intersections));
 		}
 		
-		//TODO: Not in use currently
 		JsonNode roadSegments = MAPMessage.get("roadSegments");
 		if (roadSegments != null) {
-			//genericMAP.setJ2735RoadSegmentList(J2735RoadSegmentListBuilder.genericJ2735RoadSegmentList(roadSegments));
+			genericMAP.setRoadSegments(RoadSegmentListBuilder.genericRoadSegmentList(roadSegments));
 		}
 		
-		//TODO: Not in use currently
 		JsonNode dataParameters = MAPMessage.get("dataParameters");
 		if (dataParameters != null) {
-			//genericMAP.setJ2735DataParameters(J2735DataParametersBuilder.genericJ2735DataParameters(dataParameters));
+			J2735DataParameters dataParametersObj = new J2735DataParameters();
+
+			JsonNode processMethod = dataParameters.get("processMethod");
+			if (processMethod != null) {
+				dataParametersObj.setProcessMethod(processMethod.asText());
+			}
+
+			JsonNode processAgency = dataParameters.get("processAgency");
+			if (processAgency != null) {
+				dataParametersObj.setProcessAgency(processAgency.asText());
+			}
+
+			JsonNode lastCheckedDate = dataParameters.get("lastCheckedDate");
+			if (lastCheckedDate != null) {
+				dataParametersObj.setLastCheckedDate(lastCheckedDate.asText());
+			}
+
+			JsonNode geoidUsed = dataParameters.get("geoidUsed");
+			if (geoidUsed != null) {
+				dataParametersObj.setGeoidUsed(geoidUsed.asText());
+			}
+
+			genericMAP.setDataParameters(dataParametersObj);
 		}
 
-		//TODO: Not in use currently
 		JsonNode restrictionList = MAPMessage.get("restrictionList");
 		if (restrictionList != null) {
-//			genericMAP.setJ2735RestrictionClassList(
-//					J2735RestrictionClassListBuilder.genericJ2735RestrictionClassList(restrictionList));
+			genericMAP.setRestrictionList(
+					RestrictionClassListBuilder.genericRestrictionClassList(restrictionList));
 		}
 		return genericMAP;
 	}

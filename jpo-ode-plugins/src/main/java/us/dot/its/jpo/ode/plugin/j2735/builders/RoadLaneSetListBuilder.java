@@ -4,29 +4,29 @@ import java.util.Iterator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import us.dot.its.jpo.ode.plugin.j2735.J2735LaneList;
+import us.dot.its.jpo.ode.plugin.j2735.J2735RoadLaneSetList;
 
-public class LaneSetBuilder {
-	private LaneSetBuilder() {
+public class RoadLaneSetListBuilder {
+    private RoadLaneSetListBuilder() {
 		throw new UnsupportedOperationException();
 	}
 	
-	public static J2735LaneList genericLaneSet(JsonNode laneSetNode) {
-		J2735LaneList laneList = new J2735LaneList();
+	public static J2735RoadLaneSetList genericRoadLaneSetList(JsonNode roadLaneSetNode) {
+		J2735RoadLaneSetList roadLaneSetList = new J2735RoadLaneSetList();
 
-		JsonNode genericLane = laneSetNode.get("GenericLane");
+		JsonNode genericLane = roadLaneSetNode.get("GenericLane");
 		if (genericLane != null && genericLane.isArray()) {
 			Iterator<JsonNode> elements = genericLane.elements();
 
 			while (elements.hasNext()) {
-				laneList.getLaneSet()
+				roadLaneSetList.getRoadLanes()
                     .add(GenericLaneBuilder.genericGenericLane(elements.next()));
 			}
 		} else if (genericLane != null) {
-			laneList.getLaneSet()
+			roadLaneSetList.getRoadLanes()
 				.add(GenericLaneBuilder.genericGenericLane(genericLane));
 		}
 
-		return laneList;
+		return roadLaneSetList;
 	}
 }
