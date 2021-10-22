@@ -1,0 +1,123 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.resources.services.zookeeper }} 
+  labels:
+    app: jpoode-zookeeper
+spec:
+  ports:
+  - port: 2181
+    name: ode-zookeeper-client
+  - port: 2888
+    name: ode-zookeeper-server 
+  - port: 3888
+    name: ode-zookeeper-leader-election
+  clusterIP: None 
+  selector:
+    app: jpoode-zookeeper
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata: 
+  name: ode-zookeeper-pdb
+spec:
+  selector:
+    matchLabels:
+      app: jpoode-zookeeper 
+  maxUnavailable: 1
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: 
+  name: jpoode-zookeeper
+spec:
+  selector:
+    matchLabels:
+      app: jpoode-zookeeper
+  serviceName: {{ .Values.resources.services.zookeeper }} 
+  replicas: {{ .Values.replicas.jpoode_zookeeper }}
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: jpoode-zookeeper
+    spec:
+      # assign pods to nodes
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                    - jpoode-zookeeper
+              topologyKey: "kubernetes.io/region"
+      containers:
+      - name: kubernetes-zookeeper
+        imagePullPolicy: Always
+        image: confluentinc/cp-zookeeper:6.2.0
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "0.5"
+        tty: true
+        stdin: true
+        ports:
+          - containerPort: 2181
+            name: ode-zk-client
+          - containerPort: 2888
+            name: ode-zk-server
+          - containerPort: 3888
+            name: ode-zk-election
+        env:
+          - name: ZOOKEEPER_CLIENT_PORT
+            value: "2181"
+          - name: ZOOKEEPER_TICK_TIME
+            value: "2000"
+          - name : ZOOKEEPER_SYNC_LIMIT
+            value: "5"
+          - name : ZOOKEEPER_INIT_LIMIT
+            value: "10"
+          - name : ZOOKEEPER_MAX_CLIENT_CNXNS
+            value: "60"
+          - name : ZOOKEEPER_AUTOPURGE_SNAP_RETAIN_COUNT
+            value: "3"
+          - name : ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL
+            value: "24"
+          - name: ZOOKEEPER_DATA_DIR
+            value: "/var/lib/zookeeper/data"
+          - name: ZOOKEEPER_DATA_LOG_DIR
+            value: "/var/lib/zookeeper/data/log"
+          - name: ZOOKEEPER_ELECTION_PORT
+            value: "3888"
+          - name: ZOOKEEPER_SERVER_PORT
+            value: "2888"
+          - name: ZOOKEEPER_HEAP
+            value: "512M"
+          - name: ZOOKEEPER_LOG_LEVEL
+            value: "INFO"
+          - name: ZOOKEEPER_CONF_DIR
+            value: "/opt/zookeeper/conf"
+        command:
+          - /bin/bash
+          - -c
+          - export ZOOKEEPER_SERVER_ID=$((${HOSTNAME##*-}+1)) && /etc/confluent/docker/run
+        volumeMounts:
+        - name: datadir
+          mountPath: /var/lib/zookeeper
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+---
