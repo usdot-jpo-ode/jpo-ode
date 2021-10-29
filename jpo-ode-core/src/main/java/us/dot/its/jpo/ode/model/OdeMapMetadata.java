@@ -12,6 +12,7 @@ public class OdeMapMetadata extends OdeLogMetadata {
 	}
 
 	private MapSource mapSource;
+	private String originIp;
 
 	public MapSource getMapSource() {
 		return mapSource;
@@ -32,5 +33,11 @@ public class OdeMapMetadata extends OdeLogMetadata {
 		this.mapSource = mapSource;
 	}
 	
-
+	public String getOriginIp() {
+		return originIp;
+    }
+ 
+    public void setOriginIp(String originIp) {
+		this.originIp = originIp;
+    }
 }

@@ -10,7 +10,6 @@ public class J2735ConnectionTest {
 	public void testGettersSetters() {
 		J2735ConnectingLane connectionLane = new J2735ConnectingLane();
 		connectionLane.setLane(0);
-		connectionLane.setManeuver(J2735AllowedManeuvers.caution);
 		
 		J2735Connection connection = new J2735Connection();
 		connection.setConnectingLane(connectionLane);

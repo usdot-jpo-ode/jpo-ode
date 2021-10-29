@@ -8,6 +8,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735NodeLLmD64b;
 import us.dot.its.jpo.ode.plugin.j2735.J2735NodeOffsetPointXY;
 import us.dot.its.jpo.ode.plugin.j2735.J2735NodeXY;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Node_XY;
+import us.dot.its.jpo.ode.plugin.j2735.J2735NodeAttributeSetXY;
 
 
 public class NodeBuilder {
@@ -70,7 +71,17 @@ public class NodeBuilder {
 		}
 
 		if (NodeJson.get("attributes") != null) {
-			//TODO			
+			J2735NodeAttributeSetXY attributeSetXY = new J2735NodeAttributeSetXY();
+			JsonNode attributes = NodeJson.get("attributes");
+
+			// TODO: finish attributes with all of the lists
+
+			if(attributes.get("dElevation") != null)
+			{
+				attributeSetXY.setdElevation(attributes.get("dElevation").asInt());
+			}
+
+			nodeXY.setAttributes(attributeSetXY);
 		}
 		return nodeXY;
 	}

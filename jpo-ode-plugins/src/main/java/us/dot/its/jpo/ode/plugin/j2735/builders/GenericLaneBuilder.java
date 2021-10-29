@@ -2,8 +2,6 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.util.Iterator;
 
-import org.json.JSONObject;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735AllowedManeuvers;
@@ -21,6 +19,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735LaneDirection;
 import us.dot.its.jpo.ode.plugin.j2735.J2735LaneSharing;
 import us.dot.its.jpo.ode.plugin.j2735.J2735LaneTypeAttributes;
 import us.dot.its.jpo.ode.plugin.j2735.J2735OverlayLaneList;
+import us.dot.its.jpo.ode.plugin.j2735.J2735BitString;
 
 public class GenericLaneBuilder {
 
@@ -51,251 +50,58 @@ public class GenericLaneBuilder {
 		if (laneAttributes != null) {
 			J2735LaneAttributes laneAttributesObj = new J2735LaneAttributes();
 
-			if (laneAttributes.get("directionalUse") != null) {
-				Integer directionalUse = laneAttributes.get("directionalUse").asInt();
-				if (directionalUse.equals(J2735LaneDirection.egressPath.getDirectUseId())) {
-					laneAttributesObj.setDirectionalUse(J2735LaneDirection.egressPath);
-				} else if (directionalUse.equals(J2735LaneDirection.ingressPath.getDirectUseId())) {
-					laneAttributesObj.setDirectionalUse(J2735LaneDirection.ingressPath);
-				}
+			JsonNode directionalUse = laneAttributes.get("directionalUse");
+			if (directionalUse != null) {
+				J2735BitString directionalUseObj = BitStringBuilder.genericBitString(directionalUse, J2735LaneDirection.values());
+            	laneAttributesObj.setDirectionalUse(directionalUseObj);
 			}
 
-			if (laneAttributes.get("sharedWith") != null) {
-				Integer shareWith = laneAttributes.get("sharedWith").asInt();
-				if (shareWith == J2735LaneSharing.overlappingLaneDescriptionProvided.getLaneSharingID()) {
-					laneAttributesObj.setShareWith(J2735LaneSharing.overlappingLaneDescriptionProvided);
-				} else if (shareWith == J2735LaneSharing.multipleLanesTreatedAsOneLane.getLaneSharingID()) {
-					laneAttributesObj.setShareWith(J2735LaneSharing.multipleLanesTreatedAsOneLane);
-				} else if (shareWith == J2735LaneSharing.otherNonMotorizedTrafficTypes.getLaneSharingID()) {
-					laneAttributesObj.setShareWith(J2735LaneSharing.otherNonMotorizedTrafficTypes);
-				} else if (shareWith == J2735LaneSharing.individualMotorizedVehicleTraffic.getLaneSharingID()) {
-					laneAttributesObj.setShareWith(J2735LaneSharing.individualMotorizedVehicleTraffic);
-				} else if (shareWith == J2735LaneSharing.busVehicleTraffic.getLaneSharingID()) {
-					laneAttributesObj.setShareWith(J2735LaneSharing.busVehicleTraffic);
-				} else if (shareWith == J2735LaneSharing.pedestriansTraffic.getLaneSharingID()) {
-					laneAttributesObj.setShareWith(J2735LaneSharing.pedestriansTraffic);
-				} else if (shareWith == J2735LaneSharing.taxiVehicleTraffic.getLaneSharingID()) {
-					laneAttributesObj.setShareWith(J2735LaneSharing.taxiVehicleTraffic);
-				} else if (shareWith == J2735LaneSharing.pedestriansTraffic.getLaneSharingID()) {
-					laneAttributesObj.setShareWith(J2735LaneSharing.pedestrianTraffic);
-				} else if (shareWith == J2735LaneSharing.taxiVehicleTraffic.getLaneSharingID()) {
-					laneAttributesObj.setShareWith(J2735LaneSharing.trackedVehicleTraffic);
-				} else if (shareWith == J2735LaneSharing.pedestriansTraffic.getLaneSharingID()) {
-					laneAttributesObj.setShareWith(J2735LaneSharing.cyclistVehicleTraffic);
-				}
+			JsonNode sharedWith = laneAttributes.get("sharedWith");
+			if (sharedWith != null) {
+				J2735BitString sharedWithObj = BitStringBuilder.genericBitString(sharedWith, J2735LaneSharing.values());
+            	laneAttributesObj.setShareWith(sharedWithObj);
 			}
 
-			if (laneAttributes.get("laneType") != null) {
-				JsonNode laneType = laneAttributes.get("laneType");
+			JsonNode laneType = laneAttributes.get("laneType");
+			if (laneType != null) {
 				J2735LaneTypeAttributes laneTypeObj = new J2735LaneTypeAttributes();
+
 				if (laneType.get("vehicle") != null) {
-					Integer vehicleKey = laneType.get("vehicle").asInt();
-					if (vehicleKey == J2735LaneAttributesVehicle.isVehicleRevocableLane.getLaneAttrvehicleID()) {
-						laneTypeObj.setVehicle(J2735LaneAttributesVehicle.isVehicleRevocableLane);
-					} else if (vehicleKey == J2735LaneAttributesVehicle.isVehicleFlyOverLane.getLaneAttrvehicleID()) {
-						laneTypeObj.setVehicle(J2735LaneAttributesVehicle.isVehicleFlyOverLane);
-					} else if (vehicleKey == J2735LaneAttributesVehicle.hovLaneUseOnly.getLaneAttrvehicleID()) {
-						laneTypeObj.setVehicle(J2735LaneAttributesVehicle.hovLaneUseOnly);
-					} else if (vehicleKey == J2735LaneAttributesVehicle.restrictedToBusUse.getLaneAttrvehicleID()) {
-						laneTypeObj.setVehicle(J2735LaneAttributesVehicle.restrictedToBusUse);
-					} else if (vehicleKey == J2735LaneAttributesVehicle.restrictedToTaxiUse.getLaneAttrvehicleID()) {
-						laneTypeObj.setVehicle(J2735LaneAttributesVehicle.restrictedToTaxiUse);
-					} else if (vehicleKey == J2735LaneAttributesVehicle.restrictedFromPublicUse
-							.getLaneAttrvehicleID()) {
-						laneTypeObj.setVehicle(J2735LaneAttributesVehicle.restrictedFromPublicUse);
-					} else if (vehicleKey == J2735LaneAttributesVehicle.hasIRbeaconCoverage.getLaneAttrvehicleID()) {
-						laneTypeObj.setVehicle(J2735LaneAttributesVehicle.hasIRbeaconCoverage);
-					} else if (vehicleKey == J2735LaneAttributesVehicle.permissionOnRequest.getLaneAttrvehicleID()) {
-						laneTypeObj.setVehicle(J2735LaneAttributesVehicle.permissionOnRequest);
-					}
+					J2735BitString vehicleObj = BitStringBuilder.genericBitString(laneType.get("vehicle"), J2735LaneAttributesVehicle.values());
+            		laneTypeObj.setVehicle(vehicleObj);
 				} else if (laneType.get("crosswalk") != null) {
-					Integer crosswalkKey = laneType.get("crosswalk").asInt();
-					if (crosswalkKey == J2735LaneAttributesCrosswalk.crosswalkRevocableLane
-							.getLaneAttributesCrosswalkID()) {
-						laneTypeObj.setCrosswalk(J2735LaneAttributesCrosswalk.crosswalkRevocableLane);
-					} else if (crosswalkKey == J2735LaneAttributesCrosswalk.bicyleUseAllowed
-							.getLaneAttributesCrosswalkID()) {
-						laneTypeObj.setCrosswalk(J2735LaneAttributesCrosswalk.bicyleUseAllowed);
-					} else if (crosswalkKey == J2735LaneAttributesCrosswalk.isXwalkFlyOverLane
-							.getLaneAttributesCrosswalkID()) {
-						laneTypeObj.setCrosswalk(J2735LaneAttributesCrosswalk.isXwalkFlyOverLane);
-					} else if (crosswalkKey == J2735LaneAttributesCrosswalk.fixedCycleTime
-							.getLaneAttributesCrosswalkID()) {
-						laneTypeObj.setCrosswalk(J2735LaneAttributesCrosswalk.fixedCycleTime);
-					} else if (crosswalkKey == J2735LaneAttributesCrosswalk.biDirectionalCycleTimes
-							.getLaneAttributesCrosswalkID()) {
-						laneTypeObj.setCrosswalk(J2735LaneAttributesCrosswalk.biDirectionalCycleTimes);
-					} else if (crosswalkKey == J2735LaneAttributesCrosswalk.hasPushToWalkButton
-							.getLaneAttributesCrosswalkID()) {
-						laneTypeObj.setCrosswalk(J2735LaneAttributesCrosswalk.hasPushToWalkButton);
-					} else if (crosswalkKey == J2735LaneAttributesCrosswalk.audioSupport
-							.getLaneAttributesCrosswalkID()) {
-						laneTypeObj.setCrosswalk(J2735LaneAttributesCrosswalk.audioSupport);
-					} else if (crosswalkKey == J2735LaneAttributesCrosswalk.rfSignalRequestPresent
-							.getLaneAttributesCrosswalkID()) {
-						laneTypeObj.setCrosswalk(J2735LaneAttributesCrosswalk.rfSignalRequestPresent);
-					} else if (crosswalkKey == J2735LaneAttributesCrosswalk.unsignalizedSegmentsPresent
-							.getLaneAttributesCrosswalkID()) {
-						laneTypeObj.setCrosswalk(J2735LaneAttributesCrosswalk.unsignalizedSegmentsPresent);
-					}
+					J2735BitString crosswalkObj = BitStringBuilder.genericBitString(laneType.get("crosswalk"), J2735LaneAttributesCrosswalk.values());
+            		laneTypeObj.setCrosswalk(crosswalkObj);
 				} else if (laneType.get("bikeLane") != null) {;
-					Integer bikeLaneKey = laneType.get("bikeLane").asInt();
-					if (bikeLaneKey == J2735LaneAttributesBike.bikeRevocableLane.getLaneAttributesBikeID()) {
-						laneTypeObj.setBikeLane(J2735LaneAttributesBike.bikeRevocableLane);
-					} else if (bikeLaneKey == J2735LaneAttributesBike.pedestrianUseAllowed.getLaneAttributesBikeID()) {
-						laneTypeObj.setBikeLane(J2735LaneAttributesBike.pedestrianUseAllowed);
-					} else if (bikeLaneKey == J2735LaneAttributesBike.isBikeFlyOverLane.getLaneAttributesBikeID()) {
-						laneTypeObj.setBikeLane(J2735LaneAttributesBike.isBikeFlyOverLane);
-					} else if (bikeLaneKey == J2735LaneAttributesBike.fixedCycleTime.getLaneAttributesBikeID()) {
-						laneTypeObj.setBikeLane(J2735LaneAttributesBike.fixedCycleTime);
-					} else if (bikeLaneKey == J2735LaneAttributesBike.biDirectionalCycleTimes.getLaneAttributesBikeID()) {
-						laneTypeObj.setBikeLane(J2735LaneAttributesBike.biDirectionalCycleTimes);
-					} else if (bikeLaneKey == J2735LaneAttributesBike.fixedCycleTime.getLaneAttributesBikeID()) {
-						laneTypeObj.setBikeLane(J2735LaneAttributesBike.fixedCycleTime);
-					} else if (bikeLaneKey == J2735LaneAttributesBike.biDirectionalCycleTimes.getLaneAttributesBikeID()) {
-						laneTypeObj.setBikeLane(J2735LaneAttributesBike.biDirectionalCycleTimes);
-					} else if (bikeLaneKey == J2735LaneAttributesBike.isolatedByBarrier.getLaneAttributesBikeID()) {
-						laneTypeObj.setBikeLane(J2735LaneAttributesBike.isolatedByBarrier);
-					} else if (bikeLaneKey == J2735LaneAttributesBike.unsignalizedSegmentsPresent.getLaneAttributesBikeID()) {
-						laneTypeObj.setBikeLane(J2735LaneAttributesBike.unsignalizedSegmentsPresent);
-					}
+					J2735BitString bikeLaneObj = BitStringBuilder.genericBitString(laneType.get("bikeLane"), J2735LaneAttributesBike.values());
+            		laneTypeObj.setBikeLane(bikeLaneObj);
 				} else if (laneType.get("sidewalk") != null) {
-					Integer sidewalkKey = laneType.get("sidewalk").asInt();
-					if (sidewalkKey == J2735LaneAttributesSidewalk.sidewalkRevocableLane
-							.getLaneAttributesSidewalkID()) {
-						laneTypeObj.setSidewalk(J2735LaneAttributesSidewalk.sidewalkRevocableLane);
-					} else if (sidewalkKey == J2735LaneAttributesSidewalk.bicyleUseAllowed
-							.getLaneAttributesSidewalkID()) {
-						laneTypeObj.setSidewalk(J2735LaneAttributesSidewalk.bicyleUseAllowed);
-					} else if (sidewalkKey == J2735LaneAttributesSidewalk.isSidewalkFlyOverLane
-							.getLaneAttributesSidewalkID()) {
-						laneTypeObj.setSidewalk(J2735LaneAttributesSidewalk.isSidewalkFlyOverLane);
-					} else if (sidewalkKey == J2735LaneAttributesSidewalk.walkBikes.getLaneAttributesSidewalkID()) {
-						laneTypeObj.setSidewalk(J2735LaneAttributesSidewalk.walkBikes);
-					}
+					J2735BitString sidewalkObj = BitStringBuilder.genericBitString(laneType.get("sidewalk"), J2735LaneAttributesSidewalk.values());
+            		laneTypeObj.setSidewalk(sidewalkObj);
 				} else if (laneType.get("median") != null) {
-					Integer medianKey = laneType.get("median").asInt();
-					if (medianKey == J2735LaneAttributesBarrier.medianRevocableLane.getLaneAttributesBarrierID()) {
-						laneTypeObj.setMedian(J2735LaneAttributesBarrier.medianRevocableLane);
-					} else if (medianKey == J2735LaneAttributesBarrier.median.getLaneAttributesBarrierID()) {
-						laneTypeObj.setMedian(J2735LaneAttributesBarrier.median);
-					} else if (medianKey == J2735LaneAttributesBarrier.whiteLineHashing.getLaneAttributesBarrierID()) {
-						laneTypeObj.setMedian(J2735LaneAttributesBarrier.whiteLineHashing);
-					} else if (medianKey == J2735LaneAttributesBarrier.stripedLines.getLaneAttributesBarrierID()) {
-						laneTypeObj.setMedian(J2735LaneAttributesBarrier.stripedLines);
-					} else if (medianKey == J2735LaneAttributesBarrier.doubleStripedLines
-							.getLaneAttributesBarrierID()) {
-						laneTypeObj.setMedian(J2735LaneAttributesBarrier.doubleStripedLines);
-					} else if (medianKey == J2735LaneAttributesBarrier.trafficCones.getLaneAttributesBarrierID()) {
-						laneTypeObj.setMedian(J2735LaneAttributesBarrier.trafficCones);
-					} else if (medianKey == J2735LaneAttributesBarrier.constructionBarrier
-							.getLaneAttributesBarrierID()) {
-						laneTypeObj.setMedian(J2735LaneAttributesBarrier.constructionBarrier);
-					} else if (medianKey == J2735LaneAttributesBarrier.trafficChannels.getLaneAttributesBarrierID()) {
-						laneTypeObj.setMedian(J2735LaneAttributesBarrier.trafficChannels);
-					} else if (medianKey == J2735LaneAttributesBarrier.lowCurbs.getLaneAttributesBarrierID()) {
-						laneTypeObj.setMedian(J2735LaneAttributesBarrier.lowCurbs);
-					} else if (medianKey == J2735LaneAttributesBarrier.highCurbs.getLaneAttributesBarrierID()) {
-						laneTypeObj.setMedian(J2735LaneAttributesBarrier.highCurbs);
-					}
+					J2735BitString medianObj = BitStringBuilder.genericBitString(laneType.get("median"), J2735LaneAttributesBarrier.values());
+            		laneTypeObj.setMedian(medianObj);
 				} else if (laneType.get("striping") != null) {
-					Integer stripingKey = laneType.get("striping").asInt();
-					if (stripingKey == J2735LaneAttributesStriping.stripeToConnectingLanesRevocableLane
-							.getLaneAttributesStripingID()) {
-						laneTypeObj.setStriping(J2735LaneAttributesStriping.stripeToConnectingLanesRevocableLane);
-					} else if (stripingKey == J2735LaneAttributesStriping.stripeDrawOnLeft
-							.getLaneAttributesStripingID()) {
-						laneTypeObj.setStriping(J2735LaneAttributesStriping.stripeDrawOnLeft);
-					} else if (stripingKey == J2735LaneAttributesStriping.stripeDrawOnRight
-							.getLaneAttributesStripingID()) {
-						laneTypeObj.setStriping(J2735LaneAttributesStriping.stripeDrawOnRight);
-					} else if (stripingKey == J2735LaneAttributesStriping.stripeToConnectingLanesLeft
-							.getLaneAttributesStripingID()) {
-						laneTypeObj.setStriping(J2735LaneAttributesStriping.stripeToConnectingLanesLeft);
-					} else if (stripingKey == J2735LaneAttributesStriping.stripeToConnectingLanesRight
-							.getLaneAttributesStripingID()) {
-						laneTypeObj.setStriping(J2735LaneAttributesStriping.stripeToConnectingLanesRight);
-					} else if (stripingKey == J2735LaneAttributesStriping.stripeToConnectingLanesAhead
-							.getLaneAttributesStripingID()) {
-						laneTypeObj.setStriping(J2735LaneAttributesStriping.stripeToConnectingLanesAhead);
-					}
+					J2735BitString stripingObj = BitStringBuilder.genericBitString(laneType.get("striping"), J2735LaneAttributesStriping.values());
+            		laneTypeObj.setStriping(stripingObj);
 				} else if (laneType.get("trackedVehicle") != null) {
-					Integer trackedVehicleKey = laneType.get("trackedVehicle").asInt();
-					if (trackedVehicleKey == J2735LaneAttributesTrackedVehicle.specRevocableLane
-							.getLaneAttributesTrackedVehicleID()) {
-						laneTypeObj.setTrackedVehicle(J2735LaneAttributesTrackedVehicle.specRevocableLane);
-					} else if (trackedVehicleKey == J2735LaneAttributesTrackedVehicle.specCommuterRailRoadTrack
-							.getLaneAttributesTrackedVehicleID()) {
-						laneTypeObj.setTrackedVehicle(J2735LaneAttributesTrackedVehicle.specCommuterRailRoadTrack);
-					} else if (trackedVehicleKey == J2735LaneAttributesTrackedVehicle.specLightRailRoadTrack
-							.getLaneAttributesTrackedVehicleID()) {
-						laneTypeObj.setTrackedVehicle(J2735LaneAttributesTrackedVehicle.specLightRailRoadTrack);
-					} else if (trackedVehicleKey == J2735LaneAttributesTrackedVehicle.specHeavyRailRoadTrack
-							.getLaneAttributesTrackedVehicleID()) {
-						laneTypeObj.setTrackedVehicle(J2735LaneAttributesTrackedVehicle.specHeavyRailRoadTrack);
-					} else if (trackedVehicleKey == J2735LaneAttributesTrackedVehicle.specOtherRailType
-							.getLaneAttributesTrackedVehicleID()) {
-						laneTypeObj.setTrackedVehicle(J2735LaneAttributesTrackedVehicle.specOtherRailType);
-					} else if (laneType.get("parking") != null) {
-						Integer parkingKey = laneType.get("parking").asInt();
-						if (parkingKey == J2735LaneAttributesParking.parkingRevocableLane
-								.getLaneAttributesParkingID()) {
-							laneTypeObj.setParking(J2735LaneAttributesParking.parkingRevocableLane);
-						} else if (parkingKey == J2735LaneAttributesParking.parallelParkingInUse
-								.getLaneAttributesParkingID()) {
-							laneTypeObj.setParking(J2735LaneAttributesParking.parallelParkingInUse);
-						} else if (parkingKey == J2735LaneAttributesParking.headInParkingInUse
-								.getLaneAttributesParkingID()) {
-							laneTypeObj.setParking(J2735LaneAttributesParking.headInParkingInUse);
-						} else if (parkingKey == J2735LaneAttributesParking.doNotParkZone
-								.getLaneAttributesParkingID()) {
-							laneTypeObj.setParking(J2735LaneAttributesParking.doNotParkZone);
-						} else if (parkingKey == J2735LaneAttributesParking.parkingForBusUse
-								.getLaneAttributesParkingID()) {
-							laneTypeObj.setParking(J2735LaneAttributesParking.parkingForBusUse);
-						} else if (parkingKey == J2735LaneAttributesParking.parkingForTaxiUse
-								.getLaneAttributesParkingID()) {
-							laneTypeObj.setParking(J2735LaneAttributesParking.parkingForTaxiUse);
-						} else if (parkingKey == J2735LaneAttributesParking.noPublicParkingUse
-								.getLaneAttributesParkingID()) {
-							laneTypeObj.setParking(J2735LaneAttributesParking.noPublicParkingUse);
-						}
-					}
-					laneAttributesObj.setLaneType(laneTypeObj);
+					J2735BitString trackedVehicleObj = BitStringBuilder.genericBitString(laneType.get("trackedVehicle"), J2735LaneAttributesTrackedVehicle.values());
+            		laneTypeObj.setTrackedVehicle(trackedVehicleObj);
+				} else if (laneType.get("parking") != null) {
+					J2735BitString parkingObj = BitStringBuilder.genericBitString(laneType.get("parking"), J2735LaneAttributesParking.values());
+            		laneTypeObj.setParking(parkingObj);
 				}
 
+				laneAttributesObj.setLaneType(laneTypeObj);
 			}
+
 			genericLane.setLaneAttributes(laneAttributesObj);
 		}
 
 		JsonNode maneuvers = laneSetNode.get("maneuvers");
 		if (maneuvers != null) {
-			Integer maneuversKey =maneuvers.get("maneuvers").asInt();
-			if (maneuversKey == J2735AllowedManeuvers.maneuverStraightAllowed.getAllowedManeuversID()) {
-				genericLane.setManeuvers(J2735AllowedManeuvers.maneuverStraightAllowed);
-			} else if (maneuversKey == J2735AllowedManeuvers.maneuverLeftAllowed.getAllowedManeuversID()) {
-				genericLane.setManeuvers(J2735AllowedManeuvers.maneuverLeftAllowed);
-			} else if (maneuversKey == J2735AllowedManeuvers.maneuverRightAllowed.getAllowedManeuversID()) {
-				genericLane.setManeuvers(J2735AllowedManeuvers.maneuverRightAllowed);
-			} else if (maneuversKey == J2735AllowedManeuvers.maneuverUTurnAllowed.getAllowedManeuversID()) {
-				genericLane.setManeuvers(J2735AllowedManeuvers.maneuverUTurnAllowed);
-			} else if (maneuversKey == J2735AllowedManeuvers.maneuverLeftTurnOnRedAllowed.getAllowedManeuversID()) {
-				genericLane.setManeuvers(J2735AllowedManeuvers.maneuverLeftTurnOnRedAllowed);
-			} else if (maneuversKey == J2735AllowedManeuvers.maneuverRightTurnOnRedAllowed.getAllowedManeuversID()) {
-				genericLane.setManeuvers(J2735AllowedManeuvers.maneuverRightTurnOnRedAllowed);
-			} else if (maneuversKey == J2735AllowedManeuvers.maneuverLaneChangeAllowed.getAllowedManeuversID()) {
-				genericLane.setManeuvers(J2735AllowedManeuvers.maneuverLaneChangeAllowed);
-			} else if (maneuversKey == J2735AllowedManeuvers.maneuverNoStoppingAllowed.getAllowedManeuversID()) {
-				genericLane.setManeuvers(J2735AllowedManeuvers.maneuverNoStoppingAllowed);
-			} else if (maneuversKey == J2735AllowedManeuvers.yieldAllwaysRequired.getAllowedManeuversID()) {
-				genericLane.setManeuvers(J2735AllowedManeuvers.yieldAllwaysRequired);
-			} else if (maneuversKey == J2735AllowedManeuvers.goWithHalt.getAllowedManeuversID()) {
-				genericLane.setManeuvers(J2735AllowedManeuvers.goWithHalt);
-			} else if (maneuversKey == J2735AllowedManeuvers.caution.getAllowedManeuversID()) {
-				genericLane.setManeuvers(J2735AllowedManeuvers.caution);
-			} else if (maneuversKey == J2735AllowedManeuvers.reserved1.getAllowedManeuversID()) {
-				genericLane.setManeuvers(J2735AllowedManeuvers.reserved1);
-			}
+			J2735BitString maneuversObj = BitStringBuilder.genericBitString(maneuvers, J2735AllowedManeuvers.values());
+            genericLane.setManeuvers(maneuversObj);
 		}
 
 		JsonNode nodeList = laneSetNode.get("nodeList");
@@ -305,8 +111,7 @@ public class GenericLaneBuilder {
 
 		JsonNode connectsTo = laneSetNode.get("connectsTo");
 		if (connectsTo != null) {
-			// TODO
-//			genericLane.setConnectsTo(ConnectsToListBuilder.genericConnectsToList(connectsTo));
+			genericLane.setConnectsTo(ConnectsToListBuilder.genericConnectsToList(connectsTo));
 		}
 
 		JsonNode overlays = laneSetNode.get("overlays");
@@ -319,7 +124,6 @@ public class GenericLaneBuilder {
 				}
 			} else {
 				overlayList.getLaneIds().add(overlays.asInt());
-
 			}
 		}
 

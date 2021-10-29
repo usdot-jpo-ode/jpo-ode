@@ -13,7 +13,7 @@ public class J2735RoadSegment extends Asn1Object {
 	private J2735RoadSegmentReferenceID id;
 	private Integer revision;
 	private J2735Position3D refPoint;
-	private J2735LaneWidth laneWidth;
+	private Integer laneWidth;
 	private J2735SpeedLimitList speedLimits;
 	private J2735RoadLaneSetList roadLaneSet;
 
@@ -49,11 +49,11 @@ public class J2735RoadSegment extends Asn1Object {
 		this.refPoint = refPoint;
 	}
 
-	public J2735LaneWidth getLaneWidth() {
+	public Integer getLaneWidth() {
 		return laneWidth;
 	}
 
-	public void setLaneWidth(J2735LaneWidth laneWidth) {
+	public void setLaneWidth(Integer laneWidth) {
 		this.laneWidth = laneWidth;
 	}
 

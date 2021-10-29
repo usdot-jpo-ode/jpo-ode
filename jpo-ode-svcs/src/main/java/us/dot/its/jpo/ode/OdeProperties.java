@@ -151,11 +151,27 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeRawEncodedSPATJson = "topic.OdeRawEncodedSPATJson";
    private int spatReceiverPort = 44910;
    private int spatBufferSize = 1000;
+
+   //SSM
+   private String kafkaTopicOdeSsmPojo = "topic.OdeSsmPojo";
+   private String kafkaTopicOdeSsmJson = "topic.OdeSsmJson";
+   private String kafkaTopicOdeRawEncodedSSMJson = "topic.OdeRawEncodedSSMJson";
+   private int ssmReceiverPort = 44900;
+   private int ssmBufferSize = 500;
+
+   //SRM
+   private String kafkaTopicOdeSrmTxPojo = "topic.OdeSrmTxPojo";
+   private String kafkaTopicOdeSrmJson = "topic.OdeSrmJson";
+   private String kafkaTopicOdeRawEncodedSRMJson = "topic.OdeRawEncodedSRMJson";
+   private int srmReceiverPort = 44930;
+   private int srmBufferSize = 500;
    
    //MAP
    private String kafkaTopicOdeRawEncodedMAPJson = "topic.OdeRawEncodedMAPJson";
    private String kafkaTopicOdeMapTxPojo = "topic.OdeMapTxPojo";
    private String kafkaTopicOdeMapJson = "topic.OdeMapJson";
+   private int mapReceiverPort = 44920;
+   private int mapBufferSize = 2048;
    
 // DriverAlerts
    private String kafkaTopicDriverAlertJson = "topic.OdeDriverAlertJson";
@@ -394,6 +410,38 @@ public class OdeProperties implements EnvironmentAware {
       this.timBufferSize = timBufferSize;
    }
 
+   public int getSsmReceiverPort() {
+      return ssmReceiverPort;
+   }
+
+   public void setSsmReceiverPort(int ssmReceiverPort) {
+      this.ssmReceiverPort = ssmReceiverPort;
+   }
+
+   public int getSsmBufferSize() {
+      return ssmBufferSize;
+   }
+
+   public void setSsmBufferSize(int ssmBufferSize) {
+      this.ssmBufferSize = ssmBufferSize;
+   }
+
+   public int getSrmReceiverPort() {
+      return srmReceiverPort;
+   }
+
+   public void setSrmReceiverPort(int srmReceiverPort) {
+      this.srmReceiverPort = srmReceiverPort;
+   }
+
+   public int getSrmBufferSize() {
+      return srmBufferSize;
+   }
+
+   public void setSrmBufferSize(int srmBufferSize) {
+      this.srmBufferSize = srmBufferSize;
+   }
+
    public int getSpatReceiverPort() {
       return spatReceiverPort;
    }
@@ -408,6 +456,22 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setSpatBufferSize(int spatBufferSize) {
       this.spatBufferSize = spatBufferSize;
+   }
+
+   public int getMapReceiverPort() {
+      return mapReceiverPort;
+   }
+
+   public void setMapReceiverPort(int mapReceiverPort) {
+      this.mapReceiverPort = mapReceiverPort;
+   }
+
+   public int getMapBufferSize() {
+      return mapBufferSize;
+   }
+
+   public void setMapBufferSize(int mapBufferSize) {
+      this.mapBufferSize = mapBufferSize;
    }
 
    public String getDdsCasUrl() {
@@ -803,6 +867,62 @@ public class OdeProperties implements EnvironmentAware {
 
 	public void setKafkaTopicOdeMapJson(String kafkaTopicOdeMapJson) {
 		this.kafkaTopicOdeMapJson = kafkaTopicOdeMapJson;
+	}
+
+   public String getKafkaTopicOdeRawEncodedSSMJson() {
+		return kafkaTopicOdeRawEncodedSSMJson;
+	}
+
+	public void setKafkaTopicOdeRawEncodedSSMJson(String kafkaTopicOdeRawEncodedSSMJson) {
+		this.kafkaTopicOdeRawEncodedSSMJson = kafkaTopicOdeRawEncodedSSMJson;
+	}
+
+
+	public String getKafkaTopicOdeSsmPojo() {
+		return kafkaTopicOdeSsmPojo;
+	}
+
+
+	public void setKafkaTopicOdeSsmPojo(String kafkaTopicOdeSsmPojo) {
+		this.kafkaTopicOdeSsmPojo = kafkaTopicOdeSsmPojo;
+	}
+
+
+	public String getKafkaTopicOdeSsmJson() {
+		return kafkaTopicOdeSsmJson;
+	}
+
+
+	public void setKafkaTopicOdeSsmJson(String kafkaTopicOdeSsmJson) {
+		this.kafkaTopicOdeSsmJson = kafkaTopicOdeSsmJson;
+	}
+
+   public String getKafkaTopicOdeRawEncodedSRMJson() {
+		return kafkaTopicOdeRawEncodedSRMJson;
+	}
+
+	public void setKafkaTopicOdeRawEncodedSRMJson(String kafkaTopicOdeRawEncodedSRMJson) {
+		this.kafkaTopicOdeRawEncodedSRMJson = kafkaTopicOdeRawEncodedSRMJson;
+	}
+
+
+	public String getKafkaTopicOdeSrmTxPojo() {
+		return kafkaTopicOdeSrmTxPojo;
+	}
+
+
+	public void setKafkaTopicOdeSrmTxPojo(String kafkaTopicOdeSrmTxPojo) {
+		this.kafkaTopicOdeSrmTxPojo = kafkaTopicOdeSrmTxPojo;
+	}
+
+
+	public String getKafkaTopicOdeSrmJson() {
+		return kafkaTopicOdeSrmJson;
+	}
+
+
+	public void setKafkaTopicOdeSrmJson(String kafkaTopicOdeSrmJson) {
+		this.kafkaTopicOdeSrmJson = kafkaTopicOdeSrmJson;
 	}
 	   
 }
