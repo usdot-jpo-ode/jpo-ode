@@ -39,6 +39,7 @@ All stakeholders are invited to provide input to these documents. To provide fee
 9.  [Known Bugs](#known-bugs)
 10. [Credits and Acknowledgement](#credits-and-acknowledgement)
 11. [Code.gov Registration Info](#codegov-registration-info)
+12. [Kubernetes](#kubernetes)
 
 <!--
 #########################################
@@ -521,5 +522,9 @@ Labor hours: 200
 Contact Name: James Lieu
 
 Contact Phone: (202) 366-3000
+
+## 12. Kubernetes
+The ODE can be run in a k8s environment.
+See [this document](./docs/Kubernetes.md) for more details about this.
 
 [Back to top](#toc)

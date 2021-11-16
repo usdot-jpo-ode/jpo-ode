@@ -1,0 +1,134 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jpoode-ode-tcp-svc
+  labels:
+    app: jpoode-ode
+spec:
+  type: LoadBalancer 
+  ports:
+  - port: 8080
+    name: ode-webserver 
+  loadBalancerSourceRanges:
+    {{- range .Values.config.ode.sourceRanges }}
+    - {{ . | title }}
+    {{- end }}
+  selector:
+    app: jpoode-ode
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jpoode-ode-udp-svc
+  annotations:
+    networking.gke.io/load-balancer-type: "Internal"
+  labels:
+    app: jpoode-ode
+spec:
+  type: LoadBalancer
+  loadBalancerIP: {{ .Values.config.ode.udp_service.ipAddress }}
+  ports:
+  - name: ode-rsu-bsm
+    protocol: UDP
+    port: 46800
+  - name: ode-rsu-tim
+    protocol: UDP
+    port: 47900
+  externalTrafficPolicy: Local
+  loadBalancerSourceRanges:
+    {{- range .Values.config.ode.sourceRanges }}
+    - {{ . | title }}
+    {{- end }}
+  selector:
+    app: jpoode-ode
+---
+{{- if .Values.config.ode.udp_service.exposeExternally }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: jpoode-ode-udp-svc-ext
+  labels:
+    app: jpoode-ode
+spec:
+  type: LoadBalancer
+  ports:
+  - name: ode-rsu-bsm
+    protocol: UDP
+    port: 46801
+  - name: ode-rsu-tim
+    protocol: UDP
+    port: 47901
+  externalTrafficPolicy: Local
+  loadBalancerSourceRanges:
+    {{- range .Values.config.ode.sourceRanges }}
+    - {{ . | title }}
+    {{- end }}
+  selector:
+    app: jpoode-ode
+---
+{{- end }}
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "jpoode-ode"
+  labels:
+    app: "jpoode-ode"
+spec:
+  replicas: {{ .Values.replicas.jpoode_ode }}
+  selector:
+    matchLabels:
+      app: "jpoode-ode"
+  template:
+    metadata:
+      labels:
+        app: "jpoode-ode"
+    spec:
+      containers:
+        - name: "jpoode-ode-image-sha256-1"
+          image: "{{ .Values.images.jpoode_ode.repository }}:{{ .Values.images.jpoode_ode.tag }}" 
+          resources:
+            requests:
+              memory: "1.5Gi"
+              cpu: "1"
+          tty: true
+          stdin: true
+          ports:
+          - containerPort: 8080
+          - containerPort: 9090
+          - containerPort: 46800
+            protocol: UDP
+          - containerPort: 47900
+            protocol: UDP
+            {{- if .Values.config.ode.udp_service.exposeExternally }}
+          - containerPort: 46801
+            protocol: UDP
+          - containerPort: 47901
+            protocol: UDP
+            {{- end }}
+          env:
+          - name: DOCKER_HOST_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: ODE_KAFKA_BROKERS
+            value: {{ .Values.resources.services.kafka }}:9092
+          - name: ZK
+            value: {{ .Values.resources.services.zookeeper }}:2181
+          - name: ODE_SECURITY_SVCS_SIGNATURE_URI
+            value: {{ .Values.resources.services.security }}:8090
+          - name: ODE_RSU_USERNAME
+            valueFrom: 
+              secretKeyRef:
+                name: jpoode-secrets
+                key: ode_rsu_username
+          - name: ODE_RSU_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: jpoode-secrets
+                key: ode_rsu_password
+          volumeMounts:
+            - mountPath: /jpo-ode
+              name: jpoode-ode-storage 
+      volumes:
+        - name: jpoode-ode-storage
