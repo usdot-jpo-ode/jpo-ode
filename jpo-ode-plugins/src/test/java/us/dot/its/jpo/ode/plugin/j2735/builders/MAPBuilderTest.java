@@ -23,8 +23,8 @@ public class MAPBuilderTest {
 			fail("XML parsing error:" + e);
 		}
 		J2735MAP actualMap = MAPBuilder.genericMAP(jsonMap.findValue("MapData"));	
-		String expected ="{\"msgIssueRevision\":4,\"layerType\":\"mixedContent\",\"layerID\":12,\"intersections\":{\"intersectionGeometry\":[{\"id\":{\"id\":156},\"revision\":1,\"refPoint\":{\"lat\":389284111,\"lon\":-772410713},\"laneSet\":{\"GenericLane\":[{\"laneID\":1,\"laneAttributes\":{\"directionalUse\":\"ingressPath\",\"shareWith\":\"overlappingLaneDescriptionProvided\"},\"nodeList\":{\"nodes\":{\"NodeXY\":[{\"delta\":{\"nodeXY2\":{\"x\":43,\"y\":24}}},{\"delta\":{\"nodeXY2\":{\"x\":43,\"y\":24}}}]}}}]}}]}}";
+		String expected = "{\"msgIssueRevision\":4,\"layerType\":\"mixedContent\",\"layerID\":12,\"intersections\":{\"intersectionGeometry\":[{\"id\":{\"id\":156},\"revision\":1,\"refPoint\":{\"lat\":389284111,\"lon\":-772410713},\"laneSet\":{\"GenericLane\":[{\"laneID\":1,\"laneAttributes\":{\"directionalUse\":{\"ingressPath\":false,\"egressPath\":false},\"shareWith\":{\"busVehicleTraffic\":false,\"trackedVehicleTraffic\":false,\"individualMotorizedVehicleTraffic\":false,\"taxiVehicleTraffic\":false,\"overlappingLaneDescriptionProvided\":false,\"cyclistVehicleTraffic\":false,\"otherNonMotorizedTrafficTypes\":false,\"multipleLanesTreatedAsOneLane\":false,\"pedestrianTraffic\":false,\"pedestriansTraffic\":false},\"laneType\":{\"vehicle\":{\"isVehicleRevocableLane\":false,\"isVehicleFlyOverLane\":false,\"permissionOnRequest\":false,\"hasIRbeaconCoverage\":false,\"restrictedToBusUse\":false,\"restrictedToTaxiUse\":false,\"restrictedFromPublicUse\":false,\"hovLaneUseOnly\":false}}},\"nodeList\":{\"nodes\":{\"NodeXY\":[{\"delta\":{\"nodeXY2\":{\"x\":43,\"y\":24}}},{\"delta\":{\"nodeXY2\":{\"x\":43,\"y\":24}}}]}}}]}}]}}";
+		System.out.println(actualMap.toJson());
 		assertEquals(expected, actualMap.toJson()); 
-		
-	}
+		}
 }
