@@ -8,6 +8,10 @@ import org.springframework.stereotype.Controller;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.udp.bsm.BsmReceiver;
 import us.dot.its.jpo.ode.udp.tim.TimReceiver;
+import us.dot.its.jpo.ode.udp.ssm.SsmReceiver;
+import us.dot.its.jpo.ode.udp.srm.SrmReceiver;
+import us.dot.its.jpo.ode.udp.spat.SpatReceiver;
+import us.dot.its.jpo.ode.udp.map.MapReceiver;
 
 /**
  * Centralized UDP service dispatcher.
@@ -26,8 +30,25 @@ public class UdpServicesController {
       ServiceManager rm = new ServiceManager(new UdpServiceThreadFactory("UdpReceiverManager"));
 
       logger.debug("Starting UDP receiver services...");
+
+      // BSM internal
       rm.submit(new BsmReceiver(odeProps));
+
+      // TIM internal
       rm.submit(new TimReceiver(odeProps));
+
+      // SSM internal port
+      rm.submit(new SsmReceiver(odeProps));
+      
+      // SRM internal port
+      rm.submit(new SrmReceiver(odeProps));
+
+      // SPAT internal port
+      rm.submit(new SpatReceiver(odeProps));
+
+      // MAP internal port
+      rm.submit(new MapReceiver(odeProps));
+
       logger.debug("UDP receiver services started.");
    }
 }

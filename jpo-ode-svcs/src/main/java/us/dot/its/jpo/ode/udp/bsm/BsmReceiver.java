@@ -1,12 +1,9 @@
 package us.dot.its.jpo.ode.udp.bsm;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -17,11 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import us.dot.its.jpo.ode.coder.StringPublisher;
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.coder.MessagePublisher;
-import us.dot.its.jpo.ode.coder.OdeBsmDataCreatorHelper;
-import us.dot.its.jpo.ode.model.OdeBsmData;
-import us.dot.its.jpo.ode.model.OdeData;
-import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 
 public class BsmReceiver extends AbstractUdpReceiverPublisher {
@@ -68,6 +60,8 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
                // extract the actualPacket from the buffer
                byte[] payload = removeHeader(packet.getData());
+               if (payload == null)
+                  continue;
                String payloadHexString = HexUtils.toHexString(payload);
                logger.debug("Packet: {}", payloadHexString);
                
@@ -122,6 +116,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
          logger.info("Message is raw BSM with no headers.");
       } else if (startIndex == -1) {
          logger.error("Message contains no BSM start flag.");
+         return null;
       } else {
          // We likely found a message with a header, look past the first 20
          // bytes for the start of the BSM
