@@ -124,7 +124,7 @@ public class XmlUtils {
 
    public static ObjectNode toObjectNode(String xml) throws XmlUtilsException {
       try {
-         JSONObject jsonObject = XML.toJSONObject(xml);
+         JSONObject jsonObject = XML.toJSONObject(xml, true);
          String jsonString = jsonObject.toString();
          return JsonUtils.toObjectNode(jsonString);
 
