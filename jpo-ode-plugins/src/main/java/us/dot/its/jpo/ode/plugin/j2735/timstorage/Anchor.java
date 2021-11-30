@@ -23,16 +23,11 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 @JsonPropertyOrder({ "lat", "long", "elevation" })
 public class Anchor extends Asn1Object {
    private static final long serialVersionUID = 1L;
-
-   @JsonProperty("lat")
    private String lat;
-
-   @JsonProperty("long")
    private String llong;
-
-   @JsonProperty("elevation")
    private String elevation;
 
+   @JsonProperty("lat")
    public String getLat() {
       return lat;
    }
@@ -41,6 +36,7 @@ public class Anchor extends Asn1Object {
       this.lat = lat;
    }
 
+   @JsonProperty("long")
    public String getLlong() {
       return llong;
    }
@@ -49,6 +45,7 @@ public class Anchor extends Asn1Object {
       this.llong = llong;
    }
 
+   @JsonProperty("elevation")
    public String getElevation() {
       return elevation;
    }

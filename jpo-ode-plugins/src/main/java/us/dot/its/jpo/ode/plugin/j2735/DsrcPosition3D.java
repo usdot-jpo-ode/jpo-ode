@@ -15,18 +15,16 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
+@JsonPropertyOrder({ "lat", "long", "elevation" })
 public class DsrcPosition3D extends Asn1Object {
    private static final long serialVersionUID = 1L;
-
-   @SerializedName("lat")
    private Long lat; // in degrees
-   @SerializedName("long")
    private Long _long; // in degrees
-   @SerializedName("elevation")
    private Long elevation; // in meters
 
    public DsrcPosition3D() {
@@ -40,6 +38,7 @@ public class DsrcPosition3D extends Asn1Object {
       this.elevation = elevation;
    }
 
+   @JsonProperty("lat")
    public Long getLatitude() {
       return lat;
    }
@@ -48,6 +47,7 @@ public class DsrcPosition3D extends Asn1Object {
       this.lat = latitude;
    }
 
+   @JsonProperty("long")
    public Long getLongitude() {
       return _long;
    }
@@ -56,6 +56,7 @@ public class DsrcPosition3D extends Asn1Object {
       this._long = longitude;
    }
 
+   @JsonProperty("elevation")
    public Long getElevation() {
       return elevation;
    }

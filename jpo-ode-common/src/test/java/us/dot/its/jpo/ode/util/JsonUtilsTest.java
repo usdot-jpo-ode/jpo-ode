@@ -120,21 +120,21 @@ public class JsonUtilsTest {
     @Test
     public void testNewJson() {
         String j = JsonUtils.newJson("key", "value");
-        assertEquals("{\"key\":value}", j);
+        assertEquals("{\"key\":\"value\"}", j);
     }
 
     @Test
     public void testNewObjectNode() {
         ObjectNode j = JsonUtils.newObjectNode("key", "value");
-        assertEquals("{\"key\":value}", j.toString());
+        assertEquals("{\"key\":\"value\"}", j.toString());
     }
 
     @Test
     public void testAddNode() {
         ObjectNode j = JsonUtils.newObjectNode("key", "value");
         ObjectNode j2 = JsonUtils.addNode(j, "key2", "value2");
-        assertEquals("{\"key\":value,\"key2\":value2}", j.toString());
-        assertEquals("{\"key\":value,\"key2\":value2}", j2.toString());
+        assertEquals("{\"key\":\"value\",\"key2\":\"value2\"}", j.toString());
+        assertEquals("{\"key\":\"value\",\"key2\":\"value2\"}", j2.toString());
     }
 
     @Test
@@ -157,7 +157,7 @@ public class JsonUtilsTest {
         assertEquals(expectedOvdf, ovdf.toString());
         JsonUtils.addNode(ovdf, "avgSpeed", "2.22");
         assertEquals(
-                "{\"className\":\"com.bah.ode.model.OdeVehicleDataFlat\",\"serialId\":\"10817812-036b-4d7b-867b-ae0bc62a2b3e.0\",\"receivedAt\":\"2015-07-22T19:21:16.413+0000\",\"groupId\":\"4130008F\",\"accelLong\":0.34,\"accelVert\":0.0,\"accellYaw\":8.42,\"heading\":65.95,\"speed\":8.12,\"sizeLength\":500,\"sizeWidth\":200,\"latitude\":42.3296667,\"longitude\":-83.044539,\"elevation\":156.9,\"tempId\":\"C4290123\",\"year\":2015,\"month\":5,\"day\":13,\"hour\":15,\"minute\":52,\"second\":45.5,\"dateTime\":\"2015-06-13T19:52:45.500+0000\",\"avgSpeed\":2.22}",
+                "{\"className\":\"com.bah.ode.model.OdeVehicleDataFlat\",\"serialId\":\"10817812-036b-4d7b-867b-ae0bc62a2b3e.0\",\"receivedAt\":\"2015-07-22T19:21:16.413+0000\",\"groupId\":\"4130008F\",\"accelLong\":0.34,\"accelVert\":0.0,\"accellYaw\":8.42,\"heading\":65.95,\"speed\":8.12,\"sizeLength\":500,\"sizeWidth\":200,\"latitude\":42.3296667,\"longitude\":-83.044539,\"elevation\":156.9,\"tempId\":\"C4290123\",\"year\":2015,\"month\":5,\"day\":13,\"hour\":15,\"minute\":52,\"second\":45.5,\"dateTime\":\"2015-06-13T19:52:45.500+0000\",\"avgSpeed\":\"2.22\"}",
                 ovdf.toString());
     }
 
@@ -201,7 +201,7 @@ public class JsonUtilsTest {
         ObjectNode dm = JsonUtils.newNode();
         dm.putObject("metadata");
         dm.putObject("payload").setAll(JsonUtils.newObjectNode("key1", "value1"));
-        assertEquals("{\"metadata\":{},\"payload\":{\"key1\":value1}}", dm.toString());
+        assertEquals("{\"metadata\":{},\"payload\":{\"key1\":\"value1\"}}", dm.toString());
     }
 
 }
