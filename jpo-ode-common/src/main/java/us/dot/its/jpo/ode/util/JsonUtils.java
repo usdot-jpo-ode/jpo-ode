@@ -25,6 +25,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -60,7 +62,10 @@ public class JsonUtils {
       // gsonCompact = new GsonBuilder().create();
       // gsonVerbose = new GsonBuilder().serializeNulls().create();
       mapper = new ObjectMapper();
+      mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+
       mapper_noNulls = new ObjectMapper();
+      mapper_noNulls.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
       mapper_noNulls.setSerializationInclusion(Include.NON_NULL);
    }
 
