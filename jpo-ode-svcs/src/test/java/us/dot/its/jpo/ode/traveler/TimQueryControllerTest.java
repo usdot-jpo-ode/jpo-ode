@@ -58,6 +58,8 @@ public class TimQueryControllerTest {
    @Mocked
    PDU mockPDU;
 
+   private String defaultRSU = "{\"rsuTarget\":\"10.10.10.10\",\"rsuUsername\":\"user\",\"rsuPassword\":\"pass\",\"rsuRetries\":\"3\",\"rsuTimeout\":\"5000\"}";
+
    @Test
    public void nullRequestShouldReturnError() {
       ResponseEntity<?> result = testTimQueryController.bulkQuery(null);
@@ -85,7 +87,7 @@ public class TimQueryControllerTest {
          fail("Unexpected exception in expectations block: " + e);
       }
 
-      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery("{\"request\":{},\"tim\":{}}");
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(defaultRSU);
       assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actualResponse.getStatusCode());
       assertTrue(actualResponse.getBody().contains("Failed to create SNMP session."));
    }
@@ -103,7 +105,7 @@ public class TimQueryControllerTest {
          fail("Unexpected exception in expectations block: " + e);
       }
 
-      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery("{\"request\":{},\"tim\":{}}");
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(defaultRSU);
       assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actualResponse.getStatusCode());
       assertTrue(actualResponse.getBody().contains("Failed to create SNMP session."));
    }
@@ -123,7 +125,7 @@ public class TimQueryControllerTest {
          }
       };
 
-      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery("{\"request\":{},\"tim\":{}}");
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(defaultRSU);
       assertEquals(HttpStatus.BAD_REQUEST, actualResponse.getStatusCode());
       assertTrue(actualResponse.getBody().contains("Timeout, no response from RSU."));
    }
@@ -146,7 +148,7 @@ public class TimQueryControllerTest {
          }
       };
 
-      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery("{\"request\":{},\"tim\":{}}");
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(defaultRSU);
       assertEquals(HttpStatus.BAD_REQUEST, actualResponse.getStatusCode());
       assertTrue(actualResponse.getBody().contains("Timeout, no response from RSU."));
    }
@@ -172,7 +174,7 @@ public class TimQueryControllerTest {
          }
       };
 
-      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery("{\"request\":{},\"tim\":{}}");
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(defaultRSU);
       assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
       assertTrue(actualResponse.getBody().contains("indicies_set"));
    }
@@ -201,7 +203,7 @@ public class TimQueryControllerTest {
          }
       };
 
-      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery("{\"request\":{},\"tim\":{}}");
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(defaultRSU);
       assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
       assertTrue(actualResponse.getBody().contains("indicies_set"));
    }
