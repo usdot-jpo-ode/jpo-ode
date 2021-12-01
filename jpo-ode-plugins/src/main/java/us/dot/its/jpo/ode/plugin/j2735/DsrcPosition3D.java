@@ -23,8 +23,8 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 @JsonPropertyOrder({ "lat", "long", "elevation" })
 public class DsrcPosition3D extends Asn1Object {
    private static final long serialVersionUID = 1L;
-   private Long lat; // in degrees
-   private Long _long; // in degrees
+   private Long latitude; // in degrees
+   private Long longitude; // in degrees
    private Long elevation; // in meters
 
    public DsrcPosition3D() {
@@ -33,27 +33,27 @@ public class DsrcPosition3D extends Asn1Object {
 
    public DsrcPosition3D(Long latitude, Long longitude, Long elevation) {
       super();
-      this.lat = latitude;
-      this._long = longitude;
+      this.latitude = latitude;
+      this.longitude = longitude;
       this.elevation = elevation;
    }
 
    @JsonProperty("lat")
    public Long getLatitude() {
-      return lat;
+      return latitude;
    }
 
    public void setLatitude(Long latitude) {
-      this.lat = latitude;
+      this.latitude = latitude;
    }
 
    @JsonProperty("long")
    public Long getLongitude() {
-      return _long;
+      return longitude;
    }
 
    public void setLongitude(Long longitude) {
-      this._long = longitude;
+      this.longitude = longitude;
    }
 
    @JsonProperty("elevation")
@@ -69,9 +69,9 @@ public class DsrcPosition3D extends Asn1Object {
    public int hashCode() {
       final int prime = 31;
       int result = 1;
-      result = prime * result + ((_long == null) ? 0 : _long.hashCode());
+      result = prime * result + ((longitude == null) ? 0 : longitude.hashCode());
       result = prime * result + ((elevation == null) ? 0 : elevation.hashCode());
-      result = prime * result + ((lat == null) ? 0 : lat.hashCode());
+      result = prime * result + ((latitude == null) ? 0 : latitude.hashCode());
       return result;
    }
 
@@ -84,20 +84,20 @@ public class DsrcPosition3D extends Asn1Object {
       if (getClass() != obj.getClass())
          return false;
       DsrcPosition3D other = (DsrcPosition3D) obj;
-      if (_long == null) {
-         if (other._long != null)
+      if (longitude == null) {
+         if (other.longitude != null)
             return false;
-      } else if (!_long.equals(other._long))
+      } else if (!longitude.equals(other.longitude))
          return false;
       if (elevation == null) {
          if (other.elevation != null)
             return false;
       } else if (!elevation.equals(other.elevation))
          return false;
-      if (lat == null) {
-         if (other.lat != null)
+      if (latitude == null) {
+         if (other.latitude != null)
             return false;
-      } else if (!lat.equals(other.lat))
+      } else if (!latitude.equals(other.latitude))
          return false;
       return true;
    }
