@@ -31,10 +31,11 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.cfg.CoercionAction;
+import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-// import com.google.gson.Gson;
-// import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.databind.type.LogicalType;
 
 public class JsonUtils {
 
@@ -48,8 +49,6 @@ public class JsonUtils {
 
    }
 
-   // private static Gson gsonCompact;
-   // private static Gson gsonVerbose;
    private static ObjectMapper mapper;
    private static ObjectMapper mapper_noNulls;
    private static Logger logger;
@@ -59,10 +58,10 @@ public class JsonUtils {
    }
 
    static {
-      // gsonCompact = new GsonBuilder().create();
-      // gsonVerbose = new GsonBuilder().serializeNulls().create();
       mapper = new ObjectMapper();
       mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+      mapper.coercionConfigFor(LogicalType.Enum)
+            .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);
 
       mapper_noNulls = new ObjectMapper();
       mapper_noNulls.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
@@ -78,7 +77,6 @@ public class JsonUtils {
          e.printStackTrace();
          return "";
       }
-      // return verbose ? gsonVerbose.toJson(o) : gsonCompact.toJson(o);
    }
 
    public static Object fromJson(String s, Class<?> clazz) {
@@ -88,7 +86,6 @@ public class JsonUtils {
          e.printStackTrace();
          return null;
       }
-      // return gsonCompact.fromJson(s, clazz);
    }
 
    public static Object jacksonFromJson(String s, Class<?> clazz) throws JsonUtilsException {
