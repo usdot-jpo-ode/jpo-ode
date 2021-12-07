@@ -30,10 +30,9 @@ RUN apt-get update \
     # Verify git, needed tools installed
     && apt-get -y install git openssh-client less iproute2 procps curl lsb-release zip unzip sed kafkacat telnet
 
-#-------------------Install SDKMan and Java 8----------------------------------
+#-------------------Install SDKMan----------------------------------
 RUN curl -s https://get.sdkman.io | bash
 RUN chmod a+x "$HOME/.sdkman/bin/sdkman-init.sh"
-RUN /bin/bash -c "source $HOME/.sdkman/bin/sdkman-init.sh && sdk install java 8.0.275.hs-adpt;"
 #-------------------------------------------------------------------------------------------------------------
 
 #-------------------Install Maven CLI Tools----------------------------------
