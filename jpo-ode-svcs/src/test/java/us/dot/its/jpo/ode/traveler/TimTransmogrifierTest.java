@@ -194,7 +194,7 @@ public class TimTransmogrifierTest {
       new MockUp<GeoRegionBuilder>() {
          @Mock
          public DdsGeoRegion ddsGeoRegion(OdeGeoRegion serviceRegion) {
-            return null;
+            return new DdsGeoRegion();
          }
       };
 
