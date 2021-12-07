@@ -29,11 +29,11 @@ import org.junit.Test;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.env.Environment;
 
-import groovy.lang.MissingPropertyException;
 import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
-import mockit.Mocked;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Tested;
 import us.dot.its.jpo.ode.util.CommonUtils;
 
@@ -45,9 +45,6 @@ public class OdePropertiesTest {
       Environment mockEnv;
       @Injectable
       BuildProperties mockBuildProperties;
-
-      @Mocked 
-      InetAddress mockInetAddress;
 
       @Capturing
       CommonUtils capturingCommonUtils;
@@ -74,19 +71,21 @@ public class OdePropertiesTest {
                   fail("Unexpected exception: " + e);
             }
       }
-
+      
       @Test
-      public void initShouldCatchUnknownHostException() throws Exception {
-            new Expectations() {
-                  {
-                        InetAddress.getLocalHost();
-                        result = new UnknownHostException("testException123");
+      public void initShouldCatchUnknownHostException(@Capturing InetAddress capturingInetAddress) throws Exception {
+            // from jmockit dev history (https://jmockit.github.io/changes.html)
+            // as of versiofn 1.48, partial mocking of classes through Expectations has been
+            // dropped. MockUp is recommended alternative
+            new MockUp<InetAddress>() {
+                  @Mock
+                  public InetAddress getLocalHost() throws UnknownHostException {
+                        throw new UnknownHostException("testException123");
                   }
             };
 
             try {
                   testOdeProperties.initialize();
-                  // new OdeProperties().initialize();
             } catch (Exception e) {
                   fail("Unexpected exception in init: " + e);
             }
