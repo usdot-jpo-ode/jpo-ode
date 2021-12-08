@@ -25,6 +25,9 @@ import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 
+import org.snmp4j.security.AuthMD5;
+import org.snmp4j.security.AuthSHA;
+import org.snmp4j.security.SecurityProtocols;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -45,6 +48,9 @@ public class OdeSvcsApplication {
       SystemConfig mBean = new SystemConfig(DEFAULT_NO_THREADS, DEFAULT_SCHEMA);
       ObjectName name = new ObjectName("us.dot.its.jpo.ode:type=SystemConfig");
       mbs.registerMBean(mBean, name);
+
+      SecurityProtocols.getInstance().addAuthenticationProtocol(new AuthSHA());
+      SecurityProtocols.getInstance().addAuthenticationProtocol(new AuthMD5());
    }
 
    @Bean
