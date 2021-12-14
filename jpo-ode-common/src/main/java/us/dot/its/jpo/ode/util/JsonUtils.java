@@ -25,16 +25,20 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.cfg.CoercionAction;
+import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.databind.type.LogicalType;
 
 public class JsonUtils {
-   
+
    public static class JsonUtilsException extends Exception {
 
       private static final long serialVersionUID = 1L;
@@ -45,9 +49,8 @@ public class JsonUtils {
 
    }
 
-   private static Gson gsonCompact;
-   private static Gson gsonVerbose;
    private static ObjectMapper mapper;
+   private static ObjectMapper mapper_noNulls;
    private static Logger logger;
 
    private JsonUtils() {
@@ -55,22 +58,36 @@ public class JsonUtils {
    }
 
    static {
-      gsonCompact = new GsonBuilder().create();
-      gsonVerbose = new GsonBuilder().serializeNulls().create();
       mapper = new ObjectMapper();
+      mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+      mapper.coercionConfigFor(LogicalType.Enum)
+            .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);
+
+      mapper_noNulls = new ObjectMapper();
+      mapper_noNulls.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+      mapper_noNulls.setSerializationInclusion(Include.NON_NULL);
    }
 
    public static String toJson(Object o, boolean verbose) {
-
       // convert java object to JSON format,
       // and returned as JSON formatted string
-      return verbose ? gsonVerbose.toJson(o) : gsonCompact.toJson(o);
+      try {
+         return verbose ? mapper.writeValueAsString(o) : mapper_noNulls.writeValueAsString(o);
+      } catch (JsonProcessingException e) {
+         e.printStackTrace();
+         return "";
+      }
    }
 
    public static Object fromJson(String s, Class<?> clazz) {
-      return gsonCompact.fromJson(s, clazz);
+      try {
+         return jacksonFromJson(s, clazz);
+      } catch (JsonUtilsException e) {
+         e.printStackTrace();
+         return null;
+      }
    }
-   
+
    public static Object jacksonFromJson(String s, Class<?> clazz) throws JsonUtilsException {
       try {
          return mapper.readValue(s, clazz);
@@ -86,7 +103,7 @@ public class JsonUtils {
    public static ObjectNode cloneObjectNode(ObjectNode src) {
       return src.deepCopy();
    }
-   
+
    public static ObjectNode newObjectNode(String key, Object value) {
       ObjectNode json = mapper.createObjectNode();
       json.putPOJO(key, value);
@@ -155,7 +172,7 @@ public class JsonUtils {
       }
       return nodeProps;
    }
-   
+
    /**
     * Takes in a key, value pair and returns a valid JSON string such as
     * {"error":"message"}
@@ -167,14 +184,14 @@ public class JsonUtils {
    public static String jsonKeyValue(String key, String value) {
       return "{\"" + key + "\":\"" + value + "\"}";
    }
-   
+
    public static BigDecimal decimalValue(JsonNode v) {
-     BigDecimal result;
-     if (v.isTextual()) {
-       result = new BigDecimal(v.textValue());
-     } else {
-       result = v.decimalValue();
-     }
-     return result;
+      BigDecimal result;
+      if (v.isTextual()) {
+         result = new BigDecimal(v.textValue());
+      } else {
+         result = v.decimalValue();
+      }
+      return result;
    }
 }

@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 public class J2735NodeListXY extends Asn1Object {
@@ -10,6 +12,7 @@ public class J2735NodeListXY extends Asn1Object {
 	private J2735NodeSetXY nodes;
 	private J2735ComputedLane computed;
 
+	@JsonProperty("nodes")
 	public J2735NodeSetXY getNodes() {
 		return nodes;
 	}
