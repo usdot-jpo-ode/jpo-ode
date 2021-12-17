@@ -79,12 +79,6 @@
       <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
-
-    <!-- https://mvnrepository.com/artifact/log4j/log4j -->
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-    </dependency>
   </dependencies>
 
   <dependencyManagement>
@@ -95,6 +89,11 @@
         <version>Camden.SR1</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>1.2.8</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
