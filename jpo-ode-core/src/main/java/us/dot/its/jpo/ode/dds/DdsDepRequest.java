@@ -15,11 +15,14 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.dds;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
- * "DEPOSIT: { \"systemDepositName\": \"%s\", \"encodeType\": \"%s\", \"encodedMsg\": \"%s\" }"
+ * "DEPOSIT: { \"systemDepositName\": \"%s\", \"encodeType\": \"%s\",
+ * \"encodedMsg\": \"%s\" }"
  *
  */
+@JsonPropertyOrder({ "systemDepositName", "encodeType", "encodedMsg" })
 public class DdsDepRequest extends DdsRequest {
 
    private static final long serialVersionUID = 6066887685895268828L;
@@ -28,7 +31,6 @@ public class DdsDepRequest extends DdsRequest {
    private String encodeType;
    private String encodedMsg;
 
-   
    public String getSystemDepositName() {
       return systemDepositName;
    }

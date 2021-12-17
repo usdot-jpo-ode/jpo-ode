@@ -15,43 +15,48 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({ "bsmSource", "logFileName", "recordType", "securityResultCode", "receivedMessageDetails",
+      "encodings", "payloadType", "serialId", "odeReceivedAt", "schemaVersion", "maxDurationTime", "recordGeneratedAt",
+      "recordGeneratedBy", "sanitized" })
 public class OdeBsmMetadata extends OdeLogMetadata {
 
-    private static final long serialVersionUID = -8601265839394150140L;
+   private static final long serialVersionUID = -8601265839394150140L;
 
-    private String originIp;
+   private String originIp;
 
-    public enum BsmSource {
-       EV, RV, unknown
-    }
+   public enum BsmSource {
+      EV, RV, unknown
+   }
 
-    private BsmSource bsmSource;
-    
-    public OdeBsmMetadata() {
-        super();
-    }
+   private BsmSource bsmSource;
 
-    public OdeBsmMetadata(OdeMsgPayload payload) {
-        super(payload);
-    }
+   public OdeBsmMetadata() {
+      super();
+   }
 
-    public OdeBsmMetadata(OdeMsgPayload payload, SerialId serialId, String receivedAt) {
-       
-    }
+   public OdeBsmMetadata(OdeMsgPayload payload) {
+      super(payload);
+   }
 
-    public BsmSource getBsmSource() {
-       return bsmSource;
-    }
+   public OdeBsmMetadata(OdeMsgPayload payload, SerialId serialId, String receivedAt) {
 
-    public void setBsmSource(BsmSource bsmSource) {
-       this.bsmSource = bsmSource;
-    }
+   }
 
-    public String getOriginIp() {
-       return originIp;
-    }
+   public BsmSource getBsmSource() {
+      return bsmSource;
+   }
 
-    public void setOriginIp(String originIp) {
-       this.originIp = originIp;
-    }
+   public void setBsmSource(BsmSource bsmSource) {
+      this.bsmSource = bsmSource;
+   }
+
+   public String getOriginIp() {
+      return originIp;
+   }
+
+   public void setOriginIp(String originIp) {
+      this.originIp = originIp;
+   }
 }

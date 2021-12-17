@@ -16,18 +16,15 @@
 package us.dot.its.jpo.ode.inet;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
@@ -41,14 +38,13 @@ public class InetPacketTest {
   DatagramPacket mockDatagramPacket;
   byte[] mockPayload;
 
-  @Mocked InetAddress address;
+  @Mocked InetAddress mockAddress;
   
   @Before
   public void setup() {
     new MockUp<InetAddress>() {
-      @Mock
-      public InetAddress getByName(String host) {
-          return address;
+      @Mock InetAddress getByName(String host) {
+          return mockAddress;
       }
     };
   }
@@ -87,7 +83,7 @@ public class InetPacketTest {
    */
 
   @Test
-  public void parseBundleNulll() {
+  public void parseBundleNull() {
     InetPacket testPacket = new InetPacket(new byte[] { 1, 2, 3 });
     byte[] bundle = null;
 

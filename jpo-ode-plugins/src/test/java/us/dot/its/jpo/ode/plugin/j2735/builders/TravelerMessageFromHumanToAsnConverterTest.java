@@ -42,13 +42,13 @@ import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 public class TravelerMessageFromHumanToAsnConverterTest {
   @Mocked
   private Logger logger;
-  
+
   @Before
   public void setup() {
     new MockUp<LoggerFactory>() {
       @Mock
       public Logger getLogger(String value) {
-          return logger;
+        return logger;
       }
     };
   }
@@ -65,18 +65,18 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     assertEquals(expectedTID.toString(), inputTID.toString());
     JSONObject timObject = new JSONObject();
     try {
-		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-	} catch (JSONException e1) {
-		e1.printStackTrace();
-	} catch (JsonUtilsException e1) {
-		e1.printStackTrace();
-	}
+      timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION,
+          JsonUtils.toJSONObject(inputTID.toString()));
+    } catch (JSONException e1) {
+      e1.printStackTrace();
+    } catch (JsonUtilsException e1) {
+      e1.printStackTrace();
+    }
     try {
-		assertNotNull(XML.toString(timObject));
-	} catch (JSONException e) {
-		e.printStackTrace();
-	}
-    // assertEquals("string", XML.toString(timObject));
+      assertNotNull(XML.toString(timObject));
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
   }
 
   @Test
@@ -91,17 +91,18 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     assertEquals(expectedTID.toString(), inputTID.toString());
     JSONObject timObject = new JSONObject();
     try {
-		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-	} catch (JSONException e) {
-		e.printStackTrace();
-	} catch (JsonUtilsException e) {
-		e.printStackTrace();
-	}
+      timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION,
+          JsonUtils.toJSONObject(inputTID.toString()));
+    } catch (JSONException e) {
+      e.printStackTrace();
+    } catch (JsonUtilsException e) {
+      e.printStackTrace();
+    }
     try {
-		assertNotNull(XML.toString(timObject));
-	} catch (JSONException e) {
-		e.printStackTrace();
-	}
+      assertNotNull(XML.toString(timObject));
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
   }
 
   @Test
@@ -116,18 +117,19 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     assertEquals(expectedTID.toString(), inputTID.toString());
     JSONObject timObject = new JSONObject();
     try {
-		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-	} catch (JSONException e) {
-		e.printStackTrace();
-	} catch (JsonUtilsException e) {		
-		e.printStackTrace();
-	}
+      timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION,
+          JsonUtils.toJSONObject(inputTID.toString()));
+    } catch (JSONException e) {
+      e.printStackTrace();
+    } catch (JsonUtilsException e) {
+      e.printStackTrace();
+    }
     try {
-		assertNotNull(XML.toString(timObject));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	}
+      assertNotNull(XML.toString(timObject));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    }
   }
 
   @Test
@@ -142,20 +144,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
 
     JSONObject timObject = new JSONObject();
     try {
-		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	} catch (JsonUtilsException e) {
-		
-		e.printStackTrace();
-	}
+      timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION,
+          JsonUtils.toJSONObject(inputTID.toString()));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    } catch (JsonUtilsException e) {
+
+      e.printStackTrace();
+    }
     try {
-		assertNotNull(XML.toString(timObject));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	}
+      assertNotNull(XML.toString(timObject));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    }
 
   }
 
@@ -171,20 +174,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
 
     JSONObject timObject = new JSONObject();
     try {
-		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	} catch (JsonUtilsException e) {
-		
-		e.printStackTrace();
-	}
+      timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION,
+          JsonUtils.toJSONObject(inputTID.toString()));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    } catch (JsonUtilsException e) {
+
+      e.printStackTrace();
+    }
     try {
-		assertNotNull(XML.toString(timObject));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	}
+      assertNotNull(XML.toString(timObject));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    }
 
   }
 
@@ -200,20 +204,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
 
     JSONObject timObject = new JSONObject();
     try {
-		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	} catch (JsonUtilsException e) {
-		
-		e.printStackTrace();
-	}
+      timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION,
+          JsonUtils.toJSONObject(inputTID.toString()));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    } catch (JsonUtilsException e) {
+
+      e.printStackTrace();
+    }
     try {
-		assertNotNull(XML.toString(timObject));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	}
+      assertNotNull(XML.toString(timObject));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    }
 
   }
 
@@ -228,20 +233,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     assertEquals(expectedTID.toString(), inputTID.toString());
     JSONObject timObject = new JSONObject();
     try {
-		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	} catch (JsonUtilsException e) {
-		
-		e.printStackTrace();
-	}
+      timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION,
+          JsonUtils.toJSONObject(inputTID.toString()));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    } catch (JsonUtilsException e) {
+
+      e.printStackTrace();
+    }
     try {
-		assertNotNull(XML.toString(timObject));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	}
+      assertNotNull(XML.toString(timObject));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    }
   }
 
   @Test
@@ -256,20 +262,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
 
     JSONObject timObject = new JSONObject();
     try {
-		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	} catch (JsonUtilsException e) {
-		
-		e.printStackTrace();
-	}
+      timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION,
+          JsonUtils.toJSONObject(inputTID.toString()));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    } catch (JsonUtilsException e) {
+
+      e.printStackTrace();
+    }
     try {
-		assertNotNull(XML.toString(timObject));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	}
+      assertNotNull(XML.toString(timObject));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    }
 
   }
 
@@ -284,20 +291,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
     assertEquals(expectedTID.toString(), inputTID.toString());
     JSONObject timObject = new JSONObject();
     try {
-		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	} catch (JsonUtilsException e) {
-		
-		e.printStackTrace();
-	}
+      timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION,
+          JsonUtils.toJSONObject(inputTID.toString()));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    } catch (JsonUtilsException e) {
+
+      e.printStackTrace();
+    }
     try {
-		assertNotNull(XML.toString(timObject));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	}
+      assertNotNull(XML.toString(timObject));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    }
   }
 
   @Test
@@ -338,12 +346,12 @@ public class TravelerMessageFromHumanToAsnConverterTest {
 
   @Test
   public void testBuildItem() {
-    
+
     String itisCode = "123";
     String itis = "itis";
     ObjectNode expectedItisNode = JsonUtils.newNode().put(itis, Integer.parseInt(itisCode));
     ObjectNode expecteditem = (ObjectNode) JsonUtils.newNode().set("item", expectedItisNode);
-    
+
     // build ITIS code
     JsonNode actualItem = TravelerMessageFromHumanToAsnConverter.buildItem(itisCode);
     assertEquals(expecteditem, actualItem);
@@ -373,20 +381,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
 
     JSONObject timObject = new JSONObject();
     try {
-		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	} catch (JsonUtilsException e) {
-		
-		e.printStackTrace();
-	}
+      timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION,
+          JsonUtils.toJSONObject(inputTID.toString()));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    } catch (JsonUtilsException e) {
+
+      e.printStackTrace();
+    }
     try {
-		assertNotNull(XML.toString(timObject));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	}
+      assertNotNull(XML.toString(timObject));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    }
 
   }
 
@@ -402,20 +411,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
 
     JSONObject timObject = new JSONObject();
     try {
-		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	} catch (JsonUtilsException e) {
-		
-		e.printStackTrace();
-	}
+      timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION,
+          JsonUtils.toJSONObject(inputTID.toString()));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    } catch (JsonUtilsException e) {
+
+      e.printStackTrace();
+    }
     try {
-		assertNotNull(XML.toString(timObject));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	}
+      assertNotNull(XML.toString(timObject));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    }
 
   }
 
@@ -431,20 +441,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
 
     JSONObject timObject = new JSONObject();
     try {
-		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	} catch (JsonUtilsException e) {
-		
-		e.printStackTrace();
-	}
+      timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION,
+          JsonUtils.toJSONObject(inputTID.toString()));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    } catch (JsonUtilsException e) {
+
+      e.printStackTrace();
+    }
     try {
-		assertNotNull(XML.toString(timObject));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	}
+      assertNotNull(XML.toString(timObject));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    }
 
   }
 
@@ -460,20 +471,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
 
     JSONObject timObject = new JSONObject();
     try {
-		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	} catch (JsonUtilsException e) {
-		
-		e.printStackTrace();
-	}
+      timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION,
+          JsonUtils.toJSONObject(inputTID.toString()));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    } catch (JsonUtilsException e) {
+
+      e.printStackTrace();
+    }
     try {
-		assertNotNull(XML.toString(timObject));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	}
+      assertNotNull(XML.toString(timObject));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    }
 
   }
 
@@ -489,20 +501,21 @@ public class TravelerMessageFromHumanToAsnConverterTest {
 
     JSONObject timObject = new JSONObject();
     try {
-		timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION, JsonUtils.toJSONObject(inputTID.toString()));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	} catch (JsonUtilsException e) {
-		
-		e.printStackTrace();
-	}
+      timObject.put(TravelerMessageFromHumanToAsnConverter.TRAVELER_INFORMATION,
+          JsonUtils.toJSONObject(inputTID.toString()));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    } catch (JsonUtilsException e) {
+
+      e.printStackTrace();
+    }
     try {
-		assertNotNull(XML.toString(timObject));
-	} catch (JSONException e) {
-		
-		e.printStackTrace();
-	}
+      assertNotNull(XML.toString(timObject));
+    } catch (JSONException e) {
+
+      e.printStackTrace();
+    }
 
   }
 }
