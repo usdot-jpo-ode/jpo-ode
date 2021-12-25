@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.model;
 
+import com.fasterxml.jackson.annotation.*;
+
 import us.dot.its.jpo.ode.plugin.j2735.J2735MAP;
 
 public class OdeMapPayload extends OdeMsgPayload {
@@ -13,11 +15,13 @@ public class OdeMapPayload extends OdeMsgPayload {
 	        this(new J2735MAP());
 	    }
 
-	    public OdeMapPayload(J2735MAP map) {
+		@JsonCreator
+	    public OdeMapPayload( @JsonProperty("data") J2735MAP map) {
 	        super(map);
 	        this.setData(map);
 	    }
 
+		@JsonProperty("data")
 	    public J2735MAP getMap() {
 	        return (J2735MAP) getData();
 	    }
