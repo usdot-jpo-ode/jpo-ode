@@ -54,10 +54,10 @@ public class VehicleSizeBuilderTest {
    // VehicleWidth tests
 
    /**
-    * Test that the undefined vehicle width value (0) returns null
+    * Test that the undefined vehicle width value (0) returns 0
     */
    @Test
-   public void shouldReturnUndefinedVehicleWidth() {
+   public void shouldReturnZeroVehicleWidth() {
 
       Integer expectedValue = 0;
 
@@ -245,10 +245,10 @@ public class VehicleSizeBuilderTest {
    // VehicleLength tests
 
    /**
-    * Test that undefined vehicle length flag value (0) returns (null)
+    * Test that undefined vehicle length flag value (0) returns 0
     */
    @Test
-   public void shouldReturnUndefinedVehicleLength() {
+   public void shouldReturnZeroVehicleLength() {
 
       Integer expectedValue = 0;
 
