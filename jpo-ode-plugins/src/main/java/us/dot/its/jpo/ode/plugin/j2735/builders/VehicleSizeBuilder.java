@@ -48,14 +48,14 @@ public class VehicleSizeBuilder {
         if (length != 0) {
             genericVehicleSize.setLength(length);
         } else {
-            genericVehicleSize.setLength(null);
+            genericVehicleSize.setLength(0);
         }
         
         int width = vehicleSize.get("width").asInt();
         if (width != 0) {
             genericVehicleSize.setWidth(width);
         } else {
-            genericVehicleSize.setWidth(null);
+            genericVehicleSize.setWidth(0);
         }
         
         return genericVehicleSize;

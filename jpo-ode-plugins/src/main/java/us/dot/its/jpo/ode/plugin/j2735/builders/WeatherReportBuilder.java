@@ -45,7 +45,8 @@ public class WeatherReportBuilder {
       J2735WeatherReport gwr = new J2735WeatherReport();
 
       // Required element
-      gwr.setIsRaining(J2735EssPrecipYesNo.values()[weatherReport.get("isRaining").asInt()]);
+      J2735EssPrecipYesNo enumIsRaining = J2735EssPrecipYesNo.valueOf(weatherReport.get("isRaining").fieldNames().next().toUpperCase());
+      gwr.setIsRaining(enumIsRaining);
 
       // Optional elements
       if (weatherReport.get("friction") != null) {
