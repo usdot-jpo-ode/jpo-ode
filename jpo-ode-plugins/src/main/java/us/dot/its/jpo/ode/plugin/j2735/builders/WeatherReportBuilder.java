@@ -64,7 +64,8 @@ public class WeatherReportBuilder {
       }
 
       if (weatherReport.get("precipSituation") != null) {
-         gwr.setPrecipSituation(J2735EssPrecipSituation.values()[weatherReport.get("precipSituation").asInt()]);
+         J2735EssPrecipSituation enumPrecipSituation = J2735EssPrecipSituation.valueOf(weatherReport.get("precipSituation").fieldNames().next().toUpperCase());
+         gwr.setPrecipSituation(enumPrecipSituation);
       }
 
       if (weatherReport.get("rainRate") != null) {

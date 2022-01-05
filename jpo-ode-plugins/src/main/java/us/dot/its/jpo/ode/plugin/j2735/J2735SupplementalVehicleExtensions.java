@@ -30,7 +30,7 @@ public class J2735SupplementalVehicleExtensions extends J2735BsmPart2ExtensionBa
 	private J2735DisabledVehicle status;
 	private J2735SpeedProfile speedProfile;
 	private J2735RTCMPackage theRTCM;
-	private List<J2735RegionalContent> regional = new ArrayList<>();
+	// private List<J2735RegionalContent> regional = new ArrayList<>();
 
 	public Integer getClassification() {
 		return classification;
@@ -104,12 +104,12 @@ public class J2735SupplementalVehicleExtensions extends J2735BsmPart2ExtensionBa
 		this.theRTCM = theRTCM;
 	}
 
-	public List<J2735RegionalContent> getRegional() {
-		return regional;
-	}
+	// public List<J2735RegionalContent> getRegional() {
+	// 	return regional;
+	// }
 
-	public void setRegional(List<J2735RegionalContent> regional) {
-		this.regional = regional;
-	}
+	// public void setRegional(List<J2735RegionalContent> regional) {
+	// 	this.regional = regional;
+	// }
 
 }

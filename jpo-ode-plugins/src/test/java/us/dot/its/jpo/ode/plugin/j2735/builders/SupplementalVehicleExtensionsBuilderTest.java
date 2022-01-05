@@ -214,33 +214,33 @@ public class SupplementalVehicleExtensionsBuilderTest {
       assertNotNull(result.getTheRTCM());
    }
 
-   @Test
-   public void testEmptyRegional() {
+   // @Test
+   // public void testEmptyRegional() {
 
-      ObjectNode testInput = JsonUtils.newNode();
-      testInput.set("regional", JsonUtils.newNode());
+   //    ObjectNode testInput = JsonUtils.newNode();
+   //    testInput.set("regional", JsonUtils.newNode());
 
-      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
-            .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
+   //    J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
+   //          .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
-      assertNotNull(result.getRegional());
-   }
+   //    assertNotNull(result.getRegional());
+   // }
 
-   @Test
-   public void test1Regional(@Capturing CodecUtils capturingCodecUtils) {
+   // @Test
+   // public void test1Regional(@Capturing CodecUtils capturingCodecUtils) {
 
-      ObjectNode testRegionalNode = JsonUtils.newNode();
-      testRegionalNode.put("regionId", 1);
-      testRegionalNode.put("regExtValue", "something");
+   //    ObjectNode testRegionalNode = JsonUtils.newNode();
+   //    testRegionalNode.put("regionId", 1);
+   //    testRegionalNode.put("regExtValue", "something");
 
-      ObjectNode testInput = JsonUtils.newNode();
-      testInput.set("regional", JsonUtils.newArrayNode().add(testRegionalNode));
+   //    ObjectNode testInput = JsonUtils.newNode();
+   //    testInput.set("regional", JsonUtils.newArrayNode().add(testRegionalNode));
 
-      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
-            .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
+   //    J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
+   //          .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
-      assertNotNull(result.getRegional());
-   }
+   //    assertNotNull(result.getRegional());
+   // }
 
    @Test
    public void testConstructorIsPrivate()

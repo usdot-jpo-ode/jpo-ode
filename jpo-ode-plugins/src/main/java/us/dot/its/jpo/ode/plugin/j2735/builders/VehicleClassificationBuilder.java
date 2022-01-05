@@ -99,18 +99,18 @@ public class VehicleClassificationBuilder {
          gvc.setFuelType(J2735FuelType.values()[fuelType]);
       }
 
-      JsonNode regional = vc.get("regional");
-      if (regional != null && regional.isArray()) {
-         Iterator<JsonNode> elements = regional.elements();
+      // JsonNode regional = vc.get("regional");
+      // if (regional != null && regional.isArray()) {
+      //    Iterator<JsonNode> elements = regional.elements();
 
-         while (elements.hasNext()) {
-            JsonNode element = elements.next();
+      //    while (elements.hasNext()) {
+      //       JsonNode element = elements.next();
 
-            gvc.getRegional().add(new J2735RegionalContent().setId(element.get("regionId").asInt())
-                  .setValue(CodecUtils.fromHex(element.get("regExtValue").asText())));
-         }
+      //       gvc.getRegional().add(new J2735RegionalContent().setId(element.get("regionId").asInt())
+      //             .setValue(CodecUtils.fromHex(element.get("regExtValue").asText())));
+      //    }
 
-      }
+      // }
 
       return gvc;
    }
