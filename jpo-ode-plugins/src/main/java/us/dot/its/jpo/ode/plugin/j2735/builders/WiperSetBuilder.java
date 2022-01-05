@@ -21,9 +21,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735WiperSet;
 import us.dot.its.jpo.ode.plugin.j2735.J2735WiperStatus;
 
 public class WiperSetBuilder {
-
-   private static final int STATUS_LOWER_BOUND = 0;
-   private static final int STATUS_UPPER_BOUND = 6;
+   
    private static final int RATE_LOWER_BOUND = 0;
    private static final int RATE_UPPER_BOUND = 127;
 
