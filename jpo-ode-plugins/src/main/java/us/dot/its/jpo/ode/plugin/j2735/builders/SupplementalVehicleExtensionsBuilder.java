@@ -63,16 +63,16 @@ public class SupplementalVehicleExtensionsBuilder {
         if (sve.has("theRTCM")) {
             genericSVE.setTheRTCM(RTCMPackageBuilder.genericRTCMPackage(sve.get("theRTCM")));
         }
-        if (sve.has("regional")) {
-            JsonNode regional = sve.get("regional");
-            Iterator<JsonNode> elements = regional.elements();
-            while (elements.hasNext()) {
-               JsonNode element = elements.next();
-               genericSVE.getRegional().add(new J2735RegionalContent().setId(
-                  element.get("regionId").asInt())
-                        .setValue(CodecUtils.fromHex(element.get("regExtValue").asText().trim().replaceAll("\\w", ""))));
-            }
-        }
+        // if (sve.has("regional")) {
+        //     JsonNode regional = sve.get("regional");
+        //     Iterator<JsonNode> elements = regional.elements();
+        //     while (elements.hasNext()) {
+        //        JsonNode element = elements.next();
+        //        genericSVE.getRegional().add(new J2735RegionalContent().setId(
+        //           element.get("regionId").asInt())
+        //                 .setValue(CodecUtils.fromHex(element.get("regExtValue").asText().trim().replaceAll("\\w", ""))));
+        //     }
+        // }
         return genericSVE;
     }
 
