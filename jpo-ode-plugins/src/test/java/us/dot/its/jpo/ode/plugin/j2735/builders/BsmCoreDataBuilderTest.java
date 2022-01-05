@@ -72,7 +72,10 @@ public class BsmCoreDataBuilderTest {
       testInput.put("elev", 3456);
 
       testInput.put("angle", 0x7F);
-      testInput.put("transmission", 7); // unavailable flag
+
+      ObjectNode testTransmission = JsonUtils.newNode();
+      testTransmission.set("unavailable", null);
+      testInput.set("transmission", testTransmission);
 
       assertNotNull(BsmCoreDataBuilder.genericBsmCoreData(testInput));
    }
@@ -91,7 +94,9 @@ public class BsmCoreDataBuilderTest {
       testInput.put("long", -63989308);
       testInput.put("elev", 3456);
 
-      testInput.put("transmission", 5); // unavailable flag
+      ObjectNode testTransmission = JsonUtils.newNode();
+      testTransmission.set("unavailable", null);
+      testInput.set("transmission", testTransmission);
 
       assertNotNull(BsmCoreDataBuilder.genericBsmCoreData(testInput));
    }

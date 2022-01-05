@@ -59,7 +59,7 @@ public class VehicleSizeBuilderTest {
    @Test
    public void shouldReturnUndefinedVehicleWidth() {
 
-      Integer expectedValue = null;
+      Integer expectedValue = 0;
 
       Integer testWidth = 0;
       Integer testLength = 0;
@@ -250,7 +250,7 @@ public class VehicleSizeBuilderTest {
    @Test
    public void shouldReturnUndefinedVehicleLength() {
 
-      Integer expectedValue = null;
+      Integer expectedValue = 0;
 
       Integer testWidth = 0;
       Integer testLength = 0;

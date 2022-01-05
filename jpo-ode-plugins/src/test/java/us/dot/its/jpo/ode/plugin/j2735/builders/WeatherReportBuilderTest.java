@@ -43,8 +43,9 @@ public class WeatherReportBuilderTest {
       J2735EssPrecipYesNo expectedIsRaining = J2735EssPrecipYesNo.PRECIP;
 
       ObjectNode testInputNode = JsonUtils.newNode();
-
-      testInputNode.put("isRaining", 1);
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("precip", null);
+      testInputNode.set("isRaining", testIsRaining);
 
       J2735WeatherReport actualValue = WeatherReportBuilder.genericWeatherReport(testInputNode);
 
@@ -55,7 +56,9 @@ public class WeatherReportBuilderTest {
    public void testRainRateErrorBelowLowerBound() {
       ObjectNode testInputNode = JsonUtils.newNode();
 
-      testInputNode.put("isRaining", 2);
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("noprecip", null);
+      testInputNode.set("isRaining", testIsRaining);
       testInputNode.put("rainRate", -1);
       try {
          WeatherReportBuilder.genericWeatherReport(testInputNode);
@@ -69,7 +72,9 @@ public class WeatherReportBuilderTest {
    public void testRainRateErrorAboveUpperBound() {
       ObjectNode testInputNode = JsonUtils.newNode();
 
-      testInputNode.put("isRaining", 2);
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("noprecip", null);
+      testInputNode.set("isRaining", testIsRaining);
       testInputNode.put("rainRate", 65536);
       try {
          WeatherReportBuilder.genericWeatherReport(testInputNode);
@@ -83,7 +88,9 @@ public class WeatherReportBuilderTest {
    public void testRainRateFlagValue() {
       ObjectNode testInputNode = JsonUtils.newNode();
 
-      testInputNode.put("isRaining", 2);
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("noprecip", null);
+      testInputNode.set("isRaining", testIsRaining);
       testInputNode.put("rainRate", 65535);
       assertNull(WeatherReportBuilder.genericWeatherReport(testInputNode).getRainRate());
    }
@@ -94,7 +101,9 @@ public class WeatherReportBuilderTest {
 
       ObjectNode testInputNode = JsonUtils.newNode();
 
-      testInputNode.put("isRaining", 2);
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("noprecip", null);
+      testInputNode.set("isRaining", testIsRaining);
       testInputNode.put("rainRate", 45678);
 
       J2735WeatherReport actualValue = WeatherReportBuilder.genericWeatherReport(testInputNode);
@@ -108,8 +117,13 @@ public class WeatherReportBuilderTest {
 
       ObjectNode testInputNode = JsonUtils.newNode();
 
-      testInputNode.put("isRaining", 2);
-      testInputNode.put("precipSituation", 12);
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("noprecip", null);
+      testInputNode.set("isRaining", testIsRaining);
+
+      ObjectNode testPrecipSituation = JsonUtils.newNode();
+      testPrecipSituation.set("rainHeavy", null);
+      testInputNode.set("precipSituation", testPrecipSituation);
 
       J2735WeatherReport actualValue = WeatherReportBuilder.genericWeatherReport(testInputNode);
 
@@ -120,7 +134,9 @@ public class WeatherReportBuilderTest {
    public void testSolarRadiationBelowLowerBound() {
       ObjectNode testInputNode = JsonUtils.newNode();
 
-      testInputNode.put("isRaining", 2);
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("noprecip", null);
+      testInputNode.set("isRaining", testIsRaining);
       testInputNode.put("solarRadiation", -1);
       try {
          WeatherReportBuilder.genericWeatherReport(testInputNode);
@@ -134,7 +150,9 @@ public class WeatherReportBuilderTest {
    public void testSolarRadiationAboveUpperBound() {
       ObjectNode testInputNode = JsonUtils.newNode();
 
-      testInputNode.put("isRaining", 2);
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("noprecip", null);
+      testInputNode.set("isRaining", testIsRaining);
       testInputNode.put("solarRadiation", 65536);
       try {
          WeatherReportBuilder.genericWeatherReport(testInputNode);
@@ -148,7 +166,9 @@ public class WeatherReportBuilderTest {
    public void testSolarRadiationFlagValue() {
       ObjectNode testInputNode = JsonUtils.newNode();
 
-      testInputNode.put("isRaining", 2);
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("noprecip", null);
+      testInputNode.set("isRaining", testIsRaining);
       testInputNode.put("solarRadiation", 65535);
       assertNull(WeatherReportBuilder.genericWeatherReport(testInputNode).getSolarRadiation());
    }
@@ -159,7 +179,9 @@ public class WeatherReportBuilderTest {
 
       ObjectNode testInputNode = JsonUtils.newNode();
 
-      testInputNode.put("isRaining", 2);
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("noprecip", null);
+      testInputNode.set("isRaining", testIsRaining);
       testInputNode.put("solarRadiation", 34567);
 
       J2735WeatherReport actualValue = WeatherReportBuilder.genericWeatherReport(testInputNode);
@@ -171,7 +193,9 @@ public class WeatherReportBuilderTest {
    public void testMobileFrictionBelowLowerBound() {
       ObjectNode testInputNode = JsonUtils.newNode();
 
-      testInputNode.put("isRaining", 2);
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("noprecip", null);
+      testInputNode.set("isRaining", testIsRaining);
       testInputNode.put("friction", -1);
       try {
          WeatherReportBuilder.genericWeatherReport(testInputNode);
@@ -185,7 +209,9 @@ public class WeatherReportBuilderTest {
    public void testMobileFrictionAboveUpperBound() {
       ObjectNode testInputNode = JsonUtils.newNode();
 
-      testInputNode.put("isRaining", 2);
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("noprecip", null);
+      testInputNode.set("isRaining", testIsRaining);
       testInputNode.put("friction", 102);
       try {
          WeatherReportBuilder.genericWeatherReport(testInputNode);
@@ -199,7 +225,9 @@ public class WeatherReportBuilderTest {
    public void testMobileFrictionFlagValue() {
       ObjectNode testInputNode = JsonUtils.newNode();
 
-      testInputNode.put("isRaining", 2);
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("noprecip", null);
+      testInputNode.set("isRaining", testIsRaining);
       testInputNode.put("friction", 101);
       assertNull(WeatherReportBuilder.genericWeatherReport(testInputNode).getFriction());
    }
@@ -210,7 +238,9 @@ public class WeatherReportBuilderTest {
 
       ObjectNode testInputNode = JsonUtils.newNode();
 
-      testInputNode.put("isRaining", 2);
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("noprecip", null);
+      testInputNode.set("isRaining", testIsRaining);
       testInputNode.put("friction", 55);
 
       J2735WeatherReport actualValue = WeatherReportBuilder.genericWeatherReport(testInputNode);
@@ -222,7 +252,9 @@ public class WeatherReportBuilderTest {
    public void testRoadFrictionBelowLowerBound() {
       ObjectNode testInputNode = JsonUtils.newNode();
 
-      testInputNode.put("isRaining", 2);
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("noprecip", null);
+      testInputNode.set("isRaining", testIsRaining);
       testInputNode.put("roadFriction", -1);
       try {
          WeatherReportBuilder.genericWeatherReport(testInputNode);
@@ -236,7 +268,9 @@ public class WeatherReportBuilderTest {
    public void testRoadFrictionAboveUpperBound() {
       ObjectNode testInputNode = JsonUtils.newNode();
 
-      testInputNode.put("isRaining", 2);
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("noprecip", null);
+      testInputNode.set("isRaining", testIsRaining);
       testInputNode.put("roadFriction", 51);
       try {
          WeatherReportBuilder.genericWeatherReport(testInputNode);
@@ -254,7 +288,9 @@ public class WeatherReportBuilderTest {
 
       ObjectNode testInputNode = JsonUtils.newNode();
 
-      testInputNode.put("isRaining", 2);
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("noprecip", null);
+      testInputNode.set("isRaining", testIsRaining);
       testInputNode.put("roadFriction", inputRoadFriction);
 
       J2735WeatherReport actualValue = WeatherReportBuilder.genericWeatherReport(testInputNode);

@@ -41,7 +41,9 @@ public class WiperSetBuilderTest {
 
       ObjectNode testInput = JsonUtils.newNode();
 
-      testInput.put("statusFront", 1);
+      ObjectNode testStatusFront = JsonUtils.newNode();
+      testStatusFront.set("off", null);
+      testInput.set("statusFront", testStatusFront);
       testInput.put("rateFront", 55);
 
       J2735WiperSet actualValue = WiperSetBuilder.genericWiperSet(testInput);
@@ -58,9 +60,14 @@ public class WiperSetBuilderTest {
 
       ObjectNode testInput = JsonUtils.newNode();
 
-      testInput.put("statusFront", 1);
+      ObjectNode testStatusFront = JsonUtils.newNode();
+      testStatusFront.set("off", null);
+      testInput.set("statusFront", testStatusFront);
       testInput.put("rateFront", 55);
-      testInput.put("statusRear", 6);
+
+      ObjectNode testStatusRear = JsonUtils.newNode();
+      testStatusRear.set("automaticPresent", null);
+      testInput.set("statusRear", testStatusRear);
       testInput.put("rateRear", 12);
 
       J2735WiperSet actualValue = WiperSetBuilder.genericWiperSet(testInput);
@@ -70,44 +77,17 @@ public class WiperSetBuilderTest {
    }
 
    @Test
-   public void testBelowLowerBoundStatusFront() {
-      ObjectNode testInput = JsonUtils.newNode();
-
-      testInput.put("statusFront", -1);
-      testInput.put("rateFront", 55);
-      testInput.put("statusRear", 6);
-      testInput.put("rateRear", 12);
-
-      try {
-         WiperSetBuilder.genericWiperSet(testInput);
-      } catch (Exception e) {
-         assertTrue(e instanceof IllegalArgumentException);
-      }
-   }
-
-   @Test
-   public void testAboveUpperBoundStatusFront() {
-      ObjectNode testInput = JsonUtils.newNode();
-
-      testInput.put("statusFront", 7);
-      testInput.put("rateFront", 55);
-      testInput.put("statusRear", 6);
-      testInput.put("rateRear", 12);
-
-      try {
-         WiperSetBuilder.genericWiperSet(testInput);
-      } catch (Exception e) {
-         assertTrue(e instanceof IllegalArgumentException);
-      }
-   }
-
-   @Test
    public void testBelowLowerBoundRateFront() {
       ObjectNode testInput = JsonUtils.newNode();
 
-      testInput.put("statusFront", 5);
+      ObjectNode testStatusFront = JsonUtils.newNode();
+      testStatusFront.set("off", null);
+      testInput.set("statusFront", testStatusFront);
       testInput.put("rateFront", -1);
-      testInput.put("statusRear", 6);
+
+      ObjectNode testStatusRear = JsonUtils.newNode();
+      testStatusRear.set("automaticPresent", null);
+      testInput.set("statusRear", testStatusRear);
       testInput.put("rateRear", 12);
 
       try {
@@ -121,41 +101,14 @@ public class WiperSetBuilderTest {
    public void testAboveUpperBoundRateFront() {
       ObjectNode testInput = JsonUtils.newNode();
 
-      testInput.put("statusFront", 5);
+      ObjectNode testStatusFront = JsonUtils.newNode();
+      testStatusFront.set("off", null);
+      testInput.set("statusFront", testStatusFront);
       testInput.put("rateFront", 128);
-      testInput.put("statusRear", 6);
-      testInput.put("rateRear", 12);
 
-      try {
-         WiperSetBuilder.genericWiperSet(testInput);
-      } catch (Exception e) {
-         assertTrue(e instanceof IllegalArgumentException);
-      }
-   }
-
-   @Test
-   public void testBelowLowerBoundStatusRear() {
-      ObjectNode testInput = JsonUtils.newNode();
-
-      testInput.put("statusFront", 5);
-      testInput.put("rateFront", 55);
-      testInput.put("statusRear", -1);
-      testInput.put("rateRear", 12);
-
-      try {
-         WiperSetBuilder.genericWiperSet(testInput);
-      } catch (Exception e) {
-         assertTrue(e instanceof IllegalArgumentException);
-      }
-   }
-
-   @Test
-   public void testAboveUpperBoundStatusRear() {
-      ObjectNode testInput = JsonUtils.newNode();
-
-      testInput.put("statusFront", 5);
-      testInput.put("rateFront", 55);
-      testInput.put("statusRear", 7);
+      ObjectNode testStatusRear = JsonUtils.newNode();
+      testStatusRear.set("automaticPresent", null);
+      testInput.set("statusRear", testStatusRear);
       testInput.put("rateRear", 12);
 
       try {
@@ -169,9 +122,14 @@ public class WiperSetBuilderTest {
    public void testBelowLowerBoundRateRear() {
       ObjectNode testInput = JsonUtils.newNode();
 
-      testInput.put("statusFront", 5);
+      ObjectNode testStatusFront = JsonUtils.newNode();
+      testStatusFront.set("off", null);
+      testInput.set("statusFront", testStatusFront);
       testInput.put("rateFront", 55);
-      testInput.put("statusRear", 6);
+
+      ObjectNode testStatusRear = JsonUtils.newNode();
+      testStatusRear.set("automaticPresent", null);
+      testInput.set("statusRear", testStatusRear);
       testInput.put("rateRear", -1);
 
       try {
@@ -185,9 +143,14 @@ public class WiperSetBuilderTest {
    public void testAboveUpperBoundRateRear() {
       ObjectNode testInput = JsonUtils.newNode();
 
-      testInput.put("statusFront", 5);
+      ObjectNode testStatusFront = JsonUtils.newNode();
+      testStatusFront.set("off", null);
+      testInput.set("statusFront", testStatusFront);
       testInput.put("rateFront", 55);
-      testInput.put("statusRear", 6);
+      
+      ObjectNode testStatusRear = JsonUtils.newNode();
+      testStatusRear.set("automaticPresent", null);
+      testInput.set("statusRear", testStatusRear);
       testInput.put("rateRear", 128);
 
       try {
