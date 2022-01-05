@@ -15,17 +15,13 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import java.util.Iterator;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735BasicVehicleRole;
 import us.dot.its.jpo.ode.plugin.j2735.J2735FuelType;
-import us.dot.its.jpo.ode.plugin.j2735.J2735RegionalContent;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ResponderGroupAffected;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleClassification;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleType;
-import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class VehicleClassificationBuilder {
 
@@ -98,19 +94,6 @@ public class VehicleClassificationBuilder {
 
          gvc.setFuelType(J2735FuelType.values()[fuelType]);
       }
-
-      // JsonNode regional = vc.get("regional");
-      // if (regional != null && regional.isArray()) {
-      //    Iterator<JsonNode> elements = regional.elements();
-
-      //    while (elements.hasNext()) {
-      //       JsonNode element = elements.next();
-
-      //       gvc.getRegional().add(new J2735RegionalContent().setId(element.get("regionId").asInt())
-      //             .setValue(CodecUtils.fromHex(element.get("regExtValue").asText())));
-      //    }
-
-      // }
 
       return gvc;
    }

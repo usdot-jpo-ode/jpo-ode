@@ -32,6 +32,7 @@ public class BrakeSystemStatusBuilder {
       J2735BrakeSystemStatus genericBrakesStatus = new J2735BrakeSystemStatus();
 
       JsonNode wheelBrakes = brakesStatus.get("wheelBrakes");
+      // Check if wheelBrakes was not set (00000), if it wasn't set it to unavailable
       if (wheelBrakes.asText().trim().equals("00000")) {
          ObjectNode wheelBrakesUnavailable = JsonUtils.newNode();
          wheelBrakesUnavailable.put("wheelBrakes", "10000");
