@@ -25,15 +25,12 @@ import java.lang.reflect.Modifier;
 
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735BasicVehicleRole;
 import us.dot.its.jpo.ode.plugin.j2735.J2735FuelType;
-import us.dot.its.jpo.ode.plugin.j2735.J2735RegionalContent;
 import us.dot.its.jpo.ode.plugin.j2735.J2735ResponderGroupAffected;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleType;
-import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class VehicleClassificationBuilderTest {
@@ -164,28 +161,6 @@ public class VehicleClassificationBuilderTest {
       assertEquals(J2735FuelType.natGasLiquid,
             VehicleClassificationBuilder.genericVehicleClassification(testInputNode).getFuelType());
    }
-
-   // @Test
-   // public void testRegional() {
-
-   //    // regional is an array of (int, string) value pairs of type (regionId,
-   //    // regExtValue)
-
-   //    ObjectNode regionNode = JsonUtils.newNode();
-   //    regionNode.put("regionId", 5);
-   //    regionNode.put("regExtValue", "010A"); // put hex 010A into byte array
-
-   //    ArrayNode regionList = JsonUtils.newArrayNode();
-   //    regionList.insert(0, regionNode);
-
-   //    ObjectNode testInputNode = (ObjectNode) JsonUtils.newNode().set("regional", regionList);
-
-   //    J2735RegionalContent actualRegional = VehicleClassificationBuilder.genericVehicleClassification(testInputNode)
-   //          .getRegional().get(0);
-
-   //    assertEquals(Integer.valueOf(5), actualRegional.getId());
-   //    assertEquals("010A", CodecUtils.toHex(actualRegional.getValue()));
-   // }
 
    @Test
    public void testConstructorIsPrivate()

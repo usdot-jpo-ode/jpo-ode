@@ -16,8 +16,6 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class J2735VehicleClassification implements Serializable{
 	private static final long serialVersionUID = 1L;
@@ -25,7 +23,6 @@ public class J2735VehicleClassification implements Serializable{
 	private J2735VehicleType hpmsType;
 	private Integer iso3883;
 	private Integer keyType;
-	// private List<J2735RegionalContent> regional = new ArrayList<>();
 	private J2735ResponderGroupAffected responderType;
 	private J2735NamedNumber responseEquip;
 	private J2735BasicVehicleRole role;
@@ -62,14 +59,6 @@ public class J2735VehicleClassification implements Serializable{
 	public void setKeyType(Integer keyType) {
 		this.keyType = keyType;
 	}
-
-	// public List<J2735RegionalContent> getRegional() {
-	// 	return regional;
-	// }
-
-	// public void setRegional(List<J2735RegionalContent> regional) {
-	// 	this.regional = regional;
-	// }
 
 	public J2735ResponderGroupAffected getResponderType() {
 		return responderType;
