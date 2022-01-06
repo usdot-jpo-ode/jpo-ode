@@ -15,9 +15,6 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class J2735SupplementalVehicleExtensions extends J2735BsmPart2ExtensionBase {
 	private static final long serialVersionUID = 1L;
 
@@ -30,7 +27,6 @@ public class J2735SupplementalVehicleExtensions extends J2735BsmPart2ExtensionBa
 	private J2735DisabledVehicle status;
 	private J2735SpeedProfile speedProfile;
 	private J2735RTCMPackage theRTCM;
-	private List<J2735RegionalContent> regional = new ArrayList<>();
 
 	public Integer getClassification() {
 		return classification;
@@ -102,14 +98,6 @@ public class J2735SupplementalVehicleExtensions extends J2735BsmPart2ExtensionBa
 
 	public void setTheRTCM(J2735RTCMPackage theRTCM) {
 		this.theRTCM = theRTCM;
-	}
-
-	public List<J2735RegionalContent> getRegional() {
-		return regional;
-	}
-
-	public void setRegional(List<J2735RegionalContent> regional) {
-		this.regional = regional;
 	}
 
 }
