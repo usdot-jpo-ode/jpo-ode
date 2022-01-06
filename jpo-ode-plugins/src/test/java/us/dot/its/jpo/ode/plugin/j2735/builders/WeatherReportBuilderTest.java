@@ -53,6 +53,22 @@ public class WeatherReportBuilderTest {
    }
 
    @Test
+   public void testUnsupportedIsRaining() {
+      // isRaining is the only required field
+
+      J2735EssPrecipYesNo expectedIsRaining = J2735EssPrecipYesNo.NA;
+
+      ObjectNode testInputNode = JsonUtils.newNode();
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("testIsRaining", null);
+      testInputNode.set("isRaining", testIsRaining);
+
+      J2735WeatherReport actualValue = WeatherReportBuilder.genericWeatherReport(testInputNode);
+
+      assertEquals(expectedIsRaining, actualValue.getIsRaining());
+   }
+
+   @Test
    public void testRainRateErrorBelowLowerBound() {
       ObjectNode testInputNode = JsonUtils.newNode();
 
@@ -123,6 +139,25 @@ public class WeatherReportBuilderTest {
 
       ObjectNode testPrecipSituation = JsonUtils.newNode();
       testPrecipSituation.set("rainHeavy", null);
+      testInputNode.set("precipSituation", testPrecipSituation);
+
+      J2735WeatherReport actualValue = WeatherReportBuilder.genericWeatherReport(testInputNode);
+
+      assertEquals(expectedPrecipSituation, actualValue.getPrecipSituation());
+   }
+
+   @Test
+   public void testUnsupportedPrecipSituationEnum() {
+      J2735EssPrecipSituation expectedPrecipSituation = J2735EssPrecipSituation.UNKNOWN;
+
+      ObjectNode testInputNode = JsonUtils.newNode();
+
+      ObjectNode testIsRaining = JsonUtils.newNode();
+      testIsRaining.set("noprecip", null);
+      testInputNode.set("isRaining", testIsRaining);
+
+      ObjectNode testPrecipSituation = JsonUtils.newNode();
+      testPrecipSituation.set("testSituation", null);
       testInputNode.set("precipSituation", testPrecipSituation);
 
       J2735WeatherReport actualValue = WeatherReportBuilder.genericWeatherReport(testInputNode);

@@ -39,7 +39,12 @@ public class WiperSetBuilder {
       J2735WiperSet gws = new J2735WiperSet();
 
       // statusFront and rateFront are required elements
-      J2735WiperStatus enumStatusFront = J2735WiperStatus.valueOf(wiperSet.get("statusFront").fieldNames().next().toUpperCase());
+      J2735WiperStatus enumStatusFront;
+      try {
+         enumStatusFront = J2735WiperStatus.valueOf(wiperSet.get("statusFront").fieldNames().next().toUpperCase());
+      } catch (IllegalArgumentException e) {
+         enumStatusFront = J2735WiperStatus.UNAVAILABLE;
+      }
       gws.setStatusFront(enumStatusFront);
 
       int rateFront = wiperSet.get("rateFront").asInt();
@@ -52,7 +57,12 @@ public class WiperSetBuilder {
       // statusRear and rateRear are optional elements
       JsonNode statusRearNode = wiperSet.get("statusRear");
       if (statusRearNode != null) {
-         J2735WiperStatus enumStatusRear = J2735WiperStatus.valueOf(statusRearNode.fieldNames().next().toUpperCase());
+         J2735WiperStatus enumStatusRear;
+         try {
+            enumStatusRear = J2735WiperStatus.valueOf(statusRearNode.fieldNames().next().toUpperCase());
+         } catch (IllegalArgumentException e) {
+            enumStatusRear = J2735WiperStatus.UNAVAILABLE;
+         }
          gws.setStatusRear(enumStatusRear);
       }
 

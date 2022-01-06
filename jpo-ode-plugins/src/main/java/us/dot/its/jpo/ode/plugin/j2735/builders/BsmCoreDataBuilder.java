@@ -52,7 +52,12 @@ public class BsmCoreDataBuilder {
 
         JsonNode transmission = coreData.get("transmission");
         if (transmission != null) {
-            J2735TransmissionState enumTransmission = J2735TransmissionState.valueOf(transmission.fieldNames().next().toUpperCase());
+            J2735TransmissionState enumTransmission; 
+            try {
+                enumTransmission = J2735TransmissionState.valueOf(transmission.fieldNames().next().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                enumTransmission = J2735TransmissionState.UNAVAILABLE;
+            }
             genericBsmCoreData.setTransmission(enumTransmission);
         }
 

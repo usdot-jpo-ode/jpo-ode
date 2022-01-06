@@ -77,6 +77,23 @@ public class WiperSetBuilderTest {
    }
 
    @Test
+   public void testUnsupportedStatusFront() {
+
+      J2735WiperStatus expectedWiperStatusFront = J2735WiperStatus.UNAVAILABLE;
+
+      ObjectNode testInput = JsonUtils.newNode();
+
+      ObjectNode testStatusFront = JsonUtils.newNode();
+      testStatusFront.set("testStatus", null);
+      testInput.set("statusFront", testStatusFront);
+      testInput.put("rateFront", 55);
+
+      J2735WiperSet actualValue = WiperSetBuilder.genericWiperSet(testInput);
+
+      assertEquals(expectedWiperStatusFront, actualValue.getStatusFront());
+   }
+
+   @Test
    public void testBelowLowerBoundRateFront() {
       ObjectNode testInput = JsonUtils.newNode();
 
@@ -116,6 +133,27 @@ public class WiperSetBuilderTest {
       } catch (Exception e) {
          assertTrue(e instanceof IllegalArgumentException);
       }
+   }
+
+   @Test
+   public void testUnsupportedStatusRear() {
+      J2735WiperStatus expectedWiperStatusRear = J2735WiperStatus.UNAVAILABLE;
+
+      ObjectNode testInput = JsonUtils.newNode();
+
+      ObjectNode testStatusFront = JsonUtils.newNode();
+      testStatusFront.set("off", null);
+      testInput.set("statusFront", testStatusFront);
+      testInput.put("rateFront", 55);
+
+      ObjectNode testStatusRear = JsonUtils.newNode();
+      testStatusRear.set("testStatus", null);
+      testInput.set("statusRear", testStatusRear);
+      testInput.put("rateRear", 12);
+
+      J2735WiperSet actualValue = WiperSetBuilder.genericWiperSet(testInput);
+
+      assertEquals(expectedWiperStatusRear, actualValue.getStatusRear());
    }
 
    @Test
