@@ -57,7 +57,7 @@ public class DdsDepRequestTest {
 		ddsDepRequest.setEncodeType(encodeType);
 		ddsDepRequest.setSystemDepositName(depositName);
 		String expectedStr = "DEPOSIT:{\"systemDepositName\":\"testDepositName\",\"encodeType\":\"hex\",\"dialogID\":0}";
-		assertEquals(ddsDepRequest.toString(), expectedStr);
+		assertEquals(expectedStr, ddsDepRequest.toString());
 	}
 	
 	@Test

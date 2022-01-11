@@ -34,13 +34,13 @@ public class PivotPointDescriptionBuilder {
     public static J2735PivotPointDescription genericPivotPointDescription(JsonNode ppd) {
         J2735PivotPointDescription gppd = new J2735PivotPointDescription();
 
-        if (ppd.get(PIVOT_OFFSET).intValue() < PIVOT_OFFSET_LOWER_BOUND
-                || ppd.get(PIVOT_OFFSET).intValue() > PIVOT_OFFSET_UPPER_BOUND) {
+        if (ppd.get(PIVOT_OFFSET).asInt() < PIVOT_OFFSET_LOWER_BOUND
+                || ppd.get(PIVOT_OFFSET).asInt() > PIVOT_OFFSET_UPPER_BOUND) {
             throw new IllegalArgumentException("Pivot offset value out of bounds [-1024.1023]");
-        } else if (ppd.get(PIVOT_OFFSET).intValue() == -1024) {
+        } else if (ppd.get(PIVOT_OFFSET).asInt() == -1024) {
             gppd.setPivotOffset(null);
         } else {
-            gppd.setPivotOffset(BigDecimal.valueOf(ppd.get(PIVOT_OFFSET).intValue(), 2));
+            gppd.setPivotOffset(BigDecimal.valueOf(ppd.get(PIVOT_OFFSET).asInt(), 2));
         }
 
         gppd.setPivotAngle(AngleBuilder.genericAngle(ppd.get("pivotAngle")));
