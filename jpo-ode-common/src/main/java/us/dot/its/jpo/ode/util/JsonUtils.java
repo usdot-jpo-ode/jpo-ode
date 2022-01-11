@@ -29,6 +29,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.cfg.CoercionAction;
@@ -62,6 +63,7 @@ public class JsonUtils {
       mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
       mapper.coercionConfigFor(LogicalType.Enum)
             .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);
+      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
       mapper_noNulls = new ObjectMapper();
       mapper_noNulls.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
