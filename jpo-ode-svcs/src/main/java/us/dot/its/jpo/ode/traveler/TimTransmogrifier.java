@@ -105,12 +105,14 @@ public class TimTransmogrifier {
    public static String convertToXml(DdsAdvisorySituationData asd, ObjectNode encodableTidObj,
          OdeMsgMetadata timMetadata, SerialId serialIdJ2735) throws JsonUtilsException, XmlUtilsException {
 
-      TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(),
-            TravelerInputData.class);
+      // TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(),
+      //       TravelerInputData.class);
 
-      ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
+      // ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
 
-      ObjectNode timObj = (ObjectNode) inOrderTidObj.get("tim");
+      // ObjectNode timObj = (ObjectNode) inOrderTidObj.get("tim");
+
+      ObjectNode timObj = (ObjectNode) encodableTidObj.get("tim");
 
       // Create valid payload from scratch
       OdeMsgPayload payload = null;
@@ -149,7 +151,8 @@ public class TimTransmogrifier {
       metadata.setOdeTimStartDateTime(timMetadata.getOdeTimStartDateTime());
       ObjectNode metaObject = JsonUtils.toObjectNode(metadata.toJson());
 
-      ObjectNode request = (ObjectNode) inOrderTidObj.get(REQUEST_STRING);
+      // ObjectNode request = (ObjectNode) inOrderTidObj.get(REQUEST_STRING);
+      ObjectNode request = (ObjectNode) encodableTidObj.get(REQUEST_STRING);
       metaObject.set(REQUEST_STRING, request);
 
       if (request.has(RSUS_STRING)) {

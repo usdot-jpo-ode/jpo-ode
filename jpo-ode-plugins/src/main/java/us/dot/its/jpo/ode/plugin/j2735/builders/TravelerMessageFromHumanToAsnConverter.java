@@ -374,6 +374,13 @@ public class TravelerMessageFromHumanToAsnConverter {
       if (msgId != null) {
          ObjectNode roadSignID = (ObjectNode) msgId.get("roadSignID");
          if (roadSignID != null) {
+
+            DsrcPosition3D position = Position3DBuilder
+                  .dsrcPosition3D(Position3DBuilder.odePosition3D(roadSignID.get(POSITION)));
+
+            roadSignID.putPOJO(POSITION, position);
+
+            
             // mutcdCode is optional
             JsonNode mutcdNode = roadSignID.get("mutcdCode");
             if (mutcdNode != null) {
