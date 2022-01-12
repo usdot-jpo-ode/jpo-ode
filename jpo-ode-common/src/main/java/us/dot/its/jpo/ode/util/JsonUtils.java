@@ -63,7 +63,6 @@ public class JsonUtils {
       mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
       mapper.coercionConfigFor(LogicalType.Enum)
             .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);
-      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
       mapper_noNulls = new ObjectMapper();
       mapper_noNulls.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
