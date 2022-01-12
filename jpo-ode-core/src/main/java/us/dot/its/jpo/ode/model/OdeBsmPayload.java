@@ -15,6 +15,8 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
+import com.fasterxml.jackson.annotation.*;
+
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 
 public class OdeBsmPayload extends OdeMsgPayload {
@@ -25,11 +27,13 @@ public class OdeBsmPayload extends OdeMsgPayload {
         this(new J2735Bsm());
     }
 
-    public OdeBsmPayload(J2735Bsm bsm) {
+    @JsonCreator
+    public OdeBsmPayload( @JsonProperty("data") J2735Bsm bsm) {
         super(bsm);
         this.setData(bsm);
     }
 
+    @JsonProperty("data")
     public J2735Bsm getBsm() {
         return (J2735Bsm) getData();
     }

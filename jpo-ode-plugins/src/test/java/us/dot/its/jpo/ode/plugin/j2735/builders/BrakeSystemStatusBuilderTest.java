@@ -66,6 +66,31 @@ public class BrakeSystemStatusBuilderTest {
    }
 
    @Test
+   public void testWheelBrakesUnavailable() {
+      String expectedTraction = "engaged";
+      String expectedAbs = "on";
+      String expectedScs = "off";
+      String expectedBrakeBoost = "unavailable";
+      String expectedAuxBrakes = "off";
+
+      ObjectNode testInput = JsonUtils.newNode();
+      testInput.put("wheelBrakes", "00000");
+      testInput.set("traction", JsonUtils.newNode().put(expectedTraction, true));
+      testInput.set("abs", JsonUtils.newNode().put(expectedAbs, true));
+      testInput.set("scs", JsonUtils.newNode().put(expectedScs, true));
+      testInput.set("brakeBoost", JsonUtils.newNode().put(expectedBrakeBoost, true));
+      testInput.set("auxBrakes", JsonUtils.newNode().put(expectedAuxBrakes, true));
+
+      J2735BrakeSystemStatus actualValue = BrakeSystemStatusBuilder.genericBrakeSystemStatus(testInput);
+
+      assertTrue(actualValue.getWheelBrakes().get("unavailable"));
+      assertFalse(actualValue.getWheelBrakes().get("leftFront"));
+      assertFalse(actualValue.getWheelBrakes().get("leftRear"));
+      assertFalse(actualValue.getWheelBrakes().get("rightFront"));
+      assertFalse(actualValue.getWheelBrakes().get("rightRear"));
+   }
+
+   @Test
    public void testConstructorIsPrivate()
          throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
       Constructor<BrakeSystemStatusBuilder> constructor = BrakeSystemStatusBuilder.class.getDeclaredConstructor();
