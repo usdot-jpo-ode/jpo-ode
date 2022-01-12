@@ -44,19 +44,11 @@ public class VehicleSizeBuilder {
         }
 
         J2735VehicleSize genericVehicleSize = new J2735VehicleSize();
-
-        if (length != 0) {
-            genericVehicleSize.setLength(length);
-        } else {
-            genericVehicleSize.setLength(0);
-        }
+     
+        genericVehicleSize.setLength(length);
         
         int width = vehicleSize.get("width").asInt();
-        if (width != 0) {
-            genericVehicleSize.setWidth(width);
-        } else {
-            genericVehicleSize.setWidth(0);
-        }
+        genericVehicleSize.setWidth(width);
         
         return genericVehicleSize;
     }
