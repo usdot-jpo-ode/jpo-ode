@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 @JsonPropertyOrder({ "sspTimRights", "frameType", "msgId", "startYear", "startTime", "duratonTime", "priority",
-      "sspLocationRights", "regions", "sspMsgRights1", "sspMsgRights2", "content", "url" })
+      "sspLocationRights", "regions", "sspMsgRights1", "sspMsgRights2", "tcontent", "url" })
 public class TravelerDataFrame extends Asn1Object {
    private static final long serialVersionUID = 1L;
 
