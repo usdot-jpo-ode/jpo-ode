@@ -16,10 +16,6 @@
 package us.dot.its.jpo.ode.traveler;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -52,8 +48,6 @@ public class TimDepositControllerTest {
 
    @Capturing
    MessageProducer<?, ?> capturingMessageProducer;
-   // @Capturing
-   // TimTransmogrifier capturingTimTransmogrifier;
 
    @Test
    public void nullRequestShouldReturnEmptyError() {
