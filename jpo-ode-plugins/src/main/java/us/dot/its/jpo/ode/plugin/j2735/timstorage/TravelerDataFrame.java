@@ -15,6 +15,7 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -93,6 +94,7 @@ public class TravelerDataFrame extends Asn1Object {
       this.duratonTime = duratonTime;
    }
 
+   @JsonIgnore
    public Content getContent() {
       return tcontent;
    }

@@ -21,8 +21,9 @@ import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 public class ITIS_CodesAndText extends Asn1Object {
   private static final long serialVersionUID = 1L;
-  @JsonProperty("SEQUENCE")
   private Items[] SEQUENCE;
+
+  @JsonProperty("SEQUENCE")
   public Items[] getSEQUENCE() {
     return SEQUENCE;
   }
