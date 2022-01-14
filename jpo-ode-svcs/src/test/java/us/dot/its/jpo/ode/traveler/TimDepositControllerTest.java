@@ -17,6 +17,7 @@ package us.dot.its.jpo.ode.traveler;
 
 import static org.junit.Assert.assertEquals;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 
@@ -47,8 +48,6 @@ public class TimDepositControllerTest {
 
    @Capturing
    MessageProducer<?, ?> capturingMessageProducer;
-   @Capturing
-   TimTransmogrifier capturingTimTransmogrifier;
 
    @Test
    public void nullRequestShouldReturnEmptyError() {
@@ -118,32 +117,44 @@ public class TimDepositControllerTest {
          {
             TimTransmogrifier.convertToXml((DdsAdvisorySituationData) any, (ObjectNode) any, (OdeMsgMetadata) any,
                   (SerialId) any);
-            result = new  XmlUtilsException("testException123", null);
+            result = new XmlUtilsException("testException123", null);
          }
       };
 
       ResponseEntity<String> actualResponse = testTimDepositController.postTim(
             "{\"request\":{\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}");
-      assertEquals("{\"error\":\"Error sending data to ASN.1 Encoder module: testException123\"}", actualResponse.getBody());
+      assertEquals("{\"error\":\"Error sending data to ASN.1 Encoder module: testException123\"}",
+            actualResponse.getBody());
 
    }
-   
+
    @Test
-   public void testSuccessfulMessageReturnsSuccessMessagePost(@Capturing XmlUtils capturingXmlUtils) {
+   public void testSuccessfulMessageReturnsSuccessMessagePost(@Capturing TimTransmogrifier capturingTimTransmogrifier, @Capturing XmlUtils capturingXmlUtils) {
       ResponseEntity<String> actualResponse = testTimDepositController.postTim(
             "{\"request\":{\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}");
       assertEquals("{\"success\":\"true\"}", actualResponse.getBody());
    }
-   
+
    @Test
-   public void testSuccessfulMessageReturnsSuccessMessagePostWithOde(@Capturing XmlUtils capturingXmlUtils) {
+   public void testSuccessfullSdwRequestMessageReturnsSuccessMessagePost()
+         throws Exception {
+      String file = "/sdwRequest.json";
+      String json = IOUtils.toString(
+            TimDepositControllerTest.class.getResourceAsStream(file),
+            "UTF-8");
+      ResponseEntity<String> actualResponse = testTimDepositController.postTim(json);
+      assertEquals("{\"success\":\"true\"}", actualResponse.getBody());
+   }
+
+   @Test
+   public void testSuccessfulMessageReturnsSuccessMessagePostWithOde(@Capturing TimTransmogrifier capturingTimTransmogrifier, @Capturing XmlUtils capturingXmlUtils) {
       ResponseEntity<String> actualResponse = testTimDepositController.postTim(
             "{\"request\":{\"ode\":{},\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}");
       assertEquals("{\"success\":\"true\"}", actualResponse.getBody());
    }
-   
+
    @Test
-   public void testSuccessfulMessageReturnsSuccessMessagePut(@Capturing XmlUtils capturingXmlUtils) {
+   public void testSuccessfulMessageReturnsSuccessMessagePut(@Capturing TimTransmogrifier capturingTimTransmogrifier, @Capturing XmlUtils capturingXmlUtils) {
       ResponseEntity<String> actualResponse = testTimDepositController.putTim(
             "{\"request\":{\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}");
       assertEquals("{\"success\":\"true\"}", actualResponse.getBody());

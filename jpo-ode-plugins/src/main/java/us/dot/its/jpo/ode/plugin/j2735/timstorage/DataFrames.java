@@ -25,9 +25,9 @@ public class DataFrames extends OdeObject {
 
   private static final long serialVersionUID = 1L;
 
-  @JsonProperty("TravelerDataFrame")
   private TravelerDataFrame[] TravelerDataFrame;
 
+  @JsonProperty("TravelerDataFrame")
   public TravelerDataFrame[] getTravelerDataFrame() {
     return TravelerDataFrame;
   }
