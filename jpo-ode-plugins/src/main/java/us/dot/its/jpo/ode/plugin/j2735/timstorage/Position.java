@@ -29,7 +29,7 @@ public class Position extends Asn1Object {
    @JsonProperty("lat")
    private String lat;
    @JsonProperty("long")
-   private String llong; // TODO needs to be "long"
+   private String llong;
    @JsonProperty("elevation")
    private String elevation;
 
