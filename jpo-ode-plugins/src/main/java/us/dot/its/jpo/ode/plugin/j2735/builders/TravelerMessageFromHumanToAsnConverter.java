@@ -380,7 +380,6 @@ public class TravelerMessageFromHumanToAsnConverter {
 
             roadSignID.putPOJO(POSITION, position);
 
-            
             // mutcdCode is optional
             JsonNode mutcdNode = roadSignID.get("mutcdCode");
             if (mutcdNode != null) {
