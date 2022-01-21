@@ -25,17 +25,14 @@ public class OdeSpatMetadata extends OdeLogMetadata {
 		this.isCertPresent = isCertPresent;
 	}
 
-	@JsonCreator
 	public OdeSpatMetadata() {
 		super();
 	}
 
-	@JsonCreator
 	public OdeSpatMetadata(OdeMsgPayload payload) {
 		super(payload);
 	}
 
-	@JsonCreator
 	public OdeSpatMetadata(OdeMsgPayload payload, SerialId serialId, String receivedAt) {
 
 	}
