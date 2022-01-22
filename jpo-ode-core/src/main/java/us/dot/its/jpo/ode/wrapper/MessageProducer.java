@@ -154,7 +154,7 @@ public class MessageProducer<K, V> {
 
     String auth =
       "org.apache.kafka.common.security.plain.PlainLoginModule required " +
-      "username=6VH6WQTQCILECKP7 password=Lg+thwcEiT5YEkiqzfps6tLF8YvAJHAENwHjpIcGYltHEyultccPi7vZyVJGK+pb;";
+      "username=\"6VH6WQTQCILECKP7\" password=\"Lg+thwcEiT5YEkiqzfps6tLF8YvAJHAENwHjpIcGYltHEyultccPi7vZyVJGK+pb\";";
     props.put("sasl.jaas.config", auth);
 
     return props;
