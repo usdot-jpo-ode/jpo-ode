@@ -165,7 +165,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 				}
 				
 				if(isSpatRecord() && msgMetadata instanceof OdeSpatMetadata 
-						&& !((OdeSpatMetadata)msgMetadata).isCertPresent() )
+						&& !((OdeSpatMetadata)msgMetadata).getIsCertPresent() )
 				{
 					//Nothing: If Spat log file and IEEE1609Cert is not present, Skip the Ieee1609Dot2Data encoding					
 				}
