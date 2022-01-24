@@ -90,7 +90,10 @@ public class MessageConsumer<K, V> {
         this.processor = processor;
         props.put("bootstrap.servers", brokers);
         props.put("group.id", groupId);
-        props = addConfluentProperties(props);
+
+        if (System.getenv("KAFKA_TYPE").equals("CONFLUENT"))
+            addConfluentProperties(props);
+        
         this.consumer = new KafkaConsumer<K, V>(props);
 
         logger.info("Consumer Created for groupId {}", groupId);
@@ -104,7 +107,10 @@ public class MessageConsumer<K, V> {
         this.processor = processor;
         props.put("bootstrap.servers", brokers);
         props.put("group.id", groupId);
-        props = addConfluentProperties(props);
+
+        if (System.getenv("KAFKA_TYPE").equals("CONFLUENT"))
+            addConfluentProperties(props);
+        
         this.consumer = new KafkaConsumer<K, V>(props);
 
         logger.info("Consumer Created for groupId {}", groupId);
@@ -115,8 +121,12 @@ public class MessageConsumer<K, V> {
         props.put("security.protocol", "SASL_SSL");
         props.put("sasl.mechanism", "PLAIN");
 
+        String username = System.getenv("CONFLUENT_KEY");
+        String password = System.getenv("CONFLUENT_SECRET");
+
         String auth = "org.apache.kafka.common.security.plain.PlainLoginModule required " +
-                "username=\"6VH6WQTQCILECKP7\" password=\"Lg+thwcEiT5YEkiqzfps6tLF8YvAJHAENwHjpIcGYltHEyultccPi7vZyVJGK+pb\";";
+                "username=\"" + username + "\" " +
+                "password=\"" + password + "\";";
         props.put("sasl.jaas.config", auth);
 
         return props;

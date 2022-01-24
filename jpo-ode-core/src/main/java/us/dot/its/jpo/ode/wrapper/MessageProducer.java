@@ -27,193 +27,192 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author 572682
- * This class encapsulates a message produce function.
+ *         This class encapsulates a message produce function.
  *
  * @param <K> Message Key type
  * @param <V> Message Value type
  */
 public class MessageProducer<K, V> {
 
-  public static final String SERIALIZATION_STRING_SERIALIZER =
-    "org.apache.kafka.common.serialization.StringSerializer";
-  public static final String SERIALIZATION_BYTE_ARRAY_SERIALIZER =
-    "org.apache.kafka.common.serialization.ByteArraySerializer";
-  public static final int DEFAULT_PRODUCER_BUFFER_MEMORY_BYTES = 33554432;
-  public static final int DEFAULT_PRODUCER_LINGER_MS = 1;
-  public static final int DEFAULT_PRODUCER_BATCH_SIZE_BYTES = 16384;
-  public static final int DEFAULT_PRODUCER_RETRIES = 0;
-  public static final String DEFAULT_PRODUCER_ACKS = "all";
+    public static final String SERIALIZATION_STRING_SERIALIZER = "org.apache.kafka.common.serialization.StringSerializer";
+    public static final String SERIALIZATION_BYTE_ARRAY_SERIALIZER = "org.apache.kafka.common.serialization.ByteArraySerializer";
+    public static final int DEFAULT_PRODUCER_BUFFER_MEMORY_BYTES = 33554432;
+    public static final int DEFAULT_PRODUCER_LINGER_MS = 1;
+    public static final int DEFAULT_PRODUCER_BATCH_SIZE_BYTES = 16384;
+    public static final int DEFAULT_PRODUCER_RETRIES = 0;
+    public static final String DEFAULT_PRODUCER_ACKS = "all";
 
-  private static Logger logger = LoggerFactory.getLogger(MessageProducer.class);
+    private static Logger logger = LoggerFactory.getLogger(MessageProducer.class);
 
-  private Producer<K, V> producer;
-  private Set<String> disabledTopicsSet;
+    private Producer<K, V> producer;
+    private Set<String> disabledTopicsSet;
 
-  public MessageProducer(
-    String brokers,
-    String type,
-    String partitionerClass,
-    String valueSerializerFQN,
-    Set<String> disabledTopics
-  ) {
-    Properties props = setDefaultProperties();
+    public MessageProducer(
+            String brokers,
+            String type,
+            String partitionerClass,
+            String valueSerializerFQN,
+            Set<String> disabledTopics) {
+        Properties props = setDefaultProperties();
 
-    if (brokers != null) {
-      props.put("bootstrap.servers", brokers);
-    } else {
-      logger.error("Bootstrap servers setting is null");
+        if (brokers != null) {
+            props.put("bootstrap.servers", brokers);
+        } else {
+            logger.error("Bootstrap servers setting is null");
+        }
+
+        props.put("key.serializer", SERIALIZATION_STRING_SERIALIZER);
+        props.put("value.serializer", valueSerializerFQN);
+
+        if (partitionerClass != null)
+            props.put(
+                    "partitioner.class",
+                    partitionerClass);
+
+        if (System.getenv("KAFKA_TYPE").equals("CONFLUENT"))
+            addConfluentProperties(props);
+        
+        producer = new KafkaProducer<>(props);
+
+        this.disabledTopicsSet = disabledTopics;
+
+        logger.info("Producer Created with default properties");
     }
 
-    addConfluentProperties(props);
-    props.put("key.serializer", SERIALIZATION_STRING_SERIALIZER);
-    props.put("value.serializer", valueSerializerFQN);
+    public MessageProducer(
+            String brokers,
+            String type,
+            String partitionerClass,
+            Properties props,
+            Set<String> enabledTopics) {
+        props.put("bootstrap.servers", brokers);
 
-    if (partitionerClass != null) props.put(
-      "partitioner.class",
-      partitionerClass
-    );
+        if (partitionerClass != null)
+            props.put(
+                    "partitioner.class",
+                    partitionerClass);
 
-    producer = new KafkaProducer<>(props);
+        if (System.getenv("KAFKA_TYPE").equals("CONFLUENT"))
+            addConfluentProperties(props);
+        
+        producer = new KafkaProducer<>(props);
 
-    this.disabledTopicsSet = disabledTopics;
+        this.disabledTopicsSet = enabledTopics;
 
-    logger.info("Producer Created with default properties");
-  }
-
-  public MessageProducer(
-    String brokers,
-    String type,
-    String partitionerClass,
-    Properties props,
-    Set<String> enabledTopics
-  ) {
-    props.put("bootstrap.servers", brokers);
-    addConfluentProperties(props);
-    if (partitionerClass != null) props.put(
-      "partitioner.class",
-      partitionerClass
-    );
-
-    producer = new KafkaProducer<>(props);
-
-    this.disabledTopicsSet = enabledTopics;
-
-    logger.info("Producer Created");
-  }
-
-  public static MessageProducer<String, byte[]> defaultByteArrayMessageProducer(
-    String brokers,
-    String type,
-    Set<String> disabledTopics
-  ) {
-    return new MessageProducer<String, byte[]>(
-      brokers,
-      type,
-      null,
-      SERIALIZATION_BYTE_ARRAY_SERIALIZER,
-      disabledTopics
-    );
-  }
-
-  public static MessageProducer<String, String> defaultStringMessageProducer(
-    String brokers,
-    String type,
-    Set<String> disabledTopics
-  ) {
-    return new MessageProducer<String, String>(
-      brokers,
-      type,
-      null,
-      SERIALIZATION_STRING_SERIALIZER,
-      disabledTopics
-    );
-  }
-
-  private static Properties setDefaultProperties() {
-    // NOSONAR
-    Properties props = new Properties();
-    props.put("acks", DEFAULT_PRODUCER_ACKS); // Set acknowledgments for
-    // producer requests.
-    props.put("retries", DEFAULT_PRODUCER_RETRIES); // If the request fails,
-    // the producer can
-    // automatically retry
-    props.put("batch.size", DEFAULT_PRODUCER_BATCH_SIZE_BYTES);
-    props.put("linger.ms", DEFAULT_PRODUCER_LINGER_MS);
-    // The buffer.memory controls the
-    // total amount of memory
-    // available to the producer for
-    // buffering.
-    props.put("buffer.memory", DEFAULT_PRODUCER_BUFFER_MEMORY_BYTES);
-    return props;
-  }
-
-  private static Properties addConfluentProperties(Properties props) {
-    props.put("ssl.endpoint.identification.algorithm", "https");
-    props.put("security.protocol", "SASL_SSL");
-    props.put("sasl.mechanism", "PLAIN");
-
-    String auth =
-      "org.apache.kafka.common.security.plain.PlainLoginModule required " +
-      "username=\"6VH6WQTQCILECKP7\" password=\"Lg+thwcEiT5YEkiqzfps6tLF8YvAJHAENwHjpIcGYltHEyultccPi7vZyVJGK+pb\";";
-    props.put("sasl.jaas.config", auth);
-
-    return props;
-  }
-
-  public void send(String topic, K key, V value) {
-    if (!disabledTopicsSet.contains(topic)) {
-      ProducerRecord<K, V> data;
-      if (key == null) data = new ProducerRecord<>(topic, value); else data =
-        new ProducerRecord<>(topic, key, value);
-
-      producer.send(
-        data,
-        new Callback() {
-          @Override
-          public void onCompletion(RecordMetadata returnMetadata, Exception e) {
-            if (null != e) {
-              logger.error("Error sending record.", e);
-            } else {
-              logger.debug(
-                "Completed publish to topic: {}, offset: {}, partition: {}",
-                returnMetadata.topic(),
-                returnMetadata.offset(),
-                returnMetadata.partition()
-              );
-            }
-          }
-        }
-      );
+        logger.info("Producer Created");
     }
-  }
 
-  public void close() {
-    producer.close();
-    logger.info("Producer Closed");
-  }
+    public static MessageProducer<String, byte[]> defaultByteArrayMessageProducer(
+            String brokers,
+            String type,
+            Set<String> disabledTopics) {
+        return new MessageProducer<String, byte[]>(
+                brokers,
+                type,
+                null,
+                SERIALIZATION_BYTE_ARRAY_SERIALIZER,
+                disabledTopics);
+    }
 
-  public Producer<K, V> getProducer() {
-    return producer;
-  }
+    public static MessageProducer<String, String> defaultStringMessageProducer(
+            String brokers,
+            String type,
+            Set<String> disabledTopics) {
+        return new MessageProducer<String, String>(
+                brokers,
+                type,
+                null,
+                SERIALIZATION_STRING_SERIALIZER,
+                disabledTopics);
+    }
 
-  public MessageProducer<K, V> setProducer(Producer<K, V> producer) {
-    this.producer = producer;
-    return this;
-  }
+    private static Properties setDefaultProperties() {
+        // NOSONAR
+        Properties props = new Properties();
+        props.put("acks", DEFAULT_PRODUCER_ACKS); // Set acknowledgments for
+        // producer requests.
+        props.put("retries", DEFAULT_PRODUCER_RETRIES); // If the request fails,
+        // the producer can
+        // automatically retry
+        props.put("batch.size", DEFAULT_PRODUCER_BATCH_SIZE_BYTES);
+        props.put("linger.ms", DEFAULT_PRODUCER_LINGER_MS);
+        // The buffer.memory controls the
+        // total amount of memory
+        // available to the producer for
+        // buffering.
+        props.put("buffer.memory", DEFAULT_PRODUCER_BUFFER_MEMORY_BYTES);
+        return props;
+    }
 
-  public void send(ProducerRecord<K, V> producerRecord) {
-    producer.send(
-      producerRecord,
-      new Callback() {
-        @Override
-        public void onCompletion(RecordMetadata returnMetadata, Exception e) {
-          if (null != e) {
-            logger.error("Error sending record.", e);
-          } else {
-            logger.debug("Record metadata: {}", returnMetadata);
-          }
+    private static Properties addConfluentProperties(Properties props) {
+        props.put("ssl.endpoint.identification.algorithm", "https");
+        props.put("security.protocol", "SASL_SSL");
+        props.put("sasl.mechanism", "PLAIN");
+
+        String username = System.getenv("CONFLUENT_KEY");
+        String password = System.getenv("CONFLUENT_SECRET");
+
+        String auth = "org.apache.kafka.common.security.plain.PlainLoginModule required " +
+                "username=\"" + username + "\" " +
+                "password=\"" + password + "\";";
+        props.put("sasl.jaas.config", auth);
+
+        return props;
+    }
+
+    public void send(String topic, K key, V value) {
+        if (!disabledTopicsSet.contains(topic)) {
+            ProducerRecord<K, V> data;
+            if (key == null)
+                data = new ProducerRecord<>(topic, value);
+            else
+                data = new ProducerRecord<>(topic, key, value);
+
+            producer.send(
+                    data,
+                    new Callback() {
+                        @Override
+                        public void onCompletion(RecordMetadata returnMetadata, Exception e) {
+                            if (null != e) {
+                                logger.error("Error sending record.", e);
+                            } else {
+                                logger.debug(
+                                        "Completed publish to topic: {}, offset: {}, partition: {}",
+                                        returnMetadata.topic(),
+                                        returnMetadata.offset(),
+                                        returnMetadata.partition());
+                            }
+                        }
+                    });
         }
-      }
-    );
-  }
+    }
+
+    public void close() {
+        producer.close();
+        logger.info("Producer Closed");
+    }
+
+    public Producer<K, V> getProducer() {
+        return producer;
+    }
+
+    public MessageProducer<K, V> setProducer(Producer<K, V> producer) {
+        this.producer = producer;
+        return this;
+    }
+
+    public void send(ProducerRecord<K, V> producerRecord) {
+        producer.send(
+                producerRecord,
+                new Callback() {
+                    @Override
+                    public void onCompletion(RecordMetadata returnMetadata, Exception e) {
+                        if (null != e) {
+                            logger.error("Error sending record.", e);
+                        } else {
+                            logger.debug("Record metadata: {}", returnMetadata);
+                        }
+                    }
+                });
+    }
 }
