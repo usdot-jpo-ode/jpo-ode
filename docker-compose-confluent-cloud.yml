@@ -1,0 +1,71 @@
+# DOCKER_SHARED_VOLUME_WINDOWS should be defined for Windows host machine as C: and not defined for Linux hosts
+
+version: '3'
+services:
+  ode:
+    build: .
+    image: jpoode_ode:latest
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+      - "46753:46753/udp"
+      - "46800:46800/udp"
+      - "47900:47900/udp"
+      - "44900:44900/udp"
+      - "44910:44910/udp"
+      - "44920:44920/udp"
+      - "44930:44930/udp"
+      - "5555:5555/udp"
+      - "6666:6666/udp"
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      ZK: ${DOCKER_HOST_IP}:2181
+      ODE_SECURITY_SVCS_SIGNATURE_URI: ${ODE_SECURITY_SVCS_SIGNATURE_URI}
+      ODE_RSU_USERNAME: ${ODE_RSU_USERNAME}
+      ODE_RSU_PASSWORD: ${ODE_RSU_PASSWORD}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
+      # Commented out, will use SDW depositor module by default
+      #ODE_DEPOSIT_SDW_MESSAGES_OVER_WEBSOCKET: ${ODE_DEPOSIT_SDW_MESSAGES_OVER_WEBSOCKET}
+      #ODE_DDS_CAS_USERNAME: ${ODE_DDS_CAS_USERNAME}
+      #ODE_DDS_CAS_PASSWORD: ${ODE_DDS_CAS_PASSWORD}
+    depends_on:
+      - kafka
+    volumes:
+      - ${DOCKER_SHARED_VOLUME}:/jpo-ode
+      - ${DOCKER_SHARED_VOLUME}/uploads:/home/uploads
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # adm:
+  #   build: ./asn1_codec
+  #   image: jpoode_acm:latest
+  #   environment:
+  #     DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+  #     ACM_CONFIG_FILE: adm.properties
+  #   depends_on:
+  #     - kafka
+  #   volumes:
+  #     - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
+  #   logging:
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "5"
+
+  # aem:
+  #   build: ./asn1_codec
+  #   image: jpoode_acm:latest
+  #   environment:
+  #     DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+  #     ACM_CONFIG_FILE: aem.properties
+  #   depends_on:
+  #     - kafka
+  #   volumes:
+  #     - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
+  #   logging:
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "5"

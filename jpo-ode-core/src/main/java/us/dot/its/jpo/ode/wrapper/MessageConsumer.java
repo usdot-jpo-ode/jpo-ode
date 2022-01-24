@@ -91,7 +91,8 @@ public class MessageConsumer<K, V> {
         props.put("bootstrap.servers", brokers);
         props.put("group.id", groupId);
 
-        if (System.getenv("KAFKA_TYPE").equals("CONFLUENT"))
+        String kafkaType = System.getenv("KAFKA_TYPE");
+        if (kafkaType != null && kafkaType.equals("CONFLUENT"))
             addConfluentProperties(props);
         
         this.consumer = new KafkaConsumer<K, V>(props);
@@ -108,7 +109,8 @@ public class MessageConsumer<K, V> {
         props.put("bootstrap.servers", brokers);
         props.put("group.id", groupId);
 
-        if (System.getenv("KAFKA_TYPE").equals("CONFLUENT"))
+        String kafkaType = System.getenv("KAFKA_TYPE");
+        if (kafkaType != null && kafkaType.equals("CONFLUENT"))
             addConfluentProperties(props);
         
         this.consumer = new KafkaConsumer<K, V>(props);
@@ -124,10 +126,15 @@ public class MessageConsumer<K, V> {
         String username = System.getenv("CONFLUENT_KEY");
         String password = System.getenv("CONFLUENT_SECRET");
 
-        String auth = "org.apache.kafka.common.security.plain.PlainLoginModule required " +
+        if (username != null && password != null) {
+            String auth = "org.apache.kafka.common.security.plain.PlainLoginModule required " +
                 "username=\"" + username + "\" " +
                 "password=\"" + password + "\";";
-        props.put("sasl.jaas.config", auth);
+            props.put("sasl.jaas.config", auth);
+        }
+        else {
+            logger.error("Environment variables CONFLUENT_KEY and CONFLUENT_SECRET are not set. Set these in the .env file to use Confluent Cloud");
+        }
 
         return props;
     }
