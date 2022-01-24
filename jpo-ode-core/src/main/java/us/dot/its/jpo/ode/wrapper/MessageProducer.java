@@ -47,6 +47,30 @@ public class MessageProducer<K, V> {
     private Producer<K, V> producer;
     private Set<String> disabledTopicsSet;
 
+    public static MessageProducer<String, byte[]> defaultByteArrayMessageProducer(
+            String brokers,
+            String type,
+            Set<String> disabledTopics) {
+        return new MessageProducer<String, byte[]>(
+                brokers,
+                type,
+                null,
+                SERIALIZATION_BYTE_ARRAY_SERIALIZER,
+                disabledTopics);
+    }
+
+    public static MessageProducer<String, String> defaultStringMessageProducer(
+            String brokers,
+            String type,
+            Set<String> disabledTopics) {
+        return new MessageProducer<String, String>(
+                brokers,
+                type,
+                null,
+                SERIALIZATION_STRING_SERIALIZER,
+                disabledTopics);
+    }
+
     public MessageProducer(
             String brokers,
             String type,
@@ -104,31 +128,7 @@ public class MessageProducer<K, V> {
         logger.info("Producer Created");
     }
 
-    public static MessageProducer<String, byte[]> defaultByteArrayMessageProducer(
-            String brokers,
-            String type,
-            Set<String> disabledTopics) {
-        return new MessageProducer<String, byte[]>(
-                brokers,
-                type,
-                null,
-                SERIALIZATION_BYTE_ARRAY_SERIALIZER,
-                disabledTopics);
-    }
-
-    public static MessageProducer<String, String> defaultStringMessageProducer(
-            String brokers,
-            String type,
-            Set<String> disabledTopics) {
-        return new MessageProducer<String, String>(
-                brokers,
-                type,
-                null,
-                SERIALIZATION_STRING_SERIALIZER,
-                disabledTopics);
-    }
-
-    private static Properties setDefaultProperties() {
+    private Properties setDefaultProperties() {
         // NOSONAR
         Properties props = new Properties();
         props.put("acks", DEFAULT_PRODUCER_ACKS); // Set acknowledgments for
@@ -146,7 +146,7 @@ public class MessageProducer<K, V> {
         return props;
     }
 
-    private static Properties addConfluentProperties(Properties props) {
+    private Properties addConfluentProperties(Properties props) {
         props.put("ssl.endpoint.identification.algorithm", "https");
         props.put("security.protocol", "SASL_SSL");
         props.put("sasl.mechanism", "PLAIN");
