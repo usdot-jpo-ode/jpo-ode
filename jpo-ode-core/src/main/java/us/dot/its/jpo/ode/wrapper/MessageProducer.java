@@ -88,14 +88,14 @@ public class MessageProducer<K, V> {
         props.put("key.serializer", SERIALIZATION_STRING_SERIALIZER);
         props.put("value.serializer", valueSerializerFQN);
 
-        if (partitionerClass != null)
-            props.put(
-                    "partitioner.class",
-                    partitionerClass);
+        if (partitionerClass != null) {
+            props.put("partitioner.class", partitionerClass);
+        }
 
         String kafkaType = System.getenv("KAFKA_TYPE");
-        if (kafkaType != null && kafkaType.equals("CONFLUENT"))
+        if (kafkaType != null && kafkaType.equals("CONFLUENT")) {
             addConfluentProperties(props);
+        }
         
         producer = new KafkaProducer<>(props);
 
@@ -112,14 +112,14 @@ public class MessageProducer<K, V> {
             Set<String> enabledTopics) {
         props.put("bootstrap.servers", brokers);
 
-        if (partitionerClass != null)
-            props.put(
-                    "partitioner.class",
-                    partitionerClass);
+        if (partitionerClass != null) {
+            props.put("partitioner.class", partitionerClass);
+        }
         
         String kafkaType = System.getenv("KAFKA_TYPE");
-        if (kafkaType != null && kafkaType.equals("CONFLUENT"))
+        if (kafkaType != null && kafkaType.equals("CONFLUENT")) {
             addConfluentProperties(props);
+        }
         
         producer = new KafkaProducer<>(props);
 
