@@ -2,6 +2,8 @@ package us.dot.its.jpo.ode.plugin.j2735;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.math.BigDecimal;
+
 import org.junit.jupiter.api.Test;
 
 public class J2735RequestorDescriptionTest {
@@ -21,7 +23,7 @@ public class J2735RequestorDescriptionTest {
         assertEquals(requestorDescription.getType().getRole(), J2735BasicVehicleRole.emergency);
 
         J2735RequestorPositionVector positionVector = new J2735RequestorPositionVector();
-        positionVector.setHeading(5);
+        positionVector.setHeading(BigDecimal.valueOf(5L));
         requestorDescription.setPosition(positionVector);
         assertEquals(requestorDescription.getPosition().getHeading(), 5);
 

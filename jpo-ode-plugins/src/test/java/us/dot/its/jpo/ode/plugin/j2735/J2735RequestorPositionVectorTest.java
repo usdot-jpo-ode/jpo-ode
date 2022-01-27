@@ -12,13 +12,13 @@ public class J2735RequestorPositionVectorTest {
 	public void testGettersSetters() {
         J2735RequestorPositionVector requestorPositionVector = new J2735RequestorPositionVector();
         
-        J2735Position3D pos3d = new J2735Position3D();
-        pos3d.setElevation(105);
+        OdePosition3D pos3d = new OdePosition3D();
+        pos3d.setElevation(BigDecimal.valueOf(105L));
         requestorPositionVector.setPosition(pos3d);
         assertEquals(requestorPositionVector.getPosition().getElevation(), 105);
 
-        requestorPositionVector.setHeading(5);
-        assertEquals(requestorPositionVector.getHeading(), 5);
+        requestorPositionVector.setHeading(BigDecimal.valueOf(5L));
+        assertEquals(requestorPositionVector.getHeading(), 5L);
 
         J2735TransmissionAndSpeed speed = new J2735TransmissionAndSpeed();
         speed.setSpeed(BigDecimal.valueOf(105L));
