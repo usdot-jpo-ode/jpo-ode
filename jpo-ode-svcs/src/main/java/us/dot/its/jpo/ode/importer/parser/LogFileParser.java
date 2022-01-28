@@ -247,7 +247,7 @@ public abstract class LogFileParser implements FileParser {
 				isCertPresent = spatLogFileParser.isCertPresent(); //update
 			}
 			odeSpatMetadata.setSpatSource(spatSource);
-			odeSpatMetadata.setCertPresent(isCertPresent);
+			odeSpatMetadata.setIsCertPresent(isCertPresent);
 		}
 
 		metadata.calculateGeneratedBy();

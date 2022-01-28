@@ -15,21 +15,21 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "lat", "llong", "elevation" })
 public class Position extends Asn1Object {
    private static final long serialVersionUID = 1L;
 
-   @JsonProperty("latitude")
+   @JsonProperty("lat")
    private String lat;
-
-   @JsonProperty("longitude")
-   private String llong; // TODO needs to be "long"
-
+   @JsonProperty("long")
+   private String llong;
    @JsonProperty("elevation")
    private String elevation;
 
@@ -41,11 +41,11 @@ public class Position extends Asn1Object {
       this.elevation = elevation;
    }
 
-   public String getlon() {
+   public String getLlong() {
       return llong;
    }
 
-   public void setlon(String lon) {
+   public void setLlong(String lon) {
       this.llong = lon;
    }
 

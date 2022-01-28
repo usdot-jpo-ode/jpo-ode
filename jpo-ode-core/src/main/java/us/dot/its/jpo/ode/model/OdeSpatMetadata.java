@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.model;
 
+import com.fasterxml.jackson.annotation.*;
+
 public class OdeSpatMetadata extends OdeLogMetadata {
 	/**
 	 * 
@@ -14,11 +16,12 @@ public class OdeSpatMetadata extends OdeLogMetadata {
 	private boolean isCertPresent;
 	private String originIp;
 
-	public boolean isCertPresent() {
+	@JsonProperty("isCertPresent")
+	public boolean getIsCertPresent() {
 		return isCertPresent;
 	}
 
-	public void setCertPresent(boolean isCertPresent) {
+	public void setIsCertPresent(boolean isCertPresent) {
 		this.isCertPresent = isCertPresent;
 	}
 
