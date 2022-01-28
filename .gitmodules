@@ -1,19 +1,22 @@
 [submodule "asn1_codec"]
 	path = asn1_codec
-	url = https://github.com/usdot-jpo-ode/asn1_codec.git
+	url = https://github.com/CDOT-CV/asn1_codec.git
+	branch = confluent-cloud-integration
 [submodule "jpo-cvdp"]
 	path = jpo-cvdp
-	url = https://github.com/usdot-jpo-ode/jpo-cvdp.git
+	url = https://github.com/CDOT-CV/jpo-cvdp.git
+	branch = confluent-cloud-integration
 [submodule "jpo-s3-deposit"]
 	path = jpo-s3-deposit
-	url = https://github.com/usdot-jpo-ode/jpo-s3-deposit.git
-	branch = master
+	url = https://github.com/CDOT-CV/jpo-s3-deposit
+	branch = confluent-cloud-integration
 [submodule "jpo-security-svcs"]
 	path = jpo-security-svcs
-	url = https://github.com/usdot-jpo-ode/jpo-security-svcs
+	url = https://github.com/usdot-jpo-ode/jpo-security-svcs.git
 [submodule "jpo-sdw-depositor"]
 	path = jpo-sdw-depositor
-	url = https://github.com/usdot-jpo-ode/jpo-sdw-depositor.git
+	url = https://github.com/CDOT-CV/jpo-sdw-depositor.git
+	branch = confluent-cloud-integration
 [submodule "qa/test-harness/ode-output-validator-library"]
 	path = qa/test-harness/ode-output-validator-library
 	url = https://github.com/usdot-jpo-ode/ode-output-validator-library.git
