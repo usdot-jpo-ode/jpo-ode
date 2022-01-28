@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 
+import org.codehaus.groovy.runtime.typehandling.BigDecimalMath;
 import org.junit.jupiter.api.Test;
 
 public class J2735RequestorDescriptionTest {
@@ -23,9 +24,9 @@ public class J2735RequestorDescriptionTest {
         assertEquals(requestorDescription.getType().getRole(), J2735BasicVehicleRole.emergency);
 
         J2735RequestorPositionVector positionVector = new J2735RequestorPositionVector();
-        positionVector.setHeading(BigDecimal.valueOf(5L));
+        positionVector.setHeading(BigDecimal.valueOf(5));
         requestorDescription.setPosition(positionVector);
-        assertEquals(requestorDescription.getPosition().getHeading(), 5);
+        assertEquals(requestorDescription.getPosition().getHeading(), BigDecimal.valueOf(5));
 
         requestorDescription.setName("test");
         assertEquals(requestorDescription.getName(), "test");

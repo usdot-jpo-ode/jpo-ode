@@ -13,16 +13,16 @@ public class J2735RequestorPositionVectorTest {
         J2735RequestorPositionVector requestorPositionVector = new J2735RequestorPositionVector();
         
         OdePosition3D pos3d = new OdePosition3D();
-        pos3d.setElevation(BigDecimal.valueOf(105L));
+        pos3d.setElevation(BigDecimal.valueOf(105));
         requestorPositionVector.setPosition(pos3d);
-        assertEquals(requestorPositionVector.getPosition().getElevation(), 105);
+        assertEquals(requestorPositionVector.getPosition().getElevation(), BigDecimal.valueOf(105));
 
-        requestorPositionVector.setHeading(BigDecimal.valueOf(5L));
-        assertEquals(requestorPositionVector.getHeading(), 5L);
+        requestorPositionVector.setHeading(BigDecimal.valueOf(5));
+        assertEquals(requestorPositionVector.getHeading(), BigDecimal.valueOf(5));
 
         J2735TransmissionAndSpeed speed = new J2735TransmissionAndSpeed();
-        speed.setSpeed(BigDecimal.valueOf(105L));
+        speed.setSpeed(BigDecimal.valueOf(105));
         requestorPositionVector.setSpeed(speed);
-        assertEquals(requestorPositionVector.getSpeed().getSpeed(), BigDecimal.valueOf(105L));
+        assertEquals(requestorPositionVector.getSpeed().getSpeed(), BigDecimal.valueOf(105));
 	}
 }
