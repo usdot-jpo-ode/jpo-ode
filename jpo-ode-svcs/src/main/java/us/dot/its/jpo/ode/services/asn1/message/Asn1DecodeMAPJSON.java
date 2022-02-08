@@ -41,7 +41,8 @@ public class Asn1DecodeMAPJSON extends AbstractAsn1DecodeMessageJSON {
 		OdeMsgPayload payload = null;
 
 		try {
-			logger.info("Consuming MAP data: {}", consumedData);
+			logger.info("Processing MAP data");
+			logger.debug("MAP data: {}", consumedData);
 			JSONObject rawJSONObject = new JSONObject(consumedData);
 			Set<?> keys = rawJSONObject.keySet();
 			for (Object key : keys) 
@@ -57,7 +58,7 @@ public class Asn1DecodeMAPJSON extends AbstractAsn1DecodeMessageJSON {
 						JSONObject rawMAPJsonContent = (JSONObject) rawMAPJsonContentArray.get(i);
 						String encodedPayload = rawMAPJsonContent.get("payload").toString();
 						JSONObject rawmetadata = (JSONObject) rawMAPJsonContent.get("metadata");
-						logger.info("RAW MAP: {}", encodedPayload);
+						logger.debug("RAW MAP: {}", encodedPayload);
 						// construct payload
 						payload = new OdeAsn1Payload(new OdeHexByteArray(encodedPayload));
 

@@ -37,7 +37,8 @@ public class Asn1DecodeSRMJSON extends AbstractAsn1DecodeMessageJSON {
 		OdeMsgPayload payload = null;
 
 		try {
-			logger.info("Consuming SRM data: {}", consumedData);
+			logger.info("Processing SRM data");
+			logger.debug("SRM data: {}", consumedData);
 			JSONObject rawJSONObject = new JSONObject(consumedData);
 			Set<?> keys = rawJSONObject.keySet();
 			for (Object key : keys) 
@@ -57,7 +58,7 @@ public class Asn1DecodeSRMJSON extends AbstractAsn1DecodeMessageJSON {
 						String encodedPayload = rawSRMJsonContent.get("payload").toString();
 						JSONObject rawmetadata = (JSONObject) rawSRMJsonContent.get("metadata");
 
-						logger.info("RAW SRM: {}", encodedPayload);
+						logger.debug("RAW SRM: {}", encodedPayload);
 						
 						//construct payload
 						payload = new OdeAsn1Payload(new OdeHexByteArray(encodedPayload));

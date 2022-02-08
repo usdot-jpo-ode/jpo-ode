@@ -43,7 +43,8 @@ public class Asn1DecodeSPATJSON extends AbstractAsn1DecodeMessageJSON {
 		OdeMsgPayload payload = null;
 
 		try {
-			logger.info("Consuming SPAT data: {}", consumedData);
+			logger.info("Processing SPAT data");
+			logger.debug("SPAT data: {}", consumedData);
 			JSONObject rawJSONObject = new JSONObject(consumedData);
 			Set<?> keys = rawJSONObject.keySet();
 			for (Object key : keys) {
@@ -61,7 +62,7 @@ public class Asn1DecodeSPATJSON extends AbstractAsn1DecodeMessageJSON {
 						JSONObject rawSPATJsonContent = (JSONObject) rawSPATJsonContentArray.get(i);
 						String encodedPayload = rawSPATJsonContent.get("payload").toString();
 						JSONObject rawmetadata = (JSONObject) rawSPATJsonContent.get("metadata");
-						logger.info("RAW SPAT: {}", encodedPayload);
+						logger.debug("RAW SPAT: {}", encodedPayload);
 						// construct payload
 						payload = new OdeAsn1Payload(new OdeHexByteArray(encodedPayload));
 
