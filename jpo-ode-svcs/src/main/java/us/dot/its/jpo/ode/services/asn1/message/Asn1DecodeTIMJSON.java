@@ -40,7 +40,8 @@ public class Asn1DecodeTIMJSON extends AbstractAsn1DecodeMessageJSON {
 		OdeMsgPayload payload = null;
 
 		try {
-			logger.info("Consuming TIM data: {}", consumedData);
+			logger.info("Processing TIM data");
+			logger.debug("TIM data: {}", consumedData);
 			JSONObject rawJSONObject = new JSONObject(consumedData);
 			Set<?> keys = rawJSONObject.keySet();
 			for (Object key : keys) 
@@ -58,7 +59,7 @@ public class Asn1DecodeTIMJSON extends AbstractAsn1DecodeMessageJSON {
 						String encodedPayload = rawTIMJsonContent.get("payload").toString();
 						JSONObject rawmetadata = (JSONObject) rawTIMJsonContent.get("metadata");
 
-						logger.info("RAW TIM: {}", encodedPayload);
+						logger.debug("RAW TIM: {}", encodedPayload);
 						
 						//construct payload
 						payload = new OdeAsn1Payload(new OdeHexByteArray(encodedPayload));

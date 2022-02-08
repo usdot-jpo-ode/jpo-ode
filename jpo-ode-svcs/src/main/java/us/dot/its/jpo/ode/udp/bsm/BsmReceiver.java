@@ -65,8 +65,6 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                String payloadHexString = HexUtils.toHexString(payload);
                logger.debug("Packet: {}", payloadHexString);
                
-               logger.debug("Creating Decoded BSM JSON Object...");
-
                // Add header data for the decoding process
                ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
                String timestamp = utc.format(DateTimeFormatter.ISO_INSTANT);
@@ -88,8 +86,6 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                logger.debug("BSM JSON Object: {}", jsonObject.toString());
 
                // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
-               logger.debug("Publishing JSON BSM...");
-
                this.bsmPublisher.publish(jsonObject.toString(), this.bsmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedBSMJson());
             }
          } catch (Exception e) {
@@ -113,7 +109,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
 
       int startIndex = hexPacket.indexOf(BSM_START_FLAG);
       if (startIndex == 0) {
-         logger.info("Message is raw BSM with no headers.");
+         logger.debug("Message is raw BSM with no headers.");
       } else if (startIndex == -1) {
          logger.error("Message contains no BSM start flag.");
          return null;
