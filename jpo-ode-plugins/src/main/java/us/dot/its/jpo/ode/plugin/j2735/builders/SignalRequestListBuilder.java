@@ -22,8 +22,6 @@ public class SignalRequestListBuilder {
                     .add(SignalRequestPackageBuilder.genericSignalRequestPackage(elements.next()));
 			}
 		} else {
-			System.out.println("SignalRequestListBuilder: Configuring SignalRequestPackage...");
-
 			JsonNode signalRequest = requests.get("SignalRequestPackage");
 			if(signalRequest != null)
 			{

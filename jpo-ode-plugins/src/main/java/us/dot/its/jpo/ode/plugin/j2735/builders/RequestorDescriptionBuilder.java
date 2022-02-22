@@ -17,6 +17,8 @@ public class RequestorDescriptionBuilder {
     public static J2735RequestorDescription genericRequestorDescription(JsonNode requestor) {
         J2735RequestorDescription requestorDescription = new J2735RequestorDescription();
 
+        System.out.println("RequestorDescriptionBuilder: Configuring id...");
+
         JsonNode id = requestor.get("id");
 		if(id != null)
 		{
@@ -37,11 +39,15 @@ public class RequestorDescriptionBuilder {
 			requestorDescription.setId(objVehicleId);
         }
 
+        System.out.println("RequestorDescriptionBuilder: Configuring type...");
+
         JsonNode type = requestor.get("type");
 		if(type != null)
 		{
             requestorDescription.setType(RequestorTypeBuilder.genericRequestorType(type));
         }
+
+        System.out.println("RequestorDescriptionBuilder: Configuring position...");
 
         JsonNode position = requestor.get("position");
 		if(position != null)
@@ -49,17 +55,23 @@ public class RequestorDescriptionBuilder {
             requestorDescription.setPosition(RequestorPositionVectorBuilder.genericRequestorPositionVector(position));
         }
 
+        System.out.println("RequestorDescriptionBuilder: Configuring name...");
+
         JsonNode name = requestor.get("name");
 		if(name != null)
 		{
             requestorDescription.setName(name.asText());
         }
 
+        System.out.println("RequestorDescriptionBuilder: Configuring routeName...");
+
         JsonNode routeName = requestor.get("routeName");
 		if(routeName != null)
 		{
             requestorDescription.setRouteName(routeName.asText());
         }
+
+        System.out.println("RequestorDescriptionBuilder: Configuring transitStatus...");
 
         JsonNode transitStatus = requestor.get("transitStatus");
 		if(transitStatus != null)
@@ -68,11 +80,15 @@ public class RequestorDescriptionBuilder {
             requestorDescription.setTransitStatus(transitStatusObj);
         }
 
+        System.out.println("RequestorDescriptionBuilder: Configuring transitOccupancy...");
+
         JsonNode transitOccupancy = requestor.get("transitOccupancy");
 		if(transitOccupancy != null)
 		{
             requestorDescription.setTransitOccupancy(J2735TransitVehicleOccupancy.valueOf(transitOccupancy.fieldNames().next()));
         }
+
+        System.out.println("RequestorDescriptionBuilder: Configuring transitSchedule...");
 
         JsonNode transitSchedule = requestor.get("transitSchedule");
 		if(transitSchedule != null)
