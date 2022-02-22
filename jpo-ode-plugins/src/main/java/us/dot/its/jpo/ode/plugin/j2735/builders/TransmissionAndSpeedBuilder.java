@@ -28,8 +28,20 @@ public class TransmissionAndSpeedBuilder {
 
     public static J2735TransmissionAndSpeed genericTransmissionAndSpeed(JsonNode ts) {
         J2735TransmissionAndSpeed gts = new J2735TransmissionAndSpeed();
-        gts.setSpeed(SpeedOrVelocityBuilder.genericVelocity(ts.get("speed")));
-        gts.setTransmisson(J2735TransmissionState.valueOf(ts.get("transmisson").fieldNames().next().toUpperCase()));
+
+        JsonNode speed = ts.get("speed");
+		if(speed != null)
+		{
+            gts.setSpeed(SpeedOrVelocityBuilder.genericVelocity(speed));
+        }
+
+        // The typo is deliberate as defined by J2735 TransmissionAndSpeed
+        JsonNode transmisson = ts.get("transmisson");
+		if(transmisson != null)
+		{
+            gts.setTransmisson(J2735TransmissionState.valueOf(transmisson.fieldNames().next().toUpperCase()));	
+		}
+
         return gts;
     }
 
