@@ -14,8 +14,6 @@ public class RequestorPositionVectorBuilder {
     public static J2735RequestorPositionVector genericRequestorPositionVector(JsonNode positionVector) {
         J2735RequestorPositionVector requestorPositionVector = new J2735RequestorPositionVector();
 
-		System.out.println("RequestorPositionVectorBuilder: Configuring position...");
-
         JsonNode position = positionVector.get("position");
 		if (position != null)
 		{
@@ -40,15 +38,11 @@ public class RequestorPositionVectorBuilder {
 			requestorPositionVector.setPosition(positionObj);
 		}
 
-		System.out.println("RequestorPositionVectorBuilder: Configuring heading...");
-
         JsonNode heading = positionVector.get("heading");
 		if (heading != null)
 		{
             requestorPositionVector.setHeading(HeadingBuilder.genericHeading(heading));
         }
-
-		System.out.println("RequestorPositionVectorBuilder: Configuring speed...");
 
         JsonNode speed = positionVector.get("speed");
 		if (speed != null)

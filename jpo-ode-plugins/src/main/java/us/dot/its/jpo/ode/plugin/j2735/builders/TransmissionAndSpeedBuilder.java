@@ -32,7 +32,7 @@ public class TransmissionAndSpeedBuilder {
 
     public static J2735TransmissionAndSpeed genericTransmissionAndSpeed(JsonNode ts) {
 
-        System.out.println("TransmissionAndSpeedBuilder: Starting to configure...");
+        System.out.println("TransmissionAndSpeedBuilder: Starting to configure using " + ts.toString());
 
         if (ts.get(TRANSMISSION).asLong() < TRANSMISSION_LOWER_BOUND
                 || ts.get(TRANSMISSION).asLong() > TRANSMISSION_UPPER_BOUND) {

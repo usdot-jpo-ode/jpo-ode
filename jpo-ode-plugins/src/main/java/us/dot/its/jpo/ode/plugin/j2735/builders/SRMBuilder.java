@@ -42,8 +42,6 @@ public class SRMBuilder {
 		{
 			genericSRM.setRequests(SignalRequestListBuilder.genericSignalRequestList(requests));	
 		}
-
-		System.out.println("SRMBuilder: Configuring requestor...");
 		
         JsonNode requestor = SRMMessage.get("requestor");
 		if(requestor != null)
