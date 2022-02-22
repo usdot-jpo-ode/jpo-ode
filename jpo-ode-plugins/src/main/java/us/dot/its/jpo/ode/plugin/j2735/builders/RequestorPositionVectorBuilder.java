@@ -40,7 +40,7 @@ public class RequestorPositionVectorBuilder {
 			requestorPositionVector.setPosition(positionObj);
 		}
 
-		System.out.println("RequestorPositionVectorBuilder: Configuring position...");
+		System.out.println("RequestorPositionVectorBuilder: Configuring heading...");
 
         JsonNode heading = positionVector.get("heading");
 		if (heading != null)
@@ -48,7 +48,7 @@ public class RequestorPositionVectorBuilder {
             requestorPositionVector.setHeading(HeadingBuilder.genericHeading(heading));
         }
 
-		System.out.println("RequestorPositionVectorBuilder: Configuring position...");
+		System.out.println("RequestorPositionVectorBuilder: Configuring speed...");
 
         JsonNode speed = positionVector.get("speed");
 		if (speed != null)
