@@ -37,7 +37,9 @@ public class TransmissionAndSpeedBuilder {
         String transValue = trans.fieldNames().next();
         System.out.println("Transmission value: " + transValue);
         System.out.println("Transmission value.toUpperCase: " + transValue.toUpperCase());
-        gts.setTransmisson(J2735TransmissionState.valueOf(transValue.toUpperCase()));
+        J2735TransmissionState transmissionState = J2735TransmissionState.valueOf(transValue.toUpperCase());
+        System.out.println("Transmission object: " + transmissionState.name());
+        gts.setTransmisson(transmissionState);
 
         return gts;
     }
