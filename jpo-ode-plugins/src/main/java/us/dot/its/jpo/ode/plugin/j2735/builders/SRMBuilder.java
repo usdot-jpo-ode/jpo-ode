@@ -19,12 +19,15 @@ public class SRMBuilder {
 		J2735SRM genericSRM = new J2735SRM();
 		System.out.println("SRM JsonNode: " + SRMMessage.toString());
 
+		System.out.println("Configuring timeStamp...");
 
 		JsonNode timeStamp = SRMMessage.get("timeStamp");
 		if(timeStamp != null)
 		{
 			genericSRM.setTimeStamp(timeStamp.asInt());
 		}
+
+		System.out.println("SRMBuilder: Configuring second...");
 		
 		JsonNode second = SRMMessage.get("second");
 		if(second != null)
@@ -32,11 +35,15 @@ public class SRMBuilder {
 			genericSRM.setSecond(second.asInt());
 		}
 
+		System.out.println("SRMBuilder: Configuring sequenceNumber...");
+
         JsonNode sequenceNumber = SRMMessage.get("sequenceNumber");
 		if(sequenceNumber != null)
 		{
 			genericSRM.setSequenceNumber(sequenceNumber.asInt());
 		}
+
+		System.out.println("SRMBuilder: Configuring requests...");
 		
 		JsonNode requests = SRMMessage.get("requests");
 		if(requests != null)
@@ -44,6 +51,8 @@ public class SRMBuilder {
 			genericSRM.setRequests(SignalRequestListBuilder.genericSignalRequestList(requests));	
 		}
 
+		System.out.println("SRMBuilder: Configuring requestor...");
+		
         JsonNode requestor = SRMMessage.get("requestor");
 		if(requestor != null)
 		{

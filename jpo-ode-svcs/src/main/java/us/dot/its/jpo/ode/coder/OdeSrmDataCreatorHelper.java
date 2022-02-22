@@ -53,8 +53,6 @@ public class OdeSrmDataCreatorHelper {
             metadata.setReceivedMessageDetails(null);
         }
 
-        System.out.println("Entire JSON Data: " + consumed.toString());
-
         OdeSrmPayload payload = new OdeSrmPayload(SRMBuilder.genericSRM(consumed.findValue("SignalRequestMessage")));
         return new OdeSrmData(metadata, payload);
     }
