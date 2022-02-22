@@ -32,14 +32,7 @@ public class TransmissionAndSpeedBuilder {
         gts.setSpeed(SpeedOrVelocityBuilder.genericVelocity(ts.get("speed")));
 
         System.out.println("TransmissionAndSpeedBuilder: Trying to configure transmission...");
-        JsonNode trans = ts.get("transmission");
-        System.out.println("Transmission: " + trans.toString());
-        String transValue = trans.fieldNames().next();
-        System.out.println("Transmission value: " + transValue);
-        System.out.println("Transmission value.toUpperCase: " + transValue.toUpperCase());
-        J2735TransmissionState transmissionState = J2735TransmissionState.valueOf(transValue.toUpperCase());
-        System.out.println("Transmission object: " + transmissionState.name());
-        gts.setTransmisson(transmissionState);
+        gts.setTransmisson(J2735TransmissionState.valueOf(ts.get("transmisson").fieldNames().next().toUpperCase()));
 
         return gts;
     }
