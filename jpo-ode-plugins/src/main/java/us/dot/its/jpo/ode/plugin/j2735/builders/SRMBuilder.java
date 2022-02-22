@@ -1,10 +1,15 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
+import javax.xml.transform.Source;
+
 import com.fasterxml.jackson.databind.JsonNode;
+
+import org.codehaus.groovy.runtime.powerassert.SourceText;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735SRM;
 
 public class SRMBuilder {
+
     private SRMBuilder()
 	{
 		throw new UnsupportedOperationException();
@@ -12,6 +17,8 @@ public class SRMBuilder {
 
 	public static J2735SRM genericSRM(JsonNode SRMMessage) {
 		J2735SRM genericSRM = new J2735SRM();
+		System.out.println("SRM JsonNode: " + SRMMessage.asText());
+
 
 		JsonNode timeStamp = SRMMessage.get("timeStamp");
 		if(timeStamp != null)
