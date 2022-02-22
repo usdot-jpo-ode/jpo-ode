@@ -28,12 +28,8 @@ public class TransmissionAndSpeedBuilder {
 
     public static J2735TransmissionAndSpeed genericTransmissionAndSpeed(JsonNode ts) {
         J2735TransmissionAndSpeed gts = new J2735TransmissionAndSpeed();
-
         gts.setSpeed(SpeedOrVelocityBuilder.genericVelocity(ts.get("speed")));
-
-        System.out.println("TransmissionAndSpeedBuilder: Trying to configure transmission...");
         gts.setTransmisson(J2735TransmissionState.valueOf(ts.get("transmisson").fieldNames().next().toUpperCase()));
-
         return gts;
     }
 
