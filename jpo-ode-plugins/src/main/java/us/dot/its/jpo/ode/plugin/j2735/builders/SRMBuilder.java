@@ -17,7 +17,7 @@ public class SRMBuilder {
 
 	public static J2735SRM genericSRM(JsonNode SRMMessage) {
 		J2735SRM genericSRM = new J2735SRM();
-		System.out.println("SRM JsonNode: " + SRMMessage.asText());
+		System.out.println("SRM JsonNode: " + SRMMessage.toString());
 
 
 		JsonNode timeStamp = SRMMessage.get("timeStamp");
