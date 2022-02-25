@@ -21,7 +21,8 @@ public class RegulatorySpeedLimitBuilder {
 
         JsonNode speed = regSpeedLimitNode.get("speed");
 		if (speed != null) {
-			genericRegulatorySpeedLimit.setSpeed(speed.asInt());
+			genericRegulatorySpeedLimit.setSpeed(SpeedOrVelocityBuilder.genericSpeed(speed));
+			
 		}
 
         return genericRegulatorySpeedLimit;

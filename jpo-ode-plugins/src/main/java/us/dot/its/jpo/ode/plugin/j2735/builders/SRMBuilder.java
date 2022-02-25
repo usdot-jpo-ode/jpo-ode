@@ -1,10 +1,15 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
+import javax.xml.transform.Source;
+
 import com.fasterxml.jackson.databind.JsonNode;
+
+import org.codehaus.groovy.runtime.powerassert.SourceText;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735SRM;
 
 public class SRMBuilder {
+
     private SRMBuilder()
 	{
 		throw new UnsupportedOperationException();
@@ -18,7 +23,7 @@ public class SRMBuilder {
 		{
 			genericSRM.setTimeStamp(timeStamp.asInt());
 		}
-		
+
 		JsonNode second = SRMMessage.get("second");
 		if(second != null)
 		{
@@ -30,13 +35,13 @@ public class SRMBuilder {
 		{
 			genericSRM.setSequenceNumber(sequenceNumber.asInt());
 		}
-		
+
 		JsonNode requests = SRMMessage.get("requests");
 		if(requests != null)
 		{
 			genericSRM.setRequests(SignalRequestListBuilder.genericSignalRequestList(requests));	
 		}
-
+		
         JsonNode requestor = SRMMessage.get("requestor");
 		if(requestor != null)
 		{

@@ -65,8 +65,6 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
                String payloadHexString = HexUtils.toHexString(payload);
                logger.debug("Packet: {}", payloadHexString);
                
-               logger.debug("Creating Decoded SPAT JSON Object...");
-
                // Add header data for the decoding process
                ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
                String timestamp = utc.format(DateTimeFormatter.ISO_INSTANT);
@@ -88,8 +86,6 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
                logger.debug("SPAT JSON Object: {}", jsonObject.toString());
 
                // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
-               logger.debug("Publishing JSON SPAT...");
-
                this.spatPublisher.publish(jsonObject.toString(), this.spatPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
             }
          } catch (Exception e) {
@@ -112,7 +108,7 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
 
       int startIndex = hexPacket.indexOf(SPAT_START_FLAG);
       if (startIndex == 0) {
-         logger.info("Message is raw SPAT with no headers.");
+         logger.debug("Message is raw SPAT with no headers.");
       } else if (startIndex == -1) {
          logger.error("Message contains no SPAT start flag.");
          return null;
