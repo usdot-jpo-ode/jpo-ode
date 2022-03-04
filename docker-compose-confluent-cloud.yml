@@ -42,9 +42,10 @@ services:
   #   image: jpoode_acm:latest
   #   environment:
   #     DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+  #     KAFKA_TYPE: ${KAFKA_TYPE}
+  #     CONFLUENT_KEY: ${CONFLUENT_KEY}
+  #     CONFLUENT_SECRET: ${CONFLUENT_SECRET}
   #     ACM_CONFIG_FILE: adm.properties
-  #   depends_on:
-  #     - kafka
   #   volumes:
   #     - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
   #   logging:
@@ -57,12 +58,35 @@ services:
   #   image: jpoode_acm:latest
   #   environment:
   #     DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+  #     KAFKA_TYPE: ${KAFKA_TYPE}
+  #     CONFLUENT_KEY: ${CONFLUENT_KEY}
+  #     CONFLUENT_SECRET: ${CONFLUENT_SECRET}
   #     ACM_CONFIG_FILE: aem.properties
-  #   depends_on:
-  #     - kafka
   #   volumes:
   #     - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
   #   logging:
   #     options:
   #       max-size: "10m"
   #       max-file: "5"
+
+  # ppmbsm:
+  #   build:
+  #     context: ./jpo-cvdp
+  #     dockerfile: Dockerfile.cdot
+  #   environment:
+  #     DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+  #     KAFKA_TYPE: ${KAFKA_TYPE}
+  #     CONFLUENT_KEY: ${CONFLUENT_KEY}
+  #     CONFLUENT_SECRET: ${CONFLUENT_SECRET}
+  #     PPM_CONFIG_FILE: cdot_ppmBsm.properties
+
+  # ppmtim:
+  #   build:
+  #     context: ./jpo-cvdp
+  #     dockerfile: Dockerfile.cdot
+  #   environment:
+  #     DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+  #     KAFKA_TYPE: ${KAFKA_TYPE}
+  #     CONFLUENT_KEY: ${CONFLUENT_KEY}
+  #     CONFLUENT_SECRET: ${CONFLUENT_SECRET}
+  #     PPM_CONFIG_FILE: cdot_ppmTim.properties
