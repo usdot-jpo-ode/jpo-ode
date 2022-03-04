@@ -5,7 +5,7 @@
 [submodule "jpo-cvdp"]
 	path = jpo-cvdp
 	url = https://github.com/CDOT-CV/jpo-cvdp.git
-	branch = confluent-cloud-integration
+	branch = cc-integration
 [submodule "jpo-s3-deposit"]
 	path = jpo-s3-deposit
 	url = https://github.com/CDOT-CV/jpo-s3-deposit.git
