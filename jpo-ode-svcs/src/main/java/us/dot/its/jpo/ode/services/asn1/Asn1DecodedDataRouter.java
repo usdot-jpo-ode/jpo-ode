@@ -113,7 +113,7 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 				logger.debug("Submitted to SPAT Pojo topic");
 			} else if (messageId == J2735DSRCmsgID.MAPMessage.getMsgID()) {
 				String odeMapData = OdeMapDataCreatorHelper.createOdeMapData(consumedData).toString();
-				if (recordType == RecordType.spatTx) {
+				if (recordType == RecordType.mapTx) {
 					mapProducer.send(odeProperties.getKafkaTopicOdeMapTxPojo(), getRecord().key(), odeMapData);
 				}
 				// Send all Map also to OdeMapJson

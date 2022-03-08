@@ -65,8 +65,6 @@ public class SsmReceiver extends AbstractUdpReceiverPublisher {
                String payloadHexString = HexUtils.toHexString(payload);
                logger.debug("Packet: {}", payloadHexString);
                
-               logger.debug("Creating Decoded SSM JSON Object...");
-
                // Add header data for the decoding process
                ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
                String timestamp = utc.format(DateTimeFormatter.ISO_INSTANT);
@@ -89,8 +87,6 @@ public class SsmReceiver extends AbstractUdpReceiverPublisher {
                logger.debug("SSM JSON Object: {}", jsonObject.toString());
 
                // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
-               logger.debug("Publishing JSON SSM...");
-
                this.ssmPublisher.publish(jsonObject.toString(), this.ssmPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedSSMJson());
             }
          } catch (Exception e) {
@@ -113,7 +109,7 @@ public class SsmReceiver extends AbstractUdpReceiverPublisher {
 
       int startIndex = hexPacket.indexOf(SSM_START_FLAG);
       if (startIndex == 0) {
-         logger.info("Message is raw SSM with no headers.");
+         logger.debug("Message is raw SSM with no headers.");
       } else if (startIndex == -1) {
          logger.error("Message contains no SSM start flag.");
          return null;

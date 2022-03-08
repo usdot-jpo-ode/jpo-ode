@@ -22,7 +22,9 @@ public class BitStringBuilder {
 
       for (char i = 0; i < chars.length; i++) {
          if (i >= enumValues.length) {
-            logger.warn("Invalid genericBitString. Provided bit string is longer than known enum values");
+            logger.debug(
+                  "Invalid genericBitString. Provided bit string is longer than known enum values. Enum attempted: {}",
+                  enumValues.getClass().getName());
             break;
          }
          String bitName = enumValues[i].name();
