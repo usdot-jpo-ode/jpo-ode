@@ -1,0 +1,711 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "spatSource": {
+          "type": "string"
+        },
+        "isCertPresent": {
+          "type": "boolean"
+        },
+        "originIp": {
+          "type": "string"
+        },
+        "logFileName": {
+          "type": "string"
+        },
+        "recordType": {
+          "type": "string"
+        },
+        "securityResultCode": {
+          "type": "string"
+        },
+        "receivedMessageDetails": {
+          "type": "object",
+          "properties": {
+            "locationData": {
+              "type": "null"
+            },
+            "rxSource": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "locationData",
+            "rxSource"
+          ]
+        },
+        "encodings": {
+          "type": "null"
+        },
+        "payloadType": {
+          "type": "string"
+        },
+        "serialId": {
+          "type": "object",
+          "properties": {
+            "streamId": {
+              "type": "string"
+            },
+            "bundleSize": {
+              "type": "integer"
+            },
+            "bundleId": {
+              "type": "integer"
+            },
+            "recordId": {
+              "type": "integer"
+            },
+            "serialNumber": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "streamId",
+            "bundleSize",
+            "bundleId",
+            "recordId",
+            "serialNumber"
+          ]
+        },
+        "odeReceivedAt": {
+          "type": "string"
+        },
+        "schemaVersion": {
+          "type": "integer"
+        },
+        "maxDurationTime": {
+          "type": "integer"
+        },
+        "odePacketID": {
+          "type": "string"
+        },
+        "odeTimStartDateTime": {
+          "type": "string"
+        },
+        "recordGeneratedAt": {
+          "type": "string"
+        },
+        "recordGeneratedBy": {
+          "type": "null"
+        },
+        "sanitized": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "spatSource",
+        "isCertPresent",
+        "originIp",
+        "logFileName",
+        "recordType",
+        "securityResultCode",
+        "receivedMessageDetails",
+        "encodings",
+        "payloadType",
+        "serialId",
+        "odeReceivedAt",
+        "schemaVersion",
+        "maxDurationTime",
+        "odePacketID",
+        "odeTimStartDateTime",
+        "recordGeneratedAt",
+        "recordGeneratedBy",
+        "sanitized"
+      ]
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "dataType": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "timeStamp": {
+              "type": "null"
+            },
+            "name": {
+              "type": "null"
+            },
+            "intersectionStateList": {
+              "type": "object",
+              "properties": {
+                "intersectionStatelist": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "null"
+                        },
+                        "id": {
+                          "type": "object",
+                          "properties": {
+                            "region": {
+                              "type": "null"
+                            },
+                            "id": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "region",
+                            "id"
+                          ]
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "moy": {
+                          "type": "null"
+                        },
+                        "timeStamp": {
+                          "type": "integer"
+                        },
+                        "enabledLanes": {
+                          "type": "null"
+                        },
+                        "states": {
+                          "type": "object",
+                          "properties": {
+                            "movementList": {
+                              "type": "array",
+                              "items": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "movementName": {
+                                      "type": "null"
+                                    },
+                                    "signalGroup": {
+                                      "type": "integer"
+                                    },
+                                    "state_time_speed": {
+                                      "type": "object",
+                                      "properties": {
+                                        "movementEventList": {
+                                          "type": "array",
+                                          "items": [
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "eventState": {
+                                                  "type": "string"
+                                                },
+                                                "timing": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "startTime": {
+                                                      "type": "null"
+                                                    },
+                                                    "minEndTime": {
+                                                      "type": "integer"
+                                                    },
+                                                    "maxEndTime": {
+                                                      "type": "integer"
+                                                    },
+                                                    "likelyTime": {
+                                                      "type": "null"
+                                                    },
+                                                    "confidence": {
+                                                      "type": "null"
+                                                    },
+                                                    "nextTime": {
+                                                      "type": "null"
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "startTime",
+                                                    "minEndTime",
+                                                    "maxEndTime",
+                                                    "likelyTime",
+                                                    "confidence",
+                                                    "nextTime"
+                                                  ]
+                                                },
+                                                "speeds": {
+                                                  "type": "null"
+                                                }
+                                              },
+                                              "required": [
+                                                "eventState",
+                                                "timing",
+                                                "speeds"
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "movementEventList"
+                                      ]
+                                    },
+                                    "maneuverAssistList": {
+                                      "type": "null"
+                                    }
+                                  },
+                                  "required": [
+                                    "movementName",
+                                    "signalGroup",
+                                    "state_time_speed",
+                                    "maneuverAssistList"
+                                  ]
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "movementName": {
+                                      "type": "null"
+                                    },
+                                    "signalGroup": {
+                                      "type": "integer"
+                                    },
+                                    "state_time_speed": {
+                                      "type": "object",
+                                      "properties": {
+                                        "movementEventList": {
+                                          "type": "array",
+                                          "items": [
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "eventState": {
+                                                  "type": "string"
+                                                },
+                                                "timing": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "startTime": {
+                                                      "type": "null"
+                                                    },
+                                                    "minEndTime": {
+                                                      "type": "integer"
+                                                    },
+                                                    "maxEndTime": {
+                                                      "type": "integer"
+                                                    },
+                                                    "likelyTime": {
+                                                      "type": "null"
+                                                    },
+                                                    "confidence": {
+                                                      "type": "null"
+                                                    },
+                                                    "nextTime": {
+                                                      "type": "null"
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "startTime",
+                                                    "minEndTime",
+                                                    "maxEndTime",
+                                                    "likelyTime",
+                                                    "confidence",
+                                                    "nextTime"
+                                                  ]
+                                                },
+                                                "speeds": {
+                                                  "type": "null"
+                                                }
+                                              },
+                                              "required": [
+                                                "eventState",
+                                                "timing",
+                                                "speeds"
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "movementEventList"
+                                      ]
+                                    },
+                                    "maneuverAssistList": {
+                                      "type": "null"
+                                    }
+                                  },
+                                  "required": [
+                                    "movementName",
+                                    "signalGroup",
+                                    "state_time_speed",
+                                    "maneuverAssistList"
+                                  ]
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "movementName": {
+                                      "type": "null"
+                                    },
+                                    "signalGroup": {
+                                      "type": "integer"
+                                    },
+                                    "state_time_speed": {
+                                      "type": "object",
+                                      "properties": {
+                                        "movementEventList": {
+                                          "type": "array",
+                                          "items": [
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "eventState": {
+                                                  "type": "string"
+                                                },
+                                                "timing": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "startTime": {
+                                                      "type": "null"
+                                                    },
+                                                    "minEndTime": {
+                                                      "type": "integer"
+                                                    },
+                                                    "maxEndTime": {
+                                                      "type": "integer"
+                                                    },
+                                                    "likelyTime": {
+                                                      "type": "null"
+                                                    },
+                                                    "confidence": {
+                                                      "type": "null"
+                                                    },
+                                                    "nextTime": {
+                                                      "type": "null"
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "startTime",
+                                                    "minEndTime",
+                                                    "maxEndTime",
+                                                    "likelyTime",
+                                                    "confidence",
+                                                    "nextTime"
+                                                  ]
+                                                },
+                                                "speeds": {
+                                                  "type": "null"
+                                                }
+                                              },
+                                              "required": [
+                                                "eventState",
+                                                "timing",
+                                                "speeds"
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "movementEventList"
+                                      ]
+                                    },
+                                    "maneuverAssistList": {
+                                      "type": "null"
+                                    }
+                                  },
+                                  "required": [
+                                    "movementName",
+                                    "signalGroup",
+                                    "state_time_speed",
+                                    "maneuverAssistList"
+                                  ]
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "movementName": {
+                                      "type": "null"
+                                    },
+                                    "signalGroup": {
+                                      "type": "integer"
+                                    },
+                                    "state_time_speed": {
+                                      "type": "object",
+                                      "properties": {
+                                        "movementEventList": {
+                                          "type": "array",
+                                          "items": [
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "eventState": {
+                                                  "type": "string"
+                                                },
+                                                "timing": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "startTime": {
+                                                      "type": "null"
+                                                    },
+                                                    "minEndTime": {
+                                                      "type": "integer"
+                                                    },
+                                                    "maxEndTime": {
+                                                      "type": "integer"
+                                                    },
+                                                    "likelyTime": {
+                                                      "type": "null"
+                                                    },
+                                                    "confidence": {
+                                                      "type": "null"
+                                                    },
+                                                    "nextTime": {
+                                                      "type": "null"
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "startTime",
+                                                    "minEndTime",
+                                                    "maxEndTime",
+                                                    "likelyTime",
+                                                    "confidence",
+                                                    "nextTime"
+                                                  ]
+                                                },
+                                                "speeds": {
+                                                  "type": "null"
+                                                }
+                                              },
+                                              "required": [
+                                                "eventState",
+                                                "timing",
+                                                "speeds"
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "movementEventList"
+                                      ]
+                                    },
+                                    "maneuverAssistList": {
+                                      "type": "null"
+                                    }
+                                  },
+                                  "required": [
+                                    "movementName",
+                                    "signalGroup",
+                                    "state_time_speed",
+                                    "maneuverAssistList"
+                                  ]
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "movementName": {
+                                      "type": "null"
+                                    },
+                                    "signalGroup": {
+                                      "type": "integer"
+                                    },
+                                    "state_time_speed": {
+                                      "type": "object",
+                                      "properties": {
+                                        "movementEventList": {
+                                          "type": "array",
+                                          "items": [
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "eventState": {
+                                                  "type": "string"
+                                                },
+                                                "timing": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "startTime": {
+                                                      "type": "null"
+                                                    },
+                                                    "minEndTime": {
+                                                      "type": "integer"
+                                                    },
+                                                    "maxEndTime": {
+                                                      "type": "integer"
+                                                    },
+                                                    "likelyTime": {
+                                                      "type": "null"
+                                                    },
+                                                    "confidence": {
+                                                      "type": "null"
+                                                    },
+                                                    "nextTime": {
+                                                      "type": "null"
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "startTime",
+                                                    "minEndTime",
+                                                    "maxEndTime",
+                                                    "likelyTime",
+                                                    "confidence",
+                                                    "nextTime"
+                                                  ]
+                                                },
+                                                "speeds": {
+                                                  "type": "null"
+                                                }
+                                              },
+                                              "required": [
+                                                "eventState",
+                                                "timing",
+                                                "speeds"
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "movementEventList"
+                                      ]
+                                    },
+                                    "maneuverAssistList": {
+                                      "type": "null"
+                                    }
+                                  },
+                                  "required": [
+                                    "movementName",
+                                    "signalGroup",
+                                    "state_time_speed",
+                                    "maneuverAssistList"
+                                  ]
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "movementName": {
+                                      "type": "null"
+                                    },
+                                    "signalGroup": {
+                                      "type": "integer"
+                                    },
+                                    "state_time_speed": {
+                                      "type": "object",
+                                      "properties": {
+                                        "movementEventList": {
+                                          "type": "array",
+                                          "items": [
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "eventState": {
+                                                  "type": "string"
+                                                },
+                                                "timing": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "startTime": {
+                                                      "type": "null"
+                                                    },
+                                                    "minEndTime": {
+                                                      "type": "integer"
+                                                    },
+                                                    "maxEndTime": {
+                                                      "type": "integer"
+                                                    },
+                                                    "likelyTime": {
+                                                      "type": "null"
+                                                    },
+                                                    "confidence": {
+                                                      "type": "null"
+                                                    },
+                                                    "nextTime": {
+                                                      "type": "null"
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "startTime",
+                                                    "minEndTime",
+                                                    "maxEndTime",
+                                                    "likelyTime",
+                                                    "confidence",
+                                                    "nextTime"
+                                                  ]
+                                                },
+                                                "speeds": {
+                                                  "type": "null"
+                                                }
+                                              },
+                                              "required": [
+                                                "eventState",
+                                                "timing",
+                                                "speeds"
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "movementEventList"
+                                      ]
+                                    },
+                                    "maneuverAssistList": {
+                                      "type": "null"
+                                    }
+                                  },
+                                  "required": [
+                                    "movementName",
+                                    "signalGroup",
+                                    "state_time_speed",
+                                    "maneuverAssistList"
+                                  ]
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "movementList"
+                          ]
+                        },
+                        "maneuverAssistList": {
+                          "type": "null"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "id",
+                        "revision",
+                        "status",
+                        "moy",
+                        "timeStamp",
+                        "enabledLanes",
+                        "states",
+                        "maneuverAssistList"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "intersectionStatelist"
+              ]
+            }
+          },
+          "required": [
+            "timeStamp",
+            "name",
+            "intersectionStateList"
+          ]
+        }
+      },
+      "required": [
+        "dataType",
+        "data"
+      ]
+    }
+  },
+  "required": [
+    "metadata",
+    "payload"
+  ]
+}

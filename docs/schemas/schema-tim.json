@@ -1,0 +1,487 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "properties": {
+    "metadata": {
+      "properties": {
+        "logFileName": {
+          "type": "string"
+        },
+        "maxDurationTime": {
+          "type": "string"
+        },
+        "odePacketID": {
+          "type": "string"
+        },
+        "odeReceivedAt": {
+          "type": "string"
+        },
+        "odeTimStartDateTime": {
+          "type": "string"
+        },
+        "originIp": {
+          "type": "string"
+        },
+        "payloadType": {
+          "type": "string"
+        },
+        "receivedMessageDetails": {
+          "type": "string"
+        },
+        "recordGeneratedAt": {
+          "type": "string"
+        },
+        "recordGeneratedBy": {
+          "type": "string"
+        },
+        "recordType": {
+          "type": "string"
+        },
+        "sanitized": {
+          "type": "string"
+        },
+        "schemaVersion": {
+          "type": "string"
+        },
+        "securityResultCode": {
+          "type": "string"
+        },
+        "serialId": {
+          "properties": {
+            "bundleId": {
+              "type": "string"
+            },
+            "bundleSize": {
+              "type": "string"
+            },
+            "recordId": {
+              "type": "string"
+            },
+            "serialNumber": {
+              "type": "string"
+            },
+            "streamId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "recordId",
+            "serialNumber",
+            "streamId",
+            "bundleSize",
+            "bundleId"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "securityResultCode",
+        "recordGeneratedBy",
+        "schemaVersion",
+        "odePacketID",
+        "sanitized",
+        "recordGeneratedAt",
+        "recordType",
+        "maxDurationTime",
+        "odeTimStartDateTime",
+        "receivedMessageDetails",
+        "payloadType",
+        "serialId",
+        "logFileName",
+        "odeReceivedAt",
+        "originIp"
+      ],
+      "type": "object"
+    },
+    "payload": {
+      "properties": {
+        "data": {
+          "properties": {
+            "MessageFrame": {
+              "properties": {
+                "messageId": {
+                  "type": "string"
+                },
+                "value": {
+                  "properties": {
+                    "TravelerInformation": {
+                      "properties": {
+                        "dataFrames": {
+                          "properties": {
+                            "TravelerDataFrame": {
+                              "properties": {
+                                "content": {
+                                  "properties": {
+                                    "advisory": {
+                                      "anyOf": [
+                                        {
+                                          "properties": {
+                                            "SEQUENCE": {
+                                              "items": [
+                                                {
+                                                  "properties": {
+                                                    "item": {
+                                                      "properties": {
+                                                        "itis": {
+                                                          "type": "string"
+                                                        }
+                                                      },
+                                                      "required": [
+                                                        "itis"
+                                                      ],
+                                                      "type": "object"
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "item"
+                                                  ],
+                                                  "type": "object"
+                                                }
+                                              ],
+                                              "type": "array"
+                                            }
+                                          },
+                                          "required": [
+                                            "SEQUENCE"
+                                          ],
+                                          "type": "object"
+                                        },
+                                        {
+                                          "properties": {
+                                            "SEQUENCE": {
+                                              "properties": {
+                                                "item": {
+                                                  "properties": {
+                                                    "itis": {
+                                                      "type": "string"
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "itis"
+                                                  ],
+                                                  "type": "object"
+                                                }
+                                              },
+                                              "required": [
+                                                "item"
+                                              ],
+                                              "type": "object"
+                                            }
+                                          },
+                                          "required": [
+                                            "SEQUENCE"
+                                          ],
+                                          "type": "object"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "advisory"
+                                  ],
+                                  "type": "object"
+                                },
+                                "duratonTime": {
+                                  "type": "string"
+                                },
+                                "frameType": {
+                                  "properties": {
+                                    "advisory": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "advisory"
+                                  ],
+                                  "type": "object"
+                                },
+                                "msgId": {
+                                  "properties": {
+                                    "roadSignID": {
+                                      "properties": {
+                                        "mutcdCode": {
+                                          "properties": {
+                                            "warning": {
+                                              "type": "string"
+                                            }
+                                          },
+                                          "required": [
+                                            "warning"
+                                          ],
+                                          "type": "object"
+                                        },
+                                        "position": {
+                                          "properties": {
+                                            "lat": {
+                                              "type": "string"
+                                            },
+                                            "long": {
+                                              "type": "string"
+                                            },
+                                            "elevation": {
+                                              "type": ["string", "null"]
+                                            }
+                                          },
+                                          "required": [
+                                            "lat",
+                                            "long"
+                                          ],
+                                          "type": "object"
+                                        },
+                                        "viewAngle": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "viewAngle",
+                                        "mutcdCode",
+                                        "position"
+                                      ],
+                                      "type": "object"
+                                    }
+                                  },
+                                  "required": [
+                                    "roadSignID"
+                                  ],
+                                  "type": "object"
+                                },
+                                "priority": {
+                                  "type": "string"
+                                },
+                                "regions": {
+                                  "properties": {
+                                    "GeographicalPath": {
+                                      "properties": {
+                                        "anchor": {
+                                          "properties": {
+                                            "lat": {
+                                              "type": "string"
+                                            },
+                                            "long": {
+                                              "type": "string"
+                                            },
+                                            "elevation": {
+                                              "type": ["string", "null"]
+                                            }
+                                          },
+                                          "required": [
+                                            "lat",
+                                            "long"
+                                          ],
+                                          "type": ["object", "null"]
+                                        },
+                                        "closedPath": {
+                                          "properties": {
+                                            "true": {
+                                              "type": ["string", "null"]
+                                            },
+                                            "false": {
+                                              "type": ["string", "null"]
+                                            }
+                                          },
+                                          "type": ["object", "null"]
+                                        },
+                                        "description": {
+                                          "properties": {
+                                            "path": {
+                                              "properties": {
+                                                "offset": {
+                                                  "properties": {
+                                                    "xy": {
+                                                      "properties": {
+                                                        "nodes": {
+                                                          "properties": {
+                                                            "NodeXY": {
+                                                              "items": [
+                                                                {
+                                                                  "properties": {
+                                                                    "delta": {
+                                                                      "properties": {
+                                                                        "node-LatLon": {
+                                                                          "properties": {
+                                                                            "lat": {
+                                                                              "type": "string"
+                                                                            },
+                                                                            "lon": {
+                                                                              "type": "string"
+                                                                            },
+                                                                            "elevation": {
+                                                                              "type": ["string", "null"]
+                                                                            }
+                                                                          },
+                                                                          "required": [
+                                                                            "lon",
+                                                                            "lat"
+                                                                          ],
+                                                                          "type": "object"
+                                                                        }
+                                                                      },
+                                                                      "required": [
+                                                                        "node-LatLon"
+                                                                      ],
+                                                                      "type": "object"
+                                                                    }
+                                                                  },
+                                                                  "required": [
+                                                                    "delta"
+                                                                  ],
+                                                                  "type": "object"
+                                                                }
+                                                              ],
+                                                              "type": "array"
+                                                            }
+                                                          },
+                                                          "required": [
+                                                            "NodeXY"
+                                                          ],
+                                                          "type": "object"
+                                                        }
+                                                      },
+                                                      "required": [
+                                                        "nodes"
+                                                      ],
+                                                      "type": "object"
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "xy"
+                                                  ],
+                                                  "type": "object"
+                                                }
+                                              },
+                                              "required": [
+                                                "offset"
+                                              ],
+                                              "type": "object"
+                                            }
+                                          },
+                                          "required": [
+                                            "path"
+                                          ],
+                                          "type": ["object", "null"]
+                                        },
+                                        "direction": {
+                                          "type": "string"
+                                        },
+                                        "directionality": {
+                                          "properties": {
+                                            "unavailable": {
+                                              "type": "string"
+                                            },
+                                            "forward": {
+                                              "type": "string"
+                                            },
+                                            "reverse": {
+                                              "type": "string"
+                                            },
+                                            "both": {
+                                              "type": "string"
+                                            }
+                                          },
+                                          "type": ["object", "null"]
+                                        },
+                                        "laneWidth": {
+                                          "type": ["string", "null"]
+                                        }
+                                      },
+                                      "required": [
+                                        "direction"
+                                      ],
+                                      "type": "object"
+                                    }
+                                  },
+                                  "required": [
+                                    "GeographicalPath"
+                                  ],
+                                  "type": "object"
+                                },
+                                "sspLocationRights": {
+                                  "type": "string"
+                                },
+                                "sspMsgRights1": {
+                                  "type": "string"
+                                },
+                                "sspMsgRights2": {
+                                  "type": "string"
+                                },
+                                "sspTimRights": {
+                                  "type": "string"
+                                },
+                                "startTime": {
+                                  "type": "string"
+                                },
+                                "startYear": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "regions",
+                                "duratonTime",
+                                "sspMsgRights1",
+                                "sspMsgRights2",
+                                "sspTimRights",
+                                "startYear",
+                                "sspLocationRights",
+                                "frameType",
+                                "msgId",
+                                "startTime",
+                                "priority",
+                                "content"
+                              ],
+                              "type": "object"
+                            }
+                          },
+                          "required": [
+                            "TravelerDataFrame"
+                          ],
+                          "type": "object"
+                        },
+                        "msgCnt": {
+                          "type": "string"
+                        },
+                        "packetID": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "packetID",
+                        "dataFrames",
+                        "msgCnt"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "TravelerInformation"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "messageId",
+                "value"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "MessageFrame"
+          ],
+          "type": "object"
+        },
+        "dataType": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "dataType"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "metadata",
+    "payload"
+  ],
+  "type": "object"
+}

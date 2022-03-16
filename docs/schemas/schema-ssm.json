@@ -1,0 +1,321 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "originIp": {
+          "type": "string"
+        },
+        "ssmSource": {
+          "type": "string"
+        },
+        "logFileName": {
+          "type": "string"
+        },
+        "recordType": {
+          "type": "string"
+        },
+        "securityResultCode": {
+          "type": "null"
+        },
+        "receivedMessageDetails": {
+          "type": "object",
+          "properties": {
+            "locationData": {
+              "type": "null"
+            },
+            "rxSource": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "locationData",
+            "rxSource"
+          ]
+        },
+        "encodings": {
+          "type": "null"
+        },
+        "payloadType": {
+          "type": "string"
+        },
+        "serialId": {
+          "type": "object",
+          "properties": {
+            "streamId": {
+              "type": "string"
+            },
+            "bundleSize": {
+              "type": "integer"
+            },
+            "bundleId": {
+              "type": "integer"
+            },
+            "recordId": {
+              "type": "integer"
+            },
+            "serialNumber": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "streamId",
+            "bundleSize",
+            "bundleId",
+            "recordId",
+            "serialNumber"
+          ]
+        },
+        "odeReceivedAt": {
+          "type": "string"
+        },
+        "schemaVersion": {
+          "type": "integer"
+        },
+        "maxDurationTime": {
+          "type": "integer"
+        },
+        "odePacketID": {
+          "type": "string"
+        },
+        "odeTimStartDateTime": {
+          "type": "string"
+        },
+        "recordGeneratedAt": {
+          "type": "string"
+        },
+        "recordGeneratedBy": {
+          "type": "null"
+        },
+        "sanitized": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "originIp",
+        "ssmSource",
+        "logFileName",
+        "recordType",
+        "securityResultCode",
+        "receivedMessageDetails",
+        "encodings",
+        "payloadType",
+        "serialId",
+        "odeReceivedAt",
+        "schemaVersion",
+        "maxDurationTime",
+        "odePacketID",
+        "odeTimStartDateTime",
+        "recordGeneratedAt",
+        "recordGeneratedBy",
+        "sanitized"
+      ]
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "dataType": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "timeStamp": {
+              "type": ["integer", "null"]
+            },
+            "second": {
+              "type": "integer"
+            },
+            "sequenceNumber": {
+              "type": ["integer", "null"]
+            },
+            "status": {
+              "type": "object",
+              "properties": {
+                "signalStatus": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "sequenceNumber": {
+                          "type": "integer"
+                        },
+                        "id": {
+                          "type": "object",
+                          "properties": {
+                            "region": {
+                              "type": ["integer", "null"]
+                            },
+                            "id": {
+                              "type": ["integer", "null"]
+                            }
+                          },
+                          "required": [
+                            "region",
+                            "id"
+                          ]
+                        },
+                        "sigStatus": {
+                          "type": "object",
+                          "properties": {
+                            "signalStatusPackage": {
+                              "type": "array",
+                              "items": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "requester": {
+                                      "type": ["object", "null"],
+                                      "properties": {
+                                        "id": {
+                                          "type": "object",
+                                          "properties": {
+                                            "entityID": {
+                                              "type": ["string", "null"]
+                                            },
+                                            "stationID": {
+                                              "type": ["integer", "null"]
+                                            }
+                                          },
+                                          "required": [
+                                            "entityID",
+                                            "stationID"
+                                          ]
+                                        },
+                                        "request": {
+                                          "type": "integer"
+                                        },
+                                        "sequenceNumber": {
+                                          "type": "integer"
+                                        },
+                                        "role": {
+                                          "type": ["string", "null"]
+                                        },
+                                        "typeData": {
+                                          "type": ["object", "null"],
+                                          "properties": {
+                                            "role": {
+                                              "type": "string"
+                                            },
+                                            "subrole": {
+                                              "type": ["string", "null"]
+                                            },
+                                            "request": {
+                                              "type": ["string", "null"]
+                                            },
+                                            "iso3883": {
+                                              "type": ["integer", "null"]
+                                            },
+                                            "hpmsType": {
+                                              "type": ["string", "null"]
+                                            }
+                                          },
+                                          "required": [
+                                            "role"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "request",
+                                        "sequenceNumber"
+                                      ]
+                                    },
+                                    "inboundOn": {
+                                      "type": "object",
+                                      "properties": {
+                                        "lane": {
+                                          "type": "integer"
+                                        },
+                                        "approach": {
+                                          "type": "integer"
+                                        },
+                                        "connection": {
+                                          "type": "integer"
+                                        }
+                                      },
+                                      "required": [
+                                        "lane",
+                                        "approach",
+                                        "connection"
+                                      ]
+                                    },
+                                    "outboundOn": {
+                                      "type": ["object", "null"],
+                                      "properties": {
+                                        "lane": {
+                                          "type": "integer"
+                                        },
+                                        "approach": {
+                                          "type": "integer"
+                                        },
+                                        "connection": {
+                                          "type": "integer"
+                                        }
+                                      },
+                                      "required": [
+                                        "lane",
+                                        "approach",
+                                        "connection"
+                                      ]
+                                    },
+                                    "minute": {
+                                      "type": ["integer", "null"]
+                                    },
+                                    "second": {
+                                      "type": ["integer", "null"]
+                                    },
+                                    "duration": {
+                                      "type": ["integer", "null"]
+                                    },
+                                    "status": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "inboundOn",
+                                    "status"
+                                  ]
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "signalStatusPackage"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "sequenceNumber",
+                        "id",
+                        "sigStatus"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "signalStatus"
+              ]
+            }
+          },
+          "required": [
+            "second",
+            "status"
+          ]
+        }
+      },
+      "required": [
+        "dataType",
+        "data"
+      ]
+    }
+  },
+  "required": [
+    "metadata",
+    "payload"
+  ]
+}
