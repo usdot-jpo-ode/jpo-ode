@@ -1,0 +1,2272 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "additionalProperties": false,
+  "properties": {
+    "metadata": {
+      "additionalProperties": false,
+      "properties": {
+        "bsmSource": {
+          "enum": [
+            "EV",
+            "RV",
+            "unknown"
+          ],
+          "type": "string"
+        },
+        "encodings": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "elementName": {
+                "type": "string"
+              },
+              "elementType": {
+                "type": "string"
+              },
+              "encodingRule": {
+                "enum": [
+                  "UPER",
+                  "COER"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "elementName",
+              "elementType",
+              "encodingRule"
+            ],
+            "type": "object"
+          },
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "logFileName": {
+          "type": "string"
+        },
+        "maxDurationTime": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "odePacketID": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "odeReceivedAt": {
+          "type": "string"
+        },
+        "odeTimStartDateTime": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "originIp": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "payloadType": {
+          "type": "string"
+        },
+        "receivedMessageDetails": {
+          "additionalProperties": false,
+          "properties": {
+            "locationData": {
+              "additionalProperties": false,
+              "properties": {
+                "elevation": {
+                  "type": "string"
+                },
+                "heading": {
+                  "type": "string"
+                },
+                "latitude": {
+                  "type": "string"
+                },
+                "longitude": {
+                  "type": "string"
+                },
+                "speed": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "latitude",
+                "longitude",
+                "elevation",
+                "speed",
+                "heading"
+              ],
+              "type": "object"
+            },
+            "rxSource": {
+              "enum": [
+                "RSU",
+                "SAT",
+                "RV",
+                "SNMP",
+                "NA",
+                "UNKNOWN"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "locationData",
+            "rxSource"
+          ],
+          "type": "object"
+        },
+        "recordGeneratedAt": {
+          "type": "string"
+        },
+        "recordGeneratedBy": {
+          "enum": [
+            "TMC",
+            "OBU",
+            "RSU",
+            "TMC_VIA_SAT",
+            "TMC_VIA_SNMP",
+            "UNKNOWN",
+            null
+          ],
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "recordType": {
+          "enum": [
+            "bsmLogDuringEvent",
+            "rxMsg",
+            "dnMsg",
+            "bsmTx",
+            "driverAlert",
+            "spatTx",
+            "timMsg",
+            "unsupported"
+          ],
+          "type": "string"
+        },
+        "sanitized": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "const": 6,
+          "type": "integer"
+        },
+        "securityResultCode": {
+          "enum": [
+            "success",
+            "unknown",
+            "inconsistentInputParameters",
+            "spduParsingInvalidInput",
+            "spduParsingUnsupportedCriticalInformationField",
+            "spduParsingCertificateNotFound",
+            "spduParsingGenerationTimeNotAvailable",
+            "spduParsingGenerationLocationNotAvailable",
+            "spduCertificateChainNotEnoughInformationToConstructChain",
+            "spduCertificateChainChainEndedAtUntrustedRoot",
+            "spduCertificateChainChainWasTooLongForImplementation",
+            "spduCertificateChainCertificateRevoked",
+            "spduCertificateChainOverdueCRL",
+            "spduCertificateChainInconsistentExpiryTimes",
+            "spduCertificateChainInconsistentStartTimes",
+            "spduCertificateChainInconsistentChainPermissions",
+            "spduCryptoVerificationFailure",
+            "spduConsistencyFutureCertificateAtGenerationTime",
+            "spduConsistencyExpiredCertificateAtGenerationTime",
+            "spduConsistencyExpiryDateTooEarly",
+            "spduConsistencyExpiryDateTooLate",
+            "spduConsistencyGenerationLocationOutsideValidityRegion",
+            "spduConsistencyNoGenerationLocation",
+            "spduConsistencyUnauthorizedPSID",
+            "spduInternalConsistencyExpiryTimeBeforeGenerationTime",
+            "spduInternalConsistencyextDataHashDoesntMatch",
+            "spduInternalConsistencynoExtDataHashProvided",
+            "spduInternalConsistencynoExtDataHashPresent",
+            "spduLocalConsistencyPSIDsDontMatch",
+            "spduLocalConsistencyChainWasTooLongForSDEE",
+            "spduRelevanceGenerationTimeTooFarInPast",
+            "spduRelevanceGenerationTimeTooFarInFuture",
+            "spduRelevanceExpiryTimeInPast",
+            "spduRelevanceGenerationLocationTooDistant",
+            "spduRelevanceReplayedSpdu",
+            "spduCertificateExpired"
+          ],
+          "type": "string"
+        },
+        "serialId": {
+          "additionalProperties": false,
+          "properties": {
+            "bundleId": {
+              "type": "integer"
+            },
+            "bundleSize": {
+              "type": "integer"
+            },
+            "recordId": {
+              "type": "integer"
+            },
+            "serialNumber": {
+              "type": "integer"
+            },
+            "streamId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "streamId",
+            "bundleSize",
+            "bundleId",
+            "recordId",
+            "serialNumber"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "bsmSource",
+        "logFileName",
+        "recordType",
+        "securityResultCode",
+        "receivedMessageDetails",
+        "payloadType",
+        "serialId",
+        "odeReceivedAt",
+        "schemaVersion",
+        "recordGeneratedAt",
+        "sanitized"
+      ],
+      "type": "object"
+    },
+    "payload": {
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "additionalProperties": false,
+          "properties": {
+            "coreData": {
+              "additionalProperties": false,
+              "properties": {
+                "accelSet": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "accelLat": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "accelLong": {
+                      "type": "number"
+                    },
+                    "accelVert": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "accelYaw": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "accelLong",
+                    "accelYaw"
+                  ],
+                  "type": "object"
+                },
+                "accuracy": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "orientation": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "semiMajor": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "semiMinor": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
+                "angle": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "brakes": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "abs": {
+                      "type": "string"
+                    },
+                    "auxBrakes": {
+                      "type": "string"
+                    },
+                    "brakeBoost": {
+                      "type": "string"
+                    },
+                    "scs": {
+                      "type": "string"
+                    },
+                    "traction": {
+                      "type": "string"
+                    },
+                    "wheelBrakes": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "leftFront": {
+                          "type": "boolean"
+                        },
+                        "leftRear": {
+                          "type": "boolean"
+                        },
+                        "rightFront": {
+                          "type": "boolean"
+                        },
+                        "rightRear": {
+                          "type": "boolean"
+                        },
+                        "unavailable": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "unavailable",
+                        "leftFront",
+                        "leftRear",
+                        "rightFront",
+                        "rightRear"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "wheelBrakes",
+                    "traction",
+                    "abs",
+                    "scs",
+                    "brakeBoost",
+                    "auxBrakes"
+                  ],
+                  "type": "object"
+                },
+                "heading": {
+                  "type": "number"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "msgCnt": {
+                  "type": "integer"
+                },
+                "position": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "elevation": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "latitude": {
+                      "type": "number"
+                    },
+                    "longitude": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "latitude",
+                    "longitude"
+                  ],
+                  "type": "object"
+                },
+                "secMark": {
+                  "type": "integer"
+                },
+                "size": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "length": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "width": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
+                "speed": {
+                  "type": "number"
+                },
+                "transmission": {
+                  "enum": [
+                    "NEUTRAL",
+                    "PARK",
+                    "FORWARDGEARS",
+                    "REVERSEGEARS",
+                    "RESERVED1",
+                    "RESERVED2",
+                    "RESERVED3",
+                    "UNAVAILABLE"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "msgCnt",
+                "id",
+                "secMark",
+                "position",
+                "accelSet",
+                "accuracy",
+                "transmission",
+                "speed",
+                "heading",
+                "brakes",
+                "size"
+              ],
+              "type": "object"
+            },
+            "partII": {
+              "items": {
+                "oneOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "const": "VehicleSafetyExtensions",
+                        "type": "string"
+                      },
+                      "value": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "events": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "eventABSactivated": {
+                                "type": "boolean"
+                              },
+                              "eventAirBagDeployment": {
+                                "type": "boolean"
+                              },
+                              "eventDisabledVehicle": {
+                                "type": "boolean"
+                              },
+                              "eventFlatTire": {
+                                "type": "boolean"
+                              },
+                              "eventHardBraking": {
+                                "type": "boolean"
+                              },
+                              "eventHazardLights": {
+                                "type": "boolean"
+                              },
+                              "eventHazardousMaterials": {
+                                "type": "boolean"
+                              },
+                              "eventLightsChanged": {
+                                "type": "boolean"
+                              },
+                              "eventReserved1": {
+                                "type": "boolean"
+                              },
+                              "eventStabilityControlactivated": {
+                                "type": "boolean"
+                              },
+                              "eventStopLineViolation": {
+                                "type": "boolean"
+                              },
+                              "eventTractionControlLoss": {
+                                "type": "boolean"
+                              },
+                              "eventWipersChanged": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "eventHazardLights",
+                              "eventStopLineViolation",
+                              "eventABSactivated",
+                              "eventTractionControlLoss",
+                              "eventStabilityControlactivated",
+                              "eventHazardousMaterials",
+                              "eventReserved1",
+                              "eventHardBraking",
+                              "eventLightsChanged",
+                              "eventWipersChanged",
+                              "eventFlatTire",
+                              "eventDisabledVehicle",
+                              "eventAirBagDeployment"
+                            ],
+                            "type": [
+                              "object",
+                              "null"
+                            ]
+                          },
+                          "lights": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "automaticLightControlOn": {
+                                "type": "boolean"
+                              },
+                              "daytimeRunningLightsOn": {
+                                "type": "boolean"
+                              },
+                              "fogLightOn": {
+                                "type": "boolean"
+                              },
+                              "hazardSignalOn": {
+                                "type": "boolean"
+                              },
+                              "highBeamHeadlightsOn": {
+                                "type": "boolean"
+                              },
+                              "leftTurnSignalOn": {
+                                "type": "boolean"
+                              },
+                              "lowBeamHeadlightsOn": {
+                                "type": "boolean"
+                              },
+                              "parkingLightsOn": {
+                                "type": "boolean"
+                              },
+                              "rightTurnSignalOn": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "lowBeamHeadlightsOn",
+                              "highBeamHeadlightsOn",
+                              "leftTurnSignalOn",
+                              "rightTurnSignalOn",
+                              "hazardSignalOn",
+                              "automaticLightControlOn",
+                              "daytimeRunningLightsOn",
+                              "fogLightOn",
+                              "parkingLightsOn"
+                            ],
+                            "type": [
+                              "object",
+                              "null"
+                            ]
+                          },
+                          "pathHistory": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "crumbData": {
+                                "items": {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "elevationOffset": {
+                                      "type": "number"
+                                    },
+                                    "heading": {
+                                      "type": [
+                                        "number",
+                                        "null"
+                                      ]
+                                    },
+                                    "latOffset": {
+                                      "type": "number"
+                                    },
+                                    "lonOffset": {
+                                      "type": "number"
+                                    },
+                                    "posAccuracy": {
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "orientation": {
+                                          "type": "number"
+                                        },
+                                        "semiMajor": {
+                                          "type": "number"
+                                        },
+                                        "semiMinor": {
+                                          "type": "number"
+                                        }
+                                      },
+                                      "required": [
+                                        "semiMajor",
+                                        "semiMinor",
+                                        "orientation"
+                                      ],
+                                      "type": [
+                                        "object",
+                                        "null"
+                                      ]
+                                    },
+                                    "speed": {
+                                      "type": [
+                                        "number",
+                                        "null"
+                                      ]
+                                    },
+                                    "timeOffset": {
+                                      "type": "number"
+                                    }
+                                  },
+                                  "required": [
+                                    "elevationOffset",
+                                    "latOffset",
+                                    "lonOffset",
+                                    "timeOffset"
+                                  ],
+                                  "type": "object"
+                                },
+                                "maxItems": 23,
+                                "minItems": 1,
+                                "type": "array"
+                              },
+                              "currGNSSstatus": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "aPDOPofUnder5": {
+                                    "type": "boolean"
+                                  },
+                                  "baseStationType": {
+                                    "type": "boolean"
+                                  },
+                                  "inViewOfUnder5": {
+                                    "type": "boolean"
+                                  },
+                                  "isHealthy": {
+                                    "type": "boolean"
+                                  },
+                                  "isMonitored": {
+                                    "type": "boolean"
+                                  },
+                                  "localCorrectionsPresent": {
+                                    "type": "boolean"
+                                  },
+                                  "networkCorrectionsPresent": {
+                                    "type": "boolean"
+                                  },
+                                  "unavailable": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "unavailable",
+                                  "isHealthy",
+                                  "isMonitored",
+                                  "baseStationType",
+                                  "aPDOPofUnder5",
+                                  "inViewOfUnder5",
+                                  "localCorrectionsPresent",
+                                  "networkCorrectionsPresent"
+                                ],
+                                "type": [
+                                  "object",
+                                  "null"
+                                ]
+                              },
+                              "initialPosition": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "heading": {
+                                    "type": [
+                                      "number",
+                                      "null"
+                                    ]
+                                  },
+                                  "posAccuracy": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "orientation": {
+                                        "type": [
+                                          "number",
+                                          "null"
+                                        ]
+                                      },
+                                      "semiMajor": {
+                                        "type": [
+                                          "number",
+                                          "null"
+                                        ]
+                                      },
+                                      "semiMinor": {
+                                        "type": [
+                                          "number",
+                                          "null"
+                                        ]
+                                      }
+                                    },
+                                    "required": [],
+                                    "type": "object"
+                                  },
+                                  "posConfidence": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "elevation": {
+                                        "enum": [
+                                          "UNAVAILABLE",
+                                          "ELEV_500_00",
+                                          "ELEV_200_00",
+                                          "ELEV_100_00",
+                                          "ELEV_050_00",
+                                          "ELEV_020_00",
+                                          "ELEV_010_00",
+                                          "ELEV_005_00",
+                                          "ELEV_002_00",
+                                          "ELEV_001_00",
+                                          "ELEV_000_50",
+                                          "ELEV_000_20",
+                                          "ELEV_000_10",
+                                          "ELEV_000_05",
+                                          "ELEV_000_02",
+                                          "ELEV_000_01"
+                                        ],
+                                        "type": "string"
+                                      },
+                                      "pos": {
+                                        "enum": [
+                                          "UNAVAILABLE",
+                                          "A500M",
+                                          "A200M",
+                                          "A100M",
+                                          "A50M",
+                                          "A20M",
+                                          "A10M",
+                                          "A5M",
+                                          "A2M",
+                                          "A1M",
+                                          "A50CM",
+                                          "A20CM",
+                                          "A10CM",
+                                          "A5CM",
+                                          "A2CM",
+                                          "A1CM"
+                                        ],
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "pos",
+                                      "elevation"
+                                    ],
+                                    "type": [
+                                      "object",
+                                      "null"
+                                    ]
+                                  },
+                                  "position": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "elevation": {
+                                        "type": [
+                                          "number",
+                                          "null"
+                                        ]
+                                      },
+                                      "latitude": {
+                                        "type": "number"
+                                      },
+                                      "longitude": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "required": [
+                                      "latitude",
+                                      "longitude"
+                                    ],
+                                    "type": "object"
+                                  },
+                                  "speed": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "speed": {
+                                        "type": "number"
+                                      },
+                                      "transmission": {
+                                        "enum": [
+                                          "NEUTRAL",
+                                          "PARK",
+                                          "FORWARDGEARS",
+                                          "REVERSEGEARS",
+                                          "RESERVED1",
+                                          "RESERVED2",
+                                          "RESERVED3",
+                                          "UNAVAILABLE"
+                                        ],
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "speed",
+                                      "transmission"
+                                    ],
+                                    "type": [
+                                      "object",
+                                      "null"
+                                    ]
+                                  },
+                                  "speedConfidence": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "heading": {
+                                        "enum": [
+                                          "UNAVAILABLE",
+                                          "PREC10DEG",
+                                          "PREC05DEG",
+                                          "PREC01DEG",
+                                          "PREC0_1DEG",
+                                          "PREC0_05DEG",
+                                          "PREC0_01DEG",
+                                          "PREC0_0125DEG"
+                                        ],
+                                        "type": "string"
+                                      },
+                                      "speed": {
+                                        "enum": [
+                                          "UNAVAILABLE",
+                                          "PREC100MS",
+                                          "PREC10MS",
+                                          "PREC5MS",
+                                          "PREC1MS",
+                                          "PREC0_1MS",
+                                          "PREC0_05MS",
+                                          "PREC0_01MS"
+                                        ],
+                                        "type": "string"
+                                      },
+                                      "throttle": {
+                                        "enum": [
+                                          "UNAVAILABLE",
+                                          "PREC10PERCENT",
+                                          "PREC1PERCENT",
+                                          "PREC0_5PERCENT"
+                                        ],
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "heading",
+                                      "speed",
+                                      "throttle"
+                                    ],
+                                    "type": [
+                                      "object",
+                                      "null"
+                                    ]
+                                  },
+                                  "timeConfidence": {
+                                    "enum": [
+                                      "UNAVAILABLE",
+                                      "TIME_100_000",
+                                      "TIME_050_000",
+                                      "TIME_020_000",
+                                      "TIME_010_000",
+                                      "TIME_002_000",
+                                      "TIME_001_000",
+                                      "TIME_000_500",
+                                      "TIME_000_200",
+                                      "TIME_000_100",
+                                      "TIME_000_050",
+                                      "TIME_000_020",
+                                      "TIME_000_010",
+                                      "TIME_000_005",
+                                      "TIME_000_002",
+                                      "TIME_000_001",
+                                      "TIME_000_000_5",
+                                      "TIME_000_000_2",
+                                      "TIME_000_000_1",
+                                      "TIME_000_000_05",
+                                      "TIME_000_000_02",
+                                      "TIME_000_000_01",
+                                      "TIME_000_000_005",
+                                      "TIME_000_000_002",
+                                      "TIME_000_000_001",
+                                      "TIME_000_000_000_5",
+                                      "TIME_000_000_000_2",
+                                      "TIME_000_000_000_1",
+                                      "TIME_000_000_000_05",
+                                      "TIME_000_000_000_02",
+                                      "TIME_000_000_000_01",
+                                      "TIME_000_000_000_005",
+                                      "TIME_000_000_000_002",
+                                      "TIME_000_000_000_001",
+                                      "TIME_000_000_000_000_5",
+                                      "TIME_000_000_000_000_2",
+                                      "TIME_000_000_000_000_1",
+                                      "TIME_000_000_000_000_05",
+                                      "TIME_000_000_000_000_02",
+                                      "TIME_000_000_000_000_01",
+                                      null
+                                    ],
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "utcTime": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "day": {
+                                        "type": [
+                                          "integer",
+                                          "null"
+                                        ]
+                                      },
+                                      "hour": {
+                                        "type": [
+                                          "integer",
+                                          "null"
+                                        ]
+                                      },
+                                      "minute": {
+                                        "type": [
+                                          "integer",
+                                          "null"
+                                        ]
+                                      },
+                                      "month": {
+                                        "type": [
+                                          "integer",
+                                          "null"
+                                        ]
+                                      },
+                                      "offset": {
+                                        "type": [
+                                          "integer",
+                                          "null"
+                                        ]
+                                      },
+                                      "second": {
+                                        "type": [
+                                          "integer",
+                                          "null"
+                                        ]
+                                      },
+                                      "year": {
+                                        "type": [
+                                          "integer",
+                                          "null"
+                                        ]
+                                      }
+                                    },
+                                    "required": [],
+                                    "type": [
+                                      "object",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "position"
+                                ],
+                                "type": [
+                                  "object",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "crumbData"
+                            ],
+                            "type": [
+                              "object",
+                              "null"
+                            ]
+                          },
+                          "pathPrediction": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "confidence": {
+                                "type": "number"
+                              },
+                              "radiusOfCurve": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "confidence",
+                              "radiusOfCurve"
+                            ],
+                            "type": [
+                              "object",
+                              "null"
+                            ]
+                          }
+                        },
+                        "required": [],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "value"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "const": "SpecialVehicleExtensions",
+                        "type": "string"
+                      },
+                      "value": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "description": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "description": {
+                                "items": {
+                                  "type": "integer"
+                                },
+                                "maxItems": 8,
+                                "minItems": 1,
+                                "type": [
+                                  "array",
+                                  "null"
+                                ]
+                              },
+                              "extent": {
+                                "enum": [
+                                  "USEINSTANTLYONLY",
+                                  "USEFOR3METERS",
+                                  "USEFOR10METERS",
+                                  "USEFOR50METERS",
+                                  "USEFOR100METERS",
+                                  "USEFOR500METERS",
+                                  "USEFOR1000METERS",
+                                  "USEFOR5000METERS",
+                                  "USEFOR10000METERS",
+                                  "USEFOR50000METERS",
+                                  "USEFOR100000METERS",
+                                  "USEFOR500000METERS",
+                                  "USEFOR1000000METERS",
+                                  "USEFOR5000000METERS",
+                                  "USEFOR10000000METERS",
+                                  "FOREVER",
+                                  null
+                                ],
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "heading": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "FROM000_0TO022_5DEGREES": {
+                                    "type": "boolean"
+                                  },
+                                  "FROM022_5TO045_0DEGREES": {
+                                    "type": "boolean"
+                                  },
+                                  "FROM045_0TO067_5DEGREES": {
+                                    "type": "boolean"
+                                  },
+                                  "FROM067_5TO090_0DEGREES": {
+                                    "type": "boolean"
+                                  },
+                                  "FROM090_0TO112_5DEGREES": {
+                                    "type": "boolean"
+                                  },
+                                  "FROM112_5TO135_0DEGREES": {
+                                    "type": "boolean"
+                                  },
+                                  "FROM135_0TO157_5DEGREES": {
+                                    "type": "boolean"
+                                  },
+                                  "FROM157_5TO180_0DEGREES": {
+                                    "type": "boolean"
+                                  },
+                                  "FROM180_0TO202_5DEGREES": {
+                                    "type": "boolean"
+                                  },
+                                  "FROM202_5TO225_0DEGREES": {
+                                    "type": "boolean"
+                                  },
+                                  "FROM225_0TO247_5DEGREES": {
+                                    "type": "boolean"
+                                  },
+                                  "FROM247_5TO270_0DEGREES": {
+                                    "type": "boolean"
+                                  },
+                                  "FROM270_0TO292_5DEGREES": {
+                                    "type": "boolean"
+                                  },
+                                  "FROM292_5TO315_0DEGREES": {
+                                    "type": "boolean"
+                                  },
+                                  "FROM315_0TO337_5DEGREES": {
+                                    "type": "boolean"
+                                  },
+                                  "FROM337_5TO360_0DEGREES": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "FROM000_0TO022_5DEGREES",
+                                  "FROM022_5TO045_0DEGREES",
+                                  "FROM045_0TO067_5DEGREES",
+                                  "FROM067_5TO090_0DEGREES",
+                                  "FROM090_0TO112_5DEGREES",
+                                  "FROM112_5TO135_0DEGREES",
+                                  "FROM135_0TO157_5DEGREES",
+                                  "FROM157_5TO180_0DEGREES",
+                                  "FROM180_0TO202_5DEGREES",
+                                  "FROM202_5TO225_0DEGREES",
+                                  "FROM225_0TO247_5DEGREES",
+                                  "FROM247_5TO270_0DEGREES",
+                                  "FROM270_0TO292_5DEGREES",
+                                  "FROM292_5TO315_0DEGREES",
+                                  "FROM315_0TO337_5DEGREES",
+                                  "FROM337_5TO360_0DEGREES"
+                                ],
+                                "type": [
+                                  "object",
+                                  "null"
+                                ]
+                              },
+                              "priority": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "regional": {
+                                "items": {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer"
+                                    },
+                                    "value": {
+                                      "contentEncoding": "base64",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "value"
+                                  ],
+                                  "type": "object"
+                                },
+                                "maxItems": 4,
+                                "minItems": 1,
+                                "type": [
+                                  "array",
+                                  "null"
+                                ]
+                              },
+                              "typeEvent": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [],
+                            "type": [
+                              "object",
+                              "null"
+                            ]
+                          },
+                          "trailers": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "connection": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "pivotAngle": {
+                                    "type": "number"
+                                  },
+                                  "pivotOffset": {
+                                    "type": "number"
+                                  },
+                                  "pivots": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "pivotOffset",
+                                  "pivotAngle",
+                                  "pivots"
+                                ],
+                                "type": "object"
+                              },
+                              "sspRights": {
+                                "type": "integer"
+                              },
+                              "units": {
+                                "items": {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "bumperHeights": {
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "front": {
+                                          "type": "number"
+                                        },
+                                        "rear": {
+                                          "type": "number"
+                                        }
+                                      },
+                                      "required": [
+                                        "front",
+                                        "rear"
+                                      ],
+                                      "type": [
+                                        "object",
+                                        "null"
+                                      ]
+                                    },
+                                    "centerOfGravity": {
+                                      "type": [
+                                        "number",
+                                        "null"
+                                      ]
+                                    },
+                                    "crumbData": {
+                                      "items": {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "elevationOffset": {
+                                            "type": "number"
+                                          },
+                                          "heading": {
+                                            "type": [
+                                              "number",
+                                              "null"
+                                            ]
+                                          },
+                                          "latOffset": {
+                                            "type": "number"
+                                          },
+                                          "lonOffset": {
+                                            "type": "number"
+                                          },
+                                          "posAccuracy": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                              "orientation": {
+                                                "type": "number"
+                                              },
+                                              "semiMajor": {
+                                                "type": "number"
+                                              },
+                                              "semiMinor": {
+                                                "type": "number"
+                                              }
+                                            },
+                                            "required": [
+                                              "semiMajor",
+                                              "semiMinor",
+                                              "orientation"
+                                            ],
+                                            "type": [
+                                              "object",
+                                              "null"
+                                            ]
+                                          },
+                                          "speed": {
+                                            "type": [
+                                              "number",
+                                              "null"
+                                            ]
+                                          },
+                                          "timeOffset": {
+                                            "type": "number"
+                                          }
+                                        },
+                                        "required": [
+                                          "elevationOffset",
+                                          "latOffset",
+                                          "lonOffset",
+                                          "timeOffset"
+                                        ],
+                                        "type": "object"
+                                      },
+                                      "maxItems": 23,
+                                      "minItems": 1,
+                                      "type": [
+                                        "array",
+                                        "null"
+                                      ]
+                                    },
+                                    "elevationOffset": {
+                                      "type": [
+                                        "number",
+                                        "null"
+                                      ]
+                                    },
+                                    "frontPivot": {
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "pivotAngle": {
+                                          "type": "number"
+                                        },
+                                        "pivotOffset": {
+                                          "type": "number"
+                                        },
+                                        "pivots": {
+                                          "type": "boolean"
+                                        }
+                                      },
+                                      "required": [
+                                        "pivotOffset",
+                                        "pivotAngle",
+                                        "pivots"
+                                      ],
+                                      "type": "object"
+                                    },
+                                    "height": {
+                                      "type": [
+                                        "number",
+                                        "null"
+                                      ]
+                                    },
+                                    "isDolly": {
+                                      "type": "boolean"
+                                    },
+                                    "length": {
+                                      "type": [
+                                        "integer",
+                                        "null"
+                                      ]
+                                    },
+                                    "mass": {
+                                      "type": [
+                                        "integer",
+                                        "null"
+                                      ]
+                                    },
+                                    "positionOffset": {
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "x": {
+                                          "type": "number"
+                                        },
+                                        "y": {
+                                          "type": "number"
+                                        }
+                                      },
+                                      "required": [
+                                        "x",
+                                        "y"
+                                      ],
+                                      "type": "object"
+                                    },
+                                    "rearPivot": {
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "pivotAngle": {
+                                          "type": "number"
+                                        },
+                                        "pivotOffset": {
+                                          "type": "number"
+                                        },
+                                        "pivots": {
+                                          "type": "boolean"
+                                        }
+                                      },
+                                      "required": [
+                                        "pivotOffset",
+                                        "pivotAngle",
+                                        "pivots"
+                                      ],
+                                      "type": [
+                                        "object",
+                                        "null"
+                                      ]
+                                    },
+                                    "rearWheelOffset": {
+                                      "type": [
+                                        "number",
+                                        "null"
+                                      ]
+                                    },
+                                    "width": {
+                                      "type": [
+                                        "integer",
+                                        "null"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "isDolly",
+                                    "frontPivot",
+                                    "positionOffset"
+                                  ],
+                                  "type": "object"
+                                },
+                                "maxItems": 8,
+                                "minItems": 1,
+                                "type": "array"
+                              }
+                            },
+                            "required": [
+                              "connection",
+                              "sspRights",
+                              "units"
+                            ],
+                            "type": [
+                              "object",
+                              "null"
+                            ]
+                          },
+                          "vehicleAlerts": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "events": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "event": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "peEmergencyLightsActive": {
+                                        "type": "boolean"
+                                      },
+                                      "peEmergencyResponse": {
+                                        "type": "boolean"
+                                      },
+                                      "peEmergencySoundActive": {
+                                        "type": "boolean"
+                                      },
+                                      "peNonEmergencyLightsActive": {
+                                        "type": "boolean"
+                                      },
+                                      "peNonEmergencySoundActive": {
+                                        "type": "boolean"
+                                      },
+                                      "peUnavailable": {
+                                        "type": "boolean"
+                                      }
+                                    },
+                                    "required": [
+                                      "peUnavailable",
+                                      "peEmergencyResponse",
+                                      "peEmergencyLightsActive",
+                                      "peEmergencySoundActive",
+                                      "peNonEmergencyLightsActive",
+                                      "peNonEmergencySoundActive"
+                                    ],
+                                    "type": "object"
+                                  },
+                                  "sspRights": {
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "event",
+                                  "sspRights"
+                                ],
+                                "type": [
+                                  "object",
+                                  "null"
+                                ]
+                              },
+                              "lightsUse": {
+                                "enum": [
+                                  "UNAVAILABLE",
+                                  "NOTINUSE",
+                                  "INUSE",
+                                  "YELLOWCAUTIONLIGHTS",
+                                  "SCHOOLBUSLIGHTS",
+                                  "ARROWSIGNSACTIVE",
+                                  "SLOWMOVINGVEHICLE",
+                                  "FREQSTOPS"
+                                ],
+                                "type": "string"
+                              },
+                              "multi": {
+                                "enum": [
+                                  "UNAVAILABLE",
+                                  "SINGLEVEHICLE",
+                                  "MULTIVEHICLE",
+                                  "RESERVED"
+                                ],
+                                "type": "string"
+                              },
+                              "responseType": {
+                                "enum": [
+                                  "NOTINUSEORNOTEQUIPPED",
+                                  "EMERGENCY",
+                                  "NONEMERGENCY",
+                                  "PURSUIT",
+                                  "STATIONARY",
+                                  "SLOWMOVING",
+                                  "STOPANDGOMOVEMENT",
+                                  null
+                                ],
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "sirenUse": {
+                                "enum": [
+                                  "UNAVAILABLE",
+                                  "NOTINUSE",
+                                  "INUSE",
+                                  "RESERVED"
+                                ],
+                                "type": "string"
+                              },
+                              "sspRights": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "sspRights",
+                              "lightsUse",
+                              "multi",
+                              "sirenUse"
+                            ],
+                            "type": [
+                              "object",
+                              "null"
+                            ]
+                          }
+                        },
+                        "required": [],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "value"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "const": "SupplementalVehicleExtensions",
+                        "type": "string"
+                      },
+                      "value": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "classDetails": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "fuelType": {
+                                "enum": [
+                                  "unknownFuel",
+                                  "gasoline",
+                                  "ethanol",
+                                  "diesel",
+                                  "electric",
+                                  "hybrid",
+                                  "hydrogen",
+                                  "natGasLiquid",
+                                  "natGasComp",
+                                  "propane",
+                                  null
+                                ],
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "hpmsType": {
+                                "enum": [
+                                  "none",
+                                  "unknown",
+                                  "special",
+                                  "moto",
+                                  "car",
+                                  "carOther",
+                                  "bus",
+                                  "axleCnt2",
+                                  "axleCnt3",
+                                  "axleCnt4",
+                                  "axleCnt4Trailer",
+                                  "axleCnt5Trailer",
+                                  "axleCnt6Trailer",
+                                  "axleCnt5MultiTrailer",
+                                  "axleCnt6MultiTrailer",
+                                  "axleCnt7MultiTrailer",
+                                  null
+                                ],
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "iso3883": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              },
+                              "keyType": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              },
+                              "regional": {
+                                "items": {
+                                  "contentEncoding": "base64",
+                                  "type": "string"
+                                },
+                                "maxItems": 4,
+                                "minItems": 1,
+                                "type": [
+                                  "array",
+                                  "null"
+                                ]
+                              },
+                              "responderType": {
+                                "enum": [
+                                  "emergency_vehicle_units",
+                                  "federal_law_enforcement_units",
+                                  "state_police_units",
+                                  "county_police_units",
+                                  "local_police_units",
+                                  "ambulance_units",
+                                  "rescue_units",
+                                  "fire_units",
+                                  "hAZMAT_units",
+                                  "light_tow_unit",
+                                  "heavy_tow_unit",
+                                  "freeway_service_patrols",
+                                  "transportation_response_units",
+                                  "private_contractor_response_units",
+                                  null
+                                ],
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "responseEquip": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "value": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name"
+                                ],
+                                "type": [
+                                  "object",
+                                  "null"
+                                ]
+                              },
+                              "role": {
+                                "enum": [
+                                  "basicVehicle",
+                                  "publicTransport",
+                                  "specialTransport",
+                                  "dangerousGoods",
+                                  "roadWork",
+                                  "roadRescue",
+                                  "emergency",
+                                  "safetyCar",
+                                  "none_unknown",
+                                  "truck",
+                                  "motorcycle",
+                                  "roadSideSource",
+                                  "police",
+                                  "fire",
+                                  "ambulance",
+                                  "dot",
+                                  "transit",
+                                  "slowMoving",
+                                  "stopNgo",
+                                  "cyclist",
+                                  "pedestrian",
+                                  "nonMotorized",
+                                  "military",
+                                  null
+                                ],
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "vehicleType": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "value": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name"
+                                ],
+                                "type": [
+                                  "object",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "required": [],
+                            "type": [
+                              "object",
+                              "null"
+                            ]
+                          },
+                          "classification": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          },
+                          "obstacle": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "dateTime": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "day": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ]
+                                  },
+                                  "hour": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ]
+                                  },
+                                  "minute": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ]
+                                  },
+                                  "month": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ]
+                                  },
+                                  "offset": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ]
+                                  },
+                                  "second": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ]
+                                  },
+                                  "year": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [],
+                                "type": [
+                                  "object",
+                                  "null"
+                                ]
+                              },
+                              "description": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              },
+                              "locationDetails": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "value": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name"
+                                ],
+                                "type": [
+                                  "object",
+                                  "null"
+                                ]
+                              },
+                              "obDirect": {
+                                "type": "number"
+                              },
+                              "obDist": {
+                                "type": "integer"
+                              },
+                              "vertEvent": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "leftFront": {
+                                    "type": "boolean"
+                                  },
+                                  "leftRear": {
+                                    "type": "boolean"
+                                  },
+                                  "notEquipped": {
+                                    "type": "boolean"
+                                  },
+                                  "rightFront": {
+                                    "type": "boolean"
+                                  },
+                                  "rightRear": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "rightRear",
+                                  "rightFront",
+                                  "leftRear",
+                                  "leftFront",
+                                  "notEquipped"
+                                ],
+                                "type": [
+                                  "object",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "obDirect",
+                              "obDist"
+                            ],
+                            "type": [
+                              "object",
+                              "null"
+                            ]
+                          },
+                          "regional": {
+                            "items": {
+                              "contentEncoding": "base64",
+                              "type": "string"
+                            },
+                            "maxItems": 4,
+                            "minItems": 1,
+                            "type": [
+                              "array",
+                              "null"
+                            ]
+                          },
+                          "speedProfile": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "speedReports": {
+                                "items": {
+                                  "type": "integer"
+                                },
+                                "maxItems": 20,
+                                "minItems": 1,
+                                "type": "array"
+                              }
+                            },
+                            "required": [],
+                            "type": [
+                              "object",
+                              "null"
+                            ]
+                          },
+                          "status": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "locationDetails": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "value": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name"
+                                ],
+                                "type": [
+                                  "object",
+                                  "null"
+                                ]
+                              },
+                              "statusDetails": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "statusDetails"
+                            ],
+                            "type": [
+                              "object",
+                              "null"
+                            ]
+                          },
+                          "theRTCM": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "msgs": {
+                                "items": {
+                                  "type": "string"
+                                },
+                                "maxItems": 5,
+                                "minItems": 1,
+                                "type": "array"
+                              },
+                              "rtcmHeader": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "offsetSet": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "antOffsetX": {
+                                        "type": "number"
+                                      },
+                                      "antOffsetY": {
+                                        "type": "number"
+                                      },
+                                      "antOffsetZ": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "required": [
+                                      "antOffsetX",
+                                      "antOffsetY",
+                                      "antOffsetZ"
+                                    ],
+                                    "type": "object"
+                                  },
+                                  "status": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "aPDOPofUnder5": {
+                                        "type": "boolean"
+                                      },
+                                      "baseStationType": {
+                                        "type": "boolean"
+                                      },
+                                      "inViewOfUnder5": {
+                                        "type": "boolean"
+                                      },
+                                      "isHealthy": {
+                                        "type": "boolean"
+                                      },
+                                      "isMonitored": {
+                                        "type": "boolean"
+                                      },
+                                      "localCorrectionsPresent": {
+                                        "type": "boolean"
+                                      },
+                                      "networkCorrectionsPresent": {
+                                        "type": "boolean"
+                                      },
+                                      "unavailable": {
+                                        "type": "boolean"
+                                      }
+                                    },
+                                    "required": [
+                                      "unavailable",
+                                      "isHealthy",
+                                      "isMonitored",
+                                      "baseStationType",
+                                      "aPDOPofUnder5",
+                                      "inViewOfUnder5",
+                                      "localCorrectionsPresent",
+                                      "networkCorrectionsPresent"
+                                    ],
+                                    "type": "object"
+                                  }
+                                },
+                                "required": [
+                                  "status",
+                                  "offsetSet"
+                                ],
+                                "type": [
+                                  "object",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "msgs"
+                            ],
+                            "type": "object"
+                          },
+                          "vehicleData": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "bumpers": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "front": {
+                                    "type": "number"
+                                  },
+                                  "rear": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": [
+                                  "front",
+                                  "rear"
+                                ],
+                                "type": [
+                                  "object",
+                                  "null"
+                                ]
+                              },
+                              "height": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "mass": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              },
+                              "trailerWeight": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "required": [],
+                            "type": [
+                              "object",
+                              "null"
+                            ]
+                          },
+                          "weatherProbe": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "airPressure": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              },
+                              "airTemp": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              },
+                              "rainRates": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "rateFront": {
+                                    "type": "integer"
+                                  },
+                                  "rateRear": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ]
+                                  },
+                                  "statusFront": {
+                                    "enum": [
+                                      "UNAVAILABLE",
+                                      "OFF",
+                                      "INTERMITTENT",
+                                      "LOW",
+                                      "HIGH",
+                                      "WASHERINUSE",
+                                      "AUTOMATICPRESENT"
+                                    ],
+                                    "type": "string"
+                                  },
+                                  "statusRear": {
+                                    "enum": [
+                                      "UNAVAILABLE",
+                                      "OFF",
+                                      "INTERMITTENT",
+                                      "LOW",
+                                      "HIGH",
+                                      "WASHERINUSE",
+                                      "AUTOMATICPRESENT",
+                                      null
+                                    ],
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "rateFront",
+                                  "statusFront"
+                                ],
+                                "type": [
+                                  "object",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "required": [],
+                            "type": [
+                              "object",
+                              "null"
+                            ]
+                          },
+                          "weatherReport": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "friction": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              },
+                              "isRaining": {
+                                "enum": [
+                                  "NA",
+                                  "PRECIP",
+                                  "NOPRECIP",
+                                  "ERROR"
+                                ],
+                                "type": "string"
+                              },
+                              "precipSituation": {
+                                "enum": [
+                                  "NA",
+                                  "OTHER",
+                                  "UNKNOWN",
+                                  "NOPRECIPITATION",
+                                  "UNIDENTIFIEDSLIGHT",
+                                  "UNIDENTIFIEDMODERATE",
+                                  "UNIDENTIFIEDHEAVY",
+                                  "SNOWSLIGHT",
+                                  "SNOWMODERATE",
+                                  "SNOWHEAVY",
+                                  "RAINSLIGHT",
+                                  "RAINMODERATE",
+                                  "RAINHEAVY",
+                                  "FROZENPRECIPITATIONSLIGHT",
+                                  "FROZENPRECIPITATIONMODERATE",
+                                  "FROZENPRECIPITATIONHEAVY",
+                                  null
+                                ],
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "rainRate": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "roadFriction": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "solarRadiation": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "isRaining"
+                            ],
+                            "type": [
+                              "object",
+                              "null"
+                            ]
+                          }
+                        },
+                        "required": [],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "value"
+                    ],
+                    "type": "object"
+                  }
+                ]
+              },
+              "maxItems": 8,
+              "minItems": 1,
+              "type": [
+                "array",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "coreData",
+            "partII"
+          ],
+          "type": "object"
+        },
+        "dataType": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "dataType",
+        "data"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "metadata",
+    "payload"
+  ],
+  "type": "object"
+}
