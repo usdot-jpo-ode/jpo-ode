@@ -1,0 +1,95 @@
+{
+    "request": {
+      "sdw": {
+        "ttl": "oneday",
+        "recordId": "9044E029",
+        "serviceRegion": {
+          "nwCorner": {
+            "latitude": 41.715253,
+            "longitude": -106.229851
+          },
+          "seCorner": {
+            "latitude": 40.227193,
+            "longitude": -104.620706
+          }
+        }
+      }
+    },
+    "tim": {
+      "msgCnt": "1",
+      "timeStamp": "2020-04-30T14:24:11.581Z",
+      "packetID": "67AEF692F8BB63067D",
+      "urlB": "null",
+      "dataframes": [
+        {
+          "startDateTime": "2020-04-30T14:23:59.497Z",
+          "durationTime": 1440,
+          "sspTimRights": "1",
+          "frameType": "advisory",
+          "msgId": {
+            "roadSignID": {
+              "mutcdCode": "warning",
+              "viewAngle": "1111111111111111",
+              "position": {
+                "latitude": 40.60476,
+                "longitude": -105.00139
+              }
+            }
+          },
+          "priority": "5",
+          "sspLocationRights": "1",
+          "regions": [
+            {
+              "name": "I_I 25_SAT-1CEE1793",
+              "anchorPosition": {
+                "latitude": 40.60476,
+                "longitude": -105.00139
+              },
+              "laneWidth": "327",
+              "directionality": "3",
+              "closedPath": "false",
+              "description": "path",
+              "path": {
+                "nodes": [
+                  {
+                    "nodeLong": "-105.00128",
+                    "nodeLat": "40.61901",
+                    "delta": "node-LatLon"
+                  },
+                  {
+                    "nodeLong": "-105.00097",
+                    "nodeLat": "40.63349",
+                    "delta": "node-LatLon"
+                  },
+                  {
+                    "nodeLong": "-105.00086",
+                    "nodeLat": "40.64806",
+                    "delta": "node-LatLon"
+                  },
+                  {
+                    "nodeLong": "-105.00092",
+                    "nodeLat": "40.66257",
+                    "delta": "node-LatLon"
+                  },
+                  {
+                    "nodeLong": "-105.0008",
+                    "nodeLat": "40.67695",
+                    "delta": "node-LatLon"
+                  }
+                ],
+                "type": "xy"
+              },
+              "direction": "1000000000000001"
+            }
+          ],
+          "sspMsgTypes": "1",
+          "sspMsgContent": "1",
+          "content": "advisory",
+          "items": [
+            "5127"
+          ],
+          "url": "null"
+        }
+      ]
+    }
+  }

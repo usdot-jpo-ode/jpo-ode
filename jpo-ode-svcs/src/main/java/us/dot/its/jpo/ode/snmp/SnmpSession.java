@@ -20,7 +20,6 @@ import java.text.ParseException;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.ietf.jgss.Oid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
@@ -211,8 +210,8 @@ public class SnmpSession {
       ScopedPDU pdu = SnmpSession.createPDU(snmp, payload, rsu.getRsuIndex(), requestVerb);
       response = session.set(pdu, session.getSnmp(), session.getTarget(), false);
       String msg = "Message Sent to {}, index {}: {}";
-      EventLogger.logger.info(msg, rsu.getRsuTarget(), rsu.getRsuIndex(), payload);
-      logger.info(msg, rsu.getRsuTarget(), rsu.getRsuIndex(), payload);
+      EventLogger.logger.debug(msg, rsu.getRsuTarget(), rsu.getRsuIndex(), payload);
+      logger.debug(msg, rsu.getRsuTarget(), rsu.getRsuIndex(), payload);
       return response;
    }
 
@@ -280,7 +279,8 @@ public class SnmpSession {
       // --> 1.4.1.10.3 = 1
       //////////////////////////////
 
-      VariableBinding rsuSRMPsid = SnmpSession.getPEncodedVariableBinding("1.0.15628.4.1.4.1.2.".concat(Integer.toString(index)),
+      VariableBinding rsuSRMPsid = SnmpSession.getPEncodedVariableBinding(
+            "1.0.15628.4.1.4.1.2.".concat(Integer.toString(index)),
             snmp.getRsuid());
       VariableBinding rsuSRMDsrcMsgId = new VariableBinding(
             new OID("1.0.15628.4.1.4.1.3.".concat(Integer.toString(index))), new Integer32(snmp.getMsgid()));
@@ -328,8 +328,10 @@ public class SnmpSession {
 
       if (intVal >= 0 && intVal <= 127) {
          // P = V
-         // here we must instantiate the OctetString directly with the hex string to avoid inadvertently creating the ASCII character codes
-         // for instance OctetString.fromString("20", 16) produces the space character (" ") rather than hex 20
+         // here we must instantiate the OctetString directly with the hex string to
+         // avoid inadvertently creating the ASCII character codes
+         // for instance OctetString.fromString("20", 16) produces the space character ("
+         // ") rather than hex 20
          return new VariableBinding(new OID(oid), new OctetString(Integer.toHexString(intVal)));
       } else if (intVal >= 128 && intVal <= 16511) {
          // P = V + 0x7F80

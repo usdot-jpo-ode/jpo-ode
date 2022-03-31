@@ -15,33 +15,48 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({ "bsmSource", "logFileName", "recordType", "securityResultCode", "receivedMessageDetails",
+      "encodings", "payloadType", "serialId", "odeReceivedAt", "schemaVersion", "maxDurationTime", "recordGeneratedAt",
+      "recordGeneratedBy", "sanitized" })
 public class OdeBsmMetadata extends OdeLogMetadata {
 
-    private static final long serialVersionUID = -8601265839394150140L;
+   private static final long serialVersionUID = -8601265839394150140L;
 
-    public enum BsmSource {
-       EV, RV, unknown
-    }
+   private String originIp;
 
-    private BsmSource bsmSource;
-    
-    public OdeBsmMetadata() {
-        super();
-    }
+   public enum BsmSource {
+      EV, RV, unknown
+   }
 
-    public OdeBsmMetadata(OdeMsgPayload payload) {
-        super(payload);
-    }
+   private BsmSource bsmSource;
 
-    public OdeBsmMetadata(OdeMsgPayload payload, SerialId serialId, String receivedAt) {
-       
-    }
+   public OdeBsmMetadata() {
+      super();
+   }
 
-    public BsmSource getBsmSource() {
-       return bsmSource;
-    }
+   public OdeBsmMetadata(OdeMsgPayload payload) {
+      super(payload);
+   }
 
-    public void setBsmSource(BsmSource bsmSource) {
-       this.bsmSource = bsmSource;
-    }
+   public OdeBsmMetadata(OdeMsgPayload payload, SerialId serialId, String receivedAt) {
+
+   }
+
+   public BsmSource getBsmSource() {
+      return bsmSource;
+   }
+
+   public void setBsmSource(BsmSource bsmSource) {
+      this.bsmSource = bsmSource;
+   }
+
+   public String getOriginIp() {
+      return originIp;
+   }
+
+   public void setOriginIp(String originIp) {
+      this.originIp = originIp;
+   }
 }

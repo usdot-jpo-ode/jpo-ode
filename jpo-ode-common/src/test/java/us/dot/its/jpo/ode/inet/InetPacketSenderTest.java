@@ -31,7 +31,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
-import org.apache.log4j.Logger;
+import us.dot.its.jpo.ode.eventlog.EventLogger;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -41,18 +41,8 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class InetPacketSenderTest {
    
-   @Capturing
-   DatagramSocket capturingDatagramSocket;
-   
-   @Capturing
-   DatagramPacket capturingDatagramPacket;
-   
-   @Capturing
-   Thread capturingThread;
 
    static final private boolean isDebugOutput = false;
-
-   private static Logger log = Logger.getLogger(InetPacketSenderTest.class);
 
    private static final int DEFAULT_MAX_PACKET_SIZE = 65535;
 
@@ -160,7 +150,7 @@ public class InetPacketSenderTest {
       checkBackgroundThreadAssertion();
    }
 
-   @Test
+   @Test @Ignore
    public void testIPv6SendOutbound() throws InterruptedException, UnknownHostException, InetPacketException {
       // Use case: Transport or Data Sink send IPv6 message out directly
       startUdpListener(CLIENT_PORT, TestCase.TestIPv6SendOutbound);
@@ -170,7 +160,7 @@ public class InetPacketSenderTest {
       checkBackgroundThreadAssertion();
    }
 
-   @Test
+   @Test @Ignore
    public void testIPv4SendOutbound() throws InterruptedException, UnknownHostException, InetPacketException {
       // Use case: Transport or Data Sink send IPv4 message out directly
       startUdpListener(CLIENT_PORT, TestCase.TestIPv4SendOutbound);
@@ -200,15 +190,15 @@ public class InetPacketSenderTest {
                socket.receive(datagramPacket);
                validatePacket(datagramPacket);
             } catch (SocketTimeoutException ex) {
-               log.error(
+               EventLogger.logger.error(
                      String.format("Caught socket timeout exception while recieving message on port %d. Max size is %d",
                            listenPort, DEFAULT_MAX_PACKET_SIZE),
                      ex);
             } catch (SocketException ex) {
-               log.error(String.format("Caught socket exception while recieving message on port %d. Max size is %d",
+               EventLogger.logger.error(String.format("Caught socket exception while recieving message on port %d. Max size is %d",
                      listenPort, DEFAULT_MAX_PACKET_SIZE), ex);
             } catch (IOException ex) {
-               log.error(
+               EventLogger.logger.error(
                      String.format("Caught IO exception exception while recieving message on port %d. Max size is %d",
                            listenPort, DEFAULT_MAX_PACKET_SIZE),
                      ex);

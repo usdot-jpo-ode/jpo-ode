@@ -18,12 +18,17 @@ package us.dot.its.jpo.ode.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({ "logFileName", "recordType", "securityResultCode", "receivedMessageDetails", "longitude",
+      "elevation", "speed", "heading", "rxSource", "encodings", "payloadType", "serialId", "odeReceivedAt",
+      "schemaVersion", "maxDurationTime", "recordGeneratedAt", "recordGeneratedBy", "sanitized" })
 public class OdeLogMetadata extends OdeMsgMetadata {
 
    private static final long serialVersionUID = -8601265839394150140L;
 
    public enum RecordType {
-      bsmLogDuringEvent, rxMsg, dnMsg, bsmTx, driverAlert, unsupported
+      bsmLogDuringEvent, rxMsg, dnMsg, bsmTx, driverAlert, mapTx, spatTx, ssmTx, srmTx, timMsg, unsupported
    }
 
    public enum SecurityResultCode {
@@ -84,33 +89,33 @@ public class OdeLogMetadata extends OdeMsgMetadata {
    }
 
    public void calculateGeneratedBy() {
-     ReceivedMessageDetails receivedMessageDetails = getReceivedMessageDetails();
-     if (receivedMessageDetails != null) {
-       if (receivedMessageDetails.getRxSource() != null) {
-         switch (receivedMessageDetails.getRxSource()) {
-         case RSU:
-           setRecordGeneratedBy(GeneratedBy.RSU);
-           break;
-         case RV:
-         case NA:
-           setRecordGeneratedBy(GeneratedBy.OBU);
-           break;
-         case SAT:
-           setRecordGeneratedBy(GeneratedBy.TMC_VIA_SAT);
-           break;
-         case SNMP:
-           setRecordGeneratedBy(GeneratedBy.TMC_VIA_SNMP);
-           break;
-         default:
-           setRecordGeneratedBy(GeneratedBy.UNKNOWN);
-           break;
+      ReceivedMessageDetails receivedMessageDetails = getReceivedMessageDetails();
+      if (receivedMessageDetails != null) {
+         if (receivedMessageDetails.getRxSource() != null) {
+            switch (receivedMessageDetails.getRxSource()) {
+               case RSU:
+                  setRecordGeneratedBy(GeneratedBy.RSU);
+                  break;
+               case RV:
+               case NA:
+                  setRecordGeneratedBy(GeneratedBy.OBU);
+                  break;
+               case SAT:
+                  setRecordGeneratedBy(GeneratedBy.TMC_VIA_SAT);
+                  break;
+               case SNMP:
+                  setRecordGeneratedBy(GeneratedBy.TMC_VIA_SNMP);
+                  break;
+               default:
+                  setRecordGeneratedBy(GeneratedBy.UNKNOWN);
+                  break;
+            }
          }
-       }
-     } else {
-       setRecordGeneratedBy(GeneratedBy.OBU);
-     }
+      } else {
+         setRecordGeneratedBy(GeneratedBy.OBU);
+      }
    }
-   
+
    public String getLogFileName() {
       return logFileName;
    }

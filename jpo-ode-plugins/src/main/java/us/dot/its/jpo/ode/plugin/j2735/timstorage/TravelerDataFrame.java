@@ -15,13 +15,14 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.timstorage;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-@JsonPropertyOrder({ "sspTimRights", "frameType", "startYear", "startTime", "duratonTime", "priority",
-      "sspLocationRights", "regions", "sspMsgRights1", "sspMsgRights2", "content", "url" })
+@JsonPropertyOrder({ "sspTimRights", "frameType", "msgId", "startYear", "startTime", "duratonTime", "priority",
+      "sspLocationRights", "regions", "sspMsgRights1", "sspMsgRights2", "tcontent", "url" })
 public class TravelerDataFrame extends Asn1Object {
    private static final long serialVersionUID = 1L;
 
@@ -93,6 +94,7 @@ public class TravelerDataFrame extends Asn1Object {
       this.duratonTime = duratonTime;
    }
 
+   @JsonIgnore
    public Content getContent() {
       return tcontent;
    }

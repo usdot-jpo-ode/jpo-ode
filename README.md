@@ -4,7 +4,7 @@
 
 # jpo-ode
 
-**US Department of Transportation (USDOT) Intelligent Transportation Systems (ITS) Joint Program Office (JPO) Operational Data Environemnt (ODE)**
+**US Department of Transportation (USDOT) Intelligent Transportation Systems (ITS) Joint Program Office (JPO) Operational Data Environment (ODE)**
 
 The ITS ODE is a real-time virtual data router that ingests and processes operational data from various connected devices - including vehicles, infrastructure, and traffic management centers - and distributes it to other devices and subscribing transportation management applications. Using the ITS ODE within intelligent transportation deployments increases data fluidity and interoperability while meeting operational needs and protecting user privacy. The software’s microservices architecture makes it easy to add new capabilities to meet local needs. Check the ITS factsheet for more information: <https://www.its.dot.gov/factsheets/pdf/ITSJPO_ODE.pdf>.
 
@@ -39,6 +39,7 @@ All stakeholders are invited to provide input to these documents. To provide fee
 9.  [Known Bugs](#known-bugs)
 10. [Credits and Acknowledgement](#credits-and-acknowledgement)
 11. [Code.gov Registration Info](#codegov-registration-info)
+12. [Kubernetes](#kubernetes)
 
 <!--
 #########################################
@@ -521,5 +522,9 @@ Labor hours: 200
 Contact Name: James Lieu
 
 Contact Phone: (202) 366-3000
+
+## 12. Kubernetes
+The ODE can be run in a k8s environment.
+See [this document](./docs/Kubernetes.md) for more details about this.
 
 [Back to top](#toc)

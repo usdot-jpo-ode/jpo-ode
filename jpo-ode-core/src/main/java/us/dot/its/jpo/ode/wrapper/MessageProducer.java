@@ -56,7 +56,15 @@ public class MessageProducer<K, V> {
         Set<String> disabledTopics) {
         Properties props = setDefaultProperties();
         
-        props.put("bootstrap.servers", brokers);
+        if(brokers != null) 
+        {
+        	props.put("bootstrap.servers", brokers);
+        }
+        else 
+        {
+        	logger.error("Bootstrap servers setting is null");
+        }
+        
         props.put("key.serializer", SERIALIZATION_STRING_SERIALIZER);
         props.put("value.serializer", valueSerializerFQN);
 

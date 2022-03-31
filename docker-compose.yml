@@ -6,6 +6,10 @@ services:
     image: wurstmeister/zookeeper
     ports:
       - "2181:2181"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   kafka:
     image: wurstmeister/kafka
@@ -17,7 +21,7 @@ services:
       KAFKA_ADVERTISED_HOST_NAME: ${DOCKER_HOST_IP}
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_CREATE_TOPICS: "topic.OdeBsmPojo:1:1,topic.OdeBsmJson:1:1,topic.FilteredOdeBsmJson:1:1,topic.OdeTimJson:1:1,topic.OdeTimBroadcastJson:1:1,topic.J2735TimBroadcastJson:1:1,topic.OdeDriverAlertJson:1:1,topic.Asn1DecoderInput:1:1,topic.Asn1DecoderOutput:1:1,topic.Asn1EncoderInput:1:1,topic.Asn1EncoderOutput:1:1,topic.SDWDepositorInput:1:1,topic.OdeTIMCertExpirationTimeJson:1:1"
+      KAFKA_CREATE_TOPICS: "topic.OdeBsmPojo:1:1,topic.OdeSpatTxPojo:1:1,topic.OdeSpatPojo:1:1,topic.OdeSpatJson:1:1,topic.FilteredOdeSpatJson:1:1,topic.OdeSpatRxJson:1:1,topic.OdeSpatRxPojo:1:1,topic.OdeBsmJson:1:1,topic.FilteredOdeBsmJson:1:1,topic.OdeTimJson:1:1,topic.OdeTimBroadcastJson:1:1,topic.J2735TimBroadcastJson:1:1,topic.OdeDriverAlertJson:1:1,topic.Asn1DecoderInput:1:1,topic.Asn1DecoderOutput:1:1,topic.Asn1EncoderInput:1:1,topic.Asn1EncoderOutput:1:1,topic.SDWDepositorInput:1:1,topic.OdeTIMCertExpirationTimeJson:1:1,topic.OdeRawEncodedBSMJson:1:1,topic.OdeRawEncodedSPATJson:1:1,topic.OdeRawEncodedTIMJson:1:1,topic.OdeRawEncodedMAPJson:1:1,topic.OdeMapTxPojo:1:1,topic.OdeMapJson:1:1,topic.OdeRawEncodedSSMJson:1:1,topic.OdeSsmPojo:1:1,topic.OdeSsmJson:1:1,topic.OdeRawEncodedSRMJson:1:1,topic.OdeSrmTxPojo:1:1,topic.OdeSrmJson:1:1"
       KAFKA_DELETE_TOPIC_ENABLED: "true"
       KAFKA_CLEANUP_POLICY: "delete" # delete old logs
       KAFKA_LOG_RETENTION_HOURS: 2
@@ -31,6 +35,10 @@ services:
       - zookeeper
     volumes:
       - ${DOCKER_SHARED_VOLUME_WINDOWS}/var/run/docker.sock:/var/run/docker.sock
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   ode:
     build: .
@@ -40,6 +48,11 @@ services:
       - "9090:9090"
       - "46753:46753/udp"
       - "46800:46800/udp"
+      - "47900:47900/udp"
+      - "44900:44900/udp"
+      - "44910:44910/udp"
+      - "44920:44920/udp"
+      - "44930:44930/udp"
       - "5555:5555/udp"
       - "6666:6666/udp"
     environment:
@@ -56,6 +69,11 @@ services:
       - kafka
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/jpo-ode
+      - ${DOCKER_SHARED_VOLUME}/uploads:/home/uploads
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   adm:
     build: ./asn1_codec
@@ -67,6 +85,10 @@ services:
       - kafka
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   aem:
     build: ./asn1_codec
@@ -78,6 +100,10 @@ services:
       - kafka
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   ppm_bsm:
     build:
@@ -91,6 +117,10 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
     depends_on:
       - kafka
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   ppm_tim:
     build:
@@ -104,6 +134,10 @@ services:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
     depends_on:
       - kafka
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   cvpep_bsm_depositor:
     build: ./jpo-s3-deposit
@@ -120,8 +154,13 @@ services:
       API_ENDPOINT: ${CVPEP_BSM_API_ENDPOINT}
       HEADER_ACCEPT: ${CVPEP_BSM_HEADER_ACCEPT}
       HEADER_X_API_KEY: ${CVPEP_BSM_HEADER_X_API_KEY}
+      DEPOSIT_GROUP: ${CVPEP_BSM_GROUP}
     depends_on:
      - kafka
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   rde_bsm_depositor:
     build: ./jpo-s3-deposit
@@ -138,8 +177,13 @@ services:
       API_ENDPOINT: ${RDE_BSM_API_ENDPOINT}
       HEADER_ACCEPT: ${RDE_BSM_HEADER_ACCEPT}
       HEADER_X_API_KEY: ${RDE_BSM_HEADER_X_API_KEY}
+      DEPOSIT_GROUP: ${RDE_BSM_GROUP}
     depends_on:
      - kafka
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   cvpep_tim_depositor:
     build: ./jpo-s3-deposit
@@ -156,8 +200,13 @@ services:
       API_ENDPOINT: ${CVPEP_BSM_API_ENDPOINT}
       HEADER_ACCEPT: ${CVPEP_BSM_HEADER_ACCEPT}
       HEADER_X_API_KEY: ${CVPEP_BSM_HEADER_X_API_KEY}
+      DEPOSIT_GROUP: ${CVPEP_TIM_GROUP}
     depends_on:
      - kafka
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   rde_tim_depositor:
     build: ./jpo-s3-deposit
@@ -174,8 +223,13 @@ services:
       API_ENDPOINT: ${RDE_TIM_API_ENDPOINT}
       HEADER_ACCEPT: ${RDE_TIM_HEADER_ACCEPT}
       HEADER_X_API_KEY: ${RDE_TIM_HEADER_X_API_KEY}
+      DEPOSIT_GROUP: ${RDE_TIM_GROUP}
     depends_on:
      - kafka
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   sdw_depositor:
     build: ./jpo-sdw-depositor
@@ -191,6 +245,10 @@ services:
      - kafka
      - zookeeper
      - ode
+    logging:
+      options:
+        max-size: "10m" 
+        max-file: "5"
 
   sec:
     build: ./jpo-security-svcs
@@ -199,3 +257,7 @@ services:
      - "8090:8090"
     environment:
       SEC_CRYPTO_SERVICE_BASE_URI: ${SEC_CRYPTO_SERVICE_BASE_URI}
+    logging:
+      options:
+        max-size: "10m"  
+        max-file: "5"

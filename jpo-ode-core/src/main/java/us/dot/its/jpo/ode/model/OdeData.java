@@ -15,6 +15,9 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({ "metadata", "payload" })
 public class OdeData extends OdeObject implements OdeFilterable {
     private static final long serialVersionUID = -7711340868799607662L;
 

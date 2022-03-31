@@ -6,10 +6,7 @@ The following sections summarize installation and setup of Docker on your machin
 - Install [Docker for Windows](https://store.docker.com/editions/community/docker-ce-desktop-windows)
 ## Mac OSX
 - Enable virtualization in your BIOS
-- Install [Docker for Mac](## Windows
-- Enable visualization in your BIOS
-- Install [Docker for Windows](https://store.docker.com/editions/community/docker-ce-desktop-windows)
-)
+- Install [Docker for Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac/)
 ## Linux
 - Install [Docker Engine](https://store.docker.com/search?type=edition&offering=community&operating_system=linux) on Docker host machine
 - Install [docker-compose](https://docs.docker.com/compose/install/) on docker host and/or local machine

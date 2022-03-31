@@ -40,90 +40,90 @@ import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 
 public class TravelerMessageFromHumanToAsnConverter {
 
-  private static final String SPEED = "speed";
-  private static final String TYPE = "type";
-  private static final String ATTRIBUTES = "attributes";
-  public static final String TRAVELER_INFORMATION = "TravelerInformation";
-  private static final String EXTENT = "extent";
-  private static final String UNITS = "units";
-  private static final String DIRECTIONALITY = "directionality";
-  private static final String CENTER = "center";
-  private static final String NODE_LAT = "nodeLat";
-  private static final String NODE_LONG = "nodeLong";
-  private static final String Y = "y";
-  private static final String X = "x";
-  private static final String NODE_LAT_LON = "node-LatLon";
-  private static final String LON = "lon";
-  private static final String LAT = "lat";
-  private static final String NODE_XY = "node-XY";
-  private static final String NODE_XY2 = "NodeXY";
-  private static final String COMPUTED = "computed";
-  private static final String SPEED_LIMITS = "speedLimits";
-  private static final String LANE_ANGLE = "laneAngle";
-  private static final String LANE_CROWN_POINT_RIGHT = "laneCrownPointRight";
-  private static final String LANE_CROWN_POINT_LEFT = "laneCrownPointLeft";
-  private static final String LANE_CROWN_POINT_CENTER = "laneCrownPointCenter";
-  private static final String D_ELEVATION = "dElevation";
-  private static final String D_WIDTH = "dWidth";
-  private static final String DATA = "data";
-  private static final String OFFSET_X_AXIS = "offsetXaxis";
-  private static final String OFFSET_Y_AXIS = "offsetYaxis";
-  private static final String ROTATE_XY = "rotateXY";
-  private static final String SCALE_X_AXIS = "scaleXaxis";
-  private static final String SCALE_Y_AXIS = "scaleYaxis";
-  private static final String NODE_LIST = "nodeList";
-  private static final String REGION_POINT_SET = "regionPointSet";
-  private static final String CIRCLE = "circle";
-  private static final String SHAPE_POINT_SET = "shapePointSet";
-  private static final String DELTA = "delta";
-  private static final String OFFSET = "offset";
-  private static final String NODES = "nodes";
-  private static final String XY = "xy";
-  private static final String LL = "ll";
-  private static final String OLD_REGION = "oldRegion";
-  private static final String GEOMETRY = "geometry";
-  private static final String PATH = "path";
-  private static final String DESCRIPTION = "description";
-  private static final String CLOSED_PATH = "closedPath";
-  private static final String ANCHOR = "anchor";
-  private static final String ID = "id";
-  private static final String REGION = "region";
-  private static final String LANE_WIDTH = "laneWidth";
-  private static final String ANCHOR_POSITION = "anchorPosition";
-  private static final String REGULATOR_ID = "regulatorID";
-  private static final String SEGMENT_ID = "segmentID";
-  private static final String POSITION = "position";
-  private static final String TEXT = "text";
-  private static final String ITIS = "itis";
-  private static final String ITEM = "item";
-  private static final String START_DATE_TIME = "startDateTime";
-  private static final String DURATION_TIME = "durationTime";
-  // I know, it's misspelled and it has to stay that way. J2735 spec misspelled it
-  private static final String DURATON_TIME_MISSPELLED = "duratonTime";
-  private static final String SSP_TIM_RIGHTS = "sspTimRights";
-  private static final String SSP_MSG_TYPES = "sspMsgTypes";
-  private static final String SSP_MSG_CONTENT = "sspMsgContent";
-  private static final String DATAFRAMES = "dataframes";
-  private static final String TIME_STAMP = "timeStamp";
-  public static final String GEOGRAPHICAL_PATH_STRING = "GeographicalPath";
-  public static final String REGIONS_STRING = "regions";
-  public static final String TRAVELER_DATA_FRAME_STRING = "TravelerDataFrame";
-  public static final String DATA_FRAMES_STRING = "dataFrames";
-  public static final String SEQUENCE_STRING = "SEQUENCE";
-  public static final String TCONTENT_STRING = "tcontent";
-  // JSON cannot have empty fields like XML, so the XML must be modified by
-  // removing all flag field values
-  public static final String EMPTY_FIELD_FLAG = "EMPTY_TAG";
-  public static final String BOOLEAN_OBJECT_TRUE = "BOOLEAN_OBJECT_TRUE";
-  public static final String BOOLEAN_OBJECT_FALSE = "BOOLEAN_OBJECT_FALSE";
+   private static final String SPEED = "speed";
+   private static final String TYPE = "type";
+   private static final String ATTRIBUTES = "attributes";
+   public static final String TRAVELER_INFORMATION = "TravelerInformation";
+   private static final String EXTENT = "extent";
+   private static final String UNITS = "units";
+   private static final String DIRECTIONALITY = "directionality";
+   private static final String CENTER = "center";
+   private static final String NODE_LAT = "nodeLat";
+   private static final String NODE_LONG = "nodeLong";
+   private static final String Y = "y";
+   private static final String X = "x";
+   private static final String NODE_LAT_LON = "node-LatLon";
+   private static final String LON = "lon";
+   private static final String LAT = "lat";
+   private static final String NODE_XY = "node-XY";
+   private static final String NODE_XY2 = "NodeXY";
+   private static final String COMPUTED = "computed";
+   private static final String SPEED_LIMITS = "speedLimits";
+   private static final String LANE_ANGLE = "laneAngle";
+   private static final String LANE_CROWN_POINT_RIGHT = "laneCrownPointRight";
+   private static final String LANE_CROWN_POINT_LEFT = "laneCrownPointLeft";
+   private static final String LANE_CROWN_POINT_CENTER = "laneCrownPointCenter";
+   private static final String D_ELEVATION = "dElevation";
+   private static final String D_WIDTH = "dWidth";
+   private static final String DATA = "data";
+   private static final String OFFSET_X_AXIS = "offsetXaxis";
+   private static final String OFFSET_Y_AXIS = "offsetYaxis";
+   private static final String ROTATE_XY = "rotateXY";
+   private static final String SCALE_X_AXIS = "scaleXaxis";
+   private static final String SCALE_Y_AXIS = "scaleYaxis";
+   private static final String NODE_LIST = "nodeList";
+   private static final String REGION_POINT_SET = "regionPointSet";
+   private static final String CIRCLE = "circle";
+   private static final String SHAPE_POINT_SET = "shapePointSet";
+   private static final String DELTA = "delta";
+   private static final String OFFSET = "offset";
+   private static final String NODES = "nodes";
+   private static final String XY = "xy";
+   private static final String LL = "ll";
+   private static final String OLD_REGION = "oldRegion";
+   private static final String GEOMETRY = "geometry";
+   private static final String PATH = "path";
+   private static final String DESCRIPTION = "description";
+   private static final String CLOSED_PATH = "closedPath";
+   private static final String ANCHOR = "anchor";
+   private static final String ID = "id";
+   private static final String REGION = "region";
+   private static final String LANE_WIDTH = "laneWidth";
+   private static final String ANCHOR_POSITION = "anchorPosition";
+   private static final String REGULATOR_ID = "regulatorID";
+   private static final String SEGMENT_ID = "segmentID";
+   private static final String POSITION = "position";
+   private static final String TEXT = "text";
+   private static final String ITIS = "itis";
+   private static final String ITEM = "item";
+   private static final String START_DATE_TIME = "startDateTime";
+   private static final String DURATION_TIME = "durationTime";
+   // I know, it's misspelled and it has to stay that way. J2735 spec misspelled it
+   private static final String DURATON_TIME_MISSPELLED = "duratonTime";
+   private static final String SSP_TIM_RIGHTS = "sspTimRights";
+   private static final String SSP_MSG_TYPES = "sspMsgTypes";
+   private static final String SSP_MSG_CONTENT = "sspMsgContent";
+   private static final String DATAFRAMES = "dataframes";
+   private static final String TIME_STAMP = "timeStamp";
+   public static final String GEOGRAPHICAL_PATH_STRING = "GeographicalPath";
+   public static final String REGIONS_STRING = "regions";
+   public static final String TRAVELER_DATA_FRAME_STRING = "TravelerDataFrame";
+   public static final String DATA_FRAMES_STRING = "dataFrames";
+   public static final String SEQUENCE_STRING = "SEQUENCE";
+   public static final String TCONTENT_STRING = "tcontent";
+   // JSON cannot have empty fields like XML, so the XML must be modified by
+   // removing all flag field values
+   public static final String EMPTY_FIELD_FLAG = "EMPTY_TAG";
+   public static final String BOOLEAN_OBJECT_TRUE = "BOOLEAN_OBJECT_TRUE";
+   public static final String BOOLEAN_OBJECT_FALSE = "BOOLEAN_OBJECT_FALSE";
 
-  private static final Logger logger = LoggerFactory.getLogger(TravelerMessageFromHumanToAsnConverter.class);
-   
-  private TravelerMessageFromHumanToAsnConverter() {
+   private static final Logger logger = LoggerFactory.getLogger(TravelerMessageFromHumanToAsnConverter.class);
+
+   private TravelerMessageFromHumanToAsnConverter() {
       super();
-  }
+   }
 
-  public static void convertTravelerInputDataToEncodableTim(JsonNode tid) throws JsonUtilsException {
+   public static void convertTravelerInputDataToEncodableTim(JsonNode tid) throws JsonUtilsException {
       // msgCnt MsgCount,
       // timeStamp MinuteOfTheYear OPTIONAL
       // packetID UniqueMSGID OPTIONAL
@@ -132,7 +132,7 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // Cast to ObjectNode to allow manipulation in place
       ObjectNode timDataObjectNode = (ObjectNode) tid.get("tim");
-      
+
       // timeStamp is optional
       if (timDataObjectNode.get(TIME_STAMP) != null) {
          timDataObjectNode.put(TIME_STAMP,
@@ -145,7 +145,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       timDataObjectNode.set(DATA_FRAMES_STRING, transformDataFrames(timDataObjectNode.get(DATAFRAMES)));
       timDataObjectNode.remove(DATAFRAMES);
    }
-      
+
    public static ObjectNode transformDataFrames(JsonNode dataFrames) throws JsonUtilsException {
 
       if (dataFrames == null) {
@@ -172,7 +172,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       // INPUT
       //////
       // "dataframes": [
-      // 
+      //
       // "startDateTime": "2017-08-02T22:25:00.000Z",
       // "durationTime": 1,
       // "frameType": "1",
@@ -196,7 +196,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       // "513"
       // ],
       // "url": "null"
-      // 
+      //
       // ]
 
       /// OUTPUT:
@@ -211,9 +211,8 @@ public class TravelerMessageFromHumanToAsnConverter {
       // sspTimRights does not need replacement
 
       // set frameType value
-      dataFrame.set("frameType", 
-          JsonUtils.newNode().put(dataFrame.get("frameType").asText(), EMPTY_FIELD_FLAG));
-      
+      dataFrame.set("frameType", JsonUtils.newNode().put(dataFrame.get("frameType").asText(), EMPTY_FIELD_FLAG));
+
       // replace sspMsgContent with sspMsgRights2
       dataFrame.put("sspMsgRights2", dataFrame.get(SSP_MSG_CONTENT).asInt());
       dataFrame.remove(SSP_MSG_CONTENT);
@@ -249,7 +248,8 @@ public class TravelerMessageFromHumanToAsnConverter {
       try {
          ZonedDateTime zDateTime = DateTimeUtils.isoDateTime(isoTime);
          startYear = zDateTime.getYear();
-         startMinute = (int) Duration.between(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0), zDateTime).toMinutes();
+         startMinute = (int) Duration.between(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0), zDateTime)
+               .toMinutes();
       } catch (Exception e) { // NOSONAR
          logger.warn("Failed to parse datetime {}, defaulting to unknown value {}", isoTime, startMinute);
       }
@@ -274,7 +274,8 @@ public class TravelerMessageFromHumanToAsnConverter {
       try {
          ZonedDateTime zDateTime = DateTimeUtils.isoDateTime(startDateTime);
          startYear = zDateTime.getYear();
-         startMinute = (int)ChronoUnit.MINUTES.between(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0), zDateTime);
+         startMinute = (int) ChronoUnit.MINUTES.between(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0),
+               zDateTime);
       } catch (Exception e) {
          logger.warn("Failed to startDateTime {}, defaulting to unknown value {}.", startDateTime, startMinute);
       }
@@ -302,7 +303,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       ////////
       // "content": "advisory",
       // "items":["513", "Text you need to send", "'1234567'", "255"]},
-      
+
       // step 1, reformat item list
       ArrayNode items = (ArrayNode) dataFrame.get("items");
       ArrayNode newItems = JsonUtils.newNode().arrayNode();
@@ -325,14 +326,14 @@ public class TravelerMessageFromHumanToAsnConverter {
       // step 2, set the content CHOICE
       String replacedContentName = dataFrame.get("content").asText();
       if (replacedContentName.equals("Advisory"))
-        replacedContentName = "advisory";
-      
+         replacedContentName = "advisory";
+
       // The following field is called "content" but this results in a
       // failed conversion to XML
       // see @us.dot.its.jpo.ode.traveler.TimController.publish
       dataFrame.set(TCONTENT_STRING, JsonUtils.newNode().set(replacedContentName, sequence));
       dataFrame.remove("content");
-}
+   }
 
    public static JsonNode buildItem(String itemStr) {
       JsonNode item = null;
@@ -410,7 +411,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       // "name": "Testing TIM",
       // "regulatorID": "0",
       // "segmentID": "33",
-      // "anchorPosition": 
+      // "anchorPosition":
       // "latitude": "41.2500807",
       // "longitude": "-111.0093847",
       // "elevation": "2020.6969900289998"
@@ -421,7 +422,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       // "description": "path",
       // "path": {},
       // "direction": "0000000000001010"
-      // 
+      //
 
       //// EXPECTED OUTPUT:
       // <GeographicalPath>
@@ -461,10 +462,9 @@ public class TravelerMessageFromHumanToAsnConverter {
          region.set(ID, id);
       }
       // replace regulatorID and segmentID with id
-      ObjectNode id = JsonUtils.newNode()
-            .put(REGION,region.get(REGULATOR_ID).asInt())
-            .put(ID, region.get(SEGMENT_ID).asInt());
-      
+      ObjectNode id = JsonUtils.newNode().put(REGION, region.get(REGULATOR_ID).asInt()).put(ID,
+            region.get(SEGMENT_ID).asInt());
+
       region.set(ID, id);
       region.remove(REGULATOR_ID);
       region.remove(SEGMENT_ID);
@@ -472,8 +472,8 @@ public class TravelerMessageFromHumanToAsnConverter {
       // anchorPosition --> anchor (optional)
       JsonNode anchorPos = region.get(ANCHOR_POSITION);
       if (anchorPos != null) {
-         region.set(ANCHOR, JsonUtils.toObjectNode(Position3DBuilder.dsrcPosition3D(
-            Position3DBuilder.odePosition3D(region.get(ANCHOR_POSITION))).toJson()));
+         region.set(ANCHOR, JsonUtils.toObjectNode(Position3DBuilder
+               .dsrcPosition3D(Position3DBuilder.odePosition3D(region.get(ANCHOR_POSITION))).toJson()));
          region.remove(ANCHOR_POSITION);
       }
 
@@ -485,13 +485,13 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // directionality (optional)
       if (region.has(DIRECTIONALITY)) {
-        JsonNode directionality = region.get(DIRECTIONALITY);
-        String enumString = CommonUtils.enumToString(DirectionOfUseEnum.class, directionality.asText());
-        if (enumString != null) {
-          region.set(DIRECTIONALITY, JsonUtils.newNode().put(enumString, EMPTY_FIELD_FLAG));
-        }
+         JsonNode directionality = region.get(DIRECTIONALITY);
+         String enumString = CommonUtils.enumToString(DirectionOfUseEnum.class, directionality.asText());
+         if (enumString != null) {
+            region.set(DIRECTIONALITY, JsonUtils.newNode().put(enumString, EMPTY_FIELD_FLAG));
+         }
       }
-      
+
       // closed path (optional)
       JsonNode closedPath = region.get(CLOSED_PATH);
       if (closedPath != null) {
@@ -522,11 +522,11 @@ public class TravelerMessageFromHumanToAsnConverter {
    private static void replacePath(ObjectNode pathNode) {
 
       //// EXPECTED INPUT:
-      // "path": 
+      // "path":
       // "scale": "0",
       // "type": "ll",
       // "nodes": []
-      // 
+      //
 
       //// EXPECTED OUTPUT:
       // <path>
@@ -585,11 +585,11 @@ public class TravelerMessageFromHumanToAsnConverter {
    private static ObjectNode transformNodeLL(JsonNode oldNode) {
 
       //// EXPECTED INPUT:
-      // 
+      //
       // "nodeLong": "0.0031024",
       // "nodeLat": "0.0014506",
       // "delta": "node-LL3"
-      // 
+      //
 
       //// EXPECTED OUTPUT:
       // <NodeLL>
@@ -628,46 +628,52 @@ public class TravelerMessageFromHumanToAsnConverter {
       return deltaNode;
    }
 
-//   -- Nodes with LL content Span at the equator when using a zoom of one:
-//      node-LL1 Node-LL-24B, -- within +- 22.634554 meters of last node
-//      node-LL2 Node-LL-28B, -- within +- 90.571389 meters of last node
-//      node-LL3 Node-LL-32B, -- within +- 362.31873 meters of last node
-//      node-LL4 Node-LL-36B, -- within +- 01.449308 Kmeters of last node
-//      node-LL5 Node-LL-44B, -- within +- 23.189096 Kmeters of last node
-//      node-LL6 Node-LL-48B, -- within +- 92.756481 Kmeters of last node
-//      node-LatLon Node-LLmD-64b, -- node is a full 32b Lat/Lon range
+   // -- Nodes with LL content Span at the equator when using a zoom of one:
+   // node-LL1 Node-LL-24B, -- within +- 22.634554 meters of last node
+   // node-LL2 Node-LL-28B, -- within +- 90.571389 meters of last node
+   // node-LL3 Node-LL-32B, -- within +- 362.31873 meters of last node
+   // node-LL4 Node-LL-36B, -- within +- 01.449308 Kmeters of last node
+   // node-LL5 Node-LL-44B, -- within +- 23.189096 Kmeters of last node
+   // node-LL6 Node-LL-48B, -- within +- 92.756481 Kmeters of last node
+   // node-LatLon Node-LLmD-64b, -- node is a full 32b Lat/Lon range
    private static String nodeOffsetPointLL(long transformedLat, long transformedLon) {
-	  long transformedLatabs = Math.abs(transformedLat);
-	  long transformedLonabs = Math.abs(transformedLon);
-      if (((transformedLatabs & (-1 << 11)) == 0 || (transformedLat<0 && (transformedLatabs ^ (1 << 11)) == 0))
-    	  && (transformedLonabs & (-1 << 11)) == 0 || (transformedLon<0 && ((transformedLonabs ^ (1 << 11)) == 0))) {
-          // 11 bit value
-          return "node-LL1";
-       } else if (((transformedLatabs & (-1 << 13)) == 0 || (transformedLat<0 && (transformedLatabs ^ (1 << 13)) == 0))
-    	    	  && (transformedLonabs & (-1 << 13)) == 0 || (transformedLon<0 && ((transformedLonabs ^ (1 << 13)) == 0))){
-          // 13 bit value
-          return "node-LL2";
-       } else if (((transformedLatabs & (-1 << 15)) == 0 || (transformedLat<0 && (transformedLatabs ^ (1 << 15)) == 0))
- 	    	  && (transformedLonabs & (-1 << 15)) == 0 || (transformedLon<0 && ((transformedLonabs ^ (1 << 15)) == 0))) {
-          // 15 bit value
-          return "node-LL3";
-       } else if (((transformedLatabs & (-1 << 17)) == 0 || (transformedLat<0 && (transformedLatabs ^ (1 << 17)) == 0))
- 	    	  && (transformedLonabs & (-1 << 17)) == 0 || (transformedLon<0 && ((transformedLonabs ^ (1 << 17)) == 0))) {
-          // 17 bit value
-          return "node-LL4";
-       } else if (((transformedLatabs & (-1 << 21)) == 0 || (transformedLat<0 && (transformedLatabs ^ (1 << 21)) == 0))
- 	    	  && (transformedLonabs & (-1 << 21)) == 0 || (transformedLon<0 && ((transformedLonabs ^ (1 << 21)) == 0))) {
-          // 21 bit value
-          return "node-LL5";
-       } else if (((transformedLatabs & (-1 << 23)) == 0 || (transformedLat<0 && (transformedLatabs ^ (1 << 23)) == 0))
- 	    	  && (transformedLonabs & (-1 << 23)) == 0 || (transformedLon<0 && ((transformedLonabs ^ (1 << 23)) == 0))){
-          // 23 bit value
-          return "node-LL6";
-       } else {
-          throw new IllegalArgumentException("Invalid node lat/long offset: " + transformedLat + "/" + transformedLon
-                + ". Values must be between a range of -0.8388608/+0.8388607 degrees.");
-       }
-      
+      long transformedLatabs = Math.abs(transformedLat);
+      long transformedLonabs = Math.abs(transformedLon);
+      if (((transformedLatabs & (-1 << 11)) == 0 || (transformedLat < 0 && (transformedLatabs ^ (1 << 11)) == 0))
+            && (transformedLonabs & (-1 << 11)) == 0
+            || (transformedLon < 0 && ((transformedLonabs ^ (1 << 11)) == 0))) {
+         // 11 bit value
+         return "node-LL1";
+      } else if (((transformedLatabs & (-1 << 13)) == 0 || (transformedLat < 0 && (transformedLatabs ^ (1 << 13)) == 0))
+            && (transformedLonabs & (-1 << 13)) == 0
+            || (transformedLon < 0 && ((transformedLonabs ^ (1 << 13)) == 0))) {
+         // 13 bit value
+         return "node-LL2";
+      } else if (((transformedLatabs & (-1 << 15)) == 0 || (transformedLat < 0 && (transformedLatabs ^ (1 << 15)) == 0))
+            && (transformedLonabs & (-1 << 15)) == 0
+            || (transformedLon < 0 && ((transformedLonabs ^ (1 << 15)) == 0))) {
+         // 15 bit value
+         return "node-LL3";
+      } else if (((transformedLatabs & (-1 << 17)) == 0 || (transformedLat < 0 && (transformedLatabs ^ (1 << 17)) == 0))
+            && (transformedLonabs & (-1 << 17)) == 0
+            || (transformedLon < 0 && ((transformedLonabs ^ (1 << 17)) == 0))) {
+         // 17 bit value
+         return "node-LL4";
+      } else if (((transformedLatabs & (-1 << 21)) == 0 || (transformedLat < 0 && (transformedLatabs ^ (1 << 21)) == 0))
+            && (transformedLonabs & (-1 << 21)) == 0
+            || (transformedLon < 0 && ((transformedLonabs ^ (1 << 21)) == 0))) {
+         // 21 bit value
+         return "node-LL5";
+      } else if (((transformedLatabs & (-1 << 23)) == 0 || (transformedLat < 0 && (transformedLatabs ^ (1 << 23)) == 0))
+            && (transformedLonabs & (-1 << 23)) == 0
+            || (transformedLon < 0 && ((transformedLonabs ^ (1 << 23)) == 0))) {
+         // 23 bit value
+         return "node-LL6";
+      } else {
+         throw new IllegalArgumentException("Invalid node lat/long offset: " + transformedLat + "/" + transformedLon
+               + ". Values must be between a range of -0.8388608/+0.8388607 degrees.");
+      }
+
    }
 
    public static void replaceGeometry(ObjectNode geometry) {
@@ -678,7 +684,7 @@ public class TravelerMessageFromHumanToAsnConverter {
       // circle Circle
 
       // direction does not need to be replaced
-      
+
       // extent does not need to be replaced (optional)
 
       // replace lane width
@@ -696,12 +702,12 @@ public class TravelerMessageFromHumanToAsnConverter {
       // old region == ValidRegion
       // elements:
       // direction - no changes
-     
+
       // extent - no changes
       JsonNode extentNode = oldRegion.get(EXTENT);
       String extent = CommonUtils.enumToString(Extent.ExtentEnum.class, extentNode.asText());
       oldRegion.set(EXTENT, JsonUtils.newNode().put(extent, EMPTY_FIELD_FLAG));
-      
+
       // area - needs changes
       replaceArea(oldRegion.get("area"));
    }
@@ -735,9 +741,8 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // replace anchor (optional)
       if (updatedNode.get(ANCHOR_POSITION) != null) {
-         JsonUtils.addNode(updatedNode, ANCHOR, 
-            Position3DBuilder.dsrcPosition3D(
-               Position3DBuilder.odePosition3D(updatedNode.get(ANCHOR_POSITION))));
+         JsonUtils.addNode(updatedNode, ANCHOR,
+               Position3DBuilder.dsrcPosition3D(Position3DBuilder.odePosition3D(updatedNode.get(ANCHOR_POSITION))));
          updatedNode.remove(ANCHOR_POSITION);
       }
 
@@ -748,37 +753,35 @@ public class TravelerMessageFromHumanToAsnConverter {
 
    public static void replaceCircle(JsonNode circle) {
 
-      // Circle ::= SEQUENCE 
+      // Circle ::= SEQUENCE
       // center Position3D,
       // radius Radius-B12,
       // units DistanceUnits
-      // 
+      //
 
       ObjectNode updatedNode = (ObjectNode) circle;
-      
+
       JsonNode centerPosition = null;
       if (updatedNode.has(POSITION)) {
-        centerPosition = updatedNode.get(POSITION);
-        updatedNode.remove(POSITION);
+         centerPosition = updatedNode.get(POSITION);
+         updatedNode.remove(POSITION);
       } else {
-        centerPosition = updatedNode.get(CENTER);
+         centerPosition = updatedNode.get(CENTER);
       }
-      
-      // replace center
-      JsonUtils.addNode(updatedNode, CENTER, 
-         Position3DBuilder.dsrcPosition3D(
-            Position3DBuilder.odePosition3D(centerPosition)));
 
+      // replace center
+      JsonUtils.addNode(updatedNode, CENTER,
+            Position3DBuilder.dsrcPosition3D(Position3DBuilder.odePosition3D(centerPosition)));
 
       // radius does not need replacement
 
       // replace units
       if (updatedNode.has(UNITS)) {
-        JsonNode units = updatedNode.get(UNITS);
-        String enumString = CommonUtils.enumToString(DistanceUnitsEnum.class, units.asText());
-        if (enumString != null) {
-          updatedNode.set(UNITS, JsonUtils.newNode().put(enumString, EMPTY_FIELD_FLAG));
-        }
+         JsonNode units = updatedNode.get(UNITS);
+         String enumString = CommonUtils.enumToString(DistanceUnitsEnum.class, units.asText());
+         if (enumString != null) {
+            updatedNode.set(UNITS, JsonUtils.newNode().put(enumString, EMPTY_FIELD_FLAG));
+         }
       }
    }
 
@@ -793,9 +796,8 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // replace anchor
       if (updatedNode.has(ANCHOR)) {
-         JsonUtils.addNode(updatedNode, ANCHOR, 
-            Position3DBuilder.dsrcPosition3D(
-               Position3DBuilder.odePosition3D(updatedNode.get(ANCHOR))));
+         JsonUtils.addNode(updatedNode, ANCHOR,
+               Position3DBuilder.dsrcPosition3D(Position3DBuilder.odePosition3D(updatedNode.get(ANCHOR))));
       }
 
       // replace lane width
@@ -805,74 +807,74 @@ public class TravelerMessageFromHumanToAsnConverter {
 
       // replace directionality
       if (updatedNode.has(DIRECTIONALITY)) {
-        JsonNode directionality = updatedNode.get(DIRECTIONALITY);
-        String enumString = CommonUtils.enumToString(DirectionOfUseEnum.class, directionality.asText());
-        if (enumString != null) {
-          updatedNode.set(DIRECTIONALITY, JsonUtils.newNode().put(enumString, EMPTY_FIELD_FLAG));
-        }
+         JsonNode directionality = updatedNode.get(DIRECTIONALITY);
+         String enumString = CommonUtils.enumToString(DirectionOfUseEnum.class, directionality.asText());
+         if (enumString != null) {
+            updatedNode.set(DIRECTIONALITY, JsonUtils.newNode().put(enumString, EMPTY_FIELD_FLAG));
+         }
       }
-      
+
       // replace node list
       if (updatedNode.has(NODE_LIST)) {
-        ObjectNode nodeList = (ObjectNode) updatedNode.get(NODE_LIST);
-        if (nodeList.has(NODES)) {
-          ArrayNode nodes = transformNodeSetXY(nodeList.get(NODES));
-          nodeList.set(NODES, nodes);
-        } else if (nodeList.has(COMPUTED)) {
-          JsonNode computedLane = nodeList.get(COMPUTED);
-          replaceComputedLane(computedLane);
-        }
+         ObjectNode nodeList = (ObjectNode) updatedNode.get(NODE_LIST);
+         if (nodeList.has(NODES)) {
+            ArrayNode nodes = transformNodeSetXY(nodeList.get(NODES));
+            nodeList.set(NODES, nodes);
+         } else if (nodeList.has(COMPUTED)) {
+            JsonNode computedLane = nodeList.get(COMPUTED);
+            replaceComputedLane(computedLane);
+         }
       }
    }
 
    public static void replaceComputedLane(JsonNode jsonNode) {
       ObjectNode updatedNode = (ObjectNode) jsonNode;
-      
+
       // Nothing to do for referenceLaneId LaneID
-      
-      // offsetXaxis CHOICE 
-      //   small DrivenLineOffsetSm,
-      //   large DrivenLineOffsetLg
-      // 
+
+      // offsetXaxis CHOICE
+      // small DrivenLineOffsetSm,
+      // large DrivenLineOffsetLg
+      //
       replaceScale(updatedNode, OFFSET_X_AXIS);
-      
-      // offsetYaxis CHOICE 
-      //   small DrivenLineOffsetSm,
-      //   large DrivenLineOffsetLg
-      // 
+
+      // offsetYaxis CHOICE
+      // small DrivenLineOffsetSm,
+      // large DrivenLineOffsetLg
+      //
       replaceScale(updatedNode, OFFSET_Y_AXIS);
-      
+
       // rotateXY Angle OPTIONAL
       if (updatedNode.has(ROTATE_XY)) {
          updatedNode.put(ROTATE_XY, AngleBuilder.angle(JsonUtils.decimalValue(updatedNode.get(ROTATE_XY))));
       }
-      
+
       // scaleXaxis Scale-B12 OPTIONAL
       if (updatedNode.has(SCALE_X_AXIS)) {
          updatedNode.put(SCALE_X_AXIS, ScaleB12Builder.scaleB12(JsonUtils.decimalValue(updatedNode.get(SCALE_X_AXIS))));
       }
-      
+
       // scaleYaxis Scale-B12 OPTIONAL
       if (updatedNode.has(SCALE_Y_AXIS)) {
          updatedNode.put(SCALE_Y_AXIS, ScaleB12Builder.scaleB12(JsonUtils.decimalValue(updatedNode.get(SCALE_Y_AXIS))));
       }
    }
 
-  public static void replaceScale(ObjectNode updatedNode, String scale) {
-    if (updatedNode.has(scale)) {
-      int scaleX = updatedNode.get(scale).asInt();
-      String key = "large";
-      if (-2048 <= scaleX && scaleX <= 2047) {
-        key = "small";
+   public static void replaceScale(ObjectNode updatedNode, String scale) {
+      if (updatedNode.has(scale)) {
+         int scaleX = updatedNode.get(scale).asInt();
+         String key = "large";
+         if (-2048 <= scaleX && scaleX <= 2047) {
+            key = "small";
+         }
+
+         ObjectNode node = JsonUtils.newObjectNode(key, scaleX);
+         updatedNode.set(scale, node);
       }
-       
-      ObjectNode node = JsonUtils.newObjectNode(key, scaleX);
-      updatedNode.set(scale, node);
-    }
-  }
+   }
 
    public static ArrayNode transformNodeSetXY(JsonNode inputNodeList) {
-      
+
       //// EXPECTED INPUT:
       // "nodes": []
 
@@ -907,9 +909,9 @@ public class TravelerMessageFromHumanToAsnConverter {
       ObjectNode nodexy = transformNodeOffsetPointXY(oldNode);
 
       if (oldNode.has(ATTRIBUTES)) {
-        nodexy.set(ATTRIBUTES, transformNodeAttributeSetXY(oldNode.get(ATTRIBUTES)));
+         nodexy.set(ATTRIBUTES, transformNodeAttributeSetXY(oldNode.get(ATTRIBUTES)));
       }
-      
+
       return nodexy;
    }
 
@@ -932,11 +934,11 @@ public class TravelerMessageFromHumanToAsnConverter {
          updatedNode.set(DATA, transformLaneDataAttributeList(jsonNode.get(DATA)));
       }
       if (jsonNode.has(D_WIDTH)) {
-        updatedNode.put(D_WIDTH, OffsetXyBuilder.offsetXy(JsonUtils.decimalValue(jsonNode.get(D_WIDTH))));
+         updatedNode.put(D_WIDTH, OffsetXyBuilder.offsetXy(JsonUtils.decimalValue(jsonNode.get(D_WIDTH))));
       }
 
       if (jsonNode.has(D_ELEVATION)) {
-        updatedNode.put(D_ELEVATION, OffsetXyBuilder.offsetXy(JsonUtils.decimalValue(jsonNode.get(D_ELEVATION))));
+         updatedNode.put(D_ELEVATION, OffsetXyBuilder.offsetXy(JsonUtils.decimalValue(jsonNode.get(D_ELEVATION))));
       }
       return updatedNode;
    }
@@ -972,14 +974,14 @@ public class TravelerMessageFromHumanToAsnConverter {
       if (oldNode.has("pathEndPointAngle")) {
          // do nothing
       } else if (oldNode.has(LANE_CROWN_POINT_CENTER)) {
-         updatedNode.put(LANE_CROWN_POINT_CENTER,
-               RoadwayCrownAngleBuilder.roadwayCrownAngle(JsonUtils.decimalValue(updatedNode.get(LANE_CROWN_POINT_CENTER))));
+         updatedNode.put(LANE_CROWN_POINT_CENTER, RoadwayCrownAngleBuilder
+               .roadwayCrownAngle(JsonUtils.decimalValue(updatedNode.get(LANE_CROWN_POINT_CENTER))));
       } else if (oldNode.has(LANE_CROWN_POINT_LEFT)) {
-         updatedNode.put(LANE_CROWN_POINT_LEFT,
-               RoadwayCrownAngleBuilder.roadwayCrownAngle(JsonUtils.decimalValue(updatedNode.get(LANE_CROWN_POINT_LEFT))));
+         updatedNode.put(LANE_CROWN_POINT_LEFT, RoadwayCrownAngleBuilder
+               .roadwayCrownAngle(JsonUtils.decimalValue(updatedNode.get(LANE_CROWN_POINT_LEFT))));
       } else if (oldNode.has(LANE_CROWN_POINT_RIGHT)) {
-         updatedNode.put(LANE_CROWN_POINT_RIGHT,
-               RoadwayCrownAngleBuilder.roadwayCrownAngle(JsonUtils.decimalValue(updatedNode.get(LANE_CROWN_POINT_RIGHT))));
+         updatedNode.put(LANE_CROWN_POINT_RIGHT, RoadwayCrownAngleBuilder
+               .roadwayCrownAngle(JsonUtils.decimalValue(updatedNode.get(LANE_CROWN_POINT_RIGHT))));
       } else if (oldNode.has(LANE_ANGLE)) {
          updatedNode.put(LANE_ANGLE,
                MergeDivergeNodeAngleBuilder.mergeDivergeNodeAngle(JsonUtils.decimalValue(updatedNode.get(LANE_ANGLE))));
@@ -1006,14 +1008,14 @@ public class TravelerMessageFromHumanToAsnConverter {
       // speed Velocity
 
       ObjectNode updatedNode = (ObjectNode) regulatorySpeedLimitNode;
-      
+
       // type
       JsonNode typeNode = regulatorySpeedLimitNode.get(TYPE);
       String type = CommonUtils.enumToString(SpeedLimitTypeEnum.class, typeNode.asText());
       if (type != null) {
-        updatedNode.set(TYPE, JsonUtils.newNode().put(type, EMPTY_FIELD_FLAG));
+         updatedNode.set(TYPE, JsonUtils.newNode().put(type, EMPTY_FIELD_FLAG));
       }
-      
+
       // replace velocity
       updatedNode.put(SPEED, VelocityBuilder.velocity(JsonUtils.decimalValue(updatedNode.get(SPEED))));
 
@@ -1021,11 +1023,11 @@ public class TravelerMessageFromHumanToAsnConverter {
 
    public static ObjectNode transformNodeOffsetPointXY(JsonNode oldNode) {
       //// EXPECTED INPUT:
-      // 
-      //    "nodeLong": "0.0031024",
-      //    "nodeLat": "0.0014506",
-      //    "delta": "node-LL3"
-      // 
+      //
+      // "nodeLong": "0.0031024",
+      // "nodeLat": "0.0014506",
+      // "delta": "node-LL3"
+      //
 
       //// EXPECTED OUTPUT:
       // <NodeLL>
@@ -1060,9 +1062,9 @@ public class TravelerMessageFromHumanToAsnConverter {
          Long transformedLat = LongitudeBuilder.j2735Longitude(latOffset);
          ObjectNode latLong = JsonUtils.newNode().put(LON, transformedLon).put(LAT, transformedLat);
          if (deltaText.equals(NODE_XY)) {
-           innerNode.set(nodeOffsetPointLL(transformedLat, transformedLon), latLong);
+            innerNode.set(nodeOffsetPointLL(transformedLat, transformedLon), latLong);
          } else {
-           innerNode.set(deltaText, latLong);
+            innerNode.set(deltaText, latLong);
          }
       }
 

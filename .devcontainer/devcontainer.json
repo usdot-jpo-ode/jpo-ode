@@ -1,0 +1,35 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.154.0/containers/java-8
+{
+	"name": "Java 11",
+	"dockerFile": "Dockerfile",
+	"overrideCommand": false,
+	"shutdownAction": "stopContainer",
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		"vscjava.vscode-java-pack",
+		"vscjava.vscode-java-debug",
+		"vscjava.vscode-maven",
+		"vscjava.vscode-java-dependency",
+		"vscjava.vscode-java-test",
+		"hbenl.vscode-test-explorer",
+		"ms-vscode.test-adapter-converter",
+		"esbenp.prettier-vscode",
+		"mhutchie.git-graph",
+		"tabnine.tabnine-vscode",
+		"redhat.java",
+		"redhat.vscode-commons"
+	],
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [8080, 9090, 46753, 46800, 5555, 6666, 8090, 2181, 9092],
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "bash .devcontainer/post-create.sh",
+	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+	// "remoteUser": "vscode"
+	"runArgs": [
+		"--network=host"
+	]
+}

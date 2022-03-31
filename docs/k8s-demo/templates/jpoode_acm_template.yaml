@@ -1,0 +1,36 @@
+{{- range .Values.acm }}
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: {{ .NAME | quote }}
+spec:
+  replicas: {{ $.Values.replicas.jpoode_acm }}
+  selector:
+    matchLabels:
+      app: {{ .NAME | quote }}
+  template:
+    metadata:
+      labels:
+        app: {{ .NAME | quote }}
+    spec:
+      containers:
+        - name: "jpoode-acm-image-sha256-1"
+          image: "{{ $.Values.images.jpoode_acm.repository }}:{{ $.Values.images.jpoode_acm.tag }}"
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "0.5"
+          tty: true
+          stdin: true
+          env:
+          - name: ACM_CONFIG_FILE
+            value: {{ .CONFIG_FILE }}
+          - name: DOCKER_HOST_IP
+            value: {{ $.Values.resources.services.kafka }}
+          volumeMounts:
+            - mountPath: /asn1_codec_share
+              name: {{ .NAME }}-storage
+      volumes:
+        - name: {{ .NAME }}-storage
+{{- end }}

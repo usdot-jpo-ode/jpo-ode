@@ -84,7 +84,6 @@ public class Asn1CommandManager {
    private String depositTopic;
    private DdsDepositor<DdsStatusMessage> depositor;
    private RsuDepositor rsuDepositor;
-      
 
    public Asn1CommandManager(OdeProperties odeProperties) {
 
@@ -113,9 +112,10 @@ public class Asn1CommandManager {
          try {
             depositor.deposit(asdBytes);
 
-            String websocketDepositMessage = "Deposited message to SDW directly via websocket {}";
-            logger.info(websocketDepositMessage, asdBytes);
-            EventLogger.logger.info(websocketDepositMessage, asdBytes);
+            logger.info("Deposited message to SDW directly via websocket");
+            logger.debug("Message deposited: {}", asdBytes);
+            EventLogger.logger.info("Deposited message to SDW directly via websocket");
+            EventLogger.logger.debug("Message deposited: {}", asdBytes);
          } catch (DdsRequestManagerException e) {
             String msg = "Failed to deposit message to SDW";
             throw new Asn1CommandManagerException(msg, e);
@@ -123,9 +123,10 @@ public class Asn1CommandManager {
       } else {
          stringMessageProducer.send(this.getDepositTopic(), null, asdBytes);
 
-         String sdwKafkaDepositMessage = "Published message to SDW deposit Kafka topic {}";
-         logger.info(sdwKafkaDepositMessage, asdBytes);
-         EventLogger.logger.info(sdwKafkaDepositMessage, asdBytes);
+         logger.info("Published message to SDW deposit topic");
+         EventLogger.logger.info("Published message to SDW deposit topic");
+         logger.debug("Message deposited: {}", asdBytes);
+         EventLogger.logger.debug("Message deposited: {}", asdBytes);
       }
    }
 
@@ -143,7 +144,8 @@ public class Asn1CommandManager {
 
       RestTemplate template = new RestTemplate();
 
-      logger.info("Sending data to security services module at {} to be signed: {}", signatureUri, entity);
+      logger.info("Sending data to security services module at {} to be signed", signatureUri);
+      logger.debug("Data to be signed: {}", entity);
 
       ResponseEntity<String> respEntity = template.postForEntity(signatureUri, entity, String.class);
 
@@ -151,24 +153,27 @@ public class Asn1CommandManager {
 
       return respEntity.getBody();
    }
-   public String sendForSignature(String message,int sigValidityOverride) {
-	      HttpHeaders headers = new HttpHeaders();
-	      headers.setContentType(MediaType.APPLICATION_JSON);
-	      Map<String,String> map = new HashMap<>();
-	      map.put("message",message);
-	      map.put("sigValidityOverride",Integer.toString(sigValidityOverride));
 
-	      HttpEntity<Map<String,String>> entity = new HttpEntity<>(map, headers);
-	      RestTemplate template = new RestTemplate();
+   public String sendForSignature(String message, int sigValidityOverride) {
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_JSON);
+      Map<String, String> map = new HashMap<>();
+      map.put("message", message);
+      map.put("sigValidityOverride", Integer.toString(sigValidityOverride));
 
-	      logger.info("Sending data to security services module  with validity override at {} to be signed: {}", signatureUri, entity);
+      HttpEntity<Map<String, String>> entity = new HttpEntity<>(map, headers);
+      RestTemplate template = new RestTemplate();
 
-	      ResponseEntity<String> respEntity = template.postForEntity(signatureUri, entity, String.class);
+      logger.info("Sending data to security services module with validity override at {} to be signed",
+            signatureUri);
+      logger.debug("Data to be signed: {}", entity);
 
-	      logger.info("Security services module response: {}", respEntity);
+      ResponseEntity<String> respEntity = template.postForEntity(signatureUri, entity, String.class);
 
-	      return respEntity.getBody();
-	   }
+      logger.debug("Security services module response: {}", respEntity);
+
+      return respEntity.getBody();
+   }
 
    public String packageSignedTimIntoAsd(ServiceRequest request, String signedMsg) {
 

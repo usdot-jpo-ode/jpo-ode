@@ -15,8 +15,6 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
@@ -25,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -127,6 +125,9 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeBsmTxPojo = "topic.OdeBsmTxPojo";
    private String kafkaTopicOdeBsmDuringEventPojo = "topic.OdeBsmDuringEventPojo";
    private String kafkaTopicFilteredOdeBsmJson = "topic.FilteredOdeBsmJson";
+   private String kafkaTopicOdeRawEncodedBSMJson = "topic.OdeRawEncodedBSMJson";
+   private int bsmReceiverPort = 46800;
+   private int bsmBufferSize = 500;
 
    // TIM
    private String kafkaTopicOdeTimJson = "topic.OdeTimJson";
@@ -136,8 +137,43 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeTimBroadcastJson = "topic.OdeTimBroadcastJson";
    private String kafkaTopicJ2735TimBroadcastJson = "topic.J2735TimBroadcastJson";
    private String kafkaTopicFilteredOdeTimJson = "topic.FilteredOdeTimJson";
+   private String kafkaTopicOdeRawEncodedTIMJson = "topic.OdeRawEncodedTIMJson";
+   private int timReceiverPort = 47900;
+   private int timBufferSize = 500;
+   
+   //SPAT
+   private String kafkaTopicOdeSpatTxPojo = "topic.OdeSpatTxPojo";
+   private String kafkaTopicOdeSpatPojo = "topic.OdeSpatPojo";
+   private String kafkaTopicOdeSpatJson = "topic.OdeSpatJson";
+   private String kafkaTopicOdeSpatRxPojo = "topic.OdeSpatRxPojo";
+   private String kafkaTopicOdeSpatRxJson = "topic.OdeSpatRxJson";
+   private String kafkaTopicFilteredOdeSpatJson = "topic.FilteredOdeSpatJson";
+   private String kafkaTopicOdeRawEncodedSPATJson = "topic.OdeRawEncodedSPATJson";
+   private int spatReceiverPort = 44910;
+   private int spatBufferSize = 1000;
 
-   // DriverAlerts
+   //SSM
+   private String kafkaTopicOdeSsmPojo = "topic.OdeSsmPojo";
+   private String kafkaTopicOdeSsmJson = "topic.OdeSsmJson";
+   private String kafkaTopicOdeRawEncodedSSMJson = "topic.OdeRawEncodedSSMJson";
+   private int ssmReceiverPort = 44900;
+   private int ssmBufferSize = 500;
+
+   //SRM
+   private String kafkaTopicOdeSrmTxPojo = "topic.OdeSrmTxPojo";
+   private String kafkaTopicOdeSrmJson = "topic.OdeSrmJson";
+   private String kafkaTopicOdeRawEncodedSRMJson = "topic.OdeRawEncodedSRMJson";
+   private int srmReceiverPort = 44930;
+   private int srmBufferSize = 500;
+   
+   //MAP
+   private String kafkaTopicOdeRawEncodedMAPJson = "topic.OdeRawEncodedMAPJson";
+   private String kafkaTopicOdeMapTxPojo = "topic.OdeMapTxPojo";
+   private String kafkaTopicOdeMapJson = "topic.OdeMapJson";
+   private int mapReceiverPort = 44920;
+   private int mapBufferSize = 2048;
+   
+// DriverAlerts
    private String kafkaTopicDriverAlertJson = "topic.OdeDriverAlertJson";
 
    // ASN.1 CODEC
@@ -161,23 +197,15 @@ public class OdeProperties implements EnvironmentAware {
 
    private static final byte[] JPO_ODE_GROUP_ID = "jode".getBytes();
 
+   @Autowired
+   BuildProperties buildProperties;
+
    @PostConstruct
    void initialize() {
-
-      String pomPropsFile = "/META-INF/maven/usdot.jpo.ode/jpo-ode-svcs/pom.properties";
-      try {
-         InputStream resourceAsStream = this.getClass().getResourceAsStream(pomPropsFile);
-         Properties properties = new Properties();
-         properties.load(resourceAsStream);
-         setVersion(properties.getProperty("version"));
-         logger.info("groupId: {}", properties.getProperty("groupId"));
-         logger.info("artifactId: {}", properties.getProperty("artifactId"));
-         logger.info("version: {}", version);
-
-      } catch (IOException e) {
-         logger.error("Error loading properties file " + pomPropsFile, e);
-      }
-
+      setVersion(buildProperties.getVersion());
+      logger.info("groupId: {}", buildProperties.getGroup());
+      logger.info("artifactId: {}", buildProperties.getArtifact());
+      logger.info("version: {}", version);
       OdeMsgMetadata.setStaticSchemaVersion(OUTPUT_SCHEMA_VERSION);
 
       uploadLocations.add(Paths.get(uploadLocationRoot));
@@ -348,6 +376,102 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setVerboseJson(Boolean verboseJson) {
       this.verboseJson = verboseJson;
+   }
+
+   public int getBsmReceiverPort() {
+      return bsmReceiverPort;
+   }
+
+   public void setBsmReceiverPort(int bsmReceiverPort) {
+      this.bsmReceiverPort = bsmReceiverPort;
+   }
+
+   public int getBsmBufferSize() {
+      return bsmBufferSize;
+   }
+
+   public void setBsmBufferSize(int bsmBufferSize) {
+      this.bsmBufferSize = bsmBufferSize;
+   }
+
+   public int getTimReceiverPort() {
+      return timReceiverPort;
+   }
+
+   public void setTimReceiverPort(int timReceiverPort) {
+      this.timReceiverPort = timReceiverPort;
+   }
+
+   public int getTimBufferSize() {
+      return timBufferSize;
+   }
+
+   public void setTimBufferSize(int timBufferSize) {
+      this.timBufferSize = timBufferSize;
+   }
+
+   public int getSsmReceiverPort() {
+      return ssmReceiverPort;
+   }
+
+   public void setSsmReceiverPort(int ssmReceiverPort) {
+      this.ssmReceiverPort = ssmReceiverPort;
+   }
+
+   public int getSsmBufferSize() {
+      return ssmBufferSize;
+   }
+
+   public void setSsmBufferSize(int ssmBufferSize) {
+      this.ssmBufferSize = ssmBufferSize;
+   }
+
+   public int getSrmReceiverPort() {
+      return srmReceiverPort;
+   }
+
+   public void setSrmReceiverPort(int srmReceiverPort) {
+      this.srmReceiverPort = srmReceiverPort;
+   }
+
+   public int getSrmBufferSize() {
+      return srmBufferSize;
+   }
+
+   public void setSrmBufferSize(int srmBufferSize) {
+      this.srmBufferSize = srmBufferSize;
+   }
+
+   public int getSpatReceiverPort() {
+      return spatReceiverPort;
+   }
+
+   public void setSpatReceiverPort(int spatReceiverPort) {
+      this.spatReceiverPort = spatReceiverPort;
+   }
+
+   public int getSpatBufferSize() {
+      return spatBufferSize;
+   }
+
+   public void setSpatBufferSize(int spatBufferSize) {
+      this.spatBufferSize = spatBufferSize;
+   }
+
+   public int getMapReceiverPort() {
+      return mapReceiverPort;
+   }
+
+   public void setMapReceiverPort(int mapReceiverPort) {
+      this.mapReceiverPort = mapReceiverPort;
+   }
+
+   public int getMapBufferSize() {
+      return mapBufferSize;
+   }
+
+   public void setMapBufferSize(int mapBufferSize) {
+      this.mapBufferSize = mapBufferSize;
    }
 
    public String getDdsCasUrl() {
@@ -621,10 +745,184 @@ public class OdeProperties implements EnvironmentAware {
    public void setDepositSdwMessagesOverWebsocket(boolean depositSdwMessagesOverWebsocket) {
       this.depositSdwMessagesOverWebsocket = depositSdwMessagesOverWebsocket;
    }
-    public String getKafkaTopicSignedOdeTimJsonExpiration() {
-	   return kafkaTopicSignedOdeTimJsonExpiration;
+   public String getKafkaTopicSignedOdeTimJsonExpiration() {
+      return kafkaTopicSignedOdeTimJsonExpiration;
    }
    public void setKafkaTopicSignedOdeTimJsonExpiration(String kafkaTopicSignedOdeTimJsonExpiration) {
-		this.kafkaTopicSignedOdeTimJsonExpiration = kafkaTopicSignedOdeTimJsonExpiration;
+      this.kafkaTopicSignedOdeTimJsonExpiration = kafkaTopicSignedOdeTimJsonExpiration;
+   }
+	
+	public String getKafkaTopicOdeSpatTxPojo() {
+		return kafkaTopicOdeSpatTxPojo;
 	}
+	
+	
+	public void setKafkaTopicOdeSpatTxPojo(String kafkaTopicOdeSpatTxPojo) {
+		this.kafkaTopicOdeSpatTxPojo = kafkaTopicOdeSpatTxPojo;
+	}
+
+
+	public String getKafkaTopicOdeSpatPojo() {
+		return kafkaTopicOdeSpatPojo;
+	}
+
+
+	public void setKafkaTopicOdeSpatPojo(String kafkaTopicOdeSpatPojo) {
+		this.kafkaTopicOdeSpatPojo = kafkaTopicOdeSpatPojo;
+	}
+
+
+	public String getKafkaTopicOdeSpatJson() {
+		return kafkaTopicOdeSpatJson;
+	}
+
+
+	public void setKafkaTopicOdeSpatJson(String kafkaTopicOdeSpatJson) {
+		this.kafkaTopicOdeSpatJson = kafkaTopicOdeSpatJson;
+	}
+
+
+	public String getKafkaTopicOdeSpatRxPojo() {
+		return kafkaTopicOdeSpatRxPojo;
+	}
+
+
+	public void setKafkaTopicOdeSpatRxPojo(String kafkaTopicOdeSpatRxPojo) {
+		this.kafkaTopicOdeSpatRxPojo = kafkaTopicOdeSpatRxPojo;
+	}
+
+
+	public String getKafkaTopicOdeSpatRxJson() {
+		return kafkaTopicOdeSpatRxJson;
+	}
+
+
+	public void setKafkaTopicOdeSpatRxJson(String kafkaTopicOdeSpatRxJson) {
+		this.kafkaTopicOdeSpatRxJson = kafkaTopicOdeSpatRxJson;
+	}
+
+
+	public String getKafkaTopicFilteredOdeSpatJson() {
+		return kafkaTopicFilteredOdeSpatJson;
+	}
+
+
+	public void setKafkaTopicFilteredOdeSpatJson(String kafkaTopicFilteredOdeSpatJson) {
+		this.kafkaTopicFilteredOdeSpatJson = kafkaTopicFilteredOdeSpatJson;
+	}
+
+
+	public String getKafkaTopicOdeRawEncodedBSMJson() {
+		return kafkaTopicOdeRawEncodedBSMJson;
+	}
+
+
+	public void setKafkaTopicOdeRawEncodedBSMJson(String kafkaTopicOdeRawEncodedBSMJson) {
+		this.kafkaTopicOdeRawEncodedBSMJson = kafkaTopicOdeRawEncodedBSMJson;
+	}
+
+
+	public String getKafkaTopicOdeRawEncodedTIMJson() {
+		return kafkaTopicOdeRawEncodedTIMJson;
+	}
+
+
+	public void setKafkaTopicOdeRawEncodedTIMJson(String kafkaTopicOdeRawEncodedTIMJson) {
+		this.kafkaTopicOdeRawEncodedTIMJson = kafkaTopicOdeRawEncodedTIMJson;
+	}
+
+
+	public String getKafkaTopicOdeRawEncodedSPATJson() {
+		return kafkaTopicOdeRawEncodedSPATJson;
+	}
+
+
+	public void setKafkaTopicOdeRawEncodedSPATJson(String kafkaTopicOdeRawEncodedSPATJson) {
+		this.kafkaTopicOdeRawEncodedSPATJson = kafkaTopicOdeRawEncodedSPATJson;
+	}
+	
+	public String getKafkaTopicOdeRawEncodedMAPJson() {
+		return kafkaTopicOdeRawEncodedMAPJson;
+	}
+
+	public void setKafkaTopicOdeRawEncodedMAPJson(String kafkaTopicOdeRawEncodedMAPJson) {
+		this.kafkaTopicOdeRawEncodedMAPJson = kafkaTopicOdeRawEncodedMAPJson;
+	}
+
+
+	public String getKafkaTopicOdeMapTxPojo() {
+		return kafkaTopicOdeMapTxPojo;
+	}
+
+
+	public void setKafkaTopicOdeMapTxPojo(String kafkaTopicOdeMapTxPojo) {
+		this.kafkaTopicOdeMapTxPojo = kafkaTopicOdeMapTxPojo;
+	}
+
+
+	public String getKafkaTopicOdeMapJson() {
+		return kafkaTopicOdeMapJson;
+	}
+
+
+	public void setKafkaTopicOdeMapJson(String kafkaTopicOdeMapJson) {
+		this.kafkaTopicOdeMapJson = kafkaTopicOdeMapJson;
+	}
+
+   public String getKafkaTopicOdeRawEncodedSSMJson() {
+		return kafkaTopicOdeRawEncodedSSMJson;
+	}
+
+	public void setKafkaTopicOdeRawEncodedSSMJson(String kafkaTopicOdeRawEncodedSSMJson) {
+		this.kafkaTopicOdeRawEncodedSSMJson = kafkaTopicOdeRawEncodedSSMJson;
+	}
+
+
+	public String getKafkaTopicOdeSsmPojo() {
+		return kafkaTopicOdeSsmPojo;
+	}
+
+
+	public void setKafkaTopicOdeSsmPojo(String kafkaTopicOdeSsmPojo) {
+		this.kafkaTopicOdeSsmPojo = kafkaTopicOdeSsmPojo;
+	}
+
+
+	public String getKafkaTopicOdeSsmJson() {
+		return kafkaTopicOdeSsmJson;
+	}
+
+
+	public void setKafkaTopicOdeSsmJson(String kafkaTopicOdeSsmJson) {
+		this.kafkaTopicOdeSsmJson = kafkaTopicOdeSsmJson;
+	}
+
+   public String getKafkaTopicOdeRawEncodedSRMJson() {
+		return kafkaTopicOdeRawEncodedSRMJson;
+	}
+
+	public void setKafkaTopicOdeRawEncodedSRMJson(String kafkaTopicOdeRawEncodedSRMJson) {
+		this.kafkaTopicOdeRawEncodedSRMJson = kafkaTopicOdeRawEncodedSRMJson;
+	}
+
+
+	public String getKafkaTopicOdeSrmTxPojo() {
+		return kafkaTopicOdeSrmTxPojo;
+	}
+
+
+	public void setKafkaTopicOdeSrmTxPojo(String kafkaTopicOdeSrmTxPojo) {
+		this.kafkaTopicOdeSrmTxPojo = kafkaTopicOdeSrmTxPojo;
+	}
+
+
+	public String getKafkaTopicOdeSrmJson() {
+		return kafkaTopicOdeSrmJson;
+	}
+
+
+	public void setKafkaTopicOdeSrmJson(String kafkaTopicOdeSrmJson) {
+		this.kafkaTopicOdeSrmJson = kafkaTopicOdeSrmJson;
+	}
+	   
 }
