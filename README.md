@@ -281,7 +281,7 @@ $ ./bsmjson_privacy -c ../config/ppm.properties
 
 # Confluent Cloud Integration
 
-Rather than using a local kafka instance, the ACM can utilize an instance of kafka hosted by Confluent Cloud via SASL.
+Rather than using a local kafka instance, the ODE can utilize an instance of kafka hosted by Confluent Cloud via SASL.
 
 
 
@@ -291,13 +291,14 @@ Rather than using a local kafka instance, the ACM can utilize an instance of kaf
 
 - The DOCKER_HOST_IP environment variable is used to communicate with the bootstrap server that the instance of Kafka is running on.
 
-- The KAFKA_TYPE environment variable specifies what type of kafka connection will be attempted and is used to check if Confluent should be utilized.
+- The KAFKA_TYPE environment variable specifies what type of kafka connection will be attempted and is used to check if Confluent should be utilized. If this environment variable is not set, the ODE will default to normal behavior.
 
-- The CONFLUENT_KEY and CONFLUENT_SECRET environment variables are used to authenticate with the bootstrap server.
+- The CONFLUENT_KEY and CONFLUENT_SECRET environment variables are used to authenticate with the bootstrap server. If the KAFKA_TYPE environment variable is not set, then these are not required.
 
 
 
 ### Values
+In order to utilize Confluent Cloud:
 
 - DOCKER_HOST_IP must be set to the bootstrap server address (excluding the port)
 
