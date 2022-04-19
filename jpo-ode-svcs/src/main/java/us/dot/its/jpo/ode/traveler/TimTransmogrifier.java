@@ -106,7 +106,7 @@ public class TimTransmogrifier {
          OdeMsgMetadata timMetadata, SerialId serialIdJ2735) throws JsonUtilsException, XmlUtilsException {
 
       TravelerInputData inOrderTid = (TravelerInputData) JsonUtils.jacksonFromJson(encodableTidObj.toString(),
-            TravelerInputData.class);
+            TravelerInputData.class, true);
 
       ObjectNode inOrderTidObj = JsonUtils.toObjectNode(inOrderTid.toJson());
 

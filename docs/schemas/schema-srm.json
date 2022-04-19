@@ -1,0 +1,355 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "originIp": {
+          "type": "string"
+        },
+        "srmSource": {
+          "type": "string"
+        },
+        "logFileName": {
+          "type": "string"
+        },
+        "recordType": {
+          "type": "string"
+        },
+        "securityResultCode": {
+          "type": ["string", "null"]
+        },
+        "receivedMessageDetails": {
+          "type": "object",
+          "properties": {
+            "locationData": {
+              "type": "null"
+            },
+            "rxSource": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "locationData",
+            "rxSource"
+          ]
+        },
+        "encodings": {
+          "type": "null"
+        },
+        "payloadType": {
+          "type": "string"
+        },
+        "serialId": {
+          "type": "object",
+          "properties": {
+            "streamId": {
+              "type": "string"
+            },
+            "bundleSize": {
+              "type": "integer"
+            },
+            "bundleId": {
+              "type": "integer"
+            },
+            "recordId": {
+              "type": "integer"
+            },
+            "serialNumber": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "streamId",
+            "bundleSize",
+            "bundleId",
+            "recordId",
+            "serialNumber"
+          ]
+        },
+        "odeReceivedAt": {
+          "type": "string"
+        },
+        "schemaVersion": {
+          "type": "integer"
+        },
+        "maxDurationTime": {
+          "type": "integer"
+        },
+        "odePacketID": {
+          "type": "string"
+        },
+        "odeTimStartDateTime": {
+          "type": "string"
+        },
+        "recordGeneratedAt": {
+          "type": "string"
+        },
+        "recordGeneratedBy": {
+          "type": "null"
+        },
+        "sanitized": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "originIp",
+        "srmSource",
+        "logFileName",
+        "recordType",
+        "securityResultCode",
+        "receivedMessageDetails",
+        "encodings",
+        "payloadType",
+        "serialId",
+        "odeReceivedAt",
+        "schemaVersion",
+        "maxDurationTime",
+        "odePacketID",
+        "odeTimStartDateTime",
+        "recordGeneratedAt",
+        "recordGeneratedBy",
+        "sanitized"
+      ]
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "dataType": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "timeStamp": {
+              "type": ["integer", "null"]
+            },
+            "second": {
+              "type": ["integer", "null"]
+            },
+            "sequenceNumber": {
+              "type": ["integer", "null"]
+            },
+            "requests": {
+              "type": ["object", "null"],
+              "properties": {
+                "signalRequestPackage": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "request": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "object",
+                              "properties": {
+                                "region": {
+                                  "type": ["integer", "null"]
+                                },
+                                "id": {
+                                  "type": ["integer", "null"]
+                                }
+                              },
+                              "required": [
+                                "region",
+                                "id"
+                              ]
+                            },
+                            "requestID": {
+                              "type": "integer"
+                            },
+                            "requestType": {
+                              "type": "string"
+                            },
+                            "inBoundLane": {
+                              "type": "object",
+                              "properties": {
+                                "lane": {
+                                  "type": ["integer", "null"]
+                                },
+                                "approach": {
+                                  "type": ["integer", "null"]
+                                },
+                                "connection": {
+                                  "type": ["integer", "null"]
+                                }
+                              },
+                              "required": [
+                                "lane",
+                                "approach",
+                                "connection"
+                              ]
+                            },
+                            "outBoundLane": {
+                              "type": ["object", "null"],
+                              "properties": {
+                                "lane": {
+                                  "type": ["integer", "null"]
+                                },
+                                "approach": {
+                                  "type": ["integer", "null"]
+                                },
+                                "connection": {
+                                  "type": ["integer", "null"]
+                                }
+                              },
+                              "required": [
+                                "lane",
+                                "approach",
+                                "connection"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "requestID",
+                            "requestType",
+                            "inBoundLane"
+                          ]
+                        },
+                        "minute": {
+                          "type": ["integer", "null"]
+                        },
+                        "second": {
+                          "type": ["integer", "null"]
+                        },
+                        "duration": {
+                          "type": ["integer", "null"]
+                        }
+                      },
+                      "required": [
+                        "request"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "signalRequestPackage"
+              ]
+            },
+            "requestor": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "object",
+                  "properties": {
+                    "entityID": {
+                      "type": ["string", "null"]
+                    },
+                    "stationID": {
+                      "type": ["integer", "null"]
+                    }
+                  },
+                  "required": [
+                    "entityID",
+                    "stationID"
+                  ]
+                },
+                "type": {
+                  "type": ["object", "null"],
+                  "properties": {
+                    "role": {
+                      "type": "string"
+                    },
+                    "subrole": {
+                      "type": ["string", "null"]
+                    },
+                    "request": {
+                      "type": ["string", "null"]
+                    },
+                    "iso3883": {
+                      "type": ["integer", "null"]
+                    },
+                    "hpmsType": {
+                      "type": ["string", "null"]
+                    }
+                  },
+                  "required": [
+                    "role"
+                  ]
+                },
+                "position": {
+                  "type": ["object", "null"],
+                  "properties": {
+                    "position": {
+                      "type": "object",
+                      "properties": {
+                        "latitude": {
+                          "type": "number"
+                        },
+                        "longitude": {
+                          "type": "number"
+                        },
+                        "elevation": {
+                          "type": ["number", "null"]
+                        }
+                      },
+                      "required": [
+                        "latitude",
+                        "longitude"
+                      ]
+                    },
+                    "heading": {
+                      "type": ["number", "null"]
+                    },
+                    "speed": {
+                      "type": ["object", "null"],
+                      "properties": {
+                        "transmisson": {
+                          "type": ["string", "null"]
+                        },
+                        "speed": {
+                          "type": ["number", "null"]
+                        }
+                      },
+                      "required": [
+                        "transmisson",
+                        "speed"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "position"
+                  ]
+                },
+                "name": {
+                  "type": ["string", "null"]
+                },
+                "routeName": {
+                  "type": ["string", "null"]
+                },
+                "transitStatus": {
+                  "type": ["string", "null"]
+                },
+                "transitOccupancy": {
+                  "type": ["string", "null"]
+                },
+                "transitSchedule": {
+                  "type": ["integer", "null"]
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          "required": [
+            "requestor"
+          ]
+        }
+      },
+      "required": [
+        "dataType",
+        "data"
+      ]
+    }
+  },
+  "required": [
+    "metadata",
+    "payload"
+  ]
+}

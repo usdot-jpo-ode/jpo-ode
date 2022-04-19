@@ -1,0 +1,1902 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "properties": {
+    "metadata": {
+      "properties": {
+        "encodings": {
+          "type": "null"
+        },
+        "logFileName": {
+          "type": "string"
+        },
+        "mapSource": {
+          "type": "string"
+        },
+        "maxDurationTime": {
+          "type": "integer"
+        },
+        "odePacketID": {
+          "type": "string"
+        },
+        "odeReceivedAt": {
+          "type": "string"
+        },
+        "odeTimStartDateTime": {
+          "type": "string"
+        },
+        "originIp": {
+          "type": "string"
+        },
+        "payloadType": {
+          "type": "string"
+        },
+        "receivedMessageDetails": {
+          "properties": {
+            "locationData": {
+              "type": ["string", "null"]
+            },
+            "rxSource": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "locationData",
+            "rxSource"
+          ],
+          "type": "object"
+        },
+        "recordGeneratedAt": {
+          "type": "string"
+        },
+        "recordGeneratedBy": {
+          "type": ["string", "null"]
+        },
+        "recordType": {
+          "type": "string"
+        },
+        "sanitized": {
+          "type": "boolean"
+        },
+        "schemaVersion": {
+          "type": "integer"
+        },
+        "securityResultCode": {
+          "type": "string"
+        },
+        "serialId": {
+          "properties": {
+            "bundleId": {
+              "type": "integer"
+            },
+            "bundleSize": {
+              "type": "integer"
+            },
+            "recordId": {
+              "type": "integer"
+            },
+            "serialNumber": {
+              "type": "integer"
+            },
+            "streamId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "streamId",
+            "bundleSize",
+            "bundleId",
+            "recordId",
+            "serialNumber"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "mapSource",
+        "originIp",
+        "logFileName",
+        "recordType",
+        "securityResultCode",
+        "receivedMessageDetails",
+        "payloadType",
+        "serialId",
+        "odeReceivedAt",
+        "schemaVersion",
+        "maxDurationTime",
+        "odePacketID",
+        "odeTimStartDateTime",
+        "recordGeneratedAt",
+        "recordGeneratedBy",
+        "sanitized"
+      ],
+      "type": "object"
+    },
+    "payload": {
+      "properties": {
+        "data": {
+          "properties": {
+            "dataParameters": {
+              "properties": {
+                "geoidUsed": {
+                  "type": ["string", "null"]
+                },
+                "lastCheckedDate": {
+                  "type": ["string", "null"]
+                },
+                "processAgency": {
+                  "type": ["string", "null"]
+                },
+                "processMethod": {
+                  "type": ["string", "null"]
+                }
+              },
+              "type": ["object", "null"]
+            },
+            "intersections": {
+              "properties": {
+                "intersectionGeometry": {
+                  "items": [
+                    {
+                      "properties": {
+                        "id": {
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "region": {
+                              "type": ["integer", "null"]
+                            }
+                          },
+                          "required": [
+                            "id"
+                          ],
+                          "type": "object"
+                        },
+                        "laneSet": {
+                          "properties": {
+                            "GenericLane": {
+                              "items": [
+                                {
+                                  "properties": {
+                                    "connectsTo": {
+                                      "properties": {
+                                        "connectsTo": {
+                                          "items": [
+                                            {
+                                              "properties": {
+                                                "connectingLane": {
+                                                  "properties": {
+                                                    "lane": {
+                                                      "type": "integer"
+                                                    },
+                                                    "maneuver": {
+                                                      "properties": {
+                                                        "caution": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "goWithHalt": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "maneuverLaneChangeAllowed": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "maneuverLeftAllowed": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "maneuverLeftTurnOnRedAllowed": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "maneuverNoStoppingAllowed": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "maneuverRightAllowed": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "maneuverRightTurnOnRedAllowed": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "maneuverStraightAllowed": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "maneuverUTurnAllowed": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "reserved1": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "yieldAllwaysRequired": {
+                                                          "type": "boolean"
+                                                        }
+                                                      },
+                                                      "required": [
+                                                        "maneuverStraightAllowed",
+                                                        "maneuverLeftAllowed",
+                                                        "maneuverRightAllowed",
+                                                        "maneuverUTurnAllowed",
+                                                        "maneuverLeftTurnOnRedAllowed",
+                                                        "maneuverRightTurnOnRedAllowed",
+                                                        "maneuverLaneChangeAllowed",
+                                                        "maneuverNoStoppingAllowed",
+                                                        "yieldAllwaysRequired",
+                                                        "goWithHalt",
+                                                        "caution",
+                                                        "reserved1"
+                                                      ],
+                                                      "type": ["object", "null"]
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "lane"
+                                                  ],
+                                                  "type": "object"
+                                                },
+                                                "connectionID": {
+                                                  "type": ["integer", "null"]
+                                                },
+                                                "remoteIntersection": {
+                                                  "properties": {
+                                                    "id": {
+                                                      "type": "integer"
+                                                    },
+                                                    "region": {
+                                                      "type": ["integer", "null"]
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "id"
+                                                  ],
+                                                  "type": ["object", "null"]
+                                                },
+                                                "signalGroup": {
+                                                  "type": ["integer", "null"]
+                                                },
+                                                "userClass": {
+                                                  "type": ["integer", "null"]
+                                                }
+                                              },
+                                              "required": [
+                                                "connectingLane"
+                                              ],
+                                              "type": "object"
+                                            }
+                                          ],
+                                          "type": "array"
+                                        }
+                                      },
+                                      "required": [
+                                        "connectsTo"
+                                      ],
+                                      "type": ["object", "null"]
+                                    },
+                                    "egressApproach": {
+                                      "type": ["integer", "null"]
+                                    },
+                                    "ingressApproach": {
+                                      "type": ["integer", "null"]
+                                    },
+                                    "laneAttributes": {
+                                      "properties": {
+                                        "directionalUse": {
+                                          "properties": {
+                                            "egressPath": {
+                                              "type": "boolean"
+                                            },
+                                            "ingressPath": {
+                                              "type": "boolean"
+                                            }
+                                          },
+                                          "required": [
+                                            "ingressPath",
+                                            "egressPath"
+                                          ],
+                                          "type": "object"
+                                        },
+                                        "laneType": {
+                                          "properties": {
+                                            "bikeLane": {
+                                              "properties": {
+                                                "biDirectionalCycleTimes": {
+                                                  "type": "boolean"
+                                                },
+                                                "bikeRevocableLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "fixedCycleTime": {
+                                                  "type": "boolean"
+                                                },
+                                                "isBikeFlyOverLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "isolatedByBarrier": {
+                                                  "type": "boolean"
+                                                },
+                                                "pedestrianUseAllowed": {
+                                                  "type": "boolean"
+                                                },
+                                                "unsignalizedSegmentsPresent": {
+                                                  "type": "boolean"
+                                                }
+                                              },
+                                              "required": [
+                                                "bikeRevocableLane",
+                                                "pedestrianUseAllowed",
+                                                "isBikeFlyOverLane",
+                                                "fixedCycleTime",
+                                                "biDirectionalCycleTimes",
+                                                "isolatedByBarrier",
+                                                "unsignalizedSegmentsPresent"
+                                              ],
+                                              "type": ["object", "null"]
+                                            },
+                                            "crosswalk": {
+                                              "properties": {
+                                                "audioSupport": {
+                                                  "type": "boolean"
+                                                },
+                                                "biDirectionalCycleTimes": {
+                                                  "type": "boolean"
+                                                },
+                                                "bicyleUseAllowed": {
+                                                  "type": "boolean"
+                                                },
+                                                "crosswalkRevocableLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "fixedCycleTime": {
+                                                  "type": "boolean"
+                                                },
+                                                "hasPushToWalkButton": {
+                                                  "type": "boolean"
+                                                },
+                                                "isXwalkFlyOverLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "rfSignalRequestPresent": {
+                                                  "type": "boolean"
+                                                },
+                                                "unsignalizedSegmentsPresent": {
+                                                  "type": "boolean"
+                                                }
+                                              },
+                                              "required": [
+                                                "crosswalkRevocableLane",
+                                                "bicyleUseAllowed",
+                                                "isXwalkFlyOverLane",
+                                                "fixedCycleTime",
+                                                "biDirectionalCycleTimes",
+                                                "hasPushToWalkButton",
+                                                "audioSupport",
+                                                "rfSignalRequestPresent",
+                                                "unsignalizedSegmentsPresent"
+                                              ],
+                                              "type": ["object", "null"]
+                                            },
+                                            "median": {
+                                              "properties": {
+                                                "constructionBarrier": {
+                                                  "type": "boolean"
+                                                },
+                                                "doubleStripedLines": {
+                                                  "type": "boolean"
+                                                },
+                                                "highCurbs": {
+                                                  "type": "boolean"
+                                                },
+                                                "lowCurbs": {
+                                                  "type": "boolean"
+                                                },
+                                                "median": {
+                                                  "type": "boolean"
+                                                },
+                                                "medianRevocableLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "stripedLines": {
+                                                  "type": "boolean"
+                                                },
+                                                "trafficChannels": {
+                                                  "type": "boolean"
+                                                },
+                                                "trafficCones": {
+                                                  "type": "boolean"
+                                                },
+                                                "whiteLineHashing": {
+                                                  "type": "boolean"
+                                                }
+                                              },
+                                              "required": [
+                                                "medianRevocableLane",
+                                                "median",
+                                                "whiteLineHashing",
+                                                "stripedLines",
+                                                "doubleStripedLines",
+                                                "trafficCones",
+                                                "constructionBarrier",
+                                                "trafficChannels",
+                                                "lowCurbs",
+                                                "highCurbs"
+                                              ],
+                                              "type": ["object", "null"]
+                                            },
+                                            "parking": {
+                                              "properties": {
+                                                "doNotParkZone": {
+                                                  "type": "boolean"
+                                                },
+                                                "headInParkingInUse": {
+                                                  "type": "boolean"
+                                                },
+                                                "noPublicParkingUse": {
+                                                  "type": "boolean"
+                                                },
+                                                "parallelParkingInUse": {
+                                                  "type": "boolean"
+                                                },
+                                                "parkingForBusUse": {
+                                                  "type": "boolean"
+                                                },
+                                                "parkingForTaxiUse": {
+                                                  "type": "boolean"
+                                                },
+                                                "parkingRevocableLane": {
+                                                  "type": "boolean"
+                                                }
+                                              },
+                                              "required": [
+                                                "parkingRevocableLane",
+                                                "parallelParkingInUse",
+                                                "headInParkingInUse",
+                                                "doNotParkZone",
+                                                "parkingForBusUse",
+                                                "parkingForTaxiUse",
+                                                "noPublicParkingUse"
+                                              ],
+                                              "type": ["object", "null"]
+                                            },
+                                            "sidewalk": {
+                                              "properties": {
+                                                "bicyleUseAllowed": {
+                                                  "type": "boolean"
+                                                },
+                                                "isSidewalkFlyOverLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "sidewalkRevocableLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "walkBikes": {
+                                                  "type": "boolean"
+                                                }
+                                              },
+                                              "required": [
+                                                "sidewalkRevocableLane",
+                                                "bicyleUseAllowed",
+                                                "isSidewalkFlyOverLane",
+                                                "walkBikes"
+                                              ],
+                                              "type": ["object", "null"]
+                                            },
+                                            "striping": {
+                                              "properties": {
+                                                "stripeDrawOnLeft": {
+                                                  "type": "boolean"
+                                                },
+                                                "stripeDrawOnRight": {
+                                                  "type": "boolean"
+                                                },
+                                                "stripeToConnectingLanesAhead": {
+                                                  "type": "boolean"
+                                                },
+                                                "stripeToConnectingLanesLeft": {
+                                                  "type": "boolean"
+                                                },
+                                                "stripeToConnectingLanesRevocableLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "stripeToConnectingLanesRight": {
+                                                  "type": "boolean"
+                                                }
+                                              },
+                                              "required": [
+                                                "stripeToConnectingLanesRevocableLane",
+                                                "stripeDrawOnLeft",
+                                                "stripeDrawOnRight",
+                                                "stripeToConnectingLanesLeft",
+                                                "stripeToConnectingLanesRight",
+                                                "stripeToConnectingLanesAhead"
+                                              ],
+                                              "type": ["object", "null"]
+                                            },
+                                            "trackedVehicle": {
+                                              "properties": {
+                                                "specCommuterRailRoadTrack": {
+                                                  "type": "boolean"
+                                                },
+                                                "specHeavyRailRoadTrack": {
+                                                  "type": "boolean"
+                                                },
+                                                "specLightRailRoadTrack": {
+                                                  "type": "boolean"
+                                                },
+                                                "specOtherRailType": {
+                                                  "type": "boolean"
+                                                },
+                                                "specRevocableLane": {
+                                                  "type": "boolean"
+                                                }
+                                              },
+                                              "required": [
+                                                "specRevocableLane",
+                                                "specCommuterRailRoadTrack",
+                                                "specLightRailRoadTrack",
+                                                "specHeavyRailRoadTrack",
+                                                "specOtherRailType"
+                                              ],
+                                              "type": ["object", "null"]
+                                            },
+                                            "vehicle": {
+                                              "properties": {
+                                                "hasIRbeaconCoverage": {
+                                                  "type": "boolean"
+                                                },
+                                                "hovLaneUseOnly": {
+                                                  "type": "boolean"
+                                                },
+                                                "isVehicleFlyOverLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "isVehicleRevocableLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "permissionOnRequest": {
+                                                  "type": "boolean"
+                                                },
+                                                "restrictedFromPublicUse": {
+                                                  "type": "boolean"
+                                                },
+                                                "restrictedToBusUse": {
+                                                  "type": "boolean"
+                                                },
+                                                "restrictedToTaxiUse": {
+                                                  "type": "boolean"
+                                                }
+                                              },
+                                              "required": [
+                                                "isVehicleRevocableLane",
+                                                "isVehicleFlyOverLane",
+                                                "permissionOnRequest",
+                                                "hasIRbeaconCoverage",
+                                                "restrictedToBusUse",
+                                                "restrictedToTaxiUse",
+                                                "restrictedFromPublicUse",
+                                                "hovLaneUseOnly"
+                                              ],
+                                              "type": ["object", "null"]
+                                            }
+                                          },
+                                          "type": "object"
+                                        },
+                                        "shareWith": {
+                                          "properties": {
+                                            "busVehicleTraffic": {
+                                              "type": "boolean"
+                                            },
+                                            "cyclistVehicleTraffic": {
+                                              "type": "boolean"
+                                            },
+                                            "individualMotorizedVehicleTraffic": {
+                                              "type": "boolean"
+                                            },
+                                            "multipleLanesTreatedAsOneLane": {
+                                              "type": "boolean"
+                                            },
+                                            "otherNonMotorizedTrafficTypes": {
+                                              "type": "boolean"
+                                            },
+                                            "overlappingLaneDescriptionProvided": {
+                                              "type": "boolean"
+                                            },
+                                            "pedestrianTraffic": {
+                                              "type": "boolean"
+                                            },
+                                            "pedestriansTraffic": {
+                                              "type": "boolean"
+                                            },
+                                            "taxiVehicleTraffic": {
+                                              "type": "boolean"
+                                            },
+                                            "trackedVehicleTraffic": {
+                                              "type": "boolean"
+                                            }
+                                          },
+                                          "required": [
+                                            "busVehicleTraffic",
+                                            "trackedVehicleTraffic",
+                                            "individualMotorizedVehicleTraffic",
+                                            "taxiVehicleTraffic",
+                                            "overlappingLaneDescriptionProvided",
+                                            "cyclistVehicleTraffic",
+                                            "otherNonMotorizedTrafficTypes",
+                                            "multipleLanesTreatedAsOneLane",
+                                            "pedestrianTraffic",
+                                            "pedestriansTraffic"
+                                          ],
+                                          "type": "object"
+                                        }
+                                      },
+                                      "required": [
+                                        "directionalUse",
+                                        "shareWith",
+                                        "laneType"
+                                      ],
+                                      "type": "object"
+                                    },
+                                    "laneID": {
+                                      "type": "integer"
+                                    },
+                                    "maneuvers": {
+                                      "properties": {
+                                        "caution": {
+                                          "type": "boolean"
+                                        },
+                                        "goWithHalt": {
+                                          "type": "boolean"
+                                        },
+                                        "maneuverLaneChangeAllowed": {
+                                          "type": "boolean"
+                                        },
+                                        "maneuverLeftAllowed": {
+                                          "type": "boolean"
+                                        },
+                                        "maneuverLeftTurnOnRedAllowed": {
+                                          "type": "boolean"
+                                        },
+                                        "maneuverNoStoppingAllowed": {
+                                          "type": "boolean"
+                                        },
+                                        "maneuverRightAllowed": {
+                                          "type": "boolean"
+                                        },
+                                        "maneuverRightTurnOnRedAllowed": {
+                                          "type": "boolean"
+                                        },
+                                        "maneuverStraightAllowed": {
+                                          "type": "boolean"
+                                        },
+                                        "maneuverUTurnAllowed": {
+                                          "type": "boolean"
+                                        },
+                                        "reserved1": {
+                                          "type": "boolean"
+                                        },
+                                        "yieldAllwaysRequired": {
+                                          "type": "boolean"
+                                        }
+                                      },
+                                      "required": [
+                                        "maneuverStraightAllowed",
+                                        "maneuverLeftAllowed",
+                                        "maneuverRightAllowed",
+                                        "maneuverUTurnAllowed",
+                                        "maneuverLeftTurnOnRedAllowed",
+                                        "maneuverRightTurnOnRedAllowed",
+                                        "maneuverLaneChangeAllowed",
+                                        "maneuverNoStoppingAllowed",
+                                        "yieldAllwaysRequired",
+                                        "goWithHalt",
+                                        "caution",
+                                        "reserved1"
+                                      ],
+                                      "type": ["object", "null"]
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "nodeList": {
+                                      "properties": {
+                                        "computed": {
+                                          "type": "null"
+                                        },
+                                        "nodes": {
+                                          "properties": {
+                                            "NodeXY": {
+                                              "items": [
+                                                {
+                                                  "properties": {
+                                                    "attributes": {
+                                                      "properties": {
+                                                        "dElevation": {
+                                                          "type": "number"
+                                                        },
+                                                        "dWidth": {
+                                                          "type": "null"
+                                                        },
+                                                        "data": {
+                                                          "type": "null"
+                                                        },
+                                                        "disabled": {
+                                                          "type": "null"
+                                                        },
+                                                        "enabled": {
+                                                          "type": "null"
+                                                        },
+                                                        "localNode": {
+                                                          "type": "null"
+                                                        }
+                                                      },
+                                                      "required": [
+                                                        "dElevation"
+                                                      ],
+                                                      "type": ["object", "null"]
+                                                    },
+                                                    "delta": {
+                                                      "properties": {
+                                                        "nodeLatLon": {
+                                                          "properties": {
+                                                            "lat": {
+                                                              "type": "number"
+                                                            },
+                                                            "lon": {
+                                                              "type": "number"
+                                                            }
+                                                          },
+                                                          "required": [
+                                                            "lon",
+                                                            "lat"
+                                                          ],
+                                                          "type": ["object", "null"]
+                                                        },
+                                                        "nodeXY1": {
+                                                          "properties": {
+                                                            "x": {
+                                                              "type": "number"
+                                                            },
+                                                            "y": {
+                                                              "type": "number"
+                                                            }
+                                                          },
+                                                          "required": [
+                                                            "x",
+                                                            "y"
+                                                          ],
+                                                          "type": ["object", "null"]
+                                                        },
+                                                        "nodeXY2": {
+                                                          "properties": {
+                                                            "x": {
+                                                              "type": "number"
+                                                            },
+                                                            "y": {
+                                                              "type": "number"
+                                                            }
+                                                          },
+                                                          "required": [
+                                                            "x",
+                                                            "y"
+                                                          ],
+                                                          "type": ["object", "null"]
+                                                        },
+                                                        "nodeXY3": {
+                                                          "properties": {
+                                                            "x": {
+                                                              "type": "number"
+                                                            },
+                                                            "y": {
+                                                              "type": "number"
+                                                            }
+                                                          },
+                                                          "required": [
+                                                            "x",
+                                                            "y"
+                                                          ],
+                                                          "type": ["object", "null"]
+                                                        },
+                                                        "nodeXY4": {
+                                                          "properties": {
+                                                            "x": {
+                                                              "type": "number"
+                                                            },
+                                                            "y": {
+                                                              "type": "number"
+                                                            }
+                                                          },
+                                                          "required": [
+                                                            "x",
+                                                            "y"
+                                                          ],
+                                                          "type": ["object", "null"]
+                                                        },
+                                                        "nodeXY5": {
+                                                          "properties": {
+                                                            "x": {
+                                                              "type": "number"
+                                                            },
+                                                            "y": {
+                                                              "type": "number"
+                                                            }
+                                                          },
+                                                          "required": [
+                                                            "x",
+                                                            "y"
+                                                          ],
+                                                          "type": ["object", "null"]
+                                                        },
+                                                        "nodeXY6": {
+                                                          "properties": {
+                                                            "x": {
+                                                              "type": "number"
+                                                            },
+                                                            "y": {
+                                                              "type": "number"
+                                                            }
+                                                          },
+                                                          "required": [
+                                                            "x",
+                                                            "y"
+                                                          ],
+                                                          "type": ["object", "null"]
+                                                        }
+                                                      },
+                                                      "required": [
+                                                        "nodeXY1",
+                                                        "nodeXY2",
+                                                        "nodeXY3",
+                                                        "nodeXY4",
+                                                        "nodeXY5",
+                                                        "nodeXY6",
+                                                        "nodeLatLon"
+                                                      ],
+                                                      "type": "object"
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "delta"
+                                                  ],
+                                                  "type": "object"
+                                                }
+                                              ],
+                                              "type": "array"
+                                            }
+                                          },
+                                          "required": [
+                                            "NodeXY"
+                                          ],
+                                          "type": "object"
+                                        }
+                                      },
+                                      "required": [
+                                        "nodes",
+                                        "computed"
+                                      ],
+                                      "type": "object"
+                                    },
+                                    "overlays": {
+                                      "properties": {
+                                        "laneIds": {
+                                          "items": [
+                                            {
+                                              "type": "integer"
+                                            }
+                                          ],
+                                          "type": "array"
+                                        }
+                                      },
+                                      "required": [
+                                        "laneIds"
+                                      ],
+                                      "type": ["object", "null"]
+                                    }
+                                  },
+                                  "required": [
+                                    "laneID",
+                                    "laneAttributes",
+                                    "nodeList"
+                                  ],
+                                  "type": "object"
+                                }
+                              ],
+                              "type": "array"
+                            }
+                          },
+                          "required": [
+                            "GenericLane"
+                          ],
+                          "type": "object"
+                        },
+                        "laneWidth": {
+                          "type": ["integer", "null"]
+                        },
+                        "name": {
+                          "type": ["string", "null"]
+                        },
+                        "refPoint": {
+                          "properties": {
+                            "elevation": {
+                              "type": ["number", "null"]
+                            },
+                            "latitude": {
+                              "type": "number"
+                            },
+                            "longitude": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "latitude",
+                            "longitude"
+                          ],
+                          "type": "object"
+                        },
+                        "revision": {
+                          "type": "integer"
+                        },
+                        "speedLimits": {
+                          "properties": {
+                            "speedLimits": {
+                              "items": [
+                                {
+                                  "properties": {
+                                    "speed": {
+                                      "type": "number"
+                                    },
+                                    "type": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "type",
+                                    "speed"
+                                  ],
+                                  "type": "object"
+                                }
+                              ],
+                              "type": "array"
+                            }
+                          },
+                          "required": [
+                            "speedLimits"
+                          ],
+                          "type": ["object", "null"]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "revision",
+                        "refPoint",
+                        "laneSet"
+                      ],
+                      "type": "object"
+                    }
+                  ],
+                  "type": "array"
+                }
+              },
+              "required": [
+                "intersectionGeometry"
+              ],
+              "type": ["object", "null"]
+            },
+            "layerID": {
+              "type": ["integer", "null"]
+            },
+            "layerType": {
+              "type": ["string", "null"]
+            },
+            "msgIssueRevision": {
+              "type": "integer"
+            },
+            "restrictionList": {
+              "properties": {
+                "restrictionList": {
+                  "items": [
+                    {
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "users": {
+                          "properties": {
+                            "restrictionUserType": {
+                              "items": [
+                                {
+                                  "properties": {
+                                    "basicType": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "basicType"
+                                  ],
+                                  "type": "object"
+                                }
+                              ],
+                              "type": "array"
+                            }
+                          },
+                          "required": [
+                            "restrictionUserType"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "users"
+                      ],
+                      "type": "object"
+                    }
+                  ],
+                  "type": "array"
+                }
+              },
+              "required": [
+                "restrictionList"
+              ],
+              "type": ["object", "null"]
+            },
+            "roadSegments": {
+              "properties": {
+                "roadSegmentList": {
+                  "items": [
+                    {
+                      "properties": {
+                        "id": {
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "region": {
+                              "type": ["integer", "null"]
+                            }
+                          },
+                          "required": [
+                            "id"
+                          ],
+                          "type": "object"
+                        },
+                        "laneWidth": {
+                          "type": ["integer", "null"]
+                        },
+                        "name": {
+                          "type": ["string", "null"]
+                        },
+                        "refPoint": {
+                          "properties": {
+                            "elevation": {
+                              "type": ["number", "null"]
+                            },
+                            "latitude": {
+                              "type": "number"
+                            },
+                            "longitude": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "latitude",
+                            "longitude"
+                          ],
+                          "type": "object"
+                        },
+                        "roadLaneSet": {
+                          "properties": {
+                            "roadLanes": {
+                              "items": [
+                                {
+                                  "properties": {
+                                    "connectsTo": {
+                                      "properties": {
+                                        "connectsTo": {
+                                          "items": [
+                                            {
+                                              "properties": {
+                                                "connectingLane": {
+                                                  "properties": {
+                                                    "lane": {
+                                                      "type": "integer"
+                                                    },
+                                                    "maneuver": {
+                                                      "properties": {
+                                                        "caution": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "goWithHalt": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "maneuverLaneChangeAllowed": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "maneuverLeftAllowed": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "maneuverLeftTurnOnRedAllowed": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "maneuverNoStoppingAllowed": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "maneuverRightAllowed": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "maneuverRightTurnOnRedAllowed": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "maneuverStraightAllowed": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "maneuverUTurnAllowed": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "reserved1": {
+                                                          "type": "boolean"
+                                                        },
+                                                        "yieldAllwaysRequired": {
+                                                          "type": "boolean"
+                                                        }
+                                                      },
+                                                      "required": [
+                                                        "maneuverStraightAllowed",
+                                                        "maneuverLeftAllowed",
+                                                        "maneuverRightAllowed",
+                                                        "maneuverUTurnAllowed",
+                                                        "maneuverLeftTurnOnRedAllowed",
+                                                        "maneuverRightTurnOnRedAllowed",
+                                                        "maneuverLaneChangeAllowed",
+                                                        "maneuverNoStoppingAllowed",
+                                                        "yieldAllwaysRequired",
+                                                        "goWithHalt",
+                                                        "caution",
+                                                        "reserved1"
+                                                      ],
+                                                      "type": ["object", "null"]
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "lane"
+                                                  ],
+                                                  "type": "object"
+                                                },
+                                                "connectionID": {
+                                                  "type": ["integer", "null"]
+                                                },
+                                                "remoteIntersection": {
+                                                  "properties": {
+                                                    "id": {
+                                                      "type": "integer"
+                                                    },
+                                                    "region": {
+                                                      "type": ["integer", "null"]
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "id"
+                                                  ],
+                                                  "type": ["object", "null"]
+                                                },
+                                                "signalGroup": {
+                                                  "type": ["integer", "null"]
+                                                },
+                                                "userClass": {
+                                                  "type": ["integer", "null"]
+                                                }
+                                              },
+                                              "required": [
+                                                "connectingLane"
+                                              ],
+                                              "type": "object"
+                                            }
+                                          ],
+                                          "type": "array"
+                                        }
+                                      },
+                                      "required": [
+                                        "connectsTo"
+                                      ],
+                                      "type": ["object", "null"]
+                                    },
+                                    "egressApproach": {
+                                      "type": ["integer", "null"]
+                                    },
+                                    "ingressApproach": {
+                                      "type": ["integer", "null"]
+                                    },
+                                    "laneAttributes": {
+                                      "properties": {
+                                        "directionalUse": {
+                                          "properties": {
+                                            "egressPath": {
+                                              "type": "boolean"
+                                            },
+                                            "ingressPath": {
+                                              "type": "boolean"
+                                            }
+                                          },
+                                          "required": [
+                                            "ingressPath",
+                                            "egressPath"
+                                          ],
+                                          "type": "object"
+                                        },
+                                        "laneType": {
+                                          "properties": {
+                                            "bikeLane": {
+                                              "properties": {
+                                                "biDirectionalCycleTimes": {
+                                                  "type": "boolean"
+                                                },
+                                                "bikeRevocableLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "fixedCycleTime": {
+                                                  "type": "boolean"
+                                                },
+                                                "isBikeFlyOverLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "isolatedByBarrier": {
+                                                  "type": "boolean"
+                                                },
+                                                "pedestrianUseAllowed": {
+                                                  "type": "boolean"
+                                                },
+                                                "unsignalizedSegmentsPresent": {
+                                                  "type": "boolean"
+                                                }
+                                              },
+                                              "required": [
+                                                "bikeRevocableLane",
+                                                "pedestrianUseAllowed",
+                                                "isBikeFlyOverLane",
+                                                "fixedCycleTime",
+                                                "biDirectionalCycleTimes",
+                                                "isolatedByBarrier",
+                                                "unsignalizedSegmentsPresent"
+                                              ],
+                                              "type": ["object", "null"]
+                                            },
+                                            "crosswalk": {
+                                              "properties": {
+                                                "audioSupport": {
+                                                  "type": "boolean"
+                                                },
+                                                "biDirectionalCycleTimes": {
+                                                  "type": "boolean"
+                                                },
+                                                "bicyleUseAllowed": {
+                                                  "type": "boolean"
+                                                },
+                                                "crosswalkRevocableLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "fixedCycleTime": {
+                                                  "type": "boolean"
+                                                },
+                                                "hasPushToWalkButton": {
+                                                  "type": "boolean"
+                                                },
+                                                "isXwalkFlyOverLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "rfSignalRequestPresent": {
+                                                  "type": "boolean"
+                                                },
+                                                "unsignalizedSegmentsPresent": {
+                                                  "type": "boolean"
+                                                }
+                                              },
+                                              "required": [
+                                                "crosswalkRevocableLane",
+                                                "bicyleUseAllowed",
+                                                "isXwalkFlyOverLane",
+                                                "fixedCycleTime",
+                                                "biDirectionalCycleTimes",
+                                                "hasPushToWalkButton",
+                                                "audioSupport",
+                                                "rfSignalRequestPresent",
+                                                "unsignalizedSegmentsPresent"
+                                              ],
+                                              "type": ["object", "null"]
+                                            },
+                                            "median": {
+                                              "properties": {
+                                                "constructionBarrier": {
+                                                  "type": "boolean"
+                                                },
+                                                "doubleStripedLines": {
+                                                  "type": "boolean"
+                                                },
+                                                "highCurbs": {
+                                                  "type": "boolean"
+                                                },
+                                                "lowCurbs": {
+                                                  "type": "boolean"
+                                                },
+                                                "median": {
+                                                  "type": "boolean"
+                                                },
+                                                "medianRevocableLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "stripedLines": {
+                                                  "type": "boolean"
+                                                },
+                                                "trafficChannels": {
+                                                  "type": "boolean"
+                                                },
+                                                "trafficCones": {
+                                                  "type": "boolean"
+                                                },
+                                                "whiteLineHashing": {
+                                                  "type": "boolean"
+                                                }
+                                              },
+                                              "required": [
+                                                "medianRevocableLane",
+                                                "median",
+                                                "whiteLineHashing",
+                                                "stripedLines",
+                                                "doubleStripedLines",
+                                                "trafficCones",
+                                                "constructionBarrier",
+                                                "trafficChannels",
+                                                "lowCurbs",
+                                                "highCurbs"
+                                              ],
+                                              "type": ["object", "null"]
+                                            },
+                                            "parking": {
+                                              "properties": {
+                                                "doNotParkZone": {
+                                                  "type": "boolean"
+                                                },
+                                                "headInParkingInUse": {
+                                                  "type": "boolean"
+                                                },
+                                                "noPublicParkingUse": {
+                                                  "type": "boolean"
+                                                },
+                                                "parallelParkingInUse": {
+                                                  "type": "boolean"
+                                                },
+                                                "parkingForBusUse": {
+                                                  "type": "boolean"
+                                                },
+                                                "parkingForTaxiUse": {
+                                                  "type": "boolean"
+                                                },
+                                                "parkingRevocableLane": {
+                                                  "type": "boolean"
+                                                }
+                                              },
+                                              "required": [
+                                                "parkingRevocableLane",
+                                                "parallelParkingInUse",
+                                                "headInParkingInUse",
+                                                "doNotParkZone",
+                                                "parkingForBusUse",
+                                                "parkingForTaxiUse",
+                                                "noPublicParkingUse"
+                                              ],
+                                              "type": ["object", "null"]
+                                            },
+                                            "sidewalk": {
+                                              "properties": {
+                                                "bicyleUseAllowed": {
+                                                  "type": "boolean"
+                                                },
+                                                "isSidewalkFlyOverLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "sidewalkRevocableLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "walkBikes": {
+                                                  "type": "boolean"
+                                                }
+                                              },
+                                              "required": [
+                                                "sidewalkRevocableLane",
+                                                "bicyleUseAllowed",
+                                                "isSidewalkFlyOverLane",
+                                                "walkBikes"
+                                              ],
+                                              "type": ["object", "null"]
+                                            },
+                                            "striping": {
+                                              "properties": {
+                                                "stripeDrawOnLeft": {
+                                                  "type": "boolean"
+                                                },
+                                                "stripeDrawOnRight": {
+                                                  "type": "boolean"
+                                                },
+                                                "stripeToConnectingLanesAhead": {
+                                                  "type": "boolean"
+                                                },
+                                                "stripeToConnectingLanesLeft": {
+                                                  "type": "boolean"
+                                                },
+                                                "stripeToConnectingLanesRevocableLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "stripeToConnectingLanesRight": {
+                                                  "type": "boolean"
+                                                }
+                                              },
+                                              "required": [
+                                                "stripeToConnectingLanesRevocableLane",
+                                                "stripeDrawOnLeft",
+                                                "stripeDrawOnRight",
+                                                "stripeToConnectingLanesLeft",
+                                                "stripeToConnectingLanesRight",
+                                                "stripeToConnectingLanesAhead"
+                                              ],
+                                              "type": ["object", "null"]
+                                            },
+                                            "trackedVehicle": {
+                                              "properties": {
+                                                "specCommuterRailRoadTrack": {
+                                                  "type": "boolean"
+                                                },
+                                                "specHeavyRailRoadTrack": {
+                                                  "type": "boolean"
+                                                },
+                                                "specLightRailRoadTrack": {
+                                                  "type": "boolean"
+                                                },
+                                                "specOtherRailType": {
+                                                  "type": "boolean"
+                                                },
+                                                "specRevocableLane": {
+                                                  "type": "boolean"
+                                                }
+                                              },
+                                              "required": [
+                                                "specRevocableLane",
+                                                "specCommuterRailRoadTrack",
+                                                "specLightRailRoadTrack",
+                                                "specHeavyRailRoadTrack",
+                                                "specOtherRailType"
+                                              ],
+                                              "type": ["object", "null"]
+                                            },
+                                            "vehicle": {
+                                              "properties": {
+                                                "hasIRbeaconCoverage": {
+                                                  "type": "boolean"
+                                                },
+                                                "hovLaneUseOnly": {
+                                                  "type": "boolean"
+                                                },
+                                                "isVehicleFlyOverLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "isVehicleRevocableLane": {
+                                                  "type": "boolean"
+                                                },
+                                                "permissionOnRequest": {
+                                                  "type": "boolean"
+                                                },
+                                                "restrictedFromPublicUse": {
+                                                  "type": "boolean"
+                                                },
+                                                "restrictedToBusUse": {
+                                                  "type": "boolean"
+                                                },
+                                                "restrictedToTaxiUse": {
+                                                  "type": "boolean"
+                                                }
+                                              },
+                                              "required": [
+                                                "isVehicleRevocableLane",
+                                                "isVehicleFlyOverLane",
+                                                "permissionOnRequest",
+                                                "hasIRbeaconCoverage",
+                                                "restrictedToBusUse",
+                                                "restrictedToTaxiUse",
+                                                "restrictedFromPublicUse",
+                                                "hovLaneUseOnly"
+                                              ],
+                                              "type": ["object", "null"]
+                                            }
+                                          },
+                                          "type": "object"
+                                        },
+                                        "shareWith": {
+                                          "properties": {
+                                            "busVehicleTraffic": {
+                                              "type": "boolean"
+                                            },
+                                            "cyclistVehicleTraffic": {
+                                              "type": "boolean"
+                                            },
+                                            "individualMotorizedVehicleTraffic": {
+                                              "type": "boolean"
+                                            },
+                                            "multipleLanesTreatedAsOneLane": {
+                                              "type": "boolean"
+                                            },
+                                            "otherNonMotorizedTrafficTypes": {
+                                              "type": "boolean"
+                                            },
+                                            "overlappingLaneDescriptionProvided": {
+                                              "type": "boolean"
+                                            },
+                                            "pedestrianTraffic": {
+                                              "type": "boolean"
+                                            },
+                                            "pedestriansTraffic": {
+                                              "type": "boolean"
+                                            },
+                                            "taxiVehicleTraffic": {
+                                              "type": "boolean"
+                                            },
+                                            "trackedVehicleTraffic": {
+                                              "type": "boolean"
+                                            }
+                                          },
+                                          "required": [
+                                            "busVehicleTraffic",
+                                            "trackedVehicleTraffic",
+                                            "individualMotorizedVehicleTraffic",
+                                            "taxiVehicleTraffic",
+                                            "overlappingLaneDescriptionProvided",
+                                            "cyclistVehicleTraffic",
+                                            "otherNonMotorizedTrafficTypes",
+                                            "multipleLanesTreatedAsOneLane",
+                                            "pedestrianTraffic",
+                                            "pedestriansTraffic"
+                                          ],
+                                          "type": "object"
+                                        }
+                                      },
+                                      "required": [
+                                        "directionalUse",
+                                        "shareWith",
+                                        "laneType"
+                                      ],
+                                      "type": "object"
+                                    },
+                                    "laneID": {
+                                      "type": "integer"
+                                    },
+                                    "maneuvers": {
+                                      "properties": {
+                                        "caution": {
+                                          "type": "boolean"
+                                        },
+                                        "goWithHalt": {
+                                          "type": "boolean"
+                                        },
+                                        "maneuverLaneChangeAllowed": {
+                                          "type": "boolean"
+                                        },
+                                        "maneuverLeftAllowed": {
+                                          "type": "boolean"
+                                        },
+                                        "maneuverLeftTurnOnRedAllowed": {
+                                          "type": "boolean"
+                                        },
+                                        "maneuverNoStoppingAllowed": {
+                                          "type": "boolean"
+                                        },
+                                        "maneuverRightAllowed": {
+                                          "type": "boolean"
+                                        },
+                                        "maneuverRightTurnOnRedAllowed": {
+                                          "type": "boolean"
+                                        },
+                                        "maneuverStraightAllowed": {
+                                          "type": "boolean"
+                                        },
+                                        "maneuverUTurnAllowed": {
+                                          "type": "boolean"
+                                        },
+                                        "reserved1": {
+                                          "type": "boolean"
+                                        },
+                                        "yieldAllwaysRequired": {
+                                          "type": "boolean"
+                                        }
+                                      },
+                                      "required": [
+                                        "maneuverStraightAllowed",
+                                        "maneuverLeftAllowed",
+                                        "maneuverRightAllowed",
+                                        "maneuverUTurnAllowed",
+                                        "maneuverLeftTurnOnRedAllowed",
+                                        "maneuverRightTurnOnRedAllowed",
+                                        "maneuverLaneChangeAllowed",
+                                        "maneuverNoStoppingAllowed",
+                                        "yieldAllwaysRequired",
+                                        "goWithHalt",
+                                        "caution",
+                                        "reserved1"
+                                      ],
+                                      "type": ["object", "null"]
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "nodeList": {
+                                      "properties": {
+                                        "computed": {
+                                          "type": "null"
+                                        },
+                                        "nodes": {
+                                          "properties": {
+                                            "NodeXY": {
+                                              "items": [
+                                                {
+                                                  "properties": {
+                                                    "attributes": {
+                                                      "properties": {
+                                                        "dElevation": {
+                                                          "type": "number"
+                                                        },
+                                                        "dWidth": {
+                                                          "type": "null"
+                                                        },
+                                                        "data": {
+                                                          "type": "null"
+                                                        },
+                                                        "disabled": {
+                                                          "type": "null"
+                                                        },
+                                                        "enabled": {
+                                                          "type": "null"
+                                                        },
+                                                        "localNode": {
+                                                          "type": "null"
+                                                        }
+                                                      },
+                                                      "required": [
+                                                        "dElevation"
+                                                      ],
+                                                      "type": ["object", "null"]
+                                                    },
+                                                    "delta": {
+                                                      "properties": {
+                                                        "nodeLatLon": {
+                                                          "properties": {
+                                                            "lat": {
+                                                              "type": "number"
+                                                            },
+                                                            "lon": {
+                                                              "type": "number"
+                                                            }
+                                                          },
+                                                          "required": [
+                                                            "lon",
+                                                            "lat"
+                                                          ],
+                                                          "type": ["object", "null"]
+                                                        },
+                                                        "nodeXY1": {
+                                                          "properties": {
+                                                            "x": {
+                                                              "type": "number"
+                                                            },
+                                                            "y": {
+                                                              "type": "number"
+                                                            }
+                                                          },
+                                                          "required": [
+                                                            "x",
+                                                            "y"
+                                                          ],
+                                                          "type": ["object", "null"]
+                                                        },
+                                                        "nodeXY2": {
+                                                          "properties": {
+                                                            "x": {
+                                                              "type": "number"
+                                                            },
+                                                            "y": {
+                                                              "type": "number"
+                                                            }
+                                                          },
+                                                          "required": [
+                                                            "x",
+                                                            "y"
+                                                          ],
+                                                          "type": ["object", "null"]
+                                                        },
+                                                        "nodeXY3": {
+                                                          "properties": {
+                                                            "x": {
+                                                              "type": "number"
+                                                            },
+                                                            "y": {
+                                                              "type": "number"
+                                                            }
+                                                          },
+                                                          "required": [
+                                                            "x",
+                                                            "y"
+                                                          ],
+                                                          "type": ["object", "null"]
+                                                        },
+                                                        "nodeXY4": {
+                                                          "properties": {
+                                                            "x": {
+                                                              "type": "number"
+                                                            },
+                                                            "y": {
+                                                              "type": "number"
+                                                            }
+                                                          },
+                                                          "required": [
+                                                            "x",
+                                                            "y"
+                                                          ],
+                                                          "type": ["object", "null"]
+                                                        },
+                                                        "nodeXY5": {
+                                                          "properties": {
+                                                            "x": {
+                                                              "type": "number"
+                                                            },
+                                                            "y": {
+                                                              "type": "number"
+                                                            }
+                                                          },
+                                                          "required": [
+                                                            "x",
+                                                            "y"
+                                                          ],
+                                                          "type": ["object", "null"]
+                                                        },
+                                                        "nodeXY6": {
+                                                          "properties": {
+                                                            "x": {
+                                                              "type": "number"
+                                                            },
+                                                            "y": {
+                                                              "type": "number"
+                                                            }
+                                                          },
+                                                          "required": [
+                                                            "x",
+                                                            "y"
+                                                          ],
+                                                          "type": ["object", "null"]
+                                                        }
+                                                      },
+                                                      "required": [
+                                                        "nodeXY1",
+                                                        "nodeXY2",
+                                                        "nodeXY3",
+                                                        "nodeXY4",
+                                                        "nodeXY5",
+                                                        "nodeXY6",
+                                                        "nodeLatLon"
+                                                      ],
+                                                      "type": "object"
+                                                    }
+                                                  },
+                                                  "required": [
+                                                    "delta"
+                                                  ],
+                                                  "type": "object"
+                                                }
+                                              ],
+                                              "type": "array"
+                                            }
+                                          },
+                                          "required": [
+                                            "NodeXY"
+                                          ],
+                                          "type": "object"
+                                        }
+                                      },
+                                      "required": [
+                                        "nodes",
+                                        "computed"
+                                      ],
+                                      "type": "object"
+                                    },
+                                    "overlays": {
+                                      "properties": {
+                                        "laneIds": {
+                                          "items": [
+                                            {
+                                              "type": "integer"
+                                            }
+                                          ],
+                                          "type": "array"
+                                        }
+                                      },
+                                      "required": [
+                                        "laneIds"
+                                      ],
+                                      "type": ["object", "null"]
+                                    }
+                                  },
+                                  "required": [
+                                    "laneID",
+                                    "laneAttributes",
+                                    "nodeList"
+                                  ],
+                                  "type": "object"
+                                }
+                              ],
+                              "type": "array"
+                            }
+                          },
+                          "required": [
+                            "roadLanes"
+                          ],
+                          "type": "object"
+                        },
+                        "speedLimits": {
+                          "properties": {
+                            "speedLimits": {
+                              "items": [
+                                {
+                                  "properties": {
+                                    "speed": {
+                                      "type": "number"
+                                    },
+                                    "type": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "type",
+                                    "speed"
+                                  ],
+                                  "type": "object"
+                                }
+                              ],
+                              "type": "array"
+                            }
+                          },
+                          "required": [
+                            "speedLimits"
+                          ],
+                          "type": ["object", "null"]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "refPoint",
+                        "roadLaneSet"
+                      ],
+                      "type": "object"
+                    }
+                  ],
+                  "type": "array"
+                }
+              },
+              "required": [
+                "roadSegmentList"
+              ],
+              "type": ["object", "null"]
+            },
+            "timeStamp": {
+              "type": ["integer", "null"]
+            }
+          },
+          "required": [
+            "msgIssueRevision"
+          ],
+          "type": "object"
+        },
+        "dataType": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "dataType",
+        "data"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "metadata",
+    "payload"
+  ],
+  "type": "object"
+}
