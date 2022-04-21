@@ -1,0 +1,220 @@
+# DOCKER_SHARED_VOLUME_WINDOWS should be defined for Windows host machine as C: and not defined for Linux hosts
+
+version: '3'
+services:
+  ode:
+    build: .
+    image: jpoode_ode:latest
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+      - "46753:46753/udp"
+      - "46800:46800/udp"
+      - "47900:47900/udp"
+      - "44900:44900/udp"
+      - "44910:44910/udp"
+      - "44920:44920/udp"
+      - "44930:44930/udp"
+      - "5555:5555/udp"
+      - "6666:6666/udp"
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      ODE_SECURITY_SVCS_SIGNATURE_URI: ${ODE_SECURITY_SVCS_SIGNATURE_URI}
+      ODE_RSU_USERNAME: ${ODE_RSU_USERNAME}
+      ODE_RSU_PASSWORD: ${ODE_RSU_PASSWORD}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
+      # Commented out, will use SDW depositor module by default
+      #ODE_DEPOSIT_SDW_MESSAGES_OVER_WEBSOCKET: ${ODE_DEPOSIT_SDW_MESSAGES_OVER_WEBSOCKET}
+      #ODE_DDS_CAS_USERNAME: ${ODE_DDS_CAS_USERNAME}
+      #ODE_DDS_CAS_PASSWORD: ${ODE_DDS_CAS_PASSWORD}
+    volumes:
+      - ${DOCKER_SHARED_VOLUME}:/jpo-ode
+      - ${DOCKER_SHARED_VOLUME}/uploads:/home/uploads
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  adm:
+    build: ./asn1_codec
+    image: jpoode_acm:latest
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
+      ACM_CONFIG_FILE: adm.properties
+    volumes:
+      - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  aem:
+    build: ./asn1_codec
+    image: jpoode_acm:latest
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
+      ACM_CONFIG_FILE: aem.properties
+    volumes:
+      - ${DOCKER_SHARED_VOLUME}:/asn1_codec_share
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  ppmbsm:
+    build:
+      context: ./jpo-cvdp
+      dockerfile: Dockerfile.cdot
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
+      PPM_CONFIG_FILE: cdot_ppmBsm.properties
+
+  ppmtim:
+    build:
+      context: ./jpo-cvdp
+      dockerfile: Dockerfile.cdot
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
+      PPM_CONFIG_FILE: cdot_ppmTim.properties
+
+  cvpep_bsm_depositor:
+    build: ./jpo-s3-deposit
+    image: jpoode_s3dep:latest
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      DEPOSIT_BUCKET_NAME: ${CVPEP_BSM_BUCKET_NAME}
+      DEPOSIT_KEY_NAME: ${CVPEP_BSM_DEPOSIT_KEY}
+      DEPOSIT_TOPIC: ${CVPEP_BSM_TOPIC}
+      K_AWS_ACCESS_KEY_ID: ${CVPEP_BSM_K_AWS_ACCESS_KEY_ID}
+      K_AWS_SECRET_ACCESS_SECRET: ${CVPEP_BSM_K_AWS_SECRET_ACCESS_SECRET}
+      K_AWS_SESSION_TOKEN: ${CVPEP_BSM_K_AWS_SESSION_TOKEN}
+      K_AWS_EXPIRATION: ${CVPEP_BSM_K_AWS_EXPIRATION}
+      API_ENDPOINT: ${CVPEP_BSM_API_ENDPOINT}
+      HEADER_ACCEPT: ${CVPEP_BSM_HEADER_ACCEPT}
+      HEADER_X_API_KEY: ${CVPEP_BSM_HEADER_X_API_KEY}
+      DEPOSIT_GROUP: ${CVPEP_BSM_GROUP}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  rde_bsm_depositor:
+    build: ./jpo-s3-deposit
+    image: jpoode_s3dep:latest
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      DEPOSIT_BUCKET_NAME: ${RDE_BSM_BUCKET_NAME}
+      DEPOSIT_KEY_NAME: ${RDE_BSM_DEPOSIT_KEY}
+      DEPOSIT_TOPIC: ${RDE_BSM_TOPIC}
+      K_AWS_ACCESS_KEY_ID: ${RDE_BSM_K_AWS_ACCESS_KEY_ID}
+      K_AWS_SECRET_ACCESS_SECRET: ${RDE_BSM_K_AWS_SECRET_ACCESS_SECRET}
+      K_AWS_SESSION_TOKEN: ${RDE_BSM_K_AWS_SESSION_TOKEN}
+      K_AWS_EXPIRATION: ${RDE_BSM_K_AWS_EXPIRATION}
+      API_ENDPOINT: ${RDE_BSM_API_ENDPOINT}
+      HEADER_ACCEPT: ${RDE_BSM_HEADER_ACCEPT}
+      HEADER_X_API_KEY: ${RDE_BSM_HEADER_X_API_KEY}
+      DEPOSIT_GROUP: ${RDE_BSM_GROUP}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  cvpep_tim_depositor:
+    build: ./jpo-s3-deposit
+    image: jpoode_s3dep:latest
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      DEPOSIT_BUCKET_NAME: ${CVPEP_TIM_BUCKET_NAME}
+      DEPOSIT_KEY_NAME: ${CVPEP_TIM_DEPOSIT_KEY}
+      DEPOSIT_TOPIC: ${CVPEP_TIM_TOPIC}
+      K_AWS_ACCESS_KEY_ID: ${CVPEP_BSM_K_AWS_ACCESS_KEY_ID}
+      K_AWS_SECRET_ACCESS_SECRET: ${CVPEP_BSM_K_AWS_SECRET_ACCESS_SECRET}
+      K_AWS_SESSION_TOKEN: ${CVPEP_BSM_K_AWS_SESSION_TOKEN}
+      K_AWS_EXPIRATION: ${CVPEP_BSM_K_AWS_EXPIRATION}
+      API_ENDPOINT: ${CVPEP_BSM_API_ENDPOINT}
+      HEADER_ACCEPT: ${CVPEP_BSM_HEADER_ACCEPT}
+      HEADER_X_API_KEY: ${CVPEP_BSM_HEADER_X_API_KEY}
+      DEPOSIT_GROUP: ${CVPEP_TIM_GROUP}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  rde_tim_depositor:
+    build: ./jpo-s3-deposit
+    image: jpoode_s3dep:latest
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      DEPOSIT_BUCKET_NAME: ${RDE_TIM_BUCKET_NAME}
+      DEPOSIT_KEY_NAME: ${RDE_TIM_DEPOSIT_KEY}
+      DEPOSIT_TOPIC: ${RDE_TIM_TOPIC}
+      K_AWS_ACCESS_KEY_ID: ${CVPEP_BSM_K_AWS_ACCESS_KEY_ID}
+      K_AWS_SECRET_ACCESS_SECRET: ${RDE_TIM_K_AWS_SECRET_ACCESS_SECRET}
+      K_AWS_SESSION_TOKEN: ${RDE_TIM_K_AWS_SESSION_TOKEN}
+      K_AWS_EXPIRATION: ${RDE_TIM_K_AWS_EXPIRATION}
+      API_ENDPOINT: ${RDE_TIM_API_ENDPOINT}
+      HEADER_ACCEPT: ${RDE_TIM_HEADER_ACCEPT}
+      HEADER_X_API_KEY: ${RDE_TIM_HEADER_X_API_KEY}
+      DEPOSIT_GROUP: ${RDE_TIM_GROUP}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  sdw_depositor:
+    build: ./jpo-sdw-depositor
+    image: jpoode_sdwdep:latest
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      #SDW_GROUP_ID: ${SDW_GROUP_ID}
+      #SDW_KAFKA_PORT: ${SDW_KAFKA_PORT}
+      #SDW_SUBSCRIPTION_TOPICS: ${SDW_SUBSCRIPTION_TOPICS}
+      #SDW_DESTINATION_URL: ${SDW_DESTINATION_URL}
+      SDW_API_KEY: ${SDW_API_KEY}
+      KAFKA_TYPE: ${KAFKA_TYPE}
+      CONFLUENT_KEY: ${CONFLUENT_KEY}
+      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
+    depends_on:
+     - ode
+    logging:
+      options:
+        max-size: "10m" 
+        max-file: "5"
+
+  sec:
+    build: ./jpo-security-svcs
+    image: jpoode_sec:latest
+    ports:
+     - "8090:8090"
+    environment:
+      SEC_CRYPTO_SERVICE_BASE_URI: ${SEC_CRYPTO_SERVICE_BASE_URI}
+    logging:
+      options:
+        max-size: "10m"  
+        max-file: "5"
