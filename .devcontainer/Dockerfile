@@ -70,5 +70,5 @@ ENTRYPOINT ["./docker-entrypoint.sh"]
 
 # C++
 RUN apt-get update
-RUN apt-get install -y libsasl2-dev libsasl2-modules libssl-dev librdkafka-dev
+RUN apt-get install -y g++ cmake libsasl2-dev libsasl2-modules libssl-dev librdkafka-dev
 RUN apt install -y autoconf libtool
