@@ -393,6 +393,9 @@ Install the IDE of your choice:
 
 * TravisCI: <https://travis-ci.org/usdot-jpo-ode/jpo-ode>
 
+### Dev Container Environment
+The project can be reopened inside of a dev container in VSCode. This environment should have all of the necessary dependencies to debug the ODE and its submodules. When attempting to run scripts in this environment, it may be necessary to make them executable with "chmod +x" first.
+
 [Back to top](#toc)
 
 <!--
