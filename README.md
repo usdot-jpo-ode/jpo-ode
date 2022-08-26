@@ -458,6 +458,8 @@ Please read our [contributing guide](docs/contributing_guide.md) to learn about 
   - <https://github.com/usdot-jpo-ode/jpo-security-svcs>
 - ODE Output Validatory Library (public)
   - https://github.com/usdot-jpo-ode/ode-output-validator-library
+- GeoJSON Converter and Intersection Validation
+  - https://github.com/usdot-jpo-ode/jpo-geojsonconverter
 
 ### Agile Project Management - Jira
 <https://usdotjpoode.atlassian.net/secure/RapidBoard.jspa?projectKey=ODE>
