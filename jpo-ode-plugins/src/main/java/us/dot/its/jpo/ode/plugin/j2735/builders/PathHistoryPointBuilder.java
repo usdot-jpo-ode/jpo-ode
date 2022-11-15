@@ -44,7 +44,7 @@ public class PathHistoryPointBuilder {
       
       // Required elements
       if (latOffset == -131072) {
-         php.setLatOffset(null);
+         php.setLatOffset(BigDecimal.valueOf(-131072));
       } else if (latOffset < -131072) {
          php.setLatOffset(BigDecimal.valueOf(-0.0131071));
       } else if (latOffset > 131071) {
@@ -54,7 +54,7 @@ public class PathHistoryPointBuilder {
       }
 
       if (lonOffset == -131072) {
-         php.setLonOffset(null);
+         php.setLonOffset(BigDecimal.valueOf(-131072));
       } else if (lonOffset < -131072) {
          php.setLonOffset(BigDecimal.valueOf(-0.0131071));
       } else if (lonOffset > 131071) {
@@ -64,7 +64,7 @@ public class PathHistoryPointBuilder {
       }
 
       if (elevationOffset == -2048) {
-         php.setElevationOffset(null);
+         php.setElevationOffset(BigDecimal.valueOf(-2048));
       } else if (elevationOffset < -2048) {
          php.setElevationOffset(BigDecimal.valueOf(-204.7));
       } else if (elevationOffset > 2047) {
@@ -74,7 +74,7 @@ public class PathHistoryPointBuilder {
       }
 
       if (timeOffset == 65535) {
-         php.setElevationOffset(null);
+         php.setTimeOffset(BigDecimal.valueOf(65535));
       } else if (timeOffset <= 0) {
          throw new IllegalArgumentException("timeOffset value out of bounds [below 0]");
       } else if (timeOffset >= 65534) {

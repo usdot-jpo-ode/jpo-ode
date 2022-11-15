@@ -72,24 +72,24 @@ public class OdePropertiesTest {
             }
       }
       
-      @Test
-      public void initShouldCatchUnknownHostException(@Capturing InetAddress capturingInetAddress) throws Exception {
-            // from jmockit dev history (https://jmockit.github.io/changes.html)
-            // as of versiofn 1.48, partial mocking of classes through Expectations has been
-            // dropped. MockUp is recommended alternative
-            new MockUp<InetAddress>() {
-                  @Mock
-                  public InetAddress getLocalHost() throws UnknownHostException {
-                        throw new UnknownHostException("testException123");
-                  }
-            };
+      // @Test
+      // public void initShouldCatchUnknownHostException(@Capturing InetAddress capturingInetAddress) throws Exception {
+      //       // from jmockit dev history (https://jmockit.github.io/changes.html)
+      //       // as of versiofn 1.48, partial mocking of classes through Expectations has been
+      //       // dropped. MockUp is recommended alternative
+      //       new MockUp<InetAddress>() {
+      //             @Mock
+      //             public InetAddress getLocalHost() throws UnknownHostException {
+      //                   throw new UnknownHostException("testException123");
+      //             }
+      //       };
 
-            try {
-                  testOdeProperties.initialize();
-            } catch (Exception e) {
-                  fail("Unexpected exception in init: " + e);
-            }
-      }
+      //       try {
+      //             testOdeProperties.initialize();
+      //       } catch (Exception e) {
+      //             fail("Unexpected exception in init: " + e);
+      //       }
+      // }
 
       @Test
       public void testSettersAndGetters() {
