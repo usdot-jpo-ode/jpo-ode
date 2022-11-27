@@ -8,7 +8,9 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735IntersectionState;
+import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
+import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 public class IntersectionStateBuilderTest {
@@ -23,8 +25,23 @@ public class IntersectionStateBuilderTest {
         }
 
         J2735IntersectionState actualIntersectionState = IntersectionStateBuilder.genericIntersectionState(node);
+
+        // Convert expected and actual JSON to JsonNode structures to compare them
+        // because we want to ignore null values and the order of keys in JSON objects
+        // in the comparison, so the expected JSON string doesn't need to depend on the order of 
+        // items in the Intersection Status and Maneuver Assist Bitstrings which is not
+        // preserved in the JSON representation and not known before running the tests.
+        JsonNode expectedJsonNode = null;
+        JsonNode actualJsonNode = null;
+        try {
+            expectedJsonNode = JsonUtils.toObjectNode(expectedJson);
+            actualJsonNode = JsonUtils.toObjectNode(JsonUtils.toJson(actualIntersectionState, false));
+        } catch (JsonUtilsException e) {
+            fail("Error parsing expected JSON: " + e.getMessage());
+        }
         
-        assertEquals(expectedJson, actualIntersectionState.toJson(false));
+        
+        assertEquals(expectedJsonNode, actualJsonNode);
     }
 
     
