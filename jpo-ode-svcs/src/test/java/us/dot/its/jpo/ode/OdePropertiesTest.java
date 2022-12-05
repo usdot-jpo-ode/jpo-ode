@@ -19,8 +19,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,8 +30,6 @@ import org.springframework.core.env.Environment;
 import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Injectable;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Tested;
 import us.dot.its.jpo.ode.util.CommonUtils;
 
@@ -71,25 +67,6 @@ public class OdePropertiesTest {
                   fail("Unexpected exception: " + e);
             }
       }
-      
-      // @Test
-      // public void initShouldCatchUnknownHostException(@Capturing InetAddress capturingInetAddress) throws Exception {
-      //       // from jmockit dev history (https://jmockit.github.io/changes.html)
-      //       // as of versiofn 1.48, partial mocking of classes through Expectations has been
-      //       // dropped. MockUp is recommended alternative
-      //       new MockUp<InetAddress>() {
-      //             @Mock
-      //             public InetAddress getLocalHost() throws UnknownHostException {
-      //                   throw new UnknownHostException("testException123");
-      //             }
-      //       };
-
-      //       try {
-      //             testOdeProperties.initialize();
-      //       } catch (Exception e) {
-      //             fail("Unexpected exception in init: " + e);
-      //       }
-      // }
 
       @Test
       public void testSettersAndGetters() {
