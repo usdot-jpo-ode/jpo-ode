@@ -33,8 +33,7 @@ public class OdeBsmDataCreatorHelper {
    }
 
 
-   public static OdeBsmData createOdeBsmData(String consumedData) throws XmlUtilsException 
-          {
+   public static OdeBsmData createOdeBsmData(String consumedData) throws XmlUtilsException {
       ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 
       JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
