@@ -15,6 +15,13 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+
+import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 public class J2735BsmPart2Content extends Asn1Object {
@@ -47,6 +54,15 @@ public class J2735BsmPart2Content extends Asn1Object {
 		return value;
 	}
 
+    @JsonTypeInfo(
+        use = Id.NAME, 
+        include = As.EXTERNAL_PROPERTY, 
+        property = "id")
+    @JsonSubTypes({
+        @Type(value = J2735VehicleSafetyExtensions.class, name = "VehicleSafetyExtensions"),
+        @Type(value = J2735SupplementalVehicleExtensions.class, name = "SupplementalVehicleExtensions"),
+        @Type(value = J2735SpecialVehicleExtensions.class, name = "SpecialVehicleExtensions")
+    })
 	public void setValue(J2735BsmPart2ExtensionBase value) {
 		this.value = value;
 	}

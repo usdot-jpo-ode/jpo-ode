@@ -15,6 +15,9 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.model;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
+
 public class OdeSpatData extends OdeData {
 
    private static final long serialVersionUID = 4944935387116447760L;
@@ -25,6 +28,18 @@ public class OdeSpatData extends OdeData {
 
    public OdeSpatData(OdeMsgMetadata metadata, OdeMsgPayload payload) {
       super(metadata, payload);
+   }
+
+   @Override
+   @JsonTypeInfo(use = Id.CLASS, defaultImpl = OdeSpatMetadata.class)
+   public void setMetadata(OdeMsgMetadata metadata) {
+      super.setMetadata(metadata);
+   }
+
+   @Override
+   @JsonTypeInfo(use = Id.CLASS, defaultImpl = OdeSpatPayload.class)
+   public void setPayload(OdeMsgPayload payload) {
+      super.setPayload(payload);
    }
 
 }

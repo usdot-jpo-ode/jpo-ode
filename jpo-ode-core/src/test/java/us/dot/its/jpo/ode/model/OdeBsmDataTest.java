@@ -3,6 +3,9 @@ package us.dot.its.jpo.ode.model;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugin.j2735.J2735SupplementalVehicleExtensions;
+import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleSafetyExtensions;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class OdeBsmDataTest {
@@ -14,9 +17,14 @@ public class OdeBsmDataTest {
 
         var deserialized = (OdeBsmData)JsonUtils.fromJson(bsmJson, OdeBsmData.class);
         assertNotNull(deserialized);
-        assertTrue(deserialized.getMetadata() instanceof OdeBsmMetadata);
+        assertTrue(deserialized.getMetadata() instanceof OdeBsmMetadata);     
         assertTrue(deserialized.getPayload() instanceof OdeBsmPayload);
-        
+        var payload = (OdeBsmPayload)deserialized.getPayload();
+        assertTrue(payload.getData() instanceof J2735Bsm);
+        var data = (J2735Bsm)payload.getData();
+        assertNotNull(data.getPartII());
+        assertTrue(data.getPartII().size() == 1);
+        assertTrue(data.getPartII().get(0).getValue() instanceof J2735VehicleSafetyExtensions);
     }
 
     @Test
@@ -28,6 +36,12 @@ public class OdeBsmDataTest {
         assertNotNull(deserialized);
         assertTrue(deserialized.getMetadata() instanceof OdeBsmMetadata);
         assertTrue(deserialized.getPayload() instanceof OdeBsmPayload);
-        
+        var payload = (OdeBsmPayload)deserialized.getPayload();
+        assertTrue(payload.getData() instanceof J2735Bsm);
+        var data = (J2735Bsm)payload.getData();
+        assertNotNull(data.getPartII());
+        assertTrue(data.getPartII().size() == 2);
+        assertTrue(data.getPartII().get(0).getValue() instanceof J2735VehicleSafetyExtensions);
+        assertTrue(data.getPartII().get(1).getValue() instanceof J2735SupplementalVehicleExtensions);
     }
 }
