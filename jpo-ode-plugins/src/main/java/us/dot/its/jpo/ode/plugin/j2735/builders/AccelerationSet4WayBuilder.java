@@ -41,7 +41,7 @@ public class AccelerationSet4WayBuilder {
       // -- the value -2000 shall be used for values less than -2000
       // -- a value of 2001 shall be used for Unavailable
       if (accelLong == 2001) {
-         genericAccelerationSet4Way.setAccelLong(null);
+         genericAccelerationSet4Way.setAccelLong(BigDecimal.valueOf(2001));
       } else if (accelLong < -2000) {
          genericAccelerationSet4Way.setAccelLong(BigDecimal.valueOf(-2000, 2));
       } else if (accelLong > 2001) {
@@ -51,7 +51,7 @@ public class AccelerationSet4WayBuilder {
       }
 
       if (accelLat == 2001) {
-         genericAccelerationSet4Way.setAccelLat(null);
+         genericAccelerationSet4Way.setAccelLat(BigDecimal.valueOf(2001));
       } else if (accelLat < -2000) {
          genericAccelerationSet4Way.setAccelLat(BigDecimal.valueOf(-2000,2));
       } else if (accelLat > 2001) {
@@ -66,7 +66,7 @@ public class AccelerationSet4WayBuilder {
       // -- The value -126 shall be used for ranges <= -2.52 G
       // -- The value -127 shall be used for unavailable
       if (accelVert == -127) {
-         genericAccelerationSet4Way.setAccelVert(null);
+         genericAccelerationSet4Way.setAccelVert(BigDecimal.valueOf(-127));
       } else if (accelVert < -127) {
          genericAccelerationSet4Way.setAccelVert(BigDecimal.valueOf(-2.52));
       } else if (accelVert > 127) {

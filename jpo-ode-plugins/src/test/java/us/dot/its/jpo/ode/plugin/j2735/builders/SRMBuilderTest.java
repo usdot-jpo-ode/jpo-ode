@@ -23,7 +23,7 @@ public class SRMBuilderTest {
 			fail("XML parsing error:" + e);
 		}
 		J2735SRM actualSrm = SRMBuilder.genericSRM(jsonMap.findValue("SignalRequestMessage"));	
-		String expected ="{\"timeStamp\":null,\"second\":0,\"sequenceNumber\":1,\"requests\":{\"signalRequestPackage\":[{\"request\":{\"id\":{\"region\":null,\"id\":12109},\"requestID\":4,\"requestType\":\"priorityRequest\",\"inBoundLane\":{\"lane\":13,\"approach\":null,\"connection\":null},\"outBoundLane\":{\"lane\":4,\"approach\":null,\"connection\":null}},\"minute\":null,\"second\":null,\"duration\":10979}]},\"requestor\":{\"id\":{\"entityID\":null,\"stationID\":2366845094},\"type\":{\"role\":\"publicTransport\",\"subrole\":null,\"request\":null,\"iso3883\":null,\"hpmsType\":null},\"position\":{\"position\":{\"latitude\":39.5904915,\"longitude\":-105.0913829,\"elevation\":1685.4},\"heading\":175.9000,\"speed\":null},\"name\":null,\"routeName\":null,\"transitStatus\":null,\"transitOccupancy\":null,\"transitSchedule\":null}}";
+		String expected ="{\"second\":0,\"sequenceNumber\":1,\"requests\":{\"signalRequestPackage\":[{\"request\":{\"id\":{\"id\":12109},\"requestID\":4,\"requestType\":\"priorityRequest\",\"inBoundLane\":{\"lane\":13},\"outBoundLane\":{\"lane\":4}},\"duration\":10979}]},\"requestor\":{\"id\":{\"stationID\":2366845094},\"type\":{\"role\":\"publicTransport\"},\"position\":{\"position\":{\"latitude\":39.5904915,\"longitude\":-105.0913829,\"elevation\":1685.4},\"heading\":175.9000}}}";
 		assertEquals(expected, actualSrm.toString()); 
 		
 	}
