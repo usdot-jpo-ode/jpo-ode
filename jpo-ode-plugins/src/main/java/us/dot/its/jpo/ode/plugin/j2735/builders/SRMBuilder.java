@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.codehaus.groovy.runtime.powerassert.SourceText;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735SRM;
+import us.dot.its.jpo.ode.plugin.j2735.J2735SignalRequestList;
 
 public class SRMBuilder {
 
@@ -39,7 +40,13 @@ public class SRMBuilder {
 		JsonNode requests = SRMMessage.get("requests");
 		if(requests != null)
 		{
-			genericSRM.setRequests(SignalRequestListBuilder.genericSignalRequestList(requests));	
+			J2735SignalRequestList signalRequestList = SignalRequestListBuilder.genericSignalRequestList(requests);
+			if (signalRequestList.getRequests().size() > 0) {
+				genericSRM.setRequests(signalRequestList);	
+			}
+			else {
+				genericSRM.setRequests(null);	
+			}
 		}
 		
         JsonNode requestor = SRMMessage.get("requestor");
