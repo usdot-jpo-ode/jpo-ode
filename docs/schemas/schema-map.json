@@ -3,6 +3,9 @@
     "properties": {
         "metadata": {
             "properties": {
+                "@class": {
+                    "type": "string"
+                },
                 "encodings": {
                     "type": "null"
                 },
@@ -97,6 +100,7 @@
                 }
             },
             "required": [
+                "@class",
                 "mapSource",
                 "originIp",
                 "logFileName",
