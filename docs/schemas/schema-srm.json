@@ -116,6 +116,9 @@
         "payload": {
             "type": "object",
             "properties": {
+                "@class": {
+                    "type": "string"
+                },
                 "dataType": {
                     "type": "string"
                 },
@@ -439,6 +442,7 @@
                 }
             },
             "required": [
+                "@class",
                 "dataType",
                 "data"
             ]

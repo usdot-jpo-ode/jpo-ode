@@ -121,6 +121,9 @@
         },
         "payload": {
             "properties": {
+                "@class": {
+                    "type": "string"
+                },
                 "data": {
                     "properties": {
                         "dataParameters": {
@@ -2098,6 +2101,7 @@
                 }
             },
             "required": [
+                "@class",
                 "dataType",
                 "data"
             ],

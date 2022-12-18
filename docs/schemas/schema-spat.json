@@ -266,10 +266,14 @@
         "payload": {
             "type": "object",
             "required": [
+                "@class",
                 "dataType",
                 "data"
             ],
             "properties": {
+                "@class": {
+                    "type": "string"
+                },
                 "dataType": {
                     "type": "string"
                 },
