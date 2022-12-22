@@ -9,6 +9,7 @@
         "metadata": {
             "type": "object",
             "required": [
+                "@class",
                 "spatSource",
                 "logFileName",
                 "recordType",
@@ -22,6 +23,9 @@
                 "sanitized"
             ],
             "properties": {
+                "@class": {
+                    "type": "string"
+                },
                 "spatSource": {
                     "type": "string",
                     "enum": [
@@ -105,7 +109,6 @@
                     "required": [
                         "rxSource"
                     ],
-                    "additionalProperties": false,
                     "properties": {
                         "locationData": {
                             "type": [
@@ -119,7 +122,6 @@
                                 "speed",
                                 "heading"
                             ],
-                            "additionalProperties": false,
                             "properties": {
                                 "latitude": {
                                     "type": "string"
@@ -163,7 +165,6 @@
                             "elementType",
                             "encodingRule"
                         ],
-                        "additionalProperties": false,
                         "properties": {
                             "elementName": {
                                 "type": "string"
@@ -193,7 +194,6 @@
                         "recordId",
                         "serialNumber"
                     ],
-                    "additionalProperties": false,
                     "properties": {
                         "streamId": {
                             "type": "string"
@@ -261,16 +261,19 @@
                 "sanitized": {
                     "type": "boolean"
                 }
-            },
-            "additionalProperties": false
+            }
         },
         "payload": {
             "type": "object",
             "required": [
+                "@class",
                 "dataType",
                 "data"
             ],
             "properties": {
+                "@class": {
+                    "type": "string"
+                },
                 "dataType": {
                     "type": "string"
                 },
@@ -330,29 +333,75 @@
                                                     "id": {
                                                         "type": "integer"
                                                     }
-                                                },
-                                                "additionalProperties": false
+                                                }
                                             },
                                             "revision": {
                                                 "type": "integer"
                                             },
                                             "status": {
-                                                "type": "string",
-                                                "enum": [
-                                                    "MANUALCONTROLISENABLED",
-                                                    "STOPTIMEISACTIVATED",
-                                                    "FAILUREFLASH",
-                                                    "PREEMPTISACTIVE",
-                                                    "SIGNALPRIORITYISACTIVE",
-                                                    "FIXEDTIMEOPERATION",
-                                                    "TRAFFICDEPENDENTOPERATION",
-                                                    "STANDBYOPERATION",
-                                                    "FAILUREMODE",
-                                                    "OFF",
-                                                    "RECENTMAPMESSAGEUPDATE",
-                                                    "RECENTCHANGEINMAPASSIGNEDLANESIDSUSED",
-                                                    "NOVALIDMAPISAVAILABLEATTHISTIME",
-                                                    "NOVALIDSPATISAVAILABLEATTHISTIME"
+                                                "properties": {
+                                                    "manualControlIsEnabled": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "stopTimeIsActivated": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "failureFlash": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "preemptIsActive": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "signalPriorityIsActive": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "fixedTimeOperation": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "trafficDependentOperation": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "standbyOperation": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "failureMode": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "off": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "recentMAPmessageUpdate": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "recentChangeInMAPassignedLanesIDsUsed": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "noValidMAPisAvailableAtThisTime": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "noValidSPATisAvailableAtThisTime": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "manualControlIsEnabled",
+                                                    "stopTimeIsActivated",
+                                                    "failureFlash",
+                                                    "preemptIsActive",
+                                                    "signalPriorityIsActive",
+                                                    "fixedTimeOperation",
+                                                    "trafficDependentOperation",
+                                                    "standbyOperation",
+                                                    "failureMode",
+                                                    "off",
+                                                    "recentMAPmessageUpdate",
+                                                    "recentChangeInMAPassignedLanesIDsUsed",
+                                                    "noValidMAPisAvailableAtThisTime",
+                                                    "noValidSPATisAvailableAtThisTime"
+                                                ],
+                                                "type": [
+                                                    "object",
+                                                    "null"
                                                 ]
                                             },
                                             "moy": {
@@ -382,8 +431,7 @@
                                                             "type": "integer"
                                                         }
                                                     }
-                                                },
-                                                "additionalProperties": false
+                                                }
                                             },
                                             "states": {
                                                 "type": "object",
@@ -481,8 +529,7 @@
                                                                                                     "null"
                                                                                                 ]
                                                                                             }
-                                                                                        },
-                                                                                        "additionalProperties": false
+                                                                                        }
                                                                                     },
                                                                                     "speeds": {
                                                                                         "type": [
@@ -548,19 +595,15 @@
                                                                                                                 "null"
                                                                                                             ]
                                                                                                         }
-                                                                                                    },
-                                                                                                    "additionalProperties": false
+                                                                                                    }
                                                                                                 }
                                                                                             }
-                                                                                        },
-                                                                                        "additionalProperties": false
+                                                                                        }
                                                                                     }
-                                                                                },
-                                                                                "additionalProperties": false
+                                                                                }
                                                                             }
                                                                         }
-                                                                    },
-                                                                    "additionalProperties": false
+                                                                    }
                                                                 },
                                                                 "maneuverAssistList": {
                                                                     "type": [
@@ -606,19 +649,15 @@
                                                                                             "null"
                                                                                         ]
                                                                                     }
-                                                                                },
-                                                                                "additionalProperties": false
+                                                                                }
                                                                             }
                                                                         }
-                                                                    },
-                                                                    "additionalProperties": false
+                                                                    }
                                                                 }
-                                                            },
-                                                            "additionalProperties": false
+                                                            }
                                                         }
                                                     }
-                                                },
-                                                "additionalProperties": false
+                                                }
                                             },
                                             "maneuverAssistList": {
                                                 "type": [
@@ -664,25 +703,19 @@
                                                                         "null"
                                                                     ]
                                                                 }
-                                                            },
-                                                            "additionalProperties": false
+                                                            }
                                                         }
                                                     }
-                                                },
-                                                "additionalProperties": false
+                                                }
                                             }
-                                        },
-                                        "additionalProperties": false
+                                        }
                                     }
                                 }
                             }
                         }
-                    },
-                    "additionalProperties": false
+                    }
                 }
-            },
-            "additionalProperties": false
+            }
         }
-    },
-    "additionalProperties": false
+    }
 }

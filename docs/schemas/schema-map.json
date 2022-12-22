@@ -3,6 +3,9 @@
     "properties": {
         "metadata": {
             "properties": {
+                "@class": {
+                    "type": "string"
+                },
                 "encodings": {
                     "type": "null"
                 },
@@ -97,6 +100,7 @@
                 }
             },
             "required": [
+                "@class",
                 "mapSource",
                 "originIp",
                 "logFileName",
@@ -117,6 +121,9 @@
         },
         "payload": {
             "properties": {
+                "@class": {
+                    "type": "string"
+                },
                 "data": {
                     "properties": {
                         "dataParameters": {
@@ -2094,6 +2101,7 @@
                 }
             },
             "required": [
+                "@class",
                 "dataType",
                 "data"
             ],

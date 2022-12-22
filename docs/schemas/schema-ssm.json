@@ -1,380 +1,385 @@
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "type": "object",
-  "properties": {
-      "metadata": {
-          "type": "object",
-          "properties": {
-              "originIp": {
-                  "type": "string"
-              },
-              "ssmSource": {
-                  "type": "string"
-              },
-              "logFileName": {
-                  "type": "string"
-              },
-              "recordType": {
-                  "type": "string"
-              },
-              "securityResultCode": {
-                  "type": [
-                      "string",
-                      "null"
-                  ]
-              },
-              "receivedMessageDetails": {
-                  "type": "object",
-                  "properties": {
-                      "locationData": {
-                          "type": [
-                              "object",
-                              "null"
-                          ]
-                      },
-                      "rxSource": {
-                          "type": "string"
-                      }
-                  },
-                  "required": [
-                      "rxSource"
-                  ]
-              },
-              "encodings": {
-                  "type": [
-                      "array",
-                      "null"
-                  ]
-              },
-              "payloadType": {
-                  "type": "string"
-              },
-              "serialId": {
-                  "type": "object",
-                  "properties": {
-                      "streamId": {
-                          "type": "string"
-                      },
-                      "bundleSize": {
-                          "type": "integer"
-                      },
-                      "bundleId": {
-                          "type": "integer"
-                      },
-                      "recordId": {
-                          "type": "integer"
-                      },
-                      "serialNumber": {
-                          "type": "integer"
-                      }
-                  },
-                  "required": [
-                      "streamId",
-                      "bundleSize",
-                      "bundleId",
-                      "recordId",
-                      "serialNumber"
-                  ]
-              },
-              "odeReceivedAt": {
-                  "type": "string"
-              },
-              "schemaVersion": {
-                  "type": "integer"
-              },
-              "maxDurationTime": {
-                  "type": "integer"
-              },
-              "odePacketID": {
-                  "type": "string"
-              },
-              "odeTimStartDateTime": {
-                  "type": "string"
-              },
-              "recordGeneratedAt": {
-                  "type": "string"
-              },
-              "recordGeneratedBy": {
-                  "type": [
-                      "string",
-                      "null"
-                  ]
-              },
-              "sanitized": {
-                  "type": "boolean"
-              }
-          },
-          "required": [
-              "originIp",
-              "ssmSource",
-              "logFileName",
-              "recordType",
-              "receivedMessageDetails",
-              "payloadType",
-              "serialId",
-              "odeReceivedAt",
-              "schemaVersion",
-              "maxDurationTime",
-              "odePacketID",
-              "odeTimStartDateTime",
-              "recordGeneratedAt",
-              "sanitized"
-          ]
-      },
-      "payload": {
-          "type": "object",
-          "properties": {
-              "dataType": {
-                  "type": "string"
-              },
-              "data": {
-                  "type": "object",
-                  "properties": {
-                      "timeStamp": {
-                          "type": [
-                              "integer",
-                              "null"
-                          ]
-                      },
-                      "second": {
-                          "type": "integer"
-                      },
-                      "sequenceNumber": {
-                          "type": [
-                              "integer",
-                              "null"
-                          ]
-                      },
-                      "status": {
-                          "type": "object",
-                          "properties": {
-                              "signalStatus": {
-                                  "type": "array",
-                                  "items": [
-                                      {
-                                          "type": "object",
-                                          "properties": {
-                                              "sequenceNumber": {
-                                                  "type": "integer"
-                                              },
-                                              "id": {
-                                                  "type": "object",
-                                                  "properties": {
-                                                      "region": {
-                                                          "type": [
-                                                              "integer",
-                                                              "null"
-                                                          ]
-                                                      },
-                                                      "id": {
-                                                          "type": [
-                                                              "integer",
-                                                              "null"
-                                                          ]
-                                                      }
-                                                  },
-                                                  "required": [
-                                                      "id"
-                                                  ]
-                                              },
-                                              "sigStatus": {
-                                                  "type": "object",
-                                                  "properties": {
-                                                      "signalStatusPackage": {
-                                                          "type": "array",
-                                                          "items": [
-                                                              {
-                                                                  "type": "object",
-                                                                  "properties": {
-                                                                      "requester": {
-                                                                          "type": [
-                                                                              "object",
-                                                                              "null"
-                                                                          ],
-                                                                          "properties": {
-                                                                              "id": {
-                                                                                  "type": "object",
-                                                                                  "properties": {
-                                                                                      "entityID": {
-                                                                                          "type": [
-                                                                                              "string",
-                                                                                              "null"
-                                                                                          ]
-                                                                                      },
-                                                                                      "stationID": {
-                                                                                          "type": [
-                                                                                              "integer",
-                                                                                              "null"
-                                                                                          ]
-                                                                                      }
-                                                                                  },
-                                                                                  "required": [
-                                                                                      "stationID"
-                                                                                  ]
-                                                                              },
-                                                                              "request": {
-                                                                                  "type": "integer"
-                                                                              },
-                                                                              "sequenceNumber": {
-                                                                                  "type": "integer"
-                                                                              },
-                                                                              "role": {
-                                                                                  "type": [
-                                                                                      "string",
-                                                                                      "null"
-                                                                                  ]
-                                                                              },
-                                                                              "typeData": {
-                                                                                  "type": [
-                                                                                      "object",
-                                                                                      "null"
-                                                                                  ],
-                                                                                  "properties": {
-                                                                                      "role": {
-                                                                                          "type": "string"
-                                                                                      },
-                                                                                      "subrole": {
-                                                                                          "type": [
-                                                                                              "string",
-                                                                                              "null"
-                                                                                          ]
-                                                                                      },
-                                                                                      "request": {
-                                                                                          "type": [
-                                                                                              "string",
-                                                                                              "null"
-                                                                                          ]
-                                                                                      },
-                                                                                      "iso3883": {
-                                                                                          "type": [
-                                                                                              "integer",
-                                                                                              "null"
-                                                                                          ]
-                                                                                      },
-                                                                                      "hpmsType": {
-                                                                                          "type": [
-                                                                                              "string",
-                                                                                              "null"
-                                                                                          ]
-                                                                                      }
-                                                                                  },
-                                                                                  "required": [
-                                                                                      "role"
-                                                                                  ]
-                                                                              }
-                                                                          },
-                                                                          "required": [
-                                                                              "id",
-                                                                              "request",
-                                                                              "sequenceNumber"
-                                                                          ]
-                                                                      },
-                                                                      "inboundOn": {
-                                                                          "type": "object",
-                                                                          "properties": {
-                                                                              "lane": {
-                                                                                  "type": "integer"
-                                                                              },
-                                                                              "approach": {
-                                                                                  "type": [
-                                                                                      "integer",
-                                                                                      "null"
-                                                                                  ]
-                                                                              },
-                                                                              "connection": {
-                                                                                  "type": [
-                                                                                      "integer",
-                                                                                      "null"
-                                                                                  ]
-                                                                              }
-                                                                          },
-                                                                          "required": [
-                                                                              "lane"
-                                                                          ]
-                                                                      },
-                                                                      "outboundOn": {
-                                                                          "type": [
-                                                                              "object",
-                                                                              "null"
-                                                                          ],
-                                                                          "properties": {
-                                                                              "lane": {
-                                                                                  "type": "integer"
-                                                                              },
-                                                                              "approach": {
-                                                                                  "type": "integer"
-                                                                              },
-                                                                              "connection": {
-                                                                                  "type": "integer"
-                                                                              }
-                                                                          },
-                                                                          "required": [
-                                                                              "lane"
-                                                                          ]
-                                                                      },
-                                                                      "minute": {
-                                                                          "type": [
-                                                                              "integer",
-                                                                              "null"
-                                                                          ]
-                                                                      },
-                                                                      "second": {
-                                                                          "type": [
-                                                                              "integer",
-                                                                              "null"
-                                                                          ]
-                                                                      },
-                                                                      "duration": {
-                                                                          "type": [
-                                                                              "integer",
-                                                                              "null"
-                                                                          ]
-                                                                      },
-                                                                      "status": {
-                                                                          "type": "string"
-                                                                      }
-                                                                  },
-                                                                  "required": [
-                                                                      "inboundOn",
-                                                                      "status"
-                                                                  ]
-                                                              }
-                                                          ]
-                                                      }
-                                                  },
-                                                  "required": [
-                                                      "signalStatusPackage"
-                                                  ]
-                                              }
-                                          },
-                                          "required": [
-                                              "sequenceNumber",
-                                              "id",
-                                              "sigStatus"
-                                          ]
-                                      }
-                                  ]
-                              }
-                          },
-                          "required": [
-                              "signalStatus"
-                          ]
-                      }
-                  },
-                  "required": [
-                      "second",
-                      "status"
-                  ]
-              }
-          },
-          "required": [
-              "dataType",
-              "data"
-          ]
-      }
-  },
-  "required": [
-      "metadata",
-      "payload"
-  ]
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "metadata": {
+            "type": "object",
+            "properties": {
+                "@class": {
+                    "type": "string"
+                },
+                "originIp": {
+                    "type": "string"
+                },
+                "ssmSource": {
+                    "type": "string"
+                },
+                "logFileName": {
+                    "type": "string"
+                },
+                "recordType": {
+                    "type": "string"
+                },
+                "securityResultCode": {
+                    "type": "string"
+                },
+                "receivedMessageDetails": {
+                    "type": "object",
+                    "properties": {
+                        "locationData": {
+                            "type": [
+                                "object",
+                                "null"
+                            ]
+                        },
+                        "rxSource": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "rxSource"
+                    ]
+                },
+                "encodings": {
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "payloadType": {
+                    "type": "string"
+                },
+                "serialId": {
+                    "type": "object",
+                    "properties": {
+                        "streamId": {
+                            "type": "string"
+                        },
+                        "bundleSize": {
+                            "type": "integer"
+                        },
+                        "bundleId": {
+                            "type": "integer"
+                        },
+                        "recordId": {
+                            "type": "integer"
+                        },
+                        "serialNumber": {
+                            "type": "integer"
+                        }
+                    },
+                    "required": [
+                        "streamId",
+                        "bundleSize",
+                        "bundleId",
+                        "recordId",
+                        "serialNumber"
+                    ]
+                },
+                "odeReceivedAt": {
+                    "type": "string"
+                },
+                "schemaVersion": {
+                    "type": "integer"
+                },
+                "maxDurationTime": {
+                    "type": "integer"
+                },
+                "odePacketID": {
+                    "type": "string"
+                },
+                "odeTimStartDateTime": {
+                    "type": "string"
+                },
+                "recordGeneratedAt": {
+                    "type": "string"
+                },
+                "recordGeneratedBy": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "sanitized": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "@class",
+                "originIp",
+                "ssmSource",
+                "logFileName",
+                "recordType",
+                "receivedMessageDetails",
+                "payloadType",
+                "serialId",
+                "odeReceivedAt",
+                "schemaVersion",
+                "maxDurationTime",
+                "odePacketID",
+                "odeTimStartDateTime",
+                "recordGeneratedAt",
+                "sanitized"
+            ]
+        },
+        "payload": {
+            "type": "object",
+            "properties": {
+                "@class": {
+                    "type": "string"
+                },
+                "dataType": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "timeStamp": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ]
+                        },
+                        "second": {
+                            "type": "integer"
+                        },
+                        "sequenceNumber": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ]
+                        },
+                        "status": {
+                            "type": "object",
+                            "properties": {
+                                "signalStatus": {
+                                    "type": "array",
+                                    "items": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "sequenceNumber": {
+                                                    "type": "integer"
+                                                },
+                                                "id": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "region": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "id": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id"
+                                                    ]
+                                                },
+                                                "sigStatus": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "signalStatusPackage": {
+                                                            "type": "array",
+                                                            "items": [
+                                                                {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "requester": {
+                                                                            "type": [
+                                                                                "object",
+                                                                                "null"
+                                                                            ],
+                                                                            "properties": {
+                                                                                "id": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "entityID": {
+                                                                                            "type": [
+                                                                                                "string",
+                                                                                                "null"
+                                                                                            ]
+                                                                                        },
+                                                                                        "stationID": {
+                                                                                            "type": [
+                                                                                                "integer",
+                                                                                                "null"
+                                                                                            ]
+                                                                                        }
+                                                                                    },
+                                                                                    "required": [
+                                                                                        "stationID"
+                                                                                    ]
+                                                                                },
+                                                                                "request": {
+                                                                                    "type": "integer"
+                                                                                },
+                                                                                "sequenceNumber": {
+                                                                                    "type": "integer"
+                                                                                },
+                                                                                "role": {
+                                                                                    "type": [
+                                                                                        "string",
+                                                                                        "null"
+                                                                                    ]
+                                                                                },
+                                                                                "typeData": {
+                                                                                    "type": [
+                                                                                        "object",
+                                                                                        "null"
+                                                                                    ],
+                                                                                    "properties": {
+                                                                                        "role": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "subrole": {
+                                                                                            "type": [
+                                                                                                "string",
+                                                                                                "null"
+                                                                                            ]
+                                                                                        },
+                                                                                        "request": {
+                                                                                            "type": [
+                                                                                                "string",
+                                                                                                "null"
+                                                                                            ]
+                                                                                        },
+                                                                                        "iso3883": {
+                                                                                            "type": [
+                                                                                                "integer",
+                                                                                                "null"
+                                                                                            ]
+                                                                                        },
+                                                                                        "hpmsType": {
+                                                                                            "type": [
+                                                                                                "string",
+                                                                                                "null"
+                                                                                            ]
+                                                                                        }
+                                                                                    },
+                                                                                    "required": [
+                                                                                        "role"
+                                                                                    ]
+                                                                                }
+                                                                            },
+                                                                            "required": [
+                                                                                "id",
+                                                                                "request",
+                                                                                "sequenceNumber"
+                                                                            ]
+                                                                        },
+                                                                        "inboundOn": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "lane": {
+                                                                                    "type": "integer"
+                                                                                },
+                                                                                "approach": {
+                                                                                    "type": [
+                                                                                        "integer",
+                                                                                        "null"
+                                                                                    ]
+                                                                                },
+                                                                                "connection": {
+                                                                                    "type": [
+                                                                                        "integer",
+                                                                                        "null"
+                                                                                    ]
+                                                                                }
+                                                                            },
+                                                                            "required": [
+                                                                                "lane"
+                                                                            ]
+                                                                        },
+                                                                        "outboundOn": {
+                                                                            "type": [
+                                                                                "object",
+                                                                                "null"
+                                                                            ],
+                                                                            "properties": {
+                                                                                "lane": {
+                                                                                    "type": "integer"
+                                                                                },
+                                                                                "approach": {
+                                                                                    "type": "integer"
+                                                                                },
+                                                                                "connection": {
+                                                                                    "type": "integer"
+                                                                                }
+                                                                            },
+                                                                            "required": [
+                                                                                "lane"
+                                                                            ]
+                                                                        },
+                                                                        "minute": {
+                                                                            "type": [
+                                                                                "integer",
+                                                                                "null"
+                                                                            ]
+                                                                        },
+                                                                        "second": {
+                                                                            "type": [
+                                                                                "integer",
+                                                                                "null"
+                                                                            ]
+                                                                        },
+                                                                        "duration": {
+                                                                            "type": [
+                                                                                "integer",
+                                                                                "null"
+                                                                            ]
+                                                                        },
+                                                                        "status": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "inboundOn",
+                                                                        "status"
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "signalStatusPackage"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "sequenceNumber",
+                                                "id",
+                                                "sigStatus"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "signalStatus"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "second",
+                        "status"
+                    ]
+                }
+            },
+            "required": [
+                "@class",
+                "dataType",
+                "data"
+            ]
+        }
+    },
+    "required": [
+        "metadata",
+        "payload"
+    ]
 }
