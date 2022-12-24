@@ -16,13 +16,13 @@ public class OdeSsmData extends OdeData {
     }
 
     @Override
-    @JsonTypeInfo(use = Id.CLASS, defaultImpl = OdeSsmMetadata.class)
+    @JsonTypeInfo(use = Id.CLASS, include = As.EXISTING_PROPERTY, defaultImpl = OdeSsmMetadata.class)
     public void setMetadata(OdeMsgMetadata metadata) {
         super.setMetadata(metadata);
     }
 
     @Override
-    @JsonTypeInfo(use = Id.CLASS, defaultImpl = OdeSsmPayload.class)
+    @JsonTypeInfo(use = Id.CLASS, include = As.EXISTING_PROPERTY, defaultImpl = OdeSsmPayload.class)
     public void setPayload(OdeMsgPayload payload) {
         super.setPayload(payload);
     }

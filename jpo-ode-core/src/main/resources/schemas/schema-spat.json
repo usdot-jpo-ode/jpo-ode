@@ -9,7 +9,6 @@
         "metadata": {
             "type": "object",
             "required": [
-                "@class",
                 "spatSource",
                 "logFileName",
                 "recordType",
@@ -23,9 +22,6 @@
                 "sanitized"
             ],
             "properties": {
-                "@class": {
-                    "type": "string"
-                },
                 "spatSource": {
                     "type": "string",
                     "enum": [
@@ -266,14 +262,10 @@
         "payload": {
             "type": "object",
             "required": [
-                "@class",
                 "dataType",
                 "data"
             ],
             "properties": {
-                "@class": {
-                    "type": "string"
-                },
                 "dataType": {
                     "type": "string"
                 },

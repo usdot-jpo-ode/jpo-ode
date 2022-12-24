@@ -3,9 +3,6 @@
     "properties": {
         "metadata": {
             "properties": {
-                "@class": {
-                    "type": "string"
-                },
                 "bsmSource": {
                     "enum": [
                         "EV",
@@ -231,7 +228,6 @@
                 }
             },
             "required": [
-                "@class",
                 "bsmSource",
                 "logFileName",
                 "recordType",
@@ -248,9 +244,6 @@
         },
         "payload": {
             "properties": {
-                "@class": {
-                    "type": "string"
-                },
                 "data": {
                     "properties": {
                         "coreData": {
@@ -2196,7 +2189,6 @@
                 }
             },
             "required": [
-                "@class",
                 "dataType",
                 "data"
             ],

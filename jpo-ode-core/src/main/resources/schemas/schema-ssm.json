@@ -5,9 +5,6 @@
         "metadata": {
             "type": "object",
             "properties": {
-                "@class": {
-                    "type": "string"
-                },
                 "originIp": {
                     "type": "string"
                 },
@@ -105,7 +102,6 @@
                 }
             },
             "required": [
-                "@class",
                 "originIp",
                 "ssmSource",
                 "logFileName",
@@ -125,9 +121,6 @@
         "payload": {
             "type": "object",
             "properties": {
-                "@class": {
-                    "type": "string"
-                },
                 "dataType": {
                     "type": "string"
                 },
@@ -372,7 +365,6 @@
                 }
             },
             "required": [
-                "@class",
                 "dataType",
                 "data"
             ]
