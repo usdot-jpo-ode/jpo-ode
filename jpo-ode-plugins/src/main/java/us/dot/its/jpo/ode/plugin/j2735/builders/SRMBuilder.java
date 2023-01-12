@@ -1,10 +1,6 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import javax.xml.transform.Source;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
-import org.codehaus.groovy.runtime.powerassert.SourceText;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735SRM;
 import us.dot.its.jpo.ode.plugin.j2735.J2735SignalRequestList;
