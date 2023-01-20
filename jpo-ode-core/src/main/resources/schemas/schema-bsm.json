@@ -299,64 +299,16 @@
                                     "required": [],
                                     "type": "object"
                                 },
-                                "angle": {
-                                    "type": [
-                                        "number",
-                                        "null"
-                                    ]
-                                },
                                 "brakes": {
                                     "properties": {
-                                        "abs": {
-                                            "type": "string"
-                                        },
-                                        "auxBrakes": {
-                                            "type": "string"
-                                        },
-                                        "brakeBoost": {
-                                            "type": "string"
-                                        },
-                                        "scs": {
-                                            "type": "string"
-                                        },
-                                        "traction": {
-                                            "type": "string"
-                                        },
                                         "wheelBrakes": {
-                                            "properties": {
-                                                "leftFront": {
-                                                    "type": "boolean"
-                                                },
-                                                "leftRear": {
-                                                    "type": "boolean"
-                                                },
-                                                "rightFront": {
-                                                    "type": "boolean"
-                                                },
-                                                "rightRear": {
-                                                    "type": "boolean"
-                                                },
-                                                "unavailable": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "unavailable",
-                                                "leftFront",
-                                                "leftRear",
-                                                "rightFront",
-                                                "rightRear"
-                                            ],
+                                            "properties": {},
+                                            "required": [],
                                             "type": "object"
                                         }
                                     },
                                     "required": [
-                                        "wheelBrakes",
-                                        "traction",
-                                        "abs",
-                                        "scs",
-                                        "brakeBoost",
-                                        "auxBrakes"
+                                        "wheelBrakes"
                                     ],
                                     "type": "object"
                                 },
@@ -413,19 +365,6 @@
                                 },
                                 "speed": {
                                     "type": "number"
-                                },
-                                "transmission": {
-                                    "enum": [
-                                        "NEUTRAL",
-                                        "PARK",
-                                        "FORWARDGEARS",
-                                        "REVERSEGEARS",
-                                        "RESERVED1",
-                                        "RESERVED2",
-                                        "RESERVED3",
-                                        "UNAVAILABLE"
-                                    ],
-                                    "type": "string"
                                 }
                             },
                             "required": [
@@ -435,7 +374,6 @@
                                 "position",
                                 "accelSet",
                                 "accuracy",
-                                "transmission",
                                 "speed",
                                 "heading",
                                 "brakes",
@@ -456,18 +394,6 @@
                                                 "properties": {
                                                     "events": {
                                                         "properties": {
-                                                            "eventABSactivated": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "eventAirBagDeployment": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "eventDisabledVehicle": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "eventFlatTire": {
-                                                                "type": "boolean"
-                                                            },
                                                             "eventHardBraking": {
                                                                 "type": "boolean"
                                                             },
@@ -483,13 +409,7 @@
                                                             "eventReserved1": {
                                                                 "type": "boolean"
                                                             },
-                                                            "eventStabilityControlactivated": {
-                                                                "type": "boolean"
-                                                            },
                                                             "eventStopLineViolation": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "eventTractionControlLoss": {
                                                                 "type": "boolean"
                                                             },
                                                             "eventWipersChanged": {
@@ -499,17 +419,11 @@
                                                         "required": [
                                                             "eventHazardLights",
                                                             "eventStopLineViolation",
-                                                            "eventABSactivated",
-                                                            "eventTractionControlLoss",
-                                                            "eventStabilityControlactivated",
                                                             "eventHazardousMaterials",
                                                             "eventReserved1",
                                                             "eventHardBraking",
                                                             "eventLightsChanged",
-                                                            "eventWipersChanged",
-                                                            "eventFlatTire",
-                                                            "eventDisabledVehicle",
-                                                            "eventAirBagDeployment"
+                                                            "eventWipersChanged"
                                                         ],
                                                         "type": [
                                                             "object",
@@ -517,46 +431,8 @@
                                                         ]
                                                     },
                                                     "lights": {
-                                                        "properties": {
-                                                            "automaticLightControlOn": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "daytimeRunningLightsOn": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "fogLightOn": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "hazardSignalOn": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "highBeamHeadlightsOn": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "leftTurnSignalOn": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "lowBeamHeadlightsOn": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "parkingLightsOn": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "rightTurnSignalOn": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "lowBeamHeadlightsOn",
-                                                            "highBeamHeadlightsOn",
-                                                            "leftTurnSignalOn",
-                                                            "rightTurnSignalOn",
-                                                            "hazardSignalOn",
-                                                            "automaticLightControlOn",
-                                                            "daytimeRunningLightsOn",
-                                                            "fogLightOn",
-                                                            "parkingLightsOn"
-                                                        ],
+                                                        "properties": {},
+                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -1837,16 +1713,7 @@
                                                         ]
                                                     },
                                                     "speedProfile": {
-                                                        "properties": {
-                                                            "speedReports": {
-                                                                "items": {
-                                                                    "type": "integer"
-                                                                },
-                                                                "maxItems": 20,
-                                                                "minItems": 1,
-                                                                "type": "array"
-                                                            }
-                                                        },
+                                                        "properties": {},
                                                         "required": [],
                                                         "type": [
                                                             "object",
@@ -1874,14 +1741,9 @@
                                                                     "object",
                                                                     "null"
                                                                 ]
-                                                            },
-                                                            "statusDetails": {
-                                                                "type": "integer"
                                                             }
                                                         },
-                                                        "required": [
-                                                            "statusDetails"
-                                                        ],
+                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -2020,62 +1882,9 @@
                                                     },
                                                     "weatherProbe": {
                                                         "properties": {
-                                                            "airPressure": {
-                                                                "type": [
-                                                                    "integer",
-                                                                    "null"
-                                                                ]
-                                                            },
-                                                            "airTemp": {
-                                                                "type": [
-                                                                    "integer",
-                                                                    "null"
-                                                                ]
-                                                            },
                                                             "rainRates": {
-                                                                "properties": {
-                                                                    "rateFront": {
-                                                                        "type": "integer"
-                                                                    },
-                                                                    "rateRear": {
-                                                                        "type": [
-                                                                            "integer",
-                                                                            "null"
-                                                                        ]
-                                                                    },
-                                                                    "statusFront": {
-                                                                        "enum": [
-                                                                            "UNAVAILABLE",
-                                                                            "OFF",
-                                                                            "INTERMITTENT",
-                                                                            "LOW",
-                                                                            "HIGH",
-                                                                            "WASHERINUSE",
-                                                                            "AUTOMATICPRESENT"
-                                                                        ],
-                                                                        "type": "string"
-                                                                    },
-                                                                    "statusRear": {
-                                                                        "enum": [
-                                                                            "UNAVAILABLE",
-                                                                            "OFF",
-                                                                            "INTERMITTENT",
-                                                                            "LOW",
-                                                                            "HIGH",
-                                                                            "WASHERINUSE",
-                                                                            "AUTOMATICPRESENT",
-                                                                            null
-                                                                        ],
-                                                                        "type": [
-                                                                            "string",
-                                                                            "null"
-                                                                        ]
-                                                                    }
-                                                                },
-                                                                "required": [
-                                                                    "rateFront",
-                                                                    "statusFront"
-                                                                ],
+                                                                "properties": {},
+                                                                "required": [],
                                                                 "type": [
                                                                     "object",
                                                                     "null"
@@ -2090,12 +1899,6 @@
                                                     },
                                                     "weatherReport": {
                                                         "properties": {
-                                                            "friction": {
-                                                                "type": [
-                                                                    "integer",
-                                                                    "null"
-                                                                ]
-                                                            },
                                                             "isRaining": {
                                                                 "enum": [
                                                                     "NA",
@@ -2133,18 +1936,6 @@
                                                             "rainRate": {
                                                                 "type": [
                                                                     "number",
-                                                                    "null"
-                                                                ]
-                                                            },
-                                                            "roadFriction": {
-                                                                "type": [
-                                                                    "number",
-                                                                    "null"
-                                                                ]
-                                                            },
-                                                            "solarRadiation": {
-                                                                "type": [
-                                                                    "integer",
                                                                     "null"
                                                                 ]
                                                             }
