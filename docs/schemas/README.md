@@ -7,6 +7,7 @@ The jpo-ode supports receiving and decoding ASN1 messages from RSUs. The support
 - [topic.OdeSpatJson](../../jpo-ode-core/src/main/resources/schemas/schema-spat.json)
 - [topic.OdeSrmJson](../../jpo-ode-core/src/main/resources/schemas/schema-srm.json)
 - [topic.OdeSsmJson](../../jpo-ode-core/src/main/resources/schemas/schema-ssm.json)
+- [topic.FilteredOdeBsmJson](../../jpo-ode-core/src/main/resources/schemas/schema-filtered-bsm.json)
 
 The output JSON of the ODE is complex but it is similar to the official standard of J2735 with some minor differences due to the form of their deserialized POJOs. To help implement proper data validation for the JSON output of the ODE into any data pipeline infrastructure, you may use the provided validation schemas within this directory.
 
