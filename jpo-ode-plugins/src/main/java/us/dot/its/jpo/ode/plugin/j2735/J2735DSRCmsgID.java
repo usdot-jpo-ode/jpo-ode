@@ -20,7 +20,7 @@ import java.util.Map;
 
 public enum J2735DSRCmsgID {
 
-   BasicSafetyMessage(20), TravelerInformation(31), SPATMessage(19), MAPMessage(18), SSMMessage(30), SRMMessage(29);
+   BasicSafetyMessage(20), TravelerInformation(31), SPATMessage(19), MAPMessage(18), SSMMessage(30), SRMMessage(29), PersonalSafetyMessage(32);
 
     private int msgID;
 
