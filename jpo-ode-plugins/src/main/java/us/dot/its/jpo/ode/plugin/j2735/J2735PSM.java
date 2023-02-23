@@ -19,7 +19,7 @@ public class J2735PSM extends Asn1Object {
 	private Integer speed;
 	private Integer heading;
 
-	// OPTIONAL parameters 
+	// OPTIONAL parameters
 	private J2735AccelerationSet4Way accelSet;
 	private J2735PathHistory pathHistory;
 	private J2735PropelledInformation propulsion;
@@ -236,6 +236,5 @@ public class J2735PSM extends Asn1Object {
 	public void setAnimalType(J2735AnimalType animalType) {
 		this.animalType = animalType;
 	}
-
 
 }

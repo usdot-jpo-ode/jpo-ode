@@ -22,7 +22,7 @@ public class Asn1DecodePSMJSONTest {
 	public void testConstructor() {
 		OdeProperties properties = new OdeProperties();
 		properties.setKafkaBrokers("localhost:9092");
-		assertEquals(properties.getKafkaTopicOdeBsmPojo(), "topic.OdeBsmPojo");
+		assertEquals(properties.getKafkaTopicOdePsmJson(), "topic.OdePsmJson");
 	}
 
 	@Test
