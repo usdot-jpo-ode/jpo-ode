@@ -340,23 +340,12 @@
                                                     "type": "boolean"
                                                 }
                                             },
-                                            "required": [
-                                                "unavailable",
-                                                "leftFront",
-                                                "leftRear",
-                                                "rightFront",
-                                                "rightRear"
-                                            ],
+                                            "required": [],
                                             "type": "object"
                                         }
                                     },
                                     "required": [
-                                        "wheelBrakes",
-                                        "traction",
-                                        "abs",
-                                        "scs",
-                                        "brakeBoost",
-                                        "auxBrakes"
+                                        "wheelBrakes"
                                     ],
                                     "type": "object"
                                 },
@@ -435,7 +424,6 @@
                                 "position",
                                 "accelSet",
                                 "accuracy",
-                                "transmission",
                                 "speed",
                                 "heading",
                                 "brakes",
@@ -499,17 +487,11 @@
                                                         "required": [
                                                             "eventHazardLights",
                                                             "eventStopLineViolation",
-                                                            "eventABSactivated",
-                                                            "eventTractionControlLoss",
-                                                            "eventStabilityControlactivated",
                                                             "eventHazardousMaterials",
                                                             "eventReserved1",
                                                             "eventHardBraking",
                                                             "eventLightsChanged",
-                                                            "eventWipersChanged",
-                                                            "eventFlatTire",
-                                                            "eventDisabledVehicle",
-                                                            "eventAirBagDeployment"
+                                                            "eventWipersChanged"
                                                         ],
                                                         "type": [
                                                             "object",
@@ -546,17 +528,7 @@
                                                                 "type": "boolean"
                                                             }
                                                         },
-                                                        "required": [
-                                                            "lowBeamHeadlightsOn",
-                                                            "highBeamHeadlightsOn",
-                                                            "leftTurnSignalOn",
-                                                            "rightTurnSignalOn",
-                                                            "hazardSignalOn",
-                                                            "automaticLightControlOn",
-                                                            "daytimeRunningLightsOn",
-                                                            "fogLightOn",
-                                                            "parkingLightsOn"
-                                                        ],
+                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -1879,9 +1851,7 @@
                                                                 "type": "integer"
                                                             }
                                                         },
-                                                        "required": [
-                                                            "statusDetails"
-                                                        ],
+                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -2072,10 +2042,7 @@
                                                                         ]
                                                                     }
                                                                 },
-                                                                "required": [
-                                                                    "rateFront",
-                                                                    "statusFront"
-                                                                ],
+                                                                "required": [],
                                                                 "type": [
                                                                     "object",
                                                                     "null"
