@@ -296,7 +296,6 @@
                                             ]
                                         }
                                     },
-                                    "required": [],
                                     "type": "object"
                                 },
                                 "angle": {
@@ -340,7 +339,6 @@
                                                     "type": "boolean"
                                                 }
                                             },
-                                            "required": [],
                                             "type": "object"
                                         }
                                     },
@@ -397,7 +395,6 @@
                                             ]
                                         }
                                     },
-                                    "required": [],
                                     "type": "object"
                                 },
                                 "speed": {
@@ -528,7 +525,6 @@
                                                                 "type": "boolean"
                                                             }
                                                         },
-                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -669,7 +665,6 @@
                                                                                 ]
                                                                             }
                                                                         },
-                                                                        "required": [],
                                                                         "type": "object"
                                                                     },
                                                                     "posConfidence": {
@@ -917,7 +912,6 @@
                                                                                 ]
                                                                             }
                                                                         },
-                                                                        "required": [],
                                                                         "type": [
                                                                             "object",
                                                                             "null"
@@ -960,7 +954,6 @@
                                                         ]
                                                     }
                                                 },
-                                                "required": [],
                                                 "type": "object"
                                             }
                                         },
@@ -1124,7 +1117,6 @@
                                                                 "type": "integer"
                                                             }
                                                         },
-                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -1475,7 +1467,6 @@
                                                         ]
                                                     }
                                                 },
-                                                "required": [],
                                                 "type": "object"
                                             }
                                         },
@@ -1659,7 +1650,6 @@
                                                                 ]
                                                             }
                                                         },
-                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -1718,7 +1708,6 @@
                                                                         ]
                                                                     }
                                                                 },
-                                                                "required": [],
                                                                 "type": [
                                                                     "object",
                                                                     "null"
@@ -1819,7 +1808,6 @@
                                                                 "type": "array"
                                                             }
                                                         },
-                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -1851,7 +1839,6 @@
                                                                 "type": "integer"
                                                             }
                                                         },
-                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -1982,7 +1969,6 @@
                                                                 ]
                                                             }
                                                         },
-                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -2042,14 +2028,12 @@
                                                                         ]
                                                                     }
                                                                 },
-                                                                "required": [],
                                                                 "type": [
                                                                     "object",
                                                                     "null"
                                                                 ]
                                                             }
                                                         },
-                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -2125,7 +2109,6 @@
                                                         ]
                                                     }
                                                 },
-                                                "required": [],
                                                 "type": "object"
                                             }
                                         },
