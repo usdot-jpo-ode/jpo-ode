@@ -296,7 +296,6 @@
                                             ]
                                         }
                                     },
-                                    "required": [],
                                     "type": "object"
                                 },
                                 "angle": {
@@ -340,23 +339,11 @@
                                                     "type": "boolean"
                                                 }
                                             },
-                                            "required": [
-                                                "unavailable",
-                                                "leftFront",
-                                                "leftRear",
-                                                "rightFront",
-                                                "rightRear"
-                                            ],
                                             "type": "object"
                                         }
                                     },
                                     "required": [
-                                        "wheelBrakes",
-                                        "traction",
-                                        "abs",
-                                        "scs",
-                                        "brakeBoost",
-                                        "auxBrakes"
+                                        "wheelBrakes"
                                     ],
                                     "type": "object"
                                 },
@@ -408,7 +395,6 @@
                                             ]
                                         }
                                     },
-                                    "required": [],
                                     "type": "object"
                                 },
                                 "speed": {
@@ -435,7 +421,6 @@
                                 "position",
                                 "accelSet",
                                 "accuracy",
-                                "transmission",
                                 "speed",
                                 "heading",
                                 "brakes",
@@ -499,17 +484,11 @@
                                                         "required": [
                                                             "eventHazardLights",
                                                             "eventStopLineViolation",
-                                                            "eventABSactivated",
-                                                            "eventTractionControlLoss",
-                                                            "eventStabilityControlactivated",
                                                             "eventHazardousMaterials",
                                                             "eventReserved1",
                                                             "eventHardBraking",
                                                             "eventLightsChanged",
-                                                            "eventWipersChanged",
-                                                            "eventFlatTire",
-                                                            "eventDisabledVehicle",
-                                                            "eventAirBagDeployment"
+                                                            "eventWipersChanged"
                                                         ],
                                                         "type": [
                                                             "object",
@@ -546,17 +525,6 @@
                                                                 "type": "boolean"
                                                             }
                                                         },
-                                                        "required": [
-                                                            "lowBeamHeadlightsOn",
-                                                            "highBeamHeadlightsOn",
-                                                            "leftTurnSignalOn",
-                                                            "rightTurnSignalOn",
-                                                            "hazardSignalOn",
-                                                            "automaticLightControlOn",
-                                                            "daytimeRunningLightsOn",
-                                                            "fogLightOn",
-                                                            "parkingLightsOn"
-                                                        ],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -697,7 +665,6 @@
                                                                                 ]
                                                                             }
                                                                         },
-                                                                        "required": [],
                                                                         "type": "object"
                                                                     },
                                                                     "posConfidence": {
@@ -945,7 +912,6 @@
                                                                                 ]
                                                                             }
                                                                         },
-                                                                        "required": [],
                                                                         "type": [
                                                                             "object",
                                                                             "null"
@@ -988,7 +954,6 @@
                                                         ]
                                                     }
                                                 },
-                                                "required": [],
                                                 "type": "object"
                                             }
                                         },
@@ -1152,7 +1117,6 @@
                                                                 "type": "integer"
                                                             }
                                                         },
-                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -1503,7 +1467,6 @@
                                                         ]
                                                     }
                                                 },
-                                                "required": [],
                                                 "type": "object"
                                             }
                                         },
@@ -1687,7 +1650,6 @@
                                                                 ]
                                                             }
                                                         },
-                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -1746,7 +1708,6 @@
                                                                         ]
                                                                     }
                                                                 },
-                                                                "required": [],
                                                                 "type": [
                                                                     "object",
                                                                     "null"
@@ -1847,7 +1808,6 @@
                                                                 "type": "array"
                                                             }
                                                         },
-                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -1879,9 +1839,6 @@
                                                                 "type": "integer"
                                                             }
                                                         },
-                                                        "required": [
-                                                            "statusDetails"
-                                                        ],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -2012,7 +1969,6 @@
                                                                 ]
                                                             }
                                                         },
-                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -2072,17 +2028,12 @@
                                                                         ]
                                                                     }
                                                                 },
-                                                                "required": [
-                                                                    "rateFront",
-                                                                    "statusFront"
-                                                                ],
                                                                 "type": [
                                                                     "object",
                                                                     "null"
                                                                 ]
                                                             }
                                                         },
-                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -2158,7 +2109,6 @@
                                                         ]
                                                     }
                                                 },
-                                                "required": [],
                                                 "type": "object"
                                             }
                                         },
