@@ -296,6 +296,7 @@
                                             ]
                                         }
                                     },
+                                    "required": [],
                                     "type": "object"
                                 },
                                 "angle": {
@@ -407,6 +408,7 @@
                                             ]
                                         }
                                     },
+                                    "required": [],
                                     "type": "object"
                                 },
                                 "speed": {
@@ -695,6 +697,7 @@
                                                                                 ]
                                                                             }
                                                                         },
+                                                                        "required": [],
                                                                         "type": "object"
                                                                     },
                                                                     "posConfidence": {
@@ -942,6 +945,7 @@
                                                                                 ]
                                                                             }
                                                                         },
+                                                                        "required": [],
                                                                         "type": [
                                                                             "object",
                                                                             "null"
@@ -984,6 +988,7 @@
                                                         ]
                                                     }
                                                 },
+                                                "required": [],
                                                 "type": "object"
                                             }
                                         },
@@ -1147,6 +1152,7 @@
                                                                 "type": "integer"
                                                             }
                                                         },
+                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -1497,6 +1503,7 @@
                                                         ]
                                                     }
                                                 },
+                                                "required": [],
                                                 "type": "object"
                                             }
                                         },
@@ -1680,6 +1687,7 @@
                                                                 ]
                                                             }
                                                         },
+                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -1738,6 +1746,7 @@
                                                                         ]
                                                                     }
                                                                 },
+                                                                "required": [],
                                                                 "type": [
                                                                     "object",
                                                                     "null"
@@ -1838,6 +1847,7 @@
                                                                 "type": "array"
                                                             }
                                                         },
+                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -2002,6 +2012,7 @@
                                                                 ]
                                                             }
                                                         },
+                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -2071,6 +2082,7 @@
                                                                 ]
                                                             }
                                                         },
+                                                        "required": [],
                                                         "type": [
                                                             "object",
                                                             "null"
@@ -2146,6 +2158,7 @@
                                                         ]
                                                     }
                                                 },
+                                                "required": [],
                                                 "type": "object"
                                             }
                                         },
