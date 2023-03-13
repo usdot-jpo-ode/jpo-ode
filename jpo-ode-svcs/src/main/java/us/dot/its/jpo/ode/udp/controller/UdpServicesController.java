@@ -12,6 +12,7 @@ import us.dot.its.jpo.ode.udp.ssm.SsmReceiver;
 import us.dot.its.jpo.ode.udp.srm.SrmReceiver;
 import us.dot.its.jpo.ode.udp.spat.SpatReceiver;
 import us.dot.its.jpo.ode.udp.map.MapReceiver;
+import us.dot.its.jpo.ode.udp.psm.PsmReceiver;
 
 /**
  * Centralized UDP service dispatcher.
@@ -48,6 +49,9 @@ public class UdpServicesController {
 
       // MAP internal port
       rm.submit(new MapReceiver(odeProps));
+
+      // PSM internal port
+      rm.submit(new PsmReceiver(odeProps));
 
       logger.debug("UDP receiver services started.");
    }

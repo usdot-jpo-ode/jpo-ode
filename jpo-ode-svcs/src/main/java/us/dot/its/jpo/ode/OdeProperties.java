@@ -177,7 +177,7 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeRawEncodedPSMJson = "topic.OdeRawEncodedPsmJson";
    private String kafkaTopicOdePsmTxPojo = "topic.OdePsmTxPojo";
    private String kafkaTopicOdePsmJson = "topic.OdePsmJson";
-   private int psmReceiverPort = 44930; // TODO: Update this to an actual port number
+   private int psmReceiverPort = 44940; // TODO: Update this to an actual port number
    private int psmBufferSize = 500;
    
 // DriverAlerts

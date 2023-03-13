@@ -33,7 +33,7 @@ public class PsmBuilderTest {
       JsonNode jsonPsm = null;
       try {
          jsonPsm = XmlUtils.toObjectNode(
-               "<OdeAsn1Data><payload><dataType>MessageFrame</dataType><data><MessageFrame><messageld>32</messageld><value><PersonalSafetyMessage><basicType><aPEDESTRIAN/></basicType><secMark>10064</secMark><msgCnt>55</msgCnt><id>24 77 9D 7E</id><position><lat>402397634</lat><long>-742761531</long></position><accuracy><semiMajor>20</semiMajor><semiMinor>20</semiMinor><orientation>5000</orientation></accuracy><speed>0</speed><heading>27553</heading></PersonalSafetyMessage></value></MessageFrame></data></payload></OdeAsn1Data>");
+               "<OdeAsn1Data><payload><dataType>MessageFrame</dataType><data><MessageFrame><messageId>32</messageId><value><PersonalSafetyMessage><basicType><aPEDESTRIAN/></basicType><secMark>3564</secMark><msgCnt>26</msgCnt><id>24779D7E</id><position><lat>402397377</lat><long>-742761437</long></position><accuracy><semiMajor>20</semiMajor><semiMinor>20</semiMinor><orientation>8191</orientation></accuracy><speed>0</speed><heading>8898</heading></PersonalSafetyMessage></value></MessageFrame></data></payload></OdeAsn1Data>");
       } catch (XmlUtilsException e) {
          fail("XML parsing error:" + e);
       }
@@ -41,7 +41,7 @@ public class PsmBuilderTest {
       J2735PSM actualPsm = PSMBuilder.genericPSM(jsonPsm.findValue("PersonalSafetyMessage"));
 
       assertNotNull(actualPsm);
-      String expected = "{\"basicType\":\"aPEDESTRIAN\",\"secMark\":10064,\"msgCnt\":55,\"id\":\"24779D7E\",\"position\":{\"latitude\":40.2397634,\"longitude\":-74.2761531},\"accuracy\":{\"semiMajor\":1.00,\"semiMinor\":1.00,\"orientation\":27.4662395000},\"speed\":0,\"heading\":27553}";
+      String expected = "{\"basicType\":\"aPEDESTRIAN\",\"secMark\":3564,\"msgCnt\":26,\"id\":\"24779D7E\",\"position\":{\"latitude\":40.2397377,\"longitude\":-74.2761437},\"accuracy\":{\"semiMajor\":1.00,\"semiMinor\":1.00,\"orientation\":44.9951935489},\"speed\":0,\"heading\":8898}";
       assertEquals(expected , actualPsm.toString());
    }
 

@@ -53,7 +53,7 @@ public class OdePsmDataCreatorHelper {
 			metadata.setReceivedMessageDetails(null);
 		}
 
-		OdePsmPayload payload = new OdePsmPayload(PSMBuilder.genericPSM(consumed.findValue("PsmData")));
+		OdePsmPayload payload = new OdePsmPayload(PSMBuilder.genericPSM(consumed.findValue("PersonalSafetyMessage")));
 		return new OdePsmData(metadata, payload);
 	}
 }

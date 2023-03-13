@@ -19,9 +19,9 @@ import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
 public class PsmReceiver extends AbstractUdpReceiverPublisher {
     private static Logger logger = LoggerFactory.getLogger(PsmReceiver.class);
 
-    private static final String PSM_START_FLAG = "0032"; // these bytes indicate
+    private static final String PSM_START_FLAG = "0020"; // these bytes indicate
                                                           // start of PSM payload
-    private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
+    private static final int HEADER_MINIMUM_SIZE = 6; // WSMP headers are at
                                                        // least 20 bytes long
 
     private StringPublisher psmPublisher;
@@ -104,8 +104,7 @@ public class PsmReceiver extends AbstractUdpReceiverPublisher {
      */
     public byte[] removeHeader(byte[] packet) {
         String hexPacket = HexUtils.toHexString(packet);
-
-        // logger.debug("PSM packet: {}", hexPacket);
+        logger.debug("PSM packet: {}", hexPacket);
 
         int startIndex = hexPacket.indexOf(PSM_START_FLAG);
         if (startIndex == 0) {
@@ -120,6 +119,7 @@ public class PsmReceiver extends AbstractUdpReceiverPublisher {
                     + hexPacket.substring(HEADER_MINIMUM_SIZE, hexPacket.length()).indexOf(PSM_START_FLAG);
             hexPacket = hexPacket.substring(trueStartIndex, hexPacket.length());
         }
+        logger.debug("PSM packet substring: {}", hexPacket);
 
         return HexUtils.fromHexString(hexPacket);
     }
