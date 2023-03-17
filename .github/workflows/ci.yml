@@ -26,6 +26,6 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          cd jpo-ode
+          ls -la && pwd
           mvn install -DskipTests
           mvn -e -X clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar -Dsonar.projectKey=usdot-jpo-ode_jpo-ode -Dsonar.projectName=jpo-ode -Dsonar.organization=usdot-jpo-ode-1 -Dsonar.host.url=https://sonarcloud.io -Dsonar.branch.name=$GITHUB_REF_NAM
