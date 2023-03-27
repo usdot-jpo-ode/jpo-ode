@@ -120,7 +120,7 @@ public class TimDepositController {
       ServiceRequest request;
       try {
          // Convert JSON to POJO
-         odeTID = (OdeTravelerInputData) JsonUtils.fromJson(jsonString, OdeTravelerInputData.class);
+         odeTID = (OdeTravelerInputData) JsonUtils.jacksonFromJson(jsonString, OdeTravelerInputData.class, true);
          if (odeTID == null) {
             String errMsg = "Malformed or non-compliant JSON syntax.";
             logger.error(errMsg);
@@ -140,6 +140,10 @@ public class TimDepositController {
 
       } catch (TimDepositControllerException e) {
          String errMsg = "Missing or invalid argument: " + e.getMessage();
+         logger.error(errMsg, e);
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
+      } catch (JsonUtilsException e) {
+         String errMsg = "Malformed or non-compliant JSON syntax.";
          logger.error(errMsg, e);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, errMsg));
       }
