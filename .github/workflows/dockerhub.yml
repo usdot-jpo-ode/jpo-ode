@@ -3,7 +3,7 @@ name: "DockerHub Build and Push"
 on:
   push:
     branches:
-      - "dev"
+      - "develop"
 
 jobs:
   dockerhub-Jpo-ode:
