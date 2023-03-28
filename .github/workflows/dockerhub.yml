@@ -21,7 +21,5 @@ jobs:
       - name: Build
         uses: docker/build-push-action@v3
         with:
-          context: ./
-          file: ./Dockerfile
           push: true
           tags: usdotjpoode/jpo-ode:${{ github.ref_name }}
