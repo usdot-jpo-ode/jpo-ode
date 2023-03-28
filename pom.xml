@@ -39,9 +39,15 @@
     <finalLocation>${project.build.directory}/${project.artifactId}-${project.version}</finalLocation>
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
-
+    <java.version>11</java.version>
     <sonar.organization>usdot-jpo-ode</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <!-- JaCoCo Properties -->
+    <jacoco.version>0.8.8</jacoco.version>
+    <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+    <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+    <sonar.language>java</sonar.language>
     <jmockit.version>1.49</jmockit.version>
   </properties>
 
