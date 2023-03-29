@@ -63,7 +63,7 @@ public class TimDepositControllerTest {
 
    @Test
    public void invalidJsonSyntaxShouldReturnJsonSyntaxError() {
-      ResponseEntity<String> actualResponse = testTimDepositController.postTim("{\"invalid\":\"json\"}}");
+      ResponseEntity<String> actualResponse = testTimDepositController.postTim("{\"in\"va}}}on\"}}");
       assertEquals("{\"error\":\"Malformed or non-compliant JSON syntax.\"}", actualResponse.getBody());
    }
 
