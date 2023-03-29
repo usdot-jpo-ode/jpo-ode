@@ -160,4 +160,11 @@ public class TimDepositControllerTest {
       assertEquals("{\"success\":\"true\"}", actualResponse.getBody());
    }
 
+   @Test
+   public void testDepositingTimWithExtraProperties(@Capturing TimTransmogrifier capturingTimTransmogrifier, @Capturing XmlUtils capturingXmlUtils) {
+      String timToSubmit = "{\"request\":{\"rsus\":[],\"snmp\":{},\"randomProp1\":true,\"randomProp2\":\"hello world\"},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\",\"randomProp3\":123,\"randomProp4\":{\"nestedProp1\":\"foo\",\"nestedProp2\":\"bar\"}}}";
+      ResponseEntity<String> actualResponse = testTimDepositController.postTim(timToSubmit);
+      assertEquals("{\"success\":\"true\"}", actualResponse.getBody());
+   }
+
 }
