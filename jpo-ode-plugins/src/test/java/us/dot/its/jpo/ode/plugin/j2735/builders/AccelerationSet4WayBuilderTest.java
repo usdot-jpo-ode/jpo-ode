@@ -35,7 +35,7 @@ public class AccelerationSet4WayBuilderTest {
 
    
    @Test
-   public void testConversionNull() {
+   public void testConversionUnknown() {
 
       JsonNode jsonAccelSet = null;
       try {
@@ -46,9 +46,9 @@ public class AccelerationSet4WayBuilderTest {
       }
 
       J2735AccelerationSet4Way actualAccelSet = AccelerationSet4WayBuilder.genericAccelerationSet4Way(jsonAccelSet);
-      BigDecimal lat = null;
-      BigDecimal lon = null;
-      BigDecimal vert = null;
+      BigDecimal lat = new BigDecimal(2001);
+      BigDecimal lon = new BigDecimal(2001);
+      BigDecimal vert = new BigDecimal(-127);
 
       
       assertEquals(lat, actualAccelSet.getAccelLat());

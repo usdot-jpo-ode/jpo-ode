@@ -17,14 +17,20 @@ public class ManeuverAssistBuilder {
 		if (maneuverAssistJson.get("queueLength") != null)
 			maneuverAssist.setQueueLength(maneuverAssistJson.get("queueLength").asInt());
 
-		if (maneuverAssistJson.get("waitOnStop") != null)
-			maneuverAssist.setWaitOnStop(maneuverAssistJson.get("waitOnStop").asBoolean());
+		JsonNode waitOnStop = maneuverAssistJson.get("waitOnStop");
+		if (waitOnStop != null) {
+			boolean isTrue = (waitOnStop.get("true") != null);
+			maneuverAssist.setWaitOnStop(isTrue);
+		}
 
 		if (maneuverAssistJson.get("availableStorageLength") != null)
 			maneuverAssist.setAvailableStorageLength(maneuverAssistJson.get("availableStorageLength").asInt());
 
-		if (maneuverAssistJson.get("pedBicycleDetect") != null)
-			maneuverAssist.setPedBicycleDetect(maneuverAssistJson.get("pedBicycleDetect").asBoolean());
+		JsonNode pedBicycleDetect = maneuverAssistJson.get("pedBicycleDetect");
+		if (pedBicycleDetect != null) {
+			boolean isTrue = (pedBicycleDetect.get("true") != null);
+			maneuverAssist.setPedBicycleDetect(isTrue);
+		}
 
 		return maneuverAssist;
 	}

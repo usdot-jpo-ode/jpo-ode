@@ -10,7 +10,7 @@
 	branch = master
 [submodule "jpo-security-svcs"]
 	path = jpo-security-svcs
-	url = https://github.com/usdot-jpo-ode/jpo-security-svcs
+	url = https://github.com/usdot-jpo-ode/jpo-security-svcs.git
 [submodule "jpo-sdw-depositor"]
 	path = jpo-sdw-depositor
 	url = https://github.com/usdot-jpo-ode/jpo-sdw-depositor.git

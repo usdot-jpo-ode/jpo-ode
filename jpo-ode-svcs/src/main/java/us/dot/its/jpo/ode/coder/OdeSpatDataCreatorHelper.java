@@ -50,7 +50,7 @@ public class OdeSpatDataCreatorHelper {
 		
 		if(metadataNode.findValue("certPresent") != null) {
 			boolean isCertPresent = metadataNode.findValue("certPresent").asBoolean();
-			metadata.setCertPresent(isCertPresent);
+			metadata.setIsCertPresent(isCertPresent);
 		}
 
 		if (metadata.getSchemaVersion() <= 4) {

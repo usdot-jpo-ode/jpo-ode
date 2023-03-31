@@ -15,15 +15,10 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import java.util.Iterator;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmPart2Content;
-import us.dot.its.jpo.ode.plugin.j2735.J2735RegionalContent;
-import us.dot.its.jpo.ode.plugin.j2735.J2735SpecialVehicleExtensions;
 import us.dot.its.jpo.ode.plugin.j2735.J2735SupplementalVehicleExtensions;
-import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class SupplementalVehicleExtensionsBuilder {
     
@@ -34,9 +29,7 @@ public class SupplementalVehicleExtensionsBuilder {
     public static J2735SupplementalVehicleExtensions evaluateSupplementalVehicleExtensions(J2735BsmPart2Content part2Content,
             JsonNode sve) {
         J2735SupplementalVehicleExtensions genericSVE = new J2735SupplementalVehicleExtensions();
-        
-        J2735SpecialVehicleExtensions specVeh = new J2735SpecialVehicleExtensions();
-        part2Content.setValue(specVeh);
+        part2Content.setValue(genericSVE);
 
         // All elements of this class are optional
         if (sve.has("classification")) {
@@ -66,16 +59,7 @@ public class SupplementalVehicleExtensionsBuilder {
         if (sve.has("theRTCM")) {
             genericSVE.setTheRTCM(RTCMPackageBuilder.genericRTCMPackage(sve.get("theRTCM")));
         }
-        if (sve.has("regional")) {
-            JsonNode regional = sve.get("regional");
-            Iterator<JsonNode> elements = regional.elements();
-            while (elements.hasNext()) {
-               JsonNode element = elements.next();
-               genericSVE.getRegional().add(new J2735RegionalContent().setId(
-                  element.get("regionId").asInt())
-                        .setValue(CodecUtils.fromHex(element.get("regExtValue").asText().trim().replaceAll("\\w", ""))));
-            }
-        }
+
         return genericSVE;
     }
 

@@ -3,8 +3,10 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735SRM;
+import us.dot.its.jpo.ode.plugin.j2735.J2735SignalRequestList;
 
 public class SRMBuilder {
+
     private SRMBuilder()
 	{
 		throw new UnsupportedOperationException();
@@ -18,7 +20,7 @@ public class SRMBuilder {
 		{
 			genericSRM.setTimeStamp(timeStamp.asInt());
 		}
-		
+
 		JsonNode second = SRMMessage.get("second");
 		if(second != null)
 		{
@@ -30,13 +32,19 @@ public class SRMBuilder {
 		{
 			genericSRM.setSequenceNumber(sequenceNumber.asInt());
 		}
-		
+
 		JsonNode requests = SRMMessage.get("requests");
 		if(requests != null)
 		{
-			genericSRM.setRequests(SignalRequestListBuilder.genericSignalRequestList(requests));	
+			J2735SignalRequestList signalRequestList = SignalRequestListBuilder.genericSignalRequestList(requests);
+			if (signalRequestList.getRequests().size() > 0) {
+				genericSRM.setRequests(signalRequestList);	
+			}
+			else {
+				genericSRM.setRequests(null);	
+			}
 		}
-
+		
         JsonNode requestor = SRMMessage.get("requestor");
 		if(requestor != null)
 		{

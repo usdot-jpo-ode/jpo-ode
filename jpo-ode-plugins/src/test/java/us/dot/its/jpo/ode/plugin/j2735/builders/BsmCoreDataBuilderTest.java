@@ -29,6 +29,7 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import mockit.Capturing;
+import us.dot.its.jpo.ode.plugin.j2735.J2735TransmissionState;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class BsmCoreDataBuilderTest {
@@ -72,7 +73,10 @@ public class BsmCoreDataBuilderTest {
       testInput.put("elev", 3456);
 
       testInput.put("angle", 0x7F);
-      testInput.put("transmission", 7); // unavailable flag
+
+      ObjectNode testTransmission = JsonUtils.newNode();
+      testTransmission.set("unavailable", null);
+      testInput.set("transmission", testTransmission);
 
       assertNotNull(BsmCoreDataBuilder.genericBsmCoreData(testInput));
    }
@@ -91,9 +95,32 @@ public class BsmCoreDataBuilderTest {
       testInput.put("long", -63989308);
       testInput.put("elev", 3456);
 
-      testInput.put("transmission", 5); // unavailable flag
+      ObjectNode testTransmission = JsonUtils.newNode();
+      testTransmission.set("unavailable", null);
+      testInput.set("transmission", testTransmission);
 
       assertNotNull(BsmCoreDataBuilder.genericBsmCoreData(testInput));
+   }
+
+   @Test
+   public void testUnsupportedTransmission() {
+
+      ObjectNode testInput = JsonUtils.newNode();
+      testInput.put("msgCnt", 88);
+      testInput.put("id", "A0F1");
+      testInput.put("secMark", 65535);
+      testInput.put("heading", 21000);
+      testInput.put("angle", 55);
+
+      testInput.put("lat", 50741895);
+      testInput.put("long", -63989308);
+      testInput.put("elev", 3456);
+
+      ObjectNode testTransmission = JsonUtils.newNode();
+      testTransmission.set("testValue", null);
+      testInput.set("transmission", testTransmission);
+
+      assertEquals(BsmCoreDataBuilder.genericBsmCoreData(testInput).getTransmission(), J2735TransmissionState.UNAVAILABLE);
    }
 
    @Test

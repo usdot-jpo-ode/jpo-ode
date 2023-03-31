@@ -1,27 +1,29 @@
 package us.dot.its.jpo.ode.plugin.j2735;
 
+import java.math.BigDecimal;
+
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
 public class J2735RequestorPositionVector extends Asn1Object {
 
     private static final long serialVersionUID = 1L;
-    private J2735Position3D position;
-    private Integer heading;
+    private OdePosition3D position;
+    private BigDecimal heading;
     private J2735TransmissionAndSpeed speed;
 
-    public J2735Position3D getPosition() {
+    public OdePosition3D getPosition() {
         return position;
     }
 
-    public void setPosition(J2735Position3D position) {
+    public void setPosition(OdePosition3D position) {
         this.position = position;
     }
 
-    public Integer getHeading() {
+    public BigDecimal getHeading() {
         return heading;
     }
 
-    public void setHeading(Integer heading) {
+    public void setHeading(BigDecimal heading) {
         this.heading = heading;
     }
 

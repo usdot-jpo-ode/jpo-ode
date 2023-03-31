@@ -29,6 +29,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.cfg.CoercionAction;
@@ -93,6 +94,18 @@ public class JsonUtils {
          return mapper.readValue(s, clazz);
       } catch (IOException e) {
          throw new JsonUtilsException("Error deserializing JSON tree to " + clazz.getName(), e);
+      }
+   }
+
+   public static Object jacksonFromJson(String s, Class<?> clazz, boolean allowUnknownProperties)
+         throws JsonUtilsException {
+      try {
+         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, !allowUnknownProperties);
+         return mapper.readValue(s, clazz);
+      } catch (IOException e) {
+         throw new JsonUtilsException("Error deserializing JSON tree to " + clazz.getName(), e);
+      } finally {
+         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, allowUnknownProperties);
       }
    }
 

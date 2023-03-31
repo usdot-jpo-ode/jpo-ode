@@ -11,7 +11,7 @@ public class J2735IntersectionGeometry extends Asn1Object {
 	private String name;
 	private J2735IntersectionReferenceID id;
 	private Integer revision;
-	private J2735Position3D refPoint;
+	private OdePosition3D refPoint;
 	private Integer laneWidth;
 	private J2735SpeedLimitList speedLimits;
 	private J2735LaneList laneSet;
@@ -40,11 +40,11 @@ public class J2735IntersectionGeometry extends Asn1Object {
 		this.revision = revision;
 	}
 
-	public J2735Position3D getRefPoint() {
+	public OdePosition3D getRefPoint() {
 		return refPoint;
 	}
 
-	public void setRefPoint(J2735Position3D refPoint) {
+	public void setRefPoint(OdePosition3D refPoint) {
 		this.refPoint = refPoint;
 	}
 

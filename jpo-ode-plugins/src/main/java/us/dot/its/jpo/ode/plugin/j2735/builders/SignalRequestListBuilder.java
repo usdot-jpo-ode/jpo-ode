@@ -14,19 +14,15 @@ public class SignalRequestListBuilder {
 	public static J2735SignalRequestList genericSignalRequestList(JsonNode requests) {
 		J2735SignalRequestList signalRequestList = new J2735SignalRequestList();
 
-		if (requests.isArray()) {
-			Iterator<JsonNode> elements = requests.elements();
-
-			while (elements.hasNext()) {
-				signalRequestList.getRequests()
-                    .add(SignalRequestPackageBuilder.genericSignalRequestPackage(elements.next()));
-			}
-		} else {
-			JsonNode signalRequest = requests.get("SignalRequestPackage");
-			if(signalRequest != null)
-			{
-				signalRequestList.getRequests()
-					.add(SignalRequestPackageBuilder.genericSignalRequestPackage(signalRequest));
+		JsonNode signalRequest = requests.get("SignalRequestPackage");
+		if(signalRequest != null) {
+			if (signalRequest.isArray()) {
+				Iterator<JsonNode> elements = signalRequest.elements();
+				while (elements.hasNext()) {
+					signalRequestList.getRequests().add(SignalRequestPackageBuilder.genericSignalRequestPackage(elements.next()));
+				}
+			} else {
+				signalRequestList.getRequests().add(SignalRequestPackageBuilder.genericSignalRequestPackage(signalRequest));
 			}
 		}
 		

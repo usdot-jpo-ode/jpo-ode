@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.model;
 
+import com.fasterxml.jackson.annotation.*;
+
 import us.dot.its.jpo.ode.plugin.j2735.J2735SPAT;
 
 /*******************************************************************************
@@ -29,11 +31,13 @@ public class OdeSpatPayload extends OdeMsgPayload {
 	        this(new J2735SPAT());
 	    }
 
-	    public OdeSpatPayload(J2735SPAT spat) {
+		@JsonCreator
+	    public OdeSpatPayload( @JsonProperty("data") J2735SPAT spat) {
 	        super(spat);
 	        this.setData(spat);
 	    }
 
+		@JsonProperty("data")
 	    public J2735SPAT getSpat() {
 	        return (J2735SPAT) getData();
 	    }

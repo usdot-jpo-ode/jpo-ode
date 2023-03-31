@@ -11,7 +11,7 @@ public class J2735IntersectionState extends Asn1Object {
 	private String name;
 	private J2735IntersectionReferenceID id;
 	private Integer revision;
-	private J2735IntersectionStatusObject status;
+	private J2735BitString status;
 	private Integer moy;
 	private Integer timeStamp;
 	private J2735EnableLaneList enabledLanes;
@@ -42,11 +42,11 @@ public class J2735IntersectionState extends Asn1Object {
 		this.revision = revision;
 	}
 
-	public J2735IntersectionStatusObject getStatus() {
+	public J2735BitString getStatus() {
 		return status;
 	}
 
-	public void setStatus(J2735IntersectionStatusObject status) {
+	public void setStatus(J2735BitString status) {
 		this.status = status;
 	}
 

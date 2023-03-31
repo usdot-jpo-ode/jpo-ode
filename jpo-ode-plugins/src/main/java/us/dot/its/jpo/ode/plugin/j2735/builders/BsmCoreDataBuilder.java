@@ -52,10 +52,13 @@ public class BsmCoreDataBuilder {
 
         JsonNode transmission = coreData.get("transmission");
         if (transmission != null) {
-           int trans = transmission.asInt();
-           if (trans != J2735TransmissionState.UNAVAILABLE.ordinal()) {
-              genericBsmCoreData.setTransmission(J2735TransmissionState.values()[trans]);
-           }
+            J2735TransmissionState enumTransmission; 
+            try {
+                enumTransmission = J2735TransmissionState.valueOf(transmission.fieldNames().next().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                enumTransmission = J2735TransmissionState.UNAVAILABLE;
+            }
+            genericBsmCoreData.setTransmission(enumTransmission);
         }
 
         // speed is received in units of 0.02 m/s
