@@ -16,9 +16,11 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735BrakeAppliedStatusNames;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BrakeSystemStatus;
+import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class BrakeSystemStatusBuilder {
 
@@ -29,8 +31,17 @@ public class BrakeSystemStatusBuilder {
    public static J2735BrakeSystemStatus genericBrakeSystemStatus(JsonNode brakesStatus) {
       J2735BrakeSystemStatus genericBrakesStatus = new J2735BrakeSystemStatus();
 
-      genericBrakesStatus.setWheelBrakes(BitStringBuilder.genericBitString(brakesStatus.get("wheelBrakes"),
+      JsonNode wheelBrakes = brakesStatus.get("wheelBrakes");
+      // Check if wheelBrakes was not set (00000), if it wasn't set it to unavailable
+      if (wheelBrakes.asText().trim().equals("00000")) {
+         ObjectNode wheelBrakesUnavailable = JsonUtils.newNode();
+         wheelBrakesUnavailable.put("wheelBrakes", "10000");
+         wheelBrakes = wheelBrakesUnavailable.get("wheelBrakes");
+      }
+
+      genericBrakesStatus.setWheelBrakes(BitStringBuilder.genericBitString(wheelBrakes, 
             J2735BrakeAppliedStatusNames.values()));
+      
       genericBrakesStatus.setTraction(brakesStatus.get("traction").fieldNames().next());
       genericBrakesStatus.setAbs(brakesStatus.get("abs").fieldNames().next());
       genericBrakesStatus.setScs(brakesStatus.get("scs").fieldNames().next());

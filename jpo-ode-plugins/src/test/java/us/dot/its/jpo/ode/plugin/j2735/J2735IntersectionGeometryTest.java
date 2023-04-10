@@ -10,7 +10,7 @@ public class J2735IntersectionGeometryTest {
 	public void testGettersSetters() {
 		J2735IntersectionGeometry intersectionGeometry = new J2735IntersectionGeometry();
 		J2735IntersectionReferenceID id = new J2735IntersectionReferenceID();
-		J2735Position3D refPoint = new J2735Position3D();
+		OdePosition3D refPoint = new OdePosition3D();
 		J2735SpeedLimitList speedLimits = new J2735SpeedLimitList();
 		J2735LaneList laneSet = new J2735LaneList();
 		intersectionGeometry.setId(id);

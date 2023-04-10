@@ -23,7 +23,7 @@ public class SSMBuilderTest {
 			fail("XML parsing error:" + e);
 		}
 		J2735SSM actualSrm = SSMBuilder.genericSSM(jsonMap.findValue("SignalStatusMessage"));	
-		String expected ="{\"timeStamp\":null,\"second\":0,\"sequenceNumber\":null,\"status\":{\"signalStatus\":[{\"sequenceNumber\":0,\"id\":{\"region\":null,\"id\":12110},\"sigStatus\":{\"signalStatusPackage\":[{\"requester\":{\"id\":{\"entityID\":null,\"stationID\":2366845094},\"request\":3,\"sequenceNumber\":0,\"role\":null,\"typeData\":{\"role\":\"publicTransport\",\"subrole\":null,\"request\":null,\"iso3883\":null,\"hpmsType\":null}},\"inboundOn\":{\"lane\":23,\"approach\":null,\"connection\":null},\"outboundOn\":null,\"minute\":null,\"second\":null,\"duration\":null,\"status\":\"granted\"}]}}]}}";
+		String expected ="{\"second\":0,\"status\":{\"signalStatus\":[{\"sequenceNumber\":0,\"id\":{\"id\":12110},\"sigStatus\":{\"signalStatusPackage\":[{\"requester\":{\"id\":{\"stationID\":2366845094},\"request\":3,\"sequenceNumber\":0,\"typeData\":{\"role\":\"publicTransport\"}},\"inboundOn\":{\"lane\":23},\"status\":\"granted\"}]}}]}}";
 		assertEquals(expected, actualSrm.toString()); 
 		
 	}

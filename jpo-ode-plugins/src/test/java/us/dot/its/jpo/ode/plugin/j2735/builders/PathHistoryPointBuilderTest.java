@@ -113,7 +113,7 @@ public class PathHistoryPointBuilderTest {
    public void shouldCreateUndefinedLatOffset() {
 
       Integer testInput = -131072;
-      BigDecimal expectedValue = null;
+      BigDecimal expectedValue = new BigDecimal(-131072);
 
       long testLatOffset = testInput;
       long testLonOffset = 0;
@@ -341,7 +341,7 @@ public class PathHistoryPointBuilderTest {
    public void shouldCreateUndefinedLonOffset() {
 
       Integer testInput = -131072;
-      BigDecimal expectedValue = null;
+      BigDecimal expectedValue = new BigDecimal(-131072);
 
       long testLatOffset = 0;
       long testLonOffset = testInput;
@@ -560,7 +560,7 @@ public class PathHistoryPointBuilderTest {
    public void shouldCreateUndefinedElevationOffset() {
 
       Integer testInput = -2048;
-      BigDecimal expectedValue = null;
+      BigDecimal expectedValue = new BigDecimal(-2048);
 
       long testLatOffset = 0;
       long testLonOffset = 0;
@@ -791,7 +791,7 @@ public class PathHistoryPointBuilderTest {
    public void shouldCreateUndefinedTimeOffset() {
 
       Integer testInput = 65535;
-      BigDecimal expectedValue = null;
+      BigDecimal expectedValue = new BigDecimal(65535);
 
       long testLatOffset = 0;
       long testLonOffset = 0;

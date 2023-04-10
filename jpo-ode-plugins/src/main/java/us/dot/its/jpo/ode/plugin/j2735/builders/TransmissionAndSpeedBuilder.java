@@ -21,26 +21,26 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735TransmissionAndSpeed;
 import us.dot.its.jpo.ode.plugin.j2735.J2735TransmissionState;
 
 public class TransmissionAndSpeedBuilder {
-
-    private static final String TRANSMISSION = "transmission";
-    private static final long TRANSMISSION_LOWER_BOUND = 0L;
-    private static final long TRANSMISSION_UPPER_BOUND = 7L;
     
     private TransmissionAndSpeedBuilder() {
        throw new UnsupportedOperationException();
     }
 
     public static J2735TransmissionAndSpeed genericTransmissionAndSpeed(JsonNode ts) {
-
-        if (ts.get(TRANSMISSION).asLong() < TRANSMISSION_LOWER_BOUND
-                || ts.get(TRANSMISSION).asLong() > TRANSMISSION_UPPER_BOUND) {
-            throw new IllegalArgumentException("Transmission value out of bounds [0..7]");
-        }
-
         J2735TransmissionAndSpeed gts = new J2735TransmissionAndSpeed();
 
-        gts.setSpeed(SpeedOrVelocityBuilder.genericVelocity(ts.get("speed")));
-        gts.setTransmisson(J2735TransmissionState.valueOf(ts.get(TRANSMISSION).asText().toUpperCase()));
+        JsonNode speed = ts.get("speed");
+		if(speed != null)
+		{
+            gts.setSpeed(SpeedOrVelocityBuilder.genericVelocity(speed));
+        }
+
+        // The typo is deliberate as defined by J2735 TransmissionAndSpeed
+        JsonNode transmisson = ts.get("transmisson");
+		if(transmisson != null)
+		{
+            gts.setTransmisson(J2735TransmissionState.valueOf(transmisson.fieldNames().next().toUpperCase()));	
+		}
 
         return gts;
     }

@@ -3,7 +3,7 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735RequestorPositionVector;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
+import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 
 public class RequestorPositionVectorBuilder {
     private RequestorPositionVectorBuilder()
@@ -17,21 +17,22 @@ public class RequestorPositionVectorBuilder {
         JsonNode position = positionVector.get("position");
 		if (position != null)
 		{
-			J2735Position3D positionObj = new J2735Position3D();
+			OdePosition3D positionObj = new OdePosition3D();
 
             if(position.get("lat") != null)
 			{
-				positionObj.setLat(position.get("lat").asInt());
+				positionObj.setLatitude(LatitudeBuilder.genericLatitude(position.get("lat")));
+				
 			}
 			
 			if(position.get("long") != null)
 			{
-				positionObj.setLon(position.get("long").asInt());
+				positionObj.setLongitude(LongitudeBuilder.genericLongitude(position.get("long")));
 			}
 			
 			if(position.get("elevation") != null)
 			{
-				positionObj.setElevation(position.get("elevation").asInt());
+				positionObj.setElevation(ElevationBuilder.genericElevation(position.get("elevation")));
 			}
 
 			requestorPositionVector.setPosition(positionObj);
@@ -40,7 +41,7 @@ public class RequestorPositionVectorBuilder {
         JsonNode heading = positionVector.get("heading");
 		if (heading != null)
 		{
-            requestorPositionVector.setHeading(heading.asInt());
+            requestorPositionVector.setHeading(HeadingBuilder.genericHeading(heading));
         }
 
         JsonNode speed = positionVector.get("speed");

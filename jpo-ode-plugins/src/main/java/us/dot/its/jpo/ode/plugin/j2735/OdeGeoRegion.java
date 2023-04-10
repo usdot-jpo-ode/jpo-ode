@@ -18,6 +18,8 @@ package us.dot.its.jpo.ode.plugin.j2735;
 import java.awt.geom.Point2D;
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import us.dot.its.jpo.ode.model.OdeObject;
 
 public class OdeGeoRegion extends OdeObject{
@@ -79,6 +81,7 @@ public class OdeGeoRegion extends OdeObject{
       return this;
    }
 
+   @JsonIgnore
    public OdePosition3D getCenterPosition() {
       Point2D nw = new Point2D.Double(
             nwCorner.getLongitude().doubleValue(), 

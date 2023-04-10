@@ -45,7 +45,13 @@ public class WeatherReportBuilder {
       J2735WeatherReport gwr = new J2735WeatherReport();
 
       // Required element
-      gwr.setIsRaining(J2735EssPrecipYesNo.values()[weatherReport.get("isRaining").asInt()]);
+      J2735EssPrecipYesNo enumIsRaining;
+      try {
+         enumIsRaining = J2735EssPrecipYesNo.valueOf(weatherReport.get("isRaining").fieldNames().next().toUpperCase());
+      } catch (IllegalArgumentException e) {
+         enumIsRaining = J2735EssPrecipYesNo.NA;
+      }
+      gwr.setIsRaining(enumIsRaining);
 
       // Optional elements
       if (weatherReport.get("friction") != null) {
@@ -63,7 +69,13 @@ public class WeatherReportBuilder {
       }
 
       if (weatherReport.get("precipSituation") != null) {
-         gwr.setPrecipSituation(J2735EssPrecipSituation.values()[weatherReport.get("precipSituation").asInt()]);
+         J2735EssPrecipSituation enumPrecipSituation;
+         try {
+            enumPrecipSituation = J2735EssPrecipSituation.valueOf(weatherReport.get("precipSituation").fieldNames().next().toUpperCase());
+         } catch (IllegalArgumentException e) {
+            enumPrecipSituation = J2735EssPrecipSituation.UNKNOWN;
+         }
+         gwr.setPrecipSituation(enumPrecipSituation);
       }
 
       if (weatherReport.get("rainRate") != null) {

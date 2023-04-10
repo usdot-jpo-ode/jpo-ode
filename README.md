@@ -4,7 +4,7 @@
 
 # jpo-ode
 
-**US Department of Transportation (USDOT) Intelligent Transportation Systems (ITS) Joint Program Office (JPO) Operational Data Environemnt (ODE)**
+**US Department of Transportation (USDOT) Intelligent Transportation Systems (ITS) Joint Program Office (JPO) Operational Data Environment (ODE)**
 
 The ITS ODE is a real-time virtual data router that ingests and processes operational data from various connected devices - including vehicles, infrastructure, and traffic management centers - and distributes it to other devices and subscribing transportation management applications. Using the ITS ODE within intelligent transportation deployments increases data fluidity and interoperability while meeting operational needs and protecting user privacy. The software’s microservices architecture makes it easy to add new capabilities to meet local needs. Check the ITS factsheet for more information: <https://www.its.dot.gov/factsheets/pdf/ITSJPO_ODE.pdf>.
 
@@ -25,6 +25,9 @@ All stakeholders are invited to provide input to these documents. To provide fee
 ---
 
 <a name="toc"/>
+
+## Release Notes
+The current version and release history of the JPO-ODE: [ODE Release Notes](<docs/Release_notes.md>)
 
 ## Table of Contents
 
@@ -279,9 +282,49 @@ cd $BASE_PPM_DIR/jpo-cvdp/build
 $ ./bsmjson_privacy -c ../config/ppm.properties
 ```
 
+# Confluent Cloud Integration
+
+Rather than using a local kafka instance, the ODE can utilize an instance of kafka hosted by Confluent Cloud via SASL.
+
+
+
+## Environment variables
+
+### Purpose & Usage
+
+- The DOCKER_HOST_IP environment variable is used to communicate with the bootstrap server that the instance of Kafka is running on.
+
+- The KAFKA_TYPE environment variable specifies what type of kafka connection will be attempted and is used to check if Confluent should be utilized. If this environment variable is not set, the ODE will default to normal behavior.
+
+- The CONFLUENT_KEY and CONFLUENT_SECRET environment variables are used to authenticate with the bootstrap server. If the KAFKA_TYPE environment variable is not set, then these are not required.
+
+
+
+### Values
+In order to utilize Confluent Cloud:
+
+- DOCKER_HOST_IP must be set to the bootstrap server address (excluding the port)
+
+- KAFKA_TYPE must be set to "CONFLUENT"
+
+- CONFLUENT_KEY must be set to the API key being utilized for CC
+
+- CONFLUENT_SECRET must be set to the API secret being utilized for CC
+
+
+
+## CC Docker Compose File
+
+There is a provided docker-compose file (docker-compose-confluent-cloud.yml) that passes the above environment variables into the container that gets created. Further, this file doesn't spin up a local kafka instance since it is not required.
+
+
+
+## Note
+
+This has only been tested with Confluent Cloud but technically all SASL authenticated Kafka brokers can be reached using this method.	
 
 [Back to top](#toc)
-
+	
 <!--
 #########################################
 ############# File Manifest #############
@@ -352,6 +395,9 @@ Install the IDE of your choice:
 ### Continuous Integration
 
 * TravisCI: <https://travis-ci.org/usdot-jpo-ode/jpo-ode>
+
+### Dev Container Environment
+The project can be reopened inside of a dev container in VSCode. This environment should have all of the necessary dependencies to debug the ODE and its submodules. When attempting to run scripts in this environment, it may be necessary to make them executable with "chmod +x" first.
 
 [Back to top](#toc)
 

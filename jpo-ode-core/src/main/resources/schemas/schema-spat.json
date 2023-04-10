@@ -1,0 +1,713 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+        "metadata",
+        "payload"
+    ],
+    "properties": {
+        "metadata": {
+            "type": "object",
+            "required": [
+                "spatSource",
+                "logFileName",
+                "recordType",
+                "securityResultCode",
+                "receivedMessageDetails",
+                "payloadType",
+                "serialId",
+                "odeReceivedAt",
+                "schemaVersion",
+                "recordGeneratedAt",
+                "sanitized"
+            ],
+            "properties": {
+                "spatSource": {
+                    "type": "string",
+                    "enum": [
+                        "RSU",
+                        "V2X",
+                        "MMITSS",
+                        "unknown"
+                    ]
+                },
+                "isCertPresent": {
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "originIp": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "logFileName": {
+                    "type": "string"
+                },
+                "recordType": {
+                    "type": "string",
+                    "enum": [
+                        "bsmLogDuringEvent",
+                        "rxMsg",
+                        "dnMsg",
+                        "bsmTx",
+                        "driverAlert",
+                        "spatTx",
+                        "timMsg",
+                        "unsupported"
+                    ]
+                },
+                "securityResultCode": {
+                    "type": "string",
+                    "enum": [
+                        "success",
+                        "unknown",
+                        "inconsistentInputParameters",
+                        "spduParsingInvalidInput",
+                        "spduParsingUnsupportedCriticalInformationField",
+                        "spduParsingCertificateNotFound",
+                        "spduParsingGenerationTimeNotAvailable",
+                        "spduParsingGenerationLocationNotAvailable",
+                        "spduCertificateChainNotEnoughInformationToConstructChain",
+                        "spduCertificateChainChainEndedAtUntrustedRoot",
+                        "spduCertificateChainChainWasTooLongForImplementation",
+                        "spduCertificateChainCertificateRevoked",
+                        "spduCertificateChainOverdueCRL",
+                        "spduCertificateChainInconsistentExpiryTimes",
+                        "spduCertificateChainInconsistentStartTimes",
+                        "spduCertificateChainInconsistentChainPermissions",
+                        "spduCryptoVerificationFailure",
+                        "spduConsistencyFutureCertificateAtGenerationTime",
+                        "spduConsistencyExpiredCertificateAtGenerationTime",
+                        "spduConsistencyExpiryDateTooEarly",
+                        "spduConsistencyExpiryDateTooLate",
+                        "spduConsistencyGenerationLocationOutsideValidityRegion",
+                        "spduConsistencyNoGenerationLocation",
+                        "spduConsistencyUnauthorizedPSID",
+                        "spduInternalConsistencyExpiryTimeBeforeGenerationTime",
+                        "spduInternalConsistencyextDataHashDoesntMatch",
+                        "spduInternalConsistencynoExtDataHashProvided",
+                        "spduInternalConsistencynoExtDataHashPresent",
+                        "spduLocalConsistencyPSIDsDontMatch",
+                        "spduLocalConsistencyChainWasTooLongForSDEE",
+                        "spduRelevanceGenerationTimeTooFarInPast",
+                        "spduRelevanceGenerationTimeTooFarInFuture",
+                        "spduRelevanceExpiryTimeInPast",
+                        "spduRelevanceGenerationLocationTooDistant",
+                        "spduRelevanceReplayedSpdu",
+                        "spduCertificateExpired"
+                    ]
+                },
+                "receivedMessageDetails": {
+                    "type": "object",
+                    "required": [
+                        "rxSource"
+                    ],
+                    "properties": {
+                        "locationData": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [
+                                "latitude",
+                                "longitude",
+                                "elevation",
+                                "speed",
+                                "heading"
+                            ],
+                            "properties": {
+                                "latitude": {
+                                    "type": "string"
+                                },
+                                "longitude": {
+                                    "type": "string"
+                                },
+                                "elevation": {
+                                    "type": "string"
+                                },
+                                "speed": {
+                                    "type": "string"
+                                },
+                                "heading": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "rxSource": {
+                            "type": "string",
+                            "enum": [
+                                "RSU",
+                                "SAT",
+                                "RV",
+                                "SNMP",
+                                "NA",
+                                "UNKNOWN"
+                            ]
+                        }
+                    }
+                },
+                "encodings": {
+                    "type": [
+                        "array",
+                        "null"
+                    ],
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "elementName",
+                            "elementType",
+                            "encodingRule"
+                        ],
+                        "properties": {
+                            "elementName": {
+                                "type": "string"
+                            },
+                            "elementType": {
+                                "type": "string"
+                            },
+                            "encodingRule": {
+                                "type": "string",
+                                "enum": [
+                                    "UPER",
+                                    "COER"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "payloadType": {
+                    "type": "string"
+                },
+                "serialId": {
+                    "type": "object",
+                    "required": [
+                        "streamId",
+                        "bundleSize",
+                        "bundleId",
+                        "recordId",
+                        "serialNumber"
+                    ],
+                    "properties": {
+                        "streamId": {
+                            "type": "string"
+                        },
+                        "bundleSize": {
+                            "type": "integer"
+                        },
+                        "bundleId": {
+                            "type": "integer"
+                        },
+                        "recordId": {
+                            "type": "integer"
+                        },
+                        "serialNumber": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "odeReceivedAt": {
+                    "type": "string"
+                },
+                "schemaVersion": {
+                    "type": "integer",
+                    "const": 6
+                },
+                "maxDurationTime": {
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "odePacketID": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "odeTimStartDateTime": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "recordGeneratedAt": {
+                    "type": "string"
+                },
+                "recordGeneratedBy": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "enum": [
+                                "TMC",
+                                "OBU",
+                                "RSU",
+                                "TMC_VIA_SAT",
+                                "TMC_VIA_SNMP",
+                                "UNKNOWN"
+                            ]
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "sanitized": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "payload": {
+            "type": "object",
+            "required": [
+                "dataType",
+                "data"
+            ],
+            "properties": {
+                "dataType": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object",
+                    "required": [
+                        "intersectionStateList"
+                    ],
+                    "properties": {
+                        "timeStamp": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ]
+                        },
+                        "name": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "intersectionStateList": {
+                            "type": "object",
+                            "required": [
+                                "intersectionStatelist"
+                            ],
+                            "properties": {
+                                "intersectionStatelist": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "required": [
+                                            "id",
+                                            "revision",
+                                            "status",
+                                            "states"
+                                        ],
+                                        "properties": {
+                                            "name": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "id": {
+                                                "type": "object",
+                                                "required": [
+                                                    "id"
+                                                ],
+                                                "properties": {
+                                                    "region": {
+                                                        "type": [
+                                                            "integer",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "id": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            },
+                                            "revision": {
+                                                "type": "integer"
+                                            },
+                                            "status": {
+                                                "properties": {
+                                                    "manualControlIsEnabled": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "stopTimeIsActivated": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "failureFlash": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "preemptIsActive": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "signalPriorityIsActive": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "fixedTimeOperation": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "trafficDependentOperation": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "standbyOperation": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "failureMode": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "off": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "recentMAPmessageUpdate": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "recentChangeInMAPassignedLanesIDsUsed": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "noValidMAPisAvailableAtThisTime": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "noValidSPATisAvailableAtThisTime": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "manualControlIsEnabled",
+                                                    "stopTimeIsActivated",
+                                                    "failureFlash",
+                                                    "preemptIsActive",
+                                                    "signalPriorityIsActive",
+                                                    "fixedTimeOperation",
+                                                    "trafficDependentOperation",
+                                                    "standbyOperation",
+                                                    "failureMode",
+                                                    "off",
+                                                    "recentMAPmessageUpdate",
+                                                    "recentChangeInMAPassignedLanesIDsUsed",
+                                                    "noValidMAPisAvailableAtThisTime",
+                                                    "noValidSPATisAvailableAtThisTime"
+                                                ],
+                                                "type": [
+                                                    "object",
+                                                    "null"
+                                                ]
+                                            },
+                                            "moy": {
+                                                "type": [
+                                                    "integer",
+                                                    "null"
+                                                ]
+                                            },
+                                            "timeStamp": {
+                                                "type": [
+                                                    "integer",
+                                                    "null"
+                                                ]
+                                            },
+                                            "enabledLanes": {
+                                                "type": [
+                                                    "object",
+                                                    "null"
+                                                ],
+                                                "required": [
+                                                    "enabledLaneList"
+                                                ],
+                                                "properties": {
+                                                    "enabledLaneList": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "integer"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "states": {
+                                                "type": "object",
+                                                "required": [
+                                                    "movementList"
+                                                ],
+                                                "properties": {
+                                                    "movementList": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "required": [
+                                                                "signalGroup",
+                                                                "state_time_speed"
+                                                            ],
+                                                            "properties": {
+                                                                "movementName": {
+                                                                    "type": [
+                                                                        "string",
+                                                                        "null"
+                                                                    ]
+                                                                },
+                                                                "signalGroup": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "state_time_speed": {
+                                                                    "type": "object",
+                                                                    "required": [
+                                                                        "movementEventList"
+                                                                    ],
+                                                                    "properties": {
+                                                                        "movementEventList": {
+                                                                            "type": "array",
+                                                                            "items": {
+                                                                                "type": "object",
+                                                                                "required": [
+                                                                                    "eventState"
+                                                                                ],
+                                                                                "properties": {
+                                                                                    "eventState": {
+                                                                                        "type": "string",
+                                                                                        "enum": [
+                                                                                            "UNAVAILABLE",
+                                                                                            "DARK",
+                                                                                            "STOP_THEN_PROCEED",
+                                                                                            "STOP_AND_REMAIN",
+                                                                                            "PRE_MOVEMENT",
+                                                                                            "PERMISSIVE_MOVEMENT_ALLOWED",
+                                                                                            "PROTECTED_MOVEMENT_ALLOWED",
+                                                                                            "PERMISSIVE_CLEARANCE",
+                                                                                            "PROTECTED_CLEARANCE",
+                                                                                            "CAUTION_CONFLICTING_TRAFFIC"
+                                                                                        ]
+                                                                                    },
+                                                                                    "timing": {
+                                                                                        "type": [
+                                                                                            "object",
+                                                                                            "null"
+                                                                                        ],
+                                                                                        "required": [],
+                                                                                        "properties": {
+                                                                                            "startTime": {
+                                                                                                "type": [
+                                                                                                    "integer",
+                                                                                                    "null"
+                                                                                                ]
+                                                                                            },
+                                                                                            "minEndTime": {
+                                                                                                "type": [
+                                                                                                    "integer",
+                                                                                                    "null"
+                                                                                                ]
+                                                                                            },
+                                                                                            "maxEndTime": {
+                                                                                                "type": [
+                                                                                                    "integer",
+                                                                                                    "null"
+                                                                                                ]
+                                                                                            },
+                                                                                            "likelyTime": {
+                                                                                                "type": [
+                                                                                                    "integer",
+                                                                                                    "null"
+                                                                                                ]
+                                                                                            },
+                                                                                            "confidence": {
+                                                                                                "type": [
+                                                                                                    "integer",
+                                                                                                    "null"
+                                                                                                ]
+                                                                                            },
+                                                                                            "nextTime": {
+                                                                                                "type": [
+                                                                                                    "integer",
+                                                                                                    "null"
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    },
+                                                                                    "speeds": {
+                                                                                        "type": [
+                                                                                            "object",
+                                                                                            "null"
+                                                                                        ],
+                                                                                        "required": [
+                                                                                            "advisorySpeedList"
+                                                                                        ],
+                                                                                        "properties": {
+                                                                                            "advisorySpeedList": {
+                                                                                                "type": "array",
+                                                                                                "items": {
+                                                                                                    "type": "object",
+                                                                                                    "required": [
+                                                                                                        "type"
+                                                                                                    ],
+                                                                                                    "properties": {
+                                                                                                        "type": {
+                                                                                                            "type": "string",
+                                                                                                            "enum": [
+                                                                                                                "NONE",
+                                                                                                                "GREENWAVE",
+                                                                                                                "ECODRIVE",
+                                                                                                                "TRANSIT"
+                                                                                                            ]
+                                                                                                        },
+                                                                                                        "speed": {
+                                                                                                            "type": [
+                                                                                                                "integer",
+                                                                                                                "null"
+                                                                                                            ]
+                                                                                                        },
+                                                                                                        "confidence": {
+                                                                                                            "oneOf": [
+                                                                                                                {
+                                                                                                                    "type": "string",
+                                                                                                                    "enum": [
+                                                                                                                        "UNAVAILABLE",
+                                                                                                                        "PREC100MS",
+                                                                                                                        "PREC10MS",
+                                                                                                                        "PREC5MS",
+                                                                                                                        "PREC1MS",
+                                                                                                                        "PREC0_1MS",
+                                                                                                                        "PREC0_05MS",
+                                                                                                                        "PREC0_01MS"
+                                                                                                                    ]
+                                                                                                                },
+                                                                                                                {
+                                                                                                                    "type": "null"
+                                                                                                                }
+                                                                                                            ]
+                                                                                                        },
+                                                                                                        "distance": {
+                                                                                                            "type": [
+                                                                                                                "integer",
+                                                                                                                "null"
+                                                                                                            ]
+                                                                                                        },
+                                                                                                        "classId": {
+                                                                                                            "type": [
+                                                                                                                "integer",
+                                                                                                                "null"
+                                                                                                            ]
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "maneuverAssistList": {
+                                                                    "type": [
+                                                                        "object",
+                                                                        "null"
+                                                                    ],
+                                                                    "required": [
+                                                                        "maneuverAssistList"
+                                                                    ],
+                                                                    "properties": {
+                                                                        "maneuverAssistList": {
+                                                                            "type": "array",
+                                                                            "items": {
+                                                                                "type": "object",
+                                                                                "required": [
+                                                                                    "connectionID"
+                                                                                ],
+                                                                                "properties": {
+                                                                                    "connectionID": {
+                                                                                        "type": "integer"
+                                                                                    },
+                                                                                    "queueLength": {
+                                                                                        "type": [
+                                                                                            "integer",
+                                                                                            "null"
+                                                                                        ]
+                                                                                    },
+                                                                                    "availableStorageLength": {
+                                                                                        "type": [
+                                                                                            "integer",
+                                                                                            "null"
+                                                                                        ]
+                                                                                    },
+                                                                                    "waitOnStop": {
+                                                                                        "type": [
+                                                                                            "boolean",
+                                                                                            "null"
+                                                                                        ]
+                                                                                    },
+                                                                                    "pedBicycleDetect": {
+                                                                                        "type": [
+                                                                                            "boolean",
+                                                                                            "null"
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "maneuverAssistList": {
+                                                "type": [
+                                                    "object",
+                                                    "null"
+                                                ],
+                                                "required": [
+                                                    "maneuverAssistList"
+                                                ],
+                                                "properties": {
+                                                    "maneuverAssistList": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "required": [
+                                                                "connectionID"
+                                                            ],
+                                                            "properties": {
+                                                                "connectionID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "queueLength": {
+                                                                    "type": [
+                                                                        "integer",
+                                                                        "null"
+                                                                    ]
+                                                                },
+                                                                "availableStorageLength": {
+                                                                    "type": [
+                                                                        "integer",
+                                                                        "null"
+                                                                    ]
+                                                                },
+                                                                "waitOnStop": {
+                                                                    "type": [
+                                                                        "boolean",
+                                                                        "null"
+                                                                    ]
+                                                                },
+                                                                "pedBicycleDetect": {
+                                                                    "type": [
+                                                                        "boolean",
+                                                                        "null"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

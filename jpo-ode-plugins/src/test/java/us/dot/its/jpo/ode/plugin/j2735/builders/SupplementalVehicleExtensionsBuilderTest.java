@@ -41,7 +41,6 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleClassification;
 import us.dot.its.jpo.ode.plugin.j2735.J2735VehicleData;
 import us.dot.its.jpo.ode.plugin.j2735.J2735WeatherProbe;
 import us.dot.its.jpo.ode.plugin.j2735.J2735WeatherReport;
-import us.dot.its.jpo.ode.util.CodecUtils;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
 public class SupplementalVehicleExtensionsBuilderTest {
@@ -212,34 +211,6 @@ public class SupplementalVehicleExtensionsBuilderTest {
             .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
 
       assertNotNull(result.getTheRTCM());
-   }
-
-   @Test
-   public void testEmptyRegional() {
-
-      ObjectNode testInput = JsonUtils.newNode();
-      testInput.set("regional", JsonUtils.newNode());
-
-      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
-            .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
-
-      assertNotNull(result.getRegional());
-   }
-
-   @Test
-   public void test1Regional(@Capturing CodecUtils capturingCodecUtils) {
-
-      ObjectNode testRegionalNode = JsonUtils.newNode();
-      testRegionalNode.put("regionId", 1);
-      testRegionalNode.put("regExtValue", "something");
-
-      ObjectNode testInput = JsonUtils.newNode();
-      testInput.set("regional", JsonUtils.newArrayNode().add(testRegionalNode));
-
-      J2735SupplementalVehicleExtensions result = SupplementalVehicleExtensionsBuilder
-            .evaluateSupplementalVehicleExtensions(new J2735BsmPart2Content(), testInput);
-
-      assertNotNull(result.getRegional());
    }
 
    @Test

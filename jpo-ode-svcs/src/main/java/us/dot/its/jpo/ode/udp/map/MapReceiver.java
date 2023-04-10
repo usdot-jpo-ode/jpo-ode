@@ -64,8 +64,6 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
                     String payloadHexString = HexUtils.toHexString(payload);
                     logger.debug("Packet: {}", payloadHexString);
 
-                    logger.debug("Creating Decoded MAP JSON Object...");
-
                     // Add header data for the decoding process
                     ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
                     String timestamp = utc.format(DateTimeFormatter.ISO_INSTANT);
@@ -88,8 +86,6 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
                     logger.debug("MAP JSON Object: {}", jsonObject.toString());
 
                     // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
-                    logger.debug("Publishing JSON MAP...");
-
                     this.mapPublisher.publish(jsonObject.toString(),
                             this.mapPublisher.getOdeProperties().getKafkaTopicOdeRawEncodedMAPJson());
                 }
@@ -113,7 +109,7 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
 
         int startIndex = hexPacket.indexOf(MAP_START_FLAG);
         if (startIndex == 0) {
-            logger.info("Message is raw MAP with no headers.");
+            logger.debug("Message is raw MAP with no headers.");
         } else if (startIndex == -1) {
             logger.error("Message contains no MAP start flag.");
             return null;

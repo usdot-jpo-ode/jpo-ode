@@ -40,7 +40,7 @@ public class OdeObject implements Serializable {
 
    @Override
    public String toString() {
-      return this.toJson(true);
+      return this.toJson(false);
    }
 
 }

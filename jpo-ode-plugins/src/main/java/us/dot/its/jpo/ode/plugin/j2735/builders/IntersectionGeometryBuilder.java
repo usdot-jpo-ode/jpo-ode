@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735IntersectionGeometry;
 import us.dot.its.jpo.ode.plugin.j2735.J2735IntersectionReferenceID;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Position3D;
+import us.dot.its.jpo.ode.plugin.j2735.OdePosition3D;
 
 public class IntersectionGeometryBuilder {
 	private IntersectionGeometryBuilder() {
@@ -44,20 +44,20 @@ public class IntersectionGeometryBuilder {
 		JsonNode refPoint = intersectionNode.get("refPoint");
 		if(refPoint != null)
 		{
-			J2735Position3D refPointObj= new J2735Position3D();
+			OdePosition3D refPointObj= new OdePosition3D();
 			if(refPoint.get("lat") != null)
 			{
-				refPointObj.setLat(refPoint.get("lat").asInt());
+				refPointObj.setLatitude(LatitudeBuilder.genericLatitude(refPoint.get("lat")));
 			}
 			
 			if(refPoint.get("long") != null)
 			{
-				refPointObj.setLon(refPoint.get("long").asInt());
+				refPointObj.setLongitude(LongitudeBuilder.genericLongitude(refPoint.get("long")));
 			}
 			
 			if(refPoint.get("elevation") != null)
 			{
-				refPointObj.setLat(refPoint.get("elevation").asInt());
+				refPointObj.setElevation(ElevationBuilder.genericElevation(refPoint.get("elevation")));
 			}
 			intersection.setRefPoint(refPointObj);
 		}

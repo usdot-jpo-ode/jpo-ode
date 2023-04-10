@@ -67,3 +67,11 @@ RUN chmod 775 /etc/init.d/kafka && update-rc.d kafka defaults
 COPY ./docker-entrypoint.sh ./docker-entrypoint.sh
 RUN chmod +x ./docker-entrypoint.sh
 ENTRYPOINT ["./docker-entrypoint.sh"]
+
+# C++
+RUN apt-get update
+RUN apt-get install -y g++ cmake libsasl2-dev libsasl2-modules libssl-dev librdkafka-dev
+RUN apt install -y autoconf libtool
+
+ENV REDACTION_PROPERTIES_PATH /workspaces/jpo-ode/jpo-cvdp/config/fieldsToRedact.txt
+ENV RPM_DEBUG true
