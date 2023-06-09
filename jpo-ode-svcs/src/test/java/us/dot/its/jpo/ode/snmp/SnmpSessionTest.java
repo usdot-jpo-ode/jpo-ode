@@ -37,6 +37,7 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.SnmpProtocol;
 import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
 
@@ -53,7 +54,7 @@ public class SnmpSessionTest {
 		String testPassword = "testPass";
 		int testRetries = 1;
 		int testTimeout = 2000;
-		testProps = new RSU("127.0.0.1" + "/161", testUsername, testPassword, testRetries, testTimeout);
+		testProps = new RSU("127.0.0.1" + "/161", testUsername, testPassword, testRetries, testTimeout, SnmpProtocol.FOURDOT1);
 		snmpSession = new SnmpSession(testProps);
 	}
 

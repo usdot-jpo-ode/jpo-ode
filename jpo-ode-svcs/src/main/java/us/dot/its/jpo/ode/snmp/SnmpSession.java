@@ -46,6 +46,7 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.SnmpProtocol;
 import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.ServiceRequest;
 import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
@@ -67,6 +68,8 @@ public class SnmpSession {
 
    private boolean ready = false;
    private boolean listening;
+
+   private SnmpProtocol snmpProtocol;
 
    /**
     * Constructor for SnmpSession
@@ -113,6 +116,7 @@ public class SnmpSession {
       // Assert the ready flag so the user can begin sending messages
       ready = true;
 
+      this.snmpProtocol = rsu.getSnmpProtocol();
    }
 
    /**
@@ -279,30 +283,57 @@ public class SnmpSession {
       // --> 1.4.1.10.3 = 1
       //////////////////////////////
 
+      // TODO: switch on SnmpProtocol enum value to decide OID specifics
+
       VariableBinding rsuSRMPsid = SnmpSession.getPEncodedVariableBinding(
-            "1.0.15628.4.1.4.1.2.".concat(Integer.toString(index)),
-            snmp.getRsuid());
+         SnmpFourDot1Protocol.rsu_srm_psid_value.concat(".").concat(Integer.toString(index)),
+         snmp.getRsuid()
+      );
+
       VariableBinding rsuSRMDsrcMsgId = new VariableBinding(
-            new OID("1.0.15628.4.1.4.1.3.".concat(Integer.toString(index))), new Integer32(snmp.getMsgid()));
+         new OID(SnmpFourDot1Protocol.rsu_srm_dsrc_msg_id_value.concat(".").concat(Integer.toString(index))),
+         new Integer32(snmp.getMsgid())
+      );
+
       VariableBinding rsuSRMTxMode = new VariableBinding(
-            new OID("1.0.15628.4.1.4.1.4.".concat(Integer.toString(index))), new Integer32(snmp.getMode()));
+         new OID(SnmpFourDot1Protocol.rsu_srm_tx_mode_value.concat(".").concat(Integer.toString(index))),
+         new Integer32(snmp.getMode())
+      );
+
       VariableBinding rsuSRMTxChannel = new VariableBinding(
-            new OID("1.0.15628.4.1.4.1.5.".concat(Integer.toString(index))), new Integer32(snmp.getChannel()));
+         new OID(SnmpFourDot1Protocol.rsu_srm_tx_channel_value.concat(".").concat(Integer.toString(index))),
+         new Integer32(snmp.getChannel())
+      );
+
       VariableBinding rsuSRMTxInterval = new VariableBinding(
-            new OID("1.0.15628.4.1.4.1.6.".concat(Integer.toString(index))), new Integer32(snmp.getInterval()));
+         new OID(SnmpFourDot1Protocol.rsu_srm_tx_interval_value.concat(".").concat(Integer.toString(index))),
+         new Integer32(snmp.getInterval())
+      );
+
       VariableBinding rsuSRMDeliveryStart = new VariableBinding(
-            new OID("1.0.15628.4.1.4.1.7.".concat(Integer.toString(index))),
-            new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystart()))));
+         new OID(SnmpFourDot1Protocol.rsu_srm_delivery_start_value.concat(".").concat(Integer.toString(index))),
+         new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystart())))
+      );
+
       VariableBinding rsuSRMDeliveryStop = new VariableBinding(
-            new OID("1.0.15628.4.1.4.1.8.".concat(Integer.toString(index))),
-            new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystop()))));
+         new OID(SnmpFourDot1Protocol.rsu_srm_delivery_stop_value.concat(".").concat(Integer.toString(index))),
+         new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystop())))
+      );
+
       VariableBinding rsuSRMPayload = new VariableBinding(
-            new OID("1.0.15628.4.1.4.1.9.".concat(Integer.toString(index))),
-            new OctetString(DatatypeConverter.parseHexBinary(payload)));
+         new OID(SnmpFourDot1Protocol.rsu_srm_payload_value.concat(".").concat(Integer.toString(index))),
+         new OctetString(DatatypeConverter.parseHexBinary(payload))
+      );
+
       VariableBinding rsuSRMEnable = new VariableBinding(
-            new OID("1.0.15628.4.1.4.1.10.".concat(Integer.toString(index))), new Integer32(snmp.getEnable()));
+         new OID(SnmpFourDot1Protocol.rsu_srm_enable_value.concat(".").concat(Integer.toString(index))),
+         new Integer32(snmp.getEnable())
+      );
+            
       VariableBinding rsuSRMStatus = new VariableBinding(
-            new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(index))), new Integer32(snmp.getStatus()));
+         new OID(SnmpFourDot1Protocol.rsu_srm_status_value.concat(".").concat(Integer.toString(index))),
+         new Integer32(snmp.getStatus())
+      );
 
       ScopedPDU pdu = new ScopedPDU();
       pdu.add(rsuSRMPsid);

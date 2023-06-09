@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.snmp.SnmpFourDot1Protocol;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
@@ -82,17 +83,19 @@ public class TimQueryController {
                .body(JsonUtils.jsonKeyValue(ERRSTR, "Failed to create SNMP session."));
       }
 
+      // TODO: switch on SnmpProtocol enum value to decide OID specifics
+
       PDU pdu0 = new ScopedPDU();
       pdu0.setType(PDU.GET);
       PDU pdu1 = new ScopedPDU();
       pdu1.setType(PDU.GET);
 
       for (int i = 0; i < odeProperties.getRsuSrmSlots() - 50; i++) {
-         pdu0.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
+         pdu0.add(new VariableBinding(new OID(SnmpFourDot1Protocol.rsu_srm_status_value.concat(".").concat(Integer.toString(i)))));
       }
 
       for (int i = 50; i < odeProperties.getRsuSrmSlots(); i++) {
-         pdu1.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
+         pdu1.add(new VariableBinding(new OID(SnmpFourDot1Protocol.rsu_srm_status_value.concat(".").concat(Integer.toString(i)))));
       }
 
       ResponseEvent response0 = null;

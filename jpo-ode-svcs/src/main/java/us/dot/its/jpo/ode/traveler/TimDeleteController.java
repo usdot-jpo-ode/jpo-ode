@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.snmp.SnmpFourDot1Protocol;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
@@ -81,8 +82,10 @@ public class TimDeleteController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, "Malformed JSON"));
       }
 
+      // TODO: switch on SnmpProtocol enum value to decide OID specifics
+
       PDU pdu = new ScopedPDU();
-      pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(index))), new Integer32(6)));
+      pdu.add(new VariableBinding(new OID(SnmpFourDot1Protocol.rsu_srm_status_value.concat(".").concat(Integer.toString(index))), new Integer32(6)));
       pdu.setType(PDU.SET);
 
       ResponseEvent rsuResponse = null;

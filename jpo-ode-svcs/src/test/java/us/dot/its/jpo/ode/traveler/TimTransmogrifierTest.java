@@ -26,6 +26,7 @@ import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.SnmpProtocol;
 import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.ServiceRequest;
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse.SDW;
@@ -58,20 +59,20 @@ public class TimTransmogrifierTest {
          }
       };
 
-      RSU expected = new RSU("127.0.0.1", "v3user", "password", 1, 2000);
+      RSU expected = new RSU("127.0.0.1", "v3user", "password", 1, 2000, SnmpProtocol.FOURDOT1);
 
       // rsuUsername and rsuPassword are null
-      RSU actual1 = new RSU("127.0.0.1", null, null, 1, 2000);
+      RSU actual1 = new RSU("127.0.0.1", null, null, 1, 2000, SnmpProtocol.FOURDOT1);
       TimTransmogrifier.updateRsuCreds(actual1, mockOdeProperties);
       assertEquals(expected, actual1);
 
       // rsuUsername and rsuPassword are not-null
-      RSU actual2 = new RSU("127.0.0.1", "v3user", "password", 1, 2000);
+      RSU actual2 = new RSU("127.0.0.1", "v3user", "password", 1, 2000, SnmpProtocol.FOURDOT1);
       TimTransmogrifier.updateRsuCreds(actual2, mockOdeProperties);
       assertEquals(expected, actual2);
 
       // rsuUsername and rsuPassword are blank
-      RSU actual3 = new RSU("127.0.0.1", "", "", 1, 2000);
+      RSU actual3 = new RSU("127.0.0.1", "", "", 1, 2000, SnmpProtocol.FOURDOT1);
       TimTransmogrifier.updateRsuCreds(actual3, mockOdeProperties);
       assertEquals(expected, actual3);
    }
