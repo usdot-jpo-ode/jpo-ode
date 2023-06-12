@@ -34,8 +34,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.plugin.SnmpProtocol;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
 import us.dot.its.jpo.ode.snmp.SnmpFourDot1Protocol;
+import us.dot.its.jpo.ode.snmp.SnmpNTCIP1218Protocol;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
@@ -83,19 +85,35 @@ public class TimQueryController {
                .body(JsonUtils.jsonKeyValue(ERRSTR, "Failed to create SNMP session."));
       }
 
-      // TODO: switch on SnmpProtocol enum value to decide OID specifics
-
       PDU pdu0 = new ScopedPDU();
       pdu0.setType(PDU.GET);
       PDU pdu1 = new ScopedPDU();
       pdu1.setType(PDU.GET);
 
-      for (int i = 0; i < odeProperties.getRsuSrmSlots() - 50; i++) {
-         pdu0.add(new VariableBinding(new OID(SnmpFourDot1Protocol.rsu_srm_status_value.concat(".").concat(Integer.toString(i)))));
-      }
+      SnmpProtocol snmpProtocol = queryTarget.getSnmpProtocol();
 
-      for (int i = 50; i < odeProperties.getRsuSrmSlots(); i++) {
-         pdu1.add(new VariableBinding(new OID(SnmpFourDot1Protocol.rsu_srm_status_value.concat(".").concat(Integer.toString(i)))));
+      if (snmpProtocol == SnmpProtocol.FOURDOT1) {      
+         for (int i = 0; i < odeProperties.getRsuSrmSlots() - 50; i++) {
+            pdu0.add(new VariableBinding(new OID(SnmpFourDot1Protocol.rsu_srm_status_oid.concat(".").concat(Integer.toString(i)))));
+         }
+
+         for (int i = 50; i < odeProperties.getRsuSrmSlots(); i++) {
+            pdu1.add(new VariableBinding(new OID(SnmpFourDot1Protocol.rsu_srm_status_oid.concat(".").concat(Integer.toString(i)))));
+         }
+      }
+      else if (snmpProtocol == SnmpProtocol.NTCIP1218) {
+         for (int i = 0; i < odeProperties.getRsuSrmSlots() - 50; i++) {
+            pdu0.add(new VariableBinding(new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_status_oid.concat(".").concat(Integer.toString(i)))));
+         }
+
+         for (int i = 50; i < odeProperties.getRsuSrmSlots(); i++) {
+            pdu1.add(new VariableBinding(new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_status_oid.concat(".").concat(Integer.toString(i)))));
+         }
+      }
+      else {
+         logger.error("Unsupported SNMP protocol: {}", snmpProtocol);
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+               .body(JsonUtils.jsonKeyValue(ERRSTR, "Unsupported SNMP protocol: " + snmpProtocol));
       }
 
       ResponseEvent response0 = null;

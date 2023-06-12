@@ -69,8 +69,6 @@ public class SnmpSession {
    private boolean ready = false;
    private boolean listening;
 
-   private SnmpProtocol snmpProtocol;
-
    /**
     * Constructor for SnmpSession
     * 
@@ -115,8 +113,6 @@ public class SnmpSession {
 
       // Assert the ready flag so the user can begin sending messages
       ready = true;
-
-      this.snmpProtocol = rsu.getSnmpProtocol();
    }
 
    /**
@@ -211,7 +207,7 @@ public class SnmpSession {
 
       // Send the PDU
       ResponseEvent response = null;
-      ScopedPDU pdu = SnmpSession.createPDU(snmp, payload, rsu.getRsuIndex(), requestVerb);
+      ScopedPDU pdu = SnmpSession.createPDU(snmp, payload, rsu.getRsuIndex(), requestVerb, rsu.getSnmpProtocol());
       response = session.set(pdu, session.getSnmp(), session.getTarget(), false);
       String msg = "Message Sent to {}, index {}: {}";
       EventLogger.logger.debug(msg, rsu.getRsuTarget(), rsu.getRsuIndex(), payload);
@@ -256,101 +252,17 @@ public class SnmpSession {
     * @return PDU
     * @throws ParseException
     */
-   public static ScopedPDU createPDU(SNMP snmp, String payload, int index, RequestVerb verb) throws ParseException {
-
-      //////////////////////////////
-      // - OID examples - //
-      //////////////////////////////
-      // rsuSRMStatus.3 = 4
-      // --> 1.4.1.11.3 = 4
-      // rsuSRMTxChannel.3 = 3
-      // --> 1.4.1.5.3 = 178
-      // rsuSRMTxMode.3 = 1
-      // --> 1.4.1.4.3 = 1
-      // rsuSRMPsid.3 x "8300"
-      // --> 1.4.1.2.3 x "8300"
-      // rsuSRMDsrcMsgId.3 = 31
-      // --> 1.4.1.3.3 = 31
-      // rsuSRMTxInterval.3 = 1
-      // --> 1.4.1.6.3 = 1
-      // rsuSRMDeliveryStart.3 x "010114111530"
-      // --> 1.4.1.7.3 = "010114111530"
-      // rsuSRMDeliveryStop.3 x "010114130000"
-      // --> 1.4.1.8.3 = "010114130000"
-      // rsuSRMPayload.3 x "0EFF82445566778899000000AABBCCDDEEFF00E00EA0C12A00"
-      // --> 1.4.1.9.3 = "0EFF82445566778899000000AABBCCDDEEFF00E00EA0C12A00"
-      // rsuSRMEnable.3 = 1
-      // --> 1.4.1.10.3 = 1
-      //////////////////////////////
-
-      // TODO: switch on SnmpProtocol enum value to decide OID specifics
-
-      VariableBinding rsuSRMPsid = SnmpSession.getPEncodedVariableBinding(
-         SnmpFourDot1Protocol.rsu_srm_psid_value.concat(".").concat(Integer.toString(index)),
-         snmp.getRsuid()
-      );
-
-      VariableBinding rsuSRMDsrcMsgId = new VariableBinding(
-         new OID(SnmpFourDot1Protocol.rsu_srm_dsrc_msg_id_value.concat(".").concat(Integer.toString(index))),
-         new Integer32(snmp.getMsgid())
-      );
-
-      VariableBinding rsuSRMTxMode = new VariableBinding(
-         new OID(SnmpFourDot1Protocol.rsu_srm_tx_mode_value.concat(".").concat(Integer.toString(index))),
-         new Integer32(snmp.getMode())
-      );
-
-      VariableBinding rsuSRMTxChannel = new VariableBinding(
-         new OID(SnmpFourDot1Protocol.rsu_srm_tx_channel_value.concat(".").concat(Integer.toString(index))),
-         new Integer32(snmp.getChannel())
-      );
-
-      VariableBinding rsuSRMTxInterval = new VariableBinding(
-         new OID(SnmpFourDot1Protocol.rsu_srm_tx_interval_value.concat(".").concat(Integer.toString(index))),
-         new Integer32(snmp.getInterval())
-      );
-
-      VariableBinding rsuSRMDeliveryStart = new VariableBinding(
-         new OID(SnmpFourDot1Protocol.rsu_srm_delivery_start_value.concat(".").concat(Integer.toString(index))),
-         new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystart())))
-      );
-
-      VariableBinding rsuSRMDeliveryStop = new VariableBinding(
-         new OID(SnmpFourDot1Protocol.rsu_srm_delivery_stop_value.concat(".").concat(Integer.toString(index))),
-         new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystop())))
-      );
-
-      VariableBinding rsuSRMPayload = new VariableBinding(
-         new OID(SnmpFourDot1Protocol.rsu_srm_payload_value.concat(".").concat(Integer.toString(index))),
-         new OctetString(DatatypeConverter.parseHexBinary(payload))
-      );
-
-      VariableBinding rsuSRMEnable = new VariableBinding(
-         new OID(SnmpFourDot1Protocol.rsu_srm_enable_value.concat(".").concat(Integer.toString(index))),
-         new Integer32(snmp.getEnable())
-      );
-            
-      VariableBinding rsuSRMStatus = new VariableBinding(
-         new OID(SnmpFourDot1Protocol.rsu_srm_status_value.concat(".").concat(Integer.toString(index))),
-         new Integer32(snmp.getStatus())
-      );
-
-      ScopedPDU pdu = new ScopedPDU();
-      pdu.add(rsuSRMPsid);
-      pdu.add(rsuSRMDsrcMsgId);
-      pdu.add(rsuSRMTxMode);
-      pdu.add(rsuSRMTxChannel);
-      pdu.add(rsuSRMTxInterval);
-      pdu.add(rsuSRMDeliveryStart);
-      pdu.add(rsuSRMDeliveryStop);
-      pdu.add(rsuSRMPayload);
-      pdu.add(rsuSRMEnable);
-      if (verb == ServiceRequest.OdeInternal.RequestVerb.POST) {
-         pdu.add(rsuSRMStatus);
+   public static ScopedPDU createPDU(SNMP snmp, String payload, int index, RequestVerb verb, SnmpProtocol snmpProtocol) throws ParseException {
+      if (snmpProtocol == SnmpProtocol.FOURDOT1) {
+         return createPDUWithFourDot1Protocol(snmp, payload, index, verb);
       }
-      pdu.setType(PDU.SET);
-
-      return pdu;
+      else if (snmpProtocol == SnmpProtocol.NTCIP1218) {
+         return createPDUWithNTCIP1218Protocol(snmp, payload, index, verb);
+      }
+      else {
+         System.out.println("ERROR: Unknown SNMP protocol: " + snmpProtocol);
+         return null;
+      }
    }
 
    public static VariableBinding getPEncodedVariableBinding(String oid, String val) {
@@ -380,5 +292,178 @@ public class SnmpSession {
                OctetString.fromString(Integer.toHexString(intVal + additionValue), 16));
       }
       return null;
+   }
+
+   private static ScopedPDU createPDUWithFourDot1Protocol(SNMP snmp, String payload, int index, RequestVerb verb) throws ParseException {
+         //////////////////////////////
+         // - OID examples - //
+         //////////////////////////////
+         // rsuSRMStatus.3 = 4
+         // --> 1.4.1.11.3 = 4
+         // rsuSRMTxChannel.3 = 3
+         // --> 1.4.1.5.3 = 178
+         // rsuSRMTxMode.3 = 1
+         // --> 1.4.1.4.3 = 1
+         // rsuSRMPsid.3 x "8300"
+         // --> 1.4.1.2.3 x "8300"
+         // rsuSRMDsrcMsgId.3 = 31
+         // --> 1.4.1.3.3 = 31
+         // rsuSRMTxInterval.3 = 1
+         // --> 1.4.1.6.3 = 1
+         // rsuSRMDeliveryStart.3 x "010114111530"
+         // --> 1.4.1.7.3 = "010114111530"
+         // rsuSRMDeliveryStop.3 x "010114130000"
+         // --> 1.4.1.8.3 = "010114130000"
+         // rsuSRMPayload.3 x "0EFF82445566778899000000AABBCCDDEEFF00E00EA0C12A00"
+         // --> 1.4.1.9.3 = "0EFF82445566778899000000AABBCCDDEEFF00E00EA0C12A00"
+         // rsuSRMEnable.3 = 1
+         // --> 1.4.1.10.3 = 1
+         //////////////////////////////
+
+         VariableBinding rsuSRMPsid = SnmpSession.getPEncodedVariableBinding(
+            SnmpFourDot1Protocol.rsu_srm_psid_oid.concat(".").concat(Integer.toString(index)),
+            snmp.getRsuid()
+         );
+
+         VariableBinding rsuSRMDsrcMsgId = new VariableBinding(
+            new OID(SnmpFourDot1Protocol.rsu_srm_dsrc_msg_id_oid.concat(".").concat(Integer.toString(index))),
+            new Integer32(snmp.getMsgid())
+         );
+
+         VariableBinding rsuSRMTxMode = new VariableBinding(
+            new OID(SnmpFourDot1Protocol.rsu_srm_tx_mode_oid.concat(".").concat(Integer.toString(index))),
+            new Integer32(snmp.getMode())
+         );
+
+         VariableBinding rsuSRMTxChannel = new VariableBinding(
+            new OID(SnmpFourDot1Protocol.rsu_srm_tx_channel_oid.concat(".").concat(Integer.toString(index))),
+            new Integer32(snmp.getChannel())
+         );
+
+         VariableBinding rsuSRMTxInterval = new VariableBinding(
+            new OID(SnmpFourDot1Protocol.rsu_srm_tx_interval_oid.concat(".").concat(Integer.toString(index))),
+            new Integer32(snmp.getInterval())
+         );
+
+         VariableBinding rsuSRMDeliveryStart = new VariableBinding(
+            new OID(SnmpFourDot1Protocol.rsu_srm_delivery_start_oid.concat(".").concat(Integer.toString(index))),
+            new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystart())))
+         );
+
+         VariableBinding rsuSRMDeliveryStop = new VariableBinding(
+            new OID(SnmpFourDot1Protocol.rsu_srm_delivery_stop_oid.concat(".").concat(Integer.toString(index))),
+            new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystop())))
+         );
+
+         VariableBinding rsuSRMPayload = new VariableBinding(
+            new OID(SnmpFourDot1Protocol.rsu_srm_payload_oid.concat(".").concat(Integer.toString(index))),
+            new OctetString(DatatypeConverter.parseHexBinary(payload))
+         );
+
+         VariableBinding rsuSRMEnable = new VariableBinding(
+            new OID(SnmpFourDot1Protocol.rsu_srm_enable_oid.concat(".").concat(Integer.toString(index))),
+            new Integer32(snmp.getEnable())
+         );
+               
+         VariableBinding rsuSRMStatus = new VariableBinding(
+            new OID(SnmpFourDot1Protocol.rsu_srm_status_oid.concat(".").concat(Integer.toString(index))),
+            new Integer32(snmp.getStatus())
+         );
+
+         ScopedPDU pdu = new ScopedPDU();
+         pdu.add(rsuSRMPsid);
+         pdu.add(rsuSRMDsrcMsgId);
+         pdu.add(rsuSRMTxMode);
+         pdu.add(rsuSRMTxChannel);
+         pdu.add(rsuSRMTxInterval);
+         pdu.add(rsuSRMDeliveryStart);
+         pdu.add(rsuSRMDeliveryStop);
+         pdu.add(rsuSRMPayload);
+         pdu.add(rsuSRMEnable);
+         if (verb == ServiceRequest.OdeInternal.RequestVerb.POST) {
+            pdu.add(rsuSRMStatus);
+         }
+         pdu.setType(PDU.SET);
+
+         return pdu;
+   }
+
+   private static ScopedPDU createPDUWithNTCIP1218Protocol(SNMP snmp, String payload, int index, RequestVerb verb) throws ParseException {
+         //////////////////////////////
+         // - OID examples - //
+         //////////////////////////////
+         // TODO: write examples
+         //////////////////////////////
+
+         VariableBinding rsuSRMPsid = SnmpSession.getPEncodedVariableBinding(
+            SnmpNTCIP1218Protocol.rsu_msg_repeat_psid_oid.concat(".").concat(Integer.toString(index)),
+            snmp.getRsuid()
+         );
+
+         // note: dsrc_msg_id is not in NTCIP 1218
+
+         // note: tx_mode is not in NTCIP 1218
+
+         VariableBinding rsuMsgRepeatTxChannel = new VariableBinding(
+            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_tx_channel_oid.concat(".").concat(Integer.toString(index))),
+            new Integer32(snmp.getChannel())
+         );
+
+         VariableBinding rsuMsgRepeatTxInterval = new VariableBinding(
+            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_tx_interval_oid.concat(".").concat(Integer.toString(index))),
+            new Integer32(snmp.getInterval())
+         );
+
+         VariableBinding rsuMsgRepeatDeliveryStart = new VariableBinding(
+            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_delivery_start_oid.concat(".").concat(Integer.toString(index))),
+            new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystart())))
+         );
+
+         VariableBinding rsuMsgRepeatDeliveryStop = new VariableBinding(
+            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_delivery_stop_oid.concat(".").concat(Integer.toString(index))),
+            new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystop())))
+         );
+
+         VariableBinding rsuMsgRepeatPayload = new VariableBinding(
+            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_payload_oid.concat(".").concat(Integer.toString(index))),
+            new OctetString(DatatypeConverter.parseHexBinary(payload))
+         );
+
+         VariableBinding rsuMsgRepeatEnable = new VariableBinding(
+            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_enable_oid.concat(".").concat(Integer.toString(index))),
+            new Integer32(snmp.getEnable())
+         );
+
+         VariableBinding rsuMsgRepeatStatus = new VariableBinding(
+            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_status_oid.concat(".").concat(Integer.toString(index))),
+            new Integer32(snmp.getStatus())
+         );
+
+         VariableBinding rsuMsgRepeatPriority = new VariableBinding(
+            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_priority_oid.concat(".").concat(Integer.toString(index))),
+            new Integer32(snmp.getMsgRepeatPriority())
+         );
+
+         VariableBinding rsuMsgRepeatOptions = new VariableBinding(
+            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_options_oid.concat(".").concat(Integer.toString(index))),
+            new Integer32(snmp.getMsgRepeatOptions()) // TODO: pass bitstring instead of integer
+         );
+
+         ScopedPDU pdu = new ScopedPDU();
+         pdu.add(rsuSRMPsid);
+         pdu.add(rsuMsgRepeatTxChannel);
+         pdu.add(rsuMsgRepeatTxInterval);
+         pdu.add(rsuMsgRepeatDeliveryStart);
+         pdu.add(rsuMsgRepeatDeliveryStop);
+         pdu.add(rsuMsgRepeatPayload);
+         pdu.add(rsuMsgRepeatEnable);
+         pdu.add(rsuMsgRepeatPriority);
+         pdu.add(rsuMsgRepeatOptions);
+         if (verb == ServiceRequest.OdeInternal.RequestVerb.POST) {
+            pdu.add(rsuMsgRepeatStatus);
+         }
+         pdu.setType(PDU.SET);
+
+         return pdu;
    }
 }

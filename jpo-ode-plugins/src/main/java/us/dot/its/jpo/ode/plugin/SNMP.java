@@ -192,4 +192,14 @@ public class SNMP extends OdeObject {
       return true;
    }
 
+   public int getMsgRepeatPriority() {
+      // TODO: implement
+      return 0;
+   }
+
+   public int getMsgRepeatOptions() {
+      // TODO: implement
+      return 0;
+   }
+
 }

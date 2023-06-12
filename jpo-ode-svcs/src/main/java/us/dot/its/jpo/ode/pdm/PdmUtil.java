@@ -30,80 +30,82 @@ public class PdmUtil {
        throw new UnsupportedOperationException();
     }
 
+    /**
+     * Creates a ScopedPDU from a J2735ProbeDataManagment object. Uses the SnmpFourDot1Protocol class to get the OIDs since
+     * PDM operations are not defined in NTCIP1218.
+     */
     public static ScopedPDU createPDU(J2735ProbeDataManagment params) {
-        // TODO: switch on SnmpProtocol enum value to decide OID specifics
-
         ScopedPDU pdu = new ScopedPDU();
         pdu.setType(PDU.SET);
 
         // Add singular items to PDU
         VariableBinding rsuPDMSampleStart = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_pdm_sample_start_value),
+            new OID(SnmpFourDot1Protocol.rsu_pdm_sample_start_oid),
             new Integer32(params.getSampleStart())
         );
 
         VariableBinding rsuPDMSampleEnd = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_pdm_sample_end_value),
+            new OID(SnmpFourDot1Protocol.rsu_pdm_sample_end_oid),
             new Integer32(params.getSampleEnd())
         );
 
         VariableBinding rsuPDMDirections = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_pdm_directions_value),
+            new OID(SnmpFourDot1Protocol.rsu_pdm_directions_oid),
             new Integer32(params.getDirections())
         );
 
         VariableBinding rsuPDMTermChoice = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_pdm_term_choice_value),
+            new OID(SnmpFourDot1Protocol.rsu_pdm_term_choice_oid),
             new Integer32(params.getTermChoice())
         );
 
         VariableBinding rsuPDMTermTime = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_pdm_term_time_value),
+            new OID(SnmpFourDot1Protocol.rsu_pdm_term_time_oid),
             new Integer32(params.getTermTime())
         );
 
         VariableBinding rsuPDMTermDistance = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_pdm_term_distance_value),
+            new OID(SnmpFourDot1Protocol.rsu_pdm_term_distance_oid),
             new Integer32(params.getTermDistance())
         );
 
         VariableBinding rsuPDMSnapshotChoice = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_pdm_snapshot_choice_value),
+            new OID(SnmpFourDot1Protocol.rsu_pdm_snapshot_choice_oid),
             new Integer32(params.getSnapshotChoice())
         );
 
         VariableBinding rsuPDMMinSnapshotTime = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_pdm_min_snapshot_time_value),
+            new OID(SnmpFourDot1Protocol.rsu_pdm_min_snapshot_time_oid),
             new Integer32(params.getMinSnapshotTime())
         );
 
         VariableBinding rsuPDMMaxSnapshotTime = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_pdm_max_snapshot_time_value),
+            new OID(SnmpFourDot1Protocol.rsu_pdm_max_snapshot_time_oid),
             new Integer32(params.getMaxSnapshotTime())
         );
 
         VariableBinding rsuPDMMinSnapshotDistance = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_pdm_min_snapshot_distance_value),
+            new OID(SnmpFourDot1Protocol.rsu_pdm_min_snapshot_distance_oid),
             new Integer32(params.getMinSnapshotDistance())
         );
 
         VariableBinding rsuPDMMaxSnapshotDistance = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_pdm_max_snapshot_distance_value),
+            new OID(SnmpFourDot1Protocol.rsu_pdm_max_snapshot_distance_oid),
             new Integer32(params.getMaxSnapshotDistance())
         );
 
         VariableBinding rsuPDMSnapshotMinSpeed = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_pdm_snapshot_min_speed_value),
+            new OID(SnmpFourDot1Protocol.rsu_pdm_snapshot_min_speed_oid),
             new Integer32(params.getSnapshotMinSpeed())
         );
 
         VariableBinding rsuPDMSnapshotMaxSpeed = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_pdm_snapshot_max_speed_value),
+            new OID(SnmpFourDot1Protocol.rsu_pdm_snapshot_max_speed_oid),
             new Integer32(params.getSnapshotMaxSpeed())
         );
 
         VariableBinding rsuPDMTxInterval = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_pdm_tx_interval_value),
+            new OID(SnmpFourDot1Protocol.rsu_pdm_tx_interval_oid),
             new Integer32(params.getTxInterval())
         );
 
@@ -127,27 +129,27 @@ public class PdmUtil {
         for (int index = 0; index < params.getVehicleStatusRequestList().length; index++) {
 
             VariableBinding rsuPDMVSReqTag = new VariableBinding(
-                new OID(SnmpFourDot1Protocol.rsu_pdm_vs_req_tag_value.replace("{}", String.valueOf(index))),
+                new OID(SnmpFourDot1Protocol.rsu_pdm_vs_req_tag_oid.replace("{}", String.valueOf(index))),
                 new Integer32(params.getVehicleStatusRequestList()[index].getTag())
             );
             VariableBinding rsuPDMVSReqSubTag = new VariableBinding(
-                new OID(SnmpFourDot1Protocol.rsu_pdm_vs_req_sub_tag_value.replace("{}", String.valueOf(index))),
+                new OID(SnmpFourDot1Protocol.rsu_pdm_vs_req_sub_tag_oid.replace("{}", String.valueOf(index))),
                 new Integer32(params.getVehicleStatusRequestList()[index].getSubTag())
             );
             VariableBinding rsuPDMVSReqLessThenValue = new VariableBinding(
-                new OID(SnmpFourDot1Protocol.rsu_pdm_vs_req_less_then_value.replace("{}", String.valueOf(index))),
+                new OID(SnmpFourDot1Protocol.rsu_pdm_vs_req_less_then_oid.replace("{}", String.valueOf(index))),
                 new Integer32(params.getVehicleStatusRequestList()[index].getLessThenValue())
             );
             VariableBinding rsuPDMVSReqMoreThenValue = new VariableBinding(
-                new OID(SnmpFourDot1Protocol.rsu_pdm_vs_req_more_then_value.replace("{}", String.valueOf(index))),
+                new OID(SnmpFourDot1Protocol.rsu_pdm_vs_req_more_then_oid.replace("{}", String.valueOf(index))),
                 new Integer32(params.getVehicleStatusRequestList()[index].getMoreThenValue())
             );
             VariableBinding rsuPDMVSReqSendAll = new VariableBinding(
-                new OID(SnmpFourDot1Protocol.rsu_pdm_vs_req_send_all_value.replace("{}", String.valueOf(index))),
+                new OID(SnmpFourDot1Protocol.rsu_pdm_vs_req_send_all_oid.replace("{}", String.valueOf(index))),
                 new Integer32(params.getVehicleStatusRequestList()[index].getSendAll())
             );
             VariableBinding rsuPDMVSReqStatus = new VariableBinding(
-                new OID(SnmpFourDot1Protocol.rsu_pdm_vs_req_status_value.replace("{}", String.valueOf(index))),
+                new OID(SnmpFourDot1Protocol.rsu_pdm_vs_req_status_oid.replace("{}", String.valueOf(index))),
                 new Integer32(params.getVehicleStatusRequestList()[index].getStatus())
             );
 

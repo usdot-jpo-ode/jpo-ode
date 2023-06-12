@@ -152,12 +152,12 @@ public class SnmpSessionTest {
 		SNMP testParams = new SNMP(rsuSRMPsid, rsuSRMDsrcMsgId, rsuSRMTxMode, rsuSRMTxChannel, rsuSRMTxInterval,
 				"2017-12-02T17:47:11-05:00", "2017-12-02T17:47:11-05:00", rsuSRMEnable, rsuSRMStatus);
 
-		ScopedPDU result = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.POST);
+		ScopedPDU result = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.POST, SnmpProtocol.FOURDOT1);
 
 		assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result.getType());
 		assertEquals(expectedResult, result.getVariableBindings().toString());
 
-		ScopedPDU result2 = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.GET);
+		ScopedPDU result2 = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.GET, SnmpProtocol.FOURDOT1);
 
 		assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result2.getType());
 		assertEquals(expectedResult2, result2.getVariableBindings().toString());
