@@ -92,6 +92,12 @@ public class TimQueryController {
 
       SnmpProtocol snmpProtocol = queryTarget.getSnmpProtocol();
 
+      if (snmpProtocol == null) {
+         logger.error("No SNMP protocol specified.");
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+               .body(JsonUtils.jsonKeyValue(ERRSTR, "No SNMP protocol specified."));
+      }
+
       if (snmpProtocol == SnmpProtocol.FOURDOT1) {      
          for (int i = 0; i < odeProperties.getRsuSrmSlots() - 50; i++) {
             pdu0.add(new VariableBinding(new OID(SnmpFourDot1Protocol.rsu_srm_status_oid.concat(".").concat(Integer.toString(i)))));

@@ -32,6 +32,7 @@ public class RoadSideUnit {
 
         public RSU() {
             super();
+            this.snmpProtocol = SnmpProtocol.FOURDOT1;
         }
 
         public RSU(String rsuTarget, String rsuUsername, String rsuPassword, int rsuRetries, int rsuTimeout, SnmpProtocol snmpProtocol) {

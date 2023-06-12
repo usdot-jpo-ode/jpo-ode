@@ -85,6 +85,12 @@ public class TimDeleteController {
       }
 
       SnmpProtocol snmpProtocol = queryTarget.getSnmpProtocol();
+      
+      if (snmpProtocol == null) {
+         logger.error("No SNMP protocol specified.");
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+               .body(JsonUtils.jsonKeyValue(ERRSTR, "No SNMP protocol specified."));
+      }
 
       PDU pdu = null;
       if (snmpProtocol.equals(SnmpProtocol.FOURDOT1)) {
