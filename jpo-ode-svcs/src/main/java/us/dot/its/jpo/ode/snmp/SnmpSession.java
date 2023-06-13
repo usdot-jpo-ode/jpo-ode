@@ -392,10 +392,29 @@ public class SnmpSession {
          //////////////////////////////
          // - OID examples - //
          //////////////////////////////
-         // TODO: write examples
+         // rsuMsgRepeatPsid.3 x "8300"
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.2.3 x "8300"
+         // rsuMsgRepeatTxChannel.3 = 3
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.3.3 = 178
+         // rsuMsgRepeatTxInterval.3 = 1
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.4.3 = 1
+         // rsuMsgRepeatDeliveryStart.3 x "010114111530"
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.5.3 = "010114111530"
+         // rsuMsgRepeatDeliveryStop.3 x "010114130000"
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.6.3 = "010114130000"
+         // rsuMsgRepeatPayload.3 x "0EFF82445566778899000000AABBCCDDEEFF00E00EA0C12A00"
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.7.3 = "0EFF82445566778899000000AABBCCDDEEFF00E00EA0C12A00"
+         // rsuMsgRepeatEnable.3 = 1
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.8.3 = 1
+         // rsuMsgRepeatStatus.3 = 4
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.9.3 = 4
+         // rsuMsgRepeatPriority.3 = 1
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.10.3 = 1
+         // rsuMsgRepeatOptions.3 = "0000"
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.11.3 = "0000"
          //////////////////////////////
 
-         VariableBinding rsuSRMPsid = SnmpSession.getPEncodedVariableBinding(
+         VariableBinding rsuMsgRepeatPsid = SnmpSession.getPEncodedVariableBinding(
             SnmpNTCIP1218Protocol.rsu_msg_repeat_psid_oid.concat(".").concat(Integer.toString(index)),
             snmp.getRsuid()
          );
@@ -450,18 +469,18 @@ public class SnmpSession {
          );
 
          ScopedPDU pdu = new ScopedPDU();
-         pdu.add(rsuSRMPsid);
+         pdu.add(rsuMsgRepeatPsid);
          pdu.add(rsuMsgRepeatTxChannel);
          pdu.add(rsuMsgRepeatTxInterval);
          pdu.add(rsuMsgRepeatDeliveryStart);
          pdu.add(rsuMsgRepeatDeliveryStop);
          pdu.add(rsuMsgRepeatPayload);
          pdu.add(rsuMsgRepeatEnable);
-         pdu.add(rsuMsgRepeatPriority);
-         pdu.add(rsuMsgRepeatOptions);
          if (verb == ServiceRequest.OdeInternal.RequestVerb.POST) {
             pdu.add(rsuMsgRepeatStatus);
          }
+         pdu.add(rsuMsgRepeatPriority);
+         pdu.add(rsuMsgRepeatOptions);
          pdu.setType(PDU.SET);
 
          return pdu;
