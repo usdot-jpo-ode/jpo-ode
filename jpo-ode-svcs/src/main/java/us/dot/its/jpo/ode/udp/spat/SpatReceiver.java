@@ -104,8 +104,6 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
    public byte[] removeHeader(byte[] packet) {
       String hexPacket = HexUtils.toHexString(packet);
 
-      //logger.debug("SPAT packet: {}", hexPacket);
-
       int startIndex = hexPacket.indexOf(SPAT_START_FLAG);
       if (startIndex == 0) {
          logger.debug("Message is raw SPAT with no headers.");
