@@ -216,7 +216,7 @@ public class OdeProperties implements EnvironmentAware {
       } catch (UnknownHostException e) {
          // Let's just use a random hostname
          hostname = UUID.randomUUID().toString();
-         logger.warn("Unknown host error: {}, using random", e);
+         logger.error("Unknown host error: {}, using random", e);
       }
       hostId = hostname;
       logger.info("Host ID: {}", hostId);
