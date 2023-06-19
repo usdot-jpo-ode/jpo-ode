@@ -15,8 +15,8 @@ public class SnmpNTCIP1218Protocol {
     public static String rsu_msg_repeat_payload_oid = ntcip1218prefix + srm_prefix + ".7"; // Section 5.4.2.7
     public static String rsu_msg_repeat_enable_oid = ntcip1218prefix + srm_prefix + ".8"; // Section 5.4.2.8
     public static String rsu_msg_repeat_status_oid = ntcip1218prefix + srm_prefix + ".9"; // Section 5.4.2.9
-    public static String rsu_msg_repeat_priority_oid = ntcip1218prefix + srm_prefix + ".10"; // Section 5.4.2.10
-    public static String rsu_msg_repeat_options_oid = ntcip1218prefix + srm_prefix + ".11"; // Section 5.4.2.11
+
+    // sections 5.4.2.10 (priority) & 5.4.2.11 (options) are not implemented
 
     // pdm is not defined in NTCIP1218
 }

@@ -458,16 +458,6 @@ public class SnmpSession {
             new Integer32(snmp.getStatus())
          );
 
-         VariableBinding rsuMsgRepeatPriority = new VariableBinding(
-            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_priority_oid.concat(".").concat(Integer.toString(index))),
-            new Integer32(snmp.getMsgRepeatPriority())
-         );
-
-         VariableBinding rsuMsgRepeatOptions = new VariableBinding(
-            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_options_oid.concat(".").concat(Integer.toString(index))),
-            new Integer32(snmp.getMsgRepeatOptions()) // TODO: pass bitstring instead of integer
-         );
-
          ScopedPDU pdu = new ScopedPDU();
          pdu.add(rsuMsgRepeatPsid);
          pdu.add(rsuMsgRepeatTxChannel);
@@ -479,8 +469,6 @@ public class SnmpSession {
          if (verb == ServiceRequest.OdeInternal.RequestVerb.POST) {
             pdu.add(rsuMsgRepeatStatus);
          }
-         pdu.add(rsuMsgRepeatPriority);
-         pdu.add(rsuMsgRepeatOptions);
          pdu.setType(PDU.SET);
 
          return pdu;

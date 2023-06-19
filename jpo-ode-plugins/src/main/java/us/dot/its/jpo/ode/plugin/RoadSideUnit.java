@@ -32,17 +32,35 @@ public class RoadSideUnit {
 
         public RSU() {
             super();
+
+            // default to 4.1 SNMP protocol
             this.snmpProtocol = SnmpProtocol.FOURDOT1;
         }
 
-        public RSU(String rsuTarget, String rsuUsername, String rsuPassword, int rsuRetries, int rsuTimeout, SnmpProtocol snmpProtocol) {
+        public RSU(String rsuTarget, String rsuUsername, String rsuPassword, int rsuRetries, int rsuTimeout) {
             super();
             this.rsuTarget = rsuTarget;
             this.rsuUsername = rsuUsername;
             this.rsuPassword = rsuPassword;
             this.rsuRetries = rsuRetries;
             this.rsuTimeout = rsuTimeout;
-            this.snmpProtocol = snmpProtocol;
+
+            // default to 4.1 SNMP protocol
+            this.snmpProtocol = SnmpProtocol.FOURDOT1;
+        }
+
+        public RSU(String rsuTarget, String rsuUsername, String rsuPassword, int rsuRetries, int rsuTimeout, String snmpProtocol) {
+            this(rsuTarget, rsuUsername, rsuPassword, rsuRetries, rsuTimeout);
+
+            // set SNMP protocol
+            if (snmpProtocol == SnmpProtocol.FOURDOT1.toString()) {
+                this.snmpProtocol = SnmpProtocol.FOURDOT1;
+            } else if (snmpProtocol == SnmpProtocol.NTCIP1218.toString()) {
+                this.snmpProtocol = SnmpProtocol.NTCIP1218;
+            } else {
+                // default to 4.1
+                this.snmpProtocol = SnmpProtocol.FOURDOT1;
+            }
         }
 
         public String getRsuTarget() {
