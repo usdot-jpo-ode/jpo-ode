@@ -51,8 +51,9 @@ All stakeholders are invited to provide input to these documents. To provide fee
 
 ## 1. Usage Example
 
-Once the ODE is deployed and running locally, you may access the ODE's demonstration console by opening your browser and navigating to  `http://localhost:8080`.
+Once the ODE is deployed and running locally, you may access the ODE's demonstration console by opening your browser and navigating to  `http://localhost:8080`. This portal can only be used to decode a subset of the supported message types: BSM and TIM messages. To decode messages such as MAP, SPaT, SRM and SSM, the ODE UDP ports must be utilized. The following sections will describe how to utilize both methods.
 
+<b>For testing BSM and TIM decoding only:</b>
 1.  Press the `Connect` button to connect to the ODE WebSocket service.
 2.  Press `Select File` button to select an OBU log file containing BSMs and/or TIM messages as specified by the WYDOT CV Pilot project. See below documents for details:
     - [Wyoming CV Pilot Log File Design](data/Wyoming_CV_Pilot_Log_File_Design.docx)
@@ -71,8 +72,30 @@ _Figure 2: ODE UI demonstrating message subscription_
 
 Notice that the empty fields in the J2735 message are represented by a `null` value. Also note that ODE output strips the MessageFrame header and returns a pure BSM or TIM in the subscription topic.
 
-
 With the PPM module running, all filtered BSMs that are uploaded through the web interface will be captured and processed. You will see an output of both submitted BSM and processed data unless the entire record was filtered out.
+
+<b>For testing decoding with all supported ODE message types:</b>
+
+To test decoding all supported ODE messages, the UDP endpoints must be utilized. These endpoints specifically take hex ASN1 encoded message data. These messages are allowed to have headers but do not need to.
+
+Supported message types:
+- BSM
+- TIM
+- MAP
+- SPaT
+- SRM
+- SSM
+
+1. Navigate to the [UDP sender Python scripts](<./scripts/tests/>) in the project.
+2. Ensure the environment variable "DOCKER_HOST_IP" has been set in the shell that will be running the script. This must be set to the same IP that the ODE deployments are using.
+3. Run the script of your choosing: `python3 ./scripts/tests/udpsender_spat.py`
+4. View the output Kafka messages from kafkacat: `kafkacat -b $DOCKER_HOST_IP:9092 -G udp_test_group topic.OdeSpatJson -f '\nTopic: %t, Key: %k, Offset: %o, Timestamp: %T\nValue: %s\n'`
+5. The script should continue to send the same message every 5 seconds and kafkacat should continue to output the latest message.
+6. You may modify the content of the UDP sender scripts to test different payloads of your own.
+
+<p align="center">
+  <img src="./docs/images/readme/figure3.png" width="80%" height="50%">
+</p>
 
 [Back to top](#toc)
 
