@@ -586,16 +586,20 @@ The form at the bottom of the page allows you to generate new tokens. Once you c
 ## Using a token
 SonarScanners running in GitHub Actions can automatically detect branches and pull requests being built so you don't need to specifically pass them as parameters to the scanner.
 
-To analyze your projects with GitHub Actions, you need to:
-Create your GitHub Secrets.
-Configure your workflow YAML file.
-Commit and push your code to start the analysis.
-Creating your GitHub secrets
+**<ins>To analyze your projects with GitHub Actions, you need to: </ins>**
 
+**<ins> Creating your GitHub secrets </ins>**
 You can create repository secrets from your GitHub repository as below:
 
 Sonar Token: Generate a SonarQube token and, in GitHub, create a new repository secret in GitHub with SONAR_TOKEN as the Name and the token you generated as the Value.
 Sonar Host URL: In GitHub, create a new repository secret with SONAR_HOST_URL as the Name and your SonarQube server URL as the Value.
+
+Configure your workflow YAML file as below:
+
+	1. Add GitHub Secrets in ci.yml workflow as SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }
+ 	2. Update the sonar properties in Sonar scan step (- name: Run Sonar) with new sonar project properties.
+  
+Commit and push your code to start the analysis.
 
 ## Revoking a token
 You can revoke an existing token at User > My Account > Security by clicking the Revoke button next to the token.
