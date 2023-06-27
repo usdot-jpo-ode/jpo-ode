@@ -104,9 +104,6 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
    public byte[] removeHeader(byte[] packet) {
       String hexPacket = HexUtils.toHexString(packet);
 
-      // logger.debug("BSM packet length: {}, start index: {}",
-      // hexPacket.length(), startIndex);
-
       int startIndex = hexPacket.indexOf(BSM_START_FLAG);
       if (startIndex == 0) {
          logger.debug("Message is raw BSM with no headers.");
