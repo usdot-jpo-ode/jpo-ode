@@ -40,6 +40,7 @@ All stakeholders are invited to provide input to these documents. To provide fee
 10. [Credits and Acknowledgement](#credits-and-acknowledgement)
 11. [Code.gov Registration Info](#codegov-registration-info)
 12. [Kubernetes](#kubernetes)
+13. Sonar Token Configuration([#Sonar cloud](https://sonarqube.ow2.org/documentation/user-guide/user-token/))
 
 <!--
 #########################################
@@ -571,3 +572,30 @@ The ODE can be run in a k8s environment.
 See [this document](./docs/Kubernetes.md) for more details about this.
 
 [Back to top](#toc)
+
+## 13. Sonar Token Configuration
+Generating and Using Tokens
+Users can generate tokens that can be used to run analyses or invoke web services without access to the user's actual credentials.
+
+USDOT-JPO-ODE SonarCloud Organization : https://sonarcloud.io/organizations/usdot-jpo-ode-1/
+
+## Generating a token
+You can generate new tokens at User > My Account > Security.
+The form at the bottom of the page allows you to generate new tokens. Once you click the Generate button, you will see the token value. Copy it immediately; once you dismiss the notification you will not be able to retrieve it.
+
+## Using a token
+SonarScanners running in GitHub Actions can automatically detect branches and pull requests being built so you don't need to specifically pass them as parameters to the scanner.
+
+To analyze your projects with GitHub Actions, you need to:
+Create your GitHub Secrets.
+Configure your workflow YAML file.
+Commit and push your code to start the analysis.
+Creating your GitHub secrets
+
+You can create repository secrets from your GitHub repository as below:
+
+Sonar Token: Generate a SonarQube token and, in GitHub, create a new repository secret in GitHub with SONAR_TOKEN as the Name and the token you generated as the Value.
+Sonar Host URL: In GitHub, create a new repository secret with SONAR_HOST_URL as the Name and your SonarQube server URL as the Value.
+
+## Revoking a token
+You can revoke an existing token at User > My Account > Security by clicking the Revoke button next to the token.
