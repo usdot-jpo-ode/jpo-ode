@@ -47,7 +47,7 @@ All stakeholders are invited to provide input to these documents. To provide fee
 #########################################
  -->
 
-<a name="usgage-example"/>
+<a name="usage-example"/>
 
 ## 1. Usage Example
 
@@ -113,6 +113,10 @@ Read the following guides to familiarize yourself with ODE's Docker and Kafka mo
 
 - [Docker README](docker.md)
 - [Kafka README](kafka.md)
+
+The following guide contains information about the data flow diagrams for the ODE.
+
+- [Data Flow Diagrams README](docs/data-flow-diagrams/README.md)
 
 **Installation and Deployment:**
 
