@@ -20,6 +20,8 @@ The purpose of these diagrams is to show:
 1. The Asn1DecodeDataRouter class pulls from the Asn1DecodeOutput topic and deposits messages into the Pojo Messages group of topics and the Json Messages group of topics.
 1. The PPM pulls from the Json Messages group of topics and pushes filtered messages to the Filtered Json Messages group of topics.
 1. The FileUploadController class pulls from the Json Messages & Filtered Json Messages groups of topics and offloads them.
+1. The GeoJSON Converter pulls from the Json Messages group of topics, converts the messages and pushes them to the Processed Spat/Map group of topics.
+1. The Conflict Monitor pulls from the Processed Map/Spat group of topics and pushes to the Conflict Monitor Output Topics group.
 
 ### Overview Data Flow 2
 1. Messages come in through the TimDepositorController class and are pushed to the Broadcast Messages and Json Messages groups of topics, as well as the AsnEncoderInput topic.
@@ -74,6 +76,8 @@ The purpose of these diagrams is to show:
 1. The Asn1DecodedDataRouter pushes the SPAT to the OdeSpatPojo, OdeSpatRxPojo, OdeDNMsgJson, OdeSpatRxJson, OdeSpatTxPojo and OdeSpatJson topics.
 1. The PPM pulls from the OdeSpatJson topic, filters the SPAT, and pushes it to the FilteredOdeSpatJson topic.
 1. The FileUploadController pulls from the OdeSpatJson and FilteredOdeSpatJson topics and offloads the SSM.
+1. The GeoJSON Converter pulls from the OdeSpatJson topic, converts the SPAT and pushes it to the ProcessedOdeSpatJson topic.
+1. The Conflict Monitor pulls from the ProcessedOdeSpatJson topic and pushes to the Conflict Monitor Output Topics group.
 
 ### MAP Data Flow
 1. The MAP comes in through the MapReceiver class and is pushed to the OdeRawEncodedMAPJson topic.
@@ -83,6 +87,8 @@ The purpose of these diagrams is to show:
 1. The AsnCodecRouterServiceController class pulls from the Asn1DecoderOutput topic and passes the MAP to the Asn1DecodedDataRouter class.
 1. The Asn1DecodedDataRouter class pushes the MAP to the OdeMapTxPojo and OdeMapJson topics.
 1. The FileUploadController pulls from the OdeMapJson topic and offloads the MAP.
+1. The GeoJSON Converter pulls from the OdeMapJson topic, converts the MAP and pushes it to the ProcessedOdeMapJson topic.
+1. The Conflict Monitor pulls from the ProcessedOdeMapJson topic and pushes to the Conflict Monitor Output Topics group.
 
 ### SRM Data Flow
 1. The SRM comes in through the SrmReceiver class and is pushed to the OdeRawEncodedSRMJson topic.
