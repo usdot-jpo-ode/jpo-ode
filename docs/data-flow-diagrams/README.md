@@ -34,6 +34,8 @@ The purpose of these diagrams is to show:
 1. If the message has been double-encoded, it will be passed to the SDWDepositorInput, pulled into the SDWD and sent to the SDX.
 1. The PPM pulls from the Json Messages group of topics and sends filtered messages to the Filtered Json Messages group of topics.
 1. The FileUploadController class pulls from the Json Messages and Filtered Json Messages groups of topics and offloads them.
+1. The GeoJSON Converter pulls from the Json Messages group of topics, converts the messages and pushes them to the Processed Spat/Map group of topics.
+1. The Conflict Monitor pulls from the Processed Map/Spat group of topics and pushes to the Conflict Monitor Output Topics group.
 
 ### BSM Data Flow
 1. The BSM comes in through the BsmReceiver class and is pushed to the OdeRawEncodedBSMJson topic.
