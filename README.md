@@ -76,7 +76,7 @@ With the PPM module running, all filtered BSMs that are uploaded through the web
 
 <b>For testing decoding with all supported ODE message types:</b>
 
-To test decoding all supported ODE messages, the UDP endpoints must be utilized. These endpoints specifically take hex ASN1 encoded message data. These messages are allowed to have headers but do not need to.
+To test decoding all supported ODE messages, the UDP endpoints must be utilized. These endpoints specifically take hex ASN.1 UPER encoded message data. These messages are allowed to have headers but do not need to. The headers are trimmed out currently once the UDP receiver receives the message so this data will not affect the output.
 
 Supported message types:
 - BSM
