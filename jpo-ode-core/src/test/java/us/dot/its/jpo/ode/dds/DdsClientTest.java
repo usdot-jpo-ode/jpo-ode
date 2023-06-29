@@ -15,6 +15,8 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.dds;
 
+import static org.junit.Assert.assertThrows;
+
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
@@ -23,7 +25,7 @@ import java.util.Map;
 import javax.net.ssl.SSLContext;
 
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 
 import mockit.Expectations;
@@ -83,10 +85,10 @@ public class DdsClientTest {
 	}
 
    @Ignore
-	@Test(expected = DdsClientException.class)
+	@Test
 	public void testConstructorException()
 			throws DdsClientException, CASException {
-
+		assertThrows(DdsClientException.class, () -> {
 		new Expectations() {
 			{
 				CASClient.configure((SSLContext) any, anyString, anyString, anyString);
@@ -95,6 +97,7 @@ public class DdsClientTest {
 		};
 
 		new DdsClient<String>(ddsCasUrl, ddsCasUsername, ddsCasPassword, websocketURL, keystoreFile, keystorePass);
+		});
 	}
 
   @SuppressWarnings("unchecked")
@@ -122,21 +125,22 @@ public class DdsClientTest {
    
    @Ignore
 	@SuppressWarnings("unchecked")
-	@Test(expected = DdsClientException.class)
+	@Test
 	public void testLoginException()
 			throws DdsClientException, CASException {
+		assertThrows(DdsClientException.class, () -> {
+			new Expectations() {
+				{
+					mockCasClient.login(anyString);
+					new WebSocketEndpoint<String>((URI) any, (SSLContext) any, null, (Map<String, Map<String, String>>) any,
+							(WebSocketMessageHandler<String>) any, (List<Class<? extends WebSocketMessageDecoder<?>>>) any);
+					result = new DdsClientException(null);
+				}
+			};
 
-		new Expectations() {
-			{
-				mockCasClient.login(anyString);
-				new WebSocketEndpoint<String>((URI) any, (SSLContext) any, null, (Map<String, Map<String, String>>) any,
-						(WebSocketMessageHandler<String>) any, (List<Class<? extends WebSocketMessageDecoder<?>>>) any);
-				result = new DdsClientException(null);
-			}
-		};
-
-		DdsClient<String> ddsClient = new DdsClient<String>(ddsCasUrl, ddsCasUsername, ddsCasPassword, websocketURL,
-				keystoreFile, keystorePass);
-		ddsClient.login(null, mockMessageHandler);
+			DdsClient<String> ddsClient = new DdsClient<String>(ddsCasUrl, ddsCasUsername, ddsCasPassword, websocketURL,
+					keystoreFile, keystorePass);
+			ddsClient.login(null, mockMessageHandler);
+		});
 	}
 }

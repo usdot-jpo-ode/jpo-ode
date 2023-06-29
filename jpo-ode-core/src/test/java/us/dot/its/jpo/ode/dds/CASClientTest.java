@@ -16,6 +16,7 @@
 package us.dot.its.jpo.ode.dds;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import java.util.Map;
@@ -25,7 +26,7 @@ import java.util.regex.Pattern;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.core.Response.Status;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 
 import mockit.Expectations;
@@ -310,16 +311,18 @@ Tests run: 26, Failures: 0, Errors: 17, Skipped: 0
       assertEquals(casClient.getDdsCasUsername(), casUser);
    }
 
-   @Test(expected = CASException.class)
+   @Test
    public void testConfigureException()
          throws CASException, HttpException {
-      new Expectations() {
+      assertThrows(CASException.class, () -> {
+            new Expectations() {
          {
             HttpClientFactory.build((SSLContext) any);
             result = new Exception();
          }
       };
       CASClient.configure(sslContext, casUrl, casUser, casPass);
+      });
    }
 
    @SuppressWarnings("unchecked")
@@ -391,137 +394,145 @@ Tests run: 26, Failures: 0, Errors: 17, Skipped: 0
       };
    }
 
-   @Test(expected = CASException.class)
+   @Test
    public void testLoginExceptionInGetTicket1() throws HttpException, CASException {
-      String websocketURL = "wss://url.websocket.com";
-      Map<String, String> cookies = new ConcurrentHashMap<String, String>();
-      cookies.put("JSESSIONID", "1bif45f-testSessionId");
-      new Expectations() {
-         {
-            mockResponse.getStatusCode();
-            result = Status.BAD_REQUEST;
-         }
-      };
+      assertThrows(CASException.class, () -> {
+         String websocketURL = "wss://url.websocket.com";
+         Map<String, String> cookies = new ConcurrentHashMap<String, String>();
+         cookies.put("JSESSIONID", "1bif45f-testSessionId");
+         new Expectations() {
+            {
+               mockResponse.getStatusCode();
+               result = Status.BAD_REQUEST;
+            }
+         };
 
-      CASClient casClient;
+         CASClient casClient;
 
-      casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
-      casClient.login(websocketURL);
+         casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
+         casClient.login(websocketURL);
+      });
    }
 
-   @Test(expected = CASException.class)
+   @Test
    public void testLoginExceptionInGetTicket2() throws HttpException, CASException {
-      String websocketURL = "wss://url.websocket.com";
-      Map<String, String> cookies = new ConcurrentHashMap<String, String>();
-      cookies.put("JSESSIONID", "1bif45f-testSessionId");
-      new Expectations() {
-         {
-            mockResponse.getStatusCode();
-            result = Status.CREATED;
+      assertThrows(CASException.class, () -> {
+         String websocketURL = "wss://url.websocket.com";
+         Map<String, String> cookies = new ConcurrentHashMap<String, String>();
+         cookies.put("JSESSIONID", "1bif45f-testSessionId");
+         new Expectations() {
+            {
+               mockResponse.getStatusCode();
+               result = Status.CREATED;
 
-            /* 
-             * For some very odd reason, just having mocked objects of Pattern and Matcher causes
-             * surefile plug-in to report the followig very odd and strange errors on all
-             * subsequest test cases. Hence, we have to use real values so we don't have to mock
-             * which is a better approach anyway.
-             */
-//            Pattern.compile(anyString);
-//            result = mockPattern;
-//            
-//            mockPattern.matcher(anyString);
-//            result = mockMatcher;
-//
-//            mockMatcher.matches();
-//            result = false;
-         }
-      };
+               /* 
+               * For some very odd reason, just having mocked objects of Pattern and Matcher causes
+               * surefile plug-in to report the followig very odd and strange errors on all
+               * subsequest test cases. Hence, we have to use real values so we don't have to mock
+               * which is a better approach anyway.
+               */
+   //            Pattern.compile(anyString);
+   //            result = mockPattern;
+   //            
+   //            mockPattern.matcher(anyString);
+   //            result = mockMatcher;
+   //
+   //            mockMatcher.matches();
+   //            result = false;
+            }
+         };
 
-      CASClient casClient;
+         CASClient casClient;
 
-      casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
-      casClient.login(websocketURL);
+         casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
+         casClient.login(websocketURL);
+         });
    }
 
-   @Test(expected = CASException.class)
+   @Test
    public void testLoginExceptionInGetServiceTicket() 
          throws HttpException, CASException {
-      String websocketURL = "wss://url.websocket.com";
-      Map<String, String> cookies = new ConcurrentHashMap<String, String>();
-      cookies.put("JSESSIONID", "1bif45f-testSessionId");
-      new Expectations() {
-         {
-            mockResponse.getStatusCode();
-            result = Status.CREATED;
-            result = Status.BAD_REQUEST;
+      assertThrows(CASException.class, () -> {
+         String websocketURL = "wss://url.websocket.com";
+         Map<String, String> cookies = new ConcurrentHashMap<String, String>();
+         cookies.put("JSESSIONID", "1bif45f-testSessionId");
+         new Expectations() {
+            {
+               mockResponse.getStatusCode();
+               result = Status.CREATED;
+               result = Status.BAD_REQUEST;
 
-            /* 
-             * For some very odd reason, just having mocked objects of Pattern and Matcher causes
-             * surefile plug-in to report the followig very odd and strange errors on all
-             * subsequest test cases. Hence, we have to use real values so we don't have to mock
-             * which is a better approach anyway.
-             */
-//            Pattern.compile(anyString);
-//            result = mockPattern;
-//            
-//            mockPattern.matcher(anyString);
-//            result = mockMatcher;
-//
-//            mockMatcher.matches();
-//            result = true;
-//            mockMatcher.group(1);
-//            result = "TGT-1234-11112222333334444-cas01";
+               /* 
+               * For some very odd reason, just having mocked objects of Pattern and Matcher causes
+               * surefile plug-in to report the followig very odd and strange errors on all
+               * subsequest test cases. Hence, we have to use real values so we don't have to mock
+               * which is a better approach anyway.
+               */
+   //            Pattern.compile(anyString);
+   //            result = mockPattern;
+   //            
+   //            mockPattern.matcher(anyString);
+   //            result = mockMatcher;
+   //
+   //            mockMatcher.matches();
+   //            result = true;
+   //            mockMatcher.group(1);
+   //            result = "TGT-1234-11112222333334444-cas01";
 
-            mockResponse.getBody();
-            result = "action=\"x/TGT-1234-11112222333334444-cas01\"";
-            result = "ST-1234-1111222233334444-cas01";
-         }
-      };
+               mockResponse.getBody();
+               result = "action=\"x/TGT-1234-11112222333334444-cas01\"";
+               result = "ST-1234-1111222233334444-cas01";
+            }
+         };
 
-      CASClient casClient;
+         CASClient casClient;
 
-      casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
-      casClient.login(websocketURL);
+         casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
+         casClient.login(websocketURL);
+      });
    }
 
 
-   @Test(expected = CASException.class)
+   @Test
    public void testLoginExceptionInGetServiceCall() 
                throws HttpException, CASException {
-      String websocketURL = "wss://url.websocket.com";
-      Map<String, String> cookies = new ConcurrentHashMap<String, String>();
-      cookies.put("JSESSIONID", "1bif45f-testSessionId");
-      new Expectations() {
-         {
-            mockResponse.getStatusCode();
-            result = Status.CREATED;
-            result = Status.OK;
-            result = Status.BAD_REQUEST;
+      assertThrows(CASException.class, () -> {
+         String websocketURL = "wss://url.websocket.com";
+         Map<String, String> cookies = new ConcurrentHashMap<String, String>();
+         cookies.put("JSESSIONID", "1bif45f-testSessionId");
+         new Expectations() {
+            {
+               mockResponse.getStatusCode();
+               result = Status.CREATED;
+               result = Status.OK;
+               result = Status.BAD_REQUEST;
 
-            /* 
-             * For some very odd reason, just having mocked objects of Pattern and Matcher causes
-             * surefile plug-in to report the followig very odd and strange errors on all
-             * subsequest test cases. Hence, we have to use real values so we don't have to mock
-             * which is a better approach anyway.
-             */
-//            Pattern.compile(anyString);
-//            result = mockPattern;
-//            
-//            mockPattern.matcher(anyString);
-//            result = mockMatcher;
-//
-//            mockMatcher.matches();
-//            result = true;
-//            mockMatcher.group(1);
-//            result = "TGT-1234-11112222333334444-cas01";
+               /* 
+               * For some very odd reason, just having mocked objects of Pattern and Matcher causes
+               * surefile plug-in to report the followig very odd and strange errors on all
+               * subsequest test cases. Hence, we have to use real values so we don't have to mock
+               * which is a better approach anyway.
+               */
+   //            Pattern.compile(anyString);
+   //            result = mockPattern;
+   //            
+   //            mockPattern.matcher(anyString);
+   //            result = mockMatcher;
+   //
+   //            mockMatcher.matches();
+   //            result = true;
+   //            mockMatcher.group(1);
+   //            result = "TGT-1234-11112222333334444-cas01";
 
-            mockResponse.getBody();
-            result = "action=\"x/TGT-1234-11112222333334444-cas01\"";
-            result = "ST-1234-1111222233334444-cas01";
+               mockResponse.getBody();
+               result = "action=\"x/TGT-1234-11112222333334444-cas01\"";
+               result = "ST-1234-1111222233334444-cas01";
 
-         }
-      };
+            }
+         };
 
-      CASClient casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
-      casClient.login(websocketURL);
+         CASClient casClient = CASClient.configure(sslContext, casUrl, casUser, casPass);
+         casClient.login(websocketURL);
+      });
    }
 }

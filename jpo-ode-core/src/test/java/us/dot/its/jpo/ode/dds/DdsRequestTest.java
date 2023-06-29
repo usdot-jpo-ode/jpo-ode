@@ -18,8 +18,8 @@ package us.dot.its.jpo.ode.dds;
 import static org.junit.Assert.*;
 
 import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import us.dot.its.jpo.ode.dds.DdsRequest.Dialog;
 import us.dot.its.jpo.ode.dds.DdsRequest.EncodeType;
 import us.dot.its.jpo.ode.dds.DdsRequest.SystemName;
@@ -28,9 +28,11 @@ public class DdsRequestTest {
 	
 	private DdsRequest ddsRequest;
 	
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
-		ddsRequest = new DdsRequest();
+		if (ddsRequest == null) {
+			ddsRequest = new DdsRequest();
+		}
 	}
 
 	@After
