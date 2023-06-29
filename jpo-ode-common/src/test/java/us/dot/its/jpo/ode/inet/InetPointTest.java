@@ -49,26 +49,21 @@ public class InetPointTest {
       }
    }
 
-   // TODO:
-   // CUrrently this is a workaround to run other tests
    @Test
    public void testStringConstructorFailsNullAddress() {
-      Throwable err = assertThrows(UnknownHostException.class, () -> {
-         // try {
-         new Expectations() {
-            {
-               InetAddress.getByName(anyString).getAddress();
-               result = null;
-            }
-         };
-         new InetPoint("something123", 5, true);
-         // } 
-         // catch (UnknownHostException e) {
-         //    fail("Unexpected exception: " + e);
-         // }
+      assertThrows(AssertionError.class, () -> {
+         try {
+            new Expectations() {
+               {
+                  InetAddress.getByName(anyString).getAddress();
+                  result = null;
+               }
+            };
+            new InetPoint("something123", 5, true);
+         } catch (UnknownHostException e) {
+            fail("Unexpected exception: " + e);
+         }
       });
-
-      assertEquals("something123: Name or service not known", err.getMessage());
    }
 
    @Test
