@@ -24,7 +24,7 @@ import mockit.Verifications;
 //import mockit.integration.junit4.JMockit;
 
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 
 import us.dot.its.jpo.ode.wrapper.HttpClientFactory.HttpException;

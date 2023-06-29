@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.text.ParseException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import us.dot.its.jpo.ode.plugin.SituationDataWarehouse;
 import us.dot.its.jpo.ode.plugin.ieee1609dot2.Ieee1609Dot2DataTag;

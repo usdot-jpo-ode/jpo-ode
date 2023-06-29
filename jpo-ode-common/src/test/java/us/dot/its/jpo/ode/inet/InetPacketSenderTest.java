@@ -34,7 +34,7 @@ import java.util.Arrays;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import mockit.Capturing;
 import us.dot.its.jpo.ode.util.CodecUtils;

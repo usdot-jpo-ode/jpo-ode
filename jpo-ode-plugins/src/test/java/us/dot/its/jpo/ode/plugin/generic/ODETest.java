@@ -17,7 +17,7 @@ package us.dot.its.jpo.ode.plugin.generic;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import us.dot.its.jpo.ode.plugin.ServiceRequest;
 

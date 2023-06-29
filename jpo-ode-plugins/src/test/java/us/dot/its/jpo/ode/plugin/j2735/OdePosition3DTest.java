@@ -21,7 +21,7 @@ import static org.junit.Assert.assertNotEquals;
 
 import java.math.BigDecimal;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class OdePosition3DTest {
    @Test

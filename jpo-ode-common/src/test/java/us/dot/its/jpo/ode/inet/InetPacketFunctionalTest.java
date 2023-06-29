@@ -28,7 +28,7 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import mockit.Capturing;
 import us.dot.its.jpo.ode.util.CodecUtils;
