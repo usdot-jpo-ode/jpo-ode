@@ -17,7 +17,7 @@ package us.dot.its.jpo.ode.plugin.j2735;
 
 import static org.junit.Assert.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,18 +62,20 @@ public class J2735ChoiceTest {
 	@Mocked//(stubOutClassInitialization = true)
 	final LoggerFactory unused = null;
 
-	@Test(expected = NoSuchFieldException.class)
+	@Test
 	public void testSetChosenFieldException2(@Mocked Logger logger) throws NoSuchFieldException {
-		new Expectations() {
-			{
-				logger.error(anyString, (Exception) any);
-				;
-				result = new NoSuchFieldException();
-			}
-		};
-		j2735Choice.setChosenFieldName("childField");
-		assertEquals("childField", j2735Choice.getChosenFieldName());
+		assertThrows(NoSuchFieldException.class, () -> {
+			new Expectations() {
+				{
+					logger.error(anyString, (Exception) any);
+					;
+					result = new NoSuchFieldException();
+				}
+			};
+			j2735Choice.setChosenFieldName("childField");
+			assertEquals("childField", j2735Choice.getChosenFieldName());
 
-		j2735Choice.setChosenField("wrongField", "childFieldValue");
+			j2735Choice.setChosenField("wrongField", "childFieldValue");
+		});
 	}
 }
