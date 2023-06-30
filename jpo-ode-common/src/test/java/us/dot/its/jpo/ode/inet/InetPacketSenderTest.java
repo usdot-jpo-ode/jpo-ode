@@ -32,8 +32,9 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 
 import us.dot.its.jpo.ode.eventlog.EventLogger;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import mockit.Capturing;
@@ -65,7 +66,7 @@ public class InetPacketSenderTest {
       TestForwardPacketInbound, TestSendPacketOutbound, TestIPv6ForwardOutbound, TestIPv4ForwardOutboundForward, TestIPv4ForwardOutboundSend, TestIPv6SendOutbound, TestIPv4SendOutbound,
    };
 
-   @BeforeClass
+   @BeforeAll
    public static void init() {
    }
 
@@ -91,13 +92,13 @@ public class InetPacketSenderTest {
       checkBackgroundThreadAssertion();
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void testSendPacketOutboundIPv4() throws UnknownHostException, InterruptedException, InetPacketException {
       // Use case: Forwarder sends outgoing IPv4 packet out
       testSendPacketOutbound(CLIENT_HOST_IPV4);
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void testSendPacketOutboundIPv6() throws UnknownHostException, InterruptedException, InetPacketException {
       // Use case: Forwarder sends outgoing IPv6 packet out
       testSendPacketOutbound(CLIENT_HOST_IPV6);
@@ -150,7 +151,7 @@ public class InetPacketSenderTest {
       checkBackgroundThreadAssertion();
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void testIPv6SendOutbound() throws InterruptedException, UnknownHostException, InetPacketException {
       // Use case: Transport or Data Sink send IPv6 message out directly
       startUdpListener(CLIENT_PORT, TestCase.TestIPv6SendOutbound);
@@ -160,7 +161,7 @@ public class InetPacketSenderTest {
       checkBackgroundThreadAssertion();
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void testIPv4SendOutbound() throws InterruptedException, UnknownHostException, InetPacketException {
       // Use case: Transport or Data Sink send IPv4 message out directly
       startUdpListener(CLIENT_PORT, TestCase.TestIPv4SendOutbound);

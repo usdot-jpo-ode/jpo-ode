@@ -17,13 +17,13 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import java.io.IOException;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class BrakeAppliedStatusNamesTest {
-   @Ignore
+   @Disabled
    @Test
    public void testBAS() throws JsonProcessingException, IOException {
 //      JsonNode testInput = 1;

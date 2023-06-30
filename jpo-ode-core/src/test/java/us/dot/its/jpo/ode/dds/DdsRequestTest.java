@@ -17,7 +17,7 @@ package us.dot.its.jpo.ode.dds;
 
 import static org.junit.Assert.*;
 
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import us.dot.its.jpo.ode.dds.DdsRequest.Dialog;
@@ -35,7 +35,7 @@ public class DdsRequestTest {
 		}
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 	}
 

@@ -24,7 +24,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.util.List;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import mockit.Expectations;
@@ -52,7 +52,7 @@ public class LogFileToAsn1CodecPublisherTest {
    @Injectable
    StringPublisher injectableStringPublisher;
 
-   @BeforeClass
+   @BeforeAll
    public static void setupClass() {
       OdeMsgMetadata.setStaticSchemaVersion(OdeProperties.OUTPUT_SCHEMA_VERSION);
    }

@@ -23,7 +23,7 @@ import static org.mockito.Mockito.mock;
 import java.io.IOException;
 import java.util.Vector;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.snmp4j.PDU;
@@ -39,7 +39,7 @@ public class RsuSnmpTest {
     
     @Mock private Snmp mockSnmp;
 
-    @Before
+    @BeforeEach
     public void setUpSnmp() throws IOException {
         
         //MockitoAnnotations.initMocks(this);

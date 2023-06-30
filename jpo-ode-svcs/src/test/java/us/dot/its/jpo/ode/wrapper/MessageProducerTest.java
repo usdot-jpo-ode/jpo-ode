@@ -24,8 +24,8 @@ import java.util.Properties;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import mockit.Expectations;
@@ -43,7 +43,7 @@ public class MessageProducerTest {
    @Injectable
    ProducerRecord<String, String> mockProducerRecord;
 
-   @Before
+   @BeforeEach
    public void setUp() {
       new Expectations() {
          {
@@ -52,14 +52,14 @@ public class MessageProducerTest {
       };
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void shouldConstruct() {
 
       new MessageProducer<String, String>("testBrokers", null,
             "testPartitioner", mockProps, Collections.singleton("testTopic"));
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void testSendNoTopic() {
 
       MessageProducer<String, String> testMessageProducer = 
@@ -68,7 +68,7 @@ public class MessageProducerTest {
       testMessageProducer.send(mockProducerRecord);
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void testSendWithTopic() {
 
       MessageProducer<String, String> testMessageProducer = 
@@ -79,7 +79,7 @@ public class MessageProducerTest {
       testMessageProducer.send("testTopic", "testKey", "testValue");
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void testSendWithTopicNullKey() {
 
       MessageProducer<String, String> testMessageProducer = 
@@ -90,7 +90,7 @@ public class MessageProducerTest {
       assertEquals(KafkaProducer.class, testMessageProducer.getProducer().getClass());
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void testClose() {
 
       MessageProducer<String, String> testMessageProducer = 
@@ -99,7 +99,7 @@ public class MessageProducerTest {
       testMessageProducer.close();
    }
 
-   @Test @Ignore
+   @Test @Disabled
 	public void testDefaultStringMessageProducer() {
 
       String testBrokers = "bootstrap.servers";

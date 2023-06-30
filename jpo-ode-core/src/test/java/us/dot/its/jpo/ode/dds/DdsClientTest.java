@@ -24,7 +24,7 @@ import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 
@@ -51,7 +51,7 @@ public class DdsClientTest {
 	String keystoreFile = "keystoreFile";
 	String keystorePass = "keystorePass";
 
-	@Ignore
+	@Disabled
 	@Test
 	public void testConstructor() {
 		try {
@@ -84,7 +84,7 @@ public class DdsClientTest {
 		}
 	}
 
-   @Ignore
+   @Disabled
 	@Test
 	public void testConstructorException()
 			throws DdsClientException, CASException {
@@ -101,7 +101,7 @@ public class DdsClientTest {
 	}
 
   @SuppressWarnings("unchecked")
-  @Ignore
+  @Disabled
 	@Test
 	public void testLogin() {
 		try {
@@ -123,7 +123,7 @@ public class DdsClientTest {
 		}
 	}
    
-   @Ignore
+   @Disabled
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testLoginException()
