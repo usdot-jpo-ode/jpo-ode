@@ -17,8 +17,8 @@ package us.dot.its.jpo.ode.udp.controller;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import mockit.Injectable;
 import mockit.Tested;
@@ -32,18 +32,18 @@ public class UdpServiceThreadFactoryTest {
    @Injectable
    String expectedName = "testName123";
 
-   @Test @Ignore
+   @Test @Disabled
    public void constructorShouldSetName() {
       assertEquals(expectedName, testUdpServiceThreadFactory.getThreadName());
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void shouldReturnNamedThread(@Injectable Thread testThread) {
       Thread actualThread = testUdpServiceThreadFactory.newThread(testThread);
       assertEquals(expectedName, actualThread.getName());
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void shouldSetThreadName(@Injectable Thread testThreadTwo) {
       Thread actualThreadTwo = testUdpServiceThreadFactory.newThread(testThreadTwo);
       testUdpServiceThreadFactory.setThreadName(expectedName);

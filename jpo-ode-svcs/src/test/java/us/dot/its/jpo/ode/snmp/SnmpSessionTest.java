@@ -16,13 +16,14 @@
 package us.dot.its.jpo.ode.snmp;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.text.ParseException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
@@ -47,7 +48,7 @@ public class SnmpSessionTest {
 	@Injectable
 	USM mockUSM;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		String testUsername = "testUser";
 		String testPassword = "testPass";
@@ -57,19 +58,19 @@ public class SnmpSessionTest {
 		snmpSession = new SnmpSession(testProps);
 	}
 
-	@Test(expected = IOException.class)
+	@Test
 	public void constructorShouldWithIOException(@Mocked DefaultUdpTransportMapping mockDefaultUdpTransportMapping)
 			throws IOException {
+		assertThrows(IOException.class, () -> {
+			new Expectations() {
+				{
+					new DefaultUdpTransportMapping();
+					result = new IOException();
+				}
+			};
 
-		new Expectations() {
-			{
-				new DefaultUdpTransportMapping();
-				result = new IOException();
-			}
-		};
-
-		new SnmpSession(testProps);
-
+			new SnmpSession(testProps);
+		});
 	}
 
 	@Test
@@ -106,31 +107,33 @@ public class SnmpSessionTest {
 		assertEquals(mockUserTarget, snmpSession.getTarget());
 	}
 
-	@Test(expected = IOException.class)
+	@Test
 	public void testResponseEventUDPException(@Mocked Snmp mockSnmp, @Mocked TransportMapping mockTransportMapping,
 			@Mocked UserTarget mockUserTarget, @Mocked PDU mockPDU) throws IOException {
-
-		new Expectations() {
-			{
-				mockTransportMapping.listen();
-				result = new IOException();
-			}
-		};
-		snmpSession.setTransport(mockTransportMapping);
-		snmpSession.set(mockPDU, mockSnmp, mockUserTarget, false);
+		assertThrows(IOException.class, () -> {
+			new Expectations() {
+				{
+					mockTransportMapping.listen();
+					result = new IOException();
+				}
+			};
+			snmpSession.setTransport(mockTransportMapping);
+			snmpSession.set(mockPDU, mockSnmp, mockUserTarget, false);
+		});
 	}
 
-	@Test(expected = IOException.class)
+	@Test
 	public void testResponseEventSNMPException(@Mocked Snmp mockSnmp, @Mocked UserTarget mockUserTarget,
 			@Mocked PDU mockPDU) throws IOException {
-
-		new Expectations() {
-			{
-				mockSnmp.set(mockPDU, mockUserTarget);
-				result = new IOException();
-			}
-		};
-		snmpSession.set(mockPDU, mockSnmp, mockUserTarget, false);
+		assertThrows(IOException.class, () -> {
+			new Expectations() {
+				{
+					mockSnmp.set(mockPDU, mockUserTarget);
+					result = new IOException();
+				}
+			};
+			snmpSession.set(mockPDU, mockSnmp, mockUserTarget, false);
+		});
 	}
 
 	@Test

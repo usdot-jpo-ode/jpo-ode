@@ -17,8 +17,8 @@ package us.dot.its.jpo.ode.services.asn1;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import mockit.Capturing;
 import mockit.Expectations;
@@ -40,7 +40,7 @@ public class AsnCodecRouterServiceControllerTest {
    @Injectable
    OdeProperties injectableOdeProperties;
 
-   @Test @Ignore
+   @Test @Disabled
    public void shouldStartTwoConsumers() {
 
       new Expectations() {
