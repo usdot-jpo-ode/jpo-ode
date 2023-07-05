@@ -105,8 +105,6 @@ public class SsmReceiver extends AbstractUdpReceiverPublisher {
    public byte[] removeHeader(byte[] packet) {
       String hexPacket = HexUtils.toHexString(packet);
 
-      //logger.debug("SSM packet: {}", hexPacket);
-
       int startIndex = hexPacket.indexOf(SSM_START_FLAG);
       if (startIndex == 0) {
          logger.debug("Message is raw SSM with no headers.");

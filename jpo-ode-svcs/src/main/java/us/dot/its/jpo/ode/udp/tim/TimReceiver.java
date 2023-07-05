@@ -114,8 +114,6 @@ public class TimReceiver extends AbstractUdpReceiverPublisher {
    public byte[] removeHeader(byte[] packet) {
       String hexPacket = HexUtils.toHexString(packet);
 
-      //logger.debug("TIM packet: {}", hexPacket);
-
       int startIndex = hexPacket.indexOf(TIM_START_FLAG);
       if (startIndex == 0) {
          logger.info("Message is raw TIM with no headers.");
