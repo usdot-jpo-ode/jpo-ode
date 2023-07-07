@@ -47,8 +47,8 @@ public class CASClientTest {
    
    /* 
     * For some very odd reason, just having mocked objects of Pattern and Matcher causes
-    * surefile plug-in to report the following very odd and strange errors on all
-    * subsequest test cases. Hence, we have to use real values so we don't have to mock
+    * surefire plug-in to report the following very odd and strange errors on all
+    * subsequent test cases. Hence, we have to use real values so we don't have to mock
     * which is a better approach anyway.
     * 
 -------------------------------------------------------
@@ -340,8 +340,8 @@ Tests run: 26, Failures: 0, Errors: 17, Skipped: 0
 
             /* 
              * For some very odd reason, just having mocked objects of Pattern and Matcher causes
-             * surefile plug-in to report the followig very odd and strange errors on all
-             * subsequest test cases. Hence, we have to use real values so we don't have to mock
+             * surefire plug-in to report the following very odd and strange errors on all
+             * subsequent test cases. Hence, we have to use real values so we don't have to mock
              * which is a better approach anyway.
              */
 //            Pattern.compile(anyString);
@@ -427,8 +427,8 @@ Tests run: 26, Failures: 0, Errors: 17, Skipped: 0
 
                /* 
                * For some very odd reason, just having mocked objects of Pattern and Matcher causes
-               * surefile plug-in to report the followig very odd and strange errors on all
-               * subsequest test cases. Hence, we have to use real values so we don't have to mock
+               * surefire plug-in to report the following very odd and strange errors on all
+               * subsequent test cases. Hence, we have to use real values so we don't have to mock
                * which is a better approach anyway.
                */
    //            Pattern.compile(anyString);
@@ -464,8 +464,8 @@ Tests run: 26, Failures: 0, Errors: 17, Skipped: 0
 
                /* 
                * For some very odd reason, just having mocked objects of Pattern and Matcher causes
-               * surefile plug-in to report the followig very odd and strange errors on all
-               * subsequest test cases. Hence, we have to use real values so we don't have to mock
+               * surefire plug-in to report the following very odd and strange errors on all
+               * subsequent test cases. Hence, we have to use real values so we don't have to mock
                * which is a better approach anyway.
                */
    //            Pattern.compile(anyString);
@@ -509,8 +509,8 @@ Tests run: 26, Failures: 0, Errors: 17, Skipped: 0
 
                /* 
                * For some very odd reason, just having mocked objects of Pattern and Matcher causes
-               * surefile plug-in to report the followig very odd and strange errors on all
-               * subsequest test cases. Hence, we have to use real values so we don't have to mock
+               * surefire plug-in to report the following very odd and strange errors on all
+               * subsequent test cases. Hence, we have to use real values so we don't have to mock
                * which is a better approach anyway.
                */
    //            Pattern.compile(anyString);
