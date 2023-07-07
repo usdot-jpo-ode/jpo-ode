@@ -49,6 +49,11 @@ public class TimDeleteControllerTest {
    
    @Mocked
    ResponseEvent mockResponseEvent;
+
+   private String defaultRSU = "{\"rsuTarget\":\"10.10.10.10\",\"rsuUsername\":\"user\",\"rsuPassword\":\"pass\",\"rsuRetries\":\"3\",\"rsuTimeout\":\"5000\"}";
+   private String fourDot1RSU = "{\"rsuTarget\":\"10.10.10.10\",\"rsuUsername\":\"user\",\"rsuPassword\":\"pass\",\"rsuRetries\":\"3\",\"rsuTimeout\":\"5000\",\"snmpProtocol\":\"FOURDOT1\"}";
+   private String ntcip1218RSU = "{\"rsuTarget\":\"10.10.10.10\",\"rsuUsername\":\"user\",\"rsuPassword\":\"pass\",\"rsuRetries\":\"3\",\"rsuTimeout\":\"5000\",\"snmpProtocol\":\"NTCIP1218\"}";
+
    
    @Test
    public void deleteShouldReturnBadRequestWhenNull() {
@@ -67,7 +72,37 @@ public class TimDeleteControllerTest {
       } catch (IOException e) {
          fail("Unexpected Exception in expectations block: " + e);
       }
-      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
+      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, testTimDeleteController.deleteTim(defaultRSU, 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteShouldCatchSessionIOException_fourDot1RSU() {
+      try {
+         new Expectations() {
+            {
+               new SnmpSession((RSU) any);
+               result = new IOException("testException123");
+            }
+         };
+      } catch (IOException e) {
+         fail("Unexpected Exception in expectations block: " + e);
+      }
+      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, testTimDeleteController.deleteTim(fourDot1RSU, 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteShouldCatchSessionIOException_ntcip1218RSU() {
+      try {
+         new Expectations() {
+            {
+               new SnmpSession((RSU) any);
+               result = new IOException("testException123");
+            }
+         };
+      } catch (IOException e) {
+         fail("Unexpected Exception in expectations block: " + e);
+      }
+      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, testTimDeleteController.deleteTim(ntcip1218RSU, 42).getStatusCode());
    }
 
    @Test
@@ -82,7 +117,37 @@ public class TimDeleteControllerTest {
       } catch (IOException e) {
          fail("Unexpected Exception in expectations block: " + e);
       }
-      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
+      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim(defaultRSU, 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteShouldCatchSessionNullPointerException_fourDot1RSU() {
+      try {
+         new Expectations() {
+            {
+               new SnmpSession((RSU) any);
+               result = new NullPointerException("testException123");
+            }
+         };
+      } catch (IOException e) {
+         fail("Unexpected Exception in expectations block: " + e);
+      }
+      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim(fourDot1RSU, 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteShouldCatchSessionNullPointerException_ntcip1218RSU() {
+      try {
+         new Expectations() {
+            {
+               new SnmpSession((RSU) any);
+               result = new NullPointerException("testException123");
+            }
+         };
+      } catch (IOException e) {
+         fail("Unexpected Exception in expectations block: " + e);
+      }
+      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim(ntcip1218RSU, 42).getStatusCode());
    }
    
    @Test
@@ -92,7 +157,27 @@ public class TimDeleteControllerTest {
          result = new IOException("testSnmpException123");
       }};
       
-      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
+      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, testTimDeleteController.deleteTim(defaultRSU, 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteShouldCatchSnmpSetException_fourDot1RSU() throws IOException {
+      new Expectations() {{
+         capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+         result = new IOException("testSnmpException123");
+      }};
+      
+      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, testTimDeleteController.deleteTim(fourDot1RSU, 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteShouldCatchSnmpSetException_ntcip1218RSU() throws IOException {
+      new Expectations() {{
+         capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+         result = new IOException("testSnmpException123");
+      }};
+      
+      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, testTimDeleteController.deleteTim(ntcip1218RSU, 42).getStatusCode());
    }
    
    @Test
@@ -102,7 +187,27 @@ public class TimDeleteControllerTest {
          result = null;
       }};
       
-      assertEquals(HttpStatus.REQUEST_TIMEOUT, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
+      assertEquals(HttpStatus.REQUEST_TIMEOUT, testTimDeleteController.deleteTim(defaultRSU, 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteTestTimeout1_fourDot1RSU() throws IOException {
+      new Expectations() {{
+         capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+         result = null;
+      }};
+      
+      assertEquals(HttpStatus.REQUEST_TIMEOUT, testTimDeleteController.deleteTim(fourDot1RSU, 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteTestTimeout1_ntcip1218RSU() throws IOException {
+      new Expectations() {{
+         capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+         result = null;
+      }};
+      
+      assertEquals(HttpStatus.REQUEST_TIMEOUT, testTimDeleteController.deleteTim(ntcip1218RSU, 42).getStatusCode());
    }
    
    @Test
@@ -115,9 +220,35 @@ public class TimDeleteControllerTest {
          result = null;
       }};
       
-      assertEquals(HttpStatus.REQUEST_TIMEOUT, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
+      assertEquals(HttpStatus.REQUEST_TIMEOUT, testTimDeleteController.deleteTim(defaultRSU, 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteTestTimeout2_fourDot1RSU() throws IOException {
+      new Expectations() {{
+         capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+         result = mockResponseEvent;
+         
+         mockResponseEvent.getResponse();
+         result = null;
+      }};
+      
+      assertEquals(HttpStatus.REQUEST_TIMEOUT, testTimDeleteController.deleteTim(fourDot1RSU, 42).getStatusCode());
    }
    
+   @Test
+   public void deleteTestTimeout2_ntcip1218RSU() throws IOException {
+      new Expectations() {{
+         capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+         result = mockResponseEvent;
+         
+         mockResponseEvent.getResponse();
+         result = null;
+      }};
+      
+      assertEquals(HttpStatus.REQUEST_TIMEOUT, testTimDeleteController.deleteTim(ntcip1218RSU, 42).getStatusCode());
+   }
+
    @Test
    public void deleteTestOK() throws IOException {
       new Expectations() {{
@@ -129,12 +260,14 @@ public class TimDeleteControllerTest {
       }};
 
       //rsuUsername and rsuPassword are null
-      assertEquals(HttpStatus.OK, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
+      assertEquals(HttpStatus.OK, testTimDeleteController.deleteTim(defaultRSU, 42).getStatusCode());
       //rsuUsername and rsuPassword are not-null
       assertEquals(HttpStatus.OK, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\", \"rsuUsername\": \"v3user\", \"rsuPassword\": \"password\"}", 42).getStatusCode());
       //rsuUsername and rsuPassword are blank
       assertEquals(HttpStatus.OK, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\", \"rsuUsername\": \"\", \"rsuPassword\": \"\"}", 42).getStatusCode());
    }
+
+   // TODO: write tests for fourdot1 & ntcip for deleteTestOk
    
    @Test
    public void deleteTestMessageAlreadyExists() throws IOException {
@@ -146,7 +279,33 @@ public class TimDeleteControllerTest {
          result = 12;
       }};
       
-      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
+      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim(defaultRSU, 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteTestMessageAlreadyExists_fourDot1RSU() throws IOException {
+      new Expectations() {{
+         capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+         result = mockResponseEvent;
+         
+         mockResponseEvent.getResponse().getErrorStatus();
+         result = 12;
+      }};
+      
+      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim(fourDot1RSU, 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteTestMessageAlreadyExists_ntcip1218RSU() throws IOException {
+      new Expectations() {{
+         capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+         result = mockResponseEvent;
+         
+         mockResponseEvent.getResponse().getErrorStatus();
+         result = 12;
+      }};
+      
+      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim(ntcip1218RSU, 42).getStatusCode());
    }
    
    @Test
@@ -159,7 +318,33 @@ public class TimDeleteControllerTest {
          result = 10;
       }};
       
-      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
+      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim(defaultRSU, 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteTestInvalidIndex_fourDot1RSU() throws IOException {
+      new Expectations() {{
+         capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+         result = mockResponseEvent;
+         
+         mockResponseEvent.getResponse().getErrorStatus();
+         result = 10;
+      }};
+      
+      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim(fourDot1RSU, 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteTestInvalidIndex_ntcip1218RSU() throws IOException {
+      new Expectations() {{
+         capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+         result = mockResponseEvent;
+         
+         mockResponseEvent.getResponse().getErrorStatus();
+         result = 10;
+      }};
+      
+      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim(ntcip1218RSU, 42).getStatusCode());
    }
    
    @Test
@@ -172,7 +357,33 @@ public class TimDeleteControllerTest {
          result = 5;
       }};
       
-      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim("{\"rsuTarget\":\"127.0.0.1\",\"rsuRetries\":\"1\",\"rsuTimeout\":\"2000\"}", 42).getStatusCode());
+      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim(defaultRSU, 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteTestUnknownErrorCode_fourDot1RSU() throws IOException {
+      new Expectations() {{
+         capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+         result = mockResponseEvent;
+         
+         mockResponseEvent.getResponse().getErrorStatus();
+         result = 5;
+      }};
+      
+      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim(fourDot1RSU, 42).getStatusCode());
+   }
+
+   @Test
+   public void deleteTestUnknownErrorCode_ntcip1218RSU() throws IOException {
+      new Expectations() {{
+         capturingSnmpSession.set((PDU) any, (Snmp) any, (UserTarget) any, anyBoolean);
+         result = mockResponseEvent;
+         
+         mockResponseEvent.getResponse().getErrorStatus();
+         result = 5;
+      }};
+      
+      assertEquals(HttpStatus.BAD_REQUEST, testTimDeleteController.deleteTim(ntcip1218RSU, 42).getStatusCode());
    }
 
 }
