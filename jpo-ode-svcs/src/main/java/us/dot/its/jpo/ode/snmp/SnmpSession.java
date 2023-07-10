@@ -395,7 +395,7 @@ public class SnmpSession {
          // rsuMsgRepeatPsid.3 x "8300"
          // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.2.3 x "8300"
          // rsuMsgRepeatTxChannel.3 = 3
-         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.3.3 = 178
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.3.3 = 183
          // rsuMsgRepeatTxInterval.3 = 1
          // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.4.3 = 1
          // rsuMsgRepeatDeliveryStart.3 x "010114111530"
@@ -458,6 +458,16 @@ public class SnmpSession {
             new Integer32(snmp.getStatus())
          );
 
+         VariableBinding rsuMsgRepeatPriority = new VariableBinding(
+            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_priority_oid.concat(".").concat(Integer.toString(index))),
+            new Integer32(6)
+         );
+
+         VariableBinding rsuMsgRepeatOptions = new VariableBinding(
+            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_options_oid.concat(".").concat(Integer.toString(index))),
+            new OctetString("00")
+         );
+
          ScopedPDU pdu = new ScopedPDU();
          pdu.add(rsuMsgRepeatPsid);
          pdu.add(rsuMsgRepeatTxChannel);
@@ -469,6 +479,8 @@ public class SnmpSession {
          if (verb == ServiceRequest.OdeInternal.RequestVerb.POST) {
             pdu.add(rsuMsgRepeatStatus);
          }
+         pdu.add(rsuMsgRepeatPriority);
+         pdu.add(rsuMsgRepeatOptions);
          pdu.setType(PDU.SET);
 
          return pdu;
