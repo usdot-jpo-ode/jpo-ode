@@ -478,6 +478,13 @@ public class TimQueryControllerTest {
       assertTrue(actualResponse.getBody().contains("indicies_set"));
    }
 
-   // TODO: implement test for unrecognized snmp protocol
+   @Test
+   public void testPopulatedQuery_unrecognizedProtocol() throws IOException {
+      String unrecognizedProtocolRSU = "{\"rsuTarget\":\"10.10.10.10\",\"rsuUsername\":\"user\",\"rsuPassword\":\"pass\",\"rsuRetries\":\"3\",\"rsuTimeout\":\"5000\",\"snmpProtocol\":\"banana\"}";
+
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(unrecognizedProtocolRSU);
+      assertEquals(HttpStatus.BAD_REQUEST, actualResponse.getStatusCode());
+      assertTrue(actualResponse.getBody().contains("Unrecognized protocol"));
+   }
 
 }

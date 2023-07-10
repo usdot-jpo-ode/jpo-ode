@@ -111,6 +111,17 @@ public class RoadSideUnitTest {
 		assertEquals(SnmpProtocol.NTCIP1218, deserializedRSU.getSnmpProtocol());
 	}
 
-	// TODO: implement deserialization with unrecognized protocol so defaults to fourDot1
+	@Test
+	public void testDeserializationFromJson_unrecognizedProtocol_exception() {
+		String unrecognizedProtocolRSU = "{\"rsuTarget\":\"10.10.10.10\",\"rsuUsername\":\"user\",\"rsuPassword\":\"pass\",\"rsuRetries\":\"3\",\"rsuTimeout\":\"5000\",\"snmpProtocol\":\"banana\"}";
 
+		RSU deserializedRSU = null;
+		try {
+			deserializedRSU = (RSU) JsonUtils.fromJson(unrecognizedProtocolRSU, RSU.class);
+		}
+		catch(Exception e) {
+			
+		}
+		assert(deserializedRSU == null);
+	}
 }

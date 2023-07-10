@@ -71,7 +71,16 @@ public class TimQueryController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, "Empty request."));
       }
 
-      RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
+      RSU queryTarget = null;
+      try {
+         queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
+      }
+      catch(Exception e) {
+         
+      }
+      if (queryTarget == null) {
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, "Unrecognized protocol"));
+      }
       
       TimTransmogrifier.updateRsuCreds(queryTarget, odeProperties);
 
