@@ -26,6 +26,9 @@ All stakeholders are invited to provide input to these documents. To provide fee
 
 <a name="toc"/>
 
+## Release Notes
+The current version and release history of the JPO-ODE: [ODE Release Notes](<docs/Release_notes.md>)
+
 ## Table of Contents
 
 1.  [Usage Example](#usage-example)
