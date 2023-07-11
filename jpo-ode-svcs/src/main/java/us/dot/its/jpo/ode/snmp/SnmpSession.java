@@ -304,18 +304,18 @@ public class SnmpSession {
          // --> 1.4.1.5.3 = 178
          // rsuSRMTxMode.3 = 1
          // --> 1.4.1.4.3 = 1
-         // rsuSRMPsid.3 x "8300"
-         // --> 1.4.1.2.3 x "8300"
+         // rsuSRMPsid.3 x "8003"
+         // --> 1.4.1.2.3 x "8003"
          // rsuSRMDsrcMsgId.3 = 31
          // --> 1.4.1.3.3 = 31
-         // rsuSRMTxInterval.3 = 1
-         // --> 1.4.1.6.3 = 1
-         // rsuSRMDeliveryStart.3 x "010114111530"
-         // --> 1.4.1.7.3 = "010114111530"
-         // rsuSRMDeliveryStop.3 x "010114130000"
-         // --> 1.4.1.8.3 = "010114130000"
-         // rsuSRMPayload.3 x "0EFF82445566778899000000AABBCCDDEEFF00E00EA0C12A00"
-         // --> 1.4.1.9.3 = "0EFF82445566778899000000AABBCCDDEEFF00E00EA0C12A00"
+         // rsuSRMTxInterval.3 = 10
+         // --> 1.4.1.6.3 = 10
+         // rsuSRMDeliveryStart.3 x "07e7051f0c000000"
+         // --> 1.4.1.7.3 = "07e7051f0c000000"
+         // rsuSRMDeliveryStop.3 x "07e7060f0c000000"
+         // --> 1.4.1.8.3 = "07e7060f0c000000"
+         // rsuSRMPayload.3 x "001f6020100000000000de8f834082729de80d80734d37862d2187864fc2099f1f4028407e53bd01b00e69a6f0c5a409c46c3c300118e69a26fa77a0104b8e69a2e86779e21981414e39a68fd29de697d804fb38e69a50e27796151013d81080020290"
+         // --> 1.4.1.9.3 = "001f6020100000000000de8f834082729de80d80734d37862d2187864fc2099f1f4028407e53bd01b00e69a6f0c5a409c46c3c300118e69a26fa77a0104b8e69a2e86779e21981414e39a68fd29de697d804fb38e69a50e27796151013d81080020290"
          // rsuSRMEnable.3 = 1
          // --> 1.4.1.10.3 = 1
          //////////////////////////////
@@ -392,26 +392,26 @@ public class SnmpSession {
          //////////////////////////////
          // - OID examples - //
          //////////////////////////////
-         // rsuMsgRepeatPsid.3 x "8300"
-         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.2.3 x "8300"
+         // rsuMsgRepeatPsid.3 x "8003"
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.2.3 x "8003"
          // rsuMsgRepeatTxChannel.3 = 3
          // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.3.3 = 183
-         // rsuMsgRepeatTxInterval.3 = 1
-         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.4.3 = 1
-         // rsuMsgRepeatDeliveryStart.3 x "010114111530"
-         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.5.3 = "010114111530"
-         // rsuMsgRepeatDeliveryStop.3 x "010114130000"
-         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.6.3 = "010114130000"
-         // rsuMsgRepeatPayload.3 x "0EFF82445566778899000000AABBCCDDEEFF00E00EA0C12A00"
-         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.7.3 = "0EFF82445566778899000000AABBCCDDEEFF00E00EA0C12A00"
+         // rsuMsgRepeatTxInterval.3 = 10
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.4.3 = 10
+         // rsuMsgRepeatDeliveryStart.3 x "07e7051f0c000000"
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.5.3 = "07e7051f0c000000"
+         // rsuMsgRepeatDeliveryStop.3 x "07e7060f0c000000"
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.6.3 = "07e7060f0c000000"
+         // rsuMsgRepeatPayload.3 x "001f6020100000000000de8f834082729de80d80734d37862d2187864fc2099f1f4028407e53bd01b00e69a6f0c5a409c46c3c300118e69a26fa77a0104b8e69a2e86779e21981414e39a68fd29de697d804fb38e69a50e27796151013d81080020290"
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.7.3 = "001f6020100000000000de8f834082729de80d80734d37862d2187864fc2099f1f4028407e53bd01b00e69a6f0c5a409c46c3c300118e69a26fa77a0104b8e69a2e86779e21981414e39a68fd29de697d804fb38e69a50e27796151013d81080020290"
          // rsuMsgRepeatEnable.3 = 1
          // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.8.3 = 1
          // rsuMsgRepeatStatus.3 = 4
          // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.9.3 = 4
-         // rsuMsgRepeatPriority.3 = 1
-         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.10.3 = 1
-         // rsuMsgRepeatOptions.3 = "0000"
-         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.11.3 = "0000"
+         // rsuMsgRepeatPriority.3 = 6
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.10.3 = 6
+         // rsuMsgRepeatOptions.3 = "C0"
+         // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.11.3 = "C0"
          //////////////////////////////
 
          VariableBinding rsuMsgRepeatPsid = SnmpSession.getPEncodedVariableBinding(
@@ -465,7 +465,7 @@ public class SnmpSession {
 
          VariableBinding rsuMsgRepeatOptions = new VariableBinding(
             new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_options_oid.concat(".").concat(Integer.toString(index))),
-            new OctetString("00")
+            new OctetString("C0")
          );
 
          ScopedPDU pdu = new ScopedPDU();
