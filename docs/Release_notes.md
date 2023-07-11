@@ -1,6 +1,30 @@
 JPO-ODE Release Notes
 ----------------------------
 
+Version 1.4.0, released July 5th 2023
+----------------------------------------
+
+### **Summary**
+The updates for the jpo-ode 1.4.0 include unit testing, logging & CI/CD changes.
+
+Enhancements in this release:
+- Added a unit test for depositing a tim with extra properties.
+- Updated `dockerhub.yml
+- CI/CD/Sonar updates
+- Updated README with UDP Demo steps.
+- Updated data flow diagrams/descriptions to include GeoJSON Converter & Conflict Monitor modules.
+- Added a link to the data flow diagrams README in the main README.
+- Updated TMC environment diagram.
+- Updated README with sonar cloud token configuration.
+
+Fixes in this release:
+- Fixed input to invalid syntax test not being invalid.
+- Reviewed specified log levels for each log statements and adjusted as needed.
+- Bumped json from 20210307 to 20230227.
+
+Known Issues:
+- No known issues at this time.
+
 Version 1.3.0, released Mar 30th 2023
 ----------------------------------------
 
