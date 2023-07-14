@@ -43,7 +43,7 @@ The current version and release history of the JPO-ODE: [ODE Release Notes](<doc
 10. [Credits and Acknowledgement](#credits-and-acknowledgement)
 11. [Code.gov Registration Info](#codegov-registration-info)
 12. [Kubernetes](#kubernetes)
-13. Sonar Token Configuration([#Sonar cloud](https://sonarqube.ow2.org/documentation/user-guide/user-token/))
+13. [Sonar Cloud](#sonar-token-configuration) ([Documentation](https://sonarcloud.io/documentation/user-guide/user-token/))
 14. [SNMP](#snmp)
 
 <!--
@@ -598,11 +598,15 @@ Contact Name: James Lieu
 
 Contact Phone: (202) 366-3000
 
+<a name="kubernetes"/>
+
 ## 12. Kubernetes
 The ODE can be run in a k8s environment.
 See [this document](./docs/Kubernetes.md) for more details about this.
 
 [Back to top](#toc)
+
+<a name="sonar-token-configuration"/>
 
 ## 13. Sonar Token Configuration
 Generating and Using Tokens
@@ -634,6 +638,8 @@ Commit and push your code to start the analysis.
 
 ### Revoking a token
 You can revoke an existing token at User > My Account > Security by clicking the Revoke button next to the token.
+
+<a name="snmp"/>
 
 ## 14. SNMP
 The ODE is capable of communicating with RSUs to:
