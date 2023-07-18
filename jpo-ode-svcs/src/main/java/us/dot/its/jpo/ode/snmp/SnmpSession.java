@@ -260,7 +260,7 @@ public class SnmpSession {
          return createPDUWithNTCIP1218Protocol(snmp, payload, index, verb);
       }
       else {
-         System.out.println("ERROR: Unknown SNMP protocol: " + snmpProtocol);
+         logger.error("Unknown SNMP protocol: {}", snmpProtocol);
          return null;
       }
    }
