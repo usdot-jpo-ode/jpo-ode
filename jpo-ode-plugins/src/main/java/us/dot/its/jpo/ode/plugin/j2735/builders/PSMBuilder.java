@@ -1,8 +1,5 @@
 package us.dot.its.jpo.ode.plugin.j2735.builders;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 import us.dot.its.jpo.ode.plugin.j2735.J2735NumberOfParticipantsInCluster;
@@ -19,9 +16,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735AnimalType;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Attachment;
 
 public class PSMBuilder {
-	private static final Logger logger = LoggerFactory.getLogger(PSMBuilder.class);
-
-
+	
 	private PSMBuilder() {
 		throw new UnsupportedOperationException();
 	}

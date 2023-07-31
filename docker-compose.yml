@@ -4,6 +4,8 @@ version: '3'
 services:
   zookeeper:
     image: wurstmeister/zookeeper
+    restart: always
+    mem_limit: 512m
     ports:
       - "2181:2181"
     logging:
@@ -13,6 +15,8 @@ services:
 
   kafka:
     image: wurstmeister/kafka
+    restart: always
+    mem_limit: 4g
     ports:
       - "9092:9092"
     environment:
@@ -21,7 +25,7 @@ services:
       KAFKA_ADVERTISED_HOST_NAME: ${DOCKER_HOST_IP}
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_CREATE_TOPICS: "topic.OdeBsmPojo:1:1,topic.OdeSpatTxPojo:1:1,topic.OdeSpatPojo:1:1,topic.OdeSpatJson:1:1,topic.FilteredOdeSpatJson:1:1,topic.OdeSpatRxJson:1:1,topic.OdeSpatRxPojo:1:1,topic.OdeBsmJson:1:1,topic.FilteredOdeBsmJson:1:1,topic.OdeTimJson:1:1,topic.OdeTimBroadcastJson:1:1,topic.J2735TimBroadcastJson:1:1,topic.OdeDriverAlertJson:1:1,topic.Asn1DecoderInput:1:1,topic.Asn1DecoderOutput:1:1,topic.Asn1EncoderInput:1:1,topic.Asn1EncoderOutput:1:1,topic.SDWDepositorInput:1:1,topic.OdeTIMCertExpirationTimeJson:1:1,topic.OdeRawEncodedBSMJson:1:1,topic.OdeRawEncodedSPATJson:1:1,topic.OdeRawEncodedTIMJson:1:1,topic.OdeRawEncodedMAPJson:1:1,topic.OdeMapTxPojo:1:1,topic.OdeMapJson:1:1,topic.OdeRawEncodedSSMJson:1:1,topic.OdeSsmPojo:1:1,topic.OdeSsmJson:1:1,topic.OdeRawEncodedSRMJson:1:1,topic.OdeSrmTxPojo:1:1,topic.OdeSrmJson:1:1,topic.OdeRawEncodedPsmJson:1:1,topic.OdePsmTxPojo:1:1,topic.OdePsmJson:1:1"
+      KAFKA_CREATE_TOPICS: "topic.OdeBsmPojo:1:1,topic.OdeSpatTxPojo:1:1,topic.OdeSpatPojo:1:1,topic.OdeSpatJson:1:1,topic.FilteredOdeSpatJson:1:1,topic.OdeSpatRxJson:1:1,topic.OdeSpatRxPojo:1:1,topic.OdeBsmJson:1:1,topic.FilteredOdeBsmJson:1:1,topic.OdeTimJson:1:1,topic.OdeTimBroadcastJson:1:1,topic.J2735TimBroadcastJson:1:1,topic.OdeDriverAlertJson:1:1,topic.Asn1DecoderInput:1:1,topic.Asn1DecoderOutput:1:1,topic.Asn1EncoderInput:1:1,topic.Asn1EncoderOutput:1:1,topic.SDWDepositorInput:1:1,topic.OdeTIMCertExpirationTimeJson:1:1,topic.OdeRawEncodedBSMJson:1:1,topic.OdeRawEncodedSPATJson:1:1,topic.OdeRawEncodedTIMJson:1:1,topic.OdeRawEncodedMAPJson:1:1,topic.OdeMapTxPojo:1:1,topic.OdeMapJson:1:1,topic.OdeRawEncodedSSMJson:1:1,topic.OdeSsmPojo:1:1,topic.OdeSsmJson:1:1,topic.OdeRawEncodedSRMJson:1:1,topic.OdeSrmTxPojo:1:1,topic.OdeSrmJson:1:1,topic.OdeRawEncodedPSMJson:1:1,topic.OdePsmTxPojo:1:1,topic.OdePsmJson:1:1"
       KAFKA_DELETE_TOPIC_ENABLED: "true"
       KAFKA_CLEANUP_POLICY: "delete" # delete old logs
       KAFKA_LOG_RETENTION_HOURS: 2
@@ -34,7 +38,7 @@ services:
     depends_on:
       - zookeeper
     volumes:
-      - ${DOCKER_SHARED_VOLUME_WINDOWS}/var/run/docker.sock:/var/run/docker.sock
+      - ${DOCKER_SHARED_VOLUME}/var/run/docker.sock:/var/run/docker.sock
     logging:
       options:
         max-size: "10m"
@@ -43,6 +47,8 @@ services:
   ode:
     build: .
     image: jpoode_ode:latest
+    restart: always
+    mem_limit: 1g
     ports:
       - "8080:8080"
       - "9090:9090"
@@ -79,6 +85,8 @@ services:
   adm:
     build: ./asn1_codec
     image: jpoode_acm:latest
+    restart: always
+    mem_limit: 100m
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ACM_CONFIG_FILE: adm.properties
@@ -94,6 +102,8 @@ services:
   aem:
     build: ./asn1_codec
     image: jpoode_acm:latest
+    restart: always
+    mem_limit: 100m
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ACM_CONFIG_FILE: aem.properties
@@ -208,6 +218,78 @@ services:
   #     options:
   #       max-size: "10m"
   #       max-file: "5"
+
+  # mongo:
+  #   image: mongo:6
+  #   restart: on-failure
+  #   environment:
+  #     - MONGO_REPLICA_SET_NAME=rs0
+  #   ports:
+  #     - 27017:27017
+  #   volumes:
+  #     - ${DOCKER_SHARED_VOLUME}:/MongoDB_data/db
+  #   healthcheck:
+  #     test: | 
+  #       test $$(mongosh --quiet --eval "try { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: '${DOCKER_HOST_IP}' }] }).ok } catch (_) { rs.status().ok }") -eq 1
+  #     interval: 10s
+  #     start_period: 30s
+  #   command: ["--replSet", "rs0", "--bind_ip_all"]
+
+  mongo_kafka_connect:
+      image: cp-kafka-connect:6.1.9
+      build:
+        context: ./jpo-s3-deposit/mongo-kafka-connect
+        dockerfile: Dockerfile
+      restart: always
+      mem_limit: 4g
+      ports:
+        - "8083:8083"
+      depends_on:
+      - kafka
+      - mongo
+      volumes:
+      - ${DOCKER_SHARED_VOLUME}:/connect
+      environment:
+        MONGO_IP: ${MONGO_IP}
+        DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+        CONNECT_BOOTSTRAP_SERVERS: ${DOCKER_HOST_IP}:9092
+        CONNECT_REST_ADVERTISED_HOST_NAME: connect
+        CONNECT_REST_PORT: 8083
+        CONNECT_GROUP_ID: compose-connect-group
+        CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
+        CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+        CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
+        CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
+        CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+        CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
+        CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+        CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+        CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+        CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+        CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+        CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
+        CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR,com.mongodb.kafka=DEBUG"
+        CONNECT_PLUGIN_PATH: /usr/share/confluent-hub-components
+        CONNECT_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      command:
+        - bash
+        - -c
+        - |
+          /etc/confluent/docker/run & 
+          echo "Waiting for Kafka Connect to start listening on kafka-connect ❳"
+          while [ $$(curl -s -o /dev/null -w %{http_code} http://${DOCKER_HOST_IP}:8083/connectors) -eq 000 ] ; do 
+            echo -e $$(date) " Kafka Connect listener HTTP state: " $$(curl -s -o /dev/null -w %{http_code} http://${DOCKER_HOST_IP}:8083/connectors) " (waiting for 200)"
+            sleep 5
+          done
+          sleep 10
+          echo -e "\n--\n+> Creating Kafka Connect MongoDB sink"
+          bash /scripts/connect_start.sh "${MONGO_IP}"
+          sleep infinity
+      logging:
+        options:
+          max-size: "10m"
+          max-file: "5"
+
 
   # rde_tim_depositor:
   #   build: ./jpo-s3-deposit

@@ -174,10 +174,10 @@ public class OdeProperties implements EnvironmentAware {
    private int mapBufferSize = 2048;
 
    // PSM
-   private String kafkaTopicOdeRawEncodedPSMJson = "topic.OdeRawEncodedPsmJson";
+   private String kafkaTopicOdeRawEncodedPSMJson = "topic.OdeRawEncodedPSMJson";
    private String kafkaTopicOdePsmTxPojo = "topic.OdePsmTxPojo";
    private String kafkaTopicOdePsmJson = "topic.OdePsmJson";
-   private int psmReceiverPort = 44940; // TODO: Update this to an actual port number
+   private int psmReceiverPort = 44940;
    private int psmBufferSize = 500;
    
 // DriverAlerts
