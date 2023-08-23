@@ -142,7 +142,7 @@ public class CASClient {
          try {
             httpClient.close();
          } catch (HttpException e) {
-            logger.warn(http, e);
+            logger.error(http, e);
          }
       }
    }
@@ -175,7 +175,7 @@ public class CASClient {
          try {
             httpClient.close();
          } catch (HttpException e) {
-            logger.warn(http, e);
+            logger.error(http, e);
          }
       }
    }
@@ -208,7 +208,7 @@ public class CASClient {
          try {
             httpClient.close();
          } catch (HttpException e) {
-            logger.warn(http, e);
+            logger.error(http, e);
          }
       }
    }

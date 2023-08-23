@@ -105,8 +105,6 @@ public class MapReceiver extends AbstractUdpReceiverPublisher {
     public byte[] removeHeader(byte[] packet) {
         String hexPacket = HexUtils.toHexString(packet);
 
-        // logger.debug("MAP packet: {}", hexPacket);
-
         int startIndex = hexPacket.indexOf(MAP_START_FLAG);
         if (startIndex == 0) {
             logger.debug("Message is raw MAP with no headers.");

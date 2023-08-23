@@ -40,7 +40,7 @@ public class RsuSnmp {
     public static String sendSnmpV3Request(String ip, String oid, Snmp snmp, String username) {
 
         if (ip == null || oid == null || snmp == null) {
-            logger.debug("Invalid SNMP request parameter");
+            logger.warn("Invalid SNMP request parameter");
             throw new IllegalArgumentException("Invalid SNMP request parameter");
         }
         
@@ -68,16 +68,16 @@ public class RsuSnmp {
             snmp.close();
         } catch (Exception e) {
             responseEvent = null;
-            logger.debug("SNMP4J library exception", e);
+            logger.error("SNMP4J library exception", e);
         }
 
         // Interpret snmp response
         String stringResponse;
         if (responseEvent == null) {
-            logger.debug("SNMP connection error");
+            logger.error("SNMP connection error");
             stringResponse = "[ERROR] SNMP connection error";
         } else if (responseEvent.getResponse() == null) {
-            logger.debug("Empty SNMP response");
+            logger.error("Empty SNMP response");
             stringResponse = "[ERROR] Empty SNMP response";
         } else {
             stringResponse = responseEvent.getResponse().getVariableBindings().toString();

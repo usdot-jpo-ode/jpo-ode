@@ -92,7 +92,7 @@ public class OdePluginImpl implements Plugin {
                 try {
                     loader.close();
                 } catch (IOException e) {
-                    logger.debug("Error closing URLClassLoader: {}", e);
+                    logger.error("Error closing URLClassLoader: {}", e);
                 }
         }
     }
