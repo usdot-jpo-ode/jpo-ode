@@ -40,7 +40,7 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
     <java.version>11</java.version>
-    <sonar.organization>usdot-jpo-ode</sonar.organization>
+    <sonar.organization>usdot-jpo-ode-1</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <!-- JaCoCo Properties -->
     <jacoco.version>0.8.8</jacoco.version>
