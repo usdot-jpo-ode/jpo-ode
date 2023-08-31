@@ -119,9 +119,9 @@ Supported message types:
 -  Minimum RAM: 16 GB
 -  Minimum storage space: 100 GB
 -  Supported operating systems:
-   -  Ubuntu 18.04 Linux (Recommended)
-   -  Windows 10 Professional (Professional version required for Docker virtualization)
-   -  OSX 10 Mojave
+   -  Ubuntu 22.04 Linux (Recommended)
+   -  Windows 10/11 Professional (Professional version required for Docker virtualization)
+   -  OSX 13
 
 The ODE software can run on most standard Window, Mac, or Linux based computers with
 Pentium core processors. Performance of the software will be based on the computing power and available RAM in
