@@ -18,8 +18,6 @@ package us.dot.its.jpo.ode.snmp;
 import java.io.IOException;
 import java.text.ParseException;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
@@ -38,7 +36,6 @@ import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
-import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.VariableBinding;
@@ -319,55 +316,16 @@ public class SnmpSession {
          // --> 1.4.1.10.3 = 1
          //////////////////////////////
 
-         VariableBinding rsuSRMPsid = SnmpSession.getPEncodedVariableBinding(
-            SnmpFourDot1Protocol.rsu_srm_psid_oid.concat(".").concat(Integer.toString(index)),
-            snmp.getRsuid()
-         );
-
-         VariableBinding rsuSRMDsrcMsgId = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_srm_dsrc_msg_id_oid.concat(".").concat(Integer.toString(index))),
-            new Integer32(snmp.getMsgid())
-         );
-
-         VariableBinding rsuSRMTxMode = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_srm_tx_mode_oid.concat(".").concat(Integer.toString(index))),
-            new Integer32(snmp.getMode())
-         );
-
-         VariableBinding rsuSRMTxChannel = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_srm_tx_channel_oid.concat(".").concat(Integer.toString(index))),
-            new Integer32(snmp.getChannel())
-         );
-
-         VariableBinding rsuSRMTxInterval = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_srm_tx_interval_oid.concat(".").concat(Integer.toString(index))),
-            new Integer32(snmp.getInterval())
-         );
-
-         VariableBinding rsuSRMDeliveryStart = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_srm_delivery_start_oid.concat(".").concat(Integer.toString(index))),
-            new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystart())))
-         );
-
-         VariableBinding rsuSRMDeliveryStop = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_srm_delivery_stop_oid.concat(".").concat(Integer.toString(index))),
-            new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystop())))
-         );
-
-         VariableBinding rsuSRMPayload = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_srm_payload_oid.concat(".").concat(Integer.toString(index))),
-            new OctetString(DatatypeConverter.parseHexBinary(payload))
-         );
-
-         VariableBinding rsuSRMEnable = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_srm_enable_oid.concat(".").concat(Integer.toString(index))),
-            new Integer32(snmp.getEnable())
-         );
-               
-         VariableBinding rsuSRMStatus = new VariableBinding(
-            new OID(SnmpFourDot1Protocol.rsu_srm_status_oid.concat(".").concat(Integer.toString(index))),
-            new Integer32(snmp.getStatus())
-         );
+         VariableBinding rsuSRMPsid = SnmpFourDot1Protocol.getVbRsuSrmPsid(index, snmp.getRsuid());
+         VariableBinding rsuSRMDsrcMsgId = SnmpFourDot1Protocol.getVbRsuSrmDsrcMsgId(index, snmp.getMsgid());
+         VariableBinding rsuSRMTxMode = SnmpFourDot1Protocol.getVbRsuSrmTxMode(index, snmp.getMode());
+         VariableBinding rsuSRMTxChannel = SnmpFourDot1Protocol.getVbRsuSrmTxChannel(index, snmp.getChannel());
+         VariableBinding rsuSRMTxInterval = SnmpFourDot1Protocol.getVbRsuSrmTxInterval(index, snmp.getInterval());
+         VariableBinding rsuSRMDeliveryStart = SnmpFourDot1Protocol.getVbRsuSrmDeliveryStart(index, snmp.getDeliverystart());
+         VariableBinding rsuSRMDeliveryStop = SnmpFourDot1Protocol.getVbRsuSrmDeliveryStop(index, snmp.getDeliverystop());
+         VariableBinding rsuSRMPayload = SnmpFourDot1Protocol.getVbRsuSrmPayload(index, payload);
+         VariableBinding rsuSRMEnable = SnmpFourDot1Protocol.getVbRsuSrmEnable(index, snmp.getEnable());
+         VariableBinding rsuSRMStatus = SnmpFourDot1Protocol.getVbRsuSrmStatus(index, snmp.getStatus());
 
          ScopedPDU pdu = new ScopedPDU();
          pdu.add(rsuSRMPsid);
@@ -413,59 +371,18 @@ public class SnmpSession {
          // --> 1.3.6.1.4.1.1206.4.2.18.3.2.1.11.3 = "C0"
          //////////////////////////////
 
-         VariableBinding rsuMsgRepeatPsid = SnmpSession.getPEncodedVariableBinding(
-            SnmpNTCIP1218Protocol.rsu_msg_repeat_psid_oid.concat(".").concat(Integer.toString(index)),
-            snmp.getRsuid()
-         );
-
+         VariableBinding rsuMsgRepeatPsid = SnmpNTCIP1218Protocol.getVbRsuMsgRepeatPsid(index, snmp.getRsuid());
          // note: dsrc_msg_id is not in NTCIP 1218
-
          // note: tx_mode is not in NTCIP 1218
-
-         VariableBinding rsuMsgRepeatTxChannel = new VariableBinding(
-            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_tx_channel_oid.concat(".").concat(Integer.toString(index))),
-            new Integer32(snmp.getChannel())
-         );
-
-         VariableBinding rsuMsgRepeatTxInterval = new VariableBinding(
-            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_tx_interval_oid.concat(".").concat(Integer.toString(index))),
-            new Integer32(snmp.getInterval())
-         );
-
-         VariableBinding rsuMsgRepeatDeliveryStart = new VariableBinding(
-            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_delivery_start_oid.concat(".").concat(Integer.toString(index))),
-            new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystart())))
-         );
-
-         VariableBinding rsuMsgRepeatDeliveryStop = new VariableBinding(
-            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_delivery_stop_oid.concat(".").concat(Integer.toString(index))),
-            new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(snmp.getDeliverystop())))
-         );
-
-         VariableBinding rsuMsgRepeatPayload = new VariableBinding(
-            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_payload_oid.concat(".").concat(Integer.toString(index))),
-            new OctetString(DatatypeConverter.parseHexBinary(payload))
-         );
-
-         VariableBinding rsuMsgRepeatEnable = new VariableBinding(
-            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_enable_oid.concat(".").concat(Integer.toString(index))),
-            new Integer32(snmp.getEnable())
-         );
-
-         VariableBinding rsuMsgRepeatStatus = new VariableBinding(
-            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_status_oid.concat(".").concat(Integer.toString(index))),
-            new Integer32(snmp.getStatus())
-         );
-
-         VariableBinding rsuMsgRepeatPriority = new VariableBinding(
-            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_priority_oid.concat(".").concat(Integer.toString(index))),
-            new Integer32(6)
-         );
-
-         VariableBinding rsuMsgRepeatOptions = new VariableBinding(
-            new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_options_oid.concat(".").concat(Integer.toString(index))),
-            new OctetString("C0")
-         );
+         VariableBinding rsuMsgRepeatTxChannel = SnmpNTCIP1218Protocol.getVbRsuMsgRepeatTxChannel(index, snmp.getChannel());
+         VariableBinding rsuMsgRepeatTxInterval = SnmpNTCIP1218Protocol.getVbRsuMsgRepeatTxInterval(index, snmp.getInterval());
+         VariableBinding rsuMsgRepeatDeliveryStart = SnmpNTCIP1218Protocol.getVbRsuMsgRepeatDeliveryStart(index, snmp.getDeliverystart());
+         VariableBinding rsuMsgRepeatDeliveryStop = SnmpNTCIP1218Protocol.getVbRsuMsgRepeatDeliveryStop(index, snmp.getDeliverystop());
+         VariableBinding rsuMsgRepeatPayload = SnmpNTCIP1218Protocol.getVbRsuMsgRepeatPayload(index, payload);
+         VariableBinding rsuMsgRepeatEnable = SnmpNTCIP1218Protocol.getVbRsuMsgRepeatEnable(index, snmp.getEnable());
+         VariableBinding rsuMsgRepeatStatus = SnmpNTCIP1218Protocol.getVbRsuMsgRepeatStatus(index, snmp.getStatus());
+         VariableBinding rsuMsgRepeatPriority = SnmpNTCIP1218Protocol.getVbRsuMsgRepeatPriority(index);
+         VariableBinding rsuMsgRepeatOptions = SnmpNTCIP1218Protocol.getVbRsuMsgRepeatOptions(index);
 
          ScopedPDU pdu = new ScopedPDU();
          pdu.add(rsuMsgRepeatPsid);

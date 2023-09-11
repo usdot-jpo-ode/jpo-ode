@@ -109,20 +109,20 @@ public class TimQueryController {
 
       if (snmpProtocol == SnmpProtocol.FOURDOT1) {      
          for (int i = 0; i < odeProperties.getRsuSrmSlots() - 50; i++) {
-            pdu0.add(new VariableBinding(new OID(SnmpFourDot1Protocol.rsu_srm_status_oid.concat(".").concat(Integer.toString(i)))));
+            pdu0.add(SnmpFourDot1Protocol.getVbRsuSrmStatus(i));
          }
 
          for (int i = 50; i < odeProperties.getRsuSrmSlots(); i++) {
-            pdu1.add(new VariableBinding(new OID(SnmpFourDot1Protocol.rsu_srm_status_oid.concat(".").concat(Integer.toString(i)))));
+            pdu1.add(SnmpFourDot1Protocol.getVbRsuSrmStatus(i));
          }
       }
       else if (snmpProtocol == SnmpProtocol.NTCIP1218) {
          for (int i = 0; i < odeProperties.getRsuSrmSlots() - 50; i++) {
-            pdu0.add(new VariableBinding(new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_status_oid.concat(".").concat(Integer.toString(i)))));
+            pdu0.add(SnmpNTCIP1218Protocol.getVbRsuMsgRepeatStatus(i));
          }
 
          for (int i = 50; i < odeProperties.getRsuSrmSlots(); i++) {
-            pdu1.add(new VariableBinding(new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_status_oid.concat(".").concat(Integer.toString(i)))));
+            pdu1.add(SnmpNTCIP1218Protocol.getVbRsuMsgRepeatStatus(i));
          }
       }
       else {

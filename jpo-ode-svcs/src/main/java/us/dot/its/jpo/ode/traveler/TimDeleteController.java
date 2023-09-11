@@ -95,12 +95,12 @@ public class TimDeleteController {
       PDU pdu = null;
       if (snmpProtocol.equals(SnmpProtocol.FOURDOT1)) {
          pdu = new ScopedPDU();
-         pdu.add(new VariableBinding(new OID(SnmpFourDot1Protocol.rsu_srm_status_oid.concat(".").concat(Integer.toString(index))), new Integer32(6)));
+         pdu.add(SnmpFourDot1Protocol.getVbRsuSrmStatus(index, 6));
          pdu.setType(PDU.SET);
       }
       else if (snmpProtocol.equals(SnmpProtocol.NTCIP1218)) {
          pdu = new ScopedPDU();
-         pdu.add(new VariableBinding(new OID(SnmpNTCIP1218Protocol.rsu_msg_repeat_status_oid.concat(".").concat(Integer.toString(index))), new Integer32(6)));
+         pdu.add(SnmpNTCIP1218Protocol.getVbRsuMsgRepeatStatus(index, 6));
          pdu.setType(PDU.SET);
       }
       else {
