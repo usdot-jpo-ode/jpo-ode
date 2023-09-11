@@ -253,13 +253,12 @@ public class SnmpSession {
     * @throws ParseException
     */
    public static ScopedPDU createPDU(SNMP snmp, String payload, int index, RequestVerb verb, SnmpProtocol snmpProtocol) throws ParseException {
-      if (snmpProtocol == SnmpProtocol.FOURDOT1) {
+      switch (snmpProtocol) {
+      case FOURDOT1:
          return createPDUWithFourDot1Protocol(snmp, payload, index, verb);
-      }
-      else if (snmpProtocol == SnmpProtocol.NTCIP1218) {
+      case NTCIP1218:
          return createPDUWithNTCIP1218Protocol(snmp, payload, index, verb);
-      }
-      else {
+      default:
          logger.error("Unknown SNMP protocol: {}", snmpProtocol);
          return null;
       }
