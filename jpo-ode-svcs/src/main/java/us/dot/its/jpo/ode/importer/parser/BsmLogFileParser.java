@@ -100,7 +100,12 @@ public class BsmLogFileParser extends LogFileParser {
 
    public void setBsmSource(byte[] code) {
       try {
-         setBsmSource(BsmSource.values()[code[0]]);
+         if (code[0] != 10){
+            setBsmSource(BsmSource.values()[code[0]]);
+         } else {
+            logger.debug("Removing newline character");
+            setStep(1);
+         }
       } catch (Exception e) {
          logger.error("Invalid BsmSource: {}. Valid values are {}-{} inclusive", 
             code, 0, BsmSource.values());

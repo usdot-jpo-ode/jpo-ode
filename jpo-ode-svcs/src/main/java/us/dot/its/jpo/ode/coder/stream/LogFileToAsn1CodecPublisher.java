@@ -19,6 +19,7 @@ import java.io.BufferedInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +48,7 @@ import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
+import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 
 public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
@@ -61,6 +63,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 	}
 
 	protected static final Logger logger = LoggerFactory.getLogger(LogFileToAsn1CodecPublisher.class);
+	private static final String BSM_START_FLAG = "0014"; 
 
 	protected StringPublisher publisher;
 	protected LogFileParser fileParser;
@@ -146,6 +149,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 		serialId.setBundleSize(dataList.size());
 		for (OdeData odeData : dataList) {
 			OdeLogMetadata msgMetadata = (OdeLogMetadata) odeData.getMetadata();
+			OdeMsgPayload msgPayload = (OdeMsgPayload) odeData.getPayload();
 			msgMetadata.setSerialId(serialId);
 
 			if (isDriverAlertRecord()) {
@@ -165,14 +169,13 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 				}
 				
 				if(isSpatRecord() && msgMetadata instanceof OdeSpatMetadata 
-						&& !((OdeSpatMetadata)msgMetadata).getIsCertPresent() )
-				{
+						&& !((OdeSpatMetadata)msgMetadata).getIsCertPresent() ) {
 					//Nothing: If Spat log file and IEEE1609Cert is not present, Skip the Ieee1609Dot2Data encoding					
-				}
-				else 
-				{
-					Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
-					msgMetadata.addEncoding(msgEncoding);
+				} else {
+					if (checkHeader(msgPayload) == "Ieee1609Dot2Data"){
+						Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
+						msgMetadata.addEncoding(msgEncoding);
+					}
 				}
 				
 				Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",EncodingRule.UPER);
@@ -185,5 +188,23 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 			serialId.increment();
 		}
 	}
+
+   	public String checkHeader(OdeMsgPayload payload) {
+		JSONObject payloadJson;
+		String header = null;
+		try {
+			payloadJson = JsonUtils.toJSONObject(payload.getData().toJson());
+			String hexPacket = payloadJson.getString("bytes");
+			int startIndex = hexPacket.indexOf(BSM_START_FLAG);
+			logger.debug("checkHeader hexPacket: " + hexPacket + "\n startIndex:" + startIndex);
+			if (startIndex < 10 && startIndex != 0){
+				header = "Ieee1609Dot2Data";
+			}
+		} catch (JsonUtilsException e) {
+			logger.error("JsonUtilsException while checking message header. Stacktrace: " + e.toString());
+			
+		}
+		return header;
+   }
 
 }

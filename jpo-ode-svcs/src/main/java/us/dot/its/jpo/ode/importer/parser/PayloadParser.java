@@ -21,9 +21,20 @@ import java.io.OutputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
+import org.apache.tomcat.util.buf.HexUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class PayloadParser extends LogFileParser {
+
+   private static Logger logger = LoggerFactory.getLogger(PayloadParser.class);
+
+   private static final String BSM_START_FLAG = "0014"; // these bytes indicate
+                                                        // start of BSM payload
+   private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
+                                                      // least 20 bytes long
 
    public static final int PAYLOAD_LENGTH_LENGTH = 2;
 
@@ -44,7 +55,8 @@ public class PayloadParser extends LogFileParser {
             status = parseStep(bis, PAYLOAD_LENGTH_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setPayloadLength(CodecUtils.bytesToShort(readBuffer, 0, PAYLOAD_LENGTH_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            short length = CodecUtils.bytesToShort(readBuffer, 0, PAYLOAD_LENGTH_LENGTH, ByteOrder.LITTLE_ENDIAN);
+            setPayloadLength(length);
          }
 
          // Step 10 - copy payload bytes
@@ -52,7 +64,7 @@ public class PayloadParser extends LogFileParser {
             status = parseStep(bis, getPayloadLength());
             if (status != ParserStatus.COMPLETE)
                return status;
-            setPayload(Arrays.copyOf(readBuffer, getPayloadLength()));
+            setPayload(removeHeader(Arrays.copyOf(readBuffer, getPayloadLength())));
          }
          
          resetStep();
@@ -90,4 +102,33 @@ public class PayloadParser extends LogFileParser {
     os.write(payload, 0, payloadLength);
   }
 
+
+     /**
+    * Attempts to strip WSMP header bytes. If message starts with "0014",
+    * message is raw BSM. Otherwise, headers are >= 20 bytes, so look past that
+    * for start of payload BSM.
+    * 
+    * @param packet
+    */
+   public byte[] removeHeader(byte[] packet) {
+      String hexPacket = HexUtils.toHexString(packet);
+
+      int startIndex = hexPacket.indexOf(BSM_START_FLAG);
+      if (startIndex == 0) {
+         logger.debug("Message is raw BSM with no headers.");
+      } else if (startIndex == -1) {
+         logger.error("Message contains no BSM start flag.");
+         logger.debug("Payload hex: " + hexPacket);
+         return null;
+      } else if (startIndex < 10){
+         logger.error("Message has supported header.");
+      } else {
+         // We likely found a message with a header, look past the first 20
+         // bytes for the start of the BSM
+         int trueStartIndex = HEADER_MINIMUM_SIZE
+               + hexPacket.substring(HEADER_MINIMUM_SIZE, hexPacket.length()).indexOf(BSM_START_FLAG);
+         hexPacket = hexPacket.substring(trueStartIndex, hexPacket.length());
+      }
+      return HexUtils.fromHexString(hexPacket);
+   }
 }
