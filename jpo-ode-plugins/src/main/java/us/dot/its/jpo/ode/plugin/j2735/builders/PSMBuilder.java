@@ -126,22 +126,22 @@ public class PSMBuilder {
 
 		JsonNode activityType = PSMMessage.get("activityType");
 		if (activityType != null) {
-			genericPSM.setActivityType(BitStringBuilder.genericBitString(activityType,J2735PublicSafetyAndRoadWorkerActivity.values()));
+			genericPSM.setActivityType(J2735PublicSafetyAndRoadWorkerActivity.valueOf(activityType.fields().next().getKey().toUpperCase()));
 		}
 
 		JsonNode activitySubType = PSMMessage.get("activitySubType");
 		if (activitySubType != null) {
-			genericPSM.setActivitySubType(BitStringBuilder.genericBitString(activitySubType,J2735PublicSafetyDirectingTrafficSubType.values()));
+			genericPSM.setActivitySubType(J2735PublicSafetyDirectingTrafficSubType.valueOf(activitySubType.fields().next().getKey().toUpperCase()));
 		}
 
 		JsonNode assistType = PSMMessage.get("assistType");
 		if (assistType != null) {
-			genericPSM.setAssistType(BitStringBuilder.genericBitString(assistType,J2735PersonalAssistive.values()));
+			genericPSM.setAssistType(J2735PersonalAssistive.valueOf(assistType.fields().next().getKey().toUpperCase()));
 		}
 
 		JsonNode sizing = PSMMessage.get("sizing");
 		if (sizing != null) {
-			genericPSM.setSizing(BitStringBuilder.genericBitString(sizing,J2735UserSizeAndBehaviour.values()));
+			genericPSM.setSizing(J2735UserSizeAndBehaviour.valueOf(assistType.fields().next().getKey().toUpperCase()));
 		}
 
 		JsonNode attachment = PSMMessage.get("attachment");

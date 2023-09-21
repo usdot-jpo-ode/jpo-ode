@@ -13,7 +13,7 @@ public class J2735PSM extends Asn1Object {
 	private J2735PersonalDeviceUserType basicType;
 	private Integer secMark;
 	private Integer msgCnt;
-	private String id; // Octet String
+	private String id;
 	private OdePosition3D position;
 	private J2735PositionalAccuracy accuracy;
 	private Integer speed;
@@ -29,10 +29,10 @@ public class J2735PSM extends Asn1Object {
 	private J2735NumberOfParticipantsInCluster clusterSize;
 	private Integer clusterRadius;
 	private J2735PublicSafetyEventResponderWorkerType eventResponderType;
-	private J2735BitString activityType;
-	private J2735BitString activitySubType;
-	private J2735BitString assistType;
-	private J2735BitString sizing;
+	private J2735PublicSafetyAndRoadWorkerActivity activityType;
+	private J2735PublicSafetyDirectingTrafficSubType activitySubType;
+	private J2735PersonalAssistive assistType;
+	private J2735UserSizeAndBehaviour sizing;
 	private J2735Attachment attachment;
 	private Integer attachmentRadius;
 	private J2735AnimalType animalType;
@@ -181,35 +181,35 @@ public class J2735PSM extends Asn1Object {
 		this.eventResponderType = eventResponderType;
 	}
 
-	public J2735BitString getActivityType() {
+	public J2735PublicSafetyAndRoadWorkerActivity getActivityType() {
 		return this.activityType;
 	}
 
-	public void setActivityType(J2735BitString activityType) {
+	public void setActivityType(J2735PublicSafetyAndRoadWorkerActivity activityType) {
 		this.activityType = activityType;
 	}
 
-	public J2735BitString getActivitySubType() {
+	public J2735PublicSafetyDirectingTrafficSubType getActivitySubType() {
 		return this.activitySubType;
 	}
 
-	public void setActivitySubType(J2735BitString activitySubType) {
+	public void setActivitySubType(J2735PublicSafetyDirectingTrafficSubType activitySubType) {
 		this.activitySubType = activitySubType;
 	}
 
-	public J2735BitString getAssistType() {
+	public J2735PersonalAssistive getAssistType() {
 		return this.assistType;
 	}
 
-	public void setAssistType(J2735BitString assistType) {
+	public void setAssistType(J2735PersonalAssistive assistType) {
 		this.assistType = assistType;
 	}
 
-	public J2735BitString getSizing() {
+	public J2735UserSizeAndBehaviour getSizing() {
 		return this.sizing;
 	}
 
-	public void setSizing(J2735BitString sizing) {
+	public void setSizing(J2735UserSizeAndBehaviour sizing) {
 		this.sizing = sizing;
 	}
 

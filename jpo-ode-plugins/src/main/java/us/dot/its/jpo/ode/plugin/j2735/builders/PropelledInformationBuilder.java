@@ -19,17 +19,17 @@ public class PropelledInformationBuilder {
 
         JsonNode human = propelledInformation.get("human");
         if (human != null){
-			pi.setHuman(J2735HumanPropelledType.valueOf(human.fields().next().getKey().toUpperCase()));
+			pi.setHuman(J2735HumanPropelledType.valueOf(human.asText().toUpperCase()));
         }
 
         JsonNode animal = propelledInformation.get("animal");
         if (animal != null){
-			pi.setAnimal(J2735AnimalPropelledType.valueOf(animal.fields().next().getKey().toUpperCase()));
+			pi.setAnimal(J2735AnimalPropelledType.valueOf(animal.asText().toUpperCase()));
         }
 
         JsonNode motor = propelledInformation.get("motor");
         if (motor != null){
-			pi.setMotor(J2735MotorizedPropelledType.valueOf(motor.fields().next().getKey().toUpperCase()));
+			pi.setMotor(J2735MotorizedPropelledType.valueOf(motor.asText().toUpperCase()));
         }
 
         return pi;
