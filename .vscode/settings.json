@@ -5,5 +5,4 @@
         "vmArgs": ["-javaagent:/root/.m2/repository/org/jmockit/jmockit/1.49/jmockit-1.49.jar"]
     },
     "java.test.defaultConfig": "testConfig",
-    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable"
 }
