@@ -49,8 +49,6 @@ public class Asn1DecodePSMJSON extends AbstractAsn1DecodeMessageJSON {
 			{				
 				//Send encoded PSM content to Codec service to decode PSM
 				if (key != null && key.toString().equals(PSMContentType)) {
-					/**process consumed data { "PsmMessageContent": [{ "metadata": { "utctimestamp:"2020-11-30T23:45:24.913657Z" }, "payload":"00121E38041180000138044CD8EA0F3D3FC4A600000100000000030AE0C0615C18"}]}
-					 */
 					OdePsmMetadata metadata = null;
           
 					JSONArray rawPSMJsonContentArray = rawJSONObject.getJSONArray(PSMContentType);
