@@ -4,7 +4,7 @@ import os
 
 # Currently set to oim-dev environment's ODE
 # UDP_IP = os.getenv('DOCKER_HOST_IP')
-UDP_IP = '172.29.11.116'
+UDP_IP = os.getenv('DOCKER_HOST_IP')
 UDP_PORT = 44940
 MESSAGE = "011d0000201a0000021bd86891de75f84da101c13f042e2214141fff00022c2000270000000163b2cc7986010000"
 
