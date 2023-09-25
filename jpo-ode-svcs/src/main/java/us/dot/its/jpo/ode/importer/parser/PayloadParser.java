@@ -37,9 +37,10 @@ public class PayloadParser extends LogFileParser {
                                                       // least 20 bytes long
 
    public static final int PAYLOAD_LENGTH_LENGTH = 2;
-
+   
    protected short payloadLength;
    protected byte[] payload;
+   protected String payloadType;
 
    public PayloadParser() {
       super();
@@ -103,16 +104,11 @@ public class PayloadParser extends LogFileParser {
   }
 
 
-     /**
-    * Attempts to strip WSMP header bytes. If message starts with "0014",
-    * message is raw BSM. Otherwise, headers are >= 20 bytes, so look past that
-    * for start of payload BSM.
-    * 
-    * @param packet
-    */
+
    public byte[] removeHeader(byte[] packet) {
       String hexPacket = HexUtils.toHexString(packet);
 
+      logger.debug("RemoveHeader recordType: " + recordType);
       int startIndex = hexPacket.indexOf(BSM_START_FLAG);
       if (startIndex == 0) {
          logger.debug("Message is raw BSM with no headers.");
