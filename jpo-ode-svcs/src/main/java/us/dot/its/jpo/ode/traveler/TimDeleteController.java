@@ -35,7 +35,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.plugin.SnmpProtocol;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.snmp.SnmpFourDot1Protocol;
+import us.dot.its.jpo.ode.snmp.SnmpNTCIP1218Protocol;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
@@ -81,10 +84,31 @@ public class TimDeleteController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, "Malformed JSON"));
       }
 
-      PDU pdu = new ScopedPDU();
-      pdu.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(index))), new Integer32(6)));
-      pdu.setType(PDU.SET);
+      SnmpProtocol snmpProtocol = queryTarget.getSnmpProtocol();
+      
+      if (snmpProtocol == null) {
+         logger.error("No SNMP protocol specified.");
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+               .body(JsonUtils.jsonKeyValue(ERRSTR, "No SNMP protocol specified."));
+      }
 
+      PDU pdu = null;
+      if (snmpProtocol.equals(SnmpProtocol.FOURDOT1)) {
+         pdu = new ScopedPDU();
+         pdu.add(SnmpFourDot1Protocol.getVbRsuSrmStatus(index, 6));
+         pdu.setType(PDU.SET);
+      }
+      else if (snmpProtocol.equals(SnmpProtocol.NTCIP1218)) {
+         pdu = new ScopedPDU();
+         pdu.add(SnmpNTCIP1218Protocol.getVbRsuMsgRepeatStatus(index, 6));
+         pdu.setType(PDU.SET);
+      }
+      else {
+         logger.error("Unsupported SNMP protocol");
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+               .body(JsonUtils.jsonKeyValue(ERRSTR, "Unsupported SNMP protocol"));
+      }
+      
       ResponseEvent rsuResponse = null;
       try {
          rsuResponse = ss.set(pdu, ss.getSnmp(), ss.getTarget(), false);

@@ -38,6 +38,7 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.plugin.SnmpProtocol;
 import us.dot.its.jpo.ode.plugin.SNMP;
 import us.dot.its.jpo.ode.plugin.ServiceRequest.OdeInternal.RequestVerb;
 
@@ -137,7 +138,7 @@ public class SnmpSessionTest {
 	}
 
 	@Test
-	public void shouldCreatePDU() throws ParseException {
+	public void shouldCreatePDUWithFourDot1Protocol() throws ParseException {
 
 		String expectedResult = "[1.0.15628.4.1.4.1.2.3 = 80:03, 1.0.15628.4.1.4.1.3.3 = 2, 1.0.15628.4.1.4.1.4.3 = 3, 1.0.15628.4.1.4.1.5.3 = 4, 1.0.15628.4.1.4.1.6.3 = 5, 1.0.15628.4.1.4.1.7.3 = 07:e1:0c:02:11:2f, 1.0.15628.4.1.4.1.8.3 = 07:e1:0c:02:11:2f, 1.0.15628.4.1.4.1.9.3 = 88, 1.0.15628.4.1.4.1.10.3 = 9, 1.0.15628.4.1.4.1.11.3 = 10]";
 		String expectedResult2 = "[1.0.15628.4.1.4.1.2.3 = 80:03, 1.0.15628.4.1.4.1.3.3 = 2, 1.0.15628.4.1.4.1.4.3 = 3, 1.0.15628.4.1.4.1.5.3 = 4, 1.0.15628.4.1.4.1.6.3 = 5, 1.0.15628.4.1.4.1.7.3 = 07:e1:0c:02:11:2f, 1.0.15628.4.1.4.1.8.3 = 07:e1:0c:02:11:2f, 1.0.15628.4.1.4.1.9.3 = 88, 1.0.15628.4.1.4.1.10.3 = 9]";
@@ -154,12 +155,38 @@ public class SnmpSessionTest {
 		SNMP testParams = new SNMP(rsuSRMPsid, rsuSRMDsrcMsgId, rsuSRMTxMode, rsuSRMTxChannel, rsuSRMTxInterval,
 				"2017-12-02T17:47:11-05:00", "2017-12-02T17:47:11-05:00", rsuSRMEnable, rsuSRMStatus);
 
-		ScopedPDU result = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.POST);
+		ScopedPDU result = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.POST, SnmpProtocol.FOURDOT1);
 
 		assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result.getType());
 		assertEquals(expectedResult, result.getVariableBindings().toString());
 
-		ScopedPDU result2 = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.GET);
+		ScopedPDU result2 = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.GET, SnmpProtocol.FOURDOT1);
+
+		assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result2.getType());
+		assertEquals(expectedResult2, result2.getVariableBindings().toString());
+	}
+
+	@Test
+	public void shouldCreatePDUWithNTCIP1218Protocol() throws ParseException {
+		String expectedResult = "[1.3.6.1.4.1.1206.4.2.18.3.2.1.2.3 = 80:03, 1.3.6.1.4.1.1206.4.2.18.3.2.1.3.3 = 4, 1.3.6.1.4.1.1206.4.2.18.3.2.1.4.3 = 5, 1.3.6.1.4.1.1206.4.2.18.3.2.1.5.3 = 07:e1:0c:02:11:2f, 1.3.6.1.4.1.1206.4.2.18.3.2.1.6.3 = 07:e1:0c:02:11:2f, 1.3.6.1.4.1.1206.4.2.18.3.2.1.7.3 = 88, 1.3.6.1.4.1.1206.4.2.18.3.2.1.8.3 = 9, 1.3.6.1.4.1.1206.4.2.18.3.2.1.9.3 = 10, 1.3.6.1.4.1.1206.4.2.18.3.2.1.10.3 = 6, 1.3.6.1.4.1.1206.4.2.18.3.2.1.11.3 = C0]";
+		String expectedResult2 = "[1.3.6.1.4.1.1206.4.2.18.3.2.1.2.3 = 80:03, 1.3.6.1.4.1.1206.4.2.18.3.2.1.3.3 = 4, 1.3.6.1.4.1.1206.4.2.18.3.2.1.4.3 = 5, 1.3.6.1.4.1.1206.4.2.18.3.2.1.5.3 = 07:e1:0c:02:11:2f, 1.3.6.1.4.1.1206.4.2.18.3.2.1.6.3 = 07:e1:0c:02:11:2f, 1.3.6.1.4.1.1206.4.2.18.3.2.1.7.3 = 88, 1.3.6.1.4.1.1206.4.2.18.3.2.1.8.3 = 9, 1.3.6.1.4.1.1206.4.2.18.3.2.1.10.3 = 6, 1.3.6.1.4.1.1206.4.2.18.3.2.1.11.3 = C0]";
+
+		String rsuSRMPsid = "00000083";
+		int rsuSRMTxChannel = 4;
+		int rsuSRMTxInterval = 5;
+		String rsuSRMPayload = "88";
+		int rsuSRMEnable = 9;
+		int rsuSRMStatus = 10;
+
+		SNMP testParams = new SNMP(rsuSRMPsid, 0, 0, rsuSRMTxChannel, rsuSRMTxInterval, "2017-12-02T17:47:11-05:00",
+				"2017-12-02T17:47:11-05:00", rsuSRMEnable, rsuSRMStatus);
+
+		ScopedPDU result = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.POST, SnmpProtocol.NTCIP1218);
+
+		assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result.getType());
+		assertEquals(expectedResult, result.getVariableBindings().toString());
+
+		ScopedPDU result2 = SnmpSession.createPDU(testParams, rsuSRMPayload, 3, RequestVerb.GET, SnmpProtocol.NTCIP1218);
 
 		assertEquals("Incorrect type, expected PDU.SET (-93)", -93, result2.getType());
 		assertEquals(expectedResult2, result2.getVariableBindings().toString());
