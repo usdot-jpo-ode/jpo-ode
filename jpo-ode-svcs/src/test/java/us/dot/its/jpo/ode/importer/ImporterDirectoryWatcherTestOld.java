@@ -16,17 +16,20 @@
 package us.dot.its.jpo.ode.importer;
 
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchEvent.Kind;
+import java.time.Duration;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import mockit.Capturing;
 import mockit.Expectations;
@@ -35,7 +38,7 @@ import mockit.Mocked;
 import us.dot.its.jpo.ode.OdeProperties;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 
-@Ignore
+@Disabled
 public class ImporterDirectoryWatcherTestOld {
 
    ImporterDirectoryWatcher testImporterDirectoryWatcher;
@@ -63,20 +66,22 @@ public class ImporterDirectoryWatcherTestOld {
    @Capturing
    ImporterProcessor capturingImporterProcessor;
 
-   @Before
+   @BeforeEach
    public void createTestObject() {
-      try {
-         new Expectations() {
-            {
-               OdeFileUtils.createDirectoryRecursively((Path) any);
-               times = 3;
-            }
-         };
-      } catch (IOException e) {
-         fail("Unexpected exception in expectations block: " + e);
+      if (testImporterDirectoryWatcher == null) {
+         try {
+            new Expectations() {
+               {
+                  OdeFileUtils.createDirectoryRecursively((Path) any);
+                  times = 3;
+               }
+            };
+         } catch (IOException e) {
+            fail("Unexpected exception in expectations block: " + e);
+         }
+         testImporterDirectoryWatcher = new ImporterDirectoryWatcher(injectableOdeProperties, mockDir, backupDir, failureDir, ImporterFileType.LEAR_LOG_FILE, timePeriod);
+         testImporterDirectoryWatcher.setWatching(false);
       }
-      testImporterDirectoryWatcher = new ImporterDirectoryWatcher(injectableOdeProperties, mockDir, backupDir, failureDir, ImporterFileType.LEAR_LOG_FILE, timePeriod);
-      testImporterDirectoryWatcher.setWatching(false);
    }
    
    @Test
@@ -94,34 +99,37 @@ public class ImporterDirectoryWatcherTestOld {
       new ImporterDirectoryWatcher(injectableOdeProperties, mockDir, backupDir, failureDir, ImporterFileType.LEAR_LOG_FILE, timePeriod);
    }
 
-   @Test(timeout = 4000)
+   @Test
    public void runShouldCatchException() {
-      try {
-         new Expectations() {
-            {
-               mockDir.register((WatchService) any, (Kind<?>) any);
-               result = null;
-            }
-         };
-      } catch (IOException e) {
-         fail("Unexpected exception in expectations block: " + e);
-      }
-      testImporterDirectoryWatcher.run();
+      assertTimeout(Duration.ofMillis(4000), () -> {
+         try {
+            new Expectations() {
+               {
+                  mockDir.register((WatchService) any, (Kind<?>) any);
+                  result = null;
+               }
+            };
+         } catch (IOException e) {
+            fail("Unexpected exception in expectations block: " + e);
+         }
+         testImporterDirectoryWatcher.run();
+      });
    }
 
-   @Test(timeout = 4000)
+   @Test
+   @Timeout(4)
    public void shouldRunNoProblems() {
-      try {
-         new Expectations() {
-            {
-               mockDir.register((WatchService) any, (Kind<?>) any);
-               result = mockWatchKey;
-            }
-         };
-      } catch (IOException e) {
-         fail("Unexpected exception in expectations block: " + e);
-      }
-      testImporterDirectoryWatcher.run();
+         try {
+            new Expectations() {
+               {
+                  mockDir.register((WatchService) any, (Kind<?>) any);
+                  result = mockWatchKey;
+               }
+            };
+         } catch (IOException e) {
+            fail("Unexpected exception in expectations block: " + e);
+         }
+         testImporterDirectoryWatcher.run();
    }
 
 }

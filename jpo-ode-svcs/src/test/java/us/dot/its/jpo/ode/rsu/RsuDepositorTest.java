@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.text.ParseException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 
 import mockit.Capturing;

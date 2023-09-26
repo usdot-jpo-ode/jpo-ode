@@ -24,8 +24,8 @@ import static org.junit.Assert.fail;
 
 import javax.websocket.Session;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
 import mockit.Expectations;
@@ -48,7 +48,7 @@ public class DdsDepositRequestManagerTest {
     @Mocked OdeProperties mockOdeProperties;
     @Mocked Logger mockLogger;
     
-    @Before
+    @BeforeEach
     public void setup() {
         new Expectations() {
             {

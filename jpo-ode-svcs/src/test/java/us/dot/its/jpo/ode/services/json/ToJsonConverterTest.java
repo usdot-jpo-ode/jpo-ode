@@ -15,7 +15,7 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.services.json;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import mockit.Expectations;
 import mockit.Injectable;
