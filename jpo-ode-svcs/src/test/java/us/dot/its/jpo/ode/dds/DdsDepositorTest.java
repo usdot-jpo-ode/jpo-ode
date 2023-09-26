@@ -21,7 +21,7 @@ import static org.junit.Assert.fail;
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 
 import ch.qos.logback.classic.Logger;

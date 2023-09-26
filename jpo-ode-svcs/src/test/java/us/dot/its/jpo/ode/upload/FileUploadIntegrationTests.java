@@ -20,8 +20,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Matchers.any;
 
-import org.junit.Test;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,7 +52,7 @@ public class FileUploadIntegrationTests {
     @LocalServerPort
     private int port;
 
-    @Ignore
+    @Disabled
     @Test
     public void shouldUploadFile() throws Exception {
         ClassPathResource resource = new ClassPathResource("testupload.txt", getClass());
@@ -66,7 +66,7 @@ public class FileUploadIntegrationTests {
         then(storageService).should().store(any(MultipartFile.class), "obulog");
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void shouldDownloadFile() throws Exception {
         ClassPathResource resource = new ClassPathResource("testupload.txt", getClass());

@@ -24,8 +24,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.kafka.clients.producer.Producer;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 
 import mockit.Expectations;
@@ -44,7 +44,7 @@ public class SerializableMessageProducerPoolTest {
     @Injectable
     OdeProperties mockOdeProperties;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         new Expectations() {
             {
