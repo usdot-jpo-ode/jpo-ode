@@ -31,7 +31,7 @@ public class PayloadParser extends LogFileParser {
 
    private static Logger logger = LoggerFactory.getLogger(PayloadParser.class);
 
-   private static final String BSM_START_FLAG = "0014"; // these bytes indicate
+   private static final String BSM_START_FLAG = "001f"; // these bytes indicate
                                                         // start of BSM payload
    private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
                                                       // least 20 bytes long
@@ -108,7 +108,6 @@ public class PayloadParser extends LogFileParser {
    public byte[] removeHeader(byte[] packet) {
       String hexPacket = HexUtils.toHexString(packet);
 
-      logger.debug("RemoveHeader recordType: " + recordType);
       int startIndex = hexPacket.indexOf(BSM_START_FLAG);
       if (startIndex == 0) {
          logger.debug("Message is raw BSM with no headers.");
@@ -121,6 +120,8 @@ public class PayloadParser extends LogFileParser {
       } else {
          // We likely found a message with a header, look past the first 20
          // bytes for the start of the BSM
+         logger.debug("Found payload start at: " + startIndex);
+         logger.debug("Payload hex: " + hexPacket);
          int trueStartIndex = HEADER_MINIMUM_SIZE
                + hexPacket.substring(HEADER_MINIMUM_SIZE, hexPacket.length()).indexOf(BSM_START_FLAG);
          hexPacket = hexPacket.substring(trueStartIndex, hexPacket.length());

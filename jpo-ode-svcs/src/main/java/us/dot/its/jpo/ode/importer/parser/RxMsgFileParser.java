@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import us.dot.its.jpo.ode.model.OdeBsmMetadata.BsmSource;
 import us.dot.its.jpo.ode.model.RxSource;
 
 public class RxMsgFileParser extends LogFileParser {
@@ -46,40 +47,47 @@ public class RxMsgFileParser extends LogFileParser {
       ParserStatus status;
       try {
          status = super.parseFile(bis, fileName);
+         logger.debug("RxMsgFileParser start");
          if (status != ParserStatus.COMPLETE)
             return status;
 
          // parse rxSource
          if (getStep() == 1) {
+            logger.debug("RxMsgFileParser step 1");
             status = parseStep(bis, RX_SOURCE_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
             try {
-              setRxSource(RxSource.values()[readBuffer[0]]);
+              setRxSource(readBuffer[0]);
             } catch (Exception e) {
+               logger.debug("exception");
               setRxSource(RxSource.UNKNOWN);
             }
          }
 
          if (getStep() == 2) {
+            logger.debug("RxMsgFileParser step 2");
             status = nextStep(bis, fileName, locationParser);
             if (status != ParserStatus.COMPLETE)
                return status;
          }
          
          if (getStep() == 3) {
+            logger.debug("RxMsgFileParser step 3");
             status = nextStep(bis, fileName, timeParser);
             if (status != ParserStatus.COMPLETE)
                return status;
          }
 
          if (getStep() == 4) {
+            logger.debug("RxMsgFileParser step 4");
             status = nextStep(bis, fileName, secResCodeParser);
             if (status != ParserStatus.COMPLETE)
                return status;
          }
 
          if (getStep() == 5) {
+            logger.debug("RxMsgFileParser step 5");
             status = nextStep(bis, fileName, payloadParser);
             if (status != ParserStatus.COMPLETE)
                return status;
@@ -101,12 +109,19 @@ public class RxMsgFileParser extends LogFileParser {
    }
 
    public void setRxSource(RxSource rxSource) {
+      logger.debug("rxSourceOrdinal value: " + rxSource);
       this.rxSource = rxSource;
    }
 
    public void setRxSource(int rxSourceOrdinal) {
       try {
-         setRxSource(RxSource.values()[rxSourceOrdinal]);
+         if (rxSourceOrdinal != 10){
+            logger.debug("rxSourceOrdinal value: " + rxSourceOrdinal);
+            setRxSource(RxSource.values()[rxSourceOrdinal]);
+         } else {
+            logger.debug("Removing newline character");
+            setStep(1);
+         }
       } catch (Exception e) {
          logger.error("Invalid RxSource: {}. Valid values are {}: ", 
             rxSourceOrdinal, RxSource.values());
