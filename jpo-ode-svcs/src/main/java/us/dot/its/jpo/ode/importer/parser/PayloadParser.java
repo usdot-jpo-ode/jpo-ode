@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
@@ -30,12 +31,9 @@ import us.dot.its.jpo.ode.util.CodecUtils;
 public class PayloadParser extends LogFileParser {
 
    private static Logger logger = LoggerFactory.getLogger(PayloadParser.class);
+   private static HashMap<String, String> msgStartFlags = new HashMap<String, String>();
 
-   private static final String BSM_START_FLAG = "001f"; // these bytes indicate
-                                                        // start of BSM payload
-   private static final int HEADER_MINIMUM_SIZE = 20; // WSMP headers are at
-                                                      // least 20 bytes long
-
+   private static final int HEADER_SIZE = 20; 
    public static final int PAYLOAD_LENGTH_LENGTH = 2;
    
    protected short payloadLength;
@@ -44,6 +42,9 @@ public class PayloadParser extends LogFileParser {
 
    public PayloadParser() {
       super();
+      msgStartFlags.put("BSM", "0014");
+      msgStartFlags.put("TIM", "001f");
+      msgStartFlags.put("MAP", "0012");
    }
 
    @Override
@@ -107,25 +108,36 @@ public class PayloadParser extends LogFileParser {
 
    public byte[] removeHeader(byte[] packet) {
       String hexPacket = HexUtils.toHexString(packet);
-
-      int startIndex = hexPacket.indexOf(BSM_START_FLAG);
-      if (startIndex == 0) {
-         logger.debug("Message is raw BSM with no headers.");
-      } else if (startIndex == -1) {
-         logger.error("Message contains no BSM start flag.");
-         logger.debug("Payload hex: " + hexPacket);
-         return null;
-      } else if (startIndex < 10){
-         logger.error("Message has supported header.");
-      } else {
-         // We likely found a message with a header, look past the first 20
-         // bytes for the start of the BSM
-         logger.debug("Found payload start at: " + startIndex);
-         logger.debug("Payload hex: " + hexPacket);
-         int trueStartIndex = HEADER_MINIMUM_SIZE
-               + hexPacket.substring(HEADER_MINIMUM_SIZE, hexPacket.length()).indexOf(BSM_START_FLAG);
-         hexPacket = hexPacket.substring(trueStartIndex, hexPacket.length());
+      String hexPacketParsed = "";
+      for (String key : msgStartFlags.keySet()) {
+         String startFlag = msgStartFlags.get(key);
+         int startIndex = hexPacket.indexOf(startFlag);
+         if (hexPacketParsed == ""){
+            if (startIndex == 0) {
+               logger.debug("Message is raw BSM with no headers.");
+            } else if (startIndex == -1) {
+               logger.debug("Message does not have header for: " + key);
+            } else if (startIndex < 10) {
+               logger.debug("Message has supported header. startIndex: " + startIndex + " msgFlag: " + startFlag);
+               hexPacketParsed = hexPacket;
+            } else if (startIndex > 20 && startIndex < 30) {
+               // We likely found a message with a header, look past the first 20
+               // bytes for the start of the BSM
+               logger.debug("Found payload start at: " + startIndex);
+               int trueStartIndex = HEADER_SIZE
+                     + hexPacket.substring(HEADER_SIZE, hexPacket.length()).indexOf(startFlag);
+               logger.debug("trueStartIndex: " + trueStartIndex);
+               hexPacketParsed = hexPacket.substring(trueStartIndex, hexPacket.length());
+            } else {
+               logger.debug("Could not identify message header with start flag of: " + startFlag + " and startIndex of: " + startIndex);
+            }
+         }
       }
-      return HexUtils.fromHexString(hexPacket);
+      if (hexPacketParsed == ""){
+         hexPacketParsed = hexPacket;
+      } else {
+         logger.debug("Parsed payload hex: " + hexPacketParsed);
+      }
+      return HexUtils.fromHexString(hexPacketParsed);
    }
 }

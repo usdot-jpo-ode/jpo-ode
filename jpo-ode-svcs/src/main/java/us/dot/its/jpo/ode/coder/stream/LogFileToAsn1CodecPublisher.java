@@ -17,8 +17,10 @@ package us.dot.its.jpo.ode.coder.stream;
 
 import java.io.BufferedInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import org.apache.tomcat.util.buf.HexUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +65,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 	}
 
 	protected static final Logger logger = LoggerFactory.getLogger(LogFileToAsn1CodecPublisher.class);
+	protected static HashMap<String, String> msgStartFlags = new HashMap<String, String>();
 	private static final String BSM_START_FLAG = "0014"; 
 
 	protected StringPublisher publisher;
@@ -72,6 +75,9 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 	public LogFileToAsn1CodecPublisher(StringPublisher dataPub) {
 		this.publisher = dataPub;
 		this.serialId = new SerialId();
+		msgStartFlags.put("BSM", "0014");
+      	msgStartFlags.put("TIM", "001f");
+      	msgStartFlags.put("MAP", "0012");
 	}
 
 	public List<OdeData> publish(BufferedInputStream bis, String fileName, ImporterFileType fileType)
@@ -195,15 +201,21 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 		try {
 			payloadJson = JsonUtils.toJSONObject(payload.getData().toJson());
 			String hexPacket = payloadJson.getString("bytes");
-			int startIndex = hexPacket.indexOf(BSM_START_FLAG);
-			logger.debug("checkHeader hexPacket: " + hexPacket + "\n startIndex:" + startIndex);
-			if (startIndex < 10 && startIndex != 0){
-				header = "Ieee1609Dot2Data";
+
+			for (String key : msgStartFlags.keySet()) {
+				String startFlag = msgStartFlags.get(key);
+				int startIndex = hexPacket.indexOf(startFlag);
+				logger.debug("checkHeader hexPacket: " + hexPacket + "\n startIndex:" + startIndex);
+				if (startIndex < 10 && startIndex != 0 && startIndex != -1){
+					logger.debug("Ieee1609Dot2Data header");
+					header = "Ieee1609Dot2Data";
+				}
 			}
 		} catch (JsonUtilsException e) {
 			logger.error("JsonUtilsException while checking message header. Stacktrace: " + e.toString());
 			
 		}
+		logger.debug("msg header: " +header);
 		return header;
    }
 
