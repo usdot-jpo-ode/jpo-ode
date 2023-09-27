@@ -3,10 +3,8 @@ package us.dot.its.jpo.ode.model;
 
 public class OdePsmMetadata extends OdeLogMetadata {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	
 	public enum PsmSource {
 		RSU, V2X, MMITSS, unknown
 	}
@@ -23,10 +21,6 @@ public class OdePsmMetadata extends OdeLogMetadata {
 
 	public OdePsmMetadata(OdeMsgPayload payload) {
 		super(payload);
-	}
-
-	public OdePsmMetadata(OdeMsgPayload payload, SerialId serialId, String receivedAt) {
-
 	}
 
 	public void setPsmSource(PsmSource psmSource) {

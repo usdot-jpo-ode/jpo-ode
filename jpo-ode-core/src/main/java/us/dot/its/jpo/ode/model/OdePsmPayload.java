@@ -6,9 +6,6 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735PSM;
 
 public class OdePsmPayload extends OdeMsgPayload {
 
-	   /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public OdePsmPayload() {
