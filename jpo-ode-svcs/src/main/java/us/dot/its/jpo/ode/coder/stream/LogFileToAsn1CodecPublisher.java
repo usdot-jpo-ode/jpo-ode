@@ -16,11 +16,11 @@
 package us.dot.its.jpo.ode.coder.stream;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.tomcat.util.buf.HexUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +66,6 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
 	protected static final Logger logger = LoggerFactory.getLogger(LogFileToAsn1CodecPublisher.class);
 	protected static HashMap<String, String> msgStartFlags = new HashMap<String, String>();
-	private static final String BSM_START_FLAG = "0014"; 
 
 	protected StringPublisher publisher;
 	protected LogFileParser fileParser;
@@ -76,8 +75,8 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 		this.publisher = dataPub;
 		this.serialId = new SerialId();
 		msgStartFlags.put("BSM", "0014");
-      	msgStartFlags.put("TIM", "001f");
-      	msgStartFlags.put("MAP", "0012");
+		msgStartFlags.put("TIM", "001f");
+		msgStartFlags.put("MAP", "0012");
 	}
 
 	public List<OdeData> publish(BufferedInputStream bis, String fileName, ImporterFileType fileType)
@@ -101,6 +100,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 					} else {
 						logger.error("Failed to decode ASN.1 data");
 					}
+					bis = removeNewLine(bis);
 				} catch (Exception e) {
 					throw new LogFileToAsn1CodecPublisherException("Error parsing or publishing data.", e);
 				}
@@ -163,30 +163,29 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
 				publisher.publish(JsonUtils.toJson(odeData, false),
 						publisher.getOdeProperties().getKafkaTopicDriverAlertJson());
-			} 
-			else 
-			{
+			} else {
 				if (isBsmRecord()) {
 					logger.debug("Publishing a BSM");
-				} else if(isSpatRecord()) {
+				} else if (isSpatRecord()) {
 					logger.debug("Publishing a Spat");
-				}else {
-					logger.debug("Publishing a TIM");
-				}
-				
-				if(isSpatRecord() && msgMetadata instanceof OdeSpatMetadata 
-						&& !((OdeSpatMetadata)msgMetadata).getIsCertPresent() ) {
-					//Nothing: If Spat log file and IEEE1609Cert is not present, Skip the Ieee1609Dot2Data encoding					
 				} else {
-					if (checkHeader(msgPayload) == "Ieee1609Dot2Data"){
+					logger.debug("Publishing a TIM or MAP");
+				}
+
+				if (isSpatRecord() && msgMetadata instanceof OdeSpatMetadata
+						&& !((OdeSpatMetadata) msgMetadata).getIsCertPresent()) {
+					// Nothing: If Spat log file and IEEE1609Cert is not present, Skip the
+					// Ieee1609Dot2Data encoding
+				} else {
+					if (checkHeader(msgPayload) == "Ieee1609Dot2Data") {
 						Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
 						msgMetadata.addEncoding(msgEncoding);
 					}
 				}
-				
-				Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",EncodingRule.UPER);
+
+				Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",
+						EncodingRule.UPER);
 				msgMetadata.addEncoding(unsecuredDataEncoding);
-				
 
 				publisher.publish(xmlUtils.toXml(odeData),
 						publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
@@ -195,7 +194,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 		}
 	}
 
-   	public String checkHeader(OdeMsgPayload payload) {
+	public String checkHeader(OdeMsgPayload payload) {
 		JSONObject payloadJson;
 		String header = null;
 		try {
@@ -205,18 +204,26 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 			for (String key : msgStartFlags.keySet()) {
 				String startFlag = msgStartFlags.get(key);
 				int startIndex = hexPacket.indexOf(startFlag);
-				logger.debug("checkHeader hexPacket: " + hexPacket + "\n startIndex:" + startIndex);
-				if (startIndex < 10 && startIndex != 0 && startIndex != -1){
+				if (startIndex < 10 && startIndex != 0 && startIndex != -1) {
 					logger.debug("Ieee1609Dot2Data header");
 					header = "Ieee1609Dot2Data";
 				}
 			}
 		} catch (JsonUtilsException e) {
 			logger.error("JsonUtilsException while checking message header. Stacktrace: " + e.toString());
-			
+
 		}
-		logger.debug("msg header: " +header);
 		return header;
-   }
+	}
+
+	public BufferedInputStream removeNewLine(BufferedInputStream bis) {
+		BufferedInputStream newLineCheckbis = new BufferedInputStream(bis);
+		try {
+			newLineCheckbis.read();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return newLineCheckbis;
+	}
 
 }

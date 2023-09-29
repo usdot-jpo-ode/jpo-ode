@@ -58,6 +58,7 @@ public class PayloadParser extends LogFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             short length = CodecUtils.bytesToShort(readBuffer, 0, PAYLOAD_LENGTH_LENGTH, ByteOrder.LITTLE_ENDIAN);
+            logger.debug("Payload length is: " + length);
             setPayloadLength(length);
          }
 
@@ -113,28 +114,23 @@ public class PayloadParser extends LogFileParser {
          String startFlag = msgStartFlags.get(key);
          int startIndex = hexPacket.indexOf(startFlag);
          if (hexPacketParsed == ""){
-            if (startIndex == 0) {
-               logger.debug("Message is raw BSM with no headers.");
-            } else if (startIndex == -1) {
+            logger.debug("Start index for: " + key + " is: " + startIndex);
+            if (startIndex == -1) {
                logger.debug("Message does not have header for: " + key);
             } else if (startIndex < 10) {
                logger.debug("Message has supported header. startIndex: " + startIndex + " msgFlag: " + startFlag);
                hexPacketParsed = hexPacket;
-            } else if (startIndex > 20 && startIndex < 30) {
-               // We likely found a message with a header, look past the first 20
-               // bytes for the start of the BSM
-               logger.debug("Found payload start at: " + startIndex);
+            } else if (startIndex > 20 && startIndex < 35) {
                int trueStartIndex = HEADER_SIZE
                      + hexPacket.substring(HEADER_SIZE, hexPacket.length()).indexOf(startFlag);
-               logger.debug("trueStartIndex: " + trueStartIndex);
+               logger.debug("Found payload start at: " + trueStartIndex);
                hexPacketParsed = hexPacket.substring(trueStartIndex, hexPacket.length());
-            } else {
-               logger.debug("Could not identify message header with start flag of: " + startFlag + " and startIndex of: " + startIndex);
             }
          }
       }
       if (hexPacketParsed == ""){
          hexPacketParsed = hexPacket;
+         logger.debug("Could not identify a Header in the following packet: " + hexPacketParsed);
       } else {
          logger.debug("Parsed payload hex: " + hexPacketParsed);
       }

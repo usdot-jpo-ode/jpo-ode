@@ -22,7 +22,6 @@ import java.io.OutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import us.dot.its.jpo.ode.model.OdeBsmMetadata.BsmSource;
 import us.dot.its.jpo.ode.model.RxSource;
 
 public class RxMsgFileParser extends LogFileParser {
@@ -30,7 +29,7 @@ public class RxMsgFileParser extends LogFileParser {
    private static final Logger logger = LoggerFactory.getLogger(RxMsgFileParser.class);
 
    private static final int RX_SOURCE_LENGTH = 1;
-   
+
    private RxSource rxSource;
 
    public RxMsgFileParser() {
@@ -58,10 +57,10 @@ public class RxMsgFileParser extends LogFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             try {
-              setRxSource(readBuffer[0]);
+               setRxSource(readBuffer[0]);
             } catch (Exception e) {
                logger.debug("exception");
-              setRxSource(RxSource.UNKNOWN);
+               setRxSource(RxSource.UNKNOWN);
             }
          }
 
@@ -71,7 +70,7 @@ public class RxMsgFileParser extends LogFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
          }
-         
+
          if (getStep() == 3) {
             logger.debug("RxMsgFileParser step 3");
             status = nextStep(bis, fileName, timeParser);
@@ -115,23 +114,17 @@ public class RxMsgFileParser extends LogFileParser {
 
    public void setRxSource(int rxSourceOrdinal) {
       try {
-         if (rxSourceOrdinal != 10){
-            logger.debug("rxSourceOrdinal value: " + rxSourceOrdinal);
-            setRxSource(RxSource.values()[rxSourceOrdinal]);
-         } else {
-            logger.debug("Removing newline character");
-            setStep(1);
-         }
+         setRxSource(RxSource.values()[rxSourceOrdinal]);
       } catch (Exception e) {
-         logger.error("Invalid RxSource: {}. Valid values are {}: ", 
-            rxSourceOrdinal, RxSource.values());
+         logger.error("Invalid RxSource: {}. Valid values are {}: ",
+               rxSourceOrdinal, RxSource.values());
          setRxSource(RxSource.UNKNOWN);
       }
    }
 
-  @Override
-  public void writeTo(OutputStream os) throws IOException {
-    os.write((byte)rxSource.ordinal());
-    super.writeTo(os);
-  }
+   @Override
+   public void writeTo(OutputStream os) throws IOException {
+      os.write((byte) rxSource.ordinal());
+      super.writeTo(os);
+   }
 }

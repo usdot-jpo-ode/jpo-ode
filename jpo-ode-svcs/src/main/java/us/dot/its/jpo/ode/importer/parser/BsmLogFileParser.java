@@ -54,14 +54,13 @@ public class BsmLogFileParser extends LogFileParser {
                return status;
             setBsmSource(readBuffer);
          }
-         
-         
+
          if (getStep() == 2) {
             status = nextStep(bis, fileName, locationParser);
             if (status != ParserStatus.COMPLETE)
                return status;
          }
-         
+
          if (getStep() == 3) {
             status = nextStep(bis, fileName, timeParser);
             if (status != ParserStatus.COMPLETE)
@@ -79,7 +78,7 @@ public class BsmLogFileParser extends LogFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
          }
-         
+
          resetStep();
          status = ParserStatus.COMPLETE;
 
@@ -100,22 +99,18 @@ public class BsmLogFileParser extends LogFileParser {
 
    public void setBsmSource(byte[] code) {
       try {
-         if (code[0] != 10){
-            setBsmSource(BsmSource.values()[code[0]]);
-         } else {
-            logger.debug("Removing newline character");
-            setStep(1);
-         }
+         setBsmSource(BsmSource.values()[code[0]]);
+
       } catch (Exception e) {
-         logger.error("Invalid BsmSource: {}. Valid values are {}-{} inclusive", 
-            code, 0, BsmSource.values());
+         logger.error("Invalid BsmSource: {}. Valid values are {}-{} inclusive",
+               code, 0, BsmSource.values());
          setBsmSource(BsmSource.unknown);
       }
    }
 
-  @Override
-  public void writeTo(OutputStream os) throws IOException {
-    os.write((byte)bsmSource.ordinal());
-    super.writeTo(os);
-  }
+   @Override
+   public void writeTo(OutputStream os) throws IOException {
+      os.write((byte) bsmSource.ordinal());
+      super.writeTo(os);
+   }
 }
