@@ -18,7 +18,7 @@ package us.dot.its.jpo.ode.traveler;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
 import com.fasterxml.jackson.databind.JsonNode;

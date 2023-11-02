@@ -18,7 +18,7 @@ package us.dot.its.jpo.ode.plugin.j2735;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 
 import mockit.Tested;

@@ -17,7 +17,7 @@ package us.dot.its.jpo.ode.exporter;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import us.dot.its.jpo.ode.stomp.StompContent;
 

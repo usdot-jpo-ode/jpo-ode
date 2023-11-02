@@ -20,9 +20,9 @@ import java.util.Set;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import mockit.Capturing;
 import mockit.Expectations;
@@ -66,7 +66,7 @@ public class Asn1DecodedDataRouterTest {
    ConsumerRecord<String, String> mockConsumerRecord;
 
    @SuppressWarnings("unchecked")
-   @Before @Ignore
+   @BeforeEach @Disabled
    public void createMockProducers() {
 
       new Expectations() {
@@ -81,7 +81,7 @@ public class Asn1DecodedDataRouterTest {
       };
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void testProcessBsmLogDuringEvent() throws XmlUtilsException {
       try {
 		new Expectations() {
@@ -123,7 +123,7 @@ public class Asn1DecodedDataRouterTest {
       testAsn1DecodedDataRouter.process("testConsumedData");
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void testProcessRxMsgBsm() throws XmlUtilsException {
       try {
 		new Expectations() {
@@ -165,7 +165,7 @@ public class Asn1DecodedDataRouterTest {
       testAsn1DecodedDataRouter.process("testConsumedData");
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void testProcessTxMsgBsm() throws XmlUtilsException {
       try {
 		new Expectations() {
@@ -207,7 +207,7 @@ public class Asn1DecodedDataRouterTest {
       testAsn1DecodedDataRouter.process("testConsumedData");
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void testProcessDnsTim() throws XmlUtilsException {
       try {
 		new Expectations() {
@@ -249,7 +249,7 @@ public class Asn1DecodedDataRouterTest {
       testAsn1DecodedDataRouter.process("testConsumedData");
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void testProcessRxTim() throws XmlUtilsException {
       try {
 		new Expectations() {
@@ -291,7 +291,7 @@ public class Asn1DecodedDataRouterTest {
       testAsn1DecodedDataRouter.process("testConsumedData");
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void testProcessUnsupportedTim() throws XmlUtilsException {
       try {
 		new Expectations() {
@@ -333,7 +333,7 @@ public class Asn1DecodedDataRouterTest {
       testAsn1DecodedDataRouter.process("testConsumedData");
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void testProcessUnsupportedBsm() throws XmlUtilsException {
       try {
 		new Expectations() {
@@ -376,7 +376,7 @@ public class Asn1DecodedDataRouterTest {
    }
    
 
-   @Test @Ignore
+   @Test @Disabled
    public void testProcessXmlException() throws XmlUtilsException {
       new Expectations() {
 

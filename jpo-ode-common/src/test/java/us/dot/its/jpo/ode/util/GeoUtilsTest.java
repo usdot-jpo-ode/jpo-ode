@@ -17,8 +17,12 @@ package us.dot.its.jpo.ode.util;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.util.stream.Stream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import junit.framework.TestCase;
 import us.dot.its.jpo.ode.util.GeoUtils;
@@ -29,19 +33,8 @@ public class GeoUtilsTest extends TestCase {
    public void testNearestPointOnLine() {
    }
 
-   @Test
-   public void testPointOffset() {
-      assertOffset(5.0, 5.0, 10.0, 5.0, 5.0, 8.0);  //0 deg
-      assertOffset(5.0, 5.0, 10.0, 10.0, 2.878, 7.121); //45 deg
-      assertOffset(5.0, 5.0, 5.0, 10.0, 2.0, 5.0);  //90 deg
-      assertOffset(5.0, 5.0, 0.0, 10.0, 2.878, 2.878);  //135 deg
-      assertOffset(5.0, 5.0, 0.0, 5.0, 5.0, 2.0);   //180 deg
-      assertOffset(5.0, 5.0, 0.0, 0.0, 7.121, 2.878);   //225 deg
-      assertOffset(5.0, 5.0, 5.0, 0.0, 8.0, 5.0);   //270 deg
-      assertOffset(5.0, 5.0, 10.0, 0.0, 7.121, 7.121);  //315 deg
-   }
-
-   @Test
+   @ParameterizedTest
+   @MethodSource("provideArgs")
    public void assertOffset(double ax, double ay, double bx, double by, double ox, double oy) {
       Point2D a = new Point2D.Double(ax, ay);
       Point2D b = new Point2D.Double(bx, by);
@@ -54,6 +47,19 @@ public class GeoUtilsTest extends TestCase {
 
       assertEquals((long) (ox * scale), p1x);
       assertEquals((long) (oy * scale), p1y);
+   }
+
+   private static Stream<Arguments> provideArgs() {
+      return Stream.of(
+         Arguments.of(5.0, 5.0, 10.0, 5.0, 5.0, 8.0),
+         Arguments.of(5.0, 5.0, 10.0, 10.0, 2.878, 7.121),
+         Arguments.of(5.0, 5.0, 5.0, 10.0, 2.0, 5.0),
+         Arguments.of(5.0, 5.0, 0.0, 10.0, 2.878, 2.878),
+         Arguments.of(5.0, 5.0, 0.0, 5.0, 5.0, 2.0),
+         Arguments.of(5.0, 5.0, 0.0, 0.0, 7.121, 2.878),
+         Arguments.of(5.0, 5.0, 5.0, 0.0, 8.0, 5.0),
+         Arguments.of(5.0, 5.0, 10.0, 0.0, 7.121, 7.121)
+      );
    }
    
    @Test

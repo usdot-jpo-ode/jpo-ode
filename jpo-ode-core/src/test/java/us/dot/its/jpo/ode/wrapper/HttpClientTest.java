@@ -42,8 +42,8 @@ import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.http.params.HttpParams;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 
 import mockit.Expectations;
@@ -63,7 +63,7 @@ public class HttpClientTest {
    @Mocked
    CloseableHttpClient closeableHttpClient;
 
-   @Test @Ignore
+   @Test @Disabled
    public void testGet() throws Exception {
       { // BEGIN Happy Path
          URI uri = new URI("http://ip:port/path");
@@ -177,7 +177,7 @@ public class HttpClientTest {
       }// END execute throws exception
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void testPost() throws Exception {
       { // BEGIN Happy Path
          URI uri = new URI("http://ip:port/path");

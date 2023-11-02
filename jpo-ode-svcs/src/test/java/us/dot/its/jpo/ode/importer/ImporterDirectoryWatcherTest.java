@@ -21,8 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import mockit.Capturing;
 import mockit.Expectations;
@@ -60,7 +59,7 @@ public class ImporterDirectoryWatcherTest {
    @Mocked
    ScheduledExecutorService mockScheduledExecutorService;
 
-   @Before
+   // @BeforeEach
    public void testConstructor() throws IOException {
       new Expectations() {
          {
@@ -74,14 +73,21 @@ public class ImporterDirectoryWatcherTest {
    }
 
    @Test
-   public void testRun() throws InterruptedException {
+   public void testRun() throws InterruptedException, IOException {
       new Expectations() {
          {
+            OdeFileUtils.createDirectoryRecursively((Path) any);
+            times = 3;
+
+            Executors.newScheduledThreadPool(1);
+            result = mockScheduledExecutorService;
+
             mockScheduledExecutorService.scheduleWithFixedDelay((Runnable) any, anyLong, anyLong, TimeUnit.SECONDS);
 
             mockScheduledExecutorService.awaitTermination(anyLong, TimeUnit.SECONDS);
          }
       };
+      testImporterDirectoryWatcher = new ImporterDirectoryWatcher(injectableOdeProperties, backupDir, failureDir, backupDir, injectableImporterFileType, timePeriod);
 
       testImporterDirectoryWatcher.run();
    }

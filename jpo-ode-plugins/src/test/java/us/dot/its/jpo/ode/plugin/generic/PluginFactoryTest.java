@@ -16,9 +16,10 @@
 package us.dot.its.jpo.ode.plugin.generic;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,43 +40,45 @@ public class PluginFactoryTest {
   @Mocked//(stubOutClassInitialization = true)
 	final LoggerFactory unused = null;
 
-	@Test(expected = ClassCastException.class)
+	@Test
 	public void testGetPluginByName(@Mocked Logger logger)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		assertThrows(ClassCastException.class, () -> {
+			String coderClassName = "us.dot.its.jpo.ode.plugin.generic.TestPlugin";
 
-		String coderClassName = "us.dot.its.jpo.ode.plugin.generic.TestPlugin";
-
-		OdePlugin result = PluginFactory.getPluginByName(coderClassName);
-		assertNotNull(result);
-		//assertTrue(result instanceof TestPlugin);
-		new Verifications() {
-			{
-				logger.info("Getting Plugin: {}", coderClassName);
-				logger.info("Classpath: {}", anyString);
-				logger.info("Getting class: {}", anyString);
-				logger.info("creating an instance of: {}", any);
-			}
-		};
+			OdePlugin result = PluginFactory.getPluginByName(coderClassName);
+			assertNotNull(result);
+			//assertTrue(result instanceof TestPlugin);
+			new Verifications() {
+				{
+					logger.info("Getting Plugin: {}", coderClassName);
+					logger.info("Classpath: {}", anyString);
+					logger.info("Getting class: {}", anyString);
+					logger.info("creating an instance of: {}", any);
+				}
+			};
+		});
 	}
 
 
-	@Test(expected = ClassCastException.class)
+	@Test
 	public void testException(@Mocked Logger logger)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		assertThrows(ClassCastException.class, () -> {
+			String coderClassName = "bogus.BogusClass";
 
-		String coderClassName = "bogus.BogusClass";
-
-		OdePlugin result = PluginFactory.getPluginByName(coderClassName);
-		assertNotNull(result);
-		assertTrue(result instanceof J2735Bsm);
-		new Verifications() {
-			{
-				logger.info("Getting Plugin: {}", coderClassName);
-				logger.error(anyString, (Exception) any);
-				logger.info("Classpath: {}", anyString);
-				logger.info("Getting class: {}", anyString);
-				logger.info("creating an instance of: {}", any);
-			}
-		};
+			OdePlugin result = PluginFactory.getPluginByName(coderClassName);
+			assertNotNull(result);
+			assertTrue(result instanceof J2735Bsm);
+			new Verifications() {
+				{
+					logger.info("Getting Plugin: {}", coderClassName);
+					logger.error(anyString, (Exception) any);
+					logger.info("Classpath: {}", anyString);
+					logger.info("Getting class: {}", anyString);
+					logger.info("creating an instance of: {}", any);
+				}
+			};
+		});
 	}
 }
