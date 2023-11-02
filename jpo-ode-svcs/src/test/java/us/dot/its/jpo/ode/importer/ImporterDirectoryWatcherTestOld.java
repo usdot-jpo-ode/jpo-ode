@@ -75,7 +75,7 @@ public class ImporterDirectoryWatcherTestOld {
       } catch (IOException e) {
          fail("Unexpected exception in expectations block: " + e);
       }
-      testImporterDirectoryWatcher = new ImporterDirectoryWatcher(injectableOdeProperties, mockDir, backupDir, failureDir, ImporterFileType.LEAR_LOG_FILE, timePeriod);
+      testImporterDirectoryWatcher = new ImporterDirectoryWatcher(injectableOdeProperties, mockDir, backupDir, failureDir, ImporterFileType.LOG_FILE, timePeriod);
       testImporterDirectoryWatcher.setWatching(false);
    }
    
@@ -91,7 +91,7 @@ public class ImporterDirectoryWatcherTestOld {
       } catch (IOException e) {
          fail("Unexpected exception in expectations block: " + e);
       }
-      new ImporterDirectoryWatcher(injectableOdeProperties, mockDir, backupDir, failureDir, ImporterFileType.LEAR_LOG_FILE, timePeriod);
+      new ImporterDirectoryWatcher(injectableOdeProperties, mockDir, backupDir, failureDir, ImporterFileType.LOG_FILE, timePeriod);
    }
 
    @Test(timeout = 4000)
