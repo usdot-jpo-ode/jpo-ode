@@ -117,10 +117,10 @@ public class PayloadParser extends LogFileParser {
             logger.debug("Start index for: " + key + " is: " + startIndex);
             if (startIndex == -1) {
                logger.debug("Message does not have header for: " + key);
-            } else if (startIndex < 10) {
+            } else if (startIndex <= HEADER_SIZE) {
                logger.debug("Message has supported header. startIndex: " + startIndex + " msgFlag: " + startFlag);
                hexPacketParsed = hexPacket;
-            } else if (startIndex > 20 && startIndex < 35) {
+            } else if (startIndex > HEADER_SIZE && startIndex < 35) {
                int trueStartIndex = HEADER_SIZE
                      + hexPacket.substring(HEADER_SIZE, hexPacket.length()).indexOf(startFlag);
                logger.debug("Found payload start at: " + trueStartIndex);

@@ -16,10 +16,7 @@
 package us.dot.its.jpo.ode.coder.stream;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -207,7 +204,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 			for (String key : msgStartFlags.keySet()) {
 				String startFlag = msgStartFlags.get(key);
 				int startIndex = hexPacket.indexOf(startFlag);
-				if (startIndex < 10 && startIndex != 0 && startIndex != -1) {
+				if (startIndex <= 20 && startIndex != 0 && startIndex != -1) {
 					header = "Ieee1609Dot2Data";
 				}
 			}
@@ -220,8 +217,8 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
 	public BufferedInputStream removeNewLine(BufferedInputStream bis) {
 		try {
-			bis.mark(1); // Mark the current position in the stream
-			int nextByte = bis.read(); // Read the next byte
+			bis.mark(1);
+			int nextByte = bis.read();
 			if (nextByte != 10) { // If the next byte is not a newline
 				bis.reset(); // Reset the stream back to the most recent mark
 			}

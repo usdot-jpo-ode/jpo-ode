@@ -18,12 +18,7 @@ package us.dot.its.jpo.ode.importer.parser;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class DriverAlertFileParser extends LogFileParser {
-   private static final Logger logger = LoggerFactory.getLogger(DriverAlertFileParser.class);
 
    private String alert;
 
@@ -36,6 +31,7 @@ public class DriverAlertFileParser extends LogFileParser {
 
    @Override
    public ParserStatus parseFile(BufferedInputStream bis, String fileName) throws FileParserException {
+      
       ParserStatus status;
       try {
          status = super.parseFile(bis, fileName);

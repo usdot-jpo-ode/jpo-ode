@@ -46,47 +46,40 @@ public class RxMsgFileParser extends LogFileParser {
       ParserStatus status;
       try {
          status = super.parseFile(bis, fileName);
-         logger.debug("RxMsgFileParser start");
          if (status != ParserStatus.COMPLETE)
             return status;
 
          // parse rxSource
          if (getStep() == 1) {
-            logger.debug("RxMsgFileParser step 1");
             status = parseStep(bis, RX_SOURCE_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
             try {
                setRxSource(readBuffer[0]);
             } catch (Exception e) {
-               logger.debug("exception");
                setRxSource(RxSource.UNKNOWN);
             }
          }
 
          if (getStep() == 2) {
-            logger.debug("RxMsgFileParser step 2");
             status = nextStep(bis, fileName, locationParser);
             if (status != ParserStatus.COMPLETE)
                return status;
          }
 
          if (getStep() == 3) {
-            logger.debug("RxMsgFileParser step 3");
             status = nextStep(bis, fileName, timeParser);
             if (status != ParserStatus.COMPLETE)
                return status;
          }
 
          if (getStep() == 4) {
-            logger.debug("RxMsgFileParser step 4");
             status = nextStep(bis, fileName, secResCodeParser);
             if (status != ParserStatus.COMPLETE)
                return status;
          }
 
          if (getStep() == 5) {
-            logger.debug("RxMsgFileParser step 5");
             status = nextStep(bis, fileName, payloadParser);
             if (status != ParserStatus.COMPLETE)
                return status;
