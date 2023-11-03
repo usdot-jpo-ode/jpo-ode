@@ -112,7 +112,7 @@ public class PayloadParser extends LogFileParser {
       String hexPacketParsed = "";
       for (String key : msgStartFlags.keySet()) {
          String startFlag = msgStartFlags.get(key);
-         int startIndex = hexPacket.indexOf(startFlag);
+         int startIndex = hexPacket.toLowerCase().indexOf(startFlag);
          if (hexPacketParsed == ""){
             logger.debug("Start index for: " + key + " is: " + startIndex);
             if (startIndex == -1) {
@@ -132,7 +132,7 @@ public class PayloadParser extends LogFileParser {
          hexPacketParsed = hexPacket;
          logger.debug("Could not identify a Header in the following packet: " + hexPacketParsed);
       } else {
-         logger.debug("Parsed payload hex: " + hexPacketParsed);
+         logger.debug("Payload hex: " + hexPacketParsed);
       }
       return HexUtils.fromHexString(hexPacketParsed);
    }

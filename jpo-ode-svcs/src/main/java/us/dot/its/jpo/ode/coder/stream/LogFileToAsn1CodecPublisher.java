@@ -203,10 +203,13 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
 			for (String key : msgStartFlags.keySet()) {
 				String startFlag = msgStartFlags.get(key);
-				int startIndex = hexPacket.indexOf(startFlag);
+				int startIndex = hexPacket.toLowerCase().indexOf(startFlag);
+				logger.debug("Start index for " + key + "(" + startFlag + ")" + " is: " + startIndex);
 				if (startIndex <= 20 && startIndex != 0 && startIndex != -1) {
+					logger.debug("Message has supported Ieee1609Dot2Data header, adding encoding rule to Asn1DecoderInput XML");
 					header = "Ieee1609Dot2Data";
 				}
+				logger.debug("Payload JSON: " + payloadJson);
 			}
 		} catch (JsonUtilsException e) {
 			logger.error("JsonUtilsException while checking message header. Stacktrace: " + e.toString());
