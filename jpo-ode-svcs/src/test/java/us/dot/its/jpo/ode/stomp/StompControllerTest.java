@@ -18,7 +18,7 @@ package us.dot.its.jpo.ode.stomp;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 

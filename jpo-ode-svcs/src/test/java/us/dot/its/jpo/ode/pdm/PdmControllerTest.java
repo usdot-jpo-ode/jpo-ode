@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.UserTarget;

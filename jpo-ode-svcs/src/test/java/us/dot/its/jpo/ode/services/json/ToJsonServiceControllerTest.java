@@ -14,8 +14,8 @@
  * the License.
  ******************************************************************************/
 package us.dot.its.jpo.ode.services.json;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import mockit.Capturing;
 import mockit.Expectations;
@@ -34,7 +34,7 @@ public class ToJsonServiceControllerTest {
 //   @Capturing
 //   MessageConsumer<?, ?> capturingMessageConsumer;
    
-   @Test @Ignore
+   @Test @Disabled
    public void test() {
       new Expectations() {
          {

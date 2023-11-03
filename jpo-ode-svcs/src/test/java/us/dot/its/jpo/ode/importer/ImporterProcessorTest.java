@@ -26,8 +26,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import mockit.Capturing;
 import mockit.Expectations;
@@ -68,7 +68,7 @@ public class ImporterProcessorTest {
    Path injectableFailureDir;
    
 
-   @Test @Ignore
+   @Test @Disabled
    public void processExistingFilesShouldCatchExceptionFailedToCreateStream() {
 
       try {
@@ -85,7 +85,7 @@ public class ImporterProcessorTest {
       testImporterProcessor.processDirectory(injectableDir, injectableBackupDir, injectableFailureDir);
    }
  
-   @Test @Ignore
+   @Test @Disabled
    public void processExistingFilesShouldProcessOneFile(@Mocked DirectoryStream<Path> mockDirectoryStream,
          @Mocked Iterator<Path> mockIterator) {
 
@@ -109,7 +109,7 @@ public class ImporterProcessorTest {
       testImporterProcessor.processDirectory(injectableDir, injectableBackupDir, injectableFailureDir);
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void processAndBackupFileFileShouldCatchExceptionStream() {
 
       try {

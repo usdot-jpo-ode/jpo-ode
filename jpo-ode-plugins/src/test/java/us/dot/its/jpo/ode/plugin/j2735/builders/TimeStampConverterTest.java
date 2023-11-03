@@ -17,9 +17,9 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,11 +36,11 @@ public class TimeStampConverterTest {
   @Mocked
   private Logger logger;
   
-   @BeforeClass
+   @BeforeAll
    public static void classSetup() {
    }
    
-   @Before
+   @BeforeEach
    public void setup() {
      new MockUp<LoggerFactory>() {
        @Mock

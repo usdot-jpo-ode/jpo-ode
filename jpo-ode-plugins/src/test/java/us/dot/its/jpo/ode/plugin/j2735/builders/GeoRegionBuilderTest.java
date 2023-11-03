@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -19,7 +19,7 @@ public class GeoRegionBuilderTest {
   
   private OdeGeoRegion odeGeoRegion;
   
-  @Before
+  @BeforeEach
   public void setup() {
     OdePosition3D nwCorner = new OdePosition3D(BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE);
     OdePosition3D seCorner = new OdePosition3D(BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN);

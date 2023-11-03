@@ -22,7 +22,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.JsonNode;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BumperHeights;
 import us.dot.its.jpo.ode.util.XmlUtils;

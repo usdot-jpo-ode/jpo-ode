@@ -17,7 +17,7 @@ package us.dot.its.jpo.ode.pdm;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 
 import mockit.Tested;

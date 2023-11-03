@@ -15,7 +15,7 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.http;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import us.dot.its.jpo.ode.http.BadRequestException;
 

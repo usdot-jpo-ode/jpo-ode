@@ -28,9 +28,9 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.UrlResource;
@@ -48,7 +48,7 @@ public class FileSystemStorageServiceTest {
     @Mocked
     OdeProperties mockOdeProperties;
 
-    @Before
+    @BeforeEach
     public void setupOdePropertiesExpectations() {
         new Expectations() {
             {
@@ -69,7 +69,7 @@ public class FileSystemStorageServiceTest {
 
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void storeShouldThrowExceptionUnknownType(@Mocked MultipartFile mockMultipartFile) {
 
         String unknownType = "test123";
@@ -90,7 +90,7 @@ public class FileSystemStorageServiceTest {
 
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void storeShouldTryToResolveBsmFilename(@Mocked MultipartFile mockMultipartFile) {
 
         String testType = "obulog";
@@ -119,7 +119,7 @@ public class FileSystemStorageServiceTest {
         };
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void storeShouldThrowAnErrorEmptyFile(@Mocked MultipartFile mockMultipartFile) {
 
         String testType = "obulog";
@@ -148,7 +148,7 @@ public class FileSystemStorageServiceTest {
         };
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void storeShouldRethrowDeleteException(@Mocked MultipartFile mockMultipartFile, @Mocked Files unused) {
 
         String testType = "obulog";
@@ -189,7 +189,7 @@ public class FileSystemStorageServiceTest {
         };
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void storeShouldRethrowCopyException(@Mocked MultipartFile mockMultipartFile, @Mocked Files unusedFiles,
             @Mocked final Logger mockLogger, @Mocked LoggerFactory unusedLogger, @Mocked InputStream mockInputStream) {
 
@@ -234,7 +234,7 @@ public class FileSystemStorageServiceTest {
         };
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void loadAllShouldRethrowException(/**@Mocked Files unused**/) {
         try {
             new Expectations() {
@@ -262,7 +262,7 @@ public class FileSystemStorageServiceTest {
         };
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void loadAsResourceShouldThrowExceptionWhenFileNotExists(
           @Mocked Path mockRootPath,
           @Mocked Path mockResolvedPath,
@@ -298,7 +298,7 @@ public class FileSystemStorageServiceTest {
         }
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void loadAsResourceShouldThrowExceptionWhenFileNotReadable(@Mocked Path mockRootPath,
             @Mocked Path mockResolvedPath, @Mocked UrlResource mockUrlResource) {
 
@@ -335,7 +335,7 @@ public class FileSystemStorageServiceTest {
         }
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void loadAsResourceShouldRethrowMalformedURLException(@Mocked Path mockRootPath,
             @Mocked Path mockResolvedPath, @Mocked UrlResource mockUrlResource) {
 
@@ -366,7 +366,7 @@ public class FileSystemStorageServiceTest {
         }
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void loadAsResourceShouldReturnResource(@Mocked Path mockRootPath, @Mocked Path mockResolvedPath,
             @Mocked UrlResource mockUrlResource) {
 
@@ -400,7 +400,7 @@ public class FileSystemStorageServiceTest {
         }
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void initShouldCreateDirectories(@Mocked final Files unused) {
 
         new FileSystemStorageService(mockOdeProperties).init();
@@ -417,7 +417,7 @@ public class FileSystemStorageServiceTest {
         }
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void initShouldRethrowAndLogException(@Mocked final Files unused) {
 
         try {
@@ -446,7 +446,7 @@ public class FileSystemStorageServiceTest {
         };
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void deleteAllShouldDeleteRecursivelyAndLog(@Mocked final FileSystemUtils unused) {
 
         new FileSystemStorageService(mockOdeProperties).deleteAll();

@@ -22,7 +22,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.Vector;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.UserTarget;
@@ -59,6 +59,8 @@ public class TimQueryControllerTest {
    PDU mockPDU;
 
    private String defaultRSU = "{\"rsuTarget\":\"10.10.10.10\",\"rsuUsername\":\"user\",\"rsuPassword\":\"pass\",\"rsuRetries\":\"3\",\"rsuTimeout\":\"5000\"}";
+   private String fourDot1RSU = "{\"rsuTarget\":\"10.10.10.10\",\"rsuUsername\":\"user\",\"rsuPassword\":\"pass\",\"rsuRetries\":\"3\",\"rsuTimeout\":\"5000\",\"snmpProtocol\":\"FOURDOT1\"}";
+   private String ntcip1218RSU = "{\"rsuTarget\":\"10.10.10.10\",\"rsuUsername\":\"user\",\"rsuPassword\":\"pass\",\"rsuRetries\":\"3\",\"rsuTimeout\":\"5000\",\"snmpProtocol\":\"NTCIP1218\"}";
 
    @Test
    public void nullRequestShouldReturnError() {
@@ -93,6 +95,42 @@ public class TimQueryControllerTest {
    }
 
    @Test
+   public void snmpSessionExceptionShouldReturnError_fourDot1RSU() {
+      try {
+         new Expectations() {
+            {
+               new SnmpSession((RSU) any);
+               result = new IOException("testException123");
+            }
+         };
+      } catch (IOException e) {
+         fail("Unexpected exception in expectations block: " + e);
+      }
+
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(fourDot1RSU);
+      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actualResponse.getStatusCode());
+      assertTrue(actualResponse.getBody().contains("Failed to create SNMP session."));
+   }
+
+   @Test
+   public void snmpSessionExceptionShouldReturnError_ntcip1218RSU() {
+      try {
+         new Expectations() {
+            {
+               new SnmpSession((RSU) any);
+               result = new IOException("testException123");
+            }
+         };
+      } catch (IOException e) {
+         fail("Unexpected exception in expectations block: " + e);
+      }
+
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(ntcip1218RSU);
+      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actualResponse.getStatusCode());
+      assertTrue(actualResponse.getBody().contains("Failed to create SNMP session."));
+   }
+
+   @Test
    public void snmpSessionListenExceptionShouldReturnError() {
       try {
          new Expectations() {
@@ -106,6 +144,42 @@ public class TimQueryControllerTest {
       }
 
       ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(defaultRSU);
+      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actualResponse.getStatusCode());
+      assertTrue(actualResponse.getBody().contains("Failed to create SNMP session."));
+   }
+
+   @Test
+   public void snmpSessionListenExceptionShouldReturnError_fourDot1RSU() {
+      try {
+         new Expectations() {
+            {
+               capturingSnmpSession.startListen();
+               result = new IOException("testException123");
+            }
+         };
+      } catch (IOException e) {
+         fail("Unexpected exception in expectations block: " + e);
+      }
+
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(fourDot1RSU);
+      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actualResponse.getStatusCode());
+      assertTrue(actualResponse.getBody().contains("Failed to create SNMP session."));
+   }
+
+   @Test
+   public void snmpSessionListenExceptionShouldReturnError_ntcip1218RSU() {
+      try {
+         new Expectations() {
+            {
+               capturingSnmpSession.startListen();
+               result = new IOException("testException123");
+            }
+         };
+      } catch (IOException e) {
+         fail("Unexpected exception in expectations block: " + e);
+      }
+
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(ntcip1218RSU);
       assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actualResponse.getStatusCode());
       assertTrue(actualResponse.getBody().contains("Failed to create SNMP session."));
    }
@@ -126,6 +200,46 @@ public class TimQueryControllerTest {
       };
 
       ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(defaultRSU);
+      assertEquals(HttpStatus.BAD_REQUEST, actualResponse.getStatusCode());
+      assertTrue(actualResponse.getBody().contains("Timeout, no response from RSU."));
+   }
+
+   @Test
+   public void testNullResponseReturnsTimeout_fourDot1RSU() throws IOException {
+      new Expectations() {
+         {
+            mockOdeProperties.getRsuSrmSlots();
+            result = 1;
+
+            capturingSnmpSession.getSnmp();
+            result = mockSnmp;
+
+            mockSnmp.send((PDU) any, (UserTarget) any);
+            result = null;
+         }
+      };
+
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(fourDot1RSU);
+      assertEquals(HttpStatus.BAD_REQUEST, actualResponse.getStatusCode());
+      assertTrue(actualResponse.getBody().contains("Timeout, no response from RSU."));
+   }
+
+   @Test
+   public void testNullResponseReturnsTimeout_ntcip1218RSU() throws IOException {
+      new Expectations() {
+         {
+            mockOdeProperties.getRsuSrmSlots();
+            result = 1;
+
+            capturingSnmpSession.getSnmp();
+            result = mockSnmp;
+
+            mockSnmp.send((PDU) any, (UserTarget) any);
+            result = null;
+         }
+      };
+
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(ntcip1218RSU);
       assertEquals(HttpStatus.BAD_REQUEST, actualResponse.getStatusCode());
       assertTrue(actualResponse.getBody().contains("Timeout, no response from RSU."));
    }
@@ -154,6 +268,52 @@ public class TimQueryControllerTest {
    }
 
    @Test
+   public void testNullResponseResponseReturnsTimeout_fourDot1RSU() throws IOException {
+      new Expectations() {
+         {
+            mockOdeProperties.getRsuSrmSlots();
+            result = 1;
+
+            capturingSnmpSession.getSnmp();
+            result = mockSnmp;
+
+            mockSnmp.send((PDU) any, (UserTarget) any);
+            result = mockResponseEvent;
+
+            mockResponseEvent.getResponse();
+            result = null;
+         }
+      };
+
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(fourDot1RSU);
+      assertEquals(HttpStatus.BAD_REQUEST, actualResponse.getStatusCode());
+      assertTrue(actualResponse.getBody().contains("Timeout, no response from RSU."));
+   }
+
+   @Test
+   public void testNullResponseResponseReturnsTimeout_ntcip1218RSU() throws IOException {
+      new Expectations() {
+         {
+            mockOdeProperties.getRsuSrmSlots();
+            result = 1;
+
+            capturingSnmpSession.getSnmp();
+            result = mockSnmp;
+
+            mockSnmp.send((PDU) any, (UserTarget) any);
+            result = mockResponseEvent;
+
+            mockResponseEvent.getResponse();
+            result = null;
+         }
+      };
+
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(ntcip1218RSU);
+      assertEquals(HttpStatus.BAD_REQUEST, actualResponse.getStatusCode());
+      assertTrue(actualResponse.getBody().contains("Timeout, no response from RSU."));
+   }
+
+   @Test
    public void testSuccessfulQuery() throws IOException {
       new Expectations() {
          {
@@ -175,6 +335,58 @@ public class TimQueryControllerTest {
       };
 
       ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(defaultRSU);
+      assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+      assertTrue(actualResponse.getBody().contains("indicies_set"));
+   }
+
+   @Test
+   public void testSuccessfulQuery_fourDot1RSU() throws IOException {
+      new Expectations() {
+         {
+            mockOdeProperties.getRsuSrmSlots();
+            result = 1;
+
+            capturingSnmpSession.getSnmp();
+            result = mockSnmp;
+
+            mockSnmp.send((PDU) any, (UserTarget) any);
+            result = mockResponseEvent;
+
+            mockResponseEvent.getResponse();
+            result = mockPDU;
+
+            mockPDU.getVariableBindings();
+            result = new Vector<VariableBinding>();
+         }
+      };
+
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(fourDot1RSU);
+      assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+      assertTrue(actualResponse.getBody().contains("indicies_set"));
+   }
+
+   @Test
+   public void testSuccessfulQuery_ntcip1218RSU() throws IOException {
+      new Expectations() {
+         {
+            mockOdeProperties.getRsuSrmSlots();
+            result = 1;
+
+            capturingSnmpSession.getSnmp();
+            result = mockSnmp;
+
+            mockSnmp.send((PDU) any, (UserTarget) any);
+            result = mockResponseEvent;
+
+            mockResponseEvent.getResponse();
+            result = mockPDU;
+
+            mockPDU.getVariableBindings();
+            result = new Vector<VariableBinding>();
+         }
+      };
+
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(ntcip1218RSU);
       assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
       assertTrue(actualResponse.getBody().contains("indicies_set"));
    }
@@ -207,4 +419,72 @@ public class TimQueryControllerTest {
       assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
       assertTrue(actualResponse.getBody().contains("indicies_set"));
    }
+
+   @Test
+   public void testSuccessfulPopulatedQuery_fourDot1RSU() throws IOException {
+      new Expectations() {
+         {
+            mockOdeProperties.getRsuSrmSlots();
+            result = 1;
+
+            capturingSnmpSession.getSnmp();
+            result = mockSnmp;
+
+            mockSnmp.send((PDU) any, (UserTarget) any);
+            result = mockResponseEvent;
+
+            mockResponseEvent.getResponse();
+            result = mockPDU;
+
+            Vector<VariableBinding> fakeVector = new Vector<VariableBinding>();
+            fakeVector.add(new VariableBinding());
+
+            mockPDU.getVariableBindings();
+            result = fakeVector;
+         }
+      };
+
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(fourDot1RSU);
+      assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+      assertTrue(actualResponse.getBody().contains("indicies_set"));
+   }
+
+   @Test
+   public void testSuccessfulPopulatedQuery_ntcip1218RSU() throws IOException {
+      new Expectations() {
+         {
+            mockOdeProperties.getRsuSrmSlots();
+            result = 1;
+
+            capturingSnmpSession.getSnmp();
+            result = mockSnmp;
+
+            mockSnmp.send((PDU) any, (UserTarget) any);
+            result = mockResponseEvent;
+
+            mockResponseEvent.getResponse();
+            result = mockPDU;
+
+            Vector<VariableBinding> fakeVector = new Vector<VariableBinding>();
+            fakeVector.add(new VariableBinding());
+
+            mockPDU.getVariableBindings();
+            result = fakeVector;
+         }
+      };
+
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(ntcip1218RSU);
+      assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+      assertTrue(actualResponse.getBody().contains("indicies_set"));
+   }
+
+   @Test
+   public void testPopulatedQuery_unrecognizedProtocol() throws IOException {
+      String unrecognizedProtocolRSU = "{\"rsuTarget\":\"10.10.10.10\",\"rsuUsername\":\"user\",\"rsuPassword\":\"pass\",\"rsuRetries\":\"3\",\"rsuTimeout\":\"5000\",\"snmpProtocol\":\"banana\"}";
+
+      ResponseEntity<String> actualResponse = testTimQueryController.bulkQuery(unrecognizedProtocolRSU);
+      assertEquals(HttpStatus.BAD_REQUEST, actualResponse.getStatusCode());
+      assertTrue(actualResponse.getBody().contains("Unrecognized protocol"));
+   }
+
 }
