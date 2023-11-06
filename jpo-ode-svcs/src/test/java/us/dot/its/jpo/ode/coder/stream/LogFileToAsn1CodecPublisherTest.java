@@ -99,35 +99,40 @@ public class LogFileToAsn1CodecPublisherTest {
    public void testPublishThrowsIllegalArgumentException() throws Exception {
       // If the filename does not follow expected filename pattern,
       // IllegalArgumentException should be thrown
-      testLogFileToAsn1CodecPublisher.publish(new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
-            "fileName", ImporterFileType.LOG_FILE);
-      fail("Expected an IllegalArgumentException to be thrown");
+      assertThrows(IllegalArgumentException.class, () -> {
+         // If the filename does not follow expected filename pattern,
+         // IllegalArgumentException should be thrown
+         testLogFileToAsn1CodecPublisher.publish(new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
+               "fileName", ImporterFileType.LOG_FILE);
+         fail("Expected an IllegalArgumentException to be thrown");
+      });
    }
 
    @Test
    public void testPublishThrowsLogFileToAsn1CodecPublisherException(@Mocked LogFileParser mockLogFileParser)
          throws Exception {
-      assertThrows(LogFileToAsn1CodecPublisherException.class, () -> {
-         new Expectations() {
-            {
-               LogFileParser.factory(anyString);
-               result = mockLogFileParser;
-
-               /*
-               * If the embedded parser fails to parse a log file header, it may throw an
-               * exception
-               * which is then caught by the parser and re-thrown as
-               * LogFileToAsn1CodecPublisherException.
-               * This mocked object will simulate that eventuality.
-               */
-               mockLogFileParser.parseFile((BufferedInputStream) any, anyString);
-               result = new LogFileToAsn1CodecPublisherException(anyString, (Exception) any);
-            }
-         };
-
-      testLogFileToAsn1CodecPublisher.publish(new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
-            "fileName", ImporterFileType.LOG_FILE);
-      fail("Expected an LogFileToAsn1CodecPublisherException to be thrown");
+         assertThrows(LogFileToAsn1CodecPublisherException.class, () -> {
+            new Expectations() {
+               {
+                  LogFileParser.factory(anyString);
+                  result = mockLogFileParser;
+   
+                  /*
+                  * If the embedded parser fails to parse a log file header, it may throw an
+                  * exception
+                  * which is then caught by the parser and re-thrown as
+                  * LogFileToAsn1CodecPublisherException.
+                  * This mocked object will simulate that eventuality.
+                  */
+                  mockLogFileParser.parseFile((BufferedInputStream) any, anyString);
+                  result = new LogFileToAsn1CodecPublisherException(anyString, (Exception) any);
+               }
+            };
+   
+            testLogFileToAsn1CodecPublisher.publish(new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
+                  "fileName", ImporterFileType.LOG_FILE);
+            fail("Expected an LogFileToAsn1CodecPublisherException to be thrown");
+         });
    }
 
    @Test
