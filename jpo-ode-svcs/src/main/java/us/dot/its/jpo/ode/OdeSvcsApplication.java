@@ -32,8 +32,6 @@ import org.snmp4j.security.AuthHMAC192SHA256;
 import org.snmp4j.security.AuthHMAC256SHA384;
 import org.snmp4j.security.AuthHMAC384SHA512;
 import org.snmp4j.security.PrivAES128;
-import org.snmp4j.security.PrivAES192;
-import org.snmp4j.security.PrivAES256;
 
 import org.snmp4j.security.SecurityProtocols;
 import org.springframework.boot.CommandLineRunner;
