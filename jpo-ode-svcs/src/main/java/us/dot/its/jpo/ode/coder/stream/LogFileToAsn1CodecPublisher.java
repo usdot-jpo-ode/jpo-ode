@@ -172,11 +172,8 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 					logger.debug("Publishing a TIM or MAP");
 				}
 
-				if (isSpatRecord() && msgMetadata instanceof OdeSpatMetadata
-						&& !((OdeSpatMetadata) msgMetadata).getIsCertPresent()) {
-					// Nothing: If Spat log file and IEEE1609Cert is not present, Skip the
-					// Ieee1609Dot2Data encoding
-				} else {
+				if (!(isSpatRecord() && msgMetadata instanceof OdeSpatMetadata
+        			&& !((OdeSpatMetadata) msgMetadata).getIsCertPresent())) {
 					if (checkHeader(msgPayload) == "Ieee1609Dot2Data") {
 						Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
 						msgMetadata.addEncoding(msgEncoding);
