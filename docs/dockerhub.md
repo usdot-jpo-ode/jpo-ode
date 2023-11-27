@@ -16,9 +16,9 @@ The image expects the following environment variables to be set:
 - DOCKER_SHARED_VOLUME
 
 ## Direct Dependencies
-The ODE will fail to start up if the following containers are not already present:
-- Kafka
-- Zookeeper (relied on by Kafka)
+The ODE will fail to start up if the following containers/services are not already present:
+- Kafka or Confluent & related requirements
+- Zookeeper (relied on by Kafka when run locally)
 
 ## Indirect Dependencies
 Some functionality will be unreachable without the participation of the following programs (except by directly pushing to kafka topics):
@@ -28,7 +28,10 @@ Some functionality will be unreachable without the participation of the followin
 - jpo-sdw-depositor
 - jpo-s3-deposit
 
-## Example docker-compose.yml with direct dependencies:
+## Configuration
+For further configuration options, see the [GitHub repository](https://github.com/usdot-jpo-ode/jpo-ode).
+
+### Example docker-compose.yml with direct dependencies:
 ```
 version: '3'
 services:
