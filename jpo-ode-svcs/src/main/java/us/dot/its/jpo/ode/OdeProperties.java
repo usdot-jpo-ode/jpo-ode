@@ -172,6 +172,13 @@ public class OdeProperties implements EnvironmentAware {
    private String kafkaTopicOdeMapJson = "topic.OdeMapJson";
    private int mapReceiverPort = 44920;
    private int mapBufferSize = 2048;
+
+   // PSM
+   private String kafkaTopicOdeRawEncodedPSMJson = "topic.OdeRawEncodedPSMJson";
+   private String kafkaTopicOdePsmTxPojo = "topic.OdePsmTxPojo";
+   private String kafkaTopicOdePsmJson = "topic.OdePsmJson";
+   private int psmReceiverPort = 44940;
+   private int psmBufferSize = 500;
    
 // DriverAlerts
    private String kafkaTopicDriverAlertJson = "topic.OdeDriverAlertJson";
@@ -472,6 +479,22 @@ public class OdeProperties implements EnvironmentAware {
 
    public void setMapBufferSize(int mapBufferSize) {
       this.mapBufferSize = mapBufferSize;
+   }
+
+   public int getPsmReceiverPort() {
+      return psmReceiverPort;
+   }
+
+   public void setPsmReceiverPort(int psmReceiverPort) {
+      this.psmReceiverPort = psmReceiverPort;
+   }
+
+   public int getPsmBufferSize() {
+      return psmBufferSize;
+   }
+
+   public void setPsmBufferSize(int psmBufferSize) {
+      this.psmBufferSize = psmBufferSize;
    }
 
    public String getDdsCasUrl() {
@@ -867,6 +890,34 @@ public class OdeProperties implements EnvironmentAware {
 
 	public void setKafkaTopicOdeMapJson(String kafkaTopicOdeMapJson) {
 		this.kafkaTopicOdeMapJson = kafkaTopicOdeMapJson;
+	}
+
+   public String getKafkaTopicOdeRawEncodedPSMJson() {
+		return kafkaTopicOdeRawEncodedPSMJson;
+	}
+
+	public void setKafkaTopicOdeRawEncodedPSMJson(String kafkaTopicOdeRawEncodedPSMJson) {
+		this.kafkaTopicOdeRawEncodedPSMJson = kafkaTopicOdeRawEncodedPSMJson;
+	}
+
+
+	public String getKafkaTopicOdePsmTxPojo() {
+		return kafkaTopicOdePsmTxPojo;
+	}
+
+
+	public void setKafkaTopicOdePsmTxPojo(String kafkaTopicOdePsmTxPojo) {
+		this.kafkaTopicOdePsmTxPojo = kafkaTopicOdePsmTxPojo;
+	}
+
+
+	public String getKafkaTopicOdePsmJson() {
+		return kafkaTopicOdePsmJson;
+	}
+
+
+	public void setKafkaTopicOdePsmJson(String kafkaTopicOdePsmJson) {
+		this.kafkaTopicOdePsmJson = kafkaTopicOdePsmJson;
 	}
 
    public String getKafkaTopicOdeRawEncodedSSMJson() {

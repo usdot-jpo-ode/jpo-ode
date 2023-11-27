@@ -109,3 +109,12 @@ The purpose of these diagrams is to show:
 1. The AsnCodecRouterServiceController class pulls from the Asn1DecoderOutput topic and passes the SSM to the Asn1DecodedDataRouter class.
 1. The Asn1DecodedDataRouter class pushes the SSM to the OdeSsmTxPojo and OdeSsmJson topics.
 1. The FileUploadController pulls from the OdeSsmJson topic and offloads the SSM.
+
+### PSM Data Flow
+1. The PSM comes in through the PsmReceiver class and is pushed to the OdeRawEncodedPSMJson topic.
+1. The AsnCodecMessageServiceController class pulls from the OdeRawEncodedPSMJson topic and passes the PSM to the Asn1DecodePSMJSON class.
+1. The Asn1DecodePSMJSON class pushes the PSM to the Asn1DecoderInput topic.
+1. The [ACM](https://github.com/usdot-jpo-ode/asn1_codec) pulls from the Asn1DecoderInput topic, decodes the PSM, and pushes it to the Asn1DecoderOutput topic.
+1. The AsnCodecRouterServiceController class pulls from the Asn1DecoderOutput topic and passes the PSM to the Asn1DecodedDataRouter class.
+1. The Asn1DecodedDataRouter class pushes the PSM to the OdePsmTxPojo and OdePsmJson topics.
+1. The FileUploadController pulls from the OdePsmJson topic and offloads the PSM.

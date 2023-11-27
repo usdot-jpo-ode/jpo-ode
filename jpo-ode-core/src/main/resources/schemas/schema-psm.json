@@ -1,0 +1,766 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "metadata": {
+            "type": "object",
+            "properties": {
+                "originIp": {
+                    "type": "string"
+                },
+                "psmSource": {
+                    "type": "string"
+                },
+                "logFileName": {
+                    "type": "string"
+                },
+                "recordType": {
+                    "type": "string"
+                },
+                "securityResultCode": {
+                    "type": "string"
+                },
+                "receivedMessageDetails": {
+                    "type": "object",
+                    "properties": {
+                        "locationData": {
+                            "type": "null"
+                        },
+                        "rxSource": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "rxSource"
+                    ]
+                },
+                "encodings": {
+                    "type": "null"
+                },
+                "payloadType": {
+                    "type": "string"
+                },
+                "serialId": {
+                    "type": "object",
+                    "properties": {
+                        "streamId": {
+                            "type": "string"
+                        },
+                        "bundleSize": {
+                            "type": "integer"
+                        },
+                        "bundleId": {
+                            "type": "integer"
+                        },
+                        "recordId": {
+                            "type": "integer"
+                        },
+                        "serialNumber": {
+                            "type": "integer"
+                        }
+                    },
+                    "required": [
+                        "streamId",
+                        "bundleSize",
+                        "bundleId",
+                        "recordId",
+                        "serialNumber"
+                    ]
+                },
+                "odeReceivedAt": {
+                    "type": "string"
+                },
+                "schemaVersion": {
+                    "type": "integer"
+                },
+                "maxDurationTime": {
+                    "type": "integer"
+                },
+                "odePacketID": {
+                    "type": "string"
+                },
+                "odeTimStartDateTime": {
+                    "type": "string"
+                },
+                "recordGeneratedAt": {
+                    "type": "string"
+                },
+                "recordGeneratedBy": {
+                    "type": "null"
+                },
+                "sanitized": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "originIp",
+                "psmSource",
+                "logFileName",
+                "recordType",
+                "receivedMessageDetails",
+                "payloadType",
+                "serialId",
+                "odeReceivedAt",
+                "schemaVersion",
+                "maxDurationTime",
+                "odePacketID",
+                "odeTimStartDateTime",
+                "recordGeneratedAt",
+                "sanitized"
+            ]
+        },
+        "payload": {
+            "type": "object",
+            "properties": {
+                "dataType": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "basicType": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "secMark": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ]
+                        },
+                        "msgCnt": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ]
+                        },
+                        "id": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "position": {
+                            "properties": {
+                                "elevation": {
+                                    "type": [
+                                        "number",
+                                        "null"
+                                    ]
+                                },
+                                "latitude": {
+                                    "type": "number"
+                                },
+                                "longitude": {
+                                    "type": "number"
+                                }
+                            },
+                            "required": [
+                                "latitude",
+                                "longitude"
+                            ],
+                            "type": "object"
+                        },
+                        "accuracy": {
+                            "properties": {
+                                "orientation": {
+                                    "type": [
+                                        "number",
+                                        "null"
+                                    ]
+                                },
+                                "semiMajor": {
+                                    "type": [
+                                        "number",
+                                        "null"
+                                    ]
+                                },
+                                "semiMinor": {
+                                    "type": [
+                                        "number",
+                                        "null"
+                                    ]
+                                }
+                            },
+                            "required": [],
+                            "type": "object"
+                        },
+                        "speed": {
+                            "type": "number"
+                        },
+                        "heading": {
+                            "type": "integer"
+                        },
+                        "accelSet": {
+                            "properties": {
+                                "accelLat": {
+                                    "type": "integer"
+                                },
+                                "accelLong": {
+                                    "type": "integer"
+                                },
+                                "accelVert": {
+                                    "type": "integer"
+                                },
+                                "accelYaw": {
+                                    "type": "integer"
+                                }
+                            },
+                            "required": [
+                                "accelLat",
+                                "accelLong",
+                                "accelVert",
+                                "accelYaw"
+                            ],
+                            "type": "object"
+                        },
+                        "pathHistory": {
+                            "properties": {
+                                "crumbData": {
+                                    "items": {
+                                        "properties": {
+                                            "elevationOffset": {
+                                                "type": "number"
+                                            },
+                                            "heading": {
+                                                "type": [
+                                                    "number",
+                                                    "null"
+                                                ]
+                                            },
+                                            "latOffset": {
+                                                "type": "number"
+                                            },
+                                            "lonOffset": {
+                                                "type": "number"
+                                            },
+                                            "posAccuracy": {
+                                                "properties": {
+                                                    "orientation": {
+                                                        "type": "number"
+                                                    },
+                                                    "semiMajor": {
+                                                        "type": "number"
+                                                    },
+                                                    "semiMinor": {
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "semiMajor",
+                                                    "semiMinor",
+                                                    "orientation"
+                                                ],
+                                                "type": [
+                                                    "object",
+                                                    "null"
+                                                ]
+                                            },
+                                            "speed": {
+                                                "type": [
+                                                    "number",
+                                                    "null"
+                                                ]
+                                            },
+                                            "timeOffset": {
+                                                "type": "number"
+                                            }
+                                        },
+                                        "required": [
+                                            "elevationOffset",
+                                            "latOffset",
+                                            "lonOffset",
+                                            "timeOffset"
+                                        ],
+                                        "type": "object"
+                                    },
+                                    "maxItems": 23,
+                                    "minItems": 1,
+                                    "type": "array"
+                                },
+                                "currGNSSstatus": {
+                                    "properties": {
+                                        "aPDOPofUnder5": {
+                                            "type": "boolean"
+                                        },
+                                        "baseStationType": {
+                                            "type": "boolean"
+                                        },
+                                        "inViewOfUnder5": {
+                                            "type": "boolean"
+                                        },
+                                        "isHealthy": {
+                                            "type": "boolean"
+                                        },
+                                        "isMonitored": {
+                                            "type": "boolean"
+                                        },
+                                        "localCorrectionsPresent": {
+                                            "type": "boolean"
+                                        },
+                                        "networkCorrectionsPresent": {
+                                            "type": "boolean"
+                                        },
+                                        "unavailable": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "unavailable",
+                                        "isHealthy",
+                                        "isMonitored",
+                                        "baseStationType",
+                                        "aPDOPofUnder5",
+                                        "inViewOfUnder5",
+                                        "localCorrectionsPresent",
+                                        "networkCorrectionsPresent"
+                                    ],
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ]
+                                },
+                                "initialPosition": {
+                                    "properties": {
+                                        "heading": {
+                                            "type": [
+                                                "number",
+                                                "null"
+                                            ]
+                                        },
+                                        "posAccuracy": {
+                                            "properties": {
+                                                "orientation": {
+                                                    "type": [
+                                                        "number",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "semiMajor": {
+                                                    "type": [
+                                                        "number",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "semiMinor": {
+                                                    "type": [
+                                                        "number",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [],
+                                            "type": "object"
+                                        },
+                                        "posConfidence": {
+                                            "properties": {
+                                                "elevation": {
+                                                    "enum": [
+                                                        "UNAVAILABLE",
+                                                        "ELEV_500_00",
+                                                        "ELEV_200_00",
+                                                        "ELEV_100_00",
+                                                        "ELEV_050_00",
+                                                        "ELEV_020_00",
+                                                        "ELEV_010_00",
+                                                        "ELEV_005_00",
+                                                        "ELEV_002_00",
+                                                        "ELEV_001_00",
+                                                        "ELEV_000_50",
+                                                        "ELEV_000_20",
+                                                        "ELEV_000_10",
+                                                        "ELEV_000_05",
+                                                        "ELEV_000_02",
+                                                        "ELEV_000_01"
+                                                    ],
+                                                    "type": "string"
+                                                },
+                                                "pos": {
+                                                    "enum": [
+                                                        "UNAVAILABLE",
+                                                        "A500M",
+                                                        "A200M",
+                                                        "A100M",
+                                                        "A50M",
+                                                        "A20M",
+                                                        "A10M",
+                                                        "A5M",
+                                                        "A2M",
+                                                        "A1M",
+                                                        "A50CM",
+                                                        "A20CM",
+                                                        "A10CM",
+                                                        "A5CM",
+                                                        "A2CM",
+                                                        "A1CM"
+                                                    ],
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "pos",
+                                                "elevation"
+                                            ],
+                                            "type": [
+                                                "object",
+                                                "null"
+                                            ]
+                                        },
+                                        "position": {
+                                            "properties": {
+                                                "elevation": {
+                                                    "type": [
+                                                        "number",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "latitude": {
+                                                    "type": "number"
+                                                },
+                                                "longitude": {
+                                                    "type": "number"
+                                                }
+                                            },
+                                            "required": [
+                                                "latitude",
+                                                "longitude"
+                                            ],
+                                            "type": "object"
+                                        },
+                                        "speed": {
+                                            "properties": {
+                                                "speed": {
+                                                    "type": "number"
+                                                },
+                                                "transmission": {
+                                                    "enum": [
+                                                        "NEUTRAL",
+                                                        "PARK",
+                                                        "FORWARDGEARS",
+                                                        "REVERSEGEARS",
+                                                        "RESERVED1",
+                                                        "RESERVED2",
+                                                        "RESERVED3",
+                                                        "UNAVAILABLE"
+                                                    ],
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "speed",
+                                                "transmission"
+                                            ],
+                                            "type": [
+                                                "object",
+                                                "null"
+                                            ]
+                                        },
+                                        "speedConfidence": {
+                                            "properties": {
+                                                "heading": {
+                                                    "enum": [
+                                                        "UNAVAILABLE",
+                                                        "PREC10DEG",
+                                                        "PREC05DEG",
+                                                        "PREC01DEG",
+                                                        "PREC0_1DEG",
+                                                        "PREC0_05DEG",
+                                                        "PREC0_01DEG",
+                                                        "PREC0_0125DEG"
+                                                    ],
+                                                    "type": "string"
+                                                },
+                                                "speed": {
+                                                    "enum": [
+                                                        "UNAVAILABLE",
+                                                        "PREC100MS",
+                                                        "PREC10MS",
+                                                        "PREC5MS",
+                                                        "PREC1MS",
+                                                        "PREC0_1MS",
+                                                        "PREC0_05MS",
+                                                        "PREC0_01MS"
+                                                    ],
+                                                    "type": "string"
+                                                },
+                                                "throttle": {
+                                                    "enum": [
+                                                        "UNAVAILABLE",
+                                                        "PREC10PERCENT",
+                                                        "PREC1PERCENT",
+                                                        "PREC0_5PERCENT"
+                                                    ],
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "heading",
+                                                "speed",
+                                                "throttle"
+                                            ],
+                                            "type": [
+                                                "object",
+                                                "null"
+                                            ]
+                                        },
+                                        "timeConfidence": {
+                                            "enum": [
+                                                "UNAVAILABLE",
+                                                "TIME_100_000",
+                                                "TIME_050_000",
+                                                "TIME_020_000",
+                                                "TIME_010_000",
+                                                "TIME_002_000",
+                                                "TIME_001_000",
+                                                "TIME_000_500",
+                                                "TIME_000_200",
+                                                "TIME_000_100",
+                                                "TIME_000_050",
+                                                "TIME_000_020",
+                                                "TIME_000_010",
+                                                "TIME_000_005",
+                                                "TIME_000_002",
+                                                "TIME_000_001",
+                                                "TIME_000_000_5",
+                                                "TIME_000_000_2",
+                                                "TIME_000_000_1",
+                                                "TIME_000_000_05",
+                                                "TIME_000_000_02",
+                                                "TIME_000_000_01",
+                                                "TIME_000_000_005",
+                                                "TIME_000_000_002",
+                                                "TIME_000_000_001",
+                                                "TIME_000_000_000_5",
+                                                "TIME_000_000_000_2",
+                                                "TIME_000_000_000_1",
+                                                "TIME_000_000_000_05",
+                                                "TIME_000_000_000_02",
+                                                "TIME_000_000_000_01",
+                                                "TIME_000_000_000_005",
+                                                "TIME_000_000_000_002",
+                                                "TIME_000_000_000_001",
+                                                "TIME_000_000_000_000_5",
+                                                "TIME_000_000_000_000_2",
+                                                "TIME_000_000_000_000_1",
+                                                "TIME_000_000_000_000_05",
+                                                "TIME_000_000_000_000_02",
+                                                "TIME_000_000_000_000_01",
+                                                null
+                                            ],
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "utcTime": {
+                                            "properties": {
+                                                "day": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "hour": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "minute": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "month": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "offset": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "second": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "year": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [],
+                                            "type": [
+                                                "object",
+                                                "null"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "position"
+                                    ],
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "crumbData"
+                            ],
+                            "type": [
+                                "object",
+                                "null"
+                            ]
+                        },
+                        "pathPrediction": {
+                            "properties": {
+                                "confidence": {
+                                    "type": "number"
+                                },
+                                "radiusOfCurve": {
+                                    "type": "number"
+                                }
+                            },
+                            "required": [
+                                "confidence",
+                                "radiusOfCurve"
+                            ],
+                            "type": [
+                                "object",
+                                "null"
+                            ]
+                        },
+                        "propulsion": {
+                            "properties": {
+                                "human": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "animal": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "motor": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            },
+                            "required": [],
+                            "type": [
+                                "object",
+                                "null"
+                            ]
+                        },
+                        "useState": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "crossRequest": {
+                            "type": [
+                                "boolean",
+                                "null"
+                            ]
+                        },
+                        "crossState": {
+                            "type": [
+                                "boolean",
+                                "null"
+                            ]
+                        },
+                        "clusterSize": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "clusterRadius": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ]
+                        },
+                        "activityType": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "activitySubType": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "assistType": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "sizing": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "attachment": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "attachmentRadius": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ]
+                        },
+                        "animalType": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "basicType",
+                        "secMark",
+                        "msgCnt",
+                        "id",
+                        "position",
+                        "accuracy",
+                        "speed",
+                        "heading"
+                    ]
+                }
+            },
+            "required": [
+                "dataType",
+                "data"
+            ]
+        }
+    },
+    "required": [
+        "metadata",
+        "payload"
+    ]
+}

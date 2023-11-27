@@ -25,6 +25,7 @@ import us.dot.its.jpo.ode.coder.OdeMapDataCreatorHelper;
 import us.dot.its.jpo.ode.coder.OdeSpatDataCreatorHelper;
 import us.dot.its.jpo.ode.coder.OdeSsmDataCreatorHelper;
 import us.dot.its.jpo.ode.coder.OdeSrmDataCreatorHelper;
+import us.dot.its.jpo.ode.coder.OdePsmDataCreatorHelper;
 import us.dot.its.jpo.ode.context.AppContext;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeBsmData;
@@ -47,6 +48,7 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 	private MessageProducer<String, String> mapProducer;
 	private MessageProducer<String, String> ssmProducer;
 	private MessageProducer<String, String> srmProducer;
+	private MessageProducer<String, String> psmProducer;
 
 	public Asn1DecodedDataRouter(OdeProperties odeProps) {
 		super();
@@ -62,6 +64,8 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 		this.ssmProducer = MessageProducer.defaultStringMessageProducer(odeProps.getKafkaBrokers(),
 				odeProps.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
 		this.srmProducer = MessageProducer.defaultStringMessageProducer(odeProps.getKafkaBrokers(),
+				odeProps.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
+		this.psmProducer = MessageProducer.defaultStringMessageProducer(odeProps.getKafkaBrokers(),
 				odeProps.getKafkaProducerType(), odeProperties.getKafkaTopicsDisabledSet());
 	}
 
@@ -135,6 +139,14 @@ public class Asn1DecodedDataRouter extends AbstractSubscriberProcessor<String, S
 				// Send all SRMs also to OdeSrmJson
 				srmProducer.send(odeProperties.getKafkaTopicOdeSrmJson(), getRecord().key(), odeSrmData);
 				logger.debug("Submitted to SRM Pojo topic");
+			} else if (messageId == J2735DSRCmsgID.PersonalSafetyMessage.getMsgID()) {
+				String odePsmData = OdePsmDataCreatorHelper.createOdePsmData(consumedData).toString();
+				if (recordType == RecordType.psmTx) {
+					psmProducer.send(odeProperties.getKafkaTopicOdePsmTxPojo(), getRecord().key(), odePsmData);
+				}
+				// Send all PSMs also to OdePsmJson
+				psmProducer.send(odeProperties.getKafkaTopicOdePsmJson(), getRecord().key(), odePsmData);
+				logger.debug("Submitted to PSM Pojo topic");
 			}
 		} catch (Exception e) {
 			logger.error("Failed to route received data: " + consumedData, e);
