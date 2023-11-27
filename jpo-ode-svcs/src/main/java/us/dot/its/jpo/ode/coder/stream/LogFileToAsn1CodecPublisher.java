@@ -100,7 +100,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 					} else {
 						logger.error("Failed to decode ASN.1 data");
 					}
-					bis = removeNewLine(bis);
+					bis = removeNextNewLineCharacter(bis);
 				} catch (Exception e) {
 					throw new LogFileToAsn1CodecPublisherException("Error parsing or publishing data.", e);
 				}
@@ -205,6 +205,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 				if (startIndex <= 20 && startIndex != 0 && startIndex != -1) {
 					logger.debug("Message has supported Ieee1609Dot2Data header, adding encoding rule to Asn1DecoderInput XML");
 					header = "Ieee1609Dot2Data";
+					break;
 				}
 				logger.debug("Payload JSON: " + payloadJson);
 			}
@@ -215,7 +216,9 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 		return header;
 	}
 
-	public BufferedInputStream removeNewLine(BufferedInputStream bis) {
+	// This method will check if the next character is a newline character (0x0A in hex or 10 in converted decimal) 
+	// or if the next character does not contain a newline character it will put that character back into the buffered input stream
+	public BufferedInputStream removeNextNewLineCharacter(BufferedInputStream bis) {
 		try {
 			bis.mark(1);
 			int nextByte = bis.read();

@@ -34,7 +34,7 @@ public class PayloadParser extends LogFileParser {
    private static HashMap<String, String> msgStartFlags = new HashMap<String, String>();
 
    private static final int HEADER_SIZE = 20; 
-   public static final int PAYLOAD_LENGTH_LENGTH = 2;
+   public static final int PAYLOAD_LENGTH = 2;
    
    protected short payloadLength;
    protected byte[] payload;
@@ -54,10 +54,10 @@ public class PayloadParser extends LogFileParser {
       try {
          // parse payload length
          if (getStep() == 0) {
-            status = parseStep(bis, PAYLOAD_LENGTH_LENGTH);
+            status = parseStep(bis, PAYLOAD_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
-            short length = CodecUtils.bytesToShort(readBuffer, 0, PAYLOAD_LENGTH_LENGTH, ByteOrder.LITTLE_ENDIAN);
+            short length = CodecUtils.bytesToShort(readBuffer, 0, PAYLOAD_LENGTH, ByteOrder.LITTLE_ENDIAN);
             logger.debug("Payload length is: " + length);
             setPayloadLength(length);
          }

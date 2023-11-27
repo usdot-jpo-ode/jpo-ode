@@ -228,7 +228,7 @@ public class LogFileToAsn1CodecPublisherTest {
             (byte) 0xa4, (byte) 0xa1, (byte) 0x5c, (byte) 0xce, // 1.1 longitude
             (byte) 0x67, (byte) 0x06, (byte) 0x00, (byte) 0x00, // 1.2 elevation
             (byte) 0x04, (byte) 0x00, // 1.3 speed
-            (byte) 0x09, (byte) 0x27, // 1.4 heading         assertEquals(expected, data.toJson());
+            (byte) 0x09, (byte) 0x27, // 1.4 heading
 
             (byte) 0xa9, (byte) 0x2c, (byte) 0xe2, (byte) 0x5a, // 2. utcTimeInSec
             (byte) 0x8f, (byte) 0x01, // 3. mSec
