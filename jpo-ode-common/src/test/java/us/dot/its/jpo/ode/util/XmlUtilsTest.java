@@ -2,7 +2,7 @@ package us.dot.its.jpo.ode.util;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
 public class XmlUtilsTest {

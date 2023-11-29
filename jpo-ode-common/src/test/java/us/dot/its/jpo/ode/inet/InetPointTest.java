@@ -17,6 +17,7 @@ package us.dot.its.jpo.ode.inet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -25,7 +26,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import mockit.Capturing;
 import mockit.Expectations;
@@ -48,19 +49,21 @@ public class InetPointTest {
       }
    }
 
-   @Test(expected = AssertionError.class)
+   @Test
    public void testStringConstructorFailsNullAddress() {
-      try {
-         new Expectations() {
-            {
-               InetAddress.getByName(anyString).getAddress();
-               result = null;
-            }
-         };
-         new InetPoint("something123", 5, true);
-      } catch (UnknownHostException e) {
-         fail("Unexpected exception: " + e);
-      }
+      assertThrows(AssertionError.class, () -> {
+         try {
+            new Expectations() {
+               {
+                  InetAddress.getByName(anyString).getAddress();
+                  result = null;
+               }
+            };
+            new InetPoint("something123", 5, true);
+         } catch (UnknownHostException e) {
+            fail("Unexpected exception: " + e);
+         }
+      });
    }
 
    @Test
@@ -68,9 +71,13 @@ public class InetPointTest {
       new InetPoint(new byte[] { 1, 2, 3 }, 5, true);
    }
 
-   @Test(expected = IllegalArgumentException.class)
+   @Test
    public void testByteConstructorFailsNullAddress() {
-      new InetPoint((byte[]) null, 5, true);
+      Exception err = assertThrows(IllegalArgumentException.class, () -> {
+         new InetPoint((byte[]) null, 5, true);
+      });
+
+      assertEquals("IP Address is required", err.getMessage());
    }
 
    @Test
@@ -78,9 +85,12 @@ public class InetPointTest {
       new InetPoint(new byte[] { 1, 2, 3 }, 5);
    }
 
-   @Test(expected = IllegalArgumentException.class)
+   @Test
    public void testBytePortConstructorFailsNullAddress() {
-      new InetPoint((byte[]) null, 5);
+      Exception err = assertThrows(IllegalArgumentException.class, () -> {
+         new InetPoint((byte[]) null, 5);
+      });
+      assertEquals("IP Address is required", err.getMessage());
    }
 
    @Test

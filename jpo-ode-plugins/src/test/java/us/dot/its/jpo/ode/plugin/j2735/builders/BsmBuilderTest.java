@@ -17,7 +17,7 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import static org.junit.Assert.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

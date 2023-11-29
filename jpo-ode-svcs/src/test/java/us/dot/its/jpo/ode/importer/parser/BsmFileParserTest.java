@@ -24,7 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.apache.tomcat.util.buf.HexUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import mockit.Injectable;
 import mockit.Tested;

@@ -23,8 +23,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import us.dot.its.jpo.ode.plugin.j2735.OdeGeoRegion.GeoRegionException;
 
@@ -49,7 +49,7 @@ public class OdeGeoRegionTest {
 
    private OdeGeoRegion testRegion;
 
-   @Before
+   @BeforeEach
    public void setup() throws GeoRegionException {
       region1 = new OdeGeoRegion();
       region2 = new OdeGeoRegion("44.44,-55.55 22.22,   -33.33");
@@ -230,7 +230,7 @@ public class OdeGeoRegionTest {
    /**
     * Create a known geo region (roughly Pennsylvania)
     */
-   @Before
+   @BeforeEach
    public void setupOdeGeoRegion() {
 
        BigDecimal nwLat = BigDecimal.valueOf(42.0);

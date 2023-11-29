@@ -34,7 +34,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import us.dot.its.jpo.ode.OdeProperties;
+import us.dot.its.jpo.ode.plugin.SnmpProtocol;
 import us.dot.its.jpo.ode.plugin.RoadSideUnit.RSU;
+import us.dot.its.jpo.ode.snmp.SnmpFourDot1Protocol;
+import us.dot.its.jpo.ode.snmp.SnmpNTCIP1218Protocol;
 import us.dot.its.jpo.ode.snmp.SnmpSession;
 import us.dot.its.jpo.ode.util.JsonUtils;
 
@@ -68,7 +71,16 @@ public class TimQueryController {
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, "Empty request."));
       }
 
-      RSU queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
+      RSU queryTarget = null;
+      try {
+         queryTarget = (RSU) JsonUtils.fromJson(jsonString, RSU.class);
+      }
+      catch(Exception e) {
+         
+      }
+      if (queryTarget == null) {
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(JsonUtils.jsonKeyValue(ERRSTR, "Unrecognized protocol"));
+      }
       
       TimTransmogrifier.updateRsuCreds(queryTarget, odeProperties);
 
@@ -87,12 +99,36 @@ public class TimQueryController {
       PDU pdu1 = new ScopedPDU();
       pdu1.setType(PDU.GET);
 
-      for (int i = 0; i < odeProperties.getRsuSrmSlots() - 50; i++) {
-         pdu0.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
+      SnmpProtocol snmpProtocol = queryTarget.getSnmpProtocol();
+
+      if (snmpProtocol == null) {
+         logger.error("No SNMP protocol specified.");
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+               .body(JsonUtils.jsonKeyValue(ERRSTR, "No SNMP protocol specified."));
       }
 
-      for (int i = 50; i < odeProperties.getRsuSrmSlots(); i++) {
-         pdu1.add(new VariableBinding(new OID("1.0.15628.4.1.4.1.11.".concat(Integer.toString(i)))));
+      if (snmpProtocol == SnmpProtocol.FOURDOT1) {      
+         for (int i = 0; i < odeProperties.getRsuSrmSlots() - 50; i++) {
+            pdu0.add(SnmpFourDot1Protocol.getVbRsuSrmStatus(i));
+         }
+
+         for (int i = 50; i < odeProperties.getRsuSrmSlots(); i++) {
+            pdu1.add(SnmpFourDot1Protocol.getVbRsuSrmStatus(i));
+         }
+      }
+      else if (snmpProtocol == SnmpProtocol.NTCIP1218) {
+         for (int i = 0; i < odeProperties.getRsuSrmSlots() - 50; i++) {
+            pdu0.add(SnmpNTCIP1218Protocol.getVbRsuMsgRepeatStatus(i));
+         }
+
+         for (int i = 50; i < odeProperties.getRsuSrmSlots(); i++) {
+            pdu1.add(SnmpNTCIP1218Protocol.getVbRsuMsgRepeatStatus(i));
+         }
+      }
+      else {
+         logger.error("Unsupported SNMP protocol: {}", snmpProtocol);
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+               .body(JsonUtils.jsonKeyValue(ERRSTR, "Unsupported SNMP protocol: " + snmpProtocol));
       }
 
       ResponseEvent response0 = null;

@@ -22,7 +22,7 @@ import mockit.Mocked;
 
 import static org.junit.Assert.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import us.dot.its.jpo.ode.OdeProperties;

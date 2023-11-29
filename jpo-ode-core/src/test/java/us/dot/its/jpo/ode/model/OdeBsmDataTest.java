@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.model;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.schema.JsonSchema;

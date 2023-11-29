@@ -22,8 +22,8 @@ import static org.junit.Assert.fail;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.env.Environment;
 
@@ -45,7 +45,7 @@ public class OdePropertiesTest {
       @Capturing
       CommonUtils capturingCommonUtils;
 
-      @Before
+      @BeforeEach
       public void setup() {
             new Expectations() {
                   {
