@@ -18,8 +18,8 @@ package us.dot.its.jpo.ode.services.asn1;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import mockit.Capturing;
 import mockit.Expectations;
@@ -50,7 +50,7 @@ public class Asn1EncodedDataRouterTest {
 //   @Capturing
 //   XmlUtils capturingXmlUtils;
    
-   @Test @Ignore
+   @Test @Disabled
    public void testNoRequest(@Mocked JSONObject mockJSONObject) throws XmlUtilsException {
       new Expectations() {{
          XmlUtils.toJSONObject(anyString);
@@ -62,7 +62,7 @@ public class Asn1EncodedDataRouterTest {
       testAsn1EncodedDataRouter.process("stringthing");
    }
 
-   @Test @Ignore
+   @Test @Disabled
    public void testNoRsus(@Mocked JSONObject mockJSONObject) throws XmlUtilsException {
       new Expectations() {{
          XmlUtils.toJSONObject(anyString);
@@ -77,7 +77,7 @@ public class Asn1EncodedDataRouterTest {
       testAsn1EncodedDataRouter.process("stringthing");
    }
    
-   @Test @Ignore
+   @Test @Disabled
    public void testSingleRsu(@Mocked JSONObject mockJSONObject) throws XmlUtilsException {
       try {
 		new Expectations() {{
@@ -103,7 +103,7 @@ public class Asn1EncodedDataRouterTest {
       testAsn1EncodedDataRouter.process("stringthing");
    }
    
-   @Test @Ignore
+   @Test @Disabled
    public void testRsuArray(@Mocked JSONObject mockJSONObject) throws XmlUtilsException {
       try {
 		new Expectations() {{
@@ -129,7 +129,7 @@ public class Asn1EncodedDataRouterTest {
       testAsn1EncodedDataRouter.process("stringthing");
    }
    
-   @Test @Ignore
+   @Test @Disabled
    public void testWithASD(@Mocked JSONObject mockJSONObject) throws XmlUtilsException {
       try {
 		new Expectations() {{

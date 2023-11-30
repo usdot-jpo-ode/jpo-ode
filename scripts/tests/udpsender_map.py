@@ -15,5 +15,5 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
 
 while True:
   time.sleep(5)
-  print("sending SRM every 5 second")
+  print(f"sending MAP every 5 seconds")
   sock.sendto(bytes.fromhex(MESSAGE), (UDP_IP, UDP_PORT))

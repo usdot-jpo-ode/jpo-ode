@@ -18,7 +18,7 @@ package us.dot.its.jpo.ode.traveler;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -63,7 +63,7 @@ public class TimDepositControllerTest {
 
    @Test
    public void invalidJsonSyntaxShouldReturnJsonSyntaxError() {
-      ResponseEntity<String> actualResponse = testTimDepositController.postTim("{\"invalid\":\"json\"}}");
+      ResponseEntity<String> actualResponse = testTimDepositController.postTim("{\"in\"va}}}on\"}}");
       assertEquals("{\"error\":\"Malformed or non-compliant JSON syntax.\"}", actualResponse.getBody());
    }
 
@@ -157,6 +157,13 @@ public class TimDepositControllerTest {
    public void testSuccessfulMessageReturnsSuccessMessagePut(@Capturing TimTransmogrifier capturingTimTransmogrifier, @Capturing XmlUtils capturingXmlUtils) {
       ResponseEntity<String> actualResponse = testTimDepositController.putTim(
             "{\"request\":{\"rsus\":[],\"snmp\":{}},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\"}}");
+      assertEquals("{\"success\":\"true\"}", actualResponse.getBody());
+   }
+
+   @Test
+   public void testDepositingTimWithExtraProperties(@Capturing TimTransmogrifier capturingTimTransmogrifier, @Capturing XmlUtils capturingXmlUtils) {
+      String timToSubmit = "{\"request\":{\"rsus\":[],\"snmp\":{},\"randomProp1\":true,\"randomProp2\":\"hello world\"},\"tim\":{\"msgCnt\":\"13\",\"timeStamp\":\"2017-03-13T01:07:11-05:00\",\"randomProp3\":123,\"randomProp4\":{\"nestedProp1\":\"foo\",\"nestedProp2\":\"bar\"}}}";
+      ResponseEntity<String> actualResponse = testTimDepositController.postTim(timToSubmit);
       assertEquals("{\"success\":\"true\"}", actualResponse.getBody());
    }
 

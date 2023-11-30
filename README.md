@@ -26,6 +26,9 @@ All stakeholders are invited to provide input to these documents. To provide fee
 
 <a name="toc"/>
 
+## Release Notes
+The current version and release history of the JPO-ODE: [ODE Release Notes](<docs/Release_notes.md>)
+
 ## Table of Contents
 
 1.  [Usage Example](#usage-example)
@@ -40,6 +43,8 @@ All stakeholders are invited to provide input to these documents. To provide fee
 10. [Credits and Acknowledgement](#credits-and-acknowledgement)
 11. [Code.gov Registration Info](#codegov-registration-info)
 12. [Kubernetes](#kubernetes)
+13. [Sonar Cloud](#sonar-token-configuration) ([Documentation](https://sonarcloud.io/documentation/user-guide/user-token/))
+14. [SNMP](#snmp)
 
 <!--
 #########################################
@@ -47,12 +52,13 @@ All stakeholders are invited to provide input to these documents. To provide fee
 #########################################
  -->
 
-<a name="usgage-example"/>
+<a name="usage-example"/>
 
 ## 1. Usage Example
 
-Once the ODE is deployed and running locally, you may access the ODE's demonstration console by opening your browser and navigating to  `http://localhost:8080`.
+Once the ODE is deployed and running locally, you may access the ODE's demonstration console by opening your browser and navigating to  `http://localhost:8080`. This portal can only be used to decode a subset of the supported message types: BSM and TIM messages. To decode messages such as MAP, SPaT, SRM and SSM, the ODE UDP ports must be utilized. The following sections will describe how to utilize both methods.
 
+<b>For testing BSM and TIM decoding only:</b>
 1.  Press the `Connect` button to connect to the ODE WebSocket service.
 2.  Press `Select File` button to select an OBU log file containing BSMs and/or TIM messages as specified by the WYDOT CV Pilot project. See below documents for details:
     - [Wyoming CV Pilot Log File Design](data/Wyoming_CV_Pilot_Log_File_Design.docx)
@@ -71,8 +77,30 @@ _Figure 2: ODE UI demonstrating message subscription_
 
 Notice that the empty fields in the J2735 message are represented by a `null` value. Also note that ODE output strips the MessageFrame header and returns a pure BSM or TIM in the subscription topic.
 
-
 With the PPM module running, all filtered BSMs that are uploaded through the web interface will be captured and processed. You will see an output of both submitted BSM and processed data unless the entire record was filtered out.
+
+<b>For testing decoding with all supported ODE message types:</b>
+
+To test decoding all supported ODE messages, the UDP endpoints must be utilized. These endpoints specifically take hex ASN.1 UPER encoded message data. These messages are allowed to have headers but do not need to. The headers are trimmed out currently once the UDP receiver receives the message so this data will not affect the output.
+
+Supported message types:
+- BSM
+- TIM
+- MAP
+- SPaT
+- SRM
+- SSM
+
+1. Navigate to the [UDP sender Python scripts](<./scripts/tests/>) in the project.
+2. Ensure the environment variable "DOCKER_HOST_IP" has been set in the shell that will be running the script. This must be set to the same IP that the ODE deployments are using.
+3. Run the script of your choosing: `python3 ./scripts/tests/udpsender_spat.py`
+4. View the output Kafka messages from kafkacat: `kafkacat -b $DOCKER_HOST_IP:9092 -G udp_test_group topic.OdeSpatJson -f '\nTopic: %t, Key: %k, Offset: %o, Timestamp: %T\nValue: %s\n'`
+5. The script should continue to send the same message every 5 seconds and kafkacat should continue to output the latest message.
+6. You may modify the content of the UDP sender scripts to test different payloads of your own.
+
+<p align="center">
+  <img src="./docs/images/readme/figure3.png" width="80%" height="50%">
+</p>
 
 [Back to top](#toc)
 
@@ -91,9 +119,9 @@ With the PPM module running, all filtered BSMs that are uploaded through the web
 -  Minimum RAM: 16 GB
 -  Minimum storage space: 100 GB
 -  Supported operating systems:
-   -  Ubuntu 18.04 Linux (Recommended)
-   -  Windows 10 Professional (Professional version required for Docker virtualization)
-   -  OSX 10 Mojave
+   -  Ubuntu 22.04 Linux (Recommended)
+   -  Windows 10/11 Professional (Professional version required for Docker virtualization)
+   -  OSX 13
 
 The ODE software can run on most standard Window, Mac, or Linux based computers with
 Pentium core processors. Performance of the software will be based on the computing power and available RAM in
@@ -113,6 +141,10 @@ Read the following guides to familiarize yourself with ODE's Docker and Kafka mo
 
 - [Docker README](docker.md)
 - [Kafka README](kafka.md)
+
+The following guide contains information about the data flow diagrams for the ODE.
+
+- [Data Flow Diagrams README](docs/data-flow-diagrams/README.md)
 
 **Installation and Deployment:**
 
@@ -218,6 +250,7 @@ Copy the following files from `jpo-ode` directory into your DOCKER_SHARED_VOLUME
 - Copy jpo-ode/ppm.properties to ${DOCKER_SHARED_VOLUME}/config.properties. Open the newly copied `config.properties` file in a text editor and update the `metadata.broker.list=your.docker.host.ip:9092` line with your system's DOCKER_HOST_IP in place of the dummy `your.docker.host.ip` string.
 - Copy jpo-ode/adm.properties to ${DOCKER_SHARED_VOLUME}/adm.properties
 - Copy jpo-ode/aem.properties to ${DOCKER_SHARED_VOLUME}/aem.properties
+- Specifying the variable: ${DOCKER_SHARED_VOLUME_WINDOWS} to "C:" may be required for certain Windows users.
 
 Navigate to the root directory of the jpo-ode project and run the following command:
 
@@ -279,9 +312,49 @@ cd $BASE_PPM_DIR/jpo-cvdp/build
 $ ./bsmjson_privacy -c ../config/ppm.properties
 ```
 
+# Confluent Cloud Integration
+
+Rather than using a local kafka instance, the ODE can utilize an instance of kafka hosted by Confluent Cloud via SASL.
+
+
+
+## Environment variables
+
+### Purpose & Usage
+
+- The DOCKER_HOST_IP environment variable is used to communicate with the bootstrap server that the instance of Kafka is running on.
+
+- The KAFKA_TYPE environment variable specifies what type of kafka connection will be attempted and is used to check if Confluent should be utilized. If this environment variable is not set, the ODE will default to normal behavior.
+
+- The CONFLUENT_KEY and CONFLUENT_SECRET environment variables are used to authenticate with the bootstrap server. If the KAFKA_TYPE environment variable is not set, then these are not required.
+
+
+
+### Values
+In order to utilize Confluent Cloud:
+
+- DOCKER_HOST_IP must be set to the bootstrap server address (excluding the port)
+
+- KAFKA_TYPE must be set to "CONFLUENT"
+
+- CONFLUENT_KEY must be set to the API key being utilized for CC
+
+- CONFLUENT_SECRET must be set to the API secret being utilized for CC
+
+
+
+## CC Docker Compose File
+
+There is a provided docker-compose file (docker-compose-confluent-cloud.yml) that passes the above environment variables into the container that gets created. Further, this file doesn't spin up a local kafka instance since it is not required.
+
+
+
+## Note
+
+This has only been tested with Confluent Cloud but technically all SASL authenticated Kafka brokers can be reached using this method.	
 
 [Back to top](#toc)
-
+	
 <!--
 #########################################
 ############# File Manifest #############
@@ -352,6 +425,9 @@ Install the IDE of your choice:
 ### Continuous Integration
 
 * TravisCI: <https://travis-ci.org/usdot-jpo-ode/jpo-ode>
+
+### Dev Container Environment
+The project can be reopened inside of a dev container in VSCode. This environment should have all of the necessary dependencies to debug the ODE and its submodules. When attempting to run scripts in this environment, it may be necessary to make them executable with "chmod +x" first.
 
 [Back to top](#toc)
 
@@ -523,8 +599,57 @@ Contact Name: James Lieu
 
 Contact Phone: (202) 366-3000
 
+<a name="kubernetes"/>
+
 ## 12. Kubernetes
 The ODE can be run in a k8s environment.
 See [this document](./docs/Kubernetes.md) for more details about this.
 
 [Back to top](#toc)
+
+<a name="sonar-token-configuration"/>
+
+## 13. Sonar Token Configuration
+Generating and Using Tokens
+Users can generate tokens that can be used to run analyses or invoke web services without access to the user's actual credentials.
+
+USDOT-JPO-ODE SonarCloud Organization : https://sonarcloud.io/organizations/usdot-jpo-ode-1/
+
+### Generating a token
+You can generate new tokens at User > My Account > Security.
+The form at the bottom of the page allows you to generate new tokens. Once you click the Generate button, you will see the token value. Copy it immediately; once you dismiss the notification you will not be able to retrieve it.
+
+### Using a token
+SonarScanners running in GitHub Actions can automatically detect branches and pull requests being built so you don't need to specifically pass them as parameters to the scanner.
+
+**<ins>To analyze your projects with GitHub Actions, you need to: </ins>**
+
+**<ins> Creating your GitHub secrets </ins>**
+You can create repository secrets from your GitHub repository as below:
+
+Sonar Token: Generate a SonarQube token and, in GitHub, create a new repository secret in GitHub with SONAR_TOKEN as the Name and the token you generated as the Value.
+Sonar Host URL: In GitHub, create a new repository secret with SONAR_HOST_URL as the Name and your SonarQube server URL as the Value.
+
+Configure your workflow YAML file as below:
+
+	1. Add GitHub Secrets in ci.yml workflow as SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }
+ 	2. Update the sonar properties in Sonar scan step (- name: Run Sonar) with new sonar project properties.
+  
+Commit and push your code to start the analysis.
+
+### Revoking a token
+You can revoke an existing token at User > My Account > Security by clicking the Revoke button next to the token.
+
+<a name="snmp"/>
+
+## 14. SNMP
+The ODE is capable of communicating with RSUs to:
+- Query TIMs
+- Deposit TIMs
+- Delete TIMs
+
+The following SNMP protocols are supported for communication with RSUs:
+- DSRC 4.1 (defined in 'Dedicated Short-Range Communications Roadside Unit Specifications')
+- NTCIP1218 (defined in 'National Transportation Communications for ITS Protocol')
+
+Additionally, the ODE supports the execution of PDM operations on RSUs. PDM operations are not defined in NTCIP1218, but are defined DSRC 4.1.

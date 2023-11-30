@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.154.0/containers/java-8
 {
-	"name": "Java 11",
+	"name": "Java 11 and C++",
 	"dockerFile": "Dockerfile",
 	"overrideCommand": false,
 	"shutdownAction": "stopContainer",
@@ -21,7 +21,9 @@
 		"mhutchie.git-graph",
 		"tabnine.tabnine-vscode",
 		"redhat.java",
-		"redhat.vscode-commons"
+		"redhat.vscode-commons",
+		"ms-vscode.cpptools",
+		"ms-vscode.cmake-tools"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [8080, 9090, 46753, 46800, 5555, 6666, 8090, 2181, 9092],

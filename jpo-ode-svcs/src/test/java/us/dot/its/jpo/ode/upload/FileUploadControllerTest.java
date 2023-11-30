@@ -21,8 +21,9 @@ import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,7 +63,7 @@ public class FileUploadControllerTest {
    @Mocked
    MultipartFile mockMultipartFile;
 
-   @Before
+   @BeforeEach
    public void constructorShouldLaunchSevenThreads() {
       new Expectations() {
          {

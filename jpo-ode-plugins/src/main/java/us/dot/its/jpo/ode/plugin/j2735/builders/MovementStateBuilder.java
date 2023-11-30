@@ -38,18 +38,18 @@ public class MovementStateBuilder {
 		}
 		
 		if(movementStatesJson.get("maneuverAssistList") != null
-				&& movementStatesJson.get("maneuverAssistList").get("ConnectionManueverAssist") != null)
+				&& movementStatesJson.get("maneuverAssistList").get("ConnectionManeuverAssist") != null)
 		{
 			J2735ManeuverAssistList maneuverAssistList = new J2735ManeuverAssistList();
-			if (movementStatesJson.get("maneuverAssistList").get("ConnectionManueverAssist").isArray()) {
-				Iterator<JsonNode> elements = movementStatesJson.get("maneuverAssistList").get("ConnectionManueverAssist").elements();
+			if (movementStatesJson.get("maneuverAssistList").get("ConnectionManeuverAssist").isArray()) {
+				Iterator<JsonNode> elements = movementStatesJson.get("maneuverAssistList").get("ConnectionManeuverAssist").elements();
 				while (elements.hasNext()) {
 					maneuverAssistList.getManeuverAssistList()
 							.add(ManeuverAssistBuilder.genericManeuverAssist(elements.next()));
 				}
 			} else {
 				maneuverAssistList.getManeuverAssistList().add(ManeuverAssistBuilder.genericManeuverAssist(
-						movementStatesJson.get("maneuverAssistList").get("ConnectionManueverAssist")));
+						movementStatesJson.get("maneuverAssistList").get("ConnectionManeuverAssist")));
 			}
 			state.setManeuverAssistList(maneuverAssistList);
 		}

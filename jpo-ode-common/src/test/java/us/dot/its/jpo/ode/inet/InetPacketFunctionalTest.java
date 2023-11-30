@@ -27,8 +27,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import mockit.Capturing;
 import us.dot.its.jpo.ode.util.CodecUtils;
@@ -44,7 +44,7 @@ public class InetPacketFunctionalTest {
 	   assertNull(pkt.getPayload());
 	}
 	
-	@Test @Ignore
+	@Test @Disabled
 	public void test() throws UnknownHostException {
 		test("127.0.0.1", 12, "01234567890".getBytes());
 		test("::1", 47561, "0123456789001234567890".getBytes());

@@ -4,6 +4,8 @@ import java.util.Iterator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import us.dot.its.jpo.ode.plugin.j2735.J2735BitString;
+import us.dot.its.jpo.ode.plugin.j2735.J2735EnableLaneList;
 import us.dot.its.jpo.ode.plugin.j2735.J2735IntersectionReferenceID;
 import us.dot.its.jpo.ode.plugin.j2735.J2735IntersectionState;
 import us.dot.its.jpo.ode.plugin.j2735.J2735IntersectionStatusObject;
@@ -34,14 +36,12 @@ public class IntersectionStateBuilder {
 
 		if(intersectionState.get("IntersectionState").get("status") != null)
 		{
-
-			Integer status = intersectionState.get("IntersectionState").get("status").asInt();
-			for (J2735IntersectionStatusObject statusobj : J2735IntersectionStatusObject.values()) {
-				if (statusobj.ordinal() == status) {
-					genericIntersectionState.setStatus(J2735IntersectionStatusObject.values()[status]);
-					break;
-				}
+			JsonNode status = intersectionState.get("IntersectionState").get("status");
+			if (status != null) {
+				J2735BitString statusObj = BitStringBuilder.genericBitString(status, J2735IntersectionStatusObject.values());
+				genericIntersectionState.setStatus(statusObj);
 			}
+			
 		}
 
 		if (intersectionState.get("IntersectionState").get("moy") != null)
@@ -52,11 +52,12 @@ public class IntersectionStateBuilder {
 
 		if (intersectionState.get("IntersectionState").get("enabledLanes") != null
 				&& intersectionState.get("IntersectionState").get("enabledLanes").get("LaneID") != null) {
+			genericIntersectionState.setEnabledLanes(new J2735EnableLaneList());
 			if (intersectionState.get("IntersectionState").get("enabledLanes").get("LaneID").isArray()) {
 				Iterator<JsonNode> elements = intersectionState.get("IntersectionState").get("enabledLanes").get("LaneID").elements();
 				while (elements.hasNext()) {
 					genericIntersectionState.getEnabledLanes().getEnabledLaneList()
-							.add(elements.next().get("LaneID").asInt());
+							.add(elements.next().asInt());
 				}
 			} else {
 				genericIntersectionState.getEnabledLanes().getEnabledLaneList()
@@ -83,14 +84,14 @@ public class IntersectionStateBuilder {
 				&& intersectionState.get("IntersectionState").get("maneuverAssistList").get("ConnectionManeuverAssist") != null) { // maneuverAssistList
 			J2735ManeuverAssistList maneuverAssistList = new J2735ManeuverAssistList();
 			if (intersectionState.get("IntersectionState").get("maneuverAssistList").get("ConnectionManeuverAssist").isArray()) {
-				Iterator<JsonNode> elements = intersectionState.get("maneuverAssistList").get("ConnectionManeuverAssist").elements();
+				Iterator<JsonNode> elements = intersectionState.get("IntersectionState").get("maneuverAssistList").get("ConnectionManeuverAssist").elements();
 				while (elements.hasNext()) {
 					maneuverAssistList.getManeuverAssistList()
 							.add(ManeuverAssistBuilder.genericManeuverAssist(elements.next()));
 				}
 			} else {
 				maneuverAssistList.getManeuverAssistList().add(ManeuverAssistBuilder.genericManeuverAssist(
-						intersectionState.get("IntersectionState").get("maneuverAssistList").get("ConnectionManueverAssist")));
+						intersectionState.get("IntersectionState").get("maneuverAssistList").get("ConnectionManeuverAssist")));
 			}
 			genericIntersectionState.setManeuverAssistList(maneuverAssistList);
 		}

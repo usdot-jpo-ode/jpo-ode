@@ -251,7 +251,7 @@ public class TravelerMessageFromHumanToAsnConverter {
          startMinute = (int) Duration.between(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0), zDateTime)
                .toMinutes();
       } catch (Exception e) { // NOSONAR
-         logger.warn("Failed to parse datetime {}, defaulting to unknown value {}", isoTime, startMinute);
+         logger.error("Failed to parse datetime {}, defaulting to unknown value {}", isoTime, startMinute);
       }
 
       return startMinute;
@@ -277,7 +277,7 @@ public class TravelerMessageFromHumanToAsnConverter {
          startMinute = (int) ChronoUnit.MINUTES.between(DateTimeUtils.isoDateTime(startYear, 1, 1, 0, 0, 0, 0),
                zDateTime);
       } catch (Exception e) {
-         logger.warn("Failed to startDateTime {}, defaulting to unknown value {}.", startDateTime, startMinute);
+         logger.error("Failed to startDateTime {}, defaulting to unknown value {}.", startDateTime, startMinute);
       }
 
       dataFrame.put("startYear", startYear);

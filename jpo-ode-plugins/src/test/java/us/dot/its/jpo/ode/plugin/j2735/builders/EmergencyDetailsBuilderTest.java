@@ -17,6 +17,7 @@ package us.dot.its.jpo.ode.plugin.j2735.builders;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -24,7 +25,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -86,21 +87,21 @@ public class EmergencyDetailsBuilderTest {
       assertEquals(J2735ResponseType.SLOWMOVING, actualValue.getResponseType());
    }
 
-   @Test(expected = IllegalArgumentException.class)
+   @Test
    public void testOptionalFieldsWithInvalidSSPRights() {
-      
-      ObjectNode testInput = JsonUtils.newNode();
-      testInput.put("sspRights", 8);
-      testInput.set("sirenUse", JsonUtils.newNode().put("notInUse", true));
-      testInput.set("lightsUse", JsonUtils.newNode().put("arrowSignsActive", true));
-      testInput.set("multi", JsonUtils.newNode().put("singleVehicle", true));
-      
-      // optional fields
-      testInput.set("events", JsonUtils.newNode().put("sspRights", 32).put("event", "001000"));
-      testInput.set("responseType", JsonUtils.newNode().put("slowMoving", true));
+      assertThrows(IllegalArgumentException.class, () -> {
+         ObjectNode testInput = JsonUtils.newNode();
+         testInput.put("sspRights", 8);
+         testInput.set("sirenUse", JsonUtils.newNode().put("notInUse", true));
+         testInput.set("lightsUse", JsonUtils.newNode().put("arrowSignsActive", true));
+         testInput.set("multi", JsonUtils.newNode().put("singleVehicle", true));
+         
+         // optional fields
+         testInput.set("events", JsonUtils.newNode().put("sspRights", 32).put("event", "001000"));
+         testInput.set("responseType", JsonUtils.newNode().put("slowMoving", true));
 
-      EmergencyDetailsBuilder.genericEmergencyDetails(testInput);
-
+         EmergencyDetailsBuilder.genericEmergencyDetails(testInput);
+      });
    }
 
    @Test

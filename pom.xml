@@ -11,12 +11,12 @@
 
   <scm>
     <developerConnection>scm:git:https://github.com/usdot-jpo-ode/jpo-ode.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>jpo-ode-1.3.0</tag>
   </scm>
 
   <groupId>usdot.jpo.ode</groupId>
   <artifactId>jpo-ode</artifactId>
-  <version>1.0.10-SNAPSHOT</version>
+  <version>1.3.0</version>
   <packaging>pom</packaging>
   <modules>
     <module>jpo-ode-common</module>
@@ -39,9 +39,15 @@
     <finalLocation>${project.build.directory}/${project.artifactId}-${project.version}</finalLocation>
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
-
+    <java.version>11</java.version>
     <sonar.organization>usdot-jpo-ode</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <!-- JaCoCo Properties -->
+    <jacoco.version>0.8.8</jacoco.version>
+    <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+    <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+    <sonar.language>java</sonar.language>
     <jmockit.version>1.49</jmockit.version>
   </properties>
 
@@ -80,10 +86,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.2</version>
-      <scope>test</scope>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>5.9.3</version>
+        <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -99,7 +105,7 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
-        <version>1.2.8</version>
+        <version>1.2.9</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -138,9 +144,9 @@
           </configuration>
           <dependencies>
             <dependency>
-              <groupId>org.apache.maven.surefire</groupId>
-              <artifactId>surefire-junit47</artifactId>
-              <version>3.0.0-M5</version>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-surefire-plugin</artifactId>
+              <version>3.1.2</version>
             </dependency>
           </dependencies>
         </plugin>

@@ -25,7 +25,7 @@ package us.dot.its.jpo.ode.plugin.j2735.asn1c;
 //
 //import javax.xml.bind.DatatypeConverter;
 //
-//import org.junit.Test;
+//import org.junit.jupiter.api.Test;
 //
 //import us.dot.its.jpo.ode.j2735.dsrc.GeometricProjection;
 //import us.dot.its.jpo.ode.j2735.dsrc.MsgCRC;
