@@ -38,6 +38,7 @@ public class SituationDataWarehouse {
       private String deliverystart;
       private String deliverystop;
       private String recordId = null;
+      private String expirationDate;
 
       public OdeGeoRegion getServiceRegion() {
          return serviceRegion;
@@ -88,6 +89,14 @@ public class SituationDataWarehouse {
          this.recordId = recordId;
       }
 
+      public String getExpirationDate(){
+         return expirationDate;
+      }
+
+      public void setExpirationDate(String expirationdate){
+         this.expirationDate = expirationdate;
+      }
+
       @Override
       public int hashCode() {
          final int prime = 31;
@@ -98,6 +107,7 @@ public class SituationDataWarehouse {
          result = prime * result + ((recordId == null) ? 0 : recordId.hashCode());
          result = prime * result + ((serviceRegion == null) ? 0 : serviceRegion.hashCode());
          result = prime * result + ((ttl == null) ? 0 : ttl.hashCode());
+         result = prime * result + ((expirationDate == null) ? 0 : expirationDate.hashCode());
          return result;
       }
 
@@ -136,6 +146,11 @@ public class SituationDataWarehouse {
          } else if (!serviceRegion.equals(other.serviceRegion))
             return false;
          if (ttl != other.ttl)
+            return false;
+             if (expirationDate == null) {
+            if (other.expirationDate != null)
+               return false;
+         } else if (!expirationDate.equals(other.expirationDate))
             return false;
          return true;
       }
