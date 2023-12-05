@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import ch.qos.logback.classic.Logger;
 import mockit.Expectations;

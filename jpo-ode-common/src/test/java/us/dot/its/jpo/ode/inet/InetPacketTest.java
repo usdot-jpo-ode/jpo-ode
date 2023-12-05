@@ -22,8 +22,8 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import mockit.Expectations;
 import mockit.Mock;
@@ -40,7 +40,7 @@ public class InetPacketTest {
 
   @Mocked InetAddress mockAddress;
   
-  @Before
+  @BeforeEach
   public void setup() {
     new MockUp<InetAddress>() {
       @Mock InetAddress getByName(String host) {

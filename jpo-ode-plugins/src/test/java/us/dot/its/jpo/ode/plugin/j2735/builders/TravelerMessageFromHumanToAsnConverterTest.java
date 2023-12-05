@@ -24,8 +24,8 @@ import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public class TravelerMessageFromHumanToAsnConverterTest {
   @Mocked
   private Logger logger;
 
-  @Before
+  @BeforeEach
   public void setup() {
     new MockUp<LoggerFactory>() {
       @Mock

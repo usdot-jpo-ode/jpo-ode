@@ -2,13 +2,14 @@ package us.dot.its.jpo.ode.importer.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import us.dot.its.jpo.ode.importer.parser.FileParser.FileParserException;
 import us.dot.its.jpo.ode.importer.parser.FileParser.ParserStatus;
@@ -73,10 +74,12 @@ public class LogFileParserTest {
     assertEquals(recordType, parser.getRecordType());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testFactoryThrowsException() {
-    LogFileParser.factory("invalidFileName");
-    fail("Expected IllegalArgumentException");
+    assertThrows(IllegalArgumentException.class, () -> {
+      LogFileParser.factory("invalidFileName");
+      fail("Expected IllegalArgumentException");
+    });
   }
 
   @Test

@@ -18,7 +18,7 @@ package us.dot.its.jpo.ode.dds;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import mockit.Mocked;
 import us.dot.its.jpo.ode.dds.DdsRequest.Dialog;

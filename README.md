@@ -43,7 +43,8 @@ The current version and release history of the JPO-ODE: [ODE Release Notes](<doc
 10. [Credits and Acknowledgement](#credits-and-acknowledgement)
 11. [Code.gov Registration Info](#codegov-registration-info)
 12. [Kubernetes](#kubernetes)
-13. Sonar Token Configuration([#Sonar cloud](https://sonarqube.ow2.org/documentation/user-guide/user-token/))
+13. [Sonar Cloud](#sonar-token-configuration) ([Documentation](https://sonarcloud.io/documentation/user-guide/user-token/))
+14. [SNMP](#snmp)
 
 <!--
 #########################################
@@ -118,9 +119,9 @@ Supported message types:
 -  Minimum RAM: 16 GB
 -  Minimum storage space: 100 GB
 -  Supported operating systems:
-   -  Ubuntu 18.04 Linux (Recommended)
-   -  Windows 10 Professional (Professional version required for Docker virtualization)
-   -  OSX 10 Mojave
+   -  Ubuntu 22.04 Linux (Recommended)
+   -  Windows 10/11 Professional (Professional version required for Docker virtualization)
+   -  OSX 13
 
 The ODE software can run on most standard Window, Mac, or Linux based computers with
 Pentium core processors. Performance of the software will be based on the computing power and available RAM in
@@ -598,11 +599,15 @@ Contact Name: James Lieu
 
 Contact Phone: (202) 366-3000
 
+<a name="kubernetes"/>
+
 ## 12. Kubernetes
 The ODE can be run in a k8s environment.
 See [this document](./docs/Kubernetes.md) for more details about this.
 
 [Back to top](#toc)
+
+<a name="sonar-token-configuration"/>
 
 ## 13. Sonar Token Configuration
 Generating and Using Tokens
@@ -610,11 +615,11 @@ Users can generate tokens that can be used to run analyses or invoke web service
 
 USDOT-JPO-ODE SonarCloud Organization : https://sonarcloud.io/organizations/usdot-jpo-ode-1/
 
-## Generating a token
+### Generating a token
 You can generate new tokens at User > My Account > Security.
 The form at the bottom of the page allows you to generate new tokens. Once you click the Generate button, you will see the token value. Copy it immediately; once you dismiss the notification you will not be able to retrieve it.
 
-## Using a token
+### Using a token
 SonarScanners running in GitHub Actions can automatically detect branches and pull requests being built so you don't need to specifically pass them as parameters to the scanner.
 
 **<ins>To analyze your projects with GitHub Actions, you need to: </ins>**
@@ -632,5 +637,19 @@ Configure your workflow YAML file as below:
   
 Commit and push your code to start the analysis.
 
-## Revoking a token
+### Revoking a token
 You can revoke an existing token at User > My Account > Security by clicking the Revoke button next to the token.
+
+<a name="snmp"/>
+
+## 14. SNMP
+The ODE is capable of communicating with RSUs to:
+- Query TIMs
+- Deposit TIMs
+- Delete TIMs
+
+The following SNMP protocols are supported for communication with RSUs:
+- DSRC 4.1 (defined in 'Dedicated Short-Range Communications Roadside Unit Specifications')
+- NTCIP1218 (defined in 'National Transportation Communications for ITS Protocol')
+
+Additionally, the ODE supports the execution of PDM operations on RSUs. PDM operations are not defined in NTCIP1218, but are defined DSRC 4.1.
