@@ -104,27 +104,27 @@ public class Asn1CommandManager {
 
    }
 
-   public void depositToSdw(String asdBytes) throws Asn1CommandManagerException {
+   public void depositToSdw(String depositObj) throws Asn1CommandManagerException {
 
       if (this.odeProperties.shouldDepositSdwMessagesOverWebsocket()) {
          try {
-            depositor.deposit(asdBytes);
+            depositor.deposit(depositObj);
 
             logger.info("Deposited message to SDW directly via websocket");
-            logger.debug("Message deposited: {}", asdBytes);
+            logger.debug("Message deposited: {}", depositObj);
             EventLogger.logger.info("Deposited message to SDW directly via websocket");
-            EventLogger.logger.debug("Message deposited: {}", asdBytes);
+            EventLogger.logger.debug("Message deposited: {}", depositObj);
          } catch (DdsRequestManagerException e) {
             String msg = "Failed to deposit message to SDW";
             throw new Asn1CommandManagerException(msg, e);
          }
       } else {
-         stringMessageProducer.send(this.getDepositTopic(), null, asdBytes);
+         stringMessageProducer.send(this.getDepositTopic(), null, depositObj);
 
          logger.info("Published message to SDW deposit topic");
          EventLogger.logger.info("Published message to SDW deposit topic");
-         logger.debug("Message deposited: {}", asdBytes);
-         EventLogger.logger.debug("Message deposited: {}", asdBytes);
+         logger.debug("Message deposited: {}", depositObj);
+         EventLogger.logger.debug("Message deposited: {}", depositObj);
       }
    }
 
