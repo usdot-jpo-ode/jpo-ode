@@ -60,7 +60,7 @@ public class Asn1CommandManagerTest {
    }
 
    @Test
-   public void depositToSDWShouldCallMessageProducer() throws Asn1CommandManagerException {
+   public void depositToSDWJsonShouldCallMessageProducer() throws Asn1CommandManagerException {
       JSONObject deposit = new JSONObject();
       deposit.put("expirationDate", "2023-11-04T17:47:11-05:00");
       deposit.put("encodedMsg", "message");
@@ -69,7 +69,7 @@ public class Asn1CommandManagerTest {
    }
 
    @Test
-   public void depositToSDWJsonShouldCallMessageProducer() throws Asn1CommandManagerException {
+   public void depositToSDWShouldCallMessageProducer() throws Asn1CommandManagerException {
       testAsn1CommandManager.depositToSdw("message");
    }
 
