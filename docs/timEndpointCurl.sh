@@ -196,8 +196,8 @@ curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -H
 				}]
 			},
 			"content": {
-				"sspMsgRights1": "1",
-				"sspMsgRights2": "2",
+				"notUsed2": "0",
+				"notUsed3": "0",
 				"contentType": {
 					"advisory": [{
 						"ITISCodes": "268",
