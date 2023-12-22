@@ -24,7 +24,7 @@
         {
           "startDateTime": "2020-04-30T14:23:59.497Z",
           "durationTime": 1440,
-          "sspTimRights": "1",
+          "notUsed": "1",
           "frameType": "advisory",
           "msgId": {
             "roadSignID": {
@@ -37,7 +37,7 @@
             }
           },
           "priority": "5",
-          "sspLocationRights": "1",
+          "notUsed1": "0",
           "regions": [
             {
               "name": "I_I 25_SAT-1CEE1793",

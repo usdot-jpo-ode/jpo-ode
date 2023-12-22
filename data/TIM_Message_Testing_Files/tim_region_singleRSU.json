@@ -42,7 +42,7 @@
     "urlB": "null",
     "dataframes": [
       {
-        "sspTimRights": "0",
+        "notUsed": "0",
         "frameType": "advisory",
         "msgId": {
           "roadSignID": {
@@ -59,7 +59,7 @@
         "startDateTime": "2017-12-01T17:47:11-05:00",
         "durationTime": "22",
         "priority": "0",
-        "sspLocationRights": "3",
+        "notUsed1": "0",
         "regions": [
           {
             "name": "bob",
