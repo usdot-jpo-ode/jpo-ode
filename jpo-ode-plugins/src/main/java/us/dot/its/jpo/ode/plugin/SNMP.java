@@ -127,6 +127,21 @@ public class SNMP extends OdeObject {
    public static String snmpTimestampFromIso(String isoTimestamp) throws ParseException {
       ZonedDateTime zdt = DateTimeUtils.isoDateTime(isoTimestamp);
 
+      
+      StringBuilder sb = new StringBuilder();
+
+      sb.append(String.format("%04X", zdt.getYear()));
+      sb.append(String.format("%02X", zdt.getMonthValue()));
+      sb.append(String.format("%02X", zdt.getDayOfMonth()));
+      sb.append(String.format("%02X", zdt.getHour()));
+      sb.append(String.format("%02X", zdt.getMinute()));
+      sb.append(String.format("%02X", zdt.getSecond()));
+      sb.append(String.format("%02X", zdt.getNano()));
+      return sb.toString();
+   }
+
+   public static String fourOneSnmpTimestampFromIso(String isoTimestamp) throws ParseException {
+      ZonedDateTime zdt = DateTimeUtils.isoDateTime(isoTimestamp);
       StringBuilder sb = new StringBuilder();
 
       sb.append(String.format("%04X", zdt.getYear()));
