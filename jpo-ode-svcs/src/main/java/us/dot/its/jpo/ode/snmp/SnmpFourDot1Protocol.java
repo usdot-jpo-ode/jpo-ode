@@ -56,14 +56,14 @@ public class SnmpFourDot1Protocol {
     public static VariableBinding getVbRsuSrmDeliveryStart(int index, String deliveryStart) throws ParseException {
         return new VariableBinding(
             new OID(rsu_srm_delivery_start_oid().concat(".").concat(Integer.toString(index))),
-            new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(deliveryStart)))
+            new OctetString(DatatypeConverter.parseHexBinary(SNMP.fourOneSnmpTimestampFromIso(deliveryStart)))
         );
     }
 
     public static VariableBinding getVbRsuSrmDeliveryStop(int index, String deliveryStop) throws ParseException {
         return new VariableBinding(
             new OID(rsu_srm_delivery_stop_oid().concat(".").concat(Integer.toString(index))),
-            new OctetString(DatatypeConverter.parseHexBinary(SNMP.snmpTimestampFromIso(deliveryStop)))
+            new OctetString(DatatypeConverter.parseHexBinary(SNMP.fourOneSnmpTimestampFromIso(deliveryStop)))
         );
     }
 
