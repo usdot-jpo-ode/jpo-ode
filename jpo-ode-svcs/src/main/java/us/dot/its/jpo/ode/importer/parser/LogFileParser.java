@@ -118,7 +118,7 @@ public abstract class LogFileParser implements FileParser {
 					try {
 						bis.reset();
 					} catch (IOException ioe) {
-						throw new FileParserException("Error reseting Input Stream to marked position", ioe);
+						throw new FileParserException("Error resetting Input Stream to marked position", ioe);
 					}
 				}
 				return ParserStatus.PARTIAL;

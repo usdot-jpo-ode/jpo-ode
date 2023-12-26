@@ -16,9 +16,12 @@
 package us.dot.its.jpo.ode.coder.stream;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +50,7 @@ import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.model.SerialId;
 import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
+import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 
 public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
@@ -61,6 +65,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 	}
 
 	protected static final Logger logger = LoggerFactory.getLogger(LogFileToAsn1CodecPublisher.class);
+	protected static HashMap<String, String> msgStartFlags = new HashMap<String, String>();
 
 	protected StringPublisher publisher;
 	protected LogFileParser fileParser;
@@ -69,6 +74,9 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 	public LogFileToAsn1CodecPublisher(StringPublisher dataPub) {
 		this.publisher = dataPub;
 		this.serialId = new SerialId();
+		msgStartFlags.put("BSM", "0014");
+		msgStartFlags.put("TIM", "001f");
+		msgStartFlags.put("MAP", "0012");
 	}
 
 	public List<OdeData> publish(BufferedInputStream bis, String fileName, ImporterFileType fileType)
@@ -77,7 +85,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 		ParserStatus status;
 
 		List<OdeData> dataList = new ArrayList<>();
-		if (fileType == ImporterFileType.LEAR_LOG_FILE) {
+		if (fileType == ImporterFileType.LOG_FILE) {
 			fileParser = LogFileParser.factory(fileName);
 
 			do {
@@ -92,6 +100,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 					} else {
 						logger.error("Failed to decode ASN.1 data");
 					}
+					bis = removeNextNewLineCharacter(bis);
 				} catch (Exception e) {
 					throw new LogFileToAsn1CodecPublisherException("Error parsing or publishing data.", e);
 				}
@@ -146,6 +155,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 		serialId.setBundleSize(dataList.size());
 		for (OdeData odeData : dataList) {
 			OdeLogMetadata msgMetadata = (OdeLogMetadata) odeData.getMetadata();
+			OdeMsgPayload msgPayload = (OdeMsgPayload) odeData.getPayload();
 			msgMetadata.setSerialId(serialId);
 
 			if (isDriverAlertRecord()) {
@@ -153,31 +163,26 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 
 				publisher.publish(JsonUtils.toJson(odeData, false),
 						publisher.getOdeProperties().getKafkaTopicDriverAlertJson());
-			} 
-			else 
-			{
+			} else {
 				if (isBsmRecord()) {
 					logger.debug("Publishing a BSM");
-				} else if(isSpatRecord()) {
+				} else if (isSpatRecord()) {
 					logger.debug("Publishing a Spat");
-				}else {
-					logger.debug("Publishing a TIM");
+				} else {
+					logger.debug("Publishing a TIM or MAP");
 				}
-				
-				if(isSpatRecord() && msgMetadata instanceof OdeSpatMetadata 
-						&& !((OdeSpatMetadata)msgMetadata).getIsCertPresent() )
-				{
-					//Nothing: If Spat log file and IEEE1609Cert is not present, Skip the Ieee1609Dot2Data encoding					
+
+				if (!(isSpatRecord() && msgMetadata instanceof OdeSpatMetadata
+        			&& !((OdeSpatMetadata) msgMetadata).getIsCertPresent())) {
+					if (checkHeader(msgPayload) == "Ieee1609Dot2Data") {
+						Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
+						msgMetadata.addEncoding(msgEncoding);
+					}
 				}
-				else 
-				{
-					Asn1Encoding msgEncoding = new Asn1Encoding("root", "Ieee1609Dot2Data", EncodingRule.COER);
-					msgMetadata.addEncoding(msgEncoding);
-				}
-				
-				Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",EncodingRule.UPER);
+
+				Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",
+						EncodingRule.UPER);
 				msgMetadata.addEncoding(unsecuredDataEncoding);
-				
 
 				publisher.publish(xmlUtils.toXml(odeData),
 						publisher.getOdeProperties().getKafkaTopicAsn1DecoderInput());
@@ -186,4 +191,43 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 		}
 	}
 
+	public String checkHeader(OdeMsgPayload payload) {
+		JSONObject payloadJson;
+		String header = null;
+		try {
+			payloadJson = JsonUtils.toJSONObject(payload.getData().toJson());
+			String hexPacket = payloadJson.getString("bytes");
+
+			for (String key : msgStartFlags.keySet()) {
+				String startFlag = msgStartFlags.get(key);
+				int startIndex = hexPacket.toLowerCase().indexOf(startFlag);
+				logger.debug("Start index for " + key + "(" + startFlag + ")" + " is: " + startIndex);
+				if (startIndex <= 20 && startIndex != 0 && startIndex != -1) {
+					logger.debug("Message has supported Ieee1609Dot2Data header, adding encoding rule to Asn1DecoderInput XML");
+					header = "Ieee1609Dot2Data";
+					break;
+				}
+				logger.debug("Payload JSON: " + payloadJson);
+			}
+		} catch (JsonUtilsException e) {
+			logger.error("JsonUtilsException while checking message header. Stacktrace: " + e.toString());
+
+		}
+		return header;
+	}
+
+	// This method will check if the next character is a newline character (0x0A in hex or 10 in converted decimal) 
+	// or if the next character does not contain a newline character it will put that character back into the buffered input stream
+	public BufferedInputStream removeNextNewLineCharacter(BufferedInputStream bis) {
+		try {
+			bis.mark(1);
+			int nextByte = bis.read();
+			if (nextByte != 10) { // If the next byte is not a newline
+				bis.reset(); // Reset the stream back to the most recent mark
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return bis;
+	}
 }
