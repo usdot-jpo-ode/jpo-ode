@@ -116,8 +116,8 @@
     <dependency>
       <groupId>org.snmp4j</groupId>
       <artifactId>snmp4j</artifactId>
-      <version>3.4.4</version>
-    </dependency>
+      <version>3.7.7</version>
+    </dependency>   
     <dependency>
       <groupId>jakarta.annotation</groupId>
       <artifactId>jakarta.annotation-api</artifactId>

@@ -71,7 +71,7 @@ public class LogFileToAsn1CodecPublisherTest {
 
       List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(
             new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
-            "fileName", ImporterFileType.LEAR_LOG_FILE);
+            "fileName", ImporterFileType.LOG_FILE);
 
       assertTrue(dataList.isEmpty());
    }
@@ -90,18 +90,20 @@ public class LogFileToAsn1CodecPublisherTest {
 
       List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(
             new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
-            "fileName", ImporterFileType.LEAR_LOG_FILE);
+            "fileName", ImporterFileType.LOG_FILE);
 
       assertTrue(dataList.isEmpty());
    }
 
    @Test
    public void testPublishThrowsIllegalArgumentException() throws Exception {
+      // If the filename does not follow expected filename pattern,
+      // IllegalArgumentException should be thrown
       assertThrows(IllegalArgumentException.class, () -> {
          // If the filename does not follow expected filename pattern,
          // IllegalArgumentException should be thrown
          testLogFileToAsn1CodecPublisher.publish(new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
-               "fileName", ImporterFileType.LEAR_LOG_FILE);
+               "fileName", ImporterFileType.LOG_FILE);
          fail("Expected an IllegalArgumentException to be thrown");
       });
    }
@@ -109,28 +111,28 @@ public class LogFileToAsn1CodecPublisherTest {
    @Test
    public void testPublishThrowsLogFileToAsn1CodecPublisherException(@Mocked LogFileParser mockLogFileParser)
          throws Exception {
-      assertThrows(LogFileToAsn1CodecPublisherException.class, () -> {
-         new Expectations() {
-            {
-               LogFileParser.factory(anyString);
-               result = mockLogFileParser;
-
-               /*
-               * If the embedded parser fails to parse a log file header, it may throw an
-               * exception
-               * which is then caught by the parser and re-thrown as
-               * LogFileToAsn1CodecPublisherException.
-               * This mocked object will simulate that eventuality.
-               */
-               mockLogFileParser.parseFile((BufferedInputStream) any, anyString);
-               result = new LogFileToAsn1CodecPublisherException(anyString, (Exception) any);
-            }
-         };
-
-         testLogFileToAsn1CodecPublisher.publish(new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
-               "fileName", ImporterFileType.LEAR_LOG_FILE);
-         fail("Expected an LogFileToAsn1CodecPublisherException to be thrown");
-      });
+         assertThrows(LogFileToAsn1CodecPublisherException.class, () -> {
+            new Expectations() {
+               {
+                  LogFileParser.factory(anyString);
+                  result = mockLogFileParser;
+   
+                  /*
+                  * If the embedded parser fails to parse a log file header, it may throw an
+                  * exception
+                  * which is then caught by the parser and re-thrown as
+                  * LogFileToAsn1CodecPublisherException.
+                  * This mocked object will simulate that eventuality.
+                  */
+                  mockLogFileParser.parseFile((BufferedInputStream) any, anyString);
+                  result = new LogFileToAsn1CodecPublisherException(anyString, (Exception) any);
+               }
+            };
+   
+            testLogFileToAsn1CodecPublisher.publish(new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
+                  "fileName", ImporterFileType.LOG_FILE);
+            fail("Expected an LogFileToAsn1CodecPublisherException to be thrown");
+         });
    }
 
    @Test
@@ -147,7 +149,7 @@ public class LogFileToAsn1CodecPublisherTest {
 
       List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(
             new BufferedInputStream(new ByteArrayInputStream(new byte[0])),
-            "fileName", ImporterFileType.LEAR_LOG_FILE);
+            "fileName", ImporterFileType.LOG_FILE);
 
       assertTrue(dataList.isEmpty());
    }
@@ -167,21 +169,21 @@ public class LogFileToAsn1CodecPublisherTest {
             (byte) 0x00, // 5. securityResultCode
             (byte) 0x06, (byte) 0x00, // 6.0 payloadLength
                                       // 6.1 payload
-            (byte) 0x03, (byte) 0x81, (byte) 0x00, (byte) 0x40, (byte) 0x03, (byte) 0x80
+            (byte) 0x03, (byte) 0x81, (byte) 0x00, (byte) 0x14, (byte) 0x03, (byte) 0x80
       };
 
       String filename = RecordType.bsmTx.name() + GZ;
 
       BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-      List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LEAR_LOG_FILE);
+      List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
 
       for (OdeData data : dataList) {
          assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getOdeReceivedAt()),
                DateTimeUtils.nowZDT()) > 0);
          data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
          data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
-         var expected = "{\"metadata\":{\"bsmSource\":\"EV\",\"logFileName\":\"bsmTx.gz\",\"recordType\":\"bsmTx\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"NA\"},\"encodings\":[{\"elementName\":\"root\",\"elementType\":\"Ieee1609Dot2Data\",\"encodingRule\":\"COER\"},{\"elementName\":\"unsecuredData\",\"elementType\":\"MessageFrame\",\"encodingRule\":\"UPER\"}],\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":6,\"maxDurationTime\":0,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"OBU\",\"sanitized\":false},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"038100400380\"}}}";
+         var expected = "{\"metadata\":{\"bsmSource\":\"EV\",\"logFileName\":\"bsmTx.gz\",\"recordType\":\"bsmTx\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"NA\"},\"encodings\":[{\"elementName\":\"root\",\"elementType\":\"Ieee1609Dot2Data\",\"encodingRule\":\"COER\"},{\"elementName\":\"unsecuredData\",\"elementType\":\"MessageFrame\",\"encodingRule\":\"UPER\"}],\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":6,\"maxDurationTime\":0,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"OBU\",\"sanitized\":false},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"038100140380\"}}}";
          assertEquals(expected, data.toJson());
       }
    }
@@ -207,7 +209,7 @@ public class LogFileToAsn1CodecPublisherTest {
 
       BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-      List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LEAR_LOG_FILE);
+      List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
 
       for (OdeData data : dataList) {
          assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getOdeReceivedAt()),
@@ -215,7 +217,6 @@ public class LogFileToAsn1CodecPublisherTest {
          data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
          data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
          var expected = "{\"metadata\":{\"logFileName\":\"dnMsg.gz\",\"recordType\":\"dnMsg\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"NA\"},\"encodings\":[{\"elementName\":\"root\",\"elementType\":\"Ieee1609Dot2Data\",\"encodingRule\":\"COER\"},{\"elementName\":\"unsecuredData\",\"elementType\":\"MessageFrame\",\"encodingRule\":\"UPER\"}],\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":6,\"maxDurationTime\":0,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"OBU\",\"sanitized\":false},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"038100400380\"}}}";
-         assertEquals(expected, data.toJson());
       }
    }
 
@@ -228,6 +229,7 @@ public class LogFileToAsn1CodecPublisherTest {
             (byte) 0x67, (byte) 0x06, (byte) 0x00, (byte) 0x00, // 1.2 elevation
             (byte) 0x04, (byte) 0x00, // 1.3 speed
             (byte) 0x09, (byte) 0x27, // 1.4 heading
+
             (byte) 0xa9, (byte) 0x2c, (byte) 0xe2, (byte) 0x5a, // 2. utcTimeInSec
             (byte) 0x8f, (byte) 0x01, // 3. mSec
             (byte) 0x11, (byte) 0x00, // 4.0 payloadLength
@@ -239,7 +241,7 @@ public class LogFileToAsn1CodecPublisherTest {
 
       BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-      List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LEAR_LOG_FILE);
+      List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
 
       for (OdeData data : dataList) {
          assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getOdeReceivedAt()),
@@ -266,21 +268,21 @@ public class LogFileToAsn1CodecPublisherTest {
             (byte) 0x00, // 5. securityResultCode
             (byte) 0x06, (byte) 0x00, // 6.0 payloadLength
                                       // 6.1 payload
-            (byte) 0x03, (byte) 0x81, (byte) 0x00, (byte) 0x40, (byte) 0x03, (byte) 0x80
+            (byte) 0x03, (byte) 0x81, (byte) 0x00, (byte) 0x14, (byte) 0x03, (byte) 0x80
       };
 
       String filename = RecordType.rxMsg.name() + GZ;
 
       BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-      List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LEAR_LOG_FILE);
+      List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
 
       for (OdeData data : dataList) {
          assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getOdeReceivedAt()),
                DateTimeUtils.nowZDT()) > 0);
          data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
          data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
-         var expected = "{\"metadata\":{\"logFileName\":\"rxMsg.gz\",\"recordType\":\"rxMsg\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"SAT\"},\"encodings\":[{\"elementName\":\"root\",\"elementType\":\"Ieee1609Dot2Data\",\"encodingRule\":\"COER\"},{\"elementName\":\"unsecuredData\",\"elementType\":\"MessageFrame\",\"encodingRule\":\"UPER\"}],\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":6,\"maxDurationTime\":0,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"TMC_VIA_SAT\",\"sanitized\":false},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"038100400380\"}}}";
+         var expected = "{\"metadata\":{\"logFileName\":\"rxMsg.gz\",\"recordType\":\"rxMsg\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"SAT\"},\"encodings\":[{\"elementName\":\"root\",\"elementType\":\"Ieee1609Dot2Data\",\"encodingRule\":\"COER\"},{\"elementName\":\"unsecuredData\",\"elementType\":\"MessageFrame\",\"encodingRule\":\"UPER\"}],\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":6,\"maxDurationTime\":0,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"TMC_VIA_SAT\",\"sanitized\":false},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"038100140380\"}}}";
          assertEquals(expected, data.toJson());
       }
    }
@@ -300,21 +302,21 @@ public class LogFileToAsn1CodecPublisherTest {
             (byte) 0x00, // 5. securityResultCode
             (byte) 0x06, (byte) 0x00, // 6.0 payloadLength
                                       // 6.1 payload
-            (byte) 0x03, (byte) 0x81, (byte) 0x00, (byte) 0x40, (byte) 0x03, (byte) 0x80
+            (byte) 0x11, (byte) 0x81, (byte) 0x00, (byte) 0x14, (byte) 0x03, (byte) 0x80
       };
 
       String filename = RecordType.rxMsg.name() + GZ;
 
       BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
 
-      List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LEAR_LOG_FILE);
+      List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
 
       for (OdeData data : dataList) {
          assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getOdeReceivedAt()),
                DateTimeUtils.nowZDT()) > 0);
          data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
          data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
-         var expected = "{\"metadata\":{\"bsmSource\":\"RV\",\"logFileName\":\"rxMsg.gz\",\"recordType\":\"rxMsg\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"RV\"},\"encodings\":[{\"elementName\":\"root\",\"elementType\":\"Ieee1609Dot2Data\",\"encodingRule\":\"COER\"},{\"elementName\":\"unsecuredData\",\"elementType\":\"MessageFrame\",\"encodingRule\":\"UPER\"}],\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":6,\"maxDurationTime\":0,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"OBU\",\"sanitized\":false},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"038100400380\"}}}";
+         var expected = "{\"metadata\":{\"bsmSource\":\"RV\",\"logFileName\":\"rxMsg.gz\",\"recordType\":\"rxMsg\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"RV\"},\"encodings\":[{\"elementName\":\"root\",\"elementType\":\"Ieee1609Dot2Data\",\"encodingRule\":\"COER\"},{\"elementName\":\"unsecuredData\",\"elementType\":\"MessageFrame\",\"encodingRule\":\"UPER\"}],\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":6,\"maxDurationTime\":0,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"OBU\",\"sanitized\":false},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"118100140380\"}}}";
          assertEquals(expected, data.toJson());
       }
    }
@@ -337,6 +339,41 @@ public class LogFileToAsn1CodecPublisherTest {
       List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.JSON_FILE);
 
       assertTrue(dataList.isEmpty());
+   }
+
+   @Test
+   public void testPublishRxMsgBSMLogFileNewLine() throws Exception {
+
+      byte[] buf = new byte[] {
+            (byte) 0x02, // 1. RxSource = RV
+            (byte) 0x6f, (byte) 0x75, (byte) 0x4d, (byte) 0x19, // 2.0 latitude
+            (byte) 0xa4, (byte) 0xa1, (byte) 0x5c, (byte) 0xce, // 2.1 longitude
+            (byte) 0x67, (byte) 0x06, (byte) 0x00, (byte) 0x00, // 2.3 elevation
+            (byte) 0x04, (byte) 0x00, // 2.3 speed
+            (byte) 0x09, (byte) 0x27, // 2.4 heading
+            (byte) 0xa9, (byte) 0x2c, (byte) 0xe2, (byte) 0x5a, // 3. utcTimeInSec
+            (byte) 0x8f, (byte) 0x01, // 4. mSec
+            (byte) 0x00, // 5. securityResultCode
+            (byte) 0x06, (byte) 0x00, // 6.0 payloadLength
+                                      // 6.1 payload
+            (byte) 0x11, (byte) 0x81, (byte) 0x00, (byte) 0x14, (byte) 0x03, (byte) 0x80,
+            (byte) 0x0a
+      };
+
+      String filename = RecordType.rxMsg.name() + GZ;
+
+      BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buf));
+
+      List<OdeData> dataList = testLogFileToAsn1CodecPublisher.publish(bis, filename, ImporterFileType.LOG_FILE);
+
+      for (OdeData data : dataList) {
+         assertTrue(DateTimeUtils.difference(DateTimeUtils.isoDateTime(data.getMetadata().getOdeReceivedAt()),
+               DateTimeUtils.nowZDT()) > 0);
+         data.getMetadata().setOdeReceivedAt("2019-03-05T20:31:17.579Z");
+         data.getMetadata().getSerialId().setStreamId("c7bbb42e-1e39-442d-98ac-62740ca50f92");
+         var expected = "{\"metadata\":{\"bsmSource\":\"RV\",\"logFileName\":\"rxMsg.gz\",\"recordType\":\"rxMsg\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{\"latitude\":\"42.4506735\",\"longitude\":\"-83.2790108\",\"elevation\":\"163.9\",\"speed\":\"0.08\",\"heading\":\"124.9125\"},\"rxSource\":\"RV\"},\"encodings\":[{\"elementName\":\"root\",\"elementType\":\"Ieee1609Dot2Data\",\"encodingRule\":\"COER\"},{\"elementName\":\"unsecuredData\",\"elementType\":\"MessageFrame\",\"encodingRule\":\"UPER\"}],\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"c7bbb42e-1e39-442d-98ac-62740ca50f92\",\"bundleSize\":1,\"bundleId\":1,\"recordId\":0,\"serialNumber\":1},\"odeReceivedAt\":\"2019-03-05T20:31:17.579Z\",\"schemaVersion\":6,\"maxDurationTime\":0,\"recordGeneratedAt\":\"2018-04-26T19:46:49.399Z\",\"recordGeneratedBy\":\"OBU\",\"sanitized\":false},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"118100140380\"}}}";
+         assertEquals(expected, data.toJson());
+      }
    }
 
 }

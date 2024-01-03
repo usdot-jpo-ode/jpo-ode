@@ -68,6 +68,9 @@ services:
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ACM_CONFIG_FILE: adm.properties
+      ACM_LOG_TO_CONSOLE: ${ADM_LOG_TO_CONSOLE}
+      ACM_LOG_TO_FILE: ${ADM_LOG_TO_FILE}
+      ACM_LOG_LEVEL: ${ADM_LOG_LEVEL}
     depends_on:
       - kafka
     volumes:
@@ -79,6 +82,9 @@ services:
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ACM_CONFIG_FILE: aem.properties
+      ACM_LOG_TO_CONSOLE: ${AEM_LOG_TO_CONSOLE}
+      ACM_LOG_TO_FILE: ${AEM_LOG_TO_FILE}
+      ACM_LOG_LEVEL: ${AEM_LOG_LEVEL}
     depends_on:
       - kafka
     volumes:
@@ -96,6 +102,9 @@ services:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       PPM_CONFIG_FILE: ${PPM_BSM_CONFIG_FILE}
       PPM_MAP_FILE: ${PPM_MAP_FILE}
+      PPM_LOG_TO_CONSOLE: ${PPM_BSM_LOG_TO_CONSOLE}
+      PPM_LOG_TO_FILE: ${PPM_BSM_LOG_TO_FILE}
+      PPM_LOG_LEVEL: ${PPM_BSM_LOG_LEVEL}
     volumes:
       - ${DOCKER_SHARED_VOLUME}/ppm_bsm:/ppm_data
     depends_on:
@@ -113,6 +122,9 @@ services:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       PPM_CONFIG_FILE: ${PPM_TIM_CONFIG_FILE}
       PPM_MAP_FILE: ${PPM_MAP_FILE}
+      PPM_LOG_TO_CONSOLE: ${PPM_TIM_LOG_TO_CONSOLE}
+      PPM_LOG_TO_FILE: ${PPM_TIM_LOG_TO_FILE}
+      PPM_LOG_LEVEL: ${PPM_TIM_LOG_LEVEL}
     volumes:
       - ${DOCKER_SHARED_VOLUME}/ppm_tim:/ppm_data
     depends_on:

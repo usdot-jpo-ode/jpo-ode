@@ -27,6 +27,12 @@ import javax.management.ObjectName;
 
 import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.AuthSHA;
+import org.snmp4j.security.AuthHMAC128SHA224;
+import org.snmp4j.security.AuthHMAC192SHA256;
+import org.snmp4j.security.AuthHMAC256SHA384;
+import org.snmp4j.security.AuthHMAC384SHA512;
+import org.snmp4j.security.PrivAES128;
+
 import org.snmp4j.security.SecurityProtocols;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -50,7 +56,13 @@ public class OdeSvcsApplication {
       mbs.registerMBean(mBean, name);
 
       SecurityProtocols.getInstance().addAuthenticationProtocol(new AuthSHA());
+      SecurityProtocols.getInstance().addAuthenticationProtocol(new AuthHMAC128SHA224());
+      SecurityProtocols.getInstance().addAuthenticationProtocol(new AuthHMAC192SHA256());
+      SecurityProtocols.getInstance().addAuthenticationProtocol(new AuthHMAC256SHA384());
+      SecurityProtocols.getInstance().addAuthenticationProtocol(new AuthHMAC384SHA512());
       SecurityProtocols.getInstance().addAuthenticationProtocol(new AuthMD5());
+      SecurityProtocols.getInstance().addPrivacyProtocol(new PrivAES128());
+
    }
 
    @Bean
