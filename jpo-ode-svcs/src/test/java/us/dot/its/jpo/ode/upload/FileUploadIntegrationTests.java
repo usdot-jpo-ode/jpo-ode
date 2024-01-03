@@ -18,7 +18,7 @@ package us.dot.its.jpo.ode.upload;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -61,7 +61,7 @@ public class FileUploadIntegrationTests {
         map.add("file", resource);
         ResponseEntity<String> response = this.restTemplate.postForEntity("/", map, String.class);
 
-        assertThat(response.getStatusCode()).isEqualByComparingTo(HttpStatus.FOUND);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
         assertThat(response.getHeaders().getLocation().toString()).startsWith("http://localhost:" + this.port + "/");
         then(storageService).should().store(any(MultipartFile.class), "obulog");
     }
@@ -75,7 +75,7 @@ public class FileUploadIntegrationTests {
         ResponseEntity<String> response = this.restTemplate
                 .getForEntity("/files/{filename}", String.class, "testupload.txt");
 
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode()).isEqualTo(200);
         assertThat(response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION))
                 .isEqualTo("attachment; filename=\"testupload.txt\"");
         assertThat(response.getBody()).isEqualTo("Spring Framework");
