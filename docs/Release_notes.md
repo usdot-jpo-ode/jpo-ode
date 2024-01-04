@@ -1,6 +1,22 @@
 JPO-ODE Release Notes
 ----------------------------
 
+Version 1.5.0, released November 2023
+----------------------------------------
+
+### **Summary**
+The updates for the jpo-ode 1.5.0 release include CI configuration fixes, README updates and updated submodule references.
+- Fixed CI configuration command parameters.
+- Added README note for Windows users on the shared volume environment variable.
+- Updated submodule references
+- The supported operating systems in the README have been updated to more recent versions.
+- Updated all references to the test package from org.junit.Test to org.junit.jupiter.api.Test. Some tests are also updated to remove deprecated annotations.
+- Introduced changes that enable the ODE to establish communication with RSUs using both the NTCIP1218 protocol and the 4.1 DSRC protocol.
+
+Known Issues:
+- No known issues at this time.
+
+
 Version 1.4.0, released July 5th 2023
 ----------------------------------------
 
