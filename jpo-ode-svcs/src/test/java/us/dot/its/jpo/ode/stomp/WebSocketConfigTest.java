@@ -16,47 +16,42 @@
 package us.dot.its.jpo.ode.stomp;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
 import mockit.Mocked;
-import mockit.Tested;
 import mockit.Verifications;
-//import mockit.integration.junit4.JMockit;
-import us.dot.its.jpo.ode.stomp.WebSocketConfig;
 
-//@RunWith(JMockit.class)
-public class WebSocketConfigTest {
+import static org.mockito.Mockito.*;
 
-//    @Mocked
-//    WebSocketConfig testWebSocketConfig;
+class WebSocketConfigTest {
+
+    // mock the webSocketConfig class
+    @Mocked
+    WebSocketConfig webSocketConfig;
 
     @Test
-    public void test(@Mocked MessageBrokerRegistry mockMessageBrokerRegistry) {
-    	WebSocketConfig testWebSocketConfig = new WebSocketConfig();
-        testWebSocketConfig.configureMessageBroker(mockMessageBrokerRegistry);
+    void configureMessageBroker_shouldConfigureMessageBrokerRegistry() {
+        webSocketConfig = new WebSocketConfig();
+        MessageBrokerRegistry config = mock(MessageBrokerRegistry.class);
+        webSocketConfig.configureMessageBroker(config);
 
-        new Verifications() {
-            {
-                mockMessageBrokerRegistry.enableSimpleBroker(anyString);
-                times = 1;
-                mockMessageBrokerRegistry.setApplicationDestinationPrefixes(anyString);
-                times = 1;
-            }
-        };
+        new Verifications() {{
+            config.enableSimpleBroker(anyString);
+            times = 1;
+            config.setApplicationDestinationPrefixes(anyString);
+            times = 1;
+        }};
     }
 
     @Test
-    public void testRegisterStompEndpoints(@Mocked StompEndpointRegistry mockStompEndpointRegistry) {
-    	WebSocketConfig testWebSocketConfig = new WebSocketConfig();
-        testWebSocketConfig.registerStompEndpoints(mockStompEndpointRegistry);
+    void registerStompEndpoints_shouldRegisterStompEndpointRegistry() {
+        webSocketConfig = new WebSocketConfig();
+        StompEndpointRegistry registry = mock(StompEndpointRegistry.class);
+        webSocketConfig.registerStompEndpoints(registry);
 
-        new Verifications() {
-            {
-                mockStompEndpointRegistry.addEndpoint(anyString);
-            }
-        };
+        new Verifications() {{
+            registry.addEndpoint(anyString);
+        }};
     }
-
 }

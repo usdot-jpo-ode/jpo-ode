@@ -17,7 +17,7 @@ package us.dot.its.jpo.ode;
 
 import java.lang.management.ManagementFactory;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;

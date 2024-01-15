@@ -15,6 +15,7 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.wrapper;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -148,7 +149,7 @@ public class MessageConsumer<K, V> {
         boolean gotMessages = false;
         while (isRunning) {
             try {
-                ConsumerRecords<K, V> records = consumer.poll(CONSUMER_POLL_TIMEOUT_MS);
+                ConsumerRecords<K, V> records = consumer.poll(Duration.ofMillis(CONSUMER_POLL_TIMEOUT_MS));
                 if (records != null && !records.isEmpty()) {
                     gotMessages = true;
                     logger.debug("{} consuming {} message(s)", name, records.count());

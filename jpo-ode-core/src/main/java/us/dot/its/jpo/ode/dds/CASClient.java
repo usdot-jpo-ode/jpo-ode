@@ -15,7 +15,7 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.dds;
 
-import java.net.URL;
+import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -90,7 +90,7 @@ public class CASClient {
          String httpWebsocketURL = 
                "https" + websocketURL.substring(websocketURL.indexOf(':'));
          String ddsHttpWebSocketUrl = 
-               new URL(httpWebsocketURL).toExternalForm();
+               new URI(httpWebsocketURL).toString();
          String serviceTicket = getServiceTicket(
                ddsCasUrl, 
                ticketGrantingTicket,

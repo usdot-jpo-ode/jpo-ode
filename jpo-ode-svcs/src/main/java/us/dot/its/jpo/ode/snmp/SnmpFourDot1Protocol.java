@@ -2,7 +2,7 @@ package us.dot.its.jpo.ode.snmp;
 
 import java.text.ParseException;
 
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 
 import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;

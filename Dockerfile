@@ -1,4 +1,4 @@
-FROM maven:3.8.1-openjdk-11 as builder
+FROM maven:3.8-eclipse-temurin-21-alpine as builder
 MAINTAINER 583114@bah.com
 
 WORKDIR /home
@@ -16,7 +16,7 @@ COPY ./jpo-ode-svcs/src ./jpo-ode-svcs/src
 
 RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:11-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /home
 
