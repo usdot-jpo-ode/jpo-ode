@@ -21,12 +21,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import us.dot.its.jpo.ode.plugin.asn1.Asn1Object;
 
-@JsonPropertyOrder({ "sspTimRights", "frameType", "msgId", "startYear", "startTime", "duratonTime", "priority",
-      "sspLocationRights", "regions", "sspMsgRights1", "sspMsgRights2", "tcontent", "url" })
+@JsonPropertyOrder({ "notUsed", "frameType", "msgId", "startYear", "startTime", "durationTime", "priority",
+      "notUsed1", "regions", "notUsed2", "notUsed3", "tcontent", "url" })
 public class TravelerDataFrame extends Asn1Object {
    private static final long serialVersionUID = 1L;
 
-   private String sspTimRights;
+   private String notUsed;
 
    private FrameType frameType;
 
@@ -36,29 +36,29 @@ public class TravelerDataFrame extends Asn1Object {
 
    private String startTime;
 
-   private String duratonTime;
+   private String durationTime;
 
    private String priority;
 
-   private String sspLocationRights;
+   private String notUsed1;
 
    private Regions regions;
 
-   private String sspMsgRights1;
+   private String notUsed2;
 
-   private String sspMsgRights2;
+   private String notUsed3;
 
    @JsonProperty("tcontent")
    private Content tcontent;
 
    private String url;
 
-   public String getSspLocationRights() {
-      return sspLocationRights;
+   public String getNotUsed1() {
+      return notUsed1;
    }
 
-   public void setSspLocationRights(String sspLocationRights) {
-      this.sspLocationRights = sspLocationRights;
+   public void setNotUsed1(String sspLocationRights) {
+      this.notUsed1 = sspLocationRights;
    }
 
 
@@ -86,12 +86,12 @@ public class TravelerDataFrame extends Asn1Object {
       this.frameType = frameType;
    }
 
-   public String getDuratonTime() {
-      return duratonTime;
+   public String getDurationTime() {
+      return durationTime;
    }
 
-   public void setDuratonTime(String duratonTime) {
-      this.duratonTime = duratonTime;
+   public void setDurationTime(String duratonTime) {
+      this.durationTime = duratonTime;
    }
 
    @JsonIgnore
@@ -143,27 +143,27 @@ public class TravelerDataFrame extends Asn1Object {
       this.msgId = msgId;
    }
 
-   public String getSspMsgRights2() {
-      return sspMsgRights2;
+   public String getNotUsed3() {
+      return notUsed3;
    }
 
-   public void setSspMsgRights2(String sspMsgRights2) {
-      this.sspMsgRights2 = sspMsgRights2;
+   public void setNotUsed3(String sspMsgRights2) {
+      this.notUsed3 = sspMsgRights2;
    }
 
-   public String getSspTimRights() {
-      return sspTimRights;
+   public String getNotUsed() {
+      return notUsed;
    }
 
-   public void setSspTimRights(String sspTimRights) {
-      this.sspTimRights = sspTimRights;
+   public void setNotUsed(String sspTimRights) {
+      this.notUsed = sspTimRights;
    }
 
-   public String getSspMsgRights1() {
-      return sspMsgRights1;
+   public String getNotUsed2() {
+      return notUsed2;
    }
 
-   public void setSspMsgRights1(String sspMsgRights1) {
-      this.sspMsgRights1 = sspMsgRights1;
+   public void setNotUsed2(String sspMsgRights1) {
+      this.notUsed2 = sspMsgRights1;
    }
 }
