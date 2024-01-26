@@ -255,7 +255,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             JSONObject asdObj = dataObj.getJSONObject(Asn1CommandManager.ADVISORY_SITUATION_DATA_STRING);
             try {
                JSONObject deposit = new JSONObject();
-               deposit.put("expirationDate", request.getSdw().getExpirationDate());
+               deposit.put("estimatedRemovalDate", request.getSdw().getEstimatedRemovalDate());
                deposit.put("encodedMsg", asdObj.getString(BYTES));
                asn1CommandManager.depositToSdw(deposit.toString());
             } catch (JSONException | Asn1CommandManagerException e) {
@@ -293,7 +293,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             String ddsMessage = "";
             try {
                JSONObject deposit = new JSONObject();
-               deposit.put("expirationDate", request.getSdw().getExpirationDate());
+               deposit.put("estimatedRemovalDate", request.getSdw().getEstimatedRemovalDate());
                deposit.put("encodedMsg", asdBytes);
                asn1CommandManager.depositToSdw(deposit.toString());
                ddsMessage = "\"dds_deposit\":{\"success\":\"true\"}";

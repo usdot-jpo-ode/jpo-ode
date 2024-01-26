@@ -38,7 +38,7 @@ public class SituationDataWarehouse {
       private String deliverystart;
       private String deliverystop;
       private String recordId = null;
-      private String expirationDate;
+      private String estimatedRemovalDate;
 
       public OdeGeoRegion getServiceRegion() {
          return serviceRegion;
@@ -89,12 +89,12 @@ public class SituationDataWarehouse {
          this.recordId = recordId;
       }
 
-      public String getExpirationDate(){
-         return expirationDate;
+      public String getEstimatedRemovalDate(){
+         return estimatedRemovalDate;
       }
 
-      public void setExpirationDate(String expirationdate){
-         this.expirationDate = expirationdate;
+      public void setEstimatedRemovalDate(String estimatedRemovalDate){
+         this.estimatedRemovalDate = estimatedRemovalDate;
       }
 
       @Override
@@ -107,7 +107,7 @@ public class SituationDataWarehouse {
          result = prime * result + ((recordId == null) ? 0 : recordId.hashCode());
          result = prime * result + ((serviceRegion == null) ? 0 : serviceRegion.hashCode());
          result = prime * result + ((ttl == null) ? 0 : ttl.hashCode());
-         result = prime * result + ((expirationDate == null) ? 0 : expirationDate.hashCode());
+         result = prime * result + ((estimatedRemovalDate == null) ? 0 : estimatedRemovalDate.hashCode());
          return result;
       }
 
@@ -147,10 +147,10 @@ public class SituationDataWarehouse {
             return false;
          if (ttl != other.ttl)
             return false;
-             if (expirationDate == null) {
-            if (other.expirationDate != null)
+             if (estimatedRemovalDate == null) {
+            if (other.estimatedRemovalDate != null)
                return false;
-         } else if (!expirationDate.equals(other.expirationDate))
+         } else if (!estimatedRemovalDate.equals(other.estimatedRemovalDate))
             return false;
          return true;
       }

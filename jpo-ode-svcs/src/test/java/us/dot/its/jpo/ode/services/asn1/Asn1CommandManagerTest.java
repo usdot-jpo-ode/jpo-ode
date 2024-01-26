@@ -62,7 +62,7 @@ public class Asn1CommandManagerTest {
    @Test
    public void depositToSDWJsonShouldCallMessageProducer() throws Asn1CommandManagerException {
       JSONObject deposit = new JSONObject();
-      deposit.put("expirationDate", "2023-11-04T17:47:11-05:00");
+      deposit.put("estimatedRemovalDate", "2023-11-04T17:47:11-05:00");
       deposit.put("encodedMsg", "message");
 
       testAsn1CommandManager.depositToSdw(deposit.toString());
