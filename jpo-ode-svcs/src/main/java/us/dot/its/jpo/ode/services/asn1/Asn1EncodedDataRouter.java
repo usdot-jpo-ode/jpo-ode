@@ -15,12 +15,9 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.services.asn1;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -229,6 +226,13 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
                logger.error("Unable to parse signed message response {}", e1);
             }
          }
+         else {
+            // if 001F is not first 4 bytes, then strip 1609.2 header from unsigned message
+            if (!hexEncodedTim.substring(0, 4).equals("001F")) {
+               logger.debug("Stripping 1609.2 header from unsigned message");
+               hexEncodedTim = strip1609Dot2Header(hexEncodedTim);
+            }
+         }
 
          if (null != request.getSnmp() && null != request.getRsus() && null != hexEncodedTim) {
             logger.info("Sending message to RSUs...");
@@ -310,6 +314,14 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       if (dataObj.has(MESSAGE_FRAME)) {
          JSONObject mfObj = dataObj.getJSONObject(MESSAGE_FRAME);
          String encodedTim = mfObj.getString(BYTES);
+
+         // if 001F is not first 4 bytes, then strip 1609.2 header from unsigned message
+         if (!encodedTim.substring(0, 4).equals("001F")) {
+            logger.debug("Stripping 1609.2 header from unsigned message");
+            encodedTim = strip1609Dot2Header(encodedTim);
+            mfObj.put(BYTES, encodedTim);
+         }
+
          logger.debug("Encoded message - phase 2: {}", encodedTim);
 
         // only send message to rsu if snmp, rsus, and message frame fields are present
@@ -320,5 +332,21 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       }
 
       logger.info("TIM deposit response {}", responseList);
+   }
+
+   /**
+    * Strips 1609.2 header from unsigned message
+    */
+   private String strip1609Dot2Header(String encodedUnsignedTim) {
+      String toReturn = "";
+      // find 001F hex value
+      int index = encodedUnsignedTim.indexOf("001F");
+      if (index == -1) {
+         logger.warn("No '001F' hex value found in encoded message");
+         return encodedUnsignedTim;
+      }
+      // strip everything before 001F
+      toReturn = encodedUnsignedTim.substring(index);
+      return toReturn;
    }
 }
