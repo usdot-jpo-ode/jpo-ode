@@ -16,6 +16,17 @@ Known Issues:
 - No known issues at this time.
 
 
+Version 1.5.1, released November 2023
+----------------------------------------
+
+### **Summary**
+The updates for the jpo-ode 1.5.1 release includes a hotfix for nodes getting duplicated during JSON serialization/deserialization.
+- Moved JsonProperty declaration to getters to avoid duplicate fetch in serialization/deserialization scenarios
+
+Known Issues:
+- No known issues at this time.
+
+
 Version 1.5.0, released November 2023
 ----------------------------------------
 
