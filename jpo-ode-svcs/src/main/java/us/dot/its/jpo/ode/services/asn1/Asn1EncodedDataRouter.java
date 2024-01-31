@@ -175,6 +175,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
          String hexEncodedTim = mfObj.getString(BYTES);
          logger.debug("Encoded message - phase 1: {}", hexEncodedTim);
+         logger.debug("Is header present? {}", isHeaderPresent(hexEncodedTim));
          //use Asnc1 library to decode the encoded tim returned from ASNC1; another class two blockers: decode the tim and decode the message-sign
 
          if (odeProperties.dataSigningEnabled()) {
@@ -227,15 +228,23 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             }
          }
          else {
-            // if 001F is not first 4 bytes, then strip 1609.2 header from unsigned message
-            if (!hexEncodedTim.substring(0, 4).equals("001F")) {
-               logger.debug("Stripping 1609.2 header from unsigned message");
-               hexEncodedTim = strip1609Dot2Header(hexEncodedTim);
+            // if header is present, strip it
+            if (isHeaderPresent(hexEncodedTim)) {
+               String header = hexEncodedTim.substring(0, hexEncodedTim.indexOf("001F") + 4);
+               logger.debug("Stripping header from message: {}", header);
+               hexEncodedTim = stripHeader(hexEncodedTim);
+               mfObj.remove(BYTES);
+               mfObj.put(BYTES, hexEncodedTim);
+               dataObj.remove(MESSAGE_FRAME);
+               dataObj.put(MESSAGE_FRAME, mfObj);
+               consumedObj.remove(AppContext.PAYLOAD_STRING);
+               consumedObj.put(AppContext.PAYLOAD_STRING, dataObj);
             }
          }
 
          if (null != request.getSnmp() && null != request.getRsus() && null != hexEncodedTim) {
             logger.info("Sending message to RSUs...");
+            logger.debug("Is header present? {}", isHeaderPresent(hexEncodedTim));
             asn1CommandManager.sendToRsus(request, hexEncodedTim);           
          }
 
@@ -243,6 +252,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             // Case 2 only
 
             logger.debug("Publishing message for round 2 encoding!");
+            logger.debug("Is header present? {}", isHeaderPresent(hexEncodedTim));
             String xmlizedMessage = asn1CommandManager.packageSignedTimIntoAsd(request, hexEncodedTim);
 
             stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlizedMessage);
@@ -315,18 +325,21 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          JSONObject mfObj = dataObj.getJSONObject(MESSAGE_FRAME);
          String encodedTim = mfObj.getString(BYTES);
 
-         // if 001F is not first 4 bytes, then strip 1609.2 header from unsigned message
-         if (!encodedTim.substring(0, 4).equals("001F")) {
-            logger.debug("Stripping 1609.2 header from unsigned message");
-            encodedTim = strip1609Dot2Header(encodedTim);
-            mfObj.put(BYTES, encodedTim);
+         // if header is present, strip it
+         logger.debug("Is header present? {}", isHeaderPresent(encodedTim));
+         if (isHeaderPresent(encodedTim)) {
+            String header = encodedTim.substring(0, encodedTim.indexOf("001F") + 4);
+            logger.debug("Stripping header from message: {}", header);
+            encodedTim = stripHeader(encodedTim);
          }
 
          logger.debug("Encoded message - phase 2: {}", encodedTim);
+         logger.debug("Is header present? {}", isHeaderPresent(encodedTim));
 
         // only send message to rsu if snmp, rsus, and message frame fields are present
         if (null != request.getSnmp() && null != request.getRsus() && null != encodedTim) {
            logger.debug("Encoded message phase 3: {}", encodedTim);
+           logger.debug("Is header present? {}", isHeaderPresent(encodedTim));
            asn1CommandManager.sendToRsus(request, encodedTim);           
          }
       }
@@ -335,9 +348,16 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
    }
 
    /**
-    * Strips 1609.2 header from unsigned message
+    * Checks if header is present in encoded message
     */
-   private String strip1609Dot2Header(String encodedUnsignedTim) {
+   private boolean isHeaderPresent(String encodedTim) {
+      return encodedTim.indexOf("001F") > 0;
+   }
+
+   /**
+    * Strips header from unsigned message (all bytes before 001F hex value)
+    */
+   private String stripHeader(String encodedUnsignedTim) {
       String toReturn = "";
       // find 001F hex value
       int index = encodedUnsignedTim.indexOf("001F");
