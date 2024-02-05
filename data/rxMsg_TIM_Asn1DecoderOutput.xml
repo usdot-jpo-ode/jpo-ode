@@ -51,7 +51,7 @@
 						<packetID>00000000003616371F</packetID>
 						<dataFrames>
 							<TravelerDataFrame>
-								<sspTimRights>1</sspTimRights>
+								<notUsed>0</notUsed>
 								<frameType>
 									<advisory/>
 								</frameType>
@@ -70,9 +70,9 @@
 								</msgId>
 								<startYear>2017</startYear>
 								<startTime>359511</startTime>
-								<duratonTime>10080</duratonTime>
+								<durationTime>10080</durationTime>
 								<priority>6</priority>
-								<sspLocationRights>1</sspLocationRights>
+								<notUsed1>0</notUsed1>
 								<regions>
 									<GeographicalPath>
 										<anchor>
@@ -116,8 +116,8 @@
 										</description>
 									</GeographicalPath>
 								</regions>
-								<sspMsgRights1>1</sspMsgRights1>
-								<sspMsgRights2>1</sspMsgRights2>
+								<notUsed2>0</notUsed2>
+								<notUsed3>0</notUsed3>
 								<content>
 									<advisory>
 										<SEQUENCE>

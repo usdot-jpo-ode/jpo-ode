@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See https://go.microsoft.com/fwlink/?linkid=2090316 for license information.
 #-------------------------------------------------------------------------------------------------------------
 
-FROM openjdk:11-jdk
+FROM eclipse-temurin:21-jdk
 
 # This Dockerfile adds a non-root user with sudo access. Use the "remoteUser"
 # property in devcontainer.json to use it. On Linux, the container user's GID/UIDs
@@ -45,7 +45,7 @@ RUN apt-get -y install snmp
 
 #-------------------Install Kafka----------------------------------
 RUN mkdir ~/Downloads
-RUN curl "https://archive.apache.org/dist/kafka/2.1.1/kafka_2.11-2.1.1.tgz" -o ~/Downloads/kafka.tgz
+RUN curl "https://archive.apache.org/dist/kafka/3.6.0/kafka_2.12-3.6.0.tgz" -o ~/Downloads/kafka.tgz
 RUN mkdir ~/kafka \
     && cd ~/kafka \
     && tar -xvzf ~/Downloads/kafka.tgz --strip 1

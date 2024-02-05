@@ -5,18 +5,18 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.5.0</version>
+    <version>3.1.3</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
   <scm>
     <developerConnection>scm:git:https://github.com/usdot-jpo-ode/jpo-ode.git</developerConnection>
-    <tag>jpo-ode-1.3.0</tag>
+    <tag>jpo-ode-1.6.0-SNAPSHOT</tag>
   </scm>
 
   <groupId>usdot.jpo.ode</groupId>
   <artifactId>jpo-ode</artifactId>
-  <version>1.3.0</version>
+  <version>1.6.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
     <module>jpo-ode-common</module>
@@ -33,17 +33,17 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>11</java.version>
+    <java.version>21</java.version>
 
     <!-- Generic properties -->
     <finalLocation>${project.build.directory}/${project.artifactId}-${project.version}</finalLocation>
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
-    <java.version>11</java.version>
+    <java.version>21</java.version>
     <sonar.organization>usdot-jpo-ode</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <!-- JaCoCo Properties -->
-    <jacoco.version>0.8.8</jacoco.version>
+    <jacoco.version>0.8.11</jacoco.version>
     <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
     <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
@@ -105,7 +105,7 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
-        <version>1.2.13</version>
+        <version>1.4.14</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -116,7 +116,7 @@
         <plugin>
           <groupId>org.sonarsource.scanner.maven</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
-          <version>3.9.0.2155</version>
+          <version>3.10.0.2594</version>
         </plugin>
         <plugin>
           <groupId>org.springframework.boot</groupId>
@@ -126,8 +126,12 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <configuration>
-            <source>11</source>
-            <target>11</target>
+            <source>21</source>
+            <target>21</target>
+            <showDeprecation>true</showDeprecation>
+            <compilerArgs>
+              <arg>-Xlint:deprecation</arg>
+            </compilerArgs>
           </configuration>
         </plugin>
         <plugin>

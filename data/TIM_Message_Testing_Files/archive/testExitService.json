@@ -289,8 +289,8 @@
           ]
         },
         "content": {
-          "sspMsgRights1": "1",
-          "sspMsgRights2": "2",
+          "notUsed2": "0",
+          "notUsed3": "0",
           "contentType": {
             "advisory": [],
             "workZone": [],
