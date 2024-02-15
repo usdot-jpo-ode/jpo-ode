@@ -1,5 +1,3 @@
-# DOCKER_SHARED_VOLUME_WINDOWS should be defined for Windows host machine as C: and not defined for Linux hosts
-
 version: '3'
 services:
   kafka:

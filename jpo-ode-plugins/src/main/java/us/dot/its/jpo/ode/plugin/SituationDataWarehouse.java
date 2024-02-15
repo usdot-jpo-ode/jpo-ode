@@ -38,6 +38,7 @@ public class SituationDataWarehouse {
       private String deliverystart;
       private String deliverystop;
       private String recordId = null;
+      private String estimatedRemovalDate;
 
       public OdeGeoRegion getServiceRegion() {
          return serviceRegion;
@@ -88,6 +89,14 @@ public class SituationDataWarehouse {
          this.recordId = recordId;
       }
 
+      public String getEstimatedRemovalDate(){
+         return estimatedRemovalDate;
+      }
+
+      public void setEstimatedRemovalDate(String estimatedRemovalDate){
+         this.estimatedRemovalDate = estimatedRemovalDate;
+      }
+
       @Override
       public int hashCode() {
          final int prime = 31;
@@ -98,6 +107,7 @@ public class SituationDataWarehouse {
          result = prime * result + ((recordId == null) ? 0 : recordId.hashCode());
          result = prime * result + ((serviceRegion == null) ? 0 : serviceRegion.hashCode());
          result = prime * result + ((ttl == null) ? 0 : ttl.hashCode());
+         result = prime * result + ((estimatedRemovalDate == null) ? 0 : estimatedRemovalDate.hashCode());
          return result;
       }
 
@@ -136,6 +146,11 @@ public class SituationDataWarehouse {
          } else if (!serviceRegion.equals(other.serviceRegion))
             return false;
          if (ttl != other.ttl)
+            return false;
+             if (estimatedRemovalDate == null) {
+            if (other.estimatedRemovalDate != null)
+               return false;
+         } else if (!estimatedRemovalDate.equals(other.estimatedRemovalDate))
             return false;
          return true;
       }

@@ -9,6 +9,12 @@
                     "type": "string"
                 },
                 "psmSource": {
+                    "enum": [
+                        "RSU",
+                        "V2X",
+                        "MMITSS",
+                        "unknown"
+                    ],
                     "type": "string"
                 },
                 "logFileName": {
@@ -27,6 +33,14 @@
                             "type": "null"
                         },
                         "rxSource": {
+                            "enum": [
+                                "RSU",
+                                "SAT",
+                                "RV",
+                                "SNMP",
+                                "NA",
+                                "UNKNOWN"
+                            ],
                             "type": "string"
                         }
                     },

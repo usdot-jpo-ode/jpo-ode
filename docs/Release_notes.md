@@ -1,6 +1,32 @@
 JPO-ODE Release Notes
 ----------------------------
 
+Version 1.6.0, released February 2024
+----------------------------------------
+### **Summary**
+The updates for the jpo-ode 1.6.0 release includes an update for java, switching over to targeting J2735 2020 and some data flow diagram updates.
+
+Enhancements in this release:
+- CDOT PR 50: Updated Java to version 21.
+- CDOT PR 51: Updated the ODE to target J2735 2020.
+- CDOT PR 52: Updated the data flow diagrams to reflect offloaded file path
+- CDOT PR 53: Removed DOCKER_SHARED_VOLUME_WINDOWS environment variable
+
+Known Issues:
+- No known issues at this time.
+
+
+Version 1.5.1, released November 2023
+----------------------------------------
+
+### **Summary**
+The updates for the jpo-ode 1.5.1 release includes a hotfix for nodes getting duplicated during JSON serialization/deserialization.
+- Moved JsonProperty declaration to getters to avoid duplicate fetch in serialization/deserialization scenarios
+
+Known Issues:
+- No known issues at this time.
+
+
 Version 1.5.0, released November 2023
 ----------------------------------------
 

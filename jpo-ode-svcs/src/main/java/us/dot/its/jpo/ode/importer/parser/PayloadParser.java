@@ -33,7 +33,12 @@ public class PayloadParser extends LogFileParser {
    private static Logger logger = LoggerFactory.getLogger(PayloadParser.class);
    private static HashMap<String, String> msgStartFlags = new HashMap<String, String>();
 
-   private static final int HEADER_SIZE = 20; 
+   // Maximum header size for 1609 payload headers
+   private static final int HEADER_SIZE_1609 = 20; 
+
+   // Maximum header size for WSMP payload headers
+   private static final int HEADER_SIZE_WSMP = 35; 
+
    public static final int PAYLOAD_LENGTH = 2;
    
    protected short payloadLength;
@@ -113,24 +118,24 @@ public class PayloadParser extends LogFileParser {
       for (String key : msgStartFlags.keySet()) {
          String startFlag = msgStartFlags.get(key);
          int startIndex = hexPacket.toLowerCase().indexOf(startFlag);
-         if (hexPacketParsed == ""){
+         if (hexPacketParsed.equals("")) {
             logger.debug("Start index for: " + key + " is: " + startIndex);
             if (startIndex == -1) {
                logger.debug("Message does not have header for: " + key);
                break;
-            } else if (startIndex <= HEADER_SIZE) {
+            } else if (startIndex <= HEADER_SIZE_1609) {
                logger.debug("Message has supported header. startIndex: " + startIndex + " msgFlag: " + startFlag);
                hexPacketParsed = hexPacket;
-            // Using a value of 35 as the largest index from preliminary testing data.
-            } else if (startIndex > HEADER_SIZE && startIndex < 35) {
-               int trueStartIndex = HEADER_SIZE
-                     + hexPacket.substring(HEADER_SIZE, hexPacket.length()).indexOf(startFlag);
+            // If the header type is WSMP, the header will be stripped from the payload.
+            } else if (startIndex > HEADER_SIZE_1609 && startIndex < HEADER_SIZE_WSMP) {
+               int trueStartIndex = HEADER_SIZE_1609
+                     + hexPacket.substring(HEADER_SIZE_1609, hexPacket.length()).indexOf(startFlag);
                logger.debug("Found payload start at: " + trueStartIndex);
                hexPacketParsed = hexPacket.substring(trueStartIndex, hexPacket.length());
             }
          }
       }
-      if (hexPacketParsed == ""){
+      if (hexPacketParsed.equals("")) {
          hexPacketParsed = hexPacket;
          logger.debug("Could not identify a Header in the following packet: " + hexPacketParsed);
       } else {
