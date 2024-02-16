@@ -32,7 +32,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jpo-ode
-          path: /__w/jpo-ode/jpo-ode/target 
+          path: /__w/jpo-ode/jpo-ode/jpo-ode-svcs/target 
           if-no-files-found: error
   sonar:
     needs: [jpo-ode]
