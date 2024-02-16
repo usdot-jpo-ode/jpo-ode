@@ -111,7 +111,7 @@ public class PayloadParser extends LogFileParser {
   }
 
 
-
+   // Removes the 1609.2 header but will keep the 1609.1 header
    public byte[] removeHeader(byte[] packet) {
       String hexPacket = HexUtils.toHexString(packet);
       String hexPacketParsed = "";
