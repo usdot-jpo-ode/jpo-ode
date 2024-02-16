@@ -10,66 +10,21 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Build
         uses: docker/build-push-action@v5
-  jpo-ode:
-    runs-on: ubuntu-latest
-    container:
-      image: eclipse-temurin:21-jdk-alpine
-      options: --user root
-    steps:
-      - name: Checkout ${{ github.event.repository.name }}
-        uses: actions/checkout@v4
-      - name: Set up Maven
-        uses: stCarolas/setup-maven@v4.5
-        with:
-          maven-version: 3.9.6
-      - name: Build
-        run: |
-          cd $GITHUB_WORKSPACE
-          ls -ls && pwd
-          mvn -e -X clean org.jacoco:jacoco-maven-plugin:prepare-agent package
-          mvn -e -X clean org.jacoco:jacoco-maven-plugin:report package
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v4
-        with:
-          name: jpo-ode
-          path: /__w/jpo-ode/jpo-ode/jpo-ode-svcs/target 
-          if-no-files-found: error
+
   sonar:
-    needs: [jpo-ode]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout ${{ github.event.repository.name }}
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0   
-      - name: Download code coverage results
-        uses: actions/download-artifact@v4
+          submodules: recursive
+      - name: Set up JDK
+        uses: actions/setup-java@v4
         with:
-          name: jpo-ode
-          path: home/runner/work/jpo-ode/jpo-ode/target     
-      - name: Find jacoco.xml
-        shell: bash
+          java-version: "21"
+          distribution: "temurin"
+      - name: Run Sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          find "$GITHUB_WORKSPACE" -name "jacoco.xml"  
-      - name: Setup SonarScanner
-        uses: warchant/setup-sonar-scanner@v7
-      - name: Generate sonar properties file
-        run: |
-          cat <<EOF > /tmp/sonar-scanner.properties
-          sonar.host.url=https://sonarcloud.io
-          sonar.coverage.jacoco.xmlReportPaths=/home/runner/work/jpo-ode/jpo-ode/home/runner/work/jpo-ode/jpo-ode/target/site/jacoco/jacoco.xml
-          sonar.java.binaries=home/runner/work/jpo-ode/jpo-ode/target
-          sonar.projectName=jpo-ode
-          sonar.projectKey=usdot.jpo.ode:jpo-ode
-          sonar.organization=usdot-jpo-ode
-          jpo-ode.sonar.projectBaseDir=home/runner/work/jpo-ode/jpo-ode
-          jpo-ode.sonar.sources=jpo-ode-common/src,jpo-ode-core/src,jpo-ode-plugins/src,jpo-ode-svcs/src
-          jpo-ode.sonar.tests=jpo-ode-common/src/test,jpo-ode-core/src/test,jpo-ode-plugins/src/test,jpo-ode-svcs/src/test
-          jpo-ode.sonar.test.inclusions=jpo-ode-common/src/test/**,jpo-ode-core/src/test/**,jpo-ode-plugins/src/test/**,jpo-ode-svcs/src/test/**
-          EOF
-      - name: Run SonarScanner
-        uses: usdot-fhwa-stol/actions/sonar-scanner@main
-        with:
-          sonar-properties-path: /tmp/sonar-scanner.properties
-          sonar-token: ${{ secrets.SONAR_TOKEN }}
-          working-dir: $GITHUB_WORKSPACE
+          ls -la && pwd
+          mvn -e -X clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar -Dsonar.projectKey=usdot.jpo.ode:jpo-ode -Dsonar.projectName=jpo-ode -Dsonar.organization=usdot-jpo-ode -Dsonar.host.url=https://sonarcloud.io -Dsonar.branch.name=$GITHUB_REF_NAME
