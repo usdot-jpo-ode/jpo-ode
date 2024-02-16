@@ -13,15 +13,17 @@ jobs:
 
   sonar:
     runs-on: ubuntu-latest
+    container:
+      image: eclipse-temurin:21-jdk-alpine
+      options: --user root
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Set up JDK
-        uses: actions/setup-java@v4
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4.5
         with:
-          java-version: "21"
-          distribution: "temurin"
+          maven-version: 3.9.6
       - name: Run Sonar
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
