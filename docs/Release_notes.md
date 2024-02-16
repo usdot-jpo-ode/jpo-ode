@@ -16,7 +16,12 @@ Known Issues:
 - No known issues at this time.
 
 Breaking Changes:
-- Users should note that due to the switch to J2735 2020, some fields in outputted TIMs will be different. Any programs relying on data from the ODE must be modified to accommodate these updated outputs.
+- Users should note that due to the switch to J2735 2020, some fields in outputted TIMs will be different. Any programs relying on data from the ODE must be modified to accommodate these updated outputs. The TIM changes in J2735 2020 include the following field renamings:
+    - `sspTimRights` -> `notUsed`
+    - `sspLocationRights` -> `notUsed1`
+    - `sspMsgRights1` -> `notUsed2`
+    - `sspMsgRights2` -> `notUsed3`
+    - `duratonTime` -> `durationTime`
 
 
 Version 1.5.1, released November 2023
