@@ -15,6 +15,9 @@ Enhancements in this release:
 Known Issues:
 - No known issues at this time.
 
+Breaking Changes:
+- Users should note that due to the switch to J2735 2020, some fields in outputted TIMs will be different. Any programs relying on data from the ODE must be modified to accommodate these updated outputs.
+
 
 Version 1.5.1, released November 2023
 ----------------------------------------
