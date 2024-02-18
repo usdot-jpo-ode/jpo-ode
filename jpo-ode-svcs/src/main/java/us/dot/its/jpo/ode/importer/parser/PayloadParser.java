@@ -111,7 +111,7 @@ public class PayloadParser extends LogFileParser {
   }
 
 
-
+   // Removes the 1609.2 header but will keep the 1609.1 header
    public byte[] removeHeader(byte[] packet) {
       String hexPacket = HexUtils.toHexString(packet);
       String hexPacketParsed = "";
@@ -122,7 +122,7 @@ public class PayloadParser extends LogFileParser {
             logger.debug("Start index for: " + key + " is: " + startIndex);
             if (startIndex == -1) {
                logger.debug("Message does not have header for: " + key);
-               break;
+               continue;
             } else if (startIndex <= HEADER_SIZE_1609) {
                logger.debug("Message has supported header. startIndex: " + startIndex + " msgFlag: " + startFlag);
                hexPacketParsed = hexPacket;
