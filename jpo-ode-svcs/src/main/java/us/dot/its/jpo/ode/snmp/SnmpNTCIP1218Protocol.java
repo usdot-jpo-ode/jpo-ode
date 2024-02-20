@@ -86,7 +86,7 @@ public class SnmpNTCIP1218Protocol {
     }
 
     public static VariableBinding getVbRsuMsgRepeatOptions(int index) {
-        byte[] val = {(byte) 0xc0};
+        byte[] val = {(byte) 0x00};
         return new VariableBinding(
             new OID(rsu_msg_repeat_options_oid().concat(".").concat(Integer.toString(index))),
             new OctetString(val)
