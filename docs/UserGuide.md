@@ -205,7 +205,6 @@ This document is intended for use by the ODE client applications.
 | TIM       | Traveler Information Message                                                                                                                                                                                                                                                                                                                         |
 | US DOT    | Unites States Department of Transportation                                                                                                                                                                                                                                                                                                           |
 | WebSocket | WebSocket is designed to be implemented in web browsers and web servers, but it can be used by any client or server application. The WebSocket Protocol is an independent TCP-based protocol. Its only relationship to HTTP is that its handshake is interpreted by HTTP servers as an Upgrade request.                                              |
-| ZooKeeper | Apache ZooKeeper is a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services.                                                                                                                                                                                    |
 
 <a name="ode-development-environment">
 
@@ -579,7 +578,7 @@ ODE uses Logback logging framework to log application and data events.
 
 #### 7.2.3 - Steps to turn on/off logging during application runtime.
 
-1.  Start ode, Kafka, and Zookeeper as normal.
+1.  Start ode and Kafka as normal.
 
 2.  In a new terminal window run \"jconsole\".
 

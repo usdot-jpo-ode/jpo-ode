@@ -371,7 +371,7 @@ Docker is utilized as the primary deployment mechanism to
 compartmentalize each of the designed micro-services into separate
 containers. Docker is used to package all components in a composite of
 containers each running a distinct service. The ODE application runs in
-one container and other major frameworks such as ZooKeeper and Kafka run
+one container and other major frameworks such as Kafka run
 in their own separate containers.
 
 <a name="appendix">
@@ -391,4 +391,3 @@ in their own separate containers.
 | SCP       | Secure Copy                                                                                                                                                                                                                                                                                             |
 | US DOT    | Unites States Department of Transportation                                                                                                                                                                                                                                                              |
 | WebSocket | WebSocket is designed to be implemented in web browsers and web servers, but it can be used by any client or server application. The WebSocket Protocol is an independent TCP-based protocol. Its only relationship to HTTP is that its handshake is interpreted by HTTP servers as an Upgrade request. |
-| ZooKeeper | Apache ZooKeeper is a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services.                                                                                                                                       |
