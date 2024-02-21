@@ -9,8 +9,6 @@ services:
     hostname: kafka
     ports:
       - "9092:9092"
-      - "9093:9093"
-      - "9094:9094"
     volumes:
       - "${DOCKER_SHARED_VOLUME}:/bitnami"
     environment:
