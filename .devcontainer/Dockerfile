@@ -45,7 +45,7 @@ RUN apt-get -y install snmp
 
 #-------------------Install Kafka----------------------------------
 RUN mkdir ~/Downloads
-RUN curl "https://archive.apache.org/dist/kafka/3.6.0/kafka_2.12-3.6.0.tgz" -o ~/Downloads/kafka.tgz
+RUN curl "https://archive.apache.org/dist/kafka/3.6.1/kafka_2.12-3.6.1.tgz" -o ~/Downloads/kafka.tgz
 RUN mkdir ~/kafka \
     && cd ~/kafka \
     && tar -xvzf ~/Downloads/kafka.tgz --strip 1

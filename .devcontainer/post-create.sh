@@ -1,8 +1,10 @@
 cd ~/kafka/
-# start zookeeper
-bin/zookeeper-server-start.sh -daemon config/zookeeper.properties
+KAFKA_CLUSTER_ID="$(bin/kafka-storage.sh random-uuid)"
+
+bin/kafka-storage.sh format -t $KAFKA_CLUSTER_ID -c config/kraft/server.properties
+
 # start kafka
-bin/kafka-server-start.sh -daemon config/server.properties
+bin/kafka-server-start.sh -daemon config/kraft/server.properties
 # wait 2 seconds for the server to start and be able to add partitions
 sleep 2s
 # add topics
