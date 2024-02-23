@@ -1,10 +1,10 @@
 JPO-ODE Release Notes
 ----------------------------
 
-Version 1.6.0, released February 2024
+Version 2.0.0, released February 2024
 ----------------------------------------
 ### **Summary**
-The updates for the jpo-ode 1.6.0 release includes an update for java, switching over to targeting J2735 2020 and some data flow diagram updates.
+The updates for the jpo-ode 2.0.0 release includes an update for java, switching over to targeting J2735 2020 and some data flow diagram updates.
 
 Enhancements in this release:
 - CDOT PR 50: Updated Java to version 21.
