@@ -1,10 +1,10 @@
 JPO-ODE Release Notes
 ----------------------------
 
-Version 1.6.0, released February 2024
+Version 2.0.0, released February 2024
 ----------------------------------------
 ### **Summary**
-The updates for the jpo-ode 1.6.0 release includes an update for java, switching over to targeting J2735 2020 and some data flow diagram updates.
+The updates for the jpo-ode 2.0.0 release includes an update for java, switching over to targeting J2735 2020 and some data flow diagram updates.
 
 Enhancements in this release:
 - CDOT PR 50: Updated Java to version 21.
@@ -14,6 +14,14 @@ Enhancements in this release:
 
 Known Issues:
 - No known issues at this time.
+
+Breaking Changes:
+- Users should note that due to the switch to J2735 2020, some fields in outputted TIMs will be different. Any programs relying on data from the ODE must be modified to accommodate these updated outputs. The TIM changes in J2735 2020 include the following field renamings:
+    - `sspTimRights` -> `notUsed`
+    - `sspLocationRights` -> `notUsed1`
+    - `sspMsgRights1` -> `notUsed2`
+    - `sspMsgRights2` -> `notUsed3`
+    - `duratonTime` -> `durationTime`
 
 
 Version 1.5.1, released November 2023
