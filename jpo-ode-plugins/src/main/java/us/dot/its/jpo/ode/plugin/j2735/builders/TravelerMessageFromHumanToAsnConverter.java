@@ -97,12 +97,18 @@ public class TravelerMessageFromHumanToAsnConverter {
    private static final String ITIS = "itis";
    private static final String ITEM = "item";
    private static final String START_DATE_TIME = "startDateTime";
-   private static final String DURATION_TIME = "durationTime";
-   // I know, it's misspelled and it has to stay that way. J2735 spec misspelled it
-   private static final String DURATON_TIME_MISSPELLED = "duratonTime";
-   private static final String SSP_TIM_RIGHTS = "sspTimRights";
-   private static final String SSP_MSG_TYPES = "sspMsgTypes";
-   private static final String SSP_MSG_CONTENT = "sspMsgContent";
+   private static final String DURATON_TIME_MISSPELLED = "duratonTime"; // J2735 2016 Misspelling 
+   private static final String DURATION_TIME = "durationTime"; // used in J2735 2020
+   private static final String SSP_TIM_RIGHTS = "sspTimRights"; // used in J2735 2016
+   private static final String NOT_USED = "notUsed"; // used in J2735 2020
+   private static final String SSP_LOCATION_RIGHTS = "sspLocationRights"; // used in J2735 2016
+   private static final String NOT_USED_1 = "notUsed1"; // used in J2735 2020
+   private static final String SSP_MSG_TYPES = "sspMsgTypes"; // used previously
+   private static final String SSP_MSG_RIGHTS_1 = "sspMsgRights1"; // used in J2735 2016
+   private static final String NOT_USED_2 = "notUsed2"; // used in J2735 2020
+   private static final String SSP_MSG_CONTENT = "sspMsgContent"; // used previously
+   private static final String SSP_MSG_RIGHTS_2 = "sspMsgRights2"; // used in J2735 2016
+   private static final String NOT_USED_3 = "notUsed3"; // used in J2735 2020
    private static final String DATAFRAMES = "dataframes";
    private static final String TIME_STAMP = "timeStamp";
    public static final String GEOGRAPHICAL_PATH_STRING = "GeographicalPath";
@@ -208,26 +214,34 @@ public class TravelerMessageFromHumanToAsnConverter {
       // </TravelerDataFrame>
       // </dataFrames>
 
-      // sspTimRights does not need replacement
+      // replace sspTimRights with notUsed=0 (to conform with J2735 2020)
+      dataFrame.put(NOT_USED, 0);
+      dataFrame.remove(SSP_TIM_RIGHTS);
+
+      // replace sspLocationRights with notUsed1=0 (to conform with J2735 2020)
+      dataFrame.put(NOT_USED_1, 0);
+      dataFrame.remove(SSP_LOCATION_RIGHTS);
 
       // set frameType value
       dataFrame.set("frameType", JsonUtils.newNode().put(dataFrame.get("frameType").asText(), EMPTY_FIELD_FLAG));
 
-      // replace sspMsgContent with sspMsgRights2
-      dataFrame.put("sspMsgRights2", dataFrame.get(SSP_MSG_CONTENT).asInt());
+      // replace sspMsgContent/sspMsgRights1 with notUsed2=0 (to conform with J2735 2020)
+      dataFrame.put(NOT_USED_2, 0);
       dataFrame.remove(SSP_MSG_CONTENT);
+      dataFrame.remove(SSP_MSG_RIGHTS_1);
 
-      // replace sspMsgTypes with sspMsgRights1
-      dataFrame.put("sspMsgRights1", dataFrame.get(SSP_MSG_TYPES).asInt());
+      // replace sspMsgTypes/sspMsgRights2 with notUsed3=0 (to conform with J2735 2020)
+      dataFrame.put(NOT_USED_3, 0);
       dataFrame.remove(SSP_MSG_TYPES);
-
-      dataFrame.put(SSP_TIM_RIGHTS, dataFrame.get(SSP_TIM_RIGHTS).asText());
+      dataFrame.remove(SSP_MSG_RIGHTS_2);
 
       // priority does not need replacement
 
-      // replace durationTime with duratonTime - j2735 schema misspelling
-      dataFrame.put(DURATON_TIME_MISSPELLED, dataFrame.get(DURATION_TIME).asInt());
-      dataFrame.remove(DURATION_TIME);
+      // replace duratonTime with durationTime=[value of duratonTime] (to conform with J2735 2020)
+      if (dataFrame.get(DURATON_TIME_MISSPELLED) != null) {
+         dataFrame.set(DURATION_TIME, dataFrame.get(DURATON_TIME_MISSPELLED));
+         dataFrame.remove(DURATON_TIME_MISSPELLED);
+      }
 
       // url does not need replacement
 

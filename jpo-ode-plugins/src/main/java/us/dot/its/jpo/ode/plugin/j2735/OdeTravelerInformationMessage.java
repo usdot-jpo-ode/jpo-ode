@@ -450,16 +450,16 @@ public class OdeTravelerInformationMessage extends OdeObject {
    public static class DataFrame extends OdeObject {
 
       private static final long serialVersionUID = 537503046055742396L;
-      private short sspTimRights;// Start Header Information
+      private short notUsed;// Start Header Information
       private FrameType.TravelerInfoType frameType;
       private MsgId msgId;
       private String startDateTime;
       private int durationTime;
       private int priority;// End header Information
-      private short sspLocationRights;// Start Region Information
+      private short notUsed1;// Start Region Information
       private Region[] regions;
-      private short sspMsgTypes;// Start content Information
-      private short sspMsgContent;
+      private short notUsed2;// Start content Information
+      private short notUsed3;
       private String content;
       private String[] items;
       private String url;// End content Information
@@ -990,36 +990,36 @@ public class OdeTravelerInformationMessage extends OdeObject {
          this.frameType = frameType;
       }
 
-      public short getSspTimRights() {
-         return sspTimRights;
+      public short getNotUsed() {
+         return notUsed;
       }
 
-      public void setSspTimRights(short sspTimRights) {
-         this.sspTimRights = sspTimRights;
+      public void setNotUsed(short sspTimRights) {
+         this.notUsed = sspTimRights;
       }
 
-      public short getSspLocationRights() {
-         return sspLocationRights;
+      public short getNotUsed1() {
+         return notUsed1;
       }
 
-      public void setSspLocationRights(short sspLocationRights) {
-         this.sspLocationRights = sspLocationRights;
+      public void setNotUsed1(short sspLocationRights) {
+         this.notUsed1 = sspLocationRights;
       }
 
-      public short getSspMsgTypes() {
-         return sspMsgTypes;
+      public short getNotUsed2() {
+         return notUsed2;
       }
 
-      public void setSspMsgTypes(short sspMsgTypes) {
-         this.sspMsgTypes = sspMsgTypes;
+      public void setNotUsed2(short sspMsgTypes) {
+         this.notUsed2 = sspMsgTypes;
       }
 
-      public short getSspMsgContent() {
-         return sspMsgContent;
+      public short getNotUsed3() {
+         return notUsed3;
       }
 
-      public void setSspMsgContent(short sspMsgContent) {
-         this.sspMsgContent = sspMsgContent;
+      public void setNotUsed3(short sspMsgContent) {
+         this.notUsed3 = sspMsgContent;
       }
 
    }

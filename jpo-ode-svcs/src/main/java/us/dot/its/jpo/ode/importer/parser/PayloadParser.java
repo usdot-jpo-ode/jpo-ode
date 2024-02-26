@@ -20,18 +20,36 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.HashMap;
+
+import org.apache.tomcat.util.buf.HexUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import us.dot.its.jpo.ode.util.CodecUtils;
 
 public class PayloadParser extends LogFileParser {
 
-   public static final int PAYLOAD_LENGTH_LENGTH = 2;
+   private static Logger logger = LoggerFactory.getLogger(PayloadParser.class);
+   private static HashMap<String, String> msgStartFlags = new HashMap<String, String>();
 
+   // Maximum header size for 1609 payload headers
+   private static final int HEADER_SIZE_1609 = 20; 
+
+   // Maximum header size for WSMP payload headers
+   private static final int HEADER_SIZE_WSMP = 35; 
+
+   public static final int PAYLOAD_LENGTH = 2;
+   
    protected short payloadLength;
    protected byte[] payload;
+   protected String payloadType;
 
    public PayloadParser() {
       super();
+      msgStartFlags.put("BSM", "0014");
+      msgStartFlags.put("TIM", "001f");
+      msgStartFlags.put("MAP", "0012");
    }
 
    @Override
@@ -41,10 +59,12 @@ public class PayloadParser extends LogFileParser {
       try {
          // parse payload length
          if (getStep() == 0) {
-            status = parseStep(bis, PAYLOAD_LENGTH_LENGTH);
+            status = parseStep(bis, PAYLOAD_LENGTH);
             if (status != ParserStatus.COMPLETE)
                return status;
-            setPayloadLength(CodecUtils.bytesToShort(readBuffer, 0, PAYLOAD_LENGTH_LENGTH, ByteOrder.LITTLE_ENDIAN));
+            short length = CodecUtils.bytesToShort(readBuffer, 0, PAYLOAD_LENGTH, ByteOrder.LITTLE_ENDIAN);
+            logger.debug("Payload length is: " + length);
+            setPayloadLength(length);
          }
 
          // Step 10 - copy payload bytes
@@ -52,7 +72,7 @@ public class PayloadParser extends LogFileParser {
             status = parseStep(bis, getPayloadLength());
             if (status != ParserStatus.COMPLETE)
                return status;
-            setPayload(Arrays.copyOf(readBuffer, getPayloadLength()));
+            setPayload(removeHeader(Arrays.copyOf(readBuffer, getPayloadLength())));
          }
          
          resetStep();
@@ -90,4 +110,37 @@ public class PayloadParser extends LogFileParser {
     os.write(payload, 0, payloadLength);
   }
 
+
+   // Removes the 1609.2 header but will keep the 1609.1 header
+   public byte[] removeHeader(byte[] packet) {
+      String hexPacket = HexUtils.toHexString(packet);
+      String hexPacketParsed = "";
+      for (String key : msgStartFlags.keySet()) {
+         String startFlag = msgStartFlags.get(key);
+         int startIndex = hexPacket.toLowerCase().indexOf(startFlag);
+         if (hexPacketParsed.equals("")) {
+            logger.debug("Start index for: " + key + " is: " + startIndex);
+            if (startIndex == -1) {
+               logger.debug("Message does not have header for: " + key);
+               continue;
+            } else if (startIndex <= HEADER_SIZE_1609) {
+               logger.debug("Message has supported header. startIndex: " + startIndex + " msgFlag: " + startFlag);
+               hexPacketParsed = hexPacket;
+            // If the header type is WSMP, the header will be stripped from the payload.
+            } else if (startIndex > HEADER_SIZE_1609 && startIndex < HEADER_SIZE_WSMP) {
+               int trueStartIndex = HEADER_SIZE_1609
+                     + hexPacket.substring(HEADER_SIZE_1609, hexPacket.length()).indexOf(startFlag);
+               logger.debug("Found payload start at: " + trueStartIndex);
+               hexPacketParsed = hexPacket.substring(trueStartIndex, hexPacket.length());
+            }
+         }
+      }
+      if (hexPacketParsed.equals("")) {
+         hexPacketParsed = hexPacket;
+         logger.debug("Could not identify a Header in the following packet: " + hexPacketParsed);
+      } else {
+         logger.debug("Payload hex: " + hexPacketParsed);
+      }
+      return HexUtils.fromHexString(hexPacketParsed);
+   }
 }

@@ -72,7 +72,15 @@ public class AsnCodecMessageServiceController {
 		Asn1DecodeMAPJSON asn1DecodeMAPSON = new Asn1DecodeMAPJSON(odeProps);
 		MessageConsumer<String, String> asn1RawMAPJSONConsumer = MessageConsumer.defaultStringMessageConsumer(
 				   odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), asn1DecodeMAPSON);
-		asn1RawMAPJSONConsumer.setName("asn1DecodeMAPSON");				      
+		asn1RawMAPJSONConsumer.setName("asn1DecodeMAPJSON");				      
 		asn1DecodeMAPSON.start(asn1RawMAPJSONConsumer, odeProps.getKafkaTopicOdeRawEncodedMAPJson());
+
+		//PSM
+		logger.info("Send encoded PSM to ASN.1 Decoder");
+		Asn1DecodePSMJSON asn1DecodePSMSON = new Asn1DecodePSMJSON(odeProps);
+		MessageConsumer<String, String> asn1RawPSMJSONConsumer = MessageConsumer.defaultStringMessageConsumer(
+					odeProps.getKafkaBrokers(), this.getClass().getSimpleName(), asn1DecodePSMSON);
+		asn1RawPSMJSONConsumer.setName("asn1DecodePSMJSON");				      
+		asn1DecodePSMSON.start(asn1RawPSMJSONConsumer, odeProps.getKafkaTopicOdeRawEncodedPSMJson());
 	}
 }

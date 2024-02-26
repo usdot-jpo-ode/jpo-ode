@@ -29,7 +29,7 @@ public class RxMsgFileParser extends LogFileParser {
    private static final Logger logger = LoggerFactory.getLogger(RxMsgFileParser.class);
 
    private static final int RX_SOURCE_LENGTH = 1;
-   
+
    private RxSource rxSource;
 
    public RxMsgFileParser() {
@@ -55,9 +55,9 @@ public class RxMsgFileParser extends LogFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
             try {
-              setRxSource(RxSource.values()[readBuffer[0]]);
+               setRxSource(readBuffer[0]);
             } catch (Exception e) {
-              setRxSource(RxSource.UNKNOWN);
+               setRxSource(RxSource.UNKNOWN);
             }
          }
 
@@ -66,7 +66,7 @@ public class RxMsgFileParser extends LogFileParser {
             if (status != ParserStatus.COMPLETE)
                return status;
          }
-         
+
          if (getStep() == 3) {
             status = nextStep(bis, fileName, timeParser);
             if (status != ParserStatus.COMPLETE)
@@ -101,6 +101,7 @@ public class RxMsgFileParser extends LogFileParser {
    }
 
    public void setRxSource(RxSource rxSource) {
+      logger.debug("rxSourceOrdinal value: " + rxSource);
       this.rxSource = rxSource;
    }
 
@@ -108,15 +109,15 @@ public class RxMsgFileParser extends LogFileParser {
       try {
          setRxSource(RxSource.values()[rxSourceOrdinal]);
       } catch (Exception e) {
-         logger.error("Invalid RxSource: {}. Valid values are {}: ", 
-            rxSourceOrdinal, RxSource.values());
+         logger.error("Invalid RxSource: {}. Valid values are {}: ",
+               rxSourceOrdinal, RxSource.values());
          setRxSource(RxSource.UNKNOWN);
       }
    }
 
-  @Override
-  public void writeTo(OutputStream os) throws IOException {
-    os.write((byte)rxSource.ordinal());
-    super.writeTo(os);
-  }
+   @Override
+   public void writeTo(OutputStream os) throws IOException {
+      os.write((byte) rxSource.ordinal());
+      super.writeTo(os);
+   }
 }
