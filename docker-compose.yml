@@ -1,5 +1,3 @@
-# DOCKER_SHARED_VOLUME_WINDOWS should be defined for Windows host machine as C: and not defined for Linux hosts
-
 version: '3'
 services:
   zookeeper:
@@ -21,7 +19,7 @@ services:
       KAFKA_ADVERTISED_HOST_NAME: ${DOCKER_HOST_IP}
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_CREATE_TOPICS: "topic.OdeBsmPojo:1:1,topic.OdeSpatTxPojo:1:1,topic.OdeSpatPojo:1:1,topic.OdeSpatJson:1:1,topic.FilteredOdeSpatJson:1:1,topic.OdeSpatRxJson:1:1,topic.OdeSpatRxPojo:1:1,topic.OdeBsmJson:1:1,topic.FilteredOdeBsmJson:1:1,topic.OdeTimJson:1:1,topic.OdeTimBroadcastJson:1:1,topic.J2735TimBroadcastJson:1:1,topic.OdeDriverAlertJson:1:1,topic.Asn1DecoderInput:1:1,topic.Asn1DecoderOutput:1:1,topic.Asn1EncoderInput:1:1,topic.Asn1EncoderOutput:1:1,topic.SDWDepositorInput:1:1,topic.OdeTIMCertExpirationTimeJson:1:1,topic.OdeRawEncodedBSMJson:1:1,topic.OdeRawEncodedSPATJson:1:1,topic.OdeRawEncodedTIMJson:1:1,topic.OdeRawEncodedMAPJson:1:1,topic.OdeMapTxPojo:1:1,topic.OdeMapJson:1:1,topic.OdeRawEncodedSSMJson:1:1,topic.OdeSsmPojo:1:1,topic.OdeSsmJson:1:1,topic.OdeRawEncodedSRMJson:1:1,topic.OdeSrmTxPojo:1:1,topic.OdeSrmJson:1:1"
+      KAFKA_CREATE_TOPICS: "topic.OdeBsmPojo:1:1,topic.OdeSpatTxPojo:1:1,topic.OdeSpatPojo:1:1,topic.OdeSpatJson:1:1,topic.FilteredOdeSpatJson:1:1,topic.OdeSpatRxJson:1:1,topic.OdeSpatRxPojo:1:1,topic.OdeBsmJson:1:1,topic.FilteredOdeBsmJson:1:1,topic.OdeTimJson:1:1,topic.OdeTimBroadcastJson:1:1,topic.J2735TimBroadcastJson:1:1,topic.OdeDriverAlertJson:1:1,topic.Asn1DecoderInput:1:1,topic.Asn1DecoderOutput:1:1,topic.Asn1EncoderInput:1:1,topic.Asn1EncoderOutput:1:1,topic.SDWDepositorInput:1:1,topic.OdeTIMCertExpirationTimeJson:1:1,topic.OdeRawEncodedBSMJson:1:1,topic.OdeRawEncodedSPATJson:1:1,topic.OdeRawEncodedTIMJson:1:1,topic.OdeRawEncodedMAPJson:1:1,topic.OdeMapTxPojo:1:1,topic.OdeMapJson:1:1,topic.OdeRawEncodedSSMJson:1:1,topic.OdeSsmPojo:1:1,topic.OdeSsmJson:1:1,topic.OdeRawEncodedSRMJson:1:1,topic.OdeSrmTxPojo:1:1,topic.OdeSrmJson:1:1,topic.OdeRawEncodedPSMJson:1:1,topic.OdePsmTxPojo:1:1,topic.OdePsmJson:1:1"
       KAFKA_DELETE_TOPIC_ENABLED: "true"
       KAFKA_CLEANUP_POLICY: "delete" # delete old logs
       KAFKA_LOG_RETENTION_HOURS: 2
@@ -34,7 +32,7 @@ services:
     depends_on:
       - zookeeper
     volumes:
-      - ${DOCKER_SHARED_VOLUME_WINDOWS}/var/run/docker.sock:/var/run/docker.sock
+      - ${DOCKER_SHARED_VOLUME}/var/run/docker.sock:/var/run/docker.sock
     logging:
       options:
         max-size: "10m"
@@ -53,6 +51,7 @@ services:
       - "44910:44910/udp"
       - "44920:44920/udp"
       - "44930:44930/udp"
+      - "44940:44940/udp"
       - "5555:5555/udp"
       - "6666:6666/udp"
     environment:
@@ -81,6 +80,9 @@ services:
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ACM_CONFIG_FILE: adm.properties
+      ACM_LOG_TO_CONSOLE: ${ADM_LOG_TO_CONSOLE}
+      ACM_LOG_TO_FILE: ${ADM_LOG_TO_FILE}
+      ACM_LOG_LEVEL: ${ADM_LOG_LEVEL}
     depends_on:
       - kafka
     volumes:
@@ -96,6 +98,9 @@ services:
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ACM_CONFIG_FILE: aem.properties
+      ACM_LOG_TO_CONSOLE: ${AEM_LOG_TO_CONSOLE}
+      ACM_LOG_TO_FILE: ${AEM_LOG_TO_FILE}
+      ACM_LOG_LEVEL: ${AEM_LOG_LEVEL}
     depends_on:
       - kafka
     volumes:
@@ -113,6 +118,9 @@ services:
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       PPM_CONFIG_FILE: ppmBsm.properties
+      PPM_LOG_TO_CONSOLE: ${PPM_BSM_LOG_TO_CONSOLE}
+      PPM_LOG_TO_FILE: ${PPM_BSM_LOG_TO_FILE}
+      PPM_LOG_LEVEL: ${PPM_BSM_LOG_LEVEL}
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
     depends_on:
@@ -130,6 +138,9 @@ services:
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       PPM_CONFIG_FILE: ppmTim.properties
+      PPM_LOG_TO_CONSOLE: ${PPM_TIM_LOG_TO_CONSOLE}
+      PPM_LOG_TO_FILE: ${PPM_TIM_LOG_TO_FILE}
+      PPM_LOG_LEVEL: ${PPM_TIM_LOG_LEVEL}
     volumes:
       - ${DOCKER_SHARED_VOLUME}:/ppm_data
     depends_on:

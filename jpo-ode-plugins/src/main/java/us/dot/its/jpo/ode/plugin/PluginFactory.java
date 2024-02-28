@@ -15,6 +15,7 @@
  ******************************************************************************/
 package us.dot.its.jpo.ode.plugin;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
@@ -57,9 +58,13 @@ public final class PluginFactory {
     * @throws IllegalAccessException
     * @throws InstantiationException
     * @throws ClassNotFoundException
+    * @throws SecurityException
+    * @throws NoSuchMethodException
+    * @throws InvocationTargetException
+    * @throws IllegalArgumentException
     */
    public static OdePlugin getPluginByName(String coderClassName)
-         throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+         throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
       logger.info("Getting Plugin: {}", coderClassName);
       OdePlugin result = (OdePlugin) buildObject(coderClassName);
 
@@ -74,7 +79,7 @@ public final class PluginFactory {
    }
 
    private static Object buildObject(String aClassName)
-         throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+         throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
       Object result = null;
       try {
          ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -93,7 +98,7 @@ public final class PluginFactory {
    }
 
    private static Object buildObject(ClassLoader cl, String aClassName)
-         throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+         throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
       Object result;
       logger.info("Getting class: {}", aClassName);
 
@@ -102,7 +107,7 @@ public final class PluginFactory {
       Class<?> implClass = cl.loadClass(aClassName);
 
       logger.info("creating an instance of: {}", implClass);
-      result = implClass.newInstance();
+      result = implClass.getDeclaredConstructor().newInstance();
       return result;
    }
 

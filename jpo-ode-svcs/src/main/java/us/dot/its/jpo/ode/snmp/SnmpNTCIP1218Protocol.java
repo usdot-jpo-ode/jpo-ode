@@ -2,7 +2,7 @@ package us.dot.its.jpo.ode.snmp;
 
 import java.text.ParseException;
 
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 
 import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
@@ -86,9 +86,10 @@ public class SnmpNTCIP1218Protocol {
     }
 
     public static VariableBinding getVbRsuMsgRepeatOptions(int index) {
+        byte[] val = {(byte) 0xc0};
         return new VariableBinding(
             new OID(rsu_msg_repeat_options_oid().concat(".").concat(Integer.toString(index))),
-            new OctetString("C0")
+            new OctetString(val)
          );
     }
 

@@ -2171,7 +2171,6 @@
                                 ]
                             },
                             "maxItems": 8,
-                            "minItems": 1,
                             "type": [
                                 "array",
                                 "null"

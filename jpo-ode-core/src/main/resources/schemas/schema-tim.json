@@ -180,7 +180,7 @@
                                                                     ],
                                                                     "type": "object"
                                                                 },
-                                                                "duratonTime": {
+                                                                "durationTime": {
                                                                     "type": "string"
                                                                 },
                                                                 "frameType": {
@@ -424,16 +424,16 @@
                                                                     ],
                                                                     "type": "object"
                                                                 },
-                                                                "sspLocationRights": {
+                                                                "notUsed1": {
                                                                     "type": "string"
                                                                 },
-                                                                "sspMsgRights1": {
+                                                                "notUsed2": {
                                                                     "type": "string"
                                                                 },
-                                                                "sspMsgRights2": {
+                                                                "notUsed3": {
                                                                     "type": "string"
                                                                 },
-                                                                "sspTimRights": {
+                                                                "notUsed": {
                                                                     "type": "string"
                                                                 },
                                                                 "startTime": {
@@ -445,12 +445,12 @@
                                                             },
                                                             "required": [
                                                                 "regions",
-                                                                "duratonTime",
-                                                                "sspMsgRights1",
-                                                                "sspMsgRights2",
-                                                                "sspTimRights",
+                                                                "durationTime",
+                                                                "notUsed2",
+                                                                "notUsed3",
+                                                                "notUsed",
                                                                 "startYear",
-                                                                "sspLocationRights",
+                                                                "notUsed1",
                                                                 "frameType",
                                                                 "msgId",
                                                                 "startTime",

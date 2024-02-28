@@ -9,7 +9,7 @@
     "urlB": "null",
     "dataframes": [
       {
-        "sspTimRights": "1",
+        "notUsed": "0",
         "frameType": "1",
         "msgID": "RoadSignID",
         "position": {
@@ -23,7 +23,7 @@
         "startDateTime": "2017-12-01T17:47:11-05:00",
         "durationTime": "835",
         "priority": "2",
-        "sspLocationRights": "0",
+        "notUsed1": "0",
         "regions": [
           {
             "name": "SpeedLimit",

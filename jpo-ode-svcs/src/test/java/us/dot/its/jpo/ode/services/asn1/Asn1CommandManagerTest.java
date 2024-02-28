@@ -18,6 +18,7 @@ package us.dot.its.jpo.ode.services.asn1;
 import java.io.IOException;
 import java.text.ParseException;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 import mockit.Capturing;
@@ -59,6 +60,15 @@ public class Asn1CommandManagerTest {
    }
 
    @Test
+   public void depositToSDWJsonShouldCallMessageProducer() throws Asn1CommandManagerException {
+      JSONObject deposit = new JSONObject();
+      deposit.put("estimatedRemovalDate", "2023-11-04T17:47:11-05:00");
+      deposit.put("encodedMsg", "message");
+
+      testAsn1CommandManager.depositToSdw(deposit.toString());
+   }
+
+   @Test
    public void depositToSDWShouldCallMessageProducer() throws Asn1CommandManagerException {
       testAsn1CommandManager.depositToSdw("message");
    }
@@ -66,14 +76,14 @@ public class Asn1CommandManagerTest {
    @Test
    public void testSendToRsus(@Mocked OdeTravelerInputData mockOdeTravelerInputData)
          throws DdsRequestManagerException, IOException, ParseException {
-      
+
       testAsn1CommandManager.sendToRsus(mockOdeTravelerInputData.getRequest(), "message");
    }
 
    @Test
    public void testSendToRsusSnmpException(@Mocked OdeTravelerInputData mockOdeTravelerInputData)
          throws DdsRequestManagerException, IOException, ParseException {
-     
+
       testAsn1CommandManager.sendToRsus(mockOdeTravelerInputData.getRequest(), "message");
    }
 

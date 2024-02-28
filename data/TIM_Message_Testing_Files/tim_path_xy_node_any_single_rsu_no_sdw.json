@@ -31,7 +31,7 @@
       {
         "startDateTime": "2017-08-02T22:25:00.000Z",
         "durationTime": 1,
-        "sspTimRights": "0",
+        "notUsed": "0",
         "frameType": "advisory",
         "msgId": {
           "roadSignID": {
@@ -46,7 +46,7 @@
           }
         },
         "priority": "0",
-        "sspLocationRights": "3",
+        "notUsed1": "0",
         "regions": [
           {
             "name": "Testing TIM",

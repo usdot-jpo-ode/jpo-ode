@@ -29,6 +29,7 @@ import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.security.AuthSHA;
+import org.snmp4j.security.PrivAES128;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModels;
 import org.snmp4j.security.SecurityProtocols;
@@ -83,7 +84,7 @@ public class SnmpSession {
       target.setTimeout(rsu.getRsuTimeout());
       target.setVersion(SnmpConstants.version3);
       if (rsu.getRsuUsername() != null) {
-         target.setSecurityLevel(SecurityLevel.AUTH_NOPRIV);
+         target.setSecurityLevel(SecurityLevel.AUTH_PRIV);
          target.setSecurityName(new OctetString(rsu.getRsuUsername()));
       } else {
          target.setSecurityLevel(SecurityLevel.NOAUTH_NOPRIV);
@@ -105,7 +106,7 @@ public class SnmpSession {
       SecurityModels.getInstance().addSecurityModel(usm);
       if (rsu.getRsuUsername() != null) {
          snmp.getUSM().addUser(new OctetString(rsu.getRsuUsername()), new UsmUser(new OctetString(rsu.getRsuUsername()),
-               AuthSHA.ID, new OctetString(rsu.getRsuPassword()), null, null));
+               AuthSHA.ID, new OctetString(rsu.getRsuPassword()), PrivAES128.ID, new OctetString(rsu.getRsuPassword())));
       }
 
       // Assert the ready flag so the user can begin sending messages
@@ -133,9 +134,17 @@ public class SnmpSession {
       // Try to send the SNMP request (synchronously)
       ResponseEvent responseEvent = null;
       try {
-         responseEvent = snmpob.set(pdu, targetob);
-         if (!keepOpen) {
-            snmpob.close();
+         byte[] authEngineID = snmpob.discoverAuthoritativeEngineID(targetob.getAddress(), 1000);
+         if (authEngineID != null && authEngineID.length > 0) {
+            targetob.setAuthoritativeEngineID(authEngineID);
+         }
+         if (authEngineID != null) {
+            responseEvent = snmpob.set(pdu, targetob);
+            if (!keepOpen) {
+               snmpob.close();
+            }
+         } else {
+            logger.error("Unable to send TIM to RSU {}: authEngineID is null", targetob.getAddress());
          }
       } catch (IOException e) {
          throw new IOException("Failed to send SNMP request: " + e);

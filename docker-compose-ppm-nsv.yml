@@ -1,8 +1,6 @@
 # This docker-compose file configures PPM modules with self contained configuration and map files
 # So the module can run without reliance on a shared volume. This was done to avoid corporate network
 # and machine dress-code restrictions that would not permit the container sharing volume with host.
-#
-# DOCKER_SHARED_VOLUME_WINDOWS should be defined for Windows host machine as C: and not defined for Linux hosts
 
 version: '3'
 services:
@@ -34,7 +32,7 @@ services:
     depends_on:
       - zookeeper
     volumes:
-      - ${DOCKER_SHARED_VOLUME_WINDOWS}/var/run/docker.sock:/var/run/docker.sock
+      - ${DOCKER_SHARED_VOLUME}/var/run/docker.sock:/var/run/docker.sock
 
   ode:
     build: .
@@ -68,6 +66,9 @@ services:
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ACM_CONFIG_FILE: adm.properties
+      ACM_LOG_TO_CONSOLE: ${ADM_LOG_TO_CONSOLE}
+      ACM_LOG_TO_FILE: ${ADM_LOG_TO_FILE}
+      ACM_LOG_LEVEL: ${ADM_LOG_LEVEL}
     depends_on:
       - kafka
     volumes:
@@ -79,6 +80,9 @@ services:
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       ACM_CONFIG_FILE: aem.properties
+      ACM_LOG_TO_CONSOLE: ${AEM_LOG_TO_CONSOLE}
+      ACM_LOG_TO_FILE: ${AEM_LOG_TO_FILE}
+      ACM_LOG_LEVEL: ${AEM_LOG_LEVEL}
     depends_on:
       - kafka
     volumes:
@@ -96,6 +100,9 @@ services:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       PPM_CONFIG_FILE: ${PPM_BSM_CONFIG_FILE}
       PPM_MAP_FILE: ${PPM_MAP_FILE}
+      PPM_LOG_TO_CONSOLE: ${PPM_BSM_LOG_TO_CONSOLE}
+      PPM_LOG_TO_FILE: ${PPM_BSM_LOG_TO_FILE}
+      PPM_LOG_LEVEL: ${PPM_BSM_LOG_LEVEL}
     volumes:
       - ${DOCKER_SHARED_VOLUME}/ppm_bsm:/ppm_data
     depends_on:
@@ -113,6 +120,9 @@ services:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       PPM_CONFIG_FILE: ${PPM_TIM_CONFIG_FILE}
       PPM_MAP_FILE: ${PPM_MAP_FILE}
+      PPM_LOG_TO_CONSOLE: ${PPM_TIM_LOG_TO_CONSOLE}
+      PPM_LOG_TO_FILE: ${PPM_TIM_LOG_TO_FILE}
+      PPM_LOG_LEVEL: ${PPM_TIM_LOG_LEVEL}
     volumes:
       - ${DOCKER_SHARED_VOLUME}/ppm_tim:/ppm_data
     depends_on:
