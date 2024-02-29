@@ -21,6 +21,7 @@ settings.xml
 /.settings
 .metadata
 *.pyc
+/kafka/
 
 ####################
 ### jpo-ode-svcs ###

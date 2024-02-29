@@ -53,6 +53,9 @@ import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.JsonUtils.JsonUtilsException;
 
 public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
+	private static final String BSM_FLAG = "0014";
+    private static final String TIM_FLAG = "001f";
+    private static final String MAP_FLAG = "0012";
 
 	public static class LogFileToAsn1CodecPublisherException extends Exception {
 
@@ -74,9 +77,9 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 	public LogFileToAsn1CodecPublisher(StringPublisher dataPub) {
 		this.publisher = dataPub;
 		this.serialId = new SerialId();
-		msgStartFlags.put("BSM", "0014");
-		msgStartFlags.put("TIM", "001f");
-		msgStartFlags.put("MAP", "0012");
+		msgStartFlags.put("BSM", BSM_FLAG);
+		msgStartFlags.put("TIM", TIM_FLAG);
+		msgStartFlags.put("MAP", MAP_FLAG);
 	}
 
 	public List<OdeData> publish(BufferedInputStream bis, String fileName, ImporterFileType fileType)
@@ -191,6 +194,15 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 		}
 	}
 
+	
+	/**
+		* Checks the header of the OdeMsgPayload and determines the encoding rule to be used in the Asn1DecoderInput XML.
+		* The payload is checked for various message start flags. It will add the encoding rule to the Asn1DecoderInput XML
+		* to tell the ASN1 codec to extract data from the header into the output message.
+		* 
+		* @param payload The OdeMsgPayload to check the header of.
+		* @return The encoding rule to be used in the Asn1DecoderInput XML.
+		*/
 	public String checkHeader(OdeMsgPayload payload) {
 		JSONObject payloadJson;
 		String header = null;
