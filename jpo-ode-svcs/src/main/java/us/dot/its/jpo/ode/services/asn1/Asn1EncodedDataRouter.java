@@ -357,7 +357,11 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
     * Checks if header is present in encoded message
     */
    private boolean isHeaderPresent(String encodedTim) {
-      return encodedTim.indexOf("001F") > 0;
+      boolean toReturn = encodedTim.indexOf("001F") > 0;
+      if (toReturn) {
+         logger.warn("Header found in encoded message: {}", encodedTim);
+      }
+      return toReturn;
    }
 
    /**
