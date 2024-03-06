@@ -1,6 +1,17 @@
 JPO-ODE Release Notes
 ----------------------------
 
+Version 2.0.1, released March 2024
+----------------------------------------
+### **Summary**
+The updates for the jpo-ode 2.0.1 release includes an update to the commit references for the asn1_codec, jpo-cvdp, jpo-s3-deposit, jpo-sdw-depositor & jpo-security-svcs git submodules.
+
+Enhancements in this release:
+- Compatible versions of submodules are now referenced in the jpo-ode project.
+
+Known Issues:
+- No known issues at this time.
+
 Version 2.0.0, released February 2024
 ----------------------------------------
 ### **Summary**
