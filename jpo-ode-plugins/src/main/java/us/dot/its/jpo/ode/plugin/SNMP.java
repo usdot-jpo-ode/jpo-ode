@@ -136,7 +136,8 @@ public class SNMP extends OdeObject {
       sb.append(String.format("%02X", zdt.getHour()));
       sb.append(String.format("%02X", zdt.getMinute()));
       sb.append(String.format("%02X", zdt.getSecond()));
-      sb.append(String.format("%02X", zdt.getNano()));
+      sb.append(String.format("%02X", zdt.getNano()).substring(0, 2));
+
       return sb.toString();
    }
 
