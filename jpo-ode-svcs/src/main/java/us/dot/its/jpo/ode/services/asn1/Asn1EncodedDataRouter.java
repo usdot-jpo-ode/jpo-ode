@@ -175,7 +175,6 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
          String hexEncodedTim = mfObj.getString(BYTES);
          logger.debug("Encoded message - phase 1: {}", hexEncodedTim);
-         logger.debug("Is header present? {}", isHeaderPresent(hexEncodedTim));
          //use Asnc1 library to decode the encoded tim returned from ASNC1; another class two blockers: decode the tim and decode the message-sign
 
          if (odeProperties.dataSigningEnabled()) {
@@ -231,7 +230,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             // if header is present, strip it
             if (isHeaderPresent(hexEncodedTim)) {
                String header = hexEncodedTim.substring(0, hexEncodedTim.indexOf("001F") + 4);
-               logger.debug("Stripping header from message: {}", header);
+               logger.debug("Stripping header from unsigned message: {}", header);
                hexEncodedTim = stripHeader(hexEncodedTim);
                mfObj.remove(BYTES);
                mfObj.put(BYTES, hexEncodedTim);
@@ -244,7 +243,6 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
          if (null != request.getSnmp() && null != request.getRsus() && null != hexEncodedTim) {
             logger.info("Sending message to RSUs...");
-            logger.debug("Is header present? {}", isHeaderPresent(hexEncodedTim));
             asn1CommandManager.sendToRsus(request, hexEncodedTim);
          }
 
@@ -252,7 +250,6 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
             // Case 2 only
 
             logger.debug("Publishing message for round 2 encoding!");
-            logger.debug("Is header present? {}", isHeaderPresent(hexEncodedTim));
             String xmlizedMessage = asn1CommandManager.packageSignedTimIntoAsd(request, hexEncodedTim);
 
             stringMsgProducer.send(odeProperties.getKafkaTopicAsn1EncoderInput(), null, xmlizedMessage);
@@ -332,20 +329,23 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          String encodedTim = mfObj.getString(BYTES);
 
          // if header is present, strip it
-         logger.debug("Is header present? {}", isHeaderPresent(encodedTim));
          if (isHeaderPresent(encodedTim)) {
             String header = encodedTim.substring(0, encodedTim.indexOf("001F") + 4);
-            logger.debug("Stripping header from message: {}", header);
+            logger.debug("Stripping header from unsigned message: {}", header);
             encodedTim = stripHeader(encodedTim);
+            mfObj.remove(BYTES);
+            mfObj.put(BYTES, encodedTim);
+            dataObj.remove(MESSAGE_FRAME);
+            dataObj.put(MESSAGE_FRAME, mfObj);
+            consumedObj.remove(AppContext.PAYLOAD_STRING);
+            consumedObj.put(AppContext.PAYLOAD_STRING, dataObj);
          }
 
          logger.debug("Encoded message - phase 2: {}", encodedTim);
-         logger.debug("Is header present? {}", isHeaderPresent(encodedTim));
 
          // only send message to rsu if snmp, rsus, and message frame fields are present
          if (null != request.getSnmp() && null != request.getRsus() && null != encodedTim) {
             logger.debug("Encoded message phase 3: {}", encodedTim);
-            logger.debug("Is header present? {}", isHeaderPresent(encodedTim));
            asn1CommandManager.sendToRsus(request, encodedTim);
          }
       }
@@ -357,11 +357,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
     * Checks if header is present in encoded message
     */
    private boolean isHeaderPresent(String encodedTim) {
-      boolean toReturn = encodedTim.indexOf("001F") > 0;
-      if (toReturn) {
-         logger.warn("Header found in encoded message: {}", encodedTim);
-      }
-      return toReturn;
+      return encodedTim.indexOf("001F") > 0;
    }
 
    /**
