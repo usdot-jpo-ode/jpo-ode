@@ -19,6 +19,7 @@ import us.dot.its.jpo.ode.model.OdeBsmMetadata.BsmSource;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
 import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
 import us.dot.its.jpo.ode.model.RxSource;
 import us.dot.its.jpo.ode.udp.AbstractUdpReceiverPublisher;
@@ -46,7 +47,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
    @Override
    public void run() {
 
-      logger.debug("UDP Receiver Service started.");
+      logger.debug("BSM UDP Receiver Service started.");
 
       byte[] buffer = new byte[bufferSize];
 
@@ -97,6 +98,7 @@ public class BsmReceiver extends AbstractUdpReceiverPublisher {
                bsmMetadata.setOriginIp(senderIp);
                bsmMetadata.setBsmSource(BsmSource.EV);
                bsmMetadata.setRecordType(RecordType.bsmTx);
+               bsmMetadata.setRecordGeneratedBy(GeneratedBy.OBU);
                bsmMetadata.setSecurityResultCode(SecurityResultCode.success);
 
                // Submit JSON to the OdeRawEncodedMessageJson Kafka Topic
