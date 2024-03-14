@@ -16,32 +16,32 @@ import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdeTimMetadata;
 
 public class Asn1DecodeTIMJSON extends AbstractAsn1DecodeMessageJSON {
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	private ObjectMapper objectMapper = new ObjectMapper();
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private ObjectMapper objectMapper = new ObjectMapper();
 
-	public Asn1DecodeTIMJSON(OdeProperties odeProps) {
-		super(new StringPublisher(odeProps), odeProps.getTimStartFlag());
-	}
+    public Asn1DecodeTIMJSON(OdeProperties odeProps) {
+        super(new StringPublisher(odeProps), odeProps.getTimStartFlag());
+    }
 
-	@Override
-	protected Object process(String consumedData) {
+    @Override
+    protected Object process(String consumedData) {
         try {
-			JSONObject rawTimJsonObject = new JSONObject(consumedData);
+            JSONObject rawTimJsonObject = new JSONObject(consumedData);
 
-			String jsonStringMetadata = rawTimJsonObject.get("metadata").toString();
-			OdeTimMetadata metadata = objectMapper.readValue(jsonStringMetadata, OdeTimMetadata.class);
+            String jsonStringMetadata = rawTimJsonObject.get("metadata").toString();
+            OdeTimMetadata metadata = objectMapper.readValue(jsonStringMetadata, OdeTimMetadata.class);
 
-			Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame", EncodingRule.UPER);
-			metadata.addEncoding(unsecuredDataEncoding);
+            Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame", EncodingRule.UPER);
+            metadata.addEncoding(unsecuredDataEncoding);
 
-			String payloadHexString = ((JSONObject)((JSONObject) rawTimJsonObject.get("payload")).get("data")).getString("bytes");
-			payloadHexString = super.stripDot2Header(payloadHexString);
-			OdeAsn1Payload payload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
+            String payloadHexString = ((JSONObject) ((JSONObject) rawTimJsonObject.get("payload")).get("data")).getString("bytes");
+            payloadHexString = super.stripDot2Header(payloadHexString);
+            OdeAsn1Payload payload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
 
-			publishEncodedMessageToAsn1Decoder(new OdeAsn1Data(metadata, payload));
-		} catch (Exception e) {
-			logger.error("Error publishing to Asn1DecoderInput: {}", e.getMessage());
-		}
-		return null;
-	}
+            publishEncodedMessageToAsn1Decoder(new OdeAsn1Data(metadata, payload));
+        } catch (Exception e) {
+            logger.error("Error publishing to Asn1DecoderInput: {}", e.getMessage());
+        }
+        return null;
+    }
 }

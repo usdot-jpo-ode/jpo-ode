@@ -170,12 +170,12 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 				publisher.publish(JsonUtils.toJson(odeData, false),
 					publisher.getOdeProperties().getKafkaTopicOdeRawEncodedSPATJson());
 			} else {
-				// Determine if it is a MAP or a TIM message
-				String msgtype = isMapOrTim(msgPayload);
-				if (msgtype == "MAP") {
+				// Determine the message type (MAP or TIM are the current other options)
+				String messageType = determineMessageType(msgPayload);
+				if (messageType == "MAP") {
 					publisher.publish(JsonUtils.toJson(odeData, false),
 						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedMAPJson());
-				} else if (msgtype == "TIM") {
+				} else if (messageType == "TIM") {
 					publisher.publish(JsonUtils.toJson(odeData, false),
 						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedTIMJson());
 				}
@@ -186,25 +186,33 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 	}
 
 	/**
-		* Checks the payload to see if the message is a Map or TIM message
+		* Determines the message type based off the most likely start flag
 		* 
 		* @param payload The OdeMsgPayload to check the content of.
 		*/
-	public String isMapOrTim(OdeMsgPayload payload) {
+	public String determineMessageType(OdeMsgPayload payload) {
+		String messageType = "";
 		try {
 			JSONObject payloadJson = JsonUtils.toJSONObject(payload.getData().toJson());
 			String hexString = payloadJson.getString("bytes").toLowerCase();
-			int mapStartIndex = hexString.indexOf(msgStartFlags.get("MAP"));
-			int timStartIndex = hexString.indexOf(msgStartFlags.get("TIM"));
 
-			if (mapStartIndex != -1)
-				return "MAP";
-			else if (timStartIndex != -1)
-				return "TIM";
+			HashMap<String, Integer> flagIndexes = new HashMap<String, Integer>();
+			flagIndexes.put("MAP", hexString.indexOf(msgStartFlags.get("MAP")));
+			flagIndexes.put("TIM", hexString.indexOf(msgStartFlags.get("TIM")));
+
+			int lowestIndex = Integer.MAX_VALUE;
+			for (String key : flagIndexes.keySet()) {
+				if (flagIndexes.get(key) == -1)
+					continue;
+				if (flagIndexes.get(key) < lowestIndex) {
+					messageType = key;
+					lowestIndex = flagIndexes.get(key);
+				}
+			}
 		} catch (JsonUtilsException e) {
 			logger.error("JsonUtilsException while checking message header. Stacktrace: " + e.toString());
 		}
-		return "";
+		return messageType;
 	}
 
 	// This method will check if the next character is a newline character (0x0A in hex or 10 in converted decimal) 

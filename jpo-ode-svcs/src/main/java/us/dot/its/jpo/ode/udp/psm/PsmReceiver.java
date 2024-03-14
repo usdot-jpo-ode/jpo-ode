@@ -64,7 +64,7 @@ public class PsmReceiver extends AbstractUdpReceiverPublisher {
                         continue;
 
                     // convert bytes to hex string and verify identity
-                    String payloadHexString = HexUtils.toHexString(payload);
+                    String payloadHexString = HexUtils.toHexString(payload).toLowerCase();
                     if (payloadHexString.indexOf(odeProperties.getPsmStartFlag()) == -1)
                         continue;
                     logger.debug("Full PSM packet: {}", payloadHexString);
