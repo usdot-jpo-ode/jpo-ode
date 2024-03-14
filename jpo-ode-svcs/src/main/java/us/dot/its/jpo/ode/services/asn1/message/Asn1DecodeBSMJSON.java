@@ -15,9 +15,6 @@ import us.dot.its.jpo.ode.model.OdeAsn1Data;
 import us.dot.its.jpo.ode.model.OdeAsn1Payload;
 import us.dot.its.jpo.ode.model.OdeBsmMetadata;
 
-/***
- * Encoded message Processor
- */
 public class Asn1DecodeBSMJSON extends AbstractAsn1DecodeMessageJSON {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private ObjectMapper objectMapper = new ObjectMapper();
