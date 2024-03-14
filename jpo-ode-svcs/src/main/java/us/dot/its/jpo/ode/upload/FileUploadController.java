@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import us.dot.its.jpo.ode.OdeProperties;
-import us.dot.its.jpo.ode.exporter.StompStringExporter;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher;
 import us.dot.its.jpo.ode.importer.ImporterDirectoryWatcher.ImporterFileType;
 import us.dot.its.jpo.ode.storage.StorageFileNotFoundException;
@@ -42,8 +41,6 @@ import us.dot.its.jpo.ode.storage.StorageService;
 
 @RestController
 public class FileUploadController {
-   private static final String FILTERED_OUTPUT_TOPIC = "/topic/filtered_messages";
-   private static final String UNFILTERED_OUTPUT_TOPIC = "/topic/unfiltered_messages";
 
    private static Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
@@ -51,7 +48,7 @@ public class FileUploadController {
 
    @Autowired
    public FileUploadController(
-   		StorageService storageService, OdeProperties odeProperties,
+         StorageService storageService, OdeProperties odeProperties,
          SimpMessagingTemplate template) {
       super();
       this.storageService = storageService;
@@ -59,7 +56,7 @@ public class FileUploadController {
       ExecutorService threadPool = Executors.newCachedThreadPool();
 
       Path logPath = Paths.get(odeProperties.getUploadLocationRoot(),
-          odeProperties.getUploadLocationObuLog());
+         odeProperties.getUploadLocationObuLog());
       logger.debug("UPLOADER - BSM log file upload directory: {}", logPath);
       Path failurePath = Paths.get(odeProperties.getUploadLocationRoot(), "failed");
       logger.debug("UPLOADER - Failure directory: {}", failurePath);
@@ -68,20 +65,6 @@ public class FileUploadController {
 
       // Create the importers that watch folders for new/modified files
       threadPool.submit(new ImporterDirectoryWatcher(odeProperties, logPath, backupPath, failurePath, ImporterFileType.LOG_FILE, odeProperties.getFileWatcherPeriod()));
-
-      // Create unfiltered exporters
-      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeBsmJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeTimJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeSpatJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeMapJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeSsmJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeSrmJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicDriverAlertJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, UNFILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicOdeTimBroadcastJson()));
-
-      // Create filtered exporters
-      threadPool.submit(new StompStringExporter(odeProperties, FILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicFilteredOdeBsmJson()));
-      threadPool.submit(new StompStringExporter(odeProperties, FILTERED_OUTPUT_TOPIC, template, odeProperties.getKafkaTopicFilteredOdeTimJson()));
    }
 
    @PostMapping("/upload/{type}")
