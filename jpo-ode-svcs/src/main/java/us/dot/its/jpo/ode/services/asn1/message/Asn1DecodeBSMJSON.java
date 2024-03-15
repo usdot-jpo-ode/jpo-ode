@@ -24,7 +24,8 @@ public class Asn1DecodeBSMJSON extends AbstractAsn1DecodeMessageJSON {
 	}
 
 	@Override
-	protected Object process(String consumedData) {
+	protected OdeAsn1Data process(String consumedData) {
+		OdeAsn1Data messageToPublish = null;
 		try {
 			JSONObject rawBsmJsonObject = new JSONObject(consumedData);
 
@@ -38,10 +39,11 @@ public class Asn1DecodeBSMJSON extends AbstractAsn1DecodeMessageJSON {
 			payloadHexString = super.stripDot2Header(payloadHexString);
 			OdeAsn1Payload payload = new OdeAsn1Payload(HexUtils.fromHexString(payloadHexString));
 
-			publishEncodedMessageToAsn1Decoder(new OdeAsn1Data(metadata, payload));
+			messageToPublish = new OdeAsn1Data(metadata, payload);
+			publishEncodedMessageToAsn1Decoder(messageToPublish);
 		} catch (Exception e) {
 			logger.error("Error publishing to Asn1DecoderInput: {}", e.getMessage());
 		}
-		return null;
+		return messageToPublish;
 	}
 }

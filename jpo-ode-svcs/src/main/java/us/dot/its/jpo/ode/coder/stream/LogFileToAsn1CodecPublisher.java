@@ -180,9 +180,9 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 						publisher.getOdeProperties().getKafkaTopicOdeRawEncodedTIMJson());
 				}
 			}
-		}
 
-		serialId.increment();
+			serialId.increment();
+		}
 	}
 
 	/**
