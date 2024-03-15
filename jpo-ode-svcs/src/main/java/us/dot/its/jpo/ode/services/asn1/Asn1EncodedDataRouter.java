@@ -64,6 +64,8 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
    private OdeProperties odeProperties;
    private MessageProducer<String, String> stringMsgProducer;
    private Asn1CommandManager asn1CommandManager;
+   private boolean dataSigningEnabledRSU;
+   private boolean dataSigningEnabledSDW;
 
    public Asn1EncodedDataRouter(OdeProperties odeProperties) {
       super();
@@ -75,6 +77,12 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
 
       this.asn1CommandManager = new Asn1CommandManager(odeProperties);
 
+      this.dataSigningEnabledRSU = System.getenv("DATA_SIGNING_ENABLED_RSU") != null && !System.getenv("DATA_SIGNING_ENABLED_RSU").isEmpty()
+            ? Boolean.parseBoolean(System.getenv("DATA_SIGNING_ENABLED_RSU"))
+            : false;
+      this.dataSigningEnabledSDW = System.getenv("DATA_SIGNING_ENABLED_SDW") != null && !System.getenv("DATA_SIGNING_ENABLED_SDW").isEmpty()
+            ? Boolean.parseBoolean(System.getenv("DATA_SIGNING_ENABLED_SDW"))
+            : false;
    }
 
    @Override
@@ -180,7 +188,8 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
          logger.debug("Encoded message - phase 1: {}", hexEncodedTim);
          //use Asnc1 library to decode the encoded tim returned from ASNC1; another class two blockers: decode the tim and decode the message-sign
 
-         if (odeProperties.dataSigningEnabled()) {
+         if ((dataSigningEnabledRSU && request.getRsus() != null)
+               || (dataSigningEnabledSDW && request.getSdw() != null)) {
             logger.debug("Sending message for signature! ");
             String base64EncodedTim = CodecUtils.toBase64(
                   CodecUtils.fromHex(hexEncodedTim));
@@ -247,8 +256,7 @@ public class Asn1EncodedDataRouter extends AbstractSubscriberProcessor<String, S
       } else {
          //We have encoded ASD. It could be either UNSECURED or secured.
          logger.debug("securitySvcsSignatureUri = {}", odeProperties.getSecuritySvcsSignatureUri());
-
-         if (odeProperties.dataSigningEnabled()) {
+         if (dataSigningEnabledSDW && request.getSdw() != null) {
             logger.debug("Signed message received. Depositing it to SDW.");
             // We have a ASD with signed MessageFrame
             // Case 3
