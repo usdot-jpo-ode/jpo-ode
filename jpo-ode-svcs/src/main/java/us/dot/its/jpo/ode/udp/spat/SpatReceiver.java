@@ -82,7 +82,7 @@ public class SpatReceiver extends AbstractUdpReceiverPublisher {
 
                     spatMetadata.setOriginIp(senderIp);
                     spatMetadata.setSpatSource(SpatSource.RSU);
-                    spatMetadata.setRecordType(RecordType.psmTx);
+                    spatMetadata.setRecordType(RecordType.spatTx);
                     spatMetadata.setRecordGeneratedBy(GeneratedBy.RSU);
                     spatMetadata.setSecurityResultCode(SecurityResultCode.success);
 
