@@ -1,4 +1,4 @@
-# Compatibility Matrix (Recommended Versions)
+# Submodule Compatibility Guide
 This table serves as a guide, suggesting which versions of individual submodules are best suited to accompany each version of the main module. It helps users ensure compatibility and smooth integration by recommending specific submodule versions for their chosen main module version.
 
 | [ODE (this project)](https://github.com/usdot-jpo-ode/jpo-ode/releases) | [ACM](https://github.com/usdot-jpo-ode/asn1_codec/releases) | [PPM](https://github.com/usdot-jpo-ode/jpo-cvdp/releases) | [SEC](https://github.com/usdot-jpo-ode/jpo-security-svcs/releases) | [SDWD](https://github.com/usdot-jpo-ode/jpo-sdw-depositor/releases) | [S3D](https://github.com/usdot-jpo-ode/jpo-s3-deposit/releases) | [GJConverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter/releases) | [CMonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor/releases) | [CVisualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer/releases) | [CVManager](https://github.com/usdot-jpo-ode/jpo-cvmanager/releases) |

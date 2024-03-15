@@ -154,7 +154,7 @@ The following guide contains information about the data flow diagrams for the OD
 - Additionally `git` commands may fail for similar reasons, you can fix this by running `export GIT_SSL_NO_VERIFY=1`.
 - Windows users may find more information on installing and using Docker [here](https://github.com/usdot-jpo-ode/jpo-ode/wiki/Docker-management).
 - Users interested in Kafka may find more guidance and configuration options [here](docker/kafka/README.md).
-- A compatibility guide containing recommended suitable versions of submodules for each main module version can be found [here](docs/compatibility.md).
+- A compatibility guide containing recommendations for suitable versions of submodules for each main module version can be found [here](docs/compatibility.md).
 
 **Configuration:**
 
