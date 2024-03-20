@@ -203,7 +203,7 @@ public class LogFileToAsn1CodecPublisher implements Asn1CodecPublisher {
 			int lowestIndex = Integer.MAX_VALUE;
 			for (String key : flagIndexes.keySet()) {
 				if (flagIndexes.get(key) == -1) {
-					logger.debug("This log is not of type " + key);
+					logger.debug("This message is not of type " + key);
 					continue;
 				}
 				if (flagIndexes.get(key) < lowestIndex) {
